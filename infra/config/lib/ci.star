@@ -99,7 +99,7 @@ def ci_builder(
     experiments.setdefault("chromium.resultdb.result_sink.gtests_local", 100)
 
     # Migrate executable to bbagent incrementally.
-    experiments.setdefault("luci.buildbucket.use_bbagent", 50)
+    experiments.setdefault("luci.buildbucket.use_bbagent", 100)
 
     goma_enable_ats = defaults.get_value_from_kwargs("goma_enable_ats", kwargs)
     if goma_enable_ats == args.COMPUTE:
@@ -177,12 +177,11 @@ def android_builder(
         **kwargs
     )
 
-def android_fyi_builder(*, name, executable = "recipe:chromium (bbagent)", **kwargs):
+def android_fyi_builder(*, name, **kwargs):
     return ci_builder(
         name = name,
         builder_group = "chromium.android.fyi",
         goma_backend = builders.goma.backend.RBE_PROD,
-        executable = executable,
         **kwargs
     )
 
@@ -393,14 +392,12 @@ def fyi_builder(
         name,
         execution_timeout = 10 * time.hour,
         goma_backend = builders.goma.backend.RBE_PROD,
-        executable = "recipe:chromium (bbagent)",
         **kwargs):
     return ci.builder(
         name = name,
         builder_group = "chromium.fyi",
         execution_timeout = execution_timeout,
         goma_backend = goma_backend,
-        executable = executable,
         **kwargs
     )
 
@@ -477,7 +474,7 @@ def fyi_windows_builder(
         **kwargs
     )
 
-def gpu_fyi_builder(*, name, executable = "recipe:chromium (bbagent)", **kwargs):
+def gpu_fyi_builder(*, name, **kwargs):
     return ci.builder(
         name = name,
         builder_group = "chromium.gpu.fyi",
@@ -486,7 +483,6 @@ def gpu_fyi_builder(*, name, executable = "recipe:chromium (bbagent)", **kwargs)
         properties = {
             "perf_dashboard_machine_group": "ChromiumGPUFYI",
         },
-        executable = executable,
         **kwargs
     )
 
