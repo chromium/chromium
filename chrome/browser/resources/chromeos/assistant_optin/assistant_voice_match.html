@@ -27,13 +27,17 @@
       <h1 slot="title">
         [[i18nDynamic(locale, 'assistantVoiceMatchTitle')]]
       </h1>
-      <div slot="subtitle" inner-h-t-m-l="[[getSubtitleMessage_(locale)]]">
+      <div slot="subtitle" id="message-horizontal-mode"
+          inner-h-t-m-l="[[getSubtitleMessage_(locale)]]">
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
         <div id="voice-match-animation">
           <cr-lottie id="voice-match-lottie"
               animation-url="voice_match_animation.json">
           </cr-lottie>
+        </div>
+        <div id="message-vertical-mode"
+            inner-h-t-m-l="[[getSubtitleMessage_(locale)]]">
         </div>
       </div>
       <div slot="bottom-buttons">

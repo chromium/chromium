@@ -30,6 +30,10 @@ oobe-content-dialog {
           var(--caption-bar-height) / 2);
 }
 
+:host-context([orientation=vertical]:not([screen=oobe])) oobe-adaptive-dialog {
+  --oobe-adaptive-dialog-content-padding: 64px;
+}
+
 webview {
   user-select: none;
 }
