@@ -13,6 +13,7 @@
 
 #if defined(OS_WIN)
 #include "base/win/win_util.h"
+#include "chrome/test/base/test_switches.h"
 #endif  // defined(OS_WIN)
 
 int main(int argc, char** argv) {
@@ -21,6 +22,8 @@ int main(int argc, char** argv) {
   if (parallel_jobs == 0U)
     return 1;
 
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
 #if defined(OS_WIN)
   // Many tests validate code that requires user32.dll to be loaded. Loading it,
   // however, cannot be done on the main thread loop because it is a blocking
@@ -28,11 +31,14 @@ int main(int argc, char** argv) {
   // load and pin the module early on in startup before the blocking becomes an
   // issue.
   base::win::PinUser32();
+
+  if (command_line->HasSwitch(switches::kEnableHighDpiSupport)) {
+    base::win::EnableHighDPISupport();
+  }
 #endif  // defined(OS_WIN)
 
-  // Enable high-DPI for interactive tests where the user is expected to
+  // Adjust switches for interactive tests where the user is expected to
   // manually verify results.
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kTestLauncherInteractive)) {
     // Since the test is interactive, the invoker will want to have pixel output
     // to actually see the result.
@@ -43,8 +49,6 @@ int main(int argc, char** argv) {
     // Pass in --disable-gpu to resolve this for now. See
     // http://crbug.com/687387.
     command_line->AppendSwitch(switches::kDisableGpu);
-
-    base::win::EnableHighDPISupport();
 #endif  // defined(OS_WIN)
   }
 

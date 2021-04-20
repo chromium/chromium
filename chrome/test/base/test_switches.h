@@ -16,6 +16,10 @@ extern const char kAlsoEmitSuccessLogs[];
 
 extern const char kPerfTestPrintUmaMeans[];
 
+#if defined(OS_WIN)
+extern const char kEnableHighDpiSupport[];
+#endif
+
 }  // namespace switches
 
 #endif  // CHROME_TEST_BASE_TEST_SWITCHES_H_

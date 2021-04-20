@@ -16,4 +16,9 @@ const char kAlsoEmitSuccessLogs[] = "also-emit-success-logs";
 // subclasses.
 const char kPerfTestPrintUmaMeans[] = "perf-test-print-uma-means";
 
+#if defined(OS_WIN)
+// If enabled, tests will run with high DPI support enabled.
+const char kEnableHighDpiSupport[] = "enable-high-dpi-support-for-testing";
+#endif
+
 }  // namespace switches
