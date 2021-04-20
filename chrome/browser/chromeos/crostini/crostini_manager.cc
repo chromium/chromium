@@ -39,7 +39,6 @@
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/crostini/crostini_remover.h"
 #include "chrome/browser/chromeos/crostini/crostini_reporting_util.h"
-#include "chrome/browser/chromeos/crostini/crostini_sshfs.h"
 #include "chrome/browser/chromeos/crostini/crostini_types.mojom.h"
 #include "chrome/browser/chromeos/crostini/crostini_upgrade_available_notification.h"
 #include "chrome/browser/chromeos/crostini/throttle/crostini_throttle.h"
@@ -203,6 +202,7 @@ CrostiniManager::RestartOptions& CrostiniManager::RestartOptions::operator=(
 
 class CrostiniManager::CrostiniRestarter
     : public chromeos::VmShutdownObserver,
+      public chromeos::disks::DiskMountManager::Observer,
       public chromeos::SchedulerConfigurationManagerBase::Observer {
  public:
   CrostiniRestarter(Profile* profile,
@@ -395,6 +395,9 @@ class CrostiniManager::CrostiniRestarter
     if (completed_callback_) {
       LOG(ERROR) << "Destroying without having called the callback.";
     }
+    auto* mount_manager = chromeos::disks::DiskMountManager::GetInstance();
+    if (mount_manager)
+      mount_manager->RemoveObserver(this);
   }
 
   // This is public so CallRestarterStartLxdContainerFinishedForTesting can call
@@ -415,48 +418,25 @@ class CrostiniManager::CrostiniRestarter
       FinishRestart(result);
       return;
     }
-
+    // If default termina/penguin, then sshfs mount and reshare folders, else we
+    // are finished.
     // If arc sideloading is enabled, configure the container for that.
     crostini_manager_->ConfigureForArcSideload();
-
-    // If default termina/penguin, then sshfs mount and reshare folders, else we
-    // are finished. Also, a lot of unit tests don't inject a fake container so
-    // it's possible in tests to end up here without a running container. Don't
-    // try mounting sshfs in that case.
     auto info = crostini_manager_->GetContainerInfo(container_id_);
-    if (container_id_ == ContainerId::GetDefault() && info) {
+    if (container_id_ == ContainerId::GetDefault() && info &&
+        !info->sshfs_mounted) {
       StartStage(mojom::InstallerState::kFetchSshKeys);
-      crostini_manager_->MountCrostiniFiles(
+      crostini_manager_->GetContainerSshKeys(
           container_id_,
-          base::BindOnce(&CrostiniRestarter::MountCrostiniFilesFinished,
-                         weak_ptr_factory_.GetWeakPtr()));
+          base::BindOnce(&CrostiniRestarter::GetContainerSshKeysFinished,
+                         weak_ptr_factory_.GetWeakPtr(), info->username,
+                         info->homedir));
     } else {
       FinishRestart(result);
     }
   }
 
  private:
-  void MountCrostiniFilesFinished(CrostiniResult result) {
-    // TODO(crbug/1142321): Metrics
-    // TODO(crbug/1198006): For backwards compatibility quickly run through
-    // these stages which have since been removed, but some clients still
-    // expect to see.
-    for (auto& observer : observer_list_) {
-      observer.OnSshKeysFetched(true);
-    }
-    if (ReturnEarlyIfAborted()) {
-      return;
-    }
-    StartStage(mojom::InstallerState::kMountContainer);
-    for (auto& observer : observer_list_) {
-      observer.OnContainerMounted(result == CrostiniResult::SUCCESS);
-    }
-    if (ReturnEarlyIfAborted()) {
-      return;
-    }
-    FinishRestart(result);
-  }
-
   void ContinueRestart() {
     is_running_ = true;
     // Skip to the end immediately if testing.
@@ -727,6 +707,97 @@ class CrostiniManager::CrostiniRestarter
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  void GetContainerSshKeysFinished(const std::string& container_username,
+                                   const base::FilePath& container_homedir,
+                                   bool success,
+                                   const std::string& container_public_key,
+                                   const std::string& host_private_key,
+                                   const std::string& hostname) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    for (auto& observer : observer_list_) {
+      observer.OnSshKeysFetched(success);
+    }
+    if (ReturnEarlyIfAborted()) {
+      return;
+    }
+    EmitMetricIfInIncorrectState(mojom::InstallerState::kFetchSshKeys);
+    if (!success) {
+      FinishRestart(CrostiniResult::GET_CONTAINER_SSH_KEYS_FAILED);
+      return;
+    }
+
+    // Add DiskMountManager::OnMountEvent observer.
+    auto* dmgr = chromeos::disks::DiskMountManager::GetInstance();
+    dmgr->AddObserver(this);
+
+    // Call to sshfs to mount.
+    source_path_ = base::StringPrintf(
+        "sshfs://%s@%s:", container_username.c_str(), hostname.c_str());
+    container_homedir_ = container_homedir;
+    StartStage(mojom::InstallerState::kMountContainer);
+    dmgr->MountPath(source_path_, "",
+                    file_manager::util::GetCrostiniMountPointName(profile_),
+                    file_manager::util::GetCrostiniMountOptions(
+                        hostname, host_private_key, container_public_key),
+                    chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+                    chromeos::MOUNT_ACCESS_MODE_READ_WRITE);
+  }
+
+  // chromeos::disks::DiskMountManager::Observer
+  void OnMountEvent(chromeos::disks::DiskMountManager::MountEvent event,
+                    chromeos::MountError error_code,
+                    const chromeos::disks::DiskMountManager::MountPointInfo&
+                        mount_info) override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    // Ignore any other mount/unmount events.
+    if (event != chromeos::disks::DiskMountManager::MountEvent::MOUNTING ||
+        mount_info.source_path != source_path_) {
+      return;
+    }
+    EmitMetricIfInIncorrectState(mojom::InstallerState::kMountContainer);
+    bool success = error_code == chromeos::MountError::MOUNT_ERROR_NONE;
+    for (auto& observer : observer_list_) {
+      observer.OnContainerMounted(success);
+    }
+    // Remove DiskMountManager::OnMountEvent observer.
+    chromeos::disks::DiskMountManager::GetInstance()->RemoveObserver(this);
+
+    if (!success) {
+      LOG(ERROR) << "Error mounting crostini container: error_code="
+                 << error_code << ", source_path=" << mount_info.source_path
+                 << ", mount_path=" << mount_info.mount_path
+                 << ", mount_type=" << mount_info.mount_type
+                 << ", mount_condition=" << mount_info.mount_condition;
+      if (ReturnEarlyIfAborted()) {
+        return;
+      }
+      FinishRestart(CrostiniResult::SSHFS_MOUNT_ERROR);
+      return;
+    }
+
+    crostini_manager_->SetContainerSshfsMounted(container_id_, true);
+
+    // Register filesystem and add volume to VolumeManager.
+    base::FilePath mount_path = base::FilePath(mount_info.mount_path);
+    storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+        file_manager::util::GetCrostiniMountPointName(profile_),
+        storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+        mount_path);
+
+    // VolumeManager is null in unittest.
+    if (auto* vmgr = file_manager::VolumeManager::Get(profile_))
+      vmgr->AddSshfsCrostiniVolume(mount_path, container_homedir_);
+
+    // Abort not checked until exiting this function.  On abort, do not
+    // continue, but still remove observer and add volume as per above.
+    if (ReturnEarlyIfAborted()) {
+      return;
+    }
+
+    FinishRestart(CrostiniResult::SUCCESS);
+  }
+
   Profile* profile_;
   // This isn't accessed after the CrostiniManager is destroyed and we need a
   // reference to it during the CrostiniRestarter destructor.
@@ -812,6 +883,16 @@ ContainerInfo::ContainerInfo(ContainerInfo&&) = default;
 ContainerInfo::ContainerInfo(const ContainerInfo&) = default;
 ContainerInfo& ContainerInfo::operator=(ContainerInfo&&) = default;
 ContainerInfo& ContainerInfo::operator=(const ContainerInfo&) = default;
+
+void CrostiniManager::SetContainerSshfsMounted(const ContainerId& container_id,
+                                               bool is_mounted) {
+  auto range = running_containers_.equal_range(container_id.vm_name);
+  for (auto it = range.first; it != range.second; ++it) {
+    if (it->second.name == container_id.container_name) {
+      it->second.sshfs_mounted = is_mounted;
+    }
+  }
+}
 
 namespace {
 
@@ -1016,7 +1097,6 @@ CrostiniManager::CrostiniManager(Profile* profile)
       std::make_unique<guest_os::GuestOsStabilityMonitor>(
           kCrostiniStabilityHistogram);
   low_disk_notifier_ = std::make_unique<CrostiniLowDiskNotification>();
-  crostini_sshfs_ = std::make_unique<CrostiniSshfs>(profile_);
 }
 
 CrostiniManager::~CrostiniManager() {
@@ -3508,15 +3588,15 @@ void CrostiniManager::ActiveNetworksChanged(
 void CrostiniManager::SuspendImminent(
     power_manager::SuspendImminent::Reason reason) {
   auto info = GetContainerInfo(ContainerId::GetDefault());
-  if (!crostini_sshfs_->IsSshfsMounted(ContainerId::GetDefault())) {
+  if (!info || !info->sshfs_mounted) {
     return;
   }
 
   // Block suspend and try to unmount sshfs (https://crbug.com/968060).
   auto token = base::UnguessableToken::Create();
   chromeos::PowerManagerClient::Get()->BlockSuspend(token, "CrostiniManager");
-  crostini_sshfs_->UnmountCrostiniFiles(
-      ContainerId::GetDefault(),
+  file_manager::VolumeManager::Get(profile_)->RemoveSshfsCrostiniVolume(
+      file_manager::util::GetCrostiniMountDirectory(profile_),
       base::BindOnce(&CrostiniManager::OnRemoveSshfsCrostiniVolume,
                      weak_ptr_factory_.GetWeakPtr(), token));
 }
@@ -3526,8 +3606,6 @@ void CrostiniManager::SuspendDone(base::TimeDelta sleep_duration) {
   // call RestartCrostini to force remount if container is running.
   ContainerId container_id = ContainerId::GetDefault();
   if (GetContainerInfo(container_id)) {
-    // TODO(crbug/1142321): Double-check if anything breaks if we change this
-    // to just remount the sshfs mounts, in particular check 9p mounts.
     RestartCrostini(container_id, base::DoNothing());
   }
 }
@@ -3535,17 +3613,18 @@ void CrostiniManager::SuspendDone(base::TimeDelta sleep_duration) {
 void CrostiniManager::OnRemoveSshfsCrostiniVolume(
     base::UnguessableToken power_manager_suspend_token,
     bool result) {
-  // Need to let the device suspend after cleaning up. Even if we failed we
-  // still unblock suspend since there's nothing else we can do at this point.
-  // TODO(crbug/1142321): Success metrics
+  if (result) {
+    SetContainerSshfsMounted(ContainerId::GetDefault(), false);
+  }
+  // Need to let the device suspend after cleaning up.
   chromeos::PowerManagerClient::Get()->UnblockSuspend(
       power_manager_suspend_token);
 }
 
 void CrostiniManager::RemoveUncleanSshfsMounts() {
-  // TODO(crbug/1142321): Success metrics
-  crostini_sshfs_->UnmountCrostiniFiles(ContainerId::GetDefault(),
-                                        base::DoNothing());
+  file_manager::VolumeManager::Get(profile_)->RemoveSshfsCrostiniVolume(
+      file_manager::util::GetCrostiniMountDirectory(profile_),
+      base::DoNothing());
 }
 
 void CrostiniManager::DeallocateForwardedPortsCallback(
@@ -3623,18 +3702,6 @@ void CrostiniManager::EmitVmDiskTypeMetric(const std::string vm_name) {
           }
         }
       }));
-}
-
-void CrostiniManager::MountCrostiniFiles(ContainerId container_id,
-                                         CrostiniResultCallback callback) {
-  crostini_sshfs_->MountCrostiniFiles(
-      container_id, base::BindOnce(
-                        [](CrostiniResultCallback callback, bool success) {
-                          std::move(callback).Run(
-                              success ? CrostiniResult::SUCCESS
-                                      : CrostiniResult::SSHFS_MOUNT_ERROR);
-                        },
-                        std::move(callback)));
 }
 
 void CrostiniManager::CallRestarterStartLxdContainerFinishedForTesting(
