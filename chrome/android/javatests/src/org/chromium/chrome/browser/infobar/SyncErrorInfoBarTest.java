@@ -50,7 +50,7 @@ import java.io.IOException;
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
+            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(2).build();
 
     @Before
     public void setUp() {
@@ -104,6 +104,18 @@ import java.io.IOException;
 
     @Test
     @LargeTest
+    public void testSyncErrorInfoBarShownForClientOutOfDate() {
+        Assert.assertEquals("InfoBar should not be shown before signing in", 0,
+                mSyncTestRule.getInfoBars().size());
+        showSyncErrorInfoBarForClientOutOfDate();
+        Assert.assertEquals("InfoBar should be shown", 1, mSyncTestRule.getInfoBars().size());
+
+        // Not possible to resolve this error from within chrome unlike the other SyncErrorInfoBar
+        // types.
+    }
+
+    @Test
+    @LargeTest
     public void testSyncErrorInfoBarNotShownWhenNoError() {
         Assert.assertEquals("InfoBar should not be shown before signing in", 0,
                 mSyncTestRule.getInfoBars().size());
@@ -112,6 +124,7 @@ import java.io.IOException;
         mFakeProfileSyncService.setEngineInitialized(true);
         mFakeProfileSyncService.setAuthError(GoogleServiceAuthError.State.NONE);
         mFakeProfileSyncService.setPassphraseRequiredForPreferredDataTypes(false);
+        mFakeProfileSyncService.setRequiresClientUpgrade(false);
 
         @SyncError
         int syncError = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
@@ -122,6 +135,7 @@ import java.io.IOException;
         Assert.assertTrue(syncError != SyncError.AUTH_ERROR);
         Assert.assertTrue(syncError != SyncError.PASSPHRASE_REQUIRED);
         Assert.assertTrue(syncError != SyncError.SYNC_SETUP_INCOMPLETE);
+        Assert.assertTrue(syncError != SyncError.CLIENT_OUT_OF_DATE);
 
         Assert.assertEquals("InfoBar should not be shown when there is no error", 0,
                 mSyncTestRule.getInfoBars().size());
@@ -180,6 +194,15 @@ import java.io.IOException;
                 "sync_error_infobar_passphrase_required");
     }
 
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testSyncErrorInfoBarForClientOutOfDateView() throws IOException {
+        showSyncErrorInfoBarForClientOutOfDate();
+        mRenderTestRule.render(mSyncTestRule.getInfoBarContainer().getContainerViewForTesting(),
+                "sync_error_infobar_client_out_of_date");
+    }
+
     private void showSyncErrorInfoBarForAuthError() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mFakeProfileSyncService.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
@@ -195,6 +218,12 @@ import java.io.IOException;
 
     private void showSyncErrorInfoBarForSyncSetupIncomplete() {
         mSyncTestRule.setUpTestAccountAndSignInWithSyncSetupAsIncomplete();
+        mSyncTestRule.loadUrlInNewTab(UrlConstants.CHROME_BLANK_URL);
+    }
+
+    private void showSyncErrorInfoBarForClientOutOfDate() {
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mFakeProfileSyncService.setRequiresClientUpgrade(true);
         mSyncTestRule.loadUrlInNewTab(UrlConstants.CHROME_BLANK_URL);
     }
 
