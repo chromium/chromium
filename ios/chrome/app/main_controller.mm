@@ -753,39 +753,38 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)schedulePrefObserverInitialization {
+  __weak MainController* weakSelf = self;
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kPrefObserverInit
                   block:^{
-                    // Track changes to local state prefs.
-                    _localStatePrefObserverBridge.reset(
-                        new PrefObserverBridge(self));
-                    _localStatePrefChangeRegistrar.Init(
-                        GetApplicationContext()->GetLocalState());
-                    _localStatePrefObserverBridge->ObserveChangesForPreference(
-                        metrics::prefs::kMetricsReportingEnabled,
-                        &_localStatePrefChangeRegistrar);
-                    if (!base::FeatureList::IsEnabled(kUmaCellular)) {
-                      _localStatePrefObserverBridge
-                          ->ObserveChangesForPreference(
-                              prefs::kMetricsReportingWifiOnly,
-                              &_localStatePrefChangeRegistrar);
-                    }
-
-                    // Calls the onPreferenceChanged function in case there was
-                    // a change to the observed preferences before the observer
-                    // bridge was set up.
-                    [self onPreferenceChanged:metrics::prefs::
-                                                  kMetricsReportingEnabled];
-                    [self onPreferenceChanged:prefs::kMetricsReportingWifiOnly];
-
-                    // Track changes to default search engine.
-                    TemplateURLService* service =
-                        ios::TemplateURLServiceFactory::GetForBrowserState(
-                            self.appState.mainBrowserState);
-                    _extensionSearchEngineDataUpdater =
-                        std::make_unique<ExtensionSearchEngineDataUpdater>(
-                            service);
+                    [weakSelf initializePrefObservers];
                   }];
+}
+
+- (void)initializePrefObservers {
+  // Track changes to local state prefs.
+  _localStatePrefChangeRegistrar.Init(GetApplicationContext()->GetLocalState());
+  _localStatePrefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+  _localStatePrefObserverBridge->ObserveChangesForPreference(
+      metrics::prefs::kMetricsReportingEnabled,
+      &_localStatePrefChangeRegistrar);
+  if (!base::FeatureList::IsEnabled(kUmaCellular)) {
+    _localStatePrefObserverBridge->ObserveChangesForPreference(
+        prefs::kMetricsReportingWifiOnly, &_localStatePrefChangeRegistrar);
+  }
+
+  // Calls the onPreferenceChanged function in case there was
+  // a change to the observed preferences before the observer
+  // bridge was set up.
+  [self onPreferenceChanged:metrics::prefs::kMetricsReportingEnabled];
+  [self onPreferenceChanged:prefs::kMetricsReportingWifiOnly];
+
+  // Track changes to default search engine.
+  TemplateURLService* service =
+      ios::TemplateURLServiceFactory::GetForBrowserState(
+          self.appState.mainBrowserState);
+  _extensionSearchEngineDataUpdater =
+      std::make_unique<ExtensionSearchEngineDataUpdater>(service);
 }
 
 - (void)scheduleAppDistributionPings {
@@ -868,15 +867,21 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)scheduleMemoryDebuggingTools {
   if (experimental_flags::IsMemoryDebuggingEnabled()) {
+    __weak MainController* weakSelf = self;
     [[DeferredInitializationRunner sharedInstance]
         enqueueBlockNamed:kMemoryDebuggingToolsStartup
                     block:^{
-                      _memoryDebuggerManager = [[MemoryDebuggerManager alloc]
-                          initWithView:self.window
-                                 prefs:GetApplicationContext()
-                                           ->GetLocalState()];
+                      [weakSelf initializedMemoryDebuggingTools];
                     }];
   }
+}
+
+- (void)initializedMemoryDebuggingTools {
+  DCHECK(!_memoryDebuggerManager);
+  DCHECK(experimental_flags::IsMemoryDebuggingEnabled());
+  _memoryDebuggerManager = [[MemoryDebuggerManager alloc]
+      initWithView:self.window
+             prefs:GetApplicationContext()->GetLocalState()];
 }
 
 - (void)initializeMailtoHandling {
@@ -1033,15 +1038,12 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)scheduleSpotlightResync {
-  if (!_spotlightManager) {
-    return;
-  }
-  ProceduralBlock block = ^{
-    [_spotlightManager resyncIndex];
-  };
+  __weak SpotlightManager* spotlightManager = _spotlightManager;
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kStartSpotlightBookmarksIndexing
-                  block:block];
+                  block:^{
+                    [spotlightManager resyncIndex];
+                  }];
 }
 
 - (void)expireFirstUserActionRecorder {
