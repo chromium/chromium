@@ -6,12 +6,16 @@
 
 #include <stddef.h>
 
+#include <atomic>
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/condition_variable.h"
@@ -30,6 +34,12 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    defined(PA_THREAD_CACHE_SUPPORTED)
+#include "base/allocator/partition_allocator/thread_cache.h"
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // defined(PA_THREAD_CACHE_SUPPORTED)
 
 using testing::_;
 using testing::Mock;
@@ -826,6 +836,71 @@ TEST(ThreadPoolWorkerTest, WorkerThreadObserver) {
   worker->JoinForTesting();
   Mock::VerifyAndClear(&observer);
 }
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    defined(PA_THREAD_CACHE_SUPPORTED)
+namespace {
+NOINLINE void FreeForTest(void* data) {
+  free(data);
+}
+}  // namespace
+
+class WorkerThreadThreadCacheDelegate : public WorkerThreadDefaultDelegate {
+ public:
+  void WaitForWork(WaitableEvent* wake_up_event) override {
+    // Fill several buckets before going to sleep.
+    for (size_t size = 8; size < ThreadCache::kDefaultSizeThreshold; size++) {
+      void* data = malloc(size);
+      // A simple malloc() / free() pair can be discarded by the compiler (and
+      // is), making the test fail. It is sufficient to make |FreeForTest()| a
+      // NOINLINE function for the call to not be eliminated, but it is
+      // required.
+      FreeForTest(data);
+    }
+
+    size_t cached_memory_before = ThreadCache::Get()->CachedMemory();
+    WorkerThreadDefaultDelegate::WaitForWork(wake_up_event);
+    size_t cached_memory_after = ThreadCache::Get()->CachedMemory();
+
+    if (!first_wakeup_done_) {
+      // First time we sleep is a short sleep, no cache purging.
+      //
+      // Here and below, cannot assert on exact thread cache size, since
+      // anything that allocates will make it fluctuate.
+      EXPECT_GT(cached_memory_after, cached_memory_before / 2);
+      first_wakeup_done_.store(true, std::memory_order_release);
+    } else {
+      // Second one is long, should purge.
+      EXPECT_LT(cached_memory_after, cached_memory_before / 2);
+    }
+  }
+
+  std::atomic<bool> first_wakeup_done_{false};
+};
+
+TEST(ThreadPoolWorkerThreadCachePurgeTest, Purge) {
+  TaskTracker task_tracker;
+  auto delegate = std::make_unique<WorkerThreadThreadCacheDelegate>();
+  auto* delegate_raw = delegate.get();
+  auto worker =
+      MakeRefCounted<WorkerThread>(ThreadPriority::NORMAL, std::move(delegate),
+                                   task_tracker.GetTrackedRef());
+  // Wake up before the thread is started to make sure the first sleep is short.
+  worker->WakeUp();
+  worker->Start(nullptr);
+
+  while (delegate_raw->first_wakeup_done_.load(std::memory_order_acquire)) {
+  }
+
+  // Have to use real sleep unfortunately rather than virtual time, because
+  // WaitableEvent uses the non-overridable variant of TimeTicks.
+  PlatformThread::Sleep(1.1 *
+                        WorkerThread::Delegate::kPurgeThreadCacheIdleDelay);
+  worker->JoinForTesting();
+}
+
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // defined(PA_THREAD_CACHE_SUPPORTED)
 
 }  // namespace internal
 }  // namespace base

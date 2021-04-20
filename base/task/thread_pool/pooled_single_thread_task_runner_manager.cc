@@ -115,6 +115,7 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
   RegisteredTaskSource GetWork(WorkerThread* worker) override {
     CheckedAutoLock auto_lock(lock_);
     DCHECK(worker_awake_);
+
     auto task_source = GetWorkLockRequired(worker);
     if (!task_source) {
       // The worker will sleep after this returns nullptr.

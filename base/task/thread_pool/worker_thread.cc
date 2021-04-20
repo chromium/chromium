@@ -6,8 +6,11 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 
+#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -23,19 +26,50 @@
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    defined(PA_THREAD_CACHE_SUPPORTED)
+#include "base/allocator/partition_allocator/thread_cache.h"
+#endif
+
 namespace base {
 namespace internal {
+
+constexpr TimeDelta WorkerThread::Delegate::kPurgeThreadCacheIdleDelay;
 
 void WorkerThread::Delegate::WaitForWork(WaitableEvent* wake_up_event) {
   DCHECK(wake_up_event);
   const TimeDelta sleep_time = GetSleepTimeout();
-  if (sleep_time.is_max()) {
-    // Calling TimedWait with TimeDelta::Max is not recommended per
-    // http://crbug.com/465948.
-    wake_up_event->Wait();
-  } else {
-    wake_up_event->TimedWait(sleep_time);
+
+  // When a thread goes to sleep, the memory retained by its thread cache is
+  // trapped there for as long as the thread sleeps. To prevent that, we can
+  // either purge the thread cache right before going to sleep, or after some
+  // delay.
+  //
+  // Purging the thread cache incurs a cost on the next task, since its thread
+  // cache will be empty and allocation performance initially lower. As a lot of
+  // sleeps are very short, do not purge all the time (this would also make
+  // sleep / wakeups cycles more costly).
+  //
+  // Instead, sleep for min(timeout, 1s). If the wait times out then purge at
+  // that point, and go to sleep for the remaining of the time. This ensures
+  // that we do no work for short sleeps, and that threads do not get awaken
+  // many times.
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    defined(PA_THREAD_CACHE_SUPPORTED)
+  bool was_signaled = wake_up_event->TimedWait(
+      std::min(sleep_time, kPurgeThreadCacheIdleDelay));
+
+  // Timed out.
+  if (!was_signaled) {
+    ThreadCache::PurgeCurrentThread();
+
+    if (sleep_time > kPurgeThreadCacheIdleDelay)
+      wake_up_event->TimedWait(sleep_time - kPurgeThreadCacheIdleDelay);
   }
+#else
+  wake_up_event->TimedWait(sleep_time);
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // defined(PA_THREAD_CACHE_SUPPORTED)
 }
 
 WorkerThread::WorkerThread(ThreadPriority priority_hint,

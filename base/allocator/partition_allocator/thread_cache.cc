@@ -616,6 +616,13 @@ void ThreadCache::Purge() {
   PurgeInternal();
 }
 
+// static
+void ThreadCache::PurgeCurrentThread() {
+  auto* tcache = Get();
+  if (IsValid(tcache))
+    tcache->Purge();
+}
+
 void ThreadCache::PurgeInternal() {
   should_purge_.store(false, std::memory_order_relaxed);
   // TODO(lizeb): Investigate whether lock acquisition should be less frequent.
