@@ -1045,7 +1045,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Omnibox.ToggleSuggestionGroupId.Off" enum="SuggestionGroupId"
-    expires_after="2021-08-01">
+    expires_after="2021-10-17">
   <owner>mahmadi@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>

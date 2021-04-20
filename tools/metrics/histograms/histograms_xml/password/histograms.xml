@@ -2281,7 +2281,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.UIDismissalReason"
-    enum="PasswordManagerUIDismissalReason" expires_after="2021-08-15">
+    enum="PasswordManagerUIDismissalReason" expires_after="2021-10-17">
   <owner>vasilii@chromium.org</owner>
   <summary>
     Why was the password manager's UI (bubble or infobar) closed? Save and
@@ -2454,7 +2454,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordProtection.ModalWarningDialogAction"
-    enum="PasswordProtectionWarningAction" expires_after="2021-08-15">
+    enum="PasswordProtectionWarningAction" expires_after="2021-10-17">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

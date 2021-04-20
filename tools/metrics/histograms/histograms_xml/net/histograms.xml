@@ -773,7 +773,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.DnsTransaction.AttemptType" enum="DNS.AttemptType"
-    expires_after="2021-08-15">
+    expires_after="2021-10-17">
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2323,7 +2323,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.PushedStreamVaryResponseHeader"
-    enum="PushedStreamVaryResponseHeaderValues" expires_after="2021-08-15">
+    enum="PushedStreamVaryResponseHeaderValues" expires_after="2021-10-17">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4180,7 +4180,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.StreamCloseErrorCodeClient.HandshakeConfirmed"
-    enum="QuicErrorCodes" expires_after="2021-08-09">
+    enum="QuicErrorCodes" expires_after="2021-10-17">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>

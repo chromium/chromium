@@ -827,7 +827,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.FileTypeUpdate.DynamicUpdateResult"
-    enum="SBFileTypeUpdateResult" expires_after="2021-08-15">
+    enum="SBFileTypeUpdateResult" expires_after="2021-10-17">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1083,7 +1083,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.AllStoresAvailable" enum="BooleanAvailable"
-    expires_after="2021-08-17">
+    expires_after="2021-10-17">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1094,7 +1094,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Backoff.State" enum="BooleanEnabled"
-    expires_after="2021-08-15">
+    expires_after="2021-10-17">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1353,7 +1353,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.ThreatInfoSize" units="verdicts"
-    expires_after="2021-08-15">
+    expires_after="2021-10-17">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1364,7 +1364,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SafeBrowsing.Settings.UserAction"
-    enum="SafeBrowsingSettingsUserAction" expires_after="2021-08-14">
+    enum="SafeBrowsingSettingsUserAction" expires_after="2021-10-17">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

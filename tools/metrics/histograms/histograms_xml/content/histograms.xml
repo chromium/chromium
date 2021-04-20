@@ -575,7 +575,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.Popups.StrongBlockerActions"
-    enum="StrongPopupBlockerAction" expires_after="2021-08-15">
+    enum="StrongPopupBlockerAction" expires_after="2021-10-17">
   <owner>csharrison@chromium.org</owner>
   <summary>
     Counts of various events related to the strong popup blocker (aka abusive
@@ -1025,7 +1025,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.NoticeCardFulfilled2" enum="Boolean"
-    expires_after="2021-08-15">
+    expires_after="2021-10-17">
   <owner>vincb@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>

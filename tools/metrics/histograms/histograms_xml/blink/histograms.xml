@@ -755,7 +755,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.DecodedImageType" enum="DecodedImageType"
-    expires_after="2021-08-15">
+    expires_after="2021-10-17">
   <owner>urvang@chromium.org</owner>
   <summary>Image codec inferred during decode.</summary>
 </histogram>
@@ -1239,7 +1239,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.ImageDecoders.InitiallyFullyDecodedByteSize"
-    units="bytes" expires_after="2021-08-15">
+    units="bytes" expires_after="2021-10-17">
   <owner>mbarowsky@chromium.org</owner>
   <owner>andrescj@chromium.org</owner>
   <summary>
@@ -1271,7 +1271,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.ImageDecoders.Jpeg.ColorSpace" enum="JpegColorSpace"
-    expires_after="2021-08-15">
+    expires_after="2021-10-17">
   <owner>andrescj@chromium.org</owner>
   <owner>mcasas@chromium.org</owner>
   <summary>
@@ -1860,7 +1860,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.OffscreenCanvas.ContextType" enum="CanvasContextType"
-    expires_after="2021-08-15">
+    expires_after="2021-10-17">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>

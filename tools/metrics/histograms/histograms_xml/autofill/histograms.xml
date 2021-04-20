@@ -603,7 +603,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.ExpirationDateFixFlowPromptShown" enum="Boolean"
-    expires_after="2021-08-09">
+    expires_after="2021-10-17">
   <owner>siashah@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>

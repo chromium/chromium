@@ -1745,7 +1745,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.ReceiveAdvertisementToAuthentication.EffectiveSuccessRateWithRetries"
-    enum="BooleanSuccess" expires_after="2021-08-15">
+    enum="BooleanSuccess" expires_after="2021-10-17">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1929,7 +1929,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDeviceSetup.OOBE.UserChoice"
-    enum="MultiDeviceSetupOOBEUserChoice" expires_after="2021-08-09">
+    enum="MultiDeviceSetupOOBEUserChoice" expires_after="2021-10-17">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <owner>hsuregan@chromium.org</owner>
@@ -1970,7 +1970,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProximityAuth.BleWeaveConnectionResult"
-    enum="ProximityAuth_BleWeaveConnectionResult" expires_after="2021-08-15">
+    enum="ProximityAuth_BleWeaveConnectionResult" expires_after="2021-10-17">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1981,7 +1981,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ProximityAuth.BluetoothGattConnectionResult"
     enum="ProximityAuth_BluetoothGattConnectionResult"
-    expires_after="2021-08-15">
+    expires_after="2021-10-17">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

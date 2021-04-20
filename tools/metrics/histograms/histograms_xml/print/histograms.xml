@@ -99,7 +99,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.PrinterStatus.AttemptedPrintWithErrorStatus"
-    enum="Boolean" expires_after="2021-08-17">
+    enum="Boolean" expires_after="2021-10-17">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -109,7 +109,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.PrinterStatus.AttemptedPrintWithGoodStatus"
-    enum="Boolean" expires_after="2021-08-17">
+    enum="Boolean" expires_after="2021-10-17">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -119,7 +119,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.PrinterStatus.AttemptedPrintWithUnknownStatus"
-    enum="Boolean" expires_after="2021-08-17">
+    enum="Boolean" expires_after="2021-10-17">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

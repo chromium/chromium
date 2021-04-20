@@ -77,7 +77,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.FailureReason" enum="LoginFailureReason"
-    expires_after="2021-08-15">
+    expires_after="2021-10-17">
   <owner>achuith@chromium.org</owner>
   <summary>Chrome OS login failure reason.</summary>
 </histogram>
@@ -323,7 +323,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.UserType" enum="LoginUserType"
-    expires_after="2021-08-15">
+    expires_after="2021-10-17">
   <owner>cmasone@chromium.org</owner>
   <summary>
     Chrome OS histogram that keeps track of the way a user logs in and whether

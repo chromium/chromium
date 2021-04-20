@@ -390,7 +390,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.CompositionMode.MainBuffer"
-    enum="DxgiFramePresentationMode" expires_after="2021-08-17">
+    enum="DxgiFramePresentationMode" expires_after="2021-10-17">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -877,7 +877,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.IOSurface.CreateTime" units="ms"
-    expires_after="2021-08-15">
+    expires_after="2021-10-17">
   <owner>ccameron@chromium.org</owner>
   <summary>
     The time that it took for a call to IOSurfaceCreate to complete.
@@ -930,7 +930,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.OopRaster.GlyphCacheMiss"
-    enum="OopRasterGlyphCacheMissType" expires_after="2021-08-15">
+    enum="OopRasterGlyphCacheMissType" expires_after="2021-10-17">
   <owner>khushalsagar@chromium.org</owner>
   <summary>
     During OutOfProcess(Oop) raster, the renderer generates and sends the

@@ -1849,7 +1849,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.PaintPreviewCompositor.PrivateMemoryFootprint"
-    units="MB" expires_after="2021-08-15">
+    units="MB" expires_after="2021-10-17">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
@@ -1870,7 +1870,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.PaintPreviewCompositor.PrivateSwapFootprint" units="MB"
-    expires_after="2021-08-15">
+    expires_after="2021-10-17">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
@@ -1908,7 +1908,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.PaintPreviewCompositor.SharedMemoryFootprint"
-    units="MB" expires_after="2021-08-15">
+    units="MB" expires_after="2021-10-17">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>

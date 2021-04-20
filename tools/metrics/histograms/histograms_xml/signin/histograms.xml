@@ -463,7 +463,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.AccountInfoFetchDuration" units="ms"
-    expires_after="2021-08-12">
+    expires_after="2021-10-17">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -472,7 +472,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.Guest.Availability"
-    enum="SigninInterceptGuestAvailability" expires_after="2021-08-12">
+    enum="SigninInterceptGuestAvailability" expires_after="2021-10-17">
   <owner>rhalavati@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -482,7 +482,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.HeuristicOutcome"
-    enum="SigninInterceptHeuristicOutcome" expires_after="2021-08-12">
+    enum="SigninInterceptHeuristicOutcome" expires_after="2021-10-17">
   <owner>droger@chromium.org</owner>
   <owner>alexilin@chromium.org</owner>
   <summary>
@@ -492,7 +492,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.ProfileCreationDuration" units="ms"
-    expires_after="2021-08-12">
+    expires_after="2021-10-17">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -502,7 +502,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.ProfileSwitchDuration" units="ms"
-    expires_after="2021-08-12">
+    expires_after="2021-10-17">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -540,7 +540,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.SessionStartupReconcileError"
-    enum="BooleanPresent" expires_after="2021-08-12">
+    enum="BooleanPresent" expires_after="2021-10-17">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -561,7 +561,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram base="true" name="Signin.InterceptResult"
-    enum="SigninInterceptResult" expires_after="2021-08-12">
+    enum="SigninInterceptResult" expires_after="2021-10-17">
 <!-- Name completed by histogram_suffixes name="SigninInterceptType" -->
 
   <owner>alexilin@chromium.org</owner>
