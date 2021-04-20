@@ -12,7 +12,6 @@
 // A view controller to showcase an example default screen for the new first run
 // experience.
 @interface SCFirstRunDefaultScreenViewController : FirstRunScreenViewController
-
 @end
 
 #endif  // IOS_SHOWCASE_FIRST_RUN_SC_FIRST_RUN_DEFAULT_SCREEN_VIEW_CONTROLLER_H_

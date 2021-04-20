@@ -175,8 +175,7 @@
     },
     @{
       showcase::kClassForDisplayKey : @"SCFirstRunHeroScreenViewController",
-      showcase::
-      kClassForInstantiationKey : @"SCFirstRunHeroScreenViewController",
+      showcase::kClassForInstantiationKey : @"SCFirstRunHeroScreenCoordinator",
       showcase::kUseCaseKey : @"New FRE hero screen example",
     },
     @{
@@ -189,7 +188,7 @@
       showcase::
       kClassForDisplayKey : @"SCFirstRunScrollingScreenViewController",
       showcase::
-      kClassForInstantiationKey : @"SCFirstRunScrollingScreenViewController",
+      kClassForInstantiationKey : @"SCFirstRunScrollingScreenCoordinator",
       showcase::kUseCaseKey : @"New FRE screen with scrolling example",
     },
   ];
