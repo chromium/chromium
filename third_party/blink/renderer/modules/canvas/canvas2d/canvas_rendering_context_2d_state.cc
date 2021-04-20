@@ -95,6 +95,7 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState(
       unparsed_font_(other.unparsed_font_),
       font_(other.font_),
       font_for_filter_(other.font_for_filter_),
+      filter_state_(other.filter_state_),
       canvas_filter_(other.canvas_filter_),
       unparsed_css_filter_(other.unparsed_css_filter_),
       css_filter_value_(other.css_filter_value_),
@@ -122,6 +123,7 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState(
   }
   if (realized_font_)
     font_.GetFontSelector()->RegisterForInvalidationCallbacks(this);
+  ValidateFilterState();
 }
 
 CanvasRenderingContext2DState::~CanvasRenderingContext2DState() = default;
@@ -136,7 +138,7 @@ void CanvasRenderingContext2DState::FontsNeedUpdate(FontSelector* font_selector,
 
   // FIXME: We only really need to invalidate the resolved filter if the font
   // update above changed anything and the filter uses font-dependent units.
-  resolved_filter_.reset();
+  ClearResolvedFilter();
 }
 
 void CanvasRenderingContext2DState::Trace(Visitor* visitor) const {
@@ -332,13 +334,34 @@ void CanvasRenderingContext2DState::ResetTransform() {
   is_transform_invertible_ = true;
 }
 
+void CanvasRenderingContext2DState::ValidateFilterState() const {
+#if DCHECK_IS_ON()
+  switch (filter_state_) {
+    case FilterState::kNone:
+      DCHECK(!resolved_filter_);
+      DCHECK(!css_filter_value_);
+      DCHECK(!canvas_filter_);
+      break;
+    case FilterState::kUnresolved:
+    case FilterState::kInvalid:
+      DCHECK(!resolved_filter_);
+      DCHECK(css_filter_value_ || canvas_filter_);
+      break;
+    case FilterState::kResolved:
+      DCHECK(resolved_filter_);
+      DCHECK(css_filter_value_ || canvas_filter_);
+      break;
+    default:
+      NOTREACHED();
+  }
+#endif
+}
+
 sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilterForOffscreenCanvas(
     IntSize canvas_size,
-    BaseRenderingContext2D* context) const {
-  if (!css_filter_value_ && !canvas_filter_)
-    return nullptr;
-
-  if (resolved_filter_)
+    BaseRenderingContext2D* context) {
+  ValidateFilterState();
+  if (filter_state_ != FilterState::kUnresolved)
     return resolved_filter_;
 
   FilterOperations operations;
@@ -371,19 +394,21 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilterForOffscreenCanvas(
         paint_filter_builder::Build(last_effect, kInterpolationSpaceSRGB);
   }
 
+  filter_state_ =
+      resolved_filter_ ? FilterState::kResolved : FilterState::kInvalid;
+  ValidateFilterState();
   return resolved_filter_;
 }
 
 sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
     Element* style_resolution_host,
     IntSize canvas_size,
-    CanvasRenderingContext2D* context) const {
+    CanvasRenderingContext2D* context) {
   // TODO(1189879): Investigate refactoring all filter logic into the
   // CanvasFilterOperationResolver class
-  if (!css_filter_value_ && !canvas_filter_)
-    return nullptr;
+  ValidateFilterState();
 
-  if (resolved_filter_)
+  if (filter_state_ != FilterState::kUnresolved)
     return resolved_filter_;
 
   FilterOperations operations;
@@ -456,12 +481,15 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
     }
   }
 
+  filter_state_ =
+      resolved_filter_ ? FilterState::kResolved : FilterState::kInvalid;
+  ValidateFilterState();
   return resolved_filter_;
 }
 
 bool CanvasRenderingContext2DState::HasFilterForOffscreenCanvas(
     IntSize canvas_size,
-    BaseRenderingContext2D* context) const {
+    BaseRenderingContext2D* context) {
   // Checking for a non-null m_filterValue isn't sufficient, since this value
   // might refer to a non-existent filter.
   return !!GetFilterForOffscreenCanvas(canvas_size, context);
@@ -470,14 +498,18 @@ bool CanvasRenderingContext2DState::HasFilterForOffscreenCanvas(
 bool CanvasRenderingContext2DState::HasFilter(
     Element* style_resolution_host,
     IntSize canvas_size,
-    CanvasRenderingContext2D* context) const {
+    CanvasRenderingContext2D* context) {
   // Checking for a non-null m_filterValue isn't sufficient, since this value
   // might refer to a non-existent filter.
   return !!GetFilter(style_resolution_host, canvas_size, context);
 }
 
-void CanvasRenderingContext2DState::ClearResolvedFilter() const {
+void CanvasRenderingContext2DState::ClearResolvedFilter() {
   resolved_filter_.reset();
+  filter_state_ = (canvas_filter_ || css_filter_value_)
+                      ? FilterState::kUnresolved
+                      : FilterState::kNone;
+  ValidateFilterState();
 }
 
 sk_sp<SkDrawLooper>& CanvasRenderingContext2DState::EmptyDrawLooper() const {
@@ -568,14 +600,14 @@ void CanvasRenderingContext2DState::SetShadowColor(SkColor shadow_color) {
 void CanvasRenderingContext2DState::SetCSSFilter(const CSSValue* filter_value) {
   css_filter_value_ = filter_value;
   canvas_filter_ = nullptr;
-  resolved_filter_.reset();
+  ClearResolvedFilter();
 }
 
 void CanvasRenderingContext2DState::SetCanvasFilter(
     CanvasFilter* canvas_filter) {
   canvas_filter_ = canvas_filter;
   css_filter_value_ = nullptr;
-  resolved_filter_.reset();
+  ClearResolvedFilter();
 }
 
 void CanvasRenderingContext2DState::SetGlobalComposite(SkBlendMode mode) {

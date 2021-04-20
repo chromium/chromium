@@ -96,15 +96,15 @@ class CanvasRenderingContext2DState final
   CanvasFilter* GetCanvasFilter() const { return canvas_filter_; }
   sk_sp<PaintFilter> GetFilter(Element*,
                                IntSize canvas_size,
-                               CanvasRenderingContext2D*) const;
+                               CanvasRenderingContext2D*);
   sk_sp<PaintFilter> GetFilterForOffscreenCanvas(IntSize canvas_size,
-                                                 BaseRenderingContext2D*) const;
+                                                 BaseRenderingContext2D*);
   bool HasFilterForOffscreenCanvas(IntSize canvas_size,
-                                   BaseRenderingContext2D*) const;
-  bool HasFilter(Element*,
-                 IntSize canvas_size,
-                 CanvasRenderingContext2D*) const;
-  void ClearResolvedFilter() const;
+                                   BaseRenderingContext2D*);
+  bool HasFilter(Element*, IntSize canvas_size, CanvasRenderingContext2D*);
+
+  void ClearResolvedFilter();
+  void ValidateFilterState() const;
 
   void SetStrokeStyle(CanvasStyle*);
   CanvasStyle* StrokeStyle() const { return stroke_style_.Get(); }
@@ -260,10 +260,17 @@ class CanvasRenderingContext2DState final
   Font font_;
   Font font_for_filter_;
 
+  enum class FilterState {
+    kNone,
+    kUnresolved,
+    kResolved,
+    kInvalid,
+  };
+  FilterState filter_state_ = FilterState::kNone;
   Member<CanvasFilter> canvas_filter_;
   String unparsed_css_filter_;
   Member<const CSSValue> css_filter_value_;
-  mutable sk_sp<PaintFilter> resolved_filter_;
+  sk_sp<PaintFilter> resolved_filter_;
 
   // Text state.
   TextAlign text_align_;
