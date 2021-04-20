@@ -20,14 +20,6 @@ var MediaAppUIGtestBrowserTest = class extends testing.Test {
   }
 
   /** @override */
-  get extraLibraries() {
-    return [
-      ...super.extraLibraries,
-      '//ui/webui/resources/js/assert.js',
-    ];
-  }
-
-  /** @override */
   get isAsync() {
     return true;
   }
