@@ -67,19 +67,15 @@ void LayerCopyAnimator::MaybeStartAnimation(
   animation_callback_ = std::move(callback);
   animation_requested_ = true;
   if (fail_) {
-    CancelAndDelete();
+    FinishAndDelete(/*abort=*/true);
     return;
   }
   if (copied_layer_) {
     RunAnimation();
     return;
   }
-  if (observer_) {
-    fake_sequence_ = std::make_unique<ui::LayerAnimationSequence>(
-        ui::LayerAnimationElement::CreateOpacityElement(0.0,
-                                                        base::TimeDelta()));
-    fake_sequence_->AddObserver(observer_);
-  }
+  if (observer_)
+    EnsureFakeSequence();
 }
 
 void LayerCopyAnimator::OnLayerCopied(std::unique_ptr<ui::Layer> new_layer) {
@@ -126,15 +122,12 @@ void LayerCopyAnimator::RunAnimation() {
 
   // Callback may not run animations, in which case, just end immediately.
   if (!copied_layer_->GetAnimator()->is_animating()) {
-    CancelAndDelete();
+    FinishAndDelete(/*abort=*/false);
     return;
   }
 
-  if (fake_sequence_) {
-    DCHECK(observer_);
-    observer_->OnLayerAnimationEnded(fake_sequence_.get());
-    fake_sequence_.reset();
-  }
+  if (fake_sequence_)
+    NotifyWithFakeSequence(/*abort=*/false);
 
   observer_ = nullptr;
   last_sequence_ = new ui::LayerAnimationSequence(
@@ -143,15 +136,30 @@ void LayerCopyAnimator::RunAnimation() {
   copied_layer_->GetAnimator()->AddObserver(this);
 }
 
-void LayerCopyAnimator::CancelAndDelete() {
+void LayerCopyAnimator::FinishAndDelete(bool abort) {
   if (observer_) {
-    if (fake_sequence_)
-      fake_sequence_->RemoveObserver(observer_);
-    fake_sequence_.reset();
-    observer_->OnLayerAnimationAborted(nullptr);
-    observer_ = nullptr;
+    EnsureFakeSequence();
+    NotifyWithFakeSequence(abort);
   }
   window_->ClearProperty(kLayerCopyAnimatorKey);
+}
+
+void LayerCopyAnimator::NotifyWithFakeSequence(bool abort) {
+  DCHECK(fake_sequence_);
+  if (abort)
+    observer_->OnLayerAnimationAborted(fake_sequence_.get());
+  else
+    observer_->OnLayerAnimationEnded(fake_sequence_.get());
+  fake_sequence_.reset();
+  observer_ = nullptr;
+}
+
+void LayerCopyAnimator::EnsureFakeSequence() {
+  if (fake_sequence_)
+    return;
+  fake_sequence_ = std::make_unique<ui::LayerAnimationSequence>(
+      ui::LayerAnimationElement::CreateOpacityElement(0.0, base::TimeDelta()));
+  fake_sequence_->AddObserver(observer_);
 }
 
 }  // namespace ash
