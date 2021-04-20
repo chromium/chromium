@@ -707,7 +707,12 @@
       'ozone_unittests': {},
       'pdf_unittests': {},
       'printing_unittests': {},
-      'profile_provider_unittest': {},
+      'profile_provider_unittest': {
+        'args': [
+          '--stop-ui',
+          '--test-launcher-jobs=1',
+        ],
+      },
       'sandbox_linux_unittests': {},
       'sql_unittests': {},
       'url_unittests': {},
