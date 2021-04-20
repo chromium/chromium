@@ -10056,7 +10056,7 @@ int CalculateHTTPStatusCode(NavigationRequest* request,
   // Navigations that are served from the back/forward cache or that are
   // prerendered will always have the HTTP status code set to 200.
   //
-  // TODO(https://crbug.com/1170277): Navigations should actually return the
+  // TODO(https://crbug.com/1199699): Navigations should actually return the
   // last HTTP status code of the RenderFrameHost.
   if (request->IsServedFromBackForwardCache() ||
       request->IsPrerenderedPageActivation()) {

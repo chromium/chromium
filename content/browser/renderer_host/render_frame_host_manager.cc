@@ -523,9 +523,6 @@ void RenderFrameHostManager::OnDidSetFramePolicyHeaders() {
 std::unique_ptr<BackForwardCacheImpl::Entry>
 RenderFrameHostManager::TakePrerenderedPage() {
   DCHECK(frame_tree_node_->IsMainFrame());
-  // TODO(https://crbug.com/1170277): investigate whether it is preferable to
-  // set the RenderFrameHost to a non-null placeholder similar to the
-  // implementations of portals and inner WebContents.
   return CollectPage(SetRenderFrameHost(nullptr));
 }
 

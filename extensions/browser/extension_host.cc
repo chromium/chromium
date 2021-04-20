@@ -398,7 +398,7 @@ void ExtensionHost::AddNewContents(WebContents* source,
 }
 
 void ExtensionHost::RenderFrameCreated(content::RenderFrameHost* frame_host) {
-  // TODO(crbug.com/1170277 ): This wants to watch just the top-level main frame
+  // TODO(crbug.com/1199689): This wants to watch just the top-level main frame
   // once the WebContents could hold multiple frame trees under the upcoming
   // Multiple-Process Architecture.
   if (frame_host->GetParent())

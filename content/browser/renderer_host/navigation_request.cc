@@ -5536,7 +5536,7 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForPrerenderActivation() {
   // activation types.
   mojom::DidCommitProvisionalLoadParamsPtr params =
       MakeDidCommitProvisionalLoadParamsForActivation();
-  // TODO(https://crbug.com/1170277): Investigate when a new entry should
+  // TODO(https://crbug.com/1179428): Investigate when a new entry should
   // replace an old one when prerendering a page.
   params->did_create_new_entry = true;
   // Unlike bfcache restore, Prerendering makes a new navigation entry, so it

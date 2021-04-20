@@ -636,7 +636,7 @@ void FrameTree::Shutdown() {
   if (!root_manager->current_frame_host()) {
     // The page has been transferred out during an activation. There is little
     // left to do.
-    // TODO(https://crbug.com/1170277): If we decide that pending delete RFHs
+    // TODO(https://crbug.com/1199693): If we decide that pending delete RFHs
     // need to be moved along during activation replace this line with a DCHECK
     // that there are no pending delete instances.
     root_manager->ClearRFHsPendingShutdown();
@@ -651,7 +651,7 @@ void FrameTree::Shutdown() {
     // Delete all RFHs pending shutdown, which will lead the corresponding RVHs
     // to be shutdown and be deleted as well.
     node->render_manager()->ClearRFHsPendingShutdown();
-    // TODO(https://crbug.com/1164280): Ban WebUI instance in Prerender pages.
+    // TODO(https://crbug.com/1199676): Ban WebUI instance in Prerender pages.
     node->render_manager()->ClearWebUIInstances();
   }
 

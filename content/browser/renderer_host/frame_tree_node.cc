@@ -159,9 +159,6 @@ FrameTreeNode::~FrameTreeNode() {
   // during prerender activation. However, in such cases, the FrameTree and its
   // root FrameTreeNode objects are deleted immediately with activation. In all
   // other cases, there should always be a current frame host.
-  //
-  // TODO(https://crbug.com/1170277): Need to find a solution for being notified
-  // in various places. They do not support having no current_frame_host().
   if (current_frame_host()) {
     // Remove the children.
     current_frame_host()->ResetChildren();
@@ -175,7 +172,7 @@ FrameTreeNode::~FrameTreeNode() {
     // Activation is not allowed during ongoing navigations.
     DCHECK(!navigation_request_);
 
-    // TODO(https://crbug.com/1170277): Need to determine how to handle pending
+    // TODO(https://crbug.com/1199693): Need to determine how to handle pending
     // deletions, as observers will be notified.
     DCHECK(!render_manager()->speculative_frame_host());
   }

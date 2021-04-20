@@ -1797,7 +1797,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // If the process is not live due to a crash, this will be reflected by
   // IsCrashed(), though it's possible to not be live while not indicating a
   // crash occurred.
-  // TODO(crbug.com/1164280): Under MPArch, with multiple frame trees in a
+  // TODO(crbug.com/1199685): Under MPArch, with multiple frame trees in a
   // WebContents, this just tracks the renderer process of the main frame of the
   // root page. It should be named appropriately.
   base::TerminationStatus main_frame_process_status_;

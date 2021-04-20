@@ -110,8 +110,6 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // FrameTree/FrameTreeNode.
   FrameTreeNode* frame_tree_node() const { return frame_tree_node_; }
 
-  // TODO(https://crbug.com/1170277): This is currently only used in MPArch
-  // prerendering. Add testing for cross-origin iframes.
   void set_frame_tree_node(FrameTreeNode& frame_tree_node) {
     frame_tree_node_ = &frame_tree_node;
   }

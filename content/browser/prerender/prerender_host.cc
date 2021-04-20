@@ -97,7 +97,7 @@ class PrerenderHost::MPArchPageHolder
         /*renderer_initiated_creation=*/false,
         /*main_frame_name=*/"", FrameTree::Type::kPrerender);
 
-    // TODO(https://crbug.com/1164280): This should be moved to FrameTree::Init
+    // TODO(https://crbug.com/1199679): This should be moved to FrameTree::Init
     web_contents_.NotifySwappedFromRenderManager(
         /*old_frame=*/nullptr,
         frame_tree_->root()->render_manager()->current_frame_host(),
@@ -111,7 +111,7 @@ class PrerenderHost::MPArchPageHolder
 
   // FrameTree::Delegate
 
-  // TODO(https://crbug.com/1164280): Correctly handle load events. Ignored for
+  // TODO(https://crbug.com/1199682): Correctly handle load events. Ignored for
   // now as it confuses WebContentsObserver instances because they can not
   // distinguish between the different FrameTrees.
 
@@ -189,7 +189,6 @@ class PrerenderHost::MPArchPageHolder
     DCHECK_EQ(target_frame_tree, current_render_frame_host.frame_tree());
 
     page->render_frame_host->SetFrameTreeNode(*(target_frame_tree->root()));
-    // TODO(https://crbug.com/1170277): Add testing for cross-origin iframes.
     for (auto& it : page->proxy_hosts) {
       it.second->set_frame_tree_node(*(target_frame_tree->root()));
     }
@@ -200,7 +199,7 @@ class PrerenderHost::MPArchPageHolder
     // change, and FrameTree references in those FrameTreeNodes will be updated
     // through RenderFrameHosts.
     //
-    // TODO(https://crbug.com/1170277): Need to investigate if and how
+    // TODO(https://crbug.com/1199693): Need to investigate if and how
     // pending delete RenderFrameHost objects should be handled if prerendering
     // runs all of the unload handlers; they are not currently handled here.
     // This is because pending delete RenderFrameHosts can still receive and
@@ -381,7 +380,7 @@ void PrerenderHost::StartPrerendering() {
   page_holder_->GetNavigationController().LoadURLWithParams(load_url_params);
 }
 
-// TODO(https://crbug.com/1170277): Does not work with MPArch as we get
+// TODO(https://crbug.com/1199695): Does not work with MPArch as we get
 // navigation events for all FrameTrees.
 void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // The prerendered contents are considered ready for activation when it

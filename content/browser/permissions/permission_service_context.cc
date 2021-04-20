@@ -131,7 +131,7 @@ BrowserContext* PermissionServiceContext::GetBrowserContext() const {
 }
 
 GURL PermissionServiceContext::GetEmbeddingOrigin() const {
-  // TODO(https://crbug.com/1170277): This will return the wrong origin for a
+  // TODO(https://crbug.com/1199710): This will return the wrong origin for a
   // non primary FrameTree.
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(render_frame_host_);

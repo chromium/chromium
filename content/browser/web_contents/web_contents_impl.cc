@@ -1570,7 +1570,7 @@ WebUI* WebContentsImpl::GetCommittedWebUI() {
   return frame_tree_.root()->current_frame_host()->web_ui();
 }
 
-// TODO(https://crbug.com/1170277): (MPArch) We should probably iterate all
+// TODO(https://crbug.com/1199697): (MPArch) We should probably iterate all
 // FrameTree instances here.
 void WebContentsImpl::SetUserAgentOverride(
     const blink::UserAgentOverride& ua_override,
@@ -6297,7 +6297,7 @@ void WebContentsImpl::RenderFrameCreated(
   TRACE_EVENT1("content", "WebContentsImpl::RenderFrameCreated",
                "render_frame_host", render_frame_host);
   // The WebContents tracks the process state for the main frame's renderer.
-  // TODO(crbug.com/1164280): Under MPArch, with multiple frame trees in a
+  // TODO(crbug.com/1199685): Under MPArch, with multiple frame trees in a
   // WebContents, this is intended to just track the main frame of the root
   // page.
   if (!render_frame_host->GetParent()) {
@@ -6315,7 +6315,7 @@ void WebContentsImpl::RenderFrameCreated(
     // RenderFrameDevToolsAgentHost should not be told about the main renderer
     // frame until/unless there is a `delegate_`.
     if (delegate_) {
-      // TODO(crbug.com/1164280): Under MPArch, with multiple frame trees in a
+      // TODO(crbug.com/1199687): Under MPArch, with multiple frame trees in a
       // WebContents, this is intended to just notify about the main frame of
       // the root page.
       RenderFrameDevToolsAgentHost::WebContentsMainFrameCreated(this);
