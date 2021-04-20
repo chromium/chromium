@@ -147,7 +147,7 @@ class BidderWorkletTest : public testing::Test {
         trusted_bidding_signals_keys_, trusted_bidding_signals_.get(),
         browser_signal_top_window_hostname_, browser_signal_seller_,
         browser_signal_join_count_, browser_signal_bid_count_,
-        browser_signal_prev_wins_);
+        browser_signal_prev_wins_, auction_start_time_);
   }
 
   void ExpectBidResultsEqual(const BidderWorklet::BidResult& expected_result,
@@ -255,6 +255,10 @@ class BidderWorkletTest : public testing::Test {
   std::string browser_signal_ad_render_fingerprint_;
   double browser_signal_bid_;
 
+  // Use a single constant start time. Only delta times are provided to scripts,
+  // relative to the time of the auction, so no need to vary the auction time.
+  const base::Time auction_start_time_ = base::Time::Now();
+
   // Reuseable run loop for loading the script. It's always populated after
   // creating the worklet, to cause a crash if the callback is invoked
   // synchronously.
@@ -278,14 +282,6 @@ TEST_F(BidderWorkletTest, CompileError) {
 
 // Test parsing of return values.
 TEST_F(BidderWorkletTest, GenerateBidResult) {
-  RunGenerateBidWithJavascriptExpectingResult(
-      R"(
-        function generateBid() {
-          return {ad: ["ad"], bid:1, render:"https://response.test/"};
-        }
-      )",
-      BidderWorklet::BidResult("[\"ad\"]", 1, GURL("https://response.test/")));
-
   // Base case. Also serves to make sure the script returned by
   // CreateBasicGenerateBidScript() does indeed work.
   RunGenerateBidWithJavascriptExpectingResult(
@@ -451,6 +447,13 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
   // Throw exception.
   RunGenerateBidWithReturnValueExpectingResult("shrimp",
                                                BidderWorklet::BidResult());
+}
+
+// Make sure Date() is not available when running generateBid().
+TEST_F(BidderWorkletTest, GenerateBidDateNotAvailable) {
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: Date().toString(), bid:1, render:"https://response.test/"})",
+      BidderWorklet::BidResult());
 }
 
 // Checks that most input parameters are correctly passed in, and each is parsed
@@ -667,13 +670,16 @@ std::vector<mojo::StructPtr<mojom::PreviousWin>> CreateWinList(
 }
 
 TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
-  base::Time time1;
-  ASSERT_TRUE(base::Time::FromString("Tue, 15 Nov 1994 12:00:00 GMT", &time1));
-  base::Time time2;
-  ASSERT_TRUE(base::Time::FromString("Mon, 15 Mar 2021 01:23:45 GMT", &time2));
+  base::TimeDelta delta = base::TimeDelta::FromSeconds(100);
+  base::TimeDelta tiny_delta = base::TimeDelta::FromMilliseconds(500);
+
+  base::Time time1 = auction_start_time_ - delta - delta;
+  base::Time time2 = auction_start_time_ - delta - tiny_delta;
+  base::Time future_time = auction_start_time_ + delta;
 
   auto win1 = mojom::PreviousWin::New(time1, R"("ad1")");
   auto win2 = mojom::PreviousWin::New(time2, R"(["ad2"])");
+  auto future_win = mojom::PreviousWin::New(future_time, R"("future_ad")");
   struct TestCase {
     std::vector<mojo::StructPtr<mojom::PreviousWin>> prev_wins;
     // Value to output as the ad data.
@@ -688,43 +694,38 @@ TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
       },
       {
           CreateWinList(win1),
-          "browserSignals.prevWins.length",
-          "1",
+          "browserSignals.prevWins",
+          R"([[200,"ad1"]])",
       },
+      // Make sure it's passed on as an object and not a string.
       {
           CreateWinList(win1),
-          "browserSignals.prevWins[0][0].toUTCString()",
-          R"("Tue, 15 Nov 1994 12:00:00 GMT")",
+          "browserSignals.prevWins[0]",
+          R"([200,"ad1"])",
       },
+      // Test rounding.
       {
-          CreateWinList(win1),
-          "browserSignals.prevWins[0][1]",
-          R"("ad1")",
+          CreateWinList(win2),
+          "browserSignals.prevWins",
+          R"([[100,["ad2"]]])",
       },
-      {
-          CreateWinList(win1, win2),
-          "browserSignals.prevWins.length",
-          "2",
-      },
+      // Multiple previous wins.
       {
           CreateWinList(win1, win2),
-          "browserSignals.prevWins[0][0].toUTCString()",
-          R"("Tue, 15 Nov 1994 12:00:00 GMT")",
+          "browserSignals.prevWins",
+          R"([[200,"ad1"],[100,["ad2"]]])",
       },
+      // Times are trimmed at 0.
       {
-          CreateWinList(win1, win2),
-          "browserSignals.prevWins[0][1]",
-          R"("ad1")",
+          CreateWinList(future_win),
+          "browserSignals.prevWins",
+          R"([[0,"future_ad"]])",
       },
+      // Out of order times.
       {
-          CreateWinList(win1, win2),
-          "browserSignals.prevWins[1][0].toUTCString()",
-          R"("Mon, 15 Mar 2021 01:23:45 GMT")",
-      },
-      {
-          CreateWinList(win1, win2),
-          "browserSignals.prevWins[1][1][0]",
-          R"("ad2")",
+          CreateWinList(future_win, win1),
+          "browserSignals.prevWins",
+          R"([[0,"future_ad"],[200,"ad1"]])",
       },
   };
 
@@ -818,6 +819,12 @@ TEST_F(BidderWorkletTest, ReportWin) {
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("https://foo.test");sendReportTo("https://foo.test"))",
       GURL());
+}
+
+// Make sure Date() is not available when running reportWin().
+TEST_F(BidderWorkletTest, ReportWinDateNotAvailable) {
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(sendReportTo("https://foo.test/" + Date().toString()))", GURL());
 }
 
 TEST_F(BidderWorkletTest, ReportWinParameters) {

@@ -83,25 +83,25 @@ class SellerWorkletTest : public testing::Test {
 
   // Configures `url_loader_factory_` to return a script with the specified
   // return line, expecting the provided result.
-  void RunScoreBidWithReturnValueExpectingResult(
+  void RunScoreAdWithReturnValueExpectingResult(
       const std::string& raw_return_value,
       double expected_score) {
-    RunScoreBidWithJavascriptExpectingResult(
+    RunScoreAdWithJavascriptExpectingResult(
         CreateScoreAdScript(raw_return_value), expected_score);
   }
 
   // Configures `url_loader_factory_` to return the provided script, and then
   // runs its generate_bid() function. Then runs the script, expecting the
   // provided result.
-  void RunScoreBidWithJavascriptExpectingResult(const std::string& javascript,
-                                                double expected_score) {
+  void RunScoreAdWithJavascriptExpectingResult(const std::string& javascript,
+                                               double expected_score) {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, url_, javascript);
-    RunScoreBidExpectingResult(expected_score);
+    RunScoreAdExpectingResult(expected_score);
   }
 
   // Loads and runs a scode_ad() script, expecting the supplied result.
-  void RunScoreBidExpectingResult(double expected_score) {
+  void RunScoreAdExpectingResult(double expected_score) {
     auto seller_worket = CreateWorklet();
     ASSERT_TRUE(seller_worket);
 
@@ -122,14 +122,14 @@ class SellerWorkletTest : public testing::Test {
       const std::string& raw_return_value,
       const std::string& extra_code,
       const SellerWorklet::Report& expected_report) {
-    RunScoreBidWithJavascriptExpectingResult(
+    RunReportResultWithJavascriptExpectingResult(
         CreateReportToScript(raw_return_value, extra_code), expected_report);
   }
 
   // Configures `url_loader_factory_` to return the provided script, and then
   // runs its report_result() function. Then runs the script, expecting the
   // provided result.
-  void RunScoreBidWithJavascriptExpectingResult(
+  void RunReportResultWithJavascriptExpectingResult(
       const std::string& javascript,
       const SellerWorklet::Report& expected_report) {
     SCOPED_TRACE(javascript);
@@ -221,25 +221,29 @@ TEST_F(SellerWorkletTest, CompileError) {
 TEST_F(SellerWorkletTest, ScoreAd) {
   // Base case. Also serves to make sure the script returned by
   // CreateBasicSellAdScript() does indeed work.
-  RunScoreBidWithJavascriptExpectingResult(CreateBasicSellAdScript(), 1);
+  RunScoreAdWithJavascriptExpectingResult(CreateBasicSellAdScript(), 1);
 
-  RunScoreBidWithReturnValueExpectingResult("3", 3);
-  RunScoreBidWithReturnValueExpectingResult("0.5", 0.5);
-  RunScoreBidWithReturnValueExpectingResult("0", 0);
-  RunScoreBidWithReturnValueExpectingResult("-10", 0);
+  RunScoreAdWithReturnValueExpectingResult("3", 3);
+  RunScoreAdWithReturnValueExpectingResult("0.5", 0.5);
+  RunScoreAdWithReturnValueExpectingResult("0", 0);
+  RunScoreAdWithReturnValueExpectingResult("-10", 0);
 
   // No return value.
-  RunScoreBidWithReturnValueExpectingResult("", 0);
+  RunScoreAdWithReturnValueExpectingResult("", 0);
 
   // Wrong return type / invalid values.
-  RunScoreBidWithReturnValueExpectingResult("[15]", 0);
-  RunScoreBidWithReturnValueExpectingResult("1/0", 0);
-  RunScoreBidWithReturnValueExpectingResult("0/0", 0);
-  RunScoreBidWithReturnValueExpectingResult("-1/0", 0);
-  RunScoreBidWithReturnValueExpectingResult("true", 0);
+  RunScoreAdWithReturnValueExpectingResult("[15]", 0);
+  RunScoreAdWithReturnValueExpectingResult("1/0", 0);
+  RunScoreAdWithReturnValueExpectingResult("0/0", 0);
+  RunScoreAdWithReturnValueExpectingResult("-1/0", 0);
+  RunScoreAdWithReturnValueExpectingResult("true", 0);
 
   // Throw exception.
-  RunScoreBidWithReturnValueExpectingResult("shrimp", 0);
+  RunScoreAdWithReturnValueExpectingResult("shrimp", 0);
+}
+
+TEST_F(SellerWorkletTest, ScoreAdDateNotAvailable) {
+  RunScoreAdWithReturnValueExpectingResult("Date.parse(Date().toString())", 0);
 }
 
 // Checks that input parameters are correctly passed in.
@@ -273,17 +277,17 @@ TEST_F(SellerWorkletTest, ScoreAdParameters) {
     SCOPED_TRACE(test_case.name);
 
     *test_case.value_ptr = "foo";
-    RunScoreBidWithReturnValueExpectingResult(
+    RunScoreAdWithReturnValueExpectingResult(
         base::StringPrintf(R"(%s == "foo" ? 1 : 2)", test_case.name),
         test_case.is_json ? 0 : 1);
 
     *test_case.value_ptr = R"("foo")";
-    RunScoreBidWithReturnValueExpectingResult(
+    RunScoreAdWithReturnValueExpectingResult(
         base::StringPrintf(R"(%s == "foo" ? 1 : 2)", test_case.name),
         test_case.is_json ? 1 : 2);
 
     *test_case.value_ptr = "[1]";
-    RunScoreBidWithReturnValueExpectingResult(
+    RunScoreAdWithReturnValueExpectingResult(
         base::StringPrintf(R"(%s[0] == 1 ? 4 : %s=="[1]" ? 3 : 0)",
                            test_case.name, test_case.name),
         test_case.is_json ? 4 : 3);
@@ -292,36 +296,36 @@ TEST_F(SellerWorkletTest, ScoreAdParameters) {
 
   browser_signal_interest_group_owner_ =
       url::Origin::Create(GURL("https://foo.test/"));
-  RunScoreBidWithReturnValueExpectingResult(
+  RunScoreAdWithReturnValueExpectingResult(
       R"(browserSignals.interestGroupOwner == "https://foo.test" ? 2 : 0)", 2);
 
   browser_signal_interest_group_owner_ =
       url::Origin::Create(GURL("https://[::1]:40000/"));
-  RunScoreBidWithReturnValueExpectingResult(
+  RunScoreAdWithReturnValueExpectingResult(
       R"(browserSignals.interestGroupOwner == "https://[::1]:40000" ? 3 : 0)",
       3);
   SetDefaultParameters();
 
   // Test bid parameter.
   bid_ = 5;
-  RunScoreBidWithReturnValueExpectingResult(base::StringPrintf("bid"), 5);
+  RunScoreAdWithReturnValueExpectingResult(base::StringPrintf("bid"), 5);
   bid_ = 0.5;
-  RunScoreBidWithReturnValueExpectingResult(base::StringPrintf("bid"), 0.5);
+  RunScoreAdWithReturnValueExpectingResult(base::StringPrintf("bid"), 0.5);
   bid_ = -1;
-  RunScoreBidWithReturnValueExpectingResult(base::StringPrintf("bid"), 0);
+  RunScoreAdWithReturnValueExpectingResult(base::StringPrintf("bid"), 0);
   SetDefaultParameters();
 
   // Test browserSignals.bidding_duration_msec.
   browser_signal_bidding_duration_ = base::TimeDelta();
-  RunScoreBidWithReturnValueExpectingResult(
+  RunScoreAdWithReturnValueExpectingResult(
       base::StringPrintf("browserSignals.biddingDurationMsec"), 0);
   browser_signal_bidding_duration_ = base::TimeDelta::FromMilliseconds(100);
-  RunScoreBidWithReturnValueExpectingResult(
+  RunScoreAdWithReturnValueExpectingResult(
       base::StringPrintf("browserSignals.biddingDurationMsec"), 100);
 
   // Make sure that submillisecond resolution is not available.
   browser_signal_bidding_duration_ = base::TimeDelta::FromMicroseconds(2400);
-  RunScoreBidWithReturnValueExpectingResult(
+  RunScoreAdWithReturnValueExpectingResult(
       base::StringPrintf("browserSignals.biddingDurationMsec"), 2);
 }
 
@@ -330,14 +334,14 @@ TEST_F(SellerWorkletTest, ScoreAdParameters) {
 // as that worklet is easier to get things out of.
 TEST_F(SellerWorkletTest, ScoreAdAuctionConfigParam) {
   // Default value, no URL
-  RunScoreBidWithReturnValueExpectingResult(
+  RunScoreAdWithReturnValueExpectingResult(
       "auctionConfig.decisionLogicUrl.length", 0);
 
   std::string url = "https://example.com/auction.js";
   auction_config_ = blink::mojom::AuctionAdConfig::New();
   auction_config_->seller = url::Origin::Create(GURL("https://example.com"));
   auction_config_->decision_logic_url = GURL(url);
-  RunScoreBidWithReturnValueExpectingResult(
+  RunScoreAdWithReturnValueExpectingResult(
       "auctionConfig.decisionLogicUrl.length", url.length());
 }
 
@@ -363,7 +367,7 @@ TEST_F(SellerWorkletTest, ReportResult) {
 }
 
 // Tests reporting URLs.
-TEST_F(SellerWorkletTest, ReportResultsendReportTo) {
+TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
   RunReportResultCreatedScriptExpectingResult(
       "1", R"(sendReportTo("https://foo.test"))",
       SellerWorklet::Report("1", GURL("https://foo.test/")));
@@ -390,6 +394,12 @@ TEST_F(SellerWorkletTest, ReportResultsendReportTo) {
                                               SellerWorklet::Report());
   RunReportResultCreatedScriptExpectingResult("1", R"(sendReportTo([5]))",
                                               SellerWorklet::Report());
+}
+
+TEST_F(SellerWorkletTest, ReportResultDateNotAvailable) {
+  RunReportResultCreatedScriptExpectingResult(
+      "1", R"(sendReportTo("https://foo.test/" + Date().toString()))",
+      SellerWorklet::Report());
 }
 
 TEST_F(SellerWorkletTest, ReportResultParameters) {

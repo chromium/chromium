@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/logging.h"
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/bidder_worklet.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -132,6 +133,9 @@ class AuctionRunner {
   // State for the bidding phase.
   int outstanding_bids_;  // number of bids for which we're waiting on a fetch.
   std::vector<BidState> bid_states_;  // parallel to `bidders_`.
+  // The time the auction started. Use a single base time for all Worklets, to
+  // present a more consistent view of the universe.
+  const base::Time auction_start_time_ = base::Time::Now();
 
   // State for the scoring phase.
   std::unique_ptr<SellerWorklet> seller_worklet_;

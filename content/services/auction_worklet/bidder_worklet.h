@@ -107,7 +107,8 @@ class BidderWorklet {
       int browser_signal_join_count,
       int browser_signal_bid_count,
       const std::vector<mojo::StructPtr<mojom::PreviousWin>>&
-          browser_signal_prev_wins);
+          browser_signal_prev_wins,
+      base::Time auction_start_time);
 
   // Calls reportWin(), and returns reporting information. May only be called
   // once the worklet has successfully loaded.

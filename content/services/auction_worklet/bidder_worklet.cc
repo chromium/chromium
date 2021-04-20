@@ -92,7 +92,8 @@ BidderWorklet::BidResult BidderWorklet::GenerateBid(
     int browser_signal_join_count,
     int browser_signal_bid_count,
     const std::vector<mojo::StructPtr<mojom::PreviousWin>>&
-        browser_signal_prev_wins) {
+        browser_signal_prev_wins,
+    base::Time auction_start_time) {
   // Can't make a bid without any ads.
   if (!interest_group.ads)
     return BidResult();
@@ -101,7 +102,7 @@ BidderWorklet::BidResult BidderWorklet::GenerateBid(
   v8::Isolate* isolate = v8_helper_->isolate();
   // Short lived context, to avoid leaking data at global scope between either
   // repeated calls to this worklet, or to calls to any other worklet.
-  v8::Local<v8::Context> context = v8::Context::New(isolate);
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
   v8::Context::Scope context_scope(context);
 
   std::vector<v8::Local<v8::Value>> args;
@@ -167,10 +168,15 @@ BidderWorklet::BidResult BidderWorklet::GenerateBid(
 
   std::vector<v8::Local<v8::Value>> prev_wins_v8;
   for (const auto& prev_win : browser_signal_prev_wins) {
+    int64_t time_delta = (auction_start_time - prev_win->time).InSeconds();
+    // Don't give negative times if clock has changed since last auction win.
+    // Clock changes do mean times can be out of numerical order, despite being
+    // in chronological order.
+    if (time_delta < 0)
+      time_delta = 0;
     v8::Local<v8::Value> win_values[2];
-    if (!v8::Date::New(context, prev_win->time.ToJsTimeIgnoringNull())
-             .ToLocal(&win_values[0]) ||
-        !v8_helper_->CreateValueFromJson(context, prev_win->ad_json)
+    win_values[0] = v8::Number::New(isolate, time_delta);
+    if (!v8_helper_->CreateValueFromJson(context, prev_win->ad_json)
              .ToLocal(&win_values[1])) {
       return BidResult();
     }
@@ -242,8 +248,7 @@ BidderWorklet::ReportWinResult BidderWorklet::ReportWin(
 
   // Short lived context, to avoid leaking data at global scope between either
   // repeated calls to this worklet, or to calls to any other worklet.
-  v8::Local<v8::Context> context =
-      v8::Context::New(isolate, nullptr /* extensions */, global_template);
+  v8::Local<v8::Context> context = v8_helper_->CreateContext(global_template);
   v8::Context::Scope context_scope(context);
 
   std::vector<v8::Local<v8::Value>> args;

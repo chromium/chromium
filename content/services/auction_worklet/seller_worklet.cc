@@ -148,7 +148,7 @@ SellerWorklet::ScoreResult SellerWorklet::ScoreAd(
   v8::Isolate* isolate = v8_helper_->isolate();
   // Short lived context, to avoid leaking data at global scope between either
   // repeated calls to this worklet, or to calls to any other worklet.
-  v8::Local<v8::Context> context = v8::Context::New(isolate);
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
   v8::Context::Scope context_scope(context);
 
   std::vector<v8::Local<v8::Value>> args;
@@ -211,8 +211,7 @@ SellerWorklet::Report SellerWorklet::ReportResult(
 
   // Short lived context, to avoid leaking data at global scope between either
   // repeated calls to this worklet, or to calls to any other worklet.
-  v8::Local<v8::Context> context =
-      v8::Context::New(isolate, nullptr /* extensions */, global_template);
+  v8::Local<v8::Context> context = v8_helper_->CreateContext(global_template);
   v8::Context::Scope context_scope(context);
 
   std::vector<v8::Local<v8::Value>> args;

@@ -59,6 +59,12 @@ class AuctionV8Helper {
     return scratch_context_.Get(isolate());
   }
 
+  // Create a v8::Context. The one thing this does that v8::Context::New() does
+  // not is remove access the Date object.
+  v8::Local<v8::Context> CreateContext(
+      v8::Handle<v8::ObjectTemplate> global_template =
+          v8::Handle<v8::ObjectTemplate>());
+
   // Creates a v8::String from an ASCII string literal, which should never fail.
   v8::Local<v8::String> CreateStringFromLiteral(const char* ascii_string);
 

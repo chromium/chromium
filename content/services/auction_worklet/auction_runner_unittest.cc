@@ -68,8 +68,8 @@ std::string MakeBidScript(const std::string& bid,
       for (let i = 0; i < browserSignals.prevWins.length; ++i) {
         if (!(browserSignals.prevWins[i] instanceof Array))
           throw new Error("prevWins entry not an array");
-        if (!(browserSignals.prevWins[i][0] instanceof Date))
-          throw new Error("Not a date in prevWin?");
+        if (typeof browserSignals.prevWins[i][0] != "number")
+          throw new Error("Not a Number in prevWin?");
         if (browserSignals.prevWins[i][1].winner !== -i)
           throw new Error("prevWin MD not what passed in");
       }
