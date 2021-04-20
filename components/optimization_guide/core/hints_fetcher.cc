@@ -152,6 +152,7 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
     const base::flat_set<optimization_guide::proto::OptimizationType>&
         optimization_types,
     optimization_guide::proto::RequestContext request_context,
+    const std::string& locale,
     HintsFetchedCallback hints_fetched_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(optimization_types.size(), 0u);
@@ -207,6 +208,8 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
 
   *get_hints_request.mutable_active_field_trials() =
       GetActiveFieldTrialsAllowedForFetch();
+
+  get_hints_request.set_locale(locale);
 
   for (const auto& url : valid_urls)
     get_hints_request.add_urls()->set_url(url.spec());

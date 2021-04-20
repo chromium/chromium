@@ -163,6 +163,12 @@ message GetModelsRequest {
   optional RequestContext request_context = 3;
   // The field trials that are currently active when this request is made.
   repeated FieldTrial active_field_trials = 4;
+  // The locale to associate with this request.
+  //
+  // It is the IETF language tag, defined in BCP 47. The region subtag is not
+  // included when it adds no distinguishing information to the language tag
+  // (e.g. both "en-US" and "fr" are correct here).
+  optional string locale = 5;
 }
 
 // Response to the GetModels request.

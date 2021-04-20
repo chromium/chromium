@@ -50,6 +50,7 @@ bool PredictionModelFetcher::FetchOptimizationGuideServiceModels(
     const std::vector<std::string>& hosts,
     const std::vector<proto::FieldTrial>& active_field_trials,
     proto::RequestContext request_context,
+    const std::string& locale,
     ModelsFetchedCallback models_fetched_callback) {
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -71,6 +72,7 @@ bool PredictionModelFetcher::FetchOptimizationGuideServiceModels(
       std::make_unique<optimization_guide::proto::GetModelsRequest>();
 
   pending_models_request_->set_request_context(request_context);
+  pending_models_request_->set_locale(locale);
 
   *pending_models_request_->mutable_active_field_trials() = {
       active_field_trials.begin(), active_field_trials.end()};

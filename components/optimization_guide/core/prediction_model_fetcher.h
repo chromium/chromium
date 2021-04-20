@@ -54,6 +54,7 @@ class PredictionModelFetcher {
       const std::vector<std::string>& hosts,
       const std::vector<proto::FieldTrial>& active_field_trials,
       proto::RequestContext request_context,
+      const std::string& locale,
       ModelsFetchedCallback models_fetched_callback);
 
  private:
