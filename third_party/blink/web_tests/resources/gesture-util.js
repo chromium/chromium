@@ -167,7 +167,7 @@ function waitForScrollEvent(eventTarget) {
 // The promise is resolved when the result of calling getValue matches the
 // target value. The timeout timer starts once the first event has been
 // received.
-function waitForScrollEnd(eventTarget, getValue, targetValue) {
+function waitForScrollEnd(eventTarget, getValue, targetValue, errorMessage) {
   // Give up if the animation still isn't done after this many milliseconds from
   // the time of the first scroll event.
   const TIMEOUT_MS = 1000;
@@ -176,7 +176,9 @@ function waitForScrollEnd(eventTarget, getValue, targetValue) {
     let timeout = undefined;
     const scrollListener = () => {
       if (!timeout)
-        timeout = setTimeout(reject, TIMEOUT_MS);
+        timeout = setTimeout(() => {
+          reject(errorMessage || 'Timeout waiting for scroll end');
+        }, TIMEOUT_MS);
 
       if (getValue() == targetValue) {
         clearTimeout(timeout);
