@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/optional.h"
 #include "base/token.h"
 #include "base/version.h"
 #include "content/common/content_export.h"
@@ -51,7 +52,7 @@ struct CONTENT_EXPORT CdmInfo {
 
   CdmInfo(const std::string& key_system,
           Robustness robustness,
-          CdmCapability capability,
+          base::Optional<CdmCapability> capability,
           bool supports_sub_key_systems,
           const std::string& name,
           const base::Token& guid,
@@ -60,7 +61,7 @@ struct CONTENT_EXPORT CdmInfo {
           const std::string& file_system_id);
   CdmInfo(const std::string& key_system,
           Robustness robustness,
-          CdmCapability capability);
+          base::Optional<CdmCapability> capability);
   CdmInfo(const CdmInfo& other);
   ~CdmInfo();
 
@@ -75,7 +76,9 @@ struct CONTENT_EXPORT CdmInfo {
   Robustness robustness;
 
   // CDM capability, e.g. video codecs, encryption schemes and session types.
-  CdmCapability capability;
+  // Optional to allow lazy initialization, i.e. to populate the capability
+  // after registration.
+  base::Optional<CdmCapability> capability;
 
   // Whether we also support sub key systems of the `key_system`.
   // A sub key system to a key system is like a sub domain to a domain.

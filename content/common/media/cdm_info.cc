@@ -24,7 +24,7 @@ CdmCapability::~CdmCapability() = default;
 
 CdmInfo::CdmInfo(const std::string& key_system,
                  Robustness robustness,
-                 CdmCapability capability,
+                 base::Optional<CdmCapability> capability,
                  bool supports_sub_key_systems,
                  const std::string& name,
                  const base::Token& guid,
@@ -40,16 +40,16 @@ CdmInfo::CdmInfo(const std::string& key_system,
       version(version),
       path(path),
       file_system_id(file_system_id) {
-  DCHECK(!capability.encryption_schemes.empty());
+  DCHECK(!capability || !capability->encryption_schemes.empty());
 }
 
 CdmInfo::CdmInfo(const std::string& key_system,
                  Robustness robustness,
-                 CdmCapability capability)
+                 base::Optional<CdmCapability> capability)
     : key_system(key_system),
       robustness(robustness),
       capability(std::move(capability)) {
-  DCHECK(!capability.encryption_schemes.empty());
+  DCHECK(!capability || !capability->encryption_schemes.empty());
 }
 
 CdmInfo::CdmInfo(const CdmInfo& other) = default;

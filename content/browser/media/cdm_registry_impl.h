@@ -32,9 +32,19 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
   std::unique_ptr<CdmInfo> GetCdmInfo(const std::string& key_system,
                                       CdmInfo::Robustness robustness);
 
+  // Finalizes the CdmInfo corresponding to `key_system` and `robustness` if its
+  // CdmCapability is null (lazy initialization). No-op if the CdmInfo does not
+  // exist, or if the CdmInfo's CdmCapability is not null. The CdmInfo will be
+  // removed if `cdm_capability` is null, since the CDM does not support any
+  // capability. Returns whether the CdmInfo was successfully updated with a
+  // valid CdmCapability.
+  bool FinalizeCdmCapability(const std::string& key_system,
+                             CdmInfo::Robustness robustness,
+                             base::Optional<CdmCapability> cdm_capability);
+
  private:
   friend class CdmRegistryImplTest;
-  friend class KeySystemSupportTest;
+  friend class KeySystemSupportImplTest;
 
   CdmRegistryImpl();
   ~CdmRegistryImpl() override;

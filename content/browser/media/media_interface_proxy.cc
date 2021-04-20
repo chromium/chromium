@@ -84,7 +84,7 @@ constexpr base::TimeDelta kMediaFoundationServiceIdleTimeout =
 
 // Gets an instance of the MediaFoundationService.
 // Instances are started lazily as needed.
-media::mojom::MediaFoundationService& GetMediaFoundationService() {
+media::mojom::MediaFoundationService& GetMediaFoundationServiceInternal() {
   // NOTE: We use sequence-local storage to limit the lifetime of this Remote to
   // that of the UI-thread sequence. This ensures that the Remote is destroyed
   // when the task environment is torn down and reinitialized, e.g. between unit
@@ -354,6 +354,12 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory {
 };
 
 }  // namespace
+
+#if defined(OS_WIN)
+media::mojom::MediaFoundationService& GetMediaFoundationService() {
+  return GetMediaFoundationServiceInternal();
+}
+#endif  // defined(OS_WIN)
 
 MediaInterfaceProxy::MediaInterfaceProxy(RenderFrameHost* render_frame_host)
     : render_frame_host_(render_frame_host) {

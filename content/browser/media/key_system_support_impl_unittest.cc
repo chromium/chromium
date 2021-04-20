@@ -9,6 +9,8 @@
 
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/token.h"
 #include "content/browser/media/cdm_registry_impl.h"
@@ -21,6 +23,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -31,6 +34,8 @@ using VideoCodec = media::VideoCodec;
 using EncryptionScheme = media::EncryptionScheme;
 using CdmSessionType = media::CdmSessionType;
 using Robustness = CdmInfo::Robustness;
+using base::test::RunOnceCallback;
+using testing::_;
 
 const char kTestCdmName[] = "Test Content Decryption Module";
 const base::Token kTestCdmGuid{1234, 5678};
@@ -66,16 +71,20 @@ bool StlEquals(const Container a, std::initializer_list<T> b) {
 
 }  // namespace
 
-class KeySystemSupportTest : public testing::Test {
+class KeySystemSupportImplTest : public testing::Test {
  protected:
   void SetUp() final {
     DVLOG(1) << __func__;
-    // As `CdmRegistry::GetInstance()` is a static, explicitly reset
-    // `CdmRegistry` so each test starts with a clean state.
-    static_cast<CdmRegistryImpl*>(CdmRegistry::GetInstance())
-        ->ResetForTesting();
+    // As `CdmRegistryImpl::GetInstance()` is a static, explicitly reset
+    // `CdmRegistryImpl` so each test starts with a clean state.
+    CdmRegistryImpl::GetInstance()->ResetForTesting();
 
-    KeySystemSupportImpl::Create(
+    auto key_system_support_impl = std::make_unique<KeySystemSupportImpl>();
+    key_system_support_impl->SetHardwareSecureCapabilityCBForTesting(
+        hw_secure_capability_cb_.Get());
+
+    mojo::MakeSelfOwnedReceiver(
+        std::move(key_system_support_impl),
         key_system_support_.BindNewPipeAndPassReceiver());
   }
 
@@ -89,7 +98,7 @@ class KeySystemSupportTest : public testing::Test {
   // Registers |key_system| with |capability|. All other values for CdmInfo have
   // some default value as they're not returned by IsKeySystemSupported().
   void Register(const std::string& key_system,
-                CdmCapability capability,
+                base::Optional<CdmCapability> capability,
                 Robustness robustness = Robustness::kSoftwareSecure) {
     DVLOG(1) << __func__;
 
@@ -111,6 +120,8 @@ class KeySystemSupportTest : public testing::Test {
   }
 
   mojo::Remote<media::mojom::KeySystemSupport> key_system_support_;
+  base::MockCallback<KeySystemSupportImpl::HardwareSecureCapabilityCB>
+      hw_secure_capability_cb_;
   base::test::ScopedFeatureList scoped_feature_list_;
   BrowserTaskEnvironment task_environment_;
 
@@ -118,12 +129,12 @@ class KeySystemSupportTest : public testing::Test {
   media::mojom::KeySystemCapabilityPtr capability_;
 };
 
-TEST_F(KeySystemSupportTest, NoKeySystems) {
+TEST_F(KeySystemSupportImplTest, NoKeySystems) {
   EXPECT_FALSE(IsSupported("KeySystem"));
   EXPECT_FALSE(capability_);
 }
 
-TEST_F(KeySystemSupportTest, SoftwareSecureCapability) {
+TEST_F(KeySystemSupportImplTest, SoftwareSecureCapability) {
   Register("KeySystem", TestCdmCapability());
 
   EXPECT_TRUE(IsSupported("KeySystem"));
@@ -133,7 +144,7 @@ TEST_F(KeySystemSupportTest, SoftwareSecureCapability) {
                        CdmSessionType::kPersistentLicense);
 }
 
-TEST_F(KeySystemSupportTest,
+TEST_F(KeySystemSupportImplTest,
        HardwareSecureCapability_HardwareSecureDecryptionDisabled) {
   scoped_feature_list_.InitAndDisableFeature(media::kHardwareSecureDecryption);
   Register("KeySystem", TestCdmCapability(), Robustness::kHardwareSecure);
@@ -141,7 +152,7 @@ TEST_F(KeySystemSupportTest,
   EXPECT_FALSE(IsSupported("KeySystem"));
 }
 
-TEST_F(KeySystemSupportTest, HardwareSecureCapability) {
+TEST_F(KeySystemSupportImplTest, HardwareSecureCapability) {
   scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
   Register("KeySystem", TestCdmCapability(), Robustness::kHardwareSecure);
 
@@ -153,7 +164,7 @@ TEST_F(KeySystemSupportTest, HardwareSecureCapability) {
   EXPECT_TRUE(capability_->session_types.empty());
 }
 
-TEST_F(KeySystemSupportTest, MultipleKeySystems) {
+TEST_F(KeySystemSupportImplTest, MultipleKeySystems) {
   Register("KeySystem1", TestCdmCapability());
   Register("KeySystem2", TestCdmCapability());
 
@@ -161,10 +172,47 @@ TEST_F(KeySystemSupportTest, MultipleKeySystems) {
   EXPECT_TRUE(IsSupported("KeySystem2"));
 }
 
-TEST_F(KeySystemSupportTest, MissingKeySystem) {
+TEST_F(KeySystemSupportImplTest, MissingKeySystem) {
   Register("KeySystem", TestCdmCapability());
 
   EXPECT_FALSE(IsSupported("KeySystem1"));
+  EXPECT_FALSE(capability_);
+}
+
+TEST_F(KeySystemSupportImplTest, LazyInitialize_Supported) {
+  scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
+  Register("KeySystem", base::nullopt, Robustness::kHardwareSecure);
+
+  EXPECT_CALL(hw_secure_capability_cb_, Run("KeySystem", _))
+      .WillOnce(RunOnceCallback<1>(TestCdmCapability()));
+  EXPECT_TRUE(IsSupported("KeySystem"));
+  EXPECT_TRUE(capability_);
+
+  // Calling IsSupported() again should not trigger `hw_secure_capability_cb_`.
+  EXPECT_TRUE(IsSupported("KeySystem"));
+  EXPECT_TRUE(capability_);
+}
+
+TEST_F(KeySystemSupportImplTest, LazyInitialize_NotSupported) {
+  scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
+  Register("KeySystem", base::nullopt, Robustness::kHardwareSecure);
+
+  EXPECT_CALL(hw_secure_capability_cb_, Run("KeySystem", _))
+      .WillOnce(RunOnceCallback<1>(base::nullopt));
+  EXPECT_FALSE(IsSupported("KeySystem"));
+  EXPECT_FALSE(capability_);
+
+  // Calling IsSupported() again should not trigger `hw_secure_capability_cb_`.
+  EXPECT_FALSE(IsSupported("KeySystem"));
+  EXPECT_FALSE(capability_);
+}
+
+TEST_F(KeySystemSupportImplTest,
+       LazyInitialize_HardwareSecureDecryptionDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(media::kHardwareSecureDecryption);
+  Register("KeySystem", base::nullopt, Robustness::kHardwareSecure);
+
+  EXPECT_FALSE(IsSupported("KeySystem"));
   EXPECT_FALSE(capability_);
 }
 

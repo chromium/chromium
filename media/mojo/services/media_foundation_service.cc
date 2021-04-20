@@ -44,6 +44,7 @@ void MediaFoundationService::IsKeySystemSupported(
   // TODO(crbug.com/1115687): Implement MediaFoundation-based key system support
   // query.
   NOTIMPLEMENTED();
+  std::move(callback).Run(false, nullptr);
 }
 
 void MediaFoundationService::CreateInterfaceFactory(

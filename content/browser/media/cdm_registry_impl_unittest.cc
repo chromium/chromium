@@ -49,13 +49,13 @@ bool StlEquals(const Container a, std::initializer_list<T> b) {
   } while (false)
 
 #define EXPECT_VIDEO_CODECS(...) \
-  EXPECT_STL_EQ(cdm.capability.video_codecs, __VA_ARGS__)
+  EXPECT_STL_EQ(cdm.capability->video_codecs, __VA_ARGS__)
 
 #define EXPECT_ENCRYPTION_SCHEMES(...) \
-  EXPECT_STL_EQ(cdm.capability.encryption_schemes, __VA_ARGS__)
+  EXPECT_STL_EQ(cdm.capability->encryption_schemes, __VA_ARGS__)
 
 #define EXPECT_SESSION_TYPES(...) \
-  EXPECT_STL_EQ(cdm.capability.session_types, __VA_ARGS__)
+  EXPECT_STL_EQ(cdm.capability->session_types, __VA_ARGS__)
 
 }  // namespace
 
@@ -67,19 +67,33 @@ class CdmRegistryImplTest : public testing::Test {
   ~CdmRegistryImplTest() override {}
 
  protected:
+  CdmCapability GetTestCdmCapability() {
+    return CdmCapability(
+        {media::kCodecVP8, media::kCodecVP9}, {EncryptionScheme::kCenc},
+        {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense});
+  }
+
   CdmInfo GetTestCdmInfo() {
-    return CdmInfo(
-        kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
-        CdmCapability(
-            {media::kCodecVP8, media::kCodecVP9}, {EncryptionScheme::kCenc},
-            {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense}),
-        /*supports_sub_key_systems=*/true, kTestCdmName, kTestCdmGuid,
-        base::Version(kVersion1), base::FilePath::FromUTF8Unsafe(kTestPath),
-        kTestFileSystemId);
+    return CdmInfo(kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
+                   GetTestCdmCapability(),
+                   /*supports_sub_key_systems=*/true, kTestCdmName,
+                   kTestCdmGuid, base::Version(kVersion1),
+                   base::FilePath::FromUTF8Unsafe(kTestPath),
+                   kTestFileSystemId);
   }
 
   void Register(CdmInfo cdm_info) {
     cdm_registry_.RegisterCdm(std::move(cdm_info));
+  }
+
+  void RegisterForLazyInitialization() {
+    // Register a CdmInfo without CdmCapability to allow lazy initialization.
+    Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
+                     base::nullopt));
+    auto cdm_info = cdm_registry_.GetCdmInfo(
+        kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure);
+    ASSERT_TRUE(cdm_info);
+    ASSERT_FALSE(cdm_info->capability);
   }
 
   bool IsRegistered(const std::string& name, const std::string& version) {
@@ -168,8 +182,8 @@ TEST_F(CdmRegistryImplTest, DifferentNames) {
 
 TEST_F(CdmRegistryImplTest, SupportedEncryptionSchemes) {
   auto cdm_info = GetTestCdmInfo();
-  cdm_info.capability.encryption_schemes = {EncryptionScheme::kCenc,
-                                            EncryptionScheme::kCbcs};
+  cdm_info.capability->encryption_schemes = {EncryptionScheme::kCenc,
+                                             EncryptionScheme::kCbcs};
   Register(cdm_info);
 
   std::vector<CdmInfo> cdms = cdm_registry_.GetAllRegisteredCdms();
@@ -185,6 +199,7 @@ TEST_F(CdmRegistryImplTest, GetCdmInfo_Success) {
   ASSERT_TRUE(cdm_info);
 
   const CdmInfo& cdm = *cdm_info;
+
   EXPECT_EQ(kTestCdmName, cdm.name);
   EXPECT_EQ(kVersion1, cdm.version.GetString());
   EXPECT_EQ(kTestPath, cdm.path.MaybeAsASCII());
@@ -203,6 +218,44 @@ TEST_F(CdmRegistryImplTest, GetCdmInfo_Fail) {
   auto cdm_info = cdm_registry_.GetCdmInfo(
       kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
   ASSERT_FALSE(cdm_info);
+}
+
+TEST_F(CdmRegistryImplTest, FinalizeCdmCapability_Success) {
+  RegisterForLazyInitialization();
+  EXPECT_TRUE(cdm_registry_.FinalizeCdmCapability(
+      kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
+      GetTestCdmCapability()));
+  auto cdm_info = cdm_registry_.GetCdmInfo(
+      kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure);
+  EXPECT_TRUE(cdm_info && cdm_info->capability);
+}
+
+TEST_F(CdmRegistryImplTest, FinalizeCdmCapability_Unregistered) {
+  RegisterForLazyInitialization();
+  // Trying to finalize for `kHardwareSecure` which was not registered.
+  EXPECT_FALSE(cdm_registry_.FinalizeCdmCapability(
+      kTestKeySystem, CdmInfo::Robustness::kHardwareSecure,
+      GetTestCdmCapability()));
+  EXPECT_TRUE(cdm_registry_.GetCdmInfo(kTestKeySystem,
+                                       CdmInfo::Robustness::kSoftwareSecure));
+}
+
+TEST_F(CdmRegistryImplTest, FinalizeCdmCapability_AlreadyFinalized) {
+  Register(GetTestCdmInfo());
+  EXPECT_FALSE(cdm_registry_.FinalizeCdmCapability(
+      kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
+      GetTestCdmCapability()));
+  auto cdm_info = cdm_registry_.GetCdmInfo(
+      kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure);
+  EXPECT_TRUE(cdm_info && cdm_info->capability);
+}
+
+TEST_F(CdmRegistryImplTest, FinalizeCdmCapability_RemoveCdmInfo) {
+  RegisterForLazyInitialization();
+  EXPECT_FALSE(cdm_registry_.FinalizeCdmCapability(
+      kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure, base::nullopt));
+  EXPECT_FALSE(cdm_registry_.GetCdmInfo(kTestKeySystem,
+                                        CdmInfo::Robustness::kSoftwareSecure));
 }
 
 }  // namespace content

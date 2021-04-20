@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include "base/logging.h"
+#include "content/public/common/cdm_info.h"
 #include "content/public/common/content_client.h"
 #include "media/base/key_system_names.h"
 
@@ -69,6 +71,38 @@ std::unique_ptr<CdmInfo> CdmRegistryImpl::GetCdmInfo(
   }
 
   return nullptr;
+}
+
+bool CdmRegistryImpl::FinalizeCdmCapability(
+    const std::string& key_system,
+    CdmInfo::Robustness robustness,
+    base::Optional<CdmCapability> cdm_capability) {
+  base::AutoLock auto_lock(lock_);
+
+  auto itr = cdms_.begin();
+  for (; itr != cdms_.end(); itr++) {
+    if (itr->robustness == robustness && MatchKeySystem(*itr, key_system))
+      break;
+  }
+
+  if (itr == cdms_.end()) {
+    DVLOG(1) << __func__ << ": Cannot find CdmInfo to finalize";
+    return false;
+  }
+
+  if (itr->capability) {
+    DVLOG(1) << __func__ << ": CdmCapability already finalized";
+    return false;
+  }
+
+  if (!cdm_capability) {
+    DVLOG(1) << __func__ << ": No CdmCapability supported. Removing CdmInfo!";
+    cdms_.erase(itr);
+    return false;
+  }
+
+  itr->capability = cdm_capability.value();
+  return true;
 }
 
 void CdmRegistryImpl::ResetForTesting() {

@@ -1099,6 +1099,8 @@ source_set("browser") {
     "media/forwarding_audio_stream_factory.h",
     "media/frameless_media_interface_proxy.cc",
     "media/frameless_media_interface_proxy.h",
+    "media/key_system_support_impl.cc",
+    "media/key_system_support_impl.h",
     "media/media_devices_permission_checker.cc",
     "media/media_devices_permission_checker.h",
     "media/media_devices_util.cc",
@@ -2135,6 +2137,8 @@ source_set("browser") {
       "accessibility/browser_accessibility_win.cc",
       "accessibility/browser_accessibility_win.h",
       "child_process_launcher_helper_win.cc",
+      "media/key_system_support_win.cc",
+      "media/key_system_support_win.h",
       "memory/swap_metrics_driver_impl_win.cc",
       "renderer_host/direct_manipulation_event_handler_win.cc",
       "renderer_host/direct_manipulation_event_handler_win.h",
@@ -2496,8 +2500,6 @@ source_set("browser") {
       "media/cdm_file_impl.h",
       "media/cdm_storage_impl.cc",
       "media/cdm_storage_impl.h",
-      "media/key_system_support_impl.cc",
-      "media/key_system_support_impl.h",
     ]
 
     # Depends on ppapi_constants.h
