@@ -20,6 +20,9 @@ class MediaPermission;
 
 namespace blink {
 
+class FilteringNetworkManagerTest;
+class IpcNetworkManager;
+
 // FilteringNetworkManager exposes rtc::NetworkManager to
 // PeerConnectionDependencyFactory and wraps the IpcNetworkManager. It only
 // handles the case where multiple_routes is requested. It checks at least one
@@ -36,10 +39,10 @@ namespace blink {
 class FilteringNetworkManager : public rtc::NetworkManagerBase,
                                 public sigslot::has_slots<> {
  public:
-  // This class is created by WebRTC's signaling thread but used by WebRTC's
+  // This class is created by WebRTC's main thread but used by WebRTC's
   // worker thread |task_runner|.
   PLATFORM_EXPORT FilteringNetworkManager(
-      rtc::NetworkManager* network_manager,
+      IpcNetworkManager* network_manager,
       media::MediaPermission* media_permission,
       bool allow_mdns_obfuscation);
 
@@ -54,6 +57,13 @@ class FilteringNetworkManager : public rtc::NetworkManagerBase,
   webrtc::MdnsResponderInterface* GetMdnsResponder() const override;
 
  private:
+  friend class FilteringNetworkManagerTest;
+
+  PLATFORM_EXPORT FilteringNetworkManager(
+      base::WeakPtr<rtc::NetworkManager> network_manager_for_signaling_thread,
+      media::MediaPermission* media_permission,
+      bool allow_mdns_obfuscation);
+
   // Check mic/camera permission.
   void CheckPermission();
 
@@ -82,11 +92,14 @@ class FilteringNetworkManager : public rtc::NetworkManagerBase,
 
   void SendNetworksChangedSignal();
 
-  // |network_manager_| is just a reference, owned by
-  // PeerConnectionDependencyFactory.
-  rtc::NetworkManager* network_manager_;
+  // `network_manager_for_signaling_thread_` is owned by the
+  // `PeerConnectionDependencyFactory`, that may be destroyed when the frame is
+  // detached.
+  // TODO(crbug.com/1191914): Clarify the lifetime of
+  // `network_manager_for_signaling_thread_` and `this`.
+  base::WeakPtr<rtc::NetworkManager> network_manager_for_signaling_thread_;
 
-  // The class is created by the signaling thread but used by the worker thread.
+  // The class is created by the main thread but used by the worker thread.
   THREAD_CHECKER(thread_checker_);
 
   media::MediaPermission* media_permission_;

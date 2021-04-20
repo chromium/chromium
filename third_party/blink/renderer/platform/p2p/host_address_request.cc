@@ -29,6 +29,7 @@ void P2PAsyncAddressResolver::Start(const rtc::SocketAddress& host_name,
                                     DoneCallback done_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(STATE_CREATED, state_);
+  DCHECK(dispatcher_);
 
   state_ = STATE_SENT;
   done_callback_ = std::move(done_callback);
@@ -38,6 +39,7 @@ void P2PAsyncAddressResolver::Start(const rtc::SocketAddress& host_name,
       String(host_name.hostname().data()), enable_mdns,
       WTF::Bind(&P2PAsyncAddressResolver::OnResponse,
                 scoped_refptr<P2PAsyncAddressResolver>(this)));
+  dispatcher_ = nullptr;
 }
 
 void P2PAsyncAddressResolver::Cancel() {

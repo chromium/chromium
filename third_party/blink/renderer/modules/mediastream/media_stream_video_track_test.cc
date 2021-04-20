@@ -639,7 +639,8 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
 
   Persistent<MediaStreamComponent> media_stream_component = *track;
   blink::MediaStreamVideoWebRtcSink webrtc_sink(
-      media_stream_component, new blink::MockPeerConnectionDependencyFactory(),
+      media_stream_component,
+      MakeGarbageCollected<MockPeerConnectionDependencyFactory>(),
       blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   EXPECT_EQ(webrtc_sink.GetRequiredMinFramesPerSec(), 1);
 
@@ -666,7 +667,8 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
   // Second sink.
   Persistent<MediaStreamComponent> media_stream_component = *track;
   blink::MediaStreamVideoWebRtcSink webrtc_sink(
-      media_stream_component, new blink::MockPeerConnectionDependencyFactory(),
+      media_stream_component,
+      MakeGarbageCollected<MockPeerConnectionDependencyFactory>(),
       blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   EXPECT_EQ(webrtc_sink.GetRequiredMinFramesPerSec(), 1);
 
@@ -696,7 +698,7 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
     Persistent<MediaStreamComponent> media_stream_component = *track;
     blink::MediaStreamVideoWebRtcSink webrtc_sink(
         media_stream_component,
-        new blink::MockPeerConnectionDependencyFactory(),
+        MakeGarbageCollected<MockPeerConnectionDependencyFactory>(),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
     EXPECT_EQ(webrtc_sink.GetRequiredMinFramesPerSec(), 1);
   }

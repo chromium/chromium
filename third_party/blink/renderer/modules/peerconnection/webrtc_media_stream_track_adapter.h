@@ -27,6 +27,8 @@ struct WebRtcMediaStreamTrackAdapterTraits;
 // There are different sinks/adapters used whether the track is local or remote
 // and whether it is an audio or video track; this adapter hides that fact and
 // lets you use a single class for any type of track.
+// The adapter may be created and used from either the main thread or the
+// webrtc signaling thread.
 class MODULES_EXPORT WebRtcMediaStreamTrackAdapter
     : public WTF::ThreadSafeRefCounted<WebRtcMediaStreamTrackAdapter,
                                        WebRtcMediaStreamTrackAdapterTraits> {
@@ -108,9 +110,17 @@ class MODULES_EXPORT WebRtcMediaStreamTrackAdapter
   void UnregisterRemoteAudioTrackAdapterOnSignalingThread();
   void FinalizeRemoteTrackDisposingOnMainThread();
 
-  // Pointer to a |PeerConnectionDependencyFactory| owned by the |RenderThread|.
-  // It's valid for the lifetime of |RenderThread|.
-  blink::PeerConnectionDependencyFactory* const factory_;
+  // `factory_` is only accessed from the main thread (which owns it), but
+  // `this` may be constructed by the signaling thread (for remote tracks),
+  // making it impossible to construct a `WeakPersistent`.
+  // The track adapter is indirectly owned by `RTCPeerConnection`, which is
+  // outlived by the `PeerConnectionDependencyFactory`, so `factory_` should
+  // never be null (with the possible exception of the dtor).
+  const CrossThreadWeakPersistent<PeerConnectionDependencyFactory> factory_;
+  // Proper disposal of remote audio tracks needs to be done from the WebRTC
+  // signaling thread. Since `this` may be disposed after `factory_`, we cache
+  // the task runner, and use it to post the task to dispose of the track.
+  scoped_refptr<base::SingleThreadTaskRunner> webrtc_signaling_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
 
   // Part of the initialization of remote tracks occurs on the signaling thread.

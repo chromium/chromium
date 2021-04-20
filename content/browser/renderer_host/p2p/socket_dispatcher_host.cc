@@ -12,7 +12,10 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/p2p_param_traits.h"
 
@@ -24,7 +27,7 @@ namespace content {
 P2PSocketDispatcherHost::P2PSocketDispatcherHost(int render_process_id)
     : render_process_id_(render_process_id) {}
 
-P2PSocketDispatcherHost::~P2PSocketDispatcherHost() {}
+P2PSocketDispatcherHost::~P2PSocketDispatcherHost() = default;
 
 void P2PSocketDispatcherHost::StartRtpDump(
     bool incoming,
@@ -40,8 +43,9 @@ void P2PSocketDispatcherHost::StartRtpDump(
       dump_outgoing_rtp_packet_ = true;
 
     packet_callback_ = std::move(packet_callback);
-    if (trusted_socket_manager_)
-      trusted_socket_manager_->StartRtpDump(incoming, outgoing);
+    for (auto& trusted_socket_manager : trusted_socket_managers_) {
+      trusted_socket_manager->StartRtpDump(incoming, outgoing);
+    }
   }
 }
 
@@ -58,35 +62,36 @@ void P2PSocketDispatcherHost::StopRtpDump(bool incoming, bool outgoing) {
     if (!dump_incoming_rtp_packet_ && !dump_outgoing_rtp_packet_)
       packet_callback_.Reset();
 
-    if (trusted_socket_manager_)
-      trusted_socket_manager_->StopRtpDump(incoming, outgoing);
+    for (auto& trusted_socket_manager : trusted_socket_managers_) {
+      trusted_socket_manager->StopRtpDump(incoming, outgoing);
+    }
   }
 }
 
 void P2PSocketDispatcherHost::BindReceiver(
-    mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver) {
-  auto* rph = RenderProcessHostImpl::FromID(render_process_id_);
-  if (!rph)
-    return;
+    RenderProcessHostImpl& process,
+    mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver,
+    net::NetworkIsolationKey isolation_key) {
+  DCHECK_EQ(process.GetID(), render_process_id_);
 
-  // In case the renderer was connected previously but the network process
-  // crashed.
-  receiver_.reset();
-  auto trusted_socket_manager_client = receiver_.BindNewPipeAndPassRemote();
+  mojo::PendingRemote<network::mojom::P2PTrustedSocketManagerClient>
+      trusted_socket_manager_client;
+  receivers_.Add(
+      this, trusted_socket_manager_client.InitWithNewPipeAndPassReceiver());
 
-  trusted_socket_manager_.reset();
-  // TODO(https://crbug.com/1085022): Make this interface per-frame instead of
-  // per-process, and grab the correct NetworkIsolationKey from the associated
-  // RenderFrameHost.
-  rph->GetStoragePartition()->GetNetworkContext()->CreateP2PSocketManager(
-      net::NetworkIsolationKey::Todo(),
-      std::move(trusted_socket_manager_client),
-      trusted_socket_manager_.BindNewPipeAndPassReceiver(),
+  mojo::PendingRemote<network::mojom::P2PTrustedSocketManager>
+      pending_trusted_socket_manager;
+  process.GetStoragePartition()->GetNetworkContext()->CreateP2PSocketManager(
+      isolation_key, std::move(trusted_socket_manager_client),
+      pending_trusted_socket_manager.InitWithNewPipeAndPassReceiver(),
       std::move(receiver));
+  mojo::Remote<network::mojom::P2PTrustedSocketManager> trusted_socket_manager(
+      std::move(pending_trusted_socket_manager));
   if (dump_incoming_rtp_packet_ || dump_outgoing_rtp_packet_) {
-    trusted_socket_manager_->StartRtpDump(dump_incoming_rtp_packet_,
-                                          dump_outgoing_rtp_packet_);
+    trusted_socket_manager->StartRtpDump(dump_incoming_rtp_packet_,
+                                         dump_outgoing_rtp_packet_);
   }
+  trusted_socket_managers_.Add(std::move(trusted_socket_manager));
 }
 
 base::WeakPtr<P2PSocketDispatcherHost> P2PSocketDispatcherHost::GetWeakPtr() {

@@ -28,6 +28,7 @@ namespace blink {
 
 class LocalFrame;
 class MediaStreamAudioProcessor;
+class PeerConnectionDependencyFactory;
 
 // Represents a local source of audio data that is routed through the WebRTC
 // audio pipeline for post-processing (e.g., for echo cancellation during a
@@ -43,7 +44,7 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   // audio session ID are derived from |device_info|. |factory| must outlive
   // this instance.
   ProcessedLocalAudioSource(
-      LocalFrame* frame,
+      LocalFrame& frame,
       const MediaStreamDevice& device,
       bool disable_local_echo,
       const AudioProcessingProperties& audio_processing_properties,
@@ -129,6 +130,7 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   // TODO(crbug.com/704136): Consider moving ProcessedLocalAudioSource to
   // Oilpan and use Member<> here.
   WeakPersistent<LocalFrame> consumer_frame_;
+  WeakPersistent<PeerConnectionDependencyFactory> dependency_factory_;
 
   blink::AudioProcessingProperties audio_processing_properties_;
   int num_requested_channels_;

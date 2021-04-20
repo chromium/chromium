@@ -10,6 +10,8 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_renderer_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -33,9 +35,10 @@ namespace {
 // be rendered to a matching output device, should one exist.
 // Note that if there are more than one open capture devices the function
 // will not be able to pick an appropriate device and return 0.
-base::UnguessableToken GetSessionIdForWebRtcAudioRenderer() {
+base::UnguessableToken GetSessionIdForWebRtcAudioRenderer(
+    ExecutionContext& context) {
   WebRtcAudioDeviceImpl* audio_device =
-      PeerConnectionDependencyFactory::GetInstance()->GetWebRtcAudioDevice();
+      PeerConnectionDependencyFactory::From(context).GetWebRtcAudioDevice();
   return audio_device
              ? audio_device->GetAuthorizedDeviceSessionIdForAudioRenderer()
              : base::UnguessableToken();
@@ -118,6 +121,9 @@ MediaStreamRendererFactory::GetAudioRenderer(
     return nullptr;
   }
 
+  auto* frame = To<LocalFrame>(WebLocalFrame::ToCoreFrame(*web_frame));
+  DCHECK(frame);
+
   // If the track has a local source, or is a remote track that does not use the
   // WebRTC audio pipeline, return a new TrackAudioRenderer instance.
   if (!PeerConnectionRemoteAudioTrack::From(audio_track)) {
@@ -127,11 +133,7 @@ MediaStreamRendererFactory::GetAudioRenderer(
         "%s => (creating TrackAudioRenderer for %s audio track)", __func__,
         audio_track->is_local_track() ? "local" : "remote"));
 
-    auto* frame =
-        web_frame
-            ? static_cast<LocalFrame*>(WebLocalFrame::ToCoreFrame(*web_frame))
-            : nullptr;
-    return new TrackAudioRenderer(audio_components[0].Get(), frame,
+    return new TrackAudioRenderer(audio_components[0].Get(), *frame,
                                   /*session_id=*/base::UnguessableToken(),
                                   String(device_id),
                                   std::move(on_render_error_callback));
@@ -139,7 +141,8 @@ MediaStreamRendererFactory::GetAudioRenderer(
 
   // This is a remote WebRTC media stream.
   WebRtcAudioDeviceImpl* audio_device =
-      PeerConnectionDependencyFactory::GetInstance()->GetWebRtcAudioDevice();
+      PeerConnectionDependencyFactory::From(*frame->DomWindow())
+          .GetWebRtcAudioDevice();
   DCHECK(audio_device);
   SendLogMessage(String::Format(
       "%s => (media stream is a remote WebRTC stream)", __func__));
@@ -156,9 +159,11 @@ MediaStreamRendererFactory::GetAudioRenderer(
         __func__));
 
     renderer = new WebRtcAudioRenderer(
-        PeerConnectionDependencyFactory::GetInstance()
-            ->GetWebRtcSignalingTaskRunner(),
-        web_stream, web_frame, GetSessionIdForWebRtcAudioRenderer(),
+        PeerConnectionDependencyFactory::From(*frame->DomWindow())
+            .GetWebRtcSignalingTaskRunner(),
+        web_stream, web_frame,
+
+        GetSessionIdForWebRtcAudioRenderer(*frame->DomWindow()),
         String(device_id), std::move(on_render_error_callback));
 
     if (!audio_device->SetAudioRenderer(renderer.get())) {

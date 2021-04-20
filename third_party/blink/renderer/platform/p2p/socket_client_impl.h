@@ -18,6 +18,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/p2p_socket_type.h"
 #include "services/network/public/mojom/p2p.mojom-blink.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/p2p/socket_client.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -31,7 +32,7 @@ class P2PSocketDispatcher;
 
 // P2P socket that routes all calls over Mojo.
 //
-// The object runs on the WebRTC worker thread.
+// The object is created and runs on the WebRTC worker thread.
 class P2PSocketClientImpl : public blink::P2PSocketClient,
                             public network::mojom::blink::P2PSocketClient {
  public:
@@ -100,7 +101,9 @@ class P2PSocketClientImpl : public blink::P2PSocketClient,
 
   void OnConnectionError();
 
-  P2PSocketDispatcher* dispatcher_;
+  // `P2PSocketDispatcher` is owned by the main thread, and must be accessed in
+  // a thread-safe way.
+  CrossThreadWeakPersistent<P2PSocketDispatcher> dispatcher_;
   THREAD_CHECKER(thread_checker_);
   int socket_id_;
   blink::P2PSocketClientDelegate* delegate_;

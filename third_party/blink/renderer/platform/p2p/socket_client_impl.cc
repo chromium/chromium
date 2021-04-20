@@ -56,7 +56,9 @@ void P2PSocketClientImpl::Init(
 
   DCHECK_EQ(state_, STATE_UNINITIALIZED);
   state_ = STATE_OPENING;
-  dispatcher_->GetP2PSocketManager()->CreateSocket(
+  auto dispatcher = dispatcher_.Lock();
+  CHECK(dispatcher);
+  dispatcher->GetP2PSocketManager()->CreateSocket(
       type, local_address, network::P2PPortRange(min_port, max_port),
       remote_address, receiver_.BindNewPipeAndPassRemote(),
       socket_.BindNewPipeAndPassReceiver());
@@ -137,8 +139,10 @@ void P2PSocketClientImpl::IncomingTcpConnection(
         client_receiver) {
   DCHECK_EQ(state_, STATE_OPEN);
 
+  auto dispatcher = dispatcher_.Lock();
+  CHECK(dispatcher);
   auto new_client =
-      std::make_unique<P2PSocketClientImpl>(dispatcher_, traffic_annotation_);
+      std::make_unique<P2PSocketClientImpl>(dispatcher, traffic_annotation_);
   new_client->state_ = STATE_OPEN;
 
   new_client->socket_.Bind(std::move(socket));

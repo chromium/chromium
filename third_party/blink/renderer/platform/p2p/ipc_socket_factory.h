@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/packet_socket_factory.h"
 
@@ -19,7 +20,7 @@ class P2PSocketDispatcher;
 
 // IpcPacketSocketFactory implements rtc::PacketSocketFactory
 // interface for libjingle using IPC-based P2P sockets. The class must
-// be used on a thread that is a libjingle thread (implements
+// be created and used on a thread that is a libjingle thread (implements
 // rtc::Thread) and also has associated base::MessageLoop. Each
 // socket created by the factory must be used on the thread it was
 // created on.
@@ -48,7 +49,12 @@ class IpcPacketSocketFactory : public rtc::PacketSocketFactory {
   rtc::AsyncResolverInterface* CreateAsyncResolver() override;
 
  private:
-  P2PSocketDispatcher* socket_dispatcher_;
+  // `P2PSocketDispatcher` is owned by the main thread, and must be accessed in
+  // a thread-safe way. `this` is indirectly owned by
+  // `PeerConnectionDependencyFactory`, which holds a hard reference to the
+  // dispatcher, so this should be never be null (with the possible exception of
+  // the dtor).
+  CrossThreadWeakPersistent<P2PSocketDispatcher> socket_dispatcher_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
 
   DISALLOW_COPY_AND_ASSIGN(IpcPacketSocketFactory);

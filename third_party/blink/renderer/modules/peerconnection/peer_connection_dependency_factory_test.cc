@@ -16,12 +16,11 @@ class PeerConnectionDependencyFactoryTest : public ::testing::Test {
  public:
   void SetUp() override {
     dependency_factory_ =
-        std::make_unique<blink::MockPeerConnectionDependencyFactory>();
+        MakeGarbageCollected<MockPeerConnectionDependencyFactory>();
   }
 
  protected:
-  std::unique_ptr<blink::MockPeerConnectionDependencyFactory>
-      dependency_factory_;
+  Persistent<MockPeerConnectionDependencyFactory> dependency_factory_;
 };
 
 TEST_F(PeerConnectionDependencyFactoryTest, CreateRTCPeerConnectionHandler) {

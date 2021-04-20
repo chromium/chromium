@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/ip_address.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/rtc_base/async_resolver_interface.h"
 
@@ -20,7 +21,8 @@ namespace blink {
 class P2PSocketDispatcher;
 
 // P2PAsyncAddressResolver performs DNS hostname resolution. It's used
-// to resolve addresses of STUN and relay servers.
+// to resolve addresses of STUN and relay servers. It is created and lives on
+// one of libjingle's threads.
 class P2PAsyncAddressResolver
     : public base::RefCountedThreadSafe<P2PAsyncAddressResolver> {
  public:
@@ -47,7 +49,10 @@ class P2PAsyncAddressResolver
 
   void OnResponse(const Vector<net::IPAddress>& address);
 
-  P2PSocketDispatcher* dispatcher_;
+  // `P2PSocketDispatcher` is owned by the main thread, and must be accessed in
+  // a thread-safe way. Will be reset once `Start()` is called, so it doesn't
+  // prevent the dispatcher from being garbage-collected.
+  CrossThreadPersistent<P2PSocketDispatcher> dispatcher_;
   THREAD_CHECKER(thread_checker_);
 
   // State must be accessed from delegate thread only.
