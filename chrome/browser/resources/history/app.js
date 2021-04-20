@@ -16,6 +16,7 @@ import './strings.m.js';
 import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -296,8 +297,7 @@ Polymer({
    * @private
    */
   onKeyDown_(e) {
-    if ((e.key === 'Delete' || e.key === 'Backspace') &&
-        !(e.altKey || e.ctrlKey || e.metaKey || e.shiftKey)) {
+    if ((e.key === 'Delete' || e.key === 'Backspace') && !hasKeyModifiers(e)) {
       this.onDeleteCommand_();
       return;
     }

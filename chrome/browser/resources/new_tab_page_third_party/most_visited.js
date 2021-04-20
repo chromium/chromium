@@ -18,6 +18,7 @@ import {isMac} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
@@ -323,7 +324,7 @@ class MostVisitedElement extends PolymerElement {
    * @private
    */
   onTileKeyDown_(e) {
-    if (e.altKey || e.shiftKey || e.metaKey || e.ctrlKey) {
+    if (hasKeyModifiers(e)) {
       return;
     }
 

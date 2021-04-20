@@ -7,6 +7,7 @@ import './realbox_icon.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
+import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -590,7 +591,7 @@ class RealboxElement extends PolymerElement {
     }
 
     // Do not handle the following keys if there are key modifiers.
-    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+    if (hasKeyModifiers(e)) {
       return;
     }
 
