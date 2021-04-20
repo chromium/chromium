@@ -80,8 +80,9 @@ public class EventForwarder {
             final int apiVersion = Build.VERSION.SDK_INT;
             final boolean isTouchpadScroll = event.getButtonState() == 0
                     && (event.getActionMasked() == MotionEvent.ACTION_DOWN
-                               || event.getActionMasked() == MotionEvent.ACTION_MOVE
-                               || event.getActionMasked() == MotionEvent.ACTION_UP);
+                            || event.getActionMasked() == MotionEvent.ACTION_MOVE
+                            || event.getActionMasked() == MotionEvent.ACTION_UP
+                            || event.getActionMasked() == MotionEvent.ACTION_CANCEL);
 
             if (apiVersion >= android.os.Build.VERSION_CODES.M && !isTouchpadScroll) {
                 return onMouseEvent(event);
