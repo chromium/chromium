@@ -105,7 +105,8 @@ void DrmWindow::SchedulePageFlip(
   if (force_buffer_reallocation_) {
     force_buffer_reallocation_ = false;
     std::move(submission_callback)
-        .Run(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS, nullptr);
+        .Run(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS,
+             /*release_fence=*/gfx::GpuFenceHandle());
     std::move(presentation_callback).Run(gfx::PresentationFeedback::Failure());
     return;
   }
@@ -113,7 +114,9 @@ void DrmWindow::SchedulePageFlip(
   last_submitted_planes_ = DrmOverlayPlane::Clone(planes);
 
   if (!controller_) {
-    std::move(submission_callback).Run(gfx::SwapResult::SWAP_ACK, nullptr);
+    std::move(submission_callback)
+        .Run(gfx::SwapResult::SWAP_ACK,
+             /*release_fence=*/gfx::GpuFenceHandle());
     std::move(presentation_callback).Run(gfx::PresentationFeedback::Failure());
     return;
   }

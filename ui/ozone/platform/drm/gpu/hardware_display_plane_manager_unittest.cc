@@ -1118,10 +1118,10 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest,
   scoped_refptr<ui::PageFlipRequest> page_flip_request =
       base::MakeRefCounted<ui::PageFlipRequest>(base::TimeDelta());
 
-  std::unique_ptr<gfx::GpuFence> out_fence;
+  gfx::GpuFenceHandle release_fence;
   EXPECT_TRUE(fake_drm_->plane_manager()->Commit(&state_, page_flip_request,
-                                                 &out_fence));
-  EXPECT_EQ(nullptr, out_fence);
+                                                 &release_fence));
+  EXPECT_TRUE(release_fence.is_null());
 }
 
 TEST_P(HardwareDisplayPlaneManagerTest,
@@ -1357,11 +1357,11 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, OverlaySourceCrop) {
     EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
         &state_, assigns, crtc_properties_[0].id));
 
-    std::unique_ptr<gfx::GpuFence> out_fence;
+    gfx::GpuFenceHandle release_fence;
     scoped_refptr<ui::PageFlipRequest> page_flip_request =
         base::MakeRefCounted<ui::PageFlipRequest>(base::TimeDelta());
     EXPECT_TRUE(fake_drm_->plane_manager()->Commit(&state_, page_flip_request,
-                                                   &out_fence));
+                                                   &release_fence));
 
     EXPECT_EQ(2u << 16, GetPlanePropertyValue(kPlaneOffset, "SRC_W"));
     EXPECT_EQ(2u << 16, GetPlanePropertyValue(kPlaneOffset, "SRC_H"));
@@ -1380,9 +1380,9 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, OverlaySourceCrop) {
 
     scoped_refptr<ui::PageFlipRequest> page_flip_request =
         base::MakeRefCounted<ui::PageFlipRequest>(base::TimeDelta());
-    std::unique_ptr<gfx::GpuFence> out_fence;
+    gfx::GpuFenceHandle release_fence;
     EXPECT_TRUE(fake_drm_->plane_manager()->Commit(&state_, page_flip_request,
-                                                   &out_fence));
+                                                   &release_fence));
 
     EXPECT_EQ(1u << 16, GetPlanePropertyValue(kPlaneOffset, "SRC_W"));
     EXPECT_EQ(2u << 16, GetPlanePropertyValue(kPlaneOffset, "SRC_H"));
@@ -1401,9 +1401,9 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, OverlaySourceCrop) {
 
     scoped_refptr<ui::PageFlipRequest> page_flip_request =
         base::MakeRefCounted<ui::PageFlipRequest>(base::TimeDelta());
-    std::unique_ptr<gfx::GpuFence> out_fence;
+    gfx::GpuFenceHandle release_fence;
     EXPECT_TRUE(fake_drm_->plane_manager()->Commit(&state_, page_flip_request,
-                                                   &out_fence));
+                                                   &release_fence));
 
     EXPECT_EQ(2u << 16, GetPlanePropertyValue(kPlaneOffset, "SRC_W"));
     EXPECT_EQ(1u << 16, GetPlanePropertyValue(kPlaneOffset, "SRC_H"));

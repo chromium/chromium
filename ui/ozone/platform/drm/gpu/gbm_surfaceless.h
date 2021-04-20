@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -100,8 +101,7 @@ class GbmSurfaceless : public gl::SurfacelessEGL {
   EGLSyncKHR InsertFence(bool implicit);
   void FenceRetired(PendingFrame* frame);
 
-  void OnSubmission(gfx::SwapResult result,
-                    std::unique_ptr<gfx::GpuFence> out_fence);
+  void OnSubmission(gfx::SwapResult result, gfx::GpuFenceHandle release_fence);
   void OnPresentation(const gfx::PresentationFeedback& feedback);
 
   GbmSurfaceFactory* const surface_factory_;

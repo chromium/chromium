@@ -26,6 +26,7 @@
 
 namespace gfx {
 class Point;
+struct GpuFenceHandle;
 }
 
 namespace ui {
@@ -182,7 +183,7 @@ class HardwareDisplayController {
   void OnModesetComplete(const DrmOverlayPlane& primary);
   bool ScheduleOrTestPageFlip(const DrmOverlayPlaneList& plane_list,
                               scoped_refptr<PageFlipRequest> page_flip_request,
-                              std::unique_ptr<gfx::GpuFence>* out_fence);
+                              gfx::GpuFenceHandle* release_fence);
   void AllocateCursorBuffers();
   DrmDumbBuffer* NextCursorBuffer();
   void UpdateCursorImage();

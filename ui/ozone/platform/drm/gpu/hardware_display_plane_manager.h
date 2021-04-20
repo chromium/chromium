@@ -20,8 +20,8 @@
 #include "ui/ozone/public/swap_completion_callback.h"
 
 namespace gfx {
-class GpuFence;
 class Rect;
+struct GpuFenceHandle;
 }  // namespace gfx
 
 namespace ui {
@@ -141,7 +141,7 @@ class HardwareDisplayPlaneManager {
   // if the system doesn't support out fences.
   virtual bool Commit(HardwareDisplayPlaneList* plane_list,
                       scoped_refptr<PageFlipRequest> page_flip_request,
-                      std::unique_ptr<gfx::GpuFence>* out_fence) = 0;
+                      gfx::GpuFenceHandle* release_fence) = 0;
 
   // Disable all the overlay planes previously submitted and now stored in
   // plane_list->old_plane_list.

@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 #include "ui/ozone/platform/drm/gpu/drm_window_proxy.h"
 #include "ui/ozone/platform/drm/gpu/gbm_pixmap.h"
@@ -67,7 +68,7 @@ void GbmOverlaySurface::SubmitFrame() {
 }
 
 void GbmOverlaySurface::OnSubmission(gfx::SwapResult swap_result,
-                                     std::unique_ptr<gfx::GpuFence> out_fence) {
+                                     gfx::GpuFenceHandle release_fence) {
   DCHECK(page_flip_pending_);
   DCHECK(have_unsubmitted_frame_);
 

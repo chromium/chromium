@@ -8,17 +8,17 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/swap_result.h"
 
 namespace gfx {
-class GpuFence;
 struct PresentationFeedback;
 }  // namespace gfx
 
 namespace ui {
 
 using SwapCompletionOnceCallback =
-    base::OnceCallback<void(gfx::SwapResult, std::unique_ptr<gfx::GpuFence>)>;
+    base::OnceCallback<void(gfx::SwapResult, gfx::GpuFenceHandle)>;
 
 using PresentationOnceCallback =
     base::OnceCallback<void(const gfx::PresentationFeedback&)>;

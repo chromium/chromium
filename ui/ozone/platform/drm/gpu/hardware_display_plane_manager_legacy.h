@@ -11,6 +11,10 @@
 #include "base/macros.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 
+namespace gfx {
+struct GpuFenceHandle;
+}  // namespace gfx
+
 namespace ui {
 
 class HardwareDisplayPlaneManagerLegacy : public HardwareDisplayPlaneManager {
@@ -23,7 +27,7 @@ class HardwareDisplayPlaneManagerLegacy : public HardwareDisplayPlaneManager {
 
   bool Commit(HardwareDisplayPlaneList* plane_list,
               scoped_refptr<PageFlipRequest> page_flip_request,
-              std::unique_ptr<gfx::GpuFence>* out_fence) override;
+              gfx::GpuFenceHandle* release_fence) override;
   bool DisableOverlayPlanes(HardwareDisplayPlaneList* plane_list) override;
 
   bool SetColorCorrectionOnAllCrtcPlanes(

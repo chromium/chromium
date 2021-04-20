@@ -15,6 +15,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/linux/test/mock_gbm_device.h"
 #include "ui/gfx/native_pixmap.h"
@@ -104,7 +105,7 @@ class HardwareDisplayControllerTest : public testing::Test {
   void InitializeDrmDevice(bool use_atomic);
   void SchedulePageFlip(ui::DrmOverlayPlaneList planes);
   void OnSubmission(gfx::SwapResult swap_result,
-                    std::unique_ptr<gfx::GpuFence> out_fence);
+                    gfx::GpuFenceHandle release_fence);
   void OnPresentation(const gfx::PresentationFeedback& feedback);
   uint64_t GetPlanePropertyValue(uint32_t plane,
                                  const std::string& property_name);
@@ -279,7 +280,7 @@ void HardwareDisplayControllerTest::SchedulePageFlip(
 
 void HardwareDisplayControllerTest::OnSubmission(
     gfx::SwapResult result,
-    std::unique_ptr<gfx::GpuFence> out_fence) {
+    gfx::GpuFenceHandle release_fence) {
   last_swap_result_ = result;
 }
 

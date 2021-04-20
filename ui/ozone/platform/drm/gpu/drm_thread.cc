@@ -234,7 +234,9 @@ void DrmThread::OnPlanesReadyForPageFlip(
     window->SchedulePageFlip(std::move(planes), std::move(submission_callback),
                              std::move(presentation_callback));
   } else {
-    std::move(submission_callback).Run(gfx::SwapResult::SWAP_ACK, nullptr);
+    std::move(submission_callback)
+        .Run(gfx::SwapResult::SWAP_ACK,
+             /*release_fence=*/gfx::GpuFenceHandle());
     std::move(presentation_callback).Run(gfx::PresentationFeedback::Failure());
   }
 }

@@ -57,7 +57,7 @@ class MockHardwareDisplayPlaneManager : public HardwareDisplayPlaneManager {
   }
   bool Commit(HardwareDisplayPlaneList* plane_list,
               scoped_refptr<PageFlipRequest> page_flip_request,
-              std::unique_ptr<gfx::GpuFence>* out_fence) override {
+              gfx::GpuFenceHandle* release_fence) override {
     return false;
   }
   bool DisableOverlayPlanes(HardwareDisplayPlaneList* plane_list) override {

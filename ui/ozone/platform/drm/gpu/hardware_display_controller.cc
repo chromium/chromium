@@ -19,7 +19,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -141,10 +141,10 @@ void HardwareDisplayController::SchedulePageFlip(
   DCHECK(!page_flip_request_);
   scoped_refptr<PageFlipRequest> page_flip_request =
       base::MakeRefCounted<PageFlipRequest>(GetRefreshInterval());
-  std::unique_ptr<gfx::GpuFence> out_fence;
+  gfx::GpuFenceHandle release_fence;
 
   bool status =
-      ScheduleOrTestPageFlip(plane_list, page_flip_request, &out_fence);
+      ScheduleOrTestPageFlip(plane_list, page_flip_request, &release_fence);
   if (!status) {
     for (const auto& plane : plane_list) {
       // If the page flip failed and we see that the buffer has been allocated
@@ -155,7 +155,8 @@ void HardwareDisplayController::SchedulePageFlip(
           plane.buffer->modeset_sequence_id_at_allocation() <
               plane.buffer->drm_device()->modeset_sequence_id()) {
         std::move(submission_callback)
-            .Run(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS, nullptr);
+            .Run(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS,
+                 /*release_fence=*/gfx::GpuFenceHandle());
         std::move(presentation_callback)
             .Run(gfx::PresentationFeedback::Failure());
         return;
@@ -170,13 +171,15 @@ void HardwareDisplayController::SchedulePageFlip(
     // able to happen but both CrtcController::AssignOverlayPlanes and
     // HardwareDisplayPlaneManagerLegacy::Commit appear to have cases
     // where we ACK without actually scheduling a page flip.
-    std::move(submission_callback).Run(gfx::SwapResult::SWAP_ACK, nullptr);
+    std::move(submission_callback)
+        .Run(gfx::SwapResult::SWAP_ACK,
+             /*release_fence=*/gfx::GpuFenceHandle());
     std::move(presentation_callback).Run(gfx::PresentationFeedback::Failure());
     return;
   }
 
   std::move(submission_callback)
-      .Run(gfx::SwapResult::SWAP_ACK, std::move(out_fence));
+      .Run(gfx::SwapResult::SWAP_ACK, std::move(release_fence));
 
   // Everything was submitted successfully, wait for asynchronous completion.
   page_flip_request->TakeCallback(
@@ -194,7 +197,7 @@ bool HardwareDisplayController::TestPageFlip(
 bool HardwareDisplayController::ScheduleOrTestPageFlip(
     const DrmOverlayPlaneList& plane_list,
     scoped_refptr<PageFlipRequest> page_flip_request,
-    std::unique_ptr<gfx::GpuFence>* out_fence) {
+    gfx::GpuFenceHandle* release_fence) {
   TRACE_EVENT0("drm", "HDC::SchedulePageFlip");
   DCHECK(IsEnabled());
 
@@ -216,7 +219,7 @@ bool HardwareDisplayController::ScheduleOrTestPageFlip(
   }
 
   status &= GetDrmDevice()->plane_manager()->Commit(
-      &owned_hardware_planes_, page_flip_request, out_fence);
+      &owned_hardware_planes_, page_flip_request, release_fence);
 
   return status;
 }

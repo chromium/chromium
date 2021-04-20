@@ -77,7 +77,7 @@ bool HardwareDisplayPlaneManagerLegacy::Commit(CommitRequest commit_request,
 bool HardwareDisplayPlaneManagerLegacy::Commit(
     HardwareDisplayPlaneList* plane_list,
     scoped_refptr<PageFlipRequest> page_flip_request,
-    std::unique_ptr<gfx::GpuFence>* out_fence) {
+    gfx::GpuFenceHandle* release_fence) {
   bool test_only = !page_flip_request;
   if (test_only) {
     for (HardwareDisplayPlane* plane : plane_list->plane_list) {
