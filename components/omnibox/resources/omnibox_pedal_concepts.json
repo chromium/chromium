@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2021-04-07T21:50:47.168Z",
+  "time_generated": "2021-04-16T16:14:45.934Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -6671,7 +6671,7 @@
               ]
             },
             {
-              "required": true,
+              "required": false,
               "single": true,
               "synonyms": [
                 "google chrome",
@@ -6701,22 +6701,23 @@
             }
           ],
           "cover_cases": [
-            "run chrome safety check"
+            "run chrome safety check",
+            "run safety check"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "Run Chrome Safety Check",
-            "description_text": "Run a Safety Check in Chrome settings",
-            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to run Safety Check in Chrome settings",
-            "spoken_button_focus_announcement": "Run Chrome Safety Check button, press Enter to run Safety Check in Chrome settings"
+            "button_text": "Run Chrome safety check",
+            "description_text": "Run a safety check in Chrome settings",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to run a safety check in Chrome settings",
+            "spoken_button_focus_announcement": "Run Chrome safety check button, press Enter to run a safety check in Chrome settings"
           },
-          "date_modified_omnibox_ui_strings": "2021-03-20T02:14:49.803Z"
+          "date_modified_omnibox_ui_strings": "2021-04-16T16:14:17.714Z"
         },
         {
           "id": 8,
           "groups": [
             {
-              "required": true,
+              "required": false,
               "single": false,
               "synonyms": [
                 "google chrome",
@@ -6806,7 +6807,8 @@
             "manage cookies",
             "disallow all third-party cookies",
             "manage cookie settings",
-            "chrome cookie settings"
+            "chrome cookie settings",
+            "cookies use"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -6857,7 +6859,10 @@
             }
           ],
           "cover_cases": [
-            "manage addresses"
+            "manage addresses",
+            "edit addresses",
+            "add address",
+            "change shipping address"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -6901,7 +6906,10 @@
           "cover_cases": [
             "manage sync",
             "edit sync settings",
-            "change chrome browser sync settings"
+            "change chrome browser sync settings",
+            "edit sync",
+            "change chrome sync",
+            "manage sync"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -6943,7 +6951,10 @@
           ],
           "cover_cases": [
             "manage site settings",
-            "site settings chrome"
+            "site settings chrome",
+            "control site settings",
+            "adjust site permissions",
+            "change permissions"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -6973,7 +6984,7 @@
             },
             {
               "required": true,
-              "single": true,
+              "single": false,
               "synonyms": [
                 "create",
                 "start",
@@ -6992,7 +7003,9 @@
             }
           ],
           "cover_cases": [
-            "create google doc"
+            "create google doc",
+            "open google document",
+            "make new google doc"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -7001,14 +7014,14 @@
             "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new Google Doc quickly",
             "spoken_button_focus_announcement": "Create doc button, press Enter to create a new Google Doc quickly"
           },
-          "date_modified_omnibox_ui_strings": "2021-03-25T19:20:40.431Z"
+          "date_modified_omnibox_ui_strings": "2021-04-13T22:21:33.802Z"
         },
         {
           "id": 14,
           "groups": [
             {
               "required": true,
-              "single": true,
+              "single": false,
               "synonyms": [
                 "create",
                 "start",
@@ -7042,7 +7055,10 @@
             }
           ],
           "cover_cases": [
-            "create google sheet"
+            "create google sheet",
+            "start new google sheet",
+            "create workspace spreadsheet",
+            "new google sheet"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -7051,7 +7067,7 @@
             "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new Google Sheet quickly",
             "spoken_button_focus_announcement": "Create sheet button, press Enter to create a new Google Sheet quickly"
           },
-          "date_modified_omnibox_ui_strings": "2021-03-24T00:40:51.586Z"
+          "date_modified_omnibox_ui_strings": "2021-04-13T22:21:39.787Z"
         },
         {
           "id": 15,
@@ -7091,7 +7107,10 @@
             }
           ],
           "cover_cases": [
-            "create google slide"
+            "create google slide",
+            "make new deck",
+            "new google presentation",
+            "start google preso"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -7100,7 +7119,7 @@
             "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new Google presentation in Slides quickly",
             "spoken_button_focus_announcement": "Create presentation button, press Enter to create a new Google presentation in Slides quickly"
           },
-          "date_modified_omnibox_ui_strings": "2021-03-24T00:41:59.892Z"
+          "date_modified_omnibox_ui_strings": "2021-04-13T22:21:45.094Z"
         },
         {
           "id": 16,
@@ -7143,7 +7162,10 @@
           ],
           "cover_cases": [
             "create google calendar event",
-            "create new cal invite"
+            "create new cal invite",
+            "new cal event",
+            "create google cal invite",
+            "new google calendar invite"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -7152,14 +7174,14 @@
             "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new event in Google Calendar quickly",
             "spoken_button_focus_announcement": "Create event button, press Enter to create a new event in Google Calendar quickly"
           },
-          "date_modified_omnibox_ui_strings": "2021-03-24T00:42:57.996Z"
+          "date_modified_omnibox_ui_strings": "2021-04-13T22:21:53.742Z"
         },
         {
           "id": 17,
           "groups": [
             {
               "required": true,
-              "single": true,
+              "single": false,
               "synonyms": [
                 "create",
                 "start",
@@ -7189,7 +7211,11 @@
             }
           ],
           "cover_cases": [
-            "create google site"
+            "create google site",
+            "create google site",
+            "new google site",
+            "make google website",
+            "open new google site"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -7198,7 +7224,7 @@
             "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new site in Google Site quickly",
             "spoken_button_focus_announcement": "Create site button, press Enter to create a new site in Google Site quickly"
           },
-          "date_modified_omnibox_ui_strings": "2021-03-24T00:43:41.967Z"
+          "date_modified_omnibox_ui_strings": "2021-04-13T22:21:59.622Z"
         },
         {
           "id": 18,
@@ -7237,7 +7263,10 @@
           ],
           "cover_cases": [
             "create google keep note",
-            "make new google keep note"
+            "make new google keep note",
+            "new google note",
+            "create google note",
+            "start google note"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -7246,14 +7275,14 @@
             "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new note in Google Keep quickly",
             "spoken_button_focus_announcement": "Create note button, press Enter to create a new note in Google Keep quickly"
           },
-          "date_modified_omnibox_ui_strings": "2021-03-24T00:44:32.522Z"
+          "date_modified_omnibox_ui_strings": "2021-04-13T22:22:05.566Z"
         },
         {
           "id": 19,
           "groups": [
             {
               "required": true,
-              "single": true,
+              "single": false,
               "synonyms": [
                 "create",
                 "start",
@@ -7285,7 +7314,10 @@
             }
           ],
           "cover_cases": [
-            "create google form"
+            "create google form",
+            "start google survey",
+            "new google form",
+            "make new google form"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -7294,7 +7326,7 @@
             "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new form in Google Form quickly",
             "spoken_button_focus_announcement": "Create form button, press Enter to create a new form in Google Form quickly"
           },
-          "date_modified_omnibox_ui_strings": "2021-03-24T00:45:11.949Z"
+          "date_modified_omnibox_ui_strings": "2021-04-13T22:22:10.895Z"
         },
         {
           "id": 20,
@@ -7382,7 +7414,10 @@
             }
           ],
           "cover_cases": [
-            "see chrome tips"
+            "see chrome tips",
+            "new google chrome features",
+            "learn google chrome features",
+            "chrome features"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -7412,7 +7447,7 @@
               ]
             },
             {
-              "required": false,
+              "required": true,
               "single": true,
               "synonyms": [
                 "control",
@@ -7423,7 +7458,10 @@
             }
           ],
           "cover_cases": [
-            "manage google account"
+            "manage google account",
+            "manage my google account",
+            "fix google account",
+            "control my google account"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -7491,17 +7529,21 @@
               ]
             },
             {
-              "required": false,
+              "required": true,
               "single": true,
               "synonyms": [
                 "change",
-                "reset"
+                "update",
+                "reset",
+                "fix"
               ]
             }
           ],
           "cover_cases": [
             "google password change",
-            "reset gmail account password"
+            "reset gmail account password",
+            "change gmail password",
+            "change my gmail password"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -7803,43 +7845,104 @@
           "id": 7,
           "groups": [
             {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "activate",
+                "perform",
+                "run",
+                "use"
+              ]
+            },
+            {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "google chrome",
+                "browser",
+                "chrome",
+                "google"
+              ]
+            },
+            {
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "checkup",
+                "checks",
+                "check"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "passwords",
+                "security",
+                "password",
+                "safety"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Run Chrome safety check",
+            "description_text": "Run a safety check in Chrome settings",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to run a safety check in Chrome settings",
+            "spoken_button_focus_announcement": "Run Chrome safety check button, press Enter to run a safety check in Chrome settings"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-04-16T16:13:53.350Z"
         },
         {
           "id": 8,
           "groups": [
             {
+              "required": false,
+              "single": false,
+              "synonyms": [
+                "google chrome",
+                "browsing",
+                "browser",
+                "chrome",
+                "google",
+                "browse",
+                "change",
+                "manage"
+              ]
+            },
+            {
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "enhanced protection",
+                "standard protection",
+                "security settings",
+                "security keys",
+                "certificates",
+                "secure dns",
+                "securely",
+                "safely"
+              ]
+            },
+            {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "alter",
+                "use"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Manage security settings",
+            "description_text": "Manage your Safe Browsing and more in Chrome settings",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to manage your Safe Browsing and more in Chrome settings",
+            "spoken_button_focus_announcement": "Manage security settings button, press Enter to manage your Safe Browsing and more in Chrome settings"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-04-15T21:20:35.938Z"
         },
         {
           "id": 9,
@@ -7848,19 +7951,46 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "cookie settings",
+                "do not track",
+                "cookies"
+              ]
+            },
+            {
+              "required": true,
+              "single": false,
+              "synonyms": [
+                "google chrome",
+                "disallow",
+                "browser",
+                "control",
+                "google",
+                "chrome",
+                "manage",
+                "block",
+                "allow",
+                "alter",
+                "use"
+              ]
+            },
+            {
+              "required": false,
+              "single": false,
+              "synonyms": [
+                "third party",
+                "all"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Manage cookies",
+            "description_text": "Manage your cookie preferences in Chrome settings",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to manage your cookie preferences in Chrome settings",
+            "spoken_button_focus_announcement": "Manage cookies button, press Enter to manage your cookie preferences in Chrome settings"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-04-15T21:21:42.276Z"
         },
         {
           "id": 10,
@@ -7869,19 +7999,47 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "control",
+                "manage",
+                "adjust",
+                "delete",
+                "change",
+                "store",
+                "edit",
+                "add"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "shipping addresses",
+                "shipping address",
+                "new address",
+                "addresses",
+                "address"
+              ]
+            },
+            {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "google chrome",
+                "browser",
+                "chrome",
+                "google"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Manage addresses",
+            "description_text": "Add and manage addresses in Chrome settings",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to add and manage addresses in Chrome settings",
+            "spoken_button_focus_announcement": "Manage addresses button, press Enter to add and manage addresses in Chrome settings"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-04-15T21:23:00.826Z"
         },
         {
           "id": 11,
@@ -7890,19 +8048,38 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "sync settings",
+                "sync"
+              ]
+            },
+            {
+              "required": true,
+              "single": false,
+              "synonyms": [
+                "google chrome",
+                "customize",
+                "browser",
+                "control",
+                "disable",
+                "chrome",
+                "google",
+                "manage",
+                "adjust",
+                "change",
+                "edit",
+                "add"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Manage sync",
+            "description_text": "Manage what info you sync in Chrome settings",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to manage what info you sync in Chrome settings",
+            "spoken_button_focus_announcement": "Manage sync button, press Enter to manage what info you sync in Chrome settings"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-04-15T21:24:04.309Z"
         },
         {
           "id": 12,
@@ -7911,19 +8088,37 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "site permissions",
+                "site settings",
+                "permissions"
+              ]
+            },
+            {
+              "required": true,
+              "single": false,
+              "synonyms": [
+                "google chrome",
+                "customize",
+                "browser",
+                "control",
+                "chrome",
+                "google",
+                "manage",
+                "adjust",
+                "change",
+                "edit"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Manage site settings",
+            "description_text": "Manage permissions and data stored across sites in Chrome settings",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to manage permissions and data stored across sites in Chrome settings",
+            "spoken_button_focus_announcement": "Manage site settings button, press Enter to manage permissions and data stored across sites in Chrome settings"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-04-15T21:24:56.594Z"
         },
         {
           "id": 13,
@@ -7932,40 +8127,93 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "google workspace",
+                "google chrome",
+                "workspace",
+                "browser",
+                "g suite",
+                "google",
+                "chrome",
+                "gsuite"
+              ]
+            },
+            {
+              "required": true,
+              "single": false,
+              "synonyms": [
+                "create",
+                "start",
+                "open",
+                "make",
+                "new"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "document",
+                "doc"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Create doc",
+            "description_text": "Create a new Google Doc quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new Google Doc quickly",
+            "spoken_button_focus_announcement": "Create doc button, press Enter to create a new Google Doc quickly"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-04-15T21:27:04.127Z"
         },
         {
           "id": 14,
           "groups": [
             {
               "required": true,
+              "single": false,
+              "synonyms": [
+                "create",
+                "start",
+                "open",
+                "make",
+                "new"
+              ]
+            },
+            {
+              "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "google workspace",
+                "google chrome",
+                "workspace",
+                "browser",
+                "g suite",
+                "google",
+                "chrome"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "spreadsheet",
+                "sheets",
+                "sheet",
+                "trix"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Create sheet",
+            "description_text": "Create a new Google Sheet quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new Google Sheet quickly",
+            "spoken_button_focus_announcement": "Create sheet button, press Enter to create a new Google Sheet quickly"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-04-15T21:27:50.086Z"
         },
         {
           "id": 15,
@@ -7974,103 +8222,229 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "create",
+                "start",
+                "open",
+                "make",
+                "new"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "presentation",
+                "slides",
+                "slide",
+                "preso",
+                "deck"
+              ]
+            },
+            {
+              "required": true,
+              "single": false,
+              "synonyms": [
+                "workspace",
+                "browser",
+                "g suite",
+                "google",
+                "chrome"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Create presentation",
+            "description_text": "Create a new Google presentation in Slides quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new Google presentation in Slides quickly",
+            "spoken_button_focus_announcement": "Create presentation button, press Enter to create a new Google presentation in Slides quickly"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-04-15T21:28:37.756Z"
         },
         {
           "id": 16,
           "groups": [
             {
               "required": true,
+              "single": false,
+              "synonyms": [
+                "schedule",
+                "create",
+                "start",
+                "open",
+                "make",
+                "new",
+                "add"
+              ]
+            },
+            {
+              "required": true,
+              "single": false,
+              "synonyms": [
+                "workspace",
+                "calendar",
+                "browser",
+                "g suite",
+                "google",
+                "chrome",
+                "cal"
+              ]
+            },
+            {
+              "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "meeting",
+                "invite",
+                "event"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Create event",
+            "description_text": "Create a new event in Google Calendar quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new event in Google Calendar quickly",
+            "spoken_button_focus_announcement": "Create event button, press Enter to create a new event in Google Calendar quickly"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-04-15T21:29:14.048Z"
         },
         {
           "id": 17,
           "groups": [
             {
               "required": true,
+              "single": false,
+              "synonyms": [
+                "create",
+                "start",
+                "open",
+                "make",
+                "new"
+              ]
+            },
+            {
+              "required": true,
+              "single": false,
+              "synonyms": [
+                "workspace",
+                "browser",
+                "g suite",
+                "google",
+                "chrome"
+              ]
+            },
+            {
+              "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "website",
+                "site"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Create site",
+            "description_text": "Create a new site in Google Site quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new site in Google Site quickly",
+            "spoken_button_focus_announcement": "Create site button, press Enter to create a new site in Google Site quickly"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-04-15T21:30:18.620Z"
         },
         {
           "id": 18,
           "groups": [
             {
               "required": true,
+              "single": false,
+              "synonyms": [
+                "create",
+                "start",
+                "open",
+                "make",
+                "new"
+              ]
+            },
+            {
+              "required": true,
+              "single": false,
+              "synonyms": [
+                "workspace",
+                "browser",
+                "g suite",
+                "google",
+                "chrome",
+                "keep"
+              ]
+            },
+            {
+              "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "notes",
+                "note"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Create note",
+            "description_text": "Create a new note in Google Keep quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new note in Google Keep quickly",
+            "spoken_button_focus_announcement": "Create note button, press Enter to create a new note in Google Keep quickly"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-04-15T21:31:05.537Z"
         },
         {
           "id": 19,
           "groups": [
             {
               "required": true,
+              "single": false,
+              "synonyms": [
+                "create",
+                "start",
+                "open",
+                "make",
+                "new"
+              ]
+            },
+            {
+              "required": true,
+              "single": false,
+              "synonyms": [
+                "workspace",
+                "browser",
+                "g suite",
+                "chrome",
+                "google"
+              ]
+            },
+            {
+              "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "survey",
+                "forms",
+                "form",
+                "quiz"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Create form",
+            "description_text": "Create a new form in Google Form quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new form in Google Form quickly",
+            "spoken_button_focus_announcement": "Create form button, press Enter to create a new form in Google Form quickly"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-04-15T21:31:43.711Z"
         },
         {
           "id": 20,
@@ -8097,22 +8471,45 @@
           "id": 21,
           "groups": [
             {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "make the most of",
+                "understand",
+                "explore",
+                "learn",
+                "visit",
+                "see"
+              ]
+            },
+            {
+              "required": false,
+              "single": false,
+              "synonyms": [
+                "browser",
+                "google"
+              ]
+            },
+            {
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "new chrome features",
+                "chrome tips center",
+                "chrome features",
+                "chrome tips"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "See Chrome tips",
+            "description_text": "Learn about Chrome features",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to learn about Chrome features",
+            "spoken_button_focus_announcement": "See Chrome tips button, press Enter to learn about Chrome features"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-04-15T21:33:04.845Z"
         },
         {
           "id": 22,
@@ -8121,19 +8518,37 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "google account"
+              ]
+            },
+            {
+              "required": false,
+              "single": false,
+              "synonyms": [
+                "browser",
+                "chrome"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "control",
+                "manage",
+                "adjust",
+                "fix"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Manage Google Account",
+            "description_text": "Manage your info, privacy, and security in your Google Account",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to manage your info, privacy, and security in your Google Account",
+            "spoken_button_focus_announcement": "Manage Google Account, press Enter to manage your info, privacy, and security in your Google Account"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-04-15T21:34:00.948Z"
         },
         {
           "id": 23,
@@ -8163,19 +8578,41 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "google account password",
+                "gmail account password",
+                "google password",
+                "gmail password"
+              ]
+            },
+            {
+              "required": false,
+              "single": false,
+              "synonyms": [
+                "browser",
+                "chrome",
+                "google"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "change",
+                "update",
+                "reset",
+                "fix"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Change Google password",
+            "description_text": "Change the password for your Google Account",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to change the password for your Google Account",
+            "spoken_button_focus_announcement": "Change Google password button, press Enter to change the password for your Google Account"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-04-15T21:34:43.641Z"
         }
       ],
       "tokenize_each_character": false
