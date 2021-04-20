@@ -144,11 +144,20 @@ TEST_F(SystemProxyHandlerTest, SetAuthenticationDetails) {
 // Verifies requests to shut down are sent to System-proxy according to the
 // |kSystemProxySettings| policy.
 TEST_F(SystemProxyHandlerTest, ShutDownDaemon) {
-  EXPECT_EQ(0, client_test_interface()->GetShutDownCallCount());
+  int expected_shutdown_calls = 0;
 
+  // Enable system-proxy.
+  SetPolicy(true /* system_proxy_enabled */, "" /* system_services_username */,
+            "" /* system_services_password */);
+  EXPECT_EQ(++expected_shutdown_calls,
+            client_test_interface()->GetShutDownCallCount());
+
+  // Disable system-proxy via policy and expect a shut-down request to be
+  // sent.
   SetPolicy(false /* system_proxy_enabled */, "" /* system_services_username */,
             "" /* system_services_password */);
-  EXPECT_EQ(1, client_test_interface()->GetShutDownCallCount());
+  EXPECT_EQ(++expected_shutdown_calls,
+            client_test_interface()->GetShutDownCallCount());
 }
 
 }  // namespace policy

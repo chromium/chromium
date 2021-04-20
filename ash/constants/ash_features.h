@@ -297,6 +297,8 @@ extern const base::Feature kSplitSettingsSync;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSystemLatinPhysicalTyping;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kSystemProxyForSystemServices;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kTelemetryExtension;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kUpdatedCellularActivationUi;

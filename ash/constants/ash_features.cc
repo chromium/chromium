@@ -661,6 +661,12 @@ const base::Feature kSplitSettingsSync{"SplitSettingsSync",
 const base::Feature kSystemLatinPhysicalTyping{
     "SystemLatinPhysicalTyping", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the Chrome OS system-proxy daemon, only for system services. This
+// means that system services like tlsdate, update engine etc. can opt to be
+// authenticated to a remote HTTP web proxy via system-proxy.
+const base::Feature kSystemProxyForSystemServices{
+    "SystemProxyForSystemServices", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables Chrome OS Telemetry Extension.
 const base::Feature kTelemetryExtension{"TelemetryExtension",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
