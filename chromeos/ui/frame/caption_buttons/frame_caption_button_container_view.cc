@@ -236,7 +236,7 @@ void FrameCaptionButtonContainerView::SetBackgroundColor(
 }
 
 void FrameCaptionButtonContainerView::ResetWindowControls() {
-  SetButtonsToNormal(ANIMATE_NO);
+  SetButtonsToNormal(Animate::kNo);
 }
 
 void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
@@ -385,16 +385,16 @@ void FrameCaptionButtonContainerView::SetButtonIcon(
     views::CaptionButtonIcon icon,
     Animate animate) {
   // The early return is dependent on |animate| because callers use
-  // SetButtonIcon() with ANIMATE_NO to progress |button|'s crossfade animation
-  // to the end.
+  // SetButtonIcon() with Animate::kNo to progress |button|'s crossfade
+  // animation to the end.
   if (button->GetIcon() == icon &&
-      (animate == ANIMATE_YES || !button->IsAnimatingImageSwap())) {
+      (animate == Animate::kYes || !button->IsAnimatingImageSwap())) {
     return;
   }
 
   views::FrameCaptionButton::Animate fcb_animate =
-      (animate == ANIMATE_YES) ? views::FrameCaptionButton::Animate::kYes
-                               : views::FrameCaptionButton::Animate::kNo;
+      (animate == Animate::kYes) ? views::FrameCaptionButton::Animate::kYes
+                                 : views::FrameCaptionButton::Animate::kNo;
   auto it = button_icon_map_.find(icon);
   if (it != button_icon_map_.end())
     button->SetImage(icon, fcb_animate, *it->second);
@@ -402,7 +402,7 @@ void FrameCaptionButtonContainerView::SetButtonIcon(
 
 void FrameCaptionButtonContainerView::MinimizeButtonPressed() {
   // Abort any animations of the button icons.
-  SetButtonsToNormal(ANIMATE_NO);
+  SetButtonsToNormal(Animate::kNo);
 
   frame_->Minimize();
   base::RecordAction(base::UserMetricsAction("MinButton_Clk"));
@@ -410,7 +410,7 @@ void FrameCaptionButtonContainerView::MinimizeButtonPressed() {
 
 void FrameCaptionButtonContainerView::SizeButtonPressed() {
   // Abort any animations of the button icons.
-  SetButtonsToNormal(ANIMATE_NO);
+  SetButtonsToNormal(Animate::kNo);
 
   if (on_size_button_pressed_callback_ &&
       on_size_button_pressed_callback_.Run()) {
@@ -430,7 +430,7 @@ void FrameCaptionButtonContainerView::SizeButtonPressed() {
 
 void FrameCaptionButtonContainerView::CloseButtonPressed() {
   // Abort any animations of the button icons.
-  SetButtonsToNormal(ANIMATE_NO);
+  SetButtonsToNormal(Animate::kNo);
 
   frame_->Close();
   if (chromeos::TabletState::Get()->InTabletMode()) {
@@ -443,7 +443,7 @@ void FrameCaptionButtonContainerView::CloseButtonPressed() {
 
 void FrameCaptionButtonContainerView::MenuButtonPressed() {
   // Abort any animations of the button icons.
-  SetButtonsToNormal(ANIMATE_NO);
+  SetButtonsToNormal(Animate::kNo);
 
   // Send up event as well as down event as ARC++ clients expect this sequence.
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();

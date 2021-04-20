@@ -130,8 +130,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
  private:
   friend class FrameCaptionButtonContainerViewTest;
 
-  // Sets |button|'s icon to |icon|. If |animate| is ANIMATE_YES, the button
-  // will crossfade to the new icon. If |animate| is ANIMATE_NO and
+  // Sets |button|'s icon to |icon|. If |animate| is Animate::kYes, the button
+  // will crossfade to the new icon. If |animate| is Animate::kNo and
   // |icon| == |button|->icon(), the crossfade animation is progressed to the
   // end.
   void SetButtonIcon(views::FrameCaptionButton* button,

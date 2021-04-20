@@ -23,18 +23,18 @@ enum class SnapDirection;
 // Delegate interface for FrameSizeButton.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButtonDelegate {
  public:
-  enum Animate { ANIMATE_YES, ANIMATE_NO };
+  enum class Animate { kYes, kNo };
 
   // Returns whether the minimize button is visible.
   virtual bool IsMinimizeButtonVisible() const = 0;
 
   // Reset the caption button views::Button::ButtonState back to normal. If
-  // |animate| is ANIMATE_YES, the buttons will crossfade back to their
+  // |animate| is Animate::kYes, the buttons will crossfade back to their
   // original icons.
   virtual void SetButtonsToNormal(Animate animate) = 0;
 
   // Sets the minimize and close button icons. The buttons will crossfade to
-  // their new icons if |animate| is ANIMATE_YES.
+  // their new icons if |animate| is Animate::kYes.
   virtual void SetButtonIcons(views::CaptionButtonIcon minimize_button_icon,
                               views::CaptionButtonIcon close_button_icon,
                               Animate animate) = 0;

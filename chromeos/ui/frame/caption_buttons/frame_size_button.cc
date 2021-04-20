@@ -152,7 +152,7 @@ void FrameSizeButton::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void FrameSizeButton::OnMouseCaptureLost() {
-  SetButtonsToNormalMode(FrameSizeButtonDelegate::ANIMATE_YES);
+  SetButtonsToNormalMode(FrameSizeButtonDelegate::Animate::kYes);
   views::FrameCaptionButton::OnMouseCaptureLost();
 }
 
@@ -164,7 +164,7 @@ void FrameSizeButton::OnMouseMoved(const ui::MouseEvent& event) {
 
 void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
   if (event->details().touch_points() > 1) {
-    SetButtonsToNormalMode(FrameSizeButtonDelegate::ANIMATE_YES);
+    SetButtonsToNormalMode(FrameSizeButtonDelegate::Animate::kYes);
     return;
   }
   if (event->type() == ui::ET_GESTURE_TAP_DOWN && delegate_->CanSnap()) {
@@ -208,7 +208,7 @@ void FrameSizeButton::StartSetButtonsToSnapModeTimer(
 }
 
 void FrameSizeButton::AnimateButtonsToSnapMode() {
-  SetButtonsToSnapMode(FrameSizeButtonDelegate::ANIMATE_YES);
+  SetButtonsToSnapMode(FrameSizeButtonDelegate::Animate::kYes);
 
   // Start observing the to-be-snapped window.
   snapping_window_observer_ = std::make_unique<SnappingWindowObserver>(
@@ -258,7 +258,7 @@ void FrameSizeButton::UpdateSnapPreview(const ui::LocatedEvent& event) {
   if (to_hover) {
     // Progress the minimize and close icon morph animations to the end if they
     // are in progress.
-    SetButtonsToSnapMode(FrameSizeButtonDelegate::ANIMATE_NO);
+    SetButtonsToSnapMode(FrameSizeButtonDelegate::Animate::kNo);
   }
 
   delegate_->SetHoveredAndPressedButtons(to_hover,
@@ -291,11 +291,11 @@ bool FrameSizeButton::CommitSnap(const ui::LocatedEvent& event) {
   } else if (snap == SnapDirection::kRight) {
     base::RecordAction(base::UserMetricsAction("MaxButton_MaxRight"));
   } else {
-    SetButtonsToNormalMode(FrameSizeButtonDelegate::ANIMATE_YES);
+    SetButtonsToNormalMode(FrameSizeButtonDelegate::Animate::kYes);
     return false;
   }
 
-  SetButtonsToNormalMode(FrameSizeButtonDelegate::ANIMATE_NO);
+  SetButtonsToNormalMode(FrameSizeButtonDelegate::Animate::kNo);
   return true;
 }
 
@@ -303,7 +303,7 @@ void FrameSizeButton::CancelSnap() {
   snapping_window_observer_.reset();
   delegate_->CommitSnap(SnapDirection::kNone);
   delegate_->SetHoveredAndPressedButtons(nullptr, nullptr);
-  SetButtonsToNormalMode(FrameSizeButtonDelegate::ANIMATE_YES);
+  SetButtonsToNormalMode(FrameSizeButtonDelegate::Animate::kYes);
 }
 
 void FrameSizeButton::SetButtonsToNormalMode(
