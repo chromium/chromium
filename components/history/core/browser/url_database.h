@@ -95,7 +95,7 @@ class URLDatabase {
   // URL mass-deleting ---------------------------------------------------------
 
   // Begins the mass-deleting operation by creating a temporary URL table.
-  // The caller than adds the URLs it wants to preseve to the temporary table,
+  // The caller than adds the URLs it wants to preserve to the temporary table,
   // and then deletes everything else by calling CommitTemporaryURLTable().
   // Returns true on success.
   bool CreateTemporaryURLTable();
@@ -268,7 +268,7 @@ class URLDatabase {
   // index, which is faster than the reverse.
   //
   // is_temporary is false when generating the "regular" URLs table. The expirer
-  // sets this to true to generate the  temporary table, which will have a
+  // sets this to true to generate the temporary table, which will have a
   // different name but the same schema.
   bool CreateURLTable(bool is_temporary);
 
@@ -303,7 +303,7 @@ class URLDatabase {
   // kHistoryURLRowFields.
   static void FillURLRow(const sql::Statement& s, URLRow* i);
 
-  // Returns the database for the functions in this interface. The decendent of
+  // Returns the database for the functions in this interface. The descendant of
   // this class implements these functions to return its objects.
   virtual sql::Database& GetDB() = 0;
 

@@ -159,7 +159,7 @@ bool URLDatabase::UpdateURLRow(URLID url_id, const URLRow& info) {
 
 URLID URLDatabase::AddURLInternal(const URLRow& info, bool is_temporary) {
   // This function is used to insert into two different tables, so we have to
-  // do some shuffling. Unfortinately, we can't use the macro
+  // do some shuffling. Unfortunately, we can't use the macro
   // HISTORY_URL_ROW_FIELDS because that specifies the table name which is
   // invalid in the insert syntax.
   #define ADDURL_COMMON_SUFFIX \
@@ -211,7 +211,7 @@ bool URLDatabase::URLTableContainsAutoincrement() {
   std::string urls_schema = statement.ColumnString(0);
   // We check if the whole schema contains "AUTOINCREMENT", since
   // "AUTOINCREMENT" only can be used for "INTEGER PRIMARY KEY", so we assume no
-  // other columns could cantain "AUTOINCREMENT".
+  // other columns could contain "AUTOINCREMENT".
   return urls_schema.find("AUTOINCREMENT") != std::string::npos;
 }
 
@@ -760,7 +760,7 @@ bool URLDatabase::CreateURLTable(bool is_temporary) {
       "typed_count INTEGER DEFAULT 0 NOT NULL,"
       "last_visit_time INTEGER NOT NULL,"
       "hidden INTEGER DEFAULT 0 NOT NULL)");
-  // IMPORTANT: If you change the colums, also update in_memory_database.cc
+  // IMPORTANT: If you change the columns, also update in_memory_database.cc
   // where the values are copied (InitFromDisk).
 
   return GetDB().Execute(sql.c_str());

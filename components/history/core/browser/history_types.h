@@ -22,7 +22,6 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_context.h"
 #include "components/history/core/browser/url_row.h"
-#include "components/history/core/common/thumbnail_score.h"
 #include "components/query_parser/query_parser.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"

@@ -4,12 +4,14 @@
 
 #include "components/history/core/browser/visit_annotations_database.h"
 
+#include <string>
+#include <vector>
+
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "sql/statement.h"
-#include "sql/transaction.h"
 
 namespace history {
 
@@ -178,7 +180,7 @@ bool VisitAnnotationsDatabase::MigrateFlocAllowedToAnnotationsTable() {
 
   // Not all version 43 history has the content_annotations table. So at this
   // point the content_annotations table may already have been initialized with
-  // the latest verssion with a annotation_flags column.
+  // the latest version with a annotation_flags column.
   if (!GetDB().DoesColumnExist("content_annotations", "annotation_flags")) {
     // Add a annotation_flags column to the content_annotations table.
     if (!GetDB().Execute("ALTER TABLE content_annotations ADD COLUMN "

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <iterator>
 #include <limits>
 #include <map>
 #include <memory>
@@ -24,6 +25,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
@@ -1408,10 +1410,10 @@ void HistoryBackend::DeleteMatchingURLsForKeyword(KeywordID keyword_id,
   std::vector<KeywordSearchTermRow> rows;
   if (db_->GetKeywordSearchTermRows(term, &rows)) {
     std::vector<GURL> items_to_delete;
-    URLRow row;
-    for (auto it = rows.begin(); it != rows.end(); ++it) {
-      if ((it->keyword_id == keyword_id) && db_->GetURLRow(it->url_id, &row))
-        items_to_delete.push_back(row.url());
+    URLRow url_row;
+    for (const auto& row : rows) {
+      if (row.keyword_id == keyword_id && db_->GetURLRow(row.url_id, &url_row))
+        items_to_delete.push_back(url_row.url());
     }
     DeleteURLs(items_to_delete);
   }

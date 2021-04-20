@@ -6,7 +6,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "sql/database.h"
@@ -36,8 +35,7 @@ bool IsURLRowEqual(const URLRow& a,
 class URLDatabaseTest : public testing::Test,
                         public URLDatabase {
  public:
-  URLDatabaseTest() {
-  }
+  URLDatabaseTest() = default;
 
   void CreateVersion33URLTable() {
     EXPECT_TRUE(GetDB().Execute("DROP TABLE urls"));
@@ -435,7 +433,7 @@ TEST_F(URLDatabaseTest, MigrationURLTableForAddingAUTOINCREMENT) {
   // Upgrade urls table.
   RecreateURLTableWithAllContents();
 
-  // Verify all data keeped.
+  // Verify all data kept.
   EXPECT_TRUE(GetRowForURL(url1, &info1));
   EXPECT_TRUE(IsURLRowEqual(url_info1, info1));
   EXPECT_FALSE(GetRowForURL(url2, &info2));

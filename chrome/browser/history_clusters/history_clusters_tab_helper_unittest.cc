@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
@@ -24,7 +23,6 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/history_clusters/core/memories_features.h"
-#include "components/history_clusters/core/memories_service.h"
 #include "components/history_clusters/core/memories_service_test_api.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "content/public/browser/web_contents.h"

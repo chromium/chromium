@@ -102,7 +102,7 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
   if (!db_.Open(history_name))
     return LogInitFailure(InitStep::OPEN);
 
-  // Wrap the rest of init in a tranaction. This will prevent the database from
+  // Wrap the rest of init in a transaction. This will prevent the database from
   // getting corrupted if we crash in the middle of initialization or migration.
   sql::Transaction committer(&db_);
   if (!committer.Begin())

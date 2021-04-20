@@ -1382,7 +1382,7 @@ TEST_F(HistoryBackendTest, AddPageVisitSource) {
   // Clear all history.
   backend_->DeleteAllHistory();
 
-  // Assume visiting the url from an externsion.
+  // Assume visiting the url from an extension.
   backend_->AddPageVisit(url, base::Time::Now(), 0, ui::PAGE_TRANSITION_TYPED,
                          false, history::SOURCE_EXTENSION, true, false);
   // Assume the url is imported from Firefox.
