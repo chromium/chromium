@@ -205,6 +205,7 @@ template("generate_runner_script") {
 
   generate_wrapper(target_name) {
     executable = "//build/chromeos/test_runner.py"
+    use_vpython3 = true
     wrapper_script = generated_script
     executable_args = []
 

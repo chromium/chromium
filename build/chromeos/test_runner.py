@@ -166,7 +166,7 @@ class RemoteTest(object):
     logging.info('\n' + '\n'.join(script_contents))
     fd, tmp_path = tempfile.mkstemp(suffix='.sh', dir=self._path_to_outdir)
     os.fchmod(fd, 0o755)
-    with os.fdopen(fd, 'wb') as f:
+    with os.fdopen(fd, 'w') as f:
       f.write('\n'.join(script_contents) + '\n')
     return tmp_path
 
