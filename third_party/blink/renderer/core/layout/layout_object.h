@@ -1218,6 +1218,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectSVGTextPath);
   }
+  bool IsSVGTSpan() const {
+    NOT_DESTROYED();
+    return IsOfType(kLayoutObjectSVGTSpan);
+  }
   bool IsSVGInline() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectSVGInline);
@@ -3489,6 +3493,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectSVGText,
     kLayoutObjectSVGTextPath,
     kLayoutObjectSVGTransformableContainer,
+    kLayoutObjectSVGTSpan,
     kLayoutObjectSVGViewportContainer,
   };
   virtual bool IsOfType(LayoutObjectType type) const {

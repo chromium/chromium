@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_NG_SVG_TEXT_LAYOUT_ATTRIBUTES_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_NG_SVG_TEXT_LAYOUT_ATTRIBUTES_BUILDER_H_
 
+#include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_character_data.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -33,6 +34,12 @@ class NGSVGTextLayoutAttributesBuilder final {
 
  private:
   LayoutBlockFlow* block_flow_;
+
+  // The result of Build().
+  // A list of a pair of addressable character index and an
+  // NGSVGCharacterData. This is named 'resolved' because this is
+  // the outcome of '3. Resolve character positioning'.
+  Vector<std::pair<unsigned, NGSVGCharacterData>> resolved_;
 };
 
 }  // namespace blink
