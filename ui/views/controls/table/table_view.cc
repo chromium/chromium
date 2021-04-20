@@ -789,7 +789,6 @@ void TableView::OnItemsRemoved(int start, int length) {
     selection_model_.set_active(GetFirstSelectedRow());
   if (!selection_model_.empty() && selection_model_.anchor() == -1)
     selection_model_.set_anchor(GetFirstSelectedRow());
-  NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
 
   // Remove the virtual views that are no longer needed.
   auto& virtual_children = GetViewAccessibility().virtual_children();
@@ -1217,7 +1216,6 @@ void TableView::SetSelectionModel(ui::ListSelectionModel new_selection) {
 
   focus_ring_->SchedulePaint();
   ScheduleUpdateAccessibilityFocusIfNeeded();
-  NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
   if (observer_)
     observer_->OnSelectionChanged();
 }
@@ -1657,13 +1655,17 @@ void TableView::UpdateAccessibilityFocus(
   int active_row = ModelToView(selection_model_.active());
   if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
     AXVirtualView* ax_row = GetVirtualAccessibilityRow(active_row);
-    if (ax_row)
+    if (ax_row) {
+      ax_row->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
       GetViewAccessibility().OverrideFocus(ax_row);
+    }
   } else {
     AXVirtualView* ax_cell =
         GetVirtualAccessibilityCell(active_row, active_visible_column_index_);
-    if (ax_cell)
+    if (ax_cell) {
+      ax_cell->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
       GetViewAccessibility().OverrideFocus(ax_cell);
+    }
   }
 }
 
