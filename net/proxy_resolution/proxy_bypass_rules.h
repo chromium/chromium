@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/strings/string_piece_forward.h"
 #include "net/base/net_export.h"
 #include "net/base/scheme_host_port_matcher.h"
 #include "net/base/scheme_host_port_matcher_rule.h"
@@ -84,7 +85,7 @@ class NET_EXPORT ProxyBypassRules {
   // Returns true if the rule was successfully added.
   //
   // For the supported format of bypass rules see //net/docs/proxy.md.
-  bool AddRuleFromString(const std::string& raw);
+  bool AddRuleFromString(base::StringPiece raw);
 
   // Appends rules that "cancels out" the implicit bypass rules. See
   // GetRulesToSubtractImplicit() for details.
