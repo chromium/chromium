@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -23,7 +24,9 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
         content_types.begin(), content_types.end(),
         std::back_inserter(requests_), [&](auto& content_type) {
           return std::make_unique<permissions::MockPermissionRequest>(
-              permissions::PermissionUtil::GetPermissionString(content_type),
+              base::UTF8ToUTF16(
+                  permissions::PermissionUtil::GetPermissionString(
+                      content_type)),
               content_type);
         });
     std::transform(requests_.begin(), requests_.end(),
@@ -31,7 +34,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
                    [](auto& req) { return req.get(); });
   }
 
-  TestDelegate(const GURL& origin, const std::vector<std::string> names) {
+  TestDelegate(const GURL& origin, const std::vector<std::u16string> names) {
     std::transform(
         names.begin(), names.end(), std::back_inserter(requests_),
         [&](auto& name) {
@@ -68,7 +71,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
 };
 
 TEST_F(PermissionPromptBubbleViewTest, AccessibleTitleMentionsPermissions) {
-  TestDelegate delegate(GURL("https://test.origin"), {"foo", "bar"});
+  TestDelegate delegate(GURL("https://test.origin"), {u"foo", u"bar"});
   auto bubble = std::make_unique<PermissionPromptBubbleView>(
       nullptr, &delegate, base::TimeTicks::Now(),
       PermissionPromptStyle::kBubbleOnly);
@@ -80,7 +83,7 @@ TEST_F(PermissionPromptBubbleViewTest, AccessibleTitleMentionsPermissions) {
 }
 
 TEST_F(PermissionPromptBubbleViewTest, AccessibleTitleMentionsOrigin) {
-  TestDelegate delegate(GURL("https://test.origin"), {"foo", "bar"});
+  TestDelegate delegate(GURL("https://test.origin"), {u"foo", u"bar"});
   auto bubble = std::make_unique<PermissionPromptBubbleView>(
       nullptr, &delegate, base::TimeTicks::Now(),
       PermissionPromptStyle::kBubbleOnly);
@@ -93,7 +96,7 @@ TEST_F(PermissionPromptBubbleViewTest, AccessibleTitleMentionsOrigin) {
 TEST_F(PermissionPromptBubbleViewTest,
        AccessibleTitleDoesNotMentionTooManyPermissions) {
   TestDelegate delegate(GURL("https://test.origin"),
-                        {"foo", "bar", "baz", "quxx"});
+                        {u"foo", u"bar", u"baz", u"quxx"});
   auto bubble = std::make_unique<PermissionPromptBubbleView>(
       nullptr, &delegate, base::TimeTicks::Now(),
       PermissionPromptStyle::kBubbleOnly);
@@ -107,7 +110,7 @@ TEST_F(PermissionPromptBubbleViewTest,
 
 TEST_F(PermissionPromptBubbleViewTest,
        AccessibleTitleFileSchemeMentionsThisFile) {
-  TestDelegate delegate(GURL("file:///tmp/index.html"), {"foo", "bar"});
+  TestDelegate delegate(GURL("file:///tmp/index.html"), {u"foo", u"bar"});
   auto bubble = std::make_unique<PermissionPromptBubbleView>(
       nullptr, &delegate, base::TimeTicks::Now(),
       PermissionPromptStyle::kBubbleOnly);

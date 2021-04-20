@@ -220,9 +220,6 @@ class GeolocationBrowserTest : public InProcessBrowserTest {
   // successfully in JavaScript.
   bool SetPositionAndWaitUntilUpdated(double latitude, double longitude);
 
-  // Convenience method to look up the number of queued permission requests.
-  int GetRequestQueueSize(permissions::PermissionRequestManager* manager);
-
  protected:
   // The values used for the position override.
   double fake_latitude_ = 1.23;
@@ -391,11 +388,6 @@ bool GeolocationBrowserTest::SetPositionAndWaitUntilUpdated(double latitude,
   if (!dom_message_queue.WaitForMessage(&result))
     return false;
   return result == "\"geoposition-updated\"";
-}
-
-int GeolocationBrowserTest::GetRequestQueueSize(
-    permissions::PermissionRequestManager* manager) {
-  return static_cast<int>(manager->Requests().size());
 }
 
 // Tests ----------------------------------------------------------------------

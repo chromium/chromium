@@ -91,11 +91,6 @@ class PerDeviceProvisioningPermissionRequest
             GetOrigin(), url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
   }
 
-  std::u16string GetMessageTextFragment() const final {
-    return l10n_util::GetStringUTF16(
-        IDS_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_FRAGMENT);
-  }
-
   GURL GetOrigin() const final { return origin_.GetURL(); }
 
   void PermissionGranted(bool is_one_time) final {

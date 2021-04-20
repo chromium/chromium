@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/strings/utf_string_conversions.h"
 #include "components/permissions/request_type.h"
 
 #if defined(OS_ANDROID)
@@ -18,68 +17,62 @@
 namespace permissions {
 
 MockPermissionRequest::MockPermissionRequest()
-    : MockPermissionRequest("test",
-                            "button",
-                            "button",
+    : MockPermissionRequest(u"test",
                             GURL("http://www.google.com"),
                             RequestType::kNotifications,
                             PermissionRequestGestureType::UNKNOWN,
                             ContentSettingsType::NOTIFICATIONS) {}
 
-MockPermissionRequest::MockPermissionRequest(const std::string& text)
+MockPermissionRequest::MockPermissionRequest(const std::u16string& text)
     : MockPermissionRequest(text,
-                            "button",
-                            "button",
                             GURL("http://www.google.com"),
                             RequestType::kNotifications,
                             PermissionRequestGestureType::UNKNOWN,
                             ContentSettingsType::NOTIFICATIONS) {}
 
 MockPermissionRequest::MockPermissionRequest(
-    const std::string& text,
+    const std::u16string& text,
     RequestType request_type,
     PermissionRequestGestureType gesture_type)
     : MockPermissionRequest(text,
-                            "button",
-                            "button",
                             GURL("http://www.google.com"),
                             request_type,
                             gesture_type,
                             ContentSettingsType::NOTIFICATIONS) {}
 
-MockPermissionRequest::MockPermissionRequest(const std::string& text,
+MockPermissionRequest::MockPermissionRequest(const std::u16string& text,
                                              RequestType request_type,
                                              const GURL& url)
     : MockPermissionRequest(text,
-                            "button",
-                            "button",
                             url,
                             request_type,
                             PermissionRequestGestureType::UNKNOWN,
                             ContentSettingsType::NOTIFICATIONS) {}
 
-MockPermissionRequest::MockPermissionRequest(const std::string& text,
-                                             const std::string& accept_label,
-                                             const std::string& deny_label)
-    : MockPermissionRequest(text,
-                            accept_label,
-                            deny_label,
-                            GURL("http://www.google.com"),
-                            RequestType::kNotifications,
-                            PermissionRequestGestureType::UNKNOWN,
-                            ContentSettingsType::NOTIFICATIONS) {}
-
 MockPermissionRequest::MockPermissionRequest(
-    const std::string& text,
+    const std::u16string& text,
     ContentSettingsType content_settings_type)
     : MockPermissionRequest(
           text,
-          "button",
-          "button",
           GURL("http://www.google.com"),
           permissions::ContentSettingsTypeToRequestType(content_settings_type),
           PermissionRequestGestureType::UNKNOWN,
           content_settings_type) {}
+
+MockPermissionRequest::MockPermissionRequest(
+    const std::u16string& text,
+    const GURL& origin,
+    RequestType request_type,
+    PermissionRequestGestureType gesture_type,
+    ContentSettingsType content_settings_type)
+    : granted_(false),
+      cancelled_(false),
+      finished_(false),
+      request_type_(request_type),
+      gesture_type_(gesture_type),
+      content_settings_type_(content_settings_type),
+      text_(text),
+      origin_(origin.GetOrigin()) {}
 
 MockPermissionRequest::~MockPermissionRequest() = default;
 
@@ -91,11 +84,11 @@ RequestType MockPermissionRequest::GetRequestType() const {
 std::u16string MockPermissionRequest::GetMessageText() const {
   return text_;
 }
-#endif
-
+#else
 std::u16string MockPermissionRequest::GetMessageTextFragment() const {
   return text_;
 }
+#endif
 
 GURL MockPermissionRequest::GetOrigin() const {
   return origin_;
@@ -138,24 +131,10 @@ bool MockPermissionRequest::finished() {
   return finished_;
 }
 
-MockPermissionRequest::MockPermissionRequest(
-    const std::string& text,
-    const std::string& accept_label,
-    const std::string& deny_label,
-    const GURL& origin,
-    RequestType request_type,
-    PermissionRequestGestureType gesture_type,
-    ContentSettingsType content_settings_type)
-    : granted_(false),
-      cancelled_(false),
-      finished_(false),
-      request_type_(request_type),
-      gesture_type_(gesture_type),
-      content_settings_type_(content_settings_type) {
-  text_ = base::UTF8ToUTF16(text);
-  accept_label_ = base::UTF8ToUTF16(accept_label);
-  deny_label_ = base::UTF8ToUTF16(deny_label);
-  origin_ = origin.GetOrigin();
+std::unique_ptr<MockPermissionRequest>
+MockPermissionRequest::CreateDuplicateRequest() const {
+  return std::make_unique<MockPermissionRequest>(
+      text_, origin_, request_type_, gesture_type_, content_settings_type_);
 }
 
 }  // namespace permissions

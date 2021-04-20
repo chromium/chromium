@@ -17,18 +17,20 @@ enum class RequestType;
 class MockPermissionRequest : public PermissionRequest {
  public:
   MockPermissionRequest();
-  explicit MockPermissionRequest(const std::string& text);
-  MockPermissionRequest(const std::string& text,
+  explicit MockPermissionRequest(const std::u16string& text);
+  MockPermissionRequest(const std::u16string& text,
                         RequestType request_type,
                         PermissionRequestGestureType gesture_type);
-  MockPermissionRequest(const std::string& text,
+  MockPermissionRequest(const std::u16string& text,
                         RequestType request_type,
                         const GURL& url);
-  MockPermissionRequest(const std::string& text,
-                        const std::string& accept_label,
-                        const std::string& deny_label);
-  MockPermissionRequest(const std::string& text,
+  MockPermissionRequest(const std::u16string& text,
                         ContentSettingsType content_settings_type_);
+  MockPermissionRequest(const std::u16string& text,
+                        const GURL& url,
+                        RequestType request_type,
+                        PermissionRequestGestureType gesture_type,
+                        ContentSettingsType content_settings_type);
 
   ~MockPermissionRequest() override;
 
@@ -36,8 +38,9 @@ class MockPermissionRequest : public PermissionRequest {
 
 #if defined(OS_ANDROID)
   std::u16string GetMessageText() const override;
-#endif
+#else
   std::u16string GetMessageTextFragment() const override;
+#endif
   GURL GetOrigin() const override;
 
   void PermissionGranted(bool is_one_time) override;
@@ -51,14 +54,9 @@ class MockPermissionRequest : public PermissionRequest {
   bool cancelled();
   bool finished();
 
+  std::unique_ptr<MockPermissionRequest> CreateDuplicateRequest() const;
+
  private:
-  MockPermissionRequest(const std::string& text,
-                        const std::string& accept_label,
-                        const std::string& deny_label,
-                        const GURL& url,
-                        RequestType request_type,
-                        PermissionRequestGestureType gesture_type,
-                        ContentSettingsType content_settings_type);
   bool granted_;
   bool cancelled_;
   bool finished_;
@@ -67,8 +65,6 @@ class MockPermissionRequest : public PermissionRequest {
   ContentSettingsType content_settings_type_;
 
   std::u16string text_;
-  std::u16string accept_label_;
-  std::u16string deny_label_;
   GURL origin_;
 };
 

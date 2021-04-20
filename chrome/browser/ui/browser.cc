@@ -2026,7 +2026,7 @@ void Browser::RegisterProtocolHandler(
     permission_request_manager->AddRequest(
         requesting_frame,
         new RegisterProtocolHandlerPermissionRequest(
-            registry, handler, url, user_gesture, std::move(fullscreen_block)));
+            registry, handler, url, std::move(fullscreen_block)));
   }
 }
 

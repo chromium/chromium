@@ -198,7 +198,7 @@ class ContextualNotificationPermissionUiSelectorTest : public testing::Test {
       base::Optional<QuietUiReason> quiet_ui_reason,
       base::Optional<WarningReason> warning_reason) {
     permissions::MockPermissionRequest mock_request(
-        std::string(), permissions::RequestType::kNotifications, origin);
+        std::u16string(), permissions::RequestType::kNotifications, origin);
     base::MockCallback<
         ContextualNotificationPermissionUiSelector::DecisionMadeCallback>
         mock_callback;

@@ -69,16 +69,6 @@ constexpr char kAbusiveNotificationContentWarningMessage[] =
 
 namespace {
 
-bool IsMessageTextEqual(PermissionRequest* a, PermissionRequest* b) {
-  if (a == b)
-    return true;
-  if (a->GetMessageTextFragment() == b->GetMessageTextFragment() &&
-      a->GetOrigin() == b->GetOrigin()) {
-    return true;
-  }
-  return false;
-}
-
 bool IsMediaRequest(RequestType type) {
 #if !defined(OS_ANDROID)
   if (type == RequestType::kCameraPanTiltZoom)
@@ -704,11 +694,11 @@ void PermissionRequestManager::CleanUpRequests() {
 PermissionRequest* PermissionRequestManager::GetExistingRequest(
     PermissionRequest* request) {
   for (PermissionRequest* existing_request : requests_) {
-    if (IsMessageTextEqual(existing_request, request))
+    if (request->IsDuplicateOf(existing_request))
       return existing_request;
   }
   for (PermissionRequest* queued_request : queued_requests_) {
-    if (IsMessageTextEqual(queued_request, request))
+    if (request->IsDuplicateOf(queued_request))
       return queued_request;
   }
   return nullptr;

@@ -35,11 +35,11 @@ std::u16string DownloadPermissionRequest::GetMessageText() const {
                                       /*scheme_display = */ url_formatter::
                                           SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 }
-#endif
-
+#else
 std::u16string DownloadPermissionRequest::GetMessageTextFragment() const {
   return l10n_util::GetStringUTF16(IDS_MULTI_DOWNLOAD_PERMISSION_FRAGMENT);
 }
+#endif
 
 GURL DownloadPermissionRequest::GetOrigin() const {
   return request_origin_.GetURL();

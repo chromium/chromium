@@ -107,7 +107,6 @@ class PermissionPromptBubbleViewBrowserTest
 
   permissions::PermissionRequest* MakeRegisterProtocolHandlerRequest() {
     std::string protocol = "mailto";
-    bool user_gesture = true;
     ProtocolHandler handler =
         ProtocolHandler::CreateProtocolHandler(protocol, GetTestUrl());
     ProtocolHandlerRegistry* registry =
@@ -115,8 +114,7 @@ class PermissionPromptBubbleViewBrowserTest
             browser()->profile());
     // Deleted in RegisterProtocolHandlerPermissionRequest::RequestFinished().
     return new RegisterProtocolHandlerPermissionRequest(
-        registry, handler, GetTestUrl(), user_gesture,
-        base::ScopedClosureRunner());
+        registry, handler, GetTestUrl(), base::ScopedClosureRunner());
   }
 
   void AddRequestForContentSetting(const std::string& name) {

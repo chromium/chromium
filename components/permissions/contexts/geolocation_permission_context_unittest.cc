@@ -424,8 +424,12 @@ std::u16string GeolocationPermissionContextTests::GetPromptText() {
   PermissionRequestManager* manager =
       PermissionRequestManager::FromWebContents(web_contents());
   PermissionRequest* request = manager->Requests().front();
+#if defined(OS_ANDROID)
+  return request->GetMessageText();
+#else
   return base::ASCIIToUTF16(request->GetOrigin().spec()) +
          request->GetMessageTextFragment();
+#endif
 }
 
 // Tests ----------------------------------------------------------------------

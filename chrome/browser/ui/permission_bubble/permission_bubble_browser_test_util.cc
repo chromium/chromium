@@ -49,9 +49,8 @@ void PermissionBubbleBrowserTest::SetUpOnMainThread() {
   ExtensionBrowserTest::SetUpOnMainThread();
 
   // Add a single permission request.
-  requests_.push_back(std::make_unique<permissions::MockPermissionRequest>(
-      "Request 1", l10n_util::GetStringUTF8(IDS_PERMISSION_ALLOW),
-      l10n_util::GetStringUTF8(IDS_PERMISSION_DENY)));
+  requests_.push_back(
+      std::make_unique<permissions::MockPermissionRequest>(u"Request 1"));
 
   std::vector<permissions::PermissionRequest*> raw_requests;
   raw_requests.push_back(requests_[0].get());

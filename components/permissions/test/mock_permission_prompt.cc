@@ -46,15 +46,15 @@ MockPermissionPrompt::MockPermissionPrompt(MockPermissionPromptFactory* factory,
                                            Delegate* delegate)
     : factory_(factory), delegate_(delegate) {
   for (const PermissionRequest* request : delegate_->Requests()) {
-    // The actual prompt will call these, so test they're sane.
-    EXPECT_FALSE(request->GetMessageTextFragment().empty());
     RequestType request_type = request->GetRequestType();
+    // The actual prompt will call these, so test they're sane.
 #if defined(OS_ANDROID)
     // For kStorageAccess, the prompt itself calculates the message text.
     if (request_type != permissions::RequestType::kStorageAccess)
       EXPECT_FALSE(request->GetMessageText().empty());
     EXPECT_NE(0, permissions::GetIconId(request_type));
 #else
+    EXPECT_FALSE(request->GetMessageTextFragment().empty());
     EXPECT_FALSE(permissions::GetIconId(request_type).is_empty());
 #endif
   }

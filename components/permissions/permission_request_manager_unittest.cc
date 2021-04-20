@@ -37,34 +37,33 @@ class PermissionRequestManagerTest
       public ::testing::WithParamInterface<bool> {
  public:
   PermissionRequestManagerTest()
-      : content::RenderViewHostTestHarness(),
-        request1_("test1",
+      : request1_(u"test1",
                   RequestType::kDiskQuota,
                   PermissionRequestGestureType::GESTURE),
-        request2_("test2",
+        request2_(u"test2",
                   RequestType::kMultipleDownloads,
                   PermissionRequestGestureType::NO_GESTURE),
-        request_mic_("mic",
+        request_mic_(u"mic",
                      RequestType::kMicStream,
                      PermissionRequestGestureType::NO_GESTURE),
-        request_camera_("cam",
+        request_camera_(u"cam",
                         RequestType::kCameraStream,
                         PermissionRequestGestureType::NO_GESTURE),
 #if !defined(OS_ANDROID)
-        request_ptz_("ptz",
+        request_ptz_(u"ptz",
                      RequestType::kCameraPanTiltZoom,
                      PermissionRequestGestureType::NO_GESTURE),
 #endif
-        iframe_request_same_domain_("iframe",
+        iframe_request_same_domain_(u"iframe",
                                     RequestType::kNotifications,
                                     GURL("http://www.google.com/some/url")),
-        iframe_request_other_domain_("iframe",
+        iframe_request_other_domain_(u"iframe",
                                      RequestType::kGeolocation,
                                      GURL("http://www.youtube.com")),
-        iframe_request_camera_other_domain_("iframe",
+        iframe_request_camera_other_domain_(u"iframe",
                                             RequestType::kCameraStream,
                                             GURL("http://www.youtube.com")),
-        iframe_request_mic_other_domain_("iframe",
+        iframe_request_mic_other_domain_(u"iframe",
                                          RequestType::kMicStream,
                                          GURL("http://www.youtube.com")) {
     feature_list_.InitWithFeatureState(permissions::features::kPermissionChip,
@@ -483,33 +482,33 @@ TEST_P(PermissionRequestManagerTest, DuplicateRequest) {
   WaitForBubbleToBeShown();
   manager_->AddRequest(web_contents()->GetMainFrame(), &request2_);
 
-  MockPermissionRequest dupe_request("test1");
-  manager_->AddRequest(web_contents()->GetMainFrame(), &dupe_request);
-  EXPECT_FALSE(dupe_request.finished());
+  auto dupe_request = request1_.CreateDuplicateRequest();
+  manager_->AddRequest(web_contents()->GetMainFrame(), dupe_request.get());
+  EXPECT_FALSE(dupe_request->finished());
   EXPECT_FALSE(request1_.finished());
 
-  MockPermissionRequest dupe_request2("test2");
-  manager_->AddRequest(web_contents()->GetMainFrame(), &dupe_request2);
-  EXPECT_FALSE(dupe_request2.finished());
+  auto dupe_request2 = request2_.CreateDuplicateRequest();
+  manager_->AddRequest(web_contents()->GetMainFrame(), dupe_request2.get());
+  EXPECT_FALSE(dupe_request2->finished());
   EXPECT_FALSE(request2_.finished());
 
   WaitForBubbleToBeShown();
   Accept();
   if (GetParam()) {
-    EXPECT_TRUE(dupe_request2.finished());
+    EXPECT_TRUE(dupe_request2->finished());
     EXPECT_TRUE(request2_.finished());
   } else {
-    EXPECT_TRUE(dupe_request.finished());
+    EXPECT_TRUE(dupe_request->finished());
     EXPECT_TRUE(request1_.finished());
   }
 
   WaitForBubbleToBeShown();
   Accept();
   if (GetParam()) {
-    EXPECT_TRUE(dupe_request.finished());
+    EXPECT_TRUE(dupe_request->finished());
     EXPECT_TRUE(request1_.finished());
   } else {
-    EXPECT_TRUE(dupe_request2.finished());
+    EXPECT_TRUE(dupe_request2->finished());
     EXPECT_TRUE(request2_.finished());
   }
 }
@@ -765,7 +764,7 @@ TEST_P(PermissionRequestManagerTest, UiSelectorUsedForNotifications) {
     MockNotificationPermissionUiSelector::CreateForManager(
         manager_, test.quiet_ui_reason, test.async);
 
-    MockPermissionRequest request("foo", RequestType::kNotifications,
+    MockPermissionRequest request(u"foo", RequestType::kNotifications,
                                   PermissionRequestGestureType::GESTURE);
 
     manager_->AddRequest(web_contents()->GetMainFrame(), &request);
@@ -787,14 +786,14 @@ TEST_P(PermissionRequestManagerTest,
   manager_->clear_notification_permission_ui_selector_for_testing();
   MockNotificationPermissionUiSelector::CreateForManager(
       manager_, QuietUiReason::kEnabledInPrefs, true);
-  MockPermissionRequest request1("request1", RequestType::kNotifications,
+  MockPermissionRequest request1(u"request1", RequestType::kNotifications,
                                  PermissionRequestGestureType::GESTURE);
   manager_->AddRequest(web_contents()->GetMainFrame(), &request1);
   WaitForBubbleToBeShown();
   EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
   Accept();
 
-  MockPermissionRequest request2("request2", RequestType::kNotifications,
+  MockPermissionRequest request2(u"request2", RequestType::kNotifications,
                                  PermissionRequestGestureType::GESTURE);
   manager_->clear_notification_permission_ui_selector_for_testing();
   MockNotificationPermissionUiSelector::CreateForManager(
@@ -860,7 +859,7 @@ TEST_P(PermissionRequestManagerTest, MultipleUiSelectors) {
           test.simulate_delayed_decision[i]);
     }
 
-    MockPermissionRequest request("foo", RequestType::kNotifications,
+    MockPermissionRequest request(u"foo", RequestType::kNotifications,
                                   PermissionRequestGestureType::GESTURE);
 
     manager_->AddRequest(web_contents()->GetMainFrame(), &request);
@@ -918,7 +917,7 @@ TEST_P(PermissionRequestManagerTest, SelectorsPredictionLikelihood) {
           false /* async */, test.prediction_likelihoods[i]);
     }
 
-    MockPermissionRequest request("foo", RequestType::kNotifications,
+    MockPermissionRequest request(u"foo", RequestType::kNotifications,
                                   PermissionRequestGestureType::GESTURE);
 
     manager_->AddRequest(web_contents()->GetMainFrame(), &request);
