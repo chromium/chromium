@@ -35,7 +35,7 @@ import {NavigatorDelegateImpl, PdfNavigator, WindowOpenDisposition} from './navi
 import {OpenPdfParamsParser} from './open_pdf_params_parser.js';
 import {DeserializeKeyEvent, LoadState, SerializeKeyEvent} from './pdf_scripting_api.js';
 import {PDFViewerBaseElement} from './pdf_viewer_base.js';
-import {DestinationMessageData, DocumentDimensionsMessageData, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
+import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 
 
 /**
@@ -394,6 +394,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   handleToolbarKeyEvent_(e) {
+    // TODO(thestig): Should this use hasCtrlModifier() or stay as is?
     if (e.key === '\\' && e.ctrlKey) {
       this.getToolbar_().fitToggle();
     }
@@ -419,12 +420,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
     if (document.fullscreenElement !== null) {
       // Disable zoom shortcuts in Presentation mode.
-      let hasModifier = e.ctrlKey;
-      // <if expr="is_macosx">
-      hasModifier = e.metaKey;
-      // </if>
       // Handle '+' and '-' buttons (both in the numpad and elsewhere).
-      if (hasModifier && (e.key === '=' || e.key === '-' || e.key === '+')) {
+      if (hasCtrlModifier(e) &&
+          (e.key === '=' || e.key === '-' || e.key === '+')) {
         e.preventDefault();
       }
 
@@ -434,18 +432,22 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
     switch (e.key) {
       case 'a':
-        if (e.ctrlKey || e.metaKey) {
+        if (hasCtrlModifier(e)) {
           this.pluginController_.selectAll();
           // Since we do selection ourselves.
           e.preventDefault();
         }
         return;
       case '[':
+        // Do not use hasCtrlModifier() here, since Command + [ is already
+        // taken by the "go back to the previous webpage" action.
         if (e.ctrlKey) {
           this.rotateCounterclockwise();
         }
         return;
       case ']':
+        // Do not use hasCtrlModifier() here, since Command + ] is already
+        // taken by the "go forward to the next webpage" action.
         if (e.ctrlKey) {
           this.rotateClockwise();
         }

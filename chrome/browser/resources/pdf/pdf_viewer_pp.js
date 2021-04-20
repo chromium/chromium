@@ -19,7 +19,7 @@ import {MessageData, PluginController, PrintPreviewParams} from './controller.js
 import {ViewerErrorScreenElement} from './elements/viewer-error-screen.js';
 import {DeserializeKeyEvent, LoadState, SerializeKeyEvent} from './pdf_scripting_api.js';
 import {PDFViewerBaseElement} from './pdf_viewer_base.js';
-import {DestinationMessageData, DocumentDimensionsMessageData, MessageObject, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
+import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, MessageObject, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 import {ToolbarManager} from './toolbar_manager.js';
 
 class PDFViewerPPElement extends PDFViewerBaseElement {
@@ -114,7 +114,7 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
       case 'Escape':
         break;  // Ensure escape falls through to the print-preview handler.
       case 'a':
-        if (e.ctrlKey || e.metaKey) {
+        if (hasCtrlModifier(e)) {
           this.pluginController_.selectAll();
           // Since we do selection ourselves.
           e.preventDefault();
