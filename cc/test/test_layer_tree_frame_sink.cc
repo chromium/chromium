@@ -205,7 +205,8 @@ void TestLayerTreeFrameSink::SubmitCompositorFrame(viz::CompositorFrame frame,
   }
 }
 
-void TestLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack) {
+void TestLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
+                                                FrameSkippedReason reason) {
   DCHECK(!ack.has_damage);
   DCHECK(ack.frame_id.IsSequenceValid());
   support_->DidNotProduceFrame(ack);

@@ -125,13 +125,16 @@ enum class PowerModeForUma {
   kNonWebActivity = 5,
   kBackground = 6,
   kCharging = 7,
-  kMaxValue = kCharging,
+  kNopAnimation = 8,
+  kMaxValue = kNopAnimation,
 };
 
 PowerModeForUma GetPowerModeForUma(power_scheduler::PowerMode power_mode) {
   switch (power_mode) {
     case power_scheduler::PowerMode::kIdle:
       return PowerModeForUma::kIdle;
+    case power_scheduler::PowerMode::kNopAnimation:
+      return PowerModeForUma::kNopAnimation;
     case power_scheduler::PowerMode::kAudible:
       return PowerModeForUma::kAudible;
     case power_scheduler::PowerMode::kLoading:

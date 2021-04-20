@@ -411,7 +411,8 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
 }
 
 void SynchronousLayerTreeFrameSink::DidNotProduceFrame(
-    const viz::BeginFrameAck& ack) {
+    const viz::BeginFrameAck& ack,
+    cc::FrameSkippedReason reason) {
   // We do not call CompositorFrameSink::DidNotProduceFrame here because
   // submission of frame depends on DemandDraw calls. DidNotProduceFrame will be
   // called there or during OnBeginFrame as fallback.

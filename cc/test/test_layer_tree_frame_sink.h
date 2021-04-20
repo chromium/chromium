@@ -101,7 +101,8 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   void SubmitCompositorFrame(viz::CompositorFrame frame,
                              bool hit_test_data_changed,
                              bool show_hit_test_borders) override;
-  void DidNotProduceFrame(const viz::BeginFrameAck& ack) override;
+  void DidNotProduceFrame(const viz::BeginFrameAck& ack,
+                          FrameSkippedReason reason) override;
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion buffer,
                                const viz::SharedBitmapId& id) override;
   void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override;

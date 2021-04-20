@@ -118,7 +118,8 @@ void DirectLayerTreeFrameSink::SubmitCompositorFrame(
 }
 
 void DirectLayerTreeFrameSink::DidNotProduceFrame(
-    const viz::BeginFrameAck& ack) {
+    const viz::BeginFrameAck& ack,
+    cc::FrameSkippedReason reason) {
   DCHECK(!ack.has_damage);
   DCHECK(ack.frame_id.IsSequenceValid());
   support_->DidNotProduceFrame(ack);
@@ -183,7 +184,8 @@ void DirectLayerTreeFrameSink::OnBeginFrame(
   if (!needs_begin_frames_) {
     // OnBeginFrame() can be called just to deliver presentation feedback, so
     // report that we didn't use this BeginFrame.
-    DidNotProduceFrame(viz::BeginFrameAck(args, false));
+    DidNotProduceFrame(viz::BeginFrameAck(args, false),
+                       cc::FrameSkippedReason::kNoDamage);
     return;
   }
 

@@ -67,6 +67,32 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeVoter {
   Delegate* delegate_;
 };
 
+// Tracks the BeginFrame signal as well as produced and skipped frames to vote
+// either for the kAnimation, kNopAnimation, or kIdle modes.
+class COMPONENT_EXPORT(POWER_SCHEDULER) FrameProductionPowerModeVoter {
+ public:
+  explicit FrameProductionPowerModeVoter(const char* name);
+  ~FrameProductionPowerModeVoter();
+
+  FrameProductionPowerModeVoter(const FrameProductionPowerModeVoter&) = delete;
+  FrameProductionPowerModeVoter& operator=(
+      const FrameProductionPowerModeVoter&) = delete;
+
+  // Should be called when starting or stoping observing BeginFrames.
+  void OnNeedsBeginFramesChanged(bool needs_begin_frames);
+  // Should be called when a frame is produced.
+  void OnFrameProduced();
+  // Should be called when a frame is skipped. |frame_completed| should be true
+  // if the frame production resulted in no visible updates and was completed on
+  // time. In other cases (e.g. if the deadline was missed and frame production
+  // continues for the next vsync), it should be false.
+  void OnFrameSkipped(bool frame_completed);
+
+ private:
+  std::unique_ptr<PowerModeVoter> voter_;
+  int consecutive_frames_skipped = 0;
+};
+
 }  // namespace power_scheduler
 
 #endif  // COMPONENTS_POWER_SCHEDULER_POWER_MODE_VOTER_H_

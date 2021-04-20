@@ -19,13 +19,16 @@ enum class PowerMode {
   // Default mode: none of the other use cases were detected.
   kIdle,
 
+  // The vsync signal is observed, but no frames are produced/submitted.
+  kNopAnimation,
+
   // The process is playing audio.
   kAudible,
 
   // A page or tab associated with the process is loading.
   kLoading,
 
-  // A surface rendered by the process is animating.
+  // A surface rendered by the process is animating and producing frames.
   kAnimation,
 
   // The process is responding to user input.

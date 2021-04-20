@@ -99,7 +99,7 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrame(
 void LayerTreeFrameSinkHolder::DidNotProduceFrame(
     const viz::BeginFrameAck& ack) {
   DCHECK(!is_lost_);
-  frame_sink_->DidNotProduceFrame(ack);
+  frame_sink_->DidNotProduceFrame(ack, cc::FrameSkippedReason::kNoDamage);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

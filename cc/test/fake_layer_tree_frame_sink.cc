@@ -81,8 +81,8 @@ void FakeLayerTreeFrameSink::SubmitCompositorFrame(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FakeLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack) {
-}
+void FakeLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
+                                                FrameSkippedReason reason) {}
 
 void FakeLayerTreeFrameSink::DidAllocateSharedBitmap(
     base::ReadOnlySharedMemoryRegion region,
