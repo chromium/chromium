@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Main crossOriginIsolated case: assert_equals: expected "crossOriginIsolated" but got "not isolated"
+PASS Missing HTTPS:
+PASS Missing COOP:same-origin:
+PASS Report-only:
+FAIL Report-only + enforced: assert_equals: expected "crossOriginIsolated" but got "not isolated"
+Harness: the test ran to completion.
+
