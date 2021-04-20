@@ -369,7 +369,7 @@ export class Modes {
   }
 
   /**
-   * Creates and updates new current mode object.
+   * Creates and updates current mode object.
    * @param {!Mode} mode Classname of mode to be updated.
    * @param {!ModeFactory} factory The factory ready for producing mode capture
    *     object.
@@ -382,7 +382,7 @@ export class Modes {
    */
   async updateMode(mode, factory, stream, facing, deviceId, captureResolution) {
     if (this.current !== null) {
-      await this.current.stopCapture();
+      await this.current.clear();
       await this.disableSaveMetadata_();
     }
     this.updateModeUI_(mode);
@@ -392,6 +392,18 @@ export class Modes {
           deviceId, stream, facing, captureResolution);
     }
     await this.updateSaveMetadata_();
+  }
+
+  /**
+   * Clears everything when mode is not needed anymore.
+   * @return {!Promise}
+   */
+  async clear() {
+    if (this.current !== null) {
+      await this.current.clear();
+      await this.disableSaveMetadata_();
+    }
+    this.current = null;
   }
 
   /**

@@ -243,12 +243,16 @@ export class PhotoFactory extends ModeFactory {
   /**
    * @override
    */
-  async prepareDevice(deviceOperator, constraints) {
-    const deviceId = assertString(constraints.video.deviceId.exact);
-    await deviceOperator.setCaptureIntent(
-        deviceId, cros.mojom.CaptureIntent.STILL_CAPTURE);
-    await deviceOperator.setStillCaptureResolution(
-        deviceId, assertInstanceof(this.captureResolution_, Resolution));
+  async prepareDevice(constraints, resolution) {
+    this.captureResolution_ = resolution;
+    const deviceOperator = await DeviceOperator.getInstance();
+    if (deviceOperator !== null) {
+      const deviceId = assertString(constraints.video.deviceId.exact);
+      await deviceOperator.setCaptureIntent(
+          deviceId, cros.mojom.CaptureIntent.STILL_CAPTURE);
+      await deviceOperator.setStillCaptureResolution(
+          deviceId, assertInstanceof(this.captureResolution_, Resolution));
+    }
   }
 
   /**

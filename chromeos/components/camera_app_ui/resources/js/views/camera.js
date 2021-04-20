@@ -662,7 +662,7 @@ export class Camera extends View {
           await this.endTake_();
         }
       } finally {
-        await this.preview_.close();
+        await this.stopStreams_();
       }
       return this.start_();
     })();
@@ -692,10 +692,7 @@ export class Camera extends View {
         }
         const factory = this.modes_.getModeFactory(mode);
         try {
-          factory.setCaptureResolution(captureR);
-          if (deviceOperator !== null) {
-            factory.prepareDevice(deviceOperator, constraints);
-          }
+          factory.prepareDevice(constraints, captureR);
 
           // Sets 2500 ms delay between screen resumed and open camera preview.
           // TODO(b/173679752): Removes this workaround after fix delay on
@@ -721,8 +718,8 @@ export class Camera extends View {
           nav.close(ViewName.WARNING, WarningType.NO_CAMERA);
           return true;
         } catch (e) {
-          factory.clear();
-          this.preview_.close();
+          await factory.clear();
+          await this.stopStreams_();
 
           let errorToReport = e;
           // Since OverconstrainedError is not an Error instance.
@@ -812,5 +809,16 @@ export class Camera extends View {
       this.perfLogger_.interrupt();
       return false;
     }
+  }
+
+  /**
+   * Stop extra stream and preview stream.
+   * @private
+   */
+  async stopStreams_() {
+    // Stopping preview will wait device close. Therefore, we clear
+    // mode before stopping preview to close extra stream first.
+    await this.modes_.clear();
+    await this.preview_.close();
   }
 }

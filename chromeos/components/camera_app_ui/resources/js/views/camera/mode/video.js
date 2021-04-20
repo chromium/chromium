@@ -3,7 +3,15 @@
 // found in the LICENSE file.
 
 import {AsyncJobQueue} from '../../../async_job_queue.js';
-import {assert, assertString} from '../../../chrome_util.js';
+import {
+  assert,
+  assertInstanceof,
+  assertString,
+} from '../../../chrome_util.js';
+import {
+  CaptureStream,
+  StreamManager,
+} from '../../../device/stream_manager.js';
 import * as dom from '../../../dom.js';
 // eslint-disable-next-line no-unused-vars
 import * as h264 from '../../../h264.js';
@@ -12,6 +20,7 @@ import * as loadTimeData from '../../../models/load_time_data.js';
 import {
   VideoSaver,  // eslint-disable-line no-unused-vars
 } from '../../../models/video_saver.js';
+import {DeviceOperator} from '../../../mojo/device_operator.js';
 import * as sound from '../../../sound.js';
 import * as state from '../../../state.js';
 import * as toast from '../../../toast.js';
@@ -163,12 +172,12 @@ export class VideoHandler {
  */
 export class Video extends ModeBase {
   /**
-   * @param {!MediaStream} stream
+   * @param {!CaptureStream} stream
    * @param {!Facing} facing
    * @param {!VideoHandler} handler
    */
   constructor(stream, facing, handler) {
-    super(stream, facing, null);
+    super(stream.stream, facing, null);
 
     /**
      * @const {!VideoHandler}
@@ -209,6 +218,20 @@ export class Video extends ModeBase {
      * Whether current recording ever paused/resumed before it ended.
      */
     this.everPaused_ = false;
+
+    /**
+     * @type {!CaptureStream}
+     * @private
+     */
+    this.captureStream_ = stream;
+  }
+
+  /**
+   * @override
+   */
+  async clear() {
+    await this.stopCapture();
+    await this.captureStream_.close();
   }
 
   /**
@@ -447,38 +470,65 @@ export class VideoFactory extends ModeFactory {
      * @private
      */
     this.handler_ = handler;
+
+    /**
+     * Stream for video capturing.
+     * @type {?CaptureStream}
+     * @private
+     */
+    this.captureStream_ = null;
   }
 
   /**
    * @override
    */
-  async prepareDevice(deviceOperator, constraints) {
+  async prepareDevice(constraints, resolution) {
+    this.captureResolution_ = resolution;
     const deviceId = assertString(constraints.video.deviceId.exact);
-    await deviceOperator.setCaptureIntent(
-        deviceId, cros.mojom.CaptureIntent.VIDEO_RECORD);
+    const deviceOperator = await DeviceOperator.getInstance();
+    if (deviceOperator !== null) {
+      await deviceOperator.setCaptureIntent(
+          deviceId, cros.mojom.CaptureIntent.VIDEO_RECORD);
 
-    let /** number */ minFrameRate = 0;
-    let /** number */ maxFrameRate = 0;
-    if (constraints.video && constraints.video.frameRate) {
-      const frameRate = constraints.video.frameRate;
-      if (frameRate.exact) {
-        minFrameRate = frameRate.exact;
-        maxFrameRate = frameRate.exact;
-      } else if (frameRate.min && frameRate.max) {
-        minFrameRate = frameRate.min;
-        maxFrameRate = frameRate.max;
+      let /** number */ minFrameRate = 0;
+      let /** number */ maxFrameRate = 0;
+      if (constraints.video && constraints.video.frameRate) {
+        const frameRate = constraints.video.frameRate;
+        if (frameRate.exact) {
+          minFrameRate = frameRate.exact;
+          maxFrameRate = frameRate.exact;
+        } else if (frameRate.min && frameRate.max) {
+          minFrameRate = frameRate.min;
+          maxFrameRate = frameRate.max;
+        }
+        // TODO(wtlee): To set the fps range to the default value, we should
+        // remove the frameRate from constraints instead of using incomplete
+        // range.
       }
-      // TODO(wtlee): To set the fps range to the default value, we should
-      // remove the frameRate from constraints instead of using incomplete
-      // range.
+      await deviceOperator.setFpsRange(deviceId, minFrameRate, maxFrameRate);
     }
-    await deviceOperator.setFpsRange(deviceId, minFrameRate, maxFrameRate);
+
+    const captureConstraints = {
+      audio: constraints.audio,
+      video: {
+        deviceId: constraints.video.deviceId,
+        frameRate: constraints.video.frameRate,
+      },
+    };
+    if (resolution !== null) {
+      captureConstraints.video.width = resolution.width;
+      captureConstraints.video.height = resolution.height;
+    }
+    this.captureStream_ =
+        await StreamManager.getInstance().openCaptureStream(captureConstraints);
   }
 
   /**
    * @override
    */
   produce_() {
-    return new Video(this.previewStream_, this.facing_, this.handler_);
+    return new Video(
+        assertInstanceof(this.captureStream_, CaptureStream), this.facing_,
+        this.handler_);
   }
 }
