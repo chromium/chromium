@@ -159,4 +159,24 @@ Polymer({
       }
     }
   },
+
+  /**
+   * Wraps i18n to return early if text is not yet defined. This prevents
+   * console errors since some of the strings are initially undefined. Variables
+   * like |cancelButtonTextId_| are initially undefined because they get piped
+   * by a 2-way data binding from the embedded multidevice-setup component. This
+   * does not affect the ui since these variables get defined shortly after the
+   * page is initialized. We purposely don't set some of these properties if the
+   * button is not expected to be shown in which case they will remain
+   * undefined.
+   * @param {string|undefined} text
+   * @return {string}
+   */
+  getButtonText_(text) {
+    if (!text) {
+      return '';
+    }
+
+    return this.i18n(text);
+  }
 });

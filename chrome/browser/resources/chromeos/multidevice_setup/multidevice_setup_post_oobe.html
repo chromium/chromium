@@ -27,15 +27,15 @@
     backward-button-text-id="{{backwardButtonTextId_}}">
   <cr-button id="backward-button"
       slot="backward-button" class="cancel-button">
-    [[i18n(backwardButtonTextId_)]]
+    [[getButtonText_(backwardButtonTextId_)]]
   </cr-button>
   <cr-button id="cancel-button"
       slot="cancel-button" class="cancel-button">
-    [[i18n(cancelButtonTextId_)]]
+    [[getButtonText_(cancelButtonTextId_)]]
   </cr-button>
   <cr-button id="forward-button"
       slot="forward-button" class="action-button"
       disabled$="[[forwardButtonDisabled_]]">
-    [[i18n(forwardButtonTextId_)]]
+    [[getButtonText_(forwardButtonTextId_)]]
   </cr-button>
 </multidevice-setup>
