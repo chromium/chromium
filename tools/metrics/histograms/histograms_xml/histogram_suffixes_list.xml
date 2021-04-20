@@ -8560,6 +8560,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Database for Feed v2 stream and content storage."/>
   <suffix name="GCMKeyStore" label="Databases for GCMKeyStore"/>
   <suffix name="ImageManager" label="Databases for ImageManager"/>
+  <suffix name="MerchantTrustSignalDatabase"
+      label="Database for Chrome merchant trust signals events."/>
   <suffix name="Metadata" label="Metadata of shared databases"/>
   <suffix name="NearbySharePublicCertificateDatabase"
       label="Database for Nearby Share public certificates."/>
