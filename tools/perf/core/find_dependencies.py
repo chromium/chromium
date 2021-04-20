@@ -194,7 +194,7 @@ class FindDependenciesCommand(command_line.OptparseCommand):
   @classmethod
   def AddCommandLineArgs(cls, parser, _):
     parser.add_option(
-        '-v', '--verbose', action='count', dest='verbosity',
+        '-v', '--verbose', action='count', dest='verbosity', default=0,
         help='Increase verbosity level (repeat as needed).')
 
     parser.add_option(

@@ -27,7 +27,7 @@ def ArgumentParser(standalone=False):
     all_output_formats.append('none')
   parser, group = _CreateTopLevelParser(standalone)
   parser.add_argument(
-      '-v', '--verbose', action='count', dest='verbosity',
+      '-v', '--verbose', action='count', dest='verbosity', default=0,
       help='Increase verbosity level (repeat as needed)')
   group.add_argument(
       '--output-format', action='append', dest='output_formats',

@@ -96,7 +96,7 @@ def main(args):
   parser.add_argument('--output-deps',
                       help=('Output dependencies to a json file'))
   parser.add_argument(
-        '-v', '--verbose', action='count', dest='verbosity',
+        '-v', '--verbose', action='count', dest='verbosity', default=0,
         help='Increase verbosity level (repeat as needed)')
 
   options = parser.parse_args(args)
