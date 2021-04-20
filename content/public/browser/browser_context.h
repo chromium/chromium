@@ -285,7 +285,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   static std::string CreateRandomMediaDeviceIDSalt();
 
   // Write a representation of this object into a trace.
-  void WriteIntoTracedValue(perfetto::TracedValue context);
+  void WriteIntoTrace(perfetto::TracedValue context);
 
   //////////////////////////////////////////////////////////////////////////////
   // The //content embedder can override the methods below to change or extend

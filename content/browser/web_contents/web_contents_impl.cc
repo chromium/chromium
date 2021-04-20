@@ -2068,7 +2068,7 @@ bool WebContentsImpl::HasActiveEffectivelyFullscreenVideo() {
          media_web_contents_observer_->HasActiveEffectivelyFullscreenVideo();
 }
 
-void WebContentsImpl::WriteIntoTracedValue(perfetto::TracedValue context) {
+void WebContentsImpl::WriteIntoTrace(perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("root_frame_tree_node_id", frame_tree_.root()->frame_tree_node_id());
 }

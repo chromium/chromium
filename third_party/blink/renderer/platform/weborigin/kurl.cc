@@ -954,7 +954,7 @@ bool KURL::IsSafeToSendToAnotherThread() const {
          (!inner_url_ || inner_url_->IsSafeToSendToAnotherThread());
 }
 
-void KURL::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void KURL::WriteIntoTrace(perfetto::TracedValue context) const {
   return perfetto::WriteIntoTracedValue(std::move(context), GetString());
 }
 

@@ -548,7 +548,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual std::string GetInfoForBrowserContextDestructionCrashReporting() = 0;
 
   // Write a representation of this object into a trace.
-  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
+  virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   // Ask the renderer process to dump its profiling data to disk. Invokes

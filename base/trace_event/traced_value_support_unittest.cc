@@ -17,7 +17,7 @@ struct RefCountedData : RefCounted<RefCountedData> {
  public:
   explicit RefCountedData(std::string data) : data_(data) {}
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const {
+  void WriteIntoTrace(perfetto::TracedValue context) const {
     std::move(context).WriteString(data_);
   }
 
@@ -32,7 +32,7 @@ struct WeakData {
  public:
   explicit WeakData(std::string data) : data_(data) {}
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const {
+  void WriteIntoTrace(perfetto::TracedValue context) const {
     std::move(context).WriteString(data_);
   }
 

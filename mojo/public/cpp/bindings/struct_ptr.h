@@ -111,7 +111,7 @@ class StructPtr {
 
   // If T is serialisable into trace, StructPtr<T> is also serialisable.
   template <class U = S>
-  perfetto::check_traced_value_support_t<U> WriteIntoTracedValue(
+  perfetto::check_traced_value_support_t<U> WriteIntoTrace(
       perfetto::TracedValue context) const {
     perfetto::WriteIntoTracedValue(std::move(context), ptr_);
   }
@@ -212,7 +212,7 @@ class InlinedStructPtr {
 
   // If T is serialisable into trace, StructPtr<T> is also serialisable.
   template <class U = S>
-  perfetto::check_traced_value_support_t<U> WriteIntoTracedValue(
+  perfetto::check_traced_value_support_t<U> WriteIntoTrace(
       perfetto::TracedValue context) const {
     if (is_null()) {
       std::move(context).WritePointer(nullptr);

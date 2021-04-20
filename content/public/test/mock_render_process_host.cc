@@ -465,8 +465,7 @@ MockRenderProcessHost::GetInfoForBrowserContextDestructionCrashReporting() {
   return std::string();
 }
 
-void MockRenderProcessHost::WriteIntoTracedValue(
-    perfetto::TracedValue context) {
+void MockRenderProcessHost::WriteIntoTrace(perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("id", GetID());
 }

@@ -319,7 +319,7 @@ class BASE_EXPORT File {
   bool async() const { return async_; }
 
   // Serialise this object into a trace.
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
 #if defined(OS_WIN)
   // Sets or clears the DeleteFile disposition on the file. Returns true if

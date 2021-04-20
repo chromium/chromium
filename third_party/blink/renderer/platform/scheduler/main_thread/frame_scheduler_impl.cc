@@ -793,8 +793,7 @@ void FrameSchedulerImpl::OnRemovedBackForwardCacheOptOut(
       !back_forward_cache_opt_out_counts_.empty();
 }
 
-void FrameSchedulerImpl::WriteIntoTracedValue(
-    perfetto::TracedValue context) const {
+void FrameSchedulerImpl::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame_visible", frame_visible_);
   dict.Add("page_visible", parent_page_scheduler_->IsPageVisible());

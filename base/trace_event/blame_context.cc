@@ -90,7 +90,7 @@ void BlameContext::AsValueInto(trace_event::TracedValue* state) {
   state->EndDictionary();
 }
 
-void BlameContext::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void BlameContext::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("id", id_);
   dict.Add("parent_id", parent_id_);

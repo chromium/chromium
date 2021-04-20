@@ -141,7 +141,7 @@ void UserModel::Reset(base::TimeTicks now) {
   pending_input_event_count_ = 0;
 }
 
-void UserModel::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void UserModel::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("pending_input_event_count", pending_input_event_count_);
   dict.Add("last_input_signal_time", last_input_signal_time_);

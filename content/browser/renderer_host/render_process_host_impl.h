@@ -273,7 +273,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void ForceCrash() override;
   void CleanupNetworkServicePluginExceptionsUponDestruction() override;
   std::string GetInfoForBrowserContextDestructionCrashReporting() override;
-  void WriteIntoTracedValue(perfetto::TracedValue context) override;
+  void WriteIntoTrace(perfetto::TracedValue context) override;
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   void DumpProfilingData(base::OnceClosure callback) override;
 #endif

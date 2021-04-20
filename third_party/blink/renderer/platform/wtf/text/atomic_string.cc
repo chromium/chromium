@@ -98,7 +98,7 @@ std::ostream& operator<<(std::ostream& out, const AtomicString& s) {
   return out << s.GetString();
 }
 
-void AtomicString::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void AtomicString::WriteIntoTrace(perfetto::TracedValue context) const {
   perfetto::WriteIntoTracedValue(std::move(context), GetString());
 }
 

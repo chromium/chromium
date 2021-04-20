@@ -1010,7 +1010,7 @@ std::string Value::DebugString() const {
 }
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-void Value::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void Value::WriteIntoTrace(perfetto::TracedValue context) const {
   switch (type()) {
     case Type::BOOLEAN:
       std::move(context).WriteBoolean(GetBool());

@@ -847,7 +847,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual bool DocumentUsedWebOTP() = 0;
 
   // Write a description of this RenderFrameHost into the provided |context|.
-  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
+  virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
 
   // Start/stop event log output from WebRTC on this RFH for the peer connection
   // identified locally within the RFH using the ID `lid`.

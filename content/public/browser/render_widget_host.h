@@ -291,7 +291,7 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual base::Optional<cc::TouchAction> GetAllowedTouchAction() = 0;
 
   // Write a representation of this object into a trace.
-  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
+  virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
 
   using DragOperationCallback =
       base::OnceCallback<void(::ui::mojom::DragOperation)>;

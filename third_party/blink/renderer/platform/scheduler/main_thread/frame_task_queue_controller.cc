@@ -160,7 +160,7 @@ bool FrameTaskQueueController::RemoveResourceLoadingTaskQueue(
   return true;
 }
 
-void FrameTaskQueueController::WriteIntoTracedValue(
+void FrameTaskQueueController::WriteIntoTrace(
     perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("task_queues", task_queues_.Values());

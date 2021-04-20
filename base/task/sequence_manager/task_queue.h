@@ -254,7 +254,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   virtual const char* GetName() const;
 
   // Serialise this object into a trace.
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
   // Set the priority of the queue to |priority|. NOTE this must be called on
   // the thread this TaskQueue was created by.

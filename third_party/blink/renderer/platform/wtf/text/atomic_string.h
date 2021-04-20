@@ -221,7 +221,7 @@ class WTF_EXPORT AtomicString {
     return string_.IsSafeToSendToAnotherThread();
   }
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
 #ifndef NDEBUG
   void Show() const;

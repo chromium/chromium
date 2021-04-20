@@ -178,7 +178,7 @@ void SourceLocation::ToTracedValue(TracedValue* value, const char* name) const {
   value->EndArray();
 }
 
-void SourceLocation::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void SourceLocation::WriteIntoTrace(perfetto::TracedValue context) const {
   // TODO(altimin): Consider replacing nested dict-inside-array with just an
   // array here.
   auto array = std::move(context).WriteArray();

@@ -203,7 +203,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
 
   const base::UnguessableToken& GetAgentClusterId() const;
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  protected:
   FrameSchedulerImpl(MainThreadSchedulerImpl* main_thread_scheduler,

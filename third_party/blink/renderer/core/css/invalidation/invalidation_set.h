@@ -186,7 +186,7 @@ class CORE_EXPORT InvalidationSet
 
   bool IsAlive() const { return is_alive_; }
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
   // Format the InvalidationSet for debugging purposes.
   //

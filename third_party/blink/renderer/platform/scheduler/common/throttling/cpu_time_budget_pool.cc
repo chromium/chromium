@@ -127,8 +127,8 @@ void CPUTimeBudgetPool::OnQueueNextWakeUpChanged(
 
 void CPUTimeBudgetPool::OnWakeUp(base::TimeTicks now) {}
 
-void CPUTimeBudgetPool::WriteIntoTracedValue(perfetto::TracedValue context,
-                                             base::TimeTicks now) const {
+void CPUTimeBudgetPool::WriteIntoTrace(perfetto::TracedValue context,
+                                       base::TimeTicks now) const {
   auto dict = std::move(context).WriteDictionary();
 
   dict.Add("name", name_);

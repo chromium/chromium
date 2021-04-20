@@ -1361,7 +1361,7 @@ FilePath FilePath::NormalizePathSeparators() const {
   return NormalizePathSeparatorsTo(kSeparators[0]);
 }
 
-void FilePath::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void FilePath::WriteIntoTrace(perfetto::TracedValue context) const {
   perfetto::WriteIntoTracedValue(std::move(context), value());
 }
 

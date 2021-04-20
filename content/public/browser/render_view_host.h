@@ -88,7 +88,7 @@ class CONTENT_EXPORT RenderViewHost {
   virtual bool IsRenderViewLive() = 0;
 
   // Write a representation of this object into a trace.
-  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
+  virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
 
  private:
   // This interface should only be implemented inside content.

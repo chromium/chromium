@@ -326,7 +326,7 @@ const char* TaskQueue::GetName() const {
   return name_;
 }
 
-void TaskQueue::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void TaskQueue::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("name", name_);
 }

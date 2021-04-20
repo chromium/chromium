@@ -642,7 +642,7 @@ void String::Show() const {
 }
 #endif
 
-void String::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void String::WriteIntoTrace(perfetto::TracedValue context) const {
   StringUTF8Adaptor adaptor(*this);
   std::move(context).WriteString(adaptor.data(), adaptor.size());
 }

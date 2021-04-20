@@ -454,7 +454,7 @@ StoragePartitionConfig SiteInfo::GetStoragePartitionConfigForUrl(
       browser_context, url);
 }
 
-void SiteInfo::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void SiteInfo::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("site_url", site_url());
   dict.Add("process_lock_url", process_lock_url());
@@ -1814,7 +1814,7 @@ void SiteInstanceImpl::StartIsolatingSite(BrowserContext* context,
     GetContentClient()->browser()->PersistIsolatedOrigin(context, site_origin);
 }
 
-void SiteInstanceImpl::WriteIntoTracedValue(perfetto::TracedValue context) {
+void SiteInstanceImpl::WriteIntoTrace(perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("id", GetId());
   dict.Add("browsing_instance_id", GetBrowsingInstanceId());

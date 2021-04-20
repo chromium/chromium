@@ -76,8 +76,8 @@ class PLATFORM_EXPORT BudgetPool {
   virtual QueueBlockType GetBlockType() const = 0;
 
   // Records state for tracing.
-  virtual void WriteIntoTracedValue(perfetto::TracedValue context,
-                                    base::TimeTicks now) const = 0;
+  virtual void WriteIntoTrace(perfetto::TracedValue context,
+                              base::TimeTicks now) const = 0;
 
   // Adds |queue| to given pool. If the pool restriction does not allow
   // a task to be run immediately and |queue| is throttled, |queue| becomes

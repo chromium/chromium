@@ -72,37 +72,37 @@ TabStripModelChange::TabStripModelChange(Type type,
                                          std::unique_ptr<Delta> delta)
     : type_(type), delta_(std::move(delta)) {}
 
-void TabStripModelChange::ContentsWithIndexAndWillBeDeleted::
-    WriteIntoTracedValue(perfetto::TracedValue context) const {
+void TabStripModelChange::ContentsWithIndexAndWillBeDeleted::WriteIntoTrace(
+    perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("contents", contents);
   dict.Add("index", index);
   dict.Add("will_be_deleted", will_be_deleted);
 }
 
-void TabStripModelChange::ContentsWithIndex::WriteIntoTracedValue(
+void TabStripModelChange::ContentsWithIndex::WriteIntoTrace(
     perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("contents", contents);
   dict.Add("index", index);
 }
 
-void TabStripModelChange::Insert::WriteIntoTracedValue(
+void TabStripModelChange::Insert::WriteIntoTrace(
     perfetto::TracedValue context) const {
   perfetto::WriteIntoTracedValue(std::move(context), contents);
 }
 
-void TabStripModelChange::Remove::WriteIntoTracedValue(
+void TabStripModelChange::Remove::WriteIntoTrace(
     perfetto::TracedValue context) const {
   perfetto::WriteIntoTracedValue(std::move(context), contents);
 }
 
-void TabStripModelChange::Move::WriteIntoTracedValue(
+void TabStripModelChange::Move::WriteIntoTrace(
     perfetto::TracedValue context) const {
   perfetto::WriteIntoTracedValue(std::move(context), contents);
 }
 
-void TabStripModelChange::Replace::WriteIntoTracedValue(
+void TabStripModelChange::Replace::WriteIntoTrace(
     perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("old_contents", old_contents);
@@ -110,8 +110,7 @@ void TabStripModelChange::Replace::WriteIntoTracedValue(
   dict.Add("index", index);
 }
 
-void TabStripModelChange::WriteIntoTracedValue(
-    perfetto::TracedValue context) const {
+void TabStripModelChange::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("type", type_);
   dict.Add("delta", delta_);

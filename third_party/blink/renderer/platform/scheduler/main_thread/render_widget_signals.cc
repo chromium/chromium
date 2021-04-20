@@ -52,8 +52,7 @@ void RenderWidgetSignals::DecNumVisibleRenderWidgetsWithTouchHandlers() {
     observer_->SetHasVisibleRenderWidgetWithTouchHandler(false);
 }
 
-void RenderWidgetSignals::WriteIntoTracedValue(
-    perfetto::TracedValue context) const {
+void RenderWidgetSignals::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("num_visible_render_widgets", num_visible_render_widgets_);
   dict.Add("num_visible_render_widgets_with_touch_handlers",

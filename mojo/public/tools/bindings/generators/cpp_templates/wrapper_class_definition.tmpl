@@ -32,7 +32,7 @@ size_t {{struct.name}}::Hash(size_t seed) const {
 }
 {%- endif %}
 
-void {{struct.name}}::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void {{struct.name}}::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
 {%-  for field in struct.fields %}
   perfetto::WriteIntoTracedValueWithFallback(

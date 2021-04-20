@@ -187,7 +187,7 @@ class TraceableState : public TraceableVariable, private StateTracer<category> {
 
   // TraceableState<T> is serialisable into trace iff T is serialisable.
   template <typename V = T>
-  typename perfetto::check_traced_value_support<V>::type WriteIntoTracedValue(
+  typename perfetto::check_traced_value_support<V>::type WriteIntoTrace(
       perfetto::TracedValue context) const {
     perfetto::WriteIntoTracedValue(std::move(context), get());
   }

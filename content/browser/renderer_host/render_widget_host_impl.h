@@ -250,7 +250,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void GetScreenInfo(blink::ScreenInfo* result) override;
   float GetDeviceScaleFactor() override;
   base::Optional<cc::TouchAction> GetAllowedTouchAction() override;
-  void WriteIntoTracedValue(perfetto::TracedValue context) override;
+  void WriteIntoTrace(perfetto::TracedValue context) override;
   using DragOperationCallback =
       base::OnceCallback<void(::ui::mojom::DragOperation)>;
   // |drop_data| must have been filtered. The embedder should call

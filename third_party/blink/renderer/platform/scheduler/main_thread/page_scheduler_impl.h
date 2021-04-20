@@ -151,7 +151,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // frame it not a local one.
   FrameSchedulerImpl* SelectFrameForUkmAttribution();
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
   base::WeakPtr<PageSchedulerImpl> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();

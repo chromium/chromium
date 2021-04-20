@@ -2220,8 +2220,7 @@ void RenderProcessHostImpl::DumpProfilingData(base::OnceClosure callback) {
 }
 #endif
 
-void RenderProcessHostImpl::WriteIntoTracedValue(
-    perfetto::TracedValue context) {
+void RenderProcessHostImpl::WriteIntoTrace(perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("id", GetID());
   dict.Add("process_lock", ChildProcessSecurityPolicyImpl::GetInstance()

@@ -265,7 +265,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       return key;
     }
 
-    void WriteIntoTracedValue(perfetto::TracedValue context) const;
+    void WriteIntoTrace(perfetto::TracedValue context) const;
 
     bool can_be_deferred : 1;
     bool can_be_throttled : 1;
@@ -501,7 +501,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  protected:
   void SetFrameSchedulerForTest(FrameSchedulerImpl* frame_scheduler);

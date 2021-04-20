@@ -431,7 +431,7 @@ class BASE_EXPORT FilePath {
   }
 
   // Serialise this object into a trace.
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
 #if defined(OS_APPLE)
   // Returns the string in the special canonical decomposed form as defined for

@@ -122,8 +122,8 @@ void WakeUpBudgetPool::OnWakeUp(base::TimeTicks now) {
   last_wake_up_ = now;
 }
 
-void WakeUpBudgetPool::WriteIntoTracedValue(perfetto::TracedValue context,
-                                            base::TimeTicks now) const {
+void WakeUpBudgetPool::WriteIntoTrace(perfetto::TracedValue context,
+                                      base::TimeTicks now) const {
   auto dict = std::move(context).WriteDictionary();
 
   dict.Add("name", name_);

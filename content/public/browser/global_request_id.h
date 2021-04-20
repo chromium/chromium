@@ -47,7 +47,7 @@ struct GlobalRequestID {
         request_id != other.request_id;
   }
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 };
 
 }  // namespace content

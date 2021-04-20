@@ -341,7 +341,7 @@ class CONTENT_EXPORT SiteInfo {
       BrowserContext* browser_context) const;
 
   // Write a representation of this object into a trace.
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   // Helper that returns a tuple of all the fields that are relevant for
@@ -507,7 +507,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   bool IsSameSiteWithURL(const GURL& url) override;
   bool IsGuest() override;
   SiteInstanceProcessAssignment GetLastProcessAssignmentOutcome() override;
-  void WriteIntoTracedValue(perfetto::TracedValue context) override;
+  void WriteIntoTrace(perfetto::TracedValue context) override;
 
   // This is called every time a renderer process is assigned to a SiteInstance
   // and is used by the content embedder for collecting metrics.

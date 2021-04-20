@@ -1677,7 +1677,7 @@ void FrameLoader::ReportLegacyTLSVersion(const KURL& url,
       console_message));
 }
 
-void FrameLoader::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void FrameLoader::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   {
     auto frame_dict = dict.AddDictionary("frame");

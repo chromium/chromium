@@ -4050,7 +4050,7 @@ void RenderFrameHostImpl::ReportInspectorIssue(
       this, std::move(info));
 }
 
-void RenderFrameHostImpl::WriteIntoTracedValue(perfetto::TracedValue context) {
+void RenderFrameHostImpl::WriteIntoTrace(perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("process", GetProcess());
   dict.Add("routing_id", GetRoutingID());

@@ -976,7 +976,7 @@ void RenderViewHostImpl::SetWillSendRendererPreferencesCallbackForTesting(
   will_send_renderer_preferences_callback_for_testing_ = callback;
 }
 
-void RenderViewHostImpl::WriteIntoTracedValue(perfetto::TracedValue context) {
+void RenderViewHostImpl::WriteIntoTrace(perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("routing_id", GetRoutingID());
   dict.Add("process", GetProcess());

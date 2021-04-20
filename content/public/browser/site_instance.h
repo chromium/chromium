@@ -177,7 +177,7 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   virtual SiteInstanceProcessAssignment GetLastProcessAssignmentOutcome() = 0;
 
   // Write a representation of this object into a trace.
-  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
+  virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
 
   // Factory method to create a new SiteInstance.  This will create a new
   // BrowsingInstance, so it should only be used when creating a new tab from

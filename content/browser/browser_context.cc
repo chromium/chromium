@@ -383,7 +383,7 @@ std::string BrowserContext::CreateRandomMediaDeviceIDSalt() {
   return base::UnguessableToken::Create().ToString();
 }
 
-void BrowserContext::WriteIntoTracedValue(perfetto::TracedValue context) {
+void BrowserContext::WriteIntoTrace(perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
 
   // `impl()` is destroyed by the destuctor of BrowserContext and might not

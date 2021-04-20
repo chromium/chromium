@@ -204,7 +204,7 @@ class TabStripModel::WebContentsData : public content::WebContentsObserver {
     group_ = value;
   }
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const {
+  void WriteIntoTrace(perfetto::TracedValue context) const {
     auto dict = std::move(context).WriteDictionary();
     dict.Add("web_contents", contents_);
     dict.Add("pinned", pinned_);
@@ -1647,7 +1647,7 @@ bool TabStripModel::ShouldResetOpenerOnActiveTabChange(
   return contents_data_[index]->reset_opener_on_active_tab_change();
 }
 
-void TabStripModel::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void TabStripModel::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("active_index", active_index());
   dict.Add("tabs", contents_data_);

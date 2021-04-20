@@ -365,8 +365,7 @@ InvalidationSet* InvalidationSet::PartInvalidationSet() {
   return singleton_;
 }
 
-void InvalidationSet::WriteIntoTracedValue(
-    perfetto::TracedValue context) const {
+void InvalidationSet::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
 
   dict.Add("id", DescendantInvalidationSetToIdString(*this));

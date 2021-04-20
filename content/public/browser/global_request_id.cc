@@ -8,8 +8,7 @@
 
 namespace content {
 
-void GlobalRequestID::WriteIntoTracedValue(
-    perfetto::TracedValue context) const {
+void GlobalRequestID::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("child_id", child_id);
   dict.Add("request_id", request_id);

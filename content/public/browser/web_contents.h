@@ -1201,7 +1201,7 @@ class WebContents : public PageNavigator,
   virtual bool HasActiveEffectivelyFullscreenVideo() = 0;
 
   // Serialise this object into a trace.
-  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
+  virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
 
  private:
   // This interface should only be implemented inside content.

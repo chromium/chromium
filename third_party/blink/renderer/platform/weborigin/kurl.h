@@ -239,7 +239,7 @@ class PLATFORM_EXPORT KURL {
   // TODO(crbug.com/862940): Make this conversion explicit.
   operator GURL() const;
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   friend struct WTF::HashTraits<blink::KURL>;

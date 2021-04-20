@@ -580,7 +580,7 @@ class BASE_EXPORT Value {
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
   // Write this object into a trace.
-  void WriteIntoTracedValue(perfetto::TracedValue) const;
+  void WriteIntoTrace(perfetto::TracedValue) const;
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
  protected:

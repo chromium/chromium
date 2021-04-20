@@ -44,7 +44,7 @@ class PLATFORM_EXPORT RenderWidgetSignals {
   std::unique_ptr<WebRenderWidgetSchedulingState>
   NewRenderWidgetSchedulingState();
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   friend class WebRenderWidgetSchedulingState;

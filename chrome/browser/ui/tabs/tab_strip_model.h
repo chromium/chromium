@@ -586,7 +586,7 @@ class TabStripModel : public TabGroupController {
   bool ShouldResetOpenerOnActiveTabChange(content::WebContents* contents) const;
 
   // Serialise this object into a trace.
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, GetIndicesClosedByCommand);

@@ -105,14 +105,14 @@ class BASE_EXPORT BlameContext
   void OnTraceLogEnabled() override;
   void OnTraceLogDisabled() override;
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  protected:
   // Serialize the properties of this blame context into |state|. Subclasses can
   // override this method to record additional properties (e.g, the URL for an
   // <iframe> blame context). Note that an overridden implementation must still
   // call this base method.
-  // TODO(altimin): Replace all users with WriteIntoTracedValue and remove it.
+  // TODO(altimin): Replace all users with WriteIntoTrace and remove it.
   virtual void AsValueInto(trace_event::TracedValue* state);
 
  private:

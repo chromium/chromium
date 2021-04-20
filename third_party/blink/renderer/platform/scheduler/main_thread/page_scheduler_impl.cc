@@ -621,8 +621,7 @@ bool PageSchedulerImpl::IsWaitingForMainFrameMeaningfulPaint() const {
                      });
 }
 
-void PageSchedulerImpl::WriteIntoTracedValue(
-    perfetto::TracedValue context) const {
+void PageSchedulerImpl::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("page_visible", page_visibility_ == PageVisibilityState::kVisible);
   dict.Add("is_audio_playing", IsAudioPlaying());

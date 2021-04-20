@@ -243,7 +243,7 @@ class TracedArray {
 };
 
 template <class T>
-void WriteIntoTracedValue(TracedValue, T&&) {}
+void WriteIntoTrace(TracedValue, T&&) {}
 
 }  // namespace perfetto
 

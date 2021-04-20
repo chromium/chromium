@@ -133,7 +133,7 @@ class CONTENT_EXPORT RenderViewHostImpl
       blink::mojom::PluginActionType action) override;
   RenderViewHostDelegate* GetDelegate() override;
   bool IsRenderViewLive() override;
-  void WriteIntoTracedValue(perfetto::TracedValue context) override;
+  void WriteIntoTrace(perfetto::TracedValue context) override;
 
   void SendWebPreferencesToRenderer();
   void SendRendererPreferencesToRenderer(

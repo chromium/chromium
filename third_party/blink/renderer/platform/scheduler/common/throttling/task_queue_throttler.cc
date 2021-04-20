@@ -411,8 +411,8 @@ base::Optional<QueueBlockType> TaskQueueThrottler::GetQueueBlockType(
   return base::nullopt;
 }
 
-void TaskQueueThrottler::WriteIntoTracedValue(perfetto::TracedValue context,
-                                              base::TimeTicks now) const {
+void TaskQueueThrottler::WriteIntoTrace(perfetto::TracedValue context,
+                                        base::TimeTicks now) const {
   auto dict = std::move(context).WriteDictionary();
   if (pending_pump_throttled_tasks_runtime_) {
     dict.Add(
@@ -425,8 +425,7 @@ void TaskQueueThrottler::WriteIntoTracedValue(perfetto::TracedValue context,
   {
     auto time_budget_pools = dict.AddArray("time_budget_pools");
     for (const auto& budget_pool : budget_pools_) {
-      budget_pool.key->WriteIntoTracedValue(time_budget_pools.AppendItem(),
-                                            now);
+      budget_pool.key->WriteIntoTrace(time_budget_pools.AppendItem(), now);
     }
   }
 
@@ -608,7 +607,7 @@ void TaskQueueThrottler::Metadata::OnQueueNextWakeUpChanged(
   throttler_->OnQueueNextWakeUpChanged(queue_, wake_up);
 }
 
-void TaskQueueThrottler::Metadata::WriteIntoTracedValue(
+void TaskQueueThrottler::Metadata::WriteIntoTrace(
     perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("throttling_ref_count", throttling_ref_count_);

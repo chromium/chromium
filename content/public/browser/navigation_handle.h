@@ -445,7 +445,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual bool WasEarlyHintsPreloadLinkHeaderReceived() = 0;
 
   // Write a representation of this object into a trace.
-  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
+  virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
 
   // Testing methods ----------------------------------------------------------
   //

@@ -552,7 +552,7 @@ class WTF_EXPORT String {
   void Show() const;
 #endif
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   friend struct HashTraits<String>;

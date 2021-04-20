@@ -596,7 +596,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
     TimeDomainType GetTimeDomainType() const;
 
-    void WriteIntoTracedValue(perfetto::TracedValue context) const;
+    void WriteIntoTrace(perfetto::TracedValue context) const;
 
    private:
     RAILMode rail_mode_{RAILMode::kAnimation};
@@ -651,8 +651,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       MainThreadTaskQueue* queue);
 
   // Returns the serialized scheduler state for tracing.
-  void WriteIntoTracedValueLocked(perfetto::TracedValue context,
-                                  base::TimeTicks optional_now) const;
+  void WriteIntoTraceLocked(perfetto::TracedValue context,
+                            base::TimeTicks optional_now) const;
   void CreateTraceEventObjectSnapshotLocked() const;
 
   static bool ShouldPrioritizeInputEvent(const WebInputEvent& web_input_event);

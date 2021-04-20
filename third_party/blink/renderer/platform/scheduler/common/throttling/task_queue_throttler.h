@@ -126,8 +126,7 @@ class PLATFORM_EXPORT TaskQueueThrottler : public BudgetPoolController {
                              base::TimeTicks start_time,
                              base::TimeTicks end_time);
 
-  void WriteIntoTracedValue(perfetto::TracedValue context,
-                            base::TimeTicks now) const;
+  void WriteIntoTrace(perfetto::TracedValue context, base::TimeTicks now) const;
 
   base::WeakPtr<TaskQueueThrottler> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -163,7 +162,7 @@ class PLATFORM_EXPORT TaskQueueThrottler : public BudgetPoolController {
       next_granted_run_time_ = next_granted_run_time;
     }
 
-    void WriteIntoTracedValue(perfetto::TracedValue context) const;
+    void WriteIntoTrace(perfetto::TracedValue context) const;
 
    private:
     base::sequence_manager::TaskQueue* const queue_;

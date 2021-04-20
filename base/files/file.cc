@@ -166,7 +166,7 @@ std::string File::ErrorToString(Error error) {
   return "";
 }
 
-void File::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void File::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("is_valid", IsValid());
   dict.Add("created", created_);

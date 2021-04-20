@@ -806,7 +806,7 @@ void FrameTreeNode::SetPopupCreatorOrigin(
   popup_creator_origin_ = popup_creator_origin;
 }
 
-void FrameTreeNode::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void FrameTreeNode::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("id", frame_tree_node_id());
   dict.Add("is_main_frame", IsMainFrame());

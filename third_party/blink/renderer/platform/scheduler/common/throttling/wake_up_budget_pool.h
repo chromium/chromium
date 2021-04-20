@@ -51,8 +51,8 @@ class PLATFORM_EXPORT WakeUpBudgetPool : public BudgetPool {
                                 base::TimeTicks now,
                                 base::TimeTicks desired_run_time) final;
   void OnWakeUp(base::TimeTicks now) final;
-  void WriteIntoTracedValue(perfetto::TracedValue context,
-                            base::TimeTicks now) const final;
+  void WriteIntoTrace(perfetto::TracedValue context,
+                      base::TimeTicks now) const final;
 
   base::Optional<base::TimeTicks> last_wake_up_for_testing() const {
     return last_wake_up_;

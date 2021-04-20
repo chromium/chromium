@@ -5372,7 +5372,7 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactory() {
   return origin;
 }
 
-void NavigationRequest::WriteIntoTracedValue(perfetto::TracedValue context) {
+void NavigationRequest::WriteIntoTrace(perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("navigation_id", navigation_id_);
   dict.Add("has_committed", HasCommitted());

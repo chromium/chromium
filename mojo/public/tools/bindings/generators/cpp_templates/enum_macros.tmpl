@@ -173,7 +173,7 @@ namespace perfetto {
 
 template <>
 struct {{export_attribute}} TraceFormatTraits<{{enum_name}}> {
- static void WriteIntoTracedValue(perfetto::TracedValue context, {{enum_name}} value);
+ static void WriteIntoTrace(perfetto::TracedValue context, {{enum_name}} value);
 };
 
 } // namespace perfetto
@@ -185,7 +185,7 @@ struct {{export_attribute}} TraceFormatTraits<{{enum_name}}> {
 namespace perfetto {
 
 // static
-void TraceFormatTraits<{{enum_name}}>::WriteIntoTracedValue(
+void TraceFormatTraits<{{enum_name}}>::WriteIntoTrace(
    perfetto::TracedValue context, {{enum_name}} value) {
   return std::move(context).WriteString({{enum_name}}ToString(value));
 }

@@ -19,7 +19,7 @@ namespace perfetto {
 class TracedValue;
 
 template <typename T>
-void WriteIntoTracedValue(TracedValue context, T&& value);
+void WriteIntoTrace(TracedValue context, T&& value);
 
 template <typename T, class = void>
 struct TraceFormatTraits;

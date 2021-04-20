@@ -49,7 +49,7 @@ class PLATFORM_EXPORT UserModel {
       const base::TimeTicks now,
       base::TimeDelta* prediction_valid_duration) const;
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
   // The time we should stay in a priority-escalated mode after an input event.
   static const int kGestureEstimationLimitMillis = 100;

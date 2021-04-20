@@ -227,7 +227,7 @@ class CORE_EXPORT FrameLoader final {
 
   static bool NeedsHistoryItemRestore(WebFrameLoadType type);
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   bool AllowRequestForThisFrame(const FrameLoadRequest&);

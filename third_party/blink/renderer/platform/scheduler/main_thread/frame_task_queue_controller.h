@@ -96,7 +96,7 @@ class PLATFORM_EXPORT FrameTaskQueueController {
   bool RemoveResourceLoadingTaskQueue(
       const scoped_refptr<MainThreadTaskQueue>&);
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   friend class FrameTaskQueueControllerTest;
