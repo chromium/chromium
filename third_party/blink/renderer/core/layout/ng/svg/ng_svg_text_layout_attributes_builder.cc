@@ -4,39 +4,179 @@
 
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_attributes_builder.h"
 
+#include "base/containers/adapters.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length_list.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_number_list.h"
+#include "third_party/blink/renderer/core/svg/svg_text_positioning_element.h"
 
 namespace blink {
 
 namespace {
 
-// TODO(tkent): Implement this.
+// Iterates over x/y/dx/dy/rotate attributes on an SVGTextPositioningElement.
+//
+// This class is used only by LayoutAttributesStack.
+// This class is not copyable.
+class LayoutAttributesIterator final
+    : public GarbageCollected<LayoutAttributesIterator> {
+ public:
+  LayoutAttributesIterator(const LayoutObject& layout_object, bool in_text_path)
+      : element_(To<SVGTextPositioningElement>(layout_object.GetNode())),
+        x_(element_->x()->CurrentValue()),
+        y_(element_->y()->CurrentValue()),
+        dx_(element_->dx()->CurrentValue()),
+        dy_(element_->dy()->CurrentValue()),
+        rotate_(element_->rotate()->CurrentValue()),
+        in_text_path_(in_text_path) {}
+  LayoutAttributesIterator(const LayoutAttributesIterator&) = delete;
+  LayoutAttributesIterator& operator=(const LayoutAttributesIterator&) = delete;
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(element_);
+    visitor->Trace(x_);
+    visitor->Trace(y_);
+    visitor->Trace(dx_);
+    visitor->Trace(dy_);
+    visitor->Trace(rotate_);
+  }
+
+  bool HasX() const { return consumed_ < x_->length(); }
+  bool HasY() const { return consumed_ < y_->length(); }
+  bool HasDx() const { return consumed_ < dx_->length(); }
+  bool HasDy() const { return consumed_ < dy_->length(); }
+
+  float X() const {
+    return x_->at(consumed_)->Value(SVGLengthContext(element_));
+  }
+  float Y() const {
+    return y_->at(consumed_)->Value(SVGLengthContext(element_));
+  }
+  float Dx() const {
+    return dx_->at(consumed_)->Value(SVGLengthContext(element_));
+  }
+  float Dy() const {
+    return dy_->at(consumed_)->Value(SVGLengthContext(element_));
+  }
+
+  float MatchedOrLastRotate() const {
+    uint32_t length = rotate_->length();
+    if (length == 0)
+      return SVGCharacterData::EmptyValue();
+    if (consumed_ < length)
+      return rotate_->at(consumed_)->Value();
+    return rotate_->at(length - 1)->Value();
+  }
+
+  bool InTextPath() const { return in_text_path_; }
+
+  // This function should be called whenever we handled an addressable
+  // character in a descendant LayoutText.
+  void Advance() { ++consumed_; }
+
+ private:
+  // The following six Member<>s never be null.
+  const Member<const SVGTextPositioningElement> element_;
+  const Member<const SVGLengthList> x_;
+  const Member<const SVGLengthList> y_;
+  const Member<const SVGLengthList> dx_;
+  const Member<const SVGLengthList> dy_;
+  const Member<const SVGNumberList> rotate_;
+  const bool in_text_path_;
+  // How many addressable characters in this element are consumed.
+  unsigned consumed_ = 0;
+};
+
+// A stack of LayoutAttributesIterator.
+// This class is not copyable.
 class LayoutAttributesStack final {
   STACK_ALLOCATED();
 
  public:
   LayoutAttributesStack() = default;
-  ~LayoutAttributesStack() = default;
+  ~LayoutAttributesStack() { DCHECK_EQ(stack_.size(), 0u); }
   LayoutAttributesStack(const LayoutAttributesStack&) = delete;
   LayoutAttributesStack& operator=(const LayoutAttributesStack&) = delete;
 
-  void Push(const LayoutObject& layout_object, bool in_text_path) {}
-  void Pop() {}
+  void Push(const LayoutObject& layout_object, bool in_text_path) {
+    stack_.push_back(MakeGarbageCollected<LayoutAttributesIterator>(
+        layout_object, in_text_path));
+  }
+  void Pop() { stack_.pop_back(); }
 
   // Advance all of iterators in the stack.
-  void Advance() {}
+  void Advance() {
+    DCHECK_GT(stack_.size(), 0u);
+    for (auto& iterator : stack_)
+      iterator->Advance();
+  }
 
   // X(), Y(), Dx(), and Dy() return an effective 'x, 'y', 'dx', or 'dy' value,
   // or EmptyValue().
 
-  float X() const { return SVGCharacterData::EmptyValue(); }
-  float Y() const { return SVGCharacterData::EmptyValue(); }
-  float Dx() const { return SVGCharacterData::EmptyValue(); }
-  float Dy() const { return SVGCharacterData::EmptyValue(); }
+  float X() const {
+    auto it = std::find_if(stack_.rbegin(), stack_.rend(),
+                           [](const auto& attrs) { return attrs->HasX(); });
+    return it != stack_.rend() ? (*it)->X() : SVGCharacterData::EmptyValue();
+  }
+  float Y() const {
+    auto it = std::find_if(stack_.rbegin(), stack_.rend(),
+                           [](const auto& attrs) { return attrs->HasY(); });
+    return it != stack_.rend() ? (*it)->Y() : SVGCharacterData::EmptyValue();
+  }
+  float Dx() const {
+    auto it = std::find_if(stack_.rbegin(), stack_.rend(),
+                           [](const auto& attrs) { return attrs->HasDx(); });
+    return it != stack_.rend() ? (*it)->Dx() : SVGCharacterData::EmptyValue();
+  }
+  float Dy() const {
+    auto it = std::find_if(stack_.rbegin(), stack_.rend(),
+                           [](const auto& attrs) { return attrs->HasDy(); });
+    return it != stack_.rend() ? (*it)->Dy() : SVGCharacterData::EmptyValue();
+  }
 
-  float MatchedOrLastRotate() const { return SVGCharacterData::EmptyValue(); }
+  float MatchedOrLastRotate() const {
+    for (const auto& attrs : base::Reversed(stack_)) {
+      float rotate = attrs->MatchedOrLastRotate();
+      if (!SVGCharacterData::IsEmptyValue(rotate))
+        return rotate;
+    }
+    return SVGCharacterData::EmptyValue();
+  }
 
-  bool ShouldStartAnchoredChunk(bool horizontal) const { return false; }
+  bool ShouldStartAnchoredChunk(bool horizontal) const {
+    // According to the algorithm, the x/y attributes on the nearest
+    // SVGTextPositioningElement should overwrite |anchored chunk| flag set by
+    // ancestors.  It's incorrect.
+    // https://github.com/w3c/svgwg/issues/839
+    //
+    // If the current position is not in a <textPath>, we should just check
+    // existence of available x/y attributes in ancestors.
+    // Otherwise, we should check available x/y attributes declared in the
+    // <textPath> descendants.
+
+    if (!stack_.back()->InTextPath()) {
+      return !SVGCharacterData::IsEmptyValue(X()) ||
+             !SVGCharacterData::IsEmptyValue(Y());
+    }
+
+    for (const auto& attrs : base::Reversed(stack_)) {
+      if (!attrs->InTextPath())
+        return false;
+      if (horizontal) {
+        if (attrs->HasX())
+          return true;
+      } else {
+        if (attrs->HasY())
+          return true;
+      }
+    }
+    return false;
+  }
+
+ private:
+  HeapVector<Member<LayoutAttributesIterator>> stack_;
 };
 
 bool HasUpdated(const NGSVGCharacterData& data) {
