@@ -19,6 +19,11 @@ import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
 
 const MY_FILES_PATH = '/home/chronos/user/MyFiles';
 
+// Scanner sources names.
+const ADF_DUPLEX = 'adf_duplex';
+const ADF_SIMPLEX = 'adf_simplex';
+const PLATEN = 'platen';
+
 const ColorMode = {
   BLACK_AND_WHITE: ash.scanning.mojom.ColorMode.kBlackAndWhite,
   GRAYSCALE: ash.scanning.mojom.ColorMode.kGrayscale,
@@ -43,7 +48,9 @@ const SourceType = {
   ADF_DUPLEX: ash.scanning.mojom.SourceType.kAdfDuplex,
 };
 
-const pageSizes = [PageSize.A4, PageSize.Letter, PageSize.Max];
+const firstPageSizes = [PageSize.A4, PageSize.Letter, PageSize.Max];
+
+const secondPageSizes = [PageSize.A4, PageSize.Max];
 
 const firstScannerId =
     /** @type {!mojoBase.mojom.UnguessableToken} */ ({high: 0, low: 1});
@@ -55,17 +62,19 @@ const secondScannerName = 'Scanner 2';
 
 const firstCapabilities = {
   sources: [
-    createScannerSource(SourceType.ADF_DUPLEX, 'adf duplex', pageSizes),
-    createScannerSource(SourceType.FLATBED, 'platen', pageSizes),
+    createScannerSource(SourceType.ADF_DUPLEX, ADF_DUPLEX, firstPageSizes),
+    createScannerSource(SourceType.FLATBED, PLATEN, firstPageSizes),
   ],
   colorModes: [ColorMode.BLACK_AND_WHITE, ColorMode.COLOR],
   resolutions: [75, 100, 300]
 };
 
 const secondCapabilities = {
-  sources:
-      [createScannerSource(SourceType.ADF_SIMPLEX, 'adf simplex', pageSizes)],
-  colorModes: [ColorMode.GRAYSCALE],
+  sources: [
+    createScannerSource(SourceType.ADF_DUPLEX, ADF_DUPLEX, secondPageSizes),
+    createScannerSource(SourceType.ADF_SIMPLEX, ADF_SIMPLEX, secondPageSizes),
+  ],
+  colorModes: [ColorMode.BLACK_AND_WHITE, ColorMode.GRAYSCALE],
   resolutions: [150, 600]
 };
 
@@ -962,6 +971,62 @@ export function scanningAppTest() {
         })
         .then(() => {
           scanningApp.$$('#scanButton').click();
+        });
+  });
+
+  test('DefaultScanSettings', () => {
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return fakeScanService_.whenCalled('getScannerCapabilities');
+        })
+        .then(() => {
+          assertEquals(
+              tokenToString(firstScannerId),
+              scanningApp.$$('#scannerSelect').$$('select').value);
+          assertEquals(
+              PLATEN, scanningApp.$$('#sourceSelect').$$('select').value);
+          assertEquals(
+              loadTimeData.getString('myFilesSelectOption'),
+              scanningApp.$$('#scanToSelect').$$('select').value);
+          assertEquals(
+              ash.scanning.mojom.FileType.kPdf.toString(),
+              scanningApp.$$('#fileTypeSelect').$$('select').value);
+          assertEquals(
+              ash.scanning.mojom.ColorMode.kColor.toString(),
+              scanningApp.$$('#colorModeSelect').$$('select').value);
+          assertEquals(
+              ash.scanning.mojom.PageSize.kNaLetter.toString(),
+              scanningApp.$$('#pageSizeSelect').$$('select').value);
+          assertEquals(
+              '300', scanningApp.$$('#resolutionSelect').$$('select').value);
+        });
+  });
+
+  test('DefaultScanSettingsNotAvailable', () => {
+    return initializeScanningApp(expectedScanners.slice(1), capabilities)
+        .then(() => {
+          return fakeScanService_.whenCalled('getScannerCapabilities');
+        })
+        .then(() => {
+          assertEquals(
+              tokenToString(secondScannerId),
+              scanningApp.$$('#scannerSelect').$$('select').value);
+          assertEquals(
+              ADF_SIMPLEX, scanningApp.$$('#sourceSelect').$$('select').value);
+          assertEquals(
+              loadTimeData.getString('myFilesSelectOption'),
+              scanningApp.$$('#scanToSelect').$$('select').value);
+          assertEquals(
+              ash.scanning.mojom.FileType.kPdf.toString(),
+              scanningApp.$$('#fileTypeSelect').$$('select').value);
+          assertEquals(
+              ash.scanning.mojom.ColorMode.kBlackAndWhite.toString(),
+              scanningApp.$$('#colorModeSelect').$$('select').value);
+          assertEquals(
+              ash.scanning.mojom.PageSize.kIsoA4.toString(),
+              scanningApp.$$('#pageSizeSelect').$$('select').value);
+          assertEquals(
+              '600', scanningApp.$$('#resolutionSelect').$$('select').value);
         });
   });
 }

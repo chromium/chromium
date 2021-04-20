@@ -12,9 +12,11 @@
           [[getSourceTypeString_(source.type)]]
         </option>
       </template>
-      <option value="" hidden="[[options.length]]">
-        [[i18n('defaultSourceOptionText')]]
-      </option>
+      <template is="dom-if" if="[[!options.length]]" restamp>
+        <option value="">
+          [[i18n('defaultSourceOptionText')]]
+        </option>
+      </template>
     </select>
   </div>
 </scan-settings-section>
