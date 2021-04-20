@@ -25,7 +25,6 @@ js_type_check("closure_compile") {
     ":logo",
     ":new_tab_page",
     ":new_tab_page_proxy",
-    ":one_google_bar_api",
     ":promo_browser_command_proxy",
     ":utils",
     ":voice_search_overlay",
@@ -82,7 +81,6 @@ js_library("app") {
     ":i18n_setup",
     ":metrics_utils",
     ":new_tab_page_proxy",
-    ":one_google_bar_api",
     ":promo_browser_command_proxy",
     ":voice_search_overlay",
     ":window_proxy",
@@ -238,9 +236,6 @@ js_library("background_manager") {
   ]
 }
 
-js_library("one_google_bar_api") {
-}
-
 js_library("img") {
 }
 
@@ -380,7 +375,6 @@ generate_grd("build_grd") {
   input_files = [
     "new_tab_page.html",
     "shared_vars.css",
-    "one_google_bar_api.js",
     "untrusted/background_image.html",
     "untrusted/background_image.js",
     "untrusted/image.html",
@@ -505,7 +499,6 @@ if (optimize_webui) {
       "new_tab_page.mojom-lite.js",
       "realbox/omnibox.mojom-lite.js",
       "realbox/realbox.mojom-lite.js",
-      "one_google_bar_api.js",
       "promo_browser_command.mojom-lite.js",
       "modules/drive/drive.mojom-lite.js",
       "modules/task_module/task_module.mojom-lite.js",

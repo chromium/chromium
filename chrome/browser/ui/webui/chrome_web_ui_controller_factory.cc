@@ -77,7 +77,6 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/web_ui/constants.h"
-#include "components/search/ntp_features.h"
 #include "components/security_interstitials/content/connection_help_ui.h"
 #include "components/security_interstitials/content/known_interception_disclosure_ui.h"
 #include "components/security_interstitials/content/urls.h"
@@ -1169,10 +1168,7 @@ bool ChromeWebUIControllerFactory::IsWebUIAllowedToMakeNetworkRequests(
       // https://crbug.com/831813
       origin.host() == chrome::kChromeUIInspectHost ||
       // https://crbug.com/859345
-      origin.host() == chrome::kChromeUIDownloadsHost ||
-      // TODO(crbug.com/1076506): remove when change to iframed OneGoogleBar.
-      (origin.host() == chrome::kChromeUINewTabPageHost &&
-       !base::FeatureList::IsEnabled(ntp_features::kIframeOneGoogleBar));
+      origin.host() == chrome::kChromeUIDownloadsHost;
 }
 
 ChromeWebUIControllerFactory::ChromeWebUIControllerFactory() = default;

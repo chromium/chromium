@@ -25,7 +25,6 @@
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/instant_service.h"
-#include "chrome/browser/search/one_google_bar/one_google_bar_service_factory.h"
 #include "chrome/browser/search/promos/promo_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
@@ -331,8 +330,6 @@ NewTabPageHandler::NewTabPageHandler(
       ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile)),
       logo_service_(LogoServiceFactory::GetForProfile(profile)),
-      one_google_bar_service_(
-          OneGoogleBarServiceFactory::GetForProfile(profile)),
       profile_(profile),
       web_contents_(web_contents),
       ntp_navigation_start_time_(ntp_navigation_start_time),
@@ -343,14 +340,12 @@ NewTabPageHandler::NewTabPageHandler(
   CHECK(instant_service_);
   CHECK(ntp_background_service_);
   CHECK(logo_service_);
-  CHECK(one_google_bar_service_);
   CHECK(promo_service_);
   CHECK(web_contents_);
   instant_service_->AddObserver(this);
   ntp_background_service_->AddObserver(this);
   instant_service_->UpdateNtpTheme();
   promo_service_observation_.Observe(promo_service_);
-  one_google_bar_service_observation_.Observe(one_google_bar_service_);
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
@@ -554,24 +549,6 @@ void NewTabPageHandler::ChooseLocalCustomBackground(
       profile_->last_selected_directory(), &file_types, 0,
       base::FilePath::StringType(), web_contents_->GetTopLevelNativeWindow(),
       nullptr);
-}
-
-void NewTabPageHandler::GetOneGoogleBarParts(
-    const std::string& query_params,
-    GetOneGoogleBarPartsCallback callback) {
-  if (!one_google_bar_service_) {
-    return;
-  }
-  one_google_bar_parts_callbacks_.push_back(std::move(callback));
-  bool wait_for_refresh =
-      one_google_bar_service_->SetAdditionalQueryParams(query_params);
-  if (one_google_bar_service_->one_google_bar_data().has_value() &&
-      !wait_for_refresh &&
-      base::FeatureList::IsEnabled(ntp_features::kCacheOneGoogleBar)) {
-    OnOneGoogleBarDataUpdated();
-  }
-  one_google_bar_load_start_time_ = base::TimeTicks::Now();
-  one_google_bar_service_->Refresh();
 }
 
 void NewTabPageHandler::GetPromo(GetPromoCallback callback) {
@@ -1011,39 +988,6 @@ void NewTabPageHandler::OnNextCollectionImageAvailable() {}
 void NewTabPageHandler::OnNtpBackgroundServiceShuttingDown() {
   ntp_background_service_->RemoveObserver(this);
   ntp_background_service_ = nullptr;
-}
-
-void NewTabPageHandler::OnOneGoogleBarDataUpdated() {
-  base::Optional<OneGoogleBarData> data =
-      one_google_bar_service_->one_google_bar_data();
-
-  if (one_google_bar_load_start_time_.has_value()) {
-    NTPUserDataLogger::LogOneGoogleBarFetchDuration(
-        /*success=*/data.has_value(),
-        /*duration=*/base::TimeTicks::Now() - *one_google_bar_load_start_time_);
-    one_google_bar_load_start_time_ = base::nullopt;
-  }
-
-  for (auto& callback : one_google_bar_parts_callbacks_) {
-    if (data.has_value()) {
-      auto parts = new_tab_page::mojom::OneGoogleBarParts::New();
-      parts->bar_html = data->bar_html;
-      parts->in_head_script = data->in_head_script;
-      parts->in_head_style = data->in_head_style;
-      parts->after_bar_script = data->after_bar_script;
-      parts->end_of_body_html = data->end_of_body_html;
-      parts->end_of_body_script = data->end_of_body_script;
-      std::move(callback).Run(std::move(parts));
-    } else {
-      std::move(callback).Run(nullptr);
-    }
-  }
-  one_google_bar_parts_callbacks_.clear();
-}
-
-void NewTabPageHandler::OnOneGoogleBarServiceShuttingDown() {
-  one_google_bar_service_observation_.Reset();
-  one_google_bar_service_ = nullptr;
 }
 
 void NewTabPageHandler::FileSelected(const base::FilePath& path,

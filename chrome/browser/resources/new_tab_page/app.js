@@ -22,7 +22,6 @@ import {loadTimeData} from './i18n_setup.js';
 import {recordLoadDuration} from './metrics_utils.js';
 import {ModuleRegistry} from './modules/module_registry.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
-import {oneGoogleBarApi} from './one_google_bar_api.js';
 import {PromoBrowserCommandProxy} from './promo_browser_command_proxy.js';
 import {$$} from './utils.js';
 import {Action as VoiceAction, recordVoiceAction} from './voice_search_overlay.js';
@@ -56,27 +55,6 @@ class AppElement extends PolymerElement {
   static get properties() {
     return {
       /** @private */
-      iframeOneGoogleBarEnabled_: {
-        type: Boolean,
-        value: () => {
-          const params = new URLSearchParams(window.location.search);
-          if (params.has('ogbinline')) {
-            return false;
-          }
-          return loadTimeData.getBoolean('iframeOneGoogleBarEnabled') ||
-              params.has('ogbiframe');
-        },
-        reflectToAttribute: true,
-      },
-
-      /** @private */
-      oneGoogleBarModalOverlaysEnabled_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('oneGoogleBarModalOverlaysEnabled'),
-      },
-
-      /** @private */
       oneGoogleBarIframePath_: {
         type: String,
         value: () => {
@@ -90,9 +68,8 @@ class AppElement extends PolymerElement {
 
       /** @private */
       oneGoogleBarLoaded_: {
-        observer: 'oneGoogleBarLoadedChange_',
         type: Boolean,
-        value: false,
+        observer: 'notifyOneGoogleBarDarkThemeEnabledChange_',
       },
 
       /** @private */
@@ -100,15 +77,7 @@ class AppElement extends PolymerElement {
         type: Boolean,
         computed: `computeOneGoogleBarDarkThemeEnabled_(oneGoogleBarLoaded_,
             theme_, backgroundSelection_)`,
-        observer: 'onOneGoogleBarDarkThemeEnabledChange_',
-      },
-
-      /** @private */
-      showIframedOneGoogleBar_: {
-        type: Boolean,
-        value: false,
-        computed: `computeShowIframedOneGoogleBar_(iframeOneGoogleBarEnabled_,
-            lazyRender_)`,
+        observer: 'notifyOneGoogleBarDarkThemeEnabledChange_',
       },
 
       /** @private {!newTabPage.mojom.Theme} */
@@ -257,7 +226,6 @@ class AppElement extends PolymerElement {
     this.setThemeListenerId_ = null;
     /** @private {!EventTracker} */
     this.eventTracker_ = new EventTracker();
-    this.loadOneGoogleBar_();
     /** @private {boolean} */
     this.shouldPrintPerformance_ =
         new URLSearchParams(location.search).has('print_perf');
@@ -338,9 +306,6 @@ class AppElement extends PolymerElement {
    * @private
    */
   computeOneGoogleBarDarkThemeEnabled_() {
-    if (!this.theme_ || !this.oneGoogleBarLoaded_) {
-      return false;
-    }
     switch (this.backgroundSelection_.type) {
       case BackgroundSelectionType.IMAGE:
         return true;
@@ -348,82 +313,18 @@ class AppElement extends PolymerElement {
       case BackgroundSelectionType.DAILY_REFRESH:
       case BackgroundSelectionType.NO_SELECTION:
       default:
-        return this.theme_.isDark;
+        return this.theme_ && this.theme_.isDark;
     }
-  }
-
-  /**
-   * @return {!Promise}
-   * @private
-   */
-  async loadOneGoogleBar_() {
-    if (this.iframeOneGoogleBarEnabled_) {
-      const oneGoogleBar = document.querySelector('#oneGoogleBar');
-      if (oneGoogleBar) {
-        oneGoogleBar.remove();
-      }
-      return;
-    }
-
-    const {parts} = await this.pageHandler_.getOneGoogleBarParts(
-        window.location.search.replace(/^[?]/, '&'));
-    if (!parts) {
-      return;
-    }
-
-    const inHeadStyle = document.createElement('style');
-    inHeadStyle.type = 'text/css';
-    inHeadStyle.appendChild(document.createTextNode(parts.inHeadStyle));
-    document.head.appendChild(inHeadStyle);
-
-    const inHeadScript = document.createElement('script');
-    inHeadScript.type = 'text/javascript';
-    inHeadScript.appendChild(document.createTextNode(parts.inHeadScript));
-    document.head.appendChild(inHeadScript);
-
-    this.oneGoogleBarLoaded_ = true;
-    const oneGoogleBar = document.querySelector('#oneGoogleBar');
-    oneGoogleBar.innerHTML = parts.barHtml;
-
-    const afterBarScript = document.createElement('script');
-    afterBarScript.type = 'text/javascript';
-    afterBarScript.appendChild(document.createTextNode(parts.afterBarScript));
-    oneGoogleBar.parentNode.insertBefore(
-        afterBarScript, oneGoogleBar.nextSibling);
-
-    document.querySelector('#oneGoogleBarEndOfBody').innerHTML =
-        parts.endOfBodyHtml;
-
-    const endOfBodyScript = document.createElement('script');
-    endOfBodyScript.type = 'text/javascript';
-    endOfBodyScript.appendChild(document.createTextNode(parts.endOfBodyScript));
-    document.body.appendChild(endOfBodyScript);
-
-    this.pageHandler_.onOneGoogleBarRendered(WindowProxy.getInstance().now());
-    oneGoogleBarApi.trackDarkModeChanges();
   }
 
   /** @private */
-  onOneGoogleBarDarkThemeEnabledChange_() {
-    if (!this.oneGoogleBarLoaded_) {
-      return;
-    }
-    if (this.iframeOneGoogleBarEnabled_) {
+  notifyOneGoogleBarDarkThemeEnabledChange_() {
+    if (this.oneGoogleBarLoaded_) {
       $$(this, '#oneGoogleBar').postMessage({
         type: 'enableDarkTheme',
         enabled: this.oneGoogleBarDarkThemeEnabled_,
       });
-      return;
     }
-    oneGoogleBarApi.setForegroundLight(this.oneGoogleBarDarkThemeEnabled_);
-  }
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowIframedOneGoogleBar_() {
-    return this.iframeOneGoogleBarEnabled_ && this.lazyRender_;
   }
 
   /**
@@ -763,10 +664,6 @@ class AppElement extends PolymerElement {
    *
    * 'overlaysUpdated' message includes the updated array of overlay rects that
    * are shown.
-   *
-   * When modal overlays are enabled, activate/deactivate controls if the
-   * OneGoogleBar is layered on top of #content with a backdrop. This would
-   * happen when OneGoogleBar has an overlay open.
    * @param {!MessageEvent} event
    * @private
    */
@@ -774,11 +671,9 @@ class AppElement extends PolymerElement {
     /** @type {!Object} */
     const data = event.data;
     if (data.messageType === 'loaded') {
-      if (!this.oneGoogleBarModalOverlaysEnabled_) {
-        const oneGoogleBar = $$(this, '#oneGoogleBar');
-        oneGoogleBar.style.clipPath = 'url(#oneGoogleBarClipPath)';
-        oneGoogleBar.style.zIndex = '1000';
-      }
+      const oneGoogleBar = $$(this, '#oneGoogleBar');
+      oneGoogleBar.style.clipPath = 'url(#oneGoogleBarClipPath)';
+      oneGoogleBar.style.zIndex = '1000';
       this.oneGoogleBarLoaded_ = true;
       this.pageHandler_.onOneGoogleBarRendered(WindowProxy.getInstance().now());
     } else if (data.messageType === 'overlaysUpdated') {
@@ -796,25 +691,11 @@ class AppElement extends PolymerElement {
         rectElement.setAttribute('height', height + 16);
         this.$.oneGoogleBarClipPath.appendChild(rectElement);
       });
-    } else if (data.messageType === 'activate') {
-      this.$.oneGoogleBarOverlayBackdrop.toggleAttribute('show', true);
-      $$(this, '#oneGoogleBar').style.zIndex = '1000';
-    } else if (data.messageType === 'deactivate') {
-      this.$.oneGoogleBarOverlayBackdrop.toggleAttribute('show', false);
-      $$(this, '#oneGoogleBar').style.zIndex = '0';
     } else if (data.messageType === 'can-show-promo-with-browser-command') {
       this.canShowPromoWithBrowserCommand_(data, event.source, event.origin);
     } else if (data.messageType === 'execute-browser-command') {
       this.executePromoBrowserCommand_(
           /** @type {!CommandData} */ (data.data), event.source, event.origin);
-    }
-  }
-
-  /** @private */
-  oneGoogleBarLoadedChange_() {
-    if (this.oneGoogleBarLoaded_ && this.iframeOneGoogleBarEnabled_ &&
-        this.oneGoogleBarModalOverlaysEnabled_) {
-      this.setupShortcutDragDropOneGoogleBarWorkaround_();
     }
   }
 
@@ -832,50 +713,6 @@ class AppElement extends PolymerElement {
   onCustomizeModule_() {
     this.showCustomizeDialog_ = true;
     this.selectedCustomizeDialogPage_ = CustomizeDialogPage.MODULES;
-  }
-
-  /**
-   * During a shortcut drag, an iframe behind ntp-most-visited will prevent
-   * 'dragover' events from firing. To workaround this, 'pointer-events: none'
-   * can be set on the iframe. When doing this after the 'dragstart' event is
-   * fired is too late. We can instead set 'pointer-events: none' when the
-   * pointer enters ntp-most-visited.
-   *
-   * 'pointerenter' and pointerleave' events fire during drag. The iframe
-   * 'pointer-events' needs to be reset to the original value when 'dragend'
-   * fires if the pointer has left ntp-most-visited.
-   * @private
-   */
-  setupShortcutDragDropOneGoogleBarWorkaround_() {
-    const iframe = $$(this, '#oneGoogleBar');
-    let resetAtDragEnd = false;
-    let dragging = false;
-    let originalPointerEvents;
-    this.eventTracker_.add(this.$.mostVisited, 'pointerenter', () => {
-      if (dragging) {
-        resetAtDragEnd = false;
-        return;
-      }
-      originalPointerEvents = getComputedStyle(iframe).pointerEvents;
-      iframe.style.pointerEvents = 'none';
-    });
-    this.eventTracker_.add(this.$.mostVisited, 'pointerleave', () => {
-      if (dragging) {
-        resetAtDragEnd = true;
-        return;
-      }
-      iframe.style.pointerEvents = originalPointerEvents;
-    });
-    this.eventTracker_.add(this.$.mostVisited, 'dragstart', () => {
-      dragging = true;
-    });
-    this.eventTracker_.add(this.$.mostVisited, 'dragend', () => {
-      dragging = false;
-      if (resetAtDragEnd) {
-        resetAtDragEnd = false;
-        iframe.style.pointerEvents = originalPointerEvents;
-      }
-    });
   }
 
   /** @private */

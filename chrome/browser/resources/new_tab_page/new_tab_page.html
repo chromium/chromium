@@ -9,10 +9,6 @@
         margin: 0;
       }
 
-      #oneGoogleBar {
-        height: 56px;
-      }
-
       #backgroundImage {
         border: none;
         height: 100%;
@@ -29,7 +25,6 @@
     </style>
   </head>
   <body>
-    <div id="oneGoogleBar"></div>
     <iframe id="backgroundImage"
         src="chrome-untrusted://new-tab-page/custom_background_image?url=$i18nRaw{backgroundImageUrl}">
     </iframe>
@@ -37,6 +32,5 @@
     <script type="module" src="new_tab_page.js"></script>
     <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
     <link rel="stylesheet" href="shared_vars.css">
-    <div id="oneGoogleBarEndOfBody"></div>
   </body>
 </html>

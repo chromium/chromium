@@ -4665,15 +4665,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpCacheOneGoogleBarDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kCacheOneGoogleBar)},
 
-    {"ntp-iframe-one-google-bar", flag_descriptions::kNtpIframeOneGoogleBarName,
-     flag_descriptions::kNtpIframeOneGoogleBarDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kIframeOneGoogleBar)},
-
-    {"ntp-one-google-bar-modal-overlays",
-     flag_descriptions::kNtpOneGoogleBarModalOverlaysName,
-     flag_descriptions::kNtpOneGoogleBarModalOverlaysDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kOneGoogleBarModalOverlays)},
-
     {"ntp-repeatable-queries", flag_descriptions::kNtpRepeatableQueriesName,
      flag_descriptions::kNtpRepeatableQueriesDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpRepeatableQueries,

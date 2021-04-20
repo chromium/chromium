@@ -2029,12 +2029,6 @@ extern const char kGlobalMediaControlsCastStartStopDescription[];
 extern const char kNtpCacheOneGoogleBarName[];
 extern const char kNtpCacheOneGoogleBarDescription[];
 
-extern const char kNtpIframeOneGoogleBarName[];
-extern const char kNtpIframeOneGoogleBarDescription[];
-
-extern const char kNtpOneGoogleBarModalOverlaysName[];
-extern const char kNtpOneGoogleBarModalOverlaysDescription[];
-
 extern const char kNtpRepeatableQueriesName[];
 extern const char kNtpRepeatableQueriesDescription[];
 

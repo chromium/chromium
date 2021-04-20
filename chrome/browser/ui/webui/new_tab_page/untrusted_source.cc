@@ -133,12 +133,6 @@ void UntrustedSource::StartDataRequest(
         IDR_NEW_TAB_PAGE_UNTRUSTED_ONE_GOOGLE_BAR_JS));
     return;
   }
-  if (path == "one_google_bar_api.js") {
-    ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-    std::move(callback).Run(
-        bundle.LoadDataResourceBytes(IDR_NEW_TAB_PAGE_ONE_GOOGLE_BAR_API_JS));
-    return;
-  }
   if (path == "image" && url_param.is_valid() &&
       (url_param.SchemeIs(url::kHttpsScheme) ||
        url_param.SchemeIs(content::kChromeUIUntrustedScheme))) {
@@ -234,7 +228,7 @@ bool UntrustedSource::ShouldServiceRequest(
   return path == "one-google-bar" || path == "one_google_bar.js" ||
          path == "image" || path == "background_image" ||
          path == "custom_background_image" || path == "background_image.js" ||
-         path == "background.jpg" || path == "one_google_bar_api.js";
+         path == "background.jpg";
 }
 
 void UntrustedSource::OnOneGoogleBarDataUpdated() {
@@ -252,10 +246,6 @@ void UntrustedSource::OnOneGoogleBarDataUpdated() {
   if (data.has_value()) {
     ui::TemplateReplacements replacements;
     replacements["textdirection"] = base::i18n::IsRTL() ? "rtl" : "ltr";
-    replacements["modalOverlays"] =
-        base::FeatureList::IsEnabled(ntp_features::kOneGoogleBarModalOverlays)
-            ? "modal-overlays"
-            : "";
     replacements["barHtml"] = data->bar_html;
     replacements["inHeadScript"] = data->in_head_script;
     replacements["inHeadStyle"] = data->in_head_style;

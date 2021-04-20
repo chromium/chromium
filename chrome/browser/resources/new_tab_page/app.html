@@ -61,7 +61,7 @@
     z-index: 1;
   }
 
-  :host([iframe-one-google-bar-enabled_]) #content {
+  #content {
     padding-top: var(--ntp-one-google-bar-height);
   }
 
@@ -251,7 +251,7 @@
         --ntp-theme-shortcut-background-color:
               [[rgbaOrInherit_(theme_.shortcutBackgroundColor)]];
         --ntp-logo-color: [[rgbaOrInherit_(logoColor_)]];">
-  <template is="dom-if" if="[[showIframedOneGoogleBar_]]">
+  <template is="dom-if" if="[[lazyRender_]]">
     <ntp-iframe id="oneGoogleBar" src="[[oneGoogleBarIframePath_]]"
         hidden$="[[!oneGoogleBarLoaded_]]">
     </ntp-iframe>

@@ -15,8 +15,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
 #include "chrome/browser/search/instant_service_observer.h"
-#include "chrome/browser/search/one_google_bar/one_google_bar_service.h"
-#include "chrome/browser/search/one_google_bar/one_google_bar_service_observer.h"
 #include "chrome/browser/search/promos/promo_service.h"
 #include "chrome/browser/search/promos/promo_service_observer.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
@@ -48,7 +46,6 @@ class LogoService;
 class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                           public InstantServiceObserver,
                           public NtpBackgroundServiceObserver,
-                          public OneGoogleBarServiceObserver,
                           public ui::SelectFileDialog::Listener,
                           public PromoServiceObserver {
  public:
@@ -94,8 +91,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void GetDoodle(GetDoodleCallback callback) override;
   void ChooseLocalCustomBackground(
       ChooseLocalCustomBackgroundCallback callback) override;
-  void GetOneGoogleBarParts(const std::string& ogdeb_value,
-                            GetOneGoogleBarPartsCallback callback) override;
   void GetPromo(GetPromoCallback callback) override;
   void OnDismissModule(const std::string& module_id) override;
   void OnRestoreModule(const std::string& module_id) override;
@@ -141,10 +136,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void OnNextCollectionImageAvailable() override;
   void OnNtpBackgroundServiceShuttingDown() override;
 
-  // OneGoogleBarServiceObserver:
-  void OnOneGoogleBarDataUpdated() override;
-  void OnOneGoogleBarServiceShuttingDown() override;
-
   // PromoServiceObserver:
   void OnPromoDataUpdated() override;
   void OnPromoServiceShuttingDown() override;
@@ -183,10 +174,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   std::string images_request_collection_id_;
   GetBackgroundImagesCallback background_images_callback_;
   base::TimeTicks background_images_request_start_time_;
-  std::vector<GetOneGoogleBarPartsCallback> one_google_bar_parts_callbacks_;
-  OneGoogleBarService* one_google_bar_service_;
-  base::ScopedObservation<OneGoogleBarService, OneGoogleBarServiceObserver>
-      one_google_bar_service_observation_{this};
   base::Optional<base::TimeTicks> one_google_bar_load_start_time_;
   Profile* profile_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;

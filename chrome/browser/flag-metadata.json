@@ -3685,19 +3685,9 @@
     "expiry_milestone": 92
   },
   {
-    "name": "ntp-iframe-one-google-bar",
-    "owners": [ "aee", "mahmadi", "tiborg" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "ntp-modules",
     "owners": [ "aee", "mahmadi", "tiborg" ],
     "expiry_milestone": 92
-  },
-  {
-    "name": "ntp-one-google-bar-modal-overlays",
-    "owners": [ "aee", "mahmadi", "tiborg" ],
-    "expiry_milestone": 88
   },
   {
     "name": "ntp-recipe-tasks-module",

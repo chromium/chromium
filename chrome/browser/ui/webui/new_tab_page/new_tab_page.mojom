@@ -11,16 +11,6 @@ import "mojo/public/mojom/base/time.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "url/mojom/url.mojom";
 
-
-struct OneGoogleBarParts {
-  string bar_html;
-  string in_head_script;
-  string in_head_style;
-  string after_bar_script;
-  string end_of_body_html;
-  string end_of_body_script;
-};
-
 struct MostVisitedTile {
   string title;
   mojo_base.mojom.TextDirection title_direction;
@@ -283,10 +273,6 @@ interface PageHandler {
   GetDoodle() => (Doodle? doodle);
   // Choose custom background from local file system.
   ChooseLocalCustomBackground() => (bool success);
-  // Get the OneGoogleBarParts to be inlined in the NTP. Forwards the query
-  // parameters to the endpoint that serves the OneGoogleBar parts with
-  // |query_params|.
-  GetOneGoogleBarParts(string query_params) => (OneGoogleBarParts? parts);
   // Get the middle slot promo if it exists.
   GetPromo() => (Promo? promo);
   // Called when a module the given id is dismissed.

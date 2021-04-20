@@ -95,13 +95,6 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
       base::FeatureList::IsEnabled(
           ntp_features::kNtpHandleMostVisitedNavigationExplicitly));
 
-  source->AddBoolean(
-      "iframeOneGoogleBarEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kIframeOneGoogleBar));
-  source->AddBoolean(
-      "oneGoogleBarModalOverlaysEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kOneGoogleBarModalOverlays));
-
   source->AddBoolean("shortcutsEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpShortcuts));
   source->AddBoolean("logoEnabled",
