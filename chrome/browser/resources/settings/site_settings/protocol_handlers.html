@@ -58,15 +58,11 @@
       </div>
     </template>
     <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
-      <div class="cr-row first two-line">
-        <div id="categoryLabel" class="flex" on-click="categoryLabelClicked_"
-            actionable>
-          [[computeHandlersDescription_(categoryEnabled)]]
-        </div>
-        <cr-toggle id="toggle" checked="{{categoryEnabled}}"
-            on-change="onToggleChange_" aria-labelledby="categoryLabel">
-        </cr-toggle>
-      </div>
+      <settings-toggle-button id="protocolHandlersToggle"
+        pref="{{handlersEnabledPref_}}"
+        label="[[computeHandlersDescription_(handlersEnabledPref_.*)]]"
+        on-change="onToggleChange_">
+      </settings-toggle-button>
     </template>
 
     <template is="dom-repeat" items="[[protocols]]" as="protocol">
