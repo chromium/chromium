@@ -778,8 +778,7 @@ std::tuple<GURL, std::string> AutofillDownloadManager::GetRequestURLAndMethod(
   std::string query_str;
 
   if (request_data.request_type == AutofillDownloadManager::REQUEST_QUERY) {
-    if (request_data.payload.length() <= kMaxQueryGetSize &&
-        base::FeatureList::IsEnabled(features::kAutofillCacheQueryResponses)) {
+    if (request_data.payload.length() <= kMaxQueryGetSize) {
       method = "GET";
       std::string base64_payload;
       base::Base64UrlEncode(request_data.payload,
@@ -808,8 +807,7 @@ AutofillDownloadManager::GetRequestURLAndMethodForApi(
   std::string method = "POST";
 
   if (request_data.request_type == AutofillDownloadManager::REQUEST_QUERY) {
-    if (GetPayloadLength(request_data.payload) <= kMaxAPIQueryGetSize &&
-        base::FeatureList::IsEnabled(features::kAutofillCacheQueryResponses)) {
+    if (GetPayloadLength(request_data.payload) <= kMaxAPIQueryGetSize) {
       resource_id = request_data.payload;
       method = "GET";
       UMA_HISTOGRAM_BOOLEAN("Autofill.Query.ApiUrlIsTooLong", false);
