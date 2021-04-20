@@ -84,7 +84,7 @@ class BidderWorkletTest : public testing::Test {
     browser_signal_bid_count_ = 3;
     browser_signal_prev_wins_.clear();
     seller_signals_ = "[\"seller_signals\"]";
-    GURL browser_signal_render_url_ = GURL("https://render_url.test");
+    browser_signal_render_url_ = GURL("https://render_url.test/");
     browser_signal_ad_render_fingerprint_ =
         "browser_signal_ad_render_fingerprint";
     browser_signal_bid_ = 1;

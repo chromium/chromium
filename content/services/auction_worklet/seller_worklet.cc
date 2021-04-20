@@ -142,7 +142,6 @@ SellerWorklet::ScoreResult SellerWorklet::ScoreAd(
     const blink::mojom::AuctionAdConfig& auction_config,
     const std::string& browser_signal_top_window_hostname,
     const url::Origin& browser_signal_interest_group_owner,
-    const std::string& browser_signal_interest_group_name,
     const std::string& browser_signal_ad_render_fingerprint,
     base::TimeDelta browser_signal_bidding_duration) {
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_);
@@ -168,8 +167,6 @@ SellerWorklet::ScoreResult SellerWorklet::ScoreAd(
       !browser_signals_dict.Set(
           "interestGroupOwner",
           browser_signal_interest_group_owner.Serialize()) ||
-      !browser_signals_dict.Set("interestGroupName",
-                                browser_signal_interest_group_name) ||
       !browser_signals_dict.Set("adRenderFingerprint",
                                 browser_signal_ad_render_fingerprint) ||
       !browser_signals_dict.Set(
@@ -198,7 +195,6 @@ SellerWorklet::Report SellerWorklet::ReportResult(
     const blink::mojom::AuctionAdConfig& auction_config,
     const std::string& browser_signal_top_window_hostname,
     const url::Origin& browser_signal_interest_group_owner,
-    const std::string& browser_signal_interest_group_name,
     const GURL& browser_signal_render_url,
     const std::string& browser_signal_ad_render_fingerprint,
     double browser_signal_bid,
@@ -227,8 +223,6 @@ SellerWorklet::Report SellerWorklet::ReportResult(
       !browser_signals_dict.Set(
           "interestGroupOwner",
           browser_signal_interest_group_owner.Serialize()) ||
-      !browser_signals_dict.Set("interestGroupName",
-                                browser_signal_interest_group_name) ||
       !browser_signals_dict.Set("renderUrl",
                                 browser_signal_render_url.spec()) ||
       !browser_signals_dict.Set("adRenderFingerprint",

@@ -74,7 +74,6 @@ class SellerWorkletTest : public testing::Test {
     browser_signal_top_window_hostname_ = "top_window_hostname";
     browser_signal_interest_group_owner_ =
         url::Origin::Create(GURL("https://foo.test/"));
-    browser_signal_interest_group_name_ = "interest_group_name";
     browser_signal_ad_render_fingerprint_ = "ad_render_fingerprint";
     browser_signal_bidding_duration_ = base::TimeDelta();
     browser_signal_render_url_ = GURL("https://render.url.test/");
@@ -109,7 +108,6 @@ class SellerWorkletTest : public testing::Test {
         seller_worket->ScoreAd(ad_metadata_, bid_, *auction_config_,
                                browser_signal_top_window_hostname_,
                                browser_signal_interest_group_owner_,
-                               browser_signal_interest_group_name_,
                                browser_signal_ad_render_fingerprint_,
                                browser_signal_bidding_duration_);
     EXPECT_EQ(expected_score > 0, actual_result.success);
@@ -146,8 +144,7 @@ class SellerWorkletTest : public testing::Test {
 
     SellerWorklet::Report actual_result = seller_worket->ReportResult(
         *auction_config_, browser_signal_top_window_hostname_,
-        browser_signal_interest_group_owner_,
-        browser_signal_interest_group_name_, browser_signal_render_url_,
+        browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_render_fingerprint_, bid_,
         browser_signal_desireability_);
     EXPECT_EQ(expected_report.success, actual_result.success);
@@ -193,7 +190,6 @@ class SellerWorkletTest : public testing::Test {
   blink::mojom::AuctionAdConfigPtr auction_config_;
   std::string browser_signal_top_window_hostname_;
   url::Origin browser_signal_interest_group_owner_;
-  std::string browser_signal_interest_group_name_;
   std::string browser_signal_ad_render_fingerprint_;
   base::TimeDelta browser_signal_bidding_duration_;
   GURL browser_signal_render_url_;
@@ -264,11 +260,6 @@ TEST_F(SellerWorkletTest, ScoreAdParameters) {
           "browserSignals.topWindowHostname",
           false /* is_json */,
           &browser_signal_top_window_hostname_,
-      },
-      {
-          "browserSignals.interestGroupName",
-          false /* is_json */,
-          &browser_signal_interest_group_name_,
       },
       {
           "browserSignals.adRenderFingerprint",
@@ -413,11 +404,6 @@ TEST_F(SellerWorkletTest, ReportResultParameters) {
           "browserSignals.topWindowHostname",
           false /* is_json */,
           &browser_signal_top_window_hostname_,
-      },
-      {
-          "browserSignals.interestGroupName",
-          false /* is_json */,
-          &browser_signal_interest_group_name_,
       },
       {
           "browserSignals.adRenderFingerprint",
@@ -581,7 +567,6 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
           seller_worket->ScoreAd(ad_metadata_, bid_, *auction_config_,
                                  browser_signal_top_window_hostname_,
                                  browser_signal_interest_group_owner_,
-                                 browser_signal_interest_group_name_,
                                  browser_signal_ad_render_fingerprint_,
                                  browser_signal_bidding_duration_);
       EXPECT_TRUE(score_result.success);
@@ -591,8 +576,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
     for (int j = 0; j < 2; ++j) {
       SellerWorklet::Report report = seller_worket->ReportResult(
           *auction_config_, browser_signal_top_window_hostname_,
-          browser_signal_interest_group_owner_,
-          browser_signal_interest_group_name_, browser_signal_render_url_,
+          browser_signal_interest_group_owner_, browser_signal_render_url_,
           browser_signal_ad_render_fingerprint_, bid_,
           browser_signal_desireability_);
       EXPECT_TRUE(report.success);
