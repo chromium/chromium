@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_EXTENSIONS_BOOKMARK_APP_FILE_HANDLER_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTENSIONS_BOOKMARK_APP_FILE_HANDLER_MANAGER_H_
 
-#include <vector>
-
 #include "chrome/browser/web_applications/components/file_handler_manager.h"
 
 namespace web_app {

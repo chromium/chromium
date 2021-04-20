@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_EXPLORE_SITES_GET_IMAGES_TASK_H_
 #define CHROME_BROWSER_ANDROID_EXPLORE_SITES_GET_IMAGES_TASK_H_
 
-#include <vector>
-
 #include "chrome/browser/android/explore_sites/explore_sites_store.h"
 #include "chrome/browser/android/explore_sites/explore_sites_types.h"
 #include "components/offline_pages/task/task.h"

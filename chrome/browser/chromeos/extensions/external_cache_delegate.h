@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_EXTERNAL_CACHE_DELEGATE_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_EXTERNAL_CACHE_DELEGATE_H_
 
-#include <string>
-
 #include "extensions/common/extension_id.h"
 
 namespace base {

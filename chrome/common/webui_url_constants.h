@@ -9,7 +9,6 @@
 #define CHROME_COMMON_WEBUI_URL_CONSTANTS_H_
 
 #include <stddef.h>
-#include <string>
 
 #include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"

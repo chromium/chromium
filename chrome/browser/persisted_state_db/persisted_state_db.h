@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_PERSISTED_STATE_DB_PERSISTED_STATE_DB_H_
 #define CHROME_BROWSER_PERSISTED_STATE_DB_PERSISTED_STATE_DB_H_
 
-#include <queue>
-#include <string>
-#include <vector>
-
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"

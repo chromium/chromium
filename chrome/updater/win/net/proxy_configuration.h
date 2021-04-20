@@ -8,9 +8,6 @@
 #include <windows.h>
 #include <winhttp.h>
 
-#include <memory>
-#include <string>
-
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "chrome/updater/win/net/proxy_info.h"

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_OBSERVERS_METRICS_COLLECTOR_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_OBSERVERS_METRICS_COLLECTOR_H_
 
-#include <map>
-
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SESSIONS_SESSION_RESTORE_TEST_UTILS_H_
 #define CHROME_BROWSER_SESSIONS_SESSION_RESTORE_TEST_UTILS_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "chrome/browser/resource_coordinator/session_restore_policy.h"
 

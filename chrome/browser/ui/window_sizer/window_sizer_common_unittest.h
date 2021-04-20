@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WINDOW_SIZER_WINDOW_SIZER_COMMON_UNITTEST_H_
 #define CHROME_BROWSER_UI_WINDOW_SIZER_WINDOW_SIZER_COMMON_UNITTEST_H_
 
-#include <vector>
-
 #include "base/macros.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/test/base/test_browser_window.h"

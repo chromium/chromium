@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PLATFORM_UTIL_H_
 #define CHROME_BROWSER_PLATFORM_UTIL_H_
 
-#include <string>
-
 #include "base/callback_forward.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"

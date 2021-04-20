@@ -5,8 +5,6 @@
 #ifndef CHROME_TEST_BASE_BROWSER_PROCESS_PLATFORM_PART_TEST_API_CHROMEOS_H_
 #define CHROME_TEST_BASE_BROWSER_PROCESS_PLATFORM_PART_TEST_API_CHROMEOS_H_
 
-#include <memory>
-
 #include "chrome/browser/component_updater/cros_component_manager.h"
 
 class BrowserProcessPlatformPart;

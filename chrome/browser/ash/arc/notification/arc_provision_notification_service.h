@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_NOTIFICATION_ARC_PROVISION_NOTIFICATION_SERVICE_H_
 #define CHROME_BROWSER_ASH_ARC_NOTIFICATION_ARC_PROVISION_NOTIFICATION_SERVICE_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"

@@ -7,8 +7,6 @@
 
 #include <windows.h>
 
-#include <string>
-
 #include "base/no_destructor.h"
 #include "base/synchronization/waitable_event.h"
 

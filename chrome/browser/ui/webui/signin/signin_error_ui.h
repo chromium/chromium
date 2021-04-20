@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_ERROR_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_ERROR_UI_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
 

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_POLICY_EXTENSION_REINSTALLER_H_
 #define CHROME_BROWSER_EXTENSIONS_POLICY_EXTENSION_REINSTALLER_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"

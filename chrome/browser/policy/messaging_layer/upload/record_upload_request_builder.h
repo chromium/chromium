@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_RECORD_UPLOAD_REQUEST_BUILDER_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_RECORD_UPLOAD_REQUEST_BUILDER_H_
 
-#include <string>
-
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"

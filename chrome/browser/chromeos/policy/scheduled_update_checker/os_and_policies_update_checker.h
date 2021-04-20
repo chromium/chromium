@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_SCHEDULED_UPDATE_CHECKER_OS_AND_POLICIES_UPDATE_CHECKER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_SCHEDULED_UPDATE_CHECKER_OS_AND_POLICIES_UPDATE_CHECKER_H_
 
-#include <memory>
-#include <string>
-
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"

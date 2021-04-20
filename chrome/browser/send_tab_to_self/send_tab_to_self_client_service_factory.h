@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_CLIENT_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_CLIENT_SERVICE_FACTORY_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_POLICY_POLICY_PATH_PARSER_H_
 #define CHROME_BROWSER_POLICY_POLICY_PATH_PARSER_H_
 
-#include <string>
-
 #include "base/files/file_path.h"
 
 namespace policy {

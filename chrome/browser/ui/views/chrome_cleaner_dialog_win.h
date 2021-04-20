@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CHROME_CLEANER_DIALOG_WIN_H_
 #define CHROME_BROWSER_UI_VIEWS_CHROME_CLEANER_DIALOG_WIN_H_
 
-#include <memory>
-#include <set>
-
 #include "base/macros.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "ui/views/metadata/metadata_header_macros.h"

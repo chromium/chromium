@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SESSIONS_CHROME_SERIALIZED_NAVIGATION_DRIVER_H_
 #define CHROME_BROWSER_SESSIONS_CHROME_SERIALIZED_NAVIGATION_DRIVER_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "components/sessions/content/content_serialized_navigation_driver.h"
 

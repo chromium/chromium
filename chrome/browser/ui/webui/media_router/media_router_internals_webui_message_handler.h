@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_MEDIA_ROUTER_MEDIA_ROUTER_INTERNALS_WEBUI_MESSAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_MEDIA_ROUTER_MEDIA_ROUTER_INTERNALS_WEBUI_MESSAGE_HANDLER_H_
 
-#include <string>
-
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"

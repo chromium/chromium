@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_PLUGIN_MANAGER_H_
 #define CHROME_BROWSER_EXTENSIONS_PLUGIN_MANAGER_H_
 
-#include <set>
-#include <string>
-
 #include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/nacl/common/buildflags.h"

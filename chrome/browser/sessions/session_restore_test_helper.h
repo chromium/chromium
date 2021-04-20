@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SESSIONS_SESSION_RESTORE_TEST_HELPER_H_
 #define CHROME_BROWSER_SESSIONS_SESSION_RESTORE_TEST_HELPER_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sessions/session_restore.h"

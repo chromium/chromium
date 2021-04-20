@@ -8,10 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "components/prefs/pref_member.h"

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_WILCO_DTC_SUPPORTD_CLIENT_H_
 #define CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_WILCO_DTC_SUPPORTD_CLIENT_H_
 
-#include <memory>
-
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"

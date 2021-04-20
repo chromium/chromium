@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SECURITY_EVENTS_SECURITY_EVENT_SYNC_BRIDGE_H_
 #define CHROME_BROWSER_SECURITY_EVENTS_SECURITY_EVENT_SYNC_BRIDGE_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/protocol/sync.pb.h"

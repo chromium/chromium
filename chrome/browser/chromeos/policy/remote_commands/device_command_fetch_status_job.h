@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_FETCH_STATUS_JOB_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_FETCH_STATUS_JOB_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 

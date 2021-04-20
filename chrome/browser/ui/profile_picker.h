@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_PROFILE_PICKER_H_
 #define CHROME_BROWSER_UI_PROFILE_PICKER_H_
 
-#include <vector>
-
 #include "base/callback_forward.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"

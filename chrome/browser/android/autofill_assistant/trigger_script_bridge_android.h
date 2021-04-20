@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_TRIGGER_SCRIPT_BRIDGE_ANDROID_H_
 #define CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_TRIGGER_SCRIPT_BRIDGE_ANDROID_H_
 
-#include <map>
-#include <memory>
-#include <string>
-
 #include "base/android/jni_android.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service.pb.h"

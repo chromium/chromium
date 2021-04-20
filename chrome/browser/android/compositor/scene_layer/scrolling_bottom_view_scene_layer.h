@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_COMPOSITOR_SCENE_LAYER_SCROLLING_BOTTOM_VIEW_SCENE_LAYER_H_
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_SCENE_LAYER_SCROLLING_BOTTOM_VIEW_SCENE_LAYER_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"

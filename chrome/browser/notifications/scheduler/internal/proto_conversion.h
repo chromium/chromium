@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_INTERNAL_PROTO_CONVERSION_H_
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_INTERNAL_PROTO_CONVERSION_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "chrome/browser/notifications/proto/client_state.pb.h"
 #include "chrome/browser/notifications/proto/icon.pb.h"

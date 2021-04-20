@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_AUTO_SIGNIN_FIRST_RUN_DIALOG_ANDROID_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_AUTO_SIGNIN_FIRST_RUN_DIALOG_ANDROID_H_
 
-#include <vector>
-
 #include "base/android/jni_android.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"

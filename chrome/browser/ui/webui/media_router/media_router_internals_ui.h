@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_MEDIA_ROUTER_MEDIA_ROUTER_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_MEDIA_ROUTER_MEDIA_ROUTER_INTERNALS_UI_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 

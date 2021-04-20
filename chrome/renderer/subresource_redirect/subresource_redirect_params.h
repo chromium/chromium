@@ -5,8 +5,6 @@
 #ifndef CHROME_RENDERER_SUBRESOURCE_REDIRECT_SUBRESOURCE_REDIRECT_PARAMS_H_
 #define CHROME_RENDERER_SUBRESOURCE_REDIRECT_SUBRESOURCE_REDIRECT_PARAMS_H_
 
-#include <string>
-
 #include "base/time/time.h"
 #include "url/origin.h"
 

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_MEDIA_GALLERY_CHECKBOX_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_MEDIA_GALLERY_CHECKBOX_VIEW_H_
 
-#include <string>
-
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/metadata_header_macros.h"

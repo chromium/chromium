@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_LITE_VIDEO_LITE_VIDEO_SWITCHES_H_
 #define CHROME_BROWSER_LITE_VIDEO_LITE_VIDEO_SWITCHES_H_
 
-#include <string>
-
 namespace lite_video {
 namespace switches {
 

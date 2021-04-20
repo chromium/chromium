@@ -6,7 +6,6 @@
 #define BASE_HASH_SHA1_NACL_H_
 
 #include <stdint.h>
-#include <array>
 
 namespace base {
 

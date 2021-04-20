@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CONTENT_SETTINGS_CONTENT_SETTINGS_MOCK_OBSERVER_H_
 #define CHROME_BROWSER_CONTENT_SETTINGS_CONTENT_SETTINGS_MOCK_OBSERVER_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_UPI_OFFER_BUBBLE_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_UPI_OFFER_BUBBLE_VIEWS_H_
 
-#include <memory>
-
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble_controller.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"

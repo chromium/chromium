@@ -29,7 +29,6 @@
 
 #include <limits.h>
 #include <string.h>
-#include <memory>
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc-inl.h"

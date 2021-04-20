@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ACCOUNT_MANAGER_CHILD_ACCOUNT_TYPE_CHANGED_USER_DATA_H_
 #define CHROME_BROWSER_ASH_ACCOUNT_MANAGER_CHILD_ACCOUNT_TYPE_CHANGED_USER_DATA_H_
 
-#include <memory>
-
 #include "base/callback_list.h"
 #include "base/supports_user_data.h"
 

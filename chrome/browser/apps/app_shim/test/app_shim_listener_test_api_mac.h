@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_APPS_APP_SHIM_TEST_APP_SHIM_LISTENER_TEST_API_MAC_H_
 #define CHROME_BROWSER_APPS_APP_SHIM_TEST_APP_SHIM_LISTENER_TEST_API_MAC_H_
 
-#include <memory>
-
 class AppShimListener;
 
 namespace base {

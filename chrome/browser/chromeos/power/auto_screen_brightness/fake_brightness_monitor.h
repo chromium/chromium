@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POWER_AUTO_SCREEN_BRIGHTNESS_FAKE_BRIGHTNESS_MONITOR_H_
 #define CHROME_BROWSER_CHROMEOS_POWER_AUTO_SCREEN_BRIGHTNESS_FAKE_BRIGHTNESS_MONITOR_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/brightness_monitor.h"

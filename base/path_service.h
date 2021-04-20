@@ -5,8 +5,6 @@
 #ifndef BASE_PATH_SERVICE_H_
 #define BASE_PATH_SERVICE_H_
 
-#include <string>
-
 #include "base/base_export.h"
 #include "base/base_paths.h"
 #include "base/gtest_prod_util.h"

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_USER_LOGIN_FLOW_H_
 #define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_USER_LOGIN_FLOW_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "chrome/browser/ash/login/user_flow.h"
 

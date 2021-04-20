@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_THEMES_THEME_COLOR_POLICY_HANDLER_H_
 #define CHROME_BROWSER_THEMES_THEME_COLOR_POLICY_HANDLER_H_
 
-#include <string>
-
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 // ConfigurationPolicyHandler for the BrowserThemeColor policy.

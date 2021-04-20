@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_EXPLORE_SITES_EXPLORE_SITES_STORE_H_
 #define CHROME_BROWSER_ANDROID_EXPLORE_SITES_EXPLORE_SITES_STORE_H_
 
-#include <memory>
-
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"

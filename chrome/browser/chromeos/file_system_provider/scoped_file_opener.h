@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_FILE_SYSTEM_PROVIDER_SCOPED_FILE_OPENER_H_
 #define CHROME_BROWSER_CHROMEOS_FILE_SYSTEM_PROVIDER_SCOPED_FILE_OPENER_H_
 
-#include <memory>
-
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_interface.h"
 

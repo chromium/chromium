@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_POLICY_HANDLERS_H_
 #define CHROME_BROWSER_EXTENSIONS_POLICY_HANDLERS_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/values.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_CHROME_RESTART_REQUEST_H_
 #define CHROME_BROWSER_ASH_LOGIN_CHROME_RESTART_REQUEST_H_
 
-#include <string>
+#include <stdint.h>
 
 class GURL;
 

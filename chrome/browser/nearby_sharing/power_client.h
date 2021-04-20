@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_POWER_CLIENT_H_
 #define CHROME_BROWSER_NEARBY_SHARING_POWER_CLIENT_H_
 
-#include <memory>
-
 #include "base/observer_list.h"
 
 class PowerClient {

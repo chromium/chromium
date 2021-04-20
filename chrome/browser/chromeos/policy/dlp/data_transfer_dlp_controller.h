@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DATA_TRANSFER_DLP_CONTROLLER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DATA_TRANSFER_DLP_CONTROLLER_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_drag_drop_notifier.h"

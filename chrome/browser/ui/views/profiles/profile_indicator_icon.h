@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_INDICATOR_ICON_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_INDICATOR_ICON_H_
 
-#include <string>
-
 #include "base/compiler_specific.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/metadata/metadata_header_macros.h"

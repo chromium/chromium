@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_DICTIONARY_EVENT_ROUTER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_DICTIONARY_EVENT_ROUTER_H_
 
-#include <string>
-
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

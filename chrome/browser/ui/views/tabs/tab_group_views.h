@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_VIEWS_H_
 
-#include <memory>
-
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"

@@ -5,8 +5,6 @@
 #ifndef CHROME_SERVICES_QRCODE_GENERATOR_QRCODE_GENERATOR_SERVICE_IMPL_H_
 #define CHROME_SERVICES_QRCODE_GENERATOR_QRCODE_GENERATOR_SERVICE_IMPL_H_
 
-#include <vector>
-
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

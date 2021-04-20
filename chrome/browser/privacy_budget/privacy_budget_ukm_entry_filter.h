@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_PRIVACY_BUDGET_PRIVACY_BUDGET_UKM_ENTRY_FILTER_H_
 #define CHROME_BROWSER_PRIVACY_BUDGET_PRIVACY_BUDGET_UKM_ENTRY_FILTER_H_
 
-#include <cstdint>
-#include <memory>
-
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "components/ukm/ukm_entry_filter.h"
 

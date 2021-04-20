@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_NET_NSS_CONTEXT_H_
 #define CHROME_BROWSER_NET_NSS_CONTEXT_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_SAFE_BROWSING_VERDICT_HANDLER_H_
 #define CHROME_BROWSER_EXTENSIONS_SAFE_BROWSING_VERDICT_HANDLER_H_
 
-#include <string>
-
 #include "chrome/browser/extensions/blocklist.h"
 #include "extensions/common/extension_set.h"
 

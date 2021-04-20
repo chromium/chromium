@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_APPS_INTENT_HELPER_INTENT_PICKER_HELPERS_H_
 #define CHROME_BROWSER_APPS_INTENT_HELPER_INTENT_PICKER_HELPERS_H_
 
-#include <vector>
-
 #include "url/gurl.h"
 
 namespace content {

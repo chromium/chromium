@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_CRASH_REPORT_PRIVATE_CRASH_REPORT_PRIVATE_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_CRASH_REPORT_PRIVATE_CRASH_REPORT_PRIVATE_API_H_
 
-#include <string>
-
 #include "chrome/common/extensions/api/crash_report_private.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"

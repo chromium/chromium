@@ -5,8 +5,6 @@
 #ifndef CHROME_CHROME_CLEANER_OS_FILE_REMOVER_API_H_
 #define CHROME_CHROME_CLEANER_OS_FILE_REMOVER_API_H_
 
-#include <vector>
-
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "chrome/chrome_cleaner/os/file_path_set.h"

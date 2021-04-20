@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_SUPERVISION_TRANSITION_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_SUPERVISION_TRANSITION_SCREEN_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"

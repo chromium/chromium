@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_TOUCH_MODE_STATS_TRACKER_H_
 #define CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_TOUCH_MODE_STATS_TRACKER_H_
 
-#include <memory>
-
 #include "base/time/time.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "ui/base/pointer/touch_ui_controller.h"

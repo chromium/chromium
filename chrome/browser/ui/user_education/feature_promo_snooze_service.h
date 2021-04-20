@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_SNOOZE_SERVICE_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_SNOOZE_SERVICE_H_
 
-#include <string>
-
 #include "base/optional.h"
 #include "base/time/time.h"
 

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_DRIVE_FILE_SYSTEM_UTIL_H_
 #define CHROME_BROWSER_ASH_DRIVE_FILE_SYSTEM_UTIL_H_
 
-#include <string>
-
 #include "base/files/file_path.h"
 #include "components/drive/file_errors.h"
 #include "url/gurl.h"

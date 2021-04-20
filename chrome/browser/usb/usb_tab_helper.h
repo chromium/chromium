@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_USB_USB_TAB_HELPER_H_
 #define CHROME_BROWSER_USB_USB_TAB_HELPER_H_
 
-#include <map>
-#include <memory>
-
 #include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"

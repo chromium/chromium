@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_TAB_WEB_CONTENTS_STATE_H_
 #define CHROME_BROWSER_TAB_WEB_CONTENTS_STATE_H_
 
-#include <vector>
-
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 

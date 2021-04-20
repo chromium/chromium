@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ATTESTATION_ATTESTATION_POLICY_OBSERVER_H_
 #define CHROME_BROWSER_ASH_ATTESTATION_ATTESTATION_POLICY_OBSERVER_H_
 
-#include <memory>
-#include <string>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

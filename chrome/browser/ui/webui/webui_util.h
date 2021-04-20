@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WEBUI_UTIL_H_
 #define CHROME_BROWSER_UI_WEBUI_WEBUI_UTIL_H_
 
-#include <string>
-
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_FILEAPI_RECENT_MODEL_FACTORY_H_
 #define CHROME_BROWSER_CHROMEOS_FILEAPI_RECENT_MODEL_FACTORY_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"

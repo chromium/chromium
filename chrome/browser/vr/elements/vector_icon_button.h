@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_VECTOR_ICON_BUTTON_H_
 #define CHROME_BROWSER_VR_ELEMENTS_VECTOR_ICON_BUTTON_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "chrome/browser/vr/elements/button.h"

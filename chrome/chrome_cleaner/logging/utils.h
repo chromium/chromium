@@ -5,9 +5,6 @@
 #ifndef CHROME_CHROME_CLEANER_LOGGING_UTILS_H_
 #define CHROME_CHROME_CLEANER_LOGGING_UTILS_H_
 
-#include <string>
-#include <vector>
-
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"

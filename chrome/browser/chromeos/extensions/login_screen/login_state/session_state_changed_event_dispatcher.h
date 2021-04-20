@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_STATE_SESSION_STATE_CHANGED_EVENT_DISPATCHER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_STATE_SESSION_STATE_CHANGED_EVENT_DISPATCHER_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/common/extensions/api/login_state.h"

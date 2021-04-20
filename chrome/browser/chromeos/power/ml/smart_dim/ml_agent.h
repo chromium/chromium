@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POWER_ML_SMART_DIM_ML_AGENT_H_
 #define CHROME_BROWSER_CHROMEOS_POWER_ML_SMART_DIM_ML_AGENT_H_
 
-#include <string>
-
 #include "base/cancelable_callback.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/chromeos/power/ml/smart_dim/builtin_worker.h"

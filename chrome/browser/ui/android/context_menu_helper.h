@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_CONTEXT_MENU_HELPER_H_
 #define CHROME_BROWSER_UI_ANDROID_CONTEXT_MENU_HELPER_H_
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"

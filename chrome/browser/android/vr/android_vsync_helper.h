@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_VR_ANDROID_VSYNC_HELPER_H_
 
 #include <jni.h>
-#include <utility>
 
 #include "base/android/jni_weak_ref.h"
 #include "base/callback.h"

@@ -7,8 +7,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include <memory>
-
 #import "base/mac/scoped_nsobject.h"
 
 @class BrowserWindowTouchBarController;

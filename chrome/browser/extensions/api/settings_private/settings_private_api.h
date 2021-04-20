@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_SETTINGS_PRIVATE_SETTINGS_PRIVATE_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_SETTINGS_PRIVATE_SETTINGS_PRIVATE_API_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "extensions/browser/extension_function.h"
 

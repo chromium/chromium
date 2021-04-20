@@ -7,8 +7,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include <memory>
-
 #include "base/mac/scoped_nsobject.h"
 #import "content/public/browser/render_widget_host_view_mac_delegate.h"
 

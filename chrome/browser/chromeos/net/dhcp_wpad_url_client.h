@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_NET_DHCP_WPAD_URL_CLIENT_H_
 #define CHROME_BROWSER_CHROMEOS_NET_DHCP_WPAD_URL_CLIENT_H_
 
-#include <string>
 #include "base/macros.h"
 
 #include "mojo/public/cpp/bindings/pending_remote.h"

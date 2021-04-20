@@ -7,9 +7,6 @@
 
 #include "components/enterprise/browser/reporting/report_generator.h"
 
-#include <memory>
-#include <string>
-
 namespace enterprise_reporting {
 
 /**

@@ -6,7 +6,6 @@
 #define BASE_ANDROID_BASE_JNI_ONLOAD_H_
 
 #include <jni.h>
-#include <vector>
 
 #include "base/base_export.h"
 #include "base/callback.h"

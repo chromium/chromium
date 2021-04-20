@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_DOWNLOADS_DELEGATE_H_
 #define CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_DOWNLOADS_DELEGATE_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"

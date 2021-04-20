@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_LOGIN_WIZARD_H_
 #define CHROME_BROWSER_ASH_LOGIN_LOGIN_WIZARD_H_
 
-#include <string>
-
 #include "chrome/browser/ash/login/oobe_screen.h"
 
 namespace chromeos {

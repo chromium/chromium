@@ -5,8 +5,6 @@
 #ifndef CHROME_RENDERER_PREVIEWS_RESOURCE_LOADING_HINTS_AGENT_H_
 #define CHROME_RENDERER_PREVIEWS_RESOURCE_LOADING_HINTS_AGENT_H_
 
-#include <memory>
-
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/optional.h"

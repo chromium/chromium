@@ -6,7 +6,6 @@
 #define BASE_POWER_MONITOR_THERMAL_STATE_OBSERVER_MAC_H_
 
 #include <objc/objc.h>
-#include <memory>
 
 #include "base/base_export.h"
 #include "base/callback.h"

@@ -7,9 +7,6 @@
 
 #include <jni.h>
 
-#include <map>
-#include <memory>
-
 #include "base/android/jni_weak_ref.h"
 #include "base/callback.h"
 #include "base/cancelable_callback.h"

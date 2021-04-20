@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_GENERIC_UI_EVENTS_ANDROID_H_
 #define CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_GENERIC_UI_EVENTS_ANDROID_H_
 
-#include <string>
-
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/autofill_assistant/browser/generic_ui.pb.h"

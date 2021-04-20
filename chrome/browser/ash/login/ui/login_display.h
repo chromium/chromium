@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_H_
 
-#include <string>
-#include <vector>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"

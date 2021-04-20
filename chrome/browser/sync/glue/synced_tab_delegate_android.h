@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_GLUE_SYNCED_TAB_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_SYNC_GLUE_SYNCED_TAB_DELEGATE_ANDROID_H_
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "base/macros.h"
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
 

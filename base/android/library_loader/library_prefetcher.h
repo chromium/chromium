@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include <stdint.h>
-#include <string>
 
 #include "base/android/library_loader/anchor_functions_buildflags.h"
 #include "base/base_export.h"

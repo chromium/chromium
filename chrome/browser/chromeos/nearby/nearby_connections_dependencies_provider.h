@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_NEARBY_NEARBY_CONNECTIONS_DEPENDENCIES_PROVIDER_H_
 #define CHROME_BROWSER_CHROMEOS_NEARBY_NEARBY_CONNECTIONS_DEPENDENCIES_PROVIDER_H_
 
-#include <memory>
-
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/nearby/public/mojom/sharing.mojom.h"

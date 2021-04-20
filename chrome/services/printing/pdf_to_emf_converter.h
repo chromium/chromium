@@ -5,8 +5,6 @@
 #ifndef CHROME_SERVICES_PRINTING_PDF_TO_EMF_CONVERTER_H_
 #define CHROME_SERVICES_PRINTING_PDF_TO_EMF_CONVERTER_H_
 
-#include <vector>
-
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "chrome/services/printing/public/mojom/pdf_to_emf_converter.mojom.h"

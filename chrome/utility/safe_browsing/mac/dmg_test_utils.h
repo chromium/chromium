@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <vector>
-
 #include "base/files/file.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
 

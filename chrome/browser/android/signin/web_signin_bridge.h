@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_SIGNIN_WEB_SIGNIN_BRIDGE_H_
 #define CHROME_BROWSER_ANDROID_SIGNIN_WEB_SIGNIN_BRIDGE_H_
 
-#include <string>
-
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"

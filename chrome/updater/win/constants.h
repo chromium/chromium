@@ -7,8 +7,6 @@
 
 #include <windows.h>
 
-#include <string>
-
 #include "chrome/updater/updater_branding.h"
 
 namespace updater {

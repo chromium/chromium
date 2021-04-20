@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_SYSTEM_WEB_APP_UI_UTILS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_SYSTEM_WEB_APP_UI_UTILS_H_
 
-#include <utility>
-
 #include "base/optional.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ui/browser.h"

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_MEDIA_SINK_DISCOVERY_METRICS_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_MEDIA_SINK_DISCOVERY_METRICS_H_
 
-#include <memory>
-
 #include "base/gtest_prod_util.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"

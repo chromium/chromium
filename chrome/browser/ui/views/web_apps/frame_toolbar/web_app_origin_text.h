@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_ORIGIN_TEXT_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_ORIGIN_TEXT_H_
 
-#include <string>
-
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"

@@ -36,8 +36,6 @@
 #include <inttypes.h>
 #include <io.h>
 
-#include <memory>
-
 // The ATL headers don't like to be compiled with INITGUID defined.
 #if !defined(INITGUID)
 

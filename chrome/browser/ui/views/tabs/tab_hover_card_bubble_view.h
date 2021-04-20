@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_BUBBLE_VIEW_H_
 
-#include <memory>
-
 #include "base/callback_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"

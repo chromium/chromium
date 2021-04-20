@@ -5,8 +5,6 @@
 #ifndef CHROME_SERVICES_PRINTING_PDF_TO_EMF_CONVERTER_FACTORY_H_
 #define CHROME_SERVICES_PRINTING_PDF_TO_EMF_CONVERTER_FACTORY_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "chrome/services/printing/public/mojom/pdf_to_emf_converter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

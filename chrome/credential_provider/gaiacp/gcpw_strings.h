@@ -5,9 +5,6 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_GCPW_STRINGS_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_GCPW_STRINGS_H_
 
-#include <string>
-#include <vector>
-
 namespace credential_provider {
 // Time parameters to control validity of the offline session.
 extern const char kKeyLastTokenValid[];

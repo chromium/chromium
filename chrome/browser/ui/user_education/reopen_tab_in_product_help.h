@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_REOPEN_TAB_IN_PRODUCT_HELP_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_REOPEN_TAB_IN_PRODUCT_HELP_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/profiles/profile.h"

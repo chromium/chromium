@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_NET_DNS_PROBE_SERVICE_H_
 #define CHROME_BROWSER_NET_DNS_PROBE_SERVICE_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/callback.h"
 #include "components/error_page/common/net_error_info.h"
 #include "components/keyed_service/core/keyed_service.h"

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SEARCH_INSTANT_SERVICE_OBSERVER_H_
 #define CHROME_BROWSER_SEARCH_INSTANT_SERVICE_OBSERVER_H_
 
-#include <vector>
-
 #include "build/build_config.h"
 
 #if defined(OS_ANDROID)

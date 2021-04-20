@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_OMNIBOX_OMNIBOX_PRERENDER_H_
 #define CHROME_BROWSER_ANDROID_OMNIBOX_OMNIBOX_PRERENDER_H_
 
-#include <memory>
-#include <string>
-
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
 

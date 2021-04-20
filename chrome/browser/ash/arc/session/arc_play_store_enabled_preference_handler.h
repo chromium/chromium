@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_SESSION_ARC_PLAY_STORE_ENABLED_PREFERENCE_HANDLER_H_
 #define CHROME_BROWSER_ASH_ARC_SESSION_ARC_PLAY_STORE_ENABLED_PREFERENCE_HANDLER_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"

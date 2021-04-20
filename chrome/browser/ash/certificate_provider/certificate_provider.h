@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_H_
 
-#include <vector>
-
 #include "net/ssl/client_cert_identity.h"
 
 namespace ash {

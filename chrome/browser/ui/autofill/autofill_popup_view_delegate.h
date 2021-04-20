@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_VIEW_DELEGATE_H_
 
 #include <stddef.h>
-#include <vector>
 
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "ui/gfx/native_widget_types.h"

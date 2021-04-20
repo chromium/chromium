@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <string>
-
 #include "base/files/file_path.h"
 
 namespace gfx {

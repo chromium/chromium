@@ -8,8 +8,6 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_CONSISTENCY_TEST_CONSISTENCY_GOLDEN_CONVERTER_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_CONSISTENCY_TEST_CONSISTENCY_GOLDEN_CONVERTER_H_
 
-#include <memory>
-
 #include "base/optional.h"
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/goldens/consistency_golden.pb.h"
 #include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"

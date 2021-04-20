@@ -5,9 +5,6 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_COMMON_GCP_STRINGS_H_
 #define CHROME_CREDENTIAL_PROVIDER_COMMON_GCP_STRINGS_H_
 
-#include <string>
-#include <vector>
-
 namespace credential_provider {
 
 // The the UI process can exit with the following exit code.

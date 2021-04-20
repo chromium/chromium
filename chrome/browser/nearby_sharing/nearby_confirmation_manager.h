@@ -8,8 +8,6 @@
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 
-#include <string>
-
 class NearbySharingService;
 
 class NearbyConfirmationManager

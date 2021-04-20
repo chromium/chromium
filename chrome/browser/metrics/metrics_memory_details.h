@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_METRICS_METRICS_MEMORY_DETAILS_H_
 #define CHROME_BROWSER_METRICS_METRICS_MEMORY_DETAILS_H_
 
-#include <map>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "build/build_config.h"

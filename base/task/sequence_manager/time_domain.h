@@ -5,8 +5,6 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_TIME_DOMAIN_H_
 #define BASE_TASK_SEQUENCE_MANAGER_TIME_DOMAIN_H_
 
-#include <map>
-
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/task/common/intrusive_heap.h"

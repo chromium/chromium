@@ -7,8 +7,6 @@
 
 #include <pk11pub.h>
 
-#include <memory>
-
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "crypto/scoped_nss_types.h"
 

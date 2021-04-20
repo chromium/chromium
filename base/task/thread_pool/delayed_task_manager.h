@@ -5,9 +5,6 @@
 #ifndef BASE_TASK_THREAD_POOL_DELAYED_TASK_MANAGER_H_
 #define BASE_TASK_THREAD_POOL_DELAYED_TASK_MANAGER_H_
 
-#include <memory>
-#include <utility>
-
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"

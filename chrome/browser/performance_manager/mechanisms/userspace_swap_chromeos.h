@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_USERSPACE_SWAP_CHROMEOS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_USERSPACE_SWAP_CHROMEOS_H_
 
-#include <map>
-#include <string>
-
 #include "base/macros.h"
 #include "chromeos/memory/userspace_swap/userspace_swap.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

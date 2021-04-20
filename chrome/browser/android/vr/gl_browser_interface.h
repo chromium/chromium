@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_VR_GL_BROWSER_INTERFACE_H_
 #define CHROME_BROWSER_ANDROID_VR_GL_BROWSER_INTERFACE_H_
 
-#include <memory>
-
 #include "base/android/jni_weak_ref.h"
 #include "chrome/browser/vr/assets_load_status.h"
 #include "chrome/browser/vr/ui_test_input.h"

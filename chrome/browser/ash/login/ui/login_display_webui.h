@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_WEBUI_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_WEBUI_H_
 
-#include <string>
-#include <vector>
-
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chrome/browser/ash/login/signin_specifics.h"

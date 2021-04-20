@@ -6,7 +6,6 @@
 #define CHROME_APP_SHIM_APP_SHIM_DELEGATE_H_
 
 #import <Cocoa/Cocoa.h>
-#include <vector>
 
 #include "base/files/file_path.h"
 

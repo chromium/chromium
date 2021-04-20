@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_UI_FILE_SYSTEM_ACCESS_DIALOGS_H_
 #define CHROME_BROWSER_UI_FILE_SYSTEM_ACCESS_DIALOGS_H_
 
-#include <string>
-#include <vector>
-
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "build/build_config.h"

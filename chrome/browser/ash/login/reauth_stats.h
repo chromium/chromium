@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_REAUTH_STATS_H_
 #define CHROME_BROWSER_ASH_LOGIN_REAUTH_STATS_H_
 
-#include <string>
-
 class AccountId;
 
 namespace chromeos {

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_FILE_SYSTEM_PROVIDER_OBSERVER_H_
 #define CHROME_BROWSER_CHROMEOS_FILE_SYSTEM_PROVIDER_OBSERVER_H_
 
-#include <string>
-
 #include "base/files/file.h"
 
 namespace chromeos {

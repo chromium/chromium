@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_BOREALIS_BOREALIS_CONTEXT_MANAGER_H_
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_CONTEXT_MANAGER_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"

@@ -7,7 +7,6 @@
 
 #include <jni.h>
 #include <stdint.h>
-#include <memory>
 
 #include "base/macros.h"
 #include "components/download/public/task/task_scheduler.h"

@@ -7,8 +7,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_FMPI_GET_VOLUME_ROOT_FUNCTION_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_FMPI_GET_VOLUME_ROOT_FUNCTION_H_
 
-#include <string>
-
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"

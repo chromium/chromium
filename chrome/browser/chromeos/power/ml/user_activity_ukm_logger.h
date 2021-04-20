@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POWER_ML_USER_ACTIVITY_UKM_LOGGER_H_
 #define CHROME_BROWSER_CHROMEOS_POWER_ML_USER_ACTIVITY_UKM_LOGGER_H_
 
-#include <map>
-
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace chromeos {

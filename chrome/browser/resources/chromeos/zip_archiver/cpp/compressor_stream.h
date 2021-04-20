@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_CPP_COMPRESSOR_STREAM_H_
 #define CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_CPP_COMPRESSOR_STREAM_H_
 
-#include <cstdint>
-#include <string>
-
 #include "ppapi/cpp/var_array_buffer.h"
 
 // A IO class that reads and writes data from and to files through JavaScript.

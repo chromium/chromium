@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POWER_ML_SMART_DIM_BUILTIN_WORKER_H_
 #define CHROME_BROWSER_CHROMEOS_POWER_ML_SMART_DIM_BUILTIN_WORKER_H_
 
-#include <memory>
-
 #include "base/containers/flat_map.h"
 #include "chrome/browser/chromeos/power/ml/smart_dim/smart_dim_worker.h"
 #include "chromeos/services/machine_learning/public/mojom/graph_executor.mojom.h"

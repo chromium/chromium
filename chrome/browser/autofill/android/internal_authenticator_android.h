@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ANDROID_INTERNAL_AUTHENTICATOR_ANDROID_H_
 #define CHROME_BROWSER_AUTOFILL_ANDROID_INTERNAL_AUTHENTICATOR_ANDROID_H_
 
-#include <memory>
-#include <string>
-
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
 #include "components/autofill/core/browser/payments/internal_authenticator.h"

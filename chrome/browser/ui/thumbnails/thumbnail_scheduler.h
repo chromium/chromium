@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_SCHEDULER_H_
 #define CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_SCHEDULER_H_
 
-#include <map>
-
 #include "chrome/browser/ui/thumbnails/thumbnail_capture_driver.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_readiness_tracker.h"
 

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_BLUETOOTH_POLICY_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_BLUETOOTH_POLICY_HANDLER_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"

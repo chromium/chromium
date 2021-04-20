@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SHARING_SHARING_UTILS_H_
 #define CHROME_BROWSER_SHARING_SHARING_UTILS_H_
 
-#include <string>
-
 #include "base/optional.h"
 
 namespace chrome_browser_sharing {

@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_FILE_SYSTEM_PROVIDER_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_CHROMEOS_FILE_SYSTEM_PROVIDER_SERVICE_FACTORY_H_
 
-#include <map>
-#include <string>
-#include <vector>
-
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"

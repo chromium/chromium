@@ -5,8 +5,6 @@
 #ifndef BASE_TEST_MOCK_DEVICES_CHANGED_OBSERVER_H_
 #define BASE_TEST_MOCK_DEVICES_CHANGED_OBSERVER_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "base/system/system_monitor.h"
 #include "testing/gmock/include/gmock/gmock.h"

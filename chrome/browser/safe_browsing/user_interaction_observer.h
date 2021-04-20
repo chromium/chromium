@@ -12,8 +12,6 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
 
-#include <memory>
-
 namespace blink {
 class WebMouseEvent;
 }

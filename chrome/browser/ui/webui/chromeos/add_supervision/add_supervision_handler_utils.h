@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_ADD_SUPERVISION_ADD_SUPERVISION_HANDLER_UTILS_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_ADD_SUPERVISION_ADD_SUPERVISION_HANDLER_UTILS_H_
 
-#include <string>
-
 #include "chrome/browser/profiles/profile.h"
 
 namespace apps {

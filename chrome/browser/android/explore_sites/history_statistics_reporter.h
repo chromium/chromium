@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_EXPLORE_SITES_HISTORY_STATISTICS_REPORTER_H_
 #define CHROME_BROWSER_ANDROID_EXPLORE_SITES_HISTORY_STATISTICS_REPORTER_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"

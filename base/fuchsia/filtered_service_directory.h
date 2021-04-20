@@ -10,7 +10,6 @@
 #include <lib/sys/cpp/outgoing_directory.h>
 #include <lib/sys/cpp/service_directory.h>
 #include <lib/zx/channel.h>
-#include <memory>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"

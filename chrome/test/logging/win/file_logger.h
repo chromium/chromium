@@ -8,8 +8,6 @@
 #include <guiddef.h>
 #include <stdint.h>
 
-#include <string>
-
 #include "base/macros.h"
 #include "base/win/event_trace_controller.h"
 

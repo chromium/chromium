@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_OFFER_HELPER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_OFFER_HELPER_H_
 
-#include <string>
-
 namespace autofill {
 struct AutofillOfferData;
 }  // namespace autofill

@@ -7,9 +7,6 @@
 
 #include <jni.h>
 
-#include <utility>
-#include <vector>
-
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"

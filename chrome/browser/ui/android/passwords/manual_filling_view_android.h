@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ANDROID_PASSWORDS_MANUAL_FILLING_VIEW_ANDROID_H_
 
 #include <jni.h>
-#include <vector>
 
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"

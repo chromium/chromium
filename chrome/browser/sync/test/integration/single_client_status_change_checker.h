@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_SINGLE_CLIENT_STATUS_CHANGE_CHECKER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_SINGLE_CLIENT_STATUS_CHANGE_CHECKER_H_
 
-#include <string>
-
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"

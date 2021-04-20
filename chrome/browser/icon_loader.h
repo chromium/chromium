@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_ICON_LOADER_H_
 #define CHROME_BROWSER_ICON_LOADER_H_
 
-#include <memory>
-#include <string>
-
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"

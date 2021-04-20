@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_H_
 
-#include <memory>
-#include <string>
-
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"

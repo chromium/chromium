@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SPEECH_SPEECH_RECOGNIZER_H_
 #define CHROME_BROWSER_SPEECH_SPEECH_RECOGNIZER_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 
 class SpeechRecognizerDelegate;

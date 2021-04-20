@@ -7,8 +7,6 @@
 
 // Utility classes for providing an App Service IconKey.
 
-#include <string>
-
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps_util {

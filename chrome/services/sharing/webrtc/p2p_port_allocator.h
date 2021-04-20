@@ -5,8 +5,6 @@
 #ifndef CHROME_SERVICES_SHARING_WEBRTC_P2P_PORT_ALLOCATOR_H_
 #define CHROME_SERVICES_SHARING_WEBRTC_P2P_PORT_ALLOCATOR_H_
 
-#include <memory>
-
 #include "third_party/webrtc/p2p/client/basic_port_allocator.h"
 
 namespace sharing {

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PRINTING_CLOUD_PRINT_PRIVET_TRAFFIC_DETECTOR_H_
 #define CHROME_BROWSER_PRINTING_CLOUD_PRINT_PRIVET_TRAFFIC_DETECTOR_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/receiver.h"

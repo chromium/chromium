@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_DBUS_METRICS_EVENT_SERVICE_PROVIDER_H_
 #define CHROME_BROWSER_CHROMEOS_DBUS_METRICS_EVENT_SERVICE_PROVIDER_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"

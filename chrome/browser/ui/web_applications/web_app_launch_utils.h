@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_UTILS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_UTILS_H_
 
-#include <string>
-
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 

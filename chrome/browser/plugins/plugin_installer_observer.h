@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PLUGINS_PLUGIN_INSTALLER_OBSERVER_H_
 #define CHROME_BROWSER_PLUGINS_PLUGIN_INSTALLER_OBSERVER_H_
 
-#include <string>
-
 class PluginInstaller;
 
 class PluginInstallerObserver {

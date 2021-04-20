@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_ERROR_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_ERROR_HANDLER_H_
 
-#include <string>
-
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/browser_list_observer.h"

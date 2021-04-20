@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_INSTALL_FINALIZER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_INSTALL_FINALIZER_H_
 
-#include <memory>
-
 #include "base/callback_forward.h"
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_chromeos_data.h"

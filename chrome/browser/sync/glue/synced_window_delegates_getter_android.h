@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_GLUE_SYNCED_WINDOW_DELEGATES_GETTER_ANDROID_H_
 #define CHROME_BROWSER_SYNC_GLUE_SYNCED_WINDOW_DELEGATES_GETTER_ANDROID_H_
 
-#include <set>
-
 #include "base/macros.h"
 #include "components/sync_sessions/synced_window_delegates_getter.h"
 

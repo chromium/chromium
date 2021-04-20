@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_VIDEO_TUTORIALS_TEST_TEST_UTILS_H_
 #define CHROME_BROWSER_VIDEO_TUTORIALS_TEST_TEST_UTILS_H_
 
-#include <string>
-#include <vector>
-
 #include "chrome/browser/video_tutorials/internal/tutorial_group.h"
 
 namespace video_tutorials {

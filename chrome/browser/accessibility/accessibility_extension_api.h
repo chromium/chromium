@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_H_
 #define CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_H_
 
-#include <string>
-
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_function.h"
 

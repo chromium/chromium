@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_INSTALL_TASK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_INSTALL_TASK_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"

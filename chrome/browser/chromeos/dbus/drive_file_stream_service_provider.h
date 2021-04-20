@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"

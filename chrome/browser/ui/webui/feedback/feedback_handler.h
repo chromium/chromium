@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_HANDLER_H_
 
-#include <memory>
-
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "content/public/browser/web_ui_message_handler.h"
 

@@ -5,8 +5,6 @@
 #ifndef CHROME_CHROME_CLEANER_TEST_TEST_EXECUTABLES_H_
 #define CHROME_CHROME_CLEANER_TEST_TEST_EXECUTABLES_H_
 
-#include <string>
-
 #include "base/command_line.h"
 #include "base/process/process.h"
 

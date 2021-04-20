@@ -5,10 +5,6 @@
 #ifndef CHROME_CHROME_CLEANER_SCANNER_MATCHER_UTIL_H_
 #define CHROME_CHROME_CLEANER_SCANNER_MATCHER_UTIL_H_
 
-#include <set>
-#include <string>
-#include <vector>
-
 namespace base {
 class FilePath;
 }  // namespace base

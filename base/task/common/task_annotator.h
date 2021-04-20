@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"

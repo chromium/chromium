@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_FAKE_RECOMMEND_APPS_FETCHER_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_FAKE_RECOMMEND_APPS_FETCHER_H_
 
-#include <string>
-
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/values.h"

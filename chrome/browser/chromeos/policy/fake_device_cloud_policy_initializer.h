@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_FAKE_DEVICE_CLOUD_POLICY_INITIALIZER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_FAKE_DEVICE_CLOUD_POLICY_INITIALIZER_H_
 
-#include <string>
-
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_initializer.h"

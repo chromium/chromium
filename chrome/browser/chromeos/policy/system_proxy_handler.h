@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_SYSTEM_PROXY_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_SYSTEM_PROXY_HANDLER_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 

@@ -5,9 +5,6 @@
 #ifndef CHROME_TEST_BASE_CHROME_TEST_SUITE_H_
 #define CHROME_TEST_BASE_CHROME_TEST_SUITE_H_
 
-#include <memory>
-#include <string>
-
 #include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/test/content_test_suite_base.h"

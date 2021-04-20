@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYNC_OS_SYNC_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYNC_OS_SYNC_HANDLER_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"

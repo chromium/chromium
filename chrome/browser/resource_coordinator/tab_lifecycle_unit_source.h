@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LIFECYCLE_UNIT_SOURCE_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LIFECYCLE_UNIT_SOURCE_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"

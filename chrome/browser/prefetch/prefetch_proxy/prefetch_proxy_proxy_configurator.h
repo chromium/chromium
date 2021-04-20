@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PROXY_CONFIGURATOR_H_
 #define CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PROXY_CONFIGURATOR_H_
 
-#include <vector>
-
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_CAPTION_HOST_IMPL_H_
 #define CHROME_BROWSER_ACCESSIBILITY_CAPTION_HOST_IMPL_H_
 
-#include <string>
-
 #include "chrome/common/caption.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"

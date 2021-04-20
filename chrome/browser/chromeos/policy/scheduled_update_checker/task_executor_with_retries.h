@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_SCHEDULED_UPDATE_CHECKER_TASK_EXECUTOR_WITH_RETRIES_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_SCHEDULED_UPDATE_CHECKER_TASK_EXECUTOR_WITH_RETRIES_H_
 
-#include <memory>
-#include <string>
-
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

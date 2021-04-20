@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_OPTIN_ARC_OPTIN_PREFERENCE_HANDLER_H_
 #define CHROME_BROWSER_ASH_ARC_OPTIN_ARC_OPTIN_PREFERENCE_HANDLER_H_
 
-#include <memory>
-
 #include "base/macros.h"
 
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"

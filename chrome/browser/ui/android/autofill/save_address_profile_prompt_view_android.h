@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ANDROID_AUTOFILL_SAVE_ADDRESS_PROFILE_PROMPT_VIEW_ANDROID_H_
 
 #include <jni.h>
-#include <memory>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"

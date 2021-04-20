@@ -5,8 +5,6 @@
 #ifndef BASE_THREADING_THREAD_COLLISION_WARNER_H_
 #define BASE_THREADING_THREAD_COLLISION_WARNER_H_
 
-#include <memory>
-
 #include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -97,7 +95,6 @@
 //   DFAKE_MUTEX(ctor_dtor_);
 //   DFAKE_MUTEX(shareable_section_);
 // };
-
 
 #if !defined(NDEBUG)
 

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ACCESSORY_CONTROLLER_H_
 #define CHROME_BROWSER_AUTOFILL_ACCESSORY_CONTROLLER_H_
 
-#include <vector>
-
 #include "base/callback_forward.h"
 #include "base/optional.h"
 #include "base/types/strong_alias.h"

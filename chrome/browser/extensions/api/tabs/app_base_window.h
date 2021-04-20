@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TABS_APP_BASE_WINDOW_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TABS_APP_BASE_WINDOW_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "ui/base/base_window.h"
 

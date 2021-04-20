@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_FILEAPI_ARC_FILE_SYSTEM_OPERATION_RUNNER_UTIL_H_
 #define CHROME_BROWSER_ASH_ARC_FILEAPI_ARC_FILE_SYSTEM_OPERATION_RUNNER_UTIL_H_
 
-#include <string>
-
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 

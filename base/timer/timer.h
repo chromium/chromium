@@ -60,8 +60,6 @@
 // because they're flaky on the buildbot, but when you run them locally you
 // should be able to tell the difference.
 
-#include <memory>
-
 #include "base/base_export.h"
 #include "base/bind.h"
 #include "base/callback.h"
