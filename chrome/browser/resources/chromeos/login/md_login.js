@@ -45,9 +45,6 @@ HTMLImports.whenReady(() => {
         chrome.send('screenStateInitialize');
       },
 
-      // Dummy Oobe functions not present with stripped login UI.
-      refreshA11yInfo(data) {},
-
       /**
        * Reloads content of the page.
        * @param {!Object} data New dictionary with i18n values.
