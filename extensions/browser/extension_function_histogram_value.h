@@ -1613,6 +1613,7 @@ enum HistogramValue {
   ACTION_GETUSERSETTINGS = 1550,
   ENTERPRISEREPORTINGPRIVATE_GETCERTIFICATE = 1551,
   AUTOTESTPRIVATE_ISSYSTEMWEBAPPOPENFUNCTION = 1552,
+  TTSENGINE_SENDTTSAUDIO = 1553,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

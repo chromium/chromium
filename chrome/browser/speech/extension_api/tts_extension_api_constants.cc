@@ -26,6 +26,11 @@ const char kSrcIdKey[] = "srcId";
 const char kVoiceNameKey[] = "voiceName";
 const char kVolumeKey[] = "volume";
 
+const char kSampleRateKey[] = "sampleRate";
+const char kBufferSizeKey[] = "bufferSize";
+const char kAudioBufferKey[] = "audioBuffer";
+const char kIsLastBufferKey[] = "isLastBuffer";
+
 const char kEventTypeCancelled[] = "cancelled";
 const char kEventTypeEnd[] = "end";
 const char kEventTypeError[] = "error";

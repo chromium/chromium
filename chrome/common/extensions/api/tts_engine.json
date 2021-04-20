@@ -12,6 +12,86 @@
         "type": "string",
         "deprecated": "Gender is deprecated and will be ignored.",
         "enum": ["male", "female"]
+      },
+      {
+        "id": "SpeakOptions",
+        "type": "object",
+        "description": "Options specified to the tts.speak() method.",
+        "properties": {
+          "voiceName": {
+            "type": "string",
+            "optional": true,
+            "description": "The name of the voice to use for synthesis."
+          },
+          "lang": {
+            "type": "string",
+            "optional": true,
+            "description": "The language to be used for synthesis, in the form <em>language</em>-<em>region</em>. Examples: 'en', 'en-US', 'en-GB', 'zh-CN'."
+          },
+          "gender": {
+            "$ref": "VoiceGender",
+            "optional": true,
+            "deprecated": "Gender is deprecated and will be ignored.",
+            "description": "Gender of voice for synthesized speech."
+          },
+          "rate": {
+            "type": "number",
+            "optional": true,
+            "minimum": 0.1,
+            "maximum": 10.0,
+            "description": "Speaking rate relative to the default rate for this voice. 1.0 is the default rate, normally around 180 to 220 words per minute. 2.0 is twice as fast, and 0.5 is half as fast. This value is guaranteed to be between 0.1 and 10.0, inclusive. When a voice does not support this full range of rates, don't return an error. Instead, clip the rate to the range the voice supports."
+          },
+          "pitch": {
+            "type": "number",
+            "optional": true,
+            "minimum": 0,
+            "maximum": 2,
+            "description": "Speaking pitch between 0 and 2 inclusive, with 0 being lowest and 2 being highest. 1.0 corresponds to this voice's default pitch."
+          },
+          "volume": {
+            "type": "number",
+            "optional": true,
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Speaking volume between 0 and 1 inclusive, with 0 being lowest and 1 being highest, with a default of 1.0."
+          }
+        }
+      },
+      {
+        "id": "AudioStreamOptions",
+        "type": "object",
+        "description": "Contains the audio stream format expected to be produced by an engine.",
+        "properties": {
+          "sampleRate": {
+            "type": "integer",
+            "description": "The sample rate expected in an audio buffer."
+          },
+          "bufferSize": {
+            "type": "integer",
+            "description": "The number of samples within an audio buffer."
+          }
+        }
+      },
+      {
+        "id": "AudioBuffer",
+        "type": "object",
+        "description": "Parameters containing an audio buffer and associated data.",
+        "properties": {
+          "audioBuffer": {
+            "type": "binary",
+            "description": "The audio buffer from the text-to-speech engine. It should have length exactly audioStreamOptions.bufferSize and encoded as mono, at audioStreamOptions.sampleRate, and as linear pcm, 32-bit signed float i.e. the Float32Array type in javascript."
+          },
+          "charIndex": {
+            "type": "integer",
+            "optional": true,
+            "description": "The character index associated with this audio buffer."
+          },
+          "isLastBuffer": {
+            "type": "boolean",
+            "optional": true,
+            "description": "True if this audio buffer is the last for the text being spoken."
+          }
+        }
       }
     ],
     "functions": [
@@ -44,6 +124,24 @@
             "description": "The update event from the text-to-speech engine indicating the status of this utterance."
           }
         ]
+      },
+      {
+        "name": "sendTtsAudio",
+        "nodoc": true,
+        "type": "function",
+        "description": "Routes TTS audio from a speech engine to a client.",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "requestId"
+          },
+          {
+            "name": "audio",
+            "$ref": "AudioBuffer",
+            "description": "An audio buffer from the text-to-speech engine."
+          }
+        ],
+        "platforms": ["chromeos"]
       }
     ],
     "events": [
@@ -58,48 +156,9 @@
             "description": "The text to speak, specified as either plain text or an SSML document. If your engine does not support SSML, you should strip out all XML markup and synthesize only the underlying text content. The value of this parameter is guaranteed to be no more than 32,768 characters. If this engine does not support speaking that many characters at a time, the utterance should be split into smaller chunks and queued internally without returning an error."
           },
           {
-            "type": "object",
+            "$ref": "SpeakOptions",
             "name": "options",
-            "description": "Options specified to the tts.speak() method.",
-            "properties": {
-              "voiceName": {
-                "type": "string",
-                "optional": true,
-                "description": "The name of the voice to use for synthesis."
-              },
-              "lang": {
-                "type": "string",
-                "optional": true,
-                "description": "The language to be used for synthesis, in the form <em>language</em>-<em>region</em>. Examples: 'en', 'en-US', 'en-GB', 'zh-CN'."
-              },
-              "gender": {
-                "$ref": "VoiceGender",
-                "optional": true,
-                "deprecated": "Gender is deprecated and will be ignored.",
-                "description": "Gender of voice for synthesized speech."
-              },
-              "rate": {
-                "type": "number",
-                "optional": true,
-                "minimum": 0.1,
-                "maximum": 10.0,
-                "description": "Speaking rate relative to the default rate for this voice. 1.0 is the default rate, normally around 180 to 220 words per minute. 2.0 is twice as fast, and 0.5 is half as fast. This value is guaranteed to be between 0.1 and 10.0, inclusive. When a voice does not support this full range of rates, don't return an error. Instead, clip the rate to the range the voice supports."
-              },
-              "pitch": {
-                "type": "number",
-                "optional": true,
-                "minimum": 0,
-                "maximum": 2,
-                "description": "Speaking pitch between 0 and 2 inclusive, with 0 being lowest and 2 being highest. 1.0 corresponds to this voice's default pitch."
-              },
-              "volume": {
-                "type": "number",
-                "optional": true,
-                "minimum": 0,
-                "maximum": 1,
-                "description": "Speaking volume between 0 and 1 inclusive, with 0 being lowest and 1 being highest, with a default of 1.0."
-              }
-            }
+            "description": "Options specified to the tts.speak() method."
           },
           {
             "name": "sendTtsEvent",
@@ -114,6 +173,41 @@
             ]
           }
         ]
+      },
+      {
+        "name": "onSpeakWithAudioStream",
+        "type": "function",
+        "description": "Called when the user makes a call to tts.speak() and one of the voices from this extension's manifest is the first to match the options object. Differs from ttsEngine.onSpeak in that Chrome provides audio playback services and handles dispatching tts events.",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "utterance",
+            "description": "The text to speak, specified as either plain text or an SSML document. If your engine does not support SSML, you should strip out all XML markup and synthesize only the underlying text content. The value of this parameter is guaranteed to be no more than 32,768 characters. If this engine does not support speaking that many characters at a time, the utterance should be split into smaller chunks and queued internally without returning an error."
+          },
+          {
+            "$ref": "SpeakOptions",
+            "name": "options",
+            "description": "Options specified to the tts.speak() method."
+          },
+          {
+            "$ref": "AudioStreamOptions",
+            "name": "audioStreamOptions",
+            "description": "Contains the audio stream format expected to be produced by this engine."
+          },
+          {
+            "name": "sendTtsAudio",
+            "type": "function",
+            "description": "Call this function with audio that occur in the process of speaking the utterance.",
+            "parameters": [
+              {
+            "$ref": "AudioBuffer",
+                "name": "audioBufferParams",
+                "description": "Parameters containing an audio buffer and associated data."
+              }
+            ]
+          }
+        ],
+        "platforms": ["chromeos"]
       },
       {
         "name": "onStop",

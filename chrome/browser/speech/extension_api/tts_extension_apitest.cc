@@ -29,6 +29,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
+#include "chromeos/services/tts/tts_service.h"
+#endif  // IS_CHROMEOS_ASH
+
 using ::testing::AnyNumber;
 using ::testing::DoAll;
 using ::testing::Invoke;
@@ -574,5 +579,23 @@ IN_PROC_BROWSER_TEST_F(TtsApiTest, VoicesAreCached) {
     waiter.Wait();
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(TtsApiTest, OnSpeakWithAudioStream) {
+  TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
+  TtsEngineExtensionObserverChromeOS* engine_observer =
+      TtsEngineExtensionObserverChromeOS::GetInstance(profile());
+  mojo::Remote<chromeos::tts::mojom::TtsService>* tts_service_remote =
+      engine_observer->tts_service_for_testing();
+  chromeos::tts::TtsService tts_service(
+      tts_service_remote->BindNewPipeAndPassReceiver());
+
+  EXPECT_CALL(mock_platform_impl_, IsSpeaking()).Times(AnyNumber());
+  EXPECT_CALL(mock_platform_impl_, StopSpeaking()).WillRepeatedly(Return(true));
+
+  ASSERT_TRUE(RunExtensionTest("tts_engine/on_speak_with_audio_stream"))
+      << message_;
+}
+#endif  // IS_CHROMEOS_ASH
 
 }  // namespace extensions

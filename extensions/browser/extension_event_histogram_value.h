@@ -495,6 +495,7 @@ enum HistogramValue {
   TAB_GROUPS_ON_REMOVED = 473,
   TAB_GROUPS_ON_UPDATED = 474,
   FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG = 475,
+  TTS_ENGINE_ON_SPEAK_WITH_AUDIO_STREAM = 476,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

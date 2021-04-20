@@ -31,6 +31,11 @@ extern const char kSrcIdKey[];
 extern const char kVoiceNameKey[];
 extern const char kVolumeKey[];
 
+extern const char kSampleRateKey[];
+extern const char kBufferSizeKey[];
+extern const char kAudioBufferKey[];
+extern const char kIsLastBufferKey[];
+
 extern const char kEventTypeCancelled[];
 extern const char kEventTypeEnd[];
 extern const char kEventTypeError[];

@@ -49,6 +49,10 @@ class TtsEngineExtensionObserverChromeOS
                            const extensions::Extension* extension,
                            extensions::UnloadedExtensionReason reason) override;
 
+  mojo::Remote<chromeos::tts::mojom::TtsService>* tts_service_for_testing() {
+    return &tts_service_;
+  }
+
  private:
   explicit TtsEngineExtensionObserverChromeOS(Profile* profile);
   ~TtsEngineExtensionObserverChromeOS() override;
