@@ -30,6 +30,7 @@ constexpr CGFloat kDefaultMargin = 16;
 constexpr CGFloat kActionsBottomMargin = 10;
 constexpr CGFloat kTallBannerMultiplier = 0.35;
 constexpr CGFloat kDefaultBannerMultiplier = 0.25;
+constexpr CGFloat kSubtitleBottomMarginViewHeight = 0.05;
 
 }  // namespace
 
@@ -56,11 +57,18 @@ constexpr CGFloat kDefaultBannerMultiplier = 0.25;
 
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
+  // Some of the margins are dynamic, based on the view height. Create an empty
+  // view, for which the height can be constrained to the view height, that will
+  // act as the dynamic margin.
+  UIView* subtitleBottomMarginView = [[UIView alloc] init];
+  subtitleBottomMarginView.translatesAutoresizingMaskIntoConstraints = NO;
+
   self.scrollContentView = [[UIView alloc] init];
   self.scrollContentView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.scrollContentView addSubview:self.imageView];
   [self.scrollContentView addSubview:self.titleLabel];
   [self.scrollContentView addSubview:self.subtitleLabel];
+  [self.scrollContentView addSubview:subtitleBottomMarginView];
   [self.scrollContentView addSubview:self.specificContentView];
 
   // Wrap everything except the action buttons in a scroll view, to support
@@ -151,9 +159,13 @@ constexpr CGFloat kDefaultBannerMultiplier = 0.25;
 
     // Constraints for the screen-specific content view. It should take the
     // remaining scroll view area, with some margins on the top and sides.
+    [subtitleBottomMarginView.topAnchor
+        constraintEqualToAnchor:self.subtitleLabel.bottomAnchor],
+    [subtitleBottomMarginView.heightAnchor
+        constraintEqualToAnchor:self.view.heightAnchor
+                     multiplier:kSubtitleBottomMarginViewHeight],
     [self.specificContentView.topAnchor
-        constraintEqualToAnchor:self.subtitleLabel.bottomAnchor
-                       constant:kDefaultMargin],
+        constraintEqualToAnchor:subtitleBottomMarginView.bottomAnchor],
     [self.specificContentView.leadingAnchor
         constraintEqualToAnchor:self.scrollContentView.leadingAnchor],
     [self.specificContentView.trailingAnchor
