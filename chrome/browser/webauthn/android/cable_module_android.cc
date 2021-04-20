@@ -78,8 +78,6 @@ class RegistrationState {
         base::BindRepeating(&RegistrationState::OnEvent,
                             base::Unretained(this)));
 
-    sync_registration_->PrepareContactID();
-
     PrefService* const local_state = g_browser_process->local_state();
     std::string secret_base64 = local_state->GetString(kRootSecretPrefName);
 
@@ -118,7 +116,12 @@ class RegistrationState {
     return sync_registration_ != nullptr && sync_registration_->contact_id();
   }
 
-  void set_signal_sync_when_ready() { signal_sync_when_ready_ = true; }
+  void SignalSyncWhenReady() {
+    if (sync_registration_ && !sync_registration_->contact_id()) {
+      sync_registration_->PrepareContactID();
+    }
+    signal_sync_when_ready_ = true;
+  }
 
  private:
   void OnLinkingRegistrationReady() { MaybeFlushPendingEvent(); }
@@ -184,10 +187,8 @@ RegistrationState* GetRegistrationState() {
 void RegisterForCloudMessages() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  if ((!base::FeatureList::IsEnabled(device::kWebAuthCableSecondFactor) &&
-       !base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) ||
-      !Java_CableAuthenticatorModuleProvider_canDeviceSupportCable(
-          base::android::AttachCurrentThread())) {
+  if (!base::FeatureList::IsEnabled(device::kWebAuthCableSecondFactor) &&
+      !base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
     return;
   }
 
@@ -213,7 +214,7 @@ GetSyncDataIfRegistered() {
     // Not yet ready to provide sync data. When the data is ready,
     // |state| will signal to Sync that something changed and this
     // function will be called again.
-    state->set_signal_sync_when_ready();
+    state->SignalSyncWhenReady();
     return base::nullopt;
   }
 

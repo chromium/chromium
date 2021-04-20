@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.webauth.authenticator;
 
 import android.Manifest.permission;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.KeyguardManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -73,6 +75,14 @@ public class CableAuthenticatorUI
     private static final String NOTIFICATION_CHANNEL_ID =
             "chrome.android.features.cablev2_authenticator";
 
+    // These entries duplicate some of the enum values from
+    // device::cablev2::authenticator::Platform::Error. They must be kept in
+    // sync with the C++ side because C++ communicates these values to this
+    // code.
+    private static final int ERROR_NONE = 0;
+    private static final int ERROR_UNEXPECTED_EOF = 100;
+    private static final int ERROR_NO_SCREENLOCK = 110;
+
     // ID is used when Android APIs demand a process-wide unique ID. This number
     // is a random int.
     private static final int ID = 424386536;
@@ -110,6 +120,9 @@ public class CableAuthenticatorUI
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        // This code should not be reachable on older Android versions.
+        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
+
         super.onCreate(savedInstanceState);
         final Context context = getContext();
 
@@ -125,12 +138,21 @@ public class CableAuthenticatorUI
             mMode = Mode.SERVER_LINK;
 
             mErrorCode = CableAuthenticator.validateServerLinkData(serverLink);
-            if (mErrorCode != 0) {
+            if (mErrorCode != ERROR_NONE) {
                 mMode = Mode.ERROR;
                 return;
             }
         } else {
             mMode = Mode.QR;
+        }
+
+        // GMSCore will immediately fail all requests if a screenlock
+        // isn't configured. In this case the device shouldn't have advertised
+        // itself via Sync, but it's possible for a request to come in soon
+        // after a screen lock was removed.
+        if (!hasScreenLockConfigured(context)) {
+            mMode = Mode.ERROR;
+            mErrorCode = ERROR_NO_SCREENLOCK;
         }
 
         Log.i(TAG, "Starting in mode " + mMode.toString());
@@ -152,6 +174,13 @@ public class CableAuthenticatorUI
                 mNeedToSignalBluetoothReady = true;
             }
         }
+    }
+
+    // This class should not be reachable on Android versions < N (API level 24).
+    @TargetApi(24)
+    private static boolean hasScreenLockConfigured(Context context) {
+        KeyguardManager km = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+        return km.isDeviceSecure();
     }
 
     @Override
@@ -459,7 +488,7 @@ public class CableAuthenticatorUI
         mErrorCloseButton.setOnClickListener(this);
 
         String desc;
-        if (errorCode == 100 /* cablev2::authenticator::Platform::Error::UNEXPECTED_EOF */) {
+        if (errorCode == ERROR_UNEXPECTED_EOF) {
             desc = getResources().getString(R.string.cablev2_error_timeout);
         } else {
             TextView errorCodeTextView = (TextView) mErrorView.findViewById(R.id.error_code);

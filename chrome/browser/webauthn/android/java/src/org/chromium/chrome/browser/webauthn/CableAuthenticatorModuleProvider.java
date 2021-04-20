@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.webauthn;
 
+import android.annotation.TargetApi;
+import android.app.KeyguardManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.os.Build;
@@ -17,6 +19,7 @@ import android.widget.LinearLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -122,8 +125,24 @@ public class CableAuthenticatorModuleProvider extends Fragment {
 
     @CalledByNative
     public static boolean canDeviceSupportCable() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                && BluetoothAdapter.getDefaultAdapter() != null;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N
+                || BluetoothAdapter.getDefaultAdapter() == null) {
+            return false;
+        }
+
+        // GMSCore will immediately fail all requests if a screenlock
+        // isn't configured.
+        return hasScreenLockConfigured();
+    }
+
+    // canDeviceSupportCable has checked that the system is >= N (API level 24)
+    // before calling this function.
+    @TargetApi(24)
+    private static boolean hasScreenLockConfigured() {
+        KeyguardManager km =
+                (KeyguardManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.KEYGUARD_SERVICE);
+        return km.isDeviceSecure();
     }
 
     @NativeMethods

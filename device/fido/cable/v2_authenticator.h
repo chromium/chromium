@@ -47,6 +47,8 @@ class Platform {
   enum class Error {
     // These values must match up with CableAuthenticatorUI.java and zero
     // is considered to be not an error by the Java code.
+
+    // NONE = 0,
     UNEXPECTED_EOF = 100,
     TUNNEL_SERVER_CONNECT_FAILED = 101,
     HANDSHAKE_FAILED = 102,
@@ -57,6 +59,7 @@ class Platform {
     INTERNAL_ERROR = 107,
     SERVER_LINK_WRONG_LENGTH = 108,
     SERVER_LINK_NOT_ON_CURVE = 109,
+    NO_SCREENLOCK = 110,
   };
 
   using MakeCredentialCallback =
