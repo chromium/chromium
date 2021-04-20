@@ -58,9 +58,9 @@ class OmniboxPedal {
     // Construct with given sequence of |token_ids|; used by tests.
     explicit TokenSequence(std::vector<int> token_ids);
 
-    // TODO(orinj): Don't use copies. They were necessary with old algorithm,
+    // Don't use copies. They were necessary with old algorithm,
     // but this structure is amenable to efficient resets on kept instances.
-    TokenSequence(const TokenSequence&);
+    TokenSequence(const TokenSequence&) = delete;
     TokenSequence(TokenSequence&&);
     ~TokenSequence();
 
@@ -73,12 +73,15 @@ class OmniboxPedal {
     // Add token with given |id| to sequence.
     void Add(int id);
 
+    // Clears all tokens from this sequence.
+    inline void Clear() { tokens_.clear(); }
+
     // Initializes all links in sequence to their own index, indicating
     // unconsumed state for all. This is needed after calls to Erase.
     void ResetLinks();
 
     // Removes one or more instances of |erase_sequence| from this sequence
-    // by erasing token items from the |_tokens| container.
+    // by erasing token items from the |tokens_| container.
     // Returns true if this sequence was changed; false if no match is found.
     bool Erase(const TokenSequence& erase_sequence, bool erase_only_once);
 
@@ -89,7 +92,7 @@ class OmniboxPedal {
     bool Consume(const TokenSequence& consume_sequence, bool consume_only_once);
 
     // Returns the total number of tokens, regardless of consumed status.
-    inline size_t Size() const { return _tokens.size(); }
+    inline size_t Size() const { return tokens_.size(); }
 
     // Returns collection memory estimate for tracing.
     size_t EstimateMemoryUsage() const;
@@ -107,7 +110,7 @@ class OmniboxPedal {
     size_t WalkToUnconsumedIndexFrom(size_t from_index);
 
     // Storage for tokens.
-    std::vector<Token> _tokens;
+    std::vector<Token> tokens_;
   };
 
   struct LabelStrings {
@@ -142,6 +145,9 @@ class OmniboxPedal {
     // Removes one or more matching synonyms from given |remaining| sequence if
     // any are found.  Returns true if checking may continue; false if no more
     // checking is required because what remains cannot be a concept match.
+    // Note, if |fully_erase| is true and this method returns true, the
+    // |remaining| container has changed structure so ResetLinks must be called.
+    // This method doesn't call ResetLinks in that case, for efficiency.
     bool EraseMatchesIn(TokenSequence& remaining, bool fully_erase) const;
 
     // Add a synonym token sequence to this group.
@@ -229,11 +235,6 @@ class OmniboxPedal {
   virtual const gfx::VectorIcon& GetVectorIcon() const;
 #endif
 
-  // Returns true if the preprocessed match suggestion sequence triggers
-  // presentation of this Pedal.  This is not intended for general use,
-  // and only OmniboxPedalProvider should need to call this method.
-  bool IsTriggerMatch(const TokenSequence& match_sequence) const;
-
   // Move a synonym group into this Pedal's collection.
   void AddSynonymGroup(SynonymGroup&& group);
 
@@ -242,18 +243,18 @@ class OmniboxPedal {
 
   OmniboxPedalId id() const { return id_; }
 
+  // If a sufficient set of triggering synonym groups are present in
+  // match_sequence then it's a concept match and this returns true.  If a
+  // required group is not present, or if match_sequence contains extraneous
+  // tokens not covered by any synonym group, then it's not a concept match and
+  // this returns false. |match_sequence| is consumed/mutated by this method.
+  bool IsConceptMatch(TokenSequence& match_sequence) const;
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalTest, SynonymGroupErasesFirstMatchOnly);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalTest, SynonymGroupsDriveConceptMatches);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalImplementationsTest,
                            UnorderedSynonymExpressionsAreConceptMatches);
-
-  // If a sufficient set of triggering synonym groups are present in
-  // match_sequence then it's a concept match and this returns true.  If a
-  // required group is not present, or if match_sequence contains extraneous
-  // tokens not covered by any synonym group, then it's not a concept match and
-  // this returns false.
-  bool IsConceptMatch(const TokenSequence& match_sequence) const;
 
   // Use this for the common case of navigating to a URL.
   void OpenURL(ExecutionContext& context, const GURL& url) const;

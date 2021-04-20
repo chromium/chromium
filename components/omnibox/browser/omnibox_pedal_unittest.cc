@@ -73,10 +73,9 @@ TEST_F(OmniboxPedalTest, SynonymGroupsDriveConceptMatches) {
   add_group(true, required_a);
   add_group(true, required_b);
 
-  const auto is_concept_match =
-      [&](const OmniboxPedal::TokenSequence& sequence) {
-        return test_pedal.IsConceptMatch(sequence);
-      };
+  const auto is_concept_match = [&](OmniboxPedal::TokenSequence sequence) {
+    return test_pedal.IsConceptMatch(sequence);
+  };
 
   // As long as required synonym groups are present, order shouldn't matter.
   EXPECT_TRUE(is_concept_match(make_sequence({required_a, required_b})));

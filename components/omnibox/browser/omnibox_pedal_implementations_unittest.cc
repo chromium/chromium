@@ -16109,24 +16109,23 @@ TEST_F(OmniboxPedalImplementationsTest,
   LOG(INFO) << "Pedal count: " << pedals.size();
   for (const auto& pedal_concept : literal_concept_expressions) {
     const std::u16string first_trigger = base::ASCIIToUTF16(pedal_concept[0]);
-    auto iter =
-        std::find_if(pedals.begin(), pedals.end(), [&](const auto& pedal) {
-          const auto sequence = provider.Tokenize(first_trigger);
-          return pedal.second->IsConceptMatch(sequence);
-        });
-    EXPECT_NE(iter, pedals.end())
+    const OmniboxPedal* canonical_pedal =
+        provider.FindPedalMatch(first_trigger);
+    EXPECT_NE(canonical_pedal, nullptr)
         << "Canonical pedal not found for: " << first_trigger;
-    const OmniboxPedal* canonical_pedal = iter->second.get();
     const bool is_newly_found = found_pedals.insert(canonical_pedal).second;
     EXPECT_TRUE(is_newly_found)
         << "Found the same Pedal more than once with: " << first_trigger;
     for (const char* literal : pedal_concept) {
       const std::u16string expression = base::ASCIIToUTF16(literal);
       const auto is_match = [&](const auto& pedal) {
-        const auto sequence = provider.Tokenize(expression);
+        OmniboxPedal::TokenSequence sequence(0);
+        provider.Tokenize(sequence, expression);
+        provider.ignore_group_.EraseMatchesIn(sequence, true);
+        sequence.ResetLinks();
         return pedal.second->IsConceptMatch(sequence);
       };
-      iter = std::find_if(pedals.begin(), pedals.end(), is_match);
+      auto iter = std::find_if(pedals.begin(), pedals.end(), is_match);
       EXPECT_NE(iter, pedals.end()) << "Pedal not found for: " << expression;
       EXPECT_EQ(iter->second.get(), canonical_pedal)
           << "Found wrong Pedal for: " << expression;

@@ -62,9 +62,10 @@ class OmniboxPedalProvider {
                            UnorderedSynonymExpressionsAreConceptMatches);
 
   // Generate a token sequence for text using internal dictionary & delimiters.
-  // Returns empty sequence if any delimited part of text is not in dictionary.
+  // Outputs empty sequence if any delimited part of text is not in dictionary.
   // Note, the ignore_group is applied to eliminate stop words from output.
-  OmniboxPedal::TokenSequence Tokenize(const std::u16string& text) const;
+  void Tokenize(OmniboxPedal::TokenSequence& out_tokens,
+                const std::u16string& text) const;
 
   void LoadPedalConcepts();
   OmniboxPedal::SynonymGroup LoadSynonymGroup(
@@ -92,6 +93,9 @@ class OmniboxPedalProvider {
   // This contains all token delimiter characters.  It may be empty, in which
   // case no delimiting takes place (input is treated as raw token sequence).
   std::u16string tokenize_characters_;
+
+  // This holds the tokens currently being matched against.
+  OmniboxPedal::TokenSequence match_tokens_;
 
   // This serves as an upper bound on the number of tokens we will accept from
   // text before giving up and treating it as non-match for all Pedals.

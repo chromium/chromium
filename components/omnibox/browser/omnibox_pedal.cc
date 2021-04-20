@@ -20,18 +20,16 @@
 #endif
 
 OmniboxPedal::TokenSequence::TokenSequence(size_t reserve_size) {
-  _tokens.reserve(reserve_size);
+  tokens_.reserve(reserve_size);
 }
 
 OmniboxPedal::TokenSequence::TokenSequence(std::vector<int> token_ids) {
-  _tokens.reserve(token_ids.size());
+  tokens_.reserve(token_ids.size());
   for (int id : token_ids) {
     Add(id);
   }
 }
 
-OmniboxPedal::TokenSequence::TokenSequence(const OmniboxPedal::TokenSequence&) =
-    default;
 OmniboxPedal::TokenSequence::TokenSequence(OmniboxPedal::TokenSequence&&) =
     default;
 OmniboxPedal::TokenSequence::~TokenSequence() = default;
@@ -44,23 +42,23 @@ size_t OmniboxPedal::TokenSequence::CountUnconsumed() const {
   size_t index = 0;
   size_t count = 0;
   while (index < Size()) {
-    if (_tokens[index].link == index) {
+    if (tokens_[index].link == index) {
       ++count;
       ++index;
     } else {
-      index = _tokens[index].link;
+      index = tokens_[index].link;
     }
   }
   return count;
 }
 
 void OmniboxPedal::TokenSequence::Add(int id) {
-  _tokens.push_back({id, _tokens.size()});
+  tokens_.push_back({id, tokens_.size()});
 }
 
 void OmniboxPedal::TokenSequence::ResetLinks() {
-  for (size_t i = 0; i < _tokens.size(); ++i) {
-    _tokens[i].link = i;
+  for (size_t i = 0; i < tokens_.size(); ++i) {
+    tokens_[i].link = i;
   }
 }
 
@@ -76,8 +74,8 @@ bool OmniboxPedal::TokenSequence::Erase(
   while (index >= 0) {
     if (MatchesAt(erase_sequence, index, 0)) {
       // Erase sequence matched by actual removal from container.
-      const auto iter = _tokens.begin() + index;
-      _tokens.erase(iter, iter + erase_sequence.Size());
+      const auto iter = tokens_.begin() + index;
+      tokens_.erase(iter, iter + erase_sequence.Size());
       if (erase_only_once) {
         return true;
       }
@@ -104,12 +102,12 @@ bool OmniboxPedal::TokenSequence::Consume(
   while (index < end) {
     if (MatchesAt(consume_sequence, index, ~0)) {
       // Erase sequence matched. Remove by updating links to skip.
-      _tokens[index].link =
+      tokens_[index].link =
           WalkToUnconsumedIndexFrom(index + consume_sequence.Size());
       if (consume_only_once) {
         return true;
       }
-      index = _tokens[index].link;
+      index = tokens_[index].link;
       changed = true;
     } else {
       // No match. Proceed by single step.
@@ -120,15 +118,15 @@ bool OmniboxPedal::TokenSequence::Consume(
 }
 
 size_t OmniboxPedal::TokenSequence::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(_tokens);
+  return base::trace_event::EstimateMemoryUsage(tokens_);
 }
 
 bool OmniboxPedal::TokenSequence::MatchesAt(
     const OmniboxPedal::TokenSequence& sequence,
     size_t index,
     size_t index_mask) const {
-  for (const auto& sequence_token : sequence._tokens) {
-    const auto& from_token = _tokens[index];
+  for (const auto& sequence_token : sequence.tokens_) {
+    const auto& from_token = tokens_[index];
     if (from_token.id != sequence_token.id ||
         (from_token.link & index_mask) != (index & index_mask)) {
       return false;
@@ -142,13 +140,13 @@ size_t OmniboxPedal::TokenSequence::WalkToUnconsumedIndexFrom(
     size_t from_index) {
   size_t index = from_index;
   while (index < Size()) {
-    const size_t link = _tokens[index].link;
+    const size_t link = tokens_[index].link;
     if (link == index) {
       break;
     }
     index = link;
     // Shorten path so that future walks remain near constant time.
-    _tokens[from_index].link = link;
+    tokens_[from_index].link = link;
   }
   return index;
 }
@@ -198,14 +196,6 @@ bool OmniboxPedal::SynonymGroup::EraseMatchesIn(
         break;
       }
     }
-  }
-  if (changed && fully_erase) {
-    // A restructured container must have its token links reset
-    // for correct behavior of later Consume() calls. Note, this
-    // only happens once for the ignore group, so there's no
-    // benefit to factoring the call out from this method. The
-    // links are invalidated by container element erasure regardless.
-    remaining.ResetLinks();
   }
   return changed || !required_;
 }
@@ -301,10 +291,6 @@ const gfx::VectorIcon& OmniboxPedal::GetVectorIcon() const {
 }
 #endif
 
-bool OmniboxPedal::IsTriggerMatch(const TokenSequence& match_sequence) const {
-  return IsConceptMatch(match_sequence);
-}
-
 void OmniboxPedal::AddSynonymGroup(SynonymGroup&& group) {
   synonym_groups_.push_back(std::move(group));
 }
@@ -317,13 +303,12 @@ size_t OmniboxPedal::EstimateMemoryUsage() const {
   return total;
 }
 
-bool OmniboxPedal::IsConceptMatch(const TokenSequence& match_sequence) const {
-  TokenSequence remaining(match_sequence);
+bool OmniboxPedal::IsConceptMatch(TokenSequence& match_sequence) const {
   for (const auto& group : synonym_groups_) {
-    if (!group.EraseMatchesIn(remaining, false))
+    if (!group.EraseMatchesIn(match_sequence, false))
       return false;
   }
-  return remaining.IsFullyConsumed();
+  return match_sequence.IsFullyConsumed();
 }
 
 void OmniboxPedal::OpenURL(OmniboxPedal::ExecutionContext& context,
