@@ -5,12 +5,11 @@
 #include "ui/gtk/select_file_dialog_impl_gtk.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
-#include <stddef.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <cstddef>
 #include <map>
 #include <memory>
 #include <set>
@@ -30,7 +29,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui.h"
-#include "ui/gtk/gtk_ui_delegate.h"
+#include "ui/gtk/gtk_ui_platform.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/gtk/select_file_dialog_impl.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -299,7 +298,7 @@ void SelectFileDialogImplGTK::SelectFileImpl(
 
   if (!GtkCheckVersion(4))
     gtk_widget_show_all(dialog);
-  gtk::GtkUi::GetDelegate()->ShowGtkWindow(GTK_WINDOW(dialog));
+  gtk::GtkUi::GetPlatform()->ShowGtkWindow(GTK_WINDOW(dialog));
 }
 
 void SelectFileDialogImplGTK::AddFilters(GtkFileChooser* chooser) {

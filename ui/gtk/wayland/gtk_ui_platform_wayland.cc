@@ -2,46 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gtk/wayland/gtk_ui_delegate_wayland_base.h"
-
-#include <gtk/gtk.h>
+#include "ui/gtk/wayland/gtk_ui_platform_wayland.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/environment.h"
 #include "base/logging.h"
 #include "ui/base/glib/glib_cast.h"
+#include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/gtk/gtk_compat.h"
 
-namespace ui {
+namespace gtk {
 
-GtkUiDelegateWaylandBase::GtkUiDelegateWaylandBase() {
-  CHECK(gtk::LoadGtk());
-
+GtkUiPlatformWayland::GtkUiPlatformWayland() {
   gdk_set_allowed_backends("wayland");
   // GDK_BACKEND takes precedence over gdk_set_allowed_backends(), so override
   // it to ensure we get the wayland backend.
   base::Environment::Create()->SetVar("GDK_BACKEND", "wayland");
 }
 
-GtkUiDelegateWaylandBase::~GtkUiDelegateWaylandBase() = default;
+GtkUiPlatformWayland::~GtkUiPlatformWayland() = default;
 
-void GtkUiDelegateWaylandBase::OnInitialized(GtkWidget* widget) {
+void GtkUiPlatformWayland::OnInitialized(GtkWidget* widget) {
   // Nothing to do upon initialization for Wayland.
 }
 
-GdkKeymap* GtkUiDelegateWaylandBase::GetGdkKeymap() {
+GdkKeymap* GtkUiPlatformWayland::GetGdkKeymap() {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
-GdkWindow* GtkUiDelegateWaylandBase::GetGdkWindow(
+GdkWindow* GtkUiPlatformWayland::GetGdkWindow(
     gfx::AcceleratedWidget window_id) {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
-bool GtkUiDelegateWaylandBase::SetGtkWidgetTransientFor(
+bool GtkUiPlatformWayland::SetGtkWidgetTransientFor(
     GtkWidget* widget,
     gfx::AcceleratedWidget parent) {
   if (!gtk::GtkCheckVersion(3, 22)) {
@@ -51,24 +48,23 @@ bool GtkUiDelegateWaylandBase::SetGtkWidgetTransientFor(
     return false;
   }
 
-  return SetGtkWidgetTransientForImpl(
-      parent, base::BindOnce(&GtkUiDelegateWaylandBase::OnHandle,
+  return ui::LinuxUiDelegate::GetInstance()->SetWidgetTransientFor(
+      parent, base::BindOnce(&GtkUiPlatformWayland::OnHandle,
                              weak_factory_.GetWeakPtr(), widget));
 }
 
-void GtkUiDelegateWaylandBase::ClearTransientFor(
-    gfx::AcceleratedWidget parent) {
+void GtkUiPlatformWayland::ClearTransientFor(gfx::AcceleratedWidget parent) {
   // Nothing to do here.
 }
 
-void GtkUiDelegateWaylandBase::ShowGtkWindow(GtkWindow* window) {
+void GtkUiPlatformWayland::ShowGtkWindow(GtkWindow* window) {
   // TODO(crbug.com/1008755): Check if gtk_window_present_with_time is needed
   // here as well, similarly to what is done in X11 impl.
   gtk_window_present(window);
 }
 
-void GtkUiDelegateWaylandBase::OnHandle(GtkWidget* widget,
-                                        const std::string& handle) {
+void GtkUiPlatformWayland::OnHandle(GtkWidget* widget,
+                                    const std::string& handle) {
   char* parent = const_cast<char*>(handle.c_str());
   if (gtk::GtkCheckVersion(4)) {
     auto* toplevel = GlibCast<GdkToplevel>(
@@ -81,4 +77,8 @@ void GtkUiDelegateWaylandBase::OnHandle(GtkWidget* widget,
   }
 }
 
-}  // namespace ui
+int GtkUiPlatformWayland::GetGdkKeyState() {
+  return ui::LinuxUiDelegate::GetInstance()->GetKeyState();
+}
+
+}  // namespace gtk

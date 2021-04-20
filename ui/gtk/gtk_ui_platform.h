@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GTK_GTK_UI_DELEGATE_H_
-#define UI_GTK_GTK_UI_DELEGATE_H_
+#ifndef UI_GTK_GTK_UI_PLATFORM_H_
+#define UI_GTK_GTK_UI_PLATFORM_H_
 
-#include "base/component_export.h"
 #include "ui/gfx/native_widget_types.h"
 
 using GdkKeymap = struct _GdkKeymap;
@@ -13,27 +12,13 @@ using GtkWindow = struct _GtkWindow;
 using GtkWidget = struct _GtkWidget;
 using GdkWindow = struct _GdkWindow;
 
-namespace ui {
+namespace gtk {
 
-// GtkUiDelegate encapsulates platform-specific functionalities required by
-// a Gtk-based LinuxUI implementation. The main goal of this interface is to
-// make GtkUi platform agnostic, moving the platform specifics to lower level
-// layers (e.g: ozone). Linux backends (e.g: ozone/x11, aura/x11, ozone/wayland)
-// must provide a GtkUiDelegate implementation and inject its singleton instance
-// of it via |SetInstance| in order to be able to use GtkUi.
-class COMPONENT_EXPORT(GTK) GtkUiDelegate {
+// GtkUiPlatform encapsulates platform-specific functionalities required by
+// a Gtk-based LinuxUI implementation.
+class GtkUiPlatform {
  public:
-  virtual ~GtkUiDelegate() = default;
-
-  // Sets the singleton delegate instance to be used by GtkUi. This makes it
-  // possible for ozone-based backends, for example, to inject the GtkUiDelegate
-  // object without polluting Ozone API, since just a small subset of ozone
-  // backends make use of GtkUi. This pointer is not owned, and if this method
-  // is called a second time, the first instance is not deleted.
-  static void SetInstance(GtkUiDelegate* instance);
-
-  // Returns the current active instance.
-  static GtkUiDelegate* instance();
+  virtual ~GtkUiPlatform() = default;
 
   // Called when the GtkUi instance initialization process finished. |widget| is
   // a dummy window passed in for context.
@@ -62,6 +47,6 @@ class COMPONENT_EXPORT(GTK) GtkUiDelegate {
   virtual int GetGdkKeyState() = 0;
 };
 
-}  // namespace ui
+}  // namespace gtk
 
-#endif  // UI_GTK_GTK_UI_DELEGATE_H_
+#endif  // UI_GTK_GTK_UI_PLATFORM_H_

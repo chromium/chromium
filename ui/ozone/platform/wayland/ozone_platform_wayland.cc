@@ -59,8 +59,7 @@
 #endif
 
 #if BUILDFLAG(USE_GTK)
-#include "ui/gtk/gtk_ui_delegate.h"  // nogncheck
-#include "ui/ozone/platform/wayland/host/gtk_ui_delegate_wayland.h"  //nogncheck
+#include "ui/ozone/platform/wayland/host/linux_ui_delegate_wayland.h"  // nogncheck
 #endif
 
 namespace ui {
@@ -185,10 +184,8 @@ class OzonePlatformWayland : public OzonePlatform {
     supported_buffer_formats_ =
         connection_->buffer_manager_host()->GetSupportedBufferFormats();
 #if BUILDFLAG(USE_GTK)
-    DCHECK(!GtkUiDelegate::instance());
-    gtk_ui_delegate_ =
-        std::make_unique<GtkUiDelegateWayland>(connection_.get());
-    GtkUiDelegate::SetInstance(gtk_ui_delegate_.get());
+    gtk_ui_platform_ =
+        std::make_unique<LinuxUiDelegateWayland>(connection_.get());
 #endif
 
     menu_utils_ = std::make_unique<WaylandMenuUtils>(connection_.get());
@@ -322,7 +319,7 @@ class OzonePlatformWayland : public OzonePlatform {
   DrmRenderNodePathFinder path_finder_;
 
 #if BUILDFLAG(USE_GTK)
-  std::unique_ptr<GtkUiDelegateWayland> gtk_ui_delegate_;
+  std::unique_ptr<LinuxUiDelegateWayland> gtk_ui_platform_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(OzonePlatformWayland);

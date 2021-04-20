@@ -7,15 +7,13 @@
 
 #include <map>
 
-#include "base/component_export.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/linux_ui/nav_button_provider.h"
 
 namespace gtk {
 
-class COMPONENT_EXPORT(GTK) NavButtonProviderGtk
-    : public views::NavButtonProvider {
+class NavButtonProviderGtk : public views::NavButtonProvider {
  public:
   NavButtonProviderGtk();
   ~NavButtonProviderGtk() override;

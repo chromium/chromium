@@ -5,8 +5,6 @@
 #ifndef UI_GTK_GTK_KEY_BINDINGS_HANDLER_H_
 #define UI_GTK_GTK_KEY_BINDINGS_HANDLER_H_
 
-#include <gtk/gtk.h>
-
 #include <string>
 #include <vector>
 

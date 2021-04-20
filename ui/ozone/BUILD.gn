@@ -381,7 +381,10 @@ if (ozone_platform_x11) {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "OZONE_PLATFORM_X11=$ozone_platform_x11" ]
+  flags = [
+    "OZONE_PLATFORM_WAYLAND=$ozone_platform_wayland",
+    "OZONE_PLATFORM_X11=$ozone_platform_x11",
+  ]
   visibility += [ "*" ]
 }
 

@@ -13,17 +13,10 @@
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/main_function_params.h"
 #include "content/shell/browser/shell_browser_context.h"
-#include "ui/base/buildflags.h"
 
 namespace performance_manager {
 class PerformanceManagerLifetime;
 }  // namespace performance_manager
-
-#if BUILDFLAG(USE_GTK)
-namespace ui {
-class GtkUiDelegate;
-}
-#endif
 
 namespace content {
 class ShellPlatformDelegate;
@@ -66,17 +59,12 @@ class ShellBrowserMainParts : public BrowserMainParts {
   }
 
  private:
-
   std::unique_ptr<ShellBrowserContext> browser_context_;
   std::unique_ptr<ShellBrowserContext> off_the_record_browser_context_;
 
   // For running content_browsertests.
   const MainFunctionParams parameters_;
   bool run_message_loop_;
-
-#if BUILDFLAG(USE_GTK)
-  std::unique_ptr<ui::GtkUiDelegate> gtk_ui_delegate_;
-#endif
 
   std::unique_ptr<performance_manager::PerformanceManagerLifetime>
       performance_manager_lifetime_;

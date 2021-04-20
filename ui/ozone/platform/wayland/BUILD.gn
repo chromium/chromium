@@ -221,12 +221,8 @@ source_set("wayland") {
 
   if (use_gtk) {
     sources += [
-      "host/gtk_ui_delegate_wayland.cc",
-      "host/gtk_ui_delegate_wayland.h",
-    ]
-    deps += [
-      "//ui/gtk:gtk_ui_delegate",
-      "//ui/gtk/wayland",
+      "host/linux_ui_delegate_wayland.cc",
+      "host/linux_ui_delegate_wayland.h",
     ]
   }
 

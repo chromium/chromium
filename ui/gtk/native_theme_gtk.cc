@@ -4,8 +4,6 @@
 
 #include "ui/gtk/native_theme_gtk.h"
 
-#include <gtk/gtk.h>
-
 #include "base/strings/strcat.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/color_palette.h"

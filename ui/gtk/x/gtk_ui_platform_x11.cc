@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gtk/x/gtk_ui_delegate_x11.h"
-
-#include <gtk/gtk.h>
+#include "ui/gtk/x/gtk_ui_platform_x11.h"
 
 #include "base/check.h"
 #include "base/environment.h"
@@ -20,13 +18,9 @@
 #include "ui/platform_window/x11/x11_window.h"
 #include "ui/platform_window/x11/x11_window_manager.h"
 
-namespace ui {
+namespace gtk {
 
-GtkUiDelegateX11::GtkUiDelegateX11(x11::Connection* connection)
-    : connection_(connection) {
-  DCHECK(connection_);
-  CHECK(gtk::LoadGtk());
-
+GtkUiPlatformX11::GtkUiPlatformX11() : connection_(x11::Connection::Get()) {
   gdk_set_allowed_backends("x11");
   // GDK_BACKEND takes precedence over gdk_set_allowed_backends(), so override
   // it to ensure we get the x11 backend.
@@ -34,9 +28,9 @@ GtkUiDelegateX11::GtkUiDelegateX11(x11::Connection* connection)
   x11::InitXlib();
 }
 
-GtkUiDelegateX11::~GtkUiDelegateX11() = default;
+GtkUiPlatformX11::~GtkUiPlatformX11() = default;
 
-void GtkUiDelegateX11::OnInitialized(GtkWidget* widget) {
+void GtkUiPlatformX11::OnInitialized(GtkWidget* widget) {
   // Ensure the singleton instance of GtkEventLoopX11 is created and started.
   if (!event_loop_)
     event_loop_ = std::make_unique<GtkEventLoopX11>(widget);
@@ -47,12 +41,12 @@ void GtkUiDelegateX11::OnInitialized(GtkWidget* widget) {
   x11::SetXlibErrorHandler();
 }
 
-GdkKeymap* GtkUiDelegateX11::GetGdkKeymap() {
+GdkKeymap* GtkUiPlatformX11::GetGdkKeymap() {
   DCHECK(!gtk::GtkCheckVersion(4));
   return gdk_keymap_get_for_display(GetGdkDisplay());
 }
 
-GdkWindow* GtkUiDelegateX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
+GdkWindow* GtkUiPlatformX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
   DCHECK(!gtk::GtkCheckVersion(4));
   GdkDisplay* display = GetGdkDisplay();
   GdkWindow* gdk_window = gdk_x11_window_lookup_for_display(
@@ -65,7 +59,7 @@ GdkWindow* GtkUiDelegateX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
   return gdk_window;
 }
 
-bool GtkUiDelegateX11::SetGtkWidgetTransientFor(GtkWidget* widget,
+bool GtkUiPlatformX11::SetGtkWidgetTransientFor(GtkWidget* widget,
                                                 gfx::AcceleratedWidget parent) {
   auto x11_window = static_cast<x11::Window>(
       gtk::GtkCheckVersion(4)
@@ -84,7 +78,7 @@ bool GtkUiDelegateX11::SetGtkWidgetTransientFor(GtkWidget* widget,
   return true;
 }
 
-void GtkUiDelegateX11::ClearTransientFor(gfx::AcceleratedWidget parent) {
+void GtkUiPlatformX11::ClearTransientFor(gfx::AcceleratedWidget parent) {
   ui::X11Window* parent_window =
       ui::X11WindowManager::GetInstance()->GetWindow(parent);
   // parent_window might be dead if there was a top-down window close
@@ -92,24 +86,24 @@ void GtkUiDelegateX11::ClearTransientFor(gfx::AcceleratedWidget parent) {
     parent_window->SetTransientWindow(x11::Window::None);
 }
 
-GdkDisplay* GtkUiDelegateX11::GetGdkDisplay() {
+GdkDisplay* GtkUiPlatformX11::GetGdkDisplay() {
   if (!display_)
     display_ = gdk_display_get_default();
   return display_;
 }
 
-void GtkUiDelegateX11::ShowGtkWindow(GtkWindow* window) {
+void GtkUiPlatformX11::ShowGtkWindow(GtkWindow* window) {
   // We need to call gtk_window_present after making the widgets visible to make
   // sure window gets correctly raised and gets focus.
-  DCHECK(X11EventSource::HasInstance());
+  DCHECK(ui::X11EventSource::HasInstance());
   gtk_window_present_with_time(
       window,
-      static_cast<uint32_t>(X11EventSource::GetInstance()->GetTimestamp()));
+      static_cast<uint32_t>(ui::X11EventSource::GetInstance()->GetTimestamp()));
 }
 
-int GtkUiDelegateX11::GetGdkKeyState() {
+int GtkUiPlatformX11::GetGdkKeyState() {
   auto* xevent =
-      X11EventSource::GetInstance()->connection()->dispatching_event();
+      ui::X11EventSource::GetInstance()->connection()->dispatching_event();
 
   if (!xevent)
     return ui::EF_NONE;
@@ -119,4 +113,4 @@ int GtkUiDelegateX11::GetGdkKeyState() {
   return static_cast<int>(key_xevent->state);
 }
 
-}  // namespace ui
+}  // namespace gtk

@@ -4,9 +4,7 @@
 
 #include "ui/gtk/gtk_key_bindings_handler.h"
 
-#include <gdk/gdkkeysyms.h>
-#include <stddef.h>
-
+#include <cstddef>
 #include <string>
 
 #include "base/logging.h"

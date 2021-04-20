@@ -82,7 +82,7 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   ~LinuxUI() override;
 
   // Sets the dynamically loaded singleton that draws the desktop native UI.
-  static void SetInstance(LinuxUI* instance);
+  static void SetInstance(std::unique_ptr<LinuxUI> instance);
 
   // Returns a LinuxUI instance for the toolkit used in the user's desktop
   // environment.

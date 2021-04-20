@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/wayland/host/gtk_ui_delegate_wayland.h"
+#include "ui/ozone/platform/wayland/host/linux_ui_delegate_wayland.h"
 
 #include <utility>
 
 #include "base/logging.h"
+#include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
@@ -17,14 +18,18 @@
 
 namespace ui {
 
-GtkUiDelegateWayland::GtkUiDelegateWayland(WaylandConnection* connection)
+LinuxUiDelegateWayland::LinuxUiDelegateWayland(WaylandConnection* connection)
     : connection_(connection) {
   DCHECK(connection_);
 }
 
-GtkUiDelegateWayland::~GtkUiDelegateWayland() = default;
+LinuxUiDelegateWayland::~LinuxUiDelegateWayland() = default;
 
-bool GtkUiDelegateWayland::SetGtkWidgetTransientForImpl(
+LinuxUiBackend LinuxUiDelegateWayland::GetBackend() const {
+  return LinuxUiBackend::kWayland;
+}
+
+bool LinuxUiDelegateWayland::SetWidgetTransientFor(
     gfx::AcceleratedWidget parent,
     base::OnceCallback<void(const std::string&)> callback) {
   auto* parent_window =
@@ -39,7 +44,7 @@ bool GtkUiDelegateWayland::SetGtkWidgetTransientForImpl(
   return true;
 }
 
-int GtkUiDelegateWayland::GetGdkKeyState() {
+int LinuxUiDelegateWayland::GetKeyState() {
   // TODO(crbug/1159460): Test fcitx unikey IME on ozone/wayland.
   return connection_->event_source()->keyboard_modifiers();
 }

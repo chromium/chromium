@@ -5,9 +5,6 @@
 #ifndef UI_GTK_GTK_UTIL_H_
 #define UI_GTK_GTK_UTIL_H_
 
-#include <gdk/gdk.h>
-#include <gtk/gtk.h>
-
 #include <string>
 #include <vector>
 

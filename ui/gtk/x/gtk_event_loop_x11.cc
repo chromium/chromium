@@ -4,7 +4,6 @@
 
 #include "ui/gtk/x/gtk_event_loop_x11.h"
 
-#include <gtk/gtk.h>
 #include <xcb/xcb.h>
 #include <xcb/xproto.h>
 
@@ -12,7 +11,7 @@
 #include "ui/gfx/x/event.h"
 #include "ui/gtk/gtk_compat.h"
 
-namespace ui {
+namespace gtk {
 
 namespace {
 
@@ -138,4 +137,4 @@ void GtkEventLoopX11::DispatchGdkEvent(GdkEvent* gdk_event, gpointer) {
   gtk_main_do_event(gdk_event);
 }
 
-}  // namespace ui
+}  // namespace gtk

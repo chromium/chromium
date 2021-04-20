@@ -5,14 +5,11 @@
 #ifndef UI_GTK_X_GTK_EVENT_LOOP_X11_H_
 #define UI_GTK_X_GTK_EVENT_LOOP_X11_H_
 
-#include <gdk/gdk.h>
-#include <gtk/gtk.h>
-
 #include "ui/base/glib/glib_integers.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gtk/gtk_compat.h"
 
-namespace ui {
+namespace gtk {
 
 class GtkEventLoopX11 {
  public:
@@ -34,6 +31,6 @@ class GtkEventLoopX11 {
   CHROMEG_CALLBACK_0(GtkEventLoopX11, gboolean, OnEvent, GdkEvent*);
 };
 
-}  // namespace ui
+}  // namespace gtk
 
 #endif  // UI_GTK_X_GTK_EVENT_LOOP_X11_H_

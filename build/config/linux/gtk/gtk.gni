@@ -7,9 +7,4 @@ import("//build/config/ui.gni")
 declare_args() {
   # Whether or not we should use libgtk.
   use_gtk = is_linux && !is_chromecast
-
-  # The (major) version of GTK to build against.
-  gtk_version = 3
 }
-
-assert(gtk_version >= 3 && gtk_version <= 4)

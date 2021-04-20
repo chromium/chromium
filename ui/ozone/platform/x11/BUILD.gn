@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/linux/gtk/gtk.gni")
 import("//gpu/vulkan/features.gni")
 import("//ui/base/ui_features.gni")
 
@@ -90,10 +89,6 @@ source_set("x11") {
 
   if (enable_vulkan) {
     deps += [ "//gpu/vulkan/x" ]
-  }
-
-  if (use_gtk) {
-    deps += [ "//ui/gtk/x" ]
   }
 
   if (use_xkbcommon) {

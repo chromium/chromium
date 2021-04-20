@@ -942,7 +942,7 @@ if (enable_me2me_host) {
         deps = [ "//remoting/host/mac:remoting_me2me_host" ]
       }
     } else {
-      target("executable", "remoting_me2me_host") {
+      executable("remoting_me2me_host") {
         configs += [ "//remoting/build/config:version" ]
 
         sources = [
@@ -961,6 +961,9 @@ if (enable_me2me_host) {
           "//remoting/host/setup:common",
           "//remoting/resources",
         ]
+
+        # https://crbug.com/1198747
+        assert_no_deps = [ "//ui/gtk" ]
       }
     }
 

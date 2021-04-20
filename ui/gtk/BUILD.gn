@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//printing/buildflags/buildflags.gni")
@@ -15,10 +14,12 @@ assert(is_linux || is_chromeos_lacros || is_chromeos,
        "This file should only be referenced on Linux")
 
 source_set("gtk_types") {
-  sources = [ "gtk_types.h" ]
+  visibility = [ ":gtk_stubs" ]
+  public = [ "gtk_types.h" ]
 }
 
 generate_stubs("gtk_stubs") {
+  visibility = [ ":gtk" ]
   sigs = [
     "gdk_pixbuf.sigs",
     "gdk.sigs",
@@ -28,7 +29,7 @@ generate_stubs("gtk_stubs") {
   ]
   extra_header = "gtk.fragment"
   output_name = "gtk_stubs"
-  deps = [
+  public_deps = [
     ":gtk_types",
     "//build/config/linux/gtk",
     "//build/config/linux/gtk:gtkprint",
@@ -37,45 +38,20 @@ generate_stubs("gtk_stubs") {
   logging_include = "ui/gtk/log_noop.h"
 }
 
-source_set("gtk_compat") {
-  sources = [
-    "gtk_compat.cc",
-    "gtk_compat.h",
-  ]
-  deps = [
-    ":gtk_stubs",
-    ":gtk_types",
-    "//base",
-    "//ui/base",
-    "//ui/gfx",
-  ]
-  public_deps = [
-    "//build/config/linux/gtk",
-    "//build/config/linux/gtk:gtkprint",
-  ]
-}
-
-component("gtk_ui_delegate") {
-  public = [ "gtk_ui_delegate.h" ]
-  sources = [ "gtk_ui_delegate.cc" ]
-  deps = [
-    "//base",
-    "//ui/gfx",
-  ]
-  defines = [ "IS_GTK_IMPL" ]
-}
-
 component("gtk") {
-  public = [ "gtk_ui.h" ]
-
-  friend = [ ":gtk_unittests" ]
+  public = [ "gtk_ui_factory.h" ]
 
   sources = [
     "gtk_color_mixers.cc",
     "gtk_color_mixers.h",
+    "gtk_compat.cc",
+    "gtk_compat.h",
     "gtk_key_bindings_handler.cc",
     "gtk_key_bindings_handler.h",
     "gtk_ui.cc",
+    "gtk_ui.h",
+    "gtk_ui_factory.cc",
+    "gtk_ui_platform.h",
     "gtk_util.cc",
     "gtk_util.h",
     "input_method_context_impl_gtk.cc",
@@ -112,10 +88,8 @@ component("gtk") {
   }
 
   deps = [
-    ":gtk_compat",
+    ":gtk_stubs",
     "//base",
-    "//build/config/linux/gtk",
-    "//build/config/linux/gtk:gtkprint",
     "//printing",
     "//skia",
 
@@ -148,7 +122,26 @@ component("gtk") {
     deps += [ "//printing/mojom" ]
   }
 
-  public_deps = [ ":gtk_ui_delegate" ]
+  if (use_x11 || ozone_platform_x11) {
+    sources += [
+      "x/gtk_event_loop_x11.cc",
+      "x/gtk_event_loop_x11.h",
+      "x/gtk_ui_platform_x11.cc",
+      "x/gtk_ui_platform_x11.h",
+    ]
+    deps += [
+      "//ui/events/platform/x11",
+      "//ui/gfx/x",
+      "//ui/platform_window/x11",
+    ]
+  }
+
+  if (ozone_platform_wayland) {
+    sources += [
+      "wayland/gtk_ui_platform_wayland.cc",
+      "wayland/gtk_ui_platform_wayland.h",
+    ]
+  }
 
   # TODO: This should be removed.
   if (use_ozone) {
@@ -163,15 +156,10 @@ test("gtk_unittests") {
     ":gtk",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
-
-    # Required so that including gtk_util.h can resolve <gtk/gtk.h>.
-    "//build/config/linux/gtk",
-
-    # Required so that including gtk_util.h can resolve <gtk/gtkunixprint.h>.
-    "//build/config/linux/gtk:gtkprint",
     "//testing/gtest",
     "//ui/base:features",
     "//ui/native_theme",
     "//ui/native_theme:test_support",
+    "//ui/views",
   ]
 }

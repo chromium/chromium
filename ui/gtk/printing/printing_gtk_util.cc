@@ -4,9 +4,6 @@
 
 #include "ui/gtk/printing/printing_gtk_util.h"
 
-#include <gtk/gtk.h>
-#include <gtk/gtkunixprint.h>
-
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
@@ -15,6 +12,7 @@
 #include "printing/units.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gtk/gtk_compat.h"
 
 namespace {
 

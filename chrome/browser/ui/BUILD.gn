@@ -4470,12 +4470,6 @@ static_library("ui") {
         ]
         if (use_gtk) {
           deps += [ "//ui/gtk" ]
-          if (use_x11) {
-            deps += [
-              "//ui/gfx/x",
-              "//ui/gtk/x",
-            ]
-          }
           if (use_ozone) {
             deps += [ "//ui/ozone" ]
           }

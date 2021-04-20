@@ -4,10 +4,7 @@
 
 #include "ui/gtk/input_method_context_impl_gtk.h"
 
-#include <gdk/gdk.h>
-#include <gdk/gdkkeysyms.h>
-#include <gtk/gtk.h>
-#include <stddef.h>
+#include <cstddef>
 
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window_tree_host.h"
@@ -21,7 +18,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui.h"
-#include "ui/gtk/gtk_ui_delegate.h"
+#include "ui/gtk/gtk_ui_platform.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/views/linux_ui/linux_ui.h"
 
@@ -46,7 +43,7 @@ GdkWindow* GetTargetWindow(const ui::KeyEvent& key_event) {
   DCHECK(window) << "KeyEvent target window not set.";
 
   auto window_id = window->GetHost()->GetAcceleratedWidget();
-  return GtkUi::GetDelegate()->GetGdkWindow(window_id);
+  return GtkUi::GetPlatform()->GetGdkWindow(window_id);
 }
 
 // Translate IME ui::KeyEvent to a GdkEventKey.

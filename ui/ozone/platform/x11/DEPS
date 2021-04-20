@@ -1,6 +1,4 @@
 include_rules = [
   "+ui/base/x",
   "+ui/base",
-  "+ui/gtk/gtk_ui_delegate.h",
-  "+ui/gtk/x/gtk_ui_delegate_x11.h",
 ]

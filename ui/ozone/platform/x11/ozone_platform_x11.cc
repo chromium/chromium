@@ -22,6 +22,7 @@
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory_ozone.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
+#include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/base/x/x11_cursor_factory.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/display/fake/fake_display_delegate.h"
@@ -58,14 +59,17 @@
 #include "ui/ozone/platform/x11/x11_os_exchange_data_provider_ozone.h"
 #endif
 
-#if BUILDFLAG(USE_GTK)
-#include "ui/gtk/gtk_ui_delegate.h"        // nogncheck
-#include "ui/gtk/x/gtk_ui_delegate_x11.h"  // nogncheck
-#endif
-
 namespace ui {
 
 namespace {
+
+class LinuxUiDelegateX11 : public LinuxUiDelegate {
+ public:
+  ~LinuxUiDelegateX11() override = default;
+
+  // LinuxUiDelegate:
+  LinuxUiBackend GetBackend() const override { return LinuxUiBackend::kX11; }
+};
 
 // Singleton OzonePlatform implementation for X11 platform.
 class OzonePlatformX11 : public OzonePlatform,
@@ -241,10 +245,7 @@ class OzonePlatformX11 : public OzonePlatform,
     TouchFactory::SetTouchDeviceListFromCommandLine();
 
 #if BUILDFLAG(USE_GTK)
-    DCHECK(!GtkUiDelegate::instance());
-    gtk_ui_delegate_ =
-        std::make_unique<GtkUiDelegateX11>(x11::Connection::Get());
-    GtkUiDelegate::SetInstance(gtk_ui_delegate_.get());
+    linux_ui_delegate_ = std::make_unique<LinuxUiDelegateX11>();
 #endif
 
     menu_utils_ = std::make_unique<X11MenuUtils>();
@@ -328,7 +329,7 @@ class OzonePlatformX11 : public OzonePlatform,
   std::unique_ptr<X11EventSource> event_source_;
 
 #if BUILDFLAG(USE_GTK)
-  std::unique_ptr<GtkUiDelegate> gtk_ui_delegate_;
+  std::unique_ptr<LinuxUiDelegate> linux_ui_delegate_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(OzonePlatformX11);

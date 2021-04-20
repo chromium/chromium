@@ -4,8 +4,6 @@
 
 #include "ui/gtk/nav_button_provider_gtk.h"
 
-#include <gtk/gtk.h>
-
 #include "base/notreached.h"
 #include "ui/base/glib/glib_cast.h"
 #include "ui/base/glib/scoped_gobject.h"

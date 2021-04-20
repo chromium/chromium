@@ -4,8 +4,6 @@
 
 #include "ui/gtk/printing/print_dialog_gtk.h"
 
-#include <gtk/gtkunixprint.h>
-
 #include <algorithm>
 #include <cmath>
 #include <memory>
@@ -30,7 +28,7 @@
 #include "ui/aura/window.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui.h"
-#include "ui/gtk/gtk_ui_delegate.h"
+#include "ui/gtk/gtk_ui_platform.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/gtk/printing/printing_gtk_util.h"
 
@@ -409,7 +407,7 @@ void PrintDialogGtk::ShowDialog(
   g_signal_connect(dialog_, "response", G_CALLBACK(OnResponseThunk), this);
   gtk_widget_show(dialog_);
 
-  gtk::GtkUi::GetDelegate()->ShowGtkWindow(GTK_WINDOW(dialog_));
+  gtk::GtkUi::GetPlatform()->ShowGtkWindow(GTK_WINDOW(dialog_));
 }
 
 void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,

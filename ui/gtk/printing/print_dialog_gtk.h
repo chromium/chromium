@@ -5,8 +5,6 @@
 #ifndef UI_GTK_PRINTING_PRINT_DIALOG_GTK_H_
 #define UI_GTK_PRINTING_PRINT_DIALOG_GTK_H_
 
-#include <gtk/gtk.h>
-#include <gtk/gtkunixprint.h>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -17,6 +15,7 @@
 #include "printing/printing_context_linux.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/glib/glib_signal.h"
+#include "ui/gtk/gtk_compat.h"
 
 namespace printing {
 class MetafilePlayer;

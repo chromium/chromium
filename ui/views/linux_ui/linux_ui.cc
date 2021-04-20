@@ -17,17 +17,17 @@ views::LinuxUI* g_linux_ui = nullptr;
 
 namespace views {
 
-void LinuxUI::SetInstance(LinuxUI* instance) {
+void LinuxUI::SetInstance(std::unique_ptr<LinuxUI> instance) {
   delete g_linux_ui;
-  g_linux_ui = instance;
+  g_linux_ui = instance.release();
   // Do not set IME instance for ozone as we delegate creating the input method
   // to OzonePlatforms instead. If this is set, OzonePlatform never sets a
   // context factory.
   if (!features::IsUsingOzonePlatform())
-    LinuxInputMethodContextFactory::SetInstance(instance);
-  SkiaFontDelegate::SetInstance(instance);
-  ShellDialogLinux::SetInstance(instance);
-  ui::SetTextEditKeyBindingsDelegate(instance);
+    LinuxInputMethodContextFactory::SetInstance(g_linux_ui);
+  SkiaFontDelegate::SetInstance(g_linux_ui);
+  ShellDialogLinux::SetInstance(g_linux_ui);
+  ui::SetTextEditKeyBindingsDelegate(g_linux_ui);
 }
 
 LinuxUI* LinuxUI::instance() {

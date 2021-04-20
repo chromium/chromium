@@ -2,27 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GTK_WAYLAND_GTK_UI_DELEGATE_WAYLAND_BASE_H_
-#define UI_GTK_WAYLAND_GTK_UI_DELEGATE_WAYLAND_BASE_H_
+#ifndef UI_GTK_WAYLAND_GTK_UI_PLATFORM_WAYLAND_H_
+#define UI_GTK_WAYLAND_GTK_UI_PLATFORM_WAYLAND_H_
 
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/gtk/gtk_ui_delegate.h"
+#include "ui/gtk/gtk_ui_platform.h"
 
-namespace ui {
+namespace gtk {
 
-class COMPONENT_EXPORT(GTK_WAYLAND) GtkUiDelegateWaylandBase
-    : public GtkUiDelegate {
+class GtkUiPlatformWayland : public GtkUiPlatform {
  public:
-  GtkUiDelegateWaylandBase();
-  GtkUiDelegateWaylandBase(const GtkUiDelegateWaylandBase&) = delete;
-  GtkUiDelegateWaylandBase& operator=(const GtkUiDelegateWaylandBase&) = delete;
-  ~GtkUiDelegateWaylandBase() override;
+  GtkUiPlatformWayland();
+  GtkUiPlatformWayland(const GtkUiPlatformWayland&) = delete;
+  GtkUiPlatformWayland& operator=(const GtkUiPlatformWayland&) = delete;
+  ~GtkUiPlatformWayland() override;
 
-  // GtkUiDelegate:
+  // GtkUiPlatform:
   void OnInitialized(GtkWidget* widget) override;
   GdkKeymap* GetGdkKeymap() override;
   GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;
@@ -30,20 +28,16 @@ class COMPONENT_EXPORT(GTK_WAYLAND) GtkUiDelegateWaylandBase
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;
   void ShowGtkWindow(GtkWindow* window) override;
-
- protected:
-  virtual bool SetGtkWidgetTransientForImpl(
-      gfx::AcceleratedWidget parent,
-      base::OnceCallback<void(const std::string&)> callback) = 0;
+  int GetGdkKeyState() override;
 
  private:
   // Called when xdg-foreign exports a parent window passed in
   // SetGtkWidgetTransientFor.
   void OnHandle(GtkWidget* widget, const std::string& handle);
 
-  base::WeakPtrFactory<GtkUiDelegateWaylandBase> weak_factory_{this};
+  base::WeakPtrFactory<GtkUiPlatformWayland> weak_factory_{this};
 };
 
-}  // namespace ui
+}  // namespace gtk
 
-#endif  // UI_GTK_WAYLAND_GTK_UI_DELEGATE_WAYLAND_BASE_H_
+#endif  // UI_GTK_WAYLAND_GTK_UI_PLATFORM_WAYLAND_H_

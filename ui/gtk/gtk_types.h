@@ -54,7 +54,7 @@ using GdkSurface = struct _GdkSurface;
 using GdkToplevel = struct _GdkToplevel;
 
 constexpr GdkMemoryFormat GDK_MEMORY_B8G8R8A8 = static_cast<GdkMemoryFormat>(3);
-#else
+#elif GTK_MAJOR_VERSION == 4
 enum GtkWidgetHelpType : int;
 enum GtkWindowType : int;
 
@@ -97,6 +97,8 @@ constexpr int GTK_ICON_LOOKUP_FORCE_SIZE = 1 << 4;
 constexpr const char GTK_STYLE_PROPERTY_BACKGROUND_IMAGE[] = "background-image";
 
 constexpr auto GTK_WINDOW_TOPLEVEL = static_cast<GtkWindowType>(0);
+#else
+#error "Unsupported GTK version"
 #endif
 }
 

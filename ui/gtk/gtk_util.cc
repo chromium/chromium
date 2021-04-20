@@ -4,8 +4,6 @@
 
 #include "ui/gtk/gtk_util.h"
 
-#include <gdk/gdk.h>
-#include <gtk/gtk.h>
 #include <locale.h>
 #include <stddef.h>
 
@@ -29,7 +27,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui.h"
-#include "ui/gtk/gtk_ui_delegate.h"
+#include "ui/gtk/gtk_ui_platform.h"
 #include "ui/native_theme/common_theme.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/linux_ui/linux_ui.h"
@@ -183,7 +181,7 @@ void SetGtkTransientForAura(GtkWidget* dialog, aura::Window* parent) {
 
   gtk_widget_realize(dialog);
   gfx::AcceleratedWidget parent_id = parent->GetHost()->GetAcceleratedWidget();
-  GtkUi::GetDelegate()->SetGtkWidgetTransientFor(dialog, parent_id);
+  GtkUi::GetPlatform()->SetGtkWidgetTransientFor(dialog, parent_id);
 
   // We also set the |parent| as a property of |dialog|, so that we can unlink
   // the two later.
@@ -197,7 +195,7 @@ aura::Window* GetAuraTransientParent(GtkWidget* dialog) {
 
 void ClearAuraTransientParent(GtkWidget* dialog, aura::Window* parent) {
   g_object_set_data(G_OBJECT(dialog), kAuraTransientParent, nullptr);
-  GtkUi::GetDelegate()->ClearTransientFor(
+  GtkUi::GetPlatform()->ClearTransientFor(
       parent->GetHost()->GetAcceleratedWidget());
 }
 
@@ -625,7 +623,7 @@ GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event) {
     // In such a case there is no event being dispatching in the display
     // backend.
     state = static_cast<GdkModifierType>(
-        state | ui::GtkUiDelegate::instance()->GetGdkKeyState());
+        state | GtkUi::GetPlatform()->GetGdkKeyState());
   }
 
   return state;
@@ -640,7 +638,7 @@ GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event) {
   int group = GetKeyEventProperty(key_event, ui::kPropertyKeyboardGroup);
 
   // Get GdkKeymap
-  GdkKeymap* keymap = GtkUi::GetDelegate()->GetGdkKeymap();
+  GdkKeymap* keymap = GtkUi::GetPlatform()->GetGdkKeymap();
 
   // Get keyval and state
   GdkModifierType state = GetGdkKeyEventState(key_event);

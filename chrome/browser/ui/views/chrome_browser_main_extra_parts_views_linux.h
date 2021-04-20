@@ -11,14 +11,7 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
-#include "ui/base/buildflags.h"
 #include "ui/display/display_observer.h"
-
-#if defined(USE_X11) && BUILDFLAG(USE_GTK)
-namespace ui {
-class GtkUiDelegate;
-}
-#endif
 
 // Extra parts, which are used by both Ozone/X11/Wayland and inherited by the
 // non-ozone X11 extra parts.
@@ -36,10 +29,6 @@ class ChromeBrowserMainExtraPartsViewsLinux
  private:
   // display::DisplayObserver:
   void OnCurrentWorkspaceChanged(const std::string& new_workspace) override;
-
-#if defined(USE_X11) && BUILDFLAG(USE_GTK)
-  std::unique_ptr<ui::GtkUiDelegate> gtk_ui_delegate_;
-#endif
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsViewsLinux);
 };
