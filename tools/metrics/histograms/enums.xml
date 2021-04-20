@@ -30053,7 +30053,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1866" label="VRPoseAngularAcceleration"/>
   <int value="1867" label="CSSOverflowPaged"/>
   <int value="1868" label="ChildSrcAllowedWorkerThatScriptSrcBlocked"/>
-  <int value="1869" label="HTMLTableElementPresentationAttributeBackground"/>
+  <int value="1869"
+      label="OBSOLETE_HTMLTableElementPresentationAttributeBackground"/>
   <int value="1870" label="V8Navigator_GetInstalledRelatedApps_Method"/>
   <int value="1871" label="NamedAccessOnWindow_ChildBrowsingContext"/>
   <int value="1872"

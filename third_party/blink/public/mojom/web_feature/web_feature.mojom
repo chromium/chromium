@@ -1325,7 +1325,7 @@ enum WebFeature {
   kVRPoseAngularVelocity = 1865,
   kVRPoseAngularAcceleration = 1866,
   kCSSOverflowPaged = 1867,
-  kHTMLTableElementPresentationAttributeBackground = 1869,
+  kOBSOLETE_HTMLTableElementPresentationAttributeBackground = 1869,
   kV8Navigator_GetInstalledRelatedApps_Method = 1870,
   kNamedAccessOnWindow_ChildBrowsingContext = 1871,
   kNamedAccessOnWindow_ChildBrowsingContext_CrossOriginNameMismatch = 1872,
