@@ -4,13 +4,17 @@
 
 package org.chromium.chrome.browser.feed.shared.stream;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
 import org.chromium.chrome.browser.feed.NtpListContentManager;
+import org.chromium.chrome.browser.feed.NtpListContentManager.FeedContent;
 import org.chromium.chrome.browser.ntp.ScrollListener;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
+
+import java.util.List;
 
 /** Interface used for interacting with the Stream library in order to render a stream of cards. */
 public interface Stream {
@@ -125,7 +129,9 @@ public interface Stream {
         /**
          * Called by Stream when content being shown has changed. This could be new cards being
          * created, the content of a card changing, etc...
+         * @param feedContents the list of feed contents after the change. Null if the contents are
+         *         not available.
          */
-        void onContentChanged();
+        void onContentChanged(@Nullable List<FeedContent> feedContents);
     }
 }

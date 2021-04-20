@@ -736,6 +736,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "continuous-feeds",
+    "owners": [ "//chrome/browser/continuous_search/OWNERS" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "continuous-search",
     "owners": [ "//chrome/browser/continuous_search/OWNERS" ],
     "expiry_milestone": 92

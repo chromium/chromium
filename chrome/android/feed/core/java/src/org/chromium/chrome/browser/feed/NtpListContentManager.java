@@ -17,6 +17,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.xsurface.ListContentManager;
 import org.chromium.chrome.browser.xsurface.ListContentManagerObserver;
 import org.chromium.ui.UiUtils;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,14 +31,41 @@ import java.util.Map;
  */
 public class NtpListContentManager implements ListContentManager {
     /**
+     * Holds metadata for each {@link FeedContent}
+     */
+    public static class FeedContentMetadata {
+        private final GURL mUrl;
+        private final String mTitle;
+
+        public FeedContentMetadata(String url, String title) {
+            mUrl = new GURL(url);
+            mTitle = title;
+        }
+
+        public GURL getUrl() {
+            return mUrl;
+        }
+
+        public String getTitle() {
+            return mTitle;
+        }
+    }
+
+    /**
      * Encapsulates the content of an item stored and managed by ListContentManager.
      */
     public abstract static class FeedContent {
         private final String mKey;
+        private final FeedContentMetadata mMetadata;
 
         FeedContent(String key) {
+            this(key, null);
+        }
+
+        public FeedContent(String key, FeedContentMetadata metadata) {
             assert key != null && !key.isEmpty();
             mKey = key;
+            mMetadata = metadata;
         }
 
         /**
@@ -51,6 +79,10 @@ public class NtpListContentManager implements ListContentManager {
         public String getKey() {
             return mKey;
         }
+
+        public FeedContentMetadata getMetadata() {
+            return mMetadata;
+        }
     }
 
     /**
@@ -60,7 +92,11 @@ public class NtpListContentManager implements ListContentManager {
         private final byte[] mData;
 
         public ExternalViewContent(String key, byte[] data) {
-            super(key);
+            this(key, data, null);
+        }
+
+        public ExternalViewContent(String key, byte[] data, FeedContentMetadata metadata) {
+            super(key, metadata);
             mData = data;
         }
 
@@ -170,6 +206,13 @@ public class NtpListContentManager implements ListContentManager {
      */
     public FeedContent getContent(int index) {
         return mFeedContentList.get(index);
+    }
+
+    /**
+     * Returns a list of all contents
+     */
+    public List<FeedContent> getContentList() {
+        return mFeedContentList;
     }
 
     /**

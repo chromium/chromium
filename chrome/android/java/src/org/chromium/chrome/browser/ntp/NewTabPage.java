@@ -362,7 +362,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
         updateSearchProviderHasLogo();
         initializeMainView(activity, windowAndroid, snackbarManager, uma, isInNightMode,
-                bottomSheetController, shareDelegateSupplier);
+                bottomSheetController, shareDelegateSupplier, tabModelSelector);
 
         mBrowserControlsStateProvider = browserControlsStateProvider;
         getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
@@ -415,7 +415,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     protected void initializeMainView(Activity activity, WindowAndroid windowAndroid,
             SnackbarManager snackbarManager, NewTabPageUma uma, boolean isInNightMode,
             BottomSheetController bottomSheetController,
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier) {
+            ObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            TabModelSelector tabModelSelector) {
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
 
         LayoutInflater inflater = LayoutInflater.from(activity);
@@ -435,7 +436,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 sectionHeaderView, isInNightMode, this, mNewTabPageManager.getNavigationDelegate(),
                 profile,
                 /* isPlaceholderShownInitially= */ false, bottomSheetController,
-                shareDelegateSupplier, /* externalScrollableContainerDelegate= */ null);
+                shareDelegateSupplier, /* externalScrollableContainerDelegate= */ null,
+                tabModelSelector);
 
         // Record the timestamp at which the new tab page's construction started.
         uma.trackTimeToFirstDraw(mFeedSurfaceProvider.getView(), mConstructedTimeNs);

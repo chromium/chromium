@@ -117,6 +117,9 @@ const base::Feature kContentSettingsRedesign{"ContentSettingsRedesign",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if defined(OS_ANDROID)
+const base::Feature kContinuousFeeds{"ContinuousFeeds",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kContinuousSearch{"ContinuousSearch",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 

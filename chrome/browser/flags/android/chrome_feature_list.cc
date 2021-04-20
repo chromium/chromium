@@ -98,6 +98,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &embedder_support::kShowTrustedPublisherURL,
     &features::kAdaptiveButtonInTopToolbar,
     &features::kClearOldBrowsingData,
+    &features::kContinuousFeeds,
     &features::kContinuousSearch,
     &features::kDownloadsLocationChange,
     &features::kEarlyLibraryLoad,

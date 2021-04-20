@@ -380,7 +380,7 @@ public class FeedSurfaceMediator
             stream.addScrollListener(mStreamScrollListener);
         }
 
-        mStreamContentChangedListener = () -> {
+        mStreamContentChangedListener = contents -> {
             if (mSnapScrollHelper != null) mSnapScrollHelper.resetSearchBoxOnScroll(true);
 
             if (mContentFirstAvailableTimeMs == 0) {

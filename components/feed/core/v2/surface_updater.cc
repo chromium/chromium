@@ -53,6 +53,11 @@ void AddSliceUpdate(const StreamModel& model,
     const feedstore::Content* content = model.FindContent(content_revision);
     DCHECK(content);
     slice->mutable_xsurface_slice()->set_xsurface_frame(content->frame());
+    if (content->prefetch_metadata_size() > 0) {
+      auto metadata = content->prefetch_metadata(0);
+      slice->mutable_slice_metadata()->set_uri(metadata.uri());
+      slice->mutable_slice_metadata()->set_title(metadata.title());
+    }
   } else {
     stream_update->add_updated_slices()->set_slice_id(
         ToString(content_revision));

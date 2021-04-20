@@ -114,7 +114,7 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
                 mActivity.getSnackbarManager(), mActivity.getWindowAndroid(), null, null,
                 sectionHeaderView, isInNightMode, this, mExploreSurfaceNavigationDelegate, profile,
                 isPlaceholderShown, bottomSheetController, mActivity.getShareDelegateSupplier(),
-                scrollableContainerDelegate);
+                scrollableContainerDelegate, mActivity.getTabModelSelector());
         feedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
         return feedSurfaceCoordinator;
         // TODO(crbug.com/982018): Customize surface background for incognito and dark mode.

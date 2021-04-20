@@ -198,10 +198,15 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
             params.setReferrer(
                     new Referrer("https://www.google.com", ReferrerPolicy.STRICT_ORIGIN));
             mCurrentTab.loadUrl(params);
-            RecordHistogram.recordCount100Histogram(
-                    "Browser.ContinuousSearch.UI.ClickedItemPosition"
-                            + SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory),
-                    resultPosition);
+
+            // TODO(crbug.com/1196787): Add histograms for Discover
+            if (mPageCategory == PageCategory.ORGANIC_SRP
+                    || mPageCategory == PageCategory.NEWS_SRP) {
+                RecordHistogram.recordCount100Histogram(
+                        "Browser.ContinuousSearch.UI.ClickedItemPosition"
+                                + SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory),
+                        resultPosition);
+            }
         }
     }
 
@@ -216,10 +221,13 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     }
 
     private void recordListScrolled() {
-        RecordHistogram.recordBooleanHistogram("Browser.ContinuousSearch.UI.CarouselScrolled"
-                        + SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory),
-                mScrolled);
-        mScrolled = false;
+        // TODO(crbug.com/1196787): Add histograms for Discover
+        if (mPageCategory == PageCategory.ORGANIC_SRP || mPageCategory == PageCategory.NEWS_SRP) {
+            RecordHistogram.recordBooleanHistogram("Browser.ContinuousSearch.UI.CarouselScrolled"
+                            + SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory),
+                    mScrolled);
+            mScrolled = false;
+        }
     }
 
     @Override

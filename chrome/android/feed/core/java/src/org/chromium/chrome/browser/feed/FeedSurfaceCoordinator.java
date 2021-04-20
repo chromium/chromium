@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.continuous_search.ContinuousFeedNavigationHelper;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.settings.FeedAutoplaySettingsFragment;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
@@ -50,6 +51,7 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
@@ -93,6 +95,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private final BottomSheetController mBottomSheetController;
     private final WindowAndroid mWindowAndroid;
     private final Supplier<ShareDelegate> mShareSupplier;
+    private final TabModelSelector mTabModelSelector;
 
     private UiConfig mUiConfig;
     private FrameLayout mRootView;
@@ -234,7 +237,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             @Nullable NativePageNavigationDelegate pageNavigationDelegate, Profile profile,
             boolean isPlaceholderShownInitially, BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier,
-            @Nullable ScrollableContainerDelegate externalScrollableContainerDelegate) {
+            @Nullable ScrollableContainerDelegate externalScrollableContainerDelegate,
+            TabModelSelector tabModelSelector) {
         FeedSurfaceTracker.getInstance().initServiceBridge();
         mActivity = activity;
         mSnackbarManager = snackbarManager;
@@ -248,6 +252,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mWindowAndroid = windowAndroid;
         mShareSupplier = shareDelegateSupplier;
         mScrollableContainerDelegate = externalScrollableContainerDelegate;
+        mTabModelSelector = tabModelSelector;
 
         Resources resources = mActivity.getResources();
         mDefaultMarginPixels = mActivity.getResources().getDimensionPixelSize(
@@ -484,6 +489,11 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             headerList.add(mSectionHeaderView);
         }
         setHeaders(headerList);
+
+        ContinuousFeedNavigationHelper feedNavigationHelper =
+                new ContinuousFeedNavigationHelper(mTabModelSelector);
+        mStream.addOnContentChangedListener(feedNavigationHelper);
+        mStream.addInteractionListener(feedNavigationHelper);
 
         // Work around https://crbug.com/943873 where default focus highlight shows up after
         // toggling dark mode.

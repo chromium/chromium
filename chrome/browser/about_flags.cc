@@ -6969,6 +6969,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSafetyCheckWeakPasswords)},
 
 #if defined(OS_ANDROID)
+    {"continuous-feeds", flag_descriptions::kContinuousFeedsName,
+     flag_descriptions::kContinuousFeedsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kContinuousFeeds)},
+
     {"continuous-search", flag_descriptions::kContinuousSearchName,
      flag_descriptions::kContinuousSearchDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kContinuousSearch)},

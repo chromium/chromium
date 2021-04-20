@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
@@ -125,6 +126,8 @@ public class FeedSurfaceCoordinatorTest {
     private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock
     private SectionHeaderView mSectionHeaderView;
+    @Mock
+    private TabModelSelector mTabModelSelector;
 
     // Mocked JNI.
     @Mock
@@ -210,7 +213,7 @@ public class FeedSurfaceCoordinatorTest {
         mCoordinator = new FeedSurfaceCoordinator(mActivity, mSnackbarManager, mWindowAndroid,
                 mSnapHelper, null, mSectionHeaderView, false, new TestSurfaceDelegate(),
                 mPageNavigationDelegate, mProfileMock, false, mBottomSheetController,
-                mShareDelegateSupplier, null);
+                mShareDelegateSupplier, null, mTabModelSelector);
 
         mLayoutManager = new FakeLinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);

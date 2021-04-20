@@ -2845,6 +2845,11 @@ const char kChimeAndroidSdkDescription[] =
     "Enable Chime SDK to receive push notification.";
 const char kChimeAndroidSdkName[] = "Use Chime SDK";
 
+const char kContinuousFeedsName[] = "Continuous Feeds Navigation";
+const char kContinuousFeedsDescription[] =
+    "Enables caching Discover article metadata to enable more seamless "
+    "navigation between articles.";
+
 const char kContinuousSearchName[] = "Continuous Search Navigation";
 const char kContinuousSearchDescription[] =
     "Enables caching of search results to permit a more seamless search "
