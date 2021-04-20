@@ -16467,12 +16467,53 @@ should be able to be added at any place in this file.
 
 <action name="NavEntryCommitted" not_user_triggered="true">
   <owner>mpearson@chromium.org</owner>
-  <description>Please enter the description of this user action.</description>
+  <description>
+    Emitted when a navigation commits. Recorded on both main-frame and sub-frame
+    navigations.
+
+    Example of &quot;one or more times&quot;: navigating to
+    http://www.google.com will cause two emits.
+
+    A set of NavEntryCommitted emitted in quick succession can be approximately
+    viewed as a &quot;page load&quot;, though possibly in a sub-frame on a page.
+    A NavEntryCommitted can happen for a variety of reasons: link clicks,
+    omnibox navigations, reload button, back/forward, Javascript that changes
+    the URL of the page, etc. Examples of Javascript changing the URL without
+    changing the page that cause this to be emitted is switching slides in
+    Google Slides or switching between the inbox and a message in gmail. These
+    cases happen by changing the URL hash (#whatever) or
+    history.pushState()/history.replaceState().
+
+    Note: this is even emitted on a &quot;navigation&quot; to non-web pages,
+    such as loading the NTP.
+
+    Each set of NavEntryCommitted emitted in quick succession usually are
+    triggered by a single user action. In this sense, all but the first in the
+    set are &quot;not user triggered&quot;.
+
+    Desktop-only.
+  </description>
 </action>
 
 <action name="NavEntryCommitted.SRP" not_user_triggered="true">
   <owner>mpearson@chromium.org</owner>
-  <description>Please enter the description of this user action.</description>
+  <description>
+    Emitted when a navigation happens to a page whose URL looks like it's a URL
+    from the user's default search engine. I.e., emitted when it looks like--via
+    a simple pattern match--the user navigated to a search results page.
+
+    NavEntryCommitted will also always be emitted at the same time (in the same
+    code, just a few lines before).
+
+    As with NavEntryCommitted (read the description of that user action),
+    NavEntryCommitted.SRP is emitted roughly when the URL in the omnibox
+    changes. This can happen via Javascript by, for example, scrolling through a
+    news article carousel on the user's search engine page. As such,
+    NavEntryCommitted.SRP does not necessarily align with the number of searches
+    done, though it's certainly related.
+
+    Desktop-only.
+  </description>
 </action>
 
 <action name="Navigation.Home.NotChromeInternal">
