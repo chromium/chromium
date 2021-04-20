@@ -677,14 +677,14 @@ void ContentSuggestionsService::RestoreDismissedCategoriesFromPrefs() {
   const base::ListValue* list =
       pref_service_->GetList(prefs::kDismissedCategories);
   for (const base::Value& entry : *list) {
-    int id = 0;
-    if (!entry.GetAsInteger(&id)) {
+    if (!entry.is_int()) {
       DLOG(WARNING) << "Invalid category pref value: " << entry;
       continue;
     }
 
     // When the provider is registered, it will be stored in this map.
-    dismissed_providers_by_category_[Category::FromIDValue(id)] = nullptr;
+    dismissed_providers_by_category_[Category::FromIDValue(entry.GetInt())] =
+        nullptr;
   }
 }
 
