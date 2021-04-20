@@ -1601,5 +1601,37 @@ TEST_F(CompositorFrameReportingControllerTest,
             dropped_counter_.total_smoothness_dropped());
 }
 
+// Verifies that presentation feedbacks that arrive out of order are handled
+// properly. See crbug.com/1195105 for more details.
+TEST_F(CompositorFrameReportingControllerTest,
+       HandleOutOfOrderPresentationFeedback) {
+  // Submit three compositor frames without sending back their presentation
+  // feedbacks.
+  SimulateSubmitCompositorFrame({});
+
+  SimulateSubmitCompositorFrame({});
+  const uint32_t frame_token_2 = *current_token_;
+
+  SimulateSubmitCompositorFrame({});
+  const uint32_t frame_token_3 = *current_token_;
+
+  // Send a failed presentation feedback for frame 2. This should only drop
+  // frame 2 and leave frame 1 in the queue.
+  viz::FrameTimingDetails details_2;
+  details_2.presentation_feedback = {AdvanceNowByMs(10), base::TimeDelta(),
+                                     gfx::PresentationFeedback::kFailure};
+  reporting_controller_.DidPresentCompositorFrame(frame_token_2, details_2);
+  DCHECK_EQ(1u, dropped_counter_.total_frames());
+  DCHECK_EQ(1u, dropped_counter_.total_compositor_dropped());
+
+  // Send a successful presentation feedback for frame 3. This should drop frame
+  // 1.
+  viz::FrameTimingDetails details_3;
+  details_3.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  reporting_controller_.DidPresentCompositorFrame(frame_token_3, details_3);
+  DCHECK_EQ(3u, dropped_counter_.total_frames());
+  DCHECK_EQ(2u, dropped_counter_.total_compositor_dropped());
+}
+
 }  // namespace
 }  // namespace cc
