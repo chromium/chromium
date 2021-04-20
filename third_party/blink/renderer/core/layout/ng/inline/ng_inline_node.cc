@@ -679,19 +679,14 @@ class NGInlineNodeDataEditor final {
                              unsigned start_offset) const {
     DCHECK_LE(item.start_offset_, start_offset);
     DCHECK_LT(start_offset, item.end_offset_);
+    const unsigned safe_start_offset = GetFirstSafeToReuse(item, start_offset);
     const unsigned end_offset = item.end_offset_;
-    if (!item.shape_result_ || item.shape_result_->IsAppliedSpacing())
-      return NGInlineItem(item, start_offset, end_offset, nullptr);
-    if (item.start_offset_ == start_offset)
-      return item;
-    // TODO(yosin): We should handle |shape_result| doesn't have safe-to-break
-    // at start and end, because of |ShapeText()| splits |ShapeResult| ignoring
-    // safe-to-break offset.
-    item.shape_result_->EnsurePositionData();
-    const unsigned safe_start_offset =
-        item.shape_result_->CachedNextSafeToBreakOffset(start_offset);
     if (end_offset == safe_start_offset)
       return NGInlineItem(item, start_offset, end_offset, nullptr);
+    // To handle kerning, e.g. inserting "A" before "V", and joining in Arabic,
+    // we should not reuse first glyph.
+    // See http://crbug.com/1199331
+    DCHECK_LT(safe_start_offset, item.end_offset_);
     return NGInlineItem(
         item, safe_start_offset, end_offset,
         item.shape_result_->SubRange(safe_start_offset, end_offset));
@@ -714,18 +709,44 @@ class NGInlineNodeDataEditor final {
         item.shape_result_->SubRange(start_offset, safe_end_offset));
   }
 
+  // See also |GetLastSafeToReuse()|.
+  unsigned GetFirstSafeToReuse(const NGInlineItem& item,
+                               unsigned start_offset) const {
+    DCHECK_LE(item.start_offset_, start_offset);
+    DCHECK_LE(start_offset, item.end_offset_);
+    const unsigned end_offset = item.end_offset_;
+    // TODO(yosin): It is better to utilize OpenType |usMaxContext|.
+    // For font having "fi", |usMaxContext = 2".
+    const unsigned max_context = 2;
+    const unsigned skip = max_context - 1;
+    if (!item.shape_result_ || item.shape_result_->IsAppliedSpacing() ||
+        start_offset + skip >= end_offset)
+      return end_offset;
+    item.shape_result_->EnsurePositionData();
+    // Note: Because |CachedNextSafeToBreakOffset()| assumes |start_offset|
+    // is always safe to break offset, we try to search after |start_offset|.
+    return item.shape_result_->CachedNextSafeToBreakOffset(start_offset + skip);
+  }
+
+  // See also |GetFirstSafeToReuse()|.
   unsigned GetLastSafeToReuse(const NGInlineItem& item,
                               unsigned end_offset) const {
     DCHECK_LT(item.start_offset_, end_offset);
     DCHECK_LE(end_offset, item.end_offset_);
     const unsigned start_offset = item.start_offset_;
+    // TODO(yosin): It is better to utilize OpenType |usMaxContext|.
+    // For font having "fi", |usMaxContext = 2".
+    const unsigned max_context = 2;
+    const unsigned skip = max_context - 1;
     if (!item.shape_result_ || item.shape_result_->IsAppliedSpacing() ||
-        end_offset - start_offset <= 1)
+        end_offset - skip <= start_offset)
       return start_offset;
     item.shape_result_->EnsurePositionData();
+    // TODO(yosin): It is better to utilize OpenType |usMaxContext|.
     // Note: Because |CachedPreviousSafeToBreakOffset()| assumes |end_offset|
     // is always safe to break offset, we try to search before |end_offset|.
-    return item.shape_result_->CachedPreviousSafeToBreakOffset(end_offset - 1);
+    return item.shape_result_->CachedPreviousSafeToBreakOffset(end_offset -
+                                                               skip);
   }
 
   template <typename Span1, typename Span2>
