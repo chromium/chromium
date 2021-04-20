@@ -161,9 +161,9 @@ class SubresourceRedirectBrowserTest : public InProcessBrowserTest {
       content::WebContents* web_contents = nullptr) {
     if (!web_contents)
       web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-    std::string result;
-    EXPECT_TRUE(ExecuteScriptAndExtractString(web_contents, script, &result));
-    return result;
+    return content::EvalJs(web_contents, script,
+                           content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractString();
   }
 
   // Sets up public image URL hint data.

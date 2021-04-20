@@ -355,9 +355,9 @@ IN_PROC_BROWSER_TEST_P(LiteVideoStopThrottlingOnPlaybackSeekBrowserTest,
   histogram_tester().ExpectUniqueSample("LiteVideo.HintAgent.HasHint", true, 1);
 
   // Trigger a media playback seek.
-  ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "document.querySelector('video').currentTime = 1"));
+  ASSERT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.querySelector('video').currentTime = 1"));
 
   // Verify some responses were throttled and then throttling is stopped.
   if (should_disable_lite_videos_on_seek()) {

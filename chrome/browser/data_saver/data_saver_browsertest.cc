@@ -190,12 +190,10 @@ class DataSaverBrowserTest : public InProcessBrowserTest {
       browser = InProcessBrowserTest::browser();
     ui_test_utils::NavigateToURL(
         browser, embedded_test_server()->GetURL("/echoheader?Save-Data"));
-    std::string header_value;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        browser->tab_strip_model()->GetActiveWebContents(),
-        "window.domAutomationController.send(document.body.textContent);",
-        &header_value));
-    EXPECT_EQ(expected_header_value, header_value);
+    EXPECT_EQ(
+        expected_header_value,
+        content::EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+                        "document.body.textContent;"));
   }
 };
 

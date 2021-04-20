@@ -50,10 +50,9 @@ class DataSaverWebAPIsBrowserTest : public InProcessBrowserTest {
 
  private:
   bool RunScriptExtractBool(Browser* browser, const std::string& script) {
-    bool data;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        browser->tab_strip_model()->GetActiveWebContents(), script, &data));
-    return data;
+    return content::EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+                           script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractBool();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
