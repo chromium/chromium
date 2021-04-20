@@ -2703,9 +2703,7 @@ static_library("ui") {
       "//chrome/browser/ui/app_list/search/search_result_ranker:recurrence_ranker_proto",
       "//chrome/browser/ui/webui/app_management:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings",
-      "//chrome/browser/ui/webui/chromeos/crostini_installer:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings",
-      "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/machine_learning:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/vm:mojo_bindings",
       "//chrome/browser/ui/webui/nearby_share:mojom",
@@ -2818,7 +2816,11 @@ static_library("ui") {
       "//ui/file_manager:file_manager",
       "//ui/ozone",
     ]
-    public_deps += [ "//chromeos/services/multidevice_setup/public/mojom" ]
+    public_deps += [
+      "//chrome/browser/ui/webui/chromeos/crostini_installer:mojo_bindings",
+      "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings",
+      "//chromeos/services/multidevice_setup/public/mojom",
+    ]
     allow_circular_includes_from += [ "//chrome/browser/chromeos" ]
 
     if (!is_official_build) {
