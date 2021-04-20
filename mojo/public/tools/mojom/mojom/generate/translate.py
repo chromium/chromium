@@ -472,6 +472,9 @@ def _Method(module, parsed_method, interface):
                     "attribute. If no response parameters are needed, you "
                     "could use an empty response parameter list, i.e., "
                     "\"=> ()\".")
+  # And only methods with the [Sync] attribute can specify [NoInterrupt].
+  if not method.allow_interrupt and not method.sync:
+    raise Exception("Only [Sync] methods can be marked [NoInterrupt].")
 
   return method
 

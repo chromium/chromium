@@ -365,6 +365,7 @@ void ThreadSafeInterfaceEndpointClientProxy::SendMessageWithResponder(
   }
 
   // If the Remote is bound on another sequence, post the call.
+  const bool allow_interrupt = !message.has_flag(Message::kFlagNoInterrupt);
   auto response = base::MakeRefCounted<SyncResponseInfo>();
   auto response_signaler = std::make_unique<SyncResponseSignaler>(response);
   task_runner_->PostTask(
@@ -384,9 +385,18 @@ void ThreadSafeInterfaceEndpointClientProxy::SendMessageWithResponder(
     sync_calls->pending_responses.push_back(response.get());
   }
 
-  SyncEventWatcher watcher(&response->event, base::DoNothing());
-  const bool* stop_flags[] = {&response->received, &response->cancelled};
-  watcher.SyncWatch(stop_flags, base::size(stop_flags));
+  if (allow_interrupt) {
+    // In the common case where interrupts are allowed, we watch cooperatively
+    // with other potential endpoints on the same thread.
+    SyncEventWatcher watcher(&response->event, base::DoNothing());
+    const bool* stop_flags[] = {&response->received, &response->cancelled};
+    watcher.SyncWatch(stop_flags, base::size(stop_flags));
+  } else {
+    // Else we can wait on the event directly. It will only signal after our
+    // reply has been processed or cancelled.
+    response->event.Wait();
+    DCHECK(response->received || response->cancelled);
+  }
 
   {
     base::AutoLock l(sync_calls->lock);
@@ -580,7 +590,11 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
   // message before calling |SendMessage()| below.
 #endif
 
-  bool is_sync = message->has_flag(Message::kFlagIsSync);
+  const bool is_sync = message->has_flag(Message::kFlagIsSync);
+  const SyncWatchMode sync_watch_mode =
+      message->has_flag(Message::kFlagNoInterrupt)
+          ? SyncWatchMode::kNoInterrupt
+          : SyncWatchMode::kAllowInterrupt;
   if (!controller_->SendMessage(message))
     return false;
 
@@ -606,7 +620,7 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
 
   base::WeakPtr<InterfaceEndpointClient> weak_self =
       weak_ptr_factory_.GetWeakPtr();
-  controller_->SyncWatch(&response_received);
+  controller_->SyncWatch(sync_watch_mode, response_received);
   // Make sure that this instance hasn't been destroyed.
   if (weak_self) {
     DCHECK(base::Contains(sync_responses_, request_id));

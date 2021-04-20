@@ -45,7 +45,7 @@ base::OnceCallback<void(
       auto dict = std::move(context).WriteDictionary();
 {%-     for param in method_parameters %}
       perfetto::WriteIntoTracedValueWithFallback(
-           dict.AddItem("{{param.name}}"), {{prefix+param.name}}, 
+           dict.AddItem("{{param.name}}"), {{prefix+param.name}},
                         "<value of type {{param.kind|cpp_wrapper_param_type}}>");
 {%-     endfor %}
    });
@@ -65,15 +65,17 @@ base::OnceCallback<void(
 {%-   endif -%}
 {%- endmacro -%}
 
-{%- macro build_message_flags(is_response, is_sync_text, expects_response_text,
-                              flags_name) %}
+{%- macro build_message_flags(is_response, is_sync_text, allow_interrupt_text,
+                              expects_response_text, flags_name) %}
 {%-   if is_response %}
   const uint32_t kFlags = mojo::Message::kFlagIsResponse |
-      (({{is_sync_text}}) ? mojo::Message::kFlagIsSync : 0);
+      (({{is_sync_text}}) ? mojo::Message::kFlagIsSync : 0) |
+      (({{allow_interrupt_text}}) ? 0 : mojo::Message::kFlagNoInterrupt);
 {%-   else %}
   const uint32_t kFlags =
       (({{expects_response_text}}) ? mojo::Message::kFlagExpectsResponse : 0) |
-      (({{is_sync_text}}) ? mojo::Message::kFlagIsSync : 0);
+      (({{is_sync_text}}) ? mojo::Message::kFlagIsSync : 0) |
+      (({{allow_interrupt_text}}) ? 0 : mojo::Message::kFlagNoInterrupt);
 {%-   endif %}
 {%- endmacro %}
 
@@ -127,14 +129,15 @@ class {{message_typename}}
 {%-   if not is_response %}
       bool expects_response,
 {%-   endif %}
-      bool is_sync
+      bool is_sync,
+      bool allow_interrupt
 {%-   if parameters -%}
       ,
       {{declare_params("param_", parameters)}}
 {%-   endif %}) {
 
-    {{build_message_flags(is_response, "is_sync", "expects_response",
-                          "kFlags")}}
+    {{build_message_flags(is_response, "is_sync", "allow_interrupt",
+                          "expects_response", "kFlags")}}
 
     if (!serialize) {
       return mojo::Message(std::make_unique<{{message_typename}}>(

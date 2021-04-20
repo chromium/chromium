@@ -147,11 +147,20 @@ class MultiplexRouter::InterfaceEndpoint
     sync_watcher_->AllowWokenUpBySyncWatchOnSameSequence();
   }
 
-  bool SyncWatch(const bool* should_stop) override {
+  bool SyncWatch(SyncWatchMode mode, const bool& should_stop) override {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-    EnsureSyncWatcherExists();
-    return sync_watcher_->SyncWatch(should_stop);
+    if (mode == SyncWatchMode::kAllowInterrupt) {
+      EnsureSyncWatcherExists();
+      return sync_watcher_->SyncWatch(&should_stop);
+    }
+
+    DCHECK_EQ(mode, SyncWatchMode::kNoInterrupt);
+    while (!should_stop) {
+      if (!router_->WaitForIncomingMessage())
+        return false;
+    }
+    return true;
   }
 
   void RegisterExternalSyncWaiter(uint64_t request_id) override {

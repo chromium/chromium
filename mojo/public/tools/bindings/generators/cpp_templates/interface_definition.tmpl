@@ -132,16 +132,18 @@ bool {{proxy_name}}::{{method.name}}(
 #endif
   const bool kExpectsResponse = true;
   const bool kIsSync = true;
+  const bool kAllowInterrupt =
+      {% if method.allow_interrupt %}true{% else %}false{% endif %};
 {%-   if method|method_supports_lazy_serialization %}
   const bool kSerialize = receiver_->PrefersSerializedMessages();
   auto message = {{message_typename}}::Build(
-      kSerialize, kExpectsResponse, kIsSync
+      kSerialize, kExpectsResponse, kIsSync, kAllowInterrupt
 {%-     for param in method.parameters -%}
       , std::move(param_{{param.name}})
 {%-     endfor %});
 {%-   else %}  {#- if method|method_supports_lazy_serialization #}
-  {{interface_macros.build_message_flags(False, "kIsSync", "kExpectsResponse",
-                                         "kFlags")}}
+  {{interface_macros.build_message_flags(False, "kIsSync", "kAllowInterrupt",
+                                         "kExpectsResponse", "kFlags")}}
   {{interface_macros.build_serialized_message(
       message_name, method, "param_%s", params_struct, params_description,
       "kFlags", "message")}}
@@ -188,16 +190,17 @@ void {{proxy_name}}::{{method.name}}(
   const bool kExpectsResponse = false;
 {%- endif %}
   const bool kIsSync = false;
+  const bool kAllowInterrupt = true;
 {%-   if method|method_supports_lazy_serialization %}
   const bool kSerialize = receiver_->PrefersSerializedMessages();
   auto message = {{message_typename}}::Build(
-      kSerialize, kExpectsResponse, kIsSync
+      kSerialize, kExpectsResponse, kIsSync, kAllowInterrupt
 {%-     for param in method.parameters -%}
       , std::move(in_{{param.name}})
 {%-     endfor %});
 {%-   else %}
-  {{interface_macros.build_message_flags(False, "kIsSync", "kExpectsResponse",
-                                         "kFlags")}}
+  {{interface_macros.build_message_flags(False, "kIsSync", "kAllowInterrupt",
+                                         "kExpectsResponse", "kFlags")}}
   {{interface_macros.build_serialized_message(
       message_name, method, "in_%s", params_struct, params_description,
       "kFlags", "message")}}
@@ -345,12 +348,14 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
 #endif
 {%-   if method|method_supports_lazy_serialization %}
   const bool kSerialize = responder_->PrefersSerializedMessages();
-  auto message = {{response_message_typename}}::Build(kSerialize, is_sync_
+  auto message = {{response_message_typename}}::Build(kSerialize, is_sync_,
+      true
 {%-     for param in method.response_parameters -%}
       , std::move(in_{{param.name}})
 {%-     endfor %});
 {%-   else %}
-  {{interface_macros.build_message_flags(True, "is_sync_", "false", "kFlags")}}
+  {{interface_macros.build_message_flags(True, "is_sync_", "true", "false",
+                                         "kFlags")}}
   {{interface_macros.build_serialized_message(
       message_name, method, "in_%s", response_params_struct,
       response_params_description, "kFlags", "message")}}

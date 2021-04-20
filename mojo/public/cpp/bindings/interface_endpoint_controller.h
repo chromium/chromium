@@ -11,6 +11,22 @@ namespace mojo {
 
 class Message;
 
+// Indicates how a SyncWatch call should behave.
+enum class SyncWatchMode {
+  // Other sync events are allowed to dispatch during this sync wait. For
+  // example if an incoming sync IPC targets some other receiver bound on the
+  // waiting thread, we'll allow that message to dispatch before we return to
+  // waiting. This is the safer and preferred behavior, and the default for all
+  // [Sync] messages.
+  kAllowInterrupt,
+
+  // The wait will only wake up once its waiting condition is met, and no other
+  // messages (sync or async) will be dispatched on the waiting thread until
+  // that happens and control is returned to the caller. While this is sometimes
+  // desirable, it is naturally more prone to deadlocks than `kAllowInterrupt`.
+  kNoInterrupt,
+};
+
 // A control interface exposed by AssociatedGroupController for interface
 // endpoints.
 class InterfaceEndpointController {
@@ -31,7 +47,7 @@ class InterfaceEndpointController {
   //   - return false otherwise, including
   //     MultiplexRouter::DetachEndpointClient() being called for the same
   //     interface endpoint.
-  virtual bool SyncWatch(const bool* should_stop) = 0;
+  virtual bool SyncWatch(SyncWatchMode mode, const bool& should_stop) = 0;
 
   // Notifies the controller that a specific in-flight sync message identified
   // by `request_id` has an off-thread sync waiter, so its reply must be

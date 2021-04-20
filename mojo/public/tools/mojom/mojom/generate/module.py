@@ -289,6 +289,7 @@ PRIMITIVES = (
 ATTRIBUTE_MIN_VERSION = 'MinVersion'
 ATTRIBUTE_DEFAULT = 'Default'
 ATTRIBUTE_EXTENSIBLE = 'Extensible'
+ATTRIBUTE_NO_INTERRUPT = 'NoInterrupt'
 ATTRIBUTE_STABLE = 'Stable'
 ATTRIBUTE_SYNC = 'Sync'
 ATTRIBUTE_UNLIMITED_SIZE = 'UnlimitedSize'
@@ -1049,6 +1050,11 @@ class Method(object):
   def sync(self):
     return self.attributes.get(ATTRIBUTE_SYNC) \
         if self.attributes else None
+
+  @property
+  def allow_interrupt(self):
+    return not self.attributes.get(ATTRIBUTE_NO_INTERRUPT) \
+        if self.attributes else True
 
   @property
   def unlimited_message_size(self):
