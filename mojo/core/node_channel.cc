@@ -191,13 +191,16 @@ Channel::MessagePtr NodeChannel::CreateEventMessage(size_t capacity,
 }
 
 // static
-void NodeChannel::GetEventMessageData(Channel::Message* message,
+bool NodeChannel::GetEventMessageData(Channel::Message& message,
                                       void** data,
                                       size_t* num_data_bytes) {
-  // NOTE: OnChannelMessage guarantees that we never accept a Channel::Message
-  // with a payload of fewer than |sizeof(Header)| bytes.
-  *data = reinterpret_cast<Header*>(message->mutable_payload()) + 1;
-  *num_data_bytes = message->payload_size() - sizeof(Header);
+  // NOTE: Callers must guarantee that the payload in `message` must be at least
+  // large enough to hold a Header.
+  if (message.payload_size() < sizeof(Header))
+    return false;
+  *data = reinterpret_cast<Header*>(message.mutable_payload()) + 1;
+  *num_data_bytes = message.payload_size() - sizeof(Header);
+  return true;
 }
 
 void NodeChannel::Start() {
