@@ -64,11 +64,6 @@ const char kLastLoggedInGaiaUser[] = "LastLoggedInRegularUser";
 // session restore.
 const char kLastActiveUser[] = "LastActiveUser";
 
-// Histogram for tracking the number of deprecated legacy supervised user
-// cryptohomes remaining in the wild.
-const char kHideLegacySupervisedUserHistogramName[] =
-    "ChromeOS.LegacySupervisedUsers.HiddenFromLoginScreen";
-
 // Upper bound for a histogram metric reporting the amount of time between
 // one regular user logging out and a different regular user logging in.
 const int kLogoutToLoginDelayMaxSec = 1800;
@@ -93,6 +88,13 @@ UserType GetStoredUserType(const base::DictionaryValue* prefs_user_types,
 }
 
 }  // namespace
+
+// static
+const char UserManagerBase::kLegacySupervisedUsersHistogramName[] =
+    "ChromeOS.LegacySupervisedUsers.HiddenFromLoginScreen";
+// static
+const base::Feature UserManagerBase::kRemoveLegacySupervisedUsersOnStartup{
+    "RemoveLegacySupervisedUsersOnStartup", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // static
 void UserManagerBase::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -805,10 +807,13 @@ void UserManagerBase::EnsureUsersLoaded() {
   for (std::vector<AccountId>::const_iterator it = regular_users.begin();
        it != regular_users.end(); ++it) {
     if (IsDeprecatedSupervisedAccountId(*it)) {
-      base::UmaHistogramBoolean(kHideLegacySupervisedUserHistogramName, true);
+      RemoveLegacySupervisedUser(*it);
+      // Hide legacy supervised users from the login screen if not removed.
       continue;
     }
-    base::UmaHistogramBoolean(kHideLegacySupervisedUserHistogramName, false);
+    base::UmaHistogramEnumeration(
+        kLegacySupervisedUsersHistogramName,
+        LegacySupervisedUserStatus::kGaiaUserDisplayed);
     User* user =
         User::CreateRegularUser(*it, GetStoredUserType(prefs_user_types, *it));
     user->set_oauth_token_status(LoadUserOAuthStatus(*it));
@@ -1115,6 +1120,25 @@ void UserManagerBase::DeleteUser(User* user) {
   delete user;
   if (is_active_user)
     active_user_ = nullptr;
+}
+
+// TODO(crbug/1189715): Remove dormant legacy supervised user cryptohomes. After
+// we have enough confidence that there are no more supervised users on devices
+// in the wild, remove this.
+void UserManagerBase::RemoveLegacySupervisedUser(const AccountId& account_id) {
+  DCHECK(IsDeprecatedSupervisedAccountId(account_id));
+  if (base::FeatureList::IsEnabled(kRemoveLegacySupervisedUsersOnStartup)) {
+    // Since we skip adding legacy supervised users to the users list,
+    // FindUser(account_id) returns nullptr and CanUserBeRemoved() returns
+    // false. This is why we call RemoveUserInternal() directly instead of
+    // RemoveUser().
+    RemoveUserInternal(account_id, /*delegate=*/nullptr);
+    base::UmaHistogramEnumeration(kLegacySupervisedUsersHistogramName,
+                                  LegacySupervisedUserStatus::kLSUDeleted);
+  } else {
+    base::UmaHistogramEnumeration(kLegacySupervisedUsersHistogramName,
+                                  LegacySupervisedUserStatus::kLSUHidden);
+  }
 }
 
 }  // namespace user_manager

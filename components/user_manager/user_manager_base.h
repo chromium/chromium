@@ -38,10 +38,39 @@ class RemoveUserDelegate;
 // Base implementation of the UserManager interface.
 class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
  public:
+  // These enum values represent a legacy supervised user's (LSU) status on the
+  // sign in screen.
+  // TODO(crbug/1155729): Remove once all LSUs deleted in the wild. LSUs were
+  // first hidden on the login screen in M74. Assuming a five year AUE, we
+  // should stop supporting devices with LSUs by 2024.
+  // These values are logged to UMA. Entries should not be renumbered and
+  // numeric values should never be reused. Please keep in sync with
+  // "LegacySupervisedUserStatus" in src/tools/metrics/histograms/enums.xml.
+  enum class LegacySupervisedUserStatus {
+    // Non-LSU Gaia user displayed on login screen.
+    kGaiaUserDisplayed = 0,
+    // LSU hidden on login screen. Expect this count to decline to zero over
+    // time as we delete LSUs.
+    kLSUHidden = 1,
+    // LSU attempted to delete cryptohome. Expect this count to decline to zero
+    // over time as we delete LSUs.
+    kLSUDeleted = 2,
+    // Add future entires above this comment, in sync with
+    // "LegacySupervisedUserStatus" in src/tools/metrics/histograms/enums.xml.
+    // Update kMaxValue to the last value.
+    kMaxValue = kLSUDeleted
+  };
+
   // Creates UserManagerBase with |task_runner| for UI thread.
   explicit UserManagerBase(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~UserManagerBase() override;
+
+  // Histogram for tracking the number of deprecated legacy supervised user
+  // cryptohomes remaining in the wild.
+  static const char kLegacySupervisedUsersHistogramName[];
+  // Feature that removes legacy supervised users.
+  static const base::Feature kRemoveLegacySupervisedUsersOnStartup;
 
   // Registers UserManagerBase preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -321,6 +350,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Updates user account after locale was resolved.
   void DoUpdateAccountLocale(const AccountId& account_id,
                              std::unique_ptr<std::string> resolved_locale);
+
+  void RemoveLegacySupervisedUser(const AccountId& account_id);
 
   // Indicates stage of loading user from prefs.
   UserLoadStage user_loading_stage_ = STAGE_NOT_LOADED;

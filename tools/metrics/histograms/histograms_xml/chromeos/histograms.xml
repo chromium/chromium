@@ -700,13 +700,14 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.LegacySupervisedUsers.HiddenFromLoginScreen"
-    enum="BooleanLegacySupervisedUserHidden" expires_after="2021-09-19">
+    enum="LegacySupervisedUserStatus" expires_after="2022-04-09">
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
-    Reports true when the login screen hides a legacy supervised user. Reports
-    false when the login screen displays a Gaia user. Recorded whenever the user
-    sees the login screen.
+    Reports &quot;hidden&quot; when the login screen hides a legacy supervised
+    user (LSU). Reports &quot;displayed&quot; when the login screen displays a
+    non-LSU Gaia user. Reports &quot;deleted&quot; when the login screen
+    attempts to delete a LSU. Recorded whenever the user sees the login screen.
   </summary>
 </histogram>
 
