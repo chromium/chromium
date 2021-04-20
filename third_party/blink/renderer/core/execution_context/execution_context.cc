@@ -219,8 +219,11 @@ bool ExecutionContext::CheckSharedArrayBufferTransferAllowedAndReport() {
   // in the future, and the problem is encountered for the first time in this
   // execution context. This preserves postMessage performance during the
   // transition period.
-  if (!allowed || (!has_filed_shared_array_buffer_transfer_issue_ &&
-                   !CrossOriginIsolatedCapability())) {
+  if (!allowed ||
+      (!has_filed_shared_array_buffer_transfer_issue_ &&
+       !CrossOriginIsolatedCapability() &&
+       !SchemeRegistry::ShouldTreatURLSchemeAsAllowingSharedArrayBuffers(
+           GetSecurityOrigin()->Protocol()))) {
     has_filed_shared_array_buffer_transfer_issue_ = true;
     auto source_location = SourceLocation::Capture(this);
     auto issue = CreateSharedArrayBufferIssue(source_location.get());
