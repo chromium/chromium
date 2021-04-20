@@ -1516,7 +1516,8 @@ scoped_refptr<ShapeResult> ShapeResult::CreateForSpaces(const Font* font,
       HB_SCRIPT_COMMON, start_index, length, length);
   result->width_ = run->width_ = width;
   for (unsigned i = 0; i < length; i++) {
-    run->glyph_data_[i] = {font_data->SpaceGlyph(), i, true, width};
+    unsigned index = blink::IsLtr(direction) ? i : length - 1 - i;
+    run->glyph_data_[i] = {font_data->SpaceGlyph(), index, true, width};
     width = 0;
   }
   result->runs_.push_back(std::move(run));
