@@ -21,16 +21,8 @@ inline char SpdyHexDigitToIntImpl(char c) {
   return base::HexDigitToInt(c);
 }
 
-inline std::string SpdyHexDecodeImpl(absl::string_view data) {
-  return absl::HexStringToBytes(data);
-}
-
 NET_EXPORT_PRIVATE bool SpdyHexDecodeToUInt32Impl(absl::string_view data,
                                                   uint32_t* out);
-
-inline std::string SpdyHexEncodeImpl(const char* bytes, size_t size) {
-  return absl::BytesToHexString(absl::string_view(bytes, size));
-}
 
 inline std::string SpdyHexDumpImpl(absl::string_view data) {
   return quiche::QuicheTextUtils::HexDump(data);

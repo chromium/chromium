@@ -18,19 +18,6 @@
 
 namespace http2 {
 
-template <typename... Args>
-inline std::string Http2StringPrintfImpl(const Args&... args) {
-  return base::StringPrintf(std::forward<const Args&>(args)...);
-}
-
-inline std::string Http2HexEncodeImpl(const void* bytes, size_t size) {
-  return base::HexEncode(bytes, size);
-}
-
-inline std::string Http2HexDecodeImpl(absl::string_view data) {
-  return absl::HexStringToBytes(data);
-}
-
 inline std::string Http2HexDumpImpl(absl::string_view data) {
   return quiche::QuicheTextUtils::HexDump(data);
 }

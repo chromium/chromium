@@ -1242,7 +1242,6 @@ source_set("quiche_tests") {
     "src/http2/http2_structures_test.cc",
     "src/http2/http2_structures_test_util.cc",
     "src/http2/http2_structures_test_util.h",
-    "src/http2/platform/api/http2_string_utils_test.cc",
     "src/http2/platform/api/http2_test_helpers.h",
     "src/http2/test_tools/frame_parts.cc",
     "src/http2/test_tools/frame_parts.h",
