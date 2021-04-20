@@ -125,17 +125,20 @@ generate_grd("build_ts_grdp") {
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
 }
 
+preprocessed_folder = "$target_gen_dir/preprocessed"
+
 ts_library("library") {
-  root_dir = "$target_gen_dir/preprocessed"
+  root_dir = preprocessed_folder
+  out_dir = preprocessed_folder
   in_files = [
     "js/cr/world.ts",
     "js/hello_world.ts",
   ]
   definitions = [
-    "$target_gen_dir/js/assert.m.d.ts",
-    "$target_gen_dir/js/cr.m.d.ts",
-    "$target_gen_dir/js/promise_resolver.m.d.ts",
-    "$target_gen_dir/js/util.m.d.ts",
+    "$root_dir/js/assert.m.d.ts",
+    "$root_dir/js/cr.m.d.ts",
+    "$root_dir/js/promise_resolver.m.d.ts",
+    "$root_dir/js/util.m.d.ts",
   ]
   extra_deps = [
     ":generate_definitions",
@@ -144,7 +147,8 @@ ts_library("library") {
 }
 
 ts_definitions("generate_definitions") {
-  root_dir = "$target_gen_dir/preprocessed"
+  root_dir = preprocessed_folder
+  out_dir = preprocessed_folder
   js_files = [
     "js/assert.m.js",
     "js/cr.m.js",

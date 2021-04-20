@@ -25,6 +25,15 @@ def main(argv):
 
   js_files = [os.path.join(args.root_dir, f) for f in args.js_files]
 
+  if (args.root_dir == args.out_dir):
+    # Delete .d.ts files if they already exist, otherwise TypeScript compiler
+    # throws "error TS5055: Cannot write file ... because it would overwrite
+    # input file" errors.
+    for f in args.js_files:
+      to_delete = os.path.join(args.out_dir, re.sub(r'\.js$', '.d.ts', f))
+      if os.path.exists(to_delete):
+        os.remove(to_delete)
+
   node.RunNode([
       node_modules.PathToTypescript(),
       '--declaration',
