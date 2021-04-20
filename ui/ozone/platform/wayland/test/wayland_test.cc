@@ -12,7 +12,6 @@
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"
 #include "ui/ozone/common/features.h"
-#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
@@ -69,7 +68,6 @@ void WaylandTest::SetUp() {
 
   ASSERT_TRUE(server_.Start(GetParam()));
   ASSERT_TRUE(connection_->Initialize());
-  connection_->event_source()->UseSingleThreadedPollingForTesting();
   screen_ = connection_->wayland_output_manager()->CreateWaylandScreen();
   EXPECT_CALL(delegate_, OnAcceleratedWidgetAvailable(_))
       .WillOnce(SaveArg<0>(&widget_));

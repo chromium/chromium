@@ -17,7 +17,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 
 struct wl_cursor;
-struct wl_event_queue;
 
 namespace gfx {
 class Point;
@@ -68,25 +67,11 @@ class WaylandConnection {
   // Schedules a flush of the Wayland connection.
   void ScheduleFlush();
 
-  // Calls wl_display_roundtrip_queue. Might be required during initialization
-  // of some objects that should block until they are initialized.
-  void RoundTripQueue();
-
   // Sets a callback that that shutdowns the browser in case of unrecoverable
   // error. Called by WaylandEventWatcher.
   void SetShutdownCb(base::OnceCallback<void()> shutdown_cb);
 
-  // A correct display must be chosen when creating objects or calling
-  // roundrips.  That is, all the methods that deal with polling, pulling event
-  // queues, etc, must use original display. All the other methods that create
-  // various wayland objects must use |display_wrapper_| so that the new objects
-  // are associated with the correct event queue. Otherwise, they will use a
-  // default event queue, which we do not use. See the comment below about the
-  // |event_queue_|.
   wl_display* display() const { return display_.get(); }
-  wl_display* display_wrapper() const {
-    return reinterpret_cast<wl_display*>(wrapped_display_.get());
-  }
   wl_compositor* compositor() const { return compositor_.get(); }
   // The server version of the compositor interface (might be higher than the
   // version binded).
@@ -233,8 +218,6 @@ class WaylandConnection {
 
   uint32_t compositor_version_ = 0;
   wl::Object<wl_display> display_;
-  wl::Object<wl_proxy> wrapped_display_;
-  wl::Object<wl_event_queue> event_queue_;
   wl::Object<wl_registry> registry_;
   wl::Object<wl_compositor> compositor_;
   wl::Object<wl_subcompositor> subcompositor_;

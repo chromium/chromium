@@ -26,7 +26,6 @@ struct wl_data_device;
 struct wl_data_offer;
 struct wl_data_source;
 struct wl_drm;
-struct wl_event_queue;
 struct wl_keyboard;
 struct wl_output;
 struct wl_pointer;
@@ -41,7 +40,6 @@ struct wl_surface;
 struct wl_touch;
 struct wp_presentation;
 struct wp_presentation_feedback;
-struct wl_proxy;
 struct wp_viewport;
 struct wp_viewporter;
 struct xdg_wm_base;
@@ -192,12 +190,6 @@ struct ObjectTraits<wl_drm> {
 };
 
 template <>
-struct ObjectTraits<wl_event_queue> {
-  static const wl_interface* interface;
-  static void (*deleter)(wl_event_queue*);
-};
-
-template <>
 struct ObjectTraits<wl_display> {
   static const wl_interface* interface;
   static void (*deleter)(wl_display*);
@@ -285,13 +277,6 @@ template <>
 struct ObjectTraits<wp_presentation_feedback> {
   static const wl_interface* interface;
   static void (*deleter)(wp_presentation_feedback*);
-};
-
-template <>
-struct ObjectTraits<wl_proxy> {
-  // Interface is null for proxy.
-  static const wl_interface* interface;
-  static void (*deleter)(void*);
 };
 
 template <>
@@ -483,7 +468,6 @@ class Object : public std::unique_ptr<T, Deleter> {
 
 template <typename T>
 wl::Object<T> Bind(wl_registry* registry, uint32_t name, uint32_t version) {
-  DCHECK(ObjectTraits<T>::interface);
   return wl::Object<T>(wl::bind_registry<T>(
       registry, name, ObjectTraits<T>::interface, version));
 }
