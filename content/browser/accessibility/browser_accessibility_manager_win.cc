@@ -237,9 +237,10 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED: {
       // Fire the event on the object where the focus of the selection is. This
       // is because the focus is the only endpoint that can move, and because
-      // the caret (if present) is at the focus.
-      ui::AXNodeID focus_id =
-          ax_tree()->GetUnignoredSelection().focus_object_id;
+      // the caret (if present) is at the focus. Since this is a focus-related
+      // event (and focused nodes are never ignored), we can query the focused
+      // node directly from the AXTree, and avoid calling GetUnignoredSelection.
+      ui::AXNodeID focus_id = ax_tree()->data().sel_focus_object_id;
       BrowserAccessibility* focus_object = GetFromID(focus_id);
       if (focus_object) {
         EnqueueSelectionChangedEvent(*focus_object);
