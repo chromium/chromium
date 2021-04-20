@@ -185,6 +185,30 @@ promise_test(t => {
 }, 'Test out of range index returns IndexSizeError');
 
 promise_test(t => {
+  var decoder;
+  var p1;
+  return fetch('four-colors.png')
+      .then(response => {
+        return response.arrayBuffer();
+      })
+      .then(buffer => {
+        decoder =
+            new ImageDecoder({data: buffer.slice(0, 100), type: 'image/png'});
+        return decoder.decodeMetadata();
+      })
+      .then(_ => {
+        // Queue two decodes to ensure index verification and decoding are
+        // properly ordered.
+        p1 = decoder.decode({frameIndex: 0});
+        return promise_rejects_dom(
+            t, 'EncodingError', decoder.decode({frameIndex: 1}));
+      })
+      .then(_ => {
+        return promise_rejects_dom(t, 'EncodingError', p1);
+      })
+}, 'Test partial decoding without a frame results in an error');
+
+promise_test(t => {
   var decoder = null;
 
   return fetch('four-colors.png')
