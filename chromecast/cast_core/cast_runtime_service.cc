@@ -5,11 +5,9 @@
 #include "chromecast/cast_core/cast_runtime_service.h"
 
 namespace chromecast {
-namespace media {
 
 CastRuntimeService::CastRuntimeService() = default;
 
 CastRuntimeService::~CastRuntimeService() = default;
 
-}  // namespace media
 }  // namespace chromecast
