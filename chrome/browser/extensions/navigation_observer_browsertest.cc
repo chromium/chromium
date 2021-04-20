@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/navigation_observer.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
@@ -49,11 +50,6 @@ class DisableExtensionBrowserTest : public ExtensionBrowserTest {
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
-  // TODO(lukasza): https://crbug.com/970917: We should not terminate a renderer
-  // that hosts a disabled extension.  Once that is fixed, we should remove
-  // ScopedAllowRendererCrashes below.
-  content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-
   scoped_refptr<const Extension> extension_;
   std::string extension_id_;
   GURL extension_resource_url_;
@@ -69,6 +65,7 @@ IN_PROC_BROWSER_TEST_F(
   base::ScopedClosureRunner reset_repeated_prompting(base::BindOnce([]() {
     NavigationObserver::SetAllowedRepeatedPromptingForTesting(false);
   }));
+
   // Disable the extension due to a permissions increase.
   extension_service()->DisableExtension(
       extension_id_, disable_reason::DISABLE_PERMISSIONS_INCREASE);
@@ -157,6 +154,79 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
     EXPECT_EQ(disable_reason::DISABLE_PERMISSIONS_INCREASE,
               prefs_->GetDisableReasons(kHostedAppId));
   }
+}
+
+// Verify that navigating a subframe to an enabled -> disabled -> enabled
+// extension URL doesn't result in a renderer process termination.  See
+// https://crbug.com/1197360.
+IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
+                       VisitReenabledExtensionInSubframe) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to a page with a subframe.
+  GURL main_url = embedded_test_server()->GetURL("/iframe.html");
+  ui_test_utils::NavigateToURL(browser(), main_url);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(web_contents->GetMainFrame()->GetLastCommittedURL(), main_url);
+
+  // Navigate subframe to an enabled extension URL.
+  scoped_refptr<const Extension> extension =
+      ChromeTestExtensionLoader(profile()).LoadExtension(
+          test_data_dir_.AppendASCII("web_accessible_resources"));
+  ASSERT_TRUE(extension);
+  GURL extension_url = extension->GetResourceURL("web_accessible_page.html");
+  EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", extension_url));
+
+  content::RenderFrameHost* subframe =
+      ChildFrameAt(web_contents->GetMainFrame(), 0);
+  EXPECT_EQ(subframe->GetLastCommittedURL(), extension_url);
+  scoped_refptr<content::SiteInstance> extension_site_instance =
+      subframe->GetSiteInstance();
+
+  // The extension process shouldn't be locked, since multiple extensions are
+  // allowed to reuse the same extension process.
+  EXPECT_FALSE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
+
+  // Disable the extension.
+  extension_service()->DisableExtension(extension->id(),
+                                        disable_reason::DISABLE_USER_ACTION);
+  EXPECT_TRUE(registry_->disabled_extensions().Contains(extension->id()));
+
+  // Go back and then forward.  This should go back to the original URL in the
+  // iframe, then go forward to the now-disabled extension URL.  Using a
+  // history navigation makes the latter navigation a browser-initiated one,
+  // which is important for reproducing https://crbug.com/1197360.
+  web_contents->GetController().GoBack();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  web_contents->GetController().GoForward();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  subframe = ChildFrameAt(web_contents->GetMainFrame(), 0);
+  EXPECT_EQ(subframe->GetLastCommittedURL(), extension_url);
+
+  // The SiteInstance of the disabled extension frame should reference the
+  // invalid extension ID, and should be different from the SiteInstance of the
+  // enabled extension subframe.
+  EXPECT_NE(subframe->GetSiteInstance(), extension_site_instance);
+  EXPECT_EQ(subframe->GetSiteInstance()->GetSiteURL(),
+            GURL(chrome::kExtensionInvalidRequestURL));
+
+  // The disabled extension process also shouldn't be locked.
+  EXPECT_FALSE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
+
+  // Re-enable the extension.
+  extension_service()->EnableExtension(extension->id());
+  EXPECT_TRUE(registry_->enabled_extensions().Contains(extension->id()));
+
+  // Navigate the subframe to the extension URL again.  This shouldn't
+  // terminate the renderer and should go back to the original extension
+  // SiteInstance.
+  EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", extension_url));
+  subframe = ChildFrameAt(web_contents->GetMainFrame(), 0);
+  EXPECT_TRUE(subframe->IsRenderFrameLive());
+  EXPECT_EQ(subframe->GetSiteInstance(), extension_site_instance);
+  EXPECT_FALSE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, NoExtensionsInRefererHeader) {
