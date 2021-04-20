@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_STATUS_AREA_WIDGET_TEST_HELPER_H_
 
 #include "base/macros.h"
+#include "ui/compositor/layer.h"
 
 namespace ash {
 
@@ -24,6 +25,9 @@ class StatusAreaWidgetTestHelper {
 
   // Waits until status area animations are over.
   static void WaitForAnimationEnd(StatusAreaWidget* status_area_widget);
+
+  // Waits until one child view's layer animations are over.
+  static void WaitForLayerAnimationEnd(ui::Layer* layer);
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(StatusAreaWidgetTestHelper);
