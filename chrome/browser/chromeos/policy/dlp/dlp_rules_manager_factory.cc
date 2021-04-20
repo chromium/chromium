@@ -69,9 +69,8 @@ KeyedService* DlpRulesManagerFactory::BuildServiceInstanceFor(
     return nullptr;
 
   DlpRulesManagerImpl* manager = new DlpRulesManagerImpl(local_state);
-  // TODO(1197758, marcgrimme) uncomment when fixed.
-  // BuildReportingQueue(profile,
-  //                     manager->reporting_manager_->GetReportQueueSetter());
+  BuildReportingQueue(profile,
+                      manager->reporting_manager_->GetReportQueueSetter());
   return manager;
 }
 
