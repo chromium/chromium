@@ -4,9 +4,9 @@ Code reviews are a central part of developing high-quality code for Chromium.
 All change lists (CLs) must be reviewed.
 
 The general patch, upload, and land process is covered in more detail in the
-[contributing code](contributing.md) page. To learn about upcoming code review
-and OWNERS policy changes, see
-[Mandatory code review and OWNERS](code_review_owners.md).
+[contributing code](contributing.md) page. To learn about the code review changes
+and OWNERS policy changes launched on March 24, 2021, see
+[Mandatory Code Review and Native OWNERS](code_review_owners.md).
 
 # Code review policies
 
@@ -55,7 +55,7 @@ than reviewers in the higher-level `//chrome/OWNERS` file.
 More detail on the owners file format is provided [here](#owners-file-details).
 
 *Tip:* The `git cl owners` command can help find owners. Gerrit also provides
-this functionality via the `Find Owners` button on CLs.
+this functionality in the Reviewers field of CLs.
 
 While owners must approve all patches, any committer can contribute to the
 review. In some directories the owners can be overloaded or there might be
@@ -170,7 +170,8 @@ per-file *_messages*.h=file://ipc/SECURITY_OWNERS
 
 Setting the `Owners-Override +1` label will bypass OWNERS enforcement. Active
 [sheriffs](sheriffs.md), [Large Scale Changes](#large-scale-changes) and
-[Global Approvers](#global-approvals) reviewers have this capability.
+[Global Approvers](#global-approvals) reviewers, and Release Program Managers
+have this capability.
 
 ## Mechanical changes
 
@@ -205,7 +206,11 @@ When combined with the [`Owners-Override`](#owners_override) power, sheriffs can
 effectively revert and reland on their own.
 
 Rubber Stamper never provides OWNERS approval, by design. It's intended to be
-used by those who have owners in the directory modified or who are sheriffs.
+used by those who have owners in the directory modified or who are sheriffs. If
+it provided both code review and OWNERS approval, that would be an abuse vector:
+that would allow anyone who can create a revert or cherry-pick to land it
+without any other person being involved (e.g. the silent revert of security
+patches).
 
-Changes not supported by `Rubber Stamper` still need a +1 from another
+Changes not supported by `Rubber Stamper` always need a +1 from another
 committer.
