@@ -400,14 +400,21 @@ def main():
         subprocess.call([EU_STRIP, '-g', dest])
 
   stripped_binaries = ['clang',
+                       'clang-tidy',
+                       'lld',
+                       'llvm-ar',
+                       'llvm-bcanalyzer',
+                       'llvm-cov',
+                       'llvm-cxxfilt',
+                       'llvm-nm',
+                       'llvm-objcopy',
+                       'llvm-objdump',
                        'llvm-pdbutil',
+                       'llvm-profdata',
+                       'llvm-readobj',
                        'llvm-symbolizer',
                        'llvm-undname',
                        ]
-  if sys.platform.startswith('linux'):
-    stripped_binaries.append('lld')
-    stripped_binaries.append('llvm-ar')
-    stripped_binaries.append('llvm-objcopy')
   for f in stripped_binaries:
     if sys.platform != 'win32':
       subprocess.call(['strip', os.path.join(pdir, 'bin', f)])
@@ -471,6 +478,7 @@ def main():
     f.write(expected_stamp)
     f.write('\n')
   if sys.platform != 'win32':
+    os.symlink('llvm-objdump', os.path.join(objdumpdir, 'bin', 'llvm-otool'))
     os.symlink('llvm-readobj', os.path.join(objdumpdir, 'bin', 'llvm-readelf'))
   with tarfile.open(objdumpdir + '.tgz', 'w:gz') as tar:
     tar.add(os.path.join(objdumpdir, 'bin'), arcname='bin',
