@@ -55,15 +55,6 @@
 
 namespace chromeos {
 
-namespace {
-
-void LaunchResetScreen() {
-  DCHECK(LoginDisplayHost::default_host());
-  LoginDisplayHost::default_host()->StartWizard(ResetView::kScreenId);
-}
-
-}  // namespace
-
 // Note that show_oobe_ui_ defaults to false because WizardController assumes
 // OOBE UI is not visible by default.
 CoreOobeHandler::CoreOobeHandler(JSCallsContainer* js_calls_container)
@@ -145,10 +136,6 @@ void CoreOobeHandler::RegisterMessages() {
   AddCallback("hideOobeDialog", &CoreOobeHandler::HandleHideOobeDialog);
   AddCallback("updateOobeUIState", &CoreOobeHandler::HandleUpdateOobeUIState);
   AddCallback("enableShelfButtons", &CoreOobeHandler::HandleEnableShelfButtons);
-}
-
-void CoreOobeHandler::ShowDeviceResetScreen() {
-  LaunchResetScreen();
 }
 
 void CoreOobeHandler::FocusReturned(bool reverse) {
@@ -262,7 +249,8 @@ void CoreOobeHandler::HandleToggleResetScreenCallback(
         prefs::kFactoryResetTPMFirmwareUpdateMode,
         static_cast<int>(tpm_firmware_update_mode.value()));
   }
-  LaunchResetScreen();
+  DCHECK(LoginDisplayHost::default_host());
+  LoginDisplayHost::default_host()->StartWizard(ResetView::kScreenId);
 }
 
 void CoreOobeHandler::ShowOobeUI(bool show) {

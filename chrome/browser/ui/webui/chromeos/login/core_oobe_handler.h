@@ -57,7 +57,6 @@ class CoreOobeView {
   virtual void SetClientAreaSize(int width, int height) = 0;
   virtual void SetShelfHeight(int height) = 0;
   virtual void SetDialogPaddingMode(DialogPaddingMode mode) = 0;
-  virtual void ShowDeviceResetScreen() = 0;
   virtual void UpdateKeyboardState() = 0;
   virtual void FocusReturned(bool reverse) = 0;
   virtual void SetOrientation(bool is_horizontal) = 0;
@@ -125,7 +124,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void SetClientAreaSize(int width, int height) override;
   void SetShelfHeight(int height) override;
   void SetDialogPaddingMode(CoreOobeView::DialogPaddingMode mode) override;
-  void ShowDeviceResetScreen() override;
   void FocusReturned(bool reverse) override;
   void SetOrientation(bool is_horizontal) override;
   void SetDialogSize(int width, int height) override;
