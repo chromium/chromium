@@ -87,10 +87,6 @@ CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
 
 - (void)pushViewController:(UIViewController*)viewController
                   animated:(BOOL)animated {
-  // |viewController.view| has to be a UIScrollView since the bottom sheet
-  // navigation might be not fit on the screen (related to big fonts for
-  // accessibility).
-  DCHECK([viewController.view isKindOfClass:[UIScrollView class]]);
   DCHECK([viewController
       conformsToProtocol:@protocol(ChildBottomSheetViewController)]);
   [super pushViewController:viewController animated:animated];

@@ -71,7 +71,15 @@ constexpr CGFloat kTitleSubtitleMargin = 0.;
   self.navigationItem.rightBarButtonItem = anotherButton;
   // Replace the controller view by the scroll view.
   UIScrollView* scrollView = [[UIScrollView alloc] init];
-  self.view = scrollView;
+  scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:scrollView];
+  [NSLayoutConstraint activateConstraints:@[
+    [scrollView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [scrollView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
+    [scrollView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [scrollView.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+  ]];
   // Create content view.
   self.contentView = [[UIStackView alloc] init];
   self.contentView.axis = UILayoutConstraintAxisVertical;
