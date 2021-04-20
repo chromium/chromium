@@ -22,7 +22,6 @@
 namespace content {
 
 class FrameTree;
-class NavigationController;
 class PrerenderHostRegistry;
 class RenderFrameHostImpl;
 class WebContentsImpl;
@@ -145,8 +144,6 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   FrameTree* GetPrerenderedFrameTree();
 
   void CreatePageHolder(WebContentsImpl& web_contents);
-
-  NavigationController& GetNavigationController();
 
   const blink::mojom::PrerenderAttributesPtr attributes_;
   const url::Origin initiator_origin_;
