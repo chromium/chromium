@@ -75,7 +75,7 @@ template("lacros_all_tast_tests") {
   lacros_tast_test(target_name) {
     # The following expression filters out all non-critical tests. See the link
     # below for more details:
-    # https://chromium.googlesource.com/chromiumos/platform/tast/+/master/docs/test_attributes.md
+    # https://chromium.googlesource.com/chromiumos/platform/tast/+/main/docs/test_attributes.md
     tast_attr_expr = "\"group:mainline\" && \"dep:lacros\""
 
     tast_disabled_tests = [
