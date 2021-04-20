@@ -18,7 +18,7 @@ enum class AccessoryTabType {
   PASSWORDS = 1,
   CREDIT_CARDS = 2,
   ADDRESSES = 3,
-  TOUCH_TO_FILL = 4,
+  OBSOLETE_TOUCH_TO_FILL = 4,
   COUNT,
 };
 

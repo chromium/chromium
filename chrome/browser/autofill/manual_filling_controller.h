@@ -46,7 +46,6 @@ class ManualFillingController {
     PASSWORD_FALLBACKS,
     CREDIT_CARD_FALLBACKS,
     ADDRESS_FALLBACKS,
-    TOUCH_TO_FILL,
   };
 
   ManualFillingController() = default;

@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetT
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccessorySheetCoordinator;
-import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.TouchToFillSheetCoordinator;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -612,7 +611,6 @@ class ManualFillingMediator extends EmptyTabObserver
         if (state.getAccessorySheet(tabType) != null) return state.getAccessorySheet(tabType);
 
         AccessorySheetTabCoordinator sheet = createNewSheet(tabType);
-        assert sheet != null : "Cannot create sheet for type " + tabType;
 
         state.setAccessorySheet(tabType, sheet);
         if (state.getSheetDataProvider(tabType) != null) {
@@ -625,18 +623,19 @@ class ManualFillingMediator extends EmptyTabObserver
     private boolean canCreateSheet(@AccessoryTabType int tabType) {
         if (!isInitialized()) return false;
         switch (tabType) {
-            case AccessoryTabType.ALL: // Intentional fallthrough.
-            case AccessoryTabType.COUNT:
-                return false;
             case AccessoryTabType.CREDIT_CARDS: // Intentional fallthrough.
             case AccessoryTabType.ADDRESSES:
                 return ChromeFeatureList.isEnabled(AUTOFILL_MANUAL_FALLBACK_ANDROID);
             case AccessoryTabType.PASSWORDS:
                 return true;
-            case AccessoryTabType.TOUCH_TO_FILL:
-                return true;
+            case AccessoryTabType.OBSOLETE_TOUCH_TO_FILL:
+                assert false : "Obsolete sheet type: " + tabType;
+                return false;
+            case AccessoryTabType.ALL: // Intentional fallthrough.
+            case AccessoryTabType.COUNT: // Intentional fallthrough.
         }
-        return true;
+        assert false : "Unhandled sheet type: " + tabType;
+        return false;
     }
 
     private AccessorySheetTabCoordinator createNewSheet(@AccessoryTabType int tabType) {
@@ -650,12 +649,11 @@ class ManualFillingMediator extends EmptyTabObserver
             case AccessoryTabType.PASSWORDS:
                 return new PasswordAccessorySheetCoordinator(
                         mActivity, mAccessorySheet.getScrollListener());
-            case AccessoryTabType.TOUCH_TO_FILL:
-                return new TouchToFillSheetCoordinator(
-                        mActivity, mAccessorySheet.getScrollListener());
+            case AccessoryTabType.OBSOLETE_TOUCH_TO_FILL:
             case AccessoryTabType.ALL: // Intentional fallthrough.
             case AccessoryTabType.COUNT: // Intentional fallthrough.
         }
+        assert false : "Cannot create sheet for type " + tabType;
         return null;
     }
 

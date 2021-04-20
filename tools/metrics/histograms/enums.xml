@@ -968,7 +968,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="PASSWORD"/>
   <int value="2" label="PAYMENT_INFO"/>
   <int value="3" label="ADDRESS_INFO"/>
-  <int value="4" label="TOUCH_TO_FILL_INFO"/>
+  <int value="4" label="(obsolete) TOUCH_TO_FILL_INFO"/>
 </enum>
 
 <enum name="AccessoryToggleType">

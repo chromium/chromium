@@ -47,7 +47,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Addresses" label="Address suggestions."/>
   <suffix name="CreditCards" label="Payment suggestions."/>
   <suffix name="Passwords" label="Password suggestions and generation."/>
-  <suffix name="TouchToFill" label="Password suggestions filled on touch."/>
+  <suffix name="TouchToFill" label="Password suggestions filled on touch.">
+    <obsolete>
+      Moved to separate component. Never contained meaningful data. Consider the
+      PasswordManager.TouchToFill.* histograms instead.
+    </obsolete>
+  </suffix>
   <affected-histogram name="KeyboardAccessory.AccessorySheetSuggestionCount"/>
   <affected-histogram
       name="KeyboardAccessory.AccessorySheetSuggestionsSelected"/>

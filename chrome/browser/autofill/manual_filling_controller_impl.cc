@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -42,6 +44,10 @@ using FillingSource = ManualFillingController::FillingSource;
 
 namespace {
 
+constexpr auto kAllowedFillingSources = base::MakeFixedFlatSet<FillingSource>(
+    {FillingSource::PASSWORD_FALLBACKS, FillingSource::CREDIT_CARD_FALLBACKS,
+     FillingSource::ADDRESS_FALLBACKS});
+
 FillingSource GetSourceForTabType(const AccessorySheetData& accessory_sheet) {
   switch (accessory_sheet.get_sheet_type()) {
     case AccessoryTabType::PASSWORDS:
@@ -50,8 +56,7 @@ FillingSource GetSourceForTabType(const AccessorySheetData& accessory_sheet) {
       return FillingSource::CREDIT_CARD_FALLBACKS;
     case AccessoryTabType::ADDRESSES:
       return FillingSource::ADDRESS_FALLBACKS;
-    case AccessoryTabType::TOUCH_TO_FILL:
-      return FillingSource::TOUCH_TO_FILL;
+    case AccessoryTabType::OBSOLETE_TOUCH_TO_FILL:
     case AccessoryTabType::ALL:
     case AccessoryTabType::COUNT:
       NOTREACHED() << "Cannot determine filling source";
@@ -220,9 +225,7 @@ ManualFillingControllerImpl::AsWeakPtr() {
 
 void ManualFillingControllerImpl::Initialize() {
   DCHECK(FromWebContents(web_contents_)) << "Don't call from constructor!";
-  RegisterObserverForAllowedSources({FillingSource::PASSWORD_FALLBACKS,
-                                     FillingSource::CREDIT_CARD_FALLBACKS,
-                                     FillingSource::ADDRESS_FALLBACKS});
+  RegisterObserverForAllowedSources();
   if (address_controller_)
     address_controller_->RefreshSuggestions();
 }
@@ -345,13 +348,12 @@ void ManualFillingControllerImpl::UpdateVisibility() {
   }
 }
 
-void ManualFillingControllerImpl::RegisterObserverForAllowedSources(
-    const base::flat_set<FillingSource>& sources) {
+void ManualFillingControllerImpl::RegisterObserverForAllowedSources() {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillKeyboardAccessory)) {
     return;  // Observer mechanism only available for the modern accessory.
   }
-  for (FillingSource source : sources) {
+  for (FillingSource source : kAllowedFillingSources) {
     AccessoryController* sheet_controller =
         GetControllerForFillingSource(source);
     if (!sheet_controller)
@@ -383,7 +385,7 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForTabType(
       return pwd_controller_.get();
     case AccessoryTabType::CREDIT_CARDS:
       return cc_controller_.get();
-    case AccessoryTabType::TOUCH_TO_FILL:
+    case AccessoryTabType::OBSOLETE_TOUCH_TO_FILL:
     case AccessoryTabType::ALL:
     case AccessoryTabType::COUNT:
       NOTREACHED() << "Controller not defined for tab: "
@@ -422,7 +424,6 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForFillingSource(
       return cc_controller_.get();
     case FillingSource::ADDRESS_FALLBACKS:
       return address_controller_.get();
-    case FillingSource::TOUCH_TO_FILL:
     case FillingSource::AUTOFILL:
       NOTREACHED() << "Controller not defined for filling source: "
                    << static_cast<int>(filling_source);

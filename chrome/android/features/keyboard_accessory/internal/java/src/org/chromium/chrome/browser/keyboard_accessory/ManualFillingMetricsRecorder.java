@@ -28,8 +28,6 @@ public class ManualFillingMetricsRecorder {
     private static final String UMA_KEYBOARD_ACCESSORY_SHEET_TYPE_SUFFIX_CREDIT_CARDS =
             "CreditCards";
     private static final String UMA_KEYBOARD_ACCESSORY_SHEET_TYPE_SUFFIX_ADDRESSES = "Addresses";
-    private static final String UMA_KEYBOARD_ACCESSORY_SHEET_TYPE_SUFFIX_TOUCH_TO_FILL =
-            "TouchToFill";
 
     /**
      * The Recorder itself should be stateless and have no need for an instance.
@@ -52,8 +50,8 @@ public class ManualFillingMetricsRecorder {
                 return baseHistogram + "." + UMA_KEYBOARD_ACCESSORY_SHEET_TYPE_SUFFIX_CREDIT_CARDS;
             case AccessoryTabType.ADDRESSES:
                 return baseHistogram + "." + UMA_KEYBOARD_ACCESSORY_SHEET_TYPE_SUFFIX_ADDRESSES;
-            case AccessoryTabType.TOUCH_TO_FILL:
-                return baseHistogram + "." + UMA_KEYBOARD_ACCESSORY_SHEET_TYPE_SUFFIX_TOUCH_TO_FILL;
+            case AccessoryTabType.OBSOLETE_TOUCH_TO_FILL:
+                assert false : "Obsolete histogram: " + tabType;
         }
         assert false : "Undefined histogram for tab type " + tabType + " !";
         return "";
@@ -137,10 +135,8 @@ public class ManualFillingMetricsRecorder {
                 // TODO(crbug.com/965494): Consider splitting and/or separate recording.
                 suggestionRecordingType = AccessorySuggestionType.ADDRESS_INFO;
                 break;
-            case AccessoryTabType.TOUCH_TO_FILL:
-                suggestionRecordingType = AccessorySuggestionType.TOUCH_TO_FILL_INFO;
-                break;
-
+            case AccessoryTabType.OBSOLETE_TOUCH_TO_FILL:
+                throw new InvalidParameterException("Obsolete tabType: " + tabType);
             case AccessoryTabType.ALL:
                 throw new InvalidParameterException("Unable to handle tabType: " + tabType);
         }

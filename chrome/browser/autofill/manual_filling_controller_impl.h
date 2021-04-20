@@ -104,11 +104,10 @@ class ManualFillingControllerImpl
   // Adjusts visibility based on focused field type and available suggestions.
   void UpdateVisibility();
 
-  // Registers this filling controller as observer on all given sources if they
-  // are allowed for this tab. This means `OnSourceAvailabilityChanged()`
-  // triggers as soon as the observed source changes.
-  void RegisterObserverForAllowedSources(
-      const base::flat_set<FillingSource>& sources);
+  // Registers this filling controller as observer on all sources which are
+  // allowed for this tab. This means `OnSourceAvailabilityChanged()` triggers
+  // as soon as the observed source changes.
+  void RegisterObserverForAllowedSources();
 
   void OnSourceAvailabilityChanged(
       FillingSource source,

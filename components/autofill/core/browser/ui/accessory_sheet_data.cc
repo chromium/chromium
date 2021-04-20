@@ -185,8 +185,8 @@ std::ostream& operator<<(std::ostream& os, const AccessoryTabType& type) {
       return os << "Payments sheet";
     case AccessoryTabType::ADDRESSES:
       return os << "Address sheet";
-    case AccessoryTabType::TOUCH_TO_FILL:
-      return os << "Touch to Fill sheet";
+    case AccessoryTabType::OBSOLETE_TOUCH_TO_FILL:
+      return os << "(obsolete) Touch to Fill sheet";
     case AccessoryTabType::ALL:
       return os << "All sheets";
     case AccessoryTabType::COUNT:

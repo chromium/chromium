@@ -43,7 +43,7 @@ enum class AccessorySuggestionType {
   PASSWORD = 1,
   PAYMENT_INFO = 2,
   ADDRESS_INFO = 3,
-  TOUCH_TO_FILL_INFO = 4,
+  OBSOLETE_TOUCH_TO_FILL_INFO = 4,
   COUNT,
 };
 
