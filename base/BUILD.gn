@@ -2191,7 +2191,7 @@ component("base") {
     ]
 
     # TODO(b/167763382) Find an alternate solution for Chromecast devices, since
-    # adding the icui18n dep significantly increases the binary size.
+    # adding the icui18n and icuuc deps significantly increases the binary size.
     if (!is_chromecast) {
       sources += [ "time/time_exploded_icu.cc" ]
 
@@ -2201,7 +2201,10 @@ component("base") {
       # versa). Thus, the dependency is taken here for all POSIX platforms and
       # the compiler+linker should be able to easily detect when the ICU
       # routines will not be called and delete them in the final linking.
-      deps += [ "//third_party/icu:icui18n" ]
+      deps += [
+        "//third_party/icu:icui18n",
+        "//third_party/icu:icuuc",
+      ]
     }
   }
 

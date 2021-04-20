@@ -581,6 +581,11 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // Represents an exploded time that can be formatted nicely. This is kind of
   // like the Win32 SYSTEMTIME structure or the Unix "struct tm" with a few
   // additions and changes to prevent errors.
+  // This structure always represents dates in the Gregorian calendar and always
+  // encodes day_of_week as Sunday==0, Monday==1, .., Saturday==6. This means
+  // that base::Time::LocalExplode and base::Time::FromLocalExploded only
+  // respect the current local time zone in the conversion and do *not* use a
+  // calendar or day-of-week encoding from the current locale.
   struct BASE_EXPORT Exploded {
     int year;          // Four digit year "2007"
     int month;         // 1-based month (values 1 = January, etc.)
@@ -733,6 +738,9 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // Converts an exploded structure representing either the local time or UTC
   // into a Time class. Returns false on a failure when, for example, a day of
   // month is set to 31 on a 28-30 day month. Returns Time(0) on overflow.
+  // FromLocalExploded respects the current time zone but does not attempt to
+  // use the calendar or day-of-week encoding from the current locale - see the
+  // comments on base::Time::Exploded for more information.
   static bool FromUTCExploded(const Exploded& exploded,
                               Time* time) WARN_UNUSED_RESULT {
     return FromExploded(false, exploded, time);
@@ -773,6 +781,9 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // Y10K compliance: This method will successfully convert all Times that
   // represent dates on/after the start of the year 1601 and on/before the start
   // of the year 30828. Some platforms might convert over a wider input range.
+  // LocalExplode respects the current time zone but does not attempt to use the
+  // calendar or day-of-week encoding from the current locale - see the comments
+  // on base::Time::Exploded for more information.
   void UTCExplode(Exploded* exploded) const { Explode(false, exploded); }
   void LocalExplode(Exploded* exploded) const { Explode(true, exploded); }
 
