@@ -107,10 +107,6 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView {
   void AddExtraButtons(bool enabled) override;
 
   void PerformAddExtraButtons(bool enabled);
-  void OnCellularNetworksFetched(
-      bool enabled,
-      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
-          networks);
 
   void AddCellularButtonPressed();
 

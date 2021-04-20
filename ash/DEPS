@@ -59,6 +59,7 @@ include_rules = [
   "+chromeos/dbus/initialize_dbus_client.h",
   "+chromeos/dbus/audio",
   "+chromeos/dbus/hammerd",
+  "+chromeos/dbus/hermes",
   "+chromeos/dbus/power",
   "+chromeos/dbus/power_manager",
   "+chromeos/dbus/shill",
