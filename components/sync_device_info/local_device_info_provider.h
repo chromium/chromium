@@ -49,6 +49,7 @@ class MutableLocalDeviceInfoProvider : public LocalDeviceInfoProvider {
       const std::string& client_name,
       const std::string& manufacturer_name,
       const std::string& model_name,
+      const std::string& full_hardware_class,
       std::unique_ptr<DeviceInfo> device_info_restored_from_store) = 0;
   virtual void Clear() = 0;
 

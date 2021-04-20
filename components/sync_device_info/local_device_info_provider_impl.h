@@ -34,6 +34,7 @@ class LocalDeviceInfoProviderImpl : public MutableLocalDeviceInfoProvider {
       const std::string& client_name,
       const std::string& manufacturer_name,
       const std::string& model_name,
+      const std::string& full_hardware_class,
       std::unique_ptr<DeviceInfo> device_info_restored_from_store) override;
   void Clear() override;
   void UpdateClientName(const std::string& client_name) override;
@@ -49,8 +50,16 @@ class LocalDeviceInfoProviderImpl : public MutableLocalDeviceInfoProvider {
   // The version string for the current client.
   const std::string version_;
 
+  void ResetFullHardwareClassIfUmaDisabled() const;
+
   const DeviceInfoSyncClient* const sync_client_;
 
+  bool IsUmaEnabledOnCrOSDevice() const;
+
+  // The |full_hardware_class| is stored in order to handle UMA toggles
+  // during a users session. Tracking |full_hardware_class| in this class
+  // ensures it's reset/retrieved correctly when GetLocalDeviceInfo() is called.
+  std::string full_hardware_class_;
   std::unique_ptr<DeviceInfo> local_device_info_;
   base::RepeatingClosureList closure_list_;
 

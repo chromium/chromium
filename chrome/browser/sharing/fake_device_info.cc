@@ -13,11 +13,12 @@ std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
     sync_pb::SyncEnums_DeviceType device_type,
     const std::string& manufacturer_name,
     const std::string& model_name,
+    const std::string& full_hardware_class,
     base::Time last_updated_timestamp) {
   return std::make_unique<syncer::DeviceInfo>(
       guid, name, "chrome_version", "user_agent", device_type, "device_id",
-      manufacturer_name, model_name, last_updated_timestamp,
-      syncer::DeviceInfoUtil::GetPulseInterval(),
+      manufacturer_name, model_name, full_hardware_class,
+      last_updated_timestamp, syncer::DeviceInfoUtil::GetPulseInterval(),
       /*send_tab_to_self_receiving_enabled=*/false, sharing_info,
       /*paask_info=*/base::nullopt,
       /*fcm_registration_token=*/std::string(),

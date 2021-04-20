@@ -66,6 +66,7 @@ DeviceInfo::DeviceInfo(
     const std::string& signin_scoped_device_id,
     const std::string& manufacturer_name,
     const std::string& model_name,
+    const std::string& full_hardware_class,
     base::Time last_updated_timestamp,
     base::TimeDelta pulse_interval,
     bool send_tab_to_self_receiving_enabled,
@@ -81,6 +82,7 @@ DeviceInfo::DeviceInfo(
       signin_scoped_device_id_(signin_scoped_device_id),
       manufacturer_name_(manufacturer_name),
       model_name_(model_name),
+      full_hardware_class_(full_hardware_class),
       last_updated_timestamp_(last_updated_timestamp),
       pulse_interval_(pulse_interval),
       send_tab_to_self_receiving_enabled_(send_tab_to_self_receiving_enabled),
@@ -125,6 +127,10 @@ const std::string& DeviceInfo::manufacturer_name() const {
 
 const std::string& DeviceInfo::model_name() const {
   return model_name_;
+}
+
+const std::string& DeviceInfo::full_hardware_class() const {
+  return full_hardware_class_;
 }
 
 base::Time DeviceInfo::last_updated_timestamp() const {
@@ -204,6 +210,7 @@ bool DeviceInfo::Equals(const DeviceInfo& other) const {
          this->signin_scoped_device_id() == other.signin_scoped_device_id() &&
          this->manufacturer_name() == other.manufacturer_name() &&
          this->model_name() == other.model_name() &&
+         this->full_hardware_class() == other.full_hardware_class() &&
          this->send_tab_to_self_receiving_enabled() ==
              other.send_tab_to_self_receiving_enabled() &&
          this->sharing_info() == other.sharing_info() &&
@@ -228,6 +235,11 @@ std::unique_ptr<base::DictionaryValue> DeviceInfo::ToValue() const {
 
 void DeviceInfo::set_public_id(const std::string& id) {
   public_id_ = id;
+}
+
+void DeviceInfo::set_full_hardware_class(
+    const std::string& full_hardware_class) {
+  full_hardware_class_ = full_hardware_class;
 }
 
 void DeviceInfo::set_send_tab_to_self_receiving_enabled(bool new_value) {
