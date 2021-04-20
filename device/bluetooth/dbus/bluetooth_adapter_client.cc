@@ -38,8 +38,7 @@ namespace {
 void WriteNumberAttribute(dbus::MessageWriter* writer,
                           const BluetoothServiceAttributeValueBlueZ& attribute,
                           bool is_signed) {
-  int value;
-  attribute.value().GetAsInteger(&value);
+  int value = attribute.value().GetInt();
 
   switch (attribute.size()) {
     case 1:
