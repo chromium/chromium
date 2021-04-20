@@ -104,15 +104,14 @@ bool ContentAutofillDriver::IsIncognito() const {
   // TODO(https://crbug.com/1125474): Consider renaming this function to
   // |IsOffTheRecord| after deprecation of off-the-record or ephemeral Guest
   // profiles.
-  if (autofill_manager_ &&
-      autofill_manager_->client()->GetProfileType() ==
-          profile_metrics::BrowserProfileType::kEphemeralGuest) {
+  auto* browser_context =
+      render_frame_host_->GetSiteInstance()->GetBrowserContext();
+  if (profile_metrics::GetBrowserProfileType(browser_context) ==
+      profile_metrics::BrowserProfileType::kEphemeralGuest) {
     return true;
   }
 
-  return render_frame_host_->GetSiteInstance()
-      ->GetBrowserContext()
-      ->IsOffTheRecord();
+  return browser_context->IsOffTheRecord();
 }
 
 bool ContentAutofillDriver::IsInMainFrame() const {

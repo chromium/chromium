@@ -315,8 +315,6 @@ class AutofillClient : public RiskDataLoader {
   virtual std::string GetVariationConfigCountryCode() const;
 
   // Returns the profile type of the session.
-  // TODO(https://crbug.com/1169142): Replace by getting profile type directly
-  // from BrowserContext.
   virtual profile_metrics::BrowserProfileType GetProfileType() const;
 
 #if !defined(OS_IOS)
