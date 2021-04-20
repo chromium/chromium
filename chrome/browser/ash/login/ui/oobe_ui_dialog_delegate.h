@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
+#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -40,7 +41,6 @@ namespace chromeos {
 class CaptivePortalDialogDelegate;
 class LayoutWidgetDelegateView;
 class LoginDisplayHostMojo;
-class OobeUI;
 class OobeWebDialogView;
 
 // This class manages the behavior of the Oobe UI dialog.
@@ -53,6 +53,7 @@ class OobeWebDialogView;
 class OobeUIDialogDelegate : public ui::WebDialogDelegate,
                              public ChromeKeyboardControllerClient::Observer,
                              public CaptivePortalWindowProxy::Observer,
+                             public OobeUI::Observer,
                              public views::ViewObserver,
                              public ash::SystemTrayObserver {
  public:
@@ -122,6 +123,11 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   void OnBeforeCaptivePortalShown() override;
   void OnAfterCaptivePortalHidden() override;
 
+  // OobeUI::Observer:
+  void OnCurrentScreenChanged(OobeScreenId current_screen,
+                              OobeScreenId new_screen) override;
+  void OnDestroyingOobeUI() override;
+
   // ash::SystemTrayObserver:
   void OnFocusLeavingSystemTray(bool reverse) override;
 
@@ -145,6 +151,7 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   base::ScopedObservation<CaptivePortalWindowProxy,
                           CaptivePortalWindowProxy::Observer>
       captive_portal_observer_{this};
+  base::ScopedObservation<OobeUI, OobeUI::Observer> oobe_ui_observer_{this};
 
   std::unique_ptr<
       base::ScopedObservation<LoginScreenClient,
