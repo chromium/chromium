@@ -33,8 +33,10 @@ void BackgroundFetchDelegateImpl::MarkJobComplete(const std::string& job_id) {
   BackgroundFetchDelegateBase::MarkJobComplete(job_id);
 
 #if defined(OS_ANDROID)
-  if (GetJobDetails(job_id)->job_state ==
-      background_fetch::JobDetails::State::kJobComplete) {
+  background_fetch::JobDetails* job_details =
+      GetJobDetails(job_id, /*allow_null=*/true);
+  if (job_details && job_details->job_state ==
+                         background_fetch::JobDetails::State::kJobComplete) {
     // The UI should have already been updated to the Completed state, however,
     // sometimes Android drops notification updates if there have been too many
     // requested in a short span of time, so make sure the completed state is
