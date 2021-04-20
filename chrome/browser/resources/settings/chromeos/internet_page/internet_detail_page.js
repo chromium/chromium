@@ -2410,5 +2410,33 @@ Polymer({
     // If this is a cellular device and inhibited, state cannot be changed, so
     // the page's inputs should be disabled.
     return OncMojo.deviceIsInhibited(this.deviceState_);
+  },
+
+  /**
+   * @returns {boolean}
+   * @private
+   */
+  shouldShowMacAddress_() {
+    return !!this.getMacAddress_();
+  },
+
+  /**
+   * @returns {string}
+   * @private
+   */
+  getMacAddress_() {
+    if (!this.deviceState_) {
+      return '';
+    }
+
+    // 00:00:00:00:00:00 is provided when device MAC address cannot be
+    // retrieved.
+    const MISSING_MAC_ADDRESS = '00:00:00:00:00:00';
+    if (this.deviceState_ && this.deviceState_.macAddress &&
+        this.deviceState_.macAddress !== MISSING_MAC_ADDRESS) {
+      return this.deviceState_.macAddress;
+    }
+
+    return '';
   }
 });

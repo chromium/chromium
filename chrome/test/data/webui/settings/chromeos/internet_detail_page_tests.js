@@ -372,6 +372,13 @@ suite('InternetDetailPage', function() {
   });
 
   suite('DetailsPageCellular', function() {
+    async function expandConfigurableSection() {
+      const configurableSetions = internetDetailPage.$$('#configurableSetions');
+      assertTrue(!!configurableSetions);
+      configurableSetions.click();
+      await flushAsync();
+      assertTrue(internetDetailPage.showConfigurableSections_);
+    }
     // Regression test for https://crbug.com/1182884.
     test('Connect button enabled when not connectable', function() {
       init();
@@ -669,6 +676,64 @@ suite('InternetDetailPage', function() {
       });
       await flushAsync();
       assertFalse(internetDetailPage.showConfigurableSections_);
+    });
+
+    test('Do not show MAC address', async () => {
+      const TEST_ICCID = '11111111111111111';
+      const TEST_MAC_ADDRESS = '01:23:45:67:89:AB';
+      const MISSING_MAC_ADDRESS = '00:00:00:00:00:00';
+
+      loadTimeData.overrideValues({
+        updatedCellularActivationUi: true,
+      });
+      init();
+      const mojom = chromeos.networkConfig.mojom;
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
+      const cellularNetwork =
+          getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
+      cellularNetwork.connectable = true;
+      cellularNetwork.typeProperties.cellular.simLocked = false;
+      cellularNetwork.typeProperties.cellular.iccid = TEST_ICCID;
+      mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+      internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+
+      let deviceState = {
+        type: mojom.NetworkType.kCellular,
+        deviceState: mojom.DeviceStateType.kEnabled,
+        inhibitReason: mojom.InhibitReason.kNotInhibited,
+        simInfos: [{
+          iccid: TEST_ICCID,
+          isPrimary: true,
+        }],
+        macAddress: TEST_MAC_ADDRESS
+      };
+
+      mojoApi_.setDeviceStateForTest(deviceState);
+      await flushAsync();
+      expandConfigurableSection();
+      let macAddress = internetDetailPage.$$('#mac-address-container');
+      assertTrue(!!macAddress);
+      assertFalse(macAddress.hidden);
+
+      // Set MAC address to '00:00:00:00:00:00' missing address, this address
+      // is provided when device MAC address cannot be retrieved. If this is the
+      // case, the MAC address should not be displayed in UI.
+      deviceState = {
+        type: mojom.NetworkType.kCellular,
+        deviceState: mojom.DeviceStateType.kEnabled,
+        inhibitReason: mojom.InhibitReason.kNotInhibited,
+        simInfos: [{
+          iccid: TEST_ICCID,
+          isPrimary: true,
+        }],
+        macAddress: MISSING_MAC_ADDRESS
+      };
+      mojoApi_.setDeviceStateForTest(deviceState);
+      await flushAsync();
+      expandConfigurableSection();
+      macAddress = internetDetailPage.$$('#mac-address-container');
+      assertTrue(!!macAddress);
+      assertTrue(macAddress.hidden);
     });
 
     test('Page disabled when inhibited', async () => {

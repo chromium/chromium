@@ -47,6 +47,9 @@ namespace {
 // Delay between scan requests.
 constexpr int kRequestScanDelaySeconds = 10;
 
+// 00:00:00:00:00:00 is provided when a device MAC address cannot be retrieved.
+constexpr char kMissingMacAddress[] = "00:00:00:00:00:00";
+
 // This margin value is used throughout the bubble:
 // - margins inside the border
 // - horizontal spacing between bubble border and parent bubble border
@@ -443,7 +446,7 @@ views::View* NetworkStateListDetailedView::CreateNetworkInfoView() {
   std::u16string bubble_text;
   auto maybe_add_mac_address = [&bubble_text](const std::string& address,
                                               int ids) {
-    if (address.empty())
+    if (address.empty() || address == kMissingMacAddress)
       return;
 
     if (!bubble_text.empty())
