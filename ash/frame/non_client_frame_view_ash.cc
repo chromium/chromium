@@ -372,10 +372,24 @@ void NonClientFrameViewAsh::ShowContextMenuForViewImpl(
   if (!MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu())
     return;
 
-  gfx::Point point_in_view_coords(point);
-  views::View::ConvertPointFromScreen(this, &point_in_view_coords);
-  if (NonClientHitTest(point_in_view_coords) != HTCAPTION)
-    return;
+  if (header_view_->in_immersive_mode()) {
+    // If the `header_view_` is in immersive mode, then a `NonClientHitTest`
+    // will return HTCLIENT so manually check whether `point` lies inside
+    // `header_view_`.
+    gfx::Point point_in_header_coords(point);
+    views::View::ConvertPointToTarget(this, header_view_,
+                                      &point_in_header_coords);
+    if (!header_view_->HitTestRect(
+            gfx::Rect(point_in_header_coords, gfx::Size(1, 1)))) {
+      return;
+    }
+  } else {
+    // Only show the context menu if `point` is in the caption area.
+    gfx::Point point_in_view_coords(point);
+    views::View::ConvertPointFromScreen(this, &point_in_view_coords);
+    if (NonClientHitTest(point_in_view_coords) != HTCAPTION)
+      return;
+  }
 
   auto* widget = GetWidget();
   if (!move_to_desks_menu_model_) {
