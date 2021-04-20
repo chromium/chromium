@@ -23,6 +23,8 @@ class COMPONENT_EXPORT(DLP) DlpClient {
  public:
   using SetDlpFilesPolicyCallback =
       base::OnceCallback<void(const dlp::SetDlpFilesPolicyResponse response)>;
+  using AddFileCallback =
+      base::OnceCallback<void(const dlp::AddFileResponse response)>;
 
   // Interface with testing functionality. Accessed through GetTestInterface(),
   // only implemented in the fake implementation.
@@ -52,6 +54,9 @@ class COMPONENT_EXPORT(DLP) DlpClient {
 
   virtual void SetDlpFilesPolicy(const dlp::SetDlpFilesPolicyRequest request,
                                  SetDlpFilesPolicyCallback callback) = 0;
+  virtual void AddFile(const dlp::AddFileRequest request,
+                       AddFileCallback callback) = 0;
+  virtual bool IsAlive() const = 0;
 
   // Returns an interface for testing (fake only), or returns nullptr.
   virtual TestInterface* GetTestInterface() = 0;

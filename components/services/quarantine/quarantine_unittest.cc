@@ -7,10 +7,13 @@
 #include <iterator>
 #include <string>
 
+#include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
 #include "base/stl_util.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -23,9 +26,15 @@ const char kInternetURL[] = "http://example.com/some-url";
 const char kInternetReferrerURL[] = "http://example.com/some-other-url";
 const char kTestGUID[] = "69f8621d-c46a-4e88-b915-1ce5415cb008";
 
+void CheckQuarantineResult(QuarantineFileResult result,
+                           QuarantineFileResult expected_result) {
+  EXPECT_EQ(expected_result, result);
+}
+
 }  // namespace
 
 TEST(QuarantineTest, FileCanBeOpenedForReadAfterAnnotation) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   base::ScopedTempDir test_dir;
   ASSERT_TRUE(test_dir.CreateUniqueTempDir());
 
@@ -33,9 +42,10 @@ TEST(QuarantineTest, FileCanBeOpenedForReadAfterAnnotation) {
   ASSERT_EQ(static_cast<int>(base::size(kTestData)),
             base::WriteFile(test_file, kTestData, base::size(kTestData)));
 
-  EXPECT_EQ(QuarantineFileResult::OK,
-            QuarantineFile(test_file, GURL(kInternetURL),
-                           GURL(kInternetReferrerURL), kTestGUID));
+  QuarantineFile(
+      test_file, GURL(kInternetURL), GURL(kInternetReferrerURL), kTestGUID,
+      base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
+  base::RunLoop().RunUntilIdle();
 
   std::string contents;
   EXPECT_TRUE(base::ReadFileToString(test_file, &contents));
@@ -43,6 +53,7 @@ TEST(QuarantineTest, FileCanBeOpenedForReadAfterAnnotation) {
 }
 
 TEST(QuarantineTest, FileCanBeAnnotatedWithNoGUID) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   base::ScopedTempDir test_dir;
   ASSERT_TRUE(test_dir.CreateUniqueTempDir());
 
@@ -50,9 +61,10 @@ TEST(QuarantineTest, FileCanBeAnnotatedWithNoGUID) {
   ASSERT_EQ(static_cast<int>(base::size(kTestData)),
             base::WriteFile(test_file, kTestData, base::size(kTestData)));
 
-  EXPECT_EQ(QuarantineFileResult::OK,
-            QuarantineFile(test_file, GURL(kInternetURL),
-                           GURL(kInternetReferrerURL), std::string()));
+  QuarantineFile(
+      test_file, GURL(kInternetURL), GURL(kInternetReferrerURL), std::string(),
+      base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace quarantine

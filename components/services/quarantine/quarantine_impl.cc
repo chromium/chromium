@@ -5,18 +5,21 @@
 #include "components/services/quarantine/quarantine_impl.h"
 
 #include "base/bind.h"
-#include "base/files/file_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
-#include "build/build_config.h"
 #include "components/services/quarantine/quarantine.h"
 
-#if defined(OS_WIN)
-#include "components/services/quarantine/public/cpp/quarantine_features_win.h"
-#endif  // OS_WIN
-
 namespace quarantine {
+
+namespace {
+
+void ReplyToCallback(scoped_refptr<base::TaskRunner> task_runner,
+                     mojom::Quarantine::QuarantineFileCallback callback,
+                     QuarantineFileResult result) {
+  task_runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback), result));
+}
+
+}  // namespace
 
 QuarantineImpl::QuarantineImpl() = default;
 
@@ -26,46 +29,29 @@ QuarantineImpl::QuarantineImpl(
 
 QuarantineImpl::~QuarantineImpl() = default;
 
-namespace {
-
-#if defined(OS_WIN)
-scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
-  return base::ThreadPool::CreateCOMSTATaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-}
-#else   // OS_WIN
-scoped_refptr<base::TaskRunner> GetTaskRunner() {
-  return base::ThreadPool::CreateTaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-}
-#endif  // OS_WIN
-
-}  // namespace
-
 void QuarantineImpl::QuarantineFile(
     const base::FilePath& full_path,
     const GURL& source_url,
     const GURL& referrer_url,
     const std::string& client_guid,
     mojom::Quarantine::QuarantineFileCallback callback) {
-#if defined(OS_WIN)
-  if (base::FeatureList::IsEnabled(quarantine::kOutOfProcessQuarantine)) {
-    // In out of process case, we are running in a utility process,
-    // so directly call QuarantineFile and send the result.
-    QuarantineFileResult result = quarantine::QuarantineFile(
-        full_path, source_url, referrer_url, client_guid);
-
-    std::move(callback).Run(result);
-    return;
-  }
-#endif  // OS_WIN
-  // For in-proc case, or non-Windows platforms, we are running in the browser
-  // process, so post a task to do the potentially blocking quarantine work.
-  base::PostTaskAndReplyWithResult(
-      GetTaskRunner().get(), FROM_HERE,
-      base::BindOnce(&quarantine::QuarantineFile, full_path, source_url,
-                     referrer_url, client_guid),
-      std::move(callback));
+#if defined(OS_MAC)
+  // On Mac posting to a new task runner to do the potentially blocking
+  // quarantine work.
+  scoped_refptr<base::TaskRunner> task_runner =
+      base::ThreadPool::CreateTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+#else   // OS_MAC
+  scoped_refptr<base::TaskRunner> task_runner =
+      base::ThreadTaskRunnerHandle::Get();
+#endif  // OS_MAC
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &quarantine::QuarantineFile, full_path, source_url, referrer_url,
+          client_guid,
+          base::BindOnce(&ReplyToCallback, base::ThreadTaskRunnerHandle::Get(),
+                         std::move(callback))));
 }
 
 }  // namespace quarantine

@@ -9,7 +9,7 @@ assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 component("dlp") {
   defines = [ "IS_DLP_IMPL" ]
 
-  deps = [
+  public_deps = [
     ":dlp_proto",
     "//base",
     "//dbus",

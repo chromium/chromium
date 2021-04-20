@@ -37,6 +37,14 @@ static_library("quarantine") {
       "Foundation.framework",
     ]
   }
+
+  if (is_chromeos) {
+    sources += [ "quarantine_chromeos.cc" ]
+    deps += [
+      "//chromeos/dbus/dlp",
+      "//chromeos/dbus/dlp:dlp_proto",
+    ]
+  }
 }
 
 source_set("common") {

@@ -23,6 +23,13 @@ void FakeDlpClient::SetDlpFilesPolicy(
       FROM_HERE, base::BindOnce(std::move(callback), response));
 }
 
+void FakeDlpClient::AddFile(const dlp::AddFileRequest request,
+                            AddFileCallback callback) {}
+
+bool FakeDlpClient::IsAlive() const {
+  return false;
+}
+
 DlpClient::TestInterface* FakeDlpClient::GetTestInterface() {
   return this;
 }

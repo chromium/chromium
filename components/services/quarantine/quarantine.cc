@@ -6,17 +6,18 @@
 
 #include "build/build_config.h"
 
-#if !defined(OS_WIN) && !defined(OS_APPLE)
+#if !defined(OS_WIN) && !defined(OS_APPLE) && !defined(OS_CHROMEOS)
 
 namespace quarantine {
 
-QuarantineFileResult QuarantineFile(const base::FilePath& file,
-                                    const GURL& source_url,
-                                    const GURL& referrer_url,
-                                    const std::string& client_guid) {
-  return QuarantineFileResult::OK;
+void QuarantineFile(const base::FilePath& file,
+                    const GURL& source_url,
+                    const GURL& referrer_url,
+                    const std::string& client_guid,
+                    mojom::Quarantine::QuarantineFileCallback callback) {
+  std::move(callback).Run(QuarantineFileResult::OK);
 }
 
 }  // namespace quarantine
 
-#endif  // !WIN && !MAC
+#endif  // !WIN && !MAC && !CHROMEOS

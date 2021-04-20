@@ -75,6 +75,28 @@ class DlpClientImpl : public DlpClient {
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void AddFile(const dlp::AddFileRequest request,
+               AddFileCallback callback) override {
+    dbus::MethodCall method_call(dlp::kDlpInterface, dlp::kAddFileMethod);
+    dbus::MessageWriter writer(&method_call);
+
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      dlp::AddFileResponse response;
+      response.set_error_message(base::StrCat(
+          {"Failure to call d-bus method: ", dlp::kAddFileMethod}));
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), response));
+      return;
+    }
+
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&DlpClientImpl::HandleAddFileResponse,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  bool IsAlive() const override { return is_alive_; }
+
  private:
   TestInterface* GetTestInterface() override { return nullptr; }
 
@@ -85,11 +107,27 @@ class DlpClientImpl : public DlpClient {
     if (error_message) {
       response_proto.set_error_message(error_message);
     }
+    if (!response_proto.has_error_message()) {
+      is_alive_ = true;
+    }
+    std::move(callback).Run(response_proto);
+  }
+
+  void HandleAddFileResponse(AddFileCallback callback,
+                             dbus::Response* response) {
+    dlp::AddFileResponse response_proto;
+    const char* error_message = DeserializeProto(response, &response_proto);
+    if (error_message) {
+      response_proto.set_error_message(error_message);
+    }
     std::move(callback).Run(response_proto);
   }
 
   // D-Bus proxy for the Dlp daemon, not owned.
   dbus::ObjectProxy* proxy_ = nullptr;
+
+  // Indicates whether the daemon was started and DLP Files rules are enforced.
+  bool is_alive_ = false;
 
   base::WeakPtrFactory<DlpClientImpl> weak_factory_{this};
 };

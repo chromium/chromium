@@ -228,16 +228,19 @@ QuarantineFileResult SetInternetZoneIdentifierDirectly(
              : QuarantineFileResult::ANNOTATION_FAILED;
 }
 
-QuarantineFileResult QuarantineFile(const base::FilePath& file,
-                                    const GURL& source_url_unsafe,
-                                    const GURL& referrer_url_unsafe,
-                                    const std::string& client_guid) {
+void QuarantineFile(const base::FilePath& file,
+                    const GURL& source_url_unsafe,
+                    const GURL& referrer_url_unsafe,
+                    const std::string& client_guid,
+                    mojom::Quarantine::QuarantineFileCallback callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   int64_t file_size = 0;
-  if (!base::PathExists(file) || !base::GetFileSize(file, &file_size))
-    return QuarantineFileResult::FILE_MISSING;
+  if (!base::PathExists(file) || !base::GetFileSize(file, &file_size)) {
+    std::move(callback).Run(QuarantineFileResult::FILE_MISSING);
+    return;
+  }
 
   std::string braces_guid = "{" + client_guid + "}";
   GUID guid = GUID_NULL;
@@ -254,16 +257,20 @@ QuarantineFileResult QuarantineFile(const base::FilePath& file,
     // Calling InvokeAttachmentServices on an empty file can result in the file
     // being deleted.  Also an anti-virus scan doesn't make a lot of sense to
     // perform on an empty file.
-    return SetInternetZoneIdentifierDirectly(file, source_url, referrer_url);
+    std::move(callback).Run(
+        SetInternetZoneIdentifierDirectly(file, source_url, referrer_url));
+    return;
   }
 
   QuarantineFileResult attachment_services_result = QuarantineFileResult::OK;
   if (InvokeAttachmentServices(file, source_url, referrer_url, guid,
                                &attachment_services_result)) {
-    return attachment_services_result;
+    std::move(callback).Run(attachment_services_result);
+    return;
   }
 
-  return SetInternetZoneIdentifierDirectly(file, source_url, referrer_url);
+  std::move(callback).Run(
+      SetInternetZoneIdentifierDirectly(file, source_url, referrer_url));
 }
 
 }  // namespace quarantine

@@ -23,6 +23,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeDlpClient
   // DlpClient implementation:
   void SetDlpFilesPolicy(const dlp::SetDlpFilesPolicyRequest request,
                          SetDlpFilesPolicyCallback callback) override;
+  void AddFile(const dlp::AddFileRequest request,
+               AddFileCallback callback) override;
+  bool IsAlive() const override;
   DlpClient::TestInterface* GetTestInterface() override;
 
   // DlpClient::TestInterface implementation:
