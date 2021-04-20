@@ -65,12 +65,6 @@ declare_args() {
   # platform requirements to safely enable priority inheritance.
   enable_mutex_priority_inheritance = false
 
-  # Allows component projects to disable base_unittests. This forces fewer
-  # dependencies as base_unittests pulls in a bunch more than just :base.
-  # TODO(https://crbug.com/1149922): Remove this. If you're setting this to
-  # false on a bot, please leave a note on that bug.
-  build_base_unittests = true
-
   # Set to true to use BackupRefPtr as the implementation of CheckedPtr.
   # Optionally can be controlled (partially disabled) at run-time.
   # Optionally can place ref count at the end of each allocation.
@@ -2780,927 +2774,925 @@ source_set("base_stack_sampling_profiler_test_util") {
   }
 }
 
-if (build_base_unittests) {
-  bundle_data("base_unittests_bundle_data") {
+bundle_data("base_unittests_bundle_data") {
+  testonly = true
+  sources = [
+    "//tools/metrics/histograms/enums.xml",
+    "test/data/file_util/binary_file.bin",
+    "test/data/file_util/binary_file_diff.bin",
+    "test/data/file_util/binary_file_same.bin",
+    "test/data/file_util/blank_line.txt",
+    "test/data/file_util/blank_line_crlf.txt",
+    "test/data/file_util/crlf.txt",
+    "test/data/file_util/different.txt",
+    "test/data/file_util/different_first.txt",
+    "test/data/file_util/different_last.txt",
+    "test/data/file_util/empty1.txt",
+    "test/data/file_util/empty2.txt",
+    "test/data/file_util/first1.txt",
+    "test/data/file_util/first2.txt",
+    "test/data/file_util/original.txt",
+    "test/data/file_util/same.txt",
+    "test/data/file_util/same_length.txt",
+    "test/data/file_util/shortened.txt",
+    "test/data/json/bom_feff.json",
+    "test/data/serializer_nested_test.json",
+    "test/data/serializer_test.json",
+    "test/data/serializer_test_nowhitespace.json",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
+if (is_apple) {
+  source_set("base_unittests_arc") {
     testonly = true
     sources = [
-      "//tools/metrics/histograms/enums.xml",
-      "test/data/file_util/binary_file.bin",
-      "test/data/file_util/binary_file_diff.bin",
-      "test/data/file_util/binary_file_same.bin",
-      "test/data/file_util/blank_line.txt",
-      "test/data/file_util/blank_line_crlf.txt",
-      "test/data/file_util/crlf.txt",
-      "test/data/file_util/different.txt",
-      "test/data/file_util/different_first.txt",
-      "test/data/file_util/different_last.txt",
-      "test/data/file_util/empty1.txt",
-      "test/data/file_util/empty2.txt",
-      "test/data/file_util/first1.txt",
-      "test/data/file_util/first2.txt",
-      "test/data/file_util/original.txt",
-      "test/data/file_util/same.txt",
-      "test/data/file_util/same_length.txt",
-      "test/data/file_util/shortened.txt",
-      "test/data/json/bom_feff.json",
-      "test/data/serializer_nested_test.json",
-      "test/data/serializer_test.json",
-      "test/data/serializer_test_nowhitespace.json",
+      "ios/crb_protocol_observers_unittest.mm",
+      "mac/bind_objc_block_unittest_arc.mm",
     ]
-    outputs = [ "{{bundle_resources_dir}}/" +
-                "{{source_root_relative_dir}}/{{source_file_part}}" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
+    deps = [
+      ":base",
+      "//base/ios",
+      "//base/test:test_support",
+      "//testing/gtest",
+    ]
   }
+}
+
+if (is_fuchsia) {
+  fidl_library("testfidl") {
+    library_name = "base.testfidl"
+
+    sources = [ "fuchsia/test.test-fidl" ]
+  }
+
+  source_set("test_interface_impl") {
+    testonly = true
+    sources = [
+      "fuchsia/test_interface_impl.cc",
+      "fuchsia/test_interface_impl.h",
+    ]
+    deps = [
+      ":base",
+      ":testfidl",
+    ]
+  }
+
+  source_set("test_log_listener_safe") {
+    testonly = true
+    sources = [
+      "fuchsia/test_log_listener_safe.cc",
+      "fuchsia/test_log_listener_safe.h",
+    ]
+    deps = [
+      ":base",
+      "//base/test:test_support",
+      "//testing/gtest",
+    ]
+    public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger" ]
+  }
+}
+
+source_set("base_unittests_tasktraits") {
+  testonly = true
+  sources = [
+    "task/test_task_traits_extension.cc",
+    "task/test_task_traits_extension.h",
+  ]
+  deps = [ ":base" ]
+}
+
+test("base_unittests") {
+  sources = [
+    "allocator/partition_allocator/arm_bti_test_functions.h",
+    "allocator/tcmalloc_unittest.cc",
+    "as_const_unittest.cc",
+    "at_exit_unittest.cc",
+    "atomicops_unittest.cc",
+    "auto_reset_unittest.cc",
+    "barrier_closure_unittest.cc",
+    "base64_unittest.cc",
+    "base64url_unittest.cc",
+    "big_endian_unittest.cc",
+    "bind_post_task_unittest.cc",
+    "bind_unittest.cc",
+    "bit_cast_unittest.cc",
+    "bits_unittest.cc",
+    "build_time_unittest.cc",
+    "callback_helpers_unittest.cc",
+    "callback_list_unittest.cc",
+    "callback_unittest.cc",
+    "cancelable_callback_unittest.cc",
+    "check_unittest.cc",
+    "command_line_unittest.cc",
+    "component_export_unittest.cc",
+    "containers/adapters_unittest.cc",
+    "containers/buffer_iterator_unittest.cc",
+    "containers/checked_iterators_unittest.cc",
+    "containers/checked_range_unittest.cc",
+    "containers/circular_deque_unittest.cc",
+    "containers/contains_unittest.cc",
+    "containers/contiguous_iterator_unittest.cc",
+    "containers/fixed_flat_map_unittest.cc",
+    "containers/fixed_flat_set_unittest.cc",
+    "containers/flat_map_unittest.cc",
+    "containers/flat_set_unittest.cc",
+    "containers/flat_tree_unittest.cc",
+    "containers/id_map_unittest.cc",
+    "containers/intrusive_heap_unittest.cc",
+    "containers/linked_list_unittest.cc",
+    "containers/mru_cache_unittest.cc",
+    "containers/small_map_unittest.cc",
+    "containers/span_unittest.cc",
+    "containers/stack_container_unittest.cc",
+    "containers/unique_ptr_adapters_unittest.cc",
+    "containers/vector_buffer_unittest.cc",
+    "cpu_unittest.cc",
+    "debug/activity_analyzer_unittest.cc",
+    "debug/activity_tracker_unittest.cc",
+    "debug/alias_unittest.cc",
+    "debug/crash_logging_unittest.cc",
+    "debug/debugger_unittest.cc",
+    "debug/stack_trace_unittest.cc",
+    "debug/task_trace_unittest.cc",
+    "deferred_sequenced_task_runner_unittest.cc",
+    "environment_unittest.cc",
+    "feature_list_unittest.cc",
+    "files/file_enumerator_unittest.cc",
+    "files/file_path_unittest.cc",
+    "files/file_path_watcher_unittest.cc",
+    "files/file_proxy_unittest.cc",
+    "files/file_unittest.cc",
+    "files/file_util_unittest.cc",
+    "files/important_file_writer_cleaner_unittest.cc",
+    "files/important_file_writer_unittest.cc",
+    "files/memory_mapped_file_unittest.cc",
+    "files/scoped_temp_dir_unittest.cc",
+    "functional/identity_unittest.cc",
+    "functional/invoke_unittest.cc",
+    "functional/not_fn_unittest.cc",
+    "gmock_unittest.cc",
+    "guid_unittest.cc",
+    "hash/hash_unittest.cc",
+    "hash/legacy_hash_unittest.cc",
+    "hash/md5_constexpr_unittest.cc",
+    "hash/md5_unittest.cc",
+    "hash/sha1_unittest.cc",
+    "i18n/break_iterator_unittest.cc",
+    "i18n/case_conversion_unittest.cc",
+    "i18n/char_iterator_unittest.cc",
+    "i18n/character_encoding_unittest.cc",
+    "i18n/file_util_icu_unittest.cc",
+    "i18n/icu_string_conversions_unittest.cc",
+    "i18n/icu_util_unittest.cc",
+    "i18n/message_formatter_unittest.cc",
+    "i18n/number_formatting_unittest.cc",
+    "i18n/rtl_unittest.cc",
+    "i18n/streaming_utf8_validator_unittest.cc",
+    "i18n/string_search_unittest.cc",
+    "i18n/time_formatting_unittest.cc",
+    "i18n/timezone_unittest.cc",
+    "immediate_crash_unittest.cc",
+    "json/json_parser_unittest.cc",
+    "json/json_reader_unittest.cc",
+    "json/json_value_converter_unittest.cc",
+    "json/json_value_serializer_unittest.cc",
+    "json/json_writer_unittest.cc",
+    "json/string_escape_unittest.cc",
+    "lazy_instance_unittest.cc",
+    "location_unittest.cc",
+    "logging_unittest.cc",
+    "memory/aligned_memory_unittest.cc",
+    "memory/checked_ptr_unittest.cc",
+    "memory/discardable_memory_backing_field_trial_unittest.cc",
+    "memory/discardable_shared_memory_unittest.cc",
+    "memory/memory_pressure_listener_unittest.cc",
+    "memory/memory_pressure_monitor_unittest.cc",
+    "memory/platform_shared_memory_region_unittest.cc",
+    "memory/ptr_util_unittest.cc",
+    "memory/ref_counted_memory_unittest.cc",
+    "memory/ref_counted_unittest.cc",
+    "memory/shared_memory_hooks_unittest.cc",
+    "memory/shared_memory_mapping_unittest.cc",
+    "memory/shared_memory_region_unittest.cc",
+    "memory/singleton_unittest.cc",
+    "memory/unsafe_shared_memory_pool_unittest.cc",
+    "memory/weak_ptr_unittest.cc",
+    "message_loop/message_pump_glib_unittest.cc",
+    "message_loop/message_pump_unittest.cc",
+    "message_loop/timer_slack_unittest.cc",
+    "message_loop/work_id_provider_unittest.cc",
+    "metrics/bucket_ranges_unittest.cc",
+    "metrics/crc32_unittest.cc",
+    "metrics/field_trial_params_unittest.cc",
+    "metrics/field_trial_unittest.cc",
+    "metrics/histogram_base_unittest.cc",
+    "metrics/histogram_delta_serialization_unittest.cc",
+    "metrics/histogram_functions_unittest.cc",
+    "metrics/histogram_macros_unittest.cc",
+    "metrics/histogram_samples_unittest.cc",
+    "metrics/histogram_snapshot_manager_unittest.cc",
+    "metrics/histogram_unittest.cc",
+    "metrics/metrics_hashes_unittest.cc",
+    "metrics/persistent_histogram_allocator_unittest.cc",
+    "metrics/persistent_histogram_storage_unittest.cc",
+    "metrics/persistent_memory_allocator_unittest.cc",
+    "metrics/persistent_sample_map_unittest.cc",
+    "metrics/sample_map_unittest.cc",
+    "metrics/sample_vector_unittest.cc",
+    "metrics/single_sample_metrics_unittest.cc",
+    "metrics/sparse_histogram_unittest.cc",
+    "metrics/statistics_recorder_unittest.cc",
+    "native_library_unittest.cc",
+    "no_destructor_unittest.cc",
+    "observer_list_threadsafe_unittest.cc",
+    "observer_list_unittest.cc",
+    "one_shot_event_unittest.cc",
+    "optional_unittest.cc",
+    "parameter_pack_unittest.cc",
+    "path_service_unittest.cc",
+    "pickle_unittest.cc",
+    "power_monitor/power_monitor_device_source_unittest.cc",
+    "power_monitor/power_monitor_unittest.cc",
+    "process/environment_internal_unittest.cc",
+    "process/memory_unittest.cc",
+    "process/process_metrics_unittest.cc",
+    "process/process_unittest.cc",
+    "process/process_util_unittest.cc",
+    "profiler/arm_cfi_table_unittest.cc",
+    "profiler/metadata_recorder_unittest.cc",
+    "profiler/module_cache_unittest.cc",
+    "profiler/sample_metadata_unittest.cc",
+    "profiler/stack_copier_suspend_unittest.cc",
+    "profiler/stack_copier_unittest.cc",
+    "profiler/stack_sampler_impl_unittest.cc",
+    "profiler/stack_sampling_profiler_unittest.cc",
+    "rand_util_unittest.cc",
+    "ranges/algorithm_unittest.cc",
+    "ranges/functional_unittest.cc",
+    "ranges/ranges_unittest.cc",
+    "run_loop_unittest.cc",
+    "safe_numerics_unittest.cc",
+    "sampling_heap_profiler/lock_free_address_hash_set_unittest.cc",
+    "scoped_clear_last_error_unittest.cc",
+    "scoped_generic_unittest.cc",
+    "scoped_multi_source_observation_unittest.cc",
+    "scoped_native_library_unittest.cc",
+    "scoped_observation_unittest.cc",
+    "security_unittest.cc",
+    "sequence_checker_unittest.cc",
+    "sequence_token_unittest.cc",
+    "sequenced_task_runner_unittest.cc",
+    "stl_util_unittest.cc",
+    "strings/abseil_string_conversions_unittest.cc",
+    "strings/char_traits_unittest.cc",
+    "strings/escape_unittest.cc",
+    "strings/no_trigraphs_unittest.cc",
+    "strings/pattern_unittest.cc",
+    "strings/safe_sprintf_unittest.cc",
+    "strings/strcat_unittest.cc",
+    "strings/string_number_conversions_unittest.cc",
+    "strings/string_piece_unittest.cc",
+    "strings/string_split_unittest.cc",
+    "strings/string_tokenizer_unittest.cc",
+    "strings/string_util_unittest.cc",
+    "strings/stringize_macros_unittest.cc",
+    "strings/stringprintf_unittest.cc",
+    "strings/sys_string_conversions_unittest.cc",
+    "strings/utf_offset_string_conversions_unittest.cc",
+    "strings/utf_string_conversions_unittest.cc",
+    "supports_user_data_unittest.cc",
+    "sync_socket_unittest.cc",
+    "synchronization/atomic_flag_unittest.cc",
+    "synchronization/condition_variable_unittest.cc",
+    "synchronization/lock_unittest.cc",
+    "synchronization/waitable_event_unittest.cc",
+    "synchronization/waitable_event_watcher_unittest.cc",
+    "sys_byteorder_unittest.cc",
+    "system/sys_info_unittest.cc",
+    "system/system_monitor_unittest.cc",
+    "task/cancelable_task_tracker_unittest.cc",
+    "task/common/checked_lock_unittest.cc",
+    "task/common/operations_controller_unittest.cc",
+    "task/common/task_annotator_unittest.cc",
+    "task/lazy_thread_pool_task_runner_unittest.cc",
+    "task/post_job_unittest.cc",
+    "task/post_task_unittest.cc",
+    "task/scoped_set_task_priority_for_current_thread_unittest.cc",
+    "task/sequence_manager/atomic_flag_set_unittest.cc",
+    "task/sequence_manager/lazily_deallocated_deque_unittest.cc",
+    "task/sequence_manager/sequence_manager_impl_unittest.cc",
+    "task/sequence_manager/task_queue_selector_unittest.cc",
+    "task/sequence_manager/task_queue_unittest.cc",
+    "task/sequence_manager/test/mock_time_message_pump_unittest.cc",
+    "task/sequence_manager/thread_controller_power_monitor_unittest.cc",
+    "task/sequence_manager/thread_controller_with_message_pump_impl_unittest.cc",
+    "task/sequence_manager/time_domain_unittest.cc",
+    "task/sequence_manager/work_deduplicator_unittest.cc",
+    "task/sequence_manager/work_queue_sets_unittest.cc",
+    "task/sequence_manager/work_queue_unittest.cc",
+    "task/single_thread_task_executor_unittest.cc",
+    "task/task_traits_extension_unittest.cc",
+    "task/task_traits_unittest.cc",
+    "task/thread_pool/can_run_policy_test.h",
+    "task/thread_pool/delayed_task_manager_unittest.cc",
+    "task/thread_pool/environment_config_unittest.cc",
+    "task/thread_pool/job_task_source_unittest.cc",
+    "task/thread_pool/pooled_single_thread_task_runner_manager_unittest.cc",
+    "task/thread_pool/priority_queue_unittest.cc",
+    "task/thread_pool/sequence_unittest.cc",
+    "task/thread_pool/service_thread_unittest.cc",
+    "task/thread_pool/task_source_sort_key_unittest.cc",
+    "task/thread_pool/task_tracker_unittest.cc",
+    "task/thread_pool/test_task_factory.cc",
+    "task/thread_pool/test_task_factory.h",
+    "task/thread_pool/test_utils.cc",
+    "task/thread_pool/test_utils.h",
+    "task/thread_pool/thread_group_impl_unittest.cc",
+    "task/thread_pool/thread_group_unittest.cc",
+    "task/thread_pool/thread_pool_impl_unittest.cc",
+    "task/thread_pool/tracked_ref_unittest.cc",
+    "task/thread_pool/worker_thread_stack_unittest.cc",
+    "task/thread_pool/worker_thread_unittest.cc",
+    "task/thread_pool_unittest.cc",
+    "task_runner_unittest.cc",
+    "task_runner_util_unittest.cc",
+    "template_util_unittest.cc",
+    "test/gmock_callback_support_unittest.cc",
+    "test/gmock_move_support_unittest.cc",
+    "test/gtest_links_unittest.cc",
+    "test/gtest_xml_unittest_result_printer_unittest.cc",
+    "test/launcher/test_launcher_unittest.cc",
+    "test/launcher/test_results_tracker_unittest.cc",
+    "test/metrics/histogram_enum_reader_unittest.cc",
+    "test/metrics/histogram_tester_unittest.cc",
+    "test/metrics/user_action_tester_unittest.cc",
+    "test/mock_callback_unittest.cc",
+    "test/scoped_feature_list_unittest.cc",
+    "test/scoped_logging_settings.h",
+    "test/scoped_mock_clock_override_unittest.cc",
+    "test/scoped_mock_time_message_loop_task_runner_unittest.cc",
+    "test/scoped_run_loop_timeout_unittest.cc",
+    "test/task_environment_unittest.cc",
+    "test/test_mock_time_task_runner_unittest.cc",
+    "test/test_pending_task_unittest.cc",
+    "test/test_waitable_event_unittest.cc",
+    "thread_annotations_unittest.cc",
+    "threading/hang_watcher_unittest.cc",
+    "threading/platform_thread_unittest.cc",
+    "threading/post_task_and_reply_impl_unittest.cc",
+    "threading/scoped_blocking_call_unittest.cc",
+    "threading/scoped_thread_priority_unittest.cc",
+    "threading/sequence_bound_unittest.cc",
+    "threading/sequence_local_storage_map_unittest.cc",
+    "threading/sequence_local_storage_slot_unittest.cc",
+    "threading/sequenced_task_runner_handle_unittest.cc",
+    "threading/simple_thread_unittest.cc",
+    "threading/thread_checker_unittest.cc",
+    "threading/thread_collision_warner_unittest.cc",
+    "threading/thread_id_name_manager_unittest.cc",
+    "threading/thread_local_storage_unittest.cc",
+    "threading/thread_local_unittest.cc",
+    "threading/thread_restrictions_unittest.cc",
+    "threading/thread_task_runner_handle_unittest.cc",
+    "threading/thread_unittest.cc",
+    "threading/watchdog_unittest.cc",
+    "time/pr_time_unittest.cc",
+    "time/time_unittest.cc",
+    "timer/elapsed_timer_unittest.cc",
+    "timer/hi_res_timer_manager_unittest.cc",
+    "timer/lap_timer_unittest.cc",
+    "timer/mock_timer_unittest.cc",
+    "timer/timer_unittest.cc",
+    "token_unittest.cc",
+    "tools_sanity_unittest.cc",
+    "traits_bag_unittest.cc",
+    "tuple_unittest.cc",
+    "types/pass_key_unittest.cc",
+    "types/strong_alias_unittest.cc",
+    "unguessable_token_unittest.cc",
+    "value_iterators_unittest.cc",
+    "values_unittest.cc",
+    "version_unittest.cc",
+    "vlog_unittest.cc",
+  ]
+
+  defines = []
+
+  deps = [
+    ":base",
+    ":base_stack_sampling_profiler_test_util",
+    ":base_unittests_tasktraits",
+    ":i18n",
+    ":sanitizer_buildflags",
+    "//base/allocator:buildflags",
+    "//base/test:native_library_test_utils",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//base/third_party/dynamic_annotations",
+    "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/icu",
+  ]
+
+  data_deps = [
+    "//base/test:immediate_crash_test_helper",
+    "//base/test:test_child_process",
+    "//base/test:test_shared_library",
+    "//testing/buildbot/filters:base_unittests_filters",
+  ]
 
   if (is_apple) {
-    source_set("base_unittests_arc") {
-      testonly = true
-      sources = [
-        "ios/crb_protocol_observers_unittest.mm",
-        "mac/bind_objc_block_unittest_arc.mm",
-      ]
-      configs += [ "//build/config/compiler:enable_arc" ]
-      deps = [
-        ":base",
-        "//base/ios",
-        "//base/test:test_support",
-        "//testing/gtest",
-      ]
-    }
+    deps += [ ":base_unittests_arc" ]
   }
 
-  if (is_fuchsia) {
-    fidl_library("testfidl") {
-      library_name = "base.testfidl"
+  public_deps = [ ":base_unittests_bundle_data" ]
 
-      sources = [ "fuchsia/test.test-fidl" ]
-    }
+  data = [
+    "test/data/",
+    "//tools/metrics/histograms/enums.xml",
+  ]
 
-    source_set("test_interface_impl") {
-      testonly = true
-      sources = [
-        "fuchsia/test_interface_impl.cc",
-        "fuchsia/test_interface_impl.h",
-      ]
-      deps = [
-        ":base",
-        ":testfidl",
-      ]
-    }
+  if (is_win) {
+    deps += [ "//base/win:base_win_buildflags" ]
 
-    source_set("test_log_listener_safe") {
-      testonly = true
-      sources = [
-        "fuchsia/test_log_listener_safe.cc",
-        "fuchsia/test_log_listener_safe.h",
-      ]
-      deps = [
-        ":base",
-        "//base/test:test_support",
-        "//testing/gtest",
-      ]
-      public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger" ]
-    }
-  }
-
-  source_set("base_unittests_tasktraits") {
-    testonly = true
-    sources = [
-      "task/test_task_traits_extension.cc",
-      "task/test_task_traits_extension.h",
+    sources += [
+      "debug/gdi_debug_util_win_unittest.cc",
+      "file_version_info_win_unittest.cc",
+      "process/launch_unittest_win.cc",
+      "test/fake_iasync_operation_win_unittest.cc",
+      "test/test_reg_util_win_unittest.cc",
+      "threading/platform_thread_win_unittest.cc",
+      "time/time_win_unittest.cc",
+      "win/async_operation_unittest.cc",
+      "win/com_init_balancer_unittest.cc",
+      "win/com_init_check_hook_unittest.cc",
+      "win/com_init_util_unittest.cc",
+      "win/core_winrt_util_unittest.cc",
+      "win/dispatch_stub.cc",
+      "win/dispatch_stub.h",
+      "win/dllmain.cc",
+      "win/embedded_i18n/language_selector_unittest.cc",
+      "win/enum_variant_unittest.cc",
+      "win/event_trace_consumer_unittest.cc",
+      "win/event_trace_controller_unittest.cc",
+      "win/event_trace_provider_unittest.cc",
+      "win/hstring_compare_unittest.cc",
+      "win/hstring_reference_unittest.cc",
+      "win/i18n_unittest.cc",
+      "win/map_unittest.cc",
+      "win/message_window_unittest.cc",
+      "win/object_watcher_unittest.cc",
+      "win/pe_image_reader_unittest.cc",
+      "win/pe_image_unittest.cc",
+      "win/post_async_results_unittest.cc",
+      "win/reference_unittest.cc",
+      "win/registry_unittest.cc",
+      "win/scoped_bstr_unittest.cc",
+      "win/scoped_handle_unittest.cc",
+      "win/scoped_hstring_unittest.cc",
+      "win/scoped_process_information_unittest.cc",
+      "win/scoped_safearray_unittest.cc",
+      "win/scoped_variant_unittest.cc",
+      "win/scoped_winrt_initializer_unittest.cc",
+      "win/shortcut_unittest.cc",
+      "win/startup_information_unittest.cc",
+      "win/variant_util_unittest.cc",
+      "win/variant_vector_unittest.cc",
+      "win/vector_unittest.cc",
+      "win/win_includes_unittest.cc",
+      "win/win_util_unittest.cc",
+      "win/windows_version_unittest.cc",
+      "win/winrt_storage_util_unittest.cc",
+      "win/wmi_unittest.cc",
+      "win/wrapped_window_proc_unittest.cc",
     ]
-    deps = [ ":base" ]
+
+    if (enable_cet_shadow_stack) {
+      sources += [ "win/cet_shadow_stack_unittest.cc" ]
+    }
   }
 
-  test("base_unittests") {
-    sources = [
-      "allocator/partition_allocator/arm_bti_test_functions.h",
-      "allocator/tcmalloc_unittest.cc",
-      "as_const_unittest.cc",
-      "at_exit_unittest.cc",
-      "atomicops_unittest.cc",
-      "auto_reset_unittest.cc",
-      "barrier_closure_unittest.cc",
-      "base64_unittest.cc",
-      "base64url_unittest.cc",
-      "big_endian_unittest.cc",
-      "bind_post_task_unittest.cc",
-      "bind_unittest.cc",
-      "bit_cast_unittest.cc",
-      "bits_unittest.cc",
-      "build_time_unittest.cc",
-      "callback_helpers_unittest.cc",
-      "callback_list_unittest.cc",
-      "callback_unittest.cc",
-      "cancelable_callback_unittest.cc",
-      "check_unittest.cc",
-      "command_line_unittest.cc",
-      "component_export_unittest.cc",
-      "containers/adapters_unittest.cc",
-      "containers/buffer_iterator_unittest.cc",
-      "containers/checked_iterators_unittest.cc",
-      "containers/checked_range_unittest.cc",
-      "containers/circular_deque_unittest.cc",
-      "containers/contains_unittest.cc",
-      "containers/contiguous_iterator_unittest.cc",
-      "containers/fixed_flat_map_unittest.cc",
-      "containers/fixed_flat_set_unittest.cc",
-      "containers/flat_map_unittest.cc",
-      "containers/flat_set_unittest.cc",
-      "containers/flat_tree_unittest.cc",
-      "containers/id_map_unittest.cc",
-      "containers/intrusive_heap_unittest.cc",
-      "containers/linked_list_unittest.cc",
-      "containers/mru_cache_unittest.cc",
-      "containers/small_map_unittest.cc",
-      "containers/span_unittest.cc",
-      "containers/stack_container_unittest.cc",
-      "containers/unique_ptr_adapters_unittest.cc",
-      "containers/vector_buffer_unittest.cc",
-      "cpu_unittest.cc",
-      "debug/activity_analyzer_unittest.cc",
-      "debug/activity_tracker_unittest.cc",
-      "debug/alias_unittest.cc",
-      "debug/crash_logging_unittest.cc",
-      "debug/debugger_unittest.cc",
-      "debug/stack_trace_unittest.cc",
-      "debug/task_trace_unittest.cc",
-      "deferred_sequenced_task_runner_unittest.cc",
-      "environment_unittest.cc",
-      "feature_list_unittest.cc",
-      "files/file_enumerator_unittest.cc",
-      "files/file_path_unittest.cc",
-      "files/file_path_watcher_unittest.cc",
-      "files/file_proxy_unittest.cc",
-      "files/file_unittest.cc",
-      "files/file_util_unittest.cc",
-      "files/important_file_writer_cleaner_unittest.cc",
-      "files/important_file_writer_unittest.cc",
-      "files/memory_mapped_file_unittest.cc",
-      "files/scoped_temp_dir_unittest.cc",
-      "functional/identity_unittest.cc",
-      "functional/invoke_unittest.cc",
-      "functional/not_fn_unittest.cc",
-      "gmock_unittest.cc",
-      "guid_unittest.cc",
-      "hash/hash_unittest.cc",
-      "hash/legacy_hash_unittest.cc",
-      "hash/md5_constexpr_unittest.cc",
-      "hash/md5_unittest.cc",
-      "hash/sha1_unittest.cc",
-      "i18n/break_iterator_unittest.cc",
-      "i18n/case_conversion_unittest.cc",
-      "i18n/char_iterator_unittest.cc",
-      "i18n/character_encoding_unittest.cc",
-      "i18n/file_util_icu_unittest.cc",
-      "i18n/icu_string_conversions_unittest.cc",
-      "i18n/icu_util_unittest.cc",
-      "i18n/message_formatter_unittest.cc",
-      "i18n/number_formatting_unittest.cc",
-      "i18n/rtl_unittest.cc",
-      "i18n/streaming_utf8_validator_unittest.cc",
-      "i18n/string_search_unittest.cc",
-      "i18n/time_formatting_unittest.cc",
-      "i18n/timezone_unittest.cc",
-      "immediate_crash_unittest.cc",
-      "json/json_parser_unittest.cc",
-      "json/json_reader_unittest.cc",
-      "json/json_value_converter_unittest.cc",
-      "json/json_value_serializer_unittest.cc",
-      "json/json_writer_unittest.cc",
-      "json/string_escape_unittest.cc",
-      "lazy_instance_unittest.cc",
-      "location_unittest.cc",
-      "logging_unittest.cc",
-      "memory/aligned_memory_unittest.cc",
-      "memory/checked_ptr_unittest.cc",
-      "memory/discardable_memory_backing_field_trial_unittest.cc",
-      "memory/discardable_shared_memory_unittest.cc",
-      "memory/memory_pressure_listener_unittest.cc",
-      "memory/memory_pressure_monitor_unittest.cc",
-      "memory/platform_shared_memory_region_unittest.cc",
-      "memory/ptr_util_unittest.cc",
-      "memory/ref_counted_memory_unittest.cc",
-      "memory/ref_counted_unittest.cc",
-      "memory/shared_memory_hooks_unittest.cc",
-      "memory/shared_memory_mapping_unittest.cc",
-      "memory/shared_memory_region_unittest.cc",
-      "memory/singleton_unittest.cc",
-      "memory/unsafe_shared_memory_pool_unittest.cc",
-      "memory/weak_ptr_unittest.cc",
-      "message_loop/message_pump_glib_unittest.cc",
-      "message_loop/message_pump_unittest.cc",
-      "message_loop/timer_slack_unittest.cc",
-      "message_loop/work_id_provider_unittest.cc",
-      "metrics/bucket_ranges_unittest.cc",
-      "metrics/crc32_unittest.cc",
-      "metrics/field_trial_params_unittest.cc",
-      "metrics/field_trial_unittest.cc",
-      "metrics/histogram_base_unittest.cc",
-      "metrics/histogram_delta_serialization_unittest.cc",
-      "metrics/histogram_functions_unittest.cc",
-      "metrics/histogram_macros_unittest.cc",
-      "metrics/histogram_samples_unittest.cc",
-      "metrics/histogram_snapshot_manager_unittest.cc",
-      "metrics/histogram_unittest.cc",
-      "metrics/metrics_hashes_unittest.cc",
-      "metrics/persistent_histogram_allocator_unittest.cc",
-      "metrics/persistent_histogram_storage_unittest.cc",
-      "metrics/persistent_memory_allocator_unittest.cc",
-      "metrics/persistent_sample_map_unittest.cc",
-      "metrics/sample_map_unittest.cc",
-      "metrics/sample_vector_unittest.cc",
-      "metrics/single_sample_metrics_unittest.cc",
-      "metrics/sparse_histogram_unittest.cc",
-      "metrics/statistics_recorder_unittest.cc",
-      "native_library_unittest.cc",
-      "no_destructor_unittest.cc",
-      "observer_list_threadsafe_unittest.cc",
-      "observer_list_unittest.cc",
-      "one_shot_event_unittest.cc",
-      "optional_unittest.cc",
-      "parameter_pack_unittest.cc",
-      "path_service_unittest.cc",
-      "pickle_unittest.cc",
-      "power_monitor/power_monitor_device_source_unittest.cc",
-      "power_monitor/power_monitor_unittest.cc",
-      "process/environment_internal_unittest.cc",
-      "process/memory_unittest.cc",
-      "process/process_metrics_unittest.cc",
+  if (is_linux || is_chromeos) {
+    sources += [ "debug/proc_maps_linux_unittest.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "allocator/allocator_interception_mac_unittest.mm",
+      "allocator/malloc_zone_functions_mac_unittest.cc",
+      "enterprise_util_mac_unittest.mm",
+      "mac/bind_objc_block_unittest.mm",
+      "mac/call_with_eh_frame_unittest.mm",
+      "mac/dispatch_source_mach_unittest.cc",
+      "mac/foundation_util_unittest.mm",
+      "mac/mac_util_unittest.mm",
+      "mac/mach_port_rendezvous_unittest.cc",
+      "mac/objc_release_properties_unittest.mm",
+      "mac/scoped_mach_vm_unittest.cc",
+      "mac/scoped_nsobject_unittest.mm",
+      "mac/scoped_objc_class_swizzler_unittest.mm",
+      "mac/scoped_sending_event_unittest.mm",
+      "message_loop/message_pump_mac_unittest.mm",
+      "power_monitor/thermal_state_observer_mac_unittest.mm",
+      "process/memory_unittest_mac.h",
+      "process/memory_unittest_mac.mm",
+      "strings/sys_string_conversions_mac_unittest.mm",
+      "time/time_mac_unittest.mm",
+    ]
+  }
+
+  if (is_posix) {
+    sources += [
+      "files/dir_reader_posix_unittest.cc",
+      "files/file_descriptor_watcher_posix_unittest.cc",
+      "memory/madv_free_discardable_memory_allocator_posix_unittest.cc",
+      "memory/madv_free_discardable_memory_posix_unittest.cc",
+      "message_loop/fd_watch_controller_posix_unittest.cc",
+      "posix/file_descriptor_shuffle_unittest.cc",
+      "posix/unix_domain_socket_unittest.cc",
+      "task/thread_pool/task_tracker_posix_unittest.cc",
+    ]
+    if (!is_nacl && !is_apple) {
+      sources += [
+        "cpu_affinity_posix_unittest.cc",
+        "profiler/stack_copier_signal_unittest.cc",
+        "profiler/thread_delegate_posix_unittest.cc",
+      ]
+    }
+  }
+
+  # Allow more direct string conversions on platforms with native utf8
+  # strings
+  # TODO(crbug/1052397): Consider replacing is_ash with is_chromeos once lacros switches to target_os=chromeos
+  if (is_apple || is_chromeos_ash || is_chromecast || is_fuchsia) {
+    defines += [ "SYSTEM_NATIVE_UTF8" ]
+  }
+
+  if (is_android) {
+    # Add unwind tables in base_unittests_apk test apk. The unwind tables are
+    # generated from debug info in the binary. Removing "default_symbols" and
+    # adding symbols config removes the "strip_debug" config that strips the
+    # debug info, on base unittests apk.
+    if (can_unwind_with_cfi_table || enable_arm_cfi_table) {
+      configs -= [ "//build/config/compiler:default_symbols" ]
+      if (symbol_level == 2) {
+        configs += [ "//build/config/compiler:symbols" ]
+      } else {
+        configs += [ "//build/config/compiler:minimal_symbols" ]
+      }
+      add_unwind_tables_in_apk = true
+    }
+    if (can_unwind_with_cfi_table) {
+      sources += [ "trace_event/cfi_backtrace_android_unittest.cc" ]
+    }
+    if (current_cpu == "arm") {
+      sources += [ "profiler/chrome_unwinder_android_unittest.cc" ]
+    }
+    if (!exclude_unwind_tables &&
+        (current_cpu == "arm" || current_cpu == "arm64")) {
+      sources += [ "profiler/native_unwinder_android_unittest.cc" ]
+      deps += [
+        ":base_profiler_test_support_java",
+        ":base_profiler_test_support_jni_headers",
+        ":base_profiler_test_support_library",
+        ":native_unwinder_android",
+      ]
+    }
+
+    sources += [
+      "android/android_image_reader_compat_unittest.cc",
+      "android/application_status_listener_unittest.cc",
+      "android/child_process_unittest.cc",
+      "android/content_uri_utils_unittest.cc",
+      "android/java_handler_thread_unittest.cc",
+      "android/jni_android_unittest.cc",
+      "android/jni_array_unittest.cc",
+      "android/jni_string_unittest.cc",
+      "android/library_loader/library_prefetcher_unittest.cc",
+      "android/linker/linker_jni.cc",
+      "android/linker/linker_jni.h",
+      "android/linker/modern_linker_jni.cc",
+      "android/linker/modern_linker_jni.h",
+      "android/linker/modern_linker_unittest.cc",
+      "android/path_utils_unittest.cc",
+      "android/reached_addresses_bitset_unittest.cc",
+      "android/scoped_java_ref_unittest.cc",
+      "android/sys_utils_unittest.cc",
+      "android/unguessable_token_android_unittest.cc",
+      "os_compat_android_unittest.cc",
+    ]
+
+    # Android does not use test_launcher to run gtests.
+    sources -= [
       "process/process_unittest.cc",
       "process/process_util_unittest.cc",
-      "profiler/arm_cfi_table_unittest.cc",
-      "profiler/metadata_recorder_unittest.cc",
-      "profiler/module_cache_unittest.cc",
-      "profiler/sample_metadata_unittest.cc",
-      "profiler/stack_copier_suspend_unittest.cc",
-      "profiler/stack_copier_unittest.cc",
-      "profiler/stack_sampler_impl_unittest.cc",
-      "profiler/stack_sampling_profiler_unittest.cc",
-      "rand_util_unittest.cc",
-      "ranges/algorithm_unittest.cc",
-      "ranges/functional_unittest.cc",
-      "ranges/ranges_unittest.cc",
-      "run_loop_unittest.cc",
-      "safe_numerics_unittest.cc",
-      "sampling_heap_profiler/lock_free_address_hash_set_unittest.cc",
-      "scoped_clear_last_error_unittest.cc",
-      "scoped_generic_unittest.cc",
-      "scoped_multi_source_observation_unittest.cc",
-      "scoped_native_library_unittest.cc",
-      "scoped_observation_unittest.cc",
-      "security_unittest.cc",
-      "sequence_checker_unittest.cc",
-      "sequence_token_unittest.cc",
-      "sequenced_task_runner_unittest.cc",
-      "stl_util_unittest.cc",
-      "strings/abseil_string_conversions_unittest.cc",
-      "strings/char_traits_unittest.cc",
-      "strings/escape_unittest.cc",
-      "strings/no_trigraphs_unittest.cc",
-      "strings/pattern_unittest.cc",
-      "strings/safe_sprintf_unittest.cc",
-      "strings/strcat_unittest.cc",
-      "strings/string_number_conversions_unittest.cc",
-      "strings/string_piece_unittest.cc",
-      "strings/string_split_unittest.cc",
-      "strings/string_tokenizer_unittest.cc",
-      "strings/string_util_unittest.cc",
-      "strings/stringize_macros_unittest.cc",
-      "strings/stringprintf_unittest.cc",
-      "strings/sys_string_conversions_unittest.cc",
-      "strings/utf_offset_string_conversions_unittest.cc",
-      "strings/utf_string_conversions_unittest.cc",
-      "supports_user_data_unittest.cc",
-      "sync_socket_unittest.cc",
-      "synchronization/atomic_flag_unittest.cc",
-      "synchronization/condition_variable_unittest.cc",
-      "synchronization/lock_unittest.cc",
-      "synchronization/waitable_event_unittest.cc",
-      "synchronization/waitable_event_watcher_unittest.cc",
-      "sys_byteorder_unittest.cc",
-      "system/sys_info_unittest.cc",
-      "system/system_monitor_unittest.cc",
-      "task/cancelable_task_tracker_unittest.cc",
-      "task/common/checked_lock_unittest.cc",
-      "task/common/operations_controller_unittest.cc",
-      "task/common/task_annotator_unittest.cc",
-      "task/lazy_thread_pool_task_runner_unittest.cc",
-      "task/post_job_unittest.cc",
-      "task/post_task_unittest.cc",
-      "task/scoped_set_task_priority_for_current_thread_unittest.cc",
-      "task/sequence_manager/atomic_flag_set_unittest.cc",
-      "task/sequence_manager/lazily_deallocated_deque_unittest.cc",
-      "task/sequence_manager/sequence_manager_impl_unittest.cc",
-      "task/sequence_manager/task_queue_selector_unittest.cc",
-      "task/sequence_manager/task_queue_unittest.cc",
-      "task/sequence_manager/test/mock_time_message_pump_unittest.cc",
-      "task/sequence_manager/thread_controller_power_monitor_unittest.cc",
-      "task/sequence_manager/thread_controller_with_message_pump_impl_unittest.cc",
-      "task/sequence_manager/time_domain_unittest.cc",
-      "task/sequence_manager/work_deduplicator_unittest.cc",
-      "task/sequence_manager/work_queue_sets_unittest.cc",
-      "task/sequence_manager/work_queue_unittest.cc",
-      "task/single_thread_task_executor_unittest.cc",
-      "task/task_traits_extension_unittest.cc",
-      "task/task_traits_unittest.cc",
-      "task/thread_pool/can_run_policy_test.h",
-      "task/thread_pool/delayed_task_manager_unittest.cc",
-      "task/thread_pool/environment_config_unittest.cc",
-      "task/thread_pool/job_task_source_unittest.cc",
-      "task/thread_pool/pooled_single_thread_task_runner_manager_unittest.cc",
-      "task/thread_pool/priority_queue_unittest.cc",
-      "task/thread_pool/sequence_unittest.cc",
-      "task/thread_pool/service_thread_unittest.cc",
-      "task/thread_pool/task_source_sort_key_unittest.cc",
-      "task/thread_pool/task_tracker_unittest.cc",
-      "task/thread_pool/test_task_factory.cc",
-      "task/thread_pool/test_task_factory.h",
-      "task/thread_pool/test_utils.cc",
-      "task/thread_pool/test_utils.h",
-      "task/thread_pool/thread_group_impl_unittest.cc",
-      "task/thread_pool/thread_group_unittest.cc",
-      "task/thread_pool/thread_pool_impl_unittest.cc",
-      "task/thread_pool/tracked_ref_unittest.cc",
-      "task/thread_pool/worker_thread_stack_unittest.cc",
-      "task/thread_pool/worker_thread_unittest.cc",
-      "task/thread_pool_unittest.cc",
-      "task_runner_unittest.cc",
-      "task_runner_util_unittest.cc",
-      "template_util_unittest.cc",
-      "test/gmock_callback_support_unittest.cc",
-      "test/gmock_move_support_unittest.cc",
       "test/gtest_links_unittest.cc",
       "test/gtest_xml_unittest_result_printer_unittest.cc",
       "test/launcher/test_launcher_unittest.cc",
       "test/launcher/test_results_tracker_unittest.cc",
-      "test/metrics/histogram_enum_reader_unittest.cc",
-      "test/metrics/histogram_tester_unittest.cc",
-      "test/metrics/user_action_tester_unittest.cc",
-      "test/mock_callback_unittest.cc",
-      "test/scoped_feature_list_unittest.cc",
-      "test/scoped_logging_settings.h",
-      "test/scoped_mock_clock_override_unittest.cc",
-      "test/scoped_mock_time_message_loop_task_runner_unittest.cc",
-      "test/scoped_run_loop_timeout_unittest.cc",
-      "test/task_environment_unittest.cc",
-      "test/test_mock_time_task_runner_unittest.cc",
-      "test/test_pending_task_unittest.cc",
-      "test/test_waitable_event_unittest.cc",
-      "thread_annotations_unittest.cc",
-      "threading/hang_watcher_unittest.cc",
-      "threading/platform_thread_unittest.cc",
-      "threading/post_task_and_reply_impl_unittest.cc",
-      "threading/scoped_blocking_call_unittest.cc",
-      "threading/scoped_thread_priority_unittest.cc",
-      "threading/sequence_bound_unittest.cc",
-      "threading/sequence_local_storage_map_unittest.cc",
-      "threading/sequence_local_storage_slot_unittest.cc",
-      "threading/sequenced_task_runner_handle_unittest.cc",
-      "threading/simple_thread_unittest.cc",
-      "threading/thread_checker_unittest.cc",
-      "threading/thread_collision_warner_unittest.cc",
-      "threading/thread_id_name_manager_unittest.cc",
-      "threading/thread_local_storage_unittest.cc",
-      "threading/thread_local_unittest.cc",
-      "threading/thread_restrictions_unittest.cc",
-      "threading/thread_task_runner_handle_unittest.cc",
-      "threading/thread_unittest.cc",
-      "threading/watchdog_unittest.cc",
-      "time/pr_time_unittest.cc",
-      "time/time_unittest.cc",
-      "timer/elapsed_timer_unittest.cc",
-      "timer/hi_res_timer_manager_unittest.cc",
-      "timer/lap_timer_unittest.cc",
-      "timer/mock_timer_unittest.cc",
-      "timer/timer_unittest.cc",
-      "token_unittest.cc",
-      "tools_sanity_unittest.cc",
-      "traits_bag_unittest.cc",
-      "tuple_unittest.cc",
-      "types/pass_key_unittest.cc",
-      "types/strong_alias_unittest.cc",
-      "unguessable_token_unittest.cc",
-      "value_iterators_unittest.cc",
-      "values_unittest.cc",
-      "version_unittest.cc",
-      "vlog_unittest.cc",
     ]
-
-    defines = []
-
-    deps = [
-      ":base",
-      ":base_stack_sampling_profiler_test_util",
-      ":base_unittests_tasktraits",
-      ":i18n",
-      ":sanitizer_buildflags",
-      "//base/allocator:buildflags",
-      "//base/test:native_library_test_utils",
-      "//base/test:run_all_unittests",
-      "//base/test:test_support",
-      "//base/third_party/dynamic_annotations",
-      "//build:chromecast_buildflags",
-      "//build:chromeos_buildflags",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//third_party/icu",
+    deps += [
+      ":base_java",
+      ":base_java_unittest_support",
+      "//base/test:test_support_java",
     ]
+  }
 
-    data_deps = [
-      "//base/test:immediate_crash_test_helper",
-      "//base/test:test_child_process",
-      "//base/test:test_shared_library",
-      "//testing/buildbot/filters:base_unittests_filters",
-    ]
-
-    if (is_apple) {
-      deps += [ ":base_unittests_arc" ]
-    }
-
-    public_deps = [ ":base_unittests_bundle_data" ]
-
-    data = [
-      "test/data/",
-      "//tools/metrics/histograms/enums.xml",
-    ]
-
-    if (is_win) {
-      deps += [ "//base/win:base_win_buildflags" ]
-
-      sources += [
-        "debug/gdi_debug_util_win_unittest.cc",
-        "file_version_info_win_unittest.cc",
-        "process/launch_unittest_win.cc",
-        "test/fake_iasync_operation_win_unittest.cc",
-        "test/test_reg_util_win_unittest.cc",
-        "threading/platform_thread_win_unittest.cc",
-        "time/time_win_unittest.cc",
-        "win/async_operation_unittest.cc",
-        "win/com_init_balancer_unittest.cc",
-        "win/com_init_check_hook_unittest.cc",
-        "win/com_init_util_unittest.cc",
-        "win/core_winrt_util_unittest.cc",
-        "win/dispatch_stub.cc",
-        "win/dispatch_stub.h",
-        "win/dllmain.cc",
-        "win/embedded_i18n/language_selector_unittest.cc",
-        "win/enum_variant_unittest.cc",
-        "win/event_trace_consumer_unittest.cc",
-        "win/event_trace_controller_unittest.cc",
-        "win/event_trace_provider_unittest.cc",
-        "win/hstring_compare_unittest.cc",
-        "win/hstring_reference_unittest.cc",
-        "win/i18n_unittest.cc",
-        "win/map_unittest.cc",
-        "win/message_window_unittest.cc",
-        "win/object_watcher_unittest.cc",
-        "win/pe_image_reader_unittest.cc",
-        "win/pe_image_unittest.cc",
-        "win/post_async_results_unittest.cc",
-        "win/reference_unittest.cc",
-        "win/registry_unittest.cc",
-        "win/scoped_bstr_unittest.cc",
-        "win/scoped_handle_unittest.cc",
-        "win/scoped_hstring_unittest.cc",
-        "win/scoped_process_information_unittest.cc",
-        "win/scoped_safearray_unittest.cc",
-        "win/scoped_variant_unittest.cc",
-        "win/scoped_winrt_initializer_unittest.cc",
-        "win/shortcut_unittest.cc",
-        "win/startup_information_unittest.cc",
-        "win/variant_util_unittest.cc",
-        "win/variant_vector_unittest.cc",
-        "win/vector_unittest.cc",
-        "win/win_includes_unittest.cc",
-        "win/win_util_unittest.cc",
-        "win/windows_version_unittest.cc",
-        "win/winrt_storage_util_unittest.cc",
-        "win/wmi_unittest.cc",
-        "win/wrapped_window_proc_unittest.cc",
-      ]
-
-      if (enable_cet_shadow_stack) {
-        sources += [ "win/cet_shadow_stack_unittest.cc" ]
-      }
-    }
-
-    if (is_linux || is_chromeos) {
-      sources += [ "debug/proc_maps_linux_unittest.cc" ]
-    }
-
-    if (is_mac) {
-      sources += [
-        "allocator/allocator_interception_mac_unittest.mm",
-        "allocator/malloc_zone_functions_mac_unittest.cc",
-        "enterprise_util_mac_unittest.mm",
-        "mac/bind_objc_block_unittest.mm",
-        "mac/call_with_eh_frame_unittest.mm",
-        "mac/dispatch_source_mach_unittest.cc",
-        "mac/foundation_util_unittest.mm",
-        "mac/mac_util_unittest.mm",
-        "mac/mach_port_rendezvous_unittest.cc",
-        "mac/objc_release_properties_unittest.mm",
-        "mac/scoped_mach_vm_unittest.cc",
-        "mac/scoped_nsobject_unittest.mm",
-        "mac/scoped_objc_class_swizzler_unittest.mm",
-        "mac/scoped_sending_event_unittest.mm",
-        "message_loop/message_pump_mac_unittest.mm",
-        "power_monitor/thermal_state_observer_mac_unittest.mm",
-        "process/memory_unittest_mac.h",
-        "process/memory_unittest_mac.mm",
-        "strings/sys_string_conversions_mac_unittest.mm",
-        "time/time_mac_unittest.mm",
-      ]
-    }
-
-    if (is_posix) {
-      sources += [
-        "files/dir_reader_posix_unittest.cc",
-        "files/file_descriptor_watcher_posix_unittest.cc",
-        "memory/madv_free_discardable_memory_allocator_posix_unittest.cc",
-        "memory/madv_free_discardable_memory_posix_unittest.cc",
-        "message_loop/fd_watch_controller_posix_unittest.cc",
-        "posix/file_descriptor_shuffle_unittest.cc",
-        "posix/unix_domain_socket_unittest.cc",
-        "task/thread_pool/task_tracker_posix_unittest.cc",
-      ]
-      if (!is_nacl && !is_apple) {
-        sources += [
-          "cpu_affinity_posix_unittest.cc",
-          "profiler/stack_copier_signal_unittest.cc",
-          "profiler/thread_delegate_posix_unittest.cc",
-        ]
-      }
-    }
-
-    # Allow more direct string conversions on platforms with native utf8
-    # strings
-    # TODO(crbug/1052397): Consider replacing is_ash with is_chromeos once lacros switches to target_os=chromeos
-    if (is_apple || is_chromeos_ash || is_chromecast || is_fuchsia) {
-      defines += [ "SYSTEM_NATIVE_UTF8" ]
-    }
-
+  if (icu_use_data_file) {
     if (is_android) {
-      # Add unwind tables in base_unittests_apk test apk. The unwind tables are
-      # generated from debug info in the binary. Removing "default_symbols" and
-      # adding symbols config removes the "strip_debug" config that strips the
-      # debug info, on base unittests apk.
-      if (can_unwind_with_cfi_table || enable_arm_cfi_table) {
-        configs -= [ "//build/config/compiler:default_symbols" ]
-        if (symbol_level == 2) {
-          configs += [ "//build/config/compiler:symbols" ]
-        } else {
-          configs += [ "//build/config/compiler:minimal_symbols" ]
-        }
-        add_unwind_tables_in_apk = true
-      }
-      if (can_unwind_with_cfi_table) {
-        sources += [ "trace_event/cfi_backtrace_android_unittest.cc" ]
-      }
-      if (current_cpu == "arm") {
-        sources += [ "profiler/chrome_unwinder_android_unittest.cc" ]
-      }
-      if (!exclude_unwind_tables &&
-          (current_cpu == "arm" || current_cpu == "arm64")) {
-        sources += [ "profiler/native_unwinder_android_unittest.cc" ]
-        deps += [
-          ":base_profiler_test_support_java",
-          ":base_profiler_test_support_jni_headers",
-          ":base_profiler_test_support_library",
-          ":native_unwinder_android",
-        ]
-      }
-
-      sources += [
-        "android/android_image_reader_compat_unittest.cc",
-        "android/application_status_listener_unittest.cc",
-        "android/child_process_unittest.cc",
-        "android/content_uri_utils_unittest.cc",
-        "android/java_handler_thread_unittest.cc",
-        "android/jni_android_unittest.cc",
-        "android/jni_array_unittest.cc",
-        "android/jni_string_unittest.cc",
-        "android/library_loader/library_prefetcher_unittest.cc",
-        "android/linker/linker_jni.cc",
-        "android/linker/linker_jni.h",
-        "android/linker/modern_linker_jni.cc",
-        "android/linker/modern_linker_jni.h",
-        "android/linker/modern_linker_unittest.cc",
-        "android/path_utils_unittest.cc",
-        "android/reached_addresses_bitset_unittest.cc",
-        "android/scoped_java_ref_unittest.cc",
-        "android/sys_utils_unittest.cc",
-        "android/unguessable_token_android_unittest.cc",
-        "os_compat_android_unittest.cc",
-      ]
-
-      # Android does not use test_launcher to run gtests.
-      sources -= [
-        "process/process_unittest.cc",
-        "process/process_util_unittest.cc",
-        "test/gtest_links_unittest.cc",
-        "test/gtest_xml_unittest_result_printer_unittest.cc",
-        "test/launcher/test_launcher_unittest.cc",
-        "test/launcher/test_results_tracker_unittest.cc",
-      ]
-      deps += [
-        ":base_java",
-        ":base_java_unittest_support",
-        "//base/test:test_support_java",
-      ]
+      deps += [ "//third_party/icu:icu_extra_assets" ]
+    } else {
+      deps += [ "//third_party/icu:extra_icudata" ]
+      data += [ "$root_out_dir/icudtl_extra.dat" ]
     }
+  }
 
-    if (icu_use_data_file) {
-      if (is_android) {
-        deps += [ "//third_party/icu:icu_extra_assets" ]
-      } else {
-        deps += [ "//third_party/icu:extra_icudata" ]
-        data += [ "$root_out_dir/icudtl_extra.dat" ]
-      }
-    }
+  if (is_ios) {
+    sources += [
+      "ios/device_util_unittest.mm",
+      "ios/weak_nsobject_unittest.mm",
+      "message_loop/message_pump_io_ios_unittest.cc",
+    ]
 
-    if (is_ios) {
-      sources += [
-        "ios/device_util_unittest.mm",
-        "ios/weak_nsobject_unittest.mm",
-        "message_loop/message_pump_io_ios_unittest.cc",
-      ]
+    # ios does not use test_launcher to run gtests.
+    sources -= [
+      "files/file_path_watcher_unittest.cc",
+      "memory/discardable_shared_memory_unittest.cc",
+      "process/memory_unittest.cc",
+      "process/process_unittest.cc",
+      "process/process_util_unittest.cc",
+      "sync_socket_unittest.cc",
+      "synchronization/waitable_event_watcher_unittest.cc",
+      "test/gtest_links_unittest.cc",
+      "test/gtest_xml_unittest_result_printer_unittest.cc",
+      "test/launcher/test_launcher_unittest.cc",
+      "test/launcher/test_results_tracker_unittest.cc",
+    ]
 
-      # ios does not use test_launcher to run gtests.
-      sources -= [
-        "files/file_path_watcher_unittest.cc",
-        "memory/discardable_shared_memory_unittest.cc",
-        "process/memory_unittest.cc",
-        "process/process_unittest.cc",
-        "process/process_util_unittest.cc",
-        "sync_socket_unittest.cc",
-        "synchronization/waitable_event_watcher_unittest.cc",
-        "test/gtest_links_unittest.cc",
-        "test/gtest_xml_unittest_result_printer_unittest.cc",
-        "test/launcher/test_launcher_unittest.cc",
-        "test/launcher/test_results_tracker_unittest.cc",
-      ]
+    sources += [
+      # Pull in specific Mac files for iOS.
+      "mac/bind_objc_block_unittest.mm",
+      "mac/foundation_util_unittest.mm",
+      "mac/objc_release_properties_unittest.mm",
+      "mac/scoped_nsobject_unittest.mm",
+      "strings/sys_string_conversions_mac_unittest.mm",
+    ]
 
-      sources += [
-        # Pull in specific Mac files for iOS.
-        "mac/bind_objc_block_unittest.mm",
-        "mac/foundation_util_unittest.mm",
-        "mac/objc_release_properties_unittest.mm",
-        "mac/scoped_nsobject_unittest.mm",
-        "strings/sys_string_conversions_mac_unittest.mm",
-      ]
-
-      sources -= [
-        # The immediate crash tests require shared libraries, which we don't
-        # support loading on iOS.
-        "immediate_crash_unittest.cc",
-      ]
-
-      if (use_allocator_shim) {
-        sources += [
-          "allocator/allocator_interception_mac_unittest.mm",
-          "allocator/malloc_zone_functions_mac_unittest.cc",
-        ]
-      }
-    }
-
-    if (use_partition_alloc) {
-      sources += [
-        "allocator/partition_allocator/address_pool_manager_unittest.cc",
-        "allocator/partition_allocator/address_space_randomization_unittest.cc",
-        "allocator/partition_allocator/memory_reclaimer_unittest.cc",
-        "allocator/partition_allocator/page_allocator_unittest.cc",
-        "allocator/partition_allocator/partition_alloc_unittest.cc",
-        "allocator/partition_allocator/partition_lock_unittest.cc",
-        "allocator/partition_allocator/starscan/object_bitmap_unittest.cc",
-        "allocator/partition_allocator/starscan/pcscan_scheduling_unittest.cc",
-        "allocator/partition_allocator/starscan/pcscan_unittest.cc",
-        "allocator/partition_allocator/thread_cache_unittest.cc",
-      ]
-    }
-
-    if (is_mac) {
-      sources += [ "message_loop/message_pump_kqueue_unittest.cc" ]
-      frameworks = [
-        "CoreFoundation.framework",
-        "Foundation.framework",
-      ]
-      if (current_cpu == "x64") {
-        deps += [ ":base_profiler_test_support_library" ]
-      }
-    }
-
-    if (is_fuchsia || is_linux || is_chromeos) {
-      sources += [
-        "debug/elf_reader_unittest.cc",
-        "debug/test_elf_image_builder.cc",
-        "debug/test_elf_image_builder.h",
-      ]
-
-      deps += [ "//base/test:malloc_wrapper" ]
-      defines += [
-        # This library is used by ElfReaderTest to test reading elf files.
-        "MALLOC_WRAPPER_LIB=\"${shlib_prefix}malloc_wrapper${shlib_extension}\"",
-      ]
-
-      if (!is_component_build) {
-        # Set rpath to find libmalloc_wrapper.so even in a non-component build.
-        configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
-      }
-    }
-
-    if (is_linux || is_chromeos_lacros) {
-      sources += [
-        "linux_util_unittest.cc",
-        "nix/xdg_util_unittest.cc",
-      ]
-    }
-
-    if (!use_glib) {
-      sources -= [ "message_loop/message_pump_glib_unittest.cc" ]
-    }
-
-    if (use_libevent) {
-      sources += [ "message_loop/message_pump_libevent_unittest.cc" ]
-      deps += [ "//base/third_party/libevent" ]
-    }
-
-    if (is_fuchsia) {
-      sources += [
-        "files/dir_reader_posix_unittest.cc",
-        "files/file_descriptor_watcher_posix_unittest.cc",
-        "fuchsia/file_utils_unittest.cc",
-        "fuchsia/filtered_service_directory_unittest.cc",
-        "fuchsia/intl_profile_watcher_unittest.cc",
-        "fuchsia/scoped_service_binding_unittest.cc",
-        "fuchsia/scoped_service_publisher_unittest.cc",
-        "fuchsia/service_directory_test_base.cc",
-        "fuchsia/service_directory_test_base.h",
-        "fuchsia/service_provider_impl_unittest.cc",
-        "fuchsia/test_component_context_for_process_unittest.cc",
-        "fuchsia/time_zone_data_unittest.cc",
-        "message_loop/fd_watch_controller_posix_unittest.cc",
-        "posix/file_descriptor_shuffle_unittest.cc",
-        "task/thread_pool/task_tracker_posix_unittest.cc",
-      ]
-
-      # TODO(crbug.com/851641): FilePatchWatcherImpl is not implemented.
-      sources -= [ "files/file_path_watcher_unittest.cc" ]
-
-      deps += [
-        ":test_interface_impl",
-        ":test_log_listener_safe",
-        ":testfidl",
-        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
-        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
-        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
-        "//third_party/fuchsia-sdk/sdk/pkg/async",
-        "//third_party/fuchsia-sdk/sdk/pkg/async-default",
-        "//third_party/fuchsia-sdk/sdk/pkg/fdio",
-        "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-      ]
-
-      additional_manifest_fragments =
-          [ "//build/config/fuchsia/test/test_logger_capabilities.test-cmx" ]
-    }
-
-    if (!is_fuchsia && !is_ios) {
-      sources += [ "files/file_locking_unittest.cc" ]
-    }
-
-    if (is_android) {
-      deps += [ "//testing/android/native_test:native_test_native_code" ]
-      sources += [
-        "debug/elf_reader_unittest.cc",
-        "debug/proc_maps_linux_unittest.cc",
-        "debug/test_elf_image_builder.cc",
-        "debug/test_elf_image_builder.h",
-      ]
-    }
-
-    if (is_win) {
-      deps += [ "//base:scoped_handle_test_dll" ]
-      if (current_cpu == "x64" || current_cpu == "arm64") {
-        sources += [ "profiler/win32_stack_frame_unwinder_unittest.cc" ]
-        deps += [ ":base_profiler_test_support_library" ]
-      }
-      sources += [ "files/os_validation_win_unittest.cc" ]
-    }
+    sources -= [
+      # The immediate crash tests require shared libraries, which we don't
+      # support loading on iOS.
+      "immediate_crash_unittest.cc",
+    ]
 
     if (use_allocator_shim) {
       sources += [
-        "allocator/allocator_shim_unittest.cc",
-        "sampling_heap_profiler/sampling_heap_profiler_unittest.cc",
+        "allocator/allocator_interception_mac_unittest.mm",
+        "allocator/malloc_zone_functions_mac_unittest.cc",
       ]
+    }
+  }
 
-      if (is_win) {
-        sources += [ "allocator/winheap_stubs_win_unittest.cc" ]
-      }
+  if (use_partition_alloc) {
+    sources += [
+      "allocator/partition_allocator/address_pool_manager_unittest.cc",
+      "allocator/partition_allocator/address_space_randomization_unittest.cc",
+      "allocator/partition_allocator/memory_reclaimer_unittest.cc",
+      "allocator/partition_allocator/page_allocator_unittest.cc",
+      "allocator/partition_allocator/partition_alloc_unittest.cc",
+      "allocator/partition_allocator/partition_lock_unittest.cc",
+      "allocator/partition_allocator/starscan/object_bitmap_unittest.cc",
+      "allocator/partition_allocator/starscan/pcscan_scheduling_unittest.cc",
+      "allocator/partition_allocator/starscan/pcscan_unittest.cc",
+      "allocator/partition_allocator/thread_cache_unittest.cc",
+    ]
+  }
 
-      sources += [ "allocator/allocator_shim_default_dispatch_to_partition_alloc_unittest.cc" ]
+  if (is_mac) {
+    sources += [ "message_loop/message_pump_kqueue_unittest.cc" ]
+    frameworks = [
+      "CoreFoundation.framework",
+      "Foundation.framework",
+    ]
+    if (current_cpu == "x64") {
+      deps += [ ":base_profiler_test_support_library" ]
+    }
+  }
+
+  if (is_fuchsia || is_linux || is_chromeos) {
+    sources += [
+      "debug/elf_reader_unittest.cc",
+      "debug/test_elf_image_builder.cc",
+      "debug/test_elf_image_builder.h",
+    ]
+
+    deps += [ "//base/test:malloc_wrapper" ]
+    defines += [
+      # This library is used by ElfReaderTest to test reading elf files.
+      "MALLOC_WRAPPER_LIB=\"${shlib_prefix}malloc_wrapper${shlib_extension}\"",
+    ]
+
+    if (!is_component_build) {
+      # Set rpath to find libmalloc_wrapper.so even in a non-component build.
+      configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
+    }
+  }
+
+  if (is_linux || is_chromeos_lacros) {
+    sources += [
+      "linux_util_unittest.cc",
+      "nix/xdg_util_unittest.cc",
+    ]
+  }
+
+  if (!use_glib) {
+    sources -= [ "message_loop/message_pump_glib_unittest.cc" ]
+  }
+
+  if (use_libevent) {
+    sources += [ "message_loop/message_pump_libevent_unittest.cc" ]
+    deps += [ "//base/third_party/libevent" ]
+  }
+
+  if (is_fuchsia) {
+    sources += [
+      "files/dir_reader_posix_unittest.cc",
+      "files/file_descriptor_watcher_posix_unittest.cc",
+      "fuchsia/file_utils_unittest.cc",
+      "fuchsia/filtered_service_directory_unittest.cc",
+      "fuchsia/intl_profile_watcher_unittest.cc",
+      "fuchsia/scoped_service_binding_unittest.cc",
+      "fuchsia/scoped_service_publisher_unittest.cc",
+      "fuchsia/service_directory_test_base.cc",
+      "fuchsia/service_directory_test_base.h",
+      "fuchsia/service_provider_impl_unittest.cc",
+      "fuchsia/test_component_context_for_process_unittest.cc",
+      "fuchsia/time_zone_data_unittest.cc",
+      "message_loop/fd_watch_controller_posix_unittest.cc",
+      "posix/file_descriptor_shuffle_unittest.cc",
+      "task/thread_pool/task_tracker_posix_unittest.cc",
+    ]
+
+    # TODO(crbug.com/851641): FilePatchWatcherImpl is not implemented.
+    sources -= [ "files/file_path_watcher_unittest.cc" ]
+
+    deps += [
+      ":test_interface_impl",
+      ":test_log_listener_safe",
+      ":testfidl",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
+      "//third_party/fuchsia-sdk/sdk/pkg/async",
+      "//third_party/fuchsia-sdk/sdk/pkg/async-default",
+      "//third_party/fuchsia-sdk/sdk/pkg/fdio",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    ]
+
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/test_logger_capabilities.test-cmx" ]
+  }
+
+  if (!is_fuchsia && !is_ios) {
+    sources += [ "files/file_locking_unittest.cc" ]
+  }
+
+  if (is_android) {
+    deps += [ "//testing/android/native_test:native_test_native_code" ]
+    sources += [
+      "debug/elf_reader_unittest.cc",
+      "debug/proc_maps_linux_unittest.cc",
+      "debug/test_elf_image_builder.cc",
+      "debug/test_elf_image_builder.h",
+    ]
+  }
+
+  if (is_win) {
+    deps += [ "//base:scoped_handle_test_dll" ]
+    if (current_cpu == "x64" || current_cpu == "arm64") {
+      sources += [ "profiler/win32_stack_frame_unwinder_unittest.cc" ]
+      deps += [ ":base_profiler_test_support_library" ]
+    }
+    sources += [ "files/os_validation_win_unittest.cc" ]
+  }
+
+  if (use_allocator_shim) {
+    sources += [
+      "allocator/allocator_shim_unittest.cc",
+      "sampling_heap_profiler/sampling_heap_profiler_unittest.cc",
+    ]
+
+    if (is_win) {
+      sources += [ "allocator/winheap_stubs_win_unittest.cc" ]
     }
 
-    if (enable_base_tracing) {
+    sources += [ "allocator/allocator_shim_default_dispatch_to_partition_alloc_unittest.cc" ]
+  }
+
+  if (enable_base_tracing) {
+    sources += [
+      "test/trace_event_analyzer_unittest.cc",
+      "trace_event/blame_context_unittest.cc",
+      "trace_event/event_name_filter_unittest.cc",
+      "trace_event/heap_profiler_allocation_context_tracker_unittest.cc",
+      "trace_event/memory_allocator_dump_unittest.cc",
+      "trace_event/memory_dump_manager_unittest.cc",
+      "trace_event/memory_dump_scheduler_unittest.cc",
+      "trace_event/memory_infra_background_allowlist_unittest.cc",
+      "trace_event/memory_usage_estimator_unittest.cc",
+      "trace_event/process_memory_dump_unittest.cc",
+      "trace_event/trace_arguments_unittest.cc",
+      "trace_event/trace_category_unittest.cc",
+      "trace_event/trace_config_unittest.cc",
+      "trace_event/trace_conversion_helper_unittest.cc",
+      "trace_event/trace_event_filter_test_utils.cc",
+      "trace_event/trace_event_filter_test_utils.h",
+      "trace_event/trace_event_unittest.cc",
+      "trace_event/traced_value_support_unittest.cc",
+      "trace_event/traced_value_unittest.cc",
+      "trace_event/typed_macros_unittest.cc",
+      "tracing/perfetto_task_runner_unittest.cc",
+    ]
+
+    if (is_android) {
       sources += [
-        "test/trace_event_analyzer_unittest.cc",
-        "trace_event/blame_context_unittest.cc",
-        "trace_event/event_name_filter_unittest.cc",
-        "trace_event/heap_profiler_allocation_context_tracker_unittest.cc",
-        "trace_event/memory_allocator_dump_unittest.cc",
-        "trace_event/memory_dump_manager_unittest.cc",
-        "trace_event/memory_dump_scheduler_unittest.cc",
-        "trace_event/memory_infra_background_allowlist_unittest.cc",
-        "trace_event/memory_usage_estimator_unittest.cc",
-        "trace_event/process_memory_dump_unittest.cc",
-        "trace_event/trace_arguments_unittest.cc",
-        "trace_event/trace_category_unittest.cc",
-        "trace_event/trace_config_unittest.cc",
-        "trace_event/trace_conversion_helper_unittest.cc",
-        "trace_event/trace_event_filter_test_utils.cc",
-        "trace_event/trace_event_filter_test_utils.h",
-        "trace_event/trace_event_unittest.cc",
-        "trace_event/traced_value_support_unittest.cc",
-        "trace_event/traced_value_unittest.cc",
-        "trace_event/typed_macros_unittest.cc",
-        "tracing/perfetto_task_runner_unittest.cc",
-      ]
-
-      if (is_android) {
-        sources += [
-          "trace_event/cpufreq_monitor_android_unittest.cc",
-          "trace_event/java_heap_dump_provider_android_unittest.cc",
-          "trace_event/trace_event_android_unittest.cc",
-        ]
-      }
-
-      deps += [
-        "//third_party/perfetto/protos/perfetto/trace:lite",
-        "//third_party/perfetto/protos/perfetto/trace/interned_data:lite",
-        "//third_party/perfetto/protos/perfetto/trace/track_event:lite",
+        "trace_event/cpufreq_monitor_android_unittest.cc",
+        "trace_event/java_heap_dump_provider_android_unittest.cc",
+        "trace_event/trace_event_android_unittest.cc",
       ]
     }
 
-    if (target_cpu == "arm64" && (is_linux || is_android)) {
-      sources += [ "allocator/partition_allocator/arm_bti_test_functions.S" ]
-    }
-
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    configs += [
-      ":memory_tagging",
-      "//build/config/compiler:no_size_t_to_int_warning",
-      "//build/config/compiler:noshadowing",
+    deps += [
+      "//third_party/perfetto/protos/perfetto/trace:lite",
+      "//third_party/perfetto/protos/perfetto/trace/interned_data:lite",
+      "//third_party/perfetto/protos/perfetto/trace/track_event:lite",
     ]
   }
 
-  action("build_date") {
-    script = "//build/write_build_date_header.py"
-
-    outputs = [ "$target_gen_dir/generated_build_date.h" ]
-
-    args = [
-      rebase_path("$target_gen_dir/generated_build_date.h", root_build_dir),
-      build_timestamp,
-    ]
+  if (target_cpu == "arm64" && (is_linux || is_android)) {
+    sources += [ "allocator/partition_allocator/arm_bti_test_functions.S" ]
   }
 
-  if (enable_nocompile_tests) {
-    nocompile_test("base_nocompile_tests") {
-      sources = [
-        "bind_post_task_unittest.nc",
-        "bind_unittest.nc",
-        "callback_list_unittest.nc",
-        "callback_unittest.nc",
-        "containers/buffer_iterator_unittest.nc",
-        "containers/checked_iterators_unittest.nc",
-        "containers/contains_unittest.nc",
-        "containers/span_unittest.nc",
-        "debug/crash_logging_unittest.nc",
-        "memory/checked_ptr_unittest.nc",
-        "memory/ref_counted_unittest.nc",
-        "memory/weak_ptr_unittest.nc",
-        "metrics/field_trial_params_unittest.nc",
-        "metrics/histogram_unittest.nc",
-        "observer_list_unittest.nc",
-        "optional_unittest.nc",
-        "sequence_checker_unittest.nc",
-        "task/task_traits_extension_unittest.nc",
-        "task/task_traits_unittest.nc",
-        "thread_annotations_unittest.nc",
-        "traits_bag_unittest.nc",
-        "types/pass_key_unittest.nc",
-      ]
+  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
+  configs += [
+    ":memory_tagging",
+    "//build/config/compiler:no_size_t_to_int_warning",
+    "//build/config/compiler:noshadowing",
+  ]
+}
 
-      deps = [
-        ":base",
-        ":base_unittests_tasktraits",
-        "//base/test:run_all_unittests",
-        "//testing/gtest",
-      ]
+action("build_date") {
+  script = "//build/write_build_date_header.py"
 
-      # Since the nocompile test is not able to inspect the contents of
-      # include_dirs, we need to specify the Abseil include dir manually.
-      include_dirs = [ "//third_party/abseil-cpp" ]
-    }
+  outputs = [ "$target_gen_dir/generated_build_date.h" ]
+
+  args = [
+    rebase_path("$target_gen_dir/generated_build_date.h", root_build_dir),
+    build_timestamp,
+  ]
+}
+
+if (enable_nocompile_tests) {
+  nocompile_test("base_nocompile_tests") {
+    sources = [
+      "bind_post_task_unittest.nc",
+      "bind_unittest.nc",
+      "callback_list_unittest.nc",
+      "callback_unittest.nc",
+      "containers/buffer_iterator_unittest.nc",
+      "containers/checked_iterators_unittest.nc",
+      "containers/contains_unittest.nc",
+      "containers/span_unittest.nc",
+      "debug/crash_logging_unittest.nc",
+      "memory/checked_ptr_unittest.nc",
+      "memory/ref_counted_unittest.nc",
+      "memory/weak_ptr_unittest.nc",
+      "metrics/field_trial_params_unittest.nc",
+      "metrics/histogram_unittest.nc",
+      "observer_list_unittest.nc",
+      "optional_unittest.nc",
+      "sequence_checker_unittest.nc",
+      "task/task_traits_extension_unittest.nc",
+      "task/task_traits_unittest.nc",
+      "thread_annotations_unittest.nc",
+      "traits_bag_unittest.nc",
+      "types/pass_key_unittest.nc",
+    ]
+
+    deps = [
+      ":base",
+      ":base_unittests_tasktraits",
+      "//base/test:run_all_unittests",
+      "//testing/gtest",
+    ]
+
+    # Since the nocompile test is not able to inspect the contents of
+    # include_dirs, we need to specify the Abseil include dir manually.
+    include_dirs = [ "//third_party/abseil-cpp" ]
   }
 }
 
