@@ -448,6 +448,7 @@ source_set("weblayer_lib_base") {
     "//components/policy/core/browser",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
+    "//components/profile_metrics",
     "//components/safe_browsing/content/browser:client_side_detection",
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/content/renderer:throttles",

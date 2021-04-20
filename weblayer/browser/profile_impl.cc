@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -191,6 +192,11 @@ ProfileImpl::ProfileImpl(const std::string& name, bool is_incognito)
   }
 
   GetProfiles().insert(this);
+  profile_metrics::SetBrowserProfileType(
+      GetBrowserContext(), is_incognito
+                               ? profile_metrics::BrowserProfileType::kIncognito
+                               : profile_metrics::BrowserProfileType::kRegular);
+
   for (auto& observer : GetObservers())
     observer.ProfileCreated(this);
 
