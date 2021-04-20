@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/test/chromedriver/server/http_server.h"
+#include "net/base/network_interfaces.h"
 
 namespace {
 
@@ -25,55 +26,129 @@ int ListenOnIPv6(net::ServerSocket* socket, uint16_t port, bool allow_remote) {
   return socket->ListenWithAddressAndPort(binding_ip, port, 5);
 }
 
+// Heuristic to check if hostname is fully qualified
+bool IsSimple(const std::string& hostname) {
+  return hostname.find('.') == std::string::npos;
+}
+
+bool IsMatch(const std::string& system_host, const std::string& hostname) {
+  return hostname == system_host ||
+         (base::StartsWith(system_host, hostname) && IsSimple(hostname) &&
+          system_host[hostname.size()] == '.');
+}
+
+void GetCanonicalHostName(std::vector<std::string>* canonical_host_names) {
+  struct addrinfo hints, *info = nullptr, *p;
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_family = AF_UNSPEC;
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags = AI_CANONNAME;
+
+  auto hostname = net::GetHostName();
+  int gai_result;
+  if ((gai_result = getaddrinfo(hostname.c_str(), "http", &hints, &info)) !=
+      0) {
+    LOG(ERROR) << "GetCanonicalHostName Error hostname: " << hostname;
+  }
+  for (p = info; p != nullptr; p = p->ai_next) {
+    if (p->ai_canonname != hostname)
+      canonical_host_names->emplace_back(p->ai_canonname);
+  }
+
+  if (canonical_host_names->empty())
+    canonical_host_names->emplace_back(hostname);
+
+  freeaddrinfo(info);
+  return;
+}
+
 bool RequestIsSafeToServe(const net::HttpServerRequestInfo& info,
                           bool allow_remote,
                           const std::vector<net::IPAddress>& whitelisted_ips) {
-  // To guard against browser-originating cross-site requests, when host header
-  // and/or origin header are present, serve only those coming from localhost
-  // or from an explicitly whitelisted ip.
-  std::string origin_header = info.GetHeaderValue("origin");
-  bool local_origin = false;
-  if (!origin_header.empty()) {
-    GURL url = GURL(origin_header);
-    local_origin = net::IsLocalhost(url);
-    if (!local_origin) {
-      if (!allow_remote) {
-        LOG(ERROR)
-            << "Remote connections not allowed; rejecting request with origin: "
-            << origin_header;
-        return false;
-      }
-      if (!whitelisted_ips.empty()) {
-        net::IPAddress address = net::IPAddress();
-        if (!ParseURLHostnameToAddress(origin_header, &address)) {
-          LOG(ERROR) << "Unable to parse origin to IPAddress: "
-                     << origin_header;
-          return false;
-        }
-        if (!base::Contains(whitelisted_ips, address)) {
-          LOG(ERROR) << "Rejecting request with origin: " << origin_header;
-          return false;
-        }
-      }
-    }
-  }
-  // TODO https://crbug.com/chromedriver/3389
-  //  When remote access is allowed and origin is not specified,
-  // we should confirm that host is current machines ip or hostname
+  std::string origin_header_value = info.GetHeaderValue("origin");
+  std::string host_header_value = info.GetHeaderValue("host");
+  bool is_origin_set = !origin_header_value.empty();
+  GURL origin_url(origin_header_value);
+  bool is_origin_local = is_origin_set && net::IsLocalhost(origin_url);
+  bool is_host_set = !host_header_value.empty();
+  GURL host_url("http://" + host_header_value);
+  bool is_host_local = is_host_set && net::IsLocalhost(host_url);
 
-  if (local_origin || !allow_remote) {
-    // when origin is localhost host must be localhost
-    // when origin is not set, and no remote access, host must be localhost
-    std::string host_header = info.GetHeaderValue("host");
-    if (!host_header.empty()) {
-      GURL url = GURL("http://" + host_header);
-      if (!net::IsLocalhost(url)) {
-        LOG(ERROR) << "Rejecting request with host: " << host_header
-                   << ". origin is " << origin_header;
+  // If origin is localhost, then host needs to be localhost as well.
+  if (is_origin_local && !is_host_local) {
+    LOG(ERROR) << "Rejecting request with localhost origin but host: "
+               << host_header_value;
+    return false;
+  }
+
+  if (!allow_remote) {
+    // If remote is not allowed, both origin and host header need to be
+    // localhost or not specified.
+    if (is_origin_set && !is_origin_local) {
+      LOG(ERROR) << "Rejecting request with non-local origin: "
+                 << origin_header_value;
+      return false;
+    }
+
+    if (is_host_set && !is_host_local) {
+      LOG(ERROR) << "Rejecting request with non-local host: "
+                 << host_header_value;
+      return false;
+    }
+  } else {
+    if (is_origin_set && !is_origin_local) {
+      // Check against allowed list where empty allowed list is special case to
+      // allow all. Disallow any other non-local origin.
+      bool allow_all = whitelisted_ips.empty();
+      if (!allow_all) {
+        LOG(ERROR) << "Rejecting request with origin set: "
+                   << origin_header_value;
         return false;
       }
     }
+
+    if (is_host_set && !is_host_local) {
+      net::IPAddress host_address = net::IPAddress();
+      auto host = host_url.host();
+      bool host_match = false;
+      if (ParseURLHostnameToAddress(host, &host_address)) {
+        net::NetworkInterfaceList list;
+        if (net::GetNetworkList(&list,
+                                net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES)) {
+          for (const auto& networkInterface : list) {
+            if (networkInterface.address == host_address) {
+              host_match = true;
+              break;
+            }
+          }
+
+          if (!host_match) {
+            LOG(ERROR) << "Rejecting request with host: " << host_header_value
+                       << " address: " << host_address.ToString();
+            return false;
+          }
+        }
+      } else {
+        static bool cached = false;
+        static std::vector<std::string> canonical_host_names;
+        if (!cached) {
+          GetCanonicalHostName(&canonical_host_names);
+          cached = true;
+        }
+        for (const auto& system_host : canonical_host_names) {
+          if (IsMatch(system_host, host)) {
+            host_match = true;
+            break;
+          }
+        }
+        if (!host_match) {
+          LOG(ERROR) << "Unable find match for host: " << host_header_value;
+          return false;
+        }
+      }
+    }
   }
+
   return true;
 }
 
