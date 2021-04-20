@@ -139,9 +139,10 @@ void MockFidoDevice::ExpectCtap2CommandAndRespondWith(
     CtapRequestCommand command,
     base::Optional<base::span<const uint8_t>> response,
     base::TimeDelta delay,
-    testing::Matcher<base::span<const uint8_t>> request_matcher) {
+    testing::Matcher<base::span<const uint8_t>> request_matcher,
+    bool repeatedly) {
   auto data = fido_parsing_utils::MaterializeOrNull(response);
-  auto send_response = [ data(std::move(data)), delay ](DeviceCallback & cb) {
+  auto send_response = [data(std::move(data)), delay](DeviceCallback& cb) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, base::BindOnce(std::move(cb), std::move(data)), delay);
   };
@@ -149,9 +150,18 @@ void MockFidoDevice::ExpectCtap2CommandAndRespondWith(
   EXPECT_CALL(*this,
               DeviceTransactPtr(AllOf(IsCtap2Command(command), request_matcher),
                                 ::testing::_))
-      .WillOnce(::testing::DoAll(
+      .Times(repeatedly ? testing::AnyNumber() : testing::Exactly(1))
+      .WillRepeatedly(::testing::DoAll(
           ::testing::WithArg<1>(::testing::Invoke(send_response)),
           ::testing::Return(0)));
+}
+
+void MockFidoDevice::ExpectCtap2CommandAndRespondRepeatedlyWith(
+    CtapRequestCommand command,
+    base::Optional<base::span<const uint8_t>> response) {
+  return ExpectCtap2CommandAndRespondWith(
+      command, response, base::TimeDelta(),
+      testing::A<base::span<const uint8_t>>(), /*repeatedly=*/true);
 }
 
 void MockFidoDevice::ExpectCtap2CommandAndRespondWithError(
