@@ -19,6 +19,7 @@
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/tensor.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
+#include "chromeos/services/machine_learning/public/mojom/web_platform_handwriting.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -43,7 +44,8 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       public mojom::HandwritingRecognizer,
       public mojom::GrammarChecker,
       public mojom::GraphExecutor,
-      public mojom::SodaRecognizer {
+      public mojom::SodaRecognizer,
+      public web_platform::mojom::HandwritingRecognizer {
  public:
   FakeServiceConnectionImpl();
   ~FakeServiceConnectionImpl() override;
@@ -88,6 +90,13 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
       mojom::MachineLearningService::LoadHandwritingModelWithSpecCallback
           result_callback) override;
+
+  // Dedicated HWR API for Web Platform.
+  void LoadWebPlatformHandwritingModel(
+      web_platform::mojom::HandwritingModelConstraintPtr constraint,
+      mojo::PendingReceiver<web_platform::mojom::HandwritingRecognizer>
+          receiver,
+      LoadWebPlatformHandwritingModelCallback callback) override;
 
   void LoadGrammarChecker(
       mojo::PendingReceiver<mojom::GrammarChecker> receiver,
@@ -166,6 +175,12 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   void SetOutputHandwritingRecognizerResult(
       const mojom::HandwritingRecognizerResultPtr& result);
 
+  // Call SetOutputWebPlatformHandwritingRecognizerResult() before
+  // GetPrediction() to set the output of handwriting.
+  void SetOutputWebPlatformHandwritingRecognizerResult(
+      const std::vector<web_platform::mojom::HandwritingPredictionPtr>&
+          predictions);
+
   // mojom::TextClassifier:
   void Annotate(mojom::TextAnnotationRequestPtr request,
                 mojom::TextClassifier::AnnotateCallback callback) override;
@@ -184,6 +199,13 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   void Recognize(
       mojom::HandwritingRecognitionQueryPtr query,
       mojom::HandwritingRecognizer::RecognizeCallback callback) override;
+
+  // web_platform::mojom::HandwritingRecognizer
+  void GetPrediction(
+      std::vector<web_platform::mojom::HandwritingStrokePtr> strokes,
+      web_platform::mojom::HandwritingHintsPtr hints,
+      web_platform::mojom::HandwritingRecognizer::GetPredictionCallback
+          callback) override;
 
   // mojom::GrammarChecker:
   void Check(mojom::GrammarCheckerQueryPtr query,
@@ -221,6 +243,10 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   void HandleLoadHandwritingModelCall(
       mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
       mojom::MachineLearningService::LoadHandwritingModelCallback callback);
+  void HandleLoadWebPlatformHandwritingModelCall(
+      mojo::PendingReceiver<web_platform::mojom::HandwritingRecognizer>
+          receiver,
+      mojom::MachineLearningService::LoadHandwritingModelCallback callback);
   void HandleLoadHandwritingModelWithSpecCall(
       mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
       mojom::MachineLearningService::LoadHandwritingModelWithSpecCallback
@@ -228,6 +254,11 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   void HandleRecognizeCall(
       mojom::HandwritingRecognitionQueryPtr query,
       mojom::HandwritingRecognizer::RecognizeCallback callback);
+  void HandleGetPredictionCall(
+      std::vector<web_platform::mojom::HandwritingStrokePtr> strokes,
+      web_platform::mojom::HandwritingHintsPtr hints,
+      web_platform::mojom::HandwritingRecognizer::GetPredictionCallback
+          callback);
   void HandleLoadGrammarCheckerCall(
       mojo::PendingReceiver<mojom::GrammarChecker> receiver,
       mojom::MachineLearningService::LoadGrammarCheckerCallback callback);
@@ -251,11 +282,14 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   mojo::ReceiverSet<mojom::GraphExecutor> graph_receivers_;
   mojo::ReceiverSet<mojom::TextClassifier> text_classifier_receivers_;
   mojo::ReceiverSet<mojom::HandwritingRecognizer> handwriting_receivers_;
+  mojo::ReceiverSet<web_platform::mojom::HandwritingRecognizer>
+      web_platform_handwriting_receivers_;
   mojo::ReceiverSet<mojom::GrammarChecker> grammar_checker_receivers_;
   mojo::ReceiverSet<mojom::SodaRecognizer> soda_recognizer_receivers_;
   mojo::RemoteSet<mojom::SodaClient> soda_client_remotes_;
   mojom::TensorPtr output_tensor_;
   mojom::LoadHandwritingModelResult load_handwriting_model_result_;
+  mojom::LoadHandwritingModelResult load_web_platform_handwriting_model_result_;
   mojom::LoadModelResult load_model_result_;
   mojom::LoadModelResult load_text_classifier_result_;
   mojom::LoadModelResult load_soda_result_;
@@ -265,6 +299,8 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   mojom::CodepointSpanPtr suggest_selection_result_;
   std::vector<mojom::TextLanguagePtr> find_languages_result_;
   mojom::HandwritingRecognizerResultPtr handwriting_result_;
+  std::vector<web_platform::mojom::HandwritingPredictionPtr>
+      web_platform_handwriting_result_;
   mojom::GrammarCheckerResultPtr grammar_checker_result_;
 
   bool async_mode_;

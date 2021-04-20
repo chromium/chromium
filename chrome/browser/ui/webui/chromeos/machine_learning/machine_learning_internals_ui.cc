@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/webui/chromeos/machine_learning/machine_learning_internals_page_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/dev_ui_browser_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace chromeos {
@@ -57,6 +58,13 @@ MachineLearningInternalsUI::MachineLearningInternalsUI(
 
       {IDR_MACHINE_LEARNING_INTERNALS_UTILS_JS,
        "machine_learning_internals_utils.js"},
+
+      {IDR_MACHINE_LEARNING_INTERNALS_WEB_PLATFORM_HANDWRITING_MOJO_JS,
+       "chromeos/services/machine_learning/public/mojom/"
+       "web_platform_handwriting.mojom-lite.js"},
+
+      {IDR_UI_GEOMETRY_MOJOM_LITE_JS,
+       "ui/gfx/geometry/mojom/geometry.mojom-lite.js"},
   };
 
   for (const auto& path : resource_paths) {

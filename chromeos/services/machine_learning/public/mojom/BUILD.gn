@@ -14,9 +14,12 @@ mojom_component("mojom") {
     "soda.mojom",
     "tensor.mojom",
     "text_classifier.mojom",
+    "web_platform_handwriting.mojom",
   ]
 
   public_deps = [ "//mojo/public/mojom/base" ]
+
+  deps = [ "//ui/gfx/geometry/mojom" ]
 
   output_prefix = "mlservice_mojom"
   macro_prefix = "MLSERVICE_MOJOM"
