@@ -20,11 +20,11 @@ Prefs are not for:
 1. Pick a name that resembles / shares a pref namespace with existing related
    prefs if possible.
 1. Define a new unique name in a pref_names.cc file. Either in:
-   a. chrome/common/pref_names.cc -- being careful to put it in the right
-      section (LOCAL STATE versus PROFILE PREFS) and alongside similar prefs
+   * chrome/common/pref_names.cc -- being careful to put it in the right
+     section (LOCAL STATE versus PROFILE PREFS) and alongside similar prefs
       (existing ifdefs and/or pref namespaces); or, ideally in:
-   a. a pref_names.cc local to your component (typically inside a prefs:: C++
-      namespace nested in your component's namespace)
+   * a pref_names.cc local to your component (typically inside a prefs:: C++
+     namespace nested in your component's namespace)
 1. Add a registration call from chrome/browser/prefs/browser_prefs.cc to your
    component to register your new pref using `RegisterLocalState()` or
    `RegisterProfilePrefs()` as appropriate.
