@@ -49,7 +49,7 @@ TEST_F(ForceInstalledTrackerTest, EmptyForcelist) {
 TEST_F(ForceInstalledTrackerTest, BeforeForceInstallPolicy) {
   EXPECT_FALSE(loaded_called_);
   EXPECT_FALSE(ready_called_);
-  SetupForceList(true /*is_from_store */);
+  SetupForceList(/*is_from_store=*/true);
 }
 
 // This test verifies that OnForceInstalledExtensionsLoaded() is called once all
@@ -57,7 +57,7 @@ TEST_F(ForceInstalledTrackerTest, BeforeForceInstallPolicy) {
 // OnForceInstalledExtensionsReady() is called once all those extensions have
 // become ready for use.
 TEST_F(ForceInstalledTrackerTest, AllExtensionsInstalled) {
-  SetupForceList(true /*is_from_store */);
+  SetupForceList(/*is_from_store=*/true);
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
       kExtensionName1, kExtensionId1, ExtensionStatus::kPending);
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
@@ -84,7 +84,7 @@ TEST_F(ForceInstalledTrackerTest, AllExtensionsInstalled) {
 // This test verifies that OnForceInstalledExtensionsLoaded() is not called till
 // all extensions have either successfully loaded or failed.
 TEST_F(ForceInstalledTrackerTest, ExtensionPendingInstall) {
-  SetupForceList(true /*is_from_store */);
+  SetupForceList(/*is_from_store=*/true);
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
       kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
   EXPECT_FALSE(loaded_called_);
@@ -103,7 +103,7 @@ TEST_F(ForceInstalledTrackerTest, ExtensionPendingInstall) {
 TEST_F(ForceInstalledTrackerTest, ObserversOnlyCalledOnce) {
   // Start with a non-empty force-list, and install them, which triggers
   // observer.
-  SetupForceList(true /*is_from_store */);
+  SetupForceList(/*is_from_store=*/true);
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
       kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
@@ -122,7 +122,7 @@ TEST_F(ForceInstalledTrackerTest, ObserversOnlyCalledOnce) {
 // This test verifies that observer is called if force installed extensions are
 // either successfully loaded or failed.
 TEST_F(ForceInstalledTrackerTest, ExtensionsInstallationFailed) {
-  SetupForceList(true /*is_from_store */);
+  SetupForceList(/*is_from_store=*/true);
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
       kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
   force_installed_tracker()->OnExtensionInstallationFailed(
@@ -136,7 +136,7 @@ TEST_F(ForceInstalledTrackerTest, ExtensionsInstallationFailed) {
 // |ForceInstalledTracker::extensions_| as the extensions are either loaded or
 // failed.
 TEST_F(ForceInstalledTrackerTest, ExtensionsStatus) {
-  SetupForceList(true /*is_from_store */);
+  SetupForceList(/*is_from_store=*/true);
   EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId1).status,
             ExtensionStatus::kPending);
   EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId2).status,
@@ -159,7 +159,7 @@ TEST_F(ForceInstalledTrackerTest, ExtensionsStatus) {
 // This test verifies that resetting the policy before all force installed
 // extensions are either loaded or failed does not call the observers.
 TEST_F(ForceInstalledTrackerTest, ExtensionsInstallationCancelled) {
-  SetupForceList(true /*is_from_store */);
+  SetupForceList(/*is_from_store=*/true);
   SetupEmptyForceList();
   EXPECT_FALSE(loaded_called_);
   EXPECT_FALSE(ready_called_);
@@ -168,7 +168,7 @@ TEST_F(ForceInstalledTrackerTest, ExtensionsInstallationCancelled) {
 // This test verifies that READY state observer is called when each force
 // installed extension is either ready for use or failed.
 TEST_F(ForceInstalledTrackerTest, AllExtensionsReady) {
-  SetupForceList(true /*is_from_store */);
+  SetupForceList(/*is_from_store=*/true);
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
       kExtensionName1, kExtensionId1, ExtensionStatus::kReady);
   force_installed_tracker()->OnExtensionInstallationFailed(
