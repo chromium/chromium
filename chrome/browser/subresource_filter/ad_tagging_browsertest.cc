@@ -218,9 +218,8 @@ content::RenderFrameHost* AdTaggingBrowserTest::CreateDocWrittenFrameImpl(
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
   content::TestNavigationObserver navigation_observer(web_contents, 1);
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(rfh, script, &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(rfh, script,
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   navigation_observer.Wait();
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded())
       << navigation_observer.last_net_error_code();
@@ -244,7 +243,7 @@ AdTaggingBrowserTest::CreateFrameWithDocWriteAbortedLoadImpl(
   content::TestNavigationObserver navigation_observer(GetWebContents(), 1);
   content::TitleWatcher title_watcher(GetWebContents(),
                                       base::ASCIIToUTF16(name));
-  EXPECT_TRUE(content::ExecuteScript(rfh, script));
+  EXPECT_TRUE(content::ExecJs(rfh, script));
   // The document.write() will implicitly call document.open(), which will send
   // a same-document navigation notification. Wait for it.
   navigation_observer.Wait();
@@ -269,7 +268,7 @@ AdTaggingBrowserTest::CreateFrameWithWindowStopAbortedLoadImpl(
   // finished loading.
   content::TitleWatcher title_watcher(GetWebContents(),
                                       base::ASCIIToUTF16(name));
-  EXPECT_TRUE(content::ExecuteScript(rfh, script));
+  EXPECT_TRUE(content::ExecJs(rfh, script));
   EXPECT_EQ(base::ASCIIToUTF16(name), title_watcher.WaitAndGetTitle());
   return content::FrameMatchingPredicate(
       content::WebContents::FromRenderFrameHost(rfh),
@@ -284,7 +283,7 @@ void AdTaggingBrowserTest::NavigateFrame(
   std::string script =
       base::StringPrintf(R"(window.location='%s')", url.spec().c_str());
   content::TestNavigationObserver navigation_observer(GetWebContents(), 1);
-  EXPECT_TRUE(content::ExecuteScript(render_frame_host, script));
+  EXPECT_TRUE(content::ExecJs(render_frame_host, script));
   navigation_observer.Wait();
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded())
       << navigation_observer.last_net_error_code();
@@ -1000,13 +999,15 @@ IN_PROC_BROWSER_TEST_P(AdClickNavigationBrowserTest, UseCounter) {
       case NavigationInitiationType::kSetLocation:
       case NavigationInitiationType::kAnchorLinkActivate: {
         content::TestNavigationObserver navigation_observer(web_contents());
-        EXPECT_TRUE(ExecuteScriptWithoutUserGesture(child, script));
+        EXPECT_TRUE(content::ExecJs(child, script,
+                                    content::EXECUTE_SCRIPT_NO_USER_GESTURE));
         // To report metrics.
         navigation_observer.Wait();
         break;
       }
       case NavigationInitiationType::kWindowOpen: {
-        EXPECT_TRUE(ExecuteScriptWithoutUserGesture(child, script));
+        EXPECT_TRUE(content::ExecJs(child, script,
+                                    content::EXECUTE_SCRIPT_NO_USER_GESTURE));
         // To report metrics.
         ASSERT_EQ(2, browser()->tab_strip_model()->count());
         browser()->tab_strip_model()->MoveSelectedTabsTo(0);
@@ -1056,7 +1057,7 @@ IN_PROC_BROWSER_TEST_P(AdTaggingEventFromSubframeBrowserTest,
       main_tab, embedded_test_server()->GetURL(
                     hostname, "/ad_tagging/frame_factory.html?1" + suffix));
 
-  EXPECT_TRUE(content::ExecuteScript(child, "window.open();"));
+  EXPECT_TRUE(content::ExecJs(child, "window.open();"));
 
   bool from_ad_script = from_ad_subframe;
   ExpectWindowOpenUkmEntry(ukm_recorder, false /* from_main_frame */,
@@ -1088,7 +1089,7 @@ IN_PROC_BROWSER_TEST_P(AdTaggingEventWithScriptInStackBrowserTest,
   std::string script = from_ad_script ? "windowOpenFromAdScript();"
                                       : "windowOpenFromNonAdScript();";
 
-  EXPECT_TRUE(content::ExecuteScript(main_tab, script));
+  EXPECT_TRUE(content::ExecJs(main_tab, script));
 
   bool from_ad_subframe = false;
   ExpectWindowOpenUkmEntry(ukm_recorder, true /* from_main_frame */,

@@ -50,12 +50,12 @@ class SubresourceFilterWebSocketBrowserTest
 
   void CreateWebSocketAndExpectResult(const GURL& url,
                                       bool expect_connection_success) {
-    bool websocket_connection_succeeded = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        base::StringPrintf("connectWebSocket('%s');", url.spec().c_str()),
-        &websocket_connection_succeeded));
-    EXPECT_EQ(expect_connection_success, websocket_connection_succeeded);
+    EXPECT_EQ(
+        expect_connection_success,
+        content::EvalJs(
+            browser()->tab_strip_model()->GetActiveWebContents(),
+            base::StringPrintf("connectWebSocket('%s');", url.spec().c_str()),
+            content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   }
 
  private:

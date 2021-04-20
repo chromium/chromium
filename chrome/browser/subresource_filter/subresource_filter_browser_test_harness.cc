@@ -128,11 +128,7 @@ content::RenderFrameHost* SubresourceFilterBrowserTest::FindFrameByName(
 bool SubresourceFilterBrowserTest::WasParsedScriptElementLoaded(
     content::RenderFrameHost* rfh) {
   DCHECK(rfh);
-  bool script_resource_was_loaded = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      rfh, "domAutomationController.send(!!document.scriptExecuted)",
-      &script_resource_was_loaded));
-  return script_resource_was_loaded;
+  return content::EvalJs(rfh, "!!document.scriptExecuted").ExtractBool();
 }
 
 void SubresourceFilterBrowserTest::
@@ -151,18 +147,15 @@ void SubresourceFilterBrowserTest::
 void SubresourceFilterBrowserTest::ExpectFramesIncludedInLayout(
     const std::vector<const char*>& frame_names,
     const std::vector<bool>& expect_displayed) {
-  const char kScript[] =
-      "window.domAutomationController.send("
-      "  document.getElementsByName(\"%s\")[0].clientWidth"
-      ");";
+  const char kScript[] = "document.getElementsByName(\"%s\")[0].clientWidth;";
 
   ASSERT_EQ(expect_displayed.size(), frame_names.size());
   for (size_t i = 0; i < frame_names.size(); ++i) {
     SCOPED_TRACE(frame_names[i]);
-    int client_width = 0;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        web_contents()->GetMainFrame(),
-        base::StringPrintf(kScript, frame_names[i]), &client_width));
+    int client_width =
+        content::EvalJs(web_contents()->GetMainFrame(),
+                        base::StringPrintf(kScript, frame_names[i]))
+            .ExtractInt();
     EXPECT_EQ(expect_displayed[i], !!client_width) << client_width;
   }
 }
@@ -170,24 +163,20 @@ void SubresourceFilterBrowserTest::ExpectFramesIncludedInLayout(
 bool SubresourceFilterBrowserTest::IsDynamicScriptElementLoaded(
     content::RenderFrameHost* rfh) {
   DCHECK(rfh);
-  bool script_resource_was_loaded = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      rfh, "insertScriptElementAndReportSuccess()",
-      &script_resource_was_loaded));
-  return script_resource_was_loaded;
+  return content::EvalJs(rfh, "insertScriptElementAndReportSuccess()",
+                         content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+      .ExtractBool();
 }
 
 void SubresourceFilterBrowserTest::InsertDynamicFrameWithScript() {
-  bool frame_was_loaded = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents()->GetMainFrame(), "insertFrameWithScriptAndNotify()",
-      &frame_was_loaded));
-  ASSERT_TRUE(frame_was_loaded);
+  EXPECT_EQ(true, content::EvalJs(web_contents()->GetMainFrame(),
+                                  "insertFrameWithScriptAndNotify()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 void SubresourceFilterBrowserTest::NavigateFromRendererSide(const GURL& url) {
   content::TestNavigationObserver navigation_observer(web_contents(), 1);
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       web_contents()->GetMainFrame(),
       base::StringPrintf("window.location = \"%s\";", url.spec().c_str())));
   navigation_observer.Wait();
@@ -196,7 +185,7 @@ void SubresourceFilterBrowserTest::NavigateFromRendererSide(const GURL& url) {
 void SubresourceFilterBrowserTest::NavigateFrame(const char* frame_name,
                                                  const GURL& url) {
   content::TestNavigationObserver navigation_observer(web_contents(), 1);
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       web_contents()->GetMainFrame(),
       base::StringPrintf("document.getElementsByName(\"%s\")[0].src = \"%s\";",
                          frame_name, url.spec().c_str())));
