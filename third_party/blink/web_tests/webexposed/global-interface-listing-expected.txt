@@ -4036,6 +4036,7 @@ interface HTMLPictureElement : HTMLElement
     method constructor
 interface HTMLPopupElement : HTMLElement
     attribute @@toStringTag
+    getter anchor
     getter initiallyOpen
     getter open
     method constructor

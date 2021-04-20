@@ -121,7 +121,7 @@ HTMLPopupElement* HTMLPopupElement::TopmostPopupElement() {
   return stack.IsEmpty() ? nullptr : stack.back();
 }
 
-Element* HTMLPopupElement::AnchorElement() const {
+Element* HTMLPopupElement::anchor() const {
   const AtomicString& anchor_id = FastGetAttribute(html_names::kAnchorAttr);
   if (anchor_id.IsNull())
     return nullptr;
@@ -146,7 +146,7 @@ const HTMLPopupElement* HTMLPopupElement::NearestOpenAncestralPopup(
       anchors_and_invokers;
   Document& document = start_node->GetDocument();
   for (auto popup : document.PopupElementStack()) {
-    if (const auto* anchor = popup->AnchorElement())
+    if (const auto* anchor = popup->anchor())
       anchors_and_invokers.Set(anchor, popup);
     if (const auto* invoker = popup->invoker_.Get())
       anchors_and_invokers.Set(invoker, popup);
@@ -169,7 +169,7 @@ const HTMLPopupElement* HTMLPopupElement::NearestOpenAncestralPopup(
   // of its anchor and invoking element also.
   if (const auto* start_popup = DynamicTo<HTMLPopupElement>(start_node)) {
     if (auto* anchor_ancestor =
-            NearestOpenAncestralPopup(start_popup->AnchorElement())) {
+            NearestOpenAncestralPopup(start_popup->anchor())) {
       return anchor_ancestor;
     }
     if (auto* invoker_ancestor =

@@ -905,6 +905,7 @@ html element param
 html element picture
 html element plaintext
 html element popup
+    property anchor
     property hide
     property initiallyOpen
     property open

@@ -30,7 +30,7 @@ class HTMLPopupElement final : public HTMLElement {
   void hide();
   void show();
 
-  Element* AnchorElement() const;
+  Element* anchor() const;
 
   // This is used by invoking elements (which have a "popup" attribute)
   // to invoke the popup.
