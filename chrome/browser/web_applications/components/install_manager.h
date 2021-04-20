@@ -162,15 +162,6 @@ class InstallManager {
       webapps::WebappInstallSource install_source,
       OnceInstallCallback callback) = 0;
 
-  // For backward compatibility with ExtensionSyncService-based system:
-  // Starts background installation or an update of a bookmark app from the sync
-  // system. |web_application_info| contains received sync data. Icons will be
-  // downloaded from the icon URLs provided in |web_application_info|.
-  virtual void InstallBookmarkAppFromSync(
-      const AppId& app_id,
-      std::unique_ptr<WebApplicationInfo> web_application_info,
-      OnceInstallCallback callback) = 0;
-
   // Reinstall an existing web app. If |redownload_app_icons| is true, will
   // redownload app icons and update them on disk. Otherwise, the icons in
   // |web_application_info.bitmap_icons| will be used and saved to disk.
@@ -194,9 +185,6 @@ class InstallManager {
       webapps::WebappInstallSource install_source,
       WebAppManifestCheckCallback callback) = 0;
 
-  void DisableBookmarkAppSyncInstallForTesting() {
-    disable_bookmark_app_sync_install_for_testing_ = true;
-  }
   void DisableWebAppSyncInstallForTesting() {
     disable_web_app_sync_install_for_testing_ = true;
   }
@@ -210,9 +198,6 @@ class InstallManager {
   }
   InstallFinalizer* finalizer() { return finalizer_; }
 
-  bool disable_bookmark_app_sync_install_for_testing() const {
-    return disable_bookmark_app_sync_install_for_testing_;
-  }
   bool disable_web_app_sync_install_for_testing() const {
     return disable_web_app_sync_install_for_testing_;
   }
@@ -225,7 +210,6 @@ class InstallManager {
   OsIntegrationManager* os_integration_manager_ = nullptr;
   InstallFinalizer* finalizer_ = nullptr;
 
-  bool disable_bookmark_app_sync_install_for_testing_ = false;
   bool disable_web_app_sync_install_for_testing_ = false;
 };
 

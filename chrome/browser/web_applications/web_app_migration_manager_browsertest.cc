@@ -81,14 +81,11 @@ class WebAppMigrationManagerBrowserTest : public InProcessBrowserTest {
  public:
   WebAppMigrationManagerBrowserTest() {
     if (content::IsPreTest()) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kSyncBookmarkApps},
-          {features::kDesktopPWAsWithoutExtensions});
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kDesktopPWAsWithoutExtensions);
     } else {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kDesktopPWAsWithoutExtensions,
-           features::kSyncBookmarkApps},
-          {});
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kDesktopPWAsWithoutExtensions);
     }
   }
 
@@ -251,64 +248,6 @@ IN_PROC_BROWSER_TEST_F(WebAppMigrationManagerBrowserTest,
             run_loop.Quit();
           }));
   run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppMigrationManagerBrowserTest,
-                       InstallShadowBookmarkApp) {
-  EXPECT_FALSE(provider().registrar().AsBookmarkAppRegistrar());
-  AwaitRegistryReady();
-
-  auto* extensions_registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
-  extensions::TestExtensionRegistryObserver extensions_registry_observer(
-      extensions_registry);
-
-  ui_test_utils::NavigateToURL(browser(), GURL{kSimpleManifestStartUrl});
-  AppId app_id = InstallWebAppAsUserViaOmnibox();
-
-  EXPECT_TRUE(provider().registrar().IsInstalled(app_id));
-
-  scoped_refptr<const extensions::Extension> extension =
-      extensions_registry_observer.WaitForExtensionInstalled();
-  EXPECT_EQ(extension->id(), app_id);
-  EXPECT_EQ("Manifest test app", extension->short_name());
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppMigrationManagerBrowserTest,
-                       PRE_UninstallShadowBookmarkApp) {
-  EXPECT_TRUE(provider().registrar().AsBookmarkAppRegistrar());
-  AwaitRegistryReady();
-
-  // Install shadow bookmark app.
-  ui_test_utils::NavigateToURL(browser(), GURL{kSimpleManifestStartUrl});
-  AppId app_id = InstallWebAppAsUserViaOmnibox();
-
-  EXPECT_TRUE(provider().registrar().IsInstalled(app_id));
-  EXPECT_TRUE(ui_manager().dialog_manager().CanUninstallWebApp(app_id));
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppMigrationManagerBrowserTest,
-                       UninstallShadowBookmarkApp) {
-  EXPECT_FALSE(provider().registrar().AsBookmarkAppRegistrar());
-  AwaitRegistryReady();
-
-  AppId app_id = GenerateAppIdFromURL(GURL{kSimpleManifestStartUrl});
-
-  EXPECT_TRUE(provider().registrar().IsInstalled(app_id));
-  EXPECT_TRUE(ui_manager().dialog_manager().CanUninstallWebApp(app_id));
-
-  auto* extensions_registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
-  extensions::TestExtensionRegistryObserver extensions_registry_observer(
-      extensions_registry);
-
-  UninstallWebAppAsUserViaMenu(app_id);
-  EXPECT_FALSE(provider().registrar().IsInstalled(app_id));
-
-  scoped_refptr<const extensions::Extension> extension =
-      extensions_registry_observer.WaitForExtensionUninstalled();
-  EXPECT_EQ(extension->id(), app_id);
-  EXPECT_EQ("Manifest test app", extension->short_name());
 }
 
 // TODO(crbug.com/1020037): Test policy installed bookmark apps with an external

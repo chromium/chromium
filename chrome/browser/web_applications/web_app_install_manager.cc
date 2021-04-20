@@ -204,29 +204,6 @@ void WebAppInstallManager::InstallWebAppWithParams(
   tasks_.insert(std::move(task));
 }
 
-void WebAppInstallManager::InstallBookmarkAppFromSync(
-    const AppId& bookmark_app_id,
-    std::unique_ptr<WebApplicationInfo> web_application_info,
-    OnceInstallCallback callback) {
-  if (disable_bookmark_app_sync_install_for_testing())
-    return;
-
-  // This method can be called by
-  // ExtensionSyncService::ApplyBookmarkAppSyncData() while |this| is not
-  // |started_|.
-  if (started_) {
-    EnqueueInstallAppFromSync(bookmark_app_id, std::move(web_application_info),
-                              std::move(callback));
-  } else {
-    AppSyncInstallRequest request;
-    request.sync_app_id = bookmark_app_id;
-    request.web_application_info = std::move(web_application_info);
-    request.callback = std::move(callback);
-
-    externally_managed_app_sync_installs_.push_back(std::move(request));
-  }
-}
-
 void WebAppInstallManager::EnqueueInstallAppFromSync(
     const AppId& sync_app_id,
     std::unique_ptr<WebApplicationInfo> web_application_info,

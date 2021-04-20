@@ -35,7 +35,6 @@
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
@@ -192,7 +191,6 @@ void WebAppInstallFinalizer::FinalizeInstall(
   web_app->SetAdditionalSearchTerms(web_app_info.additional_search_terms);
   web_app->AddSource(source);
   web_app->SetIsInSyncInstall(false);
-  const bool is_synced = web_app->IsSynced();
 
   UpdateIntWebAppPref(profile_->GetPrefs(), app_id, kLatestWebAppInstallSource,
                       static_cast<int>(options.install_source));
@@ -209,20 +207,6 @@ void WebAppInstallFinalizer::FinalizeInstall(
 
   SetWebAppManifestFieldsAndWriteData(web_app_info, std::move(web_app),
                                       std::move(commit_callback));
-
-  // Backward compatibility: If a legacy finalizer was provided then install a
-  // duplicate bookmark app in the extensions registry. No callback, this is
-  // fire-and-forget install. If a user gets switched back to legacy mode they
-  // still able to use the duplicate.
-  //
-  // We should install shadow bookmark app only for kSync source (we sync only
-  // user-installed apps). System, Policy, WebAppStore, Default apps should not
-  // get a shadow bookmark app.
-  if (legacy_finalizer_ && is_synced &&
-      base::FeatureList::IsEnabled(features::kSyncBookmarkApps)) {
-    legacy_finalizer_->FinalizeInstall(web_app_info, options,
-                                       base::DoNothing());
-  }
 }
 
 void WebAppInstallFinalizer::FinalizeUninstallAfterSync(
@@ -483,7 +467,6 @@ void WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo(
   // Prepare copy-on-write to update existing app.
   const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
   auto web_app = std::make_unique<WebApp>(*existing_web_app);
-  const bool is_synced = web_app->IsSynced();
   CommitCallback commit_callback = base::BindOnce(
       &WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id,
@@ -492,12 +475,6 @@ void WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo(
 
   SetWebAppManifestFieldsAndWriteData(web_app_info, std::move(web_app),
                                       std::move(commit_callback));
-
-  if (legacy_finalizer_ && is_synced &&
-      base::FeatureList::IsEnabled(features::kSyncBookmarkApps)) {
-    // Passing an empty web_contents because BookmarkApps should not need this.
-    legacy_finalizer_->FinalizeUpdate(web_app_info, nullptr, base::DoNothing());
-  }
 }
 
 bool WebAppInstallFinalizer::DoFileHandlersNeedOsUpdate(

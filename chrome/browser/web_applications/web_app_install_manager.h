@@ -74,10 +74,6 @@ class WebAppInstallManager final : public InstallManager,
                                const InstallParams& install_params,
                                webapps::WebappInstallSource install_source,
                                OnceInstallCallback callback) override;
-  void InstallBookmarkAppFromSync(
-      const AppId& bookmark_app_id,
-      std::unique_ptr<WebApplicationInfo> web_application_info,
-      OnceInstallCallback callback) override;
   void UpdateWebAppFromInfo(
       const AppId& app_id,
       std::unique_ptr<WebApplicationInfo> web_application_info,

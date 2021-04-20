@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
-#include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
@@ -316,12 +315,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
 
   Profile* source_profile = GetProfile(0);
   Profile* dest_profile = GetProfile(1);
-
-  // Both bookmark app sync and web app sync happen at the same time. Disable
-  // one of them to simulate the other winning the "race".
-  InstallManager& install_manager =
-      WebAppProvider::Get(dest_profile)->install_manager();
-  install_manager.DisableBookmarkAppSyncInstallForTesting();
 
   WebAppInstallObserver dest_install_observer(dest_profile);
 

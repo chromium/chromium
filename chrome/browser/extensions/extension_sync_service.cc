@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/extension_sync_service.h"
 
-#include <memory>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -19,11 +18,7 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
-#include "chrome/browser/web_applications/components/install_manager.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_error_factory.h"
@@ -33,7 +28,6 @@
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
-#include "extensions/common/image_util.h"
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -475,11 +469,8 @@ void ExtensionSyncService::ApplySyncData(
     }
 
     if (!extension_sync_data.bookmark_app_url().empty()) {
-      // Handles creating and updating the bookmark app only if
-      // kSyncBookmarkApps is enabled. Bookmark apps have been migrated to web
-      // apps and are now handled by WebAppSyncBridge.
-      if (base::FeatureList::IsEnabled(features::kSyncBookmarkApps))
-        ApplyBookmarkAppSyncData(extension_sync_data);
+      // Bookmark apps have been migrated to web apps and are now handled by
+      // WebAppSyncBridge.
       return;
     }
   }
@@ -511,50 +502,6 @@ void ExtensionSyncService::ApplySyncData(
 
   if (check_for_updates)
     extension_service()->CheckForUpdatesSoon();
-}
-
-void ExtensionSyncService::ApplyBookmarkAppSyncData(
-    const ExtensionSyncData& extension_sync_data) {
-  DCHECK(extension_sync_data.is_app());
-
-  // Process bookmark app sync if necessary.
-  GURL bookmark_app_url(extension_sync_data.bookmark_app_url());
-  if (!bookmark_app_url.is_valid() ||
-      extension_sync_data.uninstalled()) {
-    return;
-  }
-
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->start_url = bookmark_app_url;
-  web_app_info->title = base::UTF8ToUTF16(extension_sync_data.name());
-  web_app_info->description =
-      base::UTF8ToUTF16(extension_sync_data.bookmark_app_description());
-  web_app_info->scope = GURL(extension_sync_data.bookmark_app_scope());
-  web_app_info->theme_color = extension_sync_data.bookmark_app_theme_color();
-  web_app_info->open_as_window =
-      extension_sync_data.launch_type() == extensions::LAUNCH_TYPE_WINDOW;
-
-  if (!extension_sync_data.bookmark_app_icon_color().empty()) {
-    extensions::image_util::ParseHexColorString(
-        extension_sync_data.bookmark_app_icon_color(),
-        &web_app_info->generated_icon_color);
-  }
-  for (const auto& icon : extension_sync_data.linked_icons()) {
-    WebApplicationIconInfo icon_info;
-    icon_info.url = icon.url;
-    icon_info.square_size_px = icon.size;
-    // Web apps in Extensions system supports Purpose::ANY icons only.
-    icon_info.purpose = blink::mojom::ManifestImageResource_Purpose::ANY;
-    web_app_info->icon_infos.push_back(icon_info);
-  }
-
-  auto* provider = web_app::WebAppProviderBase::GetProviderBase(profile_);
-  // Legacy profiles containing server-side bookmark apps data must be excluded
-  // from sync if the web apps system is disabled for such a profile.
-  if (provider) {
-    provider->install_manager().InstallBookmarkAppFromSync(
-        extension_sync_data.id(), std::move(web_app_info), base::DoNothing());
-  }
 }
 
 void ExtensionSyncService::SetSyncStartFlareForTesting(

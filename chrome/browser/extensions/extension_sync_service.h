@@ -106,10 +106,6 @@ class ExtensionSyncService : public syncer::SyncableService,
   // Applies the given change coming in from the server to the local state.
   void ApplySyncData(const extensions::ExtensionSyncData& extension_sync_data);
 
-  // Applies the bookmark app specific parts of |extension_sync_data|.
-  void ApplyBookmarkAppSyncData(
-      const extensions::ExtensionSyncData& extension_sync_data);
-
   // Collects the ExtensionSyncData for all installed apps or extensions.
   std::vector<extensions::ExtensionSyncData> GetLocalSyncDataList(
       syncer::ModelType type) const;

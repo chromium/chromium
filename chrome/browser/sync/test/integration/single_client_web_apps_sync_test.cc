@@ -130,17 +130,6 @@ class SingleClientWebAppsSyncTest : public SyncTest {
   }
 };
 
-class SingleClientWebAppsSyncBookmarkAppTest
-    : public SingleClientWebAppsSyncTest {
- public:
-  SingleClientWebAppsSyncBookmarkAppTest() {
-    feature_list_.InitAndEnableFeature(features::kSyncBookmarkApps);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        DisablingSelectedTypeDisablesModelType) {
   ASSERT_TRUE(SetupSync());
@@ -290,43 +279,5 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   const std::string expected_app_id =
       web_app::GenerateAppIdFromURL(GURL("https://example.com/"));
   EXPECT_EQ(expected_app_id, installed_app_id);
-}
-
-// bookmark app should be sync installed when kSyncBookmarkApps is
-// enabled.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncBookmarkAppTest,
-                       BookmarkAppSyncInstalled) {
-  std::string url = "https://example.com/";
-  const std::string app_id = web_app::GenerateAppIdFromURL(GURL(url));
-  InjectBookmarkAppEntityToFakeServer(app_id, url);
-  ASSERT_TRUE(SetupSync());
-  AwaitWebAppQuiescence();
-
-  auto* web_app_registrar = web_app::WebAppProvider::Get(GetProfile(0))
-                                ->registrar()
-                                .AsWebAppRegistrar();
-
-  EXPECT_TRUE(web_app_registrar->IsInstalled(app_id));
-}
-
-// Web app install should commit APPS sync entity when kSyncBookmarkApps is
-// enabled.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncBookmarkAppTest,
-                       AppInstallSyncBookmarkApp) {
-  ASSERT_TRUE(SetupSync());
-  WebApplicationInfo info;
-  std::string name = "Test name";
-  info.title = base::UTF8ToUTF16(name);
-  info.description = u"Test description";
-  info.start_url = GURL("http://www.chromium.org/path");
-  info.scope = GURL("http://www.chromium.org/");
-  web_app::AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
-  ASSERT_TRUE(SetupSync());
-
-  fake_server::FakeServerVerifier fake_server_verifier(fake_server_.get());
-  EXPECT_TRUE(fake_server_verifier.VerifyEntityCountByTypeAndName(
-      1, syncer::WEB_APPS, name));
-  EXPECT_TRUE(fake_server_verifier.VerifyEntityCountByTypeAndName(
-      1, syncer::APPS, name));
 }
 }  // namespace
