@@ -872,7 +872,7 @@ void V4LocalDatabaseManager::PopulateArtificialDatabase() {
       ListIdentifier artificial_list_id(GetCurrentPlatformType(), URL,
                                         switch_and_threat_type.second);
       FullHash full_hash =
-          V4ProtocolManagerUtil::GetFullHash(GURL(tokenizer.token()));
+          V4ProtocolManagerUtil::GetFullHash(GURL(tokenizer.token_piece()));
       artificially_marked_store_and_hash_prefixes_.emplace_back(
           artificial_list_id, full_hash);
     }
