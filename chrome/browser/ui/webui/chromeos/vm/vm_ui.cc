@@ -25,18 +25,17 @@ namespace {
 
 class VmUIImpl : public vm::mojom::VmDiagnosticsProvider {
  public:
-  VmUIImpl(Profile* profile,
-           mojo::PendingReceiver<vm::mojom::VmDiagnosticsProvider> receiver)
-      : profile_(profile), receiver_(this, std::move(receiver)) {}
+  explicit VmUIImpl(
+      mojo::PendingReceiver<vm::mojom::VmDiagnosticsProvider> receiver)
+      : receiver_(this, std::move(receiver)) {}
 
  private:
   // chromeos::vm::mojom::VmDiagnosticsProvider:
   void GetPluginVmDiagnostics(
       GetPluginVmDiagnosticsCallback callback) override {
-    plugin_vm::GetDiagnostics(profile_, std::move(callback));
+    plugin_vm::GetDiagnostics(std::move(callback));
   }
 
-  Profile* profile_;
   mojo::Receiver<vm::mojom::VmDiagnosticsProvider> receiver_;
 };
 
@@ -77,8 +76,7 @@ VmUI::~VmUI() = default;
 
 void VmUI::BindInterface(
     mojo::PendingReceiver<vm::mojom::VmDiagnosticsProvider> receiver) {
-  ui_handler_ = std::make_unique<VmUIImpl>(Profile::FromWebUI(web_ui()),
-                                           std::move(receiver));
+  ui_handler_ = std::make_unique<VmUIImpl>(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(VmUI)

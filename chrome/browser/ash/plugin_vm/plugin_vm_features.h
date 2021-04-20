@@ -22,8 +22,10 @@ class PluginVmFeatures {
   enum class ProfileSupported {
     kOk,
     kErrorNonPrimary,
-    // This is for all the other cases where the profile is not supported. We
-    // might want to have more fine-grained error values in the future.
+    kErrorChildAccount,
+    kErrorOffTheRecord,
+    kErrorEphemeral,
+    // This is for all the other cases where the profile is not supported.
     kErrorNotSupported,
   };
 
