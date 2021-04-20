@@ -138,6 +138,8 @@ class VIEWS_EXPORT LayoutProvider {
   virtual ~LayoutProvider();
 
   // This should never return nullptr.
+  // TODO(crbug.com/1200584): Replace callers of this with
+  // View::GetLayoutProvider().
   static LayoutProvider* Get();
 
   // Calculates the control height based on the |font|'s reported glyph height,

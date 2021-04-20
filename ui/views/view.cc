@@ -57,6 +57,7 @@
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/drag_controller.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
@@ -1202,6 +1203,13 @@ Border* View::GetBorder() const {
 const ui::ThemeProvider* View::GetThemeProvider() const {
   const auto* widget = GetWidget();
   return widget ? widget->GetThemeProvider() : nullptr;
+}
+
+const LayoutProvider* View::GetLayoutProvider() const {
+  if (!GetWidget())
+    return nullptr;
+  // TODO(pbos): Ask the widget for a layout provider.
+  return LayoutProvider::Get();
 }
 
 const ui::ColorProvider* View::GetColorProvider() const {

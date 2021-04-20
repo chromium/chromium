@@ -84,6 +84,7 @@ class ContextMenuController;
 class DragController;
 class FocusManager;
 class FocusTraversable;
+class LayoutProvider;
 class ScrollView;
 class ViewAccessibility;
 class ViewMaskLayer;
@@ -896,6 +897,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Get the theme provider from the parent widget.
   const ui::ThemeProvider* GetThemeProvider() const;
+
+  // Get the layout provider for the View.
+  const LayoutProvider* GetLayoutProvider() const;
 
   // Returns the ColorProvider from the ColorProviderManager.
   ui::ColorProvider* GetColorProvider() {
