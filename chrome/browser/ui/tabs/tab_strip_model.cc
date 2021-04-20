@@ -139,7 +139,13 @@ class RenderWidgetHostVisibilityTracker
   // content::RenderWidgetHostObserver:
   void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* host,
                                          bool became_visible) override {
+    // TODO(crbug.com/1198798): DCHECKs are disabled during automated testing on
+    // CrOS and this check failed when tested on an experimental builder. Revert
+    // https://crrev.com/c/2835079 to enable it. See go/chrome-dcheck-on-cros
+    // or http://crbug.com/1113456 for more details.
+#if !defined(OS_CHROMEOS)
     DCHECK(became_visible);
+#endif
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Browser.Tabs.SelectionToVisibilityRequestTime", timer_.Elapsed(),
         base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(3),
