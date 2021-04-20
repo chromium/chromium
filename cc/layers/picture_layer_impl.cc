@@ -205,7 +205,10 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
 
-  SetDidCheckerboardQuad(false);
+  // If did_checkerboard_quad_ is set to true, don't set to false until the
+  // scroll is completed.
+  if (!ScrollInteractionInProgress())
+    SetDidCheckerboardQuad(false);
 
   if (raster_source_->IsSolidColor()) {
     // TODO(979672): This is still hard-coded at 1.0. This has some history:
