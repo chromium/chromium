@@ -31,6 +31,8 @@ class ProjectorBarView : public views::View {
   static views::UniqueWidgetPtr Create(
       ProjectorControllerImpl* projector_controller);
 
+  // Invoke when selfie cam activation state changed.
+  void OnSelfieCamStateChanged(bool enabled);
   // Invoke when laser pointer activation state changed.
   void OnLaserPointerStateChanged(bool enabled);
   // Invoke when marker activation state changed.
@@ -51,6 +53,7 @@ class ProjectorBarView : public views::View {
   void OnLaserPointerPressed();
   void OnMarkerPressed();
   void OnClearAllMarkersPressed();
+  void OnSelfieCamPressed(bool enabled);
 
   views::ImageView* drag_handle_ = nullptr;
   ProjectorColorButton* record_button_ = nullptr;
@@ -59,6 +62,8 @@ class ProjectorBarView : public views::View {
   ProjectorButton* laser_pointer_button_ = nullptr;
   ProjectorButton* marker_button_ = nullptr;
   ProjectorButton* clear_all_markers_button_ = nullptr;
+  ProjectorButton* selfie_cam_on_button_ = nullptr;
+  ProjectorButton* selfie_cam_off_button_ = nullptr;
 
   ProjectorControllerImpl* projector_controller_ = nullptr;
 };

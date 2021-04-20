@@ -198,4 +198,13 @@ TEST_F(ProjectorControllerTest, OnClearAllMarkersPressed) {
   controller_->OnClearAllMarkersPressed();
 }
 
+TEST_F(ProjectorControllerTest, OnSelfieCamPressed) {
+  // Verify that |OnSelfieCamPressed| in |ProjectorUiController| is called.
+  EXPECT_CALL(*mock_ui_controller_, OnSelfieCamPressed(true));
+  controller_->OnSelfieCamPressed(true);
+
+  EXPECT_CALL(*mock_ui_controller_, OnSelfieCamPressed(false));
+  controller_->OnSelfieCamPressed(false);
+}
+
 }  // namespace ash
