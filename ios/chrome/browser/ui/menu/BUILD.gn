@@ -39,6 +39,12 @@ source_set("menu") {
   ]
 }
 
+source_set("context_menu_delegate") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [ "tab_context_menu_delegate.h" ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true

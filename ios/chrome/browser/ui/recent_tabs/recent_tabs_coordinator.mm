@@ -15,6 +15,7 @@
 #include "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
+#import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_helper.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_provider.h"
@@ -34,7 +35,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface RecentTabsCoordinator () <RecentTabsContextMenuDelegate,
+@interface RecentTabsCoordinator () <TabContextMenuDelegate,
                                      RecentTabsPresentationDelegate>
 // Completion block called once the recentTabsViewController is dismissed.
 @property(nonatomic, copy) ProceduralBlock completion;
@@ -74,7 +75,7 @@
     self.recentTabsContextMenuHelper =
         [[RecentTabsContextMenuHelper alloc] initWithBrowser:self.browser
                               recentTabsPresentationDelegate:self
-                               recentTabsContextMenuDelegate:self];
+                                      tabContextMenuDelegate:self];
     self.recentTabsTableViewController.menuProvider =
         self.recentTabsContextMenuHelper;
     self.recentTabsTableViewController.session =

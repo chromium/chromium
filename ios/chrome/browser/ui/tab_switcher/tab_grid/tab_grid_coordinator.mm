@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_helper.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
@@ -61,7 +62,7 @@
 #endif
 
 @interface TabGridCoordinator () <HistoryPresentationDelegate,
-                                  RecentTabsContextMenuDelegate,
+                                  TabContextMenuDelegate,
                                   RecentTabsPresentationDelegate,
                                   TabGridMediatorDelegate,
                                   TabPresentationDelegate,
@@ -109,6 +110,10 @@
 
 // The page configuration used when create the tab grid view controller;
 @property(nonatomic, assign) TabGridPageConfiguration pageConfiguration;
+
+// TODO(crbug.com/1196952) Add GridContextMenuHelper object and find a way
+// to set it into GridViewController preferably without exposing it from
+// TabGridViewController.
 
 @end
 
@@ -533,7 +538,7 @@
     self.recentTabsContextMenuHelper =
         [[RecentTabsContextMenuHelper alloc] initWithBrowser:self.regularBrowser
                               recentTabsPresentationDelegate:self
-                               recentTabsContextMenuDelegate:self];
+                                      tabContextMenuDelegate:self];
     self.baseViewController.remoteTabsViewController.menuProvider =
         self.recentTabsContextMenuHelper;
   }
@@ -797,7 +802,7 @@
   [self showActiveRegularTabFromRecentTabs];
 }
 
-#pragma mark - RecentTabsContextMenuDelegate
+#pragma mark - TabContextMenuDelegate
 
 - (void)shareURL:(const GURL&)URL
            title:(NSString*)title

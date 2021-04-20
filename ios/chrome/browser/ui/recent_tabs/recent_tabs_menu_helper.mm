@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
+#import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_provider.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
 #include "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
@@ -26,8 +27,7 @@
 @property(nonatomic, weak) id<RecentTabsPresentationDelegate>
     recentTabsPresentationDelegate;
 
-@property(nonatomic, weak) id<RecentTabsContextMenuDelegate>
-    recentTabsContextMenuDelegate;
+@property(nonatomic, weak) id<TabContextMenuDelegate> contextMenuDelegate;
 
 @end
 
@@ -36,13 +36,13 @@
 - (instancetype)initWithBrowser:(Browser*)browser
     recentTabsPresentationDelegate:
         (id<RecentTabsPresentationDelegate>)recentTabsPresentationDelegate
-     recentTabsContextMenuDelegate:
-         (id<RecentTabsContextMenuDelegate>)recentTabsContextMenuDelegate {
+            tabContextMenuDelegate:
+                (id<TabContextMenuDelegate>)tabContextMenuDelegate {
   self = [super init];
   if (self) {
     _browser = browser;
     _recentTabsPresentationDelegate = recentTabsPresentationDelegate;
-    _recentTabsContextMenuDelegate = recentTabsContextMenuDelegate;
+    _contextMenuDelegate = tabContextMenuDelegate;
   }
   return self;
 }
@@ -94,9 +94,9 @@
     [menuElements addObject:[actionFactory actionToCopyURL:item.URL]];
 
     [menuElements addObject:[actionFactory actionToShareWithBlock:^{
-                    [weakSelf.recentTabsContextMenuDelegate shareURL:item.URL
-                                                               title:item.title
-                                                            fromView:view];
+                    [weakSelf.contextMenuDelegate shareURL:item.URL
+                                                     title:item.title
+                                                  fromView:view];
                   }]];
 
     return [UIMenu menuWithTitle:@"" children:menuElements];
@@ -133,7 +133,7 @@
             [[NSMutableArray alloc] init];
 
         synced_sessions::DistantSession const* session =
-            [weakSelf.recentTabsContextMenuDelegate
+            [weakSelf.contextMenuDelegate
                 sessionForSectionIdentifier:sectionIdentifier];
 
         if (!session->tabs.empty()) {
@@ -145,7 +145,7 @@
 
         [menuElements
             addObject:[actionFactory actionToHideWithBlock:^{
-              [strongSelf.recentTabsContextMenuDelegate
+              [strongSelf.contextMenuDelegate
                   removeSessionAtSessionSectionIdentifier:sectionIdentifier];
             }]];
 
