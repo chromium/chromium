@@ -10,12 +10,15 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "build/chromeos_buildflags.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/common/process_type.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/cpp/request_destination.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/page_transition_types.h"
@@ -250,6 +253,18 @@ const char kHistogramFirstContentfulPaintUserInitiated[] =
 
 const char kHistogramFirstMeaningfulPaintStatus[] =
     "PageLoad.Experimental.PaintTiming.FirstMeaningfulPaintStatus";
+
+const char kHistogramCachedResourceLoadTimePrefix[] =
+    "PageLoad.Experimental.PageTiming.CachedResourceLoadTime.";
+const char kHistogramCommitSentToFirstSubresourceLoadStart[] =
+    "PageLoad.Experimental.PageTiming.CommitSentToFirstSubresourceLoadStart";
+const char kHistogramNavigationToFirstSubresourceLoadStart[] =
+    "PageLoad.Experimental.PageTiming.NavigationToFirstSubresourceLoadStart";
+const char kHistogramResourceLoadTimePrefix[] =
+    "PageLoad.Experimental.PageTiming.ResourceLoadTime.";
+const char kHistogramTotalSubresourceLoadTimeAtFirstContentfulPaint[] =
+    "PageLoad.Experimental.PageTiming."
+    "TotalSubresourceLoadTimeAtFirstContentfulPaint";
 
 const char kHistogramFirstNonScrollInputAfterFirstPaint[] =
     "PageLoad.InputTiming.NavigationToFirstNonScroll.AfterPaint";
@@ -490,6 +505,10 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     PAGE_LOAD_HISTOGRAM(internal::kHistogramParseStartToFirstContentfulPaint,
                         timing.paint_timing->first_contentful_paint.value() -
                             timing.parse_timing->parse_start.value());
+
+    PAGE_LOAD_HISTOGRAM(
+        internal::kHistogramTotalSubresourceLoadTimeAtFirstContentfulPaint,
+        total_subresource_load_time_);
 
     // Emit a trace event to highlight a long navigation to first contentful
     // paint.
@@ -768,6 +787,58 @@ void UmaPageLoadMetricsObserver::OnFailedProvisionalLoad(
   // for failed provisional loads.
   RecordForegroundDurationHistograms(page_load_metrics::mojom::PageLoadTiming(),
                                      base::TimeTicks());
+}
+
+void UmaPageLoadMetricsObserver::OnLoadedResource(
+    const page_load_metrics::ExtraRequestCompleteInfo&
+        extra_request_complete_info) {
+  const net::LoadTimingInfo& timing_info =
+      *extra_request_complete_info.load_timing_info;
+  if (timing_info.receive_headers_end.is_null())
+    return;
+
+  base::StringPiece destination = network::RequestDestinationToString(
+      extra_request_complete_info.request_destination);
+  if (destination.empty())
+    destination = "empty";
+
+  base::TimeDelta delta =
+      timing_info.receive_headers_end - timing_info.request_start;
+  if (extra_request_complete_info.was_cached) {
+    base::UmaHistogramMediumTimes(
+        base::StrCat(
+            {internal::kHistogramCachedResourceLoadTimePrefix, destination}),
+        delta);
+  } else {
+    base::UmaHistogramMediumTimes(
+        base::StrCat({internal::kHistogramResourceLoadTimePrefix, destination}),
+        delta);
+  }
+
+  // Rest of the method only operates on subresource loads.
+  if (extra_request_complete_info.request_destination ==
+      network::mojom::RequestDestination::kDocument) {
+    return;
+  }
+
+  total_subresource_load_time_ += delta;
+
+  // Rest of the method only logs metrics for the first subresource load.
+  if (received_first_subresource_load_)
+    return;
+
+  received_first_subresource_load_ = true;
+  PAGE_LOAD_HISTOGRAM(
+      internal::kHistogramNavigationToFirstSubresourceLoadStart,
+      timing_info.request_start - GetDelegate().GetNavigationStart());
+
+  base::TimeTicks commit_sent_time =
+      navigation_handle_timing_.navigation_commit_sent_time;
+  if (!commit_sent_time.is_null()) {
+    PAGE_LOAD_HISTOGRAM(
+        internal::kHistogramCommitSentToFirstSubresourceLoadStart,
+        timing_info.request_start - commit_sent_time);
+  }
 }
 
 void UmaPageLoadMetricsObserver::OnUserInput(

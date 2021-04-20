@@ -63,6 +63,12 @@ extern const char kHistogramPageTimingForegroundDurationNoCommit[];
 
 extern const char kHistogramFirstMeaningfulPaintStatus[];
 
+extern const char kHistogramCachedResourceLoadTimePrefix[];
+extern const char kHistogramCommitSentToFirstSubresourceLoadStart[];
+extern const char kHistogramNavigationToFirstSubresourceLoadStart[];
+extern const char kHistogramResourceLoadTimePrefix[];
+extern const char kHistogramTotalSubresourceLoadTimeAtFirstContentfulPaint[];
+
 extern const char kHistogramFirstNonScrollInputAfterFirstPaint[];
 extern const char kHistogramFirstScrollInputAfterFirstPaint[];
 
@@ -190,6 +196,8 @@ class UmaPageLoadMetricsObserver
   void OnFailedProvisionalLoad(
       const page_load_metrics::FailedProvisionalLoadInfo& failed_load_info)
       override;
+  void OnLoadedResource(const page_load_metrics::ExtraRequestCompleteInfo&
+                            extra_request_complete_info) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnUserInput(
@@ -255,6 +263,9 @@ class UmaPageLoadMetricsObserver
 
   // Tracks user input clicks for possible click burst.
   page_load_metrics::ClickInputTracker click_tracker_;
+
+  bool received_first_subresource_load_ = false;
+  base::TimeDelta total_subresource_load_time_;
 
   DISALLOW_COPY_AND_ASSIGN(UmaPageLoadMetricsObserver);
 };
