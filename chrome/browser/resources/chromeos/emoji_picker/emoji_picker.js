@@ -211,6 +211,10 @@ export class EmojiPicker extends PolymerElement {
     this.$.listContainer.style.display = newValue ? 'none' : '';
   }
 
+  onBarTransitionStart() {
+    this.highlightBarMoving = true;
+  }
+
   onBarTransitionEnd() {
     this.highlightBarMoving = false;
   }
@@ -262,7 +266,6 @@ export class EmojiPicker extends PolymerElement {
   onRightChevronClick() {
     this.shadowRoot.getElementById('tabs').scrollLeft = GROUP_ICON_SIZE * 6;
     this.scrollToGroup(GROUP_TABS[GROUP_PER_ROW - 3].groupId);
-    this.highlightBarMoving = true;
     this.groupTabsMoving = true;
     this.shadowRoot.getElementById('bar').style.left = EMOJI_GROUP_SIZE_PX;
   }
@@ -270,7 +273,6 @@ export class EmojiPicker extends PolymerElement {
   onLeftChevronClick() {
     this.shadowRoot.getElementById('tabs').scrollLeft = 0;
     this.scrollToGroup(GROUP_TABS[0].groupId);
-    this.highlightBarMoving = true;
     this.groupTabsMoving = true;
     if (this.history.emoji.length > 0) {
       this.shadowRoot.getElementById('bar').style.left = '0';
