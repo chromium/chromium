@@ -284,11 +284,11 @@ class ChromeDownloadManagerDelegate
       DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
       download::PathValidationResult result,
       const base::FilePath& target_path);
-#endif
 
   // Returns whether to show download later dialog.
   bool ShouldShowDownloadLaterDialog(
       const download::DownloadItem* download) const;
+#endif
 
   Profile* profile_;
 

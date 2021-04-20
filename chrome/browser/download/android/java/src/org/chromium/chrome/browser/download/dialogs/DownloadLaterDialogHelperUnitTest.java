@@ -17,6 +17,7 @@ import android.content.Context;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -25,9 +26,15 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.download.DownloadDialogBridge;
+import org.chromium.chrome.browser.download.DownloadDialogBridgeJni;
 import org.chromium.chrome.browser.download.DownloadLaterPromptStatus;
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogHelper.Source;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
@@ -56,12 +63,20 @@ public class DownloadLaterDialogHelperUnitTest {
     @Mock
     private Callback<OfflineItemSchedule> mMockCallback;
 
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
+    @Mock
+    private DownloadDialogBridge.Natives mNativeMock;
+
     private DownloadLaterDialogHelper mDownloadLaterDialogHelper;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         ShadowLog.stream = System.out;
+        mJniMocker.mock(DownloadDialogBridgeJni.TEST_HOOKS, mNativeMock);
+        when(mNativeMock.shouldShowDateTimePicker()).thenReturn(true);
         when(mPrefService.getInteger(Pref.DOWNLOAD_LATER_PROMPT_STATUS))
                 .thenReturn(DownloadLaterPromptStatus.SHOW_INITIAL);
         doNothing().when(mPrefService).setInteger(anyString(), anyInt());
@@ -125,5 +140,22 @@ public class DownloadLaterDialogHelperUnitTest {
         mDownloadLaterDialogHelper.destroy();
         verify(mDownloadLaterDialog, times(1)).destroy();
         verify(mMockCallback, times(0)).onResult(any());
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.DOWNLOAD_LATER})
+    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.DOWNLOAD_LATER + "<FakeStudyName",
+            "force-fieldtrials=FakeStudyName/Enabled",
+            "force-fieldtrial-params=FakeStudyName.Enabled:show_date_time_picker/false"})
+    public void
+    testDownloadHideDownloadLaterDateTimePicker() {
+        when(mNativeMock.shouldShowDateTimePicker()).thenReturn(false);
+        OfflineItemSchedule schedule = new OfflineItemSchedule(false, START_TIME);
+        mDownloadLaterDialogHelper.showChangeScheduleDialog(
+                schedule, Source.DOWNLOAD_HOME, mMockCallback);
+        ArgumentCaptor<PropertyModel> captor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mDownloadLaterDialog, times(1)).showDialog(any(), any(), any(), captor.capture());
+        PropertyModel model = captor.getValue();
+        Assert.assertFalse(model.get(DownloadLaterDialogProperties.SHOW_DATE_TIME_PICKER_OPTION));
     }
 }

@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
@@ -41,6 +42,7 @@ public class DownloadLaterDialogView extends ScrollView implements OnCheckedChan
     private RadioButtonWithDescription mDownloadLater;
     private RadioGroup mRadioGroup;
     private CheckBox mCheckBox;
+    private TextView mSubtitle;
     private TextView mEditText;
 
     /**
@@ -61,6 +63,11 @@ public class DownloadLaterDialogView extends ScrollView implements OnCheckedChan
                         !model.get(DownloadLaterDialogProperties.DONT_SHOW_AGAIN_DISABLED));
             } else if (propertyKey == DownloadLaterDialogProperties.LOCATION_TEXT) {
                 view.setShowEditLocation(model.get(DownloadLaterDialogProperties.LOCATION_TEXT));
+            } else if (propertyKey == DownloadLaterDialogProperties.SUBTITLE_TEXT) {
+                view.setSubtitle(model.get(DownloadLaterDialogProperties.SUBTITLE_TEXT));
+            } else if (propertyKey == DownloadLaterDialogProperties.SHOW_DATE_TIME_PICKER_OPTION) {
+                view.setShowDateTimePicker(
+                        model.get(DownloadLaterDialogProperties.SHOW_DATE_TIME_PICKER_OPTION));
             }
         }
     }
@@ -97,6 +104,7 @@ public class DownloadLaterDialogView extends ScrollView implements OnCheckedChan
         mRadioGroup = (RadioGroup) findViewById(R.id.radio_button_layout);
         mRadioGroup.setOnCheckedChangeListener(this);
         mCheckBox = (CheckBox) findViewById(R.id.show_again_checkbox);
+        mSubtitle = (TextView) findViewById(R.id.subtitle);
         mEditText = (TextView) findViewById(R.id.edit_location);
     }
 
@@ -113,9 +121,14 @@ public class DownloadLaterDialogView extends ScrollView implements OnCheckedChan
                 mOnWifi.setChecked(true);
                 break;
             case DownloadLaterDialogChoice.DOWNLOAD_LATER:
+                assert mDownloadLater.getVisibility() == View.VISIBLE;
                 mDownloadLater.setChecked(true);
                 break;
         }
+    }
+
+    void setShowDateTimePicker(boolean showDateTimePicker) {
+        mDownloadLater.setVisibility(showDateTimePicker ? View.VISIBLE : View.GONE);
     }
 
     void setCheckbox(@DownloadLaterPromptStatus int promptStatus) {
@@ -132,6 +145,10 @@ public class DownloadLaterDialogView extends ScrollView implements OnCheckedChan
 
         return mCheckBox.isChecked() ? DownloadLaterPromptStatus.DONT_SHOW
                                      : DownloadLaterPromptStatus.SHOW_PREFERENCE;
+    }
+
+    void setSubtitle(@Nullable CharSequence subtitle) {
+        mSubtitle.setText(TextUtils.isEmpty(subtitle) ? "" : subtitle);
     }
 
     void setShowEditLocation(@Nullable String locationText) {

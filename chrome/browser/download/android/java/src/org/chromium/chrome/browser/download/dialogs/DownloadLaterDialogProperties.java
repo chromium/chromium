@@ -34,9 +34,21 @@ public class DownloadLaterDialogProperties {
     public static final PropertyModel.WritableObjectPropertyKey<String> LOCATION_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_DOWNLOAD_LATER_DIALOG_PROPERTIES =
-            new PropertyKey[] {CONTROLLER, INITIAL_CHOICE, DONT_SHOW_AGAIN_SELECTION,
-                    DONT_SHOW_AGAIN_DISABLED, LOCATION_TEXT};
+    /**
+     * The subtitle of the download later dialog.
+     */
+    public static final PropertyModel.ReadableObjectPropertyKey<CharSequence> SUBTITLE_TEXT =
+            new PropertyModel.ReadableObjectPropertyKey<>();
+
+    /**
+     * Whether to show the option to pick date and time to start download.
+     */
+    public static final PropertyModel.ReadableBooleanPropertyKey SHOW_DATE_TIME_PICKER_OPTION =
+            new PropertyModel.ReadableBooleanPropertyKey();
+
+    public static final PropertyKey[] ALL_DOWNLOAD_LATER_DIALOG_PROPERTIES = new PropertyKey[] {
+            CONTROLLER, INITIAL_CHOICE, DONT_SHOW_AGAIN_SELECTION, DONT_SHOW_AGAIN_DISABLED,
+            LOCATION_TEXT, SUBTITLE_TEXT, SHOW_DATE_TIME_PICKER_OPTION};
 
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_DOWNLOAD_LATER_DIALOG_PROPERTIES,

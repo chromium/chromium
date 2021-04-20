@@ -57,6 +57,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class DownloadLaterDialogTest {
     private static final long INVALID_START_TIME = -1;
+    private static final String POSITIVE_BUTTON_TEXT = "Done";
+    private static final String DEFAULT_SUBTITLE =
+            "You'll see a notification when this file is ready";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -99,6 +102,11 @@ public class DownloadLaterDialogTest {
     }
 
     private PropertyModel createModel(Integer choice, Integer promptStatus) {
+        return createModel(choice, promptStatus, null, null);
+    }
+
+    private PropertyModel createModel(Integer choice, Integer promptStatus, CharSequence subtitle,
+            Boolean showDateTimePicker) {
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(DownloadLaterDialogProperties.ALL_KEYS)
                         .with(DownloadLaterDialogProperties.CONTROLLER, mDialogCoordinator);
@@ -108,6 +116,15 @@ public class DownloadLaterDialogTest {
 
         if (promptStatus != null) {
             builder.with(DownloadLaterDialogProperties.DONT_SHOW_AGAIN_SELECTION, promptStatus);
+        }
+
+        if (subtitle != null) {
+            builder.with(DownloadLaterDialogProperties.SUBTITLE_TEXT, subtitle);
+        }
+
+        if (showDateTimePicker != null) {
+            builder.with(
+                    DownloadLaterDialogProperties.SHOW_DATE_TIME_PICKER_OPTION, showDateTimePicker);
         }
 
         return builder.build();
@@ -133,6 +150,10 @@ public class DownloadLaterDialogTest {
                 .check(matches(withText(expectedText)));
     }
 
+    private void assertSubtitle(String subtitle) {
+        onView(withId(org.chromium.chrome.R.id.subtitle)).check(matches(withText(subtitle)));
+    }
+
     private void assertShowAgainCheckBox(boolean enabled, int visibility, boolean checked) {
         onView(withId(R.id.show_again_checkbox)).check((View view, NoMatchingViewException e) -> {
             Assert.assertEquals(enabled, view.isEnabled());
@@ -156,9 +177,10 @@ public class DownloadLaterDialogTest {
     public void testInitialSelectionDownloadNowWithOutCheckbox() {
         mModel = createModel(DownloadLaterDialogChoice.DOWNLOAD_NOW, null);
         showDialog();
-        assertPositiveButtonText("Download");
+        assertPositiveButtonText(POSITIVE_BUTTON_TEXT);
         assertShowAgainCheckBox(true, View.GONE, true);
         assertEditText(false);
+        assertSubtitle(DEFAULT_SUBTITLE);
     }
 
     @Test
@@ -167,9 +189,10 @@ public class DownloadLaterDialogTest {
         mModel = createModel(
                 DownloadLaterDialogChoice.ON_WIFI, DownloadLaterPromptStatus.SHOW_INITIAL);
         showDialog();
-        assertPositiveButtonText("Download");
+        assertPositiveButtonText(POSITIVE_BUTTON_TEXT);
         assertShowAgainCheckBox(true, View.VISIBLE, false);
         assertEditText(false);
+        assertSubtitle(DEFAULT_SUBTITLE);
     }
 
     @Test
@@ -179,9 +202,10 @@ public class DownloadLaterDialogTest {
                 DownloadLaterDialogChoice.ON_WIFI, DownloadLaterPromptStatus.SHOW_PREFERENCE);
         mModel.set(DownloadLaterDialogProperties.LOCATION_TEXT, "location");
         showDialog();
-        assertPositiveButtonText("Download");
+        assertPositiveButtonText(POSITIVE_BUTTON_TEXT);
         assertShowAgainCheckBox(true, View.VISIBLE, false);
         assertEditText(true);
+        assertSubtitle(DEFAULT_SUBTITLE);
     }
 
     @Test
@@ -193,6 +217,26 @@ public class DownloadLaterDialogTest {
         assertPositiveButtonText("Next");
         assertShowAgainCheckBox(false, View.VISIBLE, false);
         assertEditText(false);
+        assertSubtitle(DEFAULT_SUBTITLE);
+    }
+
+    @Test
+    @MediumTest
+    public void testSubtitle() {
+        final String subtitle = "awesome subtitle";
+        mModel = createModel(DownloadLaterDialogChoice.DOWNLOAD_LATER,
+                DownloadLaterPromptStatus.SHOW_INITIAL, subtitle, null);
+        showDialog();
+        assertSubtitle(subtitle);
+    }
+
+    @Test
+    @MediumTest
+    public void testHideDateTimePicker() {
+        mModel = createModel(DownloadLaterDialogChoice.DOWNLOAD_LATER,
+                DownloadLaterPromptStatus.SHOW_INITIAL, null, false);
+        showDialog();
+        onView(withId(R.id.choose_date_time)).check(matches(not(isDisplayed())));
     }
 
     @Test
