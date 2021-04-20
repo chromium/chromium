@@ -327,7 +327,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1354045473509304750">A(z) <ph name="HOST" /> továbbra is használhatja és mozgathatja a kamerát</translation>
 <translation id="1355088139103479645">Törli az összes adatot?</translation>
 <translation id="1355466263109342573">A(z) <ph name="PLUGIN_NAME" /> le van tiltva</translation>
-<translation id="1358612436266364864">Kiemelések eltávolítása</translation>
 <translation id="1358741672408003399">Helyesírás és nyelvhelyesség</translation>
 <translation id="1359923111303110318">Eszközét a Smart Lock segítségével is feloldhatja. A feloldáshoz nyomja meg az Enter billentyűt.</translation>
 <translation id="1361164813881551742">Hozzáadás manuálisan</translation>
@@ -883,6 +882,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1928202201223835302">Adja meg a régi PIN-kódot</translation>
 <translation id="1928696683969751773">Frissítések</translation>
 <translation id="1929186283613845153">A fájl ellenőrzése folyamatban van.</translation>
+<translation id="1929343511231420085">Bármely soros port</translation>
 <translation id="1929546189971853037">Böngészési előzmények elolvasása az összes bejelentkezett eszközén</translation>
 <translation id="1930879306590754738">A jelszó törölve lett erről az eszközről és a Google-fiókból</translation>
 <translation id="1931152874660185993">Nincsenek összetevők telepítve.</translation>
@@ -1607,7 +1607,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2734760316755174687">A(z) <ph name="SITE_GROUP_NAME" /> csoportba tartozó webhelyek visszaállítása is megtörténik.</translation>
 <translation id="2735712963799620190">Ütemezés</translation>
 <translation id="2737363922397526254">Listanézet...</translation>
-<translation id="2737916598897808047">A(z) <ph name="APP_NAME" /> szeretné megosztani a képernyő tartalmát a következővel: <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">A webhelyek nem használhatják az eszközre telepített betűtípusokat</translation>
 <translation id="2738771556149464852">Ezután nem:</translation>
 <translation id="2739191690716947896">Hibakeresés</translation>
@@ -1895,7 +1894,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3031417829280473749">X ügynök</translation>
 <translation id="3031557471081358569">Válassza ki az importálandó elemeket:</translation>
 <translation id="3036327949511794916">Lejárt az eszköz (<ph name="DEVICE_TYPE" />) visszaküldésének határideje.</translation>
-<translation id="3036438888981457032">Kiemelések eltávolítása</translation>
 <translation id="3036546437875325427">Flash engedélyezése</translation>
 <translation id="3037754279345160234">Nem lehet elemezni a domaincsatlakoztatási konfigurációt. Vegye fel a kapcsolatot a rendszergazdával.</translation>
 <translation id="3038612606416062604">Nyomtató hozzáadása manuálisan</translation>
@@ -2941,6 +2939,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4218274196133425560">A(z) <ph name="HOST_NAME" /> webhelyre vonatkozó kivétel eltávolítása</translation>
 <translation id="4220648711404560261">Hiba történt az aktiválás során.</translation>
 <translation id="4222772810963087151">A build részletei</translation>
+<translation id="4224284700924043865"><ph name="PRODUCT_ID" /> termékkódú USB-eszközök a következő gyártótól: <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">Az összes webhelyen</translation>
 <translation id="4231095370974836764">Alkalmazásokat és játékokat telepíthet a Google Playről <ph name="DEVICE_TYPE" /> eszközére. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">A Kerberos konfigurálása</translation>
@@ -3013,6 +3012,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="431076611119798497">&amp;Részletek</translation>
 <translation id="4312866146174492540">Letiltás (alapértelmezett)</translation>
 <translation id="4314815835985389558">Szinkronizálás kezelése</translation>
+<translation id="4316650123995163262"><ph name="PRODUCT_ID" /> termékkódú USB-eszközök a következő gyártótól: <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Fejlesztő webhelye</translation>
 <translation id="4317820549299924617">Az igazolás nem sikerült</translation>
 <translation id="4320177379694898372">Nincs internetkapcsolat</translation>
@@ -3455,6 +3455,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4824958205181053313">Megszakítja a szinkronizálást?</translation>
 <translation id="4827675678516992122">Nem sikerült csatlakozni</translation>
 <translation id="4827784381479890589">Továbbfejlesztett helyesírás-ellenőrzés a Chrome böngészőben (a rendszer elküldi a szöveget a Google-nak helyesírási javaslatokért)</translation>
+<translation id="482952334869563894">USB-eszközök a következő gyártótól: <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">PIN-kód beállítása</translation>
 <translation id="4830121310592638841">Kérdezzen rá, ha valamelyik webhely ablakokat akar megnyitni és képernyőkön elhelyezni</translation>
 <translation id="4830502475412647084">Az operációs rendszer frissítésének telepítése folyamatban</translation>
@@ -3744,6 +3745,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="5159419673777902220">Szülőd letiltotta a bővítményhez tartozó engedélyeket</translation>
 <translation id="5160634252433617617">Fizikai billentyűzet</translation>
 <translation id="5160857336552977725">Jelentkezzen be <ph name="DEVICE_TYPE" /> eszközén</translation>
+<translation id="5161251470972801814">USB-eszközök a következő gyártótól: <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> letiltva</translation>
 <translation id="5163910114647549394">Lap áthelyezve a lapsor végére</translation>
 <translation id="5165085578392358314">Kapcsoló hozzárendelése: <ph name="ACTION" /></translation>
@@ -4659,7 +4661,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6212039847102026977">Speciális hálózati tulajdonságok megjelenítése</translation>
 <translation id="6212168817037875041">A kijelző kikapcsol</translation>
 <translation id="6212752530110374741">Link küldése e-mailben</translation>
-<translation id="6213230117190778270">Fogadás</translation>
 <translation id="621470880408090483">A webhelyek nem csatlakozhatnak Bluetooth-eszközökhöz</translation>
 <translation id="6215620815501168899">Az EID-számhoz és a QR-kódhoz tartozó előugró ablak bezárása</translation>
 <translation id="6216601812881225442">A tároló nem támogatja az átméretezést. Ha módosítaná a Linux számára rendelkezésre álló területet, készítsen biztonsági másolatot az adatokról, majd állítsa vissza őket új tárolóban.</translation>
@@ -5373,6 +5374,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Tevékenységnapló</translation>
 <translation id="6997707937646349884">Az Ön eszközein:</translation>
 <translation id="6998793565256476099">Eszköz felvétele a videokonferenciába</translation>
+<translation id="6999640176621571692">Engedélyezi a Google-nak a kosaraihoz hozzáadott termékekre vonatkozó kedvezmények keresését?</translation>
 <translation id="6999956497249459195">Új csoport</translation>
 <translation id="7000206553895739324">A(z) <ph name="PRINTER_NAME" /> csatlakoztatva van, de konfigurálni kell</translation>
 <translation id="7000347579424117903">Használja a Ctrl, az Alt vagy a Keresés gombok egyikét</translation>
@@ -5453,7 +5455,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7076293881109082629">Bejelentkezés</translation>
 <translation id="7077829361966535409">A bejelentkezési oldalt a jelenlegi proxybeállítások mellett nem lehetett betölteni. Kérjük, <ph name="GAIA_RELOAD_LINK_START" />próbáljon újra bejelentkezni<ph name="GAIA_RELOAD_LINK_END" />, vagy használjon más <ph name="PROXY_SETTINGS_LINK_START" />proxybeállításokat<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Minden hálózat</translation>
-<translation id="7078386829626602215">Nem található eszköz. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="708060913198414444">Audi&amp;ocím másolása</translation>
 <translation id="7081952801286122383">Inkognitó módban van</translation>
 <translation id="708278670402572152">A keresés engedélyezéséhez szakítsa meg a hálózati kapcsolatot</translation>
@@ -5502,11 +5503,9 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7135729336746831607">Bekapcsolja a Bluetooth-t?</translation>
 <translation id="7136639886842764730">A(z) <ph name="DOMAIN" /> megköveteli, hogy azonnal frissítse <ph name="DEVICE_TYPE" /> eszközét.</translation>
 <translation id="7136694880210472378">Legyen alapértelmezett</translation>
-<translation id="7136984461011502314">Üdvözli a <ph name="PRODUCT_NAME" />!</translation>
 <translation id="7136993520339022828">Hiba történt. Próbálkozzon újra úgy, hogy más képeket választ.</translation>
 <translation id="7139627972753429585">A(z) <ph name="APP_NAME" /> használja a mikrofont</translation>
 <translation id="7141105143012495934">A bejelentkezés nem sikerült, mert a fiókadatokat nem sikerült lekérni. Kérjük, forduljon rendszergazdájához, vagy próbálja újra.</translation>
-<translation id="7143358760238281735">Nem található alkalmazás</translation>
 <translation id="7144878232160441200">Újra</translation>
 <translation id="7149893636342594995">Az elmúlt 24 órából</translation>
 <translation id="7152478047064750137">A bővítmény nem igényel különleges engedélyeket</translation>
@@ -6460,7 +6459,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Csatlakozás a következő hálózathoz: <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Alkalmazások, bővítmények és témák kezelése</translation>
-<translation id="8192944472786724289">A(z) <ph name="APP_NAME" /> szeretné megosztani a képernyő tartalmát.</translation>
 <translation id="8195027750202970175">Lemezen elfoglalt méret</translation>
 <translation id="8198323535106903877">Telepítjük Önnek ezt a(z) <ph name="NUMBER_OF_APPS" /> alkalmazást</translation>
 <translation id="8199300056570174101">Hálózati (szolgáltatási) és eszköztulajdonságok</translation>
@@ -6884,6 +6882,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót a hozzárendelés megszüntetés�
 <translation id="8698269656364382265">Ha vissza szeretne térni az előző képernyőre, csúsztassa ujját befelé a képernyő bal oldalától.</translation>
 <translation id="869884720829132584">Alkalmazások menü</translation>
 <translation id="869891660844655955">Lejárati dátum</translation>
+<translation id="8699120352855309748">Ne ajánlja fel a fordítást ezekről a nyelvekről</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> eszköze zárolva volt.</translation>
 <translation id="8703346390800944767">Hirdetés átugrása</translation>
 <translation id="8705331520020532516">Sorozatszám</translation>

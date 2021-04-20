@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Passwort einblenden</translation>
 <translation id="1872096359983322073">Taschenlampe</translation>
 <translation id="1911619930368729126">Auf Google Drive hochladen</translation>
-<translation id="1919130412786645364">Anmeldung in Chrome zulassen</translation>
 <translation id="1923342640370224680">Letzte Stunde</translation>
 <translation id="1941314575388338491">Tippen Sie zum Kopieren hier doppelt.</translation>
 <translation id="1952172573699511566">Sofern dies möglich ist, wird Text auf Websites in Ihrer bevorzugten Sprache angezeigt.</translation>
@@ -216,7 +215,6 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 
 Wenn der Inkognitomodus aktiviert ist, können Websites Cookies nicht verwenden, um Ihre Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen.</translation>
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
-<translation id="3222343486469566063">Nicht angemeldet</translation>
 <translation id="3224641773458703735">Um Passwörter zu exportieren, müssen Sie zuerst einen Passcode auf Ihrem Gerät einrichten.</translation>
 <translation id="3240426699337459095">Link wurde kopiert.</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@ Gehen Sie so vor:</translation>
 <translation id="3928666092801078803">Daten zusammenführen</translation>
 <translation id="3929457972718048006">Adressen</translation>
 <translation id="3943492037546055397">Passwörter</translation>
-<translation id="3943557322767080599">Aufforderung zur Anmeldung in Chrome anzeigen, wenn Sie sich in Ihrem Google-Konto anmelden</translation>
-<translation id="3967266340354872733">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten finden Sie unter <ph name="BEGIN_LINK" />Synchronisierung<ph name="END_LINK" /> und <ph name="BEGIN_LINK" />Google-Dienste<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="3968505803272650567">Interessen verwalten</translation>
 <translation id="3989635538409502728">Abmelden</translation>
@@ -568,7 +564,6 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="6760509555861141183">Zurück zum Tab „Zuletzt geöffnet“</translation>
 <translation id="6780034285637185932">Postleitzahl</translation>
 <translation id="6785453220513215166">Absturzbericht wird gesendet…</translation>
-<translation id="679325081238418596">Rufen Sie Ihre Lesezeichen, Ihren Verlauf, Ihre Passwörter und andere Einstellungen auf allen Ihren Geräten ab</translation>
 <translation id="6797885426782475225">Sprachsuche</translation>
 <translation id="6807889908376551050">Alle anzeigen...</translation>
 <translation id="681368974849482173">Element erstellt</translation>
@@ -580,7 +575,6 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="6873263987691478642">Geteilte Ansicht</translation>
 <translation id="6888009575607455378">Möchten Sie die Änderungen wirklich verwerfen?</translation>
 <translation id="6896758677409633944">Kopieren</translation>
-<translation id="6903907808598579934">Synchronisierung aktivieren</translation>
 <translation id="6914583639806229067">Nach dem kopierten Bild suchen</translation>
 <translation id="6914783257214138813">Ihre Passwörter sind für jeden zugänglich, der die exportierte Passwortdatei aufrufen kann.</translation>
 <translation id="6930799952781667037">Zum Ändern in diese Sprache tippen.</translation>
@@ -711,6 +705,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8225985093977202398">Bilder &amp; Dateien im Cache</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="8281781826761538115">Standard: <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Überspringen</translation>
 <translation id="8283172974887967105">Festlegen…</translation>
 <translation id="8299417921174340354">Sie müssen zuerst einen Sicherheitscode auf Ihrem Gerät einrichten, um Passwörter zu verwenden.</translation>
 <translation id="8319076807703933069">Neue Suche</translation>

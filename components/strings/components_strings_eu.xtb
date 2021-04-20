@@ -1166,6 +1166,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5344579389779391559">Baliteke orri hau dirua kobratzen saiatzea</translation>
 <translation id="5355557959165512791">Une honetan ezin zara joan <ph name="SITE" /> webgunera ziurtagiria ukatu egin delako. Sareko erroreak eta erasoak aldi baterakoak izan ohi dira; beraz, geroago funtzionatuko du orriak, segur aski.</translation>
 <translation id="536296301121032821">Ezin izan dira gorde gidalerroaren ezarpenak</translation>
+<translation id="5363309033720083897">Administratzaileak onartu duen serieko ataka</translation>
 <translation id="5371425731340848620">Eguneratu txartela</translation>
 <translation id="5377026284221673050">"Erlojua atzeratuta duzu", "Erlojua aurreratuta duzu" edo "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5386426401304769735">Webgune honen ziurtagiri-kateak SHA-1 bidez sinatutako ziurtagiri bat dauka.</translation>
@@ -1258,7 +1259,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="57094364128775171">Iradoki pasahitz seguru bat…</translation>
 <translation id="5710435578057952990">Ez da egiaztatu webgune honen identitatea.</translation>
 <translation id="571403275720188526">(arm64)</translation>
-<translation id="5720705177508910913">Uneko erabiltzailea</translation>
+<translation id="5720705177508910913">Oraingo erabiltzailea</translation>
 <translation id="5728056243719941842">C5 (gutun-azala)</translation>
 <translation id="5730040223043577876">Pasahitza beste webgune batzuetan ere erabili baduzu, hura berrezartzea gomendatzen du Chrome-k.</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Gorde txartela Google-ko kontuan}other{Gorde txartelak Google-ko kontuan}}</translation>
@@ -1746,7 +1747,7 @@ Xehetasun gehiago:
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7662298039739062396">Luzapen batek kontrolatzen du ezarpena</translation>
 <translation id="7663736086183791259">Ziurtagiria <ph name="CERTIFICATE_VALIDITY" /></translation>
-<translation id="7667346355482952095">Itzuli den gidalerro-tokena hutsik dago edo ez dator bat uneko tokenarekin</translation>
+<translation id="7667346355482952095">Itzuli den gidalerro-tokena hutsik dago edo ez dator bat oraingo tokenarekin</translation>
 <translation id="7668654391829183341">Identifikatu ezin den gailua</translation>
 <translation id="7669271284792375604">Webgune honetako erasotzaileak zu engainatzen saia litezke, sarea arakatzea oztopatuko dizuten programak instala ditzazun. Besteak beste, hasierako orria alda lezakete edo ikusten dituzun webguneetan iragarki gehiago erakuts litzakete programok.</translation>
 <translation id="7673278391011283842">6. postontzia</translation>

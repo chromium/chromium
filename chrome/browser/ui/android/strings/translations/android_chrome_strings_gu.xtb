@@ -305,7 +305,6 @@
 <translation id="3016635187733453316">ખાતરી કરો કે આ ડિવાઇસ ઇન્ટરનેટ સાથે કનેક્ટ કરેલું છે</translation>
 <translation id="3029704984691124060">પાસફ્રેઝેસ મેળ ખાતા નથી</translation>
 <translation id="3031225630520268969">Assistant વૉઇસ શોધની સંમતિ માટેનું UI</translation>
-<translation id="3034163383943672781">ડાઉનલોડ <ph name="DATE" />ના રોજ શરૂ થશે.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />સહાય મેળવો<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">આગલી વખતે આ સાઇટ પર ઝડપથી ઍક્સેસ મેળવો</translation>
 <translation id="305593374596241526">સ્થાન બંધ છે, તેને <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ચાલુ કરો.</translation>
@@ -526,7 +525,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# મિનિટ પહેલાં}one{# મિનિટ પહેલાં}other{# મિનિટ પહેલાં}}</translation>
 <translation id="4587589328781138893">સાઇટ</translation>
 <translation id="4594952190837476234">આ ઑફલાઇન પેજ <ph name="CREATION_TIME" /> ના રોજનું છે અને તે ઑનલાઇન વર્ઝનથી અલગ હોઈ શકે છે.</translation>
-<translation id="4605958867780575332">આઇટમ દૂર કરી: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ખોલો</translation>
 <translation id="4619564267100705184">આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="4634124774493850572">પાસવર્ડનો ઉપયોગ કરો</translation>
@@ -702,7 +700,6 @@
 <translation id="572328651809341494">તાજેતરના ટેબ્સ</translation>
 <translation id="5723735397759933332">હવે લાઇટ મોડ HTTPS પેજ પર છબીઓને ઑપ્ટિમાઇઝ કરવાથી, તમારો વધુ ડેટા બચે છે.</translation>
 <translation id="5726692708398506830">પૃષ્ઠ પરની તમામ સામગ્રીને મોટી કરો</translation>
-<translation id="5732819098735351888">ડાઉનલોડ વાઇ-ફાઇ પર ચાલુ થશે.</translation>
 <translation id="5733983706093266635">QR કોડ બનાવી શકતાં નથી. URL <ph name="CHARACTER_LIMIT" />થી વધુ અક્ષરો ધરાવે છે.</translation>
 <translation id="5748802427693696783">માનક ટૅબ્સ પર સ્વિચ કરેલ છે</translation>
 <translation id="5749068826913805084">ફાઇલો ડાઉનલોડ કરવા માટે Chrome ને સ્ટોરેજ ઍક્સેસની જરૂર છે.</translation>
@@ -781,7 +778,6 @@
 <translation id="6159335304067198720"><ph name="PERCENT" /> ડેટા બચત</translation>
 <translation id="6186394685773237175">ચેડાં કરાયેલો કોઈ પાસવર્ડ મળ્યો નથી</translation>
 <translation id="6192907950379606605">છબીના વર્ણનો મેળવો</translation>
-<translation id="6206830853671714236">ડાઉનલોડ કરવાનો સમય પસંદ કરો</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> નથી?</translation>
 <translation id="6211386937064921208">આ પેજનો પ્રીવ્યૂ કરી રહ્યાં છીએ</translation>
 <translation id="6218096829563201111">આના જેવી પ્રોડક્ટ શોધો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
@@ -1177,12 +1173,14 @@
 <translation id="8699120352855309748">આ ભાષાઓનો અનુવાદ કરવાની ઑફર કરશો નહીં</translation>
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
+<translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="8748850008226585750">સામગ્રીઓ છુપાવેલ છે</translation>
 <translation id="8773160212632396039">વિનંતી પર પ્રક્રિયા ચાલુ છે</translation>
 <translation id="8788265440806329501">નૅવિગેશન ઇતિહાસ બંધ છે</translation>
 <translation id="8788968922598763114">છેલ્લે બંધ કરેલ ટૅબ ફરીથી ખોલો</translation>
 <translation id="8798449543960971550">વાંચેલાં</translation>
 <translation id="8812260976093120287">કેટલીક વેબસાઇટ પર, તમે સમર્થિત ચુકવણી ઍપ્લિકેશનો વડે ચુકવણી કરી શકો છો.</translation>
+<translation id="8814190375133053267">વાઇ-ફાઇ</translation>
 <translation id="881688628773363275">પ્રીવ્યૂ ટૅબનું કન્ટેન્ટ જોઈ શકાતું નથી.</translation>
 <translation id="8820817407110198400">બુકમાર્ક</translation>
 <translation id="883806473910249246">કન્ટેન્ટ ડાઉનલોડ કરતી વખતે એક ભૂલ આવી.</translation>
@@ -1220,10 +1218,10 @@
 <translation id="9063523880881406963">વિનંતી ડેસ્કટૉપ સાઇટ બંધ કરો</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>
 <translation id="9065383040763568503">Chromeને મહત્ત્વનો ન લાગતો હોય તેવો સ્ટોર કરેલો ડેટા (દા.ત., કોઇ સાચવેલા સેટિંગ ન હોય તેવી અથવા વારંવાર મુલાકાત ન લેવાતી હોય તેવી સાઇટ)</translation>
-<translation id="9069543557624799859"><ph name="TIME" /> વાગ્યે ડાઉનલોડ શરૂ થશે.</translation>
 <translation id="9069999660519089861">વાંચ્યા વગરનું કોઈ પેજ નથી</translation>
 <translation id="9070377983101773829">વૉઇસ શોધ પ્રારંભ કરો</translation>
 <translation id="9074336505530349563">Google દ્વારા સૂચવેલ વ્યક્તિગત કરેલ કન્ટેન્ટ મેળવવા માટે, સાઇન ઇન કરો અને સિંક કરવાનું ચાલુ કરો</translation>
+<translation id="9074739597929991885">બ્લૂટૂથ</translation>
 <translation id="9086302186042011942">સમન્વય કરી રહ્યું છે</translation>
 <translation id="9086455579313502267">નેટવર્ક ઍક્સેસ કરવામાં અક્ષમ છે</translation>
 <translation id="9100505651305367705">જ્યારે સપોર્ટ કરતું હોય, ત્યારે લેખો સરળ દૃશ્યમાં બતાવવાનું ઑફર કરો</translation>

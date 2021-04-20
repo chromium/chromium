@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Afișează parola</translation>
 <translation id="1872096359983322073">Lanternă</translation>
 <translation id="1911619930368729126">Încarcă în Google Drive</translation>
-<translation id="1919130412786645364">Permite conectarea la Chrome</translation>
 <translation id="1923342640370224680">Ultima oră</translation>
 <translation id="1941314575388338491">Atinge de două ori pentru a copia.</translation>
 <translation id="1952172573699511566">Site-urile vor afișa textul în limba ta preferată, dacă este posibil.</translation>
@@ -216,7 +215,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 
 În modul incognito, site-urile nu pot folosi cookie-urile pentru a vedea activitatea ta de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile.</translation>
 <translation id="3207960819495026254">Marcată</translation>
-<translation id="3222343486469566063">Nu sunteți conectat(ă)</translation>
 <translation id="3224641773458703735">Pentru a exporta parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
 <translation id="3240426699337459095">Linkul a fost copiat</translation>
 <translation id="3244271242291266297">LL</translation>
@@ -286,8 +284,6 @@ Urmează pașii de mai jos:</translation>
 <translation id="3928666092801078803">Combină datele</translation>
 <translation id="3929457972718048006">Adrese</translation>
 <translation id="3943492037546055397">Parole</translation>
-<translation id="3943557322767080599">Afișează solicitări de conectare de la Chrome când te conectezi la Contul Google</translation>
-<translation id="3967266340354872733">Pentru mai multe setări privind confidențialitatea, securitatea și colectarea datelor, consultă <ph name="BEGIN_LINK" />Sincronizarea<ph name="END_LINK" /> și <ph name="BEGIN_LINK" />Serviciile Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Descărcare finalizată</translation>
 <translation id="3968505803272650567">Gestionează interesele</translation>
 <translation id="3989635538409502728">Deconectează-te</translation>
@@ -568,7 +564,6 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6760509555861141183">Revino la fila Recente</translation>
 <translation id="6780034285637185932">Codul poștal</translation>
 <translation id="6785453220513215166">Se trimite raportul de blocare...</translation>
-<translation id="679325081238418596">Accesează marcajele, istoricul, parolele și alte setări pe toate dispozitivele</translation>
 <translation id="6797885426782475225">Căutare vocală</translation>
 <translation id="6807889908376551050">Afișați toate...</translation>
 <translation id="681368974849482173">Element creat</translation>
@@ -580,7 +575,6 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6873263987691478642">Vizualizare împărțită</translation>
 <translation id="6888009575607455378">Sigur vrei să renunți la modificări?</translation>
 <translation id="6896758677409633944">Copiază</translation>
-<translation id="6903907808598579934">Activează sincronizarea</translation>
 <translation id="6914583639806229067">Caută imaginea pe care ai copiat-o</translation>
 <translation id="6914783257214138813">Parolele vor fi vizibile pentru toți cei care pot vedea fișierul exportat.</translation>
 <translation id="6930799952781667037">Atinge ca să schimbi limba.</translation>
@@ -711,6 +705,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8225985093977202398">Imaginile și fișierele memorate în cache</translation>
 <translation id="8261506727792406068">Șterge</translation>
 <translation id="8281781826761538115">Prestabilit – <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Omite</translation>
 <translation id="8283172974887967105">Setează…</translation>
 <translation id="8299417921174340354">Pentru a folosi parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
 <translation id="8319076807703933069">Căutare nouă</translation>

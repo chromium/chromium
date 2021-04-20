@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Mostrar palavra-passe</translation>
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1911619930368729126">Carregar p/ Google Drive</translation>
-<translation id="1919130412786645364">Permitir o início de sessão no Chrome</translation>
 <translation id="1923342640370224680">Última Hora</translation>
 <translation id="1941314575388338491">Toque duas vezes para copiar.</translation>
 <translation id="1952172573699511566">Quando possível, os Websites apresentam o texto no seu idioma preferido.</translation>
@@ -216,7 +215,6 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 
 Quando estiver na Navegação anónima, os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="3207960819495026254">Adicionado aos marcadores</translation>
-<translation id="3222343486469566063">Não tem Sessão Iniciada</translation>
 <translation id="3224641773458703735">Para exportar palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="3240426699337459095">Link copiado</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@ Siga os passos abaixo:</translation>
 <translation id="3928666092801078803">Combinar os meus dados</translation>
 <translation id="3929457972718048006">Endereços</translation>
 <translation id="3943492037546055397">Palavras-passe</translation>
-<translation id="3943557322767080599">Apresentar pedidos de início de sessão do Chrome quando inicia sessão na sua Conta Google.</translation>
-<translation id="3967266340354872733">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK" />Sincronização<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />serviços Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
 <translation id="3968505803272650567">Gerir interesses</translation>
 <translation id="3989635538409502728">Terminar sessão</translation>
@@ -568,7 +564,6 @@ Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="6760509555861141183">Volte ao separador Recentes</translation>
 <translation id="6780034285637185932">Código postal</translation>
 <translation id="6785453220513215166">A enviar relatório de falha...</translation>
-<translation id="679325081238418596">Obter os marcadores, histórico, palavras-passe e outras definições em todos os dispositivos</translation>
 <translation id="6797885426782475225">Pesquisa por voz</translation>
 <translation id="6807889908376551050">Mostrar todos...</translation>
 <translation id="681368974849482173">Item criado</translation>
@@ -580,7 +575,6 @@ Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="6873263987691478642">Vista dividida</translation>
 <translation id="6888009575607455378">Tem a certeza de que pretende rejeitar as alterações?</translation>
 <translation id="6896758677409633944">Copiar</translation>
-<translation id="6903907808598579934">Ativar sincronização</translation>
 <translation id="6914583639806229067">Pesquisar imagem que copiou</translation>
 <translation id="6914783257214138813">As suas palavras-passe serão visíveis para todas as pessoas que consigam ver o ficheiro exportado.</translation>
 <translation id="6930799952781667037">Toque para alterar para este idioma.</translation>
@@ -711,6 +705,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8225985093977202398">Imagens e ficheiros em cache</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8281781826761538115">Predefinição – <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Ignorar</translation>
 <translation id="8283172974887967105">Definir…</translation>
 <translation id="8299417921174340354">Para utilizar palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="8319076807703933069">Nova pesquisa</translation>

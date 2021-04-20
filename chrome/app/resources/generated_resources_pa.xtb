@@ -328,7 +328,6 @@
 <translation id="1354045473509304750"><ph name="HOST" /> ਨੂੰ ਆਪਣਾ ਕੈਮਰਾ ਵਰਤਣ ਅਤੇ ਹਿਲਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣੀ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="1355088139103479645">ਕੀ ਸਾਰਾ ਡਾਟਾ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> ਨੂੰ ਬਲੌਕ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
-<translation id="1358612436266364864">ਹਾਈਲਾਈਟਾਂ ਹਟਾਓ</translation>
 <translation id="1358741672408003399">ਸਪੈਲਿੰਗ ਅਤੇ ਵਿਆਕਰਨ</translation>
 <translation id="1359923111303110318">ਤੁਹਾਡਾ ਡੀਵਾਈਸ 'ਸਮਾਰਟ ਲਾਕ' ਨਾਲ ਅਣਲਾਕ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਅਣਲਾਕ ਕਰਨ ਲਈ ਐਂਟਰ ਦਬਾਓ।</translation>
 <translation id="1361164813881551742">ਹੱਥੀਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -1608,7 +1607,6 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> ਦੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਵੀ ਰੀਸੈੱਟ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="2735712963799620190">ਸਮਾਂ ਨਿਯਤ ਕਰੋ</translation>
 <translation id="2737363922397526254">ਸਮੇਟੋ ...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦੀਆਂ ਸਮੱਗਰੀਆਂ ਨੂੰ <ph name="TARGET_NAME" /> ਨਾਲ ਸਾਂਝਾ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ।</translation>
 <translation id="2738030019664645674">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਸਥਾਪਤ ਫ਼ੌਂਟਾਂ ਨੂੰ ਵਰਤਣ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
 <translation id="2738771556149464852">ਬਾਅਦ ਵਿੱਚ ਨਹੀਂ</translation>
 <translation id="2739191690716947896">ਡੀਬੱਗ</translation>
@@ -1895,7 +1893,6 @@
 <translation id="3031417829280473749">ਏਜੰਟ X</translation>
 <translation id="3031557471081358569">ਆਯਾਤ ਕਰਨ ਲਈ ਆਈਟਮਾਂ ਚੁਣੋ:</translation>
 <translation id="3036327949511794916">ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਵਾਪਸ ਕਰਨ ਦੀ ਸਮਾਂ-ਸੀਮਾ ਲੰਘ ਗਈ ਹੈ।</translation>
-<translation id="3036438888981457032">ਹਾਈਲਾਈਟਾਂ ਹਟਾਓ</translation>
 <translation id="3036546437875325427">ਫਲੈਸ਼ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3037754279345160234">ਡੋਮੇਨ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਲਈ ਸੰਰੂਪਣ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="3038612606416062604">ਕਿਸੇ ਪ੍ਰਿੰਟਰ ਨੂੰ ਦਸਤੀ ਤੌਰ 'ਤੇ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -4658,7 +4655,6 @@
 <translation id="6212039847102026977">ਵਿਕਸਿਤ ਨੈੱਟਵਰਕ ਪ੍ਰਾਪਰਟੀਆਂ ਦਿਖਾਓ</translation>
 <translation id="6212168817037875041">ਡਿਸਪਲੇ ਬੰਦ ਕਰੋ</translation>
 <translation id="6212752530110374741">ਲਿੰਕ ਈਮੇਲ ਕਰੋ</translation>
-<translation id="6213230117190778270">ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="621470880408090483">ਸਾਈਟਾਂ ਨੂੰ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
 <translation id="6215620815501168899">ਡੀਵਾਈਸ EID ਅਤੇ QR ਕੋਡ ਪੌਪਅੱਪ ਬੰਦ ਕਰੋ</translation>
 <translation id="6216601812881225442">ਤੁਹਾਡਾ ਕੰਟੇਨਰ ਆਕਾਰ ਬਦਲਣ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। Linux ਲਈ ਪਹਿਲਾਂ-ਨਿਰਧਾਰਿਤ ਕੀਤੀ ਜਗ੍ਹਾ ਦੀ ਮਾਤਰਾ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰਨ ਲਈ, ਬੈਕਅੱਪ ਲਓ ਅਤੇ ਫਿਰ ਕਿਸੇ ਨਵੇਂ ਕੰਟੇਨਰ ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕਰੋ।</translation>
@@ -5452,7 +5448,6 @@
 <translation id="7076293881109082629">ਸਾਈਨ ਇਨ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7077829361966535409">ਸਾਈਨ-ਇਨ ਪੰਨਾ ਵਰਤਮਾਨ ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਦੀ ਵਰਤੋਂ ਹੋਏ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਫਲ ਰਿਹਾ। ਕਿਰਪਾ ਕਰਕੇ <ph name="GAIA_RELOAD_LINK_START" />ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ<ph name="GAIA_RELOAD_LINK_END" /> ਜਾਂ ਵੱਖ-ਵੱਖ <ph name="PROXY_SETTINGS_LINK_START" />ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ<ph name="PROXY_SETTINGS_LINK_END" /> ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="7078120482318506217">ਸਾਰੇ ਨੈੱਟਵਰਕ</translation>
-<translation id="7078386829626602215">ਕਿਸੇ ਡੀਵਾਈਸ ਦਾ ਪਤਾ ਨਹੀਂ ਲੱਗਿਆ <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">ਆਡੀਓ ਪਤਾ ਕਾ&amp;ਪੀ ਕਰੋ</translation>
 <translation id="7081952801286122383">ਤੁਸੀਂ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਹੋ</translation>
 <translation id="708278670402572152">ਸਕੈਨ ਕਰਨਾ ਚਾਲੂ ਕਰਨ ਲਈ ਡਿਸਕਨੈਕਟ ਕਰੋ</translation>
@@ -5501,11 +5496,9 @@
 <translation id="7135729336746831607">ਕੀ ਬਲੂਟੁੱਥ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਹੁਣ ਤੁਰੰਤ ਆਪਣੇ <ph name="DEVICE_TYPE" /> ਡੀਵਾਈਸ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="7136694880210472378">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬਣਾਓ</translation>
-<translation id="7136984461011502314"><ph name="PRODUCT_NAME" /> ਵਿੱਚ ਸੁਆਗਤ ਹੈ</translation>
 <translation id="7136993520339022828">ਕੋਈ ਗੜਬੜ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਹੋਰ ਚਿੱਤਰਾਂ ਦੀ ਚੋਣ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੀ ਹੈ</translation>
 <translation id="7141105143012495934">ਸਾਈਨ-ਇਨ ਅਸਫਲ ਹੋਇਆ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਖਾਤੇ ਦਾ ਵੇਰਵਿਆਂ ਨੂੰ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ ਜਾਂ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="7143358760238281735">ਕੋਈ ਐਪ ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="7144878232160441200">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="7149893636342594995">ਪਿਛਲੇ 24 ਘੰਟੇ</translation>
 <translation id="7152478047064750137">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਲਈ ਕੋਈ ਖਾਸ ਇਜਾਜ਼ਤਾਂ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ</translation>
@@ -6456,7 +6449,6 @@
 <translation id="8189750580333936930">ਪ੍ਰਾਈਵੇਸੀ ਸੈਂਡਬਾਕਸ</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> ਨਾਲ ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="8191230140820435481">ਆਪਣੇ ਐਪਸ, ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਵਿਸ਼ੇ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦੀਆਂ ਸਮੱਗਰੀਆਂ ਨੂੰ ਸਾਂਝਾ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ।</translation>
 <translation id="8195027750202970175">ਡਿਸਕ 'ਤੇ ਆਕਾਰ</translation>
 <translation id="8198323535106903877">ਅਸੀਂ ਤੁਹਾਡੇ ਲਈ ਉਹ <ph name="NUMBER_OF_APPS" /> ਐਪਾਂ ਸਥਾਪਤ ਕਰਾਂਗੇ</translation>
 <translation id="8199300056570174101">ਨੈੱਟਵਰਕ (ਸੇਵਾ) ਅਤੇ ਡੀਵਾਈਸ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ</translation>
@@ -6880,6 +6872,7 @@
 <translation id="8698269656364382265">ਪਿਛਲੀ ਸਕ੍ਰੀਨ 'ਤੇ ਵਾਪਸ ਜਾਣ ਲਈ, ਖੱਬੇ ਪਾਸੇ ਤੋਂ ਸਵਾਈਪ ਕਰੋ।</translation>
 <translation id="869884720829132584">ਐਪਲੀਕੇਸ਼ਨ ਮੀਨੂ</translation>
 <translation id="869891660844655955">ਮਿਆਦ ਪੁੱਗਣ ਦੀ ਤਾਰੀਖ</translation>
+<translation id="8699120352855309748">ਇਹਨਾਂ ਭਾਸ਼ਾਵਾਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਨਾ ਕਰੋ</translation>
 <translation id="8702825062053163569">ਤੁਹਾਡਾ <ph name="DEVICE_TYPE" /> ਲਾਕ ਕੀਤਾ ਗਿਆ ਸੀ।</translation>
 <translation id="8703346390800944767">ਵਿਗਿਆਪਨ ਛੱਡੋ</translation>
 <translation id="8705331520020532516">ਸੀਰੀਅਲ ਨੰਬਰ</translation>

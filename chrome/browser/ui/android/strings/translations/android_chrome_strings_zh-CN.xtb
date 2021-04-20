@@ -305,7 +305,6 @@
 <translation id="3016635187733453316">请确保此设备已连接到互联网。</translation>
 <translation id="3029704984691124060">密码不匹配</translation>
 <translation id="3031225630520268969">针对 Google 助理语音搜索功能的用户意见征求界面</translation>
-<translation id="3034163383943672781">将于 <ph name="DATE" />开始下载。</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />获取帮助<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">下次可更快速地转到此网站</translation>
 <translation id="305593374596241526">位置信息功能现处于关闭状态；请在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启此项功能。</translation>
@@ -526,7 +525,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# 分钟前}other{# 分钟前}}</translation>
 <translation id="4587589328781138893">网站</translation>
 <translation id="4594952190837476234">此离线网页是在 <ph name="CREATION_TIME" />创建的，可能与在线版本有所不同。</translation>
-<translation id="4605958867780575332">以下项已移除：<ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">打开<ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
 <translation id="4634124774493850572">使用密码</translation>
@@ -702,7 +700,6 @@
 <translation id="572328651809341494">最近打开的标签页</translation>
 <translation id="5723735397759933332">现在，精简模式会优化 HTTPS 网页上的图片，为您节省更多流量。</translation>
 <translation id="5726692708398506830">放大网页上的所有内容</translation>
-<translation id="5732819098735351888">一旦有 Wi-Fi 可用即开始下载。</translation>
 <translation id="5733983706093266635">无法创建二维码。网址长度超出了 <ph name="CHARACTER_LIMIT" /> 个字符（上限）。</translation>
 <translation id="5748802427693696783">已切换到标准标签页</translation>
 <translation id="5749068826913805084">Chrome 需要具备存储空间使用权限，才能下载文件。</translation>
@@ -779,9 +776,9 @@
 <translation id="614940544461990577">请试试以下办法：</translation>
 <translation id="6154478581116148741">需在“设置”部分中开启屏幕锁定功能，才能从此设备中导出您的密码</translation>
 <translation id="6159335304067198720">节省 <ph name="PERCENT" /> 的数据流量</translation>
+<translation id="6159729262978459665">会从所有已同步的设备中清除历史记录。</translation>
 <translation id="6186394685773237175">未发现任何已泄露的密码</translation>
 <translation id="6192907950379606605">获取图片说明</translation>
-<translation id="6206830853671714236">请选择下载时间</translation>
 <translation id="6210748933810148297">不是 <ph name="EMAIL" />？</translation>
 <translation id="6211386937064921208">正在预览此页</translation>
 <translation id="6218096829563201111">搜索类似商品<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@
 <translation id="7523960634226602883">借助摄像头使用 Google 智能镜头进行搜索</translation>
 <translation id="753225086557513863">已安排为延后下载</translation>
 <translation id="7559975015014302720">精简模式已关闭</translation>
+<translation id="7560448309733608642">会从所有已同步的设备中清除历史记录。您的 Google 帐号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="7562080006725997899">正在清除浏览数据</translation>
 <translation id="756809126120519699">已清除 Chrome 数据</translation>
 <translation id="7577900504646297215">管理我的兴趣</translation>
@@ -1177,12 +1175,14 @@
 <translation id="8699120352855309748">不询问是否翻译这些语言</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8725066075913043281">重试</translation>
+<translation id="8730621377337864115">完成</translation>
 <translation id="8748850008226585750">内容已隐藏</translation>
 <translation id="8773160212632396039">正在处理请求</translation>
 <translation id="8788265440806329501">导航历史记录已关闭</translation>
 <translation id="8788968922598763114">重新打开上次关闭的标签页</translation>
 <translation id="8798449543960971550">已读</translation>
 <translation id="8812260976093120287">在某些网站上，您可以使用自己的设备通过上述支持的付款应用付款。</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">无法查看标签页的预览内容。</translation>
 <translation id="8820817407110198400">书签</translation>
 <translation id="883806473910249246">下载此内容时出错。</translation>
@@ -1220,10 +1220,10 @@
 <translation id="9063523880881406963">关闭“请求切换到桌面版网站”</translation>
 <translation id="9065203028668620118">编辑</translation>
 <translation id="9065383040763568503">Chrome 认为不重要的网站（例如未保存任何设置的网站或您不常访问的网站）存储的数据</translation>
-<translation id="9069543557624799859">将于<ph name="TIME" /> 开始下载。</translation>
 <translation id="9069999660519089861">无未读页面</translation>
 <translation id="9070377983101773829">开始语音搜索</translation>
 <translation id="9074336505530349563">要获取 Google 推荐的个性化内容，请登录您的帐号并开启同步功能</translation>
+<translation id="9074739597929991885">蓝牙</translation>
 <translation id="9086302186042011942">正在同步</translation>
 <translation id="9086455579313502267">无法访问网络</translation>
 <translation id="9100505651305367705">询问是否使用简化版视图显示支持这一功能的文章</translation>

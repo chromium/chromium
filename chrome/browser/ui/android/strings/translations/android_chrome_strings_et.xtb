@@ -305,7 +305,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3016635187733453316">Veenduge, et seadmel oleks internetiühendus</translation>
 <translation id="3029704984691124060">Paroolid ei ühti</translation>
 <translation id="3031225630520268969">Assistendi häälotsingu sisu kasutajaliides</translation>
-<translation id="3034163383943672781">Allalaadimine algab <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Küsige abi<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Liikuge järgmine kord sellele saidile kiiremini</translation>
 <translation id="305593374596241526">Asukoht on välja lülitatud. Lülitage see sisse <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minut tagasi}other{# minutit tagasi}}</translation>
 <translation id="4587589328781138893">Saidid</translation>
 <translation id="4594952190837476234">Võrguühenduseta leht loodi <ph name="CREATION_TIME" /> ja see võib veebiversioonist erineda.</translation>
-<translation id="4605958867780575332">Üksus on eemaldatud: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Ava <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Kinnitage, et see olete teie</translation>
 <translation id="4634124774493850572">Kasuta parooli</translation>
@@ -702,7 +700,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="572328651809341494">Hiljutised vahelehed</translation>
 <translation id="5723735397759933332">Lihtsustatud režiim säästab nüüd rohkem andmemahtu, optimeerides HTTPS-lehtedel kujutisi.</translation>
 <translation id="5726692708398506830">Lehel kuvatud sisu suurendamine</translation>
-<translation id="5732819098735351888">Allalaadimine algab WiFi kaudu.</translation>
 <translation id="5733983706093266635">QR-koodi ei saa luua. URL on pikem kui <ph name="CHARACTER_LIMIT" /> tähemärki.</translation>
 <translation id="5748802427693696783">Tavapärased vahelehed on aktiveeritud</translation>
 <translation id="5749068826913805084">Chrome vajab failide allalaadimiseks juurdepääsu salvestusruumile.</translation>
@@ -779,9 +776,9 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="614940544461990577">Proovige järgmist.</translation>
 <translation id="6154478581116148741">Seadmes olevate paroolide eksportimiseks lülitage seadetes ekraanilukk sisse.</translation>
 <translation id="6159335304067198720">Andmemahu kokkuhoid: <ph name="PERCENT" /></translation>
+<translation id="6159729262978459665">Kustutab ajaloo kõigist sünkroonitud seadmetest.</translation>
 <translation id="6186394685773237175">Ohustatud paroole ei leitud</translation>
 <translation id="6192907950379606605">Piltide kirjelduste saamine</translation>
-<translation id="6206830853671714236">Valige, millal alla laadida</translation>
 <translation id="6210748933810148297">Kas pole <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Selle lehe eelvaade</translation>
 <translation id="6218096829563201111">Otsige sarnaseid tooteid <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="7523960634226602883">Otsige Google Lensi abil oma kaameraga</translation>
 <translation id="753225086557513863">Ajastatud hilisemaks</translation>
 <translation id="7559975015014302720">Lihtsustatud režiim on väljas</translation>
+<translation id="7560448309733608642">Kustutab ajaloo kõigist sünkroonitud seadmetest. Aadressil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu.</translation>
 <translation id="7562080006725997899">Sirvimisandmete kustutamine</translation>
 <translation id="756809126120519699">Chrome'i andmed kustutati</translation>
 <translation id="7577900504646297215">Huvide haldamine</translation>
@@ -1177,12 +1175,14 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="8699120352855309748">Ära paku nende keelte tõlkimist</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8725066075913043281">Proovi uuesti</translation>
+<translation id="8730621377337864115">Valmis</translation>
 <translation id="8748850008226585750">Sisu on peidetud</translation>
 <translation id="8773160212632396039">Taotluse töötlemine</translation>
 <translation id="8788265440806329501">Navigeerimisajalugu on suletud</translation>
 <translation id="8788968922598763114">Viimati suletud vahelehe uuesti avamine</translation>
 <translation id="8798449543960971550">Loetud</translation>
 <translation id="8812260976093120287">Mõnel veebisaidil saate maksta ülalolevate teie seadmes toetatud makserakendustega.</translation>
+<translation id="8814190375133053267">WiFi</translation>
 <translation id="881688628773363275">Eelvaate vahelehe sisu ei saa vaadata.</translation>
 <translation id="8820817407110198400">Järjehoidjad</translation>
 <translation id="883806473910249246">Sisu allalaadimisel ilmnes viga.</translation>
@@ -1220,10 +1220,10 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="9063523880881406963">Valiku Taotle arvutisaiti väljalülitamine</translation>
 <translation id="9065203028668620118">Muuda</translation>
 <translation id="9065383040763568503">Salvestatud andmed, mida Chrome peab ebaoluliseks (nt saidid, mida külastate harva või millel ei ole salvestatud seadeid)</translation>
-<translation id="9069543557624799859">Allalaadimine algab <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Pole lugemata lehti</translation>
 <translation id="9070377983101773829">Häälotsingu alustamine</translation>
 <translation id="9074336505530349563">Google'i soovitatud isikupärastatud sisu hankimiseks logige sisse ja lülitage sünkroonimine sisse</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Sünkroonimine</translation>
 <translation id="9086455579313502267">Ei saa võrgule juurdepääsu</translation>
 <translation id="9100505651305367705">Pakutakse artiklite kuvamist lihtsustatud vaates, kui seda toetatakse</translation>

@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">Seguir permitindo que <ph name="HOST" /> use e mova a túa cámara</translation>
 <translation id="1355088139103479645">Queres eliminar todos os datos?</translation>
 <translation id="1355466263109342573">O complemento (<ph name="PLUGIN_NAME" />) está bloqueado</translation>
-<translation id="1358612436266364864">Quitar destaques</translation>
 <translation id="1358741672408003399">Ortografía e gramática</translation>
 <translation id="1359923111303110318">O dispositivo pode desbloquearse con Smart Lock. Preme Intro para desbloquealo.</translation>
 <translation id="1361164813881551742">Engadir impresora manualmente</translation>
@@ -882,6 +881,7 @@
 <translation id="1928202201223835302">Introducir PIN antigo</translation>
 <translation id="1928696683969751773">Actualizacións</translation>
 <translation id="1929186283613845153">Estase analizando este ficheiro.</translation>
+<translation id="1929343511231420085">Calquera porto en serie</translation>
 <translation id="1929546189971853037">Ler o historial de navegación en todos os dispositivos en que inicies sesión</translation>
 <translation id="1930879306590754738">O contrasinal eliminouse deste dispositivo e da túa Conta de Google</translation>
 <translation id="1931152874660185993">Non se instalou ningún compoñente.</translation>
@@ -1606,7 +1606,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2734760316755174687">Tamén se restablecerán os sitios situados en <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Programación</translation>
 <translation id="2737363922397526254">Contraer...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> solicita que compartas o contido da túa pantalla con <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Non permitir que os sitios utilicen os tipos de letra instalados no dispositivo</translation>
 <translation id="2738771556149464852">Non despois de</translation>
 <translation id="2739191690716947896">Depuración</translation>
@@ -1894,7 +1893,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3031417829280473749">Axente X</translation>
 <translation id="3031557471081358569">Seleccionar elementos para importar:</translation>
 <translation id="3036327949511794916">Expirou o prazo para devolver este <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3036438888981457032">Quitar destaques</translation>
 <translation id="3036546437875325427">Activar o flash</translation>
 <translation id="3037754279345160234">Non se puido analizar a configuración de unión ao dominio. Ponte en contacto co administrador.</translation>
 <translation id="3038612606416062604">Engadir unha impresora manualmente</translation>
@@ -2941,6 +2939,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4218274196133425560">Quitar excepción para <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Produciuse un erro durante a activación.</translation>
 <translation id="4222772810963087151">Detalles da compilación</translation>
+<translation id="4224284700924043865">Dispositivos USB do provedor <ph name="VENDOR_ID" /> con ID de produto <ph name="PRODUCT_ID" /></translation>
 <translation id="4225397296022057997">En todos os sitios</translation>
 <translation id="4231095370974836764">Instala aplicacións e xogos de Google Play no dispositivo <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurar Kerberos</translation>
@@ -3013,6 +3012,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="431076611119798497">&amp;Detalles</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
 <translation id="4314815835985389558">Xestionar sincronización</translation>
+<translation id="4316650123995163262">Dispositivos USB de <ph name="VENDOR_NAME" /> con ID de produto <ph name="PRODUCT_ID" /></translation>
 <translation id="4316850752623536204">Sitio web para programadores</translation>
 <translation id="4317820549299924617">A verificación non se realizou correctamente</translation>
 <translation id="4320177379694898372">Non hai conexión a Internet</translation>
@@ -3455,6 +3455,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4824958205181053313">Queres cancelar a sincronización?</translation>
 <translation id="4827675678516992122">Non se puido establecer conexión</translation>
 <translation id="4827784381479890589">Usar corrector ortográfico mellorado no navegador Chrome (envíaselle texto a Google para obter suxestións ortográficas)</translation>
+<translation id="482952334869563894">Dispositivos USB do provedor <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Configurar PIN</translation>
 <translation id="4830121310592638841">Preguntar cando un sitio queira abrir e colocar ventás nas túas pantallas</translation>
 <translation id="4830502475412647084">Instalando actualización do SO</translation>
@@ -3744,6 +3745,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5159419673777902220">Teu pai ou túa nai desactivou os permisos para as extensións</translation>
 <translation id="5160634252433617617">Teclado físico</translation>
 <translation id="5160857336552977725">Inicia sesión no teu <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">Dispositivos USB de <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850">Bloqueouse o <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">A pestana moveuse ao final da franxa de pestanas</translation>
 <translation id="5165085578392358314">Asignar un interruptor á acción <ph name="ACTION" /></translation>
@@ -4657,7 +4659,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6212039847102026977">Mostrar propiedades de rede avanzadas</translation>
 <translation id="6212168817037875041">Desactivar a pantalla</translation>
 <translation id="6212752530110374741">Ligazón de correo electrónico</translation>
-<translation id="6213230117190778270">Recibir</translation>
 <translation id="621470880408090483">Non permitir que os sitios se conecten a dispositivos Bluetooth</translation>
 <translation id="6215620815501168899">Pechar ventá emerxente co EID e co código QR correspondente</translation>
 <translation id="6216601812881225442">Non se pode cambiar o tamaño do contedor. Se queres axustar a cantidade de espazo asignado previamente a Linux, fai unha copia de seguranza e restaura os datos nun contedor novo.</translation>
@@ -5371,6 +5372,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6997642619627518301"><ph name="NAME_PH" /> (rexistro de actividade)</translation>
 <translation id="6997707937646349884">Nos teus dispositivos:</translation>
 <translation id="6998793565256476099">Rexistra o dispositivo para realizar videoconferencias</translation>
+<translation id="6999640176621571692">Queres permitir que Google busque descontos para os artigos que engadas aos carros?</translation>
 <translation id="6999956497249459195">Novo grupo</translation>
 <translation id="7000206553895739324">A impresora <ph name="PRINTER_NAME" /> está conectada, pero é necesario configurala</translation>
 <translation id="7000347579424117903">Utiliza Ctrl, Alt ou a tecla de busca</translation>
@@ -5451,7 +5453,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7076293881109082629">Iniciando sesión</translation>
 <translation id="7077829361966535409">Non se puido cargar a páxina de inicio de sesión coa configuración de proxy actual. <ph name="GAIA_RELOAD_LINK_START" />Tenta volver iniciar sesión<ph name="GAIA_RELOAD_LINK_END" /> ou utiliza unha <ph name="PROXY_SETTINGS_LINK_START" />configuración de proxy<ph name="PROXY_SETTINGS_LINK_END" /> diferente.</translation>
 <translation id="7078120482318506217">Todas as redes</translation>
-<translation id="7078386829626602215">Non se detectou ningún dispositivo <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">C&amp;opiar enderezo de audio</translation>
 <translation id="7081952801286122383">Estás no modo de incógnito</translation>
 <translation id="708278670402572152">Desconectar a rede para activar a busca</translation>
@@ -5500,11 +5501,9 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7135729336746831607">Queres activar o Bluetooth?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> require actualizar o teu <ph name="DEVICE_TYPE" /> de inmediato.</translation>
 <translation id="7136694880210472378">Converter en predeterminado</translation>
-<translation id="7136984461011502314">Dámosche a benvida a <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Produciuse un erro. Escolle outras imaxes e téntao de novo.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> está usando o micrófono</translation>
 <translation id="7141105143012495934">Produciuse un erro no inicio de sesión porque non se puideron recuperar os datos da túa conta. Ponte en contacto co administrador ou téntao de novo.</translation>
-<translation id="7143358760238281735">Sen aplicacións dispoñibles</translation>
 <translation id="7144878232160441200">Volver tentar</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7152478047064750137">Esta extensión non necesita permisos especiais</translation>
@@ -6457,7 +6456,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Establecendo conexión con <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Xestiona as túas aplicacións, extensións e temas</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> solicita que compartas o contido da túa pantalla.</translation>
 <translation id="8195027750202970175">Tamaño en disco</translation>
 <translation id="8198323535106903877">Encargarémonos de instalar esas <ph name="NUMBER_OF_APPS" /> aplicacións</translation>
 <translation id="8199300056570174101">Propiedades do dispositivo e da rede (mantemento)</translation>
@@ -6881,6 +6879,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="8698269656364382265">Para volver á pantalla anterior, pasa o dedo desde o lateral esquerdo.</translation>
 <translation id="869884720829132584">Menú de aplicacións</translation>
 <translation id="869891660844655955">Data de vencemento</translation>
+<translation id="8699120352855309748">Non ofrecer a opción de traducir texto escrito nestes idiomas</translation>
 <translation id="8702825062053163569">Bloqueouse o teu dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="8703346390800944767">Omitir anuncio</translation>
 <translation id="8705331520020532516">Número de serie</translation>

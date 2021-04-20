@@ -304,7 +304,6 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3016635187733453316">Zkontrolujte, zda je toto zařízení připojeno k internetu</translation>
 <translation id="3029704984691124060">Heslové fráze se neshodují</translation>
 <translation id="3031225630520268969">Uživatelské rozhraní souhlasu s hlasovým vyhledáváním pomocí Asistenta</translation>
-<translation id="3034163383943672781">Stahování bude zahájeno <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Zobrazit nápovědu<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Příště tento web můžete mít při ruce</translation>
 <translation id="305593374596241526">Určování polohy je vypnuté, zapnete jej v <ph name="BEGIN_LINK" />nastavení zařízení Android<ph name="END_LINK" />.</translation>
@@ -525,7 +524,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4583164079174244168">{MINUTES,plural, =1{před # minutou}few{před # minutami}many{před # minuty}other{před # minutami}}</translation>
 <translation id="4587589328781138893">Weby</translation>
 <translation id="4594952190837476234">Tato offline stránka je z <ph name="CREATION_TIME" /> a může se od online verze lišit.</translation>
-<translation id="4605958867780575332">Tato položka byla odstraněna: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Do aplikace <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Ověřte svou totožnost</translation>
 <translation id="4634124774493850572">Použít heslo</translation>
@@ -701,7 +699,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="572328651809341494">Nedávno použité karty</translation>
 <translation id="5723735397759933332">Zjednodušený režim vám teď ušetří více dat, protože optimalizuje obrázky na stránkách HTTPS.</translation>
 <translation id="5726692708398506830">Zvětšit veškerý obsah stránky</translation>
-<translation id="5732819098735351888">Stahování bude zahájeno při připojení k Wi-Fi.</translation>
 <translation id="5733983706093266635">QR kód nelze vytvořit. Adresa URL je delší než <ph name="CHARACTER_LIMIT" /> znaků.</translation>
 <translation id="5748802427693696783">Přepnuto na standardní karty</translation>
 <translation id="5749068826913805084">Aby bylo možné stahovat soubory, Chrome potřebuje přístup k úložišti.</translation>
@@ -778,9 +775,9 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="614940544461990577">Zkuste:</translation>
 <translation id="6154478581116148741">Chcete-li z tohoto zařízení exportovat svá hesla, zapněte v Nastavení zámek obrazovky</translation>
 <translation id="6159335304067198720">Úspora dat: <ph name="PERCENT" /></translation>
+<translation id="6159729262978459665">Vymaže historii ze všech synchronizovaných zařízení.</translation>
 <translation id="6186394685773237175">Nebylo nalezeno žádné prolomené heslo</translation>
 <translation id="6192907950379606605">Zobrazovat popisy obrázků</translation>
-<translation id="6206830853671714236">Vyberte, kdy chcete stahovat</translation>
 <translation id="6210748933810148297">Nejste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Zobrazování náhledu této stránky</translation>
 <translation id="6218096829563201111">Vyhledat podobné produkty <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
@@ -989,6 +986,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="7523960634226602883">Vyhledávejte ve fotoaparátu pomocí služby Google Lens</translation>
 <translation id="753225086557513863">Naplánováno na později</translation>
 <translation id="7559975015014302720">Zjednodušený režim je vypnutý</translation>
+<translation id="7560448309733608642">Vymaže historii ze všech synchronizovaných zařízení. Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="7562080006725997899">Mazání údajů o prohlížení</translation>
 <translation id="756809126120519699">Vymazání údajů Chromu</translation>
 <translation id="7577900504646297215">Spravovat zájmy</translation>
@@ -1175,12 +1173,14 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="8699120352855309748">Nenabízet překlad do těchto jazyků</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8725066075913043281">Zkusit znovu</translation>
+<translation id="8730621377337864115">Hotovo</translation>
 <translation id="8748850008226585750">Skrytý obsah</translation>
 <translation id="8773160212632396039">Požadavek se zpracovává</translation>
 <translation id="8788265440806329501">Historie navigace je zavřená</translation>
 <translation id="8788968922598763114">Znovu otevřít naposledy zavřenou kartu</translation>
 <translation id="8798449543960971550">Čtení</translation>
 <translation id="8812260976093120287">Na některých webech můžete platit pomocí výše uvedených podporovaných platebních aplikací v zařízení.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Obsah karty náhledu nelze zobrazit.</translation>
 <translation id="8820817407110198400">Záložky</translation>
 <translation id="883806473910249246">Při stahování obsahu došlo k chybě.</translation>
@@ -1218,10 +1218,10 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="9063523880881406963">Vypnout funkci Verzi webu pro PC</translation>
 <translation id="9065203028668620118">Upravit</translation>
 <translation id="9065383040763568503">Uložená data, která Chrome nepovažuje za důležitá (např. weby bez uložených nastavení nebo weby, které nenavštěvujete často)</translation>
-<translation id="9069543557624799859">Stahování bude zahájeno v <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Žádné nepřečtené stránky</translation>
 <translation id="9070377983101773829">Spustit hlasové vyhledávání</translation>
 <translation id="9074336505530349563">Chcete-li od Googlu získat personalizované návrhy obsahu, zapněte synchronizaci</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Synchronizace</translation>
 <translation id="9086455579313502267">Nelze získat přístup k síti.</translation>
 <translation id="9100505651305367705">Nabízet zjednodušené zobrazení článků (pokud je podporováno)</translation>

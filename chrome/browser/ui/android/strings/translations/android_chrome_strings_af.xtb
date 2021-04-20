@@ -305,7 +305,6 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="3016635187733453316">Maak seker dat hierdie toestel aan die internet gekoppel is</translation>
 <translation id="3029704984691124060">Wagwoordfrases stem nie ooreen nie</translation>
 <translation id="3031225630520268969">Assistent-stemsoektog se instemming-UI</translation>
-<translation id="3034163383943672781">Aflaai sal begin op <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Kry hulp<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Kom volgende keer vinniger by hierdie werf uit</translation>
 <translation id="305593374596241526">Ligging is af; skakel dit in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
@@ -526,7 +525,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuut gelede}other{# minute gelede}}</translation>
 <translation id="4587589328781138893">Werwe</translation>
 <translation id="4594952190837476234">Hierdie vanlyn bladsy is van <ph name="CREATION_TIME" /> af en kan van die aanlyn weergawe verskil.</translation>
-<translation id="4605958867780575332">Item is verwyder: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Maak <ph name="WEBAPK_NAME" /> oop</translation>
 <translation id="4619564267100705184">Verifieer dis jy</translation>
 <translation id="4634124774493850572">Gebruik wagwoord</translation>
@@ -702,7 +700,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="572328651809341494">Onlangse oortjies</translation>
 <translation id="5723735397759933332">Ligte modus bespaar jou nou meer data deur prente op HTTPS-bladsye te optimeer.</translation>
 <translation id="5726692708398506830">Maak alles op die bladsy groter</translation>
-<translation id="5732819098735351888">Aflaai sal begin op Wi-Fi.</translation>
 <translation id="5733983706093266635">Kan nie QR-kode skep nie. URL is meer as <ph name="CHARACTER_LIMIT" /> karakters.</translation>
 <translation id="5748802427693696783">Het na standaardoortjies oorgeskakel</translation>
 <translation id="5749068826913805084">Chrome het bergingtoegang nodig om lêers af te laai.</translation>
@@ -779,9 +776,9 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="614940544461990577">Probeer:</translation>
 <translation id="6154478581116148741">Skakel skermslot in Instellings aan om jou wagwoorde van hierdie toestel af uit te voer</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> databesparings</translation>
+<translation id="6159729262978459665">Vee geskiedenis op alle gesinkroniseerde toestelle uit.</translation>
 <translation id="6186394685773237175">Geen gekompromitteerde wagwoorde gekry nie</translation>
 <translation id="6192907950379606605">Kry prentbeskrywings</translation>
-<translation id="6206830853671714236">Kies wanneer om dit af te laai</translation>
 <translation id="6210748933810148297">Nie <ph name="EMAIL" /> nie?</translation>
 <translation id="6211386937064921208">Voorbeskou tans hierdie bladsy</translation>
 <translation id="6218096829563201111">Soek vir soortgelyke produkte <ph name="BEGIN_NEW" />Nuut<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="7523960634226602883">Gebruik Google Lens om met jou kamera te soek</translation>
 <translation id="753225086557513863">Vir later geskeduleer</translation>
 <translation id="7559975015014302720">Ligte Modus is af</translation>
+<translation id="7560448309733608642">Vee geskiedenis op alle gesinkroniseerde toestelle uit. Jou Google-rekening het dalk ander vorme van blaaigeskiedenis by <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Vee blaaierdata uit</translation>
 <translation id="756809126120519699">Het Chrome-data uitgevee</translation>
 <translation id="7577900504646297215">Bestuur belangstellings</translation>
@@ -1177,12 +1175,14 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="8699120352855309748">Moenie aanbied om hierdie tale te vertaal nie</translation>
 <translation id="8712637175834984815">Het dit</translation>
 <translation id="8725066075913043281">Probeer weer</translation>
+<translation id="8730621377337864115">Gedoen</translation>
 <translation id="8748850008226585750">Inhoud word versteek</translation>
 <translation id="8773160212632396039">Verwerk tans versoek</translation>
 <translation id="8788265440806329501">Navigasiegeskiedenis is toegemaak.</translation>
 <translation id="8788968922598763114">Heropen oortjie wat laaste toegemaak is</translation>
 <translation id="8798449543960971550">Lees</translation>
 <translation id="8812260976093120287">Op sommige webwerwe kan jy met gesteunde betalingprogramme op jou toestel betaal.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Voorskou-oortjie se inhoud kan nie bekyk word.</translation>
 <translation id="8820817407110198400">Boekmerke</translation>
 <translation id="883806473910249246">Kon nie die inhoud aflaai nie.</translation>
@@ -1220,10 +1220,10 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="9063523880881406963">Skakel Versoek rekenaarwerf af</translation>
 <translation id="9065203028668620118">Wysig</translation>
 <translation id="9065383040763568503">Gebergde data wat Chrome nie dink belangrik is nie (bv. werwe met geen gestoorde instellings nie of wat jy nie dikwels besoek nie)</translation>
-<translation id="9069543557624799859">Aflaai sal <ph name="TIME" /> begin.</translation>
 <translation id="9069999660519089861">Geen ongeleesde bladsye nie</translation>
 <translation id="9070377983101773829">Begin stemsoektog</translation>
 <translation id="9074336505530349563">Meld aan en skakel sinkronisering aan om gepersonaliseerde inhoud wat deur Google voorgestel is, te kry</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Sinkroniseer tans</translation>
 <translation id="9086455579313502267">Kon nie by netwerk ingaan nie</translation>
 <translation id="9100505651305367705">Bied aan om artikels in vereenvoudigde aansig te wys, as dit gesteun word</translation>

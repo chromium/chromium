@@ -329,7 +329,6 @@
 <translation id="1354045473509304750">I dalje dopuštam da <ph name="HOST" /> koristi i pomiče kameru</translation>
 <translation id="1355088139103479645">Izbrisati sve podatke?</translation>
 <translation id="1355466263109342573">Dodatak <ph name="PLUGIN_NAME" /> je blokiran</translation>
-<translation id="1358612436266364864">Ukloni isticanja</translation>
 <translation id="1358741672408003399">Pravopis i gramatika</translation>
 <translation id="1359923111303110318">Uređaj se može otključati Smart Lockom. Pritisnite Enter za otključavanje.</translation>
 <translation id="1361164813881551742">Dodaj ručno</translation>
@@ -884,6 +883,7 @@
 <translation id="1928202201223835302">Unesite stari PIN</translation>
 <translation id="1928696683969751773">Ažuriranja</translation>
 <translation id="1929186283613845153">U tijeku je pregled datoteke.</translation>
+<translation id="1929343511231420085">Bilo koji serijski priključak</translation>
 <translation id="1929546189971853037">čitati vašu povijest pregledavanja na svim uređajima na koje ste prijavljeni</translation>
 <translation id="1930879306590754738">Zaporka je izbrisana s ovog uređaja i vašeg Google računa</translation>
 <translation id="1931152874660185993">Nema instaliranih komponenti.</translation>
@@ -1609,7 +1609,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="2734760316755174687">Poništit će se i web-lokacije u grupi <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Raspored</translation>
 <translation id="2737363922397526254">Sažmi...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> želi dijeliti sadržaj vašeg zaslona s <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Ne dopuštaj web-lokacijama korištenje fontova instaliranih na uređaju</translation>
 <translation id="2738771556149464852">Ne nakon</translation>
 <translation id="2739191690716947896">Otkloni pogrešku</translation>
@@ -1897,7 +1896,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3031417829280473749">Agentica X</translation>
 <translation id="3031557471081358569">Odaberi stavke za uvoz:</translation>
 <translation id="3036327949511794916">Istekao je rok za vraćanje ovog uređaja <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3036438888981457032">Ukloni isticanja</translation>
 <translation id="3036546437875325427">Omogući Flash</translation>
 <translation id="3037754279345160234">Nije moguće raščlaniti konfiguraciju za pridruživanje domeni. Obratite se administratoru.</translation>
 <translation id="3038612606416062604">Ručno dodavanje pisača</translation>
@@ -2944,6 +2942,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4218274196133425560">Uklanjanje iznimke za host <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Došlo je do pogreške prilikom aktivacije.</translation>
 <translation id="4222772810963087151">Pojedinosti o međuverziji</translation>
+<translation id="4224284700924043865">USB uređaji s ID-jem proizvoda <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">Na svim web-lokacijama</translation>
 <translation id="4231095370974836764">Instalirajte aplikacije i igre s Google Playa na <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Konfigurirajte Kerberos</translation>
@@ -3016,6 +3015,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="431076611119798497">&amp;Detalji</translation>
 <translation id="4312866146174492540">Blokiraj (zadano)</translation>
 <translation id="4314815835985389558">Upravljanje sinkronizacijom</translation>
+<translation id="4316650123995163262">USB uređaji s ID-jem proizvoda <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Web-lokacija razvojnog programera</translation>
 <translation id="4317820549299924617">Potvrda nije bila uspješna</translation>
 <translation id="4320177379694898372">Nema internetske veze</translation>
@@ -3458,6 +3458,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4824958205181053313">Otkazati sinkronizaciju?</translation>
 <translation id="4827675678516992122">Povezivanje nije uspjelo</translation>
 <translation id="4827784381479890589">Poboljšana provjera pravopisa u pregledniku Chrome (tekst se šalje Googleu radi pravopisnih prijedloga)</translation>
+<translation id="482952334869563894">USB uređaji dobavljača <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Postavi PIN</translation>
 <translation id="4830121310592638841">Prikaži upit kad web-lokacija želi otvarati i postavljati prozore na zaslonima</translation>
 <translation id="4830502475412647084">Instaliranje ažuriranja OS-a</translation>
@@ -3747,6 +3748,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="5159419673777902220">Tvoj je roditelj onemogućio dopuštenja za proširenja</translation>
 <translation id="5160634252433617617">Fizička tipkovnica</translation>
 <translation id="5160857336552977725">Prijavite se na uređaj <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">USB uređaji dobavljača <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850">Uređaj <ph name="DEVICE_TYPE" /> je blokiran</translation>
 <translation id="5163910114647549394">Kartica je premještena na kraj vrpce kartica</translation>
 <translation id="5165085578392358314">Dodjeljivanje prekidača: <ph name="ACTION" /></translation>
@@ -4660,7 +4662,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="6212039847102026977">Prikaži napredna svojstva mreže</translation>
 <translation id="6212168817037875041">Isključi zaslon</translation>
 <translation id="6212752530110374741">Vezu pošalji e-poštom</translation>
-<translation id="6213230117190778270">Prihvati</translation>
 <translation id="621470880408090483">Ne dopuštaj web-lokacijama povezivanje s Bluetooth uređajima</translation>
 <translation id="6215620815501168899">Zatvori skočni prozor s EID-om ili QR kodom</translation>
 <translation id="6216601812881225442">Vaš spremnik ne podržava promjenu veličine. Da biste prilagodili količinu prostora koji je unaprijed dodijeljen Linuxu, izradite sigurnosnu kopiju i vratite je u novom spremniku.</translation>
@@ -5374,6 +5375,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – zapisnik aktivnosti</translation>
 <translation id="6997707937646349884">Na vašim uređajima:</translation>
 <translation id="6998793565256476099">Registriranje uređaja za videokonferencije</translation>
+<translation id="6999640176621571692">Dopustiti Googleu da traži popuste za ono što ste dodali u košarice?</translation>
 <translation id="6999956497249459195">Nova grupa</translation>
 <translation id="7000206553895739324">Pisač <ph name="PRINTER_NAME" /> povezan je, no potrebno ga je konfigurirati</translation>
 <translation id="7000347579424117903">Mora sadržavati Ctrl, Alt ili Search</translation>
@@ -5454,7 +5456,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="7076293881109082629">Prijava</translation>
 <translation id="7077829361966535409">Nije uspjelo učitavanje stranice za prijavu pomoću trenutačnih postavki proxy poslužitelja. <ph name="GAIA_RELOAD_LINK_START" />Pokušajte se ponovo prijaviti<ph name="GAIA_RELOAD_LINK_END" /> ili upotrijebite druge <ph name="PROXY_SETTINGS_LINK_START" />postavke proxy poslužitelja<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Sve mreže</translation>
-<translation id="7078386829626602215">Nije otkriven nijedan uređaj <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">K&amp;opiraj adresu audiozapisa</translation>
 <translation id="7081952801286122383">Nalazite se u anonimnom načinu</translation>
 <translation id="708278670402572152">Prekinite vezu da biste omogućili pretraživanje</translation>
@@ -5503,11 +5504,9 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="7135729336746831607">Želite li uključiti Bluetooth?</translation>
 <translation id="7136639886842764730">Domena <ph name="DOMAIN" /> zahtijeva da odmah ažurirate uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7136694880210472378">Postavi kao zadano</translation>
-<translation id="7136984461011502314">Dobro došli u <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Došlo je do pogreške. Pokušajte ponovo kasnije odabirom drugih slika.</translation>
 <translation id="7139627972753429585">Aplikacija <ph name="APP_NAME" /> upotrebljava vaš mikrofon</translation>
 <translation id="7141105143012495934">Prijava nije uspjela jer nisu dohvaćeni podaci o vašem računu. Obratite se administratoru ili pokušajte ponovo.</translation>
-<translation id="7143358760238281735">Nema aplikacija</translation>
 <translation id="7144878232160441200">Pokušaj ponovno</translation>
 <translation id="7149893636342594995">Posljednja 24 sata</translation>
 <translation id="7152478047064750137">To proširenje ne zahtijeva nikakva posebna dopuštenja</translation>
@@ -6461,7 +6460,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Povezivanje s mrežom <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">upravljati vašim aplikacijama, proširenjima i temama</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> želi dijeliti sadržaj vašeg zaslona.</translation>
 <translation id="8195027750202970175">Veličina na disku</translation>
 <translation id="8198323535106903877">Instalirat ćemo te aplikacije za vas (njih <ph name="NUMBER_OF_APPS" />)</translation>
 <translation id="8199300056570174101">Svojstva mreže (usluge) i uređaja</translation>
@@ -6885,6 +6883,7 @@ Pritisnite dodijeljeni prekidač da biste uklonili dodjelu.</translation>
 <translation id="8698269656364382265">Da biste se vratili na prethodni zaslon, prijeđite prstom slijeva nadesno.</translation>
 <translation id="869884720829132584">Izbornik aplikacija</translation>
 <translation id="869891660844655955">Datum isteka</translation>
+<translation id="8699120352855309748">Nemoj nuditi prevođenje ovih jezika</translation>
 <translation id="8702825062053163569">Uređaj <ph name="DEVICE_TYPE" /> je zaključan.</translation>
 <translation id="8703346390800944767">Preskočite oglas</translation>
 <translation id="8705331520020532516">Serijski broj</translation>

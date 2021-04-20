@@ -305,7 +305,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3016635187733453316">Controleer of dit apparaat verbinding heeft met internet</translation>
 <translation id="3029704984691124060">Wachtwoordzinnen komen niet overeen</translation>
 <translation id="3031225630520268969">UI om toestemming voor gesproken zoekopdrachten via de Assistent te geven</translation>
-<translation id="3034163383943672781">Download wordt gestart op <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Hulp krijgen<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Ga de volgende keer sneller naar deze site</translation>
 <translation id="305593374596241526">Locatie staat uit. Je kunt deze aanzetten in de <ph name="BEGIN_LINK" />instellingen van Android<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuut geleden}other{# minuten geleden}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Deze offline pagina is van <ph name="CREATION_TIME" /> en kan afwijken van de online versie.</translation>
-<translation id="4605958867780575332">Item verwijderd: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> openen</translation>
 <translation id="4619564267100705184">Bevestigen dat jij het bent</translation>
 <translation id="4634124774493850572">Wachtwoord gebruiken</translation>
@@ -702,7 +700,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="572328651809341494">Recente tabbladen</translation>
 <translation id="5723735397759933332">In de Lite-versie kun je nu meer data besparen door afbeeldingen op HTTPS-pagina's te optimaliseren.</translation>
 <translation id="5726692708398506830">Alles op de pagina vergroten</translation>
-<translation id="5732819098735351888">Download wordt gestart via wifi.</translation>
 <translation id="5733983706093266635">Kan geen QR-code maken. De URL is langer dan <ph name="CHARACTER_LIMIT" /> tekens.</translation>
 <translation id="5748802427693696783">Overgeschakeld naar standaardtabbladen</translation>
 <translation id="5749068826913805084">Chrome heeft toegang tot de opslag nodig om deze bestanden te kunnen downloaden.</translation>
@@ -782,7 +779,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6159729262978459665">Hiermee wordt de geschiedenis van alle gesynchroniseerde apparaten gewist.</translation>
 <translation id="6186394685773237175">Geen gehackte wachtwoorden gevonden</translation>
 <translation id="6192907950379606605">Afbeeldingsbeschrijvingen ophalen</translation>
-<translation id="6206830853671714236">Kies wanneer je wilt downloaden</translation>
 <translation id="6210748933810148297">Niet <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Voorbeeld van deze pagina bekijken</translation>
 <translation id="6218096829563201111">Vergelijkbare producten zoeken <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
@@ -1179,12 +1175,14 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="8699120352855309748">Niet aanbieden om deze talen te vertalen</translation>
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>
+<translation id="8730621377337864115">Klaar</translation>
 <translation id="8748850008226585750">Content verborgen</translation>
 <translation id="8773160212632396039">Verzoek verwerken</translation>
 <translation id="8788265440806329501">Navigatiegeschiedenis is gesloten</translation>
 <translation id="8788968922598763114">Het laatst gesloten tabblad opnieuw openen</translation>
 <translation id="8798449543960971550">Gelezen</translation>
 <translation id="8812260976093120287">Op sommige websites kun je betalen met de bovenstaande ondersteunde betaal-apps op je apparaat.</translation>
+<translation id="8814190375133053267">Wifi</translation>
 <translation id="881688628773363275">Content van voorbeeldtabblad is niet zichtbaar.</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="883806473910249246">Er is een fout opgetreden tijdens het downloaden van de content.</translation>
@@ -1222,10 +1220,10 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="9063523880881406963">'Desktopsite opvragen' uitzetten</translation>
 <translation id="9065203028668620118">Bewerken</translation>
 <translation id="9065383040763568503">Opgeslagen gegevens waarvan Chrome denkt dat deze niet belangrijk zijn (bijvoorbeeld sites zonder opgeslagen instellingen of sites die je niet vaak bezoekt)</translation>
-<translation id="9069543557624799859">Download wordt gestart om <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Geen ongelezen pagina's</translation>
 <translation id="9070377983101773829">Gesproken zoekopdracht starten</translation>
 <translation id="9074336505530349563">Log in en zet de synchronisatie aan om suggesties voor gepersonaliseerde content van Google te ontvangen</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Synchroniseren</translation>
 <translation id="9086455579313502267">Geen toegang tot het netwerk</translation>
 <translation id="9100505651305367705">Aanbieden om artikelen te bekijken in een vereenvoudigde weergave (indien ondersteund)</translation>

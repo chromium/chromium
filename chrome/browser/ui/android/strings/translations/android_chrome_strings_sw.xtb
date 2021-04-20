@@ -305,7 +305,6 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="3016635187733453316">Hakikisha kwamba kifaa hiki kimeunganishwa kwenye intaneti</translation>
 <translation id="3029704984691124060">Kaulisiri hazilingani</translation>
 <translation id="3031225630520268969">Kiolesura cha idhini ya kutafuta kwa kutamka kupitia programu ya Mratibu</translation>
-<translation id="3034163383943672781">Itaanza kupakua <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Pata usaidizi<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Fikia tovuti hii kwa haraka zaidi wakati mwingine</translation>
 <translation id="305593374596241526">Kipengele cha mahali kimezimwa; kiwashe katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4583164079174244168">{MINUTES,plural, =1{Dakika # iliyopita}other{Dakika # zilizopita}}</translation>
 <translation id="4587589328781138893">Tovuti</translation>
 <translation id="4594952190837476234">Ukurasa huu wa nje ya mtandao umetoka <ph name="CREATION_TIME" /> na huenda ukatofautiana na toleo lililo mtandaoni.</translation>
-<translation id="4605958867780575332">Kipengee kilichoondolewa: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Fungua <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Thibitisha kwamba ni wewe</translation>
 <translation id="4634124774493850572">Tumia nenosiri</translation>
@@ -702,7 +700,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="572328651809341494">Vichupo vya hivi punde</translation>
 <translation id="5723735397759933332">Hali nyepesi sasa inaokoa data yako zaidi kwa kuboresha picha kwenye kurasa za HTTPS.</translation>
 <translation id="5726692708398506830">Fanya kila kitu kwenye ukurasa kiwe kikubwa zaidi</translation>
-<translation id="5732819098735351888">Itaanza kupakua kupitia Wi-Fi.</translation>
 <translation id="5733983706093266635">Imeshindwa kutunga msimbo wa QR. URL imepitisha herufi <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="5748802427693696783">Imebadilisha kwenda vichupo muundo-msingi</translation>
 <translation id="5749068826913805084">Chrome inahitaji idhini ya kufikia hifadhi ili ipakue faili.</translation>
@@ -779,9 +776,9 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="614940544461990577">Jaribu:</translation>
 <translation id="6154478581116148741">Washa kipengele cha kufunga skrini katika Mipangilio ili uhamishe manenosiri yako kutoka kwenye kifaa hiki</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> ya data imeokolewa</translation>
+<translation id="6159729262978459665">Hufuta historia kwenye vifaa vyote vinavyosawazishwa.</translation>
 <translation id="6186394685773237175">Hatukupata manenosiri yaliyoathiriwa</translation>
 <translation id="6192907950379606605">Pata maelezo ya picha</translation>
-<translation id="6206830853671714236">Chagua wakati wa kupakua</translation>
 <translation id="6210748933810148297">Wewe si <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Unaangalia onyesho la kukagua ukurasa huu</translation>
 <translation id="6218096829563201111">Tafuta bidhaa zinazofafana <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Data ya kipindi chako Fiche itafutwa tu kwenye Chrome <ph name="BEGIN_BOLD2" />u
 <translation id="7523960634226602883">Tafuta kupitia kamera yako ukitumia Lenzi ya Google</translation>
 <translation id="753225086557513863">Imeratibiwa kuanza baadaye</translation>
 <translation id="7559975015014302720">Umezima hali nyepesi</translation>
+<translation id="7560448309733608642">Hufuta historia kwenye vifaa vyote vinavyosawazishwa. Huenda Akaunti yako ya Google ikawa na aina nyingine za historia ya kuvinjari katika <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Inafuta data ya kuvinjari</translation>
 <translation id="756809126120519699">Data ya Chrome imefutwa</translation>
 <translation id="7577900504646297215">Dhibiti yanayokuvutia</translation>
@@ -1177,12 +1175,14 @@ Data ya kipindi chako Fiche itafutwa tu kwenye Chrome <ph name="BEGIN_BOLD2" />u
 <translation id="8699120352855309748">Usionyeshe chaguo la kutafsiri lugha hizi</translation>
 <translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="8725066075913043281">Jaribu tena</translation>
+<translation id="8730621377337864115">Nimemaliza</translation>
 <translation id="8748850008226585750">Maudhui yamefichwa</translation>
 <translation id="8773160212632396039">Inachakata ombi</translation>
 <translation id="8788265440806329501">Historia ya uelekezaji imezimwa</translation>
 <translation id="8788968922598763114">Fungua tena kichupo kilichofungwa mwisho</translation>
 <translation id="8798449543960971550">Ulizosoma</translation>
 <translation id="8812260976093120287">Kwenye baadhi ya tovuti, unaweza kulipa kwa programu za malipo zinazotumika zilizo hapo juu kwenye kifaa chako.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Maudhui ya kichupo cha kukagua kwanza hayawezi kuangaliwa.</translation>
 <translation id="8820817407110198400">Alamisho</translation>
 <translation id="883806473910249246">Hitilafu imetokea wakati wa kupakua maudhui.</translation>
@@ -1220,10 +1220,10 @@ Data ya kipindi chako Fiche itafutwa tu kwenye Chrome <ph name="BEGIN_BOLD2" />u
 <translation id="9063523880881406963">Zima Omba Tovuti ya Eneo-kazi</translation>
 <translation id="9065203028668620118">Badilisha</translation>
 <translation id="9065383040763568503">Data iliyohifadhiwa ambayo Chrome haioni kuwa ni muhimu (k.m. tovuti ambazo hazina mipangilio iliyohifadhiwa au ambazo hutembelei sana)</translation>
-<translation id="9069543557624799859">Itaanza kupakua <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Hakuna kurasa ambazo hujazisoma</translation>
 <translation id="9070377983101773829">Anza kutafuta kwa kutamka</translation>
 <translation id="9074336505530349563">Ingia katika akaunti na uwashe kipengee cha usawazishaji ili upate maudhui yanayokufaa unayopendekezewa na Google</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Inasawazisha</translation>
 <translation id="9086455579313502267">Haiwezi kufikia mtandao</translation>
 <translation id="9100505651305367705">Onyesha makala katika mwonekano rahisi, ikiwa yanatumika</translation>

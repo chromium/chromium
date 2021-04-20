@@ -328,7 +328,6 @@
 <translation id="1354045473509304750">Continuer d'autoriser <ph name="HOST" /> à utiliser et bouger la caméra</translation>
 <translation id="1355088139103479645">Supprimer toutes les données ?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> est bloqué</translation>
-<translation id="1358612436266364864">Supprimer les mises en surbrillance</translation>
 <translation id="1358741672408003399">Grammaire et orthographe</translation>
 <translation id="1359923111303110318">Votre appareil peut être déverrouillé avec Smart Lock. Appuyez sur Entrée pour le déverrouiller.</translation>
 <translation id="1361164813881551742">Ajouter manuellement</translation>
@@ -1609,7 +1608,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="2734760316755174687">Les sites appartenant à <ph name="SITE_GROUP_NAME" /> seront également réinitialisés.</translation>
 <translation id="2735712963799620190">Horaires</translation>
 <translation id="2737363922397526254">Réduire...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> souhaite partager le contenu de votre écran avec <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Ne pas autoriser les sites à utiliser les polices installées sur votre appareil</translation>
 <translation id="2738771556149464852">Pas après le</translation>
 <translation id="2739191690716947896">Déboguer</translation>
@@ -1897,7 +1895,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Sélectionnez les éléments à importer :</translation>
 <translation id="3036327949511794916">Le délai de retour de ce <ph name="DEVICE_TYPE" /> a expiré.</translation>
-<translation id="3036438888981457032">Supprimer les mises en surbrillance</translation>
 <translation id="3036546437875325427">Activer Flash</translation>
 <translation id="3037754279345160234">Impossible d'analyser la configuration d'association de l'appareil au domaine. Veuillez contacter votre administrateur.</translation>
 <translation id="3038612606416062604">Ajouter une imprimante manuellement</translation>
@@ -4661,7 +4658,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6212039847102026977">Afficher les propriétés de réseau avancées</translation>
 <translation id="6212168817037875041">Désactiver l'écran</translation>
 <translation id="6212752530110374741">Envoyer le lien par e-mail</translation>
-<translation id="6213230117190778270">Recevoir</translation>
 <translation id="621470880408090483">Ne pas autoriser les sites à se connecter à des appareils Bluetooth</translation>
 <translation id="6215620815501168899">Fermer la fenêtre pop-up contenant le code QR et le numéro EID</translation>
 <translation id="6216601812881225442">Votre conteneur ne peut pas être redimensionné. Pour modifier la quantité d'espace pré-allouée à Linux, faites une sauvegarde, puis une restauration dans un nouveau conteneur.</translation>
@@ -5455,7 +5451,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7076293881109082629">Connexion</translation>
 <translation id="7077829361966535409">Échec du chargement de la page de connexion avec les paramètres de proxy actuels. Veuillez <ph name="GAIA_RELOAD_LINK_START" />essayer de vous reconnecter<ph name="GAIA_RELOAD_LINK_END" /> ou utiliser d'autres <ph name="PROXY_SETTINGS_LINK_START" />paramètres de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Tous les réseaux</translation>
-<translation id="7078386829626602215">Aucun appareil détecté. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">C&amp;opier l'adresse audio</translation>
 <translation id="7081952801286122383">Mode navigation privée activé</translation>
 <translation id="708278670402572152">Déconnecter pour permettre la recherche</translation>
@@ -5504,11 +5499,9 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7135729336746831607">Activer le Bluetooth ?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> vous demande de mettre à jour votre <ph name="DEVICE_TYPE" /> immédiatement.</translation>
 <translation id="7136694880210472378">Utiliser par défaut</translation>
-<translation id="7136984461011502314">Bienvenue dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Une erreur s'est produite. Veuillez réessayer en sélectionnant d'autres images.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> utilise votre micro</translation>
 <translation id="7141105143012495934">Échec de la connexion, car il est impossible de récupérer les informations relatives à votre compte. Veuillez contacter votre administrateur ou réessayer.</translation>
-<translation id="7143358760238281735">Aucune application disponible</translation>
 <translation id="7144878232160441200">Réessayer</translation>
 <translation id="7149893636342594995">Dernières 24 heures</translation>
 <translation id="7152478047064750137">Cette extension ne nécessite aucune autorisation spéciale</translation>
@@ -6462,7 +6455,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Connexion à <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gérer vos applications, vos extensions et vos thèmes</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> souhaite partager le contenu de votre écran.</translation>
 <translation id="8195027750202970175">Taille sur le disque</translation>
 <translation id="8198323535106903877">Nous allons installer ces <ph name="NUMBER_OF_APPS" /> applications pour vous</translation>
 <translation id="8199300056570174101">Propriétés du réseau (service) et de l'appareil</translation>
@@ -6886,6 +6878,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="8698269656364382265">Pour revenir à l'écran précédent, balayez-le depuis le côté gauche.</translation>
 <translation id="869884720829132584">Menu Applications</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
+<translation id="8699120352855309748">Ne pas proposer de traduire ces langues</translation>
 <translation id="8702825062053163569">Votre <ph name="DEVICE_TYPE" /> a été verrouillé.</translation>
 <translation id="8703346390800944767">Ignorer l'annonce</translation>
 <translation id="8705331520020532516">Numéro de série</translation>

@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Показать пароль</translation>
 <translation id="1872096359983322073">Вспышка</translation>
 <translation id="1911619930368729126">Загрузить на Google Диск</translation>
-<translation id="1919130412786645364">Разрешить вход в Chrome</translation>
 <translation id="1923342640370224680">Последний час</translation>
 <translation id="1941314575388338491">Чтобы копировать, нажмите дважды.</translation>
 <translation id="1952172573699511566">Когда это возможно, текст на сайтах будет отображаться на выбранном вами языке.</translation>
@@ -216,7 +215,6 @@
 
 В режиме инкогнито сайты не могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например, для показа персонализированной рекламы.</translation>
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
-<translation id="3222343486469566063">Вход не выполнен</translation>
 <translation id="3224641773458703735">Чтобы экспортировать пароли, настройте на устройстве код доступа.</translation>
 <translation id="3240426699337459095">Готово</translation>
 <translation id="3244271242291266297">ММ</translation>
@@ -286,8 +284,6 @@
 <translation id="3928666092801078803">Объединить данные</translation>
 <translation id="3929457972718048006">Адреса</translation>
 <translation id="3943492037546055397">Пароли</translation>
-<translation id="3943557322767080599">Предлагать войти в Chrome после входа в аккаунт Google</translation>
-<translation id="3967266340354872733">Другие настройки, связанные с конфиденциальностью, безопасностью и сбором данных, можно найти в разделах <ph name="BEGIN_LINK" />Синхронизация<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Сервисы Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Скачивание завершено.</translation>
 <translation id="3968505803272650567">Настроить интересы</translation>
 <translation id="3989635538409502728">Выйти</translation>
@@ -568,7 +564,6 @@
 <translation id="6760509555861141183">Вернуться к последней использовавшейся вкладке</translation>
 <translation id="6780034285637185932">Почтовый индекс</translation>
 <translation id="6785453220513215166">Отправка отчета об ошибке…</translation>
-<translation id="679325081238418596">Вы сможете работать с одними и теми же закладками, историей, паролями и другими настройками на любом устройстве</translation>
 <translation id="6797885426782475225">Голосовой поиск</translation>
 <translation id="6807889908376551050">Показать все…</translation>
 <translation id="681368974849482173">Сохранено</translation>
@@ -580,7 +575,6 @@
 <translation id="6873263987691478642">Режим Split View</translation>
 <translation id="6888009575607455378">Отменить изменения?</translation>
 <translation id="6896758677409633944">Копировать</translation>
-<translation id="6903907808598579934">Включить</translation>
 <translation id="6914583639806229067">Поиск по скопированному изображению</translation>
 <translation id="6914783257214138813">Ваши пароли будут видны всем, у кого есть доступ к файлу экспорта.</translation>
 <translation id="6930799952781667037">Нажмите, чтобы выбрать этот язык.</translation>
@@ -711,6 +705,7 @@
 <translation id="8225985093977202398">Файлы, сохраненные в кеше</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8281781826761538115">Язык по умолчанию: <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Пропустить</translation>
 <translation id="8283172974887967105">Да</translation>
 <translation id="8299417921174340354">Чтобы использовать пароли, установите на устройстве код доступа.</translation>
 <translation id="8319076807703933069">Новый поиск</translation>

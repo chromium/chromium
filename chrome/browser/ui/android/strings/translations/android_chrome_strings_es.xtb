@@ -305,7 +305,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3016635187733453316">Comprueba que este dispositivo esté conectado a Internet.</translation>
 <translation id="3029704984691124060">Las frases de contraseña no coinciden</translation>
 <translation id="3031225630520268969">Interfaz de consentimiento de la búsqueda por voz del Asistente</translation>
-<translation id="3034163383943672781">La descarga comenzará el <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obtener ayuda<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Llega más rápido a este sitio la próxima vez</translation>
 <translation id="305593374596241526">La ubicación está desactivada. Actívala en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4583164079174244168">{MINUTES,plural, =1{Hace # minuto}other{Hace # minutos}}</translation>
 <translation id="4587589328781138893">Sitios web</translation>
 <translation id="4594952190837476234">Esta página sin conexión se creó el <ph name="CREATION_TIME" /> y puede ser distinta de la versión online.</translation>
-<translation id="4605958867780575332">Elemento retirado: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verificar mi identidad</translation>
 <translation id="4634124774493850572">Utilizar contraseña</translation>
@@ -702,7 +700,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="572328651809341494">Pestañas recientes</translation>
 <translation id="5723735397759933332">Ahora, el modo básico gasta menos datos gracias a la optimización de las imágenes de páginas HTTPS.</translation>
 <translation id="5726692708398506830">Amplía todo el contenido de la página</translation>
-<translation id="5732819098735351888">La descarga comenzará al conectarse a una red Wi‑Fi.</translation>
 <translation id="5733983706093266635">No se puede crear el código QR. La URL contiene más de <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="5748802427693696783">Se ha cambiado a las pestañas estándares</translation>
 <translation id="5749068826913805084">Chrome necesita acceso de almacenamiento para descargar archivos.</translation>
@@ -779,9 +776,9 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="614940544461990577">Prueba a:</translation>
 <translation id="6154478581116148741">Activa el bloqueo de pantalla en Configuración para exportar las contraseñas de este dispositivo</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> de ahorro de datos</translation>
+<translation id="6159729262978459665">Borra el historial de todos los dispositivos sincronizados.</translation>
 <translation id="6186394685773237175">No se ha encontrado ninguna contraseña vulnerada</translation>
 <translation id="6192907950379606605">Obtener descripciones</translation>
-<translation id="6206830853671714236">Elige cuándo descargar</translation>
 <translation id="6210748933810148297">¿No eres <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Mostrando vista previa de esta página</translation>
 <translation id="6218096829563201111">Buscar productos similares <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="7523960634226602883">Buscar con la cámara mediante Google Lens</translation>
 <translation id="753225086557513863">Programada para más adelante</translation>
 <translation id="7559975015014302720">El modo básico está desactivado</translation>
+<translation id="7560448309733608642">Borra el historial de todos los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otro contenido de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Borrando datos de navegación</translation>
 <translation id="756809126120519699">Datos de Chrome borrados</translation>
 <translation id="7577900504646297215">Gestionar intereses</translation>
@@ -1177,12 +1175,14 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="8699120352855309748">No ofrecer que se traduzcan estos idiomas</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8725066075913043281">Reintentar</translation>
+<translation id="8730621377337864115">Hecho</translation>
 <translation id="8748850008226585750">Contenidos ocultos</translation>
 <translation id="8773160212632396039">Procesando solicitud</translation>
 <translation id="8788265440806329501">El historial de navegación está cerrado</translation>
 <translation id="8788968922598763114">Vuelve a abrir la última pestaña cerrada</translation>
 <translation id="8798449543960971550">Leído</translation>
 <translation id="8812260976093120287">En algunos sitios web, puedes realizar pagos en tu dispositivo con las aplicaciones compatibles mencionadas anteriormente.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">La vista previa del contenido de la pestaña no está disponible.</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="883806473910249246">No se ha podido descargar el contenido.</translation>
@@ -1220,10 +1220,10 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="9063523880881406963">Desactivar opción para ver como ordenador</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9065383040763568503">Datos almacenados que Chrome no considera importantes (por ejemplo, sitios sin ajustes guardados o que no visitas a menudo)</translation>
-<translation id="9069543557624799859">Hora de inicio de la descarga: <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">No hay páginas sin leer</translation>
 <translation id="9070377983101773829">Iniciar búsqueda por voz</translation>
 <translation id="9074336505530349563">Para obtener contenido personalizado sugerido por Google, inicia sesión y activa la sincronización</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Sincronizando</translation>
 <translation id="9086455579313502267">No ha sido posible acceder a la red</translation>
 <translation id="9100505651305367705">Pregunta si quieres que los artículos se muestren en vista simplificada, si está disponible</translation>

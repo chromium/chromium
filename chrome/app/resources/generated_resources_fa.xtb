@@ -328,7 +328,6 @@
 <translation id="1354045473509304750">ادامه دهید و به <ph name="HOST" /> اجازه دهید از دوربین استفاده کند و آن را حرکت دهد</translation>
 <translation id="1355088139103479645">همه داده‌ها حذف شود؟</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> مسدود شده است</translation>
-<translation id="1358612436266364864">برداشتن موارد برجسته</translation>
 <translation id="1358741672408003399">املا و گرامر</translation>
 <translation id="1359923111303110318">‏قفل دستگاه می‌تواند با Smart Lock باز شود. برای باز کردن قفل، Enter را فشار دهید.</translation>
 <translation id="1361164813881551742">افزودن دستی</translation>
@@ -881,6 +880,7 @@
 <translation id="1928202201223835302">پین قدیمی را وارد کنید</translation>
 <translation id="1928696683969751773">به‌روزرسانی‌ها</translation>
 <translation id="1929186283613845153">این فایل درحال اسکن شدن است.</translation>
+<translation id="1929343511231420085">همه درگاه‌های سریالی</translation>
 <translation id="1929546189971853037">خواندن سابقه مرور شما در همه دستگاه‌هایتان که با آنها به سیستم وارد شده‌اید.</translation>
 <translation id="1930879306590754738">‏گذرواژه از این دستگاه و «حساب Google» شما حذف شد</translation>
 <translation id="1931152874660185993">هیچ مؤلفه‌ای نصب نیست.</translation>
@@ -1606,7 +1606,6 @@
 <translation id="2734760316755174687">سایت‌های زیرگروه <ph name="SITE_GROUP_NAME" /> نیز بازنشانی می‌شود.</translation>
 <translation id="2735712963799620190">زمان‌بندی</translation>
 <translation id="2737363922397526254">کوچک کردن...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> می‌خواهد محتوای صفحه‌نمایشتان را با <ph name="TARGET_NAME" /> هم‌رسانی کند.</translation>
 <translation id="2738030019664645674">به سایت‌ها اجازه داده نشود از قلم‌های نصب‌شده در دستگاه استفاده کنند</translation>
 <translation id="2738771556149464852">نه بعد از</translation>
 <translation id="2739191690716947896">رفع اشکال</translation>
@@ -1894,7 +1893,6 @@
 <translation id="3031417829280473749">‏مأمور X</translation>
 <translation id="3031557471081358569">مواردی را برای وارد کردن انتخاب کنید:</translation>
 <translation id="3036327949511794916">مهلت برگرداندن این <ph name="DEVICE_TYPE" /> گذشته است.</translation>
-<translation id="3036438888981457032">برداشتن موارد برجسته</translation>
 <translation id="3036546437875325427">‏فعال کردن Flash</translation>
 <translation id="3037754279345160234">نمی‌توان پیکربندی پیوستن به دامنه را تجزیه کرد. لطفاً با سرپرست سیستم تماس بگیرید.</translation>
 <translation id="3038612606416062604">افزودن چاپگری به‌صورت دستی</translation>
@@ -2941,6 +2939,7 @@
 <translation id="4218274196133425560">برداشتن استثنا برای <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">خطایی درحین فعال‌سازی روی داد.</translation>
 <translation id="4222772810963087151">جزئیات ساخت</translation>
+<translation id="4224284700924043865">‏دستگاه‌های USB با شناسه محصول <ph name="PRODUCT_ID" /> از فروشنده <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">در همه سایت‌ها</translation>
 <translation id="4231095370974836764">‏برنامه‌ها و بازی‌ها را از Google Play در <ph name="DEVICE_TYPE" /> نصب کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">‏پیکربندی Kerberos</translation>
@@ -3013,6 +3012,7 @@
 <translation id="431076611119798497">&amp;جزئیات</translation>
 <translation id="4312866146174492540">مسدود کردن (پیش‌فرض)</translation>
 <translation id="4314815835985389558">مدیریت همگام‌سازی</translation>
+<translation id="4316650123995163262">‏دستگاه‌های USB با شناسه محصول <ph name="PRODUCT_ID" /> از <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">وب‌سایت برنامه‌نویس</translation>
 <translation id="4317820549299924617">راستی‌آزمایی انجام نشد</translation>
 <translation id="4320177379694898372">اتصال اینترنتی ندارید</translation>
@@ -3455,6 +3455,7 @@
 <translation id="4824958205181053313">همگام‌سازی لغو شود؟</translation>
 <translation id="4827675678516992122">متصل نشد</translation>
 <translation id="4827784381479890589">‏غلط‌گیر املای پیشرفته در مرورگر Chrome (نوشتار برای پیشنهادهای املا به Google ارسال می‌شود)</translation>
+<translation id="482952334869563894">‏دستگاه‌های USB از فروشنده <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">تنظیم پین</translation>
 <translation id="4830121310592638841">وقتی سایتی می‌خواهد پنجره‌ها را باز کند و در صفحه جای‌گذاری کند درخواست شود</translation>
 <translation id="4830502475412647084">درحال نصب به‌روزرسانی سیستم‌عامل</translation>
@@ -3744,6 +3745,7 @@
 <translation id="5159419673777902220">ولی شما اجازه‌های افزونه را غیرفعال کرده است</translation>
 <translation id="5160634252433617617">صفحه‌کلید فیزیکی</translation>
 <translation id="5160857336552977725">وارد سیستم <ph name="DEVICE_TYPE" /> خودتان شوید</translation>
+<translation id="5161251470972801814">‏دستگاه‌های USB از <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> مسدود شد</translation>
 <translation id="5163910114647549394">برگه به انتهای نوار برگه منتقل شد</translation>
 <translation id="5165085578392358314">تخصیص کلید: <ph name="ACTION" /></translation>
@@ -4657,7 +4659,6 @@
 <translation id="6212039847102026977">نمایش ویژگی‌های پیشرفته شبکه</translation>
 <translation id="6212168817037875041">خاموش کردن نمایشگر</translation>
 <translation id="6212752530110374741">پیوند ایمیل</translation>
-<translation id="6213230117190778270">دریافت</translation>
 <translation id="621470880408090483">به سایت‌ها اجازه داده نشود به دستگاه‌های بلوتوث متصل شوند</translation>
 <translation id="6215620815501168899">‏بستن بالاپر رمزینه پاسخ‌سریع و EID</translation>
 <translation id="6216601812881225442">‏محتوی شما از تغییر اندازه پشتیبانی نمی‌کند. برای تنظیم مقدار فضایی که ازقبل به Linux اختصاص داده شده است، پشتیبان‌گیری کنید و سپس در محتوی جدیدی بازیابی کنید.</translation>
@@ -5371,6 +5372,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - گزارش فعالیت</translation>
 <translation id="6997707937646349884">در دستگاه‌های شما:</translation>
 <translation id="6998793565256476099">ثبت‌نام دستگاه برای برگزاری کنفرانس ویدیویی</translation>
+<translation id="6999640176621571692">‏به Google اجازه داده شود برای مواردی که به سبد خریدتان اضافه می‌کنید تخفیف پیدا کند؟</translation>
 <translation id="6999956497249459195">گروه جدید</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> متصل شده است اما باید پیکربندی شود</translation>
 <translation id="7000347579424117903">‏باید شامل Ctrl،‏ Alt یا Search‌ باشد</translation>
@@ -5451,7 +5453,6 @@
 <translation id="7076293881109082629">در حال ورود به سیستم</translation>
 <translation id="7077829361966535409">بارگیری صفحه ورود به سیستم با استفاده از تنظمیات کنونی پروکسی انجام نشد. لطفاً <ph name="GAIA_RELOAD_LINK_START" />دوباره به سیستم وارد شوید<ph name="GAIA_RELOAD_LINK_END" /> یا از <ph name="PROXY_SETTINGS_LINK_START" />تنظمیات پروکسی<ph name="PROXY_SETTINGS_LINK_END" /> متفاوتی استفاده نمایید.</translation>
 <translation id="7078120482318506217">تمام شبکه‌ها</translation>
-<translation id="7078386829626602215">دستگاهی شناسایی نشد <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">کپی آدرس صوت</translation>
 <translation id="7081952801286122383">در حالت ناشناس هستید</translation>
 <translation id="708278670402572152">برای فعال کردن اسکن، ارتباط را قطع کنید</translation>
@@ -5500,11 +5501,9 @@
 <translation id="7135729336746831607">بلوتوث روشن شود؟</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> از شما می‌خواهد فوراً <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید.</translation>
 <translation id="7136694880210472378">پیش‌فرض قرار دادن</translation>
-<translation id="7136984461011502314">به <ph name="PRODUCT_NAME" /> خوش آمدید</translation>
 <translation id="7136993520339022828">خطایی روی داده است. لطفاً با انتخاب تصاویر دیگر دوباره امتحان کنید.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> درحال استفاده از میکروفون است</translation>
 <translation id="7141105143012495934">به دلیل اینکه جزئيات حساب شما بازیابی نشد، ورود به سیستم ناموفق بود. لطفاً با سرپرستتان تماس بگیرید یا دوباره امتحان کنید.</translation>
-<translation id="7143358760238281735">هیچ برنامه‌ای دردسترس نیست</translation>
 <translation id="7144878232160441200">سعی مجدد</translation>
 <translation id="7149893636342594995">۲۴ ساعت گذشته</translation>
 <translation id="7152478047064750137">این افزونه به مجوز خاصی نیاز ندارد</translation>
@@ -6458,7 +6457,6 @@
 <translation id="8189750580333936930">جعبه ایمنی حریم‌خصوصی</translation>
 <translation id="8190193592390505034">اتصال به <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">مدیریت برنامه‌ها، افزونه‌ها و طرح‌های زمینه</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> می‌خواهد محتوای صفحه‌نمایشتان را هم‌رسانی کند</translation>
 <translation id="8195027750202970175">اندازه روی دیسک</translation>
 <translation id="8198323535106903877"><ph name="NUMBER_OF_APPS" /> برنامه را برایتان نصب می‌کنیم</translation>
 <translation id="8199300056570174101">مشخصات دستگاه و شبکه (سرویس)</translation>
@@ -6882,6 +6880,7 @@
 <translation id="8698269656364382265">برای برگشتن به صفحه قبل، از سمت راست تند به‌سمت دیگر بکشید.</translation>
 <translation id="869884720829132584">منوی برنامه</translation>
 <translation id="869891660844655955">تاریخ انقضا</translation>
+<translation id="8699120352855309748">ترجمه این زبان‌ها پیشنهاد نشود</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> شما قفل شده است.</translation>
 <translation id="8703346390800944767">رد کردن آگهی</translation>
 <translation id="8705331520020532516">شمارهٔ سریال</translation>

@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">Continua a consentire a <ph name="HOST" /> di utilizzare e spostare la videocamera</translation>
 <translation id="1355088139103479645">Vuoi eliminare tutti i dati?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> è bloccato</translation>
-<translation id="1358612436266364864">Rimuovi evidenziazioni</translation>
 <translation id="1358741672408003399">Ortografia e grammatica</translation>
 <translation id="1359923111303110318">Il tuo dispositivo può essere sbloccato con Smart Lock. Premi INVIO per sbloccarlo.</translation>
 <translation id="1361164813881551742">Aggiungi manualmente</translation>
@@ -883,6 +882,7 @@
 <translation id="1928202201223835302">Inserisci il PIN precedente</translation>
 <translation id="1928696683969751773">Aggiornamenti</translation>
 <translation id="1929186283613845153">Analisi del file in corso.</translation>
+<translation id="1929343511231420085">Qualsiasi porta seriale</translation>
 <translation id="1929546189971853037">Leggere la cronologia di navigazione su tutti i dispositivi su cui viene eseguito l'accesso</translation>
 <translation id="1930879306590754738">Password eliminata da questo dispositivo e dal tuo Account Google</translation>
 <translation id="1931152874660185993">Nessun componente installato.</translation>
@@ -1318,7 +1318,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2428939361789119025">Disattiva Wi-Fi</translation>
 <translation id="2428978615149723410">questi carrelli</translation>
 <translation id="2431027948063157455">Impossibile caricare l'Assistente Google, controlla la connessione di rete e riprova.</translation>
-<translation id="243179355394256322">La tua organizzazione ha limitato la registrazione dei dispositivi ai soli utenti autorizzati. Questo utente non è autorizzato a registrare i dispositivi. Assicurati che l'utente disponga del privilegio di amministratore Registrazione dell'hardware Google Meet nella sezione Utenti della Console di amministrazione.</translation>
+<translation id="243179355394256322">La tua organizzazione ha limitato la registrazione dei dispositivi ai soli utenti autorizzati. Questo utente non è autorizzato a registrare i dispositivi. Assicurati che l'utente disponga del privilegio di amministratore per Registrazione dell'hardware Google Meet nella sezione Utenti della Console di amministrazione.</translation>
 <translation id="2433452467737464329">Aggiungi un parametro di ricerca nell'URL per aggiornare automaticamente la pagina: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Aspetto</translation>
 <translation id="2433836460518180625">Sblocca solo il dispositivo</translation>
@@ -1607,7 +1607,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="2734760316755174687">Verranno reimpostati anche i siti su <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Pianificazione</translation>
 <translation id="2737363922397526254">Comprimi...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> vuole condividere i contenuti del tuo schermo con <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Non consentire ai siti di utilizzare i caratteri installati sul tuo dispositivo</translation>
 <translation id="2738771556149464852">Non dopo</translation>
 <translation id="2739191690716947896">Debug</translation>
@@ -1895,7 +1894,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031557471081358569">Seleziona elementi da importare:</translation>
 <translation id="3036327949511794916">Il termine per la restituzione di questo <ph name="DEVICE_TYPE" /> è scaduto.</translation>
-<translation id="3036438888981457032">Rimuovi evidenziazioni</translation>
 <translation id="3036546437875325427">Abilita Flash</translation>
 <translation id="3037754279345160234">Impossibile analizzare la configurazione per l'aggiunta al dominio. Contatta l'amministratore.</translation>
 <translation id="3038612606416062604">Aggiungi manualmente una stampante</translation>
@@ -2942,6 +2940,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4218274196133425560">Rimuovi l'eccezione per <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Si è verificato un errore durante l'attivazione.</translation>
 <translation id="4222772810963087151">Dettagli build</translation>
+<translation id="4224284700924043865">Dispositivi USB con ID prodotto <ph name="PRODUCT_ID" /> del fornitore <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">Su tutti i siti</translation>
 <translation id="4231095370974836764">Installa app e giochi da Google Play su <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configura Kerberos</translation>
@@ -3014,6 +3013,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="431076611119798497">&amp;Dettagli</translation>
 <translation id="4312866146174492540">Blocca (predefinita)</translation>
 <translation id="4314815835985389558">Gestisci sincronizzazione</translation>
+<translation id="4316650123995163262">Dispositivi USB con ID prodotto <ph name="PRODUCT_ID" /> di <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Sito web dello sviluppatore</translation>
 <translation id="4317820549299924617">La verifica non è andata a buon fine</translation>
 <translation id="4320177379694898372">Nessuna connessione Internet</translation>
@@ -3370,7 +3370,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4699172675775169585">Immagini e file memorizzati nella cache</translation>
 <translation id="4699357559218762027">(avviata automaticamente)</translation>
 <translation id="4701025263201366865">Accesso per i genitori</translation>
-<translation id="4702656508969495934">Sottotitoli in tempo reale visibili, utilizza il selettore di finestre per impostare lo stato attivo</translation>
+<translation id="4702656508969495934">Sottotitoli in tempo reale visibili, utilizza il selettore di finestre per visualizzare la finestra</translation>
 <translation id="4708794300267213770">Mostra la schermata di blocco quando il dispositivo viene riattivato dopo la sospensione</translation>
 <translation id="4708849949179781599">Esci da <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Ripristina impostazioni</translation>
@@ -3456,6 +3456,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4824958205181053313">Vuoi annullare la sincronizzazione?</translation>
 <translation id="4827675678516992122">Impossibile collegarsi</translation>
 <translation id="4827784381479890589">Controllo ortografico avanzato nel browser Chrome (testo inviato a Google per suggerimenti ortografici)</translation>
+<translation id="482952334869563894">Dispositivi USB del fornitore <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Imposta il codice PIN</translation>
 <translation id="4830121310592638841">Chiedi conferma quando un sito vuole aprire e posizionare finestre sugli schermi</translation>
 <translation id="4830502475412647084">Installazione dell'aggiornamento del sistema operativo in corso</translation>
@@ -3745,6 +3746,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5159419673777902220">Uno dei tuoi genitori ha disattivato le autorizzazioni per le estensioni</translation>
 <translation id="5160634252433617617">Tastiera fisica</translation>
 <translation id="5160857336552977725">Accedi al tuo dispositivo <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">Dispositivi USB di <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> è stato bloccato</translation>
 <translation id="5163910114647549394">Scheda spostata alla fine della tabstrip</translation>
 <translation id="5165085578392358314">Assegna sensore: <ph name="ACTION" /></translation>
@@ -4658,7 +4660,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6212039847102026977">Mostra proprietà di rete avanzate</translation>
 <translation id="6212168817037875041">Disattiva lo schermo</translation>
 <translation id="6212752530110374741">Invia link tramite email</translation>
-<translation id="6213230117190778270">Ricevi</translation>
 <translation id="621470880408090483">Non consentire ai siti di connettersi ai dispositivi Bluetooth</translation>
 <translation id="6215620815501168899">Chiudi EID e popup codice QR</translation>
 <translation id="6216601812881225442">Il tuo contenitore non supporta il ridimensionamento. Per modificare la quantità di spazio preassegnata a Linux, effettua il backup e il ripristino in un nuovo contenitore.</translation>
@@ -5372,6 +5373,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6997642619627518301">Log delle attività - <ph name="NAME_PH" /></translation>
 <translation id="6997707937646349884">Sui tuoi dispositivi:</translation>
 <translation id="6998793565256476099">Registra il dispositivo per le videoconferenze</translation>
+<translation id="6999640176621571692">Consentire a Google di trovare sconti sugli articoli aggiunti ai carrelli?</translation>
 <translation id="6999956497249459195">Nuovo gruppo</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> è connessa ma deve essere configurata</translation>
 <translation id="7000347579424117903">Includi CTRL, ALT o tasto per la ricerca</translation>
@@ -5408,7 +5410,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7029307918966275733">Crostini non è installato. Per visualizzare i crediti, installa Crostini.</translation>
 <translation id="7029809446516969842">Password</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Porta seriale collegata</translation>
-<translation id="7034692021407794547">Un amministratore con privilegi Gestione della fatturazione deve prima accettare i Termini di servizio dell'hardware Google Meet nella relativa sezione della Console di amministrazione.</translation>
+<translation id="7034692021407794547">Un amministratore con privilegi per Gestione della fatturazione deve prima accettare i Termini di servizio dell'hardware Google Meet nella relativa sezione della Console di amministrazione.</translation>
 <translation id="7036706669646341689">Sono consigliati <ph name="DISK_SIZE" /> di spazio libero per Linux. Per aumentare lo spazio disponibile, elimina i file dal dispositivo.</translation>
 <translation id="7037509989619051237">Anteprima del testo</translation>
 <translation id="7038632520572155338">Switch Access</translation>
@@ -5452,7 +5454,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7076293881109082629">Accesso</translation>
 <translation id="7077829361966535409">Caricamento della pagina di accesso non riuscito utilizzando le impostazioni proxy correnti. <ph name="GAIA_RELOAD_LINK_START" />Prova ad accedere di nuovo<ph name="GAIA_RELOAD_LINK_END" /> o utilizza altre <ph name="PROXY_SETTINGS_LINK_START" />impostazioni proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Tutte le reti</translation>
-<translation id="7078386829626602215">Nessun dispositivo rilevato <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">C&amp;opia l'indirizzo dell'audio</translation>
 <translation id="7081952801286122383">Stai navigando in incognito</translation>
 <translation id="708278670402572152">Scollega per consentire la scansione</translation>
@@ -5501,11 +5502,9 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7135729336746831607">Attivare il Bluetooth?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> richiede l'immediato aggiornamento del tuo dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7136694880210472378">Imposta come predefinito</translation>
-<translation id="7136984461011502314">Benvenuto in <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Si è verificato un errore. Riprova scegliendo altre immagini.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> sta utilizzando il microfono</translation>
 <translation id="7141105143012495934">Accesso non riuscito perché non è stato possibile recuperare i dati dell'account. Contatta l'amministratore o riprova.</translation>
-<translation id="7143358760238281735">Nessuna app disponibile</translation>
 <translation id="7144878232160441200">Riprova</translation>
 <translation id="7149893636342594995">Ultimo giorno</translation>
 <translation id="7152478047064750137">Questa estensione non richiede autorizzazioni speciali</translation>
@@ -6390,7 +6389,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8113476325385351118">Continua a impedire a questo sito di avere il controllo totale dei dispositivi MIDI</translation>
 <translation id="8114199541033039755">Torna alla schermata Home, vai indietro e cambia app usando i pulsanti in modalità tablet. Questa impostazione viene attivata quando vengono abilitate le funzionalità ChromeVox o Clic automatici.</translation>
 <translation id="8114875720387900039">Divisione in orizzontale</translation>
-<translation id="8115139559594092084">Dal tuo account Google Drive</translation>
+<translation id="8115139559594092084">Dal tuo Google Drive</translation>
 <translation id="8116972784401310538">Gestione &amp;Preferiti</translation>
 <translation id="8117752106453549166">È in corso la configurazione di Linux da parte dell'amministratore. L'operazione richiederà alcuni minuti.</translation>
 <translation id="8118362518458010043">Estensione disattivata da Chrome perché potrebbe non essere sicura.</translation>
@@ -6458,7 +6457,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Connessione a <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gestire applicazioni, estensioni e temi</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> vuole condividere i contenuti del tuo schermo.</translation>
 <translation id="8195027750202970175">Dimensioni su disco</translation>
 <translation id="8198323535106903877">Le <ph name="NUMBER_OF_APPS" /> app verranno installate automaticamente</translation>
 <translation id="8199300056570174101">Proprietà dispositivo e rete (servizio)</translation>
@@ -6882,6 +6880,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="8698269656364382265">Per tornare alla schermata precedente, scorri dal lato sinistro.</translation>
 <translation id="869884720829132584">Menu Applicazioni</translation>
 <translation id="869891660844655955">Data di scadenza</translation>
+<translation id="8699120352855309748">Non proporre di tradurre queste lingue</translation>
 <translation id="8702825062053163569">Il tuo dispositivo <ph name="DEVICE_TYPE" /> è stato bloccato.</translation>
 <translation id="8703346390800944767">Salta annuncio</translation>
 <translation id="8705331520020532516">Numero di serie</translation>

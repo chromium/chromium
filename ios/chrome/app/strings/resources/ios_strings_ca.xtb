@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Mostra la contrasenya</translation>
 <translation id="1872096359983322073">Llanterna</translation>
 <translation id="1911619930368729126">Penja a Google Drive</translation>
-<translation id="1919130412786645364">Permet l'inici de sessió a Chrome</translation>
 <translation id="1923342640370224680">Darrera hora</translation>
 <translation id="1941314575388338491">Feu doble toc per copiar-ho.</translation>
 <translation id="1952172573699511566">Quan sigui possible, els llocs web mostraran el text en el teu idioma preferit.</translation>
@@ -216,7 +215,6 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 
 En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis.</translation>
 <translation id="3207960819495026254">S'ha afegit a les adreces d'interès.</translation>
-<translation id="3222343486469566063">Sessió no iniciada</translation>
 <translation id="3224641773458703735">Per exportar les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="3240426699337459095">S'ha copiat l'enllaç.</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@ Segueix aquests passos:</translation>
 <translation id="3928666092801078803">Combina les meves dades</translation>
 <translation id="3929457972718048006">Adreces</translation>
 <translation id="3943492037546055397">Contrasenyes</translation>
-<translation id="3943557322767080599">Mostra les sol·licituds d'inici de sessió de Chrome quan inicies la sessió al teu Compte de Google</translation>
-<translation id="3967266340354872733">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta <ph name="BEGIN_LINK" />Sincronització<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
 <translation id="3968505803272650567">Gestiona els interessos</translation>
 <translation id="3989635538409502728">Tanca la sessió</translation>
@@ -568,7 +564,6 @@ Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="6760509555861141183">Torna a la pestanya Recents</translation>
 <translation id="6780034285637185932">Codi postal</translation>
 <translation id="6785453220513215166">S'està enviant l'informe d'error...</translation>
-<translation id="679325081238418596">Accedeix a les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració en tots els dispositius</translation>
 <translation id="6797885426782475225">Cerca per veu</translation>
 <translation id="6807889908376551050">Mostra-ho tot...</translation>
 <translation id="681368974849482173">S'ha creat un element.</translation>
@@ -580,7 +575,6 @@ Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="6873263987691478642">Visualització dividida</translation>
 <translation id="6888009575607455378">Confirmes que vols descartar els canvis?</translation>
 <translation id="6896758677409633944">Copia</translation>
-<translation id="6903907808598579934">Activa la sincronització</translation>
 <translation id="6914583639806229067">Cerca la imatge que has copiat</translation>
 <translation id="6914783257214138813">Tothom que pugui veure el fitxer exportat podrà veure també les teves contrasenyes.</translation>
 <translation id="6930799952781667037">Toca per canviar a aquest idioma.</translation>
@@ -711,6 +705,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8225985093977202398">Fitxers i imatges a memòria cau</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8281781826761538115">Idioma predeterminat: <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Omet</translation>
 <translation id="8283172974887967105">Estableix…</translation>
 <translation id="8299417921174340354">Per utilitzar les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="8319076807703933069">Cerca nova</translation>

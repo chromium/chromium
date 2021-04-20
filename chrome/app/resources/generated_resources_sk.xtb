@@ -329,7 +329,6 @@
 <translation id="1354045473509304750">Pokračovať v povolení hostiteľovi <ph name="HOST" /> používať vašu kameru a hýbať ňou</translation>
 <translation id="1355088139103479645">Chcete odstrániť všetky údaje?</translation>
 <translation id="1355466263109342573">Doplnok <ph name="PLUGIN_NAME" /> je blokovaný</translation>
-<translation id="1358612436266364864">Odstrániť zvýraznenia</translation>
 <translation id="1358741672408003399">Pravopis a gramatika</translation>
 <translation id="1359923111303110318">Zariadenie môžete odomykať pomocou funkcie Smart Lock. Odomknete ho stlačením tlačidla Enter.</translation>
 <translation id="1361164813881551742">Pridať ručne</translation>
@@ -885,6 +884,7 @@
 <translation id="1928202201223835302">Zadanie pôvodného kódu PIN</translation>
 <translation id="1928696683969751773">Aktualizácie</translation>
 <translation id="1929186283613845153">Prebieha kontrola tohto súboru.</translation>
+<translation id="1929343511231420085">Ľubovoľný sériový port</translation>
 <translation id="1929546189971853037">Čítať históriu prehliadania na všetkých prihlásených zariadeniach</translation>
 <translation id="1930879306590754738">Heslo bolo odstránené z tohto zariadenia aj vášho účtu Google</translation>
 <translation id="1931152874660185993">Nie sú nainštalované žiadne komponenty.</translation>
@@ -1609,7 +1609,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="2734760316755174687">Weby v skupine <ph name="SITE_GROUP_NAME" /> budú tiež obnovené.</translation>
 <translation id="2735712963799620190">Rozvrh</translation>
 <translation id="2737363922397526254">Zbaliť...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> chce zdieľať obsah vašej obrazovky s webom <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Nepovoliť webom používať písma nainštalované v zariadení</translation>
 <translation id="2738771556149464852">Nie po</translation>
 <translation id="2739191690716947896">Ladiť</translation>
@@ -1897,7 +1896,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Vyberte položky na import:</translation>
 <translation id="3036327949511794916">Termín na vrátenie tohto zariadenia <ph name="DEVICE_TYPE" /> uplynul.</translation>
-<translation id="3036438888981457032">Odstrániť zvýraznenia</translation>
 <translation id="3036546437875325427">Povoliť Flash</translation>
 <translation id="3037754279345160234">Konfigurácia pridania do domény sa nedá analyzovať. Kontaktujte správcu.</translation>
 <translation id="3038612606416062604">Manuálne pridanie tlačiarne</translation>
@@ -2944,6 +2942,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4218274196133425560">Odstrániť výnimku pre <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Počas aktivácie sa vyskytla chyba.</translation>
 <translation id="4222772810963087151">Podrobnosti o zostave</translation>
+<translation id="4224284700924043865">Zariadenia USB s identifikátorom výrobku <ph name="PRODUCT_ID" /> od dodávateľa <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">Na všetkých weboch</translation>
 <translation id="4231095370974836764">Nainštalujte si aplikácie a hry zo služby Google Play v zariadení <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Konfigurácia protokolu Kerberos</translation>
@@ -3016,6 +3015,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="431076611119798497">&amp;Podrobnosti</translation>
 <translation id="4312866146174492540">Blokovať (predvolené)</translation>
 <translation id="4314815835985389558">Správa synchronizácie</translation>
+<translation id="4316650123995163262">Zariadenia USB s identifikátorom výrobku <ph name="PRODUCT_ID" /> od dodávateľa <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Webové stránky vývojára</translation>
 <translation id="4317820549299924617">Overenie nebolo úspešné</translation>
 <translation id="4320177379694898372">Žiadne internetové pripojenie</translation>
@@ -3458,6 +3458,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4824958205181053313">Chcete zrušiť synchronizáciu?</translation>
 <translation id="4827675678516992122">Nepodarilo sa pripojiť</translation>
 <translation id="4827784381479890589">Rozšírená kontrola pravopisu v prehliadači Chrome (text sa odosiela Googlu, ktorý poskytuje návrhy pravopisu)</translation>
+<translation id="482952334869563894">Zariadenia USB od dodávateľa <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Nastaviť kód PIN</translation>
 <translation id="4830121310592638841">Opýtať sa, keď chce web otvárať a umiestňovať okná na vaše obrazovky</translation>
 <translation id="4830502475412647084">Inštaluje sa aktualizácia operačného systému</translation>
@@ -3747,6 +3748,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5159419673777902220">Tvoj rodič deaktivoval povolenia rozšírenia</translation>
 <translation id="5160634252433617617">Fyzická klávesnica</translation>
 <translation id="5160857336552977725">Prihláste sa do svojho zariadenia <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">Zariadenia USB od dodávateľa <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850">Zariadenie <ph name="DEVICE_TYPE" /> je blokované</translation>
 <translation id="5163910114647549394">Karta bola presunutá na koniec panela kariet</translation>
 <translation id="5165085578392358314">Pridelenie prepínača: <ph name="ACTION" /></translation>
@@ -4660,7 +4662,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6212039847102026977">Zobraziť rozšírené vlastnosti siete</translation>
 <translation id="6212168817037875041">Vypnúť obrazovku</translation>
 <translation id="6212752530110374741">Odoslať odkaz e-mailom</translation>
-<translation id="6213230117190778270">Prijať</translation>
 <translation id="621470880408090483">Nepovoliť webom pripájať sa k zariadeniam s rozhraním Bluetooth</translation>
 <translation id="6215620815501168899">Zavrieť vyskakovacie okno s číslom EID zariadenia a QR kódom</translation>
 <translation id="6216601812881225442">Váš kontajner nepodporuje zmenu veľkosti. Ak chcete upraviť priestor, ktorý bol vopred pridelený systému Linux, vytvorte zálohu a potom ju obnovte do nového kontajnera.</translation>
@@ -5374,6 +5375,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – denník aktivít</translation>
 <translation id="6997707937646349884">V zariadeniach:</translation>
 <translation id="6998793565256476099">Zaregistrovať zariadenie na videokonferencie</translation>
+<translation id="6999640176621571692">Chcete povoliť Googlu vyhľadať zľavy na obsah, ktorý pridáte do košíkov?</translation>
 <translation id="6999956497249459195">Nová skupina</translation>
 <translation id="7000206553895739324">Tlačiareň <ph name="PRINTER_NAME" /> je pripojená, ale je potrebné ju nakonfigurovať</translation>
 <translation id="7000347579424117903">Použite Ctrl, Alt alebo kláves vyhľadávania</translation>
@@ -5454,7 +5456,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7076293881109082629">Prihlásenie</translation>
 <translation id="7077829361966535409">Prihlasovaciu stránku sa pomocou aktuálneho nastavenia servera proxy nepodarilo načítať. <ph name="GAIA_RELOAD_LINK_START" />Skúste sa prihlásiť znova<ph name="GAIA_RELOAD_LINK_END" /> alebo použite iné <ph name="PROXY_SETTINGS_LINK_START" />nastavenia servera proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Všetky siete</translation>
-<translation id="7078386829626602215">Nebolo rozpoznané žiadne zariadenie <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">K&amp;opírovať adresu zvuku</translation>
 <translation id="7081952801286122383">Ste v režime inkognito</translation>
 <translation id="708278670402572152">Ak chcete aktivovať vyhľadávanie, odpojte sa</translation>
@@ -5503,11 +5504,9 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7135729336746831607">Chcete zapnúť Bluetooth?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> vyžaduje, aby ste ihneď aktualizovali svoje zariadenie <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7136694880210472378">Nastaviť ako predvolený</translation>
-<translation id="7136984461011502314">Vitajte v aplikácii <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Vyskytla sa chyba. Vyberte iné obrázky a skúste to znova.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> používa váš mikrofón</translation>
 <translation id="7141105143012495934">Prihlásenie zlyhalo, pretože podrobnosti účtu sa nepodarilo načítať. Kontaktujte svojho správcu alebo to skúste znova.</translation>
-<translation id="7143358760238281735">K dispozícii nie sú žiadne aplikácie</translation>
 <translation id="7144878232160441200">Skúsiť znova</translation>
 <translation id="7149893636342594995">Posledných 24 hodín</translation>
 <translation id="7152478047064750137">Toto rozšírenie nevyžaduje žiadne špeciálne povolenia</translation>
@@ -6460,7 +6459,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Prebieha pripájanie na stránku <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Spravovať vaše aplikácie, rozšírenia a motívy</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> chce zdieľať obsah vašej obrazovky.</translation>
 <translation id="8195027750202970175">Veľkosť na disku</translation>
 <translation id="8198323535106903877">Aplikácie (počet: <ph name="NUMBER_OF_APPS" />) pre vás nainštalujeme</translation>
 <translation id="8199300056570174101">Vlastnosti siete (služba) a zariadenia</translation>
@@ -6884,6 +6882,7 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="8698269656364382265">Na predchádzajúcu obrazovku sa vrátite potiahnutím zľava.</translation>
 <translation id="869884720829132584">Ponuka Aplikácie</translation>
 <translation id="869891660844655955">Koniec platnosti</translation>
+<translation id="8699120352855309748">Neponúkať preklad týchto jazykov</translation>
 <translation id="8702825062053163569">Vaše zariadenie <ph name="DEVICE_TYPE" /> bolo uzamknuté.</translation>
 <translation id="8703346390800944767">Preskočiť reklamu</translation>
 <translation id="8705331520020532516">Sériové číslo</translation>

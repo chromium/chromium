@@ -227,6 +227,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7106741999175697885">Aktivitetshanteraren - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Det finns en ny Chrome-uppdatering som tillämpas så snart du startar om.}=1{Det finns en ny Chrome-uppdatering som tillämpas så snart du startar om. Inkognitofönstret öppnas inte igen.}other{Det finns en ny Chrome-uppdatering som tillämpas så snart du startar om. De # inkognitofönstren öppnas inte igen.}}</translation>
 <translation id="7155997830309522122">Om så är fallet ska du redigera det sparade lösenordet i Chrome så att det matchar det nya lösenordet.</translation>
+<translation id="7161904924553537242">Välkommen till Google Chrome</translation>
 <translation id="7242029209006116544">Du loggar in med ett hanterat konto och ger dess administratör kontroll över din Google Chrome-profil. Dina Chrome-uppgifter, t.ex. dina appar, bokmärken, din historik, dina lösenord och andra inställningar, knyts permanent till <ph name="USER_NAME" />. Du kommer att kunna ta bort dessa uppgifter via instrumentpanelen i Google Konton, men du kommer inte att kunna koppla dessa uppgifter till ett annat konto. Du kan skapa en ny profil om du vill hålla dina befintliga Chrome-uppgifter separata. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Användargränssnittet i Google Chrome visas på det här språket</translation>
 <translation id="7296210096911315575">Viktig användnings- och säkerhetsinformation</translation>

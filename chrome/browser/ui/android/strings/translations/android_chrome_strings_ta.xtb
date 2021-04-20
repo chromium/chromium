@@ -305,7 +305,6 @@
 <translation id="3016635187733453316">இந்தச் சாதனம் இணையத்துடன் இணைக்கப்பட்டுள்ளதை உறுதி செய்யவும்</translation>
 <translation id="3029704984691124060">கடவுத்தொடர்கள் பொருந்தவில்லை</translation>
 <translation id="3031225630520268969">குரல் தேடலுக்கு Assistantடைப் பயன்படுத்துவதற்கான ஒப்புதல் ui</translation>
-<translation id="3034163383943672781">பதிவிறக்கமானது <ph name="DATE" /> அன்று தொடங்கும்.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />உதவி பெறுக<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">அடுத்த முறை இந்தத் தளத்தை விரைவாக அணுகலாம்</translation>
 <translation id="305593374596241526">இருப்பிடம் முடக்கப்பட்டுள்ளது; அதை <ph name="BEGIN_LINK" />Android அமைப்புகளில்<ph name="END_LINK" /> இயக்கவும்.</translation>
@@ -526,7 +525,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# நிமிடத்திற்கு முன்பு}other{# நிமிடங்களுக்கு முன்பு}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234"><ph name="CREATION_TIME" /> அன்று இந்த ஆஃப்லைன் பக்கம் உருவாக்கப்பட்டது. இது ஆன்லைன் பதிப்பிலிருந்து வேறுபடலாம்.</translation>
-<translation id="4605958867780575332">உருப்படி அகற்றப்பட்டது: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ஐத் திற</translation>
 <translation id="4619564267100705184">இது நீங்கள்தான் என உறுதிசெய்யுங்கள்</translation>
 <translation id="4634124774493850572">கடவுச்சொல்லைப் பயன்படுத்து</translation>
@@ -702,7 +700,6 @@
 <translation id="572328651809341494">சமீபத்திய தாவல்கள்</translation>
 <translation id="5723735397759933332">HTTPS பக்கங்களில் உள்ள படங்களைச் சுருக்குவதன் மூலம் லைட் பயன்முறை இப்போது கூடுதல் டேட்டாவைச் சேமிக்கிறது.</translation>
 <translation id="5726692708398506830">பக்கத்திலுள்ள அனைத்தையும் பெரிதாக்கும்</translation>
-<translation id="5732819098735351888">பதிவிறக்கமானது வைஃபை கிடைக்கும்போது தொடங்கும்.</translation>
 <translation id="5733983706093266635">QR குறியீட்டை உருவாக்க முடியவில்லை. URL <ph name="CHARACTER_LIMIT" /> எழுத்துகளுக்கு அதிகமாக உள்ளது.</translation>
 <translation id="5748802427693696783">இயல்பான தாவல்களுக்கு மாற்றப்பட்டது</translation>
 <translation id="5749068826913805084">கோப்புகளைப் பதிவிறக்க Chromeக்கு சேமிப்பிட அணுகல் தேவை.</translation>
@@ -781,7 +778,6 @@
 <translation id="6159335304067198720"><ph name="PERCENT" /> தரவுச் சேமிப்புகள்</translation>
 <translation id="6186394685773237175">களவாடப்பட்ட கடவுச்சொற்கள் எதுவும் இல்லை</translation>
 <translation id="6192907950379606605">பட விளக்கங்களைப் பெறு</translation>
-<translation id="6206830853671714236">எப்போது பதிவிறக்கலாம் என்பதைத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> இல்லையா?</translation>
 <translation id="6211386937064921208">இந்தப் பக்கத்தின் மாதிரிக்காட்சி</translation>
 <translation id="6218096829563201111">இதுபோன்றவற்றைத் தேடுக <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
@@ -1177,12 +1173,14 @@
 <translation id="8699120352855309748">இந்த மொழிகளுக்கு மொழிபெயர்ப்பு வேண்டாம்:</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8725066075913043281">மீண்டும் முயற்சிக்கவும்</translation>
+<translation id="8730621377337864115">முடிந்தது</translation>
 <translation id="8748850008226585750">மறைந்துள்ள உள்ளடக்கம்</translation>
 <translation id="8773160212632396039">கோரிக்கையைச் செயலாக்குகிறது</translation>
 <translation id="8788265440806329501">வழிசெலுத்தல் வரலாறு மூடப்பட்டுள்ளது</translation>
 <translation id="8788968922598763114">கடைசியாக மூடிய தாவலைத் திறக்கும்</translation>
 <translation id="8798449543960971550">படித்தவை</translation>
 <translation id="8812260976093120287">உங்கள் சாதனத்தில் ஆதரிக்கப்படும் கட்டணம் செலுத்துவதற்கான பயன்பாடுகளைப் (மேலே குறிப்பிட்டவை) பயன்படுத்தி, சில இணையதளங்களின் மூலம் பணம் செலுத்தலாம்.</translation>
+<translation id="8814190375133053267">வைஃபை</translation>
 <translation id="881688628773363275">தாவல் உள்ளடக்கத்தின் மாதிரிக்காட்சியைப் பார்க்க முடியாது.</translation>
 <translation id="8820817407110198400">புக்மார்க்குகள்</translation>
 <translation id="883806473910249246">உள்ளடக்கத்தைப் பதிவிறக்கும் போது பிழை ஏற்பட்டது.</translation>
@@ -1220,10 +1218,10 @@
 <translation id="9063523880881406963">டெஸ்க்டாப் தளத்திற்கான கோரிக்கையை முடக்கு</translation>
 <translation id="9065203028668620118">திருத்து</translation>
 <translation id="9065383040763568503">முக்கியமில்லை என்று Chrome கருதும் சேமிக்கப்பட்ட தரவுகள் (எ.கா. சேமித்த அமைப்புகள் இல்லாத/அடிக்கடி நீங்கள் பார்க்காத தளங்கள்)</translation>
-<translation id="9069543557624799859"><ph name="TIME" />க்குப் பதிவிறக்கம் தொடங்கும்.</translation>
 <translation id="9069999660519089861">படிக்காத பக்கங்கள் எதுவுமில்லை</translation>
 <translation id="9070377983101773829">குரல் தேடலைத் தொடங்கு</translation>
 <translation id="9074336505530349563">Google பரிந்துரைக்கும் பிரத்யேக உள்ளடக்கத்தைப் பெற, உள்நுழைந்து, ஒத்திசைவை இயக்கவும்</translation>
+<translation id="9074739597929991885">புளூடூத்</translation>
 <translation id="9086302186042011942">ஒத்திசைக்கிறது</translation>
 <translation id="9086455579313502267">நெட்வொர்க்கை அணுக முடியவில்லை</translation>
 <translation id="9100505651305367705">கட்டுரைகளை எளிதாக்கிக் காட்டும் வசதி கிடைக்கும்போது, அவ்வாறு காட்ட வேண்டுமா எனக் கேள்</translation>

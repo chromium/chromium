@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Показване на паролата</translation>
 <translation id="1872096359983322073">Фенерче</translation>
 <translation id="1911619930368729126">Качване в Google Диск</translation>
-<translation id="1919130412786645364">Разрешаване на влизането в Chrome</translation>
 <translation id="1923342640370224680">Последният час</translation>
 <translation id="1941314575388338491">Докоснете двукратно, за да копирате.</translation>
 <translation id="1952172573699511566">Когато е възможно, текстът на уебсайтовете ще се показва на предпочитания от вас език.</translation>
@@ -216,7 +215,6 @@
 
 Докато сте в режим „инкогнито“, сайтовете не могат да използват „бисквитки“, за да следят активността ви при сърфиране в различни сайтове, например с цел персонализиране на реклами.</translation>
 <translation id="3207960819495026254">С отметка</translation>
-<translation id="3222343486469566063">Не е в профила си</translation>
 <translation id="3224641773458703735">За да експортирате паролите, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="3240426699337459095">Връзката е копирана</translation>
 <translation id="3244271242291266297">ММ</translation>
@@ -286,8 +284,6 @@
 <translation id="3928666092801078803">Комбиниране на данните ми</translation>
 <translation id="3929457972718048006">Адреси</translation>
 <translation id="3943492037546055397">Пароли</translation>
-<translation id="3943557322767080599">Показване на подкани за влизане в Chrome, когато влизате в профила си в Google</translation>
-<translation id="3967266340354872733">За още настройки за поверителността, сигурността и събирането на данни вижте <ph name="BEGIN_LINK" />Синхронизиране<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Изтеглянето завърши</translation>
 <translation id="3968505803272650567">Управление на интересите</translation>
 <translation id="3989635538409502728">Изход</translation>
@@ -568,7 +564,6 @@
 <translation id="6760509555861141183">Назад към най-скорошния раздел</translation>
 <translation id="6780034285637185932">Пощенски код</translation>
 <translation id="6785453220513215166">Сигналите за сривове се изпращат...</translation>
-<translation id="679325081238418596">Получете отметките, историята, паролите и другите си настройки на всичките си устройства</translation>
 <translation id="6797885426782475225">Гласово търсене</translation>
 <translation id="6807889908376551050">Показване на всички...</translation>
 <translation id="681368974849482173">Елементът е създаден</translation>
@@ -580,7 +575,6 @@
 <translation id="6873263987691478642">Разделен изглед</translation>
 <translation id="6888009575607455378">Наистина ли искате да отхвърлите промените?</translation>
 <translation id="6896758677409633944">Копиране</translation>
-<translation id="6903907808598579934">Включване на синхронизирането</translation>
 <translation id="6914583639806229067">Търсене на копираното изображение</translation>
 <translation id="6914783257214138813">Паролите ви ще бъдат видими за всички, които могат да видят експортирания файл.</translation>
 <translation id="6930799952781667037">Докоснете за използване на съответния език.</translation>
@@ -711,6 +705,7 @@
 <translation id="8225985093977202398">Кеширани изображения и файлове</translation>
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="8281781826761538115">Стандартно – <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Пропускане</translation>
 <translation id="8283172974887967105">Задаване…</translation>
 <translation id="8299417921174340354">За да използвате паролите, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="8319076807703933069">Ново търсене</translation>

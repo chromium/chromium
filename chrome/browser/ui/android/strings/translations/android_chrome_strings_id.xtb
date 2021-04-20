@@ -305,7 +305,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3016635187733453316">Pastikan perangkat ini tersambung ke internet</translation>
 <translation id="3029704984691124060">Frasa sandi tidak cocok</translation>
 <translation id="3031225630520268969">UI izin penelusuran suara Asisten</translation>
-<translation id="3034163383943672781">Download akan dimulai pada <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Dapatkan bantuan<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Buka situs ini lebih cepat pada waktu berikutnya</translation>
 <translation id="305593374596241526">Lokasi nonaktif, aktifkan di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4583164079174244168">{MINUTES,plural, =1{# menit yang lalu}other{# menit yang lalu}}</translation>
 <translation id="4587589328781138893">Situs</translation>
 <translation id="4594952190837476234">Halaman offline ini dibuat pada <ph name="CREATION_TIME" /> dan mungkin berbeda dengan versi onlinenya.</translation>
-<translation id="4605958867780575332">Item yang dihapus: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Buka <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifikasi diri Anda</translation>
 <translation id="4634124774493850572">Gunakan sandi</translation>
@@ -702,7 +700,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="572328651809341494">Tab terbaru</translation>
 <translation id="5723735397759933332">Mode Ringan kini menghemat data Anda lebih banyak dengan mengoptimalkan gambar di halaman HTTPS.</translation>
 <translation id="5726692708398506830">Memperbesar semua yang ada di halaman</translation>
-<translation id="5732819098735351888">Download akan dimulai saat terhubung ke Wi-Fi.</translation>
 <translation id="5733983706093266635">Tidak dapat membuat kode QR. URL berisi lebih dari <ph name="CHARACTER_LIMIT" /> karakter.</translation>
 <translation id="5748802427693696783">Beralih ke tab standar</translation>
 <translation id="5749068826913805084">Chrome memerlukan akses penyimpanan untuk mendownload file.</translation>
@@ -779,9 +776,9 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="614940544461990577">Coba:</translation>
 <translation id="6154478581116148741">Aktifkan kunci layar di Setelan untuk mengekspor sandi dari perangkat ini</translation>
 <translation id="6159335304067198720">Penghematan kuota <ph name="PERCENT" /></translation>
+<translation id="6159729262978459665">Menghapus histori dari semua perangkat yang disinkronkan.</translation>
 <translation id="6186394685773237175">Tidak ditemukan sandi yang telah dibobol</translation>
 <translation id="6192907950379606605">Dapatkan deskripsi gambar</translation>
-<translation id="6206830853671714236">Pilih waktu untuk mendownload</translation>
 <translation id="6210748933810148297">Bukan <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Melihat pratinjau halaman ini</translation>
 <translation id="6218096829563201111">Telusuri produk serupa <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="7523960634226602883">Telusuri dengan kamera Anda menggunakan Google Lens</translation>
 <translation id="753225086557513863">Dijadwalkan untuk nanti</translation>
 <translation id="7559975015014302720">Mode Ringan nonaktif</translation>
+<translation id="7560448309733608642">Menghapus histori dari semua perangkat yang disinkronkan. Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Menghapus data penjelajahan</translation>
 <translation id="756809126120519699">Data Chrome telah dihapus</translation>
 <translation id="7577900504646297215">Kelola minat</translation>
@@ -1177,12 +1175,14 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="8699120352855309748">Jangan tawarkan penerjemahan bahasa ini</translation>
 <translation id="8712637175834984815">Mengerti</translation>
 <translation id="8725066075913043281">Coba lagi</translation>
+<translation id="8730621377337864115">Selesai</translation>
 <translation id="8748850008226585750">Konten tersembunyi</translation>
 <translation id="8773160212632396039">Memproses permintaan</translation>
 <translation id="8788265440806329501">Histori navigasi tertutup</translation>
 <translation id="8788968922598763114">Membuka ulang tab yang terakhir ditutup</translation>
 <translation id="8798449543960971550">Telah dibaca</translation>
 <translation id="8812260976093120287">Di beberapa situs, Anda dapat membayar dengan aplikasi pembayaran yang didukung di atas pada perangkat Anda.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Pratinjau konten tab tidak terlihat.</translation>
 <translation id="8820817407110198400">Bookmark</translation>
 <translation id="883806473910249246">Terjadi error saat mendownload konten.</translation>
@@ -1220,10 +1220,10 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="9063523880881406963">Nonaktifkan Ubah situs desktop</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9065383040763568503">Data tersimpan yang dianggap tidak penting oleh Chrome (misalnya situs yang tidak memiliki setelan tersimpan atau situs yang jarang Anda kunjungi)</translation>
-<translation id="9069543557624799859">Download akan dimulai pukul <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Tidak ada halaman yang belum dibaca</translation>
 <translation id="9070377983101773829">Mulai penelusuran suara</translation>
 <translation id="9074336505530349563">Untuk mendapatkan konten hasil personalisasi yang disarankan oleh Google, login dan aktifkan sinkronisasi</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Menyinkronkan</translation>
 <translation id="9086455579313502267">Tidak dapat mengakses jaringan</translation>
 <translation id="9100505651305367705">Tawarkan untuk menampilkan artikel dalam tampilan sederhana, jika didukung</translation>

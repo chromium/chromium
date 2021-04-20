@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">비밀번호 표시</translation>
 <translation id="1872096359983322073">토치</translation>
 <translation id="1911619930368729126">Google Drive로 업로드</translation>
-<translation id="1919130412786645364">Chrome 로그인 허용</translation>
 <translation id="1923342640370224680">지난 1시간</translation>
 <translation id="1941314575388338491">복사하려면 두 번 탭하세요.</translation>
 <translation id="1952172573699511566">가능한 경우 웹사이트에서 텍스트를 선호하는 언어로 표시합니다.</translation>
@@ -216,7 +215,6 @@
 
 시크릿 모드에 있는 동안에는 사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다.</translation>
 <translation id="3207960819495026254">북마크에 추가됨</translation>
-<translation id="3222343486469566063">로그인하지 않음</translation>
 <translation id="3224641773458703735">비밀번호를 내보내려면 먼저 기기에 비밀번호를 설정해야 합니다.</translation>
 <translation id="3240426699337459095">링크 복사됨</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@
 <translation id="3928666092801078803">내 데이터 결합하기</translation>
 <translation id="3929457972718048006">주소</translation>
 <translation id="3943492037546055397">비밀번호</translation>
-<translation id="3943557322767080599">Google 계정에 로그인하면 Chrome 로그인 메시지 표시</translation>
-<translation id="3967266340354872733">개인정보 보호, 보안, 데이터 수집에 관한 추가 설정을 보려면 <ph name="BEGIN_LINK" />동기화<ph name="END_LINK" /> 및 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 참고하세요.</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
 <translation id="3968505803272650567">관심분야 관리</translation>
 <translation id="3989635538409502728">로그아웃</translation>
@@ -568,7 +564,6 @@
 <translation id="6760509555861141183">최근 탭으로 돌아가기</translation>
 <translation id="6780034285637185932">우편번호</translation>
 <translation id="6785453220513215166">비정상 종료 보고서 보내는 중...</translation>
-<translation id="679325081238418596">모든 기기에서 북마크, 방문 기록, 비밀번호, 기타 설정을 동기화합니다.</translation>
 <translation id="6797885426782475225">음성검색</translation>
 <translation id="6807889908376551050">모두 표시...</translation>
 <translation id="681368974849482173">북마크가 생성되었습니다.</translation>
@@ -580,7 +575,6 @@
 <translation id="6873263987691478642">분할 보기</translation>
 <translation id="6888009575607455378">변경사항을 삭제하시겠습니까?</translation>
 <translation id="6896758677409633944">복사</translation>
-<translation id="6903907808598579934">동기화 사용 설정</translation>
 <translation id="6914583639806229067">복사한 이미지 검색</translation>
 <translation id="6914783257214138813">내보낸 파일을 볼 수 있는 모든 사용자에게 비밀번호가 표시됩니다.</translation>
 <translation id="6930799952781667037">이 언어로 변경하려면 탭하세요.</translation>
@@ -711,6 +705,7 @@
 <translation id="8225985093977202398">캐시된 이미지 및 파일</translation>
 <translation id="8261506727792406068">삭제</translation>
 <translation id="8281781826761538115">기본값 - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">건너뛰기</translation>
 <translation id="8283172974887967105">설정…</translation>
 <translation id="8299417921174340354">비밀번호를 사용하려면 기기에 비밀번호를 설정해야 합니다.</translation>
 <translation id="8319076807703933069">새 검색</translation>

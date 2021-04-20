@@ -763,9 +763,6 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
           Als dit beleid niet is ingesteld, wordt de functie beheerd door de eigen interne logica die handmatig kan worden geconfigureerd door gebruikers.
 
           Houd er rekening mee dat het beleid wordt toegepast per weergaveprogrammaproces en dat de meest recente waarde van de beleidsinstelling van kracht is als een weergaveprogrammaproces wordt gestart. Volledig opnieuw opstarten is vereist om ervoor te zorgen dat op alle geladen tabbladen een consistente beleidsinstelling wordt toegepast. Dit heeft geen negatieve invloed op processen die met andere waarden van dit beleid worden uitgevoerd.</translation>
-<translation id="2026547141364626978">Als je het beleid instelt, kun je de <ph name="PLUGIN_VM_NAME" />-licentiecode voor dit apparaat opgeven.
-
-      Dit beleid is verwijderd in M91.</translation>
 <translation id="2030905906517501646">Zoekwoord voor standaardzoekprovider</translation>
 <translation id="203096360153626918">Dit beleid is niet van invloed op de Android-apps. Deze hebben toegang tot de modus voor volledig scherm, zelfs als dit beleid is ingesteld op <ph name="FALSE" /> (Onwaar).</translation>
 <translation id="2032848225007871645">Met dit beleid bepaal je welke standen voor snel ontgrendelen kunnen worden gebruikt om het vergrendelscherm te ontgrendelen.
@@ -800,11 +797,6 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="2043749682619281558">Cursormarkering op het inlogscherm aanzetten</translation>
 <translation id="2043770014371753404">Bedrijfsprinters staan uit</translation>
-<translation id="2044730764993088298">Hiermee bepaal je de instellingen voor de levensduur van browsergegevens voor <ph name="PRODUCT_NAME" />. Met dit beleid kunnen beheerders instellen (per gegevenstype) wanneer gegevens door de browser moeten worden verwijderd. Dit is handig voor klanten die met gevoelige klantgegevens werken. Het beleid wordt alleen van kracht als <ph name="SYNC_DISABLED_POLICY_NAME" /> is ingesteld op True.
-
-      De beschikbare gegevenstypen zijn <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> en <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
-
-      De browser verwijdert automatisch gegevens van de geselecteerde typen die ouder zijn dan <ph name="TIME_TO_LIVE_IN_HOURS" />. De minimumwaarde die kan worden ingesteld is 1 uur. In sommige zeldzame gevallen kan het langer duren voordat de gegevens worden verwijderd, maar de gegevens worden uiteindelijk verwijderd.</translation>
 <translation id="2057317273526988987">Toegang verlenen aan een lijst met URL's</translation>
 <translation id="2061123930713023976">Opnamen van netwerkpakketten voor fouten opsporen toestaan</translation>
 <translation id="2061810934846663491">De vereiste domeinnamen configureren voor hosts voor externe toegang</translation>
@@ -2417,11 +2409,6 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staat gesproken feedback op het inlogscherm in eerste instantie uit. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
-<translation id="4175667688338118889">Als je dit beleid toepast, vertrouwt Safe Browsing de domeinen die je aangeeft. De functie checkt deze niet op gevaarlijke bronnen zoals phishing, malware of ongewenste software. De service voor downloadbeveiliging van Safe Browsing checkt downloads die worden gehost op deze domeinen niet. De service voor wachtwoordbeveiliging checkt niet of wachtwoorden opnieuw worden gebruikt.
-
-      Als je het beleid niet toepast of niet instelt, wordt de standaardbescherming van Safe Browsing toegepast op alle resources.
-
-      In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="417956245902013347">Zet de toegankelijkheidsfunctie voor de markering van het caret-teken op het inlogscherm aan.
 
           Als dit beleid is ingesteld op True, staat de markering van het caret-teken altijd aan op het inlogscherm.
@@ -4086,6 +4073,7 @@ Als je het beleid instelt, kunnen gebruikers dit niet aanpassen in de browserins
 
       Als je het beleid niet instelt, wordt er geen maximumlengte afgedwongen.</translation>
 <translation id="6553143066970470539">Percentage voor helderheid van scherm</translation>
+<translation id="6558362593755624474">Als je het beleid instelt, kun je de <ph name="PLUGIN_VM_NAME" />-licentiecode voor dit apparaat opgeven.</translation>
 <translation id="6559057113164934677">Niet toestaan dat sites toegang krijgen tot de camera en microfoon</translation>
 <translation id="6559221564468029245">Als je dit beleid toepast of niet instelt, worden gebruikers niet als inactief gezien als er audio wordt afgespeeld. Hierdoor wordt voorkomen dat de time-out voor inactiviteit wordt bereikt en dat de actie bij inactiviteit wordt ondernomen. Het dimmen, uitzetten of vergrendelen van het scherm wordt nog wel uitgevoerd na de ingestelde periode, ongeacht of er audio wordt afgespeeld.
 

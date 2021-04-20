@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">পাছৱর্ড দেখুৱাওক</translation>
 <translation id="1872096359983322073">টৰ্চ</translation>
 <translation id="1911619930368729126">Google Driveলৈ আপল’ড কৰক</translation>
-<translation id="1919130412786645364">Chromeত ছাইন ইন কৰিব দিয়ক</translation>
 <translation id="1923342640370224680">যোৱা ১ঘণ্টাৰ</translation>
 <translation id="1941314575388338491">প্ৰতিলিপি কৰিবলৈ দুবাৰ টিপক।</translation>
 <translation id="1952172573699511566">ৱেবছাইটবোৰে যেতিয়া সম্ভৱ হয় তেতিয়া আপুনি অগ্ৰাধিকাৰ দিয়া ভাষাত পাঠবোৰ দেখুৱাব।</translation>
@@ -216,7 +215,6 @@
 
 ইনক’গনিট’ ম’ডত থকাৰ সময়ত, ছাইটসমূহে বিভিন্ন ছাইটত আপোনাৰ ব্ৰাউজিঙৰ কাৰ্যকলাপ চাবলৈ কুকিসমূহ ব্যৱহাৰ কৰিব নোৱাৰে; উদাহৰণস্বৰূপে, বিজ্ঞাপন ব্যক্তিগতকৰণ কৰিবলৈ।</translation>
 <translation id="3207960819495026254">বুকমার্ক কৰা হৈছে</translation>
-<translation id="3222343486469566063">ছাইন ইন কৰা নাই</translation>
 <translation id="3224641773458703735">পাছৱৰ্ড ৰপ্তানি কৰিবলৈ, আপুনি প্ৰথমে নিজৰ ডিভাইচত এটা পাছক’ড ছেট কৰিব লাগিব৷</translation>
 <translation id="3240426699337459095">লিংকটোৰ প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="3244271242291266297">মাহ</translation>
@@ -286,8 +284,6 @@
 <translation id="3928666092801078803">মোৰ ডেটা সংযুক্ত কৰক</translation>
 <translation id="3929457972718048006">ঠিকনা</translation>
 <translation id="3943492037546055397">পাছৱৰ্ড</translation>
-<translation id="3943557322767080599">আপোনাৰ Google একাউণ্টত ছাইন ইন কৰোঁতে Chromeৰ ছাইন-ইন প্ৰম্পট্‌ দেখুৱাওক</translation>
-<translation id="3967266340354872733">গোপনীয়তা, সুৰক্ষা আৰু ডেটা সংগ্ৰহ সম্পৰ্কীয় অধিক ছেটিঙৰ বাবে <ph name="BEGIN_LINK" />ছিংক<ph name="END_LINK" /> আৰু <ph name="BEGIN_LINK" />Google সেৱাসমূহ<ph name="END_LINK" /> চাওক।</translation>
 <translation id="3967822245660637423">ডাউনল’ড সম্পূৰ্ণ হ’ল</translation>
 <translation id="3968505803272650567">আগ্ৰহসমূহ পৰিচালনা কৰক</translation>
 <translation id="3989635538409502728">ছাইন আউট কৰক</translation>
@@ -568,7 +564,6 @@
 <translation id="6760509555861141183">শেহতীয়া টেবলৈ উভতি যাওক</translation>
 <translation id="6780034285637185932">পিন ক’ড</translation>
 <translation id="6785453220513215166">ক্ৰেশ্ব প্ৰতিবেদন পঠিয়াই থকা হৈছে…</translation>
-<translation id="679325081238418596">আপোনাৰ সকলো ডিভাইচত নিজৰ বুকমার্ক, ব্ৰাউজিঙৰ ইতিহাস, পাছৱর্ড আৰু আন ছেটিংসমূহ পাওক</translation>
 <translation id="6797885426782475225">কণ্ঠধ্বনিৰদ্বাৰা সন্ধান</translation>
 <translation id="6807889908376551050">সকলো দেখুৱাওক...</translation>
 <translation id="681368974849482173">বস্তু সৃষ্টি কৰা হ’ল</translation>
@@ -580,7 +575,6 @@
 <translation id="6873263987691478642">স্প্লিট ভিউ</translation>
 <translation id="6888009575607455378">আপুনি আপোনাৰ সালসলনিসমূহ বাতিল কৰিব বিচৰাটো নিশ্চিতনে?</translation>
 <translation id="6896758677409633944">প্ৰতিলিপি কৰক</translation>
-<translation id="6903907808598579934">ছিংক অন কৰক</translation>
 <translation id="6914583639806229067">আপুনি প্রতিলিপি কৰা প্ৰতিচ্ছবি সন্ধান কৰক</translation>
 <translation id="6914783257214138813">ৰপ্তানি কৰা ফাইল দেখা পোৱা যিকোনো লোকে আপোনাৰ পাছৱৰ্ড দেখা পাব।</translation>
 <translation id="6930799952781667037">এই ভাষাটোলৈ সলনি কৰিবলৈ টিপক।</translation>
@@ -708,6 +702,7 @@
 <translation id="8225985093977202398">কেশ্ব প্ৰতিচ্ছবি আৰু ফাইল</translation>
 <translation id="8261506727792406068">মচক</translation>
 <translation id="8281781826761538115">ডিফ’ল্ট - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">এৰি যাওক</translation>
 <translation id="8283172974887967105">ছেট কৰক…</translation>
 <translation id="8299417921174340354">পাছৱৰ্ডসমূহ ব্যৱহাৰ কৰিবলৈ আপুনি প্ৰথমে নিজৰ ডিভাইচত এটা পাছক’ড ছেট কৰিবই লাগিব।</translation>
 <translation id="8319076807703933069">নতুন সন্ধান</translation>

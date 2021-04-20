@@ -305,7 +305,6 @@
 <translation id="3016635187733453316">पक्का करें कि इस डिवाइस को इंटरनेट से कनेक्ट किया गया है</translation>
 <translation id="3029704984691124060">पासफ़्रेज़ मिलान नहीं करते</translation>
 <translation id="3031225630520268969">यूज़र इंटरफ़ेस (यूआई) पर वॉइस सर्च के लिए, Assistant का इस्तेमाल करने की सहमति</translation>
-<translation id="3034163383943672781">डाउनलोड <ph name="DATE" /> को शुरू होगा.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />सहायता पाएं<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">अगली बार यह साइट तेज़ी से ऐक्सेस हो</translation>
 <translation id="305593374596241526">स्थान सेवा बंद है, उसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
@@ -526,7 +525,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनट पहले}one{# मिनट पहले}other{# मिनट पहले}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">यह पेज <ph name="CREATION_TIME" /> का है और यह ऑनलाइन वर्शन से अलग हो सकता है.</translation>
-<translation id="4605958867780575332">आइटम निकाला गया: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> को खोलें</translation>
 <translation id="4619564267100705184">अपनी पहचान की पुष्टि करें</translation>
 <translation id="4634124774493850572">पासवर्ड का इस्तेमाल करें</translation>
@@ -702,7 +700,6 @@
 <translation id="572328651809341494">हाल ही के टैब</translation>
 <translation id="5723735397759933332">लाइट मोड अब एचटीटीपीएस पेजों पर इमेज ऑप्टिमाइज़ करके, आपके लिए और डेटा बचा सकता है.</translation>
 <translation id="5726692708398506830">पेज पर सब कुछ बड़ा करें</translation>
-<translation id="5732819098735351888">डाउनलोड, वाई-फ़ाई पर शुरू होगा.</translation>
 <translation id="5733983706093266635">क्यूआर कोड नहीं बनाया जा सकता. यूआरएल <ph name="CHARACTER_LIMIT" /> वर्णों से ज़्यादा का है.</translation>
 <translation id="5748802427693696783">मानक टैब पर स्विच कर दिया गया</translation>
 <translation id="5749068826913805084">फ़ाइलें डाउनलोड करने के लिए Chrome को मेमोरी के ऐक्‍सेस की ज़रूरत होगी.</translation>
@@ -779,9 +776,9 @@
 <translation id="614940544461990577">यह आज़माकर देखें:</translation>
 <translation id="6154478581116148741">इस डिवाइस से अपने पासवर्ड निर्यात करने के लिए सेटिंग में स्क्रीन लॉक चालू करें</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> डेटा बचत</translation>
+<translation id="6159729262978459665">सिंक किए हुए सभी डिवाइसों से ब्राउज़िंग इतिहास मिट जाएगा.</translation>
 <translation id="6186394685773237175">ऐसा कोई भी पासवर्ड नहीं मिला जो या तो हैक हुआ है या चोरी हुआ है</translation>
 <translation id="6192907950379606605">ज़्यादा जानकारी पाएं</translation>
-<translation id="6206830853671714236">चुनें कि कब डाउनलोड करना है</translation>
 <translation id="6210748933810148297">क्या <ph name="EMAIL" /> नहीं हैं?</translation>
 <translation id="6211386937064921208">इस पेज की झलक दिखाई जा रही है</translation>
 <translation id="6218096829563201111">मिलते-जुलते प्रॉडक्ट खोजें <ph name="BEGIN_NEW" />नए<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@
 <translation id="7523960634226602883">Google Lens के ज़रिए अपने कैमरे और फ़ोटो की मदद से खोजें</translation>
 <translation id="753225086557513863">बाद में शुरू करने के लिए शेड्यूल किया गया</translation>
 <translation id="7559975015014302720">लाइट मोड बंद है</translation>
+<translation id="7560448309733608642">सिंक किए हुए सभी डिवाइसों से इतिहास मिटा देता है. आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर किसी और तरह का ब्राउज़िंग इतिहास हो सकता है.</translation>
 <translation id="7562080006725997899">ब्राउज़िंग डेटा साफ़ हो रहा है</translation>
 <translation id="756809126120519699">साफ़ किया गया Chrome डेटा</translation>
 <translation id="7577900504646297215">पसंद प्रबंधित करें</translation>
@@ -1177,12 +1175,14 @@
 <translation id="8699120352855309748">इन भाषाओं का अनुवाद करने की सुविधा न दें</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8725066075913043281">फिर से कोशिश करें</translation>
+<translation id="8730621377337864115">हो गया</translation>
 <translation id="8748850008226585750">छिपी हुई सामग्री</translation>
 <translation id="8773160212632396039">अनुरोध को प्रोसेस किया जा रहा है</translation>
 <translation id="8788265440806329501">नेविगेशन का इतिहास बंद है</translation>
 <translation id="8788968922598763114">अभी बंद किया हुआ टैब खोलें</translation>
 <translation id="8798449543960971550">पढ़ा गया</translation>
 <translation id="8812260976093120287">कुछ वेबसाइटों पर, आप ऊपर समर्थित भुगतान ऐप्लिकेशन के ज़रिए अपने डिवाइस पर भुगतान कर सकते हैं.</translation>
+<translation id="8814190375133053267">वाई-फ़ाई </translation>
 <translation id="881688628773363275">टैब कॉन्टेंट की झलक देखी नहीं जा सकती.</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="883806473910249246">सामग्री डाउनलोड करते समय कोई गड़बड़ी हुई.</translation>
@@ -1220,10 +1220,10 @@
 <translation id="9063523880881406963">अनुरोध डेस्कटॉप साइट बंद करें</translation>
 <translation id="9065203028668620118">बदलाव करें</translation>
 <translation id="9065383040763568503">सेव किया गया ऐसा डेटा जो Chrome के हिसाब से ज़रूरी नहीं है (उदाहरण के लिए, ऐसी साइटें जिनमें कोई भी सेटिंग सेव नहीं की गई है या जिन पर आप अक्सर नहीं जाते)</translation>
-<translation id="9069543557624799859">डाउनलोड <ph name="TIME" /> पर शुरू होगा.</translation>
 <translation id="9069999660519089861">सभी लेख पढ़ लिए गए हैं</translation>
 <translation id="9070377983101773829">बोलकर खोज चालू करें</translation>
 <translation id="9074336505530349563">Google की ओर से सुझाई गई मनमुताबिक सामग्री पाने के लिए, साइन इन करें और 'सिंक करें' को चालू करें</translation>
+<translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9086302186042011942">समन्वयित हो रहा है</translation>
 <translation id="9086455579313502267">नेटवर्क की एक्सेस नहीं की जा सकती है.</translation>
 <translation id="9100505651305367705">अगर सुविधा उपलब्ध है, तो लेख को सरल बनाए गए व्यू में दिखाना ऑफ़र करें</translation>

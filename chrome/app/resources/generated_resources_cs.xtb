@@ -329,7 +329,6 @@
 <translation id="1354045473509304750">Povolit webu <ph name="HOST" /> používat a natáčet kameru i nadále</translation>
 <translation id="1355088139103479645">Smazat všechna data?</translation>
 <translation id="1355466263109342573">Plugin <ph name="PLUGIN_NAME" /> je blokován</translation>
-<translation id="1358612436266364864">Odstranit výběr</translation>
 <translation id="1358741672408003399">Pravopis a gramatika</translation>
 <translation id="1359923111303110318">Vaše zařízení lze odemknout pomocí funkce Smart Lock. Odemknete ho stisknutím klávesy Enter.</translation>
 <translation id="1361164813881551742">Přidat ručně</translation>
@@ -885,6 +884,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1928202201223835302">Zadejte starý PIN</translation>
 <translation id="1928696683969751773">Aktualizace</translation>
 <translation id="1929186283613845153">Soubor je právě kontrolován.</translation>
+<translation id="1929343511231420085">Jakýkoli sériový port</translation>
 <translation id="1929546189971853037">Čtení historie procházení ve všech přihlášených zařízeních</translation>
 <translation id="1930879306590754738">Heslo bylo smazáno ze zařízení i z účtu Google</translation>
 <translation id="1931152874660185993">Nebyly nainstalovány žádné komponenty.</translation>
@@ -1606,7 +1606,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2734760316755174687">Budou resetovány i weby ve skupině <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Plán</translation>
 <translation id="2737363922397526254">Sbalit...</translation>
-<translation id="2737916598897808047">Aplikace <ph name="APP_NAME" /> chce sdílet obsah vaší obrazovky s kartou <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Weby nemohou používat písma nainstalovaná ve vašem zařízení</translation>
 <translation id="2738771556149464852">Nikoli po</translation>
 <translation id="2739191690716947896">Ladit</translation>
@@ -1893,7 +1892,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3031417829280473749">Agentka</translation>
 <translation id="3031557471081358569">Vyberte položky k importu:</translation>
 <translation id="3036327949511794916">Termín pro vrácení tohoto zařízení (<ph name="DEVICE_TYPE" />) již vypršel.</translation>
-<translation id="3036438888981457032">Odstranit výběr</translation>
 <translation id="3036546437875325427">Povolit Flash</translation>
 <translation id="3037754279345160234">Konfiguraci přidání do domény nelze analyzovat. Obraťte se na svého administrátora.</translation>
 <translation id="3038612606416062604">Přidat tiskárnu ručně</translation>
@@ -2939,6 +2937,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4218274196133425560">Odstranit výjimku pro web <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Při aktivaci došlo k chybě.</translation>
 <translation id="4222772810963087151">Podrobnosti o sestavení</translation>
+<translation id="4224284700924043865">Zařízení USB s ID produktu <ph name="PRODUCT_ID" /> od dodavatele <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">Na všech webech</translation>
 <translation id="4231095370974836764">Instalujte do svého zařízení <ph name="DEVICE_TYPE" /> aplikace a hry z Google Play. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Nakonfigurovat Kerberos</translation>
@@ -3011,6 +3010,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="431076611119798497">&amp;Podrobnosti</translation>
 <translation id="4312866146174492540">Blokovat (výchozí)</translation>
 <translation id="4314815835985389558">Správa synchronizace</translation>
+<translation id="4316650123995163262">Zařízení USB s ID produktu <ph name="PRODUCT_ID" /> od dodavatele <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Webové stránky vývojáře</translation>
 <translation id="4317820549299924617">Ověření nebylo úspěšné</translation>
 <translation id="4320177379694898372">Žádné připojení k internetu</translation>
@@ -3452,6 +3452,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4824958205181053313">Zrušit synchronizaci?</translation>
 <translation id="4827675678516992122">Nelze se připojit</translation>
 <translation id="4827784381479890589">Vylepšená kontrola pravopisu v prohlížeči Chrome (text je odesílán do Googlu a zobrazují se návrhy)</translation>
+<translation id="482952334869563894">Zařízení USB od dodavatele <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Nastavit PIN</translation>
 <translation id="4830121310592638841">Zeptat se, když chce web otevřít okna a umístit je na obrazovky</translation>
 <translation id="4830502475412647084">Instalace aktualizace operačního systému</translation>
@@ -3741,6 +3742,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5159419673777902220">Oprávnění pro rozšíření zakázal rodič</translation>
 <translation id="5160634252433617617">Fyzická klávesnice</translation>
 <translation id="5160857336552977725">Přihlaste se do zařízení <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">Zařízení USB od dodavatele <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850">Zařízení <ph name="DEVICE_TYPE" /> bylo zablokováno</translation>
 <translation id="5163910114647549394">Karta byla přesunuta na konec lišty karet</translation>
 <translation id="5165085578392358314">Přiřazení přepínače: <ph name="ACTION" /></translation>
@@ -4652,7 +4654,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6212039847102026977">Zobrazit rozšířené vlastnosti sítě</translation>
 <translation id="6212168817037875041">Vypnout displej</translation>
 <translation id="6212752530110374741">Odeslat odkaz e-mailem</translation>
-<translation id="6213230117190778270">Přijmout</translation>
 <translation id="621470880408090483">Nepovolovat webům připojení k zařízením Bluetooth</translation>
 <translation id="6215620815501168899">Zavřít vyskakovací okno s EID a QR kódem</translation>
 <translation id="6216601812881225442">Váš kontejner změnu velikosti nepodporuje. Chcete-li upravit množství místa předem alokované pro Linux, zálohujte ho a poté ho obnovte do nového kontejneru.</translation>
@@ -5365,6 +5366,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – protokol aktivit</translation>
 <translation id="6997707937646349884">Ve vašich zařízeních:</translation>
 <translation id="6998793565256476099">Zaregistrovat zařízení pro videohovory</translation>
+<translation id="6999640176621571692">Povolit Googlu hledat slevy na položky přidané do košíků?</translation>
 <translation id="6999956497249459195">Nová skupina</translation>
 <translation id="7000206553895739324">Tiskárna <ph name="PRINTER_NAME" /> je připojená, ale je potřeba ji nakonfigurovat</translation>
 <translation id="7000347579424117903">Zahrňte klávesu Ctrl, Alt, nebo Hledat</translation>
@@ -5444,7 +5446,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7076293881109082629">Přihlášení</translation>
 <translation id="7077829361966535409">Přihlašovací stránku se pomocí aktuálního nastavení proxy serveru nepodařilo načíst. <ph name="GAIA_RELOAD_LINK_START" />Zkuste se prosím přihlásit znovu<ph name="GAIA_RELOAD_LINK_END" />, nebo použijte jiné <ph name="PROXY_SETTINGS_LINK_START" />nastavení proxy serveru<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Všechny sítě</translation>
-<translation id="7078386829626602215">Nebylo zjištěno žádné zařízení <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">K&amp;opírovat adresu zvukového souboru</translation>
 <translation id="7081952801286122383">Jste v anonymním režimu</translation>
 <translation id="708278670402572152">Chcete-li povolit vyhledávání, odpojte zařízení od sítě</translation>
@@ -5493,11 +5494,9 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7135729336746831607">Zapnout Bluetooth?</translation>
 <translation id="7136639886842764730">Doména <ph name="DOMAIN" /> vyžaduje, abyste okamžitě aktualizovali zařízení <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7136694880210472378">Nastavit jako výchozí</translation>
-<translation id="7136984461011502314">Vítá vás <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Došlo k chybě. Vyberte jiné obrázky a zkuste to znovu.</translation>
 <translation id="7139627972753429585">Aplikace <ph name="APP_NAME" /> používá váš mikrofon</translation>
 <translation id="7141105143012495934">Přihlášení selhalo, protože se nepodařilo načíst podrobnosti účtu. Kontaktujte administrátora nebo to zkuste znovu.</translation>
-<translation id="7143358760238281735">Nejsou k dispozici žádné aplikace</translation>
 <translation id="7144878232160441200">Opakovat</translation>
 <translation id="7149893636342594995">Posledních 24 hodin</translation>
 <translation id="7152478047064750137">Toto rozšíření nevyžaduje žádná speciální oprávnění.</translation>
@@ -6448,7 +6447,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Připojování k síti poskytovatele <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Spravovat aplikace, rozšíření a motivy</translation>
-<translation id="8192944472786724289">Aplikace <ph name="APP_NAME" /> chce sdílet obsah vaší obrazovky.</translation>
 <translation id="8195027750202970175">Velikost na disku</translation>
 <translation id="8198323535106903877">Aplikace (<ph name="NUMBER_OF_APPS" />) se samy nainstalují</translation>
 <translation id="8199300056570174101">Vlastnosti sítě (služba) a zařízení</translation>
@@ -6870,6 +6868,7 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="8698269656364382265">Na předchozí obrazovku se vrátíte přejetím prstem z levé strany obrazovky.</translation>
 <translation id="869884720829132584">Nabídka Aplikace</translation>
 <translation id="869891660844655955">Datum vypršení platnosti</translation>
+<translation id="8699120352855309748">Nenabízet překlad do těchto jazyků</translation>
 <translation id="8702825062053163569">Zařízení <ph name="DEVICE_TYPE" /> bylo uzamknuto.</translation>
 <translation id="8703346390800944767">Přeskočit reklamu</translation>
 <translation id="8705331520020532516">Sériové číslo</translation>

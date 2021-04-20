@@ -347,6 +347,7 @@
 <translation id="1479427764273213107">通过设置此政策，您可以指定一个 USB 设备列表，在其中列出用户可从内核驱动程序分离以便直接在 Web 应用内通过 chrome.usb API 使用的 USB 设备。列表中的条目是成对的用于标识特定硬件的 USB 供应商标识符和产品标识符。
 
       如果您不设置此政策，可分离式 USB 设备的列表便会是空的。</translation>
+<translation id="1479515813926202288">为企业用户停用由智能镜头提供支持的摄像头辅助搜索功能</translation>
 <translation id="1481508277421549404">如果此政策设为 True，系统会允许由企业政策安装的扩展程序使用 Enterprise Hardware Platform API。
 
       如果此政策设为 False 或未设置，系统会阻止扩展程序使用该 API。
@@ -755,9 +756,6 @@
 
           请注意，此政策是按渲染程序进程来应用的，当有渲染程序进程启动时，此政策设置中的最新值会生效。必须完全重启设备，才能确保所加载的所有标签页都会收到一致的政策设置。不同的进程可以使用此政策的不同值运行。
           </translation>
-<translation id="2026547141364626978">通过设置此政策，您可为该设备指定 <ph name="PLUGIN_VM_NAME" /> 许可密钥。
-
-      自 M91 起，此政策已被移除。</translation>
 <translation id="2030905906517501646">默认搜索服务提供商关键字</translation>
 <translation id="203096360153626918">此政策对 Android 应用没有任何影响。即使此政策设为 <ph name="FALSE" />，这些应用也将能够进入全屏模式。</translation>
 <translation id="2032848225007871645">通过设置此政策，您可以控制哪些快速解锁模式可为锁定屏幕解锁。
@@ -792,11 +790,6 @@
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="2043749682619281558">在登录屏幕上启用“光标突出显示”</translation>
 <translation id="2043770014371753404">已停用企业打印机</translation>
-<translation id="2044730764993088298">为 <ph name="PRODUCT_NAME" /> 配置浏览数据生命周期设置。此政策让管理员能够（按数据类型）配置浏览器对数据的删除时间点。这对需要处理敏感客户数据的客户非常有用。仅当 <ph name="SYNC_DISABLED_POLICY_NAME" /> 设为 true 时，此政策才会生效。
-
-      可用的数据类型有 <ph name="DATA_TYPE_BROWSING_HISTORY" />、<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />、<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />、<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、<ph name="DATA_TYPE_PASSWORD" />、<ph name="DATA_TYPE_AUTOFILL" />、<ph name="DATA_TYPE_SITE_SETTINGS" /> 和 <ph name="DATA_TYPE_HOSTED_APP_DATA" />。
-
-      浏览器会自动移除留存时长已超过 <ph name="TIME_TO_LIVE_IN_HOURS" />的所选类型数据。可设置的最小值为 1 小时。在极少数情况下，浏览器可能会延迟执行删除操作，但最终仍会删除数据。</translation>
 <translation id="2057317273526988987">允许访问指定的一系列网址</translation>
 <translation id="2061123930713023976">允许调试网络数据包捕获流程</translation>
 <translation id="2061810934846663491">为远程访问主机配置所需的域名</translation>
@@ -1501,6 +1494,7 @@
 
       如果此政策设为 false，<ph name="BOREALIS_NAME" /> 会处于不可用状态。否则（如果此政策未设置或设为 true），仅当未被任何其他政策或设置停用时，<ph name="BOREALIS_NAME" /> 才可用。</translation>
 <translation id="2964373560810620158">阻止用户使用 <ph name="LACROS_NAME" /> 浏览器</translation>
+<translation id="2968177167006045252">允许网站使用 SharedArrayBuffers</translation>
 <translation id="2969797921412053304">此政策用于配置哪些网址有权在登录屏幕上的 SAML 流程中对设备身份执行远程认证。
 
       具体而言，如果某个网址与通过此政策提供的格式之一匹配，该网址就能接收 HTTP 标头（包含对远程认证质询的响应），以认证设备身份和设备状态。
@@ -1638,6 +1632,7 @@
 <translation id="3072847235228302527">为设备本地帐号设置服务条款</translation>
 <translation id="3083259245974004342">密码保护</translation>
 <translation id="3086995894968271156">在 <ph name="PRODUCT_NAME" />中配置 Cast 接收器。</translation>
+<translation id="3087346703976541109">指定 SharedArrayBuffers 可否用在未进行跨域隔离的情境中</translation>
 <translation id="3088557424854005813">认证</translation>
 <translation id="3091832372132789233">为主要连接到外部电源的设备的电池充电。</translation>
 <translation id="3092059499596000593">在打印预览中将系统默认打印机设为默认选项</translation>
@@ -2410,11 +2405,6 @@
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果您未设置此政策，语音反馈在登录屏幕上最初会处于停用状态，但用户可随时启用它。</translation>
-<translation id="4175667688338118889">如果此政策已启用，“安全浏览”功能将会信任您指定的网域。该功能将不会检查此类网域是否含有危险资源（例如网上诱骗、恶意软件或垃圾软件）。“安全浏览”功能的下载保护服务将不会检查托管在此类网域上的下载内容。该功能的密码保护服务将不会检查密码重用情况。
-
-      如果此政策已停用或未设置，系统便会将默认开启的“安全浏览”保护功能应用于所有资源。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="417956245902013347">在登录屏幕上启用“插入符号突出显示”无障碍功能。
 
           如果此政策设为 true、“插入符号突出显示”在登录屏幕上将始终处于启用状态。
@@ -2587,6 +2577,7 @@
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">配置与 <ph name="PLUGIN_VM_NAME" /> 相关的政策。</translation>
 <translation id="449784980858429908">自动授权网站连接所有串行端口。</translation>
+<translation id="4507775063441355559">启用由 <ph name="GOOGLE_LENS_PRODUCT_NAME" />提供支持的摄像头辅助搜索功能</translation>
 <translation id="4510923771103268849">允许用户拥有 Crostini 容器的 root 权限</translation>
 <translation id="4515404363392014383">针对可信来源启用安全浏览功能</translation>
 <translation id="4518251772179446575">每次网站尝试跟踪用户的地理位置时都询问我</translation>
@@ -3025,6 +3016,7 @@
       如果此政策设为 false 或未设置，系统将不会报告这些信息。
       如果此政策设为 true，系统将会报告每个 CPU 的型号名称、架构和最快时钟速度。</translation>
 <translation id="5124368997194894978">启用“接通 AC（交流电）时启动”</translation>
+<translation id="5130213897914754028">阻止网站使用 SharedArrayBuffers</translation>
 <translation id="5141670636904227950">设置登录屏幕上启用的默认放大镜类型</translation>
 <translation id="5142301680741828703">总是通过“<ph name="PRODUCT_FRAME_NAME" />”呈现以下网址格式</translation>
 <translation id="514870861066611127">此政策旨在控制是否报告可用于识别用户身份的信息，例如操作系统登录、<ph name="PRODUCT_NAME" /> 个人资料登录、<ph name="PRODUCT_NAME" /> 个人资料名称、<ph name="PRODUCT_NAME" /> 个人资料路径和 <ph name="PRODUCT_NAME" /> 可执行文件路径。
@@ -3159,6 +3151,7 @@
           * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />，系统会使用 <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 字段。
 
       注意：如需查看更详细的示例，请访问 Chromium 项目 ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )。</translation>
+<translation id="5264773067879932127">如果此政策未设置或已启用，用户便可借助 <ph name="GOOGLE_LENS_PRODUCT_NAME" />使用摄像头进行搜索。如果此政策设为 False，那么即使可以使用由 <ph name="GOOGLE_LENS_PRODUCT_NAME" />提供支持的摄像头辅助搜索功能，用户也不会在搜索框中看到 <ph name="GOOGLE_LENS_PRODUCT_NAME" />按钮。</translation>
 <translation id="5266173014392157048">此政策已被弃用，请改用“<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />”政策。
 
       通过设置此政策，您可以指定 <ph name="PRODUCT_NAME" /> 可将用户凭据委派给哪台/哪些服务器。若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。
@@ -3784,6 +3777,8 @@
 <translation id="6111936128861357925">允许用户玩恐龙复活节彩蛋游戏</translation>
 <translation id="6123052603197028610">不允许向 Google 服务器发送检索时间戳的查询</translation>
 <translation id="6132506775968708399">禁用第三方 Cookie</translation>
+<translation id="6132739217670763962">
+      指定 SharedArrayBuffers 可否用在未进行跨域隔离的情境中。出于网络兼容性方面的原因，从 Chrome 91 (2021-05-25) 开始，Chrome 会要求网站在使用 SharedArrayBuffers 时进行跨域隔离。如需了解更多详情，请访问 https://developer.chrome.com/blog/enabling-shared-array-buffer/。</translation>
 <translation id="6133088669883929098">允许所有网站使用密钥生成功能</translation>
 <translation id="6135398260575578389">“安全浏览”功能会处于开启状态且会在增强模式下运行。此模式可提高安全性，但需与 Google 分享更多浏览信息。</translation>
 <translation id="6138636318340561140">实时查看网址的安全浏览状态</translation>
@@ -3955,6 +3950,7 @@
       如果此政策设为 False，系统会阻止加载 Signed HTTP Exchange (SXG) 内容。</translation>
 <translation id="6368011194414932347">配置主页网址</translation>
 <translation id="6368403635025849609">在这些网站上允许 JavaScript</translation>
+<translation id="6371561334154580937">在用户关闭最后一个窗口时显示让用户确认退出登录的对话框。</translation>
 <translation id="6372105930898423193">允许重新启用 AppCache 功能，即使此功能默认处于关闭状态。</translation>
 <translation id="6376659517206731212">可强制执行</translation>
 <translation id="6377355597423503887">此政策已弃用，请考虑改用 BrowserSignin。
@@ -4073,6 +4069,7 @@
 
       如果您未设置此政策，系统将不会强制实施任何长度上限。</translation>
 <translation id="6553143066970470539">屏幕亮度百分比</translation>
+<translation id="6558362593755624474">通过设置此政策，您可为该设备指定 <ph name="PLUGIN_VM_NAME" /> 许可密钥。</translation>
 <translation id="6559057113164934677">不允许任何网站使用摄像头和麦克风</translation>
 <translation id="6559221564468029245">如果此政策已启用或未设置，播放音频时设备不会被视为闲置。这样就不会导致闲置超时，系统也不会执行闲置操作。不过，在达到配置的超时值后，尽管存在音频活动，屏幕仍会变暗、关闭和锁定。
 
@@ -4747,6 +4744,7 @@
 
       如果未设置此政策，默认情况下，受企业管理的用户不能使用即时网络共享功能，不受管理的用户则能够使用即时网络共享功能。</translation>
 <translation id="7295019613773647480">启用受监管用户</translation>
+<translation id="7295038772938766029">为企业用户启用由智能镜头提供支持的摄像头辅助搜索功能</translation>
 <translation id="7302043767260300182">使用交流电源供电时的屏幕锁定延迟时间</translation>
 <translation id="7303902834678570827">受管理访客会话用户无法存储设备级显示设置</translation>
 <translation id="731208205557053914">报告 VPD 信息</translation>
@@ -4993,6 +4991,7 @@
           如果您未设置此政策，系统将使用默认时长。
 
           指定的政策值应以毫秒为单位，且不得大于屏幕关闭延迟时间（若已设置）和闲置延迟时间。</translation>
+<translation id="7680437377926096177">在用户关闭最后一个窗口时不显示让用户确认退出登录的对话框。</translation>
 <translation id="7683777542468165012">动态政策刷新</translation>
 <translation id="7687943045976362719">如果设置了此政策，则指定的内容类型由 <ph name="PRODUCT_FRAME_NAME" />处理。
 
@@ -5533,6 +5532,9 @@
 
       如果此政策设为 true 或未设置，用户会获得对 Crostini 容器的 root 权限。
       如果此政策设为 false，用户将不会获得对现有以及新的 Crostini 容器的 root 权限。</translation>
+<translation id="8410477879938914253">此政策仅适用于受管理的访客会话。
+      如果此政策设为 True 或未设置，系统会在用户关闭最后一个窗口时显示一个对话框，让用户确认或否认退出登录。
+      将此政策设为 False 会阻止系统显示该对话框，因而亦会停用在用户关闭最后一个窗口时自动退出登录的功能。</translation>
 <translation id="8415953438346821074">如果您启用了此设置，存储在 <ph name="PRODUCT_NAME" /> 个人资料中的设置（例如书签、自动填充数据、密码等）也会被写入一个存储在漫游用户个人资料文件夹内的文件中，或被写入一个由管理员通过 <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" /> 政策指定的位置中。启用此政策会停用云同步。
 
       如果您停用了或未设置此政策，系统将会仅使用常规的本地个人资料。</translation>
@@ -5810,6 +5812,7 @@
           如果未设置，此政策将不会产生任何影响。在这种情况下，此计算机上的远程访问连接将不会受到任何时长上限的制约。</translation>
 <translation id="8800453707696044281">设置电池充电自定义停止充电值（以百分比表示）</translation>
 <translation id="8801680448782904838">系统建议或要求重新启动浏览器或重启设备时，通知用户</translation>
+<translation id="8807313206348471682">显示让用户确认退出登录的对话框</translation>
 <translation id="8816671955985738552">不允许通过 chrome://password-change 在会话期间更改 SAML 密码</translation>
 <translation id="8817960019535659860">阻止用户通过注册 Chrome 操作系统来兑换优惠</translation>
 <translation id="8818173863808665831">报告设备的地理位置。

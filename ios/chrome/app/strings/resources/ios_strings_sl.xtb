@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Razkrijte geslo</translation>
 <translation id="1872096359983322073">Svetilka</translation>
 <translation id="1911619930368729126">Prenos v Google Drive</translation>
-<translation id="1919130412786645364">Omogočanje prijave v Chrome</translation>
 <translation id="1923342640370224680">Zadnja ura</translation>
 <translation id="1941314575388338491">Dvakrat se dotaknite, če želite kopirati.</translation>
 <translation id="1952172573699511566">Spletna mesta bodo besedilo prikazala v izbranem jeziku, če je mogoče.</translation>
@@ -216,7 +215,6 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 
 Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na različnih spletnih mestih, na primer za osebno prilagajanje oglasov.</translation>
 <translation id="3207960819495026254">Dodano med zaznamke</translation>
-<translation id="3222343486469566063">Niste prijavljeni</translation>
 <translation id="3224641773458703735">Če želite izvoziti gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="3240426699337459095">Povezava kopirana</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="3928666092801078803">Združevanje podatkov</translation>
 <translation id="3929457972718048006">Naslovi</translation>
 <translation id="3943492037546055397">Gesla</translation>
-<translation id="3943557322767080599">Prikaz pozivov za prijavo v Chrome, ko se prijavite v račun Google.</translation>
-<translation id="3967266340354872733">Če vas zanima več nastavitev, povezanih z zasebnostjo, varnostjo in zbiranjem podatkov, si oglejte razdelka <ph name="BEGIN_LINK" />Sinhronizacija<ph name="END_LINK" /> in <ph name="BEGIN_LINK" />Googlove storitve<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Prenos končan</translation>
 <translation id="3968505803272650567">Upravljanje zanimanj</translation>
 <translation id="3989635538409502728">Odjava</translation>
@@ -568,7 +564,6 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="6760509555861141183">Nazaj na prejšnji zavihek</translation>
 <translation id="6780034285637185932">Poštna številka</translation>
 <translation id="6785453220513215166">Pošiljanje poročila o zrušitvi ...</translation>
-<translation id="679325081238418596">Dostopajte do zaznamkov, zgodovine, gesel in drugih nastavitev v vseh napravah.</translation>
 <translation id="6797885426782475225">Glasovno iskanje</translation>
 <translation id="6807889908376551050">Pokaži vse ...</translation>
 <translation id="681368974849482173">Item created</translation>
@@ -580,7 +575,6 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="6873263987691478642">Razdeljeni pogled</translation>
 <translation id="6888009575607455378">Ali ste prepričani, da želite zavreči spremembe?</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
-<translation id="6903907808598579934">Vklopi sinhronizacijo</translation>
 <translation id="6914583639806229067">Iskanje slike, ki ste jo kopirali</translation>
 <translation id="6914783257214138813">Gesla bodo vidna vsakomur, ki si lahko ogleda izvoženo datoteko z gesli.</translation>
 <translation id="6930799952781667037">Dotaknite se, če želite spremeniti ta jezik.</translation>
@@ -711,6 +705,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8225985093977202398">Cached Images and Files</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8281781826761538115">Privzeto - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Preskoči</translation>
 <translation id="8283172974887967105">Nastavi …</translation>
 <translation id="8299417921174340354">Če želite uporabiti gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="8319076807703933069">Novo iskanje</translation>

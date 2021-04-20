@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Zobrazit heslo</translation>
 <translation id="1872096359983322073">Svítilna</translation>
 <translation id="1911619930368729126">Nahrát na Disk Google</translation>
-<translation id="1919130412786645364">Povolit přihlášení do Chromu</translation>
 <translation id="1923342640370224680">Poslední hodina</translation>
 <translation id="1941314575388338491">Zkopírujete dvojitým klepnutím.</translation>
 <translation id="1952172573699511566">Pokud to bude možné, budou weby zobrazovat text ve vašem preferovaném jazyce.</translation>
@@ -216,7 +215,6 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 
 V anonymním režimu weby nemohou používat soubory cookie ke sledování vaší aktivity prohlížení na různých webech, například k personalizaci reklam.</translation>
 <translation id="3207960819495026254">Přidáno do záložek</translation>
-<translation id="3222343486469566063">Nejste přihlášeni</translation>
 <translation id="3224641773458703735">Chcete-li exportovat hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
 <translation id="3240426699337459095">Odkaz byl zkopírován</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@ Postupujte podle následujících pokynů:</translation>
 <translation id="3928666092801078803">Sloučit má data</translation>
 <translation id="3929457972718048006">Adresy</translation>
 <translation id="3943492037546055397">Hesla</translation>
-<translation id="3943557322767080599">Zobrazovat výzvy k přihlášení do Chromu, když se přihlásíte k účtu Google</translation>
-<translation id="3967266340354872733">Další nastavení související s ochranou soukromí, zabezpečením a shromažďováním dat najdete v částech <ph name="BEGIN_LINK" />Synchronizace<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />Služby Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Stahování bylo dokončeno</translation>
 <translation id="3968505803272650567">Spravovat zájmy</translation>
 <translation id="3989635538409502728">Odhlásit se</translation>
@@ -568,7 +564,6 @@ Pro každý web se pokuste použít jedinečné heslo.</translation>
 <translation id="6760509555861141183">Zpět na kartu Nedávné</translation>
 <translation id="6780034285637185932">PSČ</translation>
 <translation id="6785453220513215166">Odesílání zprávy o selhání...</translation>
-<translation id="679325081238418596">Synchronizujte záložky, historii, hesla a nastavení do všech svých zařízení</translation>
 <translation id="6797885426782475225">Hlasové vyhledávání</translation>
 <translation id="6807889908376551050">Zobrazit vše…</translation>
 <translation id="681368974849482173">Položka byla vytvořena</translation>
@@ -580,7 +575,6 @@ Pro každý web se pokuste použít jedinečné heslo.</translation>
 <translation id="6873263987691478642">Režim Split View</translation>
 <translation id="6888009575607455378">Opravdu chcete změny zahodit?</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
-<translation id="6903907808598579934">Zapnout synchronizaci</translation>
 <translation id="6914583639806229067">Vyhledat zkopírovaný obrázek</translation>
 <translation id="6914783257214138813">Vaše hesla uvidí každý, kdo může zobrazit exportovaný soubor.</translation>
 <translation id="6930799952781667037">Klepnutím přepnete na tento jazyk.</translation>
@@ -711,6 +705,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8225985093977202398">Obrázky a soubory v mezipaměti</translation>
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="8281781826761538115">Výchozí – <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Přeskočit</translation>
 <translation id="8283172974887967105">Nastavit…</translation>
 <translation id="8299417921174340354">Chcete-li použít hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
 <translation id="8319076807703933069">Nové vyhledávání</translation>

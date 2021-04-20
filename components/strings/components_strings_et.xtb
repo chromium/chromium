@@ -1180,6 +1180,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5344579389779391559">Leht võib üritada teilt tasu võtta</translation>
 <translation id="5355557959165512791">Te ei saa saiti <ph name="SITE" /> praegu külastada, sest selle sertifikaat on tühistatud. Võrguvead ja -rünnakud on tavaliselt ajutised, nii et leht tõenäoliselt hiljem töötab.</translation>
 <translation id="536296301121032821">Reegli seadete talletamine ebaõnnestus</translation>
+<translation id="5363309033720083897">Jadaport, mille on lubanud teie administraator</translation>
 <translation id="5371425731340848620">Värskendage kaarti</translation>
 <translation id="5377026284221673050">„Teie kell on ajast maas” või „Teie kell on ajast ees” või „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5386426401304769735">Selle saidi sertifikaadiahel sisaldab sertifikaati, mis on allkirjastatud SHA-1-ga.</translation>

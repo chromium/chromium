@@ -328,7 +328,6 @@
 <translation id="1354045473509304750">Halda áfram að nota <ph name="HOST" /> til að nota og færa myndavélina</translation>
 <translation id="1355088139103479645">Eyða öllum gögnum?</translation>
 <translation id="1355466263109342573">Lokað er fyrir <ph name="PLUGIN_NAME" /></translation>
-<translation id="1358612436266364864">Fjarlægja yfirstrikun</translation>
 <translation id="1358741672408003399">Stafsetning og málfræði</translation>
 <translation id="1359923111303110318">Hægt er að taka tækið þitt úr lás með Smart Lock. Ýttu á Enter til að opna.</translation>
 <translation id="1361164813881551742">Bæta við handvirkt</translation>
@@ -884,6 +883,7 @@
 <translation id="1928202201223835302">Sláðu inn gamla PIN-númerið</translation>
 <translation id="1928696683969751773">Uppfærslur</translation>
 <translation id="1929186283613845153">Verið er að skanna þessa skrá.</translation>
+<translation id="1929343511231420085">Öll raðtengi</translation>
 <translation id="1929546189971853037">Lesa vafraferilinn þinn í öllum innskráðum tækjum</translation>
 <translation id="1930879306590754738">Aðgangsorði eytt úr þessu tæki og af Google reikningnum þínum</translation>
 <translation id="1931152874660185993">Engar íhlutir eru uppsettir.</translation>
@@ -1320,7 +1320,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2428939361789119025">Slökkva á Wi-Fi</translation>
 <translation id="2428978615149723410">þessar körfur</translation>
 <translation id="2431027948063157455">Ekki var hægt að hlaða Google hjálparanum. Athugaðu nettenginguna og reyndu aftur.</translation>
-<translation id="243179355394256322">Fyrirtækið takmarkar skráningu tækja við notendur með heimild. Þessi notandi hefur ekki heimild til að skrá tæki. Gakktu úr skugga um að notandinn sé með heimildina „Skrá Google Meet vélbúnað“ á svæðinu „Notendur“ á stjórnborði stjórnanda.</translation>
+<translation id="243179355394256322">Fyrirtækið takmarkar skráningu tækja við notendur með heimild. Þessi notandi hefur ekki heimild til að skrá tæki. Gakktu úr skugga um að notandinn sé með heimild til að „Skrá Google Meet vélbúnað“ á notandasvæði stjórnborðs stjórnanda.</translation>
 <translation id="2433452467737464329">Bættu fyrirspurnarbreytu við vefslóðina til að endurnýja síðuna sjálfkrafa: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Útlit</translation>
 <translation id="2433836460518180625">Taka aðeins tæki úr lás</translation>
@@ -1608,7 +1608,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2734760316755174687">Vefsvæði undir <ph name="SITE_GROUP_NAME" /> verða líka endurstillt.</translation>
 <translation id="2735712963799620190">Áætlun</translation>
 <translation id="2737363922397526254">Minnka...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> vill deila því sem er á skjánum hjá þér með <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Ekki leyfa vefsvæðum að nota leturgerðir sem eru uppsettar í tækinu þínu</translation>
 <translation id="2738771556149464852">Ekki eftir</translation>
 <translation id="2739191690716947896">Villuleit</translation>
@@ -1896,7 +1895,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3031417829280473749">Birgitta</translation>
 <translation id="3031557471081358569">Veldu atriði til að flytja inn:</translation>
 <translation id="3036327949511794916">Skilafrestur þessa <ph name="DEVICE_TYPE" /> tækis er liðinn.</translation>
-<translation id="3036438888981457032">Fjarlægja yfirstrikun</translation>
 <translation id="3036546437875325427">Virkja Flash</translation>
 <translation id="3037754279345160234">Ekki tókst að þátta stillinguna til að tengjast léninu. Hafðu samband við kerfisstjóra.</translation>
 <translation id="3038612606416062604">Bæta prentara við handvirkt</translation>
@@ -2943,6 +2941,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4218274196133425560">Fjarlægja undantekningu fyrir <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Villa kom upp við virkjun.</translation>
 <translation id="4222772810963087151">Upplýsingar um smíði</translation>
+<translation id="4224284700924043865">USB-tæki með vöruauðkennið <ph name="PRODUCT_ID" /> frá seljandanum <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">Á öllum vefsvæðum</translation>
 <translation id="4231095370974836764">Settu upp forrit og leiki af Google Play í <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Stilla Kerberos</translation>
@@ -3015,6 +3014,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="431076611119798497">Upplýsingar</translation>
 <translation id="4312866146174492540">Útiloka (sjálfgefið)</translation>
 <translation id="4314815835985389558">Stjórna samstillingu</translation>
+<translation id="4316650123995163262">USB-tæki með vöruauðkennið <ph name="PRODUCT_ID" /> frá <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Vefsvæði þróunaraðila</translation>
 <translation id="4317820549299924617">Staðfesting tókst ekki</translation>
 <translation id="4320177379694898372">Engin nettenging</translation>
@@ -3457,6 +3457,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4824958205181053313">Hætta við samstillingu?</translation>
 <translation id="4827675678516992122">Tenging mistókst</translation>
 <translation id="4827784381479890589">Bætt villuleit í Chrome vafra (texti er sendur til Google til að fá tillögur að stafsetningu)</translation>
+<translation id="482952334869563894">USB-tæki frá seljandanum <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Setja upp PIN-númer</translation>
 <translation id="4830121310592638841">Spyrja þegar vefsvæði vill opna og birta glugga á skjánum</translation>
 <translation id="4830502475412647084">Setur upp stýrikerfisuppfærslu</translation>
@@ -3746,6 +3747,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5159419673777902220">Foreldri þitt hefur gert heimildir fyrir viðbót óvirkar</translation>
 <translation id="5160634252433617617">Vélbúnaðarlyklaborð</translation>
 <translation id="5160857336552977725">Skráðu þig inn í <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">USB-tæki frá <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850">Lokað hefur verið fyrir <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">Flipi færður neðst á flipastiku</translation>
 <translation id="5165085578392358314">Úthluta rofa: <ph name="ACTION" /></translation>
@@ -4419,7 +4421,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5932124097031739492">Linux var uppfært.</translation>
 <translation id="5932224571077948991">Vefsvæðið sýnir ágengar eða villandi auglýsingar.</translation>
 <translation id="59324397759951282">USB-tæki frá <ph name="MANUFACTURER_NAME" /></translation>
-<translation id="5932441198730183141">Þú ert ekki með næg tiltæk leyfi til að skrá þetta Google Meet vélbúnaðartæki. Hafðu samband við söludeild til að kaupa leyfi. Ef þú telur að þessi villuboð ættu ekki að birtast þér skaltu tala við þjónustudeild.</translation>
+<translation id="5932441198730183141">Þú ert ekki með nógu mörg laus leyfi til að skrá þetta Google Meet vélbúnaðartæki. Hafðu samband við söludeild til að kaupa fleiri. Ef þú telur að þessi villuboð eigi ekki við rök að styðjast skaltu tala við þjónustudeild.</translation>
 <translation id="5932881020239635062">Raðnúmer</translation>
 <translation id="5933376509899483611">Tímabelti</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> er að nota myndavélina þína og hljóðnemann</translation>
@@ -4659,7 +4661,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6212039847102026977">Sýna ítarlega neteiginleika</translation>
 <translation id="6212168817037875041">Slökkva á skjá</translation>
 <translation id="6212752530110374741">Tengill í tölvupósti</translation>
-<translation id="6213230117190778270">Taka við</translation>
 <translation id="621470880408090483">Ekki leyfa vefsvæðum að tengjast Bluetooth-tækjum</translation>
 <translation id="6215620815501168899">Loka sprettiglugga EID- og QR-kóða</translation>
 <translation id="6216601812881225442">Ekki er hægt að breyta stærð geymisins. Til að breyta því hve miklu geymslurými er forúthlutað á Linux skaltu taka öryggisafrit af því og síðan endurheimta það inn í nýjan geymi.</translation>
@@ -5373,6 +5374,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – notkunarskrá</translation>
 <translation id="6997707937646349884">Í tækjunum þínum:</translation>
 <translation id="6998793565256476099">Skrá tæki í myndfundi</translation>
+<translation id="6999640176621571692">Heimila Google að finna afslætti á vörunum í körfunum þínum?</translation>
 <translation id="6999956497249459195">Nýr hópur</translation>
 <translation id="7000206553895739324">Prentarinn <ph name="PRINTER_NAME" /> er tengdur en hann þarfnast stillingar</translation>
 <translation id="7000347579424117903">Hafðu Ctrl, Alt eða Search með</translation>
@@ -5409,7 +5411,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7029307918966275733">Crostini er ekki sett upp. Settu upp Crostini til að skoða einingar.</translation>
 <translation id="7029809446516969842">Aðgangsorð</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – raðtengi tengt</translation>
-<translation id="7034692021407794547">Stjórnandi með heimild til að hafa umsjón með innheimtu verður fyrst að samþykkja þjónustuskilmála Google Meet vélbúnaðar í hlutanum „Google Meet vélbúnaður“ á stjórnborði stjórnanda.</translation>
+<translation id="7034692021407794547">Stjórnandi með heimild til að innheimta verður fyrst að samþykkja þjónustuskilmála Google Meet vélbúnaðar í hlutanum „Google Meet vélbúnaður“ á stjórnborði stjórnanda.</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> af plássi er nauðsynlegt fyrir Linux. Eyddu skrám úr tækinu til að auka geymslurýmið.</translation>
 <translation id="7037509989619051237">Texti til að nota sem sýnishorn</translation>
 <translation id="7038632520572155338">Rofaaðgangur</translation>
@@ -5453,7 +5455,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7076293881109082629">Skráir inn</translation>
 <translation id="7077829361966535409">Ekki tókst að hlaða innskráningarsíðuna með því að nota núverandi proxy-stillingar. <ph name="GAIA_RELOAD_LINK_START" />Reyndu aftur að skrá þig inn<ph name="GAIA_RELOAD_LINK_END" /> eða notaðu aðrar <ph name="PROXY_SETTINGS_LINK_START" />proxy-stillingar<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Öll netkerfi</translation>
-<translation id="7078386829626602215">Ekkert tæki greindist <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">A&amp;frita slóð hljóðs</translation>
 <translation id="7081952801286122383">Huliðsstilling er virk</translation>
 <translation id="708278670402572152">Aftengdu net til að leita</translation>
@@ -5502,11 +5503,9 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7135729336746831607">Kveikja á Bluetooth?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> fer fram á að þú uppfærir <ph name="DEVICE_TYPE" /> strax.</translation>
 <translation id="7136694880210472378">Gera sjálfgefið</translation>
-<translation id="7136984461011502314">Velkomin(n) í <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Villa kom upp. Reyndu aftur með því að velja aðrar myndir.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> er að nota hljóðnemann</translation>
 <translation id="7141105143012495934">Innskráning mistókst vegna þess að ekki tókst að sækja reikningsupplýsingar. Hafðu samband við kerfisstjóra eða reyndu aftur.</translation>
-<translation id="7143358760238281735">Engin forrit í boði</translation>
 <translation id="7144878232160441200">Reyna aftur</translation>
 <translation id="7149893636342594995">Síðastliðinn sólarhring</translation>
 <translation id="7152478047064750137">Þessi viðbót þarf engar sérstakar heimildir</translation>
@@ -6459,7 +6458,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Tengist <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Stjórna forritunum þínum, viðbótum og þemum</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> vill deila því sem er á skjánum hjá þér.</translation>
 <translation id="8195027750202970175">Stærð á diski</translation>
 <translation id="8198323535106903877">Við setjum upp <ph name="NUMBER_OF_APPS" /> forrit fyrir þig</translation>
 <translation id="8199300056570174101">Eiginleikar netkerfis (þjónustu) og tækis</translation>
@@ -6883,6 +6881,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8698269656364382265">Strjúktu til hliðar frá vinstri til að fara aftur á síðasta skjá.</translation>
 <translation id="869884720829132584">Forritavalmynd</translation>
 <translation id="869891660844655955">Lokadagsetning</translation>
+<translation id="8699120352855309748">Ekki bjóða upp á að þýða þessi tungumál</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> var læst.</translation>
 <translation id="8703346390800944767">Sleppa auglýsingu</translation>
 <translation id="8705331520020532516">Raðnúmer</translation>

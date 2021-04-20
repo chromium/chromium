@@ -327,7 +327,6 @@
 <translation id="1354045473509304750"><ph name="HOST" /> weiterhin erlauben, meine Kamera zu verwenden und zu bewegen</translation>
 <translation id="1355088139103479645">Alle Daten löschen?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> ist blockiert</translation>
-<translation id="1358612436266364864">Hervorhebungen entfernen</translation>
 <translation id="1358741672408003399">Rechtschreibung und Grammatik</translation>
 <translation id="1359923111303110318">Ihr Gerät kann mit Smart Lock entsperrt werden. Drücken Sie zum Entsperren die Eingabetaste.</translation>
 <translation id="1361164813881551742">Manuell hinzufügen</translation>
@@ -916,6 +915,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1974821797477522211">Mit Netzwerk verbinden</translation>
 <translation id="1975841812214822307">Entfernen...</translation>
 <translation id="1976150099241323601">In Sicherheitsgerät anmelden</translation>
+<translation id="1976928778492259496">Der Fingerabdrucksensor befindet sich auf der linken Seite Ihres <ph name="DEVICE_TYPE" />. Berühren Sie ihn leicht mit dem Finger.</translation>
 <translation id="1977965994116744507">Verringern Sie den Abstand zwischen Smartphone und <ph name="DEVICE_TYPE" />, um das Gerät zu entsperren.</translation>
 <translation id="1978057560491495741">Adresse entfernen</translation>
 <translation id="1979095679518582070">Wenn Sie diese Funktion deaktivieren, kann dieses Gerät weiterhin Informationen senden, die für grundlegende Dienste wie Systemupdates und -sicherheit erforderlich sind.</translation>
@@ -1314,6 +1314,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2428939361789119025">WLAN deaktivieren</translation>
 <translation id="2428978615149723410">diese Einkaufswagen</translation>
 <translation id="2431027948063157455">Google Assistant konnte nicht geladen werden. Überprüfen Sie Ihre Netzverbindung und versuchen Sie es noch einmal.</translation>
+<translation id="243179355394256322">In Ihrer Organisation darf die Geräteregistrierung nur von autorisierten Nutzern durchgeführt werden. Dieser Nutzer ist nicht für die Geräteregistrierung autorisiert. Der Nutzer muss im Bereich „Nutzer“ in der Admin-Konsole über die Administratorberechtigung „Google Meet-Hardware registrieren“ verfügen.</translation>
 <translation id="2433452467737464329">Fügen Sie einen Anfrageparameter zur URL hinzu, damit die Seite automatisch aktualisiert wird: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Darstellung</translation>
 <translation id="2433836460518180625">Gerät nur entsperren</translation>
@@ -1602,7 +1603,6 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="2734760316755174687">Websites unter <ph name="SITE_GROUP_NAME" /> werden ebenfalls zurückgesetzt.</translation>
 <translation id="2735712963799620190">Zeitplan</translation>
 <translation id="2737363922397526254">Minimieren...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> möchte den Inhalt Ihres Bildschirms mit <ph name="TARGET_NAME" /> teilen.</translation>
 <translation id="2738030019664645674">Websites dürfen keine auf meinem Gerät installierten Schriftarten verwenden</translation>
 <translation id="2738771556149464852">Nicht nach</translation>
 <translation id="2739191690716947896">Fehlerbehebung</translation>
@@ -1845,6 +1845,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2993517869960930405">App-Info</translation>
 <translation id="2996286169319737844">Daten sind mit Ihrer Synchronisierungspassphrase verschlüsselt. Davon ausgenommen sind Zahlungsmethoden oder Adressen von Google Pay.</translation>
 <translation id="2996722619877761919">Entlang der langen Seite wenden</translation>
+<translation id="2996932914629936323">Löscht den Verlauf auf allen synchronisierten Geräten</translation>
 <translation id="3000236644796679448">Websites dürfen nachfragen, wenn sie mein Mikrofon verwenden möchten (empfohlen)</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> zugelassen</translation>
 <translation id="3000461861112256445">Mono-Audio</translation>
@@ -1889,7 +1890,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3031417829280473749">Agentin X</translation>
 <translation id="3031557471081358569">Zu importierende Daten wählen:</translation>
 <translation id="3036327949511794916">Die Rückgabefrist für dieses <ph name="DEVICE_TYPE" /> ist abgelaufen.</translation>
-<translation id="3036438888981457032">Hervorhebungen entfernen</translation>
 <translation id="3036546437875325427">Flash aktivieren</translation>
 <translation id="3037754279345160234">Die Konfiguration zum Domainbeitritt kann nicht geparst werden. Bitte wenden Sie sich an Ihren Administrator.</translation>
 <translation id="3038612606416062604">Drucker manuell hinzufügen</translation>
@@ -3364,6 +3364,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4699172675775169585">Bilder und Dateien im Cache</translation>
 <translation id="4699357559218762027">(wird automatisch gestartet)</translation>
 <translation id="4701025263201366865">Elternanmeldung</translation>
+<translation id="4702656508969495934">Automatische Untertitel sind sichtbar, Fensterwechsel zum Fokussieren verwenden</translation>
 <translation id="4708794300267213770">Sperrbildschirm anzeigen, wenn der Ruhemodus beendet wird</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> beenden</translation>
 <translation id="4711638718396952945">Einstellungen wiederherstellen</translation>
@@ -4411,6 +4412,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5932124097031739492">Linux wurde aktualisiert.</translation>
 <translation id="5932224571077948991">Website zeigt aufdringliche oder irreführende Werbung an</translation>
 <translation id="59324397759951282">USB-Gerät von <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Sie haben nicht genügend Lizenzen zum Registrieren dieses Google Meet-Hardware-Geräts. Weitere Lizenzen können Sie beim Vertriebsteam erwerben. Wenn Sie glauben, dass Sie diese Meldung fälschlicherweise erhalten, kontaktieren Sie bitte den Support.</translation>
 <translation id="5932881020239635062">Seriennummer</translation>
 <translation id="5933376509899483611">Zeitzone</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> verwendet deine Kamera und dein Mikrofon</translation>
@@ -4624,6 +4626,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6169666352732958425">Der Desktop kann nicht übertragen werden</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6170498031581934115">Die ADB-Fehlerbehebung konnte nicht aktiviert werden. Öffnen Sie die Einstellungen und versuchen Sie es noch einmal.</translation>
+<translation id="617213288191670920">Keine Sprachen hinzugefügt</translation>
 <translation id="6173623053897475761">PIN noch einmal eingeben</translation>
 <translation id="6175314957787328458">Microsoft-Domain-GUID</translation>
 <translation id="6176043333338857209">Bluetooth wird vorübergehend aktiviert, damit eine Kommunikation mit dem Sicherheitsschlüssel möglich ist</translation>
@@ -4649,7 +4652,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6212039847102026977">Erweiterte Netzwerkeigenschaften anzeigen</translation>
 <translation id="6212168817037875041">Display deaktivieren</translation>
 <translation id="6212752530110374741">Link per E-Mail versenden</translation>
-<translation id="6213230117190778270">Empfangen</translation>
 <translation id="621470880408090483">Websites dürfen keine Verbindung mit Bluetooth-Geräten herstellen</translation>
 <translation id="6215620815501168899">Pop-up mit Geräte-EID und QR-Code schließen</translation>
 <translation id="6216601812881225442">Ihr Container unterstützt keine Größenanpassung. Wenn Sie den Speicherplatz anpassen möchten, der Linux zugewiesen wurde, machen Sie eine Sicherungskopie und stellen Sie ihn in einem neuen Container wieder her.</translation>
@@ -5321,6 +5323,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6957044667612803194">Der Sicherheitsschlüssel unterstützt keine PINs</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{Link}other{# Links}}</translation>
 <translation id="6960507406838246615">Linux-Update erforderlich</translation>
+<translation id="6960565108681981554">Nicht aktiviert. Wenden Sie sich bitte an Ihren Mobilfunkanbieter.</translation>
 <translation id="696103774840402661">Alle Dateien und lokalen Daten für alle Nutzer auf diesem <ph name="DEVICE_TYPE" /> wurden dauerhaft gelöscht.</translation>
 <translation id="6964390816189577014">Held</translation>
 <translation id="6964760285928603117">Aus Gruppe entfernen</translation>
@@ -5398,6 +5401,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7029307918966275733">Crostini ist nicht installiert. Bitte installieren Sie Crostini, um die Credits anzuzeigen.</translation>
 <translation id="7029809446516969842">Passwörter</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" />: serielle Schnittstelle verbunden</translation>
+<translation id="7034692021407794547">Ein Administrator mit der Berechtigung „Abrechnungsverwaltung“ muss zuerst im Bereich „Google Meet-Hardware“ in der Admin-Konsole die Nutzungsbedingungen der Google Meet-Hardware akzeptieren.</translation>
 <translation id="7036706669646341689">Für Linux sind mindestens <ph name="DISK_SIZE" /> freier Speicherplatz erforderlich. Löschen Sie Dateien von Ihrem Gerät, um Speicherplatz freizugeben.</translation>
 <translation id="7037509989619051237">Text zum Anhören</translation>
 <translation id="7038632520572155338">Schalterzugriff</translation>
@@ -5441,7 +5445,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7076293881109082629">Anmeldung</translation>
 <translation id="7077829361966535409">Die Anmeldeseite konnte mit den aktuellen Proxy-Einstellungen nicht geladen werden. <ph name="GAIA_RELOAD_LINK_START" />Versuchen Sie erneut, sich anzumelden<ph name="GAIA_RELOAD_LINK_END" />, oder verwenden Sie andere <ph name="PROXY_SETTINGS_LINK_START" />Proxy-Einstellungen<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Alle Netzwerke</translation>
-<translation id="7078386829626602215">Kein Gerät erkannt. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">Audioadresse k&amp;opieren</translation>
 <translation id="7081952801286122383">Inkognitomodus ist aktiviert</translation>
 <translation id="708278670402572152">Zum Scannen Verbindung trennen</translation>
@@ -5490,11 +5493,9 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7135729336746831607">Bluetooth aktivieren?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> erfordert, dass das <ph name="DEVICE_TYPE" /> sofort aktualisiert wird.</translation>
 <translation id="7136694880210472378">Als Standard festlegen</translation>
-<translation id="7136984461011502314">Herzlich willkommen bei <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Ein Fehler ist aufgetreten. Versuchen Sie es noch einmal mit anderen Bildern.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> verwendet dein Mikrofon</translation>
 <translation id="7141105143012495934">Sie konnten nicht angemeldet werden, weil Ihre Kontodetails nicht abgerufen werden konnten. Bitte wenden Sie sich an Ihren Administrator oder versuchen Sie es erneut.</translation>
-<translation id="7143358760238281735">Keine Apps verfügbar</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
 <translation id="7149893636342594995">Letzte 24 Stunden</translation>
 <translation id="7152478047064750137">Diese Erweiterung erfordert keine speziellen Berechtigungen</translation>
@@ -6379,6 +6380,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8113476325385351118">Dieser Website weiterhin keine vollständige Kontrolle über MIDI-Geräte gewähren</translation>
 <translation id="8114199541033039755">Mit den Schaltflächen im Tablet-Modus zum Launcher, zurück und zwischen Apps wechseln. Wird aktiviert, wenn ChromeVox oder "Automatische Klicks" eingeschaltet ist.</translation>
 <translation id="8114875720387900039">Horizontal teilen</translation>
+<translation id="8115139559594092084">Von Ihrem Google Drive</translation>
 <translation id="8116972784401310538">&amp;Lesezeichen-Manager</translation>
 <translation id="8117752106453549166">Linux wird aktuell von Ihrem Administrator konfiguriert. Die Konfiguration wird einige Minuten dauern.</translation>
 <translation id="8118362518458010043">Von Chrome deaktiviert. Diese Erweiterung könnte unsicher sein.</translation>
@@ -6399,6 +6401,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8138082791834443598">Optional: Eingabe neuer oder Aktualisierung vorhandener Informationen für dieses Gerät.</translation>
 <translation id="8138217203226449454">Wollten Sie Ihren Suchanbieter wechseln?</translation>
 <translation id="813913629614996137">Initialisierung…</translation>
+<translation id="8139447493436036221">Google Drive-Dateien</translation>
 <translation id="8141584439523427891">Wird in einem alternativen Browser geöffnet</translation>
 <translation id="8141725884565838206">Passwörter verwalten</translation>
 <translation id="8143442547342702591">Ungültige Anwendung</translation>
@@ -6445,7 +6448,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Verbindung zu <ph name="PROVIDER_NAME" /> wird hergestellt.</translation>
 <translation id="8191230140820435481">Apps, Erweiterungen und Designs verwalten</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> möchte den Inhalt Ihres Bildschirms teilen.</translation>
 <translation id="8195027750202970175">Dateigröße</translation>
 <translation id="8198323535106903877"><ph name="NUMBER_OF_APPS" /> Apps werden installiert</translation>
 <translation id="8199300056570174101">Netzwerk(dienst) und Geräteeigenschaften</translation>
@@ -6604,6 +6606,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8386091599636877289">Richtlinie nicht gefunden.</translation>
 <translation id="8386819192691131213">Assistant darf Informationen auf dem Bildschirm verwenden, um schnelle Antworten zu geben – beispielsweise Übersetzungen, Definitionen oder Umrechnung von Einheiten.</translation>
 <translation id="8386903983509584791">Suche abgeschlossen</translation>
+<translation id="838705362287678887">Unter <ph name="BEGIN_LINK_GOOGLE" />Mein Google-Konto<ph name="END_LINK_GOOGLE" /> können Sie Verläufe wie den <ph name="BEGIN_LINK_SEARCH" />Suchverlauf<ph name="END_LINK_SEARCH" /> löschen</translation>
 <translation id="8387361103813440603">Dürfen meine Standortdaten nicht abrufen</translation>
 <translation id="8389416080014625855">QR-Code für diese Seite erstellen</translation>
 <translation id="8389492867173948260">Dieser Erweiterung erlauben, alle meine Daten auf von mir besuchten Websites zu lesen und zu ändern:</translation>
@@ -6617,6 +6620,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8398877366907290961">Trotzdem fortfahren</translation>
 <translation id="8400146488506985033">Nutzer verwalten</translation>
 <translation id="8401432541486058167">Geben Sie die PIN für Ihre Smartcard an.</translation>
+<translation id="8404893580027489425">Der Fingerabdrucksensor befindet sich auf der rechten Seite Ihres <ph name="DEVICE_TYPE" />. Berühren Sie ihn leicht mit dem Finger.</translation>
 <translation id="8405046151008197676">Wichtiges zum letzten Update ansehen</translation>
 <translation id="8407199357649073301">Protokollebene:</translation>
 <translation id="8408068190360279472">Netzwerk: <ph name="NETWORK_TYPE" />, Verbindung wird hergestellt</translation>
@@ -6867,6 +6871,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="8698269656364382265">Sie gelangen zum vorherigen Bildschirm, indem Sie von der linken Seite zur Mitte wischen.</translation>
 <translation id="869884720829132584">Apps-Menü</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>
+<translation id="8699120352855309748">Übersetzen dieser Sprachen nicht anbieten</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> wurde gesperrt.</translation>
 <translation id="8703346390800944767">Werbung überspringen</translation>
 <translation id="8705331520020532516">Seriennummer</translation>

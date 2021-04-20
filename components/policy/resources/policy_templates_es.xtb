@@ -350,6 +350,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1479427764273213107">Si se asigna un valor a esta política, se definirá la lista de dispositivos USB que los usuarios pueden desvincular de su controlador de kernel para utilizarse en la API chrome.usb directamente en una aplicación web. Las entradas son pares de identificador de producto e identificador de proveedor del USB que permiten identificar hardware específico.
 
       Si no se le asigna ningún valor, la lista de dispositivos USB que se pueden desvincular estará vacía.</translation>
+<translation id="1479515813926202288">Inhabilitar búsqueda asistida mediante cámara de Lens para usuarios de empresa</translation>
 <translation id="1481508277421549404">Si se le asigna el valor "True" a esta política, las extensiones instaladas por política de empresa podrán usar la API Enterprise Hardware Platform.
 
       Si se le asigna el valor "False" o si no se le asigna ningún valor, las extensiones no podrán usar esta API.
@@ -776,9 +777,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
           de política consistente. Ejecutar los procesos con diferentes valores de esta política no les afecta
           de forma negativa.
           </translation>
-<translation id="2026547141364626978">Si se le asigna un valor a esta política, se especificará la clave de licencia de <ph name="PLUGIN_VM_NAME" /> de este dispositivo.
-
-      Esta política se quitó en la versión M91.</translation>
 <translation id="2030905906517501646">Palabra clave de proveedor de búsquedas predeterminadas</translation>
 <translation id="203096360153626918">Esta política no influye en las aplicaciones para Android. Aunque se le asigne el valor <ph name="FALSE" />, las aplicaciones podrán acceder al modo de pantalla completa.</translation>
 <translation id="2032848225007871645">Esta política controla qué modos de desbloqueo rápido se pueden usar para desbloquear la pantalla de bloqueo.
@@ -813,11 +811,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="2043749682619281558">Habilita el resaltado del cursor en la pantalla de inicio de sesión</translation>
 <translation id="2043770014371753404">Impresoras de empresa inhabilitadas</translation>
-<translation id="2044730764993088298">Configura los ajustes del periodo de conservación de los datos de navegación de <ph name="PRODUCT_NAME" />. Esta política permite a los administradores configurar (por tipo de dato) cuándo eliminará los datos el navegador. Es útil para las personas que trabajan con datos sensibles de clientes. Esta política solo tendrá efecto si se le asigna el valor true a <ph name="SYNC_DISABLED_POLICY_NAME" />.
-
-      Los tipos de datos disponibles son los siguientes: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> y <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
-
-      El navegador eliminará automáticamente los datos de los tipos seleccionados que tengan una antigüedad superior a <ph name="TIME_TO_LIVE_IN_HOURS" />. El valor mínimo que se puede establecer es 1 hora. En raras ocasiones, es posible que se tarde más tiempo en eliminar los datos, pero se acabarán borrando.</translation>
 <translation id="2057317273526988987">Permitir el acceso a una lista de URL</translation>
 <translation id="2061123930713023976">Permite capturas de paquetes de red de depuración</translation>
 <translation id="2061810934846663491">Configurar los nombres de dominio obligatorios para hosts de acceso remoto</translation>
@@ -1528,6 +1521,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Si se le asigna el valor false, <ph name="BOREALIS_NAME" /> no estará disponible. Si, por el contrario, se le asigna el valor true o no se le asigna ningún valor, <ph name="BOREALIS_NAME" /> estará disponible únicamente si no lo desactiva otra política o ajuste.</translation>
 <translation id="2964373560810620158">Evitar que los usuarios usen el navegador <ph name="LACROS_NAME" /></translation>
+<translation id="2968177167006045252">Permitir que los sitios usen SharedArrayBuffers</translation>
 <translation id="2969797921412053304">Esta política define las URL a las que se otorgará acceso para usar la atestación remota de identidades de dispositivos durante el flujo de SAML en la pantalla de inicio de sesión.
 
       En concreto, si una URL coincide con uno de los patrones proporcionados a través de esta política, la URL podrá recibir un encabezado HTTP con una respuesta a una prueba de atestación remota, certificando la identidad y el estado del dispositivo.
@@ -1670,6 +1664,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3072847235228302527">Establecer los Términos del Servicio para una cuenta de dispositivo local</translation>
 <translation id="3083259245974004342">Protección de contraseñas</translation>
 <translation id="3086995894968271156">Configura Cast Receiver en <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3087346703976541109">Especifica si SharedArrayBuffers se puede usar en un contexto que no está aislado en orígenes cruzados</translation>
 <translation id="3088557424854005813">Atestación</translation>
 <translation id="3091832372132789233">Carga la batería de los dispositivos que están conectados principalmente a una fuente de alimentación externa.</translation>
 <translation id="3092059499596000593">Utilizar la impresora predeterminada del sistema como opción predeterminada en la vista previa de impresión</translation>
@@ -2452,11 +2447,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
           Si asignas un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no se asigna ningún valor a esta política, los mensajes de voz se inhabilitarán inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarlos en cualquier momento.</translation>
-<translation id="4175667688338118889">Si se habilita esta política, Navegación segura confiará en los dominios que indiques. No comprobará si los recursos son peligrosos (por ejemplo, si incluyen suplantación de identidad, software malicioso o software no deseado). El servicio de protección de descargas de Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará si se reutilizan contraseñas.
-
-      Si se inhabilita la política o se deja sin definir, se aplicará la protección predeterminada de Navegación segura a todos los recursos.
-
-      En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="417956245902013347">Habilita la función de accesibilidad de resaltado del símbolo de intercalación de texto en la pantalla de inicio de sesión.
 
           Si se asigna el valor "True" a esta política, el resaltado del símbolo de intercalación estará siempre habilitado en la pantalla de inicio de sesión.
@@ -2629,6 +2619,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">Configura las políticas relacionadas con <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="449784980858429908">Permite conceder permiso automáticamente a sitios para conectarse a todos los puertos serie.</translation>
+<translation id="4507775063441355559">Permitir búsqueda asistida mediante cámara de <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="4510923771103268849">El usuario puede tener acceso root a los contenedores de Crostini</translation>
 <translation id="4515404363392014383">Habilitar Navegación segura en fuentes de confianza</translation>
 <translation id="4518251772179446575">Preguntar siempre que un sitio quiera hacer un seguimiento de la ubicación física de los usuarios</translation>
@@ -3072,6 +3063,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       Si se le asigna el valor "true", se enviará información sobre el nombre del modelo, la arquitectura y la velocidad máxima de reloj
       de cada CPU.</translation>
 <translation id="5124368997194894978">Habilitar el inicio con CA (corriente alterna)</translation>
+<translation id="5130213897914754028">Impedir que los sitios usen SharedArrayBuffers</translation>
 <translation id="5141670636904227950">Establecer el tipo de lupa predeterminada habilitada en la pantalla de inicio de sesión</translation>
 <translation id="5142301680741828703">Mostrar siempre los patrones de URL indicados a continuación en <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Esta política determina si se recoge información que se pueda usar para identificar a usuarios, como el inicio de sesión en el SO, el inicio de sesión en el perfil de <ph name="PRODUCT_NAME" />, el nombre de perfil de <ph name="PRODUCT_NAME" />, la ruta del perfil de <ph name="PRODUCT_NAME" /> y la ruta del ejecutable de <ph name="PRODUCT_NAME" />.
@@ -3206,6 +3198,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
           * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: se usan los campos <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> y <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
 
       Nota: Puedes consultar más ejemplos detallados en The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
+<translation id="5264773067879932127">Si esta política no se define o se habilita, los usuarios podrán buscar con sus cámaras utilizando <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Si se le asigna el valor False, los usuarios no podrán ver el botón <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el cuadro de búsqueda cuando se pueda usar la búsqueda asistida mediante cámara de <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="5266173014392157048">Esta política está obsoleta. Usa la política <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> en su lugar.
 
       Si se establece esta política, se asignarán los servidores en los que <ph name="PRODUCT_NAME" /> pueda delegar. Si hay varios nombres de servidores, se deben separar con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
@@ -3857,6 +3850,12 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6111936128861357925">Permitir el juego del huevo de pascua de dinosaurio</translation>
 <translation id="6123052603197028610">No permitir que las consultas a los servidores de Google obtengan marcas de tiempo</translation>
 <translation id="6132506775968708399">Bloquear cookies de terceros</translation>
+<translation id="6132739217670763962">
+      Especifica si SharedArrayBuffers se puede usar en un contexto que no está aislado
+      en orígenes cruzados. Chrome requerirá el aislamiento en orígenes cruzados cuando se use
+      SharedArrayBuffers a partir de Chrome 91 (25-05-2021) por motivos de compatibilidad
+      con la Web. Información adicional disponible en:
+      https://developer.chrome.com/blog/enabling-shared-array-buffer/.</translation>
 <translation id="6133088669883929098">Permitir que todos los sitios utilicen la generación de claves</translation>
 <translation id="6135398260575578389">Navegación segura está activa en modo mejorado. Este modo proporciona mayor seguridad, pero requiere compartir más información de navegación con Google.</translation>
 <translation id="6138636318340561140">Comprueba en tiempo real el estado de Navegación segura de las URL</translation>
@@ -4031,6 +4030,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se le asigna el valor "Inhabilitada", los Signed HTTP Exchanges no se podrán cargar.</translation>
 <translation id="6368011194414932347">Configurar la URL de la página principal</translation>
 <translation id="6368403635025849609">Permitir JavaScript en estos sitios</translation>
+<translation id="6371561334154580937">Muestra el cuadro de diálogo de cierre de sesión cuando se cierra la última ventana.</translation>
 <translation id="6372105930898423193">Permite volver a habilitar la función AppCache aunque esté desactivada de forma predeterminada.</translation>
 <translation id="6376659517206731212">Puede ser obligatoria</translation>
 <translation id="6377355597423503887">Esta política está obsoleta, pero puedes utilizar BrowserSignin en su lugar.
@@ -4149,6 +4149,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si no se establece la política, no se aplicará ninguna longitud máxima.</translation>
 <translation id="6553143066970470539">Porcentaje de brillo de la pantalla</translation>
+<translation id="6558362593755624474">Establecer esta política permite especificar la clave de licencia de <ph name="PLUGIN_VM_NAME" /> para este dispositivo.</translation>
 <translation id="6559057113164934677">No permitir que ningún sitio acceda a la cámara y al micrófono</translation>
 <translation id="6559221564468029245">Si se habilita la política o no se establece, no se considerará que el usuario está inactivo mientras se reproduzca audio. Esto impide que se alcance el tiempo de espera de inactividad y que se entre en modo de inactividad. Sin embargo, se llevarán a cabo la atenuación de pantalla, la desconexión de pantalla y el bloqueo de pantalla tras los tiempos de espera configurados, a pesar de la actividad del audio.
 
@@ -4824,6 +4825,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Si no se asigna ningún valor a esta política, la opción predeterminada no estará disponible para los usuarios gestionados por empresas, aunque sí lo estará para aquellos no gestionados por empresas.</translation>
 <translation id="7295019613773647480">Habilitar usuarios supervisados</translation>
+<translation id="7295038772938766029">Habilitar búsqueda asistida mediante cámara de Lens para usuarios de empresa</translation>
 <translation id="7302043767260300182">Retraso de bloqueo de pantalla cuando el dispositivo está conectado a la red</translation>
 <translation id="7303902834678570827">Los usuarios de sesiones de invitado gestionadas pueden almacenar ajustes de pantalla que se apliquen a todo el dispositivo</translation>
 <translation id="731208205557053914">Enviar información sobre VPD</translation>
@@ -5073,6 +5075,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
           Si no se establece esta política, se utiliza un valor de tiempo predeterminado.
 
           El valor de esta política debe especificarse en milisegundos. Los valores deben ser inferiores o iguales al retraso de desconexión de la pantalla (si se ha configurado) y al retraso de inactividad.</translation>
+<translation id="7680437377926096177">Impide que se muestre el cuadro de diálogo de cierre de sesión cuando se cierra la última ventana.</translation>
 <translation id="7683777542468165012">Actualización dinámica de política</translation>
 <translation id="7687943045976362719">Si se asigna un valor a esta política, <ph name="PRODUCT_FRAME_NAME" /> gestiona los tipos de contenido especificados.
 
@@ -5618,6 +5621,9 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       Si se asigna el valor "True" a esta política o no se le asigna ningún valor, el usuario tendrá acceso root a los contenedores de Crostini.
       Si se le asigna el valor "False", el usuario no tendrá acceso root a los contenedores de Crostini nuevos ni a los ya creados.</translation>
+<translation id="8410477879938914253">La política solo se aplica a sesiones de invitado gestionadas.
+      Si se le asigna el valor True a esta política o no se le asigna ningún valor, se mostrará un cuadro de diálogo donde se pedirá al usuario que confirme o deniegue el cierre de sesión cuando se cierre la última ventana.
+      Si se le asigna el valor False, el cuadro de diálogo no se podrá mostrar y, por tanto, también se inhabilitará el cierre de sesión automático después de que se cierre la última ventana.</translation>
 <translation id="8415953438346821074">Si se habilita esta opción, la configuración almacenada en los perfiles de <ph name="PRODUCT_NAME" /> (como los marcadores, los datos de Autocompletar, las contraseñas, etc.) también se escribirá en un archivo almacenado en la carpeta Roaming del perfil de usuario o en una ubicación especificada por el administrador en la política <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. Al habilitar esta política, se inhabilitará la sincronización en la nube.
 
       Si se inhabilita esta política o no se le asigna ningún valor, solo se usarán los perfiles locales habituales.</translation>
@@ -5899,6 +5905,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
           Esta política no tendrá efecto si no se le asigna ningún valor. En este caso, las conexiones de acceso remoto no tendrán duración máxima en este equipo.</translation>
 <translation id="8800453707696044281">Define un porcentaje personalizado de la parada de carga de la batería</translation>
 <translation id="8801680448782904838">Informar al usuario de que es necesario o recomendable reiniciar el navegador o el dispositivo</translation>
+<translation id="8807313206348471682">Mostrar el cuadro de diálogo de confirmación de cierre de sesión</translation>
 <translation id="8816671955985738552">No permitir cambios de contraseña de SAML dentro de la sesión en chrome://password-change</translation>
 <translation id="8817960019535659860">Evitar que los usuarios canjeen ofertas a través del registro de Chrome OS</translation>
 <translation id="8818173863808665831">Informa de la ubicación geográfica del dispositivo.

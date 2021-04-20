@@ -330,7 +330,6 @@
 <translation id="1354045473509304750">І далей дазваляць сайту <ph name="HOST" /> выкарыстоўваць і перамяшчаць вашу камеру</translation>
 <translation id="1355088139103479645">Выдаліць усе даныя?</translation>
 <translation id="1355466263109342573">Убудова "<ph name="PLUGIN_NAME" />" заблакіравана</translation>
-<translation id="1358612436266364864">Выдаліць вылучаныя фрагменты</translation>
 <translation id="1358741672408003399">Правапіс і граматыка</translation>
 <translation id="1359923111303110318">Разблакіроўка прылады можа ажыццяўляцца з дапамогай Smart Lock. Каб разблакіраваць яе, націсніце Enter.</translation>
 <translation id="1361164813881551742">Дадаць уручную</translation>
@@ -886,6 +885,7 @@
 <translation id="1928202201223835302">Увядзіце стары PIN-код</translation>
 <translation id="1928696683969751773">Абнаўленні</translation>
 <translation id="1929186283613845153">Файл правяраецца.</translation>
+<translation id="1929343511231420085">Любы паслядоўны порт</translation>
 <translation id="1929546189971853037">Доступ да вашай гісторыі прагляду сайтаў з усіх прылад, з якіх вы ўвайшлі ва ўліковы запіс</translation>
 <translation id="1930879306590754738">Паролі выдалены з гэтай прылады і Уліковага запісу Google</translation>
 <translation id="1931152874660185993">Няма ўсталяваных кампанентаў.</translation>
@@ -1610,7 +1610,6 @@
 <translation id="2734760316755174687">Сайты ў межах <ph name="SITE_GROUP_NAME" /> таксама будуць скінуты.</translation>
 <translation id="2735712963799620190">Расклад</translation>
 <translation id="2737363922397526254">Згарнуць...</translation>
-<translation id="2737916598897808047">Праграма "<ph name="APP_NAME" />" запытвае дазвол на абагульванне змесціва экрана з <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Не дазваляць сайтам выкарыстоўваць шрыфты, усталяваныя на прыладзе</translation>
 <translation id="2738771556149464852">Не пазней</translation>
 <translation id="2739191690716947896">Адладзіць</translation>
@@ -1898,7 +1897,6 @@
 <translation id="3031417829280473749">Агент X</translation>
 <translation id="3031557471081358569">Выберыце, што імпартаваць:</translation>
 <translation id="3036327949511794916">Тэрмін вяртання прылады <ph name="DEVICE_TYPE" /> мінуў.</translation>
-<translation id="3036438888981457032">Выдаліць вылучаныя фрагменты</translation>
 <translation id="3036546437875325427">Уключыць Flash</translation>
 <translation id="3037754279345160234">Не ўдалося прааналізаваць канфігурацыю, каб далучыцца да дамена. Звярніцеся да адміністратара.</translation>
 <translation id="3038612606416062604">Дадаванне прынтара ўручную</translation>
@@ -2945,6 +2943,7 @@
 <translation id="4218274196133425560">Выдаліць выключэнне для <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Падчас актывацыі ўзнікла памылка.</translation>
 <translation id="4222772810963087151">Звесткі пра зборку</translation>
+<translation id="4224284700924043865">Прылады USB з ідэнтыфікатарам прадукту <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">На ўсіх сайтах</translation>
 <translation id="4231095370974836764">Усталёўвайце праграмы і гульні з Google Play на сваёй прыладзе "<ph name="DEVICE_TYPE" />". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Канфігурацыя Kerberos</translation>
@@ -3017,6 +3016,7 @@
 <translation id="431076611119798497">&amp;Звесткі</translation>
 <translation id="4312866146174492540">Блакіраваць (стандартна)</translation>
 <translation id="4314815835985389558">Кіраванне сінхранізацыяй</translation>
+<translation id="4316650123995163262">Прылады USB з ідэнтыфікатарам прадукту <ph name="PRODUCT_ID" /> ад пастаўшчыка "<ph name="VENDOR_NAME" />"</translation>
 <translation id="4316850752623536204">Вэб-сайт распрацоўшчыка</translation>
 <translation id="4317820549299924617">Ажыццявіць спраўджанне не ўдалося</translation>
 <translation id="4320177379694898372">Няма падключэння да інтэрнэту</translation>
@@ -3459,6 +3459,7 @@
 <translation id="4824958205181053313">Скасаваць сінхранізацыю?</translation>
 <translation id="4827675678516992122">Не ўдалося падключыцца</translation>
 <translation id="4827784381479890589">Палепшаная праверка правапісу ў браўзеры Chrome (тэкст адпраўляецца ў Google для прапаноў правапісных варыянтаў)</translation>
+<translation id="482952334869563894">Прылады USB ад пастаўшчыка <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Наладзіць PIN-код</translation>
 <translation id="4830121310592638841">Пытацца, калі сайт запытвае дазвол адкрываць і размяшчаць вокны на экранах</translation>
 <translation id="4830502475412647084">Ідзе ўсталяванне абнаўлення АС</translation>
@@ -3748,6 +3749,7 @@
 <translation id="5159419673777902220">Вашы бацькі выключылі дазволы для пашырэнняў</translation>
 <translation id="5160634252433617617">Фізічная клавіятура</translation>
 <translation id="5160857336552977725">Уваход у <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">Прылады USB ад пастаўшчыка "<ph name="VENDOR_NAME" />"</translation>
 <translation id="5162905305237671850">Прылада "<ph name="DEVICE_TYPE" />" заблакіравана</translation>
 <translation id="5163910114647549394">Укладка перамешчана ў канец панэлі</translation>
 <translation id="5165085578392358314">Прызначэнне пераключальніка для дзеяння "<ph name="ACTION" />"</translation>
@@ -4661,7 +4663,6 @@
 <translation id="6212039847102026977">Паказаць пашыраныя параметры сеткі</translation>
 <translation id="6212168817037875041">Выключыць дысплэй</translation>
 <translation id="6212752530110374741">Адправіць спасылку па пошце</translation>
-<translation id="6213230117190778270">Прыняць</translation>
 <translation id="621470880408090483">Не дазваляць сайтам падключацца да прылад з Bluetooth</translation>
 <translation id="6215620815501168899">Закрыць усплывальнае акно з электронным ідэнтыфікатарам прылады і QR-кодам</translation>
 <translation id="6216601812881225442">Гэты кантэйнер не падтрымлівае змяненне памеру. Каб змяніць колькасць месца, загадзя вылучанага для Linux, зрабіце рэзервовую копію і аднавіце яе ў новым кантэйнеры.</translation>
@@ -5375,6 +5376,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – журнал актыўнасці</translation>
 <translation id="6997707937646349884">На прыладах:</translation>
 <translation id="6998793565256476099">Зарэгістраваць прыладу для відэаканферэнцый</translation>
+<translation id="6999640176621571692">Дазволіць Google шукаць скідкі на тавары, якія вы дадаяце ў кошыкі?</translation>
 <translation id="6999956497249459195">Новая група</translation>
 <translation id="7000206553895739324">Прынтар "<ph name="PRINTER_NAME" />" падключаны, але яго трэба наладзіць</translation>
 <translation id="7000347579424117903">Дадайце Ctrl, Alt або клавішу "Пошук"</translation>
@@ -5455,7 +5457,6 @@
 <translation id="7076293881109082629">Уваход</translation>
 <translation id="7077829361966535409">Не ўдалося загрузіць старонку ўваходу пры бягучых наладах проксі-сервера. <ph name="GAIA_RELOAD_LINK_START" />Паўтарыце спробу ўваходу<ph name="GAIA_RELOAD_LINK_END" /> або скарыстайце іншыя <ph name="PROXY_SETTINGS_LINK_START" />налады проксі-сервера<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Усе сеткі</translation>
-<translation id="7078386829626602215">Прылады не выяўлены. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">К&amp;апіраваць адрас аўдыя</translation>
 <translation id="7081952801286122383">Вы ў рэжыме інкогніта</translation>
 <translation id="708278670402572152">Каб уключыць пошук, адключыцеся</translation>
@@ -5504,11 +5505,9 @@
 <translation id="7135729336746831607">Уключыць Bluetooth?</translation>
 <translation id="7136639886842764730">Выкарыстанне дамена "<ph name="DOMAIN" />" патрабуе неадкладнага абнаўлення прылады "<ph name="DEVICE_TYPE" />".</translation>
 <translation id="7136694880210472378">Зрабіць стандартнай пошукавай сістэмай</translation>
-<translation id="7136984461011502314">Вітаем у <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Адбылася памылка. Выберыце іншы відарыс і паўтарыце спробу.</translation>
 <translation id="7139627972753429585">Праграма "<ph name="APP_NAME" />" выкарыстоўвае ваш мікрафон</translation>
 <translation id="7141105143012495934">Уваход не выкананы: не ўдалося атрымаць даныя ўліковага запісу. Звярніцеся да адміністратара або паўтарыце спробу.</translation>
-<translation id="7143358760238281735">Праграмы недаступныя</translation>
 <translation id="7144878232160441200">Паўтарыць</translation>
 <translation id="7149893636342594995">За апошнія 24 гадзіны</translation>
 <translation id="7152478047064750137">Пашырэнне не патрабуе спецыяльных дазволаў</translation>
@@ -6461,7 +6460,6 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Ідзе падключэнне да правайдара <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Кіраваць праграмамі, пашырэннямі і тэмамі</translation>
-<translation id="8192944472786724289">Праграма "<ph name="APP_NAME" />" запытвае дазвол на абагульванне змесціва экрана.</translation>
 <translation id="8195027750202970175">Месца на дыску</translation>
 <translation id="8198323535106903877">Будуць усталяваны гэтыя праграмы (<ph name="NUMBER_OF_APPS" /> шт.)</translation>
 <translation id="8199300056570174101">Уласцівасці прылады і сеткі (сэрвісу)</translation>
@@ -6885,6 +6883,7 @@
 <translation id="8698269656364382265">Каб вярнуцца на папярэдні экран, правядзіце пальцам злева ў цэнтр.</translation>
 <translation id="869884720829132584">Меню праграм</translation>
 <translation id="869891660844655955">Тэрмін дзеяння</translation>
+<translation id="8699120352855309748">Не прапаноўваць перакладаць з гэтых моў</translation>
 <translation id="8702825062053163569">Ваша прылада <ph name="DEVICE_TYPE" /> была заблакіравана.</translation>
 <translation id="8703346390800944767">Прапусціць рэкламу</translation>
 <translation id="8705331520020532516">Серыйны нумар</translation>

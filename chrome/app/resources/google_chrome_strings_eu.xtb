@@ -49,7 +49,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2063848847527508675">Eguneratzea aplikatzeko, berrabiarazi egin behar da Chrome OS.</translation>
 <translation id="2094919256425865063">Chrome-tik irten nahi duzu hala ere?</translation>
 <translation id="2120620239521071941">Gailuko <ph name="ITEMS_COUNT" /> elementu ezabatuko dira. Geroago datuak eskuratu nahi izanez gero, hasi saioa Chrome-n <ph name="USER_EMAIL" /> gisa.</translation>
-<translation id="2123055963409958220">Lagundu Chrome hobetzen <ph name="BEGIN_LINK" />uneko ezarpenen<ph name="END_LINK" /> berri emanda</translation>
+<translation id="2123055963409958220">Lagundu Chrome hobetzen <ph name="BEGIN_LINK" />oraingo ezarpenen<ph name="END_LINK" /> berri emanda</translation>
 <translation id="2151406531797534936">Berrabiarazi Chrome</translation>
 <translation id="2246246234298806438">Google Chrome-k ezin du erakutsi inprimatze-aurrebista PDF dokumentuen ikustaile inkorporatua falta bada.</translation>
 <translation id="2290014774651636340">Google APIaren gakoak falta dira. Agian Google Chrome-ren funtzio batzuk desgaituta egongo dira.</translation>
@@ -225,6 +225,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7106741999175697885">Zeregin-kudeatzailea - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome-ren eguneratze bat erabilgarri dago eta arakatzailea berrabiarazten duzunean aplikatuko da.}=1{Chrome-ren eguneratze bat erabilgarri dago eta arakatzailea berrabiarazten duzunean aplikatuko da. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chrome-ren eguneratze bat erabilgarri dago eta arakatzailea berrabiarazten duzunean aplikatuko da. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
 <translation id="7155997830309522122">Hala bada, editatu Chrome-n gordetako pasahitza, berriarekin bat etor dadin.</translation>
+<translation id="7161904924553537242">Ongi etorri Google Chrome-ra</translation>
 <translation id="7242029209006116544">Kontu kudeatu batekin hasten ari zara saioa eta, beraz, Google Chrome-ko zure profilaren gaineko kontrola emango diozu kontuaren administratzaileari. <ph name="USER_NAME" /> erabiltzailearekin iraunkorki lotuko dira zure Chrome datuak, esaterako, aplikazioak, laster-markak eta beste ezarpen batzuk. Datu horiek ezabatzeko, Google-ko kontuen Panela erabili ahal izango duzu, baina ezin izango dituzu datuak lotu beste kontu batera. Zure Chrome datuak bereizita izan nahi badituzu, beste profil bat sor dezakezu. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Hizkuntza honetan dago Google Chrome-ren erabiltzaile-interfazea</translation>
 <translation id="7296210096911315575">Erabilerari eta segurtasunari buruzko informazio garrantzitsua</translation>

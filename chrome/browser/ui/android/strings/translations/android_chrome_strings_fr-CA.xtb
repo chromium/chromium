@@ -305,7 +305,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3016635187733453316">Assurez-vous que cet appareil est connecté à Internet</translation>
 <translation id="3029704984691124060">Mots de passe multitermes différents</translation>
 <translation id="3031225630520268969">Fenêtre d'IU de consentement pour la recherche vocale avec l'Assistant</translation>
-<translation id="3034163383943672781">Début prévu du téléchargement : <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obtenir de l'aide<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Accédez plus rapidement à ce site la prochaine fois</translation>
 <translation id="305593374596241526">Le paramètre Position est désactivé, activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4583164079174244168">{MINUTES,plural, =1{Il y a # minute}one{Il y a # minute}other{Il y a # minutes}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Cette page hors connexion a été créée le <ph name="CREATION_TIME" /> et peut différer de la version en ligne.</translation>
-<translation id="4605958867780575332">Élément supprimé : <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Ouvrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Confirmer que c'est bien vous</translation>
 <translation id="4634124774493850572">Utiliser le mot de passe</translation>
@@ -702,7 +700,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="572328651809341494">Onglets récents</translation>
 <translation id="5723735397759933332">Le mode simplifié vous permet d'économiser davantage de données en optimisant les images sur les pages HTTPS.</translation>
 <translation id="5726692708398506830">Agrandir la taille de tout le contenu de la page</translation>
-<translation id="5732819098735351888">Le téléchargement commencera lorsque vous serez connecté à un réseau Wi-Fi.</translation>
 <translation id="5733983706093266635">Impossible de créer un code QR. L'URL contient plus de <ph name="CHARACTER_LIMIT" /> caractères.</translation>
 <translation id="5748802427693696783">Passage aux onglets standards</translation>
 <translation id="5749068826913805084">Chrome a besoin d'accéder au stockage pour télécharger des fichiers.</translation>
@@ -779,9 +776,9 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="614940544461990577">Essayez ceci :</translation>
 <translation id="6154478581116148741">Activez le verrouillage de l'écran dans Paramètres pour exporter vos mots de passe à partir de cet appareil</translation>
 <translation id="6159335304067198720">Économies de données de <ph name="PERCENT" /></translation>
+<translation id="6159729262978459665">Efface l'historique de tous les appareils synchronisés.</translation>
 <translation id="6186394685773237175">Aucun mot de passe compromis n'a été trouvé</translation>
 <translation id="6192907950379606605">Obtenir les descriptions</translation>
-<translation id="6206830853671714236">Choisir quand effectuer le téléchargement</translation>
 <translation id="6210748933810148297">Pas <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Affichage de l'aperçu de cette page</translation>
 <translation id="6218096829563201111">Rech. produits similaires <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7523960634226602883">Recherchez avec votre appareil photo à l'aide de Lentille Google</translation>
 <translation id="753225086557513863">Programmé pour plus tard</translation>
 <translation id="7559975015014302720">Le mode simplifié est désactivé</translation>
+<translation id="7560448309733608642">Efface l'historique de tous les appareils synchronisés. D'autres formes d'historique de navigation peuvent exister dans votre compte Google à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Effacement des données de navigation en cours…</translation>
 <translation id="756809126120519699">Données de Chrome effacées</translation>
 <translation id="7577900504646297215">Gérer les centres d'intérêt</translation>
@@ -1177,12 +1175,14 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="8699120352855309748">Ne pas proposer de traduire ces langues</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8725066075913043281">Réessayer</translation>
+<translation id="8730621377337864115">Terminé</translation>
 <translation id="8748850008226585750">Contenus masqués</translation>
 <translation id="8773160212632396039">Traitement de la demande en cours…</translation>
 <translation id="8788265440806329501">L'historique de navigation est fermé</translation>
 <translation id="8788968922598763114">Rouvrir le dernier onglet fermé</translation>
 <translation id="8798449543960971550">Lu</translation>
 <translation id="8812260976093120287">Sur certains sites Web, vous pouvez payer avec les applications de paiement prises en charge indiquées ci-dessus sur votre appareil.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Impossible d'afficher l'aperçu du contenu dans un onglet.</translation>
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="883806473910249246">Une erreur s'est produite lors du téléchargement du contenu.</translation>
@@ -1220,10 +1220,10 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="9063523880881406963">Désactiver l’option Demander site pour ordinateurs de bureau</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9065383040763568503">Les données stockées que Chrome ne considère pas comme importantes (comme les sites qui n'ont pas de paramètres enregistrés ou que vous ne consultez pas souvent)</translation>
-<translation id="9069543557624799859">Le téléchargement commencera à <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Aucune page non lue</translation>
 <translation id="9070377983101773829">Démarrer la recherche vocale</translation>
 <translation id="9074336505530349563">Pour obtenir du contenu personnalisé suggéré par Google, connectez-vous et activez la synchronisation</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Synchronisation en cours...</translation>
 <translation id="9086455579313502267">Échec d'accès au réseau</translation>
 <translation id="9100505651305367705">Proposer d'afficher les articles en vue simplifiée, lorsqu'ils sont pris en charge</translation>

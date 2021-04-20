@@ -329,7 +329,6 @@
 <translation id="1354045473509304750">Наставите да дозвољавате сајту <ph name="HOST" /> да користи и помера камеру</translation>
 <translation id="1355088139103479645">Желите ли да избришете све податке?</translation>
 <translation id="1355466263109342573">Додатна компонента <ph name="PLUGIN_NAME" /> је блокирана</translation>
-<translation id="1358612436266364864">Уклони истакнуте ставке</translation>
 <translation id="1358741672408003399">Правопис и граматика</translation>
 <translation id="1359923111303110318">Уређај може да се откључа помоћу Smart Lock-а. Притисните Enter да бисте откључали.</translation>
 <translation id="1361164813881551742">Додајте ручно</translation>
@@ -1608,7 +1607,6 @@
 <translation id="2734760316755174687">Ресетоваће се и сајтови из групе <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Распоред</translation>
 <translation id="2737363922397526254">Скупи...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> жели да дели садржај екрана са <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Не дозволите сајтовима да користе фонтове инсталиране на уређају</translation>
 <translation id="2738771556149464852">Не после</translation>
 <translation id="2739191690716947896">Отклони грешке</translation>
@@ -1896,7 +1894,6 @@
 <translation id="3031417829280473749">Агент Икс</translation>
 <translation id="3031557471081358569">Изаберите ставке за увоз:</translation>
 <translation id="3036327949511794916">Рок за враћање овог уређаја <ph name="DEVICE_TYPE" /> је прошао.</translation>
-<translation id="3036438888981457032">Уклони истакнуте ставке</translation>
 <translation id="3036546437875325427">Омогући Flash</translation>
 <translation id="3037754279345160234">Не можемо да рашчланимо конфигурацију ради придруживања домену. Обратите се администратору.</translation>
 <translation id="3038612606416062604">Ручно додајте штампач</translation>
@@ -4664,7 +4661,6 @@
 <translation id="6212039847102026977">Прикажи напредна својства мреже</translation>
 <translation id="6212168817037875041">Искључи екран</translation>
 <translation id="6212752530110374741">Пошаљи линк имејлом</translation>
-<translation id="6213230117190778270">Прими</translation>
 <translation id="621470880408090483">Не дозвољавај сајтовима да се повезују са Bluetooth уређајима</translation>
 <translation id="6215620815501168899">Затворите искачући прозор са EID бројем и QR кодом</translation>
 <translation id="6216601812881225442">Контејнер не подржава промену величине. Да бисте прилагодили количину простора која се унапред додељује Linux-у, направите резервну копију и вратите је у новом контејнеру.</translation>
@@ -5459,7 +5455,6 @@
 <translation id="7076293881109082629">Пријављивање</translation>
 <translation id="7077829361966535409">Учитавање странице за пријављивање помоћу актуелних подешавања проксија није успело. <ph name="GAIA_RELOAD_LINK_START" />Пробајте поново да се пријавите<ph name="GAIA_RELOAD_LINK_END" /> или користите нека друга <ph name="PROXY_SETTINGS_LINK_START" />подешавања проксија<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Све мреже</translation>
-<translation id="7078386829626602215">Није откривен ниједан уређај <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">К&amp;опирај адресу аудио садржаја</translation>
 <translation id="7081952801286122383">Ништа се не архивира</translation>
 <translation id="708278670402572152">Прекините везу да бисте омогућили скенирање</translation>
@@ -5508,11 +5503,9 @@
 <translation id="7135729336746831607">Желите ли да укључите Bluetooth?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> захтева да одмах ажурирате <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7136694880210472378">Постави као подразумевано</translation>
-<translation id="7136984461011502314">Добро дошли у <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Дошло је до грешке. Изаберите друге слике и пробајте поново.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> користи микрофон</translation>
 <translation id="7141105143012495934">Пријављивање није успело јер нисмо успели да преузмемо детаље о налогу. Контактирајте администратора или покушајте поново.</translation>
-<translation id="7143358760238281735">Нема доступних апликација</translation>
 <translation id="7144878232160441200">Пробај поново</translation>
 <translation id="7149893636342594995">Последња 24 сата</translation>
 <translation id="7152478047064750137">Овај додатак не захтева никакве специјалне дозволе</translation>
@@ -6466,7 +6459,6 @@
 <translation id="8189750580333936930">Заштићено окружење приватности</translation>
 <translation id="8190193592390505034">Повезивање са мрежом <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Управљање апликацијама, додацима и темама</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> жели да дели садржај екрана.</translation>
 <translation id="8195027750202970175">Величина на диску</translation>
 <translation id="8198323535106903877">Инсталираћемо вам те апликације (<ph name="NUMBER_OF_APPS" />)</translation>
 <translation id="8199300056570174101">Својства мреже (услуга) и уређаја</translation>
@@ -6890,6 +6882,7 @@
 <translation id="8698269656364382265">Да бисте се вратили на претходни екран, превуците почев од леве стране.</translation>
 <translation id="869884720829132584">Мени апликација</translation>
 <translation id="869891660844655955">Датум истека</translation>
+<translation id="8699120352855309748">Не нуди превод ових језика</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> је закључан.</translation>
 <translation id="8703346390800944767">Прескочи оглас</translation>
 <translation id="8705331520020532516">Серијски број</translation>

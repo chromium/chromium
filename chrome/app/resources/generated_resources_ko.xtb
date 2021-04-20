@@ -327,7 +327,6 @@
 <translation id="1354045473509304750"><ph name="HOST" />의 카메라 사용 및 이동을 계속 허용</translation>
 <translation id="1355088139103479645">모든 데이터를 삭제하시겠습니까?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" />이(가) 차단되었습니다.</translation>
-<translation id="1358612436266364864">하이라이트 삭제</translation>
 <translation id="1358741672408003399">영문 철자 및 문법</translation>
 <translation id="1359923111303110318">Smart Lock으로 기기를 잠금 해제할 수 있습니다. 잠금 해제하려면 Enter 키를 누르세요.</translation>
 <translation id="1361164813881551742">직접 추가</translation>
@@ -883,6 +882,7 @@
 <translation id="1928202201223835302">기존 PIN 입력</translation>
 <translation id="1928696683969751773">업데이트</translation>
 <translation id="1929186283613845153">파일을 검사하는 중입니다.</translation>
+<translation id="1929343511231420085">모든 직렬 포트</translation>
 <translation id="1929546189971853037">로그인한 모든 기기의 인터넷 사용 기록 조회</translation>
 <translation id="1930879306590754738">이 기기와 내 Google 계정에서 비밀번호가 삭제되었습니다.</translation>
 <translation id="1931152874660185993">설치된 구성요소가 없습니다.</translation>
@@ -1608,7 +1608,6 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> 그룹에 있는 사이트의 권한도 초기화됩니다.</translation>
 <translation id="2735712963799620190">일정</translation>
 <translation id="2737363922397526254">접기...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> 앱이 <ph name="TARGET_NAME" /> 사이트와 내 화면의 콘텐츠를 공유하려고 합니다.</translation>
 <translation id="2738030019664645674">사이트에서 기기에 설치된 글꼴을 사용할 수 없게 함</translation>
 <translation id="2738771556149464852">만료:</translation>
 <translation id="2739191690716947896">디버그</translation>
@@ -1896,7 +1895,6 @@
 <translation id="3031417829280473749">X 요원</translation>
 <translation id="3031557471081358569">가져올 항목 선택:</translation>
 <translation id="3036327949511794916"><ph name="DEVICE_TYPE" /> 반납 기한이 지났습니다.</translation>
-<translation id="3036438888981457032">하이라이트 삭제</translation>
 <translation id="3036546437875325427">Flash 사용</translation>
 <translation id="3037754279345160234">도메인 연결 구성을 파싱할 수 없습니다. 관리자에게 문의하세요.</translation>
 <translation id="3038612606416062604">수동으로 프린터 추가</translation>
@@ -2941,6 +2939,7 @@
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> 예외 삭제</translation>
 <translation id="4220648711404560261">활성화 중 오류가 발생했습니다.</translation>
 <translation id="4222772810963087151">빌드 세부정보</translation>
+<translation id="4224284700924043865">USB 기기(제품 ID: <ph name="PRODUCT_ID" />, 업체 ID: <ph name="VENDOR_ID" />)</translation>
 <translation id="4225397296022057997">모든 사이트에서</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" />에서 Google Play 앱 및 게임을 설치하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos 설정</translation>
@@ -3013,6 +3012,7 @@
 <translation id="431076611119798497">세부정보(&amp;D)</translation>
 <translation id="4312866146174492540">차단(기본값)</translation>
 <translation id="4314815835985389558">동기화 관리</translation>
+<translation id="4316650123995163262">USB 기기(제품 ID: <ph name="PRODUCT_ID" />, 업체: <ph name="VENDOR_NAME" />)</translation>
 <translation id="4316850752623536204">개발자 웹사이트</translation>
 <translation id="4317820549299924617">확인 실패</translation>
 <translation id="4320177379694898372">인터넷에 연결되지 않음</translation>
@@ -3455,6 +3455,7 @@
 <translation id="4824958205181053313">동기화를 취소하시겠습니까?</translation>
 <translation id="4827675678516992122">연결할 수 없음</translation>
 <translation id="4827784381479890589">Chrome 브라우저의 향상된 맞춤법 검사(텍스트는 맞춤법 추천을 위해 Google에 전송됨)</translation>
+<translation id="482952334869563894">USB 기기(업체 ID: <ph name="VENDOR_ID" />)</translation>
 <translation id="4829768588131278040">PIN 설정</translation>
 <translation id="4830121310592638841">열리는 사이트에서 화면에 창을 배치하려고 할 때 확인</translation>
 <translation id="4830502475412647084">OS 업데이트 설치 중</translation>
@@ -3744,6 +3745,7 @@
 <translation id="5159419673777902220">부모님이 확장 프로그램 권한을 사용 중지했습니다.</translation>
 <translation id="5160634252433617617">물리적 키보드</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" />에 로그인</translation>
+<translation id="5161251470972801814">USB 기기(업체: <ph name="VENDOR_NAME" />)</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> 차단됨</translation>
 <translation id="5163910114647549394">탭스트립 끝으로 탭을 이동함</translation>
 <translation id="5165085578392358314">스위치 할당: <ph name="ACTION" /></translation>
@@ -4657,7 +4659,6 @@
 <translation id="6212039847102026977">고급 네트워크 속성 표시</translation>
 <translation id="6212168817037875041">디스플레이 사용 중지</translation>
 <translation id="6212752530110374741">이메일 링크</translation>
-<translation id="6213230117190778270">받기</translation>
 <translation id="621470880408090483">사이트에서 블루투스 기기에 연결하도록 허용하지 않음</translation>
 <translation id="6215620815501168899">EID 및 QR 코드 팝업 닫기</translation>
 <translation id="6216601812881225442">컨테이너가 크기 조정을 지원하지 않습니다. Linux에 사전 할당되는 공간의 크기를 조정하려면 백업 후 새로운 컨테이너로 복원하세요.</translation>
@@ -5371,6 +5372,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 활동 로그</translation>
 <translation id="6997707937646349884">기기에서 다음과 같이 설정하세요.</translation>
 <translation id="6998793565256476099">화상회의용 기기 등록</translation>
+<translation id="6999640176621571692">Google이 장바구니 상품의 할인 가격을 찾을 수 있도록 허용하시겠습니까?</translation>
 <translation id="6999956497249459195">새 그룹</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" />이(가) 연결되어 있으나 구성이 필요함</translation>
 <translation id="7000347579424117903">Ctrl, Alt, 검색 키가 포함되어야 합니다</translation>
@@ -5451,7 +5453,6 @@
 <translation id="7076293881109082629">로그인</translation>
 <translation id="7077829361966535409">현재 프록시 설정을 사용하여 로그인 페이지를 로드하지 못했습니다. <ph name="GAIA_RELOAD_LINK_START" />다시 로그인<ph name="GAIA_RELOAD_LINK_END" />하거나 다른 <ph name="PROXY_SETTINGS_LINK_START" />프록시 설정<ph name="PROXY_SETTINGS_LINK_END" />을 사용합니다.</translation>
 <translation id="7078120482318506217">모든 네트워크</translation>
-<translation id="7078386829626602215">감지된 기기가 없습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">오디오 주소 복사(&amp;O)</translation>
 <translation id="7081952801286122383">시크릿 모드를 사용 중입니다.</translation>
 <translation id="708278670402572152">검색하려면 연결 해제하세요</translation>
@@ -5500,11 +5501,9 @@
 <translation id="7135729336746831607">블루투스를 사용 설정하시겠습니까?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" />에서 <ph name="DEVICE_TYPE" /> 기기를 즉시 업데이트할 것을 요청합니다.</translation>
 <translation id="7136694880210472378">기본으로 설정</translation>
-<translation id="7136984461011502314"><ph name="PRODUCT_NAME" />에 오신 것을 환영합니다.</translation>
 <translation id="7136993520339022828">오류가 발생했습니다. 다른 이미지를 선택하고 다시 시도해 보세요.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" />에서 마이크를 사용 중입니다.</translation>
 <translation id="7141105143012495934">계정 세부정보를 가져올 수 없어 로그인할 수 없습니다. 관리자에게 문의하거나 다시 시도해 주세요.</translation>
-<translation id="7143358760238281735">사용 가능한 앱 없음</translation>
 <translation id="7144878232160441200">다시 시도</translation>
 <translation id="7149893636342594995">지난 24시간</translation>
 <translation id="7152478047064750137">이 확장 프로그램에는 특별한 권한이 필요하지 않습니다</translation>
@@ -6458,7 +6457,6 @@
 <translation id="8189750580333936930">개인정보 보호 샌드박스</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />에 연결 중</translation>
 <translation id="8191230140820435481">앱, 확장 프로그램 및 테마 관리</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> 앱이 내 화면의 콘텐츠를 공유하려고 합니다.</translation>
 <translation id="8195027750202970175">디스크에서 차지하는 용량</translation>
 <translation id="8198323535106903877">앱 <ph name="NUMBER_OF_APPS" />개는 자동으로 설치됩니다</translation>
 <translation id="8199300056570174101">네트워크(서비스) 및 기기 속성</translation>
@@ -6882,6 +6880,7 @@
 <translation id="8698269656364382265">이전 화면으로 돌아가려면 왼쪽에서 스와이프하세요.</translation>
 <translation id="869884720829132584">애플리케이션 메뉴</translation>
 <translation id="869891660844655955">유효기간</translation>
+<translation id="8699120352855309748">번역할지 묻지 않을 언어</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> 잠김</translation>
 <translation id="8703346390800944767">광고 건너뛰기</translation>
 <translation id="8705331520020532516">일련번호</translation>

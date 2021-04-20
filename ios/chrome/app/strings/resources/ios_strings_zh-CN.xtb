@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">显示密码</translation>
 <translation id="1872096359983322073">闪光灯</translation>
 <translation id="1911619930368729126">上传到Google云端硬盘</translation>
-<translation id="1919130412786645364">允许登录 Chrome</translation>
 <translation id="1923342640370224680">过去 1 小时</translation>
 <translation id="1941314575388338491">点按两次即可复制。</translation>
 <translation id="1952172573699511566">网站将尽可能以您的首选语言显示文字。</translation>
@@ -216,7 +215,6 @@
 
 不过，在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。</translation>
 <translation id="3207960819495026254">已加书签</translation>
-<translation id="3222343486469566063">未登录</translation>
 <translation id="3224641773458703735">要想导出密码，您必须先在设备上设置屏幕锁定。</translation>
 <translation id="3240426699337459095">已复制链接</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@
 <translation id="3928666092801078803">合并我的数据</translation>
 <translation id="3929457972718048006">地址</translation>
 <translation id="3943492037546055397">密码</translation>
-<translation id="3943557322767080599">当您登录 Google 帐号时，向您显示 Chrome 登录提示</translation>
-<translation id="3967266340354872733">如需了解更多与隐私、安全和数据收集相关的设置，请前往<ph name="BEGIN_LINK" />同步<ph name="END_LINK" />和 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />部分。</translation>
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="3968505803272650567">管理感兴趣的主题</translation>
 <translation id="3989635538409502728">退出</translation>
@@ -568,7 +564,6 @@
 <translation id="6760509555861141183">返回到最近用过的标签页</translation>
 <translation id="6780034285637185932">邮编</translation>
 <translation id="6785453220513215166">正在发送崩溃报告…</translation>
-<translation id="679325081238418596">获取您在所有设备上保存的书签、历史记录、密码和其他设置</translation>
 <translation id="6797885426782475225">语音搜索</translation>
 <translation id="6807889908376551050">全部显示...</translation>
 <translation id="681368974849482173">书签已创建</translation>
@@ -580,7 +575,6 @@
 <translation id="6873263987691478642">拆分视图</translation>
 <translation id="6888009575607455378">确定要舍弃您所做的更改吗？</translation>
 <translation id="6896758677409633944">复制</translation>
-<translation id="6903907808598579934">开启同步功能</translation>
 <translation id="6914583639806229067">搜索您复制的图片</translation>
 <translation id="6914783257214138813">所有能查看此导出文件的人员都能看到您的密码。</translation>
 <translation id="6930799952781667037">点按此行即可更改为对应的语言。</translation>
@@ -711,6 +705,7 @@
 <translation id="8225985093977202398">缓存的图片和文件</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8281781826761538115">默认语言区域 - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">跳过</translation>
 <translation id="8283172974887967105">设置…</translation>
 <translation id="8299417921174340354">您必须先在设备上设置密码，才能使用密码。</translation>
 <translation id="8319076807703933069">新搜索</translation>

@@ -305,7 +305,6 @@
 <translation id="3016635187733453316">Праверце, ці падключана прылада да інтэрнэту</translation>
 <translation id="3029704984691124060">Фразы-паролі не супадаюць</translation>
 <translation id="3031225630520268969">Дыялогавае акно для дачы згоды на выкарыстанне Памочніка для галасавога пошуку</translation>
-<translation id="3034163383943672781">Спампоўванне пачнецца <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Даведка<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">У наступны раз вы зможаце перайсці на гэты сайт хутчэй</translation>
 <translation id="305593374596241526">Вызначэнне месцазнаходжання выключана. Уключыце яго ў <ph name="BEGIN_LINK" />наладах Android<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4583164079174244168">{MINUTES,plural, =1{1 хвіліну таму}one{# хвіліну таму}few{# хвіліны таму}many{# хвілін таму}other{# хвіліны таму}}</translation>
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4594952190837476234">Гэта пазасеткавая старонка створана <ph name="CREATION_TIME" /> і можа адрознівацца ад сваёй інтэрнэт-версіі.</translation>
-<translation id="4605958867780575332">Элемент "<ph name="ITEM_TITLE" />" выдалены</translation>
 <translation id="4616150815774728855">Адкрыць <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Пацвердзіць маю асобу</translation>
 <translation id="4634124774493850572">Выкарыстаць пароль</translation>
@@ -702,7 +700,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="572328651809341494">Нядаўнія ўкладкі</translation>
 <translation id="5723735397759933332">Цяпер у спрошчаным рэжыме можна захоўваць больш даных з дапамогай аптымізацыі відарысаў на старонках HTTPS.</translation>
 <translation id="5726692708398506830">Павялічыць усё на старонцы</translation>
-<translation id="5732819098735351888">Спампоўванне пачнецца пры падключэнні праз Wi-Fi.</translation>
 <translation id="5733983706093266635">Не ўдалося стварыць QR-код. URL-адрас перавышае дапушчальную колькасць знакаў (<ph name="CHARACTER_LIMIT" />).</translation>
 <translation id="5748802427693696783">Пераключана на стандартныя ўкладкі</translation>
 <translation id="5749068826913805084">Для спампоўвання файлаў Chrome патрабуецца доступ да сховішча.</translation>
@@ -779,9 +776,9 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="614940544461990577">Паспрабуйце наступнае:</translation>
 <translation id="6154478581116148741">Каб экспартаваць паролі з гэтай прылады, уключыце блакіроўку экрана ў Наладах</translation>
 <translation id="6159335304067198720">Эканомія трафіка <ph name="PERCENT" /></translation>
+<translation id="6159729262978459665">З усіх сінхранізаваных прылад будзе выдалена гісторыя.</translation>
 <translation id="6186394685773237175">Не знойдзена раскрытых пароляў</translation>
 <translation id="6192907950379606605">Атрымл. апісанні відарысаў</translation>
-<translation id="6206830853671714236">Выберыце час для спампоўкі</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> – гэта не вы?</translation>
 <translation id="6211386937064921208">Паказваецца перадпрагляд гэтай старонкі</translation>
 <translation id="6218096829563201111">Пошук падобных прадуктаў <ph name="BEGIN_NEW" />Новае<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="7523960634226602883">Пошук з дапамогай камеры і Google Аб'ектыва</translation>
 <translation id="753225086557513863">Адкладзена</translation>
 <translation id="7559975015014302720">Лёгкі рэжым выключаны</translation>
+<translation id="7560448309733608642">З усіх сінхранізаваных прылад будзе выдалена гісторыя. На сайце <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> размешчаны іншыя формы запісу гісторыі прагляду сайтаў для вашага Уліковага запісу Google.</translation>
 <translation id="7562080006725997899">Ідзе ачыстка даных прагляду</translation>
 <translation id="756809126120519699">Даныя Chrome выдалены</translation>
 <translation id="7577900504646297215">Кіраваць інтарэсамі</translation>
@@ -1177,12 +1175,14 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8699120352855309748">Не прапаноўваць перакладаць з гэтых моў</translation>
 <translation id="8712637175834984815">Зразумела</translation>
 <translation id="8725066075913043281">Паўтарыць спробу</translation>
+<translation id="8730621377337864115">Гатова</translation>
 <translation id="8748850008226585750">Змесціва схавана</translation>
 <translation id="8773160212632396039">Запыт апрацоўваецца</translation>
 <translation id="8788265440806329501">Гісторыя навігацыі закрыта</translation>
 <translation id="8788968922598763114">Адкрыць апошнюю закрытую ўкладку</translation>
 <translation id="8798449543960971550">Прачытана</translation>
 <translation id="8812260976093120287">На некаторых вэб-сайтах можна плаціць з дапамогай указаных вышэй плацежных праграм, усталяваных на прыладзе.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Не ўдаецца паказаць змесціва ўкладкі перадпрагляду.</translation>
 <translation id="8820817407110198400">Закладкі</translation>
 <translation id="883806473910249246">Адбылася памылка падчас спампоўвання змесціва.</translation>
@@ -1220,10 +1220,10 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="9063523880881406963">Выключыць запытванне версіі для настольнага камп'ютара</translation>
 <translation id="9065203028668620118">Змяніць</translation>
 <translation id="9065383040763568503">Захаваныя даныя, якія Chrome не лічыць важнымі (напрыклад, сайты, налады якіх не захаваны або якія вы наведваеце рэдка)</translation>
-<translation id="9069543557624799859">Спампоўванне пачнецца ў <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Няма непрачытаных старонак</translation>
 <translation id="9070377983101773829">Пачаць галасавы пошук</translation>
 <translation id="9074336505530349563">Каб Google рэкамендаваў вам персаналізаванае змесціва, увайдзіце ва ўліковы запіс і ўключыце сінхранізацыю</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Сінхранізацыя</translation>
 <translation id="9086455579313502267">Не ўдалося атрымаць доступ да сеткі</translation>
 <translation id="9100505651305367705">Прапаноўваць паказваць артыкулы ў спрошчаным выглядзе, калі гэта падтрымліваецца</translation>

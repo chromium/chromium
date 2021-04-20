@@ -778,9 +778,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
           onglets chargés. L'exécution de processus basés sur des valeurs différentes pour cette règle
           est sans danger.
           </translation>
-<translation id="2026547141364626978">Cette règle permet de spécifier la clé de licence <ph name="PLUGIN_VM_NAME" /> pour cet appareil
-
-      et a été supprimée dans M91.</translation>
 <translation id="2030905906517501646">Mot clé du moteur de recherche par défaut</translation>
 <translation id="203096360153626918">Cette règle n'a aucun effet sur les applications Android. L'utilisation du mode plein écran est possible même si cette règle est définie sur "<ph name="FALSE" />".</translation>
 <translation id="2032848225007871645">Cette règle permet de contrôler les modes de déverrouillage rapide qu'il est possible d'utiliser pour déverrouiller l'écran de verrouillage.
@@ -815,11 +812,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="2043749682619281558">Activer la mise en surbrillance du curseur sur l'écran de connexion</translation>
 <translation id="2043770014371753404">Imprimantes d'entreprise désactivées</translation>
-<translation id="2044730764993088298">Cette règle permet de configurer les paramètres de durée de conservation des données de navigation dans <ph name="PRODUCT_NAME" />. Par exemple, les administrateurs peuvent définir (selon le type de données) quand le navigateur supprime ces données. C'est utile pour les clients qui utilisent des données sensibles. Cette règle n'est appliquée que si la règle "<ph name="SYNC_DISABLED_POLICY_NAME" />" est définie sur "True".
-
-      Les types de données disponibles sont les suivants : <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> et <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
-
-      Le navigateur supprime automatiquement les données des types sélectionnés qui datent de plus de <ph name="TIME_TO_LIVE_IN_HOURS" />. Vous ne pouvez pas définir une valeur inférieure à une heure. Dans certains cas rares, la suppression des données peut prendre plus de temps, mais elles seront supprimées malgré tout.</translation>
 <translation id="2057317273526988987">Autoriser l'accès à une liste d'URL</translation>
 <translation id="2061123930713023976">Autoriser les captures de paquets de débogage du réseau</translation>
 <translation id="2061810934846663491">Configurer les noms de domaines requis pour les hôtes d'accès à distance</translation>
@@ -2427,11 +2419,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
           Si vous configurez cette règle, les utilisateurs ne peuvent ni la modifier, ni l'ignorer.
 
           Si cette règle n'est pas configurée, les commentaires audio sont initialement désactivés sur l'écran de connexion, mais les utilisateurs peuvent les activer à tout moment.</translation>
-<translation id="4175667688338118889">Si cette règle est activée, la fonctionnalité de navigation privée juge fiables les domaines que vous avez spécifiés. Autrement dit, elle ne vérifie pas si des ressources présentent un danger (hameçonnage, logiciels malveillants ou indésirables, par exemple). Le service de protection des téléchargements associé à cette fonctionnalité ne vérifie pas non plus les téléchargements hébergés sur ces domaines. De même, le service de protection par mot de passe ne vérifie pas si un mot de passe est réutilisé.
-
-      Si cette règle est désactivée ou si elle n'est pas configurée, la fonctionnalité de navigation privée applique son service de protection par défaut à toutes les ressources.
-
-      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="417956245902013347">Permet d'activer la fonctionnalité d'accessibilité de mise en surbrillance du curseur de saisie sur l'écran de connexion.
 
           Si cette règle est définie sur "True", la mise en surbrillance du curseur de saisie est toujours activée sur l'écran de connexion.
@@ -4120,6 +4107,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Si cette règle n'est pas configurée, aucune longueur maximale n'est appliquée.</translation>
 <translation id="6553143066970470539">Niveau de luminosité de l'écran (%)</translation>
+<translation id="6558362593755624474">Cette règle permet de spécifier la clé de licence <ph name="PLUGIN_VM_NAME" /> pour cet appareil.</translation>
 <translation id="6559057113164934677">Interdire à tous les sites d'accéder à la caméra et au microphone</translation>
 <translation id="6559221564468029245">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur n'est pas considéré comme inactif pendant la lecture audio. Le délai d'inactivité ne peut ainsi pas être atteint, et l'action à effectuer en cas d'inactivité n'est pas appliquée. Toutefois, l'écran peut quand même s'assombrir, s'éteindre ou se verrouiller au terme des délais configurés, malgré l'activité audio.
 

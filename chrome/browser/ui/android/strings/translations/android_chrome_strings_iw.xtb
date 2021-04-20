@@ -305,7 +305,6 @@
 <translation id="3016635187733453316">יש לוודא שהמכשיר הזה מחובר לאינטרנט</translation>
 <translation id="3029704984691124060">ביטויי הסיסמה אינם תואמים</translation>
 <translation id="3031225630520268969">‏הסכמה לחיפוש קולי של Assistant בממשק משתמש</translation>
-<translation id="3034163383943672781">ההורדה תתחיל בתאריך <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />קבלת עזרה<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">בפעם הבאה ניתן יהיה להיכנס לאתר מהר יותר</translation>
 <translation id="305593374596241526">‏הגישה למיקום כבויה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{לפני דקה}two{לפני # דקות}many{לפני # דקות}other{לפני # דקות}}</translation>
 <translation id="4587589328781138893">אתרים</translation>
 <translation id="4594952190837476234">הדף האופליין הזה נוצר ב-<ph name="CREATION_TIME" /> ויכול להיות שהגרסה המקוונת שלו שונה.</translation>
-<translation id="4605958867780575332">פריטים שהוסרו: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">פתיחה של <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">אימות הזהות שלך</translation>
 <translation id="4634124774493850572">שימוש בסיסמה</translation>
@@ -702,7 +700,6 @@
 <translation id="572328651809341494">כרטיסיות אחרונות</translation>
 <translation id="5723735397759933332">‏מצב הטעינה המהירה מאפשר לך לשפר את החיסכון בנתונים על ידי אופטימיזציה של התמונות בדפי HTTPS.</translation>
 <translation id="5726692708398506830">הגדלת כל מה שמופיע בדף</translation>
-<translation id="5732819098735351888">‏ההורדה תתחיל בחיבור Wi-Fi.</translation>
 <translation id="5733983706093266635">‏לא ניתן ליצור קוד אימות. כתובת ה-URL מכילה יותר מ-<ph name="CHARACTER_LIMIT" /> תווים.</translation>
 <translation id="5748802427693696783">הוחלף לכרטיסיות רגילות</translation>
 <translation id="5749068826913805084">‏לצורך הורדת קבצים, Chrome זקוק לגישה לאחסון.</translation>
@@ -779,9 +776,9 @@
 <translation id="614940544461990577">כדאי לנסות:</translation>
 <translation id="6154478581116148741">יש להפעיל נעילת מסך ב'הגדרות' כדי לייצא את הסיסמאות מהמכשיר הזה</translation>
 <translation id="6159335304067198720">חיסכון בצריכת נתונים בשיעור של <ph name="PERCENT" /></translation>
+<translation id="6159729262978459665">ניקוי ההיסטוריה בכל המכשירים המסונכרנים.</translation>
 <translation id="6186394685773237175">לא נמצאו סיסמאות שנחשפו</translation>
 <translation id="6192907950379606605">ליצירת תיאורי תמונות</translation>
-<translation id="6206830853671714236">בחירת מועד ההורדה</translation>
 <translation id="6210748933810148297">אינך <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">מוצגת תצוגה מקדימה של הדף</translation>
 <translation id="6218096829563201111">חיפוש מוצרים דומים <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@
 <translation id="7523960634226602883">‏חיפוש עם המצלמה באמצעות Google Lens</translation>
 <translation id="753225086557513863">ההורדה תוזמנה למועד מאוחר יותר</translation>
 <translation id="7559975015014302720">מצב הטעינה המהירה מושבת</translation>
+<translation id="7560448309733608642">‏ניקוי ההיסטוריה בכל המכשירים המסונכרנים. ייתכן שיהיה אפשר לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">ניקוי נתוני הגלישה מתבצע</translation>
 <translation id="756809126120519699">‏נתוני Chrome נוקו</translation>
 <translation id="7577900504646297215">ניהול תחומי עניין</translation>
@@ -1177,12 +1175,14 @@
 <translation id="8699120352855309748">אין להציג את ההצעה לתרגם את השפות האלה</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
+<translation id="8730621377337864115">בוצע</translation>
 <translation id="8748850008226585750">התוכן מוסתר</translation>
 <translation id="8773160212632396039">עיבוד הבקשה מתבצע</translation>
 <translation id="8788265440806329501">היסטוריית הניווט סגורה</translation>
 <translation id="8788968922598763114">פתיחה מחדש של הכרטיסייה האחרונה שנסגרה</translation>
 <translation id="8798449543960971550">נקראו</translation>
 <translation id="8812260976093120287">באתרים מסוימים ניתן לשלם דרך המכשיר באמצעות אפליקציות התשלום הנתמכות שמופיעות למעלה.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">לא ניתן לצפות בתוכן של כרטיסיית 'התצוגה המקדימה'.</translation>
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="883806473910249246">אירעה שגיאה בזמן הורדת התוכן.</translation>
@@ -1220,10 +1220,10 @@
 <translation id="9063523880881406963">כיבוי של 'בקשת אתר עבור מחשב שולחני'</translation>
 <translation id="9065203028668620118">עריכה</translation>
 <translation id="9065383040763568503">‏נתונים מאוחסנים שלא מוגדרים כחשובים ב-Chrome (למשל: אתרים ללא הגדרות שמורות או כאלה שתדירות הביקור בהם נמוכה)</translation>
-<translation id="9069543557624799859">ההורדה תתחיל בשעה <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">אין דפים שלא נקראו</translation>
 <translation id="9070377983101773829">ביצוע חיפוש קולי</translation>
 <translation id="9074336505530349563">‏כדי לקבל מ-Google הצעות לתוכן מותאם אישית, יש להיכנס ולהפעיל את הסנכרון</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">הסנכרון מתבצע</translation>
 <translation id="9086455579313502267">אין אפשרות לגשת לרשת</translation>
 <translation id="9100505651305367705">יש להציע הצגת מאמרים בתצוגה פשוטה, כשהאפשרות נתמכת</translation>

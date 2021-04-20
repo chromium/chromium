@@ -248,6 +248,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2612676031748830579">Karta raqami</translation>
 <translation id="2625189173221582860">Parol nusxalandi</translation>
 <translation id="2631006050119455616">Tejaldi</translation>
+<translation id="2645657967708199252"><ph name="CONNECTION_TYPE" /> aloqasi tezligi yuklab olish uchun yetarli emas</translation>
 <translation id="2647434099613338025">Til qo‘shish</translation>
 <translation id="2650751991977523696">Fayl qayta yuklab olinsinmi?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ta audio fayl}other{# ta audio fayl}}</translation>
@@ -260,6 +261,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2718846868787000099">Kontent sizga mos tillarda chiqishi uchun siz ochadigan saytlar til sozlamalaringizni koʻra oladi</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Sayt asosida saralash</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Tegishli qidiruv natijalari va amallarni ko‘rish uchun so‘z ustiga bosing</translation>
 <translation id="2760989362628427051">Qurilmangizda tungi mavzu yoki Quvvat tejash rejimi yoqilganda tungi mavzu faollashadi</translation>
 <translation id="2762000892062317888">hozirgina</translation>
@@ -305,7 +307,6 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3016635187733453316">Bu qurilma internetga ulanganini tekshiring</translation>
 <translation id="3029704984691124060">Kodli iboralar bir xil emas</translation>
 <translation id="3031225630520268969">Assistent ovozli qidiruv paneli interfeysi</translation>
-<translation id="3034163383943672781">Yuklab olish <ph name="DATE" /> sanasida ishga tushadi.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Yordam markazi<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Keyingi safar bu saytga tezroq kirish</translation>
 <translation id="305593374596241526">Joylashuvni aniqlash xizmati yoqilmagan, uni <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali yoqing.</translation>
@@ -437,6 +438,7 @@ Privacy Sandbox hali ishlab chiqish jarayonida va ayrim mamlakatlarda mavjud. Ho
 <translation id="3943557322767080599">Google hisobingizga kirish vaqtida Chrome brauzeriga kirish oynasi chiqsin</translation>
 <translation id="395206256282351086">Qidiruv va sayt manzili takliflari o‘chiq</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome sahifani tayyor boʻlishi bilan ochadi}other{Chrome sahifalarni tayyor boʻlishi bilan ochadi}}</translation>
+<translation id="3962957115499249330">Wi-Fi orqali yuklab olish boshlanganda bildirishnoma olasiz.</translation>
 <translation id="3963007978381181125">Kodli ibora yordamida shifrlaganda Google Pay manzillari va toʻlov usullari shifrlanmaydi. Shifrlangan maʼlumotlaringizni faqat kodli iborani biladiganlar koʻra oladi. Bu iborani Google bilmaydi va serverlarida saqlamaydi. Agar kodli iborani unutsangiz, sinxronizatsiya sozlamalarini qayta tiklash kerak bo‘ladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome parollaringizni tekshira olmadi</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> ilovasi Chrome ichida ochiladi. Davom etish bilan siz <ph name="BEGIN_LINK1" />Google xizmat shartlari<ph name="END_LINK1" /> bilan <ph name="BEGIN_LINK2" />Google Chrome va Chrome OS qoʻshimcha xizmat shartlariga<ph name="END_LINK2" /> rozilik bildirgan hisoblanasiz. <ph name="BEGIN_LINK3" />Family Link bilan boshqariladigan Google hisoblari uchun Maxfiylik eslatmasi<ph name="END_LINK3" /> ham tatbiq qilinadi.</translation>
@@ -480,6 +482,7 @@ Privacy Sandbox hali ishlab chiqish jarayonida va ayrim mamlakatlarda mavjud. Ho
 <translation id="4256782883801055595">Ochiq kodli DT litsenziyalari</translation>
 <translation id="4263656433980196874">Assistent ovozli qidiruv paneli interfeysi toʻliq hajmda ochildi</translation>
 <translation id="4269820728363426813">Havola manzilini nusxalash</translation>
+<translation id="4290281343757112331">Keyinroq yuklab olinsinmi?</translation>
 <translation id="4298388696830689168">Aloqador saytlar</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Asosiy</translation>
@@ -526,7 +529,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4583164079174244168">{MINUTES,plural, =1{# daqiqa oldin}other{# daqiqa oldin}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Bu sahifa saytning <ph name="CREATION_TIME" /> kunidagi nusxasi va onlayn versiyasidan farq qilishi mumkin.</translation>
-<translation id="4605958867780575332">Olib tashlangan element: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> veb-ilovasini ochish</translation>
 <translation id="4619564267100705184">Bu siz ekaningizni isbotlang</translation>
 <translation id="4634124774493850572">Paroldan foydalanish</translation>
@@ -543,6 +545,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4698034686595694889"><ph name="APP_NAME" /> orqali oflayn ochish mumkin</translation>
 <translation id="4699172675775169585">Keshda saqlangan tavsirlar va boshqa fayllar</translation>
 <translation id="4714588616299687897">Trafigingizni 60% gacha tejang</translation>
+<translation id="4716066120200945007">KUZATYAPSIZ</translation>
 <translation id="4719927025381752090">Tarjima qilishni taklif qilish</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> orqali ochish</translation>
 <translation id="4720982865791209136">Chrome brauzerini yaxshilashga yordam bering. <ph name="BEGIN_LINK" />So‘rovnomada qatnashing.<ph name="END_LINK" /></translation>
@@ -623,6 +626,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5191251636205085390">Tashqi cookie fayllar oʻrniga ishlatiladigan yangi texnologiyalarni oʻrganing va boshqaring</translation>
 <translation id="5193988420012215838">Vaqtinchalik xotiraga nusxalandi</translation>
 <translation id="5199929503336119739">Ish profili</translation>
+<translation id="5201464744567315552">Yuklab olish boshlanganda bildirishnoma olasiz: <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Parolni kiriting</translation>
 <translation id="5210286577605176222">Avvalgi varaqqa o‘tish</translation>
 <translation id="5210365745912300556">Tabni yopish</translation>
@@ -633,6 +637,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5230560987958996918"><ph name="SITE" /> sayti yaqin-atrofdagi Bluetooth qurilmalarni tekshirmoqchi. Quyidagi qurilmalar topilgan:</translation>
 <translation id="5233638681132016545">Yangi varaq</translation>
 <translation id="5250483651202458397">Skrinshot. Bosib yopish.</translation>
+<translation id="5262378156578470238">Yuklab olish boshlanganda bildirishnoma olasiz: <ph name="DATE" />.</translation>
 <translation id="526421993248218238">Bu sahifa yuklanmadi</translation>
 <translation id="5271967389191913893">Yuklab olingan kontent ma’lumotlarini ochib bo‘lmadi.</translation>
 <translation id="5292796745632149097">Bunga yuborish:</translation>
@@ -702,7 +707,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="572328651809341494">Oxirgi varaqlar</translation>
 <translation id="5723735397759933332">Lite rejimi HTTPS sahifalardagi rasmlarni arxivlash hisobiga endi koʻproq trafikni tejaydi</translation>
 <translation id="5726692708398506830">Sahifadagi hamma narsani kattalashtirish</translation>
-<translation id="5732819098735351888">Yuklab olish Wi-Fi orqali ishga tushadi.</translation>
 <translation id="5733983706093266635">QR kod yaratilmadi. URL manzilda <ph name="CHARACTER_LIMIT" /> tadan ortiq belgi kiritildi.</translation>
 <translation id="5748802427693696783">Standart rejimdagi varaqlarga o‘tildi</translation>
 <translation id="5749068826913805084">Yuklab olish uchun Chrome brauzerida omborga saqlash ruxsati bo‘lishi zarur.</translation>
@@ -782,7 +786,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="6159729262978459665">Sinxronlangan barcha qurilmalardagi brauzer tarixini tozalaydi.</translation>
 <translation id="6186394685773237175">Oshkor qilingan parollar topilmadi</translation>
 <translation id="6192907950379606605">Rasm tavsiflari chiqsin</translation>
-<translation id="6206830853671714236">Qachon yuklab olishni tanlang</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> emasmi?</translation>
 <translation id="6211386937064921208">Bu sahifaga razm solyapsiz</translation>
 <translation id="6218096829563201111">Shu kabi <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /> mahsulotlar</translation>
@@ -916,6 +919,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6981982820502123353">Qulayliklar</translation>
 <translation id="6989267951144302301">Yuklab olinmadi</translation>
 <translation id="6995899638241819463">Parolim oshkor etilganda ogohlantirilsin</translation>
+<translation id="7001056293070445572">Bu – katta fayl (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">Dastlabki sinxronizatsiya sozlanishi oxiriga yetmagan. Sinxronizatsiya yoqilmagan.</translation>
 <translation id="7022756207310403729">Brauzerda ochish</translation>
 <translation id="702463548815491781">TalkBack yoki Switch Access yoniq holatda tavsiya etiladi</translation>
@@ -1179,12 +1183,14 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8699120352855309748">Quyidagi tillarga tarjima taklif qilinmasin</translation>
 <translation id="8712637175834984815">Tushunarli</translation>
 <translation id="8725066075913043281">Qayta urinib ko‘ring</translation>
+<translation id="8730621377337864115">Tayyor</translation>
 <translation id="8748850008226585750">Kontent berkitildi</translation>
 <translation id="8773160212632396039">Soʻrov bajarilmoqda…</translation>
 <translation id="8788265440806329501">Sahifalar tarixi yopildi</translation>
 <translation id="8788968922598763114">Oxirgi yopilgan varaqni yana ochish</translation>
 <translation id="8798449543960971550">Oʻqish</translation>
 <translation id="8812260976093120287">Ba’zi saytlarda qurilmangizdagi qo‘llab-quvvatlanadigan to‘lov ilovalari orqali to‘lash mumkin.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Razm solish sahifasi kontentini koʻrish imkonsiz.</translation>
 <translation id="8820817407110198400">Bukmarklar</translation>
 <translation id="883806473910249246">Kontentni yuklab olishda xatolik yuz berdi.</translation>
@@ -1222,10 +1228,10 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="9063523880881406963">Saytning to‘liq versiyasi ko‘rinishini o‘chirib qo‘yish</translation>
 <translation id="9065203028668620118">O‘zgartirish</translation>
 <translation id="9065383040763568503">Chrome muhim deb hisoblamaydigan saqlangan maʼlumotlar (masalan, saqlanish xususiyatga ega boʻlmagan va kam kiriladigan saytlar)</translation>
-<translation id="9069543557624799859">Yuklab olish boshlanadi: <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Hech narsa topilmadi</translation>
 <translation id="9070377983101773829">Ovozli qidiruv</translation>
 <translation id="9074336505530349563">Bildirgilar Google tomonidan faqat sizning qiziqishlaringiz bo‘yicha taklif qilinishi uchun hisobingizga kiring va sinxronizatsiyani yoqing</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Sinxronlanmoqda</translation>
 <translation id="9086455579313502267">Tarmoqqa ruxsat yo‘q</translation>
 <translation id="9100505651305367705">Imkon bo‘lganda maqolalar soddalashtirilgan shaklda taklif qilinsin</translation>

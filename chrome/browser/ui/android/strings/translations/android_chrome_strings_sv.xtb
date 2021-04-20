@@ -305,7 +305,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3016635187733453316">Kontrollera att enheten är ansluten till internet</translation>
 <translation id="3029704984691124060">Lösenfraserna matchar inte</translation>
 <translation id="3031225630520268969">Användargränssnitt för samtycke till röstsökning med assistenten</translation>
-<translation id="3034163383943672781">Nedladdningen påbörjas <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Få hjälp<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Besök den här webbplatsen snabbare nästa gång</translation>
 <translation id="305593374596241526">Plats har inaktiverats. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4583164079174244168">{MINUTES,plural, =1{för # minut sedan}other{för # minuter sedan}}</translation>
 <translation id="4587589328781138893">Webbplatser</translation>
 <translation id="4594952190837476234">Den här offlinesidan sparades <ph name="CREATION_TIME" /> och kan skilja sig från onlineversionen.</translation>
-<translation id="4605958867780575332">Borttaget objekt: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Öppna <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifiera din identitet</translation>
 <translation id="4634124774493850572">Använd lösenordet</translation>
@@ -702,7 +700,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="572328651809341494">Senaste flikarna</translation>
 <translation id="5723735397759933332">Nu sparar du mer data i Begränsat läge tack vare att bilder på HTTPS-sidor optimeras.</translation>
 <translation id="5726692708398506830">Gör allt på sidan större</translation>
-<translation id="5732819098735351888">Nedladdningen påbörjas via Wi-Fi.</translation>
 <translation id="5733983706093266635">Det gick inte att skapa QR-koden Webbadressen är längre än <ph name="CHARACTER_LIMIT" /> tecken.</translation>
 <translation id="5748802427693696783">Bytte till standardflikar</translation>
 <translation id="5749068826913805084">Chrome måste ha åtkomst till lagringsutrymmet om det ska gå att ladda ned filer.</translation>
@@ -779,9 +776,9 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="614940544461990577">Testa att</translation>
 <translation id="6154478581116148741">Aktivera ett skärmlås i inställningarna om du vill exportera lösenord från den här enheten.</translation>
 <translation id="6159335304067198720">Sparat utrymme: <ph name="PERCENT" /></translation>
+<translation id="6159729262978459665">Historiken rensas från alla synkroniserade enheter.</translation>
 <translation id="6186394685773237175">Inga utsatta lösenord hittades</translation>
 <translation id="6192907950379606605">Få bildbeskrivningar</translation>
-<translation id="6206830853671714236">Välj när du vill ladda ned</translation>
 <translation id="6210748933810148297">Inte <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Förhandsgranskar sidan</translation>
 <translation id="6218096829563201111">Sök på liknande produkter <ph name="BEGIN_NEW" />Nytt<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7523960634226602883">Sök med kameran med hjälp av Google Lens</translation>
 <translation id="753225086557513863">Schemalagd till senare</translation>
 <translation id="7559975015014302720">Begränsat läge har inaktiverats</translation>
+<translation id="7560448309733608642">Historiken rensas från alla synkroniserade enheter. Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Tar bort webbinformation</translation>
 <translation id="756809126120519699">Data i Chrome har rensats</translation>
 <translation id="7577900504646297215">Hantera intressen</translation>
@@ -1177,12 +1175,14 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="8699120352855309748">Erbjud inte att översätta dessa språk</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8725066075913043281">Försök igen</translation>
+<translation id="8730621377337864115">Klart</translation>
 <translation id="8748850008226585750">Innehållet har dolts</translation>
 <translation id="8773160212632396039">Bearbetar begäran</translation>
 <translation id="8788265440806329501">Navigeringshistoriken har stängts</translation>
 <translation id="8788968922598763114">Öppna den senast stängda fliken igen</translation>
 <translation id="8798449543960971550">Lästa</translation>
 <translation id="8812260976093120287">På vissa webbplatser kan du betala med ovanstående betalningsappar som stöds på enheten.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Det går inte att förhandsgranska innehållet.</translation>
 <translation id="8820817407110198400">Bokmärken</translation>
 <translation id="883806473910249246">Ett fel uppstod när innehållet skulle laddas ned.</translation>
@@ -1220,10 +1220,10 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="9063523880881406963">Inaktivera begäran av webbplats för stationär dator</translation>
 <translation id="9065203028668620118">Redigera</translation>
 <translation id="9065383040763568503">Sparad data som bedöms som oviktig i Chrome (t.ex. webbplatser utan sparade inställningar eller som du inte besöker ofta)</translation>
-<translation id="9069543557624799859">Nedladdningen påbörjas kl. <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Det finns inga olästa sidor</translation>
 <translation id="9070377983101773829">Starta röstsökning</translation>
 <translation id="9074336505530349563">Logga in och aktivera synkronisering om du vill få förslag på anpassat innehåll från Google</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Synkroniserar</translation>
 <translation id="9086455579313502267">Det går inte att ansluta till nätverket</translation>
 <translation id="9100505651305367705">Fråga om artiklarna ska visas i en förenklad vy när detta stöds</translation>

@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Sýna aðgangsorð</translation>
 <translation id="1872096359983322073">Ljós</translation>
 <translation id="1911619930368729126">Hlaða inn á Google Drive</translation>
-<translation id="1919130412786645364">Leyfa innskráningu í Chrome</translation>
 <translation id="1923342640370224680">Undanfarin klukkustund</translation>
 <translation id="1941314575388338491">Ýttu tvisvar til að afrita.</translation>
 <translation id="1952172573699511566">Vefsvæði birta texta á því tungumáli sem þú hefur valið þegar hægt er.</translation>
@@ -216,7 +215,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 
 Þegar huliðsgluggi er notaður geta vefsvæði ekki notað fótspor til að sjá vafranotkun þína á vefsvæðum, til dæmis til að sérsníða auglýsingar.</translation>
 <translation id="3207960819495026254">Í bókamerkjum</translation>
-<translation id="3222343486469566063">Ekki innskráð(ur)</translation>
 <translation id="3224641773458703735">Til að flytja út aðgangsorð þarftu fyrst að stilla aðgangskóða í tækinu þínu.</translation>
 <translation id="3240426699337459095">Tengill afritaður</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="3928666092801078803">Sameina gögnin mín</translation>
 <translation id="3929457972718048006">Heimilisföng</translation>
 <translation id="3943492037546055397">Aðgangsorð</translation>
-<translation id="3943557322767080599">Sýna áminningar um innskráningu á Chrome þegar þú skráir þig inn á Google reikninginn þinn</translation>
-<translation id="3967266340354872733">Frekari upplýsingar sem tengjast persónuvernd, öryggi og gagnasöfnun má finna í <ph name="BEGIN_LINK" />Samstilling<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />Google þjónustur<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Niðurhali lokið</translation>
 <translation id="3968505803272650567">Stjórna áhugasviðum</translation>
 <translation id="3989635538409502728">Skrá út</translation>
@@ -568,7 +564,6 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="6760509555861141183">Fara aftur á nýlegan flipa</translation>
 <translation id="6780034285637185932">Póstnúmer</translation>
 <translation id="6785453220513215166">Sendir hrunskýrslu...</translation>
-<translation id="679325081238418596">Fáðu bókamerkin þín, ferilinn, aðgangsorð og aðrar stillingar í öll tækin þín</translation>
 <translation id="6797885426782475225">Raddleit</translation>
 <translation id="6807889908376551050">Sýna alla...</translation>
 <translation id="681368974849482173">Atriði búið til</translation>
@@ -580,7 +575,6 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="6873263987691478642">Tvískiptur skjár</translation>
 <translation id="6888009575607455378">Ertu viss um að þú viljir fleygja breytingunum?</translation>
 <translation id="6896758677409633944">Afrita</translation>
-<translation id="6903907808598579934">Kveikja á samstillingu</translation>
 <translation id="6914583639806229067">Leita að mynd sem þú afritaðir</translation>
 <translation id="6914783257214138813">Aðgangsorðin þín verða sýnileg öllum sem geta séð útfluttu skrána.</translation>
 <translation id="6930799952781667037">Ýttu til að skipta yfir í þetta tungumál.</translation>
@@ -711,6 +705,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8225985093977202398">Myndir/skrár í skyndiminni</translation>
 <translation id="8261506727792406068">Eyða</translation>
 <translation id="8281781826761538115">Sjálfgefið – <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Sleppa</translation>
 <translation id="8283172974887967105">Stilla…</translation>
 <translation id="8299417921174340354">Til að nota aðgangsorð þarftu fyrst að stilla aðgangskóða í tækinu þínu.</translation>
 <translation id="8319076807703933069">Ný leit</translation>

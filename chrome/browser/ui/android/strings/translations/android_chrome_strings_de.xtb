@@ -180,6 +180,7 @@ Tippen Sie auf ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche 
 <translation id="2169830938017475061">Jetzt</translation>
 <translation id="2172688499998841696">Bildbeschreibungen sind deaktiviert</translation>
 <translation id="2175927920773552910">QR-Code</translation>
+<translation id="2181298861158186289">Blendet Inhalt der Zwischenablage aus</translation>
 <translation id="218608176142494674">Freigabe</translation>
 <translation id="2195339740518523951">Höchste Sicherheit in Chrome erhalten</translation>
 <translation id="2200113223741723867">Freigabe von Nutzungsdaten verwalten</translation>
@@ -304,7 +305,6 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3016635187733453316">Prüfen Sie, ob das Gerät mit dem Internet verbunden ist</translation>
 <translation id="3029704984691124060">Passphrasen stimmen nicht überein.</translation>
 <translation id="3031225630520268969">Benutzeroberfläche für die Einwilligung in die Sprachsuche von Assistant</translation>
-<translation id="3034163383943672781">Beginn des Downloads: <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Hilfe aufrufen<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Diese Seite beim nächsten Mal schneller aufrufen</translation>
 <translation id="305593374596241526">Die Standortermittlung ist deaktiviert. Sie können sie in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
@@ -525,7 +525,6 @@ Eventuell finden Sie unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4583164079174244168">{MINUTES,plural, =1{vor # Minute}other{vor # Minuten}}</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4594952190837476234">Diese Offlineseite ist vom <ph name="CREATION_TIME" /> und unterscheidet sich gegebenenfalls von der Onlineversion.</translation>
-<translation id="4605958867780575332">Element entfernt: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> öffnen</translation>
 <translation id="4619564267100705184">Identität bestätigen</translation>
 <translation id="4634124774493850572">Passwort verwenden</translation>
@@ -701,7 +700,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="572328651809341494">Zuletzt geöffnete Tabs</translation>
 <translation id="5723735397759933332">Der Lite-Modus spart nun durch die Optimierung von Bildern auf HTTPS-Seiten noch mehr Daten.</translation>
 <translation id="5726692708398506830">Gesamten Seiteninhalt vergrößern</translation>
-<translation id="5732819098735351888">Der Download beginnt bei Verbindung mit einem WLAN.</translation>
 <translation id="5733983706093266635">QR-Code konnte nicht erstellt werden. Die URL ist länger als <ph name="CHARACTER_LIMIT" /> Zeichen.</translation>
 <translation id="5748802427693696783">Zu Standard-Tabs gewechselt</translation>
 <translation id="5749068826913805084">Chrome benötigt Speicherzugriff, um Dateien herunterladen zu können.</translation>
@@ -780,7 +778,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="6159335304067198720"><ph name="PERCENT" /> Einsparungen bei der Datennutzung</translation>
 <translation id="6186394685773237175">Keine gehackten Passwörter gefunden</translation>
 <translation id="6192907950379606605">Bildbeschreibungen abrufen</translation>
-<translation id="6206830853671714236">Uhrzeit für den Download auswählen</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ist nicht Ihre E-Mail-Adresse?</translation>
 <translation id="6211386937064921208">Vorschau für diese Seite</translation>
 <translation id="6218096829563201111">Ähnliche Produkte suchen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
@@ -844,6 +841,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6539092367496845964">Ein Fehler ist aufgetreten. Versuchen Sie es später noch einmal.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Zuletzt geprüft: vor 1 Stunde}other{Zuletzt geprüft: vor # Stunden}}</translation>
 <translation id="6545017243486555795">Alle Daten löschen</translation>
+<translation id="6549142516027084053">Blendet Inhalt der Zwischenablage ein</translation>
 <translation id="6560414384669816528">Suche mit Sogou</translation>
 <translation id="656065428026159829">Mehr anzeigen</translation>
 <translation id="6565959834589222080">WLAN wird verwendet, wenn es verfügbar ist</translation>
@@ -1175,12 +1173,14 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="8699120352855309748">Übersetzen dieser Sprachen nicht anbieten</translation>
 <translation id="8712637175834984815">Alles klar</translation>
 <translation id="8725066075913043281">Erneut versuchen</translation>
+<translation id="8730621377337864115">Fertig</translation>
 <translation id="8748850008226585750">Inhalte ausgeblendet</translation>
 <translation id="8773160212632396039">Anfrage wird verarbeitet</translation>
 <translation id="8788265440806329501">Der Navigationsverlauf wurde geschlossen</translation>
 <translation id="8788968922598763114">Zuletzt geschlossenen Tab öffnen</translation>
 <translation id="8798449543960971550">Gelesen</translation>
 <translation id="8812260976093120287">Auf manchen Websites können Sie über Ihr Gerät mit den obigen unterstützten Zahlungs-Apps bezahlen.</translation>
+<translation id="8814190375133053267">WLAN</translation>
 <translation id="881688628773363275">Vorschau des Tab-Inhalts kann nicht angezeigt werden.</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>
 <translation id="883806473910249246">Beim Herunterladen des Inhalts ist ein Fehler aufgetreten.</translation>
@@ -1218,10 +1218,10 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="9063523880881406963">"Desktopversion ansehen" deaktivieren</translation>
 <translation id="9065203028668620118">Bearbeiten</translation>
 <translation id="9065383040763568503">Gespeicherte Daten, die Chrome nicht für wichtig hält, wie etwa Websites ohne gespeicherte Einstellungen oder solche, die nicht oft besucht werden</translation>
-<translation id="9069543557624799859">Der Download beginnt um <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Keine ungelesenen Seiten</translation>
 <translation id="9070377983101773829">Sprachsuche starten</translation>
 <translation id="9074336505530349563">Melden Sie sich und aktivieren Sie die Synchronisierung, um personalisierte, von Google vorgeschlagene Inhalte zu erhalten</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Synchronisierung läuft...</translation>
 <translation id="9086455579313502267">Kein Zugriff auf das Netzwerk</translation>
 <translation id="9100505651305367705">Anbieten, Artikel in vereinfachter Ansicht anzuzeigen, falls unterstützt</translation>

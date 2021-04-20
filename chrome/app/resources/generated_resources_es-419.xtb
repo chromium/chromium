@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">Seguir permitiendo que <ph name="HOST" /> use y mueva la cámara</translation>
 <translation id="1355088139103479645">¿Quieres borrar todos los datos?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> está bloqueado</translation>
-<translation id="1358612436266364864">Quitar el formato destacado</translation>
 <translation id="1358741672408003399">Ortografía y gramática</translation>
 <translation id="1359923111303110318">Puedes desbloquear tu dispositivo mediante Smart Lock. Presiona Intro para permitir el acceso.</translation>
 <translation id="1361164813881551742">Agregar manualmente</translation>
@@ -880,6 +879,7 @@
 <translation id="1928202201223835302">Ingresar PIN anterior</translation>
 <translation id="1928696683969751773">Actualizaciones</translation>
 <translation id="1929186283613845153">Se está analizando este archivo.</translation>
+<translation id="1929343511231420085">Cualquier puerto en serie</translation>
 <translation id="1929546189971853037">Leer el historial de navegación en todos los dispositivos registrados</translation>
 <translation id="1930879306590754738">Se borró la contraseña de este dispositivo y de tu Cuenta de Google</translation>
 <translation id="1931152874660185993">No hay componentes instalados.</translation>
@@ -1605,7 +1605,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2734760316755174687">También se restablecerán los sitios en <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Programar</translation>
 <translation id="2737363922397526254">Contraer...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> desea compartir el contenido de tu pantalla con <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">No permitir que los sitios usen las fuentes instaladas en el dispositivo</translation>
 <translation id="2738771556149464852">No después</translation>
 <translation id="2739191690716947896">Depurar</translation>
@@ -1893,7 +1892,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031557471081358569">Selecciona elementos para importar:</translation>
 <translation id="3036327949511794916">Ya pasó la fecha límite para devolver este dispositivo <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3036438888981457032">Quitar el formato destacado</translation>
 <translation id="3036546437875325427">Habilitar Flash</translation>
 <translation id="3037754279345160234">No se puede analizar la configuración para vincular el dominio. Comunícate con el administrador.</translation>
 <translation id="3038612606416062604">Agregar una impresora manualmente</translation>
@@ -2940,6 +2938,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4218274196133425560">Quitar la excepción para <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Se produjo un error durante la activación.</translation>
 <translation id="4222772810963087151">Detalles de compilación</translation>
+<translation id="4224284700924043865">Dispositivos USB con ID del producto <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">En todos los sitios</translation>
 <translation id="4231095370974836764">Instala apps y juegos de Google Play en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurar Kerberos</translation>
@@ -3012,6 +3011,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="431076611119798497">&amp;Detalles</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
 <translation id="4314815835985389558">Administrar la sincronización</translation>
+<translation id="4316650123995163262">Dispositivos USB con ID del producto <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Sitio web del programador</translation>
 <translation id="4317820549299924617">No se completó la verificación</translation>
 <translation id="4320177379694898372">Sin conexión a Internet</translation>
@@ -3454,6 +3454,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4824958205181053313">¿Quieres cancelar la sincronización?</translation>
 <translation id="4827675678516992122">No se pudo establecer conexión</translation>
 <translation id="4827784381479890589">Corrector ortográfico mejorado en el navegador Chrome (se envía el texto a Google para obtener sugerencias ortográficas)</translation>
+<translation id="482952334869563894">Dispositivos USB del proveedor <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Configurar PIN</translation>
 <translation id="4830121310592638841">Preguntar si deseas que un sitio abra y ubique ventanas en tus pantallas</translation>
 <translation id="4830502475412647084">Instalando la actualización del SO</translation>
@@ -3743,6 +3744,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5159419673777902220">Tu padre o madre inhabilitaron los permisos de extensiones</translation>
 <translation id="5160634252433617617">Teclado físico</translation>
 <translation id="5160857336552977725">Accede a tu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="5161251470972801814">Dispositivos USB de <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850">Se bloqueó <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">Se movió la pestaña al final de la barra de pestañas</translation>
 <translation id="5165085578392358314">Asignar interruptor: <ph name="ACTION" /></translation>
@@ -4656,7 +4658,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6212039847102026977">Mostrar las propiedades de red avanzadas</translation>
 <translation id="6212168817037875041">Apagar la pantalla</translation>
 <translation id="6212752530110374741">Compartir vínculo por correo electrónico</translation>
-<translation id="6213230117190778270">Recibir</translation>
 <translation id="621470880408090483">No permitir que los sitios se conecten a dispositivos Bluetooth</translation>
 <translation id="6215620815501168899">Cerrar la ventana emergente del código QR y del EID</translation>
 <translation id="6216601812881225442">El contenedor no admite un cambio de tamaño. Si quieres modificar el espacio preasignado a Linux, realiza una copia de seguridad y, luego, restablécela en un contenedor nuevo.</translation>
@@ -5370,6 +5371,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" />: Registro de actividad</translation>
 <translation id="6997707937646349884">En tus dispositivos:</translation>
 <translation id="6998793565256476099">Inscribe el dispositivo para realizar videoconferencias</translation>
+<translation id="6999640176621571692">¿Deseas permitir que Google busque descuentos para los productos que agregaste a tus carritos?</translation>
 <translation id="6999956497249459195">Grupo nuevo</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> está conectada, pero debe configurarse</translation>
 <translation id="7000347579424117903">Incluir Ctrl, Alt o el botón de búsqueda</translation>
@@ -5450,7 +5452,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7076293881109082629">Accediendo</translation>
 <translation id="7077829361966535409">No se pudo cargar la página de acceso a la cuenta con la configuración de proxy actual. <ph name="GAIA_RELOAD_LINK_START" />Intenta volver a acceder<ph name="GAIA_RELOAD_LINK_END" /> o utiliza otra <ph name="PROXY_SETTINGS_LINK_START" />configuración de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Todas las redes</translation>
-<translation id="7078386829626602215">No se detectó ningún dispositivo <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">Copiar dirección del audio</translation>
 <translation id="7081952801286122383">Estás en modo de navegación incógnito</translation>
 <translation id="708278670402572152">Desactiva la conexión para habilitar el análisis</translation>
@@ -5499,11 +5500,9 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7135729336746831607">¿Quieres activar la conexión Bluetooth?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> requiere que actualices tu <ph name="DEVICE_TYPE" /> de inmediato.</translation>
 <translation id="7136694880210472378">Configurar como predeterminado</translation>
-<translation id="7136984461011502314">Bienvenido a <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Se produjo un error. Elige otras imágenes y vuelve a intentarlo.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> está usando el micrófono</translation>
 <translation id="7141105143012495934">Se produjo un error de acceso porque no se pudieron recuperar los datos de tu cuenta. Comunícate con el administrador o vuelve a intentarlo.</translation>
-<translation id="7143358760238281735">No hay apps disponibles</translation>
 <translation id="7144878232160441200">Volver a intentar</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7152478047064750137">Esta extensión no requiere permisos especiales</translation>
@@ -6457,7 +6456,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Estableciendo conexión con <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Administrar tus aplicaciones, extensiones y temas</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> desea compartir el contenido de tu pantalla.</translation>
 <translation id="8195027750202970175">Tamaño en disco</translation>
 <translation id="8198323535106903877">Instalaremos las <ph name="NUMBER_OF_APPS" /> apps por ti</translation>
 <translation id="8199300056570174101">Propiedades de la red (servicio) y del dispositivo</translation>
@@ -6881,6 +6879,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8698269656364382265">Si quieres regresar a la pantalla anterior, desliza el dedo desde el lado izquierdo.</translation>
 <translation id="869884720829132584">Menú Aplicaciones</translation>
 <translation id="869891660844655955">Fecha de vencimiento</translation>
+<translation id="8699120352855309748">No ofrecer la traducción de estos idiomas</translation>
 <translation id="8702825062053163569">Se bloqueó tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8703346390800944767">Omitir anuncio</translation>
 <translation id="8705331520020532516">Número de serie</translation>

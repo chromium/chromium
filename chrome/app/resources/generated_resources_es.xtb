@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">Permitir que <ph name="HOST" /> siga usando y moviendo tu cámara</translation>
 <translation id="1355088139103479645">¿Eliminar todos los datos?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> está bloqueado</translation>
-<translation id="1358612436266364864">Eliminar destacado</translation>
 <translation id="1358741672408003399">Ortografía y gramática</translation>
 <translation id="1359923111303110318">Tu dispositivo se puede desbloquear con Smart Lock. Pulsa Intro para desbloquearlo.</translation>
 <translation id="1361164813881551742">Añadir manualmente</translation>
@@ -883,6 +882,7 @@
 <translation id="1928202201223835302">Introducir PIN anterior</translation>
 <translation id="1928696683969751773">Actualizaciones</translation>
 <translation id="1929186283613845153">Este archivo se está analizando.</translation>
+<translation id="1929343511231420085">Cualquier puerto serie</translation>
 <translation id="1929546189971853037">Leer tu historial de navegación en todos los dispositivos en los que hayas iniciado sesión</translation>
 <translation id="1930879306590754738">Contraseña eliminada de este dispositivo y de tu cuenta de Google</translation>
 <translation id="1931152874660185993">No hay componentes instalados.</translation>
@@ -1607,7 +1607,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2734760316755174687">También se restablecerán los permisos de los sitios de <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Programar</translation>
 <translation id="2737363922397526254">Ocultar...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> quiere compartir el contenido de tu pantalla con <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">No permitir que los sitios usen fuentes instaladas en tu dispositivo</translation>
 <translation id="2738771556149464852">Anterior a</translation>
 <translation id="2739191690716947896">Depurar</translation>
@@ -1895,7 +1894,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031557471081358569">Selecciona los elementos que quieres importar:</translation>
 <translation id="3036327949511794916">Se ha pasado el plazo para devolver este <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3036438888981457032">Eliminar Destacado</translation>
 <translation id="3036546437875325427">Habilitar Flash</translation>
 <translation id="3037754279345160234">No se puede analizar la configuración para unirse al dominio. Ponte en contacto con el administrador.</translation>
 <translation id="3038612606416062604">Añadir una impresora manualmente</translation>
@@ -2941,6 +2939,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4218274196133425560">Quitar excepción para <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">No se ha podido activar.</translation>
 <translation id="4222772810963087151">Detalles de la versión</translation>
+<translation id="4224284700924043865">Dispositivos USB con ID de producto <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">En todos los sitios</translation>
 <translation id="4231095370974836764">Instala aplicaciones y juegos de Google Play en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurar Kerberos</translation>
@@ -3013,6 +3012,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="431076611119798497">&amp;Detalles</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
 <translation id="4314815835985389558">Gestionar sincronización</translation>
+<translation id="4316650123995163262">Dispositivos USB con ID de producto <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Sitio web del desarrollador</translation>
 <translation id="4317820549299924617">No se ha podido verificar</translation>
 <translation id="4320177379694898372">No hay conexión a Internet</translation>
@@ -3455,6 +3455,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4824958205181053313">¿Quieres cancelar la sincronización?</translation>
 <translation id="4827675678516992122">No se ha podido conectar</translation>
 <translation id="4827784381479890589">Revisión ortográfica mejorada en el navegador Chrome (el texto se envía a Google para que muestre sugerencias ortográficas)</translation>
+<translation id="482952334869563894">Dispositivos USB del proveedor <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Configurar PIN</translation>
 <translation id="4830121310592638841">Preguntar cuando un sitio web quiera abrir y colocar ventanas en tus pantallas</translation>
 <translation id="4830502475412647084">Instalando actualización del SO</translation>
@@ -3744,6 +3745,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5159419673777902220">Tus padres han inhabilitado los permisos de extensiones</translation>
 <translation id="5160634252433617617">Teclado físico</translation>
 <translation id="5160857336552977725">Inicia sesión en tu <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">Dispositivos USB de <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850">Se ha bloqueado el <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">Pestaña movida al final de la barra de pestañas</translation>
 <translation id="5165085578392358314">Asignar interruptor: <ph name="ACTION" /></translation>
@@ -4657,7 +4659,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6212039847102026977">Mostrar propiedades de red avanzadas</translation>
 <translation id="6212168817037875041">Apagar la pantalla</translation>
 <translation id="6212752530110374741">Enviar enlace por correo electrónico</translation>
-<translation id="6213230117190778270">Recibir</translation>
 <translation id="621470880408090483">No permitir que los sitios se conecten a dispositivos Bluetooth</translation>
 <translation id="6215620815501168899">Cerrar ventana emergente con EID y código QR</translation>
 <translation id="6216601812881225442">Tu contenedor no puede cambiar de tamaño. Si quieres ajustar la cantidad de espacio asignado previamente a Linux, crea una copia de seguridad y restáurala en un nuevo contenedor.</translation>
@@ -5371,6 +5372,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6997642619627518301"><ph name="NAME_PH" />: Registro de actividad</translation>
 <translation id="6997707937646349884">En tus dispositivos:</translation>
 <translation id="6998793565256476099">Registrar dispositivo para hacer videoconferencias</translation>
+<translation id="6999640176621571692">¿Permitir que Google busque descuentos para los artículos que añadas a tus carritos?</translation>
 <translation id="6999956497249459195">Nuevo grupo</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> está conectada, pero es necesario configurarla</translation>
 <translation id="7000347579424117903">Incluye Ctrl, Alt o la tecla de búsqueda</translation>
@@ -5451,7 +5453,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7076293881109082629">Iniciando sesión</translation>
 <translation id="7077829361966535409">No se ha podido cargar la página de inicio de sesión con la configuración de proxy actual. <ph name="GAIA_RELOAD_LINK_START" />Intenta iniciar sesión de nuevo<ph name="GAIA_RELOAD_LINK_END" /> o utiliza otra <ph name="PROXY_SETTINGS_LINK_START" />configuración de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Todas las redes</translation>
-<translation id="7078386829626602215">Ningún dispositivo detectado. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">C&amp;opiar dirección de audio</translation>
 <translation id="7081952801286122383">Estás en modo de incógnito</translation>
 <translation id="708278670402572152">Desconectar para habilitar la búsqueda</translation>
@@ -5500,11 +5501,9 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7135729336746831607">¿Activar Bluetooth?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> necesita que actualices tu <ph name="DEVICE_TYPE" /> de inmediato.</translation>
 <translation id="7136694880210472378">Elegir como predeterminado</translation>
-<translation id="7136984461011502314">Te damos la bienvenida a <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Se ha producido un error. Selecciona otras imágenes e inténtalo de nuevo.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> está usando tu micrófono</translation>
 <translation id="7141105143012495934">Se ha producido un error al iniciar sesión porque no ha sido posible recuperar la información de la cuenta. Ponte en contacto con el administrador o vuelve a intentarlo.</translation>
-<translation id="7143358760238281735">No hay aplicaciones disponibles</translation>
 <translation id="7144878232160441200">Reintentar</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7152478047064750137">Esta extensión no requiere permisos especiales</translation>
@@ -6458,7 +6457,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Conectando con <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gestionar tus aplicaciones, extensiones y temas</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> quiere compartir el contenido de tu pantalla.</translation>
 <translation id="8195027750202970175">Tamaño en disco</translation>
 <translation id="8198323535106903877">Vamos a instalarte estas <ph name="NUMBER_OF_APPS" /> aplicaciones</translation>
 <translation id="8199300056570174101">Propiedades de los dispositivos y las redes (servicio)</translation>
@@ -6882,6 +6880,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8698269656364382265">Para volver a la pantalla anterior, desliza el dedo horizontalmente desde la izquierda.</translation>
 <translation id="869884720829132584">Menú de aplicaciones</translation>
 <translation id="869891660844655955">Fecha de caducidad</translation>
+<translation id="8699120352855309748">No ofrecer que se traduzcan estos idiomas</translation>
 <translation id="8702825062053163569">Se ha bloqueado tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8703346390800944767">Saltar anuncio</translation>
 <translation id="8705331520020532516">Número de serie</translation>

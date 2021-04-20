@@ -329,7 +329,6 @@
 <translation id="1354045473509304750">זה בסדר, אפשר להמשיך להרשות ל-<ph name="HOST" /> להשתמש במצלמה ולהזיז אותה</translation>
 <translation id="1355088139103479645">למחוק את כל הנתונים?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> חסום</translation>
-<translation id="1358612436266364864">הסרת ההדגשות</translation>
 <translation id="1358741672408003399">איות ודקדוק</translation>
 <translation id="1359923111303110318">‏אפשר לבטל את נעילת המכשיר באמצעות Smart Lock. יש להקיש על Enter כדי לבטל את הנעילה.</translation>
 <translation id="1361164813881551742">הוספה ידנית</translation>
@@ -882,6 +881,7 @@
 <translation id="1928202201223835302">יש להזין את קוד האימות הישן</translation>
 <translation id="1928696683969751773">עדכונים</translation>
 <translation id="1929186283613845153">המערכת סורקת את הקובץ.</translation>
+<translation id="1929343511231420085">יציאה טורית כלשהי</translation>
 <translation id="1929546189971853037">קריאת היסטוריית הגלישה שלך בכל המכשירים שאליהם נכנסת</translation>
 <translation id="1930879306590754738">‏הסיסמאות נמחקו מהמכשיר הזה ומחשבון Google שלך</translation>
 <translation id="1931152874660185993">לא מותקנים רכיבים.</translation>
@@ -1608,7 +1608,6 @@
 <translation id="2734760316755174687">הפעולה תאפס גם אתרים שהם חלק מ-<ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">לוח זמנים</translation>
 <translation id="2737363922397526254">כיווץ...</translation>
-<translation id="2737916598897808047">האפליקציה <ph name="APP_NAME" /> מבקשת הרשאה לשתף את המסך שלך עם <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">לא לאפשר לאתרים להשתמש בגופנים שמותקנים במכשיר</translation>
 <translation id="2738771556149464852">לא אחרי</translation>
 <translation id="2739191690716947896">ניפוי באגים</translation>
@@ -1896,7 +1895,6 @@
 <translation id="3031417829280473749">‏סוכנת X</translation>
 <translation id="3031557471081358569">יש לבחור פריטים לייבוא:</translation>
 <translation id="3036327949511794916">תאריך היעד להחזרת מכשיר ה-<ph name="DEVICE_TYPE" /> חלף.</translation>
-<translation id="3036438888981457032">הסרת ההדגשות</translation>
 <translation id="3036546437875325427">‏הפעלת Flash</translation>
 <translation id="3037754279345160234">אי אפשר לנתח את התצורה כדי להצטרף לדומיין. יש לפנות למנהל המערכת.</translation>
 <translation id="3038612606416062604">הוספה ידנית של מדפסת</translation>
@@ -2943,6 +2941,7 @@
 <translation id="4218274196133425560">הסרת החריגה של <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">קרתה שגיאה בזמן ההפעלה.</translation>
 <translation id="4222772810963087151">‏פרטי גרסת ה-Build</translation>
+<translation id="4224284700924043865">‏התקני USB עם מזהה המוצר <ph name="PRODUCT_ID" /> של הספק <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">בכל האתרים</translation>
 <translation id="4231095370974836764">‏ניתן להתקין אפליקציות ומשחקים מ-Google Play ב-<ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">‏הגדרת Kerberos</translation>
@@ -3015,6 +3014,7 @@
 <translation id="431076611119798497">&amp;פרטים</translation>
 <translation id="4312866146174492540">חסומה (ברירת מחדל)</translation>
 <translation id="4314815835985389558">ניהול הסנכרון</translation>
+<translation id="4316650123995163262">‏התקני USB עם מזהה המוצר <ph name="PRODUCT_ID" /> של <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">אתר המפתח</translation>
 <translation id="4317820549299924617">לא הצלחנו לבצע אימות</translation>
 <translation id="4320177379694898372">אין חיבור לאינטרנט</translation>
@@ -3457,6 +3457,7 @@
 <translation id="4824958205181053313">לבטל את הסנכרון?</translation>
 <translation id="4827675678516992122">לא ניתן להתחבר</translation>
 <translation id="4827784381479890589">‏בדיקת איות משופרת בדפדפן Chrome (הטקסט נשלח ל-Google לקבלת הצעות איות)</translation>
+<translation id="482952334869563894">‏התקני USB של הספק <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">הגדרת קוד אימות</translation>
 <translation id="4830121310592638841">תוצג שאלה כשאתר ירצה לפתוח ולהציב חלונות במסכים שלך</translation>
 <translation id="4830502475412647084">‏מתקין עדכון OS</translation>
@@ -3746,6 +3747,7 @@
 <translation id="5159419673777902220">ההרשאות של התוסף הושבתו על ידי ההורה שלך</translation>
 <translation id="5160634252433617617">מקלדת פיזית</translation>
 <translation id="5160857336552977725">יש להיכנס אל ה-<ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">‏התקני USB של <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> נחסם</translation>
 <translation id="5163910114647549394">הכרטיסייה הועברה לסוף שורת הכרטיסיות</translation>
 <translation id="5165085578392358314">הקצאת מתג עבור: <ph name="ACTION" /></translation>
@@ -4659,7 +4661,6 @@
 <translation id="6212039847102026977">הצגת מאפייני רשת מתקדמים</translation>
 <translation id="6212168817037875041">כיבוי המסך</translation>
 <translation id="6212752530110374741">שליחת קישור באימייל</translation>
-<translation id="6213230117190778270">כן</translation>
 <translation id="621470880408090483">‏לא לאפשר לאתרים להתחבר למכשירי Bluetooth</translation>
 <translation id="6215620815501168899">‏סגירת החלון הקופץ של מספר ה-EID וקוד ה-QR</translation>
 <translation id="6216601812881225442">‏אי אפשר לשנות את הגודל של הקונטיינר. כדי לשנות את הנפח שמוקצה מראש ל-Linux, יש לגבות ולאחר מכן לשחזר בקונטיינר חדש.</translation>
@@ -5373,6 +5374,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - יומן פעילות</translation>
 <translation id="6997707937646349884">במכשירים שלך:</translation>
 <translation id="6998793565256476099">רישום של מכשיר לשיחות ועידה בווידאו</translation>
+<translation id="6999640176621571692">‏להתיר ל-Google למצוא הנחות על פריטים שיתווספו לעגלות הקניות שלך?</translation>
 <translation id="6999956497249459195">קבוצה חדשה</translation>
 <translation id="7000206553895739324">המדפסת <ph name="PRINTER_NAME" /> מחוברת אבל יש להגדיר אותה</translation>
 <translation id="7000347579424117903">‏יש לכלול את Ctrl,‏ Alt או מקש החיפוש</translation>
@@ -5453,7 +5455,6 @@
 <translation id="7076293881109082629">כניסה</translation>
 <translation id="7077829361966535409">‏טעינת דף הכניסה באמצעות הגדרות שרת ה-proxy הנוכחיות נכשלה. <ph name="GAIA_RELOAD_LINK_START" />יש לנסות להיכנס שוב<ph name="GAIA_RELOAD_LINK_END" /> או להשתמש ב<ph name="PROXY_SETTINGS_LINK_START" />הגדרות שונות לשרת ה-proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">כל הרשתות</translation>
-<translation id="7078386829626602215">לא זוהה מכשיר <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">העתקת כתובת &amp;אודיו</translation>
 <translation id="7081952801286122383">עברת למצב גלישה בסתר</translation>
 <translation id="708278670402572152">עליך להתנתק כדי לאפשר סריקה</translation>
@@ -5502,11 +5503,9 @@
 <translation id="7135729336746831607">‏האם להפעיל את Bluetooth?</translation>
 <translation id="7136639886842764730">כדי להיכנס אל <ph name="DOMAIN" /> עליך לעדכן את <ph name="DEVICE_TYPE" /> באופן מיידי.</translation>
 <translation id="7136694880210472378">הפיכה לברירת מחדל</translation>
-<translation id="7136984461011502314">ברוכים הבאים ל-<ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">קרתה שגיאה. יש לנסות שוב על-ידי בחירת תמונות אחרות.</translation>
 <translation id="7139627972753429585">המיקרופון בשימוש על ידי <ph name="APP_NAME" /></translation>
 <translation id="7141105143012495934">הכניסה נכשלה מפני שלא ניתן היה לאחזר את פרטי החשבון. יש ליצור קשר עם מנהל המערכת או לנסות שוב.</translation>
-<translation id="7143358760238281735">אין אפליקציות זמינות</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
 <translation id="7149893636342594995">מהיום האחרון</translation>
 <translation id="7152478047064750137">אין צורך בהרשאות מיוחדות כדי להשתמש בתוסף זה</translation>
@@ -6461,7 +6460,6 @@
 <translation id="8189750580333936930">ארגז חול לפרטיות</translation>
 <translation id="8190193592390505034">מתבצע חיבור אל <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">לנהל את היישומים, התוספים והעיצובים שלך</translation>
-<translation id="8192944472786724289">האפליקציה <ph name="APP_NAME" /> מבקשת הרשאה לשתף את המסך שלך.</translation>
 <translation id="8195027750202970175">גודל בדיסק</translation>
 <translation id="8198323535106903877"><ph name="NUMBER_OF_APPS" /> האפליקציות יותקנו</translation>
 <translation id="8199300056570174101">מאפייני רשת (שירות) ומכשיר</translation>
@@ -6885,6 +6883,7 @@
 <translation id="8698269656364382265">כדי לחזור למסך הקודם, מחליקים מצד ימין.</translation>
 <translation id="869884720829132584">תפריט יישומים</translation>
 <translation id="869891660844655955">תאריך תפוגה</translation>
+<translation id="8699120352855309748">אין להציג את ההצעה לתרגם את השפות האלה</translation>
 <translation id="8702825062053163569">ה-<ph name="DEVICE_TYPE" /> היה נעול.</translation>
 <translation id="8703346390800944767">דילוג על המודעה</translation>
 <translation id="8705331520020532516">מספר סידורי</translation>

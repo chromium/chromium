@@ -305,7 +305,6 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="3016635187733453316">Pastikan peranti ini disambungkan ke Internet</translation>
 <translation id="3029704984691124060">Frasa laluan tidak sepadan</translation>
 <translation id="3031225630520268969">UI persetujuan carian suara Assistant</translation>
-<translation id="3034163383943672781">Muat turun akan bermula pada <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Dapatkan bantuan<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Lawati laman ini dengan lebih pantas selepas ini</translation>
 <translation id="305593374596241526">Lokasi dimatikan, hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minit yang lalu}other{# minit yang lalu}}</translation>
 <translation id="4587589328781138893">Tapak</translation>
 <translation id="4594952190837476234">Halaman luar talian ini dari <ph name="CREATION_TIME" /> dan mungkin berbeza daripada versi dalam talian.</translation>
-<translation id="4605958867780575332">Item dialih keluar: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Buka <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Sahkan orang itu ialah anda</translation>
 <translation id="4634124774493850572">Gunakan kata laluan</translation>
@@ -702,7 +700,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="572328651809341494">Tab terbaharu</translation>
 <translation id="5723735397759933332">Kini mod Ringkas menjimatkan lebih banyak data dengan mengoptimumkan imej pada halaman HTTPS.</translation>
 <translation id="5726692708398506830">Jadikan semua yang ada pada halaman lebih besar</translation>
-<translation id="5732819098735351888">Muat turun akan bermula pada Wi-Fi.</translation>
 <translation id="5733983706093266635">Tidak dapat membuat kod QR. URL melebihi <ph name="CHARACTER_LIMIT" /> aksara.</translation>
 <translation id="5748802427693696783">Beralih ke tab standard</translation>
 <translation id="5749068826913805084">Chrome memerlukan akses storan untuk memuat turun fail.</translation>
@@ -779,9 +776,9 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="614940544461990577">Cuba:</translation>
 <translation id="6154478581116148741">Hidupkan kunci skrin dalam Tetapan untuk mengeksport kata laluan anda daripada peranti ini</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> penjimatan data</translation>
+<translation id="6159729262978459665">Mengosongkan sejarah daripada semua peranti yang disegerakkan.</translation>
 <translation id="6186394685773237175">Tiada kata laluan yang terjejas ditemukan</translation>
 <translation id="6192907950379606605">Dapatkan perihalan imej</translation>
-<translation id="6206830853671714236">Pilih masa untuk memuat turun</translation>
 <translation id="6210748933810148297">Bukan <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Memaparkan pratonton halaman ini</translation>
 <translation id="6218096829563201111">Cari produk yang serupa <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="7523960634226602883">Cari dengan kamera anda menggunakan Google Lens</translation>
 <translation id="753225086557513863">Dijadualkan untuk kemudian</translation>
 <translation id="7559975015014302720">Mod Ringkas dimatikan</translation>
+<translation id="7560448309733608642">Mengosongkan sejarah daripada semua peranti yang disegerakkan. Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain di <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Mengosongkan data penyemakan imbas</translation>
 <translation id="756809126120519699">Data Chrome dikosongkan</translation>
 <translation id="7577900504646297215">Urus minat</translation>
@@ -1177,12 +1175,14 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="8699120352855309748">Jangan tawarkan untuk menterjemahkan bahasa ini</translation>
 <translation id="8712637175834984815">Faham</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>
+<translation id="8730621377337864115">Selesai</translation>
 <translation id="8748850008226585750">Kandungan tersembunyi</translation>
 <translation id="8773160212632396039">Memproses permintaan</translation>
 <translation id="8788265440806329501">Sejarah navigasi ditutup</translation>
 <translation id="8788968922598763114">Buka semula tab yang terakhir ditutup</translation>
 <translation id="8798449543960971550">Baca</translation>
 <translation id="8812260976093120287">Pada sesetengah tapak web, anda boleh membayar menggunakan apl pembayaran yang disokong di atas pada peranti anda.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Kandungan tab pratonton tidak boleh dilihat.</translation>
 <translation id="8820817407110198400">Penanda buku</translation>
 <translation id="883806473910249246">Ralat berlaku semasa memuat turun kandungan.</translation>
@@ -1220,10 +1220,10 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="9063523880881406963">Matikan Minta tapak desktop</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9065383040763568503">Data tersimpan yang Chrome anggap tidak penting (misalnya tapak yang tiada tetapan yang disimpan atau yang jarang anda lawati)</translation>
-<translation id="9069543557624799859">Muat turun akan bermula pada <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Tiada halaman belum dibaca</translation>
 <translation id="9070377983101773829">Mulakan carian suara</translation>
 <translation id="9074336505530349563">Log masuk dan hidupkan penyegerakan untuk mendapatkan kandungan diperibadikan yang dicadangkan oleh Google</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Menyegerak</translation>
 <translation id="9086455579313502267">Tidak dapat mengakses rangkaian</translation>
 <translation id="9100505651305367705">Tawarkan untuk memaparkan artikel dalam paparan mudah apabila disokong</translation>

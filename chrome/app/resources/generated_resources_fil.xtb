@@ -328,7 +328,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1354045473509304750">Patuloy na payagan ang <ph name="HOST" /> na gamitin at galawin ang iyong camera</translation>
 <translation id="1355088139103479645">I-delete ang lahat ng data?</translation>
 <translation id="1355466263109342573">Naka-block ang <ph name="PLUGIN_NAME" /></translation>
-<translation id="1358612436266364864">Alisin ang mga highlight</translation>
 <translation id="1358741672408003399">Spelling and Grammar</translation>
 <translation id="1359923111303110318">Puwedeng i-unlock ang iyong device gamit ang Smart Lock. Pindutin ang Enter para ma-unlock.</translation>
 <translation id="1361164813881551742">Idagdag nang Manual</translation>
@@ -1610,7 +1609,6 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="2734760316755174687">Mare-reset din ang mga site sa ilalim ng <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Iskedyul</translation>
 <translation id="2737363922397526254">Tiklupin...</translation>
-<translation id="2737916598897808047">Gustong ibahagi ng <ph name="APP_NAME" /> sa <ph name="TARGET_NAME" /> ang mga content ng iyong screen.</translation>
 <translation id="2738030019664645674">Huwag payagan ang mga site na gamitin ang mga font na naka-install sa iyong device</translation>
 <translation id="2738771556149464852">Hindi Pagkatapos</translation>
 <translation id="2739191690716947896">I-debug</translation>
@@ -1898,7 +1896,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Pumili ng mga item na ii-import:</translation>
 <translation id="3036327949511794916">Lumipas na ang deadline para ibalik ang <ph name="DEVICE_TYPE" /> na ito.</translation>
-<translation id="3036438888981457032">Alisin ang Mga Highlight</translation>
 <translation id="3036546437875325427">I-enable ang Flash</translation>
 <translation id="3037754279345160234">Hindi ma-parse ang configuration para magsama ng domain. Makipag-ugnayan sa iyong administrator.</translation>
 <translation id="3038612606416062604">Manual na magdagdag ng printer</translation>
@@ -4665,7 +4662,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6212039847102026977">Ipakita ang mga advanced na property ng network</translation>
 <translation id="6212168817037875041">I-off ang display</translation>
 <translation id="6212752530110374741">I-email ang Link</translation>
-<translation id="6213230117190778270">Tanggapin</translation>
 <translation id="621470880408090483">Huwag payagan ang mga site na kumonekta sa mga Bluetooth device</translation>
 <translation id="6215620815501168899">Isara ang popup ng EID at QR code</translation>
 <translation id="6216601812881225442">Hindi sinusuportahan ng iyong container ang pag-resize rito. Para isaayos ang laki ng espasyo na naka-preallocate sa Linux, i-back up at pagkatapos ay i-restore ito sa isang bagong container.</translation>
@@ -5460,7 +5456,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7076293881109082629">Nagsa-sign in</translation>
 <translation id="7077829361966535409">Nabigong ma-load ang pahina sa pag-sign in gamit ang mga kasalukuyang setting ng proxy. Mangyaring <ph name="GAIA_RELOAD_LINK_START" />subukang mag-sign in muli<ph name="GAIA_RELOAD_LINK_END" />, o gumamit ng ibang <ph name="PROXY_SETTINGS_LINK_START" />mga setting ng proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Lahat ng network</translation>
-<translation id="7078386829626602215">Walang device na na-detect <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">K&amp;opyahin ang address ng audio</translation>
 <translation id="7081952801286122383">Incognito ka</translation>
 <translation id="708278670402572152">Idiskonekta upang i-enable ang pag-scan</translation>
@@ -5509,11 +5504,9 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7135729336746831607">I-on ang Bluetooth?</translation>
 <translation id="7136639886842764730">Hinihiling sa iyo ng <ph name="DOMAIN" /> na i-update kaagad ang <ph name="DEVICE_TYPE" /> mo.</translation>
 <translation id="7136694880210472378">Gawing default</translation>
-<translation id="7136984461011502314">Maligayang Pagdating sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Mayroong error. Pakisubukang muli sa pamamagitan ng pagpili ng iba pang larawan.</translation>
 <translation id="7139627972753429585">Ginagamit ng <ph name="APP_NAME" /> ang iyong mikropono</translation>
 <translation id="7141105143012495934">Hindi nakapag-sign dahil hindi maibalik ang mga detalye ng iyong account. Mangyaring makipag-ugnayan sa iyong administrator o subukang muli.</translation>
-<translation id="7143358760238281735">Walang available na app</translation>
 <translation id="7144878232160441200">Subukang muli</translation>
 <translation id="7149893636342594995">Nakalipas na 24 na oras</translation>
 <translation id="7152478047064750137">Hindi nangangailangan ang extension na ito ng mga espesyal na pahintulot</translation>
@@ -6467,7 +6460,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Kumukonekta sa <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Pamahalaan ang iyong apps, mga extension, at tema</translation>
-<translation id="8192944472786724289">Gustong ibahagi ng <ph name="APP_NAME" /> ang mga content ng iyong screen.</translation>
 <translation id="8195027750202970175">Sukat sa disk</translation>
 <translation id="8198323535106903877">Ii-install namin ang <ph name="NUMBER_OF_APPS" /> (na) app iyon para sa iyo</translation>
 <translation id="8199300056570174101">Mga property ng Network (Serbisyo) at Device</translation>
@@ -6892,6 +6884,7 @@ Pumindot ng nakatalagang switch para alisin ang pagtatalaga.</translation>
 <translation id="8698269656364382265">Para bumalik sa nakaraang screen, mag-swipe mula sa kaliwang bahagi.</translation>
 <translation id="869884720829132584">Menu ng mga application</translation>
 <translation id="869891660844655955">Expiration date</translation>
+<translation id="8699120352855309748">Huwag mag-alok na isalin ang mga wikang ito</translation>
 <translation id="8702825062053163569">Na-lock ang iyong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8703346390800944767">Laktawan ang Ad</translation>
 <translation id="8705331520020532516">Serial Number</translation>

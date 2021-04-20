@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">எனது கேமராவைப் பயன்படுத்தவும் நகர்த்தவும் <ph name="HOST" /> ஐத் தொடர்ந்து அனுமதி</translation>
 <translation id="1355088139103479645">அனைத்துத் தரவையும் நீக்கவா?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> தடுக்கப்பட்டுள்ளது</translation>
-<translation id="1358612436266364864">ஹைலைட்ஸை அகற்று</translation>
 <translation id="1358741672408003399">இலக்கணம் மற்றும் எழுத்துப்பிழை</translation>
 <translation id="1359923111303110318">உங்கள் சாதனத்தை Smart Lock மூலம் அன்லாக் செய்யலாம். அன்லாக் செய்ய Enterரை அழுத்தவும்.</translation>
 <translation id="1361164813881551742">கைமுறையாகச் சேர்</translation>
@@ -1608,7 +1607,6 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> குழுவில் உள்ள எல்லா தளங்களும் மீட்டமைக்கப்படும்.</translation>
 <translation id="2735712963799620190">திட்ட அட்டவணை</translation>
 <translation id="2737363922397526254">சுருக்கு...</translation>
-<translation id="2737916598897808047">உங்கள் திரையில் உள்ளவற்றை <ph name="TARGET_NAME" /> உடன் பகிர <ph name="APP_NAME" /> விரும்புகிறது.</translation>
 <translation id="2738030019664645674">சாதனத்தில் நிறுவப்பட்டுள்ள எழுத்து வடிவங்களைப் பயன்படுத்த தளங்களை அனுமதிக்காதே</translation>
 <translation id="2738771556149464852">இதன்பிறகு அல்ல</translation>
 <translation id="2739191690716947896">பிழைத்திருத்து</translation>
@@ -1896,7 +1894,6 @@
 <translation id="3031417829280473749">ஏஜெண்ட் X</translation>
 <translation id="3031557471081358569">இறக்குமதிக்கு உருப்படிகளைத் தேர்ந்தெடு</translation>
 <translation id="3036327949511794916">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தைத் திருப்பியளிப்பதற்கான காலக்கெடு முடிவடைந்துவிட்டது.</translation>
-<translation id="3036438888981457032">ஹைலைட்ஸை அகற்று</translation>
 <translation id="3036546437875325427">ஃபிளாஷை இயக்கு</translation>
 <translation id="3037754279345160234">டொமைனில் இணைவதற்கு, உள்ளமைவைப் பாகுபடுத்த முடியவில்லை. உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="3038612606416062604">கைமுறையாகப் பிரிண்டரைச் சேர்</translation>
@@ -4660,7 +4657,6 @@
 <translation id="6212039847102026977">மேம்பட்ட நெட்வொர்க் பண்புகளைக் காட்டு</translation>
 <translation id="6212168817037875041">திரையை அணை</translation>
 <translation id="6212752530110374741">இணைப்பை மின்னஞ்சல் செய்</translation>
-<translation id="6213230117190778270">பெறு</translation>
 <translation id="621470880408090483">புளூடூத் சாதனங்களுடன் இணைவதற்குத் தளங்களை அனுமதிக்காதே</translation>
 <translation id="6215620815501168899">EIDயும் QR குறியீடும் உள்ள பாப்-அப்பை மூடும்</translation>
 <translation id="6216601812881225442">அளவை மாற்றுவதை உங்கள் கண்டெய்னர் ஆதரிக்கவில்லை. Linuxஸுக்கு முன்கூட்டியே ஒதுக்கப்பட்ட இடத்தின் அளவை மாற்றியமைக்க, காப்புப் பிரதி எடுத்து புதிய கண்டெய்னரில் மீட்டெடுக்கவும்.</translation>
@@ -5454,7 +5450,6 @@
 <translation id="7076293881109082629">உள்நுழைகிறீர்கள்</translation>
 <translation id="7077829361966535409">தற்போதைய பிராக்ஸி அமைப்புகளைப் பயன்படுத்தி உள்நுழைவுப் பக்கத்தை ஏற்றுவது தோல்வியடைந்தது. <ph name="GAIA_RELOAD_LINK_START" />மீண்டும் உள்நுழைய முயற்சிக்கவும்<ph name="GAIA_RELOAD_LINK_END" /> அல்லது வேறொரு <ph name="PROXY_SETTINGS_LINK_START" />பிராக்ஸி அமைப்புகளைப்<ph name="PROXY_SETTINGS_LINK_END" /> பயன்படுத்தவும்.</translation>
 <translation id="7078120482318506217">எல்லா நெட்வொர்க்குகளும்</translation>
-<translation id="7078386829626602215">சாதனம் எதுவும் கண்டறியப்படவில்லை. <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">ஆடியோ முகவரியை ந&amp;கலெடு</translation>
 <translation id="7081952801286122383">மறைநிலையில் உள்ளீர்கள்</translation>
 <translation id="708278670402572152">ஸ்கேன் செய்வதை இயக்க, இணைப்பைத் துண்டிக்கவும்</translation>
@@ -5503,11 +5498,9 @@
 <translation id="7135729336746831607">புளூடூத்தை இயக்கவா?</translation>
 <translation id="7136639886842764730">உங்கள் <ph name="DEVICE_TYPE" /> ஐ உடனடியாகப் புதுப்பிக்குமாறு <ph name="DOMAIN" /> வேண்டுகிறது.</translation>
 <translation id="7136694880210472378">இயல்புநிலையாக மாற்று</translation>
-<translation id="7136984461011502314"><ph name="PRODUCT_NAME" /> க்கு வருக</translation>
 <translation id="7136993520339022828">பிழை நேர்ந்தது. வேறு படங்களைத் தேர்வுசெய்து முயலவும்.</translation>
 <translation id="7139627972753429585">உங்கள் மைக்ரோஃபோனை <ph name="APP_NAME" /> பயன்படுத்துகிறது</translation>
 <translation id="7141105143012495934">உங்கள் கணக்கு விவரங்களை மீட்டெடுக்க முடியாததால் உள்நுழைவு தோல்வியானது. உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும் அல்லது மீண்டும் முயலவும்.</translation>
-<translation id="7143358760238281735">ஆப்ஸ் எதுவுமில்லை</translation>
 <translation id="7144878232160441200">மீண்டும் முயற்சி செய்க</translation>
 <translation id="7149893636342594995">கடந்த 24 மணிநேரம்</translation>
 <translation id="7152478047064750137">இந்த நீட்டிப்பிற்குச் சிறப்பு அனுமதிகள் தேவையில்லை</translation>
@@ -6461,7 +6454,6 @@
 <translation id="8189750580333936930">தனியுரிமை சாண்ட்பாக்ஸ்</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> உடன் இணைக்கிறது</translation>
 <translation id="8191230140820435481">உங்கள் ஆப்ஸ், நீட்டிப்புகள் மற்றும் தீம்களை நிர்வகிக்கலாம்</translation>
-<translation id="8192944472786724289">உங்கள் திரையில் உள்ளவற்றை <ph name="APP_NAME" /> பகிர விரும்புகிறது.</translation>
 <translation id="8195027750202970175">வட்டில் உள்ள அளவு</translation>
 <translation id="8198323535106903877">உங்களுக்காக அந்த <ph name="NUMBER_OF_APPS" /> ஆப்ஸை நிறுவுவோம்</translation>
 <translation id="8199300056570174101">நெட்வொர்க் (சேவை) மற்றும் சாதனப் பண்புகள்</translation>
@@ -6885,6 +6877,7 @@
 <translation id="8698269656364382265">முந்தைய திரைக்குச் செல்வதற்கு இடதுபக்கத்தில் இருந்து ஸ்வைப் செய்யவும்.</translation>
 <translation id="869884720829132584">ஆப்ஸ் மெனு</translation>
 <translation id="869891660844655955">காலாவதியாகும் தேதி</translation>
+<translation id="8699120352855309748">இந்த மொழிகளுக்கு மொழிபெயர்ப்பு வேண்டாம்:</translation>
 <translation id="8702825062053163569">உங்கள் <ph name="DEVICE_TYPE" /> பூட்டப்பட்டது.</translation>
 <translation id="8703346390800944767">விளம்பரத்தைத் தவிர்</translation>
 <translation id="8705331520020532516">வரிசை எண்</translation>

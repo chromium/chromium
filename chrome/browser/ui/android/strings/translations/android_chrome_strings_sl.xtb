@@ -305,7 +305,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="3016635187733453316">Naprava mora biti povezana z internetom</translation>
 <translation id="3029704984691124060">Gesli se ne ujemata</translation>
 <translation id="3031225630520268969">Uporabniški vmesnik za soglasje za glasovno iskanje v Pomočniku</translation>
-<translation id="3034163383943672781">Prenos se bo začel <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Poiščite pomoč<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Naslednjič hitreje odprite to spletno mesto.</translation>
 <translation id="305593374596241526">Lokacija je izklopljena. Vklopite jo lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4583164079174244168">{MINUTES,plural, =1{Pred # minuto}one{Pred # minuto}two{Pred # minutama}few{Pred # minutami}other{Pred # minutami}}</translation>
 <translation id="4587589328781138893">Spletna mesta</translation>
 <translation id="4594952190837476234">Ta stran brez povezave je bila ustvarjena <ph name="CREATION_TIME" /> in se morda razlikuje od spletne različice.</translation>
-<translation id="4605958867780575332">Odstranjen element: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Odpri <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Potrditev identitete</translation>
 <translation id="4634124774493850572">Uporabi geslo</translation>
@@ -702,7 +700,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="572328651809341494">Nedavni zavihki</translation>
 <translation id="5723735397759933332">Lahki način z optimiziranjem slik na straneh HTTPS zdaj poskrbi, da prihranite pri prenosu podatkov.</translation>
 <translation id="5726692708398506830">Povečanje vsebine strani</translation>
-<translation id="5732819098735351888">Prenos se bo začel v omrežju Wi-Fi.</translation>
 <translation id="5733983706093266635">Kode QR ni mogoče ustvariti. URL vsebuje več kot toliko znakov: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="5748802427693696783">Preklopljeno na standardne zavihke</translation>
 <translation id="5749068826913805084">Chrome za prenos datotek potrebuje dostop do shrambe.</translation>
@@ -782,7 +779,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="6159729262978459665">Izbriše zgodovino iz vseh sinhroniziranih naprav.</translation>
 <translation id="6186394685773237175">Najdeno ni bilo nobeno ogroženo geslo</translation>
 <translation id="6192907950379606605">Prenesi opise slik</translation>
-<translation id="6206830853671714236">Izbira, kdaj prenesti</translation>
 <translation id="6210748933810148297">Niste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Predogled te strani</translation>
 <translation id="6218096829563201111">Iskanje podobnih izdelkov <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -1179,12 +1175,14 @@ Podatki anonimne seje se iz Chroma izbrišejo šele, ko <ph name="BEGIN_BOLD2" /
 <translation id="8699120352855309748">Ne ponudi prevajanja teh jezikov</translation>
 <translation id="8712637175834984815">Razumem</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>
+<translation id="8730621377337864115">Končano</translation>
 <translation id="8748850008226585750">Vsebina je skrita</translation>
 <translation id="8773160212632396039">Obdelovanje zahteve</translation>
 <translation id="8788265440806329501">Zgodovina krmarjenja je zaprta</translation>
 <translation id="8788968922598763114">Vnovično odpiranje nazadnje zaprtega zavihka</translation>
 <translation id="8798449543960971550">Branje</translation>
 <translation id="8812260976093120287">Na nekaterih spletnih mestih je mogoče plačevati z zgoraj navedenimi podprtimi aplikacijami v napravi.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Predogleda vsebine zavihka si ni mogoče ogledati.</translation>
 <translation id="8820817407110198400">Zaznamki</translation>
 <translation id="883806473910249246">Pri prenosu vsebine je prišlo do napake.</translation>
@@ -1222,10 +1220,10 @@ Podatki anonimne seje se iz Chroma izbrišejo šele, ko <ph name="BEGIN_BOLD2" /
 <translation id="9063523880881406963">Izklop možnosti »Zahteva za namizno spletno mesto«</translation>
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9065383040763568503">Shranjeni podatki, ki se Chromu ne zdijo pomembni (npr. spletna mesta, za katera nimate shranjenih nastavitev ali ki jih ne obiskujete pogosto).</translation>
-<translation id="9069543557624799859">Prenos se bo začel ob <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Ni neprebranih strani</translation>
 <translation id="9070377983101773829">Začni glasovno iskanje</translation>
 <translation id="9074336505530349563">Če želite prejemati prilagojeno vsebino, ki jo predlaga Google, se prijavite in vklopite sinhronizacijo</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Sinhroniziranje</translation>
 <translation id="9086455579313502267">Dostop do omrežja ni mogoč</translation>
 <translation id="9100505651305367705">Možnost prikaza člankov v preprostem pogledu, če je podprt</translation>

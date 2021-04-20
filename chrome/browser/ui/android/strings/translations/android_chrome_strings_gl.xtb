@@ -305,7 +305,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3016635187733453316">Asegúrate de que este dispositivo estea conectado a Internet</translation>
 <translation id="3029704984691124060">Os contrasinais non coinciden</translation>
 <translation id="3031225630520268969">Interface de consentimento para a busca por voz a través do Asistente</translation>
-<translation id="3034163383943672781">A descarga iniciarase o <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obter axuda<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Accede a este sitio de forma máis rápida a próxima vez</translation>
 <translation id="305593374596241526">A localización está desactivada. Actívaa na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="4583164079174244168">{MINUTES,plural, =1{Hai # minuto}other{Hai # minutos}}</translation>
 <translation id="4587589328781138893">Sitios</translation>
 <translation id="4594952190837476234">Esta páxina sen conexión creouse o <ph name="CREATION_TIME" /> e pode ser diferente da versión en liña.</translation>
-<translation id="4605958867780575332">Elemento eliminado: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verificar a túa identidade</translation>
 <translation id="4634124774493850572">Usar contrasinal</translation>
@@ -702,7 +700,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="572328651809341494">Pestanas recentes</translation>
 <translation id="5723735397759933332">Agora o modo básico permite aforrar máis datos optimizando as imaxes das páxinas HTTPS.</translation>
 <translation id="5726692708398506830">Facer máis grande todo o contido da páxina</translation>
-<translation id="5732819098735351888">A descarga iniciarase a través da wifi.</translation>
 <translation id="5733983706093266635">Non se puido crear o código QR. O URL contén máis de <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="5748802427693696783">Cambiouse ás pestanas estándar</translation>
 <translation id="5749068826913805084">Chrome precisa acceder ao almacenamento para descargar ficheiros.</translation>
@@ -779,9 +776,9 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="614940544461990577">Proba a facer o seguinte:</translation>
 <translation id="6154478581116148741">Activa o bloqueo de pantalla en Configuración para exportar os teus contrasinais deste dispositivo</translation>
 <translation id="6159335304067198720">Redución de datos do <ph name="PERCENT" /></translation>
+<translation id="6159729262978459665">Borra o historial de todos os dispositivos sincronizados.</translation>
 <translation id="6186394685773237175">Non se atoparon contrasinais vulnerados</translation>
 <translation id="6192907950379606605">Obter descricións de imaxes</translation>
-<translation id="6206830853671714236">Escoller cando realizar a descarga</translation>
 <translation id="6210748933810148297">Non es <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Mostrando unha vista previa desta páxina</translation>
 <translation id="6218096829563201111">Buscar produtos similares <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7523960634226602883">Realizar buscas coa cámara usando Google Lens</translation>
 <translation id="753225086557513863">Programada para máis tarde</translation>
 <translation id="7559975015014302720">O modo básico está desactivado</translation>
+<translation id="7560448309733608642">Borra o historial de todos os dispositivos sincronizados. É posible que a túa Conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Borrando datos de navegación</translation>
 <translation id="756809126120519699">Borráronse os datos de Chrome</translation>
 <translation id="7577900504646297215">Xestionar intereses</translation>
@@ -1177,12 +1175,14 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8699120352855309748">Non ofrecer a opción de traducir texto escrito nestes idiomas</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>
+<translation id="8730621377337864115">Feito</translation>
 <translation id="8748850008226585750">Contido oculto</translation>
 <translation id="8773160212632396039">Procesando solicitude</translation>
 <translation id="8788265440806329501">O historial de navegación está pechado</translation>
 <translation id="8788968922598763114">Volver abrir a última pestana que se pechou</translation>
 <translation id="8798449543960971550">Lido</translation>
 <translation id="8812260976093120287">Nalgúns sitios web, podes pagar no teu dispositivo coas aplicacións de pago compatibles mencionadas anteriormente.</translation>
+<translation id="8814190375133053267">Wifi</translation>
 <translation id="881688628773363275">A vista previa do contido da pestana non está dispoñible.</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="883806473910249246">Produciuse un erro ao descargar o contido.</translation>
@@ -1220,10 +1220,10 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="9063523880881406963">Desactiva a opción Ver como ordenador</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9065383040763568503">Datos almacenados que Chrome non considera importantes (por exemplo, de sitios sen configuración gardada ou que non visitas a miúdo)</translation>
-<translation id="9069543557624799859">Hora de inicio da descarga: <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Non hai páxinas sen ler</translation>
 <translation id="9070377983101773829">Comeza a busca por voz</translation>
 <translation id="9074336505530349563">Inicia sesión e activa a sincronización para recibir contido personalizado suxerido por Google</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Sincronizando</translation>
 <translation id="9086455579313502267">Non se pode acceder á rede</translation>
 <translation id="9100505651305367705">Ofrecer a opción de mostrar os artigos na vista simplificada sempre que sexa posible</translation>

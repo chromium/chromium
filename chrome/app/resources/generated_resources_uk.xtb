@@ -330,7 +330,6 @@
 <translation id="1354045473509304750">Надалі дозволяти сайту <ph name="HOST" /> використовувати й переміщувати камеру</translation>
 <translation id="1355088139103479645">Видалити всі дані?</translation>
 <translation id="1355466263109342573">Плагін <ph name="PLUGIN_NAME" /> заблоковано</translation>
-<translation id="1358612436266364864">Не виділяти</translation>
 <translation id="1358741672408003399">Правопис і граматика</translation>
 <translation id="1359923111303110318">Ваш пристрій можна розблоковувати за допомогою Smart Lock. Натисніть клавішу Enter, щоб розблокувати.</translation>
 <translation id="1361164813881551742">Додати вручну</translation>
@@ -886,6 +885,7 @@
 <translation id="1928202201223835302">Введіть старий PIN-код</translation>
 <translation id="1928696683969751773">Оновлення</translation>
 <translation id="1929186283613845153">Виконується сканування цього файлу.</translation>
+<translation id="1929343511231420085">Усі послідовні порти</translation>
 <translation id="1929546189971853037">Переглядати історію веб-перегляду на всіх пристроях, на яких ви ввійшли в обліковий запис</translation>
 <translation id="1930879306590754738">Пароль видалено з цього пристрою й облікового запису Google</translation>
 <translation id="1931152874660185993">Немає встановлених компонентів.</translation>
@@ -1322,7 +1322,7 @@
 <translation id="2428939361789119025">Вимкнути Wi-Fi</translation>
 <translation id="2428978615149723410">ці картки</translation>
 <translation id="2431027948063157455">Не вдалося завантажити Google Асистент. Перевірте з’єднання з мережею та повторіть спробу.</translation>
-<translation id="243179355394256322">Реєструвати пристрої у вашій організації можуть лише користувачі з відповідним дозволом. Цей користувач не має такого дозволу. Надайте йому право адміністратора "Реєструвати обладнання для Google Meet" у розділі "Користувачі" в Консолі адміністратора.</translation>
+<translation id="243179355394256322">Реєструвати пристрої у вашій організації можуть лише користувачі з відповідним дозволом. Цей користувач не має такого дозволу. Право на реєстрацію обладнання для Google Meet можна надати в розділі "Користувачі" в Консолі адміністратора.</translation>
 <translation id="2433452467737464329">Додайте в URL-адресу параметр запиту для автоматичного оновлення сторінки: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Зовнішній вигляд</translation>
 <translation id="2433836460518180625">Розблокувати лише пристрій</translation>
@@ -1611,7 +1611,6 @@
 <translation id="2734760316755174687">Дозволи сайтів групи <ph name="SITE_GROUP_NAME" /> також буде скинуто.</translation>
 <translation id="2735712963799620190">Графік</translation>
 <translation id="2737363922397526254">Згорнути...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> хоче показувати вміст вашого екрана тут: <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Заборонити сайтам використовувати шрифти, установлені на пристрої</translation>
 <translation id="2738771556149464852">Не пізніше</translation>
 <translation id="2739191690716947896">Налагоджувати</translation>
@@ -1899,7 +1898,6 @@
 <translation id="3031417829280473749">Агент X</translation>
 <translation id="3031557471081358569">Виберіть елементи для імпорту:</translation>
 <translation id="3036327949511794916">Кінцевий термін повернення пристрою <ph name="DEVICE_TYPE" /> минув.</translation>
-<translation id="3036438888981457032">Не виділяти</translation>
 <translation id="3036546437875325427">Увімкнути Flash</translation>
 <translation id="3037754279345160234">Неможливо виконати синтаксичний аналіз конфігурації приєднання домену. Зв’яжіться з адміністратором.</translation>
 <translation id="3038612606416062604">Додати принтер вручну</translation>
@@ -2946,6 +2944,7 @@
 <translation id="4218274196133425560">Видалити виняток для хосту <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Під час активації сталася помилка.</translation>
 <translation id="4222772810963087151">Дані складання</translation>
+<translation id="4224284700924043865">Пристрої USB з ідентифікатором продукту <ph name="PRODUCT_ID" /> від постачальника <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">На всіх сайтах</translation>
 <translation id="4231095370974836764">Установлюйте додатки й ігри з Google Play на пристрої <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Налаштувати Kerberos</translation>
@@ -3018,6 +3017,7 @@
 <translation id="431076611119798497">&amp;Деталі</translation>
 <translation id="4312866146174492540">Блокувати (за умовчанням)</translation>
 <translation id="4314815835985389558">Керування синхронізацією</translation>
+<translation id="4316650123995163262">Пристрої USB з ідентифікатором продукту <ph name="PRODUCT_ID" /> від постачальника "<ph name="VENDOR_NAME" />"</translation>
 <translation id="4316850752623536204">Веб-сайт розробника</translation>
 <translation id="4317820549299924617">Не підтверджено</translation>
 <translation id="4320177379694898372">Немає з’єднання з Інтернетом</translation>
@@ -3374,7 +3374,7 @@
 <translation id="4699172675775169585">Кешовані зображення та файли</translation>
 <translation id="4699357559218762027">(автозапуск)</translation>
 <translation id="4701025263201366865">Вхід для батьків</translation>
-<translation id="4702656508969495934">Відображаються живі субтитри. Щоб відкрити їх, скористайтеся перемикачем вікон.</translation>
+<translation id="4702656508969495934">Відображаються живі субтитри. Щоб сфокусуватися на них, скористайтеся перемикачем вікон.</translation>
 <translation id="4708794300267213770">Показувати заблокований екран, коли пристрій виходить із режиму сну</translation>
 <translation id="4708849949179781599">Вийти з <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Відновити налаштування</translation>
@@ -3460,6 +3460,7 @@
 <translation id="4824958205181053313">Скасувати синхронізацію?</translation>
 <translation id="4827675678516992122">Не вдалося під’єднатись</translation>
 <translation id="4827784381479890589">Покращена перевірка орфографії у веб-переглядачі Chrome (текст надсилається в Google для пропозицій написання)</translation>
+<translation id="482952334869563894">Пристрої USB від постачальника <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Налаштувати PIN-код</translation>
 <translation id="4830121310592638841">Запитувати, коли сайт хоче відкрити й розмістити вікна на ваших екранах</translation>
 <translation id="4830502475412647084">Установлюється оновлення ОС</translation>
@@ -3749,6 +3750,7 @@
 <translation id="5159419673777902220">Хтось із батьків вимкнув дозволи розширення</translation>
 <translation id="5160634252433617617">Фізична клавіатура</translation>
 <translation id="5160857336552977725">Увійдіть в обліковий запис на пристрої <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">Пристрої USB від постачальника "<ph name="VENDOR_NAME" />"</translation>
 <translation id="5162905305237671850">Пристрій <ph name="DEVICE_TYPE" /> заблоковано</translation>
 <translation id="5163910114647549394">Вкладку переміщено на кінець панелі</translation>
 <translation id="5165085578392358314">Призначити перемикачу дію "<ph name="ACTION" />"</translation>
@@ -4422,7 +4424,7 @@
 <translation id="5932124097031739492">Linux успішно оновлено.</translation>
 <translation id="5932224571077948991">Сайт показує нав’язливі чи оманливі оголошення</translation>
 <translation id="59324397759951282">Пристрій USB від <ph name="MANUFACTURER_NAME" /></translation>
-<translation id="5932441198730183141">Не вдається зареєструвати це обладнання для Google Meet, оскільки у вас недостатньо ліцензій. Щоб придбати їх, зв’яжіться з продавцем. Якщо ви вважаєте, що це повідомлення з’явилося помилково, зв’яжіться зі службою підтримки.</translation>
+<translation id="5932441198730183141">Не вдається зареєструвати це обладнання для Google Meet, оскільки у вас недостатньо ліцензій. Щоб придбати їх, зв’яжіться з відділом продажу. Якщо ви вважаєте, що це повідомлення з’явилося помилково, зв’яжіться зі службою підтримки.</translation>
 <translation id="5932881020239635062">Серійний номер</translation>
 <translation id="5933376509899483611">Часовий пояс</translation>
 <translation id="5933522550144185133">Додаток <ph name="APP_NAME" /> використовує ваші камеру та мікрофон</translation>
@@ -4662,7 +4664,6 @@
 <translation id="6212039847102026977">Показати розширені параметри мережі</translation>
 <translation id="6212168817037875041">Вимкнути дисплей</translation>
 <translation id="6212752530110374741">Надіслати посилання електронною поштою</translation>
-<translation id="6213230117190778270">Отримати</translation>
 <translation id="621470880408090483">Заборонити сайтам підключатися до пристроїв із Bluetooth</translation>
 <translation id="6215620815501168899">Закрити спливаюче вікно з номером EID пристрою та QR-кодом</translation>
 <translation id="6216601812881225442">Розмір вашого контейнера не можна змінювати. Щоб змінити обсяг пам'яті, що попередньо виділено для Linux, створіть резервну копію, а потім відновіть її в новому контейнері.</translation>
@@ -5376,6 +5377,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – журнал активності</translation>
 <translation id="6997707937646349884">На ваших пристроях:</translation>
 <translation id="6998793565256476099">Зареєструвати пристрій для відеоконференцій</translation>
+<translation id="6999640176621571692">Дозволити Google шукати знижки на товари, які ви додали в кошики?</translation>
 <translation id="6999956497249459195">Нова група</translation>
 <translation id="7000206553895739324">Принтер <ph name="PRINTER_NAME" /> під'єднано, але його потрібно налаштувати</translation>
 <translation id="7000347579424117903">Натискайте Ctrl, Alt або клавішу пошуку</translation>
@@ -5456,7 +5458,6 @@
 <translation id="7076293881109082629">Вхід</translation>
 <translation id="7077829361966535409">Не вдалося завантажити сторінку входу за допомогою поточних налаштувань проксі-сервера. <ph name="GAIA_RELOAD_LINK_START" />Спробуйте ввійти знову<ph name="GAIA_RELOAD_LINK_END" /> або скористайтеся іншими <ph name="PROXY_SETTINGS_LINK_START" />налаштуваннями проксі-сервера<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Усі мережі</translation>
-<translation id="7078386829626602215">Пристроїв не виявлено <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">Копіювати адресу аудіо</translation>
 <translation id="7081952801286122383">Це режим анонімного перегляду</translation>
 <translation id="708278670402572152">Від’єднайте пристрій, щоб увімкнути сканування</translation>
@@ -5505,11 +5506,9 @@
 <translation id="7135729336746831607">Увімкнути Bluetooth?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" />: негайно оновіть <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7136694880210472378">Установити за умовчанням</translation>
-<translation id="7136984461011502314">Вас вітає <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Виявлено помилку. Повторіть спробу, вибравши інші зображення.</translation>
 <translation id="7139627972753429585">Додаток <ph name="APP_NAME" /> використовує ваш мікрофон</translation>
 <translation id="7141105143012495934">Помилка входу. Не вдалось отримати дані вашого облікового запису. Зв’яжіться з адміністратором або повторіть спробу.</translation>
-<translation id="7143358760238281735">Доступних додатків немає</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
 <translation id="7149893636342594995">Останні 24 години</translation>
 <translation id="7152478047064750137">Для цього розширення не потрібні спеціальні дозволи</translation>
@@ -6463,7 +6462,6 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">З'єднання з <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Керувати вашими програмами, розширеннями та темами</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> хоче показувати вміст вашого екрана.</translation>
 <translation id="8195027750202970175">Розмір на диску</translation>
 <translation id="8198323535106903877">Ми встановимо для вас стільки додатків: <ph name="NUMBER_OF_APPS" /></translation>
 <translation id="8199300056570174101">Параметри мережі (служби) і пристрою</translation>
@@ -6887,6 +6885,7 @@
 <translation id="8698269656364382265">Щоб повернутися на попередній екран, проведіть пальцем від лівого краю.</translation>
 <translation id="869884720829132584">Меню програм</translation>
 <translation id="869891660844655955">Діє до</translation>
+<translation id="8699120352855309748">Не пропонувати перекладати ці мови</translation>
 <translation id="8702825062053163569">Пристрій <ph name="DEVICE_TYPE" /> заблоковано.</translation>
 <translation id="8703346390800944767">Пропустити оголошення</translation>
 <translation id="8705331520020532516">Серійний номер</translation>

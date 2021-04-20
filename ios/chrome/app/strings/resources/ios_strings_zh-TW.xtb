@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">顯示密碼</translation>
 <translation id="1872096359983322073">閃光燈</translation>
 <translation id="1911619930368729126">上傳至 Google 雲端硬碟</translation>
-<translation id="1919130412786645364">允許登入 Chrome</translation>
 <translation id="1923342640370224680">前一個小時</translation>
 <translation id="1941314575388338491">輕觸兩下即可複製。</translation>
 <translation id="1952172573699511566">Chrome 會儘可能以你慣用的語言顯示網站文字。</translation>
@@ -216,7 +215,6 @@
 
 在無痕模式中，網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
-<translation id="3222343486469566063">未登入</translation>
 <translation id="3224641773458703735">你必須先在裝置上設定螢幕解鎖密碼才能匯出密碼。</translation>
 <translation id="3240426699337459095">連結已複製</translation>
 <translation id="3244271242291266297">月</translation>
@@ -286,8 +284,6 @@
 <translation id="3928666092801078803">合併我的資料</translation>
 <translation id="3929457972718048006">地址</translation>
 <translation id="3943492037546055397">密碼</translation>
-<translation id="3943557322767080599">當你登入 Google 帳戶時，顯示 Chrome 登入提示</translation>
-<translation id="3967266340354872733">如需更多有關隱私權、安全性和資料收集的設定，請參閱 <ph name="BEGIN_LINK" />Google Sync<ph name="END_LINK" /> 和 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3968505803272650567">管理興趣喜好</translation>
 <translation id="3989635538409502728">登出</translation>
@@ -568,7 +564,6 @@
 <translation id="6760509555861141183">返回「最近」分頁</translation>
 <translation id="6780034285637185932">郵遞區號</translation>
 <translation id="6785453220513215166">正在傳送當機報告...</translation>
-<translation id="679325081238418596">你在任何裝置上都能取得自己的書籤、歷史記錄、密碼和其他設定</translation>
 <translation id="6797885426782475225">語音搜尋</translation>
 <translation id="6807889908376551050">全部顯示...</translation>
 <translation id="681368974849482173">項目已建立</translation>
@@ -580,7 +575,6 @@
 <translation id="6873263987691478642">分割檢視</translation>
 <translation id="6888009575607455378">確定要捨棄變更嗎？</translation>
 <translation id="6896758677409633944">複製</translation>
-<translation id="6903907808598579934">開啟同步處理功能</translation>
 <translation id="6914583639806229067">搜尋你複製的圖片</translation>
 <translation id="6914783257214138813">凡是可查看匯出的檔案的使用者都能看到你的密碼。</translation>
 <translation id="6930799952781667037">輕觸即可變更為這個語言。</translation>
@@ -711,6 +705,7 @@
 <translation id="8225985093977202398">快取圖片和檔案</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8281781826761538115">預設 - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">略過</translation>
 <translation id="8283172974887967105">設定…</translation>
 <translation id="8299417921174340354">你必須先在裝置上設定螢幕解鎖密碼才能使用密碼。</translation>
 <translation id="8319076807703933069">新搜尋</translation>

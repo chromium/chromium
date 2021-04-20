@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">Hou aan om <ph name="HOST" /> toe te laat om jou kamera te gebruik en te beweeg</translation>
 <translation id="1355088139103479645">Vee alle data uit?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> is geblokkeer</translation>
-<translation id="1358612436266364864">Verwyder hoogtepunte</translation>
 <translation id="1358741672408003399">Spelling en grammatika</translation>
 <translation id="1359923111303110318">Jou toestel kan met Smart Lock ontsluit word. Druk Enter om te ontsluit.</translation>
 <translation id="1361164813881551742">Voeg self by</translation>
@@ -883,6 +882,7 @@
 <translation id="1928202201223835302">Voer ou PIN in</translation>
 <translation id="1928696683969751773">Opdaterings</translation>
 <translation id="1929186283613845153">Hierdie lêer word tans geskandeer.</translation>
+<translation id="1929343511231420085">Enige reekspoort</translation>
 <translation id="1929546189971853037">Lees jou blaaigeskiedenis op al jou aangemelde toestelle</translation>
 <translation id="1930879306590754738">Wagwoord is van hierdie toestel en jou Google-rekening af uitgevee</translation>
 <translation id="1931152874660185993">Geen komponente is geïnstalleer nie.</translation>
@@ -1608,7 +1608,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="2734760316755174687">Werwe onder <ph name="SITE_GROUP_NAME" /> sal ook teruggestel word.</translation>
 <translation id="2735712963799620190">Skedule</translation>
 <translation id="2737363922397526254">Vou in …</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> wil jou skerm se inhoud met <ph name="TARGET_NAME" /> deel.</translation>
 <translation id="2738030019664645674">Moenie werwe toelaat om lettertipes wat op jou toestel geïnstalleer is, te gebruik nie</translation>
 <translation id="2738771556149464852">Nie na die tyd nie</translation>
 <translation id="2739191690716947896">Ontfout</translation>
@@ -1896,7 +1895,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Kies items om in te voer:</translation>
 <translation id="3036327949511794916">Die sperdatum om hierdie <ph name="DEVICE_TYPE" /> terug te gee, is verby.</translation>
-<translation id="3036438888981457032">Verwyder hoogtepunte</translation>
 <translation id="3036546437875325427">Aktiveer Flits</translation>
 <translation id="3037754279345160234">Kan nie die opstelling ontleed om by domein aan te sluit nie. Kontak asseblief jou administrateur.</translation>
 <translation id="3038612606416062604">Voeg self 'n drukker by</translation>
@@ -2943,6 +2941,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4218274196133425560">Verwyder uitsondering vir <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Kon nie aktiveer nie.</translation>
 <translation id="4222772810963087151">Boubesonderhede</translation>
+<translation id="4224284700924043865">USB-toestelle met produk-ID <ph name="PRODUCT_ID" /> vanaf verkoper <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">Op alle werwe</translation>
 <translation id="4231095370974836764">Installeer programme en speletjies van Google Play af op jou <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Stel Kerberos op</translation>
@@ -3015,6 +3014,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="431076611119798497">Besonderhede</translation>
 <translation id="4312866146174492540">Blokkeer (verstek)</translation>
 <translation id="4314815835985389558">Bestuur sinkronisering</translation>
+<translation id="4316650123995163262">USB-toestelle met produk-ID <ph name="PRODUCT_ID" /> vanaf <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Ontwikkelaarwebwerf</translation>
 <translation id="4317820549299924617">Verifikasie was nie suksesvol nie</translation>
 <translation id="4320177379694898372">Geen internetverbinding nie</translation>
@@ -3457,6 +3457,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4824958205181053313">Kanselleer sinkronisering?</translation>
 <translation id="4827675678516992122">Kon nie koppel nie</translation>
 <translation id="4827784381479890589">Verbeterde speltoets in Chrome-blaaier (teks word na Google gestuur vir spellingvoorstelle)</translation>
+<translation id="482952334869563894">USB-toestelle vanaf verkoper <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Stel PIN op</translation>
 <translation id="4830121310592638841">Vra wanneer 'n werf vensters op jou skerms wil oopmaak en plaas</translation>
 <translation id="4830502475412647084">Installeer tans bedryfstelselopdatering</translation>
@@ -3746,6 +3747,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5159419673777902220">Jou ouer het uitbreidingtoestemmings gedeaktiveer</translation>
 <translation id="5160634252433617617">Fisieke sleutelbord</translation>
 <translation id="5160857336552977725">Meld by jou <ph name="DEVICE_TYPE" /> aan</translation>
+<translation id="5161251470972801814">USB-toestelle vanaf <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> is geblokkeer</translation>
 <translation id="5163910114647549394">Oortjie is na einde van oortjiestrook geskuif</translation>
 <translation id="5165085578392358314">Wys skakelaar toe: <ph name="ACTION" /></translation>
@@ -4660,7 +4662,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6212039847102026977">Wys gevorderde netwerkeienskappe</translation>
 <translation id="6212168817037875041">Skakel skerm af</translation>
 <translation id="6212752530110374741">E-posskakel</translation>
-<translation id="6213230117190778270">Ontvang</translation>
 <translation id="621470880408090483">Moenie werwe toelaat om aan Bluetooth-toestelle te koppel nie</translation>
 <translation id="6215620815501168899">Maak EID- en QR-kode-opspringer oop</translation>
 <translation id="6216601812881225442">Jou houer se grootte kan nie verander word nie. Om die hoeveelheid spasie te verstel wat vooraf aan Linux toegewys word, moet jy rugsteun en dan in 'n nuwe houer terugstel.</translation>
@@ -5374,6 +5375,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – aktiwiteitloglêer</translation>
 <translation id="6997707937646349884">Op jou toestelle:</translation>
 <translation id="6998793565256476099">Skryf toestel in vir videokonferensie</translation>
+<translation id="6999640176621571692">Laat Google toe om afslag te soek vir items wat jy by jou mandjies voeg?</translation>
 <translation id="6999956497249459195">Nuwe groep</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> is gekoppel, maar moet opgestel word</translation>
 <translation id="7000347579424117903">Sluit Ctrl, Alt of Soek in</translation>
@@ -5454,7 +5456,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7076293881109082629">Meld tans aan</translation>
 <translation id="7077829361966535409">Die aanmeldbladsy kon nie met die huidige instaanbedienerinstellings gelaai word nie. <ph name="GAIA_RELOAD_LINK_START" />Probeer asseblief weer om aan te meld<ph name="GAIA_RELOAD_LINK_END" />, of gebruik ander <ph name="PROXY_SETTINGS_LINK_START" />instaanbedienerinstellings<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Alle netwerke</translation>
-<translation id="7078386829626602215">Geen toestel bespeur nie <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">Kopieer oudioadres</translation>
 <translation id="7081952801286122383">Jy's incognito</translation>
 <translation id="708278670402572152">Ontkoppel om skandering te aktiveer</translation>
@@ -5503,11 +5504,9 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7135729336746831607">Skakel Bluetooth aan?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> vereis dat jy onmiddellik jou <ph name="DEVICE_TYPE" /> opdateer.</translation>
 <translation id="7136694880210472378">Maak verstek</translation>
-<translation id="7136984461011502314">Welkom by <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Iets is fout. Probeer weer deur ander prente te kies.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> gebruik tans jou mikrofoon</translation>
 <translation id="7141105143012495934">Kon nie aanmeld nie omdat jou rekeningbesonderhede nie gehaal kon word nie. Kontak jou administrateur of probeer weer.</translation>
-<translation id="7143358760238281735">Geen programme is beskikbaar nie</translation>
 <translation id="7144878232160441200">Probeer weer</translation>
 <translation id="7149893636342594995">Afgelope 24 uur</translation>
 <translation id="7152478047064750137">Hierdie uitbreiding vereis geen spesiale toestemmings nie</translation>
@@ -6460,7 +6459,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Koppel tans aan <ph name="PROVIDER_NAME" /> …</translation>
 <translation id="8191230140820435481">Bestuur jou programme, uitbreidings en temas</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> wil jou skerm se inhoud deel.</translation>
 <translation id="8195027750202970175">Grootte op skyf</translation>
 <translation id="8198323535106903877">Ons sal daardie <ph name="NUMBER_OF_APPS" /> programme vir jou installeer</translation>
 <translation id="8199300056570174101">Netwerk- (diens-) en toesteleienskappe</translation>
@@ -6619,7 +6617,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8386091599636877289">Kon nie beleid kry nie.</translation>
 <translation id="8386819192691131213">Laat Assistent toe om inligting op die skerm te gebruik om kitsantwoorde te verskaf, soos vertaling, definisie, eenheidomskakeling en meer</translation>
 <translation id="8386903983509584791">Skandering voltooi</translation>
-<translation id="838705362287678887">Besoek <ph name="BEGIN_LINK_GOOGLE" />My Google-rekening<ph name="END_LINK_GOOGLE" /> om <ph name="BEGIN_LINK_SEARCH" />soektog<ph name="END_LINK_SEARCH" /> of ander vorme van geskiedenis uit te vee</translation>
+<translation id="838705362287678887">Besoek <ph name="BEGIN_LINK_GOOGLE" />My Google-rekening<ph name="END_LINK_GOOGLE" /> om <ph name="BEGIN_LINK_SEARCH" />soektog-<ph name="END_LINK_SEARCH" /> of ander vorme van geskiedenis uit te vee</translation>
 <translation id="8387361103813440603">Mag nie jou ligging sien nie</translation>
 <translation id="8389416080014625855">Skep QR-kode vir hierdie bladsy</translation>
 <translation id="8389492867173948260">Laat hierdie uitbreiding toe om al jou data op webwerwe wat jy besoek te lees en te verander:</translation>
@@ -6884,6 +6882,7 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="8698269656364382265">Swiep van die linkerkant af om na die vorige skerm toe terug te keer.</translation>
 <translation id="869884720829132584">Programmekieslys</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
+<translation id="8699120352855309748">Moenie aanbied om hierdie tale te vertaal nie</translation>
 <translation id="8702825062053163569">Jou <ph name="DEVICE_TYPE" /> is gesluit.</translation>
 <translation id="8703346390800944767">Slaan advertensie oor</translation>
 <translation id="8705331520020532516">Reeksnommer</translation>

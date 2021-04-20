@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Pokaż hasło</translation>
 <translation id="1872096359983322073">Latarka</translation>
 <translation id="1911619930368729126">Prześlij na Dysk Google</translation>
-<translation id="1919130412786645364">Zezwalaj na logowanie się w Chrome</translation>
 <translation id="1923342640370224680">Ostatnia godzina</translation>
 <translation id="1941314575388338491">Kliknij dwukrotnie, by skopiować.</translation>
 <translation id="1952172573699511566">Gdy będzie to możliwe, tekst na stronach internetowych będzie się wyświetlać w Twoim preferowanym języku.</translation>
@@ -216,7 +215,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 
 W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych witryn, na przykład w celu personalizowania reklam.</translation>
 <translation id="3207960819495026254">Dodano do zakładek</translation>
-<translation id="3222343486469566063">Nie zalogowano się</translation>
 <translation id="3224641773458703735">Aby wyeksportować hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="3240426699337459095">Link skopiowany</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -284,8 +282,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="3928666092801078803">Połącz moje dane</translation>
 <translation id="3929457972718048006">Adresy</translation>
 <translation id="3943492037546055397">Hasła</translation>
-<translation id="3943557322767080599">Podczas logowania się na konto Google będą występować prośby o zalogowanie się w Chrome</translation>
-<translation id="3967266340354872733">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcjach <ph name="BEGIN_LINK" />Synchronizacja<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />Usługi Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
 <translation id="3968505803272650567">Zarządzaj zainteresowaniami</translation>
 <translation id="3989635538409502728">Wyloguj się</translation>
@@ -566,7 +562,6 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="6760509555861141183">Powrót na ostatnio wyświetlaną kartę</translation>
 <translation id="6780034285637185932">Kod pocztowy</translation>
 <translation id="6785453220513215166">Wysyłam raport o awarii...</translation>
-<translation id="679325081238418596">Korzystaj z zakładek, historii, haseł i innych ustawień na wszystkich swoich urządzeniach</translation>
 <translation id="6797885426782475225">Wyszukiwanie głosowe</translation>
 <translation id="6807889908376551050">Pokaż wszystkie...</translation>
 <translation id="681368974849482173">Utworzono element</translation>
@@ -578,7 +573,6 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="6873263987691478642">Widok dzielony</translation>
 <translation id="6888009575607455378">Czy na pewno chcesz odrzucić zmiany?</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
-<translation id="6903907808598579934">Włącz synchronizację</translation>
 <translation id="6914583639806229067">Wyszukaj skopiowany obraz</translation>
 <translation id="6914783257214138813">Twoje hasła będą widoczne dla każdego, kto może zobaczyć wyeksportowany plik.</translation>
 <translation id="6930799952781667037">Kliknij, by zmienić na ten język.</translation>
@@ -709,6 +703,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8225985093977202398">Obrazy i pliki w pamięci podręcznej</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8281781826761538115">Domyślny – <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Pomiń</translation>
 <translation id="8283172974887967105">Ustaw…</translation>
 <translation id="8299417921174340354">Aby użyć haseł, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="8319076807703933069">Nowe wyszukiwanie</translation>

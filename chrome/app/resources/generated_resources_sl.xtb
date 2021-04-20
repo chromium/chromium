@@ -330,7 +330,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1354045473509304750">Še naprej dovoli, da gostitelj <ph name="HOST" /> uporablja in premika kamero</translation>
 <translation id="1355088139103479645">Želite izbrisati vse podatke?</translation>
 <translation id="1355466263109342573">Vtičnik <ph name="PLUGIN_NAME" /> je blokiran</translation>
-<translation id="1358612436266364864">Odstrani označbe</translation>
 <translation id="1358741672408003399">Črkovanje in slovnica</translation>
 <translation id="1359923111303110318">Napravo je mogoče odkleniti s funkcijo Smart Lock. Pritisnite Enter, če želite odkleniti.</translation>
 <translation id="1361164813881551742">Ročno dodajanje</translation>
@@ -1612,7 +1611,6 @@ in Ctrl +Alt + tipko za zmanjšanje svetlosti za pomanjšavo.</translation>
 <translation id="2734760316755174687">Spletna mesta v skupini <ph name="SITE_GROUP_NAME" /> bodo prav tako ponastavljena.</translation>
 <translation id="2735712963799620190">Razpored</translation>
 <translation id="2737363922397526254">Strni ...</translation>
-<translation id="2737916598897808047">Aplikacija <ph name="APP_NAME" /> želi deliti vsebino vašega zaslona s spletnim mestom <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Spletnim mestom ni dovoljeno uporabljati pisave, nameščene v napravi</translation>
 <translation id="2738771556149464852">Ne po</translation>
 <translation id="2739191690716947896">Odpravljanje napak</translation>
@@ -1900,7 +1898,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Izberite elemente, ki jih želite uvoziti:</translation>
 <translation id="3036327949511794916">Rok za vrnitev te naprave <ph name="DEVICE_TYPE" /> je potekel.</translation>
-<translation id="3036438888981457032">Odstrani označbe</translation>
 <translation id="3036546437875325427">Omogoči Flash</translation>
 <translation id="3037754279345160234">Konfiguracije za pridružitev domeni ni mogoče razčleniti. Obrnite se na skrbnika.</translation>
 <translation id="3038612606416062604">Ročno dodajanje tiskalnika</translation>
@@ -4669,7 +4666,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6212039847102026977">Prikaži dodatne lastnosti omrežja</translation>
 <translation id="6212168817037875041">Izklop zaslona</translation>
 <translation id="6212752530110374741">Pošlji povezavo po e-pošti</translation>
-<translation id="6213230117190778270">Sprejmi</translation>
 <translation id="621470880408090483">Spletnim mestom ni dovoljeno povezovanje z napravami Bluetooth.</translation>
 <translation id="6215620815501168899">Zapiranje pojavnega okna s številko EID in kodo QR</translation>
 <translation id="6216601812881225442">Vsebnik ne podpira spreminjanja velikosti. Če želite prilagoditi količino prostora, ki je vnaprej dodeljen Linuxu, ustvarite varnostno kopijo in jo nato obnovite v novem vsebniku.</translation>
@@ -5464,7 +5460,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7076293881109082629">Prijava</translation>
 <translation id="7077829361966535409">Nalaganje strani za prijavo s trenutnimi nastavitvami strežnika proxy ni uspelo. <ph name="GAIA_RELOAD_LINK_START" />Poskusite se znova prijaviti<ph name="GAIA_RELOAD_LINK_END" /> ali uporabite druge <ph name="PROXY_SETTINGS_LINK_START" />nastavitve proxyja<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Vsa omrežja</translation>
-<translation id="7078386829626602215">Ni zaznanih naprav. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">Kopiraj naslov zvoka</translation>
 <translation id="7081952801286122383">Ste v anonimnem načinu</translation>
 <translation id="708278670402572152">Prekinite povezavo za omogočanje iskanja</translation>
@@ -5513,11 +5508,9 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7135729336746831607">Želite vklopiti Bluetooth?</translation>
 <translation id="7136639886842764730">Domena <ph name="DOMAIN" /> zahteva, da takoj posodobite napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7136694880210472378">Nastavi za privzeto</translation>
-<translation id="7136984461011502314">Dobrodošli v storitvi <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Napaka. Poskusite znova tako, da izberete druge slike.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> uporablja vaš mikrofon.</translation>
 <translation id="7141105143012495934">Prijava ni uspela, ker ni bilo mogoče pridobiti podrobnosti o računu. Obrnite se na skrbnika in poskusite znova.</translation>
-<translation id="7143358760238281735">Ni aplikacij</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
 <translation id="7149893636342594995">Zadnjih 24 ur</translation>
 <translation id="7152478047064750137">Za to razširitev niso potrebna posebna dovoljenja</translation>
@@ -6471,7 +6464,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8189750580333936930">Zasebni peskovnik</translation>
 <translation id="8190193592390505034">Vzpostavljanje povezave z <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Upravljajte aplikacije, razširitve in teme</translation>
-<translation id="8192944472786724289">Aplikacija <ph name="APP_NAME" /> želi deliti vsebino vašega zaslona.</translation>
 <translation id="8195027750202970175">Velikost na disku</translation>
 <translation id="8198323535106903877">Namestili bomo toliko aplikacij: <ph name="NUMBER_OF_APPS" /></translation>
 <translation id="8199300056570174101">Nastavitve omrežja (storitve) in naprav</translation>
@@ -6895,6 +6887,7 @@ Pritisnite dodeljeno stikalo, če želite odstraniti dodelitev.</translation>
 <translation id="8698269656364382265">Če se želite vrniti na prejšnji zaslon, s prstom povlecite od leve strani.</translation>
 <translation id="869884720829132584">Meni programov</translation>
 <translation id="869891660844655955">Datum izteka</translation>
+<translation id="8699120352855309748">Ne ponudi prevajanja teh jezikov</translation>
 <translation id="8702825062053163569">Vaša naprava <ph name="DEVICE_TYPE" /> je bila zaklenjena.</translation>
 <translation id="8703346390800944767">Preskoči oglas</translation>
 <translation id="8705331520020532516">Serijska številka</translation>

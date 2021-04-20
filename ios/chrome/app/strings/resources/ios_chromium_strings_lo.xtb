@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">ອະນຸຍາດໃຫ້ Chromium ລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານ.</translation>
 <translation id="1472013873724362412">ບັນຊີຂອງທ່ານໃຊ້ບໍ່ໄດ້ຢູ່ໃນ Chromium. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງໂດເມນຂອງທ່ານ ຫຼືໃຊ້ບັນຊີ Google ປົກກະຕິ ເພື່ອເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="1507010443238049608">ຊ່ວຍປັບປຸງຄຸນສົມບັດ ແລະ ປະສິດທິພາບຂອງ Chromium</translation>
+<translation id="1531155317299575425">ສະແດງຂໍ້ຄວາມເພື່ອເຂົ້າສູ່ລະບົບຫາ Chromium.</translation>
 <translation id="1617663976202781617">ຂໍ້ມູນຈາກການຊິ້ງຂໍ້ມູນຂອງ Chromium</translation>
 <translation id="1736662517232558588">ລຶບລ້າງຂໍ້ມູນ Chromium ແລ້ວ</translation>
 <translation id="1838412507805038478">Chromium ໄດ້ພິສູດຢືນຢັນວ່າ <ph name="ISSUER" /> ໄດ້ອອກໃບຮັບຮອງຂອງເວັບໄຊນີ້.</translation>
@@ -49,6 +50,7 @@
 <translation id="5396916991083608703">ຕັ້ງ Chromium ເປັນຄ່າເລີ່ມຕົ້ນບໍ?</translation>
 <translation id="5521125884468363740">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chromium, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລະ ເປີດການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="5573014823074921752">ເຄັດລັບກ່ຽວກັບ Chromium. ສຳລັບຕົວເລືອກແຖບເພີ່ມເຕີມ, ກະລຸນາແຕະປຸ່ມສະແດງແຖບໃນແຖບເຄື່ອງມືຄ້າງໄວ້ ເຊິ່ງຢູ່ລຸ່ມສຸດ ຫຼື ເທິງສຸດຂອງໜ້າຈໍຂອງທ່ານ.</translation>
+<translation id="5651741435382092412">ເຂົ້າສູ່ລະບົບເວັບໄຊນີ້, ບັນຊີ Google ຂອງທ່ານ ແລະ Chromium. ທ່ານສາມາດເປີດການຊິ້ງຂໍ້ມູນໃນພາຍຫຼັງໄດ້.</translation>
 <translation id="5700709190537129682">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້</translation>
 <translation id="5742135483959137648">ໃຊ້ Chromium ເພື່ອເປີດລິ້ງ</translation>
 <translation id="5777187867430702742">ໜ້າ Chromium</translation>
@@ -59,6 +61,7 @@
 1. ເປີດການຕັ້ງຄ່າ ແຕະແອັບໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ
 3. ເລືອກ Chromium.</translation>
 <translation id="6268381023930128611">ອອກຈາກລະບົບ Chromium ບໍ?</translation>
+<translation id="632825460376924298">ອະນຸຍາດການເຂົ້າສູ່ລະບົບ Chromium</translation>
 <translation id="6337530241089703714">ເລືອກວ່າຈະລຶບລ້າງຂໍ້ມູນ Chromium ຂອງທ່ານອອກຈາກອຸປະກອນນີ້ ຫຼື ເກັບມັນໄວ້</translation>
 <translation id="6424492062988593837">Chromium ​ດີກ​ວ່າເກົ່າແລ້ວ​! ມີລຸ້ນ​ໃຫມ່​ໃຫ້​​ໃຊ້​.</translation>
 <translation id="6820823224820483452">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ກະລຸນາລອງໃໝ່ໃນມື້ອື່ນ.</translation>

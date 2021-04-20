@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Сырсөздү көрсөтүү</translation>
 <translation id="1872096359983322073">Колчырак</translation>
 <translation id="1911619930368729126">Google Drive'га жүкт брүү</translation>
-<translation id="1919130412786645364">Chrome'го кирүүгө уруксат берүү</translation>
 <translation id="1923342640370224680">Акыркы саатта</translation>
 <translation id="1941314575388338491">Көчүрүү үчүн эки жолу таптап коюңуз.</translation>
 <translation id="1952172573699511566">Мүмкүн болгон учурда вебсайттар текстти сиз каалаган тилде көрсөтүшөт.</translation>
@@ -216,7 +215,6 @@
 
 Жашыруун режимде сайттар жарнамаларды жекелештирүү максатында башка сайттардагы серептөө аракеттериңизди көрүү үчүн cookie файлдарын колдоно алышпайт.</translation>
 <translation id="3207960819495026254">Кыстармаланды</translation>
-<translation id="3222343486469566063">Кирген жоксуз</translation>
 <translation id="3224641773458703735">Сырсөздөрдү экспорттоо үчүн, адегенде, түзмөгүңүздөгү өткөрүүчү кодду жөндөп алышыңыз керек.</translation>
 <translation id="3240426699337459095">Шилтеме көчүрүлдү</translation>
 <translation id="3244271242291266297">АА</translation>
@@ -286,8 +284,6 @@
 <translation id="3928666092801078803">Дайындарымды бириктирүү</translation>
 <translation id="3929457972718048006">Даректер</translation>
 <translation id="3943492037546055397">Сырсөздөр</translation>
-<translation id="3943557322767080599">Google аккаунтуңузга кирген сайын Chrome'до билдирмелер көрүнүп турат</translation>
-<translation id="3967266340354872733">Купуялыкка, коопсуздукка жана дайындарды чогултууга байланыштуу дагы башка жөндөөлөрдү көрүү үчүн <ph name="BEGIN_LINK" />Шайкештирүү<ph name="END_LINK" /> жана <ph name="BEGIN_LINK" />Google кызматтары<ph name="END_LINK" /> бөлүмүнө өтүңүз.</translation>
 <translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
 <translation id="3968505803272650567">Кызыккан нерселерди башкаруу</translation>
 <translation id="3989635538409502728">Чыгуу</translation>
@@ -568,7 +564,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6760509555861141183">Акыркы өтмөккө өтүү</translation>
 <translation id="6780034285637185932">Почта индекси</translation>
 <translation id="6785453220513215166">Ката жөнүндө кабар жөнөтүү…</translation>
-<translation id="679325081238418596">Бардык түзмөктөрүңүздөн кыстармаларды, таржымалды, сырсөздөрдү жана башка жөндөөлөрүңүздү алыңыз</translation>
 <translation id="6797885426782475225">Айтып издөө</translation>
 <translation id="6807889908376551050">Баарын көрсөтүү…</translation>
 <translation id="681368974849482173">Нерсе түзүлдү</translation>
@@ -580,7 +575,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6873263987691478642">Бөлүп көрүү режими</translation>
 <translation id="6888009575607455378">Өзгөрүүлөрдү чын эле өчүрөсүзбү?</translation>
 <translation id="6896758677409633944">Көчүрүү</translation>
-<translation id="6903907808598579934">Шайкештирүүнү күйгүзүү</translation>
 <translation id="6914583639806229067">Көчүрүп алган сүрөттү издеңиз</translation>
 <translation id="6914783257214138813">Сырсөздөрүңүз экспорттолгон сырсөздөр файлын көргөн адамдардын баарына көрүнөт.</translation>
 <translation id="6930799952781667037">Ушул тилге өзгөртүү үчүн таптап коюңуз.</translation>
@@ -711,6 +705,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8225985093977202398">Кештелген сүрөттөр жана файлдар</translation>
 <translation id="8261506727792406068">Жок кылуу</translation>
 <translation id="8281781826761538115">Демейки - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Өткөрүп жиберүү</translation>
 <translation id="8283172974887967105">Коюу…</translation>
 <translation id="8299417921174340354">Сырсөздөрдү колдонуу үчүн адегенде, түзмөгүңүздөгү өткөрүүчү кодду жөндөп алышыңыз керек.</translation>
 <translation id="8319076807703933069">Жаңы издөө</translation>

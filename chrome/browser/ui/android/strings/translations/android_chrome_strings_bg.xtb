@@ -305,7 +305,6 @@
 <translation id="3016635187733453316">Уверете се, че това устройство е свързано с интернет</translation>
 <translation id="3029704984691124060">Пропуските не са идентични</translation>
 <translation id="3031225630520268969">Потребителски интерфейс за даване на съгласие за ползване на Асистент при гласови търсения</translation>
-<translation id="3034163383943672781">Изтеглянето ще стартира на <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Получете помощ<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Стигнете до този сайт по-бързо следващия път</translation>
 <translation id="305593374596241526">Местоположението е изключено. Включете го от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4583164079174244168">{MINUTES,plural, =1{преди # минута}other{преди # минути}}</translation>
 <translation id="4587589328781138893">Сайтове</translation>
 <translation id="4594952190837476234">Тази офлайн страница е от <ph name="CREATION_TIME" /> и може да се различава от онлайн версията.</translation>
-<translation id="4605958867780575332">Елементът бе премахнат: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Отваряне на <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Потвърдете, че сте вие</translation>
 <translation id="4634124774493850572">Използване на паролата</translation>
@@ -702,7 +700,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="572328651809341494">Скорошни раздели</translation>
 <translation id="5723735397759933332">С олекотения режим вече спестявате повече данни, тъй като изображенията на HTTPS страниците се оптимизират.</translation>
 <translation id="5726692708398506830">Уголемяване на всички елементи на страницата</translation>
-<translation id="5732819098735351888">Изтеглянето ще стартира при връзка с Wi-Fi мрежа.</translation>
 <translation id="5733983706093266635">Не може да се създаде QR код. URL адресът е повече от <ph name="CHARACTER_LIMIT" /> знака.</translation>
 <translation id="5748802427693696783">Превключихте към стандартните раздели</translation>
 <translation id="5749068826913805084">Chrome се нуждае от достъп до хранилището, за да изтегля файлове.</translation>
@@ -779,9 +776,9 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="614940544461990577">Изпробвайте следното:</translation>
 <translation id="6154478581116148741">Включете функцията за заключване на екрана от настройките, за да експортирате паролите си от това устройство</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> икономия на данни</translation>
+<translation id="6159729262978459665">Изчиства историята от всички синхронизирани устройства.</translation>
 <translation id="6186394685773237175">Няма намерени компрометирани пароли</translation>
 <translation id="6192907950379606605">Описания на изображенията</translation>
-<translation id="6206830853671714236">Избиране на време за изтегляне</translation>
 <translation id="6210748933810148297">Не сте <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Страницата се визуализира</translation>
 <translation id="6218096829563201111">Търсене на под. продукти <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7523960634226602883">Търсете с камерата си посредством Google Обектив</translation>
 <translation id="753225086557513863">Насрочено за по-късно</translation>
 <translation id="7559975015014302720">Олекотеният режим е изключен</translation>
+<translation id="7560448309733608642">Изчиства историята от всички синхронизирани устройства. В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Данните за сърфирането се изчистват</translation>
 <translation id="756809126120519699">Данните в Chrome са изчистени</translation>
 <translation id="7577900504646297215">Управление на интересите</translation>
@@ -1177,12 +1175,14 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8699120352855309748">Да не се предлага превод от тези езици</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
+<translation id="8730621377337864115">Готово</translation>
 <translation id="8748850008226585750">Съдържанието е скрито</translation>
 <translation id="8773160212632396039">Заявката се обработва</translation>
 <translation id="8788265440806329501">Историята на навигацията е затворена</translation>
 <translation id="8788968922598763114">Повторно отваряне на последно затворения раздел</translation>
 <translation id="8798449543960971550">Прочетени</translation>
 <translation id="8812260976093120287">На някои уебсайтове можете да извършвате плащания чрез посочените по-горе поддържани приложения за плащане на устройството ви.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Не е възможна визуализация на съдържанието на раздела.</translation>
 <translation id="8820817407110198400">Отметки</translation>
 <translation id="883806473910249246">При изтеглянето на съдържанието възникна грешка.</translation>
@@ -1220,10 +1220,10 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="9063523880881406963">Изключване на функцията за заявяване на настолни сайтове</translation>
 <translation id="9065203028668620118">Редактиране</translation>
 <translation id="9065383040763568503">Съхранявани данни, които Chrome не счита за важни (напр. рядко посещавани сайтове или такива без запазени настройки)</translation>
-<translation id="9069543557624799859">Изтеглянето ще стартира в <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Няма непрочетени страници</translation>
 <translation id="9070377983101773829">Стартиране на гласово търсене</translation>
 <translation id="9074336505530349563">Влезте в профила си и включете синхронизирането, за да получавате персонализирано съдържание, предлагано от Google</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Синхронизира се</translation>
 <translation id="9086455579313502267">Няма достъп до мрежата</translation>
 <translation id="9100505651305367705">Извеждане на предложение статиите да се показват в опростен изглед, когато се поддържа</translation>

@@ -305,7 +305,6 @@
 <translation id="3016635187733453316">Βεβαιωθείτε ότι η συσκευή είναι συνδεδεμένη στο διαδίκτυο.</translation>
 <translation id="3029704984691124060">Οι φράσεις πρόσβασης δεν συμφωνούν</translation>
 <translation id="3031225630520268969">Διεπαφή χρήστη για παροχή συναίνεσης σχετικά με τη φωνητική αναζήτηση μέσω του Βοηθού</translation>
-<translation id="3034163383943672781">Η λήψη θα ξεκινήσει στις <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Λάβετε βοήθεια<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Μεταβείτε πιο γρήγορα σε αυτόν τον ιστότοπο την επόμενη φορά</translation>
 <translation id="305593374596241526">Η Τοποθεσία είναι απενεργοποιημένη. Ενεργοποιήστε την στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{Πριν από # λεπτό}other{Πριν από # λεπτά}}</translation>
 <translation id="4587589328781138893">Ιστότοποι</translation>
 <translation id="4594952190837476234">Αυτή η σελίδα εκτός σύνδεσης δημιουργήθηκε στις <ph name="CREATION_TIME" /> και μπορεί να διαφέρει από την έκδοση στο διαδίκτυο.</translation>
-<translation id="4605958867780575332">Το στοιχείο καταργήθηκε <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Ανοίξτε <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Επαλήθευση ταυτότητας</translation>
 <translation id="4634124774493850572">Χρήση κωδικού πρόσβασης</translation>
@@ -702,7 +700,6 @@
 <translation id="572328651809341494">Πρόσφατες καρτέλες</translation>
 <translation id="5723735397759933332">Η λειτουργία Lite πλέον εξοικονομεί περισσότερα δεδομένα βελτιστοποιώντας εικόνες σε σελίδες HTTPS.</translation>
 <translation id="5726692708398506830">Μεγέθυνση όλων των στοιχείων της σελίδας</translation>
-<translation id="5732819098735351888">Η λήψη θα ξεκινήσει σε Wi-Fi.</translation>
 <translation id="5733983706093266635">Δεν είναι δυνατή η δημιουργία κωδικού QR. Το URL περιέχει περισσότερους από <ph name="CHARACTER_LIMIT" /> χαρακτήρες.</translation>
 <translation id="5748802427693696783">Έγινε εναλλαγή σε τυπικές καρτέλες</translation>
 <translation id="5749068826913805084">Το Chrome χρειάζεται πρόσβαση στο χώρο αποθήκευσης για τη λήψη αρχείων.</translation>
@@ -779,9 +776,9 @@
 <translation id="614940544461990577">Δοκιμάστε να κάνετε τα εξής:</translation>
 <translation id="6154478581116148741">Ενεργοποιήστε το κλείδωμα οθόνης στις Ρυθμίσεις, για να εξαγάγετε τους κωδικούς πρόσβασής σας από αυτήν τη συσκευή</translation>
 <translation id="6159335304067198720">Εξοικονόμηση δεδομένων κατά <ph name="PERCENT" /></translation>
+<translation id="6159729262978459665">Διαγράφει το ιστορικό από όλες τις συγχρονισμένες συσκευές.</translation>
 <translation id="6186394685773237175">Δεν βρέθηκαν παραβιασμένοι κωδικοί πρόσβασης.</translation>
 <translation id="6192907950379606605">Λήψη περιγραφών εικόνων</translation>
-<translation id="6206830853671714236">Επιλέξτε πότε θα γίνει λήψη</translation>
 <translation id="6210748933810148297">Δεν είστε ο χρήστης <ph name="EMAIL" />;</translation>
 <translation id="6211386937064921208">Πραγματοποιείται προεπισκόπηση αυτής της σελίδας</translation>
 <translation id="6218096829563201111">Αναζήτηση παρόμοιων προϊόντων <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@
 <translation id="7523960634226602883">Αναζητήστε με την κάμερα χρησιμοποιώντας το Google Lens</translation>
 <translation id="753225086557513863">Προγραμματισμένο για αργότερα</translation>
 <translation id="7559975015014302720">Η λειτουργία Lite είναι απενεργοποιημένη</translation>
+<translation id="7560448309733608642">Διαγράφει το ιστορικό από όλες τις συγχρονισμένες συσκευές. Ο Λογαριασμός Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Διαγραφή δεδομένων περιήγησης</translation>
 <translation id="756809126120519699">Τα δεδομένα του Chrome διαγράφηκαν</translation>
 <translation id="7577900504646297215">Διαχείριση ενδιαφερόντων</translation>
@@ -1177,12 +1175,14 @@
 <translation id="8699120352855309748">Να μην παρέχεται δυνατότητα μετάφρασης αυτών των γλωσσών</translation>
 <translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="8725066075913043281">Προσπαθήστε ξανά</translation>
+<translation id="8730621377337864115">Ολοκληρώθηκε</translation>
 <translation id="8748850008226585750">Κρυφό περιεχόμενο</translation>
 <translation id="8773160212632396039">Αίτημα επεξεργασίας</translation>
 <translation id="8788265440806329501">Το Ιστορικό πλοήγηση έκλεισε</translation>
 <translation id="8788968922598763114">Εκ νέου άνοιγμα της καρτέλας που έκλεισε τελευταία</translation>
 <translation id="8798449543960971550">Αναγνωσμένα</translation>
 <translation id="8812260976093120287">Σε ορισμένους ιστοτόπους, μπορείτε να πληρώσετε χρησιμοποιώντας τις παραπάνω υποστηριζόμενες εφαρμογές πληρωμών στη συσκευή σας.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Δεν υπάρχει δυνατότητα προβολής του περιεχομένου της καρτέλα προεπισκόπησης.</translation>
 <translation id="8820817407110198400">Σελιδοδείκτες</translation>
 <translation id="883806473910249246">Παρουσιάστηκε σφάλμα κατά τη λήψη του περιεχομένου.</translation>
@@ -1220,10 +1220,10 @@
 <translation id="9063523880881406963">Απενεργοποίηση αιτήματος ιστότοπου για υπολογιστές</translation>
 <translation id="9065203028668620118">Επεξεργασία</translation>
 <translation id="9065383040763568503">Αποθηκευμένα δεδομένα τα οποία το Chrome θεωρεί ότι δεν είναι σημαντικά (π.χ. ιστότοποι χωρίς αποθηκευμένες ρυθμίσεις ή που δεν επισκέπτεστε συχνά)</translation>
-<translation id="9069543557624799859">Η λήψη θα ξεκινήσει στις <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Δεν υπάρχουν μη αναγνωσμένες σελίδες</translation>
 <translation id="9070377983101773829">Έναρξη φωνητικής αναζήτησης</translation>
 <translation id="9074336505530349563">Για λήψη εξατομικευμένου περιεχομένου που προτείνεται από την Google, συνδεθείτε και ενεργοποιήστε τον συγχρονισμό</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Συγχρονισμός</translation>
 <translation id="9086455579313502267">Δεν είναι δυνατή η πρόσβαση στο δίκτυο</translation>
 <translation id="9100505651305367705">Προσφορά για προβολή άρθρων σε απλοποιημένη προβολή, όταν υποστηρίζεται</translation>

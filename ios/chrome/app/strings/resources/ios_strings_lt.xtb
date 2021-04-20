@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Rodyti slaptažodį</translation>
 <translation id="1872096359983322073">Žibintuvėlis</translation>
 <translation id="1911619930368729126">Įkelti į „Google“ diską</translation>
-<translation id="1919130412786645364">Leisti „Chrome“ prisijungti</translation>
 <translation id="1923342640370224680">Pastaroji valanda</translation>
 <translation id="1941314575388338491">Dukart palieskite, kad nukopijuotumėte.</translation>
 <translation id="1952172573699511566">Kai bus įmanoma, svetainėje tekstas bus rodomas pasirinkta kalba.</translation>
@@ -216,7 +215,6 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 
 Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtingose svetainėse, pvz., kad galėtų suasmeninti skelbimus.</translation>
 <translation id="3207960819495026254">Pažymėta</translation>
-<translation id="3222343486469566063">Neprisijungta</translation>
 <translation id="3224641773458703735">Jei norite eksportuoti slaptažodžius, pirmiausia turite nustatyti įrenginio slaptažodį.</translation>
 <translation id="3240426699337459095">Nuoroda nukopijuota</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@ Atlikite toliau nurodytus veiksmus.</translation>
 <translation id="3928666092801078803">Sujungti duomenis</translation>
 <translation id="3929457972718048006">Adresai</translation>
 <translation id="3943492037546055397">Slaptažodžiai</translation>
-<translation id="3943557322767080599">Rodomi „Chrome“ prisijungimo raginimai, kai prisijungiate prie „Google“ paskyros</translation>
-<translation id="3967266340354872733">Daugiau nustatymų, susijusių su privatumu, sauga ir duomenų rinkimu, žr. skiltyse <ph name="BEGIN_LINK" />„Sinchronizavimas“<ph name="END_LINK" /> ir <ph name="BEGIN_LINK" />„Google“ paslaugos“<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Atsisiuntimas baigtas</translation>
 <translation id="3968505803272650567">Tvarkyti pomėgius</translation>
 <translation id="3989635538409502728">Atsijungti</translation>
@@ -568,7 +564,6 @@ Kiekvienoje svetainėje stenkitės naudoti unikalius slaptažodžius.</translati
 <translation id="6760509555861141183">Grįžti į naujausią skirtuką</translation>
 <translation id="6780034285637185932">Pašto kodas</translation>
 <translation id="6785453220513215166">Siunčiama strigties ataskaita...</translation>
-<translation id="679325081238418596">Gaukite žymes, istoriją, slaptažodžius ir kitus nustatymus visuose įrenginiuose</translation>
 <translation id="6797885426782475225">Paieška balsu</translation>
 <translation id="6807889908376551050">Rodyti viską...</translation>
 <translation id="681368974849482173">Elementas sukurtas</translation>
@@ -580,7 +575,6 @@ Kiekvienoje svetainėje stenkitės naudoti unikalius slaptažodžius.</translati
 <translation id="6873263987691478642">Padalytas rodinys</translation>
 <translation id="6888009575607455378">Ar tikrai norite atmesti pakeitimus?</translation>
 <translation id="6896758677409633944">Kopijuoti</translation>
-<translation id="6903907808598579934">Įjungti sinchronizavimą</translation>
 <translation id="6914583639806229067">Ieškoti nukopijuoto vaizdo</translation>
 <translation id="6914783257214138813">Jūsų slaptažodžiai bus matomi visiems, kurie gali peržiūrėti eksportuotą failą.</translation>
 <translation id="6930799952781667037">Palieskite, kad pakeistumėte šią kalbą.</translation>
@@ -711,6 +705,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8225985093977202398">Talp. vaiz. ir fail.</translation>
 <translation id="8261506727792406068">Ištrinti</translation>
 <translation id="8281781826761538115">Numatytoji – <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Praleisti</translation>
 <translation id="8283172974887967105">Nustatyti…</translation>
 <translation id="8299417921174340354">Jei norite naudoti slaptažodžius, pirmiausia turite nustatyti įrenginio slaptažodį.</translation>
 <translation id="8319076807703933069">Nauja paieška</translation>

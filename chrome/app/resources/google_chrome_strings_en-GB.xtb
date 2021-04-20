@@ -225,6 +225,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7106741999175697885">Task Manager - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{A new update for Chrome is available and will be applied as soon as you relaunch.}=1{A new update for Chrome is available and will be applied as soon as you relaunch. Your Incognito window won't reopen.}other{A new update for Chrome is available and will be applied as soon as you relaunch. Your # Incognito windows won't reopen.}}</translation>
 <translation id="7155997830309522122">If so, please edit your saved password in Chrome so that it matches your new password.</translation>
+<translation id="7161904924553537242">Welcome to Google Chrome</translation>
 <translation id="7242029209006116544">You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. You can optionally create a new profile to keep your existing Chrome data separate. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">This language is used to display the Google Chrome UI</translation>
 <translation id="7296210096911315575">Important use and safety information</translation>

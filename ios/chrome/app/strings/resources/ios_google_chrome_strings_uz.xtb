@@ -27,6 +27,7 @@
 <translation id="3167189358072330585">Hisobingiz Google Chrome tizimida ishlamaydi. Domen administratoriga murojaat qiling yoki tizimga oddiy Google hisobidan kiring.</translation>
 <translation id="3173834708294760622">Google Chrome sahifasi</translation>
 <translation id="3196546062792660320">Chrome xizmatlariga kirishda har safar foydalanuvchi nomi va parol kiritishingiz shart emas. Chrome qurilmada saqlangan hisoblardan foydalanadi. Ularni sozlamalar orqali boshqarishingiz mumkin.</translation>
+<translation id="3223655207402797071">Bu sayt, Google va Chrome hisoblaringizga kiring. Sinxronizatsiyani keyinroq yoqish mumkin.</translation>
 <translation id="3282568296779691940">Chrome hisobiga kirish</translation>
 <translation id="3345341804167540816">Chrome’ni o‘zingiz bilan olib yuring</translation>
 <translation id="3522659714780527202">Boshqa qurilmalardagi Chrome varaqlarini koʻrish uchun sinxronizatsiyani yoqing</translation>
@@ -57,6 +58,7 @@
 <translation id="5876773482963502140">Geolokatsiyadan foydalanishga ruxsat bersangiz, Chrome bu maʼlumotlarni siz ruxsat bergan saytlarga yuboradi. Saytlar atrofdagi doʻkonlar yoki yangiliklar kabi axborotlarni chiqarish uchun joylashuvingizni soʻrashi mumkin.</translation>
 <translation id="6036420186814142909">Google Chrome brauzerida Internet ma’lumotlarini qayta ishlash va sahifalar yuklanishi tezligini boshqarish mumkin.
 <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Chrome hisobiga kirishga ruxsat berish</translation>
 <translation id="6181930887571472871">Chrome brauzeriga almashing</translation>
 <translation id="6238746320622508509">Chrome bilan Inkognito varaqlarni himoyalang.</translation>
 <translation id="6573431926118603307">Boshqa qurilmalaringizda ochilgan Chrome sahifalari shu yerda ko‘rsatiladi.</translation>
@@ -95,5 +97,6 @@
   3. Chrome brauzerini tanlang.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chrome bilan himoyalaning</translation>
+<translation id="8772179140489533211">Chrome orqali kirish oynasi chiqadi.</translation>
 <translation id="9112744793181547300">Chrome asosiy brauzer sifatida tanlansinmi?</translation>
 </translationbundle>

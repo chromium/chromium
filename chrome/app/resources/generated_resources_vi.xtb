@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">Tiếp tục cho phép <ph name="HOST" /> sử dụng và di chuyển máy ảnh của bạn</translation>
 <translation id="1355088139103479645">Xóa tất cả dữ liệu?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> đã bị chặn</translation>
-<translation id="1358612436266364864">Loại bỏ hiệu ứng làm nổi bật văn bản</translation>
 <translation id="1358741672408003399">Chính tả và Ngữ pháp</translation>
 <translation id="1359923111303110318">Bạn có thể mở khóa thiết bị của mình bằng Smart Lock. Hãy nhấn phím Enter để mở khóa.</translation>
 <translation id="1361164813881551742">Thêm thủ công</translation>
@@ -883,6 +882,7 @@
 <translation id="1928202201223835302">Nhập mã PIN cũ</translation>
 <translation id="1928696683969751773">Bản cập nhật</translation>
 <translation id="1929186283613845153">Tệp này đang được quét.</translation>
+<translation id="1929343511231420085">Cổng nối tiếp bất kỳ</translation>
 <translation id="1929546189971853037">Đọc lịch sử duyệt web của bạn trên tất cả các thiết bị đã đăng nhập</translation>
 <translation id="1930879306590754738">Đã xóa mật khẩu khỏi thiết bị này và Tài khoản Google của bạn</translation>
 <translation id="1931152874660185993">Không có thành phần nào được cài đặt.</translation>
@@ -1608,7 +1608,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="2734760316755174687">Các trang web trong <ph name="SITE_GROUP_NAME" /> cũng sẽ được đặt lại.</translation>
 <translation id="2735712963799620190">Lịch biểu</translation>
 <translation id="2737363922397526254">Thu gọn...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> muốn chia sẻ nội dung trên màn hình của bạn với <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Không cho phép trang web sử dụng phông chữ đã cài đặt trên thiết bị của bạn</translation>
 <translation id="2738771556149464852">Không được Sau</translation>
 <translation id="2739191690716947896">Gỡ lỗi</translation>
@@ -1896,7 +1895,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3031417829280473749">Đặc vụ X</translation>
 <translation id="3031557471081358569">Chọn các mục cần nhập:</translation>
 <translation id="3036327949511794916">Đã quá thời hạn trả lại thiết bị <ph name="DEVICE_TYPE" /> này.</translation>
-<translation id="3036438888981457032">Loại bỏ hiệu ứng làm nổi bật văn bản</translation>
 <translation id="3036546437875325427">Bật Flash</translation>
 <translation id="3037754279345160234">Không thể phân tích cú pháp cấu hình để tham gia miền. Vui lòng liên hệ với quản trị viên của bạn.</translation>
 <translation id="3038612606416062604">Thêm máy in theo cách thủ công</translation>
@@ -2943,6 +2941,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4218274196133425560">Xóa trường hợp ngoại lệ đối với <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Đã xảy ra lỗi trong quá trình kích hoạt.</translation>
 <translation id="4222772810963087151">Thông tin chi tiết về bản dựng</translation>
+<translation id="4224284700924043865">Các thiết bị USB do <ph name="VENDOR_ID" /> cung cấp có mã sản phẩm là <ph name="PRODUCT_ID" /></translation>
 <translation id="4225397296022057997">Trên tất cả các trang web</translation>
 <translation id="4231095370974836764">Cài đặt ứng dụng và trò chơi từ Google Play trên <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Định cấu hình Kerberos</translation>
@@ -3015,6 +3014,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="431076611119798497">&amp;Chi tiết</translation>
 <translation id="4312866146174492540">Chặn (mặc định)</translation>
 <translation id="4314815835985389558">Quản lý dữ liệu đồng bộ hóa</translation>
+<translation id="4316650123995163262">Các thiết bị USB do <ph name="VENDOR_NAME" /> cung cấp có mã sản phẩm là <ph name="PRODUCT_ID" /></translation>
 <translation id="4316850752623536204">Trang web dành cho nhà phát triển</translation>
 <translation id="4317820549299924617">Không xác minh được</translation>
 <translation id="4320177379694898372">Không có kết nối Internet</translation>
@@ -3457,6 +3457,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4824958205181053313">Bạn muốn hủy đồng bộ hóa?</translation>
 <translation id="4827675678516992122">Không thể kết nối</translation>
 <translation id="4827784381479890589">Tính năng kiểm tra lỗi chính tả nâng cao trong trình duyệt Chrome (văn bản sẽ được gửi đến Google để đưa ra các đề xuất chính tả)</translation>
+<translation id="482952334869563894">Các thiết bị USB của nhà cung cấp <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Thiết lập mã PIN</translation>
 <translation id="4830121310592638841">Hỏi khi có một trang web muốn mở và đặt các cửa sổ trên màn hình của bạn</translation>
 <translation id="4830502475412647084">Đang cài đặt bản cập nhật hệ điều hành</translation>
@@ -3746,6 +3747,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5159419673777902220">Cha mẹ của bạn đã tắt quyền sử dụng tiện ích</translation>
 <translation id="5160634252433617617">Bàn phím vật lý</translation>
 <translation id="5160857336552977725">Đăng nhập vào <ph name="DEVICE_TYPE" /> của bạn</translation>
+<translation id="5161251470972801814">Các thiết bị USB của <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850">Thiết bị <ph name="DEVICE_TYPE" /> đã bị chặn</translation>
 <translation id="5163910114647549394">Đã di chuyển thẻ tới cuối dải thẻ</translation>
 <translation id="5165085578392358314">Gán công tắc: <ph name="ACTION" /></translation>
@@ -4659,7 +4661,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6212039847102026977">Hiển thị thuộc tính mạng nâng cao</translation>
 <translation id="6212168817037875041">Tắt màn hình</translation>
 <translation id="6212752530110374741">Gửi liên kết qua email</translation>
-<translation id="6213230117190778270">Nhận</translation>
 <translation id="621470880408090483">Không cho phép trang web kết nối với thiết bị Bluetooth</translation>
 <translation id="6215620815501168899">Đóng cửa sổ bật lên hiển thị mã QR và số EID</translation>
 <translation id="6216601812881225442">Vùng chứa của bạn không hỗ trợ việc thay đổi dung lượng. Để điều chỉnh mức dung lượng được phân bổ sẵn cho Linux, hãy sao lưu rồi khôi phục dữ liệu sang một vùng chứa mới.</translation>
@@ -5373,6 +5374,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Nhật ký hoạt động</translation>
 <translation id="6997707937646349884">Trên các thiết bị của bạn:</translation>
 <translation id="6998793565256476099">Đăng ký thiết bị tham gia hội nghị truyền hình</translation>
+<translation id="6999640176621571692">Cho phép Google tìm chương trình chiết khấu cho những mặt hàng bạn thêm vào giỏ hàng?</translation>
 <translation id="6999956497249459195">Nhóm mới</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> đã kết nối nhưng cần định cấu hình</translation>
 <translation id="7000347579424117903">Bao gồm phím Ctrl, Alt hoặc Tìm kiếm</translation>
@@ -5453,7 +5455,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7076293881109082629">Đăng nhập</translation>
 <translation id="7077829361966535409">Không thể tải trang đăng nhập bằng cài đặt proxy hiện tại. Vui lòng <ph name="GAIA_RELOAD_LINK_START" />thử đăng nhập lại<ph name="GAIA_RELOAD_LINK_END" /> hoặc sử dụng <ph name="PROXY_SETTINGS_LINK_START" />cài đặt proxy<ph name="PROXY_SETTINGS_LINK_END" /> khác.</translation>
 <translation id="7078120482318506217">Tất cả các mạng</translation>
-<translation id="7078386829626602215">Không phát hiện thấy thiết bị nào <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">S&amp;ao chép địa chỉ âm thanh</translation>
 <translation id="7081952801286122383">Bạn đang ở chế độ ẩn danh</translation>
 <translation id="708278670402572152">Ngắt kết nối để bật tính năng quét</translation>
@@ -5502,11 +5503,9 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7135729336746831607">Bạn muốn bật Bluetooth?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> yêu cầu bạn cập nhật ngay <ph name="DEVICE_TYPE" /> của mình.</translation>
 <translation id="7136694880210472378">Đặt làm mặc định</translation>
-<translation id="7136984461011502314">Chào mừng bạn đến với <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Đã xảy ra lỗi. Vui lòng thử lại bằng cách chọn các hình ảnh khác.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> đang sử dụng micrô của bạn</translation>
 <translation id="7141105143012495934">Đăng nhập không thành công vì không thể truy xuất chi tiết tài khoản của bạn. Vui lòng liên hệ với quản trị viên của bạn hoặc thử lại.</translation>
-<translation id="7143358760238281735">Không có ứng dụng nào</translation>
 <translation id="7144878232160441200">Thử lại</translation>
 <translation id="7149893636342594995">24 giờ qua</translation>
 <translation id="7152478047064750137">Tiện ích này không yêu cầu quyền đặc biệt</translation>
@@ -6460,7 +6459,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8189750580333936930">Hộp cát về quyền riêng tư</translation>
 <translation id="8190193592390505034">Đang kết nối đến <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Quản lý ứng dụng, tiện ích và chủ đề của bạn</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> muốn chia sẻ nội dung trên màn hình của bạn.</translation>
 <translation id="8195027750202970175">Dung lượng trên đĩa</translation>
 <translation id="8198323535106903877">Chúng tôi sẽ cài đặt <ph name="NUMBER_OF_APPS" /> ứng dụng đó cho bạn</translation>
 <translation id="8199300056570174101">Thuộc tính của thiết bị và mạng (dịch vụ)</translation>
@@ -6884,6 +6882,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="8698269656364382265">Để quay lại màn hình trước, hãy vuốt từ cạnh trái.</translation>
 <translation id="869884720829132584">Menu ứng dụng</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
+<translation id="8699120352855309748">Không đề xuất dịch những ngôn ngữ này</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> của bạn đã bị khóa.</translation>
 <translation id="8703346390800944767">Bỏ qua quảng cáo</translation>
 <translation id="8705331520020532516">Số Sê-ri</translation>

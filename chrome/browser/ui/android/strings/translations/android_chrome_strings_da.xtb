@@ -305,7 +305,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3016635187733453316">Sørg for, at din enhed har forbindelse til internettet</translation>
 <translation id="3029704984691124060">Adgangssætningerne stemmer ikke overens</translation>
 <translation id="3031225630520268969">Brugerflade for samtykke i forbindelse med stemmesøgning i Assistent</translation>
-<translation id="3034163383943672781">Downloaden starter <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Få hjælp<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Nå hurtigere frem til dette website næste gang</translation>
 <translation id="305593374596241526">Placering er slået fra. Du kan aktivere den i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4583164079174244168">{MINUTES,plural, =1{For # minut siden}one{For # minut siden}other{For # minutter siden}}</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4594952190837476234">Denne offlineside er fra <ph name="CREATION_TIME" /> og kan afvige fra onlineversionen.</translation>
-<translation id="4605958867780575332">Element fjernet: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Åbn <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Bekræft din identitet</translation>
 <translation id="4634124774493850572">Brug adgangskode</translation>
@@ -702,7 +700,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="572328651809341494">Seneste faner</translation>
 <translation id="5723735397759933332">Lite-tilstand optimerer nu billeder på HTTPS-sider for at reducere dit dataforbrug.</translation>
 <translation id="5726692708398506830">Gør alting på siden større</translation>
-<translation id="5732819098735351888">Downloaden starter, når der er Wi-Fi-forbindelse.</translation>
 <translation id="5733983706093266635">QR-koden kan ikke oprettes. Webadressen indeholder mere end <ph name="CHARACTER_LIMIT" /> tegn.</translation>
 <translation id="5748802427693696783">Skiftet til standardfaner</translation>
 <translation id="5749068826913805084">Chrome skal have lageradgang for at kunne downloade filer.</translation>
@@ -779,9 +776,9 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="614940544461990577">Prøv at:</translation>
 <translation id="6154478581116148741">Aktivér skærmlåsen i Indstillinger for at eksportere dine adgangskoder fra denne enhed</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> sparet data</translation>
+<translation id="6159729262978459665">Ryder historikken fra alle synkroniserede enheder.</translation>
 <translation id="6186394685773237175">Der blev ikke fundet nogen kompromitterede adgangskoder</translation>
 <translation id="6192907950379606605">Få billedbeskrivelser</translation>
-<translation id="6206830853671714236">Vælg tidspunkt for download</translation>
 <translation id="6210748933810148297">Ikke <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Forhåndsvisning af denne side</translation>
 <translation id="6218096829563201111">Find lignende produkter <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="7523960634226602883">Søg med dit kamera ved hjælp af Google Lens</translation>
 <translation id="753225086557513863">Planlagt til senere</translation>
 <translation id="7559975015014302720">Lite-tilstand er deaktiveret</translation>
+<translation id="7560448309733608642">Ryder historikken fra alle synkroniserede enheder. Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Browserdata ryddes</translation>
 <translation id="756809126120519699">Chrome-dataene blev ryddet</translation>
 <translation id="7577900504646297215">Administrer interesser</translation>
@@ -1177,12 +1175,14 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="8699120352855309748">Tilbyd ikke at oversætte disse sprog</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>
+<translation id="8730621377337864115">Udfør</translation>
 <translation id="8748850008226585750">Indholdet er skjult</translation>
 <translation id="8773160212632396039">Behandler anmodning</translation>
 <translation id="8788265440806329501">Navigationsoversigt er lukket</translation>
 <translation id="8788968922598763114">Åbn den senest lukkede fane igen</translation>
 <translation id="8798449543960971550">Læst</translation>
 <translation id="8812260976093120287">På nogle websites kan du betale med ovenstående understøttede betalingsapps på din enhed.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Indholdet på fanen Forhåndsvisning kan ikke vises.</translation>
 <translation id="8820817407110198400">Bogmærker</translation>
 <translation id="883806473910249246">Der opstod en fejl under download af indholdet.</translation>
@@ -1220,10 +1220,10 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="9063523880881406963">Slå anmodning om computerversionen af websitet fra</translation>
 <translation id="9065203028668620118">Rediger</translation>
 <translation id="9065383040763568503">Gemte data, som Chrome ikke mener er vigtige (f.eks. websites uden gemte indstillinger, eller som du ikke besøger så ofte)</translation>
-<translation id="9069543557624799859">Downloaden starter <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Der er ingen ulæste sider</translation>
 <translation id="9070377983101773829">Start talesøgning</translation>
 <translation id="9074336505530349563">Log ind, og aktivér synkronisering for at hente brugertilpasset indhold, som er foreslået af Google</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Synkroniserer</translation>
 <translation id="9086455579313502267">Der kunne ikke opnås adgang til netværket</translation>
 <translation id="9100505651305367705">Tilbyd enkel visning af artikler, når det understøttes</translation>

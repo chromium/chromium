@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Нууц үгийг харуулах</translation>
 <translation id="1872096359983322073">Чийдэн</translation>
 <translation id="1911619930368729126">Google Drive руу татаж оруул</translation>
-<translation id="1919130412786645364">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
 <translation id="1923342640370224680">Сүүлийн цаг</translation>
 <translation id="1941314575388338491">Хуулахын тулд хоёр удаа товшино уу.</translation>
 <translation id="1952172573699511566">Вебсайт текстийг таны сонгосон хэлээр (хэрэв тухайн хэл боломжтой бол) харуулна.</translation>
@@ -216,7 +215,6 @@
 
 Сайтууд нь нууцлалтай горимд байх үедээ, жишээлбэл зарыг хувийн болгохын тулд өөр сайт дээрх таны хөтчийн үйл ажиллагааг харах зорилгоор күүки ашиглах боломжгүй.</translation>
 <translation id="3207960819495026254">Хавчуурга хадгалагдсан</translation>
-<translation id="3222343486469566063">Нэвтрээгүй байна</translation>
 <translation id="3224641773458703735">Та нууц үгийг экспорт хийхийн тулд эхлээд төхөөрөмждөө нууц код тохируулах шаардлагатай.</translation>
 <translation id="3240426699337459095">Холбоосыг хуулсан</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@
 <translation id="3928666092801078803">Миний өгөгдлийг нэгтгэх</translation>
 <translation id="3929457972718048006">Хаягууд</translation>
 <translation id="3943492037546055397">Нууц үг</translation>
-<translation id="3943557322767080599">Таныг Google Бүртгэлдээ нэвтрэх үед Chrome-н нэвтрэх сануулгыг харуулна</translation>
-<translation id="3967266340354872733">Нууцлал, аюулгүй байдал болон өгөгдөл цуглуулахтай холбоотой бусад тохиргоог <ph name="BEGIN_LINK" />Синк хийх<ph name="END_LINK" /> ба <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүд<ph name="END_LINK" />-ээс харна уу.</translation>
 <translation id="3967822245660637423">Татаж авч дууслаа</translation>
 <translation id="3968505803272650567">Сонирхлыг удирдах</translation>
 <translation id="3989635538409502728">Гарах</translation>
@@ -567,7 +563,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6760509555861141183">Сүүлийн таб руу буцах</translation>
 <translation id="6780034285637185932">Зип код</translation>
 <translation id="6785453220513215166">Алдаа ослын тайланг илгээж байна...</translation>
-<translation id="679325081238418596">Хавчуурга, түүх, нууц үг болон бусад тохиргоог төхөөрөмждөө авна уу</translation>
 <translation id="6797885426782475225">Дуут хайлт</translation>
 <translation id="6807889908376551050">Бүгдийг үзүүл...</translation>
 <translation id="681368974849482173">Үүссэн зүйл</translation>
@@ -579,7 +574,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6873263987691478642">Хувааж харах</translation>
 <translation id="6888009575607455378">Та өөрчлөлт оруулахаа болихдоо итгэлтэй байна уу?</translation>
 <translation id="6896758677409633944">Хуулах</translation>
-<translation id="6903907808598579934">Синк хийхийг асаах</translation>
 <translation id="6914583639806229067">Хуулсан зургаа хайх</translation>
 <translation id="6914783257214138813">Экспорт хийсэн файлыг харах боломжтой хүн бүрд таны нууц үг харагдана.</translation>
 <translation id="6930799952781667037">Энэ хэл рүү өөрчлөхийн тулд товшино уу.</translation>
@@ -710,6 +704,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8225985093977202398">Нөөцөлсөн зураг болон файлууд</translation>
 <translation id="8261506727792406068">Устгах</translation>
 <translation id="8281781826761538115">Өгөгдмөл - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Алгасах</translation>
 <translation id="8283172974887967105">Тохируулах…</translation>
 <translation id="8299417921174340354">Нууц үгсийг ашиглахын тулд та эхлээд төхөөрөмж дээрээ нууц код тохируулах ёстой.</translation>
 <translation id="8319076807703933069">Шинэ хайлт</translation>

@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Fichua Nenosiri</translation>
 <translation id="1872096359983322073">Tochi</translation>
 <translation id="1911619930368729126">Pakia kwenye Hifadhi ya Google</translation>
-<translation id="1919130412786645364">Ruhusu kuingia katika akaunti ya Chrome</translation>
 <translation id="1923342640370224680">Saa ya Mwisho</translation>
 <translation id="1941314575388338491">Gusa mara mbili ili unakili.</translation>
 <translation id="1952172573699511566">Tovuti zitaonyesha maandishi katika lugha unayopendelea, panapowezekana.</translation>
@@ -216,7 +215,6 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 
 Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti mbalimbali, kwa mfano, ili kukuonyesha matangazo yanayokufaa zaidi.</translation>
 <translation id="3207960819495026254">Imealamishwa</translation>
-<translation id="3222343486469566063">Hujaingia Katika Akaunti</translation>
 <translation id="3224641773458703735">Ili utume manenosiri, ni lazima kwanza uweke nambari ya siri kwenye kifaa chako.</translation>
 <translation id="3240426699337459095">Kiungo kimenakiliwa</translation>
 <translation id="3244271242291266297">MW</translation>
@@ -286,8 +284,6 @@ Fuata hatua zifuatazo:</translation>
 <translation id="3928666092801078803">Unganisha data yangu</translation>
 <translation id="3929457972718048006">Anwani</translation>
 <translation id="3943492037546055397">Manenosiri</translation>
-<translation id="3943557322767080599">Onyesha vidokezo vya kuingia katika akaunti vya Chrome unapoingia katika Akaunti yako ya Google</translation>
-<translation id="3967266340354872733">Ili upate mipangilio zaidi inayohusiana na faragha, usalama na ukusanyaji wa data, angalia <ph name="BEGIN_LINK" />Usawazishaji<ph name="END_LINK" /> na <ph name="BEGIN_LINK" />Huduma za Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Faili imekamilika kupakuliwa</translation>
 <translation id="3968505803272650567">Dhibiti Mambo Yanayokuvutia</translation>
 <translation id="3989635538409502728">Ondoka</translation>
@@ -568,7 +564,6 @@ Jaribu kutumia nenosiri la kipekee kwa kila tovuti.</translation>
 <translation id="6760509555861141183">Rudi kwenye Kichupo cha Hivi Karibuni</translation>
 <translation id="6780034285637185932">Msimbo wa Eneo</translation>
 <translation id="6785453220513215166">Inatuma ripoti ya kuacha kufanya kazi...</translation>
-<translation id="679325081238418596">Pata alamisho zako, historia, manenosiri na mipangilio yako mingine kwenye vifaa vyako vyote.</translation>
 <translation id="6797885426782475225">Kutafuta kwa Kutamka</translation>
 <translation id="6807889908376551050">Onyesha Zote...</translation>
 <translation id="681368974849482173">Umeunda kipengee</translation>
@@ -580,7 +575,6 @@ Jaribu kutumia nenosiri la kipekee kwa kila tovuti.</translation>
 <translation id="6873263987691478642">Mwonekano wa Madirisha Mawili</translation>
 <translation id="6888009575607455378">Je, una uhakika unataka kufuta mabadiliko uliyofanya?</translation>
 <translation id="6896758677409633944">Nakili</translation>
-<translation id="6903907808598579934">Washa kipengele cha kusawazisha</translation>
 <translation id="6914583639806229067">Tafuta Picha Uliyonakili</translation>
 <translation id="6914783257214138813">Mtu yeyote anayeweza kuona faili uliyohamisha ataona manenosiri yako.</translation>
 <translation id="6930799952781667037">Gusa ili utumie lugha hii.</translation>
@@ -711,6 +705,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8225985093977202398">Picha na Faili Zilizowekwa katika Akiba</translation>
 <translation id="8261506727792406068">Futa</translation>
 <translation id="8281781826761538115">Chaguomsingi - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Ruka</translation>
 <translation id="8283172974887967105">Weka…</translation>
 <translation id="8299417921174340354">Ili utumie manenosiri, ni lazima kwanza uweke nambari ya siri kwenye kifaa chako.</translation>
 <translation id="8319076807703933069">Utafutaji Mpya</translation>

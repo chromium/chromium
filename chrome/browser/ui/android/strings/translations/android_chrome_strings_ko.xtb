@@ -305,7 +305,6 @@
 <translation id="3016635187733453316">이 기기가 인터넷에 연결되어 있는지 확인하세요.</translation>
 <translation id="3029704984691124060">암호가 일치하지 않습니다.</translation>
 <translation id="3031225630520268969">어시스턴트 음성 검색 동의 UI</translation>
-<translation id="3034163383943672781"><ph name="DATE" />에 다운로드가 시작됩니다.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />도움 받기<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">다음번에 이 사이트로 빠르게 이동합니다.</translation>
 <translation id="305593374596241526">위치가 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>
@@ -526,7 +525,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{#분 전}other{#분 전}}</translation>
 <translation id="4587589328781138893">사이트</translation>
 <translation id="4594952190837476234">이 오프라인 페이지는 <ph name="CREATION_TIME" />에 생성되었으며 온라인 버전과 다를 수 있습니다.</translation>
-<translation id="4605958867780575332"><ph name="ITEM_TITLE" /> 삭제됨</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> 열기</translation>
 <translation id="4619564267100705184">본인 인증</translation>
 <translation id="4634124774493850572">비밀번호 사용</translation>
@@ -702,7 +700,6 @@
 <translation id="572328651809341494">최근 탭</translation>
 <translation id="5723735397759933332">라이트 모드에서는 HTTPS 페이지의 이미지를 최적화하여 더 많은 데이터를 절약할 수 있습니다.</translation>
 <translation id="5726692708398506830">페이지의 모든 항목 확대</translation>
-<translation id="5732819098735351888">Wi-Fi에 연결되면 다운로드가 시작됩니다.</translation>
 <translation id="5733983706093266635">QR 코드를 만들 수 없습니다. URL이 <ph name="CHARACTER_LIMIT" />자(영문 기준)를 초과합니다.</translation>
 <translation id="5748802427693696783">일반 탭으로 전환됨</translation>
 <translation id="5749068826913805084">Chrome에서 파일을 다운로드하려면 저장소 액세스 권한이 있어야 합니다.</translation>
@@ -779,9 +776,9 @@
 <translation id="614940544461990577">다음 방법을 시도해 보세요.</translation>
 <translation id="6154478581116148741">이 기기에서 비밀번호를 내보내려면 설정에서 화면 잠금을 사용 설정하세요</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> 데이터 절약</translation>
+<translation id="6159729262978459665">동기화된 모든 기기에서 방문 기록을 지웁니다.</translation>
 <translation id="6186394685773237175">유출된 비밀번호가 없습니다.</translation>
 <translation id="6192907950379606605">이미지 설명 보기</translation>
-<translation id="6206830853671714236">다운로드 시간 선택</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" />이(가) 아닌가요?</translation>
 <translation id="6211386937064921208">페이지 미리보기입니다.</translation>
 <translation id="6218096829563201111">비슷한 상품 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@
 <translation id="7523960634226602883">Google 렌즈를 사용하여 카메라로 검색</translation>
 <translation id="753225086557513863">다운로드 예약</translation>
 <translation id="7559975015014302720">라이트 모드 사용 중지됨</translation>
+<translation id="7560448309733608642">동기화된 모든 기기에서 방문 기록을 지웁니다. Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에 방문 기록이 다른 형식으로 남아 있을 수도 있습니다.</translation>
 <translation id="7562080006725997899">인터넷 사용 기록 삭제</translation>
 <translation id="756809126120519699">Chrome 데이터 삭제됨</translation>
 <translation id="7577900504646297215">관심분야 관리</translation>
@@ -1177,12 +1175,14 @@
 <translation id="8699120352855309748">번역할지 묻지 않을 언어</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8725066075913043281">다시 시도하세요</translation>
+<translation id="8730621377337864115">완료</translation>
 <translation id="8748850008226585750">숨겨진 콘텐츠</translation>
 <translation id="8773160212632396039">요청 처리 중입니다.</translation>
 <translation id="8788265440806329501">탐색 기록 닫힘</translation>
 <translation id="8788968922598763114">마지막으로 닫은 탭 다시 열기</translation>
 <translation id="8798449543960971550">읽음</translation>
 <translation id="8812260976093120287">일부 웹사이트에서는 위의 결제 앱을 사용하여 내 기기에서 결제할 수 있습니다.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">미리보기 탭 콘텐츠를 볼 수 없습니다.</translation>
 <translation id="8820817407110198400">북마크</translation>
 <translation id="883806473910249246">콘텐츠를 다운로드하는 중에 오류가 발생했습니다.</translation>
@@ -1220,10 +1220,10 @@
 <translation id="9063523880881406963">데스크톱 버전으로 보기 사용 중지</translation>
 <translation id="9065203028668620118">수정</translation>
 <translation id="9065383040763568503">Chrome에서 중요하다고 간주하지 않는 저장된 데이터(예: 저장된 설정이 없거나 사용자가 자주 방문하지 않는 사이트)</translation>
-<translation id="9069543557624799859"><ph name="TIME" />에 다운로드가 시작됩니다.</translation>
 <translation id="9069999660519089861">읽지 않은 페이지 없음</translation>
 <translation id="9070377983101773829">음성 검색 시작</translation>
 <translation id="9074336505530349563">Google에서 추천하는 맞춤 콘텐츠를 보려면 로그인하고 동기화를 사용 설정하세요.</translation>
+<translation id="9074739597929991885">블루투스</translation>
 <translation id="9086302186042011942">동기화 중</translation>
 <translation id="9086455579313502267">네트워크에 액세스할 수 없습니다.</translation>
 <translation id="9100505651305367705">지원되는 경우 간단히 보기로 기사를 표시하는 기능 제공</translation>

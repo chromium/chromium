@@ -305,7 +305,6 @@
 <translation id="3016635187733453316">يُرجى التأكُّد من اتصال هذا الجهاز بالإنترنت.</translation>
 <translation id="3029704984691124060">عبارات المرور غير متطابقة</translation>
 <translation id="3031225630520268969">‏واجهة المستخدم الخاصة بالموافقة على استخدام ميزة "البحث الصوتي" في "مساعد Google"</translation>
-<translation id="3034163383943672781">سيبدأ التنزيل بتاريخ <ph name="DATE" /></translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />الحصول على مساعدة<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">الوصول إلى هذا الموقع الإلكتروني بسرعة أكبر في المرة القادمة</translation>
 <translation id="305593374596241526">‏تحديد الموقع الجغرافي متوقف، يمكنك تفعيله من <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{قبل دقيقة واحدة (#)}zero{قبل # دقيقة}two{قبل دقيقتين (#)}few{قبل # دقائق}many{قبل # دقيقة}other{قبل # دقيقة}}</translation>
 <translation id="4587589328781138893">المواقع</translation>
 <translation id="4594952190837476234">تم إنشاء هذه الصفحة المتوفّرة بلا اتصال بالإنترنت في <ph name="CREATION_TIME" />، وقد تختلف عن النسخة المتوفِّرة على الإنترنت.</translation>
-<translation id="4605958867780575332">تمت إزالة العنصر: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">فتح <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">إثبات هويّتك</translation>
 <translation id="4634124774493850572">استخدام كلمة المرور</translation>
@@ -702,7 +700,6 @@
 <translation id="572328651809341494">علامات التبويب الأخيرة</translation>
 <translation id="5723735397759933332">‏يوفّر "الوضع البسيط" الآن المزيد من البيانات من خلال تحسين الصور على صفحات HTTPS.</translation>
 <translation id="5726692708398506830">تكبير كامل محتوى الصفحة</translation>
-<translation id="5732819098735351888">‏سيبدأ التنزيل عند الاتصال بشبكة Wi-Fi</translation>
 <translation id="5733983706093266635">‏يتعذّر إنشاء رمز الاستجابة السريعة. يجب ألّا يزيد عدد أحرف عنوان URL عن <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="5748802427693696783">تم التبديل إلى علامات التبويب القياسية</translation>
 <translation id="5749068826913805084">‏يحتاج Chrome للوصول إلى مساحة التخزين لتنزيل الملفات.</translation>
@@ -779,9 +776,9 @@
 <translation id="614940544461990577">يمكنك محاولة:</translation>
 <translation id="6154478581116148741">تشغيل قفل الشاشة في الإعدادات لتصدير كلمات المرور من هذا الجهاز</translation>
 <translation id="6159335304067198720">توفير البيانات بنسبة <ph name="PERCENT" /></translation>
+<translation id="6159729262978459665">سيتم محو السجلّ من جميع الأجهزة التي تمت مزامنتها.</translation>
 <translation id="6186394685773237175">لم يتم العثور على أي كلمات مرور محتمَل تعرّضها للاختراق.</translation>
 <translation id="6192907950379606605">عرض أوصاف الصور</translation>
-<translation id="6206830853671714236">اختيار وقت التنزيل</translation>
 <translation id="6210748933810148297">ليس <ph name="EMAIL" />؟</translation>
 <translation id="6211386937064921208">جارٍ معاينة هذه الصفحة</translation>
 <translation id="6218096829563201111">البحث عن منتجات مشابهة <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@
 <translation id="7523960634226602883">‏البحث من خلال الكاميرا باستخدام "عدسة Google"</translation>
 <translation id="753225086557513863">عمليات التنزيل المجدوَلة لوقتٍ لاحق</translation>
 <translation id="7559975015014302720">تم إيقاف الوضع البسيط</translation>
+<translation id="7560448309733608642">‏سيتم محو السجلّ من جميع الأجهزة التي تمت مزامنتها. قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">جارٍ محو بيانات التصفح</translation>
 <translation id="756809126120519699">‏بيانات Chrome التي تم محوها</translation>
 <translation id="7577900504646297215">إدارة الاهتمامات</translation>
@@ -1177,12 +1175,14 @@
 <translation id="8699120352855309748">عدم اقتراح ترجمة لهذه اللغات</translation>
 <translation id="8712637175834984815">تم</translation>
 <translation id="8725066075913043281">أعد المحاولة</translation>
+<translation id="8730621377337864115">تم</translation>
 <translation id="8748850008226585750">المحتوى مخفي</translation>
 <translation id="8773160212632396039">جارٍ معالجة الطلب</translation>
 <translation id="8788265440806329501">يتم إغلاق سجلّ التنقُّل.</translation>
 <translation id="8788968922598763114">إعادة فتح آخر علامة تبويب تم إغلاقها</translation>
 <translation id="8798449543960971550">مقروءة</translation>
 <translation id="8812260976093120287">يمكنك على مواقع إلكترونية معيّنة الدفع باستخدام تطبيقات الدفع المتوافقة أعلاه على جهازك.</translation>
+<translation id="8814190375133053267">‏لاسلكي، Wi-Fi</translation>
 <translation id="881688628773363275">محتوى علامة تبويب المعاينة غير قابل للعرض.</translation>
 <translation id="8820817407110198400">الإشارات المرجعية</translation>
 <translation id="883806473910249246">حدث خطأ أثناء تنزيل المحتوى.</translation>
@@ -1220,10 +1220,10 @@
 <translation id="9063523880881406963">إيقاف طلب الموقع الإلكتروني لسطح المكتب</translation>
 <translation id="9065203028668620118">تعديل</translation>
 <translation id="9065383040763568503">‏البيانات المُخزَّنة التي لا يعتبرها متصفِّح Chrome مهمة (على سبيل المثال، المواقع الإلكترونية التي لا تتضمَّن إعدادات محفوظة أو تلك التي لا تزورها كثيرًا)</translation>
-<translation id="9069543557624799859">سيبدأ التنزيل في <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">ما مِن صفحات غير مقروءة.</translation>
 <translation id="9070377983101773829">بدء البحث الصوتي</translation>
 <translation id="9074336505530349563">‏للحصول على محتوى مُخصَّص اقترحته Google، يُرجى تسجيل الدخول وتفعيل المزامنة.</translation>
+<translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9086302186042011942">جارٍ المزامنة</translation>
 <translation id="9086455579313502267">تعذر الدخول إلى الشبكة</translation>
 <translation id="9100505651305367705">اقتراح مشاهدة المقالات في العرض المبسَّط إذا كان ذلك متاحًا</translation>

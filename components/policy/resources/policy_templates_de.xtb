@@ -89,6 +89,7 @@
 <translation id="1122089575901325963">Durch diese Richtlinie wird der <ph name="WILCO_NAME" /> Diagnostics and Telemetry Controller (DTC) konfiguriert, wenn er auf dem Gerät vorhanden ist. Die Konfiguration darf nicht größer als 1 MB (1.000.000 Byte) sein und muss im JSON-Format vorliegen. Der <ph name="WILCO_NAME" /> DTC übernimmt die Verwaltung. Die Integrität des Downloads wird anhand des kryptografischen Hashs verifiziert. Die Konfiguration wird heruntergeladen und im Cache gespeichert. Sobald sich URL oder Hash ändern, wird sie noch einmal heruntergeladen.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden.</translation>
+<translation id="1133622335785078255">Diese Einstellung erlaubt Nutzern, sekundäre Profile zu erstellen und zu verwenden sowie den Gastmodus im <ph name="LACROS_NAME" />-Browser zu verwenden</translation>
 <translation id="1133814529606590009">Ist diese Richtlinie aktiviert, ist die anonymisierte URL-Datenerfassung immer aktiv. Das heißt, URLs der von Nutzern besuchten Seiten werden an Google gesendet, um Suchanfragen und das Surfen zu verbessern.
 
       Wenn die Richtlinie deaktiviert ist, erfolgt keine anonymisierte URL-Datenerfassung.
@@ -755,9 +756,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
           Wenn sie nicht konfiguriert ist, folgt die Funktion ihrer eigenen internen Logik und kann von Nutzern manuell konfiguriert werden.
 
           Bitte beachten Sie, dass die Richtlinie pro Renderer-Prozess angewendet wird. Dabei wird der letzte Wert der Richtlinie angewendet, wenn ein Renderer-Prozess startet. Wenn Sie sicherstellen möchten, dass alle geladenen Tabs die gleiche Richtlinieneinstellung erhalten, ist ein Neustart des Browsers nötig. Allerdings ist es kein Problem, wenn einzelne Prozesse mit unterschiedlichen Werten für diese Richtlinie laufen.</translation>
-<translation id="2026547141364626978">Mit dieser Richtlinie wird der <ph name="PLUGIN_VM_NAME" />-Lizenzschlüssel für dieses Gerät angegeben.
-
-      Diese Richtlinie wurde in M91 entfernt.</translation>
 <translation id="2030905906517501646">Suchbegriff der Standardsuchmaschine</translation>
 <translation id="203096360153626918">Diese Richtlinie hat keine Auswirkungen auf die Android-Apps. Der Vollbildmodus kann aktiviert werden, auch wenn diese Richtlinie auf <ph name="FALSE" /> gesetzt ist.</translation>
 <translation id="2032848225007871645">Durch die Konfiguration der Richtlinie wird festgelegt, mit welchen Modi für das schnelle Entsperren der Sperrbildschirm entsperrt werden kann.
@@ -790,12 +788,8 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="2043749682619281558">Hiermit wird die Funktion "Mauscursor hervorheben" auf dem Anmeldebildschirm aktiviert</translation>
 <translation id="2043770014371753404">Deaktivierte Unternehmensdrucker</translation>
-<translation id="2044730764993088298">Konfiguriert die Einstellungen für die Lebensdauer von Browserdaten für <ph name="PRODUCT_NAME" />. Diese Richtlinie lässt zu, dass Administratoren festlegen (nach Datentyp), wann Daten durch den Browser gelöscht werden. Das ist nützlich für Kunden, die mit sensiblen Kundendaten umgehen. Die Richtlinie ist nur wirksam, wenn <ph name="SYNC_DISABLED_POLICY_NAME" /> auf „True“ gesetzt ist.
-
-      Die folgenden Datentypen sind verfügbar: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> und <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
-
-      Der Browser entfernt automatisch Daten ausgewählter Typen, die älter sind als <ph name="TIME_TO_LIVE_IN_HOURS" />. Als kleinster Wert kann eine Stunde festgelegt werden. In seltenen Fällen kann das Löschen der Daten länger dauern, es wird dennoch definitiv ausgeführt.</translation>
 <translation id="2057317273526988987">Zugriff auf eine Liste mit URLs erlauben</translation>
+<translation id="2061123930713023976">Fehlerbehebung von Netzwerkpaketaufnahmen erlauben</translation>
 <translation id="2061810934846663491">Erforderliche Domainnamen für Remotezugriff-Hosts konfigurieren</translation>
 <translation id="2069350366303315077">Wenn die Richtlinie aktiviert ist, erzwingt <ph name="PRODUCT_NAME" /> Gastsitzungen und verhindert die Anmeldung über Nutzerprofile. Gastsitzungen sind <ph name="PRODUCT_NAME" />-Profile, bei denen die Fenster im Inkognitomodus ausgeführt werden.
 
@@ -962,6 +956,13 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="2290270645214705008">Wenn diese Richtlinie deaktiviert ist, kann der Host für den Remotezugriff keine eingehenden Verbindungen annehmen.  Diese Richtlinien wirkt sich nicht auf die Remote-Unterstützung aus.
 
           Diese Richtlinie ist nicht wirksam, wenn sie aktiviert ist, leer gelassen oder nicht konfiguriert wird.</translation>
+<translation id="2290589982136082117">Diese Einstellung erlaubt Nutzern, sekundäre Profile zu erstellen und zu verwenden sowie den Gastmodus im <ph name="LACROS_NAME" />-Browser zu verwenden.
+
+      Wenn diese Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, kann der Nutzer ähnlich wie bei BrowserAddPersonEnabled und BrowserGuestModeEnabled keine sekundären Profile erstellen oder verwenden und den Gastmodus nicht verwenden. Zuvor erstellte sekundäre Profile, falls vorhanden, sind nicht verfügbar.
+
+      Wenn diese Richtlinie auf „true“ gesetzt wird, können Nutzer sekundäre Profile erstellen und verwenden sowie den Gastmodus verwenden.
+
+      Beachten Sie, dass der Nutzer keine sekundären Profile erstellen kann, wenn diese Richtlinie auf „true“ gesetzt ist, BrowserAddPersonEnabled jedoch auf „false“. Dasselbe gilt für BrowserGuestModeEnabled und den Gastmodus.</translation>
 <translation id="229322770310505679">Gruppen aus Einzelrichtlinien aktivieren</translation>
 <translation id="22941467117331786">Wenn die Richtlinie auf "True" gesetzt ist, wird während aktiver Sitzungen in der Taskleiste eine große rote Schaltfläche zum Abmelden angezeigt, solange das Display nicht gesperrt ist.
 
@@ -1161,6 +1162,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
           Wenn Sie diese Richtlinie konfigurieren, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Ist die Richtlinie nicht konfiguriert, ist "Textcursor hervorheben" anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
+<translation id="2509748672176727116">Der Nutzer ist zu Netzwerkpaketaufnahmen berechtigt</translation>
 <translation id="2509919237512982967">Verwenden Sie alte Formularsteuerelemente bis M84.</translation>
 <translation id="2515699738406900920">Verfügbarkeit von Profil-Picker beim Start</translation>
 <translation id="2517466659416174529">Deaktivieren von Tabs im Hintergrund zulassen</translation>
@@ -2334,6 +2336,7 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
       Diese Einschränkungen gelten für Downloads, die durch Websiteinhalte ausgelöst werden, sowie für die Menüoption „Link herunterladen“. Diese Einschränkungen gelten aber weder für das Herunterladen und Speichern der gerade angezeigten Seite noch für das Speichern als PDF-Datei in den Druckoptionen.
 
       Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
+<translation id="4043796890723386527">Diese Einstellung hindert Nutzer daran, sekundäre Profile zu erstellen oder zu verwenden und den Gastmodus im <ph name="LACROS_NAME" />-Browser zu verwenden</translation>
 <translation id="4051723201852944592">Fenster-Okklusion aktivieren</translation>
 <translation id="4056910949759281379">SPDY-Protokoll deaktivieren</translation>
 <translation id="4061590579642538878">Informationen über Absturzberichte melden.</translation>
@@ -2412,11 +2415,6 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
           Wenn Sie diese Richtlinie konfigurieren, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, ist das gesprochene Feedback auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
-<translation id="4175667688338118889">Wenn die Richtlinie aktiviert ist, vertraut Safe Browsing den Domains, die Sie festlegen. Es findet keine Prüfung auf gefährliche Ressourcen wie Phishing, Malware oder unerwünschte Software statt. Es findet keine Prüfung von in diesen Domains gehosteten Downloads durch den Downloadschutzdienst statt. Eine Wiederverwendung von Passwörtern wird nicht durch den Passwortschutzdienst geprüft.
-
-      Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, wird der Safe Browsing-Standardschutz auf alle Ressourcen angewendet.
-
-      Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="417956245902013347">Hiermit wird die Bedienungshilfe "Textcursor hervorheben" auf dem Anmeldebildschirm aktiviert.
 
           Wird diese Richtlinie auf "true" gesetzt, ist die Bedienungshilfe "Textcursor hervorheben" auf dem Anmeldebildschirm immer aktiviert.
@@ -2669,6 +2667,10 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 
       Wenn diese Richtlinie auf Windows nicht konfiguriert ist, wird der Standardpfad für Roaming-Profile verwendet.</translation>
 <translation id="4596517047440640833">Entsperrung mit PIN</translation>
+<translation id="4596742680861734343">Diese Einstellung erlaubt die Fehlerbehebung von Netzwerkpaketaufnahmen auf dem Gerät.
+
+      Wenn diese Richtlinie auf „true“ gesetzt oder nicht konfiguriert ist, ist der Nutzer zu Netzwerkpaketaufnahmen auf dem Gerät berechtigt.
+      Wird die Richtlinie auf „false“ gesetzt, sind Netzwerkpaketaufnahmen auf dem Gerät nicht möglich.</translation>
 <translation id="4600786265870346112">Großen Cursor aktivieren</translation>
 <translation id="4607416370554533118">Mit dieser Richtlinie können Sie eine Liste von URL-Mustern erstellen, die Websites angeben, für die Chrome automatisch ein Clientzertifikat auswählen kann. Der Wert ist ein Array von String-JSON-Wörterbüchern. Jedes Wörterbuch muss das Format <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" /> haben, wobei <ph name="URL_PATTERN_PLACEHOLDER" /> ein Muster zum Festlegen der Inhalte ist. <ph name="FILTER_PLACEHOLDER" /> schränkt ein, aus welchen Clientzertifikaten der Browser automatisch auswählt. Unabhängig vom Filter werden nur Zertifikate ausgewählt, die mit der Zertifizierungsanforderung des Servers übereinstimmen.
 
@@ -2757,6 +2759,9 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird kein Zertifikat erstellt und Aufrufe der <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> schlagen fehl.</translation>
 <translation id="4742973303930120836">Druckmodus mit Hintergrundgrafiken einschränken</translation>
 <translation id="4752880493649142945">Clientzertifikat zur Herstellung einer Verbindung zu RemoteAccessHostTokenValidationUrl</translation>
+<translation id="475479145997699293">Wenn die Richtlinie auf <ph name="ASK_FILE_HANDLING" /> gesetzt ist, dürfen Webanwendungen um Zugriff auf Dateitypen über die File Handling API bitten. Wenn die Richtlinie auf <ph name="BLOCK_FILE_HANDLING" /> gesetzt ist, wird der Zugriff auf Dateitypen abgelehnt.
+
+      Wird die Richtlinie nicht konfiguriert, können Webanwendungen um Zugriff bitten. Nutzer können diese Einstellung jedoch anpassen.</translation>
 <translation id="4757053978738874325">Mit dieser Richtlinie wird die Bedienungshilfe "Mono-Audio" aktiviert.
 
           Mit dieser Funktion kann die Audio-Ausgabe von der Standardeinstellung Stereo auf Mono-Audio umgestellt werden. Bei Stereo-Audio können über separate linke und rechte Kanäle auf beiden Ohren unterschiedliche Töne gehört werden, bei Mono-Audio werden auf beiden Kanälen die gleichen Töne ausgegeben.
@@ -2931,6 +2936,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="4962262530309732070">Wurde für diese Richtlinie "true" festgelegt oder nichts konfiguriert, ist in <ph name="PRODUCT_NAME" /> die Verwendung der Funktion "Person hinzufügen" über den Nutzermanager zulässig.
 
       Ist für die Richtlinie "false" festgelegt, können in <ph name="PRODUCT_NAME" /> keine neuen Profile im Nutzermanager erstellt werden.</translation>
+<translation id="4970046075219007744">Webanwendungen erlauben, um Zugriff auf Dateitypen über die File Handling API zu bitten</translation>
 <translation id="4970855112942626932">Browseranmeldung deaktivieren</translation>
 <translation id="4977702914571821981">Mit dieser Richtlinie können Sie eine Liste von URL-Mustern festlegen, die angeben, auf welchen Websites blockierbare (aktive) gemischte Inhalte (HTTP-Inhalte auf HTTPS-Websites) nicht angezeigt werden dürfen und auf welchen Websites optional blockierbare (passive) gemischte Inhalte auf HTTPS geändert werden.
 
@@ -4090,6 +4096,7 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 
       Wenn diese Richtlinie nicht konfiguriert ist, wird keine maximale Länge erzwungen.</translation>
 <translation id="6553143066970470539">Displayhelligkeit in %</translation>
+<translation id="6558362593755624474">Mit dieser Richtlinie wird der <ph name="PLUGIN_VM_NAME" />-Lizenzschlüssel für dieses Gerät angegeben.</translation>
 <translation id="6559057113164934677">Keine Website darf auf meine Kamera oder mein Mikrofon zugreifen</translation>
 <translation id="6559221564468029245">Wenn die Richtlinie aktiviert wird oder nicht konfiguriert ist, gilt der Nutzer während der Audiowiedergabe nicht als inaktiv. Dadurch wird verhindert, dass das Zeitlimit für die Inaktivität erreicht wird und entsprechende Aktionen ausgeführt werden. Der Bildschirm wird jedoch unabhängig von den Audioaktivitäten gemäß den konfigurierten Zeitlimits gedimmt, abgeschaltet und gesperrt.
 
@@ -5092,6 +5099,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
       Wenn die Richtlinie nicht konfiguriert ist, kann der Nutzer festlegen, ob er nach einem Passwort zum Entsperren des Geräts bei Inaktivität gefragt werden möchte.</translation>
 <translation id="7784062550705119230">Wenn <ph name="PRINTERS_ALLOWLIST" /> für <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer verwenden können. Den Nutzern stehen nur die Drucker zur Verfügung, deren IDs mit den Werten in dieser Richtlinie übereinstimmen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="DEVICE_PRINTERS_POLICY_NAME" /> angegeben ist.</translation>
 <translation id="7788511847830146438">Nach Profil</translation>
+<translation id="7792796937016596423">Der Nutzer ist nicht zu Netzwerkpaketaufnahmen berechtigt</translation>
 <translation id="7798441698807517880">Diese Richtlinie ist seit Version 89 von <ph name="PRODUCT_NAME" /> nicht mehr enthalten, da <ph name="FLASH_PLUGIN_NAME" /> eingestellt wurde.
 
       Wenn die Richtlinie auf „True“ gesetzt ist, werden alle <ph name="FLASH_PLUGIN_NAME" />-Inhalte ausgeführt, die auf Websites eingebettet sind, die <ph name="FLASH_PLUGIN_NAME" /> zulassen. Hierzu gehören auch Inhalte anderer Herkunft sowie kleine Inhalte.

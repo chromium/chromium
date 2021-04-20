@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">Teruskan membenarkan <ph name="HOST" /> menggunakan dan mengalihkan kamera anda</translation>
 <translation id="1355088139103479645">Padamkan semua data?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> disekat</translation>
-<translation id="1358612436266364864">Alih keluar serlahan</translation>
 <translation id="1358741672408003399">Ejaan dan Tatabahasa</translation>
 <translation id="1359923111303110318">Peranti anda boleh dibuka kunci dengan Smart Lock. Tekan Enter untuk membuka kunci.</translation>
 <translation id="1361164813881551742">Tambahkan Secara Manual</translation>
@@ -883,6 +882,7 @@
 <translation id="1928202201223835302">Masukkan PIN lama</translation>
 <translation id="1928696683969751773">Kemaskinian</translation>
 <translation id="1929186283613845153">Fail ini sedang diimbas.</translation>
+<translation id="1929343511231420085">Sebarang port bersiri</translation>
 <translation id="1929546189971853037">Baca sejarah penyemakan anda pada semua peranti yang anda log masuk.</translation>
 <translation id="1930879306590754738">Kata laluan telah dipadamkan daripada peranti ini dan Akaun Google anda</translation>
 <translation id="1931152874660185993">Tiada komponen dipasang.</translation>
@@ -1608,7 +1608,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="2734760316755174687">Tapak di bawah <ph name="SITE_GROUP_NAME" /> akan ditetapkan semula juga.</translation>
 <translation id="2735712963799620190">Jadual</translation>
 <translation id="2737363922397526254">Runtuhkan...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> mahu berkongsi kandungan skrin anda dengan <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Jangan benarkan laman menggunakan fon yang dipasang pada peranti anda</translation>
 <translation id="2738771556149464852">Bukan Selepas</translation>
 <translation id="2739191690716947896">Nyahpepijat</translation>
@@ -1896,7 +1895,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3031417829280473749">Ejen X</translation>
 <translation id="3031557471081358569">Pilih item untuk mengimport:</translation>
 <translation id="3036327949511794916">Tarikh akhir untuk memulangkan <ph name="DEVICE_TYPE" /> ini telah berlalu.</translation>
-<translation id="3036438888981457032">Alih Keluar Serlahan</translation>
 <translation id="3036546437875325427">Dayakan Flash</translation>
 <translation id="3037754279345160234">Tidak dapat menghurai konfigurasi penyertaan domain. Sila hubungi pentadbir anda.</translation>
 <translation id="3038612606416062604">Tambahkan pencetak secara manual</translation>
@@ -2943,6 +2941,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4218274196133425560">Alik keluar pengecualian untuk <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Ralat berlaku semasa pengaktifan.</translation>
 <translation id="4222772810963087151">Butiran Binaan</translation>
+<translation id="4224284700924043865">Peranti USB dengan ID produk <ph name="PRODUCT_ID" /> daripada vendor <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">Di semua tapak</translation>
 <translation id="4231095370974836764">Pasang apl dan permainan daripada Google Play pada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Konfigurasikan Kerberos</translation>
@@ -3015,6 +3014,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="431076611119798497">&amp;Butiran</translation>
 <translation id="4312866146174492540">Sekat (lalai)</translation>
 <translation id="4314815835985389558">Urus penyegerakan</translation>
+<translation id="4316650123995163262">Peranti USB dengan ID produk <ph name="PRODUCT_ID" /> daripada <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Tapak Web Pembangun</translation>
 <translation id="4317820549299924617">Pengesahan tidak berjaya</translation>
 <translation id="4320177379694898372">Tiada sambungan Internet</translation>
@@ -3457,6 +3457,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4824958205181053313">Batalkan penyegerakan?</translation>
 <translation id="4827675678516992122">Tidak dapat menyambung</translation>
 <translation id="4827784381479890589">Semak ejaan yang dipertingkatkan dalam penyemak imbas Chrome (teks dihantar kepada Google untuk mendapatkan cadangan ejaan)</translation>
+<translation id="482952334869563894">Peranti USB daripada vendor <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Sediakan PIN</translation>
 <translation id="4830121310592638841">Tanya apabila tapak mahu membuka dan meletakkan tetingkap pada skrin anda</translation>
 <translation id="4830502475412647084">Memasang kemas kini OS</translation>
@@ -3746,6 +3747,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5159419673777902220">Ibu bapa anda telah melumpuhkan kebenaran sambungan</translation>
 <translation id="5160634252433617617">Papan kekunci fizikal</translation>
 <translation id="5160857336552977725">Log masuk ke <ph name="DEVICE_TYPE" /> anda</translation>
+<translation id="5161251470972801814">Peranti USB daripada <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> telah disekat</translation>
 <translation id="5163910114647549394">Tab dialihkan ke bahagian hujung jalur tab</translation>
 <translation id="5165085578392358314">Tetapkan suis: <ph name="ACTION" /></translation>
@@ -4659,7 +4661,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6212039847102026977">Tunjukkan sifat rangkaian terperinci</translation>
 <translation id="6212168817037875041">Matikan paparan</translation>
 <translation id="6212752530110374741">E-melkan Pautan</translation>
-<translation id="6213230117190778270">Terima</translation>
 <translation id="621470880408090483">Jangan benarkan laman menyambung kepada peranti Bluetooth</translation>
 <translation id="6215620815501168899">Tutup tetingkap timbul EID dan kod QR</translation>
 <translation id="6216601812881225442">Bekas anda tidak menyokong pengubahan saiz. Untuk melaraskan jumlah ruang yang telah diperuntukkan lebih awal kepada Linux, buat sandaran, kemudian pulihkan dalam bekas baharu.</translation>
@@ -5373,6 +5374,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Log Aktiviti</translation>
 <translation id="6997707937646349884">Pada peranti anda:</translation>
 <translation id="6998793565256476099">Daftar peranti untuk persidangan video</translation>
+<translation id="6999640176621571692">Benarkan Google mencari diskaun bagi item yang anda tambahkan pada troli anda?</translation>
 <translation id="6999956497249459195">Kumpulan baharu</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> disambung tetapi memerlukan konfigurasi</translation>
 <translation id="7000347579424117903">Termasuk Ctrl, Alt atau Search</translation>
@@ -5453,7 +5455,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7076293881109082629">Melog masuk</translation>
 <translation id="7077829361966535409">Halaman log masuk gagal dimuatkan menggunakan tetapan proksi semasa. Sila <ph name="GAIA_RELOAD_LINK_START" />cuba log masuk sekali lagi<ph name="GAIA_RELOAD_LINK_END" /> atau gunakan <ph name="PROXY_SETTINGS_LINK_START" />tetapan proksi<ph name="PROXY_SETTINGS_LINK_END" /> yang berbeza.</translation>
 <translation id="7078120482318506217">Semua rangkaian</translation>
-<translation id="7078386829626602215">Tiada peranti dikesan <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">S&amp;alin alamat audio</translation>
 <translation id="7081952801286122383">Anda dalam mod inkognito</translation>
 <translation id="708278670402572152">Putuskan sambungan untuk mendayakan pengimbasan</translation>
@@ -5502,11 +5503,9 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7135729336746831607">Hidupkan Bluetooth?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> menghendaki anda mengemas kini <ph name="DEVICE_TYPE" /> anda dengan segera.</translation>
 <translation id="7136694880210472378">Jadikan lalai</translation>
-<translation id="7136984461011502314">Selamat datang ke <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Terdapat ralat. Sila cuba lagi dengan memilih imej lain.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> sedang menggunakan mikrofon anda</translation>
 <translation id="7141105143012495934">Log masuk gagal kerana butiran akaun anda tidak boleh didapatkan semula. Sila hubungi pentadbir anda atau cuba lagi.</translation>
-<translation id="7143358760238281735">Tiada apl tersedia</translation>
 <translation id="7144878232160441200">Cuba semula</translation>
 <translation id="7149893636342594995">24 jam yang lalu</translation>
 <translation id="7152478047064750137">Sambungan ini tidak memerlukan kebenaran khas</translation>
@@ -6460,7 +6459,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8189750580333936930">Kotak Pasir Privasi</translation>
 <translation id="8190193592390505034">Disambungkan ke <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Uruskan apl, sambungan dan tema anda</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> mahu berkongsi kandungan skrin anda.</translation>
 <translation id="8195027750202970175">Saiz pada cakera</translation>
 <translation id="8198323535106903877">Kami akan memasang <ph name="NUMBER_OF_APPS" /> apl itu untuk anda</translation>
 <translation id="8199300056570174101">Sifat Rangkaian (Perkhidmatan) dan Peranti</translation>
@@ -6885,6 +6883,7 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="8698269656364382265">Untuk kembali ke skrin sebelumnya, leret dari sebelah kiri.</translation>
 <translation id="869884720829132584">Menu aplikasi</translation>
 <translation id="869891660844655955">Tarikh tamat tempoh</translation>
+<translation id="8699120352855309748">Jangan tawarkan untuk menterjemahkan bahasa ini</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> anda telah dikunci.</translation>
 <translation id="8703346390800944767">Langkau Iklan</translation>
 <translation id="8705331520020532516">Nombor Siri</translation>

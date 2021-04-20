@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">បន្តអនុញ្ញាត <ph name="HOST" /> ឱ្យប្រើ​ និងផ្លាស់ទីកាមេរ៉ារបស់អ្នក</translation>
 <translation id="1355088139103479645">លុប​ទិន្នន័យ​ទាំងអស់ឬ?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> ត្រូវបានរារាំង</translation>
-<translation id="1358612436266364864">លុបការរំលេច</translation>
 <translation id="1358741672408003399">ការប្រកប និងវេយ្យាករណ៍</translation>
 <translation id="1359923111303110318">អាច​ដោះសោ​ឧបករណ៍​របស់អ្នក​ដោយប្រើ Smart Lock​។ ចុច Enter ដើម្បី​ដោះសោ។</translation>
 <translation id="1361164813881551742">បន្ថែមដោយផ្ទាល់</translation>
@@ -1609,7 +1608,6 @@
 <translation id="2734760316755174687">គេហទំព័រ​ដែលស្ថិត​ក្រោម​ <ph name="SITE_GROUP_NAME" /> ក៏នឹងត្រូវកំណត់​ឡើងវិញ​ផងដែរ។</translation>
 <translation id="2735712963799620190">កាលវិភាគ</translation>
 <translation id="2737363922397526254">បង្រួម...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> ចង់ចែករំលែក​ខ្លឹមសារ​នៅលើ​អេក្រង់របស់អ្នក​ជាមួយ <ph name="TARGET_NAME" />។</translation>
 <translation id="2738030019664645674">កុំអនុញ្ញាតឱ្យគេហទំព័រប្រើពុម្ព​អក្សរ​ ដែលបានដំឡើងនៅលើឧបករណ៍របស់អ្នក</translation>
 <translation id="2738771556149464852">មិនបន្ទាប់ពី</translation>
 <translation id="2739191690716947896">កម្ចាត់កំហុស</translation>
@@ -1897,7 +1895,6 @@
 <translation id="3031417829280473749">ភ្នាក់ងារ X</translation>
 <translation id="3031557471081358569">ជ្រើសរើសរបស់ដើម្បីនាំចូល៖</translation>
 <translation id="3036327949511794916">ថ្ងៃផុតកំណត់​នៃការបញ្ជូន <ph name="DEVICE_TYPE" /> នេះត្រឡប់ទៅវិញ​បានកន្លងផុតហើយ។</translation>
-<translation id="3036438888981457032">លុបការរំលេច</translation>
 <translation id="3036546437875325427">បើក​ពន្លឺផ្លាស់</translation>
 <translation id="3037754279345160234">មិន​អាច​ញែក​ការកំណត់​រចនាសម្ព័ន្ធ​ ដើម្បី​ចូលរួម​ដែនបានទេ។ សូមទាក់ទង​អ្នក​គ្រប់គ្រង​របស់អ្នក។</translation>
 <translation id="3038612606416062604">បន្ថែម​ម៉ាស៊ីន​បោះពុម្ព​ដោយ​ផ្ទាល់</translation>
@@ -4665,7 +4662,6 @@
 <translation id="6212039847102026977">បង្ហាញ​លក្ខណៈសម្បត្តិ​បណ្តាញ​កម្រិត​ខ្ពស់</translation>
 <translation id="6212168817037875041">បិទ​អេក្រង់</translation>
 <translation id="6212752530110374741">តំណ​អ៊ីមែល</translation>
-<translation id="6213230117190778270">ទទួល</translation>
 <translation id="621470880408090483">មិនអនុញ្ញាតឱ្យ​គេហទំព័រ​ភ្ជាប់ជាមួយ​ឧបករណ៍​ប៊្លូធូសទេ</translation>
 <translation id="6215620815501168899">បិទផ្ទាំង​លោតឡើង​ដែលមានកូដ QR និង EID</translation>
 <translation id="6216601812881225442">ទម្រង់ផ្ទុក​របស់អ្នក​មិនអាច​ប្ដូរទំហំ​បានទេ​។ សូមបម្រុងទុក បន្ទាប់មក​ស្ដារទៅក្នុង​ទម្រង់ផ្ទុក​ថ្មី ដើម្បី​កែតម្រូវ​ទំហំផ្ទុក ដែលត្រូវបាន​កំណត់ជាមុន​សម្រាប់ Linux។</translation>
@@ -5460,7 +5456,6 @@
 <translation id="7076293881109082629">កំពុងចូល</translation>
 <translation id="7077829361966535409">ទំព័រចូលបានបរាជ័យក្នុងការដំណើរការ ដោយប្រើការកំណត់ប្រូកស៊ីបច្ចុប្បន្ន។ សូម <ph name="GAIA_RELOAD_LINK_START" />ព្យាយាមចូលម្តងទៀត<ph name="GAIA_RELOAD_LINK_END" /> ឬប្រើ <ph name="PROXY_SETTINGS_LINK_START" />ការកំណត់ប្រូកស៊ី<ph name="PROXY_SETTINGS_LINK_END" /> ដទៃ។</translation>
 <translation id="7078120482318506217">បណ្តាញទាំងអស់</translation>
-<translation id="7078386829626602215">រកមិនឃើញ​ឧបករណ៍​ណាមួយ​ទេ <ph name="BEGIN_LINK" />ស្វែងយល់​បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">ថតចម្លងអាសយដ្ឋានសំឡេង</translation>
 <translation id="7081952801286122383">អ្នក​កំពុង​ប្រើ​មុខងារ​ឯកជន</translation>
 <translation id="708278670402572152">ផ្ដាច់ដើម្បីបើកការស្កេន</translation>
@@ -5509,11 +5504,9 @@
 <translation id="7135729336746831607">បើកប៊្លូធូស?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> តម្រូវឱ្យអ្នក​ដំឡើងកំណែ <ph name="DEVICE_TYPE" /> របស់អ្នក​ភ្លាមៗ។</translation>
 <translation id="7136694880210472378">ដាក់ជាលំនាំដើម</translation>
-<translation id="7136984461011502314">ស្វាគមន៍មកកាន់ <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">មាន​បញ្ហា។ សូមព្យាយាមម្ដងទៀត ដោយជ្រើសរើស​រូបភាពផ្សេង។</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> កំពុងប្រើមីក្រូហ្វូនរបស់អ្នក</translation>
 <translation id="7141105143012495934">បានបរាជ័យក្នុងការចូលពីព្រោះមិនអាចទាញយកព័ត៌មានលម្អិតគណនីរបស់អ្នកបានទេ។ សូមទាក់ទងអ្នកគ្រប់គ្រងរបស់អ្នក ឬព្យាយាមម្តងទៀត។</translation>
-<translation id="7143358760238281735">មិនមាន​កម្មវិធីទេ</translation>
 <translation id="7144878232160441200">ព្យាយាមម្តងទៀត</translation>
 <translation id="7149893636342594995">24 ម៉ោងមុន</translation>
 <translation id="7152478047064750137">កម្មវិធី​បន្ថែម​នេះ​មិន​តម្រូវ​ឱ្យ​មាន​ការអនុញ្ញាត​ពិសេសទេ</translation>
@@ -6466,7 +6459,6 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">កំពុងភ្ជាប់ទៅ <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">គ្រប់គ្រងកម្មវិធី កម្មវិធីបន្ថែម និងធីមរបស់អ្នក</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> ចង់ចែករំលែក​ខ្លឹមសារ​នៅលើ​អេក្រង់របស់អ្នក។</translation>
 <translation id="8195027750202970175">ទំហំផ្ទុករបស់ថាស</translation>
 <translation id="8198323535106903877">យើង​នឹង​ដំឡើង​កម្មវិធីទាំង <ph name="NUMBER_OF_APPS" /> នោះសម្រាប់អ្នក</translation>
 <translation id="8199300056570174101">លក្ខណៈ​សម្បត្តិ​បណ្ដាញ (សេវាកម្ម) និង​ឧបករណ៍</translation>
@@ -6890,6 +6882,7 @@
 <translation id="8698269656364382265">ដើម្បី​ត្រឡប់​ទៅអេក្រង់​មុនវិញ សូមអូស​ពីផ្នែកខាងឆ្វេង។</translation>
 <translation id="869884720829132584">ម៉ឺនុយកម្មវិធី</translation>
 <translation id="869891660844655955">កាលបរិច្ឆេទការផុតកំណត់</translation>
+<translation id="8699120352855309748">មិនផ្ដល់ការបកប្រែភាសាទាំងនេះទេ</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> របស់អ្នកត្រូវ​បានចាក់សោ។</translation>
 <translation id="8703346390800944767">រំលង​ការផ្សាយ​ពាណិជ្ជកម្ម</translation>
 <translation id="8705331520020532516">លេខសេរ៊ី</translation>

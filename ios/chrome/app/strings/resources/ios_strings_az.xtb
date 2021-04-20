@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Parolu Göstərin</translation>
 <translation id="1872096359983322073">Fənər</translation>
 <translation id="1911619930368729126">Google Diskə yükləyin</translation>
-<translation id="1919130412786645364">Chrome girişinə icazə verin</translation>
 <translation id="1923342640370224680">Son Saat</translation>
 <translation id="1941314575388338491">Kopyalamaq üçün iki dəfə tıklayın.</translation>
 <translation id="1952172573699511566">Mümkün olduqda veb səhifələr tərcih etdiyiniz dildə mətn göstərəcək.</translation>
@@ -216,7 +215,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 
 Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görmək üçün kukilərinizdən istifadə edə bilmir (məsələn, reklamları fərdiləşdirmək üçün).</translation>
 <translation id="3207960819495026254">Əlfəcinlənib</translation>
-<translation id="3222343486469566063">Daxil olmayıb</translation>
 <translation id="3224641773458703735">Parolları eksport etmək üçün əvvəlcə cihazınızda parol kod ayarlamalısınız.</translation>
 <translation id="3240426699337459095">Link kopyalandı</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@ Aşağıdakı addımları izləyin:</translation>
 <translation id="3928666092801078803">Datamı birləşdirin</translation>
 <translation id="3929457972718048006">Ünvanlar</translation>
 <translation id="3943492037546055397">Parollar</translation>
-<translation id="3943557322767080599">Google Hesabınıza daxil olarkən Chrome giriş dəvətlərini göstərin</translation>
-<translation id="3967266340354872733">Məxfilik, təhlükəsizlik və datanın toplanması ilə bağlı daha çox ayarlar üçün <ph name="BEGIN_LINK" />Sinxronizasiya<ph name="END_LINK" /> və <ph name="BEGIN_LINK" />Google Xidmətləri<ph name="END_LINK" /> səhifəsinə daxil olun.</translation>
 <translation id="3967822245660637423">Endirmə tamamdır</translation>
 <translation id="3968505803272650567">Maraqları idarə edin</translation>
 <translation id="3989635538409502728">Çıxış</translation>
@@ -568,7 +564,6 @@ Hər sayt üçün unikal parol istifadə edin.</translation>
 <translation id="6760509555861141183">Son Taba qayıdın</translation>
 <translation id="6780034285637185932">Poçt İndeksi</translation>
 <translation id="6785453220513215166">Qəza haqqında hesabat göndərilir...</translation>
-<translation id="679325081238418596">Bütün cihazlarınızda əlfəcin, tarixçə, parol və digər ayarları əldə edin</translation>
 <translation id="6797885426782475225">Səsli Axtarış</translation>
 <translation id="6807889908376551050">Hamısını göstərin...</translation>
 <translation id="681368974849482173">Element yaradılmışdır</translation>
@@ -580,7 +575,6 @@ Hər sayt üçün unikal parol istifadə edin.</translation>
 <translation id="6873263987691478642">Bölünmüş Görüntü</translation>
 <translation id="6888009575607455378">Dəyişiklikləri ləğv etmək istədiyinizə əminsiniz?</translation>
 <translation id="6896758677409633944">Kopyalayın</translation>
-<translation id="6903907808598579934">Sinxronizasiyanı akitv edin</translation>
 <translation id="6914583639806229067">Kopyalanmış Şəkli Axtarın</translation>
 <translation id="6914783257214138813">Eksport edilmiş faylı görən hər kəs parollarınızı görəcək.</translation>
 <translation id="6930799952781667037">Bu dilə dəyişmək üçün toxunun.</translation>
@@ -711,6 +705,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8225985093977202398">Keşlənmiş Şəkillər və Fayllar</translation>
 <translation id="8261506727792406068">Silin</translation>
 <translation id="8281781826761538115">Defolt - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Keçin</translation>
 <translation id="8283172974887967105">Ayarlayın:</translation>
 <translation id="8299417921174340354">Parollardan istifadə etmək üçün əvvəlcə cihazınızda parol ayarlamalısınız.</translation>
 <translation id="8319076807703933069">Yeni Axtarış</translation>
@@ -794,6 +789,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9223358826628549784">Xəta hesabatı göndərildi.</translation>
 <translation id="952704832371081537">Ləğv edin</translation>
 <translation id="988141524645182168">Digər Cihazlar</translation>
-<translation id="989988560359834682">Ünvana Düzəliş edin</translation>
+<translation id="989988560359834682">Ünvana düzəliş edin</translation>
 <translation id="994757059139821576">Məqalə Təklifləri</translation>
 </translationbundle>

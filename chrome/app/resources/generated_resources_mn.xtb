@@ -327,7 +327,6 @@
 <translation id="1354045473509304750"><ph name="HOST" />-д таны камерыг ашиглах болон хөдөлгөхийг үргэлжлүүлэн зөвшөөрөх</translation>
 <translation id="1355088139103479645">Бүх өгөгдлийг устгах уу?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" />-г блоклосон</translation>
-<translation id="1358612436266364864">Тодруулгыг хасах</translation>
 <translation id="1358741672408003399">Үг, үсэг болон дүрмийн алдаа</translation>
 <translation id="1359923111303110318">Таны төхөөрөмжийн түгжээг Ухаалаг түгжээгээр тайлах боломжтой. Түгжээг тайлахын тулд Enter дээр дарна уу.</translation>
 <translation id="1361164813881551742">Гараар нэмэх</translation>
@@ -1604,7 +1603,6 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> доорх сайтууд мөн шинэчлэгдэх болно.</translation>
 <translation id="2735712963799620190">Хуваарь</translation>
 <translation id="2737363922397526254">Гэмтэлтэй байна ...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> таны дэлгэцийн контентыг <ph name="TARGET_NAME" />-тай хуваалцахыг хүсэж байна.</translation>
 <translation id="2738030019664645674">Сайтуудад таны төхөөрөмж дээр суулгасан фонтуудыг ашиглахыг бүү зөвшөөр</translation>
 <translation id="2738771556149464852">Дараа нь биш</translation>
 <translation id="2739191690716947896">Алдааг засах</translation>
@@ -1892,7 +1890,6 @@
 <translation id="3031417829280473749">Х Агент</translation>
 <translation id="3031557471081358569">Импортолж авах зүйлсийг сонгоно уу:</translation>
 <translation id="3036327949511794916">Энэ <ph name="DEVICE_TYPE" />-г буцаах эцсийн хугацаа өнгөрсөн байна.</translation>
-<translation id="3036438888981457032">Тодруулгыг хасах</translation>
 <translation id="3036546437875325427">Flash-г идэвхжүүлэх</translation>
 <translation id="3037754279345160234">Домайнд нэгдэхийн тулд тохиргоог задалж чадахгүй байна. Админтайгаа холбогдоно уу.</translation>
 <translation id="3038612606416062604">Хэвлэгчийг гараар нэмэх</translation>
@@ -4658,7 +4655,6 @@
 <translation id="6212039847102026977">Дэвшилтэт сүлжээний сонголтыг харуулах</translation>
 <translation id="6212168817037875041">Дэлгэцийг унтраах</translation>
 <translation id="6212752530110374741">Имэйлийн холбоос</translation>
-<translation id="6213230117190778270">Хүлээн авах</translation>
 <translation id="621470880408090483">Сайтуудад Bluetooth төхөөрөмжүүдэд холбогдохыг бүү зөвшөөр</translation>
 <translation id="6215620815501168899">EID болон QR кодын попапыг хаах</translation>
 <translation id="6216601812881225442">Таны контейнер хэмжээг нь өөрчлөхийг дэмждэггүй. Linux-т урьдчилан оноосон зайн хэмжээг тохируулахын тулд хуулбарлаж, дараа нь шинэ контейнерт сэргээнэ үү.</translation>
@@ -5453,7 +5449,6 @@
 <translation id="7076293881109082629">Нэвтэрч байна</translation>
 <translation id="7077829361966535409">Прокси тохируулгыг ашигласан энэ үед нэвтрэх хуудас ачаалагдсангүй. <ph name="GAIA_RELOAD_LINK_START" />дахин нэвтрэх оролдлого<ph name="GAIA_RELOAD_LINK_END" /> хийнэ үү. Эсвэл өөр <ph name="PROXY_SETTINGS_LINK_START" />прокси тохируулга<ph name="PROXY_SETTINGS_LINK_END" /> ашиглана уу.</translation>
 <translation id="7078120482318506217">Бүх сүлжээ</translation>
-<translation id="7078386829626602215">Төхөөрөмж илэрсэнгүй <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">Аудио хаягийг хуулах</translation>
 <translation id="7081952801286122383">Та нууцлалын горимд байна</translation>
 <translation id="708278670402572152">Шалгалтыг идэвхжүүлэхийн тулд салгах</translation>
@@ -5502,11 +5497,9 @@
 <translation id="7135729336746831607">Bluetooth-г асаах уу?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> таныг өөрийн <ph name="DEVICE_TYPE" />-г нэн даруй шинэчлэхийг шаардаж байна.</translation>
 <translation id="7136694880210472378">Байнга ашиглагдах болгох</translation>
-<translation id="7136984461011502314"><ph name="PRODUCT_NAME" /> руу тавтай морилно уу</translation>
 <translation id="7136993520339022828">Алдаа байна. Өөр зураг сонгож дахин оролдоно уу.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> таны микрофоныг ашиглаж байна</translation>
 <translation id="7141105143012495934">Таны бүртгэлийн мэдээллийг татаж чадсангүй тул нэвтрэх үйлдэл амжилтгүй боллоо. Та админтайгаа холбогдох, эсвэл дахин оролдох хэрэгтэй.</translation>
-<translation id="7143358760238281735">Боломжтой апп алга</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
 <translation id="7149893636342594995">Сүүлийн 24 цаг</translation>
 <translation id="7152478047064750137">Энэ өргөтгөл ямар нэгэн тусгай зөвшөөрөл шаарддаггүй</translation>
@@ -6456,7 +6449,6 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> руу холбогдож байна</translation>
 <translation id="8191230140820435481">Програм, өргөтгөл, theme-дээ тохиргоо хийх</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> таны дэлгэцийн контентыг хуваалцахыг хүсэж байна.</translation>
 <translation id="8195027750202970175">Дискийн хэмжээ</translation>
 <translation id="8198323535106903877">Бид эдгээр <ph name="NUMBER_OF_APPS" /> аппыг танд зориулан суулгах болно</translation>
 <translation id="8199300056570174101">Сүлжээ (Үйлчилгээ) болон Төхөөрөмжийн тодруулга</translation>
@@ -6880,6 +6872,7 @@
 <translation id="8698269656364382265">Өмнөх дэлгэц рүү буцахын тулд зүүн талаас нь шударна уу.</translation>
 <translation id="869884720829132584">Програмын цэс</translation>
 <translation id="869891660844655955">Дуусах хугацаа</translation>
+<translation id="8699120352855309748">Эдгээр хэлийг орчуулахыг бүү санал болго</translation>
 <translation id="8702825062053163569">Таны <ph name="DEVICE_TYPE" />-г түгжсэн байна.</translation>
 <translation id="8703346390800944767">Зарыг алгасах</translation>
 <translation id="8705331520020532516">Сери дугаар</translation>

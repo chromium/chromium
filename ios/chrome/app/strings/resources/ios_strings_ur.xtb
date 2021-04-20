@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">پاس ورڈ ظاہر کریں</translation>
 <translation id="1872096359983322073">ٹارچ</translation>
 <translation id="1911619930368729126">‏Google Drive میں اپ لوڈ کریں</translation>
-<translation id="1919130412786645364">‏Chrome میں سائن ان کی اجازت دیں</translation>
 <translation id="1923342640370224680">پچھلے گھنٹے</translation>
 <translation id="1941314575388338491">کاپی کرنے کیلئے دو بار تھپتھپائیں۔</translation>
 <translation id="1952172573699511566">جب ممکن ہوگا، تو ویب سائٹس آپ کی پسندیدہ زبان میں متن دکھائیں گی۔</translation>
@@ -216,7 +215,6 @@
 
 پوشیدگی موڈ میں ہونے پر سائٹس مختلف سائٹس میں آپ کی براؤزنگ سرگرمی کو دیکھنے کے لیے کوکیز کا استعمال نہیں کرسکتی ہیں، مثال کے طور پر اشتہارات کو ذاتی نوعیت کا بنانا۔</translation>
 <translation id="3207960819495026254">بُک مارک بنایا ہوا</translation>
-<translation id="3222343486469566063">سائن ان نہیں ہیں</translation>
 <translation id="3224641773458703735">پاس ورڈز برآمد کرنے کیلئے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا ہوگا۔</translation>
 <translation id="3240426699337459095">لنک کاپی ہوگیا</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@
 <translation id="3928666092801078803">میرا ڈیٹا ملائیں</translation>
 <translation id="3929457972718048006">پتے</translation>
 <translation id="3943492037546055397">پاس ورڈز</translation>
-<translation id="3943557322767080599">‏اپنے Google اکاؤنٹ میں سائن ان کرنے پر Chrome سائن ان پرامپٹس دکھائیں</translation>
-<translation id="3967266340354872733">‏رازداری، سیکیورٹی اور ڈیٹا جمع کرنے سے متعلق مزید ترتیبات کیلئے، <ph name="BEGIN_LINK" />مطابقت پذیری<ph name="END_LINK" /> اور <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
 <translation id="3968505803272650567">دلچسپیوں کا نظم کریں</translation>
 <translation id="3989635538409502728">سائن آؤٹ کریں</translation>
@@ -568,7 +564,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6760509555861141183">حالیہ ٹیب میں واپس جائیں</translation>
 <translation id="6780034285637185932">زپ کوڈ</translation>
 <translation id="6785453220513215166">کریش رپورٹ بھیج رہا ہے…</translation>
-<translation id="679325081238418596">اپنے سبھی آلات پر اپنے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات حاصل کریں</translation>
 <translation id="6797885426782475225">صوتی تلاش</translation>
 <translation id="6807889908376551050">سبھی دکھائیں…</translation>
 <translation id="681368974849482173">آئٹم بنایا گیا</translation>
@@ -580,7 +575,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6873263987691478642">منقسم منظر</translation>
 <translation id="6888009575607455378">کیا آپ واقعی اپنی تبدیلیوں کو مسترد کرنا چاہتے ہیں؟</translation>
 <translation id="6896758677409633944">کاپی کریں</translation>
-<translation id="6903907808598579934">مطابقت پذیری آن کریں</translation>
 <translation id="6914583639806229067">وہ تصویر تلاش کریں جسے آپ نے کاپی کیا ہے</translation>
 <translation id="6914783257214138813">آپ کے پاسورڈز کسی بھی ایسے شخص کے لیے مرئی ہوں گے جو برآمد کردہ فائل کو دیکھ سکتا ہے۔</translation>
 <translation id="6930799952781667037">اس زبان میں تبدیل کرنے کے لیے تھپتھپائیں۔</translation>
@@ -711,6 +705,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8225985093977202398">کیش کردہ تصاویر اور فائلیں</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
 <translation id="8281781826761538115">ڈیفالٹ - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">نظر انداز کریں</translation>
 <translation id="8283172974887967105">سیٹ کریں…</translation>
 <translation id="8299417921174340354">پاس ورڈز استعمال کرنے کے ليے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا ہوگا۔</translation>
 <translation id="8319076807703933069">نئی تلاش</translation>

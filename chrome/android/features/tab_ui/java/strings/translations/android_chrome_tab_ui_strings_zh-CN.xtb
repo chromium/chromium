@@ -16,7 +16,7 @@
 <translation id="257674075312929031">群组</translation>
 <translation id="2613747923081026172">创建群组</translation>
 <translation id="2662028055331606429">当前评分是 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
-<translation id="2671423594960767771">分享群组</translation>
+<translation id="2671423594960767771">分享组</translation>
 <translation id="2759453070259087442">展开包含 <ph name="NUMBER_OF_TABS" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页组。</translation>
 <translation id="2801787514987684416">查看商店信息？</translation>
 <translation id="2928243913527329289">Google | 关于此商店</translation>
@@ -54,7 +54,7 @@
 <translation id="6615455863669487791">演示一下</translation>
 <translation id="6840760312327750441">要将标签页分组，请轻触并按住某个标签页，然后拖动到另一个标签页上。</translation>
 <translation id="6856809498882026482">隐藏多选模式</translation>
-<translation id="7151209024774799310">移除组内的标签页</translation>
+<translation id="7151209024774799310">移出组内的标签页</translation>
 <translation id="7204204600596740190">多选模式</translation>
 <translation id="7352298686197644113">查看您打开的标签页中哪件商品降价了</translation>
 <translation id="753732157349120914">标签页切换器</translation>

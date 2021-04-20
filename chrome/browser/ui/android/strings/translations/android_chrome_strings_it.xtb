@@ -305,7 +305,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3016635187733453316">Assicurati che questo dispositivo sia connesso a Internet</translation>
 <translation id="3029704984691124060">Le passphrase non corrispondono</translation>
 <translation id="3031225630520268969">Interfaccia utente per il consenso all'utilizzo dell'assistente per la ricerca vocale</translation>
-<translation id="3034163383943672781">Il download inizierà il giorno <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Richiedi assistenza<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Accedi più velocemente a questo sito la prossima volta</translation>
 <translation id="305593374596241526">La geolocalizzazione non è attiva; attivala nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuto fa}other{# minuti fa}}</translation>
 <translation id="4587589328781138893">Siti</translation>
 <translation id="4594952190837476234">Questa pagina offline risale al giorno <ph name="CREATION_TIME" /> e potrebbe essere diversa dalla versione online.</translation>
-<translation id="4605958867780575332">Elemento rimosso: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Apri <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>
 <translation id="4634124774493850572">Utilizza password</translation>
@@ -702,7 +700,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="572328651809341494">Schede recenti</translation>
 <translation id="5723735397759933332">La modalità Lite ora ti permette di ridurre il consumo di dati ottimizzando le immagini sulle pagine HTTPS.</translation>
 <translation id="5726692708398506830">Ingrandisci i contenuti della pagina</translation>
-<translation id="5732819098735351888">Il download inizierà tramite Wi-Fi.</translation>
 <translation id="5733983706093266635">Impossibile creare il codice QR. L'URL contiene più di <ph name="CHARACTER_LIMIT" /> caratteri.</translation>
 <translation id="5748802427693696783">Schede standard attivate</translation>
 <translation id="5749068826913805084">Chrome deve avere accesso allo spazio di archiviazione per poter scaricare file.</translation>
@@ -779,9 +776,9 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="614940544461990577">Prova a:</translation>
 <translation id="6154478581116148741">Attiva il blocco schermo in Impostazioni per esportare le tue password da questo dispositivo</translation>
 <translation id="6159335304067198720">Riduzioni dei dati: <ph name="PERCENT" /></translation>
+<translation id="6159729262978459665">Consente di cancellare la cronologia da tutti i dispositivi sincronizzati.</translation>
 <translation id="6186394685773237175">Non sono state trovate password compromesse</translation>
 <translation id="6192907950379606605">Recupera descriz. immagini</translation>
-<translation id="6206830853671714236">Scegli quando effettuare il download</translation>
 <translation id="6210748933810148297">Non sei <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Visualizzazione dell'anteprima della pagina</translation>
 <translation id="6218096829563201111">Cerca prodotti simili <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="7523960634226602883">Cerca con la fotocamera usando Google Lens</translation>
 <translation id="753225086557513863">Programmato più tardi</translation>
 <translation id="7559975015014302720">La modalità Lite non è attiva</translation>
+<translation id="7560448309733608642">Consente di cancellare la cronologia da tutti i dispositivi sincronizzati. Il tuo Account Google potrebbe avere altri tipi di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Cancellazione dei dati di navigazione in corso</translation>
 <translation id="756809126120519699">Dati di Chrome cancellati</translation>
 <translation id="7577900504646297215">Gestisci interessi</translation>
@@ -1177,12 +1175,14 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="8699120352855309748">Non proporre di tradurre queste lingue</translation>
 <translation id="8712637175834984815">Fatto</translation>
 <translation id="8725066075913043281">Riprova</translation>
+<translation id="8730621377337864115">Fine</translation>
 <translation id="8748850008226585750">Contenuti nascosti</translation>
 <translation id="8773160212632396039">Elaborazione della richiesta in corso…</translation>
 <translation id="8788265440806329501">La cronologia di navigazione è chiusa</translation>
 <translation id="8788968922598763114">Riapri l'ultima scheda chiusa</translation>
 <translation id="8798449543960971550">Leggi</translation>
 <translation id="8812260976093120287">In alcuni siti web puoi pagare con le suddette app di pagamento supportate sul tuo dispositivo.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">I contenuti della scheda di anteprima non sono visualizzabili.</translation>
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="883806473910249246">Si è verificato un errore durante il download dei contenuti.</translation>
@@ -1220,10 +1220,10 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="9063523880881406963">Disattiva Richiedi sito desktop</translation>
 <translation id="9065203028668620118">Modifica</translation>
 <translation id="9065383040763568503">I dati memorizzati che Chrome non ritiene importanti (ad esempio siti senza impostazioni salvate o che non visiti spesso)</translation>
-<translation id="9069543557624799859">Il download inizierà alle ore <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Nessuna pagina da leggere</translation>
 <translation id="9070377983101773829">Avvia la ricerca vocale</translation>
 <translation id="9074336505530349563">Per ricevere contenuti suggeriti appositamente per te da Google, accedi e attiva la sincronizzazione</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Sincronizzazione in corso</translation>
 <translation id="9086455579313502267">Impossibile accedere alla rete</translation>
 <translation id="9100505651305367705">Chiedi di mostrare gli articoli in visualizzazione semplificata, se supportata</translation>

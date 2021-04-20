@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">పాస్‌వర్డ్‌ను చూపండి</translation>
 <translation id="1872096359983322073">టార్చ్</translation>
 <translation id="1911619930368729126">Google డిస్క్‌కి అప్‌. చే.</translation>
-<translation id="1919130412786645364">Chrome సైన్-ఇన్‌ని అనుమతించండి</translation>
 <translation id="1923342640370224680">గత గంట</translation>
 <translation id="1941314575388338491">కాపీ చేయడానికి రెండుసార్లు నొక్కండి.</translation>
 <translation id="1952172573699511566">వీలైనప్పుడు వెబ్‌సైట్‌లు, మీ ప్రాధాన్య భాషలో వచనాన్ని చూపుతాయి.</translation>
@@ -216,7 +215,6 @@
 
 అజ్ఞాత మోడ్‍లో ఉండగా, వివిధ సైట్‌లలో మీ బ్రౌజింగ్ యాక్టివిటీని చూడటానికి సైట్‌లు మీ కుక్కీలను ఉపయోగించలేవు, ఉదాహరణకు, యాడ్‌లను వ్యక్తిగతీకరించడం లాంటివి.</translation>
 <translation id="3207960819495026254">బుక్‌మార్క్ చేయబడింది</translation>
-<translation id="3222343486469566063">సైన్ ఇన్ చేయలేదు</translation>
 <translation id="3224641773458703735">పాస్‌వర్డ్‌లను ఎగుమతి చేయడానికి, మీరు ముందుగా మీ పరికరంలో పాస్‌కోడ్‌ను సెట్ చేయాలి.</translation>
 <translation id="3240426699337459095">లింక్ కాపీ చేయబడింది</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@
 <translation id="3928666092801078803">నా డేటాను కలపండి</translation>
 <translation id="3929457972718048006">చిరునామాలు</translation>
 <translation id="3943492037546055397">పాస్‌వర్డ్‌లు</translation>
-<translation id="3943557322767080599">మీరు Google ఖాతాకు సైన్ ఇన్ చేసినప్పుడు, Chrome సైన్ ఇన్ ప్రాంప్ట్‌లను చూపించు</translation>
-<translation id="3967266340354872733">గోప్యత, భద్రత అలాగే డేటా సేకరణకు సంబంధించిన మరిన్ని సెట్టింగ్‌ల కోసం, <ph name="BEGIN_LINK" />సింక్<ph name="END_LINK" />, అలాగే <ph name="BEGIN_LINK" />Google సర్వీస్‌ల<ph name="END_LINK" />ను చూడండి.</translation>
 <translation id="3967822245660637423">డౌన్‌లోడ్ పూర్తయింది</translation>
 <translation id="3968505803272650567">ఆసక్తులను మేనేజ్ చేయండి</translation>
 <translation id="3989635538409502728">సైన్ అవుట్</translation>
@@ -568,7 +564,6 @@
 <translation id="6760509555861141183">ఇటీవలి ట్యాబ్‌కు తిరిగి వెళ్ళండి</translation>
 <translation id="6780034285637185932">జిప్ కోడ్</translation>
 <translation id="6785453220513215166">క్రాష్ నివేదికను పంపుతోంది...</translation>
-<translation id="679325081238418596">మీ బుక్‌మార్క్‌లు, చరిత్ర, పాస్‌వర్డ్‌లు మరియు ఇతర సెట్టింగ్‌లను మీ అన్ని పరికరాల్లో పొందండి</translation>
 <translation id="6797885426782475225">వాయిస్ శోధన</translation>
 <translation id="6807889908376551050">అన్నీ చూపు...</translation>
 <translation id="681368974849482173">అంశం సృష్టించబడింది</translation>
@@ -580,7 +575,6 @@
 <translation id="6873263987691478642">విభజన వీక్షణ</translation>
 <translation id="6888009575607455378">మీరు చేసిన మార్పులను ఖచ్చితంగా విస్మరించాలనుకుంటున్నారా?</translation>
 <translation id="6896758677409633944">కాపీ చేయి</translation>
-<translation id="6903907808598579934">సమకాలీకరణను ఆన్ చేయి</translation>
 <translation id="6914583639806229067">మీరు కాపీ చేసిన చిత్రాన్ని వెతకండి</translation>
 <translation id="6914783257214138813">ఎగుమతి చేయబడిన ఫైల్‌ను చూడగల ఎవరికైనా మీ పాస్‌వర్డ్‌లు కనిపిస్తాయి.</translation>
 <translation id="6930799952781667037">ఈ భాషకు మార్చడానికి నొక్కండి.</translation>
@@ -711,6 +705,7 @@
 <translation id="8225985093977202398">కాష్ చిత్రాలు, ఫైల్‌లు</translation>
 <translation id="8261506727792406068">తొలగించు</translation>
 <translation id="8281781826761538115">డిఫాల్ట్ - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">దాటవేయి</translation>
 <translation id="8283172974887967105">సెట్ చేయి…</translation>
 <translation id="8299417921174340354">పాస్‌వర్డ్‌లను ఉపయోగించడానికి, మీరు ముందుగా తప్పనిసరిగా మీ పరికరంలో పాస్‌కోడ్‌ను సెట్ చేయాలి.</translation>
 <translation id="8319076807703933069">కొత్త శోధన</translation>

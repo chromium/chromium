@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">ສືບຕໍ່ອະນຸຍາດໃຫ້ <ph name="HOST" /> ໃຊ້ ແລະ ຍ້າຍກ້ອງຂອງທ່ານ</translation>
 <translation id="1355088139103479645">ລຶບຂໍ້ມູນທັງໝົດບໍ?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> ຖືກບລັອກໄວ້</translation>
-<translation id="1358612436266364864">ລຶບໄຮໄລ້ອອກ</translation>
 <translation id="1358741672408003399">ການ​ສະ​ກົດ​ຄໍາ​ ແລະໄວຍາກອນ</translation>
 <translation id="1359923111303110318">ສາມາດປົດລັອກອຸປະກອນຂອງທ່ານດ້ວຍ Smart Lock ໄດ້. ກົດ Enter ເພື່ອປົດລັອກ.</translation>
 <translation id="1361164813881551742">ເພີ່ມໃສ່ດ້ວຍຕົນເອງ</translation>
@@ -753,6 +752,7 @@
 <translation id="1794791083288629568">ສົ່ງຄຳຕິຊົມເພື່ອຊ່ວຍພວກເຮົາແກ້ໄຂບັນຫານີ້.</translation>
 <translation id="1795214765651529549">ໃຊ້ແບບຄລາດສິກ</translation>
 <translation id="1799071797295057738">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ຖືກປິດນຳໃຊ້ໂດຍອັດຕະໂນມັດ.</translation>
+<translation id="1800973090344019061">ສ່ວນຂະຫຍາຍ "<ph name="APP_NAME" />" ຕ້ອງການແບ່ງປັນເນື້ອຫາໜ້າຈໍຂອງທ່ານ.</translation>
 <translation id="1802624026913571222">ພັກເຄື່ອງເມື່ອປິດຝາ</translation>
 <translation id="1802687198411089702">ໜ້ານີ້ບໍ່ຕອບສະໜອງ. ທ່ານສາມາດລໍຖ້າມັນ ຫຼື ອອກໄດ້.</translation>
 <translation id="1803531841600994172">ພາສາທີ່ຈະແປເປັນ</translation>
@@ -1353,6 +1353,7 @@
 <translation id="2464089476039395325">ພຣັອກຊີ HTTP</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" /> ກຳນົດໃຫ້ທ່ານຕ້ອງເຊື່ອມຕໍ່ກັບ Wi-Fi ຕອນນີ້ ແລະ ດາວໂຫຼດການອັບເດດ. ຫຼື ດາວໂຫຼດຈາກການເຊື່ອມຕໍ່ແບບວັດແທກປະລິມານອິນເຕີເນັດ (ອາດເກັບຄ່າບໍລິການ).</translation>
 <translation id="2467267713099745100">ເຄືອຂ່າຍ <ph name="NETWORK_TYPE" />, ປິດຢູ່</translation>
+<translation id="2467755475704469005">ກວດບໍ່ພົບອຸປະກອນໃດ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">ການເລັ່ງຄວາມໄວການເລື່ອນແຜ່ນສຳຜັດ</translation>
 <translation id="2468205691404969808">ໃຊ້ຄຸກກີ້ເພື່ອຈື່ການຕັ້ງຄ່າຂອງທ່ານ, ເຖິງແມ່ນວ່າທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງໜ້າເຫຼົ່ານັ້ນກໍຕາມ</translation>
 <translation id="2468402215065996499">ທາມາກັອດຈິ</translation>
@@ -1607,7 +1608,6 @@
 <translation id="2734760316755174687">ເວັບໄຊພາຍໃຕ້ <ph name="SITE_GROUP_NAME" /> ຈະຖືກຣີເຊັດເຊັ່ນກັນ.</translation>
 <translation id="2735712963799620190">ກຳນົດເວລາ</translation>
 <translation id="2737363922397526254">ຍຸບລົງ...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> ຕ້ອງການແບ່ງປັນເນື້ອຫາໜ້າຈໍຂອງທ່ານນຳ <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ຟອນທີ່ຕິດຕັ້ງຢູ່ອຸປະກອນຂອງທ່ານໄດ້</translation>
 <translation id="2738771556149464852">ບໍ່ຫຼັງຈາກ</translation>
 <translation id="2739191690716947896">ແກ້ໄຂບັນຫາ</translation>
@@ -1895,7 +1895,6 @@
 <translation id="3031417829280473749">ຕົວ​ແທນ X</translation>
 <translation id="3031557471081358569">ເລືອກ​ລາຍ​ການ​ທີ່​ຈະ​ນໍາ​ເຂົ້າ​:</translation>
 <translation id="3036327949511794916">ກຳນົດເວລາສົ່ງ <ph name="DEVICE_TYPE" /> ນີ້ຄືນກາຍແລ້ວ.</translation>
-<translation id="3036438888981457032">ລຶບໄຮໄລ້ອອກ</translation>
 <translation id="3036546437875325427">ເປີດໃຊ້ແຟລດ</translation>
 <translation id="3037754279345160234">ບໍ່ສາມາດແຍກວິເຄາະການກຳນົດຄ່າເພື່ອເຂົ້າຮ່ວມໂດເມນໄດ້. ກະລຸນາຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="3038612606416062604">ເພີ່ມເຄື່ອງພິມດ້ວຍຕົນເອງ</translation>
@@ -2383,6 +2382,7 @@
 <translation id="3608576286259426129">ຕົວຢ່າງຮູບຂອງຜູ້ໃຊ້</translation>
 <translation id="3610369246614755442">ພັດລົມຂອງແທ່ນສາກຕ້ອງການສ້ອມແປງ</translation>
 <translation id="361106536627977100">ຂໍ້​ມູນແຝຼດ</translation>
+<translation id="3611655097742243705">ເຂົ້າໄປ Play Store ເພື່ອຊອກຫາແອັບເພີ່ມເຕີມ</translation>
 <translation id="3612673635130633812">ດາວ​ໂຫຼດ​ແລ້ວ​ໂດຍ &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">ສະແດງ <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">ເປີດຢູ່ໃນແຖບໃໝ່</translation>
@@ -2719,6 +2719,7 @@
 <translation id="3943494825379372497">ກູ້ຄືນແອັບ ແລະ ໜ້າບໍ?</translation>
 <translation id="3943582379552582368">ກັບ​ຄືນ​</translation>
 <translation id="3943857333388298514">ແປະໃສ່</translation>
+<translation id="3945513714196326460">ກະລຸນາລອງໃຊ້ຊື່ທີ່ສັ້ນລົງ</translation>
 <translation id="3948116654032448504">&amp;ຊອກຫາ <ph name="SEARCH_ENGINE" /> ຮູບ</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> ສາມາດແກ້ໄຂໄຟລ໌ໃນໂຟນເດີຕໍ່ໄປນີ້ໄດ້</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -3105,6 +3106,7 @@
 <translation id="4415245286584082850">ບໍ່ພົບອຸປະກອນໃດ. ເປີດບົດຄວາມຂອງສູນຊ່ວຍເຫຼືອໃນແຖບໃໝ່.</translation>
 <translation id="4415276339145661267">ຈັດການບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="4415748029120993980">SECG elliptic curve secp384r1 (aka NIST P-384)</translation>
+<translation id="4416450511678320850">ບໍ່ມີແອັບທີ່ສາມາດໃຊ້ໄດ້ສຳລັບເນື້ອຫານີ້</translation>
 <translation id="4416582610654027550">ພິມ URL ທີ່ຖືກຕ້ອງ</translation>
 <translation id="4419409365248380979">ອະນຸຍາດໃຫ້ <ph name="HOST" /> ຕັ້ງຄຸກກີ້ທຸກຄັ້ງ</translation>
 <translation id="4421932782753506458">ຟູ</translation>
@@ -3398,6 +3400,7 @@
 <translation id="473936925429402449">ເລືອກແລ້ວ, ເນື້ອຫາເພີ່ມເຕີມທີ <ph name="CURRENT_ELEMENT" /> ຈາກທັງໝົດ <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">ປີ້</translation>
 <translation id="4742334355511750246">ບໍ່ໄດ້ຮັບອະນຸຍາດສະແດງຮູບພາບ</translation>
+<translation id="4742970037960872810">ລຶບໄຮໄລ້ອອກ</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ສຶກສາວິທີອັບເດດແອັບພລິເຄຊັນ<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ເປີດສຽງເວັບໄຊ}other{ເປີດສຽງເວັບໄຊ}}</translation>
 <translation id="4746351372139058112">ຂໍ້​ຄວາມ</translation>
@@ -4607,6 +4610,7 @@
 <translation id="6136114942382973861">ປິດແຖບການດາວໂຫຼດ</translation>
 <translation id="6136287496450963112">ກະແຈຄວາມປອດໄພຂອງທ່ານບໍ່ໄດ້ຮັບການປົກປ້ອງດ້ວຍ PIN. ເພື່ອຈັດການລາຍນິ້ວມື, ໃຫ້ສ້າງ PIN ກ່ອນ.</translation>
 <translation id="6138680304137685902">ລາຍເຊັນ X9.62 ECDSA ທີ່ມີ SHA-384</translation>
+<translation id="6138774640412545950">ສ່ວນຂະຫຍາຍ "<ph name="APP_NAME" />" ຕ້ອງການແບ່ງປັນເນື້ອຫາໜ້າຈໍຂອງທ່ານກັບ <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ບໍ່ມີເຄືອຂ່າຍ</translation>
 <translation id="6141988275892716286">ຢືນຢັນການດາວໂຫຼດ</translation>
 <translation id="6143186082490678276">ເອົາ​ການ​ຊ່ວຍ​ເຫຼືອ</translation>
@@ -4662,7 +4666,6 @@
 <translation id="6212039847102026977">ສະແດງຄຸນລັກສະນະເຄືອຂ່າຍຂັ້ນສູງ</translation>
 <translation id="6212168817037875041">ປິດໜ້າຈໍ</translation>
 <translation id="6212752530110374741">ອີເມວລິ້ງ</translation>
-<translation id="6213230117190778270">ຮັບ</translation>
 <translation id="621470880408090483">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊເຊື່ອມຕໍ່ຫາອຸປະກອນ Bluetooth</translation>
 <translation id="6215620815501168899">ປິດປັອບອັບ EID ແລະ ລະຫັດ QR</translation>
 <translation id="6216601812881225442">ກ່ອງບັນຈຸຂອງທ່ານບໍ່ຮອງຮັບການປັບຂະໜາດ. ເພື່ອປັບປະລິມານພື້ນທີ່ຫວ່າງທີ່ຈັດສັນລ່ວງໜ້າໃຫ້ Linux, ກະລຸນາສຳຮອງຂໍ້ມູນໄວ້ ແລະ ຈາກນັ້ນກູ້ຄືນໃສ່ກ່ອງບັນຈຸໃໝ່.</translation>
@@ -5397,6 +5400,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> ກຳລັງໃຊ້ກ້ອງຂອງທ່ານຢູ່</translation>
 <translation id="701080569351381435">ເບິ່ງແຫຼ່ງທີ່ມາ</translation>
 <translation id="7014174261166285193">ການ​ຕິດ​ຕັ້ງ​ບໍ່ສໍາເລັດ.</translation>
+<translation id="7014480873681694324">ລຶບໄຮໄລ້ອອກ</translation>
 <translation id="7017004637493394352">ເວົ້າ​ "Ok Google" ອີກເທື່ອໜຶ່ງ</translation>
 <translation id="7017219178341817193">ເພີ່ມໜ້າໃໝ່</translation>
 <translation id="7017354871202642555">ບໍ່ສາມາດຕັ້ງໂໝດໄດ້ຫຼັງຈາກຕັ້ງໜ້າຕ່າງແລ້ວ.</translation>
@@ -5457,7 +5461,6 @@
 <translation id="7076293881109082629">ກໍາລັງເຂົ້າ​ລະ​ບົບ</translation>
 <translation id="7077829361966535409">ໜ້າລົງຊື່ເຂົ້າ​ໃຊ້ທີ່ໃຊ້ການຕັ້ງຄ່າພຣັອກຊີປະຈຸບັນໂຫຼດບໍ່ໄດ້. ກະລຸນາ <ph name="GAIA_RELOAD_LINK_START" />ລອງລົງຊື່ເຂົ້າ​ໃຊ້ອີກ<ph name="GAIA_RELOAD_LINK_END" />, ຫຼືໃຊ້ <ph name="PROXY_SETTINGS_LINK_START" />ການຕັ້ງຄ່າພຣັອກຊີ<ph name="PROXY_SETTINGS_LINK_END" /> ອື່ນ.</translation>
 <translation id="7078120482318506217">ທຸກເຄືອຂ່າຍ</translation>
-<translation id="7078386829626602215">ກວດບໍ່ພົບອຸປະກອນໃດ <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">ອັດ​ສຳ​ເນົາ​ທີ່​ຢູ່​ສຽງ</translation>
 <translation id="7081952801286122383">ທ່ານຢູ່ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="708278670402572152">ຕັດເຊື່ອມຕໍ່ເພື່ອເປີດນຳໃຊ້ການສະແກນ</translation>
@@ -5506,11 +5509,9 @@
 <translation id="7135729336746831607">ເປີດ Bluetooth ບໍ?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> ກຳນົດໃຫ້ທ່ານອັບເດດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານໃນທັນທີ.</translation>
 <translation id="7136694880210472378">ເຮັດ​ເປັນຄ່າມາດຕະຖານ</translation>
-<translation id="7136984461011502314">ຍິນດີຕ້ອນຮັບສູ່ <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">ເກີດຄວາມຜິດພາດ. ກະລຸນາລອງອີກຄັ້ງໂດຍການເລືອກຮູບພາບອື່ນ.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> ກຳລັງໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="7141105143012495934">ລົງຊື່ເຂົ້າໃຊ້​ບໍ່​ສຳ​ເລັດ ເພາະ​ວ່າ​ບໍ່​ສາ​ມາດ​ກູ້​ຄືນ​ລາຍ​ລະ​ອຽດ​ບັນ​ຊີ​ຂອງ​ທ່ານ​ໄດ້. ກະ​ລຸ​ນາ​ຕິດ​ຕໍ່​ຜູ້ຄວບຄຸມຂອງທ່ານ ຫຼື ລອງໃໝ່ອີກ.</translation>
-<translation id="7143358760238281735">ບໍ່ມີແອັບທີ່ໃຊ້ໄດ້</translation>
 <translation id="7144878232160441200">ລອງໃໝ່ອີກ</translation>
 <translation id="7149893636342594995">24 ຊົ່ວໂມງຜ່ານມາ</translation>
 <translation id="7152478047064750137">ສ່ວນຂະຫຍາຍນີ້ບໍ່ຈຳເປັນຕ້ອງມີການອະນຸຍາດພິເສດໃດໆ</translation>
@@ -6462,7 +6463,6 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">ກໍາລັງ​ເຊື່ອມ​ຕໍ່​ກັບ <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">ຈັດການແອັບ, ສ່ວນຂະຫຍາຍ, ແລະເທມຂອງທ່ານ</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> ຕ້ອງການແບ່ງປັນເນື້ອຫາໜ້າຈໍຂອງທ່ານ.</translation>
 <translation id="8195027750202970175">ຂະໜາດໃນດິສ</translation>
 <translation id="8198323535106903877">ພວກເຮົາຈະຕິດຕັ້ງແອັບ <ph name="NUMBER_OF_APPS" /> ເຫຼົ່ານີ້ໃຫ້ທ່ານ</translation>
 <translation id="8199300056570174101">ຄຸນລັກສະນະຂອງເຄືອຂ່າຍ (ການບໍລິການ) ແລະ ອຸປະກອນ</translation>
@@ -6886,6 +6886,7 @@
 <translation id="8698269656364382265">ປັດຈາກເບື້ອງຊ້າຍເພື່ອກັບຄືນຫາໜ້າຈໍຜ່ານມາ.</translation>
 <translation id="869884720829132584">ເມ​ນູ​ແອັບພລິເຄຊັນ</translation>
 <translation id="869891660844655955">ວັນ​ຫມົດ​ອາ​ຍຸ</translation>
+<translation id="8699120352855309748">ບໍ່ສະເໜີແປພາສາເຫຼົ່ານີ້</translation>
 <translation id="8702825062053163569">ລັອກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານໄວ້ແລ້ວ.</translation>
 <translation id="8703346390800944767">ຂ້າມໂຄສະນາ</translation>
 <translation id="8705331520020532516">ເລກລໍາດັບ</translation>

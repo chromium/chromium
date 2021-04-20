@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">သင့်ကင်မရာ သုံးရန်နှင့် ရွှေ့ရန်အတွက် <ph name="HOST" /> ကို ဆက်လက်ခွင့်ပြုရန်</translation>
 <translation id="1355088139103479645">ဒေတာအားလုံးကို ဖျက်မလား။</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> ကို ပိတ်ထားပါသည်</translation>
-<translation id="1358612436266364864">မြင်သာအောင်လုပ်ထားသည်များကို ဖယ်ရှားရန်</translation>
 <translation id="1358741672408003399">စာလုံးပေါင်း နှင့် သဒ္ဒါ</translation>
 <translation id="1359923111303110318">သင့်စက်ပစ္စည်းကို Smart Lock ဖြင့် လော့ခ်ဖွင့်နိုင်သည်။ လော့ခ်ဖွင့်ရန် Enter နှိပ်ပါ။</translation>
 <translation id="1361164813881551742">ကိုယ်တိုင်ထည့်ရန်</translation>
@@ -1610,7 +1609,6 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> အောက်ရှိ ဝဘ်ဆိုက်များကိုလည်း ပြင်ဆင်သတ်မှတ်လိုက်ပါမည်။</translation>
 <translation id="2735712963799620190">အချိန်ဇယား</translation>
 <translation id="2737363922397526254">ခေါက်သိမ်းရန်...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> သည် သင့်ဖန်သားပြင် အကြောင်းအရာများကို <ph name="TARGET_NAME" /> အား မျှဝေလိုသည်။</translation>
 <translation id="2738030019664645674">သင့်စက်တွင်ထည့်သွင်းထားသော ဖောင့်များသုံးရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
 <translation id="2738771556149464852">နောက်မှ မဟုတ်ပါ</translation>
 <translation id="2739191690716947896">အမှားရှာပြင်ခြင်း</translation>
@@ -1898,7 +1896,6 @@
 <translation id="3031417829280473749">ကိုယ်စားလှယ် X</translation>
 <translation id="3031557471081358569">တင်သွင်းရန် အရာများကို ရွေးပါ:</translation>
 <translation id="3036327949511794916">ဤ <ph name="DEVICE_TYPE" /> ကိုပြန်ပို့ရန် နောက်ဆုံးသတ်မှတ်ရက် ကျော်သွားပါပြီ။</translation>
-<translation id="3036438888981457032">မြင်သာအောင်လုပ်ထားသည်များကို ဖယ်ရှားခြင်း</translation>
 <translation id="3036546437875325427">ဖလက်ရှ်မီးကို ဖွင့်ရန်</translation>
 <translation id="3037754279345160234">ဒိုမိန်းသို့ ချိတ်ဆက်ခြင်း စီစဉ်သတ်မှတ်မှုကို ခွဲခြမ်းစိတ်ဖြာ၍ မရပါ။ သင်၏ စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="3038612606416062604">ပုံနှိပ်စက်ကို မိမိကိုယ်တိုင် ထည့်ရန်</translation>
@@ -4663,7 +4660,6 @@
 <translation id="6212039847102026977">အဆင့်မြင့်ကွန်ရက် အချက်အလက်များကို ပြရန်</translation>
 <translation id="6212168817037875041">မျက်နှာပြင်ပြသမှုကို ပိတ်ရန်</translation>
 <translation id="6212752530110374741">အီးမေးလ်လင့်ခ်</translation>
-<translation id="6213230117190778270">လက်ခံရန်</translation>
 <translation id="621470880408090483">ဘလူးတုသ်သုံးစက်များနှင့် ချိတ်ဆက်ရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
 <translation id="6215620815501168899">EID နှင့် QR ကုဒ် ပေါ့ပ်အပ်ပိတ်ရန်</translation>
 <translation id="6216601812881225442">သင့်ကွန်တိန်နာသည် အရွယ်အစားပြင်ခြင်းကို မပံ့ပိုးပါ။ Linux အတွက် ကြိုတင်သတ်မှတ်ပေးထားသည့် နေရာပမာဏကို ချိန်ညှိရန် အရန်သိမ်းပြီး ကွန်တိန်နာအသစ်သို့ ပြန်ယူပါ။</translation>
@@ -5457,7 +5453,6 @@
 <translation id="7076293881109082629">အကောင့်ထံဝင်ရောက်နေသည်</translation>
 <translation id="7077829361966535409">လက်ရှိ ပရောက်စီ ဆက်တင်များကို သုံးပြီး လက်မှတ်ထိုး-ဝင်ရေး စာမျက်နှာ တင် မရခဲ့ပါ။ ကျေးဇူးပြုပြီး <ph name="GAIA_RELOAD_LINK_START" />ထပ်ပြီး လက်မှတ်ထိုး ဝင်ရန် ကြိုးစားပါ<ph name="GAIA_RELOAD_LINK_END" />၊ သို့မဟုတ် အခြား <ph name="PROXY_SETTINGS_LINK_START" />ပရောက်စီ ဆက်တင်များ<ph name="PROXY_SETTINGS_LINK_END" />ကို သုံးပါ။</translation>
 <translation id="7078120482318506217">ကွန်ရက်အားလုံး</translation>
-<translation id="7078386829626602215">စက်မရှိပါ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">အသံ၏ လိပ်စာကို မိ&amp;တ္တူ ကူးပါ</translation>
 <translation id="7081952801286122383">ကိုယ်ဖျောက်မုဒ်ဖြင့် သုံးနေသည်</translation>
 <translation id="708278670402572152">ရှာဖွေခြင်းကို ဖွင့်ရန် ချိတ်ဆက်မှုဖြုတ်ပါ</translation>
@@ -5506,11 +5501,9 @@
 <translation id="7135729336746831607">ဘလူးတုသ် ဖွင့်မလား။</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> က သင်၏ <ph name="DEVICE_TYPE" /> ကို ချက်ချင်း အပ်ဒိတ်လုပ်စေလိုသည်။</translation>
 <translation id="7136694880210472378">ပုံသေ လုပ်ရန်</translation>
-<translation id="7136984461011502314"><ph name="PRODUCT_NAME" /> မှကြိုဆိုပါသည်</translation>
 <translation id="7136993520339022828">အမှားအယွင်းရှိနေသည်။ အခြားပုံများကို ရွေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> က သင့်မိုက်ခရိုဖုန်းကို အသုံးပြုနေသည်</translation>
 <translation id="7141105143012495934">သင့်အကောင့်အသေးစိတ်များအား ထုတ်ယူ၍မရသောကြောင့် လက်မှတ်ထိုးဝင်ရောက်မှု မအောင်မြင်ပါ။ ကျေးဇူးပြု၍ သင့်ကြီးကြပ်သူကို ဆက်သွယ်ပါ သို့မဟုတ် နောက်တစ်ကြိမ်ကြိုးစားပါ။</translation>
-<translation id="7143358760238281735">မည်သည့်အက်ပ်မျှ မရှိပါ</translation>
 <translation id="7144878232160441200">ထပ်စမ်းရန်</translation>
 <translation id="7149893636342594995">ပြီးခဲ့သည့် ၂၄ နာရီ</translation>
 <translation id="7152478047064750137">ဤနောက်ဆက်တွဲသည် အထူးခွင့်ပြုချက်များ မလိုအပ်ပါ</translation>
@@ -6463,7 +6456,6 @@
 <translation id="8189750580333936930">ပုဂ္ဂိုလ်ရေးဆိုင်ရာ လုံခြုံသည့်နေရာ</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />သို့ ချိတ်ဆက်​နေ</translation>
 <translation id="8191230140820435481">သင်၏ အက်ပ်များ၊ တိုးချဲ့မှုများ၊ နှင့် အပြင်အဆင်များကို စီမံကွပ်ကဲရန်</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> သည် သင့်ဖန်သားပြင် အကြောင်းအရာများကို မျှဝေလိုသည်။</translation>
 <translation id="8195027750202970175">ဖိုင်အရွယ်အစား</translation>
 <translation id="8198323535106903877">၎င်း <ph name="NUMBER_OF_APPS" /> အက်ပ်များကို သင့်အတွက် ထည့်သွင်းပေးပါမည်</translation>
 <translation id="8199300056570174101">ကွန်ရက် (ဝန်ဆောင်မှု) နှင့် စက်ပစ္စည်း သတ်မှတ်ချက်များ</translation>
@@ -6887,6 +6879,7 @@
 <translation id="8698269656364382265">ယခင်ဖန်သားပြင်သို့ ပြန်သွားရန် ဘယ်ဘက်မှ ပွတ်ဆွဲပါ။</translation>
 <translation id="869884720829132584">အပလီကေးရှင်း မီနူး</translation>
 <translation id="869891660844655955">သက်တမ်း ကုန်ဆုံးရက်</translation>
+<translation id="8699120352855309748">ဤဘာသာစကားများကို ပြန်ဆိုရန် မကမ်းလှမ်းပါနှင့်</translation>
 <translation id="8702825062053163569">သင်၏ <ph name="DEVICE_TYPE" /> ကို လော့ခ်ချထားပါသည်။</translation>
 <translation id="8703346390800944767">ကြော်ငြာကို ကျော်ရန်</translation>
 <translation id="8705331520020532516">နံပါတ်စဉ်</translation>

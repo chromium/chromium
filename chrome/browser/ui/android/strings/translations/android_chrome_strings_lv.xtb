@@ -305,7 +305,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3016635187733453316">Pārbaudiet, vai šajā ierīcē ir izveidots interneta savienojums</translation>
 <translation id="3029704984691124060">Ieejas frāzes neatbilst.</translation>
 <translation id="3031225630520268969">Piekrišanas lietotāja saskarne Asistenta izmantošanai meklēšanā ar balsi</translation>
-<translation id="3034163383943672781">Lejupielāde tiks sākta šajā datumā: <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Saņemt palīdzību<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Nākamreiz uz šo vietni varat pāriet ātrāk</translation>
 <translation id="305593374596241526">Atrašanās vietu noteikšana ir izslēgta. Ieslēdziet to <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4583164079174244168">{MINUTES,plural, =1{pirms # minūtes}zero{pirms # minūtēm}one{pirms # minūtes}other{pirms # minūtēm}}</translation>
 <translation id="4587589328781138893">Vietnes</translation>
 <translation id="4594952190837476234">Šī lapas bezsaistes versija (izveidota: <ph name="CREATION_TIME" />) var atšķirties no tiešsaistes versijas.</translation>
-<translation id="4605958867780575332">Vienums noņemts: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Atvērt <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Apstiprināt identitāti</translation>
 <translation id="4634124774493850572">Izmantot paroli</translation>
@@ -702,7 +700,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="572328651809341494">Nesen atvērtas cilnes</translation>
 <translation id="5723735397759933332">Tagad vienkāršotajā režīmā tiek vēl vairāk samazināts datu lietojums, optimizējot attēlus HTTPS lapās.</translation>
 <translation id="5726692708398506830">Palielināt visu lapas saturu</translation>
-<translation id="5732819098735351888">Lejupielāde tiks sākta, kad būs izveidots Wi-Fi savienojums.</translation>
 <translation id="5733983706093266635">Nevar izveidot QR kodu. URL garums pārsniedz <ph name="CHARACTER_LIMIT" /> rakstzīmes.</translation>
 <translation id="5748802427693696783">Notika pārslēgšanās uz standarta cilnēm</translation>
 <translation id="5749068826913805084">Chrome ir nepieciešama piekļuve krātuvei, lai varētu lejupielādēt failus.</translation>
@@ -779,9 +776,9 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="614940544461990577">Veiciet tālāk norādītās darbības.</translation>
 <translation id="6154478581116148741">Lai eksportētu paroles no šīs ierīces, sadaļā “Iestatījumi” ieslēdziet ekrāna bloķēšanu.</translation>
 <translation id="6159335304067198720">Datu lietojuma samazinājums: <ph name="PERCENT" /></translation>
+<translation id="6159729262978459665">Vēsture tiks notīrīta no visām sinhronizētajām ierīcēm.</translation>
 <translation id="6186394685773237175">Netika atrasta neviena uzlauzta parole.</translation>
 <translation id="6192907950379606605">Iegūt attēlu aprakstus</translation>
-<translation id="6206830853671714236">Lejupielādes laika atlase</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> nav mana e-pasta adrese</translation>
 <translation id="6211386937064921208">Notiek šīs lapas priekšskatīšana</translation>
 <translation id="6218096829563201111">Meklēt līdzīgus produktus <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="7523960634226602883">Meklēt ar kameru, izmantojot Google Lens</translation>
 <translation id="753225086557513863">Ieplānota vēlāk</translation>
 <translation id="7559975015014302720">Vienkāršotais režīms ir izslēgts</translation>
+<translation id="7560448309733608642">Vēsture tiks notīrīta no visām sinhronizētajām ierīcēm. Jūsu Google kontam var būt citu veidu pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Notiek pārlūkošanas datu notīrīšana</translation>
 <translation id="756809126120519699">Chrome dati tika notīrīti</translation>
 <translation id="7577900504646297215">Pārvaldīt intereses</translation>
@@ -1177,12 +1175,14 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="8699120352855309748">Nepiedāvāt tulkot no šīm valodām</translation>
 <translation id="8712637175834984815">Sapratu!</translation>
 <translation id="8725066075913043281">Mēģināt vēlreiz</translation>
+<translation id="8730621377337864115">Gatavs</translation>
 <translation id="8748850008226585750">Saturs paslēpts</translation>
 <translation id="8773160212632396039">Notiek pieprasījuma apstrāde</translation>
 <translation id="8788265440806329501">Navigācijas vēsture ir aizvērta</translation>
 <translation id="8788968922598763114">Atkārtoti atvērt pēdējo aizvērto cilni</translation>
 <translation id="8798449543960971550">Lasītas</translation>
 <translation id="8812260976093120287">Dažās vietnēs var norēķināties, ierīcē izmantojot iepriekš norādītās atbalstītās maksājumu lietotnes.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Priekšskatāmās cilnes saturu nevar skatīt.</translation>
 <translation id="8820817407110198400">Grāmatzīmes</translation>
 <translation id="883806473910249246">Lejupielādējot saturu, radās kļūda.</translation>
@@ -1220,10 +1220,10 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="9063523880881406963">Izslēgt iestatījumu “Pieprasīt datora vietni”</translation>
 <translation id="9065203028668620118">Labot</translation>
 <translation id="9065383040763568503">Saglabāti dati, kas pārlūkā Chrome netiek uzskatīti par svarīgu (piemēram, dati, ko glabā vietnes bez saglabātiem iestatījumiem vai vietnes, kuras neapmeklējat bieži)</translation>
-<translation id="9069543557624799859">Lejupielāde sāksies <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Nav nelasītu lapu</translation>
 <translation id="9070377983101773829">Sākt meklēšanu ar balsi</translation>
 <translation id="9074336505530349563">Lai saņemtu Google ieteikto personalizēto saturu, pierakstieties un ieslēdziet sinhronizāciju.</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Notiek sinhronizācija</translation>
 <translation id="9086455579313502267">Nevar piekļūt tīklam</translation>
 <translation id="9100505651305367705">Piedāvāt rādīt rakstus vienkāršotā skatā, ja tāds tiek atbalstīts</translation>

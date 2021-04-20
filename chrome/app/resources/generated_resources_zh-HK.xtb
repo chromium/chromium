@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">繼續允許 <ph name="HOST" /> 使用和移動相機</translation>
 <translation id="1355088139103479645">要刪除所有資料嗎？</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> 已遭封鎖</translation>
-<translation id="1358612436266364864">移除突顯</translation>
 <translation id="1358741672408003399">拼字與文法</translation>
 <translation id="1359923111303110318">你可以用 Smart Lock 解鎖裝置。㩒 Enter 掣就可以解鎖。</translation>
 <translation id="1361164813881551742">手動新增</translation>
@@ -1608,7 +1607,6 @@
 <translation id="2734760316755174687">屬於「<ph name="SITE_GROUP_NAME" />」的網站將會重設。</translation>
 <translation id="2735712963799620190">設定時段</translation>
 <translation id="2737363922397526254">收合…</translation>
-<translation id="2737916598897808047">「<ph name="APP_NAME" />」要求與 <ph name="TARGET_NAME" /> 分享螢幕內容。</translation>
 <translation id="2738030019664645674">不允許網站使用裝置上安裝的字型</translation>
 <translation id="2738771556149464852">此日期之前</translation>
 <translation id="2739191690716947896">偵錯</translation>
@@ -1896,7 +1894,6 @@
 <translation id="3031417829280473749">特務 X</translation>
 <translation id="3031557471081358569">選取要匯入的項目：</translation>
 <translation id="3036327949511794916">此 <ph name="DEVICE_TYPE" /> 的退貨期限已過。</translation>
-<translation id="3036438888981457032">移除突顯</translation>
 <translation id="3036546437875325427">啟用 Flash</translation>
 <translation id="3037754279345160234">無法剖析設定以加入網域，請與管理員聯絡。</translation>
 <translation id="3038612606416062604">手動新增打印機</translation>
@@ -4663,7 +4660,6 @@
 <translation id="6212039847102026977">顯示進階網絡屬性</translation>
 <translation id="6212168817037875041">關閉螢幕</translation>
 <translation id="6212752530110374741">透過電郵傳送連結</translation>
-<translation id="6213230117190778270">接收</translation>
 <translation id="621470880408090483">不允許網站連接藍牙裝置</translation>
 <translation id="6215620815501168899">閂 EID 同 QR 碼彈出式視窗</translation>
 <translation id="6216601812881225442">無法調整容器大小。如要調整預先分配給 Linux 的空間數量，請先備份容器，然後再復原至新容器。</translation>
@@ -5458,7 +5454,6 @@
 <translation id="7076293881109082629">登入中</translation>
 <translation id="7077829361966535409">無法使用目前的 Proxy 設定載入登入頁面。請<ph name="GAIA_RELOAD_LINK_START" />重新登入<ph name="GAIA_RELOAD_LINK_END" />或使用其他<ph name="PROXY_SETTINGS_LINK_START" />Proxy 設定<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
 <translation id="7078120482318506217">所有網絡</translation>
-<translation id="7078386829626602215">未偵測到任何裝置。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">複製音效檔案位址(&amp;O)</translation>
 <translation id="7081952801286122383">目前為無痕模式</translation>
 <translation id="708278670402572152">中斷連線即可啟用掃瞄功能</translation>
@@ -5507,11 +5502,9 @@
 <translation id="7135729336746831607">要開啟藍牙嗎？</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> 要求您立即更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="7136694880210472378">設定為預設</translation>
-<translation id="7136984461011502314">歡迎使用 <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">發生錯誤。請選擇其他圖片並再試一次。</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> 正在使用您的麥克風</translation>
 <translation id="7141105143012495934">系統無法擷取您帳戶的詳細資料，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
-<translation id="7143358760238281735">沒有可用的應用程式</translation>
 <translation id="7144878232160441200">重試</translation>
 <translation id="7149893636342594995">最近 24 小時</translation>
 <translation id="7152478047064750137">這個擴充程式不需要任何特殊權限</translation>
@@ -6464,7 +6457,6 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">正在連線至 <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">管理您的應用程式、擴充功能和主題</translation>
-<translation id="8192944472786724289">「<ph name="APP_NAME" />」要求分享螢幕內容。</translation>
 <translation id="8195027750202970175">磁碟大小</translation>
 <translation id="8198323535106903877">我們將為您安裝這 <ph name="NUMBER_OF_APPS" /> 個應用程式</translation>
 <translation id="8199300056570174101">網絡 (服務) 和裝置屬性元件</translation>
@@ -6887,6 +6879,7 @@
 <translation id="8698269656364382265">如要返回上一個畫面，請從左邊向另一邊滑動。</translation>
 <translation id="869884720829132584">應用程式選單</translation>
 <translation id="869891660844655955">到期日</translation>
+<translation id="8699120352855309748">不要詢問是否翻譯這些語言</translation>
 <translation id="8702825062053163569">系統已鎖定您的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="8703346390800944767">略過廣告</translation>
 <translation id="8705331520020532516">序號</translation>

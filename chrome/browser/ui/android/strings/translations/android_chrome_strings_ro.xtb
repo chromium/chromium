@@ -305,7 +305,6 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3016635187733453316">Verifică dacă dispozitivul este conectat la internet</translation>
 <translation id="3029704984691124060">Expresiile de acces nu corespund</translation>
 <translation id="3031225630520268969">IU pentru consimțirea la căutarea vocală cu ajutorul Asistentului</translation>
-<translation id="3034163383943672781">Descărcarea va începe pe <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obține ajutor<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Accesează mai rapid site-ul data viitoare</translation>
 <translation id="305593374596241526">Locația este dezactivată; activeaz-o în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4583164079174244168">{MINUTES,plural, =1{Acum # minut}few{Acum # minute}other{Acum # de minute}}</translation>
 <translation id="4587589328781138893">Site-uri</translation>
 <translation id="4594952190837476234">Această pagină offline este din data de <ph name="CREATION_TIME" /> și poate fi diferită de versiunea online.</translation>
-<translation id="4605958867780575332">Element eliminat: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Deschide <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Confirmă-ți identitatea</translation>
 <translation id="4634124774493850572">Folosește parola</translation>
@@ -702,7 +700,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="572328651809341494">File recente</translation>
 <translation id="5723735397759933332">Modul Lite economisește acum mai multe date optimizând imaginile din paginile HTTPS.</translation>
 <translation id="5726692708398506830">Mărește întregul conținut al paginii</translation>
-<translation id="5732819098735351888">Descărcarea va începe prin Wi-Fi.</translation>
 <translation id="5733983706093266635">Nu s-a putut crea codul QR. Adresa URL are peste <ph name="CHARACTER_LIMIT" /> caractere.</translation>
 <translation id="5748802427693696783">Ai comutat la filele standard</translation>
 <translation id="5749068826913805084">Pentru a descărca fișiere, Chrome necesită acces la stocare.</translation>
@@ -782,7 +779,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="6159729262978459665">Șterge istoricul de pe toate dispozitivele sincronizate.</translation>
 <translation id="6186394685773237175">Nu s-au găsit parole compromise</translation>
 <translation id="6192907950379606605">Generează descrieri imagine</translation>
-<translation id="6206830853671714236">Alege momentul descărcării</translation>
 <translation id="6210748933810148297">Nu ești <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Previzualizare a paginii</translation>
 <translation id="6218096829563201111">Caută produse similare <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
@@ -1179,12 +1175,14 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="8699120352855309748">Nu oferi traducerea pentru aceste limbi</translation>
 <translation id="8712637175834984815">Am înțeles</translation>
 <translation id="8725066075913043281">Încearcă din nou</translation>
+<translation id="8730621377337864115">Terminat</translation>
 <translation id="8748850008226585750">Conținutul este ascuns</translation>
 <translation id="8773160212632396039">Se procesează solicitarea</translation>
 <translation id="8788265440806329501">Istoricul de navigare este închis</translation>
 <translation id="8788968922598763114">Redeschide ultima filă închisă</translation>
 <translation id="8798449543960971550">Citite</translation>
 <translation id="8812260976093120287">Pe unele site-uri, poți plăti folosind aplicațiile acceptate pentru plăți de mai sus de pe dispozitiv.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Conținutul filei Previzualizează nu poate fi afișat.</translation>
 <translation id="8820817407110198400">Marcaje</translation>
 <translation id="883806473910249246">A apărut o eroare la descărcarea conținutului.</translation>
@@ -1222,10 +1220,10 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="9063523880881406963">Dezactivează opțiunea Versiune site pentru desktop</translation>
 <translation id="9065203028668620118">Editează</translation>
 <translation id="9065383040763568503">Datele stocate pe care Chrome nu le consideră importante (de ex., site-uri care nu au setări salvate sau pe care nu le accesezi frecvent)</translation>
-<translation id="9069543557624799859">Descărcarea va începe la <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Nu există pagini necitite</translation>
 <translation id="9070377983101773829">Începe căutarea vocală</translation>
 <translation id="9074336505530349563">Pentru a obține sugestii de conținut personalizat de la Google, conectează-te și activează sincronizarea</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Se sincronizează</translation>
 <translation id="9086455579313502267">Nu se poate accesa rețeaua</translation>
 <translation id="9100505651305367705">Oferă afișarea simplificată a articolelor, dacă este acceptată</translation>

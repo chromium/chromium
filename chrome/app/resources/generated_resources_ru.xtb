@@ -330,7 +330,6 @@
 <translation id="1354045473509304750">Разрешить сайту <ph name="HOST" /> и дальше использовать вашу камеру и перемещать ее</translation>
 <translation id="1355088139103479645">Удалить все данные?</translation>
 <translation id="1355466263109342573">Плагин "<ph name="PLUGIN_NAME" />" заблокирован</translation>
-<translation id="1358612436266364864">Снять выделение</translation>
 <translation id="1358741672408003399">Правописание и грамматика</translation>
 <translation id="1359923111303110318">Ваше устройство можно разблокировать с помощью Smart Lock. Для этого нажмите Ввод.</translation>
 <translation id="1361164813881551742">Добавить вручную</translation>
@@ -885,6 +884,7 @@
 <translation id="1928202201223835302">Введите прежний PIN-код</translation>
 <translation id="1928696683969751773">Обновления</translation>
 <translation id="1929186283613845153">Сканирование файла…</translation>
+<translation id="1929343511231420085">Любой последовательный порт</translation>
 <translation id="1929546189971853037">Чтение истории просмотров на всех устройствах, где вы используете этот аккаунт.</translation>
 <translation id="1930879306590754738">Пароль удален с устройства и из аккаунта Google.</translation>
 <translation id="1931152874660185993">Компоненты не установлены.</translation>
@@ -1608,7 +1608,6 @@
 <translation id="2734760316755174687">Разрешения будут также сброшены на всех сайтах <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Расписание</translation>
 <translation id="2737363922397526254">Свернуть...</translation>
-<translation id="2737916598897808047">Приложение "<ph name="APP_NAME" />" хочет предоставить сайту <ph name="TARGET_NAME" /> доступ к вашему экрану.</translation>
 <translation id="2738030019664645674">Запретить сайтам использовать шрифты, установленные на устройстве</translation>
 <translation id="2738771556149464852">Не позже</translation>
 <translation id="2739191690716947896">Отладка</translation>
@@ -1896,7 +1895,6 @@
 <translation id="3031417829280473749">Секретный агент</translation>
 <translation id="3031557471081358569">Выберите элементы для импорта:</translation>
 <translation id="3036327949511794916">Истек срок возврата устройства <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3036438888981457032">Снять выделение</translation>
 <translation id="3036546437875325427">Включить Flash</translation>
 <translation id="3037754279345160234">Не удалось проанализировать конфигурацию для подключения к домену. Обратитесь к администратору.</translation>
 <translation id="3038612606416062604">Добавление принтера вручную</translation>
@@ -2145,7 +2143,7 @@
 <translation id="3341703758641437857">Разрешить открывать локальные файлы по ссылкам</translation>
 <translation id="3342361181740736773">Программа "<ph name="TRIGGERING_EXTENSION_NAME" />" пытается удалить это расширение.</translation>
 <translation id="3345135638360864351">Не удалось отправить пользователю <ph name="NAME" /> запрос на доступ к этому сайту. Повторите попытку.</translation>
-<translation id="3345634917232014253">Проверка безопасности выполнена только что.</translation>
+<translation id="3345634917232014253">Проверка безопасности выполнена только что</translation>
 <translation id="3345886924813989455">Поддерживаемые браузеры не найдены</translation>
 <translation id="3347086966102161372">&amp;Копировать URL картинки</translation>
 <translation id="3348038390189153836">Обнаружено съемное устройство</translation>
@@ -2293,7 +2291,7 @@
 <translation id="3500417806337761827">Произошла ошибка. Подключено слишком много общих папок SMB.</translation>
 <translation id="3505030558724226696">Запретить доступ к устройствам</translation>
 <translation id="3505100368357440862">Рекомендуемые товары</translation>
-<translation id="3507132249039706973">Стандартная защита включена.</translation>
+<translation id="3507132249039706973">Стандартная защита включена</translation>
 <translation id="3507421388498836150">Текущие разрешения расширения "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3507888235492474624">Повторите поиск устройств Bluetooth</translation>
 <translation id="3508492320654304609">Невозможно удалить ваши учетные данные</translation>
@@ -2943,6 +2941,7 @@
 <translation id="4218274196133425560">Удалить исключение для <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">При активации произошла ошибка.</translation>
 <translation id="4222772810963087151">Сведения о сборке</translation>
+<translation id="4224284700924043865">USB-устройства с идентификатором продукта <ph name="PRODUCT_ID" /> от поставщика с идентификатором <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">На всех сайтах</translation>
 <translation id="4231095370974836764">Устанавливайте приложения и игры из Google Play на устройство <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Настройка Kerberos</translation>
@@ -3015,6 +3014,7 @@
 <translation id="431076611119798497">&amp;Подробнее</translation>
 <translation id="4312866146174492540">Блокировать (по умолчанию)</translation>
 <translation id="4314815835985389558">Настройки синхронизации</translation>
+<translation id="4316650123995163262">USB-устройства с идентификатором продукта <ph name="PRODUCT_ID" /> от поставщика "<ph name="VENDOR_NAME" />"</translation>
 <translation id="4316850752623536204">Сайт разработчика</translation>
 <translation id="4317820549299924617">Не удалось выполнить верификацию</translation>
 <translation id="4320177379694898372">Нет подключения к Интернету</translation>
@@ -3457,6 +3457,7 @@
 <translation id="4824958205181053313">Отключить синхронизацию?</translation>
 <translation id="4827675678516992122">Ошибка подключения</translation>
 <translation id="4827784381479890589">Использовать расширенную проверку правописания в браузере Chrome (для создания подсказок текст будет отправляться в Google)</translation>
+<translation id="482952334869563894">USB-устройства от поставщика с идентификатором <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Установить PIN-код</translation>
 <translation id="4830121310592638841">Запрашивать разрешение на открытие и размещение сайтами окон на экранах</translation>
 <translation id="4830502475412647084">Обновление ОС</translation>
@@ -3746,6 +3747,7 @@
 <translation id="5159419673777902220">Кто-то из твоих родителей отключил разрешения для этого расширения</translation>
 <translation id="5160634252433617617">Физическая клавиатура</translation>
 <translation id="5160857336552977725">Войдите в аккаунт на устройстве <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">USB-устройства от поставщика "<ph name="VENDOR_NAME" />"</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" />: заблокировано</translation>
 <translation id="5163910114647549394">Вкладка перемещена в конец панели</translation>
 <translation id="5165085578392358314">Назначьте переключатель для действия "<ph name="ACTION" />"</translation>
@@ -4659,7 +4661,6 @@
 <translation id="6212039847102026977">Показать дополнительные свойства сети</translation>
 <translation id="6212168817037875041">Выключать экран</translation>
 <translation id="6212752530110374741">Отправить ссылку по эл. почте</translation>
-<translation id="6213230117190778270">Принять</translation>
 <translation id="621470880408090483">Запретить сайтам подключаться к устройствам Bluetooth</translation>
 <translation id="6215620815501168899">Закрыть всплывающее окно с кодом EID и QR-кодом</translation>
 <translation id="6216601812881225442">Контейнер не поддерживает изменение размера. Чтобы скорректировать объем хранилища, предварительно определенного для Linux, выполните резервное копирование, а затем восстановите данные, используя новый контейнер.</translation>
@@ -5373,6 +5374,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Журнал активности</translation>
 <translation id="6997707937646349884">На ваших устройствах:</translation>
 <translation id="6998793565256476099">Зарегистрировать как устройство для проведения видеоконференций.</translation>
+<translation id="6999640176621571692">Разрешить Google искать скидки на товары, добавленные в корзины?</translation>
 <translation id="6999956497249459195">Новая группа</translation>
 <translation id="7000206553895739324">Принтер <ph name="PRINTER_NAME" /> подключен, но ещё не настроен.</translation>
 <translation id="7000347579424117903">Сочетание должно начинаться с клавиши Ctrl, Alt или Search</translation>
@@ -5453,7 +5455,6 @@
 <translation id="7076293881109082629">Вход</translation>
 <translation id="7077829361966535409">При загрузке текущих настроек прокси-сервера на главной странице произошла ошибка. <ph name="GAIA_RELOAD_LINK_START" />Выполните вход повторно<ph name="GAIA_RELOAD_LINK_END" /> или измените <ph name="PROXY_SETTINGS_LINK_START" />параметры прокси-сервера<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Все сети</translation>
-<translation id="7078386829626602215">Нет устройств. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">&amp;Копировать URL аудио</translation>
 <translation id="7081952801286122383">Режим инкогнито</translation>
 <translation id="708278670402572152">Чтобы запустить сканирование, отключитесь от сети.</translation>
@@ -5502,11 +5503,9 @@
 <translation id="7135729336746831607">Включить Bluetooth?</translation>
 <translation id="7136639886842764730">По правилам домена <ph name="DOMAIN" /> вам нужно немедленно обновить устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7136694880210472378">Использовать по умолчанию</translation>
-<translation id="7136984461011502314">Добро пожаловать в <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Произошла ошибка. Выберите другое изображение.</translation>
 <translation id="7139627972753429585">Приложение "<ph name="APP_NAME" />" использует микрофон</translation>
 <translation id="7141105143012495934">Ошибка входа: не удалось получить данные аккаунта. Обратитесь к администратору или повторите попытку.</translation>
-<translation id="7143358760238281735">Нет приложений.</translation>
 <translation id="7144878232160441200">Повторить</translation>
 <translation id="7149893636342594995">Последние 24 часа</translation>
 <translation id="7152478047064750137">Расширению не требуются особые разрешения</translation>
@@ -6459,7 +6458,6 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Соединение с <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Управление приложениями, расширениями и темами</translation>
-<translation id="8192944472786724289">Приложение "<ph name="APP_NAME" />" запрашивает разрешение на доступ к вашему экрану.</translation>
 <translation id="8195027750202970175">Объем на диске</translation>
 <translation id="8198323535106903877">Эти приложения (<ph name="NUMBER_OF_APPS" />) будут установлены на ваше устройство</translation>
 <translation id="8199300056570174101">Настройки сети и устройства</translation>
@@ -6883,6 +6881,7 @@
 <translation id="8698269656364382265">Чтобы вернуться на предыдущий экран, проведите слева направо.</translation>
 <translation id="869884720829132584">Меню приложений</translation>
 <translation id="869891660844655955">Срок действия</translation>
+<translation id="8699120352855309748">Не предлагать переводить страницы на этих языках</translation>
 <translation id="8702825062053163569">Устройство <ph name="DEVICE_TYPE" /> заблокировано</translation>
 <translation id="8703346390800944767">Пропустить</translation>
 <translation id="8705331520020532516">Серийный номер</translation>

@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാനും ചലിപ്പിക്കാനും <ph name="HOST" /> -നെ, തുടർന്നും അനുവദിക്കുക</translation>
 <translation id="1355088139103479645">എല്ലാ ഡാറ്റയും ഇല്ലാതാക്കണോ?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> പ്ലഗിൻ ബ്ലോക്കുചെയ്‌തു</translation>
-<translation id="1358612436266364864">ഹൈലൈറ്റുകൾ നീക്കം ചെയ്യുക</translation>
 <translation id="1358741672408003399">സ്‌പെല്ലിംഗും വ്യാകരണവും</translation>
 <translation id="1359923111303110318">Smart Lock ഉപയോഗിച്ച് നിങ്ങളുടെ ഉപകരണം അൺലോക്ക് ചെയ്യാനാവും. അൺലോക്ക് ചെയ്യാൻ 'Enter' അമർത്തുക.</translation>
 <translation id="1361164813881551742">നേരിട്ട് ചേർക്കുക</translation>
@@ -1605,7 +1604,6 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> എന്നതിന് കീഴിലുള്ള സൈറ്റുകളും പുനഃസജ്ജീകരിക്കപ്പെടും.</translation>
 <translation id="2735712963799620190">ഷെഡ്യൂള്‍‌</translation>
 <translation id="2737363922397526254">ചുരുക്കുക...</translation>
-<translation id="2737916598897808047">നിങ്ങളുടെ സ്ക്രീനിലെ ഉള്ളടക്കങ്ങൾ <ph name="TARGET_NAME" /> എന്നതുമായി പങ്കിടാൻ <ph name="APP_NAME" /> ആഗ്രഹിക്കുന്നു.</translation>
 <translation id="2738030019664645674">നിങ്ങളുടെ ഉപകരണത്തിൽ ഇൻസ്റ്റാൾ ചെയ്തിരിക്കുന്ന ഫോണ്ടുകൾ ഉപയോഗിക്കാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
 <translation id="2738771556149464852">അതിനുശേഷമല്ല</translation>
 <translation id="2739191690716947896">ഡീബഗ് ചെയ്യുക</translation>
@@ -1893,7 +1891,6 @@
 <translation id="3031417829280473749">ഏജന്റ് X</translation>
 <translation id="3031557471081358569">ഇറക്കുമതി ചെയ്യുന്നതിനായി ഇനങ്ങള്‍ തിരഞ്ഞെടുക്കുക:</translation>
 <translation id="3036327949511794916">ഈ <ph name="DEVICE_TYPE" /> തിരികെ നൽകാനുള്ള സമയപരിധി കഴിഞ്ഞു.</translation>
-<translation id="3036438888981457032">ഹൈലൈറ്റുകൾ നീക്കം ചെയ്യുക</translation>
 <translation id="3036546437875325427">ഫ്ലാഷ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="3037754279345160234">ഡൊമെയ്‌നിൽ ചേരാനുള്ള കോൺഫിഗറേഷൻ വിശകലനം ചെയ്യാനാവില്ല. നിങ്ങളുടെ അഡ്‌മിനിസ്ട്രേറ്ററെ ബന്ധപ്പെടുക.</translation>
 <translation id="3038612606416062604">നേരിട്ട് ഒരു പ്രിന്റർ ചേർക്കുക</translation>
@@ -4657,7 +4654,6 @@
 <translation id="6212039847102026977">വിപുലമായ നെറ്റ്‌വർക്ക് പ്രോപ്പർട്ടികൾ കാണിക്കുക</translation>
 <translation id="6212168817037875041">ഡിസ്പ്ലേ ഓഫാക്കുക</translation>
 <translation id="6212752530110374741">ലിങ്ക് ഇമെയിൽ ചെയ്യുക</translation>
-<translation id="6213230117190778270">സ്വീകരിക്കുക</translation>
 <translation id="621470880408090483">Bluetooth ഉപകരണങ്ങളിലേക്ക് കണക്റ്റ് ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
 <translation id="6215620815501168899">EID-യും QR കോഡ് പോപ്പ് അപ്പും അടയ്ക്കുക</translation>
 <translation id="6216601812881225442">നിങ്ങളുടെ കണ്ടെയ്‌നർ, വലുപ്പം മാറ്റൽ പിന്തുണയ്‌ക്കുന്നില്ല. Linux-ന് മുൻകൂട്ടി അനുവദിച്ചിട്ടുള്ള ഇടത്തിന്റെ അളവ് ക്രമീകരിക്കാൻ, ബാക്കപ്പ് ചെയ്‌ത ശേഷം ഒരു പുതിയ കണ്ടെയ്‌നറിലേക്ക് പുനഃസ്ഥാപിക്കുക.</translation>
@@ -5451,7 +5447,6 @@
 <translation id="7076293881109082629">സൈൻ ഇൻ ചെയ്യുന്നു</translation>
 <translation id="7077829361966535409">നിലവിലെ പ്രോക്‌സി ക്രമീകരണങ്ങൾ ഉപയോഗിച്ച് ലോഡ് ചെയ്യുന്നതിൽ സൈൻ-ഇൻ പേജ് പരാജയപ്പെട്ടു. <ph name="GAIA_RELOAD_LINK_START" />വീണ്ടും സൈൻ ഇൻ ചെയ്യാൻ ശ്രമിക്കുക<ph name="GAIA_RELOAD_LINK_END" />, അല്ലെങ്കിൽ മറ്റ് <ph name="PROXY_SETTINGS_LINK_START" />പ്രോക്‌സി ക്രമീകരണങ്ങൾ<ph name="PROXY_SETTINGS_LINK_END" /> ഉപയോഗിക്കുക.</translation>
 <translation id="7078120482318506217">എല്ലാ നെറ്റ്‌വർക്കുകളും</translation>
-<translation id="7078386829626602215">ഉപകരണമൊന്നും കണ്ടെത്തിയില്ല <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">ഓഡിയോ വിലാസം പകർത്തുക</translation>
 <translation id="7081952801286122383">നിങ്ങൾ അദൃശ്യ മോഡിലാണ്</translation>
 <translation id="708278670402572152">സ്‌കാനിംഗ് പ്രവർത്തനക്ഷമമാക്കാൻ വിച്ഛേദിക്കുക</translation>
@@ -5500,11 +5495,9 @@
 <translation id="7135729336746831607">Bluetooth ഓണാക്കണോ?</translation>
 <translation id="7136639886842764730">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉടനടി അപ്‌ഡേറ്റ് ചെയ്യാൻ <ph name="DOMAIN" />ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="7136694880210472378">ഡിഫോൾട്ട് ആക്കുക</translation>
-<translation id="7136984461011502314"><ph name="PRODUCT_NAME" /> ലേക്ക് സ്വാഗതം</translation>
 <translation id="7136993520339022828">ഒരു പിശകുണ്ട്. മറ്റ് ചിത്രങ്ങൾ തിരഞ്ഞെടുത്ത് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കുന്നു</translation>
 <translation id="7141105143012495934">നിങ്ങളുടെ അക്കൗണ്ട് വിശദാംശങ്ങൾ വീണ്ടെടുക്കാനാവാത്തതിനാൽ സൈൻ ഇൻ ചെയ്യുന്നത് പരാജയപ്പെട്ടു. നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്ററെ ബന്ധപ്പെടുക അല്ലെങ്കിൽ വീണ്ടും ശ്രമിക്കുക.</translation>
-<translation id="7143358760238281735">ആപ്പുകളൊന്നും ലഭ്യമല്ല</translation>
 <translation id="7144878232160441200">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7149893636342594995">അവസാന 24 മണിക്കൂർ</translation>
 <translation id="7152478047064750137">ഈ വിപുലീകരണത്തിന് പ്രത്യേക അനുമതികളൊന്നും ആവശ്യമില്ല</translation>
@@ -6458,7 +6451,6 @@
 <translation id="8189750580333936930">സ്വകാര്യതാ സാൻഡ്‌ബോക്‌സ്</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> ലേക്ക് ബന്ധിപ്പിക്കുന്നു</translation>
 <translation id="8191230140820435481">നിങ്ങളുടെ അപ്ലിക്കേഷനുകൾ, വിപുലീകരണങ്ങൾ, തീമുകൾ എന്നിവ നിയന്ത്രിക്കുക</translation>
-<translation id="8192944472786724289">നിങ്ങളുടെ സ്ക്രീനിലെ ഉള്ളടക്കങ്ങൾ പങ്കിടാൻ <ph name="APP_NAME" /> ആഗ്രഹിക്കുന്നു.</translation>
 <translation id="8195027750202970175">ഡിസ്‌കിലെ വലുപ്പം</translation>
 <translation id="8198323535106903877">നിങ്ങൾക്കായി ആ <ph name="NUMBER_OF_APPS" /> ആപ്പുകൾ ഞങ്ങൾ ഇൻസ്‌റ്റാൾ ചെയ്യും</translation>
 <translation id="8199300056570174101">നെറ്റ്‌വർക്കും (സേവനം) ഉപകരണ പ്രോപ്പർട്ടികളും</translation>
@@ -6882,6 +6874,7 @@
 <translation id="8698269656364382265">മുമ്പത്തെ സ്ക്രീനിലേക്ക് മടങ്ങാൻ ഇടതുവശത്ത് നിന്ന് സ്വൈപ്പ് ചെയ്യുക.</translation>
 <translation id="869884720829132584">അപ്ലിക്കേഷനുക‌ള്‍‌ മെനു</translation>
 <translation id="869891660844655955">കാലഹരണപ്പെടല്‍‌ തീയതി</translation>
+<translation id="8699120352855309748">ഈ ഭാഷകൾ വിവർത്തനം ചെയ്യേണ്ട</translation>
 <translation id="8702825062053163569">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ലോക്ക് ചെയ്തിരിക്കുന്നു.</translation>
 <translation id="8703346390800944767">പരസ്യം ഒഴിവാക്കുക</translation>
 <translation id="8705331520020532516">സീരിയല്‍‌ നമ്പര്‍‌</translation>

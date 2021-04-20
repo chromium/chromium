@@ -217,6 +217,7 @@
 <translation id="7106741999175697885">Oppgavebehandling – Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{En ny oppdatering for Chrome er tilgjengelig og tas i bruk når du starter Chrome på nytt.}=1{En ny oppdatering for Chrome er tilgjengelig og tas i bruk når du starter Chrome på nytt. Inkognitovinduet ditt blir ikke gjenåpnet.}other{En ny oppdatering for Chrome er tilgjengelig og tas i bruk når du starter Chrome på nytt. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
 <translation id="7155997830309522122">I så fall bør du endre det lagrede passordet i Chrome så det samsvarer med det nye passordet.</translation>
+<translation id="7161904924553537242">Velkommen til Google Chrome</translation>
 <translation id="7242029209006116544">Du er i ferd med å logge deg på med en administrert konto og gir administratoren kontroll over Chrome-profilen din. Chrome-dataene dine, som apper, bokmerker, loggen, passord og andre innstillinger, blir permanent knyttet til <ph name="USER_NAME" />. Du kan slette disse dataene via kontooversikten for Google, men du kan ikke knytte disse dataene til en annen konto. Du kan velge om du vil opprette en ny profil for å holde de eksisterende Chrome-dataene dine atskilte. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Dette språket brukes for UI-et i Google Chrome</translation>
 <translation id="7296210096911315575">Viktig informasjon om bruk og sikkerhet</translation>

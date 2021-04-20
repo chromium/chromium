@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">อนุญาตให้ <ph name="HOST" /> ใช้และเคลื่อนย้ายกล้องของคุณต่อไป</translation>
 <translation id="1355088139103479645">ลบข้อมูลทั้งหมดใช่ไหม</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> ถูกบล็อก</translation>
-<translation id="1358612436266364864">นำไฮไลต์ออก</translation>
 <translation id="1358741672408003399">ตัวสะกดและไวยากรณ์</translation>
 <translation id="1359923111303110318">อุปกรณ์ปลดล็อกได้ด้วย Smart Lock กด Enter เพื่อปลดล็อก</translation>
 <translation id="1361164813881551742">เพิ่มด้วยตนเอง</translation>
@@ -883,6 +882,7 @@
 <translation id="1928202201223835302">ป้อน PIN เก่า</translation>
 <translation id="1928696683969751773">อัปเดต</translation>
 <translation id="1929186283613845153">กำลังสแกนไฟล์นี้</translation>
+<translation id="1929343511231420085">พอร์ตอนุกรมใดก็ตาม</translation>
 <translation id="1929546189971853037">อ่านประวัติการเข้าชมบนอุปกรณ์ที่คุณลงชื่อเข้าใช้ทุกเครื่อง</translation>
 <translation id="1930879306590754738">ลบรหัสผ่านจากอุปกรณ์นี้และบัญชี Google ของคุณแล้ว</translation>
 <translation id="1931152874660185993">ไม่มีคอมโพเนนต์ที่ได้รับการติดตั้ง</translation>
@@ -1608,7 +1608,6 @@
 <translation id="2734760316755174687">ระบบจะรีเซ็ตเว็บไซต์ภายใต้ <ph name="SITE_GROUP_NAME" /> ด้วย</translation>
 <translation id="2735712963799620190">กำหนดการ</translation>
 <translation id="2737363922397526254">ยุบ...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> ต้องการแชร์เนื้อหาในหน้าจอของคุณกับ <ph name="TARGET_NAME" /></translation>
 <translation id="2738030019664645674">ไม่อนุญาตให้เว็บไซต์ใช้แบบอักษรที่ติดตั้งอยู่ในอุปกรณ์</translation>
 <translation id="2738771556149464852">ไม่เกิน</translation>
 <translation id="2739191690716947896">แก้ปัญหา</translation>
@@ -1896,7 +1895,6 @@
 <translation id="3031417829280473749">เอเจนต์เอ็กซ์</translation>
 <translation id="3031557471081358569">เลือกรายการที่จะนำเข้าต่อไปนี้:</translation>
 <translation id="3036327949511794916">เลยกำหนดเวลาส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้แล้ว</translation>
-<translation id="3036438888981457032">นำไฮไลต์ออก</translation>
 <translation id="3036546437875325427">เปิดใช้ Flash</translation>
 <translation id="3037754279345160234">แยกวิเคราะห์การกำหนดค่าเพื่อเข้าร่วมโดเมนไม่ได้ โปรดติดต่อผู้ดูแลระบบ</translation>
 <translation id="3038612606416062604">เพิ่มเครื่องพิมพ์ด้วยตนเอง</translation>
@@ -2943,6 +2941,7 @@
 <translation id="4218274196133425560">นำข้อยกเว้นออกสำหรับ <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">เกิดข้อผิดพลาดขณะเปิดใช้งาน</translation>
 <translation id="4222772810963087151">รายละเอียดบิลด์</translation>
+<translation id="4224284700924043865">อุปกรณ์ USB ที่มีรหัสผลิตภัณฑ์ <ph name="PRODUCT_ID" /> จากผู้ให้บริการ <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">ในเว็บไซต์ทั้งหมด</translation>
 <translation id="4231095370974836764">ติดตั้งแอปและเกมจาก Google Play ใน <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">กำหนดค่า Kerberos</translation>
@@ -3015,6 +3014,7 @@
 <translation id="431076611119798497">&amp;รายละเอียด</translation>
 <translation id="4312866146174492540">บล็อก (ค่าเริ่มต้น)</translation>
 <translation id="4314815835985389558">จัดการการซิงค์</translation>
+<translation id="4316650123995163262">อุปกรณ์ USB ที่มีรหัสผลิตภัณฑ์ <ph name="PRODUCT_ID" /> จาก <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">เว็บไซต์นักพัฒนาซอฟต์แวร์</translation>
 <translation id="4317820549299924617">ยืนยันไม่สำเร็จ</translation>
 <translation id="4320177379694898372">ไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
@@ -3457,6 +3457,7 @@
 <translation id="4824958205181053313">ยกเลิกการซิงค์ใช่ไหม</translation>
 <translation id="4827675678516992122">เชื่อมต่อไม่ได้</translation>
 <translation id="4827784381479890589">การตรวจตัวสะกดที่ผ่านการเพิ่มประสิทธิภาพในเบราว์เซอร์ Chrome (ระบบจะส่งข้อความไปยัง Google เพื่อรับคำแนะนำในการสะกด)</translation>
+<translation id="482952334869563894">อุปกรณ์ USB จากผู้ให้บริการ <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">ตั้งค่า PIN</translation>
 <translation id="4830121310592638841">ถามเมื่อเว็บไซต์ต้องการเปิดและวางหน้าต่างบนหน้าจอ</translation>
 <translation id="4830502475412647084">กำลังติดตั้งอัปเดตระบบปฏิบัติการ</translation>
@@ -3746,6 +3747,7 @@
 <translation id="5159419673777902220">ผู้ปกครองของคุณปิดใช้สิทธิ์ของส่วนขยาย</translation>
 <translation id="5160634252433617617">แป้นพิมพ์จริง</translation>
 <translation id="5160857336552977725">ลงชื่อเข้าใช้ <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">อุปกรณ์ USB จาก <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ถูกบล็อก</translation>
 <translation id="5163910114647549394">แท็บย้ายไปอยู่ท้ายสุดของแถบแท็บ</translation>
 <translation id="5165085578392358314">กำหนดสวิตช์: <ph name="ACTION" /></translation>
@@ -4659,7 +4661,6 @@
 <translation id="6212039847102026977">แสดงคุณสมบัติเครือข่ายขั้นสูง</translation>
 <translation id="6212168817037875041">ปิดจอแสดงผล</translation>
 <translation id="6212752530110374741">ส่งลิงก์ทางอีเมล</translation>
-<translation id="6213230117190778270">รับ</translation>
 <translation id="621470880408090483">ไม่อนุญาตให้เว็บไซต์เชื่อมต่ออุปกรณ์บลูทูธ</translation>
 <translation id="6215620815501168899">ปิด EID และป๊อปอัปคิวอาร์โค้ด</translation>
 <translation id="6216601812881225442">คอนเทนเนอร์ไม่รองรับการปรับขนาด หากต้องการปรับพื้นที่ว่างที่จัดสรรล่วงหน้าสำหรับ Linux ให้สำรองข้อมูลแล้วคืนค่าในคอนเทนเนอร์ใหม่</translation>
@@ -5373,6 +5374,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - บันทึกกิจกรรม</translation>
 <translation id="6997707937646349884">บนอุปกรณ์ของคุณ:</translation>
 <translation id="6998793565256476099">ลงทะเบียนอุปกรณ์สำหรับการประชุมทางวิดีโอ</translation>
+<translation id="6999640176621571692">อนุญาตให้ Google ค้นหาส่วนลดสำหรับสินค้าที่คุณเพิ่มลงในรถเข็นไหม</translation>
 <translation id="6999956497249459195">กลุ่มใหม่</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> เชื่อมต่อแล้วแต่ต้องกำหนดค่า</translation>
 <translation id="7000347579424117903">รวม Ctrl, Alt หรือแป้นค้นหา</translation>
@@ -5453,7 +5455,6 @@
 <translation id="7076293881109082629">กำลังลงชื่อเข้าใช้</translation>
 <translation id="7077829361966535409">หน้าลงชื่อเข้าใช้ไม่สามารถโหลดโดยใช้การตั้งค่าพร็อกซีในปัจจุบัน โปรด <ph name="GAIA_RELOAD_LINK_START" />ลองลงชื่อเข้าใช้อีกครั้ง<ph name="GAIA_RELOAD_LINK_END" /> หรือใช้<ph name="PROXY_SETTINGS_LINK_START" />การตั้งค่าพร็อกซี<ph name="PROXY_SETTINGS_LINK_END" />อื่นๆ</translation>
 <translation id="7078120482318506217">ทุกเครือข่าย</translation>
-<translation id="7078386829626602215">ตรวจไม่พบอุปกรณ์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">คัด&amp;ลอกที่อยู่ของเสียง</translation>
 <translation id="7081952801286122383">คุณอยู่ในโหมดไม่ระบุตัวตน</translation>
 <translation id="708278670402572152">ยกเลิกการเชื่อมต่อเพื่อเปิดใช้การสแกน</translation>
@@ -5502,11 +5503,9 @@
 <translation id="7135729336746831607">เปิดบลูทูธไหม</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> ต้องการให้คุณอัปเดต <ph name="DEVICE_TYPE" /> ทันที</translation>
 <translation id="7136694880210472378">ทำให้เป็นค่าเริ่มต้น</translation>
-<translation id="7136984461011502314">ยินดีต้อนรับสู่ <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">เกิดข้อผิดพลาด โปรดลองอีกครั้งโดยเลือกภาพอื่น</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> กำลังใช้ไมโครโฟน</translation>
 <translation id="7141105143012495934">การลงชื่อเข้าใช้ล้มเหลวเนื่องจากไม่สามารถเรียกคืนรายละเอียดบัญชีของคุณได้ โปรดติดต่อผู้ดูแลระบบของคุณหรือลองอีกครั้ง</translation>
-<translation id="7143358760238281735">ไม่มีแอป</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
 <translation id="7149893636342594995">24 ชั่วโมงที่แล้ว</translation>
 <translation id="7152478047064750137">ส่วนขยายนี้ไม่จำเป็นต้องมีสิทธิ์พิเศษ</translation>
@@ -6460,7 +6459,6 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">กำลังเชื่อมต่อกับ <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">จัดการแอปพลิเคชัน ส่วนขยาย และธีมของคุณ</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> ต้องการแชร์เนื้อหาในหน้าจอของคุณ</translation>
 <translation id="8195027750202970175">ขนาดบนดิสก์</translation>
 <translation id="8198323535106903877">เราจะติดตั้งแอป <ph name="NUMBER_OF_APPS" /> แอปนั้นให้คุณ</translation>
 <translation id="8199300056570174101">เครือข่าย (บริการ) และคุณสมบัติอุปกรณ์</translation>
@@ -6884,6 +6882,7 @@
 <translation id="8698269656364382265">หากต้องการกลับไปยังหน้าจอก่อนหน้า ให้เลื่อนจากด้านซ้าย</translation>
 <translation id="869884720829132584">เมนูของแอปพลิเคชัน</translation>
 <translation id="869891660844655955">วันหมดอายุ</translation>
+<translation id="8699120352855309748">ไม่ต้องเสนอการแปลภาษาเหล่านี้</translation>
 <translation id="8702825062053163569">ล็อก <ph name="DEVICE_TYPE" /> แล้ว</translation>
 <translation id="8703346390800944767">ข้ามโฆษณา</translation>
 <translation id="8705331520020532516">หมายเลขซีเรียล</translation>

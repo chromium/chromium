@@ -328,7 +328,6 @@
 <translation id="1354045473509304750"><ph name="HOST" />ને તમારા કૅમેરાનો ઉપયોગ કરવાની અને તેને ખસેડવાની મંજૂરી આપવાનું ચાલુ રાખો</translation>
 <translation id="1355088139103479645">તમામ ડેટા ડિલીટ કરીએ?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> અવરોધિત છે</translation>
-<translation id="1358612436266364864">હાઇલાઇટ કાઢી નાખો</translation>
 <translation id="1358741672408003399">જોડણી અને વ્યાકરણ</translation>
 <translation id="1359923111303110318">તમારા ડિવાઇસને Smart Lock વડે અનલૉક કરવામાં આવી શકે છે. અનલૉક કરવા માટે Enter દબાવો.</translation>
 <translation id="1361164813881551742">મેન્યુઅલી ઉમેરો</translation>
@@ -1605,7 +1604,6 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> હેઠળની સાઇટ પણ રીસેટ કરવામાં આવશે.</translation>
 <translation id="2735712963799620190">શેડ્યૂલ</translation>
 <translation id="2737363922397526254">સંકુચિત કરો...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> તમારી સ્ક્રીન પરનું કન્ટેન્ટ <ph name="TARGET_NAME" /> સાથે શેર કરવા માગે છે.</translation>
 <translation id="2738030019664645674">સાઇટને તમારા ડિવાઇસ પર ઇન્સ્ટૉલ કરેલા ફૉન્ટનો ઉપયોગ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="2738771556149464852">આના પછી નહીં</translation>
 <translation id="2739191690716947896">ડીબગ કરો</translation>
@@ -1676,7 +1674,7 @@
 <translation id="2805539617243680210">આગળ વધવા માટે તમે સંપૂર્ણ રીતે સજ્જ છો!</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
 <translation id="2805756323405976993">ઍપ</translation>
-<translation id="2805760958323556153">ExtensionInstallForcelistનું નીતિ મૂલ્ય અમાન્ય છે. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
+<translation id="2805760958323556153">ExtensionInstallForcelistનું પૉલિસી મૂલ્ય અમાન્ય છે. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="2805770823691782631">વધારાની વિગતો</translation>
 <translation id="2806372837663997957">તમે જે ડિવાઇસ સાથે શેર કરવાનો પ્રયાસ કરો છો, તેણે વિનંતી સ્વીકારી નથી</translation>
 <translation id="2806891468525657116">શૉર્ટકટ પહેલેથી અસ્તિત્વમાં છે</translation>
@@ -1893,11 +1891,10 @@
 <translation id="3031417829280473749">એજંટ X</translation>
 <translation id="3031557471081358569">આયાત કરવા માટે આઇટમ્સ પસંદ કરો:</translation>
 <translation id="3036327949511794916">આ <ph name="DEVICE_TYPE" />ને પરત કરવાની સમયસીમા સમાપ્ત થઈ ગઈ છે.</translation>
-<translation id="3036438888981457032">હાઇલાઇટ કાઢી નાખો</translation>
 <translation id="3036546437875325427">ફ્લૅશ ચાલુ કરો</translation>
 <translation id="3037754279345160234">ડોમેનમાં જોડાવા માટે ગોઠવણીનું વિશ્લેષણ કરી શકતાં નથી. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="3038612606416062604">પ્રિન્ટરને મેન્યુઅલી ઉમેરો</translation>
-<translation id="3039491566278747710">ડિવાઇસ પર ઇન્ટરનેટ વગર નીતિ ઇન્સ્ટૉલ કરવામાં નિષ્ફળ ગયું.</translation>
+<translation id="3039491566278747710">ડિવાઇસ પર ઑફલાઇન પૉલિસી ઇન્સ્ટૉલ કરવામાં નિષ્ફળ ગયું.</translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" />માંથી</translation>
 <translation id="3045447014237878114">આ સાઇટે એકથી વધુ ફાઇલો ઑટોમૅટિક રીતે ડાઉનલોડ કરી છે</translation>
 <translation id="3046178388369461825">Linuxમાં ડિસ્ક સ્પેસ અત્યંત ઓછી છે</translation>
@@ -2796,7 +2793,7 @@
 <translation id="4033963223187371752">સુરક્ષિત સાઇટ છબીઓ અથવા વેબ ફ્રેમ જેવું અસુરક્ષિત કન્ટેન્ટ શામેલ કરી શકે છે</translation>
 <translation id="4034824040120875894">પ્રિન્ટર</translation>
 <translation id="4035758313003622889">&amp;કાર્ય વ્યવસ્થાપક</translation>
-<translation id="4036778507053569103">સર્વરમાંથી ડાઉનલોડ કરેલી નીતિ અમાન્ય છે.</translation>
+<translation id="4036778507053569103">સર્વરમાંથી ડાઉનલોડ કરેલી પૉલિસી અમાન્ય છે.</translation>
 <translation id="4037084878352560732">ઘોડો</translation>
 <translation id="4037889604535939429">વ્યક્તિની માહિતીમાં ફેરફાર કરો</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{પેજમાંથી બહાર નીકળો}one{પેજમાંથી બહાર નીકળો}other{પેજમાંથી બહાર નીકળો}}</translation>
@@ -2947,7 +2944,7 @@
 <translation id="4241182343707213132">સંસ્થાની ઍપ અપડેટ કરવા માટે, ફરી શરૂ કરો</translation>
 <translation id="4242145785130247982">એકથી વધુ ક્લાયન્ટ પ્રમાણપત્રોને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="4242533952199664413">સેટિંગ્સ ખોલો</translation>
-<translation id="4242577469625748426">આ ઉપકરણ પર નીતિ સેટિંગ્સ ઇન્સ્ટોલ કરવામાં નિષ્ફળ ગયું: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4242577469625748426">આ ડિવાઇસ પર પૉલિસી સેટિંગ ઇન્સ્ટોલ કરવામાં નિષ્ફળ ગયું: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4243504193894350135">પ્રિન્ટર થોભાવેલું છે</translation>
 <translation id="4244238649050961491">વધુ સ્ટાઇલસ ઍપ મેમરીનો શોધો</translation>
 <translation id="424726838611654458">હંમેશાં Adobe Reader માં ખોલો</translation>
@@ -4658,7 +4655,6 @@ USB ડિવાઇસ</translation>
 <translation id="6212039847102026977">વિગતવાર નેટવર્ક ગુણધર્મો બતાવો</translation>
 <translation id="6212168817037875041">ડિસ્પ્લે બંધ કરો</translation>
 <translation id="6212752530110374741">લિંક ઇમેઇલ કરો</translation>
-<translation id="6213230117190778270">મેળવો</translation>
 <translation id="621470880408090483">સાઇટને બ્લૂટૂથ ડિવાઇસ સાથે કનેક્ટ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="6215620815501168899">EID અને QR કોડ પૉપઅપ બંધ કરો</translation>
 <translation id="6216601812881225442">તમારા કન્ટેનરનું કદ બદલવાની સુવિધા ઉપલબ્ધ નથી. Linux માટે અગાઉથી ફાળવેલી સ્પેસ ગોઠવવા માટે, બૅકઅપ લો અને ત્યાર બાદ નવા કન્ટેનરમાં રિસ્ટોર કરો.</translation>
@@ -4750,7 +4746,7 @@ USB ડિવાઇસ</translation>
 <translation id="630065524203833229">&amp;બહાર નીકળો</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" />ને ઑટોમૅટિક રીતે ગોઠવી શકાતું નથી. કૃપા કરીને વિગતવાર પ્રિન્ટરની વિગતો જણાવો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="630292539633944562">વ્યક્તિગત માહિતીના સૂચનો</translation>
-<translation id="6305607932814307878">વૈશ્વિક નીતિ:</translation>
+<translation id="6305607932814307878">વૈશ્વિક પૉલિસી:</translation>
 <translation id="6307990684951724544">સિસ્ટમ વ્યસ્ત છે</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> દ્વારા આપવામાં આવેલું સાઇન-ઇન</translation>
 <translation id="6308937455967653460">લિં&amp;કને આ રીતે સાચવો...</translation>
@@ -5452,7 +5448,6 @@ USB ડિવાઇસ</translation>
 <translation id="7076293881109082629">સાઇન ઇન કરી રહ્યું છે</translation>
 <translation id="7077829361966535409">સાઇન-ઇન પેજ વર્તમાન પ્રૉક્સી સેટિંગનો ઉપયોગ કરીને લોડ થવામાં નિષ્ફળ થયું. કૃપા કરીને <ph name="GAIA_RELOAD_LINK_START" />ફરીથી સાઇન ઇન કરવાનો પ્રયાસ કરો<ph name="GAIA_RELOAD_LINK_END" /> અથવા જુદા <ph name="PROXY_SETTINGS_LINK_START" />પ્રૉક્સી સેટિંગ<ph name="PROXY_SETTINGS_LINK_END" />નો ઉપયોગ કરો.</translation>
 <translation id="7078120482318506217">તમામ નેટવર્ક્સ</translation>
-<translation id="7078386829626602215">કોઈ ડિવાઇસ મળ્યું નથી <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">ઑડિઓ સરનામું કૉ&amp;પિ કરો</translation>
 <translation id="7081952801286122383">તમે છૂપા મોડમાં છો</translation>
 <translation id="708278670402572152">સ્કૅનિંગ ચાલુ કરવા માટે ડિસ્કનેક્ટ કરો</translation>
@@ -5501,11 +5496,9 @@ USB ડિવાઇસ</translation>
 <translation id="7135729336746831607">બ્લૂટૂથ ચાલુ કરીએ?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું <ph name="DEVICE_TYPE" /> તરત જ અપડેટ કરો.</translation>
 <translation id="7136694880210472378">ડિફૉલ્ટ બનાવો</translation>
-<translation id="7136984461011502314"><ph name="PRODUCT_NAME" /> માં આપનું સ્વાગત છે</translation>
 <translation id="7136993520339022828">તેમાં એક ભૂલ છે. કૃપા કરીને અન્ય છબી પસંદ કરીને ફરી પ્રયત્ન કરો.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> તમારા માઇક્રોફોનનો ઉપયોગ કરી રહી છે</translation>
 <translation id="7141105143012495934">સાઇન ઇન નિષ્ફળ થયું કારણ કે તમારી એકાઉન્ટ વિગતો પાછી મેળવી શકાઈ નથી. કૃપા કરીને તમારા એડમિનનો સંપર્ક કરો અથવા ફરી પ્રયાસ કરો.</translation>
-<translation id="7143358760238281735">કોઈ ઍપ ઉપલબ્ધ નથી</translation>
 <translation id="7144878232160441200">ફરી પ્રયત્ન કરો</translation>
 <translation id="7149893636342594995">છેલ્લા 24 કલાક</translation>
 <translation id="7152478047064750137">આ એક્સટેન્શનને કોઈ વિશિષ્ટ પરવાનગીઓની જરૂર નથી</translation>
@@ -6453,7 +6446,6 @@ USB ડિવાઇસ</translation>
 <translation id="8189750580333936930">પ્રાઇવસી સૅન્ડબૉક્સ</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> થી કનેક્ટ કરે છે</translation>
 <translation id="8191230140820435481">તમારી ઍપ્લિકેશનો, એક્સ્ટેન્શન અને થીમ્સ મેનેજ કરો</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> તમારી સ્ક્રીન પરનું કન્ટેન્ટ શેર કરવા માગે છે.</translation>
 <translation id="8195027750202970175">ડિસ્ક પર કદ</translation>
 <translation id="8198323535106903877">અમે તમારા માટે તે <ph name="NUMBER_OF_APPS" /> ઍપ ઇન્સ્ટૉલ કરીશું</translation>
 <translation id="8199300056570174101">નેટવર્ક (સેવા) અને ઉપકરણના ગુણધર્મો</translation>
@@ -6609,7 +6601,7 @@ USB ડિવાઇસ</translation>
 <translation id="8379878387931047019">આ ઉપકરણ આ વેબસાઇટ દ્વારા વિનંતી કરાયેલ સુરક્ષા કોડના પ્રકારનું સમર્થન કરતું નથી</translation>
 <translation id="8379991678458444070">આ ટૅબને બુકમાર્ક કરીને તમે અહીં ઝડપથી પાછા ફરી શકશો</translation>
 <translation id="8382913212082956454">&amp;ઇમેઇલ સરનામું કૉપિ કરો</translation>
-<translation id="8386091599636877289">નીતિ મળી નથી.</translation>
+<translation id="8386091599636877289">પૉલિસી મળી નથી.</translation>
 <translation id="8386819192691131213">Assistantને અનુવાદ, વ્યાખ્યા અને એકમના રૂપાંતરણ જેવા અન્ય ઘણા પ્રશ્નોના ઝડપી જવાબો આપવા માટે, સ્ક્રીન પરની માહિતીનો ઉપયોગ કરવાની મંજૂરી આપો</translation>
 <translation id="8386903983509584791">સ્કૅન પૂર્ણ થયું</translation>
 <translation id="838705362287678887"><ph name="BEGIN_LINK_SEARCH" />શોધ<ph name="END_LINK_SEARCH" /> ઇતિહાસ અથવા ઇતિહાસના અન્ય પ્રકારની માહિતી સાફ કરવા માટે <ph name="BEGIN_LINK_GOOGLE" />મારા Google એકાઉન્ટ<ph name="END_LINK_GOOGLE" />ની મુલાકાત લો</translation>
@@ -6877,6 +6869,7 @@ USB ડિવાઇસ</translation>
 <translation id="8698269656364382265">પાછલી સ્ક્રીન પર પાછા જવા માટે, ડાબી બાજુથી સ્વાઇપ કરો.</translation>
 <translation id="869884720829132584">ઍપ્લિકેશનો મેનૂ</translation>
 <translation id="869891660844655955">સમાપ્તિ તારીખ</translation>
+<translation id="8699120352855309748">આ ભાષાઓનો અનુવાદ કરવાની ઑફર કરશો નહીં</translation>
 <translation id="8702825062053163569">તમારું <ph name="DEVICE_TYPE" /> લૉક હતું.</translation>
 <translation id="8703346390800944767">જાહેરાત છોડો</translation>
 <translation id="8705331520020532516">અનુક્રમ નંબર</translation>

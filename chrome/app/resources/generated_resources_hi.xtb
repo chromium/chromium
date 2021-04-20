@@ -328,7 +328,6 @@
 <translation id="1354045473509304750"><ph name="HOST" /> को कैमरे का इस्तेमाल और उसे मूव करते रहने दें</translation>
 <translation id="1355088139103479645">क्या आप पूरा डेटा मिटाना चाहते हैं?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> अवरोधित है</translation>
-<translation id="1358612436266364864">हाइलाइट हटाएं</translation>
 <translation id="1358741672408003399">वर्तनी और व्याकरण</translation>
 <translation id="1359923111303110318">आपका डिवाइस, Smart Lock से अनलॉक किया जा सकता है. अनलॉक करने के लिए Enter दबाएं.</translation>
 <translation id="1361164813881551742">मैन्युअल रूप से जोड़ें</translation>
@@ -884,6 +883,7 @@
 <translation id="1928202201223835302">पुराना पिन डालें</translation>
 <translation id="1928696683969751773">अपडेट</translation>
 <translation id="1929186283613845153">इस फ़ाइल को स्कैन किया जा रहा है.</translation>
+<translation id="1929343511231420085">कोई भी सीरियल पोर्ट</translation>
 <translation id="1929546189971853037">अपने प्रवेश किए हुए सभी डिवाइस पर अपना ब्राउज़िंग इतिहास पढ़ें</translation>
 <translation id="1930879306590754738">आपके Google खाते और इस डिवाइस से पासवर्ड को मिटा दिया गया है</translation>
 <translation id="1931152874660185993">कोई घटक इंस्टॉल नहीं.</translation>
@@ -1608,7 +1608,6 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> की साइटों को भी रीसेट किया जाएगा.</translation>
 <translation id="2735712963799620190">शेड्यूल</translation>
 <translation id="2737363922397526254">छोटा करें...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> आपकी स्क्रीन पर मौजूद कॉन्टेंट को <ph name="TARGET_NAME" /> के साथ शेयर करना चाहता है.</translation>
 <translation id="2738030019664645674">साइटों को आपके डिवाइस पर इंस्टॉल किए गए फ़ॉन्ट इस्तेमाल करने की अनुमति न दें</translation>
 <translation id="2738771556149464852">बाद में नहीं</translation>
 <translation id="2739191690716947896">डीबग</translation>
@@ -1896,7 +1895,6 @@
 <translation id="3031417829280473749">एजेंट X</translation>
 <translation id="3031557471081358569">आयात करने के लिए आइटम को चुनें:</translation>
 <translation id="3036327949511794916">इस <ph name="DEVICE_TYPE" /> को वापस करने की समयसीमा खत्म हो चुकी है.</translation>
-<translation id="3036438888981457032">हाइलाइट हटाएं</translation>
 <translation id="3036546437875325427">Flash चालू करें</translation>
 <translation id="3037754279345160234">डोमेन जोड़ने का कॉन्फ़िगरेशन पार्स नहीं किया जा सकता. कृपया अपने एडमिन से संपर्क करें.</translation>
 <translation id="3038612606416062604">कोई प्रिंटर मैन्युअल रूप से जोड़ें</translation>
@@ -2942,6 +2940,7 @@
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> के लिए अपवाद हटाएं</translation>
 <translation id="4220648711404560261">सेटअप पूरा करने के दौरान कुछ गड़बड़ी हुई.</translation>
 <translation id="4222772810963087151">ब्यौरा तैयार करें</translation>
+<translation id="4224284700924043865"><ph name="VENDOR_ID" /> के <ph name="PRODUCT_ID" /> वाले यूएसबी डिवाइस</translation>
 <translation id="4225397296022057997">सभी साइट पर</translation>
 <translation id="4231095370974836764">Google Play से अपने <ph name="DEVICE_TYPE" /> पर ऐप्लिकेशन और गेम इंस्टॉल करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos कॉन्फ़िगर करें</translation>
@@ -3014,6 +3013,7 @@
 <translation id="431076611119798497">&amp;विवरण</translation>
 <translation id="4312866146174492540">ब्लॉक करें (डिफ़ॉल्ट)</translation>
 <translation id="4314815835985389558">सिंक प्रबंधित करें</translation>
+<translation id="4316650123995163262"><ph name="VENDOR_NAME" /> के <ph name="PRODUCT_ID" /> वाले यूएसबी डिवाइस</translation>
 <translation id="4316850752623536204">डेवलपर वेबसाइट</translation>
 <translation id="4317820549299924617">पुष्टि नहीं हुई</translation>
 <translation id="4320177379694898372">कोई इंटरनेट कनेक्‍शन नहीं</translation>
@@ -3456,6 +3456,7 @@
 <translation id="4824958205181053313">सिंक करना रद्द करें?</translation>
 <translation id="4827675678516992122">जोड़ा नहीं जा सका</translation>
 <translation id="4827784381479890589">Chrome ब्राउज़र में वर्तनी जांच की बेहतर सुविधा (वर्तनी के सुझावों के लिए Google को टेक्स्ट भेजा जाता है)</translation>
+<translation id="482952334869563894"><ph name="VENDOR_ID" /> वेंडर के यूएसबी डिवाइस</translation>
 <translation id="4829768588131278040">पिन सेट करें</translation>
 <translation id="4830121310592638841">जब कोई साइट, विंडो को खोलकर आपकी स्क्रीन पर लगाना चाहे, तो इसके लिए पूछें</translation>
 <translation id="4830502475412647084">OS अपडेट इंस्टॉल किया जा रहा है</translation>
@@ -3745,6 +3746,7 @@
 <translation id="5159419673777902220">आपके पैरंट ने एक्सटेंशन की अनुमतियां बंद कर दी हैं</translation>
 <translation id="5160634252433617617">सामान्य कीबोर्ड के विकल्प</translation>
 <translation id="5160857336552977725">अपने <ph name="DEVICE_TYPE" /> में साइन इन करें</translation>
+<translation id="5161251470972801814"><ph name="VENDOR_NAME" /> के यूएसबी डिवाइस</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> को रोक दिया गया है</translation>
 <translation id="5163910114647549394">टैब को टैबस्ट्रिप (टैब वाली लाइन) के आखिर में ले जाया गया</translation>
 <translation id="5165085578392358314">इसके लिए स्विच असाइन करें: <ph name="ACTION" /></translation>
@@ -4418,7 +4420,7 @@
 <translation id="5932124097031739492">Linux को पहले से बेहतर बना दिया गया है.</translation>
 <translation id="5932224571077948991">साइट में तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाई देते हैं</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" /> का यूएसबी डिवाइस</translation>
-<translation id="5932441198730183141">Google Meet के इस हार्डवेयर डिवाइस का नाम दर्ज करने के लिए, आपके पास सभी ज़रूरी लाइसेंस नहीं हैं. ज़्यादा लाइसेंस खरीदने के लिए, कृपया सेल्स टीम से संपर्क करें. अगर आपको लगता है कि आप यह मैसेज किसी गड़बड़ी की वजह से देख रहे हैं, तो कृपया सहायता टीम से संपर्क करें.</translation>
+<translation id="5932441198730183141">Google Meet के इस हार्डवेयर डिवाइस का नाम दर्ज करने के लिए, आपके पास सभी ज़रूरी लाइसेंस नहीं हैं. ज़्यादा लाइसेंस खरीदने के लिए, कृपया सेल्स टीम से संपर्क करें. अगर आपको लगता है कि यह मैसेज किसी गड़बड़ी की वजह से दिख रहा है, तो कृपया सहायता टीम से संपर्क करें.</translation>
 <translation id="5932881020239635062">सीरियल</translation>
 <translation id="5933376509899483611">समय क्षेत्र</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> आपके कैमरे और माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
@@ -4658,7 +4660,6 @@
 <translation id="6212039847102026977">बेहतर नेटवर्क प्रॉपर्टी दिखाएं</translation>
 <translation id="6212168817037875041">डिसप्ले बंद करें</translation>
 <translation id="6212752530110374741">लिंक ईमेल करें</translation>
-<translation id="6213230117190778270">पाएं</translation>
 <translation id="621470880408090483">साइटों को ब्लूटूथ डिवाइसों से कनेक्ट करने की अनुमति न दें</translation>
 <translation id="6215620815501168899">ईआईडी और क्यूआर कोड पॉप-अप बंद करें</translation>
 <translation id="6216601812881225442">आपके कंटेनर में साइज़ बदलने की सुविधा नहीं है. Linux के लिए पहले से तय की गई जगह में बदलाव करने के लिए, उसका बैक अप लें. इसके बाद, उसे नए कंटेनर में फिर से सेव करें.</translation>
@@ -5372,6 +5373,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - गतिविधि लॉग</translation>
 <translation id="6997707937646349884">आपके इन डिवाइस पर:</translation>
 <translation id="6998793565256476099">डिवाइस को वीडियो कॉन्फ़्रेंसिंग के लिए नामांकित करें</translation>
+<translation id="6999640176621571692">क्या आप Google को यह पता लगाने की अनुमति देना चाहते हैं कि आपके कार्ट में मौजूद आइटम पर छूट उपलब्ध है या नहीं?</translation>
 <translation id="6999956497249459195">नया ग्रुप</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> कनेक्ट है पर उसे कॉन्फ़िगर करने की ज़रूरत है</translation>
 <translation id="7000347579424117903">Ctrl, Alt या Search को शामिल करें</translation>
@@ -5452,7 +5454,6 @@
 <translation id="7076293881109082629">साइन इन किया जा रहा है</translation>
 <translation id="7077829361966535409">मौजूदा प्रॉक्सी सेटिंग के इस्तेमाल करने से साइन इन पेज लोड नहीं हो सका. कृपया <ph name="GAIA_RELOAD_LINK_START" />फिर साइन इन करने की कोशिश करें<ph name="GAIA_RELOAD_LINK_END" />, या अलग-अलग <ph name="PROXY_SETTINGS_LINK_START" />प्रॉक्सी सेटिंग<ph name="PROXY_SETTINGS_LINK_END" /> का इस्तेमाल करें.</translation>
 <translation id="7078120482318506217">सभी नेटवर्क</translation>
-<translation id="7078386829626602215">कोई भी डिवाइस उपलब्ध नहीं है <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">ऑडियो के पते को कॉ&amp;पी करें</translation>
 <translation id="7081952801286122383">आप गुप्त मोड में हैं</translation>
 <translation id="708278670402572152">स्कैन करना चालू करने के लिए डिसकनेक्ट करें</translation>
@@ -5501,11 +5502,9 @@
 <translation id="7135729336746831607">क्या आप ब्लूटूथ चालू करना चाहते हैं?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> के लिए ज़रूरी है कि आप तुरंत अपना <ph name="DEVICE_TYPE" /> अपडेट करें.</translation>
 <translation id="7136694880210472378">डिफ़ॉल्ट बनाएं</translation>
-<translation id="7136984461011502314"><ph name="PRODUCT_NAME" /> में आपका स्वागत है</translation>
 <translation id="7136993520339022828">कोई गड़बड़ी हुई है. कृपया दूसरी इमेज चुनकर फिर से कोशिश करें.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> आपके माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
 <translation id="7141105143012495934">साइन इन नहीं हो पाया क्योंकि आपके खाते की जानकारी फिर से नहीं पाई जा सकी. कृपया अपने एडमिन से संपर्क करें या फिर से कोशिश करें.</translation>
-<translation id="7143358760238281735">कोई भी ऐप्लिकेशन उपलब्ध नहीं है</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
 <translation id="7149893636342594995">पिछले 24 घंटे</translation>
 <translation id="7152478047064750137">इस एक्‍सटेंशन को कोई खास अनुमति नहीं चाहिए</translation>
@@ -6458,7 +6457,6 @@
 <translation id="8189750580333936930">निजता सैंडबॉक्स</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> से कनेक्‍ट हो रहा है</translation>
 <translation id="8191230140820435481">अपने ऐप्स , एक्सटेंशन, और थीम प्रबंधित करें</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> आपकी स्क्रीन पर मौजूद कॉन्टेंट शेयर करना चाहता है.</translation>
 <translation id="8195027750202970175">डिस्क पर आकार</translation>
 <translation id="8198323535106903877">हम आपके लिए वे <ph name="NUMBER_OF_APPS" /> ऐप्लिकेशन इंस्टॉल करेंगे</translation>
 <translation id="8199300056570174101">नेटवर्क (सेवा) और डिवाइस प्रॉपर्टी</translation>
@@ -6882,6 +6880,7 @@
 <translation id="8698269656364382265">पिछली स्क्रीन पर वापस जाने के लिए, स्क्रीन की बाईं ओर से स्वाइप करें.</translation>
 <translation id="869884720829132584">ऐप्लिकेशन मेन्यू</translation>
 <translation id="869891660844655955">समय समाप्ति तारीख</translation>
+<translation id="8699120352855309748">इन भाषाओं का अनुवाद करने की सुविधा न दें</translation>
 <translation id="8702825062053163569">आपका <ph name="DEVICE_TYPE" /> लॉक हो गया था.</translation>
 <translation id="8703346390800944767">विज्ञापन छोड़ें</translation>
 <translation id="8705331520020532516">क्रम संख्या</translation>

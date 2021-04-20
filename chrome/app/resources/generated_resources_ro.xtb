@@ -328,7 +328,6 @@
 <translation id="1354045473509304750">Permite în continuare ca <ph name="HOST" /> să folosească și să miște camera</translation>
 <translation id="1355088139103479645">Ștergi toate datele?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> este blocat</translation>
-<translation id="1358612436266364864">Elimină evidențierile</translation>
 <translation id="1358741672408003399">Ortografie și gramatică</translation>
 <translation id="1359923111303110318">Dispozitivul se deblochează cu Smart Lock. Apasă pe Enter pentru a-l debloca.</translation>
 <translation id="1361164813881551742">Adaugă manual</translation>
@@ -1610,7 +1609,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2734760316755174687">Site-urile din <ph name="SITE_GROUP_NAME" /> vor fi și ele resetate.</translation>
 <translation id="2735712963799620190">Program</translation>
 <translation id="2737363922397526254">Restrânge...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> solicită permisiunea de a trimite conținut de pe ecran la <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Nu permite site-urilor să folosească fonturile instalate pe dispozitiv</translation>
 <translation id="2738771556149464852">Nu după</translation>
 <translation id="2739191690716947896">Remediați erorile</translation>
@@ -1898,7 +1896,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3031417829280473749">Agenta X</translation>
 <translation id="3031557471081358569">Selectează elementele de importat:</translation>
 <translation id="3036327949511794916">A trecut termenul limită pentru returnarea acestui <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3036438888981457032">Elimină evidențierile</translation>
 <translation id="3036546437875325427">Activează Flash</translation>
 <translation id="3037754279345160234">Nu se poate analiza configurația de conectare la domeniu. Contactează administratorul.</translation>
 <translation id="3038612606416062604">Adaugă manual o imprimantă</translation>
@@ -4665,7 +4662,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6212039847102026977">Afișează proprietățile avansate pentru rețea</translation>
 <translation id="6212168817037875041">Dezactivează ecranul</translation>
 <translation id="6212752530110374741">Trimite linkul prin e-mail</translation>
-<translation id="6213230117190778270">Primește</translation>
 <translation id="621470880408090483">Nu permite site-urilor să se conecteze la dispozitive Bluetooth</translation>
 <translation id="6215620815501168899">Închide codul EID și pop-upul cu codul QR</translation>
 <translation id="6216601812881225442">Containerul nu acceptă redimensionarea. Pentru a ajusta spațiul alocat în avans pentru Linux, fă-i backup și restabilește-l într-un container nou.</translation>
@@ -5460,7 +5456,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7076293881109082629">Conectare</translation>
 <translation id="7077829361966535409">Pagina de conectare nu s-a putut încărca utilizând setările de proxy actuale. <ph name="GAIA_RELOAD_LINK_START" />Încercați să vă conectați din nou<ph name="GAIA_RELOAD_LINK_END" /> sau utilizați alte <ph name="PROXY_SETTINGS_LINK_START" />setări de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Toate rețelele</translation>
-<translation id="7078386829626602215">Nu s-a detectat niciun dispozitiv <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">C&amp;opiază adresa conținutului audio</translation>
 <translation id="7081952801286122383">Ești în modul incognito</translation>
 <translation id="708278670402572152">Deconectează-te pentru a permite scanarea</translation>
@@ -5509,11 +5504,9 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7135729336746831607">Activezi Bluetooth?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> îți solicită să actualizezi imediat dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7136694880210472378">Setează ca prestabilit</translation>
-<translation id="7136984461011502314">Bun venit la <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">A apărut o eroare. Încearcă din nou alegând alte imagini.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> folosește microfonul</translation>
 <translation id="7141105143012495934">Nu s-a conectat, deoarece nu s-au putut prelua detaliile contului. Contactează administratorul sau încearcă din nou.</translation>
-<translation id="7143358760238281735">Nicio aplicație disponibilă</translation>
 <translation id="7144878232160441200">Reîncearcă</translation>
 <translation id="7149893636342594995">Ultimele 24 de ore</translation>
 <translation id="7152478047064750137">Această extensie nu necesită permisiuni speciale</translation>
@@ -6467,7 +6460,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Se conectează la <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gestionează aplicațiile, extensiile și temele dvs.</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> solicită permisiunea de a trimite conținut de pe ecran.</translation>
 <translation id="8195027750202970175">Dimensiune pe disc</translation>
 <translation id="8198323535106903877">Vom instala aceste <ph name="NUMBER_OF_APPS" /> aplicații pentru tine</translation>
 <translation id="8199300056570174101">Proprietăți pentru dispozitiv și rețea (serviciu)</translation>
@@ -6891,6 +6883,7 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
 <translation id="8698269656364382265">Pentru a reveni la ecranul anterior, glisează din stânga.</translation>
 <translation id="869884720829132584">Meniul aplicațiilor</translation>
 <translation id="869891660844655955">Dată de expirare</translation>
+<translation id="8699120352855309748">Nu oferi traducerea pentru aceste limbi</translation>
 <translation id="8702825062053163569">Dispozitivul <ph name="DEVICE_TYPE" /> a fost blocat.</translation>
 <translation id="8703346390800944767">Închide anunțul</translation>
 <translation id="8705331520020532516">Număr de serie</translation>

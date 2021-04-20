@@ -754,9 +754,6 @@
           必要です。ただし、各プロセスに異なるポリシー値が適用され、実行されても
           問題はありません。
           </translation>
-<translation id="2026547141364626978">このポリシーでは、このデバイスの <ph name="PLUGIN_VM_NAME" /> のライセンスキーを指定します。
-
-      このポリシーは M91 で削除されました。</translation>
 <translation id="2030905906517501646">デフォルトの検索プロバイダのキーワード</translation>
 <translation id="203096360153626918">このポリシーは Android アプリには適用されません。このポリシーを <ph name="FALSE" /> に設定した場合でも、Android アプリの全画面表示は可能です。</translation>
 <translation id="2032848225007871645">このポリシーでは、ロック画面を解除できるロックのクイック解除モードを管理できます。
@@ -791,10 +788,6 @@
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="2043749682619281558">ログイン画面でカーソルによるハイライト表示を有効にする</translation>
 <translation id="2043770014371753404">無効な企業プリンタ</translation>
-<translation id="2044730764993088298"><ph name="PRODUCT_NAME" /> の閲覧データの有効期間を設定します。このポリシーでは、ブラウザでデータを削除するタイミングをデータの種類ごとに設定できます。このポリシーは、機密性の高い顧客データを取り扱う場合に役立ちます。このポリシーは、<ph name="SYNC_DISABLED_POLICY_NAME" /> が true に設定されている場合にのみ適用されます。
-
-      対象となるデータの種類は <ph name="DATA_TYPE_BROWSING_HISTORY" />、<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />、<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />、<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、<ph name="DATA_TYPE_PASSWORD" />、<ph name="DATA_TYPE_AUTOFILL" />、<ph name="DATA_TYPE_SITE_SETTINGS" />、<ph name="DATA_TYPE_HOSTED_APP_DATA" /> です。
-      ブラウザでは、選択した種類のデータについて、保存期間が <ph name="TIME_TO_LIVE_IN_HOURS" /> を経過すると自動的に削除されます。設定できる最小値は 1 時間です。まれに、データが削除されるまでに時間がかかる場合がありますが、最終的には必ず削除されます。</translation>
 <translation id="2057317273526988987">URL のリストへのアクセスを許可する</translation>
 <translation id="2061123930713023976">デバッグのネットワーク パケット キャプチャを許可する</translation>
 <translation id="2061810934846663491">リモート アクセス ホストの必須のドメイン名を設定する</translation>
@@ -2375,11 +2368,6 @@
           このポリシーを設定した場合、ユーザーによる変更やオーバーライドはできません。
 
           このポリシーを設定しない場合、音声フィードバックは初期設定ではログイン画面で無効ですが、ユーザーはいつでも有効にできます。</translation>
-<translation id="4175667688338118889">このポリシーを有効に設定した場合、セーフ ブラウジングでは指定ドメインが信頼され、危険なリソース（フィッシング、不正なソフトウェア、迷惑ソフトウェアなど）の確認は行われません。セーフ ブラウジングのダウンロード保護サービスでは指定ドメインでホストされているダウンロードの確認は行われず、パスワード保護サービスでもパスワード再利用の確認は行われません。
-
-      このポリシーを無効に設定するか未設定のままにした場合、デフォルトのセーフ ブラウジング保護がすべてのリソースに適用されます。
-
-      <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="417956245902013347">ログイン画面で「テキストカーソルによるハイライト表示」ユーザー補助機能を有効にします。
 
           このポリシーを true に設定した場合、テキストカーソルによるハイライト表示はログイン画面で常に有効になります。
@@ -3999,6 +3987,7 @@
 
       このポリシーを未設定のままにした場合、最大桁数は適用されません。</translation>
 <translation id="6553143066970470539">画面の明るさの割合（%）</translation>
+<translation id="6558362593755624474">このポリシーでは、このデバイスの <ph name="PLUGIN_VM_NAME" /> のライセンスキーを指定します。</translation>
 <translation id="6559057113164934677">カメラやマイクへのアクセスをどのサイトにも許可しない</translation>
 <translation id="6559221564468029245">このポリシーを有効に設定するか未設定のままにした場合、音声が再生されている間は、ユーザーはアイドル状態とはみなされません。アイドル タイムアウトにはならず、アイドル処理も行われません。ただし、音声操作にかかわらず、画面を暗くするまでの時間、画面オフまでの時間、画面ロックまでの時間としてそれぞれ設定されたタイムアウト後は、対応する処理が行われます。
 

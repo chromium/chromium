@@ -331,7 +331,6 @@
 <translation id="1354045473509304750">مواصلة السماح للمضيف <ph name="HOST" /> باستخدام الكاميرا وتحريكها</translation>
 <translation id="1355088139103479645">هل تريد حذف كلّ البيانات؟</translation>
 <translation id="1355466263109342573">تم حظر <ph name="PLUGIN_NAME" /></translation>
-<translation id="1358612436266364864">إزالة التظليل</translation>
 <translation id="1358741672408003399">التدقيق الإملائي والتدقيق النحوي</translation>
 <translation id="1359923111303110318">‏يمكن فتح قفل جهازك باستخدام Smart Lock. عليك الضغط على Enter لفتح القفل.</translation>
 <translation id="1361164813881551742">الإضافة يدويًا</translation>
@@ -887,6 +886,7 @@
 <translation id="1928202201223835302">إدخال رقم التعريف الشخصي القديم</translation>
 <translation id="1928696683969751773">التحديثات</translation>
 <translation id="1929186283613845153">جارٍ فحص الملف.</translation>
+<translation id="1929343511231420085">أي منفذ تسلسلي</translation>
 <translation id="1929546189971853037">قراءة سجل التصفح على كل الأجهزة التي سجلت الدخول إليها</translation>
 <translation id="1930879306590754738">‏تم حذف كلمة المرور من هذا الجهاز ومن حسابك على Google.</translation>
 <translation id="1931152874660185993">لم يتم تثبيت أي مكونات.</translation>
@@ -1612,7 +1612,6 @@
 <translation id="2734760316755174687">سيتم أيضًا إعادة ضبط المواقع الإلكترونية ضمن <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">الجدول الزمني</translation>
 <translation id="2737363922397526254">تصغير...</translation>
-<translation id="2737916598897808047">يريد <ph name="APP_NAME" /> مشاركة محتوى شاشتك مع <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">عدم السماح للمواقع الإلكترونية باستخدام أشكال الخط المثبَّتة على جهازك</translation>
 <translation id="2738771556149464852">آخر يوم للصلاحية</translation>
 <translation id="2739191690716947896">تصحيح الأخطاء</translation>
@@ -1901,7 +1900,6 @@
 <translation id="3031417829280473749">‏الوكيل X</translation>
 <translation id="3031557471081358569">اختيار العناصر المراد استيرادها:</translation>
 <translation id="3036327949511794916">لقد انتهت مهلة إرجاع جهاز <ph name="DEVICE_TYPE" /> هذا.</translation>
-<translation id="3036438888981457032">إزالة التظليل</translation>
 <translation id="3036546437875325427">‏تفعيل Flash</translation>
 <translation id="3037754279345160234">يتعذَّر تحليل الإعداد لضمّ النطاق. يُرجى الاتصال بمشرفك.</translation>
 <translation id="3038612606416062604">إضافة طابعة يدويًا</translation>
@@ -2946,6 +2944,7 @@
 <translation id="4218274196133425560">إزالة الاستثناء للمضيف <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">حدث خطأ أثناء التفعيل.</translation>
 <translation id="4222772810963087151">تفاصيل الإصدار</translation>
+<translation id="4224284700924043865">‏أجهزة USB التي يتوفّر بها معرِّف المنتج <ph name="PRODUCT_ID" /> من البائع <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">على جميع المواقع</translation>
 <translation id="4231095370974836764">‏يمكنك تثبيت التطبيقات والألعاب من Google Play على جهاز <ph name="DEVICE_TYPE" /> الخاص بك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">‏ضبط Kerberos</translation>
@@ -3018,6 +3017,7 @@
 <translation id="431076611119798497">&amp;التفاصيل</translation>
 <translation id="4312866146174492540">حظر (تلقائي)</translation>
 <translation id="4314815835985389558">إدارة المزامنة</translation>
+<translation id="4316650123995163262">‏أجهزة USB التي يتوفّر بها معرِّف المنتج <ph name="PRODUCT_ID" /> من <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">الموقع الإلكتروني لمطوّر البرامج</translation>
 <translation id="4317820549299924617">تعذَّر إثبات الملكية</translation>
 <translation id="4320177379694898372">لا يتوفر اتصال بالإنترنت</translation>
@@ -3460,6 +3460,7 @@
 <translation id="4824958205181053313">هل تريد إلغاء المزامنة؟</translation>
 <translation id="4827675678516992122">تعذّر الاتصال</translation>
 <translation id="4827784381479890589">‏التدقيق الإملائي المُحسَّن في متصفِّح Chrome (يتم إرسال النص إلى Google للاقتراحات الإملائية)</translation>
+<translation id="482952334869563894">‏أجهزة USB من المورِّد <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">إعداد رقم التعريف الشخصي</translation>
 <translation id="4830121310592638841">طلب الإذن في حال محاولة موقع فتح النوافذ ووضعها على شاشتك</translation>
 <translation id="4830502475412647084">جارٍ تثبيت تحديث لنظام التشغيل</translation>
@@ -3749,6 +3750,7 @@
 <translation id="5159419673777902220">أوقَف أحد والدَيك أذونات الإضافة.</translation>
 <translation id="5160634252433617617">لوحة المفاتيح الفعلية</translation>
 <translation id="5160857336552977725">سجّل الدخول إلى <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">‏أجهزة USB من <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850">تم حظر جهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">تم نقل علامة التبويب إلى نهاية شريط علامات التبويب.</translation>
 <translation id="5165085578392358314">تخصيص مفتاح التبديل: <ph name="ACTION" /></translation>
@@ -4662,7 +4664,6 @@
 <translation id="6212039847102026977">عرض خصائص الشبكة المتقدمة</translation>
 <translation id="6212168817037875041">إيقاف الشاشة</translation>
 <translation id="6212752530110374741">إرسال الرابط عبر البريد الإلكتروني</translation>
-<translation id="6213230117190778270">استلام</translation>
 <translation id="621470880408090483">عدم السماح للمواقع الإلكترونية بالاتصال بأجهزة تتضمّن بلوتوث</translation>
 <translation id="6215620815501168899">‏إغلاق النافذة المنبثقة لرقم EID للجهاز ورمز الاستجابة السريعة</translation>
 <translation id="6216601812881225442">‏لا يُسمح بتغيير حجم الحاوية. لضبط مقدار المساحة التي تم تخصيصها مسبقًا لنظام Linux، يُرجى الاحتفاظ بنسخة احتياطية ثم استعادتها في حاوية جديدة.</translation>
@@ -5376,6 +5377,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - سجلّ الأنشطة</translation>
 <translation id="6997707937646349884">على أجهزتك:</translation>
 <translation id="6998793565256476099">تسجيل الجهاز لمؤتمر الفيديو</translation>
+<translation id="6999640176621571692">‏هل تريد السماح لـ Google بالبحث عن خصومات على السلع التي تضيفها إلى سَلاَّت التسوق؟</translation>
 <translation id="6999956497249459195">مجموعة جديدة</translation>
 <translation id="7000206553895739324">تم توصيل <ph name="PRINTER_NAME" /> ولكنها بحاجة إلى الضبط</translation>
 <translation id="7000347579424117903">‏تضمين مفتاحي Ctrl، أو Alt، أو مفتاح البحث</translation>
@@ -5456,7 +5458,6 @@
 <translation id="7076293881109082629">تسجيل الدخول</translation>
 <translation id="7077829361966535409">تعذّر تحميل صفحة تسجيل الدخول باستخدام إعدادات الخادم الوكيل الحالية. يُرجى <ph name="GAIA_RELOAD_LINK_START" />إعادة محاولة تسجيل الدخول<ph name="GAIA_RELOAD_LINK_END" />، أو استخدام <ph name="PROXY_SETTINGS_LINK_START" />إعدادات خادم وكيل<ph name="PROXY_SETTINGS_LINK_END" /> مختلفة.</translation>
 <translation id="7078120482318506217">جميع الشبكات</translation>
-<translation id="7078386829626602215">لم يتم العثور على أي جهاز. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">ن&amp;سخ عنوان الصوت</translation>
 <translation id="7081952801286122383">أنت تستخدم وضع التصفُّح المُتخفِّي</translation>
 <translation id="708278670402572152">قطع الاتصال لتفعيل الفحص</translation>
@@ -5505,11 +5506,9 @@
 <translation id="7135729336746831607">هل تريد تفعيل البلوتوث؟</translation>
 <translation id="7136639886842764730">يتطلّب <ph name="DOMAIN" /> تحديث جهاز <ph name="DEVICE_TYPE" /> فورًا.</translation>
 <translation id="7136694880210472378">جعل الخيار تلقائيًا</translation>
-<translation id="7136984461011502314">مرحبًا بك في <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">حدث خطأ. يُرجى إعادة المحاولة عن طريق اختيار صور أخرى.</translation>
 <translation id="7139627972753429585">يستخدم تطبيق <ph name="APP_NAME" /> الميكروفون.</translation>
 <translation id="7141105143012495934">فشل تسجيل الدخول، نظرًا لعدم القدرة على استرداد تفاصيل حسابك، يُرجى الاتصال بالمسؤول أو إعادة المحاولة.</translation>
-<translation id="7143358760238281735">ما مِن تطبيقات متاحة</translation>
 <translation id="7144878232160441200">إعادة المحاولة</translation>
 <translation id="7149893636342594995">آخر 24 ساعة</translation>
 <translation id="7152478047064750137">لا تتطلب هذه الإضافة أذونات خاصة</translation>
@@ -6463,7 +6462,6 @@
 <translation id="8189750580333936930">مبادرة حماية الخصوصية</translation>
 <translation id="8190193592390505034">جارٍ الاتصال بـ <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">إدارة التطبيقات والإضافات والمظاهر</translation>
-<translation id="8192944472786724289">يريد <ph name="APP_NAME" /> مشاركة محتوى شاشتك.</translation>
 <translation id="8195027750202970175">الحجم على القرص</translation>
 <translation id="8198323535106903877">سنعمل على تثبيت <ph name="NUMBER_OF_APPS" /> من هذه التطبيقات من أجلك</translation>
 <translation id="8199300056570174101">خصائص الشبكة (الخدمة) والجهاز</translation>
@@ -6887,6 +6885,7 @@
 <translation id="8698269656364382265">للرجوع إلى الشاشة السابقة، مرِّر سريعًا من الجانب الأيمن.</translation>
 <translation id="869884720829132584">قائمة التطبيقات</translation>
 <translation id="869891660844655955">تاريخ انتهاء الصلاحية</translation>
+<translation id="8699120352855309748">عدم اقتراح ترجمة لهذه اللغات</translation>
 <translation id="8702825062053163569">تم قفل الجهاز <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8703346390800944767">تخطي الإعلان</translation>
 <translation id="8705331520020532516">الرقم التسلسلي</translation>

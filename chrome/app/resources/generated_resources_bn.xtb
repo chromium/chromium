@@ -328,7 +328,6 @@
 <translation id="1354045473509304750">আপনার ক্যামেরা ব্যবহার করতে এবং সরাতে <ph name="HOST" />-কে অনুমতি দেওয়ার বিষয়টি চালিয়ে যান</translation>
 <translation id="1355088139103479645">সব ডেটা মুছতে চান?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> অবরুদ্ধ করা রয়েছে</translation>
-<translation id="1358612436266364864">হাইলাইট সরিয়ে দিন</translation>
 <translation id="1358741672408003399">বানান এবং ব্যাকরণ</translation>
 <translation id="1359923111303110318">Smart Lock দিয়ে আপনার ডিভাইস আনলক করা যাবে। আনলক করতে 'Enter' বোতাম প্রেস করুন।</translation>
 <translation id="1361164813881551742">নিজে যোগ করুন</translation>
@@ -884,6 +883,7 @@
 <translation id="1928202201223835302">পুরানো পিন লিখুন</translation>
 <translation id="1928696683969751773">আপডেট</translation>
 <translation id="1929186283613845153">এই ফাইল স্ক্যান করা হচ্ছে।</translation>
+<translation id="1929343511231420085">যেকোনও সিরিয়ালের পোর্ট</translation>
 <translation id="1929546189971853037">আপনার সমস্ত প্রবেশ করা ডিভাইসের ব্রাউজিং ইতিহাস পড়ুন</translation>
 <translation id="1930879306590754738">এই ডিভাইস এবং আপনার Google অ্যাকাউন্ট থেকে পাসওয়ার্ড মুছে ফেলা হয়েছে</translation>
 <translation id="1931152874660185993">কোনো উপাদান ইনস্টল করা নেই৷</translation>
@@ -1607,7 +1607,6 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" />-এর অধীনে থাকা সাইটগুলিও রিসেট করা হবে।</translation>
 <translation id="2735712963799620190">সময়সূচি</translation>
 <translation id="2737363922397526254">আড়াল করুন...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> আপনার স্ক্রিনের কন্টেন্ট <ph name="TARGET_NAME" />-এর সাথে শেয়ার করতে চাইছে।</translation>
 <translation id="2738030019664645674">সাইটকে আপনার ডিভাইসে ইনস্টল করা ফন্ট ব্যবহার করতে দেয় না</translation>
 <translation id="2738771556149464852">এরপরে নয়</translation>
 <translation id="2739191690716947896">ডিবাগ</translation>
@@ -1895,7 +1894,6 @@
 <translation id="3031417829280473749">এজেন্ট X</translation>
 <translation id="3031557471081358569">আমদানির জন্য আইটেম বেছে নিন:</translation>
 <translation id="3036327949511794916">এই <ph name="DEVICE_TYPE" /> ফেরত দেওয়ার সময়সীমা পেরিয়ে গেছে।</translation>
-<translation id="3036438888981457032">হাইলাইট সরিয়ে দিন</translation>
 <translation id="3036546437875325427">Flash সক্ষম করুন</translation>
 <translation id="3037754279345160234">ডোমেনে যোগ করার জন্য প্রয়োজনীয় কনফিগারেশন পার্স করা যাচ্ছে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="3038612606416062604">নিজ হাতে একটি প্রিন্টার যোগ করুন</translation>
@@ -2941,6 +2939,7 @@
 <translation id="4218274196133425560"><ph name="HOST_NAME" />-এর জন্য ব্যতিক্রম সরানোর বোতাম</translation>
 <translation id="4220648711404560261">অ্যাক্টিভেট করার সময় কোনও সমস্যা হয়েছে।</translation>
 <translation id="4222772810963087151">বিবরণ লিখুন</translation>
+<translation id="4224284700924043865"><ph name="VENDOR_ID" /> ভেন্ডরের <ph name="PRODUCT_ID" /> প্রোডাক্ট আইডিসহ ইউএসবি ডিভাইস</translation>
 <translation id="4225397296022057997">সমস্ত সাইটে</translation>
 <translation id="4231095370974836764">আপনার <ph name="DEVICE_TYPE" />-এ Google Play থেকে অ্যাপ ও গেম ইনস্টল করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos কনফিগার করুন</translation>
@@ -3013,6 +3012,7 @@
 <translation id="431076611119798497">&amp;বিশদ বিবরণ</translation>
 <translation id="4312866146174492540">অবরুদ্ধ করুন (ডিফল্ট)</translation>
 <translation id="4314815835985389558">সিঙ্ক ম্যানেজ করুন</translation>
+<translation id="4316650123995163262"><ph name="VENDOR_NAME" />-এর <ph name="PRODUCT_ID" /> প্রোডাক্ট আইডিসহ ইউএসবি ডিভাইস</translation>
 <translation id="4316850752623536204">ডেভেলপার ওয়েবসাইট</translation>
 <translation id="4317820549299924617">যাচাইকরণ সম্পূর্ণ হয়নি</translation>
 <translation id="4320177379694898372">কোনো ইন্টারনেট সংযোগ নেই</translation>
@@ -3455,6 +3455,7 @@
 <translation id="4824958205181053313">সিঙ্ক বাতিল করতে চান?</translation>
 <translation id="4827675678516992122">কানেক্ট করা যায়নি</translation>
 <translation id="4827784381479890589">Chrome ব্রাউজারে বানান পরীক্ষা করার উন্নত সুবিধা (বানান সংক্রান্ত সাজেশনের জন্য Google-এর কাছে টেক্সট পাঠানো হয়েছে)</translation>
+<translation id="482952334869563894"><ph name="VENDOR_ID" /> ভেন্ডরের ইউএসবি ডিভাইস</translation>
 <translation id="4829768588131278040">পিন সেট-আপ করুন</translation>
 <translation id="4830121310592638841">কোনও সাইট আপনার স্ক্রিনে উইন্ডো খুলতে ও রাখতে চাইলে অনুমতি নিতে বলুন</translation>
 <translation id="4830502475412647084">OS আপডেট ইনস্টল করা হচ্ছে</translation>
@@ -3744,6 +3745,7 @@
 <translation id="5159419673777902220">আপনার অভিভাবক এক্সটেনশন ব্যবহারের অনুমতি বন্ধ করে দিয়েছেন।</translation>
 <translation id="5160634252433617617">ফিজিক্যাল কীবোর্ড</translation>
 <translation id="5160857336552977725">আপনার <ph name="DEVICE_TYPE" />-এ সাইন-ইন করুন</translation>
+<translation id="5161251470972801814"><ph name="VENDOR_NAME" /> ভেন্ডরের ইউএসবি ডিভাইস</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ব্লক করা হয়েছে</translation>
 <translation id="5163910114647549394">ট্যাবস্ট্রিপের শেষে ট্যাব সরানো হয়েছে</translation>
 <translation id="5165085578392358314">সুইচ অ্যাসাইন করুন: <ph name="ACTION" /></translation>
@@ -4658,7 +4660,6 @@
 <translation id="6212039847102026977">উন্নত নেটওয়ার্ক বৈশিষ্ট্যগুলি দেখুন</translation>
 <translation id="6212168817037875041">ডিসপ্লে বন্ধ করুন</translation>
 <translation id="6212752530110374741">ইমেল লিঙ্ক</translation>
-<translation id="6213230117190778270">গ্রহণ করুন</translation>
 <translation id="621470880408090483">সাইটগুলিকে ব্লুটুথ ডিভাইস কানেক্ট করতে দেয় না</translation>
 <translation id="6215620815501168899">EID ও QR কোডের পপ-আপ বন্ধ করুন</translation>
 <translation id="6216601812881225442">আপনার কন্টেনার রিসাইজ করা যায় না। Linux-এ আগে থেকে বরাদ্দ করা জায়গার পরিমাণ অ্যাডজাস্ট করতে, ব্যাক-আপ নিয়ে নতুন কন্টেনারে ফিরিয়ে আনুন।</translation>
@@ -5372,6 +5373,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - অ্যাক্টিভিটি লগ</translation>
 <translation id="6997707937646349884">আপনার ডিভাইসে:</translation>
 <translation id="6998793565256476099">ভিডিও কনফারেন্সিংয়ের জন্য ডিভাইস যোগ করুন</translation>
+<translation id="6999640176621571692">Google-কে কি আপনি কার্টে যোগ করা আইটেমে কোনও ছাড় পাবেন কিনা তা খুঁজে দেখতে অনুমতি দিতে চান?</translation>
 <translation id="6999956497249459195">নতুন গ্রুপ</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> কানেক্ট করা হয়েছে, কিন্তু কনফিগার করতে হবে</translation>
 <translation id="7000347579424117903">Ctrl, Alt অথবা Search বোতাম ব্যবহার করতে হবে</translation>
@@ -5452,7 +5454,6 @@
 <translation id="7076293881109082629">প্রবেশ করুন হচ্ছে</translation>
 <translation id="7077829361966535409">সাইন-ইন পৃষ্ঠাটি বর্তমান প্রক্সি সেটিংস ব্যবহার করে লোড করা যায়নি৷ অনুগ্রহ করে <ph name="GAIA_RELOAD_LINK_START" />আবার সাইন-ইনের চেষ্টা করুন<ph name="GAIA_RELOAD_LINK_END" /> অথবা অন্য কোনও <ph name="PROXY_SETTINGS_LINK_START" />প্রক্সি সেটিংস<ph name="PROXY_SETTINGS_LINK_END" /> ব্যবহার করুন৷</translation>
 <translation id="7078120482318506217">সকল নেটওয়ার্কগুলি</translation>
-<translation id="7078386829626602215">কোনও ডিভাইস শনাক্ত করা হয়নি। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">অ&amp;ডিও ঠিকানা কপি করুন</translation>
 <translation id="7081952801286122383">আপনি ছদ্মবেশী মোডে আছেন</translation>
 <translation id="708278670402572152">স্ক্যানিং সক্রিয় করতে সংযোগ বিচ্ছিন্ন করুন</translation>
@@ -5501,11 +5502,9 @@
 <translation id="7135729336746831607">ব্লুটুথ চালু করবেন?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" />-এর প্রয়োজন অনুযায়ী, আপনাকে খুব তাড়াতাড়ি নিজের <ph name="DEVICE_TYPE" />-কে আপডেট করতে হবে।</translation>
 <translation id="7136694880210472378">ডিফল্ট করুন</translation>
-<translation id="7136984461011502314"><ph name="PRODUCT_NAME" />-তে আপনাকে স্বাগতম</translation>
 <translation id="7136993520339022828">একটি সমস্যা হয়েছে। অনুগ্রহ করে অন্য একটি ছবি বেছে নিয়ে আবার চেষ্টা করুন।</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> আপনার মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="7141105143012495934">আপনার অ্যাকাউন্টের বিশদ বিবরণ পুনরুদ্ধার করতে না পারায় সাইন-ইন ব্যর্থ হয়েছে। অনুগ্রহ করে আপনার প্রশাসকের সাথে যোগাযোগ করুন অথবা আবার চেষ্টা করুন।</translation>
-<translation id="7143358760238281735">কোনও অ্যাপ উপলভ্য নেই</translation>
 <translation id="7144878232160441200">আবার চেষ্টা করুন</translation>
 <translation id="7149893636342594995">গত ২৪ ঘণ্টা</translation>
 <translation id="7152478047064750137">এই এক্সটেনশনটির জন্য কোনও বিশেষ অনুমতির প্রয়োজন নেই</translation>
@@ -6457,7 +6456,6 @@
 <translation id="8189750580333936930">প্রাইভেসি স্যান্ডবক্স</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />-তে সংযুক্ত হচ্ছে</translation>
 <translation id="8191230140820435481">আপনার অ্যাপ্লিকেশন, এক্সটেনশন, এবং থিম পরিচালনা করুন</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> আপনার স্ক্রিনের কন্টেন্ট শেয়ার করতে চাইছে।</translation>
 <translation id="8195027750202970175">ডিস্কের মাপ</translation>
 <translation id="8198323535106903877">আপনার জন্য সেই <ph name="NUMBER_OF_APPS" />টি অ্যাপ আমরা ইনস্টল করে দেব</translation>
 <translation id="8199300056570174101">নেটওয়ার্ক (পরিষেবা) এবং ডিভাইসের বৈশিষ্ট্য</translation>
@@ -6881,6 +6879,7 @@
 <translation id="8698269656364382265">আগের স্ক্রিনে ফিরে যেতে, বাঁদিক থেকে সোয়াইপ করুন।</translation>
 <translation id="869884720829132584">অ্যাপ্লিকেশনস মেনু</translation>
 <translation id="869891660844655955">মেয়াদকাল সমাপ্তির তারিখ</translation>
+<translation id="8699120352855309748">এইসব ভাষায় অনুবাদ হবে না</translation>
 <translation id="8702825062053163569">আপনার <ph name="DEVICE_TYPE" /> লক হয়ে গেছে।</translation>
 <translation id="8703346390800944767">বিজ্ঞাপন এড়িয়ে যান</translation>
 <translation id="8705331520020532516">ক্রমিক সংখ্যা</translation>

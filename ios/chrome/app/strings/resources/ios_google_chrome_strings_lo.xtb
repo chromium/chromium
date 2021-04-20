@@ -27,6 +27,7 @@
 <translation id="3167189358072330585">ບັນຊີຂອງທ່ານໃຊ້ບໍ່ໄດ້ຢູ່ໃນ Google Chrome. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງໂດເມນຂອງທ່ານ ຫຼືໃຊ້ບັນຊີ Google ປົກກະຕິ ເພື່ອເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="3173834708294760622">ໜ້າ Google Chrome</translation>
 <translation id="3196546062792660320">Chrome ຊ່ວຍທ່ານປະຢັດເວລາໂດຍການນຳເອົາບັນຊີຂອງທ່ານມາສູ່ເວັບ. ທ່ານສາມາດເພີ່ມ ຫຼື ລຶບບັນຊີອອກໄດ້ໃນການຕັ້ງຄ່າ.</translation>
+<translation id="3223655207402797071">ເຂົ້າສູ່ລະບົບເວັບໄຊນີ້, ບັນຊີ Google ຂອງທ່ານ ແລະ Chrome. ທ່ານອາດຈະເປີດການຊິ້ງຂໍ້ມູນໃນພາຍຫຼັງກໍໄດ້.</translation>
 <translation id="3282568296779691940">ລົງຊື່ເຂົ້າ​ໃຊ້ Chrome</translation>
 <translation id="3345341804167540816">ໃຊ້ Chrome ຢູ່​ທຸກ​ບ່ອນ</translation>
 <translation id="3522659714780527202">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chrome, ກະລຸນາເປີດການຊິ້ງຂໍ້ມູນ</translation>
@@ -57,6 +58,7 @@
 <translation id="5876773482963502140">ຫາກທ່ານອະນຸຍາດໃຫ້ Chrome ຮູ້ສະຖານທີ່ຂອງທ່ານ, Chrome ຈະສົ່ງມັນໄປຫາເວັບໄຊໃດກໍຕາມທີ່ທ່ານອະນຸຍາດ. ເວັບໄຊອາດຂໍສະຖານທີ່ຂອງທ່ານເມື່ອພວກມັນມີຂໍ້ມູນໃນທ້ອງຖິ່ນທີ່ຈະສະແດງໃຫ້ທ່ານເຫັນ ເຊັ່ນ: ຮ້ານຄ້າທີ່ຢູ່ໃກ້ຄຽງ ຫຼື ຂ່າວ.</translation>
 <translation id="6036420186814142909">Google Chrome ມີ​ຄຸນສົມບັດໃຊ້ງານ​ທີ່​ຊ່ວຍ​ທ່ານ​ຈັດ​ການ​ຂໍ້​ມູນ​ອິນ​ເຕີ​ເນັດ​ຂອງ​ທ່ານ ແລະ​ທ່ານ​ສາ​ມາດ​ໂຫຼດ​ໜ້າ​ເວັບ​ໄດ້​ໄວ​ປານ​ໃດ.
 <ph name="BEGIN_LINK" />ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">ອະນຸຍາດການເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="6181930887571472871">ປ່ຽນເປັນ Chrome</translation>
 <translation id="6238746320622508509">ອະນຸຍາດໃຫ້ Chrome ລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານ.</translation>
 <translation id="6573431926118603307">ແຖບທີ່ທ່ານໄດ້ເປີດໃນ Chrome ຢູ່ໃນອຸປະກອນອື່ນຂອງທ່ານຈະປາກົດຢູ່ບ່ອນນີ້.</translation>
@@ -95,5 +97,6 @@
   3. ເລືອກ Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">ທ່ອງເວັບຢ່າງປອດໄພດ້ວຍ Google Chrome</translation>
+<translation id="8772179140489533211">ສະແດງຂໍ້ຄວາມເພື່ອເຂົ້າສູ່ລະບົບຫາ Chrome.</translation>
 <translation id="9112744793181547300">ຕັ້ງ Chrome ເປັນຄ່າເລີ່ມຕົ້ນບໍ?</translation>
 </translationbundle>

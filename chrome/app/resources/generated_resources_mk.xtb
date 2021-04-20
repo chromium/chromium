@@ -328,7 +328,6 @@
 <translation id="1354045473509304750">Продолжете да дозволувате <ph name="HOST" /> да ја користи и движи камерата</translation>
 <translation id="1355088139103479645">Да се избришат сите податоци?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> е блокиран</translation>
-<translation id="1358612436266364864">Отстрани го нагласувањето</translation>
 <translation id="1358741672408003399">Правопис и граматика</translation>
 <translation id="1359923111303110318">Вашиот уред може да се отклучи со Smart Lock. Притиснете Enter за да се отклучи.</translation>
 <translation id="1361164813881551742">Додај рачно</translation>
@@ -884,6 +883,7 @@
 <translation id="1928202201223835302">Внесете го стариот PIN</translation>
 <translation id="1928696683969751773">Ажурирања</translation>
 <translation id="1929186283613845153">Датотекава се скенира.</translation>
+<translation id="1929343511231420085">Која било сериска порта</translation>
 <translation id="1929546189971853037">Прочитајте ја историјата на прелистувачот на сите најавени уреди</translation>
 <translation id="1930879306590754738">Лозинката е избришана од уредов и од сметката на Google</translation>
 <translation id="1931152874660185993">Не се инсталирани компоненти.</translation>
@@ -1609,7 +1609,6 @@
 <translation id="2734760316755174687">Сајтовите под <ph name="SITE_GROUP_NAME" /> исто така ќе се ресетираат.</translation>
 <translation id="2735712963799620190">Распоред</translation>
 <translation id="2737363922397526254">Собери...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> сака да ги сподели содржините од вашиот екран со <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Не им дозволувај на сајтовите да ги користат фонтовите инсталирани на уредот</translation>
 <translation id="2738771556149464852">Не отпосле</translation>
 <translation id="2739191690716947896">Отстранете грешка</translation>
@@ -1897,7 +1896,6 @@
 <translation id="3031417829280473749">Агентката X</translation>
 <translation id="3031557471081358569">Изберете ставки за увезување:</translation>
 <translation id="3036327949511794916">Крајниот рок за враќање на овој <ph name="DEVICE_TYPE" /> помина.</translation>
-<translation id="3036438888981457032">Отстрани го нагласувањето</translation>
 <translation id="3036546437875325427">Овозможи Flash</translation>
 <translation id="3037754279345160234">Не може да се анализира конфигурацијата за приклучување на доменот. Контактирајте со вашиот администратор.</translation>
 <translation id="3038612606416062604">Додај печатач рачно</translation>
@@ -2944,6 +2942,7 @@
 <translation id="4218274196133425560">Отстранете го исклучокот за <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Грешка при активацијата.</translation>
 <translation id="4222772810963087151">Детали за верзијата</translation>
+<translation id="4224284700924043865">USB-уреди со ID на производ <ph name="PRODUCT_ID" /> од продавачот <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">На сите сајтови</translation>
 <translation id="4231095370974836764">Инсталирајте апликации и игри од Google Play на вашиот <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Конфигурирајте го Kerberos</translation>
@@ -3016,6 +3015,7 @@
 <translation id="431076611119798497">&amp;Детали</translation>
 <translation id="4312866146174492540">Блокирај (стандардно)</translation>
 <translation id="4314815835985389558">Управувајте со синхронизацијата</translation>
+<translation id="4316650123995163262">USB-уреди со ID на производ <ph name="PRODUCT_ID" /> од <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Вебсајт на програмерот</translation>
 <translation id="4317820549299924617">Неуспешно потврдување</translation>
 <translation id="4320177379694898372">Нема интернет поврзување</translation>
@@ -3458,6 +3458,7 @@
 <translation id="4824958205181053313">Да се откаже синхронизацијата?</translation>
 <translation id="4827675678516992122">Не може да се поврзе</translation>
 <translation id="4827784381479890589">Напредна проверка на правописот во прелистувачот Chrome (текстот се испраќа во Google за правописни предлози)</translation>
+<translation id="482952334869563894">USB-уреди од продавачот <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Постави PIN</translation>
 <translation id="4830121310592638841">Прашувај кога некој сајт сака да отвора и поставува прозорци на екраните</translation>
 <translation id="4830502475412647084">Се инсталира ажурирање на ОС</translation>
@@ -3747,6 +3748,7 @@
 <translation id="5159419673777902220">Родителот ги оневозможил дозволите за екстензиите</translation>
 <translation id="5160634252433617617">Физичка тастатура</translation>
 <translation id="5160857336552977725">Најавете се на <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">USB-уреди од <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> е блокиран</translation>
 <translation id="5163910114647549394">Картичката е преместена на крајот од лентата со картички</translation>
 <translation id="5165085578392358314">Назначете прекинувач: <ph name="ACTION" /></translation>
@@ -4660,7 +4662,6 @@
 <translation id="6212039847102026977">Покажи ги напредните својства на мрежата</translation>
 <translation id="6212168817037875041">Исклучи го екранот</translation>
 <translation id="6212752530110374741">Испрати е-порака со линк</translation>
-<translation id="6213230117190778270">Прими</translation>
 <translation id="621470880408090483">Не им дозволувај на сајтовите да се поврзуваат со уреди со Bluetooth</translation>
 <translation id="6215620815501168899">Затвори го скокачкиот прозорец со EID-број и QR-код</translation>
 <translation id="6216601812881225442">Вашиот контејнер не поддржува промена на големината. За да го приспособите количеството простор што однапред се доделува во Linux, направете бекап, па вратете го во нов контејнер.</translation>
@@ -5374,6 +5375,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Евиденција на активности</translation>
 <translation id="6997707937646349884">На вашите уреди:</translation>
 <translation id="6998793565256476099">Запишете го уредот за видео конференции</translation>
+<translation id="6999640176621571692">Дали сакате Google да наоѓа попусти на ставките што ќе ги додадете во кошничките?</translation>
 <translation id="6999956497249459195">Нова група</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> е поврзан, но треба да се конфигурира</translation>
 <translation id="7000347579424117903">Опфатете Ctrl, Alt или Search</translation>
@@ -5454,7 +5456,6 @@
 <translation id="7076293881109082629">Пријавување</translation>
 <translation id="7077829361966535409">Страницата за пријавување не успеа да се вчита со користење на тековните поставки за прокси. <ph name="GAIA_RELOAD_LINK_START" />Обидете се да се пријавите повторно<ph name="GAIA_RELOAD_LINK_END" /> или користете поинакви <ph name="PROXY_SETTINGS_LINK_START" />поставки за прокси<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Сите мрежи</translation>
-<translation id="7078386829626602215">Не е откриен уред <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">К&amp;опирај ја адресата на аудиото</translation>
 <translation id="7081952801286122383">Инкогнито</translation>
 <translation id="708278670402572152">Прекинете ја врската со мрежата за да го овозможите скенирањето</translation>
@@ -5503,11 +5504,9 @@
 <translation id="7135729336746831607">Да се вклучи Bluetooth?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> бара веднаш да го ажурирате вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7136694880210472378">Направи стандардно</translation>
-<translation id="7136984461011502314">Добре дојдовте во <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Грешка. Обидете се повторно со избирање други слики.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> го користи микрофонот</translation>
 <translation id="7141105143012495934">Најавувањето не успеа бидејќи не можеа да се вчитаат деталите за вашата сметка. Контактирајте со администраторот или обидете се повторно.</translation>
-<translation id="7143358760238281735">Нема апликации</translation>
 <translation id="7144878232160441200">Обиди се повторно</translation>
 <translation id="7149893636342594995">Изминатите 24 часа</translation>
 <translation id="7152478047064750137">Екстензијава не бара специјални дозволи</translation>
@@ -6460,7 +6459,6 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Се поврзува на <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Управувајте со вашите апликации, наставки и теми</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> сака да ги сподели содржините од вашиот екран.</translation>
 <translation id="8195027750202970175">Големина на диск</translation>
 <translation id="8198323535106903877">Ќе ги инсталираме тие <ph name="NUMBER_OF_APPS" /> апликации за вас</translation>
 <translation id="8199300056570174101">Својства на уредот и мрежата (услугата)</translation>
@@ -6887,6 +6885,7 @@
 <translation id="8698269656364382265">За да се вратите на претходниот екран, повлечете од левата страна.</translation>
 <translation id="869884720829132584">Мени со апликации</translation>
 <translation id="869891660844655955">Рок на важност</translation>
+<translation id="8699120352855309748">Не нуди превод за овие јазици</translation>
 <translation id="8702825062053163569">Вашиот <ph name="DEVICE_TYPE" /> е заклучен.</translation>
 <translation id="8703346390800944767">Прескокни ја рекламата</translation>
 <translation id="8705331520020532516">Сериски број</translation>

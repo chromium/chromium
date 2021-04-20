@@ -305,7 +305,6 @@
 <translation id="3016635187733453316">このデバイスがインターネットに接続していることを確認してください</translation>
 <translation id="3029704984691124060">パスフレーズが一致しません</translation>
 <translation id="3031225630520268969">アシスタントの音声検索の同意ダイアログ</translation>
-<translation id="3034163383943672781"><ph name="DATE" /> にダウンロードを開始します。</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />ヘルプ<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">次回からこのサイトにすばやくアクセスできます</translation>
 <translation id="305593374596241526">位置情報が OFF になっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で ON にしてください。</translation>
@@ -526,7 +525,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# 分前}other{# 分前}}</translation>
 <translation id="4587589328781138893">サイト</translation>
 <translation id="4594952190837476234">このオフライン ページは <ph name="CREATION_TIME" /> 時点のものであり、オンライン版とは異なる可能性があります。</translation>
-<translation id="4605958867780575332">削除したアイテム: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> を起動</translation>
 <translation id="4619564267100705184">本人確認</translation>
 <translation id="4634124774493850572">パスワードを使用</translation>
@@ -702,7 +700,6 @@
 <translation id="572328651809341494">最近使ったタブ</translation>
 <translation id="5723735397759933332">ライトモードで HTTPS ページの画像が最適化されるようになり、データをさらに節約できるようになりました。</translation>
 <translation id="5726692708398506830">ページ上のすべての要素を拡大する</translation>
-<translation id="5732819098735351888">Wi-Fi 接続時にダウンロードを開始します。</translation>
 <translation id="5733983706093266635">QR コードを作成できません。URL が <ph name="CHARACTER_LIMIT" /> 文字を超えています。</translation>
 <translation id="5748802427693696783">標準のタブに切り替えました</translation>
 <translation id="5749068826913805084">Chrome でファイルをダウンロードするにはストレージへのアクセス権が必要です。</translation>
@@ -782,7 +779,6 @@
 <translation id="6159729262978459665">同期しているすべてのデバイスから履歴を削除します。</translation>
 <translation id="6186394685773237175">漏洩した可能性のあるパスワードは見つかりませんでした</translation>
 <translation id="6192907950379606605">画像の説明文を取得する</translation>
-<translation id="6206830853671714236">ダウンロード日時の選択</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ではありませんか？</translation>
 <translation id="6211386937064921208">このページのプレビューを表示しています</translation>
 <translation id="6218096829563201111">同じような商品を検索 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -1179,12 +1175,14 @@
 <translation id="8699120352855309748">これらの言語を翻訳するか尋ねない</translation>
 <translation id="8712637175834984815">閉じる</translation>
 <translation id="8725066075913043281">やり直し</translation>
+<translation id="8730621377337864115">完了</translation>
 <translation id="8748850008226585750">メッセージは非表示です</translation>
 <translation id="8773160212632396039">リクエストの処理中</translation>
 <translation id="8788265440806329501">ナビゲーション履歴は閉じられています</translation>
 <translation id="8788968922598763114">最後に閉じたタブを開く</translation>
 <translation id="8798449543960971550">既読</translation>
 <translation id="8812260976093120287">一部のウェブサイトでは、デバイスでサポートされている上記のお支払いアプリを使って支払いができます。</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">タブのコンテンツのプレビューを表示できません。</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="883806473910249246">コンテンツのダウンロード中にエラーが発生しました。</translation>
@@ -1222,10 +1220,10 @@
 <translation id="9063523880881406963">[PC 版サイトを見る] をオフにします</translation>
 <translation id="9065203028668620118">編集</translation>
 <translation id="9065383040763568503">Chrome で重要度が低いと判断される保存データ（設定を保存していないサイトやアクセス頻度の少ないサイトのデータなど）</translation>
-<translation id="9069543557624799859">ダウンロードは <ph name="TIME" /> に開始します。</translation>
 <translation id="9069999660519089861">未読ページはありません</translation>
 <translation id="9070377983101773829">音声検索を開始</translation>
 <translation id="9074336505530349563">ユーザーに合わせた Google からのおすすめコンテンツを表示するには、ログインして同期を有効にします</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">同期しています</translation>
 <translation id="9086455579313502267">ネットワークにアクセスできません</translation>
 <translation id="9100505651305367705">記事の簡易表示がサポートされている場合、簡易表示を提案します</translation>

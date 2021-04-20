@@ -329,7 +329,6 @@
 <translation id="1354045473509304750">Nastavite da dozvoljavate sajtu <ph name="HOST" /> da koristi i pomera kameru</translation>
 <translation id="1355088139103479645">Želite li da izbrišete sve podatke?</translation>
 <translation id="1355466263109342573">Dodatna komponenta <ph name="PLUGIN_NAME" /> je blokirana</translation>
-<translation id="1358612436266364864">Ukloni istaknute stavke</translation>
 <translation id="1358741672408003399">Pravopis i gramatika</translation>
 <translation id="1359923111303110318">Uređaj može da se otključa pomoću Smart Lock-a. Pritisnite Enter da biste otključali.</translation>
 <translation id="1361164813881551742">Dodajte ručno</translation>
@@ -1608,7 +1607,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="2734760316755174687">Resetovaće se i sajtovi iz grupe <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Raspored</translation>
 <translation id="2737363922397526254">Skupi...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> želi da deli sadržaj ekrana sa <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Ne dozvolite sajtovima da koriste fontove instalirane na uređaju</translation>
 <translation id="2738771556149464852">Ne posle</translation>
 <translation id="2739191690716947896">Otkloni greške</translation>
@@ -1896,7 +1894,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3031417829280473749">Agent Iks</translation>
 <translation id="3031557471081358569">Izaberite stavke za uvoz:</translation>
 <translation id="3036327949511794916">Rok za vraćanje ovog uređaja <ph name="DEVICE_TYPE" /> je prošao.</translation>
-<translation id="3036438888981457032">Ukloni istaknute stavke</translation>
 <translation id="3036546437875325427">Omogući Flash</translation>
 <translation id="3037754279345160234">Ne možemo da raščlanimo konfiguraciju radi pridruživanja domenu. Obratite se administratoru.</translation>
 <translation id="3038612606416062604">Ručno dodajte štampač</translation>
@@ -4664,7 +4661,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6212039847102026977">Prikaži napredna svojstva mreže</translation>
 <translation id="6212168817037875041">Isključi ekran</translation>
 <translation id="6212752530110374741">Pošalji link imejlom</translation>
-<translation id="6213230117190778270">Primi</translation>
 <translation id="621470880408090483">Ne dozvoljavaj sajtovima da se povezuju sa Bluetooth uređajima</translation>
 <translation id="6215620815501168899">Zatvorite iskačući prozor sa EID brojem i QR kodom</translation>
 <translation id="6216601812881225442">Kontejner ne podržava promenu veličine. Da biste prilagodili količinu prostora koja se unapred dodeljuje Linux-u, napravite rezervnu kopiju i vratite je u novom kontejneru.</translation>
@@ -5459,7 +5455,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7076293881109082629">Prijavljivanje</translation>
 <translation id="7077829361966535409">Učitavanje stranice za prijavljivanje pomoću aktuelnih podešavanja proksija nije uspelo. <ph name="GAIA_RELOAD_LINK_START" />Probajte ponovo da se prijavite<ph name="GAIA_RELOAD_LINK_END" /> ili koristite neka druga <ph name="PROXY_SETTINGS_LINK_START" />podešavanja proksija<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Sve mreže</translation>
-<translation id="7078386829626602215">Nije otkriven nijedan uređaj <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">K&amp;opiraj adresu audio sadržaja</translation>
 <translation id="7081952801286122383">Ništa se ne arhivira</translation>
 <translation id="708278670402572152">Prekinite vezu da biste omogućili skeniranje</translation>
@@ -5508,11 +5503,9 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7135729336746831607">Želite li da uključite Bluetooth?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> zahteva da odmah ažurirate <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7136694880210472378">Postavi kao podrazumevano</translation>
-<translation id="7136984461011502314">Dobro došli u <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Došlo je do greške. Izaberite druge slike i probajte ponovo.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> koristi mikrofon</translation>
 <translation id="7141105143012495934">Prijavljivanje nije uspelo jer nismo uspeli da preuzmemo detalje o nalogu. Kontaktirajte administratora ili pokušajte ponovo.</translation>
-<translation id="7143358760238281735">Nema dostupnih aplikacija</translation>
 <translation id="7144878232160441200">Probaj ponovo</translation>
 <translation id="7149893636342594995">Poslednja 24 sata</translation>
 <translation id="7152478047064750137">Ovaj dodatak ne zahteva nikakve specijalne dozvole</translation>
@@ -6466,7 +6459,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8189750580333936930">Zaštićeno okruženje privatnosti</translation>
 <translation id="8190193592390505034">Povezivanje sa mrežom <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Upravljanje aplikacijama, dodacima i temama</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> želi da deli sadržaj ekrana.</translation>
 <translation id="8195027750202970175">Veličina na disku</translation>
 <translation id="8198323535106903877">Instaliraćemo vam te aplikacije (<ph name="NUMBER_OF_APPS" />)</translation>
 <translation id="8199300056570174101">Svojstva mreže (usluga) i uređaja</translation>
@@ -6890,6 +6882,7 @@ Pritisnite dodeljeni prekidač da biste uklonili dodelu.</translation>
 <translation id="8698269656364382265">Da biste se vratili na prethodni ekran, prevucite počev od leve strane.</translation>
 <translation id="869884720829132584">Meni aplikacija</translation>
 <translation id="869891660844655955">Datum isteka</translation>
+<translation id="8699120352855309748">Ne nudi prevod ovih jezika</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> je zaključan.</translation>
 <translation id="8703346390800944767">Preskoči oglas</translation>
 <translation id="8705331520020532516">Serijski broj</translation>

@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">პაროლის გამოჩენა</translation>
 <translation id="1872096359983322073">ჩირაღდანი</translation>
 <translation id="1911619930368729126">ატვირთვა Google Drive-ზე</translation>
-<translation id="1919130412786645364">Chrome-ში შესვლის დაშვება</translation>
 <translation id="1923342640370224680">ბოლო საათი</translation>
 <translation id="1941314575388338491">კოპირებისთვის, შეეხეთ ორმაგად.</translation>
 <translation id="1952172573699511566">შესაძლებლობის მიხედვით, ვებსაიტებზე ტექსტი ნაჩვენები იქნება თქვენს სასურველ ენაზე.</translation>
@@ -216,7 +215,6 @@
 
 ინკოგნიტო რეჟიმში საიტებს არ შეუძლია ქუქი-ჩანაწერების გამოყენება სხვადასხვა საიტის თქვენ მიერ დათვალიერების აქტივობის სანახავად, მაგალითად, რეკლამის თქვენზე მოსარგებად.</translation>
 <translation id="3207960819495026254">ჩანიშნულია</translation>
-<translation id="3222343486469566063">არ ხართ შესული</translation>
 <translation id="3224641773458703735">პაროლების ექსპორტირებისთვის, პირველ რიგში, საჭიროა თქვენს მოწყობილობაზე საიდუმლო კოდის დაყენება.</translation>
 <translation id="3240426699337459095">ბმული დაკოპირდა</translation>
 <translation id="3244271242291266297">თთ</translation>
@@ -286,8 +284,6 @@
 <translation id="3928666092801078803">ჩემი მონაცემების კომბინირება</translation>
 <translation id="3929457972718048006">მისამართები</translation>
 <translation id="3943492037546055397">პაროლები</translation>
-<translation id="3943557322767080599">Chrome-ის სისტემაში შესვლის მოთხოვნების ჩვენება, როცა თქვენს Google ანგარიშში შეხვალთ</translation>
-<translation id="3967266340354872733">კონფიდენციალურობასთან, უსაფრთხოებასთან და მონაცემთა შეგროვებასთან დაკავშირებული სხვა პარამეტრებისთვის იხილეთ <ph name="BEGIN_LINK" />სინქრონიზაცია<ph name="END_LINK" /> და <ph name="BEGIN_LINK" />Google სერვისები<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">ჩამოტვირთვა დასრულდა</translation>
 <translation id="3968505803272650567">ინტერესების მართვა</translation>
 <translation id="3989635538409502728">სისტემიდან გამოსვლა</translation>
@@ -568,7 +564,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6760509555861141183">ბოლოდროინდელ ჩანართზე დაბრუნება</translation>
 <translation id="6780034285637185932">საფოსტო კოდი</translation>
 <translation id="6785453220513215166">შეცდომების შესახებ მოხსენების გაგზავნა…</translation>
-<translation id="679325081238418596">მიიღეთ თქვენი სანიშნეები, ისტორია, პაროლები და სხვა პარამეტრები ყველა თქვენს მოწყობილობაში</translation>
 <translation id="6797885426782475225">ხმოვანი ძიება</translation>
 <translation id="6807889908376551050">ყველას ჩვენება…</translation>
 <translation id="681368974849482173">ელემენტი შექმნილია</translation>
@@ -580,7 +575,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6873263987691478642">გაყოფილი ხედი</translation>
 <translation id="6888009575607455378">ნამდვილად გსურთ ცვლილებების გაუქმება?</translation>
 <translation id="6896758677409633944">კოპირება</translation>
-<translation id="6903907808598579934">სინქრონიზაციის ჩართვა</translation>
 <translation id="6914583639806229067">თქვენ მიერ კოპირებული სურათის ძიება</translation>
 <translation id="6914783257214138813">თქვენს პაროლებს დაინახავს ნებისმიერი, ვისაც ექნება წვდომა ექსპორტირებულ ფაილზე.</translation>
 <translation id="6930799952781667037">შეეხეთ ამ ენის შესაცვლელად.</translation>
@@ -711,6 +705,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8225985093977202398">ქეშირებული სურათები და ფაილები</translation>
 <translation id="8261506727792406068">წაშლა</translation>
 <translation id="8281781826761538115">ნაგულისხმევი — <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">გამოტოვება</translation>
 <translation id="8283172974887967105">დაყენება…</translation>
 <translation id="8299417921174340354">პაროლების გამოსაყენებლად, პირველ რიგში, საჭიროა საიდუმლო კოდის დაყენება თქვენს მოწყობილობაზე.</translation>
 <translation id="8319076807703933069">ახალი ძიება</translation>

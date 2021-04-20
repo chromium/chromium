@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">Tillåt <ph name="HOST" /> att använda och röra din kamera även i fortsättningen</translation>
 <translation id="1355088139103479645">Vill du radera all data?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> har blockerats</translation>
-<translation id="1358612436266364864">Ta bort markeringar</translation>
 <translation id="1358741672408003399">Stavning och grammatik</translation>
 <translation id="1359923111303110318">Enheten kan låsas upp med Smart Lock. Tryck på Retur för att låsa upp.</translation>
 <translation id="1361164813881551742">Lägg till manuellt</translation>
@@ -883,6 +882,7 @@
 <translation id="1928202201223835302">Ange den tidigare pinkoden</translation>
 <translation id="1928696683969751773">Uppdateringar</translation>
 <translation id="1929186283613845153">Filen genomsöks.</translation>
+<translation id="1929343511231420085">Alla serieportar</translation>
 <translation id="1929546189971853037">Läsa webbhistoriken på alla enheter där du är inloggad</translation>
 <translation id="1930879306590754738">Lösenordet har raderats från den här enheten och ditt Google-konto</translation>
 <translation id="1931152874660185993">Det finns inga installerade komponenter.</translation>
@@ -1608,7 +1608,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2734760316755174687">Webbplatser som är underordnade <ph name="SITE_GROUP_NAME" /> återställs också.</translation>
 <translation id="2735712963799620190">Schema</translation>
 <translation id="2737363922397526254">Dölj...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> vill dela det som visas på skärmen med <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Tillåt inte att webbplatser använder teckensnitt som har installerats på enheten</translation>
 <translation id="2738771556149464852">Inte efter</translation>
 <translation id="2739191690716947896">Felsökning</translation>
@@ -1896,7 +1895,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Välj objekt att importera:</translation>
 <translation id="3036327949511794916">Sista dagen för att returnera denna <ph name="DEVICE_TYPE" /> har passerat.</translation>
-<translation id="3036438888981457032">Ta bort markeringar</translation>
 <translation id="3036546437875325427">Aktivera blixt</translation>
 <translation id="3037754279345160234">Det gick inte att analysera konfigurationen för domänanslutning. Kontakta administratören.</translation>
 <translation id="3038612606416062604">Lägg till en skrivare manuellt</translation>
@@ -2943,6 +2941,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4218274196133425560">Ta bort undantag för <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Ett fel inträffade under aktiveringen.</translation>
 <translation id="4222772810963087151">Versionsinformation</translation>
+<translation id="4224284700924043865">USB-enheter med produkt-id <ph name="PRODUCT_ID" /> från leverantören <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">På alla webbplatser</translation>
 <translation id="4231095370974836764">Installera appar och spel från Google Play på din <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Konfigurera Kerberos</translation>
@@ -3015,6 +3014,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="431076611119798497">&amp;Info</translation>
 <translation id="4312866146174492540">Blockera (standard)</translation>
 <translation id="4314815835985389558">Hantera synkronisering</translation>
+<translation id="4316650123995163262">USB-enheter med produkt-id <ph name="PRODUCT_ID" /> från <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Webbplats för utvecklare</translation>
 <translation id="4317820549299924617">Verifieringen lyckades inte</translation>
 <translation id="4320177379694898372">Ingen internetanslutning</translation>
@@ -3457,6 +3457,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4824958205181053313">Vill du avbryta synkroniseringen?</translation>
 <translation id="4827675678516992122">Det gick inte att ansluta</translation>
 <translation id="4827784381479890589">Utökad stavningskontroll i webbläsaren Chrome (texten skickas till Google för stavningsförslag)</translation>
+<translation id="482952334869563894">USB-enheter från leverantören <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Konfigurera pinkod</translation>
 <translation id="4830121310592638841">Fråga när en webbplats vill öppna fönster och placera ut dem på skärmen</translation>
 <translation id="4830502475412647084">Uppdateringen för operativsystemet installeras</translation>
@@ -3746,6 +3747,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5159419673777902220">Din förälder har inaktiverat behörigheter för tillägg</translation>
 <translation id="5160634252433617617">Fysiskt tangentbord</translation>
 <translation id="5160857336552977725">Logga in på din <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">USB-enheter från <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> har blockerats</translation>
 <translation id="5163910114647549394">Fliken flyttades till slutet av flikhuvudet</translation>
 <translation id="5165085578392358314">Tilldela brytaren: <ph name="ACTION" /></translation>
@@ -4659,7 +4661,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="6212039847102026977">Visa avancerade nätverksinställningar</translation>
 <translation id="6212168817037875041">Stäng av skärmen</translation>
 <translation id="6212752530110374741">Skicka länk via e-post</translation>
-<translation id="6213230117190778270">Ta emot</translation>
 <translation id="621470880408090483">Tillåt inte att webbplatser ansluter till enheter via Bluetooth</translation>
 <translation id="6215620815501168899">Stäng popup-fönstret för enhetens EID eller QR-kod</translation>
 <translation id="6216601812881225442">Det går inte att ändra storlek på den här behållaren. Om du vill justera hur mycket utrymme som ska förhandstilldelas Linux säkerhetskopierar du behållaren och återställer den till en ny behållare.</translation>
@@ -5373,6 +5374,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – aktivitetslogg</translation>
 <translation id="6997707937646349884">Gör så här på dina enheter:</translation>
 <translation id="6998793565256476099">Registrera enheten för videokonferenser</translation>
+<translation id="6999640176621571692">Vill du tillåta att Google söker efter rabatter på varor i din kundvagn?</translation>
 <translation id="6999956497249459195">Ny grupp</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> har anslutits men behöver konfigureras</translation>
 <translation id="7000347579424117903">Ctrl-, alt- eller söktangenten måste finnas med</translation>
@@ -5453,7 +5455,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="7076293881109082629">Logga in</translation>
 <translation id="7077829361966535409">Det gick inte att läsa in inloggningssidan med de aktuella proxyinställningarna. <ph name="GAIA_RELOAD_LINK_START" />Försök logga in igen<ph name="GAIA_RELOAD_LINK_END" /> eller använd andra <ph name="PROXY_SETTINGS_LINK_START" />proxyinställningar<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Alla nätverk</translation>
-<translation id="7078386829626602215">Ingen enhet upptäcktes <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">K&amp;opiera ljudadress</translation>
 <translation id="7081952801286122383">Du använder inkognitoläget</translation>
 <translation id="708278670402572152">Koppla från om du vill aktivera sökning</translation>
@@ -5502,11 +5503,9 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="7135729336746831607">Vill du aktivera Bluetooth?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> kräver att du uppdaterar din <ph name="DEVICE_TYPE" /> omedelbart.</translation>
 <translation id="7136694880210472378">Ange som standard</translation>
-<translation id="7136984461011502314">Välkommen till <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Ett fel har uppstått. Välj andra bilder och försök igen.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> använder mikrofonen</translation>
 <translation id="7141105143012495934">Inloggningen misslyckades eftersom det inte gick att hämta dina kontouppgifter. Kontakta administratören eller försök igen.</translation>
-<translation id="7143358760238281735">Det finns inga appar</translation>
 <translation id="7144878232160441200">Försök igen</translation>
 <translation id="7149893636342594995">Senaste 24 timmarna</translation>
 <translation id="7152478047064750137">Det här tillägget kräver inga särskilda behörigheter</translation>
@@ -6460,7 +6459,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Ansluter till <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Hantera dina appar, tillägg och teman</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> vill dela det som visas på skärmen.</translation>
 <translation id="8195027750202970175">Storlek på disk</translation>
 <translation id="8198323535106903877">Vi installerar de <ph name="NUMBER_OF_APPS" /> apparna åt dig</translation>
 <translation id="8199300056570174101">Nätverkstjänst och enhetsegenskaper</translation>
@@ -6884,6 +6882,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="8698269656364382265">Återgå till föregående skärm genom att svepa från skärmens vänsterkant.</translation>
 <translation id="869884720829132584">Programmeny</translation>
 <translation id="869891660844655955">Utgångsdatum</translation>
+<translation id="8699120352855309748">Erbjud inte att översätta dessa språk</translation>
 <translation id="8702825062053163569">Din <ph name="DEVICE_TYPE" /> har låsts.</translation>
 <translation id="8703346390800944767">Hoppa över annons</translation>
 <translation id="8705331520020532516">Serienummer</translation>

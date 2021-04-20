@@ -226,6 +226,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7106741999175697885">작업 관리자 - Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{새 Chrome 업데이트가 있습니다. Chrome을 다시 실행하면 업데이트가 바로 적용됩니다.}=1{새 Chrome 업데이트가 있습니다. Chrome을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창이 다시 열리지 않습니다.}other{새 Chrome 업데이트가 있습니다. Chrome을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="7155997830309522122">그렇다면 Chrome에 저장된 비밀번호가 새로운 비밀번호와 일치하도록 수정해 주세요.</translation>
+<translation id="7161904924553537242">신개념 브라우저 - Chrome</translation>
 <translation id="7242029209006116544">관리 계정으로 로그인하고 관리자에게 Chrome 프로필에 대한 제어권을 부여하려고 합니다. 앱, 북마크, 방문 기록, 비밀번호 및 기타 설정과 같은 Chrome 데이터가 <ph name="USER_NAME" /> 계정에 영구적으로 연결됩니다. 이후 이 데이터를 Google 계정 대시보드에서 삭제할 수는 있지만 다른 계정에 연결할 수는 없습니다. 기존 Chrome 데이터를 유지하려면 새 프로필을 만드는 방법이 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Chrome UI가 이 언어로 표시됩니다.</translation>
 <translation id="7296210096911315575">사용 및 안전 관련 주요 정보</translation>

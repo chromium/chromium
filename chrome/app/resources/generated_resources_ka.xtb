@@ -327,7 +327,6 @@
 <translation id="1354045473509304750"><ph name="HOST" />-ისთვის თქვენი კამერის გამოყენებისა და გადააგილების კლავინდებურად დაშვება</translation>
 <translation id="1355088139103479645">გსურთ ყველა მონაცემის წაშლა?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> დაბლოკილია</translation>
-<translation id="1358612436266364864">გამოყოფილის ამოშლა</translation>
 <translation id="1358741672408003399">მართლწერა და გრამატიკა</translation>
 <translation id="1359923111303110318">თქვენი მოწყობილობის განბლოკვა შესაძლებელია Smart Lock-ით. განსაბლოკად დააჭირეთ კლავიშს „Enter“.</translation>
 <translation id="1361164813881551742">ხელით დამატება</translation>
@@ -883,6 +882,7 @@
 <translation id="1928202201223835302">შეიყვანეთ ძველი PIN-კოდი</translation>
 <translation id="1928696683969751773">განახლება</translation>
 <translation id="1929186283613845153">მიმდინარეობს ამ ფაილის სკანირება.</translation>
+<translation id="1929343511231420085">ნებისმიერი თანმიმდევრული პორტი</translation>
 <translation id="1929546189971853037">წაიკითხეთ თქვენი დათვალიერების ისტორია ყველა შესულ მოწყობილობაში</translation>
 <translation id="1930879306590754738">პაროლი წაიშალა როგორც ამ მოწყობილობიდან, ისე თქვენი Google ანგარიშიდან</translation>
 <translation id="1931152874660185993">კომპონენტები არ არის დაინსტალირებული.</translation>
@@ -1607,7 +1607,6 @@
 <translation id="2734760316755174687">გადაყენებული იქნება „<ph name="SITE_GROUP_NAME" />“-ის ვებსაიტების ნებართვებიც.</translation>
 <translation id="2735712963799620190">განრიგი</translation>
 <translation id="2737363922397526254">აკეცვა…</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" />-ს სურს, გაუზიაროს თქვენს ეკრანზე არსებული კონტენტი <ph name="TARGET_NAME" />-ს.</translation>
 <translation id="2738030019664645674">საიტებისთვის თქვენს მოწყობილობაზე არსებული შრიფტების გამოყენების აკრძალვა</translation>
 <translation id="2738771556149464852">არა შემდეგ</translation>
 <translation id="2739191690716947896">გამართვა</translation>
@@ -1895,7 +1894,6 @@
 <translation id="3031417829280473749">აგენტი X</translation>
 <translation id="3031557471081358569">აირჩიეთ ელემენტები იმპორტისთვის:</translation>
 <translation id="3036327949511794916">ამ <ph name="DEVICE_TYPE" />-ის დაბრუნების ბოლო ვადა გავიდა.</translation>
-<translation id="3036438888981457032">გამოყოფილის ამოშლა</translation>
 <translation id="3036546437875325427">Flash-ის ჩართვა</translation>
 <translation id="3037754279345160234">დომენში გაწევრიანების კონფიგურაციის გარჩევა ვერ მოხერხდა. გთხოვთ, დაუკავშირდეთ ადმინისტრატორს.</translation>
 <translation id="3038612606416062604">პრინტერის ხელით დამატება</translation>
@@ -2942,6 +2940,7 @@
 <translation id="4218274196133425560"><ph name="HOST_NAME" />-ისთვის გამონაკლისის ამოშლა</translation>
 <translation id="4220648711404560261">გააქტიურება ვერ მოხერხდა შეცდომის გამო.</translation>
 <translation id="4222772810963087151">აწყობის დეტალები</translation>
+<translation id="4224284700924043865">USB მოწყობილობები, რომელთა პროდუქტის ID არის <ph name="PRODUCT_ID" />, ხოლო მომწოდებელია <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">ყველა საიტზე</translation>
 <translation id="4231095370974836764">დააინსტალირეთ აპები და თამაშები Google Play-დან თქვენს <ph name="DEVICE_TYPE" />-ზე. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos-ის კონფიგურაცია</translation>
@@ -3014,6 +3013,7 @@
 <translation id="431076611119798497">&amp;დეტალები</translation>
 <translation id="4312866146174492540">დაბლოკვა (ნაგულისხმევი)</translation>
 <translation id="4314815835985389558">სინქრონიზაციის მართვა</translation>
+<translation id="4316650123995163262"><ph name="VENDOR_NAME" />-ის USB მოწყობილობები, რომელთა პროდუქტის ID არის <ph name="PRODUCT_ID" /></translation>
 <translation id="4316850752623536204">დეველოპერის საიტი</translation>
 <translation id="4317820549299924617">დადასტურება ვერ მოხერხდა</translation>
 <translation id="4320177379694898372">ინტერნეტთან კავშირი არ არის</translation>
@@ -3456,6 +3456,7 @@
 <translation id="4824958205181053313">გსურთ სინქრონიზაციის გაუქმება?</translation>
 <translation id="4827675678516992122">დაკავშირება ვერ მოხერხდა</translation>
 <translation id="4827784381479890589">მართლწერის გაძლიერებული შემოწმება Chrome ბრაუზერში (ტექსტი გაეგზავნება Google-ს მართლწერასთან დაკავშირებული შემოთავაზებებისთვის)</translation>
+<translation id="482952334869563894">USB მოწყობილობები, რომელთა მომწოდებელია <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">PIN-კოდის დაყენება</translation>
 <translation id="4830121310592638841">შეკითხვა საიტის მიერ თქვენს ეკრანებზე ფანჯრების გახსნისა და განლაგების მოთხოვნისას</translation>
 <translation id="4830502475412647084">მიმდინარეობს ოპერაციული სისტემის განახლების ინსტალაცია</translation>
@@ -3745,6 +3746,7 @@
 <translation id="5159419673777902220">თქვენმა მშობელმა გათიშა გაფართოებების ნებართვები</translation>
 <translation id="5160634252433617617">ფიზიკური კლავიატურა</translation>
 <translation id="5160857336552977725">შედით თქვენს <ph name="DEVICE_TYPE" />-ში</translation>
+<translation id="5161251470972801814"><ph name="VENDOR_NAME" />-ის USB მოწყობილობები</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> დაბლოკილია</translation>
 <translation id="5163910114647549394">ჩანართი გადატანილია ჩანართების ზოლის ბოლოში</translation>
 <translation id="5165085578392358314">მიანიჭეთ გადამრთველი მოქმედებას „<ph name="ACTION" />“</translation>
@@ -4658,7 +4660,6 @@
 <translation id="6212039847102026977">ქსელის დამატებითი მახასიათებლების ჩვენება</translation>
 <translation id="6212168817037875041">ეკრანის გამორთვა</translation>
 <translation id="6212752530110374741">ბმულის ელფოსტით გაგზავნა</translation>
-<translation id="6213230117190778270">მიღება</translation>
 <translation id="621470880408090483">საიტებისთვის Bluetooth მოწყობილობებთან დაკავშირების აკრძალვა</translation>
 <translation id="6215620815501168899">მოწყობილობის EID-ისა და QR კოდის ამომხტარი ფანჯრის დახურვა</translation>
 <translation id="6216601812881225442">კონტეინერის ზომის შეცვლა მხარდაუჭერელია. Linux-ისთვის წინასწარ გამოყოფილი მეხსიერების ზომის შესაცვლელად შექმენით კონტეინერის სარეზერვო ასლი, ხოლო შემდეგ აღადგინეთ ის.</translation>
@@ -5372,6 +5373,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> — აქტივობის ჟურნალი</translation>
 <translation id="6997707937646349884">თქვენს მოწყობილობებზე:</translation>
 <translation id="6998793565256476099">მოწყობილობის რეგისტრაცია ვიდეოკონფერენციებისთვის</translation>
+<translation id="6999640176621571692">Google-ისთვის თქვენ მიერ კალათებში დამატებულ პროდუქტებზე ფასდაკლებების პოვნის დაშვება</translation>
 <translation id="6999956497249459195">ახალი ჯგუფი</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> დაკავშირებულია, თუმცა საჭიროებს კონფიგურაციას</translation>
 <translation id="7000347579424117903">დაურთეთ Ctrl, Alt ან Search</translation>
@@ -5452,7 +5454,6 @@
 <translation id="7076293881109082629">მიმდინარეობს სისტემაში შესვლა</translation>
 <translation id="7077829361966535409">ვერ მოხერხდა სისტემაში შესვლის გვერდის ჩამოტვირთვა არსებული პროქსი პარამეტრების გამოყენებით. გთხოვთ <ph name="GAIA_RELOAD_LINK_START" />სდაცეთ შესვლა კიდევ ერთხელ<ph name="GAIA_RELOAD_LINK_END" />, ან გამოიყენეთ სხვა <ph name="PROXY_SETTINGS_LINK_START" />პროქსის პარამეტრები<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">ყველა ქსელი</translation>
-<translation id="7078386829626602215">მოწყობილობა აღმოჩენილი არ არის. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">აუდიოს მისამართის კ&amp;ოპირება</translation>
 <translation id="7081952801286122383">თქვენ იმყოფებით ინკოგნიტო რეჟიმში</translation>
 <translation id="708278670402572152">გათიშვა სკანირების ჩასართავად</translation>
@@ -5501,11 +5502,9 @@
 <translation id="7135729336746831607">გსურთ Bluetooth-ის ჩართვა?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> საჭიროებს <ph name="DEVICE_TYPE" />-ის დაუყოვნებლივ განახლებას.</translation>
 <translation id="7136694880210472378">აქციეთ ნაგულისხმევად</translation>
-<translation id="7136984461011502314">მოგესალმებათ <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">წარმოიქმნა შეცდომა. ცადეთ ხელახლა სხვა სურათების არჩევით.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> იყენებს თქვენს მიკროფონს</translation>
 <translation id="7141105143012495934">შესვლა ვერ მოხერხდა, რადგან თქვენი ანგარიშის შესახებ დეტალების მიღება შეუძლებელია. გთხოვთ, დაუკავშირდეთ ადმინისტრატორს ან სცადოთ ხელახლა.</translation>
-<translation id="7143358760238281735">ხელმისაწვდომი აპები არ არის</translation>
 <translation id="7144878232160441200">გაიმეორეთ</translation>
 <translation id="7149893636342594995">ბოლო 24 საათი</translation>
 <translation id="7152478047064750137">ეს გაფართოება არ საჭიროებს სპეციალურ ნებართვებს</translation>
@@ -6457,7 +6456,6 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />-თან დაკავშირება</translation>
 <translation id="8191230140820435481">მართეთ თქვენი პროგრამები, გაფართოებები, და თემები</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" />-ს სურს თქვენს ეკრანზე არსებული კონტენტის გაზიარება.</translation>
 <translation id="8195027750202970175">ზომა დისკზე</translation>
 <translation id="8198323535106903877">ეს <ph name="NUMBER_OF_APPS" /> აპი დაინსტალირდება თქვენთვის</translation>
 <translation id="8199300056570174101">ქსელის (სერვისი) და მოწყობილობის მახასიათებლები</translation>
@@ -6881,6 +6879,7 @@
 <translation id="8698269656364382265">წინა ეკრანზე დასაბრუნებლად გადაფურცლეთ მარცხენა მხრიდან.</translation>
 <translation id="869884720829132584">პროგრამის მენიუ</translation>
 <translation id="869891660844655955">ვადის გასვლის თარიღი</translation>
+<translation id="8699120352855309748">ამ ენების თარგმნის შემოთავაზების აკრძალვა</translation>
 <translation id="8702825062053163569">თქვენი <ph name="DEVICE_TYPE" /> ჩაიკეტა.</translation>
 <translation id="8703346390800944767">რეკლამის გამოტოვება</translation>
 <translation id="8705331520020532516">სერიული ნომერი</translation>

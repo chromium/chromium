@@ -328,7 +328,6 @@
 <translation id="1354045473509304750">Continuer d'autoriser <ph name="HOST" /> à utiliser et à déplacer votre caméra</translation>
 <translation id="1355088139103479645">Supprimer toutes les données?</translation>
 <translation id="1355466263109342573">Le plugiciel <ph name="PLUGIN_NAME" /> est bloqué</translation>
-<translation id="1358612436266364864">Retirer les mises en surbrillance</translation>
 <translation id="1358741672408003399">Orthographe et grammaire</translation>
 <translation id="1359923111303110318">Votre appareil peut être déverrouillé avec Smart Lock. Appuyez sur Entrée pour le déverrouiller.</translation>
 <translation id="1361164813881551742">Ajouter manuellement</translation>
@@ -883,6 +882,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1928202201223835302">Entrez l'ancien NIP</translation>
 <translation id="1928696683969751773">Mises à jour</translation>
 <translation id="1929186283613845153">Ce fichier est en cours d'analyse.</translation>
+<translation id="1929343511231420085">Tout port série</translation>
 <translation id="1929546189971853037">Consulter votre historique de navigation sur tous les appareils sur lesquels vous êtes connecté à votre compte</translation>
 <translation id="1930879306590754738">Le mot de passe a été supprimé de cet appareil et de votre compte Google</translation>
 <translation id="1931152874660185993">Aucun composant installé</translation>
@@ -1609,7 +1609,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="2734760316755174687">Les sites sous <ph name="SITE_GROUP_NAME" /> seront également réinitialisés.</translation>
 <translation id="2735712963799620190">Horaire</translation>
 <translation id="2737363922397526254">Réduire...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> veut partager le contenu de votre écran avec <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Ne pas autoriser les sites à utiliser les polices installées sur votre appareil</translation>
 <translation id="2738771556149464852">Pas après le</translation>
 <translation id="2739191690716947896">Débogage</translation>
@@ -1897,7 +1896,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031557471081358569">Sélectionnez les éléments à importer :</translation>
 <translation id="3036327949511794916">L'échéance pour retourner cet appareil <ph name="DEVICE_TYPE" /> est dépassée.</translation>
-<translation id="3036438888981457032">Retirer les mises en surbrillance</translation>
 <translation id="3036546437875325427">Activer le flash</translation>
 <translation id="3037754279345160234">Impossible d'analyser la configuration d'association à un domaine. Veuillez communiquer avec votre administrateur.</translation>
 <translation id="3038612606416062604">Ajouter une imprimante manuellement</translation>
@@ -2944,6 +2942,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4218274196133425560">Retirer l'exception pour <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Une erreur s'est produite lors de l'activation.</translation>
 <translation id="4222772810963087151">Détails de la version</translation>
+<translation id="4224284700924043865">Appareils USB par le fournisseur <ph name="VENDOR_ID" /> dont l'identifiant de produit est <ph name="PRODUCT_ID" /></translation>
 <translation id="4225397296022057997">Sur tous les sites</translation>
 <translation id="4231095370974836764">Installez des applications et des jeux de Google Play sur votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurer Kerberos</translation>
@@ -3016,6 +3015,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="431076611119798497">&amp;Détails</translation>
 <translation id="4312866146174492540">Bloquer (par défaut)</translation>
 <translation id="4314815835985389558">Gérer la synchronisation</translation>
+<translation id="4316650123995163262">Appareils USB par <ph name="VENDOR_NAME" /> dont l'identifiant de produit est <ph name="PRODUCT_ID" /></translation>
 <translation id="4316850752623536204">Site Web du développeur</translation>
 <translation id="4317820549299924617">Échec de la vérification</translation>
 <translation id="4320177379694898372">Pas de connexion Internet</translation>
@@ -3458,6 +3458,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4824958205181053313">Annuler la synchronisation?</translation>
 <translation id="4827675678516992122">Impossible de se connecter</translation>
 <translation id="4827784381479890589">Correcteur orthographique amélioré dans le navigateur Chrome (le texte est envoyé à Google pour vous proposer des suggestions d'orthographe)</translation>
+<translation id="482952334869563894">Appareils USB par le fournisseur <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Configurer un NIP</translation>
 <translation id="4830121310592638841">Demander la permission lorsqu'un site souhaite ouvrir et placer des fenêtres sur vos écrans</translation>
 <translation id="4830502475412647084">Installation d'une mise à jour du système d'exploitation en cours…</translation>
@@ -3747,6 +3748,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5159419673777902220">Ton parent a désactivé les autorisations pour les extensions</translation>
 <translation id="5160634252433617617">Clavier physique</translation>
 <translation id="5160857336552977725">Connexion à votre <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">Appareils USB par <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850">L'appareil <ph name="DEVICE_TYPE" /> a été bloqué</translation>
 <translation id="5163910114647549394">Onglet déplacé à la fin de la barre d'onglets</translation>
 <translation id="5165085578392358314">Attribuer le commutateur : <ph name="ACTION" /></translation>
@@ -4659,7 +4661,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6212039847102026977">Afficher les propriétés de réseau avancées</translation>
 <translation id="6212168817037875041">Désactiver l'écran</translation>
 <translation id="6212752530110374741">Envoyer le lien par courriel</translation>
-<translation id="6213230117190778270">Recevoir</translation>
 <translation id="621470880408090483">Ne pas autoriser les sites à se connecter à des appareils Bluetooth</translation>
 <translation id="6215620815501168899">Fermer la fenêtre contextuelle du numéro EID et du code QR</translation>
 <translation id="6216601812881225442">Votre conteneur ne prend pas en charge le redimensionnement. Pour modifier la quantité d'espace allouée à Linux, sauvegardez votre disque et restaurez-le dans un nouveau conteneur.</translation>
@@ -5373,6 +5374,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Journal d'activité</translation>
 <translation id="6997707937646349884">Sur vos appareils :</translation>
 <translation id="6998793565256476099">Inscrire un appareil pour la vidéoconférence</translation>
+<translation id="6999640176621571692">Autoriser Google à trouver des rabais sur les éléments que vous ajoutez dans vos paniers?</translation>
 <translation id="6999956497249459195">Nouveau groupe</translation>
 <translation id="7000206553895739324">L'imprimante <ph name="PRINTER_NAME" /> est connectée, mais elle doit être configurée</translation>
 <translation id="7000347579424117903">Incluez la touche Ctrl, Alt ou Recherche</translation>
@@ -5453,7 +5455,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7076293881109082629">Connexion en cours</translation>
 <translation id="7077829361966535409">Échec du chargement de la page de connexion avec les paramètres de mandataire actuels. Veuillez <ph name="GAIA_RELOAD_LINK_START" />essayer de vous reconnecter<ph name="GAIA_RELOAD_LINK_END" /> ou utiliser d'autres <ph name="PROXY_SETTINGS_LINK_START" />paramètres de mandataire<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Tous les réseaux</translation>
-<translation id="7078386829626602215">Aucun appareil détecté. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">C&amp;opier l'adresse de l'audio</translation>
 <translation id="7081952801286122383">Vous êtes en mode de navigation privée</translation>
 <translation id="708278670402572152">Déconnecter pour activer la numérisation</translation>
@@ -5502,11 +5503,9 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7135729336746831607">Activer le Bluetooth?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> exige que vous mettiez immédiatement à jour votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7136694880210472378">Utiliser par défaut</translation>
-<translation id="7136984461011502314">Bienvenue dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Une erreur s'est produite. Veuillez réessayer en choisissant d'autres images.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> utilise votre microphone</translation>
 <translation id="7141105143012495934">La connexion a échoué, car les détails de votre compte n'ont pas pu être récupérés. Veuillez communiquer avec votre administrateur ou réessayer.</translation>
-<translation id="7143358760238281735">Aucune application à partager</translation>
 <translation id="7144878232160441200">Réessayer</translation>
 <translation id="7149893636342594995">24 dernières heures</translation>
 <translation id="7152478047064750137">Cette extension fonctionne sans autorisation spéciale</translation>
@@ -6459,7 +6458,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8189750580333936930">Bac à sable de confidentialité</translation>
 <translation id="8190193592390505034">Connexion à <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gérer vos applications, vos extensions et vos thèmes</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> veut partager le contenu de votre écran.</translation>
 <translation id="8195027750202970175">Taille sur le disque</translation>
 <translation id="8198323535106903877">Nous allons installer ces <ph name="NUMBER_OF_APPS" /> applications pour vous</translation>
 <translation id="8199300056570174101">(Service) réseau et propriétés de l’appareil</translation>
@@ -6882,6 +6880,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="8698269656364382265">Pour revenir à l'écran précédent, balayez l'écran de la gauche vers la droite.</translation>
 <translation id="869884720829132584">Menu Applications</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
+<translation id="8699120352855309748">Ne pas proposer de traduire ces langues</translation>
 <translation id="8702825062053163569">Votre <ph name="DEVICE_TYPE" /> a été verrouillé.</translation>
 <translation id="8703346390800944767">Ignorer l'annonce</translation>
 <translation id="8705331520020532516">Numéro de série</translation>

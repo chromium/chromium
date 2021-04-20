@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">继续允许 <ph name="HOST" /> 使用和移动您的摄像头</translation>
 <translation id="1355088139103479645">删除所有数据？</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> 已被屏蔽</translation>
-<translation id="1358612436266364864">撤消突出显示</translation>
 <translation id="1358741672408003399">拼写和语法</translation>
 <translation id="1359923111303110318">您的设备可通过 Smart Lock 解锁。按 Enter 键即可解锁。</translation>
 <translation id="1361164813881551742">手动添加</translation>
@@ -880,6 +879,7 @@
 <translation id="1928202201223835302">输入原来的 PIN 码</translation>
 <translation id="1928696683969751773">更新</translation>
 <translation id="1929186283613845153">正在扫描此文件。</translation>
+<translation id="1929343511231420085">任意串行端口</translation>
 <translation id="1929546189971853037">读取您在所有登录过的设备上的浏览记录</translation>
 <translation id="1930879306590754738">密码已从此设备上和您的 Google 帐号中删除</translation>
 <translation id="1931152874660185993">没有安装任何组件。</translation>
@@ -1603,7 +1603,6 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> 下的网站也会重置。</translation>
 <translation id="2735712963799620190">排定时间</translation>
 <translation id="2737363922397526254">收起...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" />想与 <ph name="TARGET_NAME" /> 分享您屏幕上的内容。</translation>
 <translation id="2738030019664645674">不允许网站使用您设备上安装的字体</translation>
 <translation id="2738771556149464852">不晚于</translation>
 <translation id="2739191690716947896">调试</translation>
@@ -1891,7 +1890,6 @@
 <translation id="3031417829280473749">女特工</translation>
 <translation id="3031557471081358569">选择要导入的内容：</translation>
 <translation id="3036327949511794916">退还此 <ph name="DEVICE_TYPE" /> 的截止日期已过。</translation>
-<translation id="3036438888981457032">撤消突出显示</translation>
 <translation id="3036546437875325427">启用 Flash</translation>
 <translation id="3037754279345160234">无法对加入网域的配置进行解析，请与您的管理员联系。</translation>
 <translation id="3038612606416062604">手动添加打印机</translation>
@@ -2937,6 +2935,7 @@
 <translation id="4218274196133425560">为 <ph name="HOST_NAME" /> 移除例外情况</translation>
 <translation id="4220648711404560261">激活时出错。</translation>
 <translation id="4222772810963087151">版本详情</translation>
+<translation id="4224284700924043865">由供应商 <ph name="VENDOR_ID" /> 提供的产品 ID 为 <ph name="PRODUCT_ID" /> 的 USB 设备</translation>
 <translation id="4225397296022057997">在所有网站上</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上通过 Google Play 安装各种应用和游戏。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">配置 Kerberos</translation>
@@ -3009,6 +3008,7 @@
 <translation id="431076611119798497">详细信息(&amp;D)</translation>
 <translation id="4312866146174492540">屏蔽（默认）</translation>
 <translation id="4314815835985389558">管理同步数据</translation>
+<translation id="4316650123995163262">由<ph name="VENDOR_NAME" />提供的产品 ID 为 <ph name="PRODUCT_ID" /> 的 USB 设备</translation>
 <translation id="4316850752623536204">开发者网站</translation>
 <translation id="4317820549299924617">验证失败</translation>
 <translation id="4320177379694898372">未连接到互联网</translation>
@@ -3451,6 +3451,7 @@
 <translation id="4824958205181053313">取消同步？</translation>
 <translation id="4827675678516992122">无法连接</translation>
 <translation id="4827784381479890589">在 Chrome 浏览器中使用增强的“拼写检查”功能（您输入的文字会被发送给 Google 以方便其提供拼写建议）</translation>
+<translation id="482952334869563894">由供应商 <ph name="VENDOR_ID" /> 提供的 USB 设备</translation>
 <translation id="4829768588131278040">设置 PIN 码</translation>
 <translation id="4830121310592638841">在网站想在您的屏幕上打开和放置窗口时询问您</translation>
 <translation id="4830502475412647084">正在安装操作系统更新</translation>
@@ -3740,6 +3741,7 @@
 <translation id="5159419673777902220">您的家长已停用扩展程序权限</translation>
 <translation id="5160634252433617617">实体键盘</translation>
 <translation id="5160857336552977725">登录您的<ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">由<ph name="VENDOR_NAME" />提供的 USB 设备</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> 已被禁用</translation>
 <translation id="5163910114647549394">此标签页已移至标签栏的末尾</translation>
 <translation id="5165085578392358314">为以下操作分配开关键：<ph name="ACTION" /></translation>
@@ -4653,7 +4655,6 @@
 <translation id="6212039847102026977">显示高级网络属性</translation>
 <translation id="6212168817037875041">关闭显示屏</translation>
 <translation id="6212752530110374741">通过电子邮件发送链接</translation>
-<translation id="6213230117190778270">接收</translation>
 <translation id="621470880408090483">不允许网站连接到蓝牙设备</translation>
 <translation id="6215620815501168899">关闭包含 EID 和二维码的弹出式窗口</translation>
 <translation id="6216601812881225442">您的容器无法调整大小。若要调整预先分配给 Linux 的空间，请先备份旧容器中的内容，然后再将这些内容恢复到新容器中。</translation>
@@ -5367,6 +5368,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 活动日志</translation>
 <translation id="6997707937646349884">在您的设备上：</translation>
 <translation id="6998793565256476099">注册设备以进行视频会议</translation>
+<translation id="6999640176621571692">允许 Google 查找您添加到购物车中的商品的折扣信息？</translation>
 <translation id="6999956497249459195">新建组</translation>
 <translation id="7000206553895739324">“<ph name="PRINTER_NAME" />”已建立连接但需要配置</translation>
 <translation id="7000347579424117903">必须以 Ctrl 键、Alt 键或搜索键开头</translation>
@@ -5447,7 +5449,6 @@
 <translation id="7076293881109082629">正在登录</translation>
 <translation id="7077829361966535409">使用当前代理设置无法加载登录页面。请<ph name="GAIA_RELOAD_LINK_START" />尝试重新登录<ph name="GAIA_RELOAD_LINK_END" />，或者使用不同的<ph name="PROXY_SETTINGS_LINK_START" />代理设置<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
 <translation id="7078120482318506217">所有网络</translation>
-<translation id="7078386829626602215">未检测到任何设备<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">复制音频地址(&amp;O)</translation>
 <translation id="7081952801286122383">您正在使用无痕模式</translation>
 <translation id="708278670402572152">要想启用扫描，请先断开连接</translation>
@@ -5496,11 +5497,9 @@
 <translation id="7135729336746831607">要开启蓝牙吗？</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> 要求您立即更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="7136694880210472378">设为默认选项</translation>
-<translation id="7136984461011502314">欢迎使用<ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">出错了。请选择其他图片以重试。</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> 正在使用您的麦克风</translation>
 <translation id="7141105143012495934">由于无法获取您的帐号详情，因此登录失败了。请与管理员联系或重试。</translation>
-<translation id="7143358760238281735">无可用应用</translation>
 <translation id="7144878232160441200">重试</translation>
 <translation id="7149893636342594995">过去 24 小时</translation>
 <translation id="7152478047064750137">此扩展程序无需任何特殊权限</translation>
@@ -6453,7 +6452,6 @@
 <translation id="8189750580333936930">隐私沙盒</translation>
 <translation id="8190193592390505034">正在连接到<ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">管理您的应用、扩展程序和主题背景</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" />想分享您屏幕上的内容。</translation>
 <translation id="8195027750202970175">占用的存储空间</translation>
 <translation id="8198323535106903877">我们将为您安装这 <ph name="NUMBER_OF_APPS" /> 款应用</translation>
 <translation id="8199300056570174101">网络（服务）和设备属性</translation>
@@ -6877,6 +6875,7 @@
 <translation id="8698269656364382265">要返回到上一个屏幕，请从屏幕左侧向右侧滑动。</translation>
 <translation id="869884720829132584">应用菜单</translation>
 <translation id="869891660844655955">截止日期</translation>
+<translation id="8699120352855309748">不询问是否翻译这些语言</translation>
 <translation id="8702825062053163569">您的 <ph name="DEVICE_TYPE" /> 已锁定。</translation>
 <translation id="8703346390800944767">跳过广告</translation>
 <translation id="8705331520020532516">序列号</translation>

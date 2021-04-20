@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Rādīt paroli</translation>
 <translation id="1872096359983322073">Lukturītis</translation>
 <translation id="1911619930368729126">Augšupielādēt Google diskā</translation>
-<translation id="1919130412786645364">Atļaut pierakstīties pārlūkā Chrome</translation>
 <translation id="1923342640370224680">Pēdējā stunda</translation>
 <translation id="1941314575388338491">Veiciet dubultskārienu, lai kopētu.</translation>
 <translation id="1952172573699511566">Kad vien iespējams, vietnēs tiks rādīts teksts atlasītajā valodā.</translation>
@@ -216,7 +215,6 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 
 Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs, piemēram, reklāmu personalizēšanai.</translation>
 <translation id="3207960819495026254">Atzīmēts kā grāmatzīme</translation>
-<translation id="3222343486469566063">Nav pierakstījies</translation>
 <translation id="3224641773458703735">Lai eksportētu paroles, vispirms ierīcei ir jāiestata piekļuves kods.</translation>
 <translation id="3240426699337459095">Saite nokopēta</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@ Veiciet tālāk norādītās darbības.</translation>
 <translation id="3928666092801078803">Datu apvienošana</translation>
 <translation id="3929457972718048006">Adreses</translation>
 <translation id="3943492037546055397">Paroles</translation>
-<translation id="3943557322767080599">Pierakstoties Google kontā, rādīt Chrome pierakstīšanās uzvednes</translation>
-<translation id="3967266340354872733">Papildu iestatījumus, kas attiecas uz konfidencialitāti, drošību un datu vākšanu, skatiet sadaļās <ph name="BEGIN_LINK" />Sinhronizēšana<ph name="END_LINK" /> un <ph name="BEGIN_LINK" />Google pakalpojumi<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Lejupielāde pabeigta</translation>
 <translation id="3968505803272650567">Pārvaldīt intereses</translation>
 <translation id="3989635538409502728">Izrakstīties</translation>
@@ -568,7 +564,6 @@ Ieteicams izmantot unikālu paroli katrai vietnei.</translation>
 <translation id="6760509555861141183">Atgriezties uz cilni Nesenās</translation>
 <translation id="6780034285637185932">Pasta indekss</translation>
 <translation id="6785453220513215166">Notiek avārijas ziņojuma sūtīšana...</translation>
-<translation id="679325081238418596">Iegūstiet savas grāmatzīmes, vēsturi, paroles un citus iestatījumus visās savās ierīcēs</translation>
 <translation id="6797885426782475225">Meklēšana ar balsi</translation>
 <translation id="6807889908376551050">Rādīt visus...</translation>
 <translation id="681368974849482173">Vienums izveidots</translation>
@@ -580,7 +575,6 @@ Ieteicams izmantot unikālu paroli katrai vietnei.</translation>
 <translation id="6873263987691478642">Dalītais skats</translation>
 <translation id="6888009575607455378">Vai tiešām vēlaties atmest veiktās izmaiņas?</translation>
 <translation id="6896758677409633944">Kopēt</translation>
-<translation id="6903907808598579934">Ieslēgt sinhronizāciju</translation>
 <translation id="6914583639806229067">Meklēt jūsu kopēto attēlu</translation>
 <translation id="6914783257214138813">Jūsu paroles būs redzamas ikvienam, kas var skatīt eksportēto failu.</translation>
 <translation id="6930799952781667037">Pieskarieties, lai mainītu uz šo valodu.</translation>
@@ -711,6 +705,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8225985093977202398">Kešatmiņa</translation>
 <translation id="8261506727792406068">Dzēst</translation>
 <translation id="8281781826761538115">Noklusējuma — <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Izlaist</translation>
 <translation id="8283172974887967105">Iestatīt…</translation>
 <translation id="8299417921174340354">Lai izmantotu paroles, vispirms ierīcei ir jāiestata piekļuves kods.</translation>
 <translation id="8319076807703933069">Jauns meklēšanas vaicājums</translation>

@@ -305,7 +305,6 @@
 <translation id="3016635187733453316">Энэ төхөөрөмж интернэтэд холбогдсон эсэхийг шалгана уу</translation>
 <translation id="3029704984691124060">Нэвтрэх хэллэг тохирохгүй байна</translation>
 <translation id="3031225630520268969">Туслахын дуут хайлтын зөвшөөрлийн ui</translation>
-<translation id="3034163383943672781">Таталтыг <ph name="DATE" />-д эхлүүлнэ.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Тусламж авах<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Дараагийн удаа энэ сайт руу илүү шуурхай очоорой</translation>
 <translation id="305593374596241526">Байршил идэвхгүй, үүнийг <ph name="BEGIN_LINK" />Андройд Тохиргоо<ph name="END_LINK" /> дотроос асаана уу.</translation>
@@ -526,7 +525,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4583164079174244168">{MINUTES,plural, =1{# минутын өмнө}other{# минутын өмнө}}</translation>
 <translation id="4587589328781138893">Сайт</translation>
 <translation id="4594952190837476234">Энэ офлайн хуудсыг <ph name="CREATION_TIME" />-с харуулж байгаа бөгөөд онлайн хувилбараас өөр байж болзошгүй.</translation>
-<translation id="4605958867780575332">Зүйл устгасан: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />-г нээх</translation>
 <translation id="4619564267100705184">Өөрийгөө мөн болохыг бататгах</translation>
 <translation id="4634124774493850572">Нууц үг ашиглах</translation>
@@ -701,7 +699,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="572328651809341494">Саяхан нээсэн табууд</translation>
 <translation id="5723735397759933332">Lite горим одоо HTTPS хуудаснууд дээрх зургуудыг оновчилсноор илүү их дата хэмнэнэ.</translation>
 <translation id="5726692708398506830">Бүгдийг дэлгэцийн хэмжээгээр томсгох</translation>
-<translation id="5732819098735351888">Таталтыг Wi-Fi дээр эхлүүлнэ.</translation>
 <translation id="5733983706093266635">QR код үүсгэх боломжгүй байна. URL нь <ph name="CHARACTER_LIMIT" />-с олон тэмдэгттэй байна.</translation>
 <translation id="5748802427693696783">Стандарт таб руу шилжүүлсэн</translation>
 <translation id="5749068826913805084">Файл татахын тулд Chrome-д санах ойд хандах зөвшөөрөл шаардлагатай.</translation>
@@ -781,7 +778,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6159729262978459665">Синк хийсэн бүх төхөөрөмжөөс түүхийг арилгана.</translation>
 <translation id="6186394685773237175">Алдагдсан нууц үг олдсонгүй</translation>
 <translation id="6192907950379606605">Зургийн тайлбарыг авах</translation>
-<translation id="6206830853671714236">Хэзээ татаж авахаа сонгоно уу</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> биш үү?</translation>
 <translation id="6211386937064921208">Энэ хуудсыг урьдчилан үзэж байна</translation>
 <translation id="6218096829563201111">Төстэй бүтээгдэхүүн хайх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
@@ -1178,12 +1174,14 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8699120352855309748">Эдгээр хэлийг орчуулахыг бүү санал болго</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="8725066075913043281">Дахин оролдож үзнэ үү.</translation>
+<translation id="8730621377337864115">хийсэн</translation>
 <translation id="8748850008226585750">Агуулгыг нуусан</translation>
 <translation id="8773160212632396039">Хүсэлтийг боловсруулж байна</translation>
 <translation id="8788265440806329501">Навигацын түүх хаалттай байна</translation>
 <translation id="8788968922598763114">Сүүлд хаасан чихтэй хуудсыг дахин нээх</translation>
 <translation id="8798449543960971550">Унших</translation>
 <translation id="8812260976093120287">Зарим веб хуудаст та төлбөр хийхдээ таны төхөөрөмжид дэмжсэн дээрх төлбөрийн аппыг ашиглах боломжтой.</translation>
+<translation id="8814190375133053267">Утасгүй интернет</translation>
 <translation id="881688628773363275">Урьдчилан үзэх табын контентыг үзэх боломжгүй.</translation>
 <translation id="8820817407110198400">Хавчуургууд</translation>
 <translation id="883806473910249246">Агуулгыг татаж байх үед алдаа гарлаа.</translation>
@@ -1221,10 +1219,10 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="9063523880881406963">Сайтыг компьютерийн горимоор харах хүсэлт-г унтраах</translation>
 <translation id="9065203028668620118">Засварлах</translation>
 <translation id="9065383040763568503">Chrome-н зүгээс чухал гэж тооцдоггүй хадгалсан өгөгдөл (жишээ нь: тохиргоог нь хадгалаагүй эсвэл таны тогтмол зочилдоггүй сайтууд)</translation>
-<translation id="9069543557624799859"><ph name="TIME" />-д татаж эхэлнэ.</translation>
 <translation id="9069999660519089861">Уншаагүй хуудас байхгүй</translation>
 <translation id="9070377983101773829">Дуут хайлтыг эхлүүлэх</translation>
 <translation id="9074336505530349563">Google-с санал болгож буй хувийн болгосон агуулга авахын тулд нэвтрээд синкийг асаана уу</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Sync хийж байна.</translation>
 <translation id="9086455579313502267">Сүлжээнд хандах боломжгүй байна</translation>
 <translation id="9100505651305367705">Нийтлэлийг хялбаршуулсан харагдах байдлаар (дэмжсэн үед) харуулахыг санал болгох</translation>

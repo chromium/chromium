@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">Luba hostil <ph name="HOST" /> ka edaspidi minu kaamerat kasutada ja liigutada</translation>
 <translation id="1355088139103479645">Kas kustutada kõik andmed?</translation>
 <translation id="1355466263109342573">Pistikprogramm <ph name="PLUGIN_NAME" /> on blokeeritud</translation>
-<translation id="1358612436266364864">Eemalda esiletõstud</translation>
 <translation id="1358741672408003399">Õigekiri ja grammatika</translation>
 <translation id="1359923111303110318">Teie seadme saab avada funktsiooniga Smart Lock. Avamiseks vajutage sisestusklahvi.</translation>
 <translation id="1361164813881551742">Käsitsi lisamine</translation>
@@ -883,6 +882,7 @@
 <translation id="1928202201223835302">Sisestage vana PIN-kood</translation>
 <translation id="1928696683969751773">Värskendused</translation>
 <translation id="1929186283613845153">Seda faili skannitakse.</translation>
+<translation id="1929343511231420085">Ükskõik milline jadaport</translation>
 <translation id="1929546189971853037">Sirvimisajaloo lugemine kõikides sisselogitud seadmetes</translation>
 <translation id="1930879306590754738">Parool kustutati sellest seadmest ja teie Google'i kontolt</translation>
 <translation id="1931152874660185993">Ühtegi komponenti pole installitud.</translation>
@@ -1608,7 +1608,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="2734760316755174687">Rühmas <ph name="SITE_GROUP_NAME" /> olevad saidid lähtestatakse samuti.</translation>
 <translation id="2735712963799620190">Ajakava</translation>
 <translation id="2737363922397526254">Ahenda ...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> soovib teie ekraanikuval olevat sisu jagada vahelehega <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Ära luba saitidel kasutada seadmesse installitud fonte</translation>
 <translation id="2738771556149464852">Mitte pärast</translation>
 <translation id="2739191690716947896">Silu</translation>
@@ -1896,7 +1895,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Valige imporditavad üksused:</translation>
 <translation id="3036327949511794916">Selle seadme (<ph name="DEVICE_TYPE" />) tagastamise tähtaeg on möödunud.</translation>
-<translation id="3036438888981457032">Esiletõstude eemaldamine</translation>
 <translation id="3036546437875325427">Luba Flash</translation>
 <translation id="3037754279345160234">Domeeniga liitumise seadistust ei saa sõeluda. Võtke ühendust administraatoriga.</translation>
 <translation id="3038612606416062604">Printeri käsitsi lisamine</translation>
@@ -2943,6 +2941,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4218274196133425560">Erandi eemaldamine seadmest <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Aktiveerimisel ilmnes viga.</translation>
 <translation id="4222772810963087151">Järgu üksikasjad</translation>
+<translation id="4224284700924043865">Ettevõtte <ph name="VENDOR_ID" /> USB-seadmed toote ID-ga <ph name="PRODUCT_ID" /></translation>
 <translation id="4225397296022057997">Kõikidel saitidel</translation>
 <translation id="4231095370974836764">Installige Google Playst oma seadmesse <ph name="DEVICE_TYPE" /> rakendusi ja mänge. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberose seadistamine</translation>
@@ -3015,6 +3014,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="431076611119798497">&amp;Üksikasjad</translation>
 <translation id="4312866146174492540">Blokeeri (vaikimisi)</translation>
 <translation id="4314815835985389558">Sünkroonimise haldamine</translation>
+<translation id="4316650123995163262">Ettevõtte <ph name="VENDOR_NAME" /> USB-seadmed toote ID-ga <ph name="PRODUCT_ID" /></translation>
 <translation id="4316850752623536204">Arendaja veebisait</translation>
 <translation id="4317820549299924617">Kinnitamine ei õnnestunud</translation>
 <translation id="4320177379694898372">Interneti-ühendus puudub</translation>
@@ -3457,6 +3457,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4824958205181053313">Kas tühistada sünkroonimine?</translation>
 <translation id="4827675678516992122">Ühendamine ebaõnnestus</translation>
 <translation id="4827784381479890589">Täiustatud õigekirjakontroll Chrome'i brauseris (tekst saadetakse õigekirjasoovituste saamiseks Google'ile)</translation>
+<translation id="482952334869563894">Ettevõtte <ph name="VENDOR_ID" /> USB-seadmed</translation>
 <translation id="4829768588131278040">Seadista PIN-kood</translation>
 <translation id="4830121310592638841">Küsitakse, kui sait soovib teie ekraanikuvadel aknaid avada ja neid sinna paigutada</translation>
 <translation id="4830502475412647084">OS-i värskenduse installimine</translation>
@@ -3746,6 +3747,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5159419673777902220">Sinu vanem on laienduste load keelanud</translation>
 <translation id="5160634252433617617">Füüsiline klaviatuur</translation>
 <translation id="5160857336552977725">Logige sisse seadmesse <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">Ettevõtte <ph name="VENDOR_NAME" /> USB-seadmed</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> on blokeeritud</translation>
 <translation id="5163910114647549394">Vaheleht teisaldati vahelehtede riba lõppu</translation>
 <translation id="5165085578392358314">Toimingu <ph name="ACTION" /> lüliti määramine</translation>
@@ -4659,7 +4661,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6212039847102026977">Kuva täpsemad võrguatribuudid</translation>
 <translation id="6212168817037875041">Lülita ekraan välja</translation>
 <translation id="6212752530110374741">Saada link meiliga</translation>
-<translation id="6213230117190778270">Võta vastu</translation>
 <translation id="621470880408090483">Ära luba saitidel Bluetooth-seadmetega ühendust luua</translation>
 <translation id="6215620815501168899">Sulge EID ja QR-koodi hüpikaken</translation>
 <translation id="6216601812881225442">Teie konteiner ei toeta suuruse muutmist. Linuxi jaoks varem eraldatud kettaruumi kohandamiseks varundage sisu ja taastage see uues konteineris.</translation>
@@ -5373,6 +5374,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – tegevuste logi</translation>
 <translation id="6997707937646349884">Teie seadmetes:</translation>
 <translation id="6998793565256476099">Registreeri seade videokonverentsi kasutamiseks</translation>
+<translation id="6999640176621571692">Kas lubada Google'il otsida teie ostukorvi lisatud toodete allahindlusi?</translation>
 <translation id="6999956497249459195">Uus grupp</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> on ühendatud, aga vajab seadistamist</translation>
 <translation id="7000347579424117903">Kaasake Ctrl, Alt või otsinguklahv</translation>
@@ -5453,7 +5455,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7076293881109082629">Sisselogimine</translation>
 <translation id="7077829361966535409">Sisselogimislehte ei saanud praeguste puhverserveri seadetega laadida. <ph name="GAIA_RELOAD_LINK_START" />Proovige uuesti sisse logida<ph name="GAIA_RELOAD_LINK_END" /> või kasutage teisi <ph name="PROXY_SETTINGS_LINK_START" />puhverserveri seadeid<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Kõik võrgud</translation>
-<translation id="7078386829626602215">Seadet ei tuvastatud. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">K&amp;opeeri heli aadress</translation>
 <translation id="7081952801286122383">Olete inkognito režiimis</translation>
 <translation id="708278670402572152">Skannimise lubamiseks katkestage ühendus</translation>
@@ -5502,11 +5503,9 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7135729336746831607">Kas lülitada Bluetooth sisse?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> nõuab, et värskendaksite kohe seadet <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7136694880210472378">Muuda vaikevalikuks</translation>
-<translation id="7136984461011502314">Tere tulemast rakendusse <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Ilmnes viga. Uuesti proovimiseks valige muud pildid.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> kasutab teie mikrofoni</translation>
 <translation id="7141105143012495934">Sisselogimine ebaõnnestus, kuna teie konto üksikasju ei saanud tuua. Võtke ühendust administraatoriga või proovige uuesti.</translation>
-<translation id="7143358760238281735">Rakendusi pole</translation>
 <translation id="7144878232160441200">Proovi uuesti</translation>
 <translation id="7149893636342594995">Viimased 24 tundi</translation>
 <translation id="7152478047064750137">Selle laienduse jaoks pole erilube vaja</translation>
@@ -6460,7 +6459,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8189750580333936930">Privaatsuse liivakast</translation>
 <translation id="8190193592390505034">Ühendamine võrku <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Teie rakenduste, laienduste ja teemade haldamine</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> soovib teie ekraanikuval olevat sisu jagada.</translation>
 <translation id="8195027750202970175">Maht kettal</translation>
 <translation id="8198323535106903877">Installime need <ph name="NUMBER_OF_APPS" /> rakendust teie eest</translation>
 <translation id="8199300056570174101">Võrk (teenus) ja seadme atribuudid</translation>
@@ -6884,6 +6882,7 @@ Määratud toimingu eemaldamiseks vajutage määratud lülitit.</translation>
 <translation id="8698269656364382265">Eelmisele ekraanikuvale naasmiseks pühkige vasakust servast.</translation>
 <translation id="869884720829132584">Rakenduste menüü</translation>
 <translation id="869891660844655955">Aegumiskuupäev</translation>
+<translation id="8699120352855309748">Ära paku nende keelte tõlkimist</translation>
 <translation id="8702825062053163569">Teie seade <ph name="DEVICE_TYPE" /> lukustati.</translation>
 <translation id="8703346390800944767">Jäta reklaam vahele</translation>
 <translation id="8705331520020532516">Seerianumber</translation>

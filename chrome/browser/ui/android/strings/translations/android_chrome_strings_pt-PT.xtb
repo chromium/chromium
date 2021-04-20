@@ -305,7 +305,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="3016635187733453316">Certifique-se de que este dispositivo está ligado à Internet.</translation>
 <translation id="3029704984691124060">As frases de acesso não coincidem</translation>
 <translation id="3031225630520268969">IU de consentimento da pesquisa por voz do Assistente</translation>
-<translation id="3034163383943672781">A transferência vai ser iniciada a <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obter ajuda<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Aceda a este site mais rapidamente da próxima vez</translation>
 <translation id="305593374596241526">A localização está desativada. Ative-a nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4583164079174244168">{MINUTES,plural, =1{Há # minuto}other{Há # minutos}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Esta página foi criada a <ph name="CREATION_TIME" /> e pode ser diferente da versão online.</translation>
-<translation id="4605958867780575332">Item removido: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Validar identidade</translation>
 <translation id="4634124774493850572">Utilizar palavra-passe</translation>
@@ -702,7 +700,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="572328651809341494">Separadores recentes</translation>
 <translation id="5723735397759933332">Agora, o Modo Lite guarda mais dados ao otimizar imagens em páginas HTTPS.</translation>
 <translation id="5726692708398506830">Aumentar o tamanho de todos os itens na página</translation>
-<translation id="5732819098735351888">A transferência vai ser iniciada através de Wi-Fi.</translation>
 <translation id="5733983706093266635">Não é possível criar o código QR. O URL contém mais de <ph name="CHARACTER_LIMIT" /> carateres.</translation>
 <translation id="5748802427693696783">Mudado para separadores padrão</translation>
 <translation id="5749068826913805084">O Chrome necessita de acesso ao armazenamento para transferir ficheiros.</translation>
@@ -779,9 +776,9 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="614940544461990577">Experimente:</translation>
 <translation id="6154478581116148741">Ative o bloqueio de ecrã nas Definições para exportar as suas palavras-passe a partir deste dispositivo.</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> de poupança de dados</translation>
+<translation id="6159729262978459665">Limpa o histórico de todos os dispositivos sincronizados.</translation>
 <translation id="6186394685773237175">Não foram encontradas palavras-passe comprometidas.</translation>
 <translation id="6192907950379606605">Obter descrições de imagens</translation>
-<translation id="6206830853671714236">Escolha quando transferir</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> não é o seu email?</translation>
 <translation id="6211386937064921208">A pré-visualizar esta página…</translation>
 <translation id="6218096829563201111">Pesq. produtos parecidos <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Os dados da sua sessão de Navegação anónima apenas serão limpos do Chrome q
 <translation id="7523960634226602883">Pesquise com a sua câmara através do Google Lens.</translation>
 <translation id="753225086557513863">Agendado para mais tarde</translation>
 <translation id="7559975015014302720">O Modo Lite está desativado.</translation>
+<translation id="7560448309733608642">Limpa o histórico de todos os dispositivos sincronizados. A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">A limpar dados de navegação</translation>
 <translation id="756809126120519699">Dados do Chrome limpos</translation>
 <translation id="7577900504646297215">Gerir interesses</translation>
@@ -1177,12 +1175,14 @@ Os dados da sua sessão de Navegação anónima apenas serão limpos do Chrome q
 <translation id="8699120352855309748">Não se disponibilizar para traduzir estes idiomas</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
+<translation id="8730621377337864115">Concluído</translation>
 <translation id="8748850008226585750">Conteúdo ocultado</translation>
 <translation id="8773160212632396039">A processar o pedido</translation>
 <translation id="8788265440806329501">O histórico de navegação está fechado.</translation>
 <translation id="8788968922598763114">Reabrir o último separador fechado</translation>
 <translation id="8798449543960971550">Lidas</translation>
 <translation id="8812260976093120287">Nalguns Sites, é possível pagar com as aplicações de pagamento compatíveis acima no dispositivo.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">O conteúdo do separador de pré-visualização não está visível.</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="883806473910249246">Ocorreu um erro ao transferir o conteúdo.</translation>
@@ -1220,10 +1220,10 @@ Os dados da sua sessão de Navegação anónima apenas serão limpos do Chrome q
 <translation id="9063523880881406963">Desativar Pedir site para computador</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9065383040763568503">Dados armazenados que o Chrome não considera importantes (por exemplo, sites sem definições guardadas ou que não visita com frequência).</translation>
-<translation id="9069543557624799859">A transferência vai começar à(s) <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Sem páginas não lidas</translation>
 <translation id="9070377983101773829">Iniciar pesquisa por voz</translation>
 <translation id="9074336505530349563">Para obter conteúdo personalizado sugerido pelo Google, inicie sessão e ative a sincronização.</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">A sincronizar</translation>
 <translation id="9086455579313502267">Não é possível aceder à rede</translation>
 <translation id="9100505651305367705">Sugerir a apresentação de artigos na vista simplificada, quando suportada</translation>

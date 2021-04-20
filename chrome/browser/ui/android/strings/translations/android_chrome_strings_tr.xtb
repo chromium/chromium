@@ -305,7 +305,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3016635187733453316">Bu cihazın internete bağlı olduğundan emin olun</translation>
 <translation id="3029704984691124060">Parolalar eşleşmiyor</translation>
 <translation id="3031225630520268969">Asistan sesli arama izni kullanıcı arayüzü</translation>
-<translation id="3034163383943672781">İndirme <ph name="DATE" /> tarihinde başlatılacak.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Yardım alın<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Gelecek sefer bu siteye daha hızlı ulaşın</translation>
 <translation id="305593374596241526">Konum özelliği kapalı. <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'ndan açın.</translation>
@@ -526,7 +525,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4583164079174244168">{MINUTES,plural, =1{# dakika önce}other{# dakika önce}}</translation>
 <translation id="4587589328781138893">Siteler</translation>
 <translation id="4594952190837476234">Bu çevrimdışı sayfa <ph name="CREATION_TIME" /> tarihli olup web'deki sürümden farklı olabilir.</translation>
-<translation id="4605958867780575332">Öğe kaldırıldı: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> APK'sını aç</translation>
 <translation id="4619564267100705184">Kimliğinizi doğrulayın</translation>
 <translation id="4634124774493850572">Şifre kullan</translation>
@@ -702,7 +700,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="572328651809341494">Son sekmeler</translation>
 <translation id="5723735397759933332">Basit mod, HTTPS sayfalarındaki görselleri optimize ederek size veri tasarrufu sağlıyor.</translation>
 <translation id="5726692708398506830">Sayfadaki her şeyi büyütür</translation>
-<translation id="5732819098735351888">İndirme kablosuz bağlantı üzerinden başlatılacak.</translation>
 <translation id="5733983706093266635">QR kodu oluşturulamıyor. URL, <ph name="CHARACTER_LIMIT" /> karakterden fazlasını içeriyor.</translation>
 <translation id="5748802427693696783">Standart sekmelere geçildi</translation>
 <translation id="5749068826913805084">Dosya indirmek için Chrome'un depolama alanına erişmesi gerekiyor.</translation>
@@ -779,9 +776,9 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="614940544461990577">Aşağıdakileri deneyin:</translation>
 <translation id="6154478581116148741">Bu cihazdaki şifrelerinizi dışarı aktarmak için Ayarlar'da ekran kilidini açın</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> veri tasarrufu</translation>
+<translation id="6159729262978459665">Geçmişi, tüm senkronize edilen cihazlardan temizler.</translation>
 <translation id="6186394685773237175">Güvenliği ihlal edilmiş şifre bulunmadı</translation>
 <translation id="6192907950379606605">Resim açıklaması al</translation>
-<translation id="6206830853671714236">İndirmenin ne zaman yapılacağını seçin</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> değil misiniz?</translation>
 <translation id="6211386937064921208">Sayfanın önizlemesi gösteriliyor</translation>
 <translation id="6218096829563201111">Benzer ürünler arayın <ph name="BEGIN_NEW" />YENİ<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="7523960634226602883">Google Lens'i kullanarak kameranızla arama yapın</translation>
 <translation id="753225086557513863">Daha sonrası için programlandı.</translation>
 <translation id="7559975015014302720">Basit mod kapalı</translation>
+<translation id="7560448309733608642">Geçmişi, tüm senkronize edilen cihazlardan temizler. Google Hesabınızın <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> adresinde başka biçimlerde tarama geçmişi olabilir</translation>
 <translation id="7562080006725997899">Göz atma verileri temizleniyor</translation>
 <translation id="756809126120519699">Chrome verileri temizlendi</translation>
 <translation id="7577900504646297215">İlgi alanlarını yönet</translation>
@@ -1177,12 +1175,14 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="8699120352855309748">Şu dilleri çevirmeyi önerme</translation>
 <translation id="8712637175834984815">Anlaşıldı</translation>
 <translation id="8725066075913043281">Yeniden dene</translation>
+<translation id="8730621377337864115">Bitti</translation>
 <translation id="8748850008226585750">İçerik gizlendi</translation>
 <translation id="8773160212632396039">İstek gerçekleştiriliyor</translation>
 <translation id="8788265440806329501">Gezinme geçmişi kapalı</translation>
 <translation id="8788968922598763114">Son kapatılan sekmeyi yeniden açar</translation>
 <translation id="8798449543960971550">Okunanlar</translation>
 <translation id="8812260976093120287">Bazı web sitelerinde, yukarıdaki desteklenen ödeme uygulamalarıyla cihazınızdan ödeme yapabilirsiniz.</translation>
+<translation id="8814190375133053267">Kablosuz</translation>
 <translation id="881688628773363275">Önizleme sekmesinin içeriği görüntülenemiyor.</translation>
 <translation id="8820817407110198400">Yer işaretleri</translation>
 <translation id="883806473910249246">İçerik indirilirken bir hata oluştu.</translation>
@@ -1220,10 +1220,10 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="9063523880881406963">Masaüstü sitesi istemeyi devre dışı bırak</translation>
 <translation id="9065203028668620118">Düzenle</translation>
 <translation id="9065383040763568503">Chrome'un önemli olmadığını düşündüğü depolanmış veriler (ör. kayıtlı ayarları bulunmayan veya sık ziyaret etmediğiniz siteler)</translation>
-<translation id="9069543557624799859">İndirmenin başlatılacağı saat: <ph name="TIME" /></translation>
 <translation id="9069999660519089861">Okunmamış sayfa yok</translation>
 <translation id="9070377983101773829">Sesli arama başlat</translation>
 <translation id="9074336505530349563">Google tarafından önerilen kişiselleştirilmiş içeriği almak için oturum açın ve senkronizasyonu etkinleştirin</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Senkronize ediliyor</translation>
 <translation id="9086455579313502267">Ağa erişilemiyor</translation>
 <translation id="9100505651305367705">Desteklendiğinde makaleleri basitleştirilmiş görünümde göstermeyi öner</translation>

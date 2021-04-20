@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Wachtwoord tonen</translation>
 <translation id="1872096359983322073">Zaklamp</translation>
 <translation id="1911619930368729126">Uploaden naar Google Drive</translation>
-<translation id="1919130412786645364">Inloggen bij Chrome toestaan</translation>
 <translation id="1923342640370224680">Afgelopen uur</translation>
 <translation id="1941314575388338491">Dubbeltik om te kopiëren.</translation>
 <translation id="1952172573699511566">Websites worden indien mogelijk getoond in je voorkeurstaal.</translation>
@@ -216,7 +215,6 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 
 Als je de incognitomodus gebruikt, mogen sites geen cookies gebruiken om je browse-activiteit op verschillende sites te bekijken, bijvoorbeeld om advertenties te personaliseren.</translation>
 <translation id="3207960819495026254">Toegevoegd aan 'Bookmarks'</translation>
-<translation id="3222343486469566063">Niet aangemeld</translation>
 <translation id="3224641773458703735">Als je wachtwoorden wilt exporteren, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="3240426699337459095">Link gekopieerd</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@ Volg de onderstaande stappen:</translation>
 <translation id="3928666092801078803">Mijn gegevens combineren</translation>
 <translation id="3929457972718048006">Adressen</translation>
 <translation id="3943492037546055397">Wachtwoorden</translation>
-<translation id="3943557322767080599">Chrome-inlogprompts tonen als je inlogt op je Google-account</translation>
-<translation id="3967266340354872733">Bekijk <ph name="BEGIN_LINK" />Synchronisatie<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer instellingen over privacy, beveiliging en gegevensverzameling.</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
 <translation id="3968505803272650567">Interesses beheren</translation>
 <translation id="3989635538409502728">Afmelden</translation>
@@ -568,7 +564,6 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="6760509555861141183">Terug naar recent tabblad</translation>
 <translation id="6780034285637185932">Postcode</translation>
 <translation id="6785453220513215166">Crashrapport verzenden...</translation>
-<translation id="679325081238418596">Je bookmarks, geschiedenis, wachtwoorden en andere instellingen beschikbaar maken op al je apparaten</translation>
 <translation id="6797885426782475225">Gesproken zoekopdracht</translation>
 <translation id="6807889908376551050">Alles tonen...</translation>
 <translation id="681368974849482173">Item gemaakt</translation>
@@ -580,7 +575,6 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="6873263987691478642">Gesplitste weergave</translation>
 <translation id="6888009575607455378">Weet je zeker dat je de wijzigingen niet wilt opslaan?</translation>
 <translation id="6896758677409633944">Kopieer</translation>
-<translation id="6903907808598579934">Synchronisatie aanzetten</translation>
 <translation id="6914583639806229067">Zoeken naar gekopieerde afbeelding</translation>
 <translation id="6914783257214138813">Je wachtwoorden zijn zichtbaar voor iedereen die het geëxporteerde bestand kan bekijken.</translation>
 <translation id="6930799952781667037">Tik om over te schakelen naar deze taal.</translation>
@@ -711,6 +705,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8225985093977202398">Afbeeldingen en bestanden in chachegeheugen</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="8281781826761538115">Standaard - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Overslaan</translation>
 <translation id="8283172974887967105">Instellen…</translation>
 <translation id="8299417921174340354">Als je wachtwoorden wilt gebruiken, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="8319076807703933069">Nieuwe zoekopdracht</translation>

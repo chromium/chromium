@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">கடவுச்சொல்லைக் காட்டும்</translation>
 <translation id="1872096359983322073">டார்ச்</translation>
 <translation id="1911619930368729126">Google இயக்ககத்தில் பதிவேற்றுக</translation>
-<translation id="1919130412786645364">Chrome உள்நுழைவை அனுமதித்தல்</translation>
 <translation id="1923342640370224680">கடந்த மணிநேரம்</translation>
 <translation id="1941314575388338491">நகலெடுக்க, இருமுறை தட்டவும்.</translation>
 <translation id="1952172573699511566">சாத்தியமான போது, நீங்கள் விரும்பும் மொழியில் உரையை இணையதளங்கள் காட்டும்.</translation>
@@ -216,7 +215,6 @@
 
 மறைநிலையில் உள்ளபோது, விளம்பரங்களைப் பிரத்தியேகமாக்குவது போன்ற செயல்களைச் செய்வதற்காக வெவ்வேறு தளங்களில் உங்களின் உலாவல் செயல்பாட்டைப் பார்க்க, தளங்களால் குக்கீகளைப் பயன்படுத்த முடியாது.</translation>
 <translation id="3207960819495026254">புக்மார்க் செய்யப்பட்டது</translation>
-<translation id="3222343486469566063">உள்நுழையவில்லை</translation>
 <translation id="3224641773458703735">கடவுச்சொற்களை ஏற்ற, முதலில் உங்கள் சாதனத்தில் கடவுக்குறியீட்டை அமைக்க வேண்டும்.</translation>
 <translation id="3240426699337459095">இணைப்பு நகலெடுக்கப்பட்டது</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@
 <translation id="3928666092801078803">எனது தரவை ஒன்றிணை</translation>
 <translation id="3929457972718048006">முகவரிகள்</translation>
 <translation id="3943492037546055397">கடவுச்சொற்கள்</translation>
-<translation id="3943557322767080599">நான் Google கணக்கில் உள்நுழையும்போது Chrome உள்நுழைவு அறிவிப்புகளைக் காட்டு</translation>
-<translation id="3967266340354872733">தனியுரிமை, பாதுகாப்பு, தரவுச் சேகரிப்பு ஆகியவற்றுடன் தொடர்புடைய கூடுதல் அமைப்புகளுக்கு <ph name="BEGIN_LINK" />ஒத்திசைவு<ph name="END_LINK" /> &amp; <ph name="BEGIN_LINK" />Google சேவைகள்<ph name="END_LINK" /> என்பதைப் பார்க்கவும்.</translation>
 <translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
 <translation id="3968505803272650567">ஆர்வங்களை நிர்வகி</translation>
 <translation id="3989635538409502728">வெளியேறு</translation>
@@ -568,7 +564,6 @@
 <translation id="6760509555861141183">சமீபத்திய தாவலுக்குச் செல்</translation>
 <translation id="6780034285637185932">அஞ்சல் குறியீடு</translation>
 <translation id="6785453220513215166">சிதைவு அறிக்கையை அனுப்புகிறது...</translation>
-<translation id="679325081238418596">உங்கள் புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள் மற்றும் பிற அமைப்புகளை, உங்கள் எல்லா சாதனங்களிலும் பெறவும்</translation>
 <translation id="6797885426782475225">குரல் தேடல்</translation>
 <translation id="6807889908376551050">எல்லாவற்றையும் காட்டு...</translation>
 <translation id="681368974849482173">புத்தகக்குறி உருவாக்கப்பட்டது</translation>
@@ -580,7 +575,6 @@
 <translation id="6873263987691478642">காட்சிப் பிரிப்பு</translation>
 <translation id="6888009575607455378">நீங்கள் செய்த மாற்றங்களை நிச்சயமாக நிராகரிக்கவா?</translation>
 <translation id="6896758677409633944">நகலெடு</translation>
-<translation id="6903907808598579934">ஒத்திசைவை இயக்கு</translation>
 <translation id="6914583639806229067">நீங்கள் நகலெடுத்த படத்தைத் தேடுக</translation>
 <translation id="6914783257214138813">ஏற்றிய கோப்பைப் பார்க்கக்கூடிய அனைவரும் உங்கள் கடவுச்சொற்களைப் பார்க்க முடியும்.</translation>
 <translation id="6930799952781667037">இந்த மொழிக்கு மாற்ற தட்டவும்.</translation>
@@ -711,6 +705,7 @@
 <translation id="8225985093977202398">தற்காலிகமாகச் சேமிக்கப்பட்ட படங்களும் கோப்புகளும்</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="8281781826761538115">இயல்பு - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">தவிர்</translation>
 <translation id="8283172974887967105">அமை…</translation>
 <translation id="8299417921174340354">கடவுச்சொற்களைப் பயன்படுத்த முதலில் உங்கள் சாதனத்தில் கடவுக்குறியீட்டை அமைக்க வேண்டும்.</translation>
 <translation id="8319076807703933069">புதிய தேடல்</translation>

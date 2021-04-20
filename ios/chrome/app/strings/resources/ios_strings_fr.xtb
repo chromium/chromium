@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Afficher le mot de passe</translation>
 <translation id="1872096359983322073">Lampe torche</translation>
 <translation id="1911619930368729126">Importer dans Google Drive</translation>
-<translation id="1919130412786645364">Autoriser la connexion à Chrome</translation>
 <translation id="1923342640370224680">Heure précédente</translation>
 <translation id="1941314575388338491">Appuyez deux fois pour copier.</translation>
 <translation id="1952172573699511566">Les sites Web s'afficheront dans votre langue préférée lorsque ce sera possible.</translation>
@@ -216,7 +215,6 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 
 En revanche, lorsque vous êtes en mode navigation privée, les sites ne peuvent pas utiliser de cookies pour voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces).</translation>
 <translation id="3207960819495026254">Favori</translation>
-<translation id="3222343486469566063">Non connecté</translation>
 <translation id="3224641773458703735">Pour exporter les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="3240426699337459095">Le lien a bien été copié.</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="3928666092801078803">Combiner mes données</translation>
 <translation id="3929457972718048006">Adresses</translation>
 <translation id="3943492037546055397">Mots de passe</translation>
-<translation id="3943557322767080599">Une invite de connexion à Chrome s'affiche lorsque vous vous connectez à votre compte Google</translation>
-<translation id="3967266340354872733">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez les pages <ph name="BEGIN_LINK" />Synchronisation<ph name="END_LINK" /> et <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3968505803272650567">Gérer les centres d'intérêt</translation>
 <translation id="3989635538409502728">Déconnexion</translation>
@@ -568,7 +564,6 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="6760509555861141183">Revenir au dernier onglet</translation>
 <translation id="6780034285637185932">Code postal</translation>
 <translation id="6785453220513215166">Envoi du rapport d'erreur en cours…</translation>
-<translation id="679325081238418596">Accédez à vos favoris, votre historique, vos mots de passe et d'autres paramètres sur tous vos appareils</translation>
 <translation id="6797885426782475225">Recherche vocale</translation>
 <translation id="6807889908376551050">Tout afficher…</translation>
 <translation id="681368974849482173">Élément créé</translation>
@@ -580,7 +575,6 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="6873263987691478642">Vue fractionnée</translation>
 <translation id="6888009575607455378">Voulez-vous vraiment supprimer les modifications ?</translation>
 <translation id="6896758677409633944">Copier</translation>
-<translation id="6903907808598579934">Activer la synchronisation</translation>
 <translation id="6914583639806229067">Rechercher l'image copiée</translation>
 <translation id="6914783257214138813">Toute personne ayant accès au fichier exporté pourra voir ces mots de passe.</translation>
 <translation id="6930799952781667037">Appuyez pour choisir cette langue.</translation>
@@ -711,6 +705,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8225985093977202398">Img/fich. en cache</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8281781826761538115">Par défaut : <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Passer</translation>
 <translation id="8283172974887967105">Définir…</translation>
 <translation id="8299417921174340354">Pour utiliser les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="8319076807703933069">Nouvelle recherche</translation>

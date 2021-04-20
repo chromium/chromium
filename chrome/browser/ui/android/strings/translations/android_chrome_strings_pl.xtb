@@ -305,7 +305,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3016635187733453316">Sprawdź, czy to urządzenie jest połączone z internetem</translation>
 <translation id="3029704984691124060">Hasła nie pasują do siebie</translation>
 <translation id="3031225630520268969">Ekran wyrażenia zgody na wyszukiwanie głosowe z pomocą Asystenta</translation>
-<translation id="3034163383943672781">Pobieranie rozpocznie się <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Poproś o pomoc<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Następnym razem otwórz tę stronę szybciej</translation>
 <translation id="305593374596241526">Lokalizacja jest wyłączona. Włącz ją w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minutę temu}few{# minuty temu}many{# minut temu}other{# minuty temu}}</translation>
 <translation id="4587589328781138893">Witryny</translation>
 <translation id="4594952190837476234">Ta strona offline jest z <ph name="CREATION_TIME" /> i może różnić się od wersji online.</translation>
-<translation id="4605958867780575332">Usunięto element: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Otwórz <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Potwierdź, że to Ty</translation>
 <translation id="4634124774493850572">Użyj hasła</translation>
@@ -702,7 +700,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="572328651809341494">Ostatnie karty</translation>
 <translation id="5723735397759933332">Wersja uproszczona oszczędza teraz więcej danych dzięki optymalizacji obrazów na stronach HTTPS.</translation>
 <translation id="5726692708398506830">Powiększ całą zawartość strony</translation>
-<translation id="5732819098735351888">Pobieranie rozpocznie się po połączeniu z siecią Wi-Fi.</translation>
 <translation id="5733983706093266635">Nie można utworzyć kodu QR. URL ma za dużo znaków – ponad <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="5748802427693696783">Przełączono na karty standardowe</translation>
 <translation id="5749068826913805084">Chrome musi mieć dostęp do pamięci, by pobierać pliki.</translation>
@@ -779,9 +776,9 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="614940544461990577">Wypróbuj te rozwiązania:</translation>
 <translation id="6154478581116148741">Włącz blokadę ekranu w ustawieniach, by wyeksportować hasła z urządzenia</translation>
 <translation id="6159335304067198720">Oszczędność danych: <ph name="PERCENT" /></translation>
+<translation id="6159729262978459665">Usuwa historię ze wszystkich zsynchronizowanych urządzeń.</translation>
 <translation id="6186394685773237175">Nie znaleziono przejętych haseł</translation>
 <translation id="6192907950379606605">Pobieraj opisy obrazów</translation>
-<translation id="6206830853671714236">Wybierz, kiedy pobrać</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> to nie Ty?</translation>
 <translation id="6211386937064921208">Wyświetlam podgląd tej strony</translation>
 <translation id="6218096829563201111">Znajdź podobne produkty <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7523960634226602883">Szukaj za pomocą aparatu i Obiektywu Google</translation>
 <translation id="753225086557513863">Zaplanowano na później</translation>
 <translation id="7559975015014302720">Wersja uproszczona jest wyłączona</translation>
+<translation id="7560448309733608642">Usuwa historię ze wszystkich zsynchronizowanych urządzeń. Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Czyszczenie danych przeglądania</translation>
 <translation id="756809126120519699">Wyczyszczono dane Chrome</translation>
 <translation id="7577900504646297215">Zarządzaj zainteresowaniami</translation>
@@ -1177,12 +1175,14 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8699120352855309748">Nie proponuj tłumaczenia tych języków</translation>
 <translation id="8712637175834984815">Rozumiem</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
+<translation id="8730621377337864115">Gotowe</translation>
 <translation id="8748850008226585750">Treści ukryte</translation>
 <translation id="8773160212632396039">Przetwarzanie żądania</translation>
 <translation id="8788265440806329501">Historia nawigacji jest zamknięta</translation>
 <translation id="8788968922598763114">Ponownie otwórz ostatnio zamknięte karty</translation>
 <translation id="8798449543960971550">Przeczytane</translation>
 <translation id="8812260976093120287">Używając swojego urządzenia, na niektórych stronach możesz płacić za pomocą powyższych obsługiwanych aplikacji do płatności.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Nie można wyświetlić zawartości karty podglądu.</translation>
 <translation id="8820817407110198400">Zakładki</translation>
 <translation id="883806473910249246">Podczas pobierania treści wystąpił błąd.</translation>
@@ -1220,10 +1220,10 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="9063523880881406963">Wyłącz opcję „Wersja na komputer”</translation>
 <translation id="9065203028668620118">Edytuj</translation>
 <translation id="9065383040763568503">Zapisane dane, które Chrome uznaje za nieistotne (np. witryny, które rzadko odwiedzasz lub które nie mają zapisanych ustawień).</translation>
-<translation id="9069543557624799859">Pobieranie rozpocznie się o <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Nie ma nieprzeczytanych stron</translation>
 <translation id="9070377983101773829">Rozpocznij wyszukiwanie głosowe</translation>
 <translation id="9074336505530349563">Aby uzyskać dostęp do spersonalizowanej treści proponowanej przez Google, zaloguj się i włącz synchronizację</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Synchronizuję</translation>
 <translation id="9086455579313502267">Nie można uzyskać dostępu do sieci</translation>
 <translation id="9100505651305367705">Proponuj wyświetlanie artykułów w widoku uproszczonym, gdy jest obsługiwany</translation>

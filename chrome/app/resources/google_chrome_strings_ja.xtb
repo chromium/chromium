@@ -217,6 +217,7 @@
 <translation id="7106741999175697885">タスク マネージャ - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。}=1{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。シークレット ウィンドウは、再起動後は自動的には開きません。}other{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="7155997830309522122">その場合は、Chrome に保存したパスワードを編集して、新しいパスワードと一致するようにしてください。</translation>
+<translation id="7161904924553537242">Google Chrome へようこそ</translation>
 <translation id="7242029209006116544">現在、管理対象アカウントでログインしており、あなたの Google Chrome プロファイルを管理者が制御できる状態になっています。あなたの Chrome データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。新しいプロファイルを作成して、既存の Chrome データを別に保管することができます。<ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">この言語が Google Chrome UI の表示に使用されます</translation>
 <translation id="7296210096911315575">使用と安全に関する重要事項</translation>

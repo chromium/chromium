@@ -305,7 +305,6 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3016635187733453316">Įsitikinkite, kad šis įrenginys prijungtas prie interneto</translation>
 <translation id="3029704984691124060">Slaptafrazės neatitinka</translation>
 <translation id="3031225630520268969">Sutikimo atlikti paiešką balsu naudojant Padėjėją NS</translation>
-<translation id="3034163383943672781">Atsisiuntimas bus pradedamas <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Gaukite pagalbos<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Kitą kartą sparčiau pasiekite šią svetainę</translation>
 <translation id="305593374596241526">Vieta išjungta; įjunkite <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
@@ -526,7 +525,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4583164079174244168">{MINUTES,plural, =1{Prieš 1 minutę}one{Prieš # minutę}few{Prieš # minutes}many{Prieš # minutės}other{Prieš # minučių}}</translation>
 <translation id="4587589328781138893">Svetainės</translation>
 <translation id="4594952190837476234">Šis neprisijungus naudojamas puslapis sukurtas <ph name="CREATION_TIME" />, todėl gali skirtis nuo prisijungus pateiktos versijos.</translation>
-<translation id="4605958867780575332">Pašalintas elementas: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Atidaryti „<ph name="WEBAPK_NAME" />“</translation>
 <translation id="4619564267100705184">Patvirtinti tapatybę</translation>
 <translation id="4634124774493850572">Naudoti slaptažodį</translation>
@@ -702,7 +700,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="572328651809341494">Naujausi skirtukai</translation>
 <translation id="5723735397759933332">Naudojant supaprastintą režimą dabar sutaupoma daugiau duomenų, nes HTTPS puslapiuose optimizuojami vaizdai.</translation>
 <translation id="5726692708398506830">Padidinti visą puslapio turinį</translation>
-<translation id="5732819098735351888">Atsisiuntimas bus pradėtas prisijungus prie „Wi-Fi“.</translation>
 <translation id="5733983706093266635">Nepavyko sukurti QR kodo. URL sudaro daugiau nei <ph name="CHARACTER_LIMIT" /> simbol.</translation>
 <translation id="5748802427693696783">Perjungta į įprastus skirtukus</translation>
 <translation id="5749068826913805084">„Chrome“ reikia prieigos prie saugyklos failams atsisiųsti.</translation>
@@ -779,9 +776,9 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="614940544461990577">Pabandykite atlikti toliau nurodytus veiksmus.</translation>
 <translation id="6154478581116148741">Norėdami iš šio įrenginio eksportuoti slaptažodžius, nustatymuose įjunkite ekrano užraktą</translation>
 <translation id="6159335304067198720">Sutaupyta duomenų: <ph name="PERCENT" /></translation>
+<translation id="6159729262978459665">Išvaloma istorija visuose sinchronizuojamuose įrenginiuose.</translation>
 <translation id="6186394685773237175">Nerasta pažeistų slaptažodžių</translation>
 <translation id="6192907950379606605">Gauti vaizdų aprašus</translation>
-<translation id="6206830853671714236">Pasirinkite, kada atsisiųsti</translation>
 <translation id="6210748933810148297">Ne <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Peržiūrimas šis puslapis</translation>
 <translation id="6218096829563201111">Ieškoti panašių produktų <ph name="BEGIN_NEW" />Nauja<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="7523960634226602883">Ieškoti naudojant fotoaparatą ir „Google Lens“</translation>
 <translation id="753225086557513863">Suplanuota atsisiųsti vėliau</translation>
 <translation id="7559975015014302720">Supaprastintasis režimas išjungtas</translation>
+<translation id="7560448309733608642">Išvaloma visų sinchronizuotų įrenginių istorija. „Google“ paskyroje gali būti kito tipo naršymo istorijos, kuri pasiekiama adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Naršymo duomenų išvalymas</translation>
 <translation id="756809126120519699">Išvalyti „Chrome“ duomenys</translation>
 <translation id="7577900504646297215">Tvarkyti pomėgius</translation>
@@ -1177,12 +1175,14 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="8699120352855309748">Nesiūlyti versti šių kalbų</translation>
 <translation id="8712637175834984815">Supratau</translation>
 <translation id="8725066075913043281">Bandyti dar kartą</translation>
+<translation id="8730621377337864115">Atlikta</translation>
 <translation id="8748850008226585750">Turinys paslėptas</translation>
 <translation id="8773160212632396039">Užklausa apdorojama</translation>
 <translation id="8788265440806329501">Naršymo istorija uždaryta</translation>
 <translation id="8788968922598763114">Iš naujo atidaryti paskutinį uždarytą skirtuką</translation>
 <translation id="8798449543960971550">Skaityta</translation>
 <translation id="8812260976093120287">Kai kuriose svetainėse galite mokėti naudodami įrenginyje įdiegtas anksčiau nurodytas palaikomas mokėjimo programas.</translation>
+<translation id="8814190375133053267">WI-Fi</translation>
 <translation id="881688628773363275">Peržiūros skirtuko turinio peržiūrėti negalima.</translation>
 <translation id="8820817407110198400">Žymės</translation>
 <translation id="883806473910249246">Atsisiunčiant turinį įvyko klaida.</translation>
@@ -1220,10 +1220,10 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="9063523880881406963">Išjungti stalinio kompiuterio svetainės užklausą</translation>
 <translation id="9065203028668620118">Redaguoti</translation>
 <translation id="9065383040763568503">Išsaugoti duomenys, kurių „Chrome“ nelaiko svarbiais (pvz., svetainės be išsaugotų nustatymų arba tos, kuriose retai lankotės)</translation>
-<translation id="9069543557624799859">Atsisiuntimas bus pradedamas <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Nėra jokių neskaitytų puslapių</translation>
 <translation id="9070377983101773829">Pradėti paiešką balsu</translation>
 <translation id="9074336505530349563">Jei norite gauti „Google“ siūlomo suasmeninto turinio, prisijunkite ir įjunkite sinchronizavimą</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Sinchronizuojama</translation>
 <translation id="9086455579313502267">Nepavyko pasiekti tinklo</translation>
 <translation id="9100505651305367705">Siūlyti rodyti straipsnius supaprastintame rodinyje, kai palaikoma</translation>

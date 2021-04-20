@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Şifreyi Göster</translation>
 <translation id="1872096359983322073">Flaş</translation>
 <translation id="1911619930368729126">Google Drive'a yükle</translation>
-<translation id="1919130412786645364">Chrome'da oturum açmaya izin verin</translation>
 <translation id="1923342640370224680">Son Bir Saat</translation>
 <translation id="1941314575388338491">Kopyalamak için iki kez dokunun.</translation>
 <translation id="1952172573699511566">Web siteleri, mümkün olduğunda metni tercih ettiğiniz dilde gösterir.</translation>
@@ -216,7 +215,6 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 
 Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde tarama etkinliğinizi görmek için çerez kullanamaz.</translation>
 <translation id="3207960819495026254">Yer işareti koyuldu</translation>
-<translation id="3222343486469566063">Oturum Açılmadı</translation>
 <translation id="3224641773458703735">Şifreleri dışa aktarmak için öncelikle cihazınızda bir şifre kodu ayarlamanız gerekir.</translation>
 <translation id="3240426699337459095">Bağlantı kopyalandı</translation>
 <translation id="3244271242291266297">AA</translation>
@@ -286,8 +284,6 @@ Aşağıdaki adımları uygulayın:</translation>
 <translation id="3928666092801078803">Verilerimi birleştir</translation>
 <translation id="3929457972718048006">Adresler</translation>
 <translation id="3943492037546055397">Şifreler</translation>
-<translation id="3943557322767080599">Google Hesabınızda oturum açtığınızda Chrome oturum açma istemleri gösterilsin</translation>
-<translation id="3967266340354872733">Gizlilik, güvenlik ve veri toplamayla ilgili daha fazla ayar için <ph name="BEGIN_LINK" />Senkronizasyon<ph name="END_LINK" /> ve <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" /> konularına bakın.</translation>
 <translation id="3967822245660637423">İndirme tamamlandı</translation>
 <translation id="3968505803272650567">İlgi Alanlarını Yönet</translation>
 <translation id="3989635538409502728">Çıkış</translation>
@@ -568,7 +564,6 @@ Her site için benzersiz bir şifre kullanmaya çalışın.</translation>
 <translation id="6760509555861141183">Son Sekmeye Dön</translation>
 <translation id="6780034285637185932">Posta Kodu</translation>
 <translation id="6785453220513215166">Kilitlenme raporu gönderiliyor...</translation>
-<translation id="679325081238418596">Yer işaretlerinizi, geçmişinizi, şifrelerinizi ve diğer ayarlarınızı tüm cihazlarınızda kullanın.</translation>
 <translation id="6797885426782475225">Sesli Arama</translation>
 <translation id="6807889908376551050">Tümünü Göster...</translation>
 <translation id="681368974849482173">Öğe oluşturuldu</translation>
@@ -580,7 +575,6 @@ Her site için benzersiz bir şifre kullanmaya çalışın.</translation>
 <translation id="6873263987691478642">Bölünmüş Görünüm</translation>
 <translation id="6888009575607455378">Değişikliklerinizi iptal etmek istediğinizden emin misiniz?</translation>
 <translation id="6896758677409633944">Kopyala</translation>
-<translation id="6903907808598579934">Senkronizasyonu aç</translation>
 <translation id="6914583639806229067">Kopyalanan Metni Ara</translation>
 <translation id="6914783257214138813">Şifreleriniz, dışa aktarılan dosyayı görebilen herkes tarafından görülebilir.</translation>
 <translation id="6930799952781667037">Bu dile değiştirmek için dokunun.</translation>
@@ -711,6 +705,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8225985093977202398">Önbelleğe Alınan Resimler ve Dosyalar</translation>
 <translation id="8261506727792406068">Sil</translation>
 <translation id="8281781826761538115">Varsayılan - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Atla</translation>
 <translation id="8283172974887967105">Ayarla…</translation>
 <translation id="8299417921174340354">Şifreleri kullanmak için öncelikle cihazınızda bir şifre kodu ayarlamanız gerekir.</translation>
 <translation id="8319076807703933069">Yeni Arama</translation>

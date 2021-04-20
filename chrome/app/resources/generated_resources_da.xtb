@@ -328,7 +328,6 @@
 <translation id="1354045473509304750">Tillad fortsat, at <ph name="HOST" /> kan bruge og flytte dit kamera</translation>
 <translation id="1355088139103479645">Vil du slette alle data?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> er blokeret</translation>
-<translation id="1358612436266364864">Fjern markering</translation>
 <translation id="1358741672408003399">Stavning og grammatik</translation>
 <translation id="1359923111303110318">Din enhed kan låses op ved hjælp af Smart Lock. Tryk på Enter for at låse op.</translation>
 <translation id="1361164813881551742">Tilføj manuelt</translation>
@@ -884,6 +883,7 @@
 <translation id="1928202201223835302">Angiv den gamle pinkode</translation>
 <translation id="1928696683969751773">Opdateringer</translation>
 <translation id="1929186283613845153">Denne fil scannes.</translation>
+<translation id="1929343511231420085">Alle serieporte</translation>
 <translation id="1929546189971853037">Læse din browserhistorik på alle enheder, hvor du er logget ind</translation>
 <translation id="1930879306590754738">Adgangskoden blev slettet fra denne enhed og din Google-konto</translation>
 <translation id="1931152874660185993">Der er ikke installeret nogen komponenter.</translation>
@@ -1609,7 +1609,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="2734760316755174687">Websites i <ph name="SITE_GROUP_NAME" /> bliver også nulstillet.</translation>
 <translation id="2735712963799620190">Tidsplan</translation>
 <translation id="2737363922397526254">Skjul...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> vil gerne dele indholdet på din skærm med <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Tillad ikke, at websites bruger de skrifttyper, der er installeret på din enhed</translation>
 <translation id="2738771556149464852">Ikke efter</translation>
 <translation id="2739191690716947896">Fejlretning</translation>
@@ -1897,7 +1896,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3031417829280473749">Scully</translation>
 <translation id="3031557471081358569">Vælg at importere følgende:</translation>
 <translation id="3036327949511794916">Fristen for at returnere denne <ph name="DEVICE_TYPE" /> er overskredet.</translation>
-<translation id="3036438888981457032">Fjern markering</translation>
 <translation id="3036546437875325427">Aktivér Flash</translation>
 <translation id="3037754279345160234">Konfigurationen for domænetilmelding kunne ikke parses. Kontakt din administrator.</translation>
 <translation id="3038612606416062604">Tilføj en printer manuelt</translation>
@@ -2944,6 +2942,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4218274196133425560">Fjern undtagelsen for <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Der opstod en fejl under aktiveringen.</translation>
 <translation id="4222772810963087151">Oplysninger om build</translation>
+<translation id="4224284700924043865">USB-enheder med produkt-id <ph name="PRODUCT_ID" /> fra leverandøren <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">På alle websites</translation>
 <translation id="4231095370974836764">Installer apps og spil fra Google Play på din <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Konfigurer Kerberos</translation>
@@ -3016,6 +3015,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="431076611119798497">&amp;Detaljer</translation>
 <translation id="4312866146174492540">Bloker (standardindstilling)</translation>
 <translation id="4314815835985389558">Administrer synkronisering</translation>
+<translation id="4316650123995163262">USB-enheder med produkt-id <ph name="PRODUCT_ID" /> fra <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Udviklers website</translation>
 <translation id="4317820549299924617">Bekræftelsen blev ikke gennemført</translation>
 <translation id="4320177379694898372">Ingen internetforbindelse</translation>
@@ -3458,6 +3458,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4824958205181053313">Vil du annullere synkroniseringen?</translation>
 <translation id="4827675678516992122">Der kunne ikke oprettes forbindelse</translation>
 <translation id="4827784381479890589">Forbedret stavekontrol i Chrome-browseren (teksten sendes til Google for at generere staveforslag)</translation>
+<translation id="482952334869563894">USB-enheder fra leverandøren <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Konfiguration af pinkode</translation>
 <translation id="4830121310592638841">Spørg, når et website gerne vil åbne og placere vinduer på dine skærme</translation>
 <translation id="4830502475412647084">Installerer OS-opdateringen</translation>
@@ -3747,6 +3748,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5159419673777902220">Din forælder har deaktiveret tilladelserne for udvidelser</translation>
 <translation id="5160634252433617617">Fysisk tastatur</translation>
 <translation id="5160857336552977725">Log ind på din <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">USB-enheder fra <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> er blevet blokeret</translation>
 <translation id="5163910114647549394">Fanen blev flyttet til slutningen af fanelinjen</translation>
 <translation id="5165085578392358314">Tildel kontakten: <ph name="ACTION" /></translation>
@@ -4660,7 +4662,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6212039847102026977">Vis avancerede netværksegenskaber</translation>
 <translation id="6212168817037875041">Sluk skærmen</translation>
 <translation id="6212752530110374741">Send link via mail</translation>
-<translation id="6213230117190778270">Modtag</translation>
 <translation id="621470880408090483">Tillad ikke, at websites opretter forbindelse til Bluetooth-enheder</translation>
 <translation id="6215620815501168899">Luk pop op-vinduet med EID-nummer og QR-kode</translation>
 <translation id="6216601812881225442">Din container understøtter ikke størrelsesjusteringer. Du kan justere den mængde plads, der er forudallokeret til Linux, ved at sikkerhedskopiere og derefter gendanne i en ny container.</translation>
@@ -5374,6 +5375,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Aktivitetshistorik</translation>
 <translation id="6997707937646349884">På dine enheder:</translation>
 <translation id="6998793565256476099">Meld enheden til videomøde</translation>
+<translation id="6999640176621571692">Vil du tillade, at Google finder rabatter på de varer, du lægger i indkøbskurven?</translation>
 <translation id="6999956497249459195">Ny gruppe</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> har forbindelse, men skal konfigureres</translation>
 <translation id="7000347579424117903">Skal indeholde Ctrl, Alt eller søgetasten</translation>
@@ -5454,7 +5456,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7076293881109082629">Login</translation>
 <translation id="7077829361966535409">Loginsiden kunne ikke indlæses med de aktuelle proxyindstillinger. <ph name="GAIA_RELOAD_LINK_START" />Prøv at logge ind igen<ph name="GAIA_RELOAD_LINK_END" />, eller brug nogle andre <ph name="PROXY_SETTINGS_LINK_START" />proxyindstillinger<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Alle netværk</translation>
-<translation id="7078386829626602215">Der er ikke registreret en enhed <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">K&amp;opiér webadressen til lyden</translation>
 <translation id="7081952801286122383">Inkognitotilstand er aktiveret</translation>
 <translation id="708278670402572152">Afbryd forbindelsen for at aktivere scanning</translation>
@@ -5503,11 +5504,9 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7135729336746831607">Vil du aktivere Bluetooth?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> kræver, at du opdaterer din <ph name="DEVICE_TYPE" /> med det samme.</translation>
 <translation id="7136694880210472378">Gør til standard</translation>
-<translation id="7136984461011502314">Velkommen til <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Der opstod en fejl. Prøv igen ved at vælge andre billeder.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> bruger din mikrofon</translation>
 <translation id="7141105143012495934">Login mislykkedes, da dine kontooplysninger ikke kunne hentes. Kontakt din administrator, eller prøv igen.</translation>
-<translation id="7143358760238281735">Der er ingen tilgængelige apps</translation>
 <translation id="7144878232160441200">Prøv igen</translation>
 <translation id="7149893636342594995">De seneste 24 timer</translation>
 <translation id="7152478047064750137">Denne udvidelse kræver ikke nogen særlige tilladelser</translation>
@@ -6460,7 +6459,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Forbinder til <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Administrere dine apps, udvidelser og temaer</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> vil gerne dele indholdet på din skærm.</translation>
 <translation id="8195027750202970175">Filstørrelse</translation>
 <translation id="8198323535106903877">Vi installerer disse <ph name="NUMBER_OF_APPS" /> apps til dig</translation>
 <translation id="8199300056570174101">Egenskaber for netværkstjeneste og enhed</translation>
@@ -6884,6 +6882,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="8698269656364382265">Stryg fra venstre side for at vende tilbage til den forrige skærm.</translation>
 <translation id="869884720829132584">Programmenu</translation>
 <translation id="869891660844655955">Udløbsdato</translation>
+<translation id="8699120352855309748">Tilbyd ikke at oversætte disse sprog</translation>
 <translation id="8702825062053163569">Din <ph name="DEVICE_TYPE" /> er blevet låst.</translation>
 <translation id="8703346390800944767">Spring annonce over</translation>
 <translation id="8705331520020532516">Serienummer</translation>

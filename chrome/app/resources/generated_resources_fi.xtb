@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">Hyväksy edelleen, että <ph name="HOST" /> voi käyttää ja liikuttaa kameraasi</translation>
 <translation id="1355088139103479645">Poistetaanko kaikki data?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> on estetty</translation>
-<translation id="1358612436266364864">Poista kohokohdat</translation>
 <translation id="1358741672408003399">Oikeinkirjoitus ja kielioppi</translation>
 <translation id="1359923111303110318">Voit avata laitteen Smart Lockilla. Avaa painamalla Enter.</translation>
 <translation id="1361164813881551742">Lisää manuaalisesti</translation>
@@ -883,6 +882,7 @@
 <translation id="1928202201223835302">Anna vanha PIN-koodi</translation>
 <translation id="1928696683969751773">Päivitykset</translation>
 <translation id="1929186283613845153">Tätä tiedostoa tarkistetaan.</translation>
+<translation id="1929343511231420085">Mikä tahansa sarjaportti</translation>
 <translation id="1929546189971853037">Lukea selaushistoriaasi kaikilla kirjautuneilla laitteilla</translation>
 <translation id="1930879306590754738">Salasana poistettu tältä laitteelta ja Google-tililtäsi</translation>
 <translation id="1931152874660185993">Ei asennettuja osia.</translation>
@@ -1608,7 +1608,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" />:n alaiset sivustot nollataan myös.</translation>
 <translation id="2735712963799620190">Aikataulu</translation>
 <translation id="2737363922397526254">Tiivistä...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> haluaa jakaa näyttösi sisällön tälle: <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Älä salli sivustojen käyttää laitteellesi asennettuja fontteja</translation>
 <translation id="2738771556149464852">Ei tämän jälkeen</translation>
 <translation id="2739191690716947896">Vianetsintä</translation>
@@ -1896,7 +1895,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3031417829280473749">Agentti X</translation>
 <translation id="3031557471081358569">Valitse tuotavat kohteet:</translation>
 <translation id="3036327949511794916">Laitteen (<ph name="DEVICE_TYPE" />) palauttamisen määräaika on mennyt umpeen.</translation>
-<translation id="3036438888981457032">Poista kohokohdat</translation>
 <translation id="3036546437875325427">Ota Flash käyttöön</translation>
 <translation id="3037754279345160234">Verkkotunnuksen liittymiskonfiguraatiota ei voi jäsentää. Ota yhteyttä järjestelmänvalvojaan.</translation>
 <translation id="3038612606416062604">Lisää tulostin manuaalisesti</translation>
@@ -2940,6 +2938,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4218274196133425560">Poista poikkeus (<ph name="HOST_NAME" />)</translation>
 <translation id="4220648711404560261">Aktivoinnin aikana tapahtui virhe.</translation>
 <translation id="4222772810963087151">Koontiversion tiedot</translation>
+<translation id="4224284700924043865">USB-laitteet, joiden tuotetunnus on <ph name="PRODUCT_ID" /> (myyjä: <ph name="VENDOR_ID" />)</translation>
 <translation id="4225397296022057997">Kaikilla sivustoilla</translation>
 <translation id="4231095370974836764">Asenna sovelluksia ja pelejä Google Playsta (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Määritä Kerberos</translation>
@@ -3012,6 +3011,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="431076611119798497">&amp;Tiedot</translation>
 <translation id="4312866146174492540">Estä (oletus)</translation>
 <translation id="4314815835985389558">Synkronointiasetusten muokkaus</translation>
+<translation id="4316650123995163262">USB-laitteet, joiden tuotetunnus on <ph name="PRODUCT_ID" /> (<ph name="VENDOR_NAME" />)</translation>
 <translation id="4316850752623536204">Kehittäjän verkkosivusto</translation>
 <translation id="4317820549299924617">Vahvistus ei onnistunut</translation>
 <translation id="4320177379694898372">Ei internetyhteyttä</translation>
@@ -3454,6 +3454,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4824958205181053313">Perutaanko synkronointi?</translation>
 <translation id="4827675678516992122">Ei yhteyttä</translation>
 <translation id="4827784381479890589">Parannettu oikeinkirjoituksen tarkistus Chrome-selaimessa (teksti lähetetään Googlelle ehdotusten saamiseksi)</translation>
+<translation id="482952334869563894">USB-laitteet (myyjä: <ph name="VENDOR_ID" />)</translation>
 <translation id="4829768588131278040">Määritä PIN-koodi</translation>
 <translation id="4830121310592638841">Kysy, kun sivusto haluaa avata ikkunoita ja sijoittaa niitä näytöillesi</translation>
 <translation id="4830502475412647084">Asennetaan käyttöjärjestelmäpäivitystä</translation>
@@ -3743,6 +3744,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5159419673777902220">Vanhempasi on estänyt laajennukset</translation>
 <translation id="5160634252433617617">Fyysinen näppäimistö</translation>
 <translation id="5160857336552977725">Kirjaudu sisään <ph name="DEVICE_TYPE" />-laitteeseesi.</translation>
+<translation id="5161251470972801814">USB-laitteet: <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> on estetty</translation>
 <translation id="5163910114647549394">Välilehti siirretty rivin loppuun</translation>
 <translation id="5165085578392358314">Määritä kytkin: <ph name="ACTION" /></translation>
@@ -4656,7 +4658,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6212039847102026977">Näytä verkkoyhteyksien lisäasetukset</translation>
 <translation id="6212168817037875041">Sulje näyttö</translation>
 <translation id="6212752530110374741">Lähetä linkki sähköpostitse</translation>
-<translation id="6213230117190778270">Vastaanota</translation>
 <translation id="621470880408090483">Älä salli sivustojen yhdistää Bluetooth-laitteisiin</translation>
 <translation id="6215620815501168899">Sulje ponnahdusikkuna, jossa on laitteen EID ja QR-koodi</translation>
 <translation id="6216601812881225442">Säilö ei tue koon muuttamista. Jos haluat muuttaa sen tilan määrää, joka on varattu ennakkoon Linuxille, luo varmuuskopio ja palauta se sitten uuteen säilöön.</translation>
@@ -5370,6 +5371,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – toimintaloki</translation>
 <translation id="6997707937646349884">Laitteillasi:</translation>
 <translation id="6998793565256476099">Ota videokonferenssit käyttöön laitteessa</translation>
+<translation id="6999640176621571692">Saako Google etsiä alennuksia ostoskoriin lisäämistäsi tuotteista?</translation>
 <translation id="6999956497249459195">Uusi ryhmä</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> on yhdistetty mutta määritettävä</translation>
 <translation id="7000347579424117903">Lisää alkuun Ctrl, Alt tai hakupainike</translation>
@@ -5450,7 +5452,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7076293881109082629">Kirjautuminen</translation>
 <translation id="7077829361966535409">Kirjautumissivun lataaminen epäonnistui nykyisillä välityspalvelimen asetuksilla. <ph name="GAIA_RELOAD_LINK_START" />Kirjaudu sisään uudelleen<ph name="GAIA_RELOAD_LINK_END" /> tai muokkaa <ph name="PROXY_SETTINGS_LINK_START" />välityspalvelimen asetuksia<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Kaikki verkot</translation>
-<translation id="7078386829626602215">Ei havaittuja laitteita. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">K&amp;opioi äänen osoite</translation>
 <translation id="7081952801286122383">Olet incognito-tilassa</translation>
 <translation id="708278670402572152">Katkaise yhteys, jotta skannaus voidaan ottaa käyttöön.</translation>
@@ -5499,11 +5500,9 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7135729336746831607">Otetaanko Bluetooth käyttöön?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> edellyttää, että <ph name="DEVICE_TYPE" /> päivitetään välittömästi.</translation>
 <translation id="7136694880210472378">Aseta oletukseksi</translation>
-<translation id="7136984461011502314"><ph name="PRODUCT_NAME" /> – Tervetuloa</translation>
 <translation id="7136993520339022828">Tapahtui virhe. Valitse muita kuvia ja yritä uudelleen.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> käyttää mikrofonia</translation>
 <translation id="7141105143012495934">Sisäänkirjautuminen epäonnistui, koska tilitietojasi ei löytynyt. Ota yhteyttä järjestelmänvalvojaan tai yritä uudelleen.</translation>
-<translation id="7143358760238281735">Ei sovelluksia</translation>
 <translation id="7144878232160441200">Yritä uudelleen</translation>
 <translation id="7149893636342594995">Viimeiset 24 tuntia</translation>
 <translation id="7152478047064750137">Tämä laajennus ei vaadi erityisiä käyttöoikeuksia.</translation>
@@ -6456,7 +6455,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Muodostetaan yhteyttä sivustoon <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Hallita sovelluksia, laajennuksia ja teemoja</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> haluaa jakaa näyttösi sisällön.</translation>
 <translation id="8195027750202970175">Tiedoston koko</translation>
 <translation id="8198323535106903877">Asennamme nämä <ph name="NUMBER_OF_APPS" /> sovellusta puolestasi</translation>
 <translation id="8199300056570174101">Verkon ja laitteen ominaisuudet</translation>
@@ -6880,6 +6878,7 @@ Paina määritettyä kytkintä, niin poistat sen määrityksen.</translation>
 <translation id="8698269656364382265">Voit palata edelliselle näytölle pyyhkäisemällä vasemmasta reunasta.</translation>
 <translation id="869884720829132584">Sovellusvalikko</translation>
 <translation id="869891660844655955">Vanhenemispäivämäärä</translation>
+<translation id="8699120352855309748">Älä ehdota näiden kielten kääntämistä</translation>
 <translation id="8702825062053163569">Laitteesi (<ph name="DEVICE_TYPE" />) on lukittu.</translation>
 <translation id="8703346390800944767">Ohita mainos</translation>
 <translation id="8705331520020532516">Sarjanumero</translation>

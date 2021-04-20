@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">Blijven toestaan dat <ph name="HOST" /> de camera gebruikt en beweegt</translation>
 <translation id="1355088139103479645">Alle gegevens verwijderen?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> wordt geblokkeerd</translation>
-<translation id="1358612436266364864">Markeringen verwijderen</translation>
 <translation id="1358741672408003399">Spelling en grammatica</translation>
 <translation id="1359923111303110318">Je apparaat kan worden ontgrendeld met Smart Lock. Druk op Enter om te ontgrendelen.</translation>
 <translation id="1361164813881551742">Handmatig toevoegen</translation>
@@ -1608,7 +1607,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2734760316755174687">Sites onder <ph name="SITE_GROUP_NAME" /> worden ook gereset.</translation>
 <translation id="2735712963799620190">Schema</translation>
 <translation id="2737363922397526254">Samenvouwen...</translation>
-<translation id="2737916598897808047"><ph name="APP_NAME" /> wil de content van je scherm delen met <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Niet toestaan dat sites lettertypen gebruiken die zijn geïnstalleerd op je apparaat</translation>
 <translation id="2738771556149464852">Niet na</translation>
 <translation id="2739191690716947896">Foutopsporing</translation>
@@ -1896,7 +1894,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031557471081358569">Selecteer items die je wilt importeren:</translation>
 <translation id="3036327949511794916">De deadline voor het terugsturen van deze <ph name="DEVICE_TYPE" /> is verstreken.</translation>
-<translation id="3036438888981457032">Markeringen verwijderen</translation>
 <translation id="3036546437875325427">Flitser aanzetten</translation>
 <translation id="3037754279345160234">Kan de configuratie voor domeinkoppeling niet parseren. Neem contact op met je beheerder.</translation>
 <translation id="3038612606416062604">Handmatig een printer toevoegen</translation>
@@ -4663,7 +4660,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6212039847102026977">Geavanceerde netwerkeigenschappen tonen</translation>
 <translation id="6212168817037875041">Scherm uitzetten</translation>
 <translation id="6212752530110374741">Link e-mailen</translation>
-<translation id="6213230117190778270">Ontvangen</translation>
 <translation id="621470880408090483">Niet toestaan dat sites verbinding maken met bluetooth-apparaten</translation>
 <translation id="6215620815501168899">Pop-up met EID en QR-code sluiten</translation>
 <translation id="6216601812881225442">Je container ondersteunt het aanpassen van de schijfgrootte niet. Als je de hoeveelheid ruimte wilt aanpassen die vooraf is toegewezen aan Linux, maak je een back-up en zet je deze terug in een nieuwe container.</translation>
@@ -5458,7 +5454,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7076293881109082629">Inloggen</translation>
 <translation id="7077829361966535409">De inlogpagina kan niet worden geladen met de huidige proxyinstellingen. <ph name="GAIA_RELOAD_LINK_START" />Probeer opnieuw in te loggen<ph name="GAIA_RELOAD_LINK_END" /> of gebruik andere <ph name="PROXY_SETTINGS_LINK_START" />proxyinstellingen<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Alle netwerken</translation>
-<translation id="7078386829626602215">Geen apparaat gedetecteerd <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="708060913198414444">Adres van audio k&amp;opiëren</translation>
 <translation id="7081952801286122383">Je bent incognito</translation>
 <translation id="708278670402572152">Verbreek de verbinding om te scannen</translation>
@@ -5507,11 +5502,9 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7135729336746831607">Bluetooth aanzetten?</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> vereist dat je je <ph name="DEVICE_TYPE" /> onmiddellijk updatet.</translation>
 <translation id="7136694880210472378">Instellen als standaard</translation>
-<translation id="7136984461011502314">Welkom bij <ph name="PRODUCT_NAME" /></translation>
 <translation id="7136993520339022828">Er is een fout opgetreden. Probeer het later opnieuw door andere afbeeldingen te kiezen.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> gebruikt je microfoon</translation>
 <translation id="7141105143012495934">Inloggen is mislukt omdat je accountgegevens niet kunnen worden opgevraagd. Neem contact op met je beheerder of probeer het opnieuw.</translation>
-<translation id="7143358760238281735">Geen apps</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
 <translation id="7149893636342594995">Afgelopen 24 uur</translation>
 <translation id="7152478047064750137">De extensie vereist geen speciale rechten</translation>
@@ -6464,7 +6457,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Verbinding maken met <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Je apps, extensies en thema's beheren</translation>
-<translation id="8192944472786724289"><ph name="APP_NAME" /> wil de content van je scherm delen.</translation>
 <translation id="8195027750202970175">Grootte op schijf</translation>
 <translation id="8198323535106903877">We installeren deze <ph name="NUMBER_OF_APPS" /> apps voor je</translation>
 <translation id="8199300056570174101">Eigenschappen van netwerk (service) en apparaat</translation>
@@ -6888,6 +6880,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="8698269656364382265">Swipe vanaf de linkerkant om terug te gaan naar het vorige scherm.</translation>
 <translation id="869884720829132584">Menu 'Applicaties'</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
+<translation id="8699120352855309748">Niet aanbieden om deze talen te vertalen</translation>
 <translation id="8702825062053163569">Je <ph name="DEVICE_TYPE" /> is vergrendeld.</translation>
 <translation id="8703346390800944767">Advertentie overslaan</translation>
 <translation id="8705331520020532516">Serienummer</translation>

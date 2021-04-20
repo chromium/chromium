@@ -221,6 +221,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7106741999175697885">Tegumihaldur - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Saadaval on uus Chrome'i värskendus, mis rakendatakse taaskäivitamisel.}=1{Saadaval on uus Chrome'i värskendus, mis rakendatakse taaskäivitamisel. Teie inkognito akent ei avata uuesti.}other{Saadaval on uus Chrome'i värskendus, mis rakendatakse taaskäivitamisel. Teie # inkognito akent ei avata uuesti.}}</translation>
 <translation id="7155997830309522122">Sellisel juhul muutke Chrome'is oma salvestatud parooli, et see ühtiks teie uue parooliga.</translation>
+<translation id="7161904924553537242">Tere tulemast Google Chrome'i</translation>
 <translation id="7242029209006116544">Logite sisse hallatud kontoga ja annate selle administraatorile üle oma Google Chrome'i profiili juhtimise. Teie Chrome'i andmed, näiteks rakendused, järjehoidjad, ajalugu, paroolid ja muud seaded seotakse jäädavalt kasutajaga <ph name="USER_NAME" />. Saate need andmed Google'i kontode juhtpaneeli kaudu kustutada, kuid te ei saa neid seostada teise kontoga. Võite olemasolevate Chrome'i andmete eraldi hoidmiseks luua aga uue profiili. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Seda keelt kasutatakse Google Chrome’i UI kuvamiseks</translation>
 <translation id="7296210096911315575">Tähtis kasutus- ja ohutusteave</translation>

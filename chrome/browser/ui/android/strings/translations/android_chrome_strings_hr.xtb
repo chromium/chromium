@@ -305,7 +305,6 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="3016635187733453316">Provjerite je li uređaj povezan s internetom</translation>
 <translation id="3029704984691124060">Zaporke se ne podudaraju</translation>
 <translation id="3031225630520268969">Korisničko sučelje pristanka za glasovno pretraživanje pomoću Asistenta</translation>
-<translation id="3034163383943672781">Preuzimanje će započeti <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Potražite pomoć<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Sljedeći put brže otvorite ovu web-lokaciju</translation>
 <translation id="305593374596241526">Lokacija je isključena. Uključite je u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>
@@ -525,7 +524,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4583164079174244168">{MINUTES,plural, =1{prije # minute}one{prije # minute}few{prije # minute}other{prije # minuta}}</translation>
 <translation id="4587589328781138893">Web-lokacije</translation>
 <translation id="4594952190837476234">Ova offline stranica nastala je <ph name="CREATION_TIME" /> i možda se razlikuje od online verzije.</translation>
-<translation id="4605958867780575332">Stavka je uklonjena: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Otvori <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Potvrđivanje identiteta</translation>
 <translation id="4634124774493850572">Upotrijebi zaporku</translation>
@@ -701,7 +699,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="572328651809341494">Nedavne kartice</translation>
 <translation id="5723735397759933332">Jednostavni način sad vam štedi više podataka optimiziranjem slika na HTTPS stranicama.</translation>
 <translation id="5726692708398506830">Povećavanje svega na stranici</translation>
-<translation id="5732819098735351888">Preuzimanje će se pokrenuti na Wi-Fiju.</translation>
 <translation id="5733983706093266635">Izrada QR koda nije uspjela. Broj znakova u URL-u veći je od <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="5748802427693696783">Prešli ste na standardne kartice</translation>
 <translation id="5749068826913805084">Chrome treba pristup pohrani radi preuzimanja datoteka.</translation>
@@ -778,9 +775,9 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="614940544461990577">Pokušajte sljedeće:</translation>
 <translation id="6154478581116148741">Uključite zaključavanje zaslona u postavkama da biste izvezli svoje zaporke s ovog uređaja</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> manji podatkovni promet</translation>
+<translation id="6159729262978459665">Briše povijest sa svih sinkroniziranih uređaja.</translation>
 <translation id="6186394685773237175">Nije pronađena nijedna ugrožena zaporka</translation>
 <translation id="6192907950379606605">Primajte opise slike</translation>
-<translation id="6206830853671714236">Odaberite vrijeme preuzimanja</translation>
 <translation id="6210748933810148297">Niste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Pregledavanje ove stranice</translation>
 <translation id="6218096829563201111">Pretraži slične proizvode <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -990,6 +987,7 @@ Podaci iz vaših anonimnih sesija izbrisat će se iz Chromea tek kad <ph name="B
 <translation id="7523960634226602883">Pretražujte kamerom pomoću Google objektiva</translation>
 <translation id="753225086557513863">Zakazano za kasnije</translation>
 <translation id="7559975015014302720">Jednostavni je način isključen</translation>
+<translation id="7560448309733608642">Briše povijest sa svih sinkroniziranih uređaja. Na vašem Google računu možda postoje drugi oblici povijesti pregledavanja na stranici <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Brisanje podataka o pregledavanju</translation>
 <translation id="756809126120519699">Chromeovi su podaci izbrisani</translation>
 <translation id="7577900504646297215">Upravljaj interesima</translation>
@@ -1176,12 +1174,14 @@ Podaci iz vaših anonimnih sesija izbrisat će se iz Chromea tek kad <ph name="B
 <translation id="8699120352855309748">Nemoj nuditi prevođenje ovih jezika</translation>
 <translation id="8712637175834984815">Shvaćam</translation>
 <translation id="8725066075913043281">Pokušajte ponovo</translation>
+<translation id="8730621377337864115">Gotovo</translation>
 <translation id="8748850008226585750">Sadržaj je skriven</translation>
 <translation id="8773160212632396039">Obrada zahtjeva</translation>
 <translation id="8788265440806329501">Zatvorena je povijest navigacije</translation>
 <translation id="8788968922598763114">Ponovno otvaranje posljednje zatvorene kartice</translation>
 <translation id="8798449543960971550">Pročitano</translation>
 <translation id="8812260976093120287">Na nekim web-lokacijama možete plaćati pomoću podržanih aplikacija za plaćanje na uređaju.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Sadržaj kartice pregleda nije vidljiv.</translation>
 <translation id="8820817407110198400">Knjižne oznake</translation>
 <translation id="883806473910249246">Prilikom preuzimanja sadržaja dogodila se pogreška.</translation>
@@ -1219,10 +1219,10 @@ Podaci iz vaših anonimnih sesija izbrisat će se iz Chromea tek kad <ph name="B
 <translation id="9063523880881406963">Isključivanje zahtjeva za prikaz klasične web-lokacije</translation>
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9065383040763568503">Pohranjeni podaci koje Chrome ne smatra važnim (primjerice web-lokacije za koje nema spremljenih postavki ili koje ne posjećujete često)</translation>
-<translation id="9069543557624799859">Preuzimanje će započeti u <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Nema nepročitanih stranica</translation>
 <translation id="9070377983101773829">Pokretanje glasovnog pretraživanja</translation>
 <translation id="9074336505530349563">Prijavite se i uključite sinkronizaciju ako želite da vam Google predlaže prilagođene sadržaje</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Sinkronizacija</translation>
 <translation id="9086455579313502267">Nije moguće pristupiti mreži</translation>
 <translation id="9100505651305367705">Mogućnost prikazivanja članaka u pojednostavljenom prikazu kada je to podržano</translation>

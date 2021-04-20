@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">पासवर्ड दाखवा</translation>
 <translation id="1872096359983322073">टॉर्च</translation>
 <translation id="1911619930368729126">Google ड्राइव्हवर अपलोड करा</translation>
-<translation id="1919130412786645364">Chrome मध्ये साइन इन करण्यासाठी अनुमती द्या</translation>
 <translation id="1923342640370224680">शेवटचा तास</translation>
 <translation id="1941314575388338491">कॉपी करण्‍यासाठी दोनदा टॅप करा.</translation>
 <translation id="1952172573699511566">वेबसाइट शक्य असताना तुमच्या प्राधान्य असलेल्‍या भाषेमध्ये मजकूर दाखवेल.</translation>
@@ -216,7 +215,6 @@
 
 गुप्त मोडमध्ये असताना, वेगवेगळ्या साइटवरील तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी पाहण्यासाठी साइट कुकी वापरू शकत नाहीत, उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्यासाठी.</translation>
 <translation id="3207960819495026254">बुकमार्क केलेली</translation>
-<translation id="3222343486469566063">साइन इन केलेले नाही</translation>
 <translation id="3224641773458703735">पासवर्ड एक्सपोर्ट करण्यासाठी, तुम्ही प्रथम तुमच्या डिव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
 <translation id="3240426699337459095">लिंक कॉपी केला</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -286,8 +284,6 @@
 <translation id="3928666092801078803">माझा डेटा एकत्र करा</translation>
 <translation id="3929457972718048006">पत्ते</translation>
 <translation id="3943492037546055397">पासवर्ड</translation>
-<translation id="3943557322767080599">तुम्ही तुमच्या Google खाते मध्ये साइन इन करता तेव्हा Chrome मध्ये साइन इन सूचना दाखवा</translation>
-<translation id="3967266340354872733">गोपनीयता, सुरक्षा आणि डेटा संग्रह यांच्याशी संबंधित आणखी सेटिंग्जसाठी, <ph name="BEGIN_LINK" />सिंक<ph name="END_LINK" /> व <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> पाहा</translation>
 <translation id="3967822245660637423">पूर्ण डाउनलोड करा</translation>
 <translation id="3968505803272650567">स्वारस्ये व्यवस्थापित करा</translation>
 <translation id="3989635538409502728">साइन आउट</translation>
@@ -570,7 +566,6 @@
 <translation id="6760509555861141183">अलीकडील टॅब वर जा</translation>
 <translation id="6780034285637185932">पिनकोड</translation>
 <translation id="6785453220513215166">क्रॅश अहवाल पाठवत आहे...</translation>
-<translation id="679325081238418596">आपल्या सर्व डिव्हाइसेसवर तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्ज मिळवा</translation>
 <translation id="6797885426782475225">व्हॉइस शोध</translation>
 <translation id="6807889908376551050">सर्व दर्शवा...</translation>
 <translation id="681368974849482173">तयार केलेला आयटम</translation>
@@ -582,7 +577,6 @@
 <translation id="6873263987691478642">विभाजित दृश्य</translation>
 <translation id="6888009575607455378">तुम्हाला तुमचे बदल नक्की काढून टाकायचे आहेत का?</translation>
 <translation id="6896758677409633944">कॉपी करा</translation>
-<translation id="6903907808598579934">सिंक सुरू करा</translation>
 <translation id="6914583639806229067">तुम्ही कॉपी केलेली इमेज शोधा</translation>
 <translation id="6914783257214138813">एक्सपोर्ट करण्यात आलेली फाइल दिसणार्‍या प्रत्येकाला, तुमचा पासवर्ड दिसेल.</translation>
 <translation id="6930799952781667037">ही भाषा बदलण्यासाठी टॅप करा.</translation>
@@ -713,6 +707,7 @@
 <translation id="8225985093977202398">कॅशे   इमेज आणि फाइल</translation>
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="8281781826761538115">डीफॉल्ट - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">वगळा</translation>
 <translation id="8283172974887967105">सेट करा…</translation>
 <translation id="8299417921174340354">पासवर्ड वापरण्यासाठी, तुम्ही आधी तुमच्या डिव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
 <translation id="8319076807703933069">नवीन शोध</translation>

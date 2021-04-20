@@ -97,7 +97,6 @@
 <translation id="1870148520156231997">Dedahkan Kata Laluan</translation>
 <translation id="1872096359983322073">Lampu suluh</translation>
 <translation id="1911619930368729126">Muat naik ke Google Drive</translation>
-<translation id="1919130412786645364">Benarkan log masuk Chrome</translation>
 <translation id="1923342640370224680">Jam Terakhir</translation>
 <translation id="1941314575388338491">Ketik dua kali untuk menyalin.</translation>
 <translation id="1952172573699511566">Tapak web akan menunjukkan teks dalam bahasa pilihan anda, jika boleh.</translation>
@@ -216,7 +215,6 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 
 Semasa dalam mod inkognito, tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas pada beberapa tapak yang berlainan, contohnya, untuk memperibadikan iklan.</translation>
 <translation id="3207960819495026254">Ditandai halaman</translation>
-<translation id="3222343486469566063">Tidak Dilog Masuk</translation>
 <translation id="3224641773458703735">Untuk mengeksport kata laluan, mula-mula anda mesti menetapkan kod laluan pada peranti anda.</translation>
 <translation id="3240426699337459095">Pautan disalin</translation>
 <translation id="3244271242291266297">BB</translation>
@@ -286,8 +284,6 @@ Ikut langkah di bawah:</translation>
 <translation id="3928666092801078803">Gabungkan data saya</translation>
 <translation id="3929457972718048006">Alamat</translation>
 <translation id="3943492037546055397">Kata laluan</translation>
-<translation id="3943557322767080599">Paparkan gesaan log masuk Chrome apabila anda log masuk ke Akaun Google anda</translation>
-<translation id="3967266340354872733">Untuk mendapatkan pelbagai lagi tetapan yang berkaitan dengan privasi, keselamatan dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Penyegerakan<ph name="END_LINK" /> dan <ph name="BEGIN_LINK" />Perkhidmatan Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Muat turun selesai</translation>
 <translation id="3968505803272650567">Urus Minat</translation>
 <translation id="3989635538409502728">Log Keluar</translation>
@@ -568,7 +564,6 @@ Cuba gunakan kata laluan yang unik untuk setiap laman.</translation>
 <translation id="6760509555861141183">Kembali ke Tab Baru-baru Ini</translation>
 <translation id="6780034285637185932">Poskod</translation>
 <translation id="6785453220513215166">Menghantar laporan ranap sistem…</translation>
-<translation id="679325081238418596">Dapatkan penanda halaman, sejarah, kata laluan dan tetapan anda yang lain pada semua peranti anda.</translation>
 <translation id="6797885426782475225">Carian Suara</translation>
 <translation id="6807889908376551050">Paparkan Semua...</translation>
 <translation id="681368974849482173">Item dibuat</translation>
@@ -580,7 +575,6 @@ Cuba gunakan kata laluan yang unik untuk setiap laman.</translation>
 <translation id="6873263987691478642">Paparan Pisah</translation>
 <translation id="6888009575607455378">Adakah anda pasti anda mahu membuang perubahan anda?</translation>
 <translation id="6896758677409633944">Salin</translation>
-<translation id="6903907808598579934">Hidupkan penyegerakan</translation>
 <translation id="6914583639806229067">Cari Imej yang Anda Salin</translation>
 <translation id="6914783257214138813">Kata laluan anda akan kelihatan kepada sesiapa yang dapat melihat fail yang dieksport.</translation>
 <translation id="6930799952781667037">Ketik untuk menukar kepada bahasa ini.</translation>
@@ -711,6 +705,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8225985093977202398">Imej dan Fail Dicache</translation>
 <translation id="8261506727792406068">Padam</translation>
 <translation id="8281781826761538115">Lalai - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281886186245836920">Langkau</translation>
 <translation id="8283172974887967105">Tetapkan…</translation>
 <translation id="8299417921174340354">Untuk menggunakan kata laluan, anda mesti menetapkan kod laluan pada peranti anda dahulu.</translation>
 <translation id="8319076807703933069">Carian Baharu</translation>

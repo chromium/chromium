@@ -180,6 +180,7 @@
 <translation id="2169830938017475061">Now</translation>
 <translation id="2172688499998841696">ଛବିର ବର୍ଣ୍ଣନା ବନ୍ଦ ଅଛି</translation>
 <translation id="2175927920773552910">QR କୋଡ୍</translation>
+<translation id="2181298861158186289">କ୍ଲିପବୋର୍ଡ ବିଷୟବସ୍ତୁଗୁଡ଼ିକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="218608176142494674">ସେୟାରିଂ</translation>
 <translation id="2195339740518523951">Chromeର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ପାଆନ୍ତୁ</translation>
 <translation id="2200113223741723867">ବ୍ୟବହାର ଡାଟାର ସେୟାରିଂ ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -304,7 +305,6 @@
 <translation id="3016635187733453316">ଏହି ଡିଭାଇସ୍‌ଟି ଇଣ୍ଟର୍ନେଟ୍ ସହ ସଂଯୁକ୍ତ ହୋଇଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="3029704984691124060">ପାସଫ୍ରେଜ୍ ମେଳ ଖାଉନାହିଁ</translation>
 <translation id="3031225630520268969">Assistantର ଭଏସ୍ ମାଧ୍ୟମରେ ସନ୍ଧାନ ପାଇଁ ସମ୍ମତିର ui</translation>
-<translation id="3034163383943672781"><ph name="DATE" />ରେ ଡାଉନଲୋଡ୍ ଆରମ୍ଭ ହେବ।</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />ସାହାଯ୍ୟ ପାଆନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">ପରବର୍ତ୍ତୀ ସମୟରେ ଏହି ସାଇଟକୁ ଶୀଘ୍ର ଯାଆନ୍ତୁ</translation>
 <translation id="305593374596241526">ଲୋକେସନ୍‍ ବନ୍ଦ ଅଛି; ଏହାକୁ <ph name="BEGIN_LINK" />Android ସେଟିଂସ୍‌<ph name="END_LINK" />ରେ ଚାଲୁ କରନ୍ତୁ।</translation>
@@ -525,7 +525,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# ମିନିଟ୍‌ ପୂର୍ବେ}other{#ମିନିଟ୍ ପୂର୍ବେ}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">ଏହି ପୃଷ୍ଠା <ph name="CREATION_TIME" />ର ଅଟେ ଏବଂ ଅନ୍‌ଲାଇନ୍ ସଂସ୍କରଣ ଠାରୁ ଅଲଗା ହୋଇପାରେ।</translation>
-<translation id="4605958867780575332">କଢ଼ାଯାଇଥିବା ଆଇଟମ୍: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ଖୋଲନ୍ତୁ</translation>
 <translation id="4619564267100705184">ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4634124774493850572">ପାସ୍‌ୱର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -701,7 +700,6 @@
 <translation id="572328651809341494">ନିକଟର ଟାବ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="5723735397759933332">Lite ମୋଡ୍ ଏବେ HTTPS ପୃଷ୍ଠାଗୁଡ଼ିକରେ ଛବିଗୁଡ଼ିକୁ ଅପ୍ଟିମାଇଜ୍ କରି, ଆପଣଙ୍କ ପାଇଁ ଅଧିକ ଡାଟା ସେଭ୍ କରୁଛି।</translation>
 <translation id="5726692708398506830">ପୃଷ୍ଠାରେ ସବୁକିଛି ବୃହତ୍ତର କରନ୍ତୁ</translation>
-<translation id="5732819098735351888">ୱାଇ-ଫାଇରେ ଡାଉନଲୋଡ୍ ଆରମ୍ଭ ହେବ।</translation>
 <translation id="5733983706093266635">QR କୋଡ୍ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। URLରେ <ph name="CHARACTER_LIMIT" />ରୁ ଅଧିକ ଅକ୍ଷର ଅଛି।</translation>
 <translation id="5748802427693696783">ସାଧାରଣ ଟାବ୍‌ଗୁଡ଼ିକୁ ସ୍ୱିଚ୍ କରାଗଲା</translation>
 <translation id="5749068826913805084">ଫାଇଲ୍‌ଗୁଡ଼ିକ ଡାଉନ୍‌ଲୋଡ୍ କରିବାକୁ Chrome ଷ୍ଟୋରେଜ୍ ଆକ୍ସେସ୍ ଆବଶ୍ୟକ କରେ।</translation>
@@ -778,9 +776,9 @@
 <translation id="614940544461990577">ଏହାକୁ ପରଖନ୍ତୁ:</translation>
 <translation id="6154478581116148741">ଏହି ଡିଭାଇସ୍‌ରୁ ଆପଣଙ୍କର ପାସ୍‌ୱର୍ଡ ଏକ୍ସପୋର୍ଟ କରିବାକୁ ସେଟିଂସ୍‌ରେ ସ୍କ୍ରିନ୍‌ ଲକ୍‌ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> ଡାଟା ସେଭ୍ ହେଉଛି</translation>
+<translation id="6159729262978459665">ସିଙ୍କ୍ କରାଯାଇଥିବା ସମସ୍ତ ଡିଭାଇସରୁ ଇତିହାସକୁ ଖାଲି କରେ।</translation>
 <translation id="6186394685773237175">କୌଣସି ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ ମିଳିଲା ନାହିଁ</translation>
 <translation id="6192907950379606605">ଛବିର ବର୍ଣ୍ଣନା ପାଆନ୍ତୁ</translation>
-<translation id="6206830853671714236">କେତେବେଳେ ଡାଉନଲୋଡ୍ କରିବେ ତାହା ବାଛନ୍ତୁ</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ନୁହେଁ?</translation>
 <translation id="6211386937064921208">ଏହି ପୃଷ୍ଠା ପ୍ରିଭ୍ୟୁ କରାଯାଉଛି</translation>
 <translation id="6218096829563201111">ସମାନ ଉତ୍ପାଦଗୁଡ଼ିକ ଖୋଜନ୍ତୁ <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /></translation>
@@ -844,6 +842,7 @@
 <translation id="6539092367496845964">କିଛି ଭୁଲ ହୋଇଗଲା। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 ଘଣ୍ଟା ପୂର୍ବେ ଯାଞ୍ଚ କରାଯାଇଛି}other{# ଘଣ୍ଟା ପୂର୍ବେ ଯାଞ୍ଚ କରାଯାଇଛି}}</translation>
 <translation id="6545017243486555795">ସମସ୍ତ ଡାଟା ଖାଲି କରନ୍ତୁ</translation>
+<translation id="6549142516027084053">କ୍ଲିପବୋର୍ଡ ବିଷୟବସ୍ତୁଗୁଡ଼ିକୁ ପ୍ରକାଶ କରନ୍ତୁ</translation>
 <translation id="6560414384669816528">Sogouରେ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="656065428026159829">ଅଧିକ ଦେଖନ୍ତୁ</translation>
 <translation id="6565959834589222080">ୱାଇ-ଫାଇ ଉପଲବ୍ଧ ହେଲେ ଏହାକୁ ବ୍ୟବହାର କରାଯାଏ</translation>
@@ -989,6 +988,7 @@
 <translation id="7523960634226602883">Google Lens ବ୍ୟବହାର କରି ଆପଣଙ୍କ କ୍ୟାମେରା ମାଧ୍ୟମରେ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="753225086557513863">ପରବର୍ତ୍ତୀ ସମୟ ପାଇଁ ସିଡୁଲ୍ କରାଯାଇଛି</translation>
 <translation id="7559975015014302720">ଲାଇଟ୍ ମୋଡ୍ ବନ୍ଦ ଅଛି</translation>
+<translation id="7560448309733608642">ସିଙ୍କ୍ କରାଯାଇଥିବା ସମସ୍ତ ଡିଭାଇସରୁ ଇତିହାସକୁ ଖାଲି କରେ। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ବ୍ରାଉଜିଂ ଇତିହାସର ଅନ୍ୟ ଫର୍ମଗୁଡ଼ିକ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ରେ ଥାଇପାରେ।</translation>
 <translation id="7562080006725997899">ବ୍ରାଇଜିଂ ଡାଟା ଖାଲି ହେଉଛି</translation>
 <translation id="756809126120519699">Chrome ଡାଟା ଖାଲି କରାଯାଇଛି</translation>
 <translation id="7577900504646297215">ରୁଚିଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -1175,12 +1175,14 @@
 <translation id="8699120352855309748">ଏହି ଭାଷାଗୁଡ଼ିକର ଅନୁବାଦ କରିବାକୁ ଅଫର୍ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="8712637175834984815">ବୁଝିଗଲି</translation>
 <translation id="8725066075913043281">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
+<translation id="8730621377337864115">ସମାପ୍ତ ହୋଇଛି</translation>
 <translation id="8748850008226585750">ଲୁଚାଯାଇଥିବା ବିଷୟବସ୍ତୁ</translation>
 <translation id="8773160212632396039">ପ୍ରକ୍ରିୟାକରଣ ପାଇଁ ଅନୁରୋଧ</translation>
 <translation id="8788265440806329501">ନାଭିଗେସନ୍ ଇତିହାସ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="8788968922598763114">ଶେଷରେ ବନ୍ଦ କରାଯାଇଥିବା ଟାବ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="8798449543960971550">ପଢ଼ନ୍ତୁ</translation>
 <translation id="8812260976093120287">ଆପଣଙ୍କ ଡିଭାଇସ୍‌ରେ ଥିବା ଉପରୋକ୍ତ ସମର୍ଥିତ ପେମେଣ୍ଟ୍ ଆପ୍ସ ସାହାଯ୍ୟରେ ଆପଣ କେତେକ ୱେବସାଇଟ୍‌ରେ ପେମେଣ୍ଟ କରିପାରିବେ।</translation>
+<translation id="8814190375133053267">ୱାଇ-ଫାଇ</translation>
 <translation id="881688628773363275">ପ୍ରିଭ୍ୟୁ ଟାବର ବିଷୟବସ୍ତୁକୁ ଦେଖି ହେବ ନାହିଁ।</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="883806473910249246">ବିଷୟବସ୍ତୁ ଡାଉନ୍‌ଲୋଡ୍ କରିବା ସମୟରେ ଏକ ତ୍ରୁଟି ଦେଖାଗଲା।</translation>
@@ -1218,10 +1220,10 @@
 <translation id="9063523880881406963">ଡେସ୍କଟପ୍ ସାଇଟ୍ ଅନୁରୋଧକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="9065203028668620118">ସମ୍ପାଦନ</translation>
 <translation id="9065383040763568503">Chrome ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ବୋଲି ମନେ କରୁନଥିବା ଷ୍ଟୋର୍ କରାଯାଇଥିବା ଡାଟା (ଉ.ଦା. ସେଭ୍ କରାଯାଇଥିବା କୌଣସି ସେଟିଂସ୍ ନଥିବା କିମ୍ବା ଆପଣ ପ୍ରାୟତଃ ଭିଜିଟ୍ କରୁନଥିବା ସାଇଟଗୁଡ଼ିକ)</translation>
-<translation id="9069543557624799859"><ph name="TIME" />ରେ ଡାଉନଲୋଡ୍ ଆରମ୍ଭ ହେବ।</translation>
 <translation id="9069999660519089861">ପଢ଼ାଯାଇନଥିବା କୌଣସି ପୃଷ୍ଠା ନାହିଁ</translation>
 <translation id="9070377983101773829">ଭଏସ୍ ସନ୍ଧାନ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="9074336505530349563">Google ଦ୍ୱାରା ପରାମର୍ଶ ଦିଆଯାଇଥିବା ବିଷୟବସ୍ତୁ ପ୍ରାପ୍ତ କରିବାକୁ ସାଇନ୍‍ ଇନ୍‌ କରନ୍ତୁ ଏବଂ ସିଙ୍କ୍‍ ଚାଲୁ କରନ୍ତୁ</translation>
+<translation id="9074739597929991885">ବ୍ଲୁଟୁଥ୍</translation>
 <translation id="9086302186042011942">ସିଙ୍କ୍ ହେଉଛି</translation>
 <translation id="9086455579313502267">ନେଟ୍‌ୱାର୍କ ଆକ୍ସେସ୍ କରିବାରେ ଅକ୍ଷମ</translation>
 <translation id="9100505651305367705">ସମର୍ଥିତ ହେଲେ, ପ୍ରବନ୍ଧଗୁଡ଼ିକର ସରଳିକୃତ ଦୃଶ୍ୟ ଦେଖାଇବାକୁ ଅଫର୍ କରେ</translation>

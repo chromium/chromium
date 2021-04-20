@@ -305,7 +305,6 @@
 <translation id="3016635187733453316">ဤစက်သည် အင်တာနက်ချိတ်ထားမှု ရှိမရှိ စစ်ဆေးပါ</translation>
 <translation id="3029704984691124060">စကားစုဝှက်များ မတိုက်ဆိုင်ပါ</translation>
 <translation id="3031225630520268969">Assistant အသံဖြင့်ရှာဖွေခြင်း သဘောတူညီချက် ui</translation>
-<translation id="3034163383943672781"><ph name="DATE" /> တွင် ဒေါင်းလုဒ် စတင်ပါမည်။</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />အကူအညီရယူရန်<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">နောက်တစ်ကြိမ်တွင် ဤဝဘ်ဆိုက်သို့ ပိုမြန်မြန်သွားနိုင်သည်</translation>
 <translation id="305593374596241526">တည်နေရာကို ပိတ်ထားသည်၊ ၎င်းကို <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် ဖွင့်ပါ။</translation>
@@ -526,7 +525,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{လွန်ခဲ့သည့် # မိနစ်က}other{ လွန်ခဲ့သည့် # မိနစ်က}}</translation>
 <translation id="4587589328781138893">ဝဘ်ဆိုက်များ</translation>
 <translation id="4594952190837476234">ဤအော့ဖ်လိုင်း စာမျက်နှာသည် <ph name="CREATION_TIME" /> က ဖြစ်ပြီး အွန်လိုင်းဗားရှင်းနှင့် ကွဲပြားနိုင်ပါသည်။</translation>
-<translation id="4605958867780575332">ဖယ်ရှားလိုက်သည့် အကြောင်းအရာ − <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ကို ဖွင့်ပါ</translation>
 <translation id="4619564267100705184">သင်ဖြစ်ကြောင်း အတည်ပြုရန်</translation>
 <translation id="4634124774493850572">စကားဝှက်ကို အသုံးပြုရန်</translation>
@@ -702,7 +700,6 @@
 <translation id="572328651809341494">မကြာမီက တဲဘ်များ</translation>
 <translation id="5723735397759933332">'အပေါ့စားမုဒ်' က ယခုအခါ HTTPS စာမျက်နှာများပေါ်တွင် ပုံများကို အကောင်းဆုံးပြုပြင်ခြင်းဖြင့် သင့်အတွက် ဒေတာပိုမိုချွေတာပေးနိုင်ပါပြီ။</translation>
 <translation id="5726692708398506830">စာမျက်နှာပေါ်ရှိ အရာအားလုံးကို ပိုကြီးအောင်လုပ်ရန်</translation>
-<translation id="5732819098735351888">Wi-Fi ပေါ်တွင် ဒေါင်းလုဒ် စတင်ပါမည်။</translation>
 <translation id="5733983706093266635">QR ကုဒ် ဖန်တီး၍မရပါ။ URL သည် အက္ခရာ <ph name="CHARACTER_LIMIT" /> လုံးထက်များသည်။</translation>
 <translation id="5748802427693696783">ပုံမှန်တဘ်များအဖြစ်သို့ ပြောင်းလိုက်ပါပြီ</translation>
 <translation id="5749068826913805084">Chrome သည် ဖိုင်များကို ဒေါင်းလုဒ် လုပ်ရန် သိုလှောင်ခန်းကို သုံးရန် လိုအပ်သည်။</translation>
@@ -782,7 +779,6 @@
 <translation id="6159729262978459665">စင့်ခ်လုပ်ထားသော စက်အားလုံးမှ မှတ်တမ်းကို ရှင်းထုတ်သည်။</translation>
 <translation id="6186394685773237175">ကျိုးပေါက်ထားသည့် စကားဝှက် မရှိပါ</translation>
 <translation id="6192907950379606605">ပုံရှင်းလင်းချက်များ ရယူရန်</translation>
-<translation id="6206830853671714236">ဒေါင်းလုဒ်လုပ်ရမည့်အချိန်ကို ရွေးခြင်း</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> မဟုတ်ဘူးလား။</translation>
 <translation id="6211386937064921208">ဤစာမျက်နှာကို အစမ်းကြည့်ရှုနေသည်</translation>
 <translation id="6218096829563201111">အလားတူထုတ်ကုန်များ ရှာရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
@@ -1178,12 +1174,14 @@
 <translation id="8699120352855309748">ဤဘာသာစကားများကို ပြန်ဆိုရန် မကမ်းလှမ်းပါနှင့်</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8725066075913043281">ထပ် စမ်းကြည့်ရန်</translation>
+<translation id="8730621377337864115">ပြီးပါပြီ</translation>
 <translation id="8748850008226585750">အကြောင်းအရာများကို ဝှက်ထားသည်</translation>
 <translation id="8773160212632396039">တောင်းဆိုချက်ကို လုပ်ဆောင်နေသည်</translation>
 <translation id="8788265440806329501">လမ်းညွှန်မှု မှတ်တမ်း ပိတ်ထားသည်</translation>
 <translation id="8788968922598763114">နောက်ဆုံးပိတ်လိုက်သည့် တဘ်ကို ပြန်ဖွင့်ရန်</translation>
 <translation id="8798449543960971550">ဖတ်ပြီးသည်များ</translation>
 <translation id="8812260976093120287">အချို့သော ဝဘ်ဆိုက်များတွင် သင်၏စက်ပစ္စည်းပေါ်ရှိ အထက်ပါပံ့ပိုးထားသည့် ငွေပေးချေမှုအက်ပ်များဖြင့် ပေးချေနိုင်ပါသည်။</translation>
+<translation id="8814190375133053267">ကြိုးမဲ့</translation>
 <translation id="881688628773363275">အစမ်းကြည့်ရှုသည့်တဘ် အကြောင်းအရာကို ကြည့်၍မရပါ။</translation>
 <translation id="8820817407110198400">စာညှပ်များ</translation>
 <translation id="883806473910249246">အကြောင်းအရာကို ဒေါင်းလုဒ်လုပ်ရာတွင် အမှားအယွင်းရှိနေသည်။</translation>
@@ -1221,10 +1219,10 @@
 <translation id="9063523880881406963">ဆိုဒ်အကြီး တောင်းဆိုချက် ပိတ်မည်</translation>
 <translation id="9065203028668620118">ပြင်ဆင်ရန်</translation>
 <translation id="9065383040763568503">Chrome က အရေးကြီးသည်ဟု မယူဆသည့် သိမ်းထားသောဒေတာများ (ဥပမာ - သိမ်းထားသောဆက်တင်များ မရှိသည့် သို့မဟုတ် သင် မကြာခဏ ဝင်ကြည့်လေ့မရှိသည့် ဝဘ်ဆိုက်များ)</translation>
-<translation id="9069543557624799859"><ph name="TIME" /> တွင် ဒေါင်းလုဒ်စတင်မည်။</translation>
 <translation id="9069999660519089861">မဖတ်ရသေးသော စာမျက်နှာ မရှိပါ</translation>
 <translation id="9070377983101773829">အသံဖြင့် ရှာဖွေမှု စတင်ရန်</translation>
 <translation id="9074336505530349563">Google က အကြံပြုထားသည့် ပုဂ္ဂိုလ်ရေးသီးသန့် အကြောင်းအရာကို ရယူနိုင်ရန် လက်မှတ်ထိုးဝင်ပြီး စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ</translation>
+<translation id="9074739597929991885">ဘလူးတုသ်</translation>
 <translation id="9086302186042011942">စင့်က် လုပ်နေ</translation>
 <translation id="9086455579313502267">ကွန်ရက်ကို ရယူမသုံးနိုင်</translation>
 <translation id="9100505651305367705">ပံ့ပိုးထားသည့်အခါ ဆောင်းပါးကို ရိုးရှင်းသည့် မြင်ကွင်းဖြင့် ပြပေးနိုင်သည်</translation>

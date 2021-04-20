@@ -305,7 +305,6 @@
 <translation id="3016635187733453316">Համոզվեք, որ սարքը միացած է ինտերնետին</translation>
 <translation id="3029704984691124060">Անցաբառերը չեն համընկնում</translation>
 <translation id="3031225630520268969">Օգնականի միջոցով ձայնային որոնման համաձայնության միջերես</translation>
-<translation id="3034163383943672781">Ներբեռնումը կսկսվի <ph name="DATE" />-ին։</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Ստացեք օգնություն<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Հաջորդ անգամ ավելի արագ անցեք այս կայք</translation>
 <translation id="305593374596241526">Տեղորոշումն անջատված է: Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />:</translation>
@@ -526,7 +525,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4583164079174244168">{MINUTES,plural, =1{# րոպե առաջ}one{# րոպե առաջ}other{# րոպե առաջ}}</translation>
 <translation id="4587589328781138893">Կայքեր</translation>
 <translation id="4594952190837476234">Այս էջը պահվել է <ph name="CREATION_TIME" />-ին, և կարող է տարբերվել առցանց տարբերակից։</translation>
-<translation id="4605958867780575332">Տարրը հեռացվեց՝ <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Բացել <ph name="WEBAPK_NAME" /> հավելվածը</translation>
 <translation id="4619564267100705184">Հաստատեք ձեր ինքնությունը</translation>
 <translation id="4634124774493850572">Օգտագործել գաղտնաբառը</translation>
@@ -702,7 +700,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="572328651809341494">Վերջերս բացված ներդիրներ</translation>
 <translation id="5723735397759933332">HTTPS էջերում պատկերների օպտիմալացման շնորհիվ Lite ռեժիմն այժմ ավելի շատ թրաֆիկ է խնայում։</translation>
 <translation id="5726692708398506830">Էջում ամեն ինչ մեծացնել</translation>
-<translation id="5732819098735351888">Ներբեռնումը կսկսվի Wi-Fi ցանցով։</translation>
 <translation id="5733983706093266635">Չհաջողվեց ստեղծել QR կոդ։ URL-ը կարող է պարունակել առավելագույնը <ph name="CHARACTER_LIMIT" /> նիշ։</translation>
 <translation id="5748802427693696783">Դուք անցում կատարեցիք սովորական ներդիրների ռեժիմին</translation>
 <translation id="5749068826913805084">Ֆայլեր ներբեռնելու համար Chrome-ին անհրաժեշտ է պահեստի մուտք:</translation>
@@ -779,9 +776,9 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="614940544461990577">Փորձեք՝</translation>
 <translation id="6154478581116148741">Այս սարքից ձեր գաղտնաբառերն արտահանելու համար կարգավորումներում միացրեք էկրանի կողպումը։</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> տվյալների խնայում</translation>
+<translation id="6159729262978459665">Մաքրում է պատմությունը բոլոր համաժամացված սարքերից։</translation>
 <translation id="6186394685773237175">Կոտրված գաղտնաբառեր չեն գտնվել</translation>
 <translation id="6192907950379606605">Ստանալ նկարագրություններ</translation>
-<translation id="6206830853671714236">Ընտրեք, թե երբ է պետք ներբեռնել</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> հաշիվը ձե՞րը չէ</translation>
 <translation id="6211386937064921208">Էջի նախադիտում</translation>
 <translation id="6218096829563201111">Որոնել նման ապրանքներ <ph name="BEGIN_NEW" />Նորույթ<ph name="END_NEW" /></translation>
@@ -991,6 +988,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="7523960634226602883">Որոնել տեսախցիկի միջոցով՝ օգտագործելով Google Տեսապակին</translation>
 <translation id="753225086557513863">Պլանավորված է ավելի ուշ ժամանակահատվածի համար</translation>
 <translation id="7559975015014302720">Lite ռեժիմն անջատված է</translation>
+<translation id="7560448309733608642">Մաքրում է պատմությունը բոլոր համաժամացված սարքերից։ Այցելությունների պատմությունը կարող է պահվել նաև ձեր Google հաշվում։ Այդ տվյալները կարող եք գտնել <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> էջում։</translation>
 <translation id="7562080006725997899">Ջնջվում են զննարկման տվյալները</translation>
 <translation id="756809126120519699">Chrome-ի տվյալները ջնջվեցին</translation>
 <translation id="7577900504646297215">Կառավարել հետաքրքրությունները</translation>
@@ -1177,12 +1175,14 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="8699120352855309748">Չառաջարկել թարգմանել այս լեզուները</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>
+<translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="8748850008226585750">Բովանդակությունը թաքցված է</translation>
 <translation id="8773160212632396039">Հարցումը մշակվում է</translation>
 <translation id="8788265440806329501">Նավիգացիայի պատմության թերթը փակված է</translation>
 <translation id="8788968922598763114">Վերաբացել վերջին փակված ներդիրը</translation>
 <translation id="8798449543960971550">Ընթերցված</translation>
 <translation id="8812260976093120287">Որոշ կայքերում կարող եք վճարել ձեր սարքից՝ վերոնշյալ աջակցվող վճարային հավելվածների օգնությամբ:</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Նախադիտման ներդիրի բովանդակությունը չի ցուցադրվում։</translation>
 <translation id="8820817407110198400">Էջանիշներ</translation>
 <translation id="883806473910249246">Բովանդակությունը ներբեռնելիս սխալ առաջացավ:</translation>
@@ -1220,10 +1220,10 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="9063523880881406963">Անջատել կայքի ամբողջական տարբերակը</translation>
 <translation id="9065203028668620118">Փոփոխել</translation>
 <translation id="9065383040763568503">Պահված տվյալները, որոնք ըստ Chrome-ի կարևոր չեն (օր.՝ առանց պահված կարգավորումների կայքերը կամ այն կայքերը, որոնք վաղուց չեք այցելել)</translation>
-<translation id="9069543557624799859">Ներբեռնումը կսկսվի <ph name="TIME" />-ին։</translation>
 <translation id="9069999660519089861">Չկարդացված էջեր չկան</translation>
 <translation id="9070377983101773829">Սկսել ձայնային որոնումը</translation>
 <translation id="9074336505530349563">Google-ից անհատականացված բովանդակություն ստանալու համար մտեք հաշիվ և միացրեք համաժամացումը</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Համաժամացում</translation>
 <translation id="9086455579313502267">Հնարավոր չէ մուտք գործել ցանց</translation>
 <translation id="9100505651305367705">Առաջարկել հոդվածների պարզեցված դիտում, եթե աջակցվում է</translation>
