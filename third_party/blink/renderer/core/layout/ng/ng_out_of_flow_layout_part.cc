@@ -1148,6 +1148,9 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   DCHECK(fragmentainer.fragment->IsFragmentainerBox());
   const NGBlockNode& node = container_builder_->Node();
   const auto& fragment = To<NGPhysicalBoxFragment>(*fragmentainer.fragment);
+  LogicalOffset fragmentainer_offset = UpdatedFragmentainerOffset(
+      fragmentainer.offset, index, column_inline_progression,
+      create_new_fragment);
 
   const NGBlockBreakToken* previous_break_token =
       PreviousFragmentainerBreakToken(add_to_last_fragment ? index
@@ -1167,20 +1170,20 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   // Layout any OOF elements that are a continuation of layout first.
   for (auto& descendant : descendants_continued) {
     AddOOFToFragmentainer(descendant, &space, additional_inline_offset,
-                          add_to_last_fragment, &algorithm,
-                          fragmented_descendants);
+                          add_to_last_fragment, fragmentainer_offset,
+                          &algorithm, fragmented_descendants);
   }
   // Once we've laid out the OOF elements that are a continuation of layout, we
   // can layout the OOF elements that start layout in the current fragmentainer.
   for (auto& descendant : pending_descendants) {
     AddOOFToFragmentainer(descendant, &space, additional_inline_offset,
-                          add_to_last_fragment, &algorithm,
-                          fragmented_descendants);
+                          add_to_last_fragment, fragmentainer_offset,
+                          &algorithm, fragmented_descendants);
   }
 
   // Finalize layout on the cloned fragmentainer and replace all existing
   // references to the old result.
-  ReplaceFragmentainer(index, column_inline_progression, create_new_fragment,
+  ReplaceFragmentainer(index, fragmentainer_offset, create_new_fragment,
                        &algorithm, multicol_children);
 }
 
@@ -1189,6 +1192,7 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
     const NGConstraintSpace* fragmentainer_space,
     LayoutUnit additional_inline_offset,
     bool add_to_last_fragment,
+    LogicalOffset fragmentainer_offset,
     NGSimplifiedOOFLayoutAlgorithm* algorithm,
     HeapVector<NodeToLayout>* fragmented_descendants) {
   const NGLayoutResult* result =
@@ -1219,9 +1223,11 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
   LayoutUnit containing_block_adjustment =
       container_builder_->BlockOffsetAdjustmentForFragmentainer(
           fragmentainer_consumed_block_size_);
+  LogicalOffset oof_offset_rel_to_builder = result->OutOfFlowPositionedOffset();
+  oof_offset_rel_to_builder += fragmentainer_offset;
 
   container_builder_->PropagateOOFPositionedInfo(
-      result->PhysicalFragment(), result->OutOfFlowPositionedOffset(),
+      result->PhysicalFragment(), oof_offset_rel_to_builder,
       /* inline_container */ nullptr, containing_block_adjustment,
       &descendant.node_info.fixedpos_containing_block,
       additional_fixedpos_offset);
@@ -1243,34 +1249,16 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
 
 void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
     wtf_size_t index,
-    LayoutUnit column_inline_progression,
+    LogicalOffset offset,
     bool create_new_fragment,
     NGSimplifiedOOFLayoutAlgorithm* algorithm,
     HeapVector<MulticolChildInfo>* multicol_children) {
-  wtf_size_t num_children = container_builder_->Children().size();
   const NGBlockNode& node = container_builder_->Node();
   const auto& fragmentainer = container_builder_->Children()[index];
   const NGPhysicalBoxFragment& fragment =
       To<NGPhysicalBoxFragment>(*fragmentainer.fragment);
 
   if (create_new_fragment) {
-    LogicalOffset offset;
-    if (index != num_children - 1 && !container_builder_->Children()[index + 1]
-                                          .fragment->IsFragmentainerBox()) {
-      // If we are a new fragment and are separated from other columns by a
-      // spanner, compute the correct column offset to use.
-      const auto& spanner = container_builder_->Children()[index + 1];
-      DCHECK(spanner.fragment->IsColumnSpanAll());
-
-      offset = spanner.offset;
-      LogicalSize spanner_size = spanner.fragment->Size().ConvertToLogical(
-          container_builder_->Style().GetWritingMode());
-      // TODO(almaher): Include trailing spanner margin.
-      offset.block_offset += spanner_size.block_size;
-    } else {
-      offset = fragmentainer.offset;
-      offset.inline_offset += column_inline_progression;
-    }
     const NGLayoutResult* new_result = algorithm->Layout();
     node.AddColumnResult(new_result);
     container_builder_->AddChild(
@@ -1282,8 +1270,7 @@ void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
     const NGLayoutResult* new_result = algorithm->Layout();
     node.ReplaceColumnResult(new_result, fragment);
     const NGPhysicalFragment* new_fragment = &new_result->PhysicalFragment();
-    container_builder_->ReplaceChild(index, *new_fragment,
-                                     fragmentainer.offset);
+    container_builder_->ReplaceChild(index, *new_fragment, offset);
 
     if (nested_fragmentation_context_) {
       // We are in a nested fragmentation context. Replace the column entry
@@ -1299,6 +1286,32 @@ void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
       column_info.mutable_link->fragment = new_fragment;
     }
   }
+}
+
+LogicalOffset NGOutOfFlowLayoutPart::UpdatedFragmentainerOffset(
+    LogicalOffset offset,
+    wtf_size_t index,
+    LayoutUnit column_inline_progression,
+    bool create_new_fragment) {
+  if (create_new_fragment) {
+    wtf_size_t num_children = container_builder_->Children().size();
+    if (index != num_children - 1 && !container_builder_->Children()[index + 1]
+                                          .fragment->IsFragmentainerBox()) {
+      // If we are a new fragment and are separated from other columns by a
+      // spanner, compute the correct column offset to use.
+      const auto& spanner = container_builder_->Children()[index + 1];
+      DCHECK(spanner.fragment->IsColumnSpanAll());
+
+      offset = spanner.offset;
+      LogicalSize spanner_size = spanner.fragment->Size().ConvertToLogical(
+          container_builder_->Style().GetWritingMode());
+      // TODO(almaher): Include trailing spanner margin.
+      offset.block_offset += spanner_size.block_size;
+    } else {
+      offset.inline_offset += column_inline_progression;
+    }
+  }
+  return offset;
 }
 
 NGConstraintSpace NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(

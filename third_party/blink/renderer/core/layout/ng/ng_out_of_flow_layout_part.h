@@ -265,13 +265,18 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
                              const NGConstraintSpace* fragmentainer_space,
                              LayoutUnit additional_inline_offset,
                              bool add_to_last_fragment,
+                             LogicalOffset fragmentainer_offset,
                              NGSimplifiedOOFLayoutAlgorithm* algorithm,
                              HeapVector<NodeToLayout>* fragmented_descendants);
   void ReplaceFragmentainer(wtf_size_t index,
-                            LayoutUnit column_inline_progression,
+                            LogicalOffset offset,
                             bool create_new_fragment,
                             NGSimplifiedOOFLayoutAlgorithm* algorithm,
                             HeapVector<MulticolChildInfo>* multicol_children);
+  LogicalOffset UpdatedFragmentainerOffset(LogicalOffset offset,
+                                           wtf_size_t index,
+                                           LayoutUnit column_inline_progression,
+                                           bool create_new_fragment);
   NGConstraintSpace GetFragmentainerConstraintSpace(wtf_size_t index);
   const NGBlockBreakToken* PreviousFragmentainerBreakToken(
       wtf_size_t index) const;
