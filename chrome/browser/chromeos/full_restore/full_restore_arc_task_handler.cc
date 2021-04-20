@@ -8,10 +8,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/full_restore/full_restore_utils.h"
 
-#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
-#include "chrome/browser/exo_parts.h"
-#endif
-
 namespace chromeos {
 namespace full_restore {
 
@@ -29,8 +25,7 @@ FullRestoreArcTaskHandler::FullRestoreArcTaskHandler(Profile* profile) {
   arc_prefs_observer_.Observe(prefs);
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
-  exo_parts_ = ExoParts::CreateIfNecessary();
-  if (exo_parts_)
+  if (IsArcGhostWindowEnabled())
     window_handler_ = std::make_unique<ArcWindowHandler>();
 #endif
 }

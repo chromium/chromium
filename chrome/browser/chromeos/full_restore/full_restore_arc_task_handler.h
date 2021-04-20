@@ -13,10 +13,6 @@
 #include "chrome/common/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
-class ExoParts;
-#endif
-
 class Profile;
 
 namespace chromeos {
@@ -55,7 +51,6 @@ class FullRestoreArcTaskHandler : public KeyedService,
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   std::unique_ptr<ArcWindowHandler> window_handler_;
-  std::unique_ptr<ExoParts> exo_parts_;
 #endif
 };
 
