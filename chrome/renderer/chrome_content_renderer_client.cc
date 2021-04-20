@@ -175,6 +175,11 @@
 #include "components/search/ntp_features.h"  // nogncheck
 #endif
 
+#if defined(OS_WIN)
+#include "base/win/core_winrt_util.h"
+#include "base/win/scoped_hstring.h"
+#endif
+
 #if BUILDFLAG(ENABLE_NACL)
 #include "components/nacl/common/nacl_constants.h"
 #include "components/nacl/renderer/nacl_helper.h"
@@ -310,6 +315,26 @@ bool IsStandaloneContentExtensionProcess() {
 
 std::unique_ptr<base::Unwinder> CreateV8Unwinder(v8::Isolate* isolate) {
   return std::make_unique<V8Unwinder>(isolate);
+}
+
+// Web Share is conditionally enabled here in chrome/, to avoid it being
+// made available in other clients of content/ that do not have a Web Share
+// Mojo implementation (e.g. WebView).
+void MaybeEnableWebShare() {
+#if defined(OS_WIN)
+  if (!base::win::ResolveCoreWinRTDelayload() ||
+      !base::win::ScopedHString::ResolveCoreWinRTStringDelayload()) {
+    // Web Share API is not available for Windows 7.
+    return;
+  }
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC)
+  if (base::FeatureList::IsEnabled(features::kWebShare))
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC) || \
+    defined(OS_ANDROID)
+    blink::WebRuntimeFeatures::EnableWebShare(true);
+#endif
 }
 
 }  // namespace
@@ -1491,16 +1516,7 @@ void ChromeContentRendererClient::
   // embedder only.
   blink::WebRuntimeFeatures::EnablePerformanceManagerInstrumentation(true);
 
-  // Web Share is conditionally enabled here in chrome/, to avoid it being
-  // made available in other clients of content/ that do not have a Web Share
-  // Mojo implementation (e.g. WebView).  Web Share is shipped on Android.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC)
-  if (base::FeatureList::IsEnabled(features::kWebShare))
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC) || \
-    defined(OS_ANDROID)
-    blink::WebRuntimeFeatures::EnableWebShare(true);
-#endif
+  MaybeEnableWebShare();
 
   if (base::FeatureList::IsEnabled(subresource_filter::kAdTagging))
     blink::WebRuntimeFeatures::EnableAdTagging(true);
