@@ -141,8 +141,11 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual IntRect ViewportToScreen(const IntRect&,
                                    const LocalFrameView*) const = 0;
 
+  void ScheduleAnimation(const LocalFrameView* view) {
+    ScheduleAnimation(view, base::TimeDelta());
+  }
   virtual void ScheduleAnimation(const LocalFrameView*,
-                                 base::TimeDelta = base::TimeDelta()) = 0;
+                                 base::TimeDelta delay) = 0;
 
   // Adjusts |pending_rect| for the minimum window size and |frame|'s screen
   // and returns the adjusted value.

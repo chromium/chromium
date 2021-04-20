@@ -169,7 +169,7 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
 
   void InvalidateRect(const IntRect&) override {}
   void ScheduleAnimation(const LocalFrameView*,
-                         base::TimeDelta = base::TimeDelta()) override {}
+                         base::TimeDelta delay) override {}
   IntRect ViewportToScreen(const IntRect& r,
                            const LocalFrameView*) const override {
     return r;
