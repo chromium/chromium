@@ -73,9 +73,9 @@ std::string GetDefaultMediaDeviceIDFromCommandLine(
   option_tokenizer.set_quote_chars("\"");
 
   while (option_tokenizer.GetNext()) {
-    std::vector<std::string> param =
-        base::SplitString(option_tokenizer.token(), "=", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
+    std::vector<base::StringPiece> param = base::SplitStringPiece(
+        option_tokenizer.token_piece(), "=", base::TRIM_WHITESPACE,
+        base::SPLIT_WANT_NONEMPTY);
     if (param.size() != 2u) {
       DLOG(WARNING) << "Forgot a value '" << option << "'? Use name=value for "
                     << switches::kUseFakeDeviceForMediaStream << ".";
@@ -84,10 +84,10 @@ std::string GetDefaultMediaDeviceIDFromCommandLine(
 
     if (device_type == MediaDeviceType::MEDIA_AUDIO_INPUT &&
         param.front() == "audio-input-default-id") {
-      return param.back();
+      return std::string(param.back());
     } else if (device_type == MediaDeviceType::MEDIA_VIDEO_INPUT &&
                param.front() == "video-input-default-id") {
-      return param.back();
+      return std::string(param.back());
     }
   }
 
