@@ -253,6 +253,12 @@ TEST_F(RebootFuchsiaTest, RebootReasonRetrySystemUpdateTranslatesFromFuchsia) {
               Eq(RebootShlib::RebootSource::OTA));
 }
 
+TEST_F(RebootFuchsiaTest, RebootReasonZbiSwapTranslatesFromFuchsia) {
+  SetLastReboot(GenerateLastReboot(true, RebootReason::ZBI_SWAP));
+  EXPECT_THAT(RebootUtil::GetLastRebootSource(),
+              Eq(RebootShlib::RebootSource::OTA));
+}
+
 class RebootFuchsiaParamTest : public RebootFuchsiaTest,
                                public ::testing::WithParamInterface<RebootReasonParam> {
  public:

@@ -179,6 +179,7 @@ RebootShlib::RebootSource RebootUtil::GetLastRebootSource() {
       return RebootShlib::RebootSource::API;
     case RebootReason::SYSTEM_UPDATE:
     case RebootReason::RETRY_SYSTEM_UPDATE:
+    case RebootReason::ZBI_SWAP:
       return RebootShlib::RebootSource::OTA;
     case RebootReason::HIGH_TEMPERATURE:
       return RebootShlib::RebootSource::OVERHEAT;
