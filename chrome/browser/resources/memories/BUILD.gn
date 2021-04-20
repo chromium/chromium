@@ -19,7 +19,6 @@ js_library("app") {
   deps = [
     ":browser_proxy",
     ":memory_card",
-    ":mojom_conversion_mixin",
     ":page_thumbnail",
     ":router",
     "//chrome/browser/ui/webui/memories:mojo_bindings_webui_js",
@@ -28,6 +27,7 @@ js_library("app") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
     "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_search_field",
+    "//ui/webui/resources/js:assert.m",
     "//url/mojom:url_mojom_origin_webui_js",
   ]
 }
@@ -61,13 +61,6 @@ js_library("memory_tile") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//url/mojom:url_mojom_origin_webui_js",
-  ]
-}
-
-js_library("mojom_conversion_mixin") {
-  deps = [
-    "//mojo/public/mojom/base:base_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -156,7 +149,6 @@ preprocess_if_expr("preprocess") {
   in_files = [
     "browser_proxy.js",
     "memories.js",
-    "mojom_conversion_mixin.js",
     "utils.js",
   ]
 }

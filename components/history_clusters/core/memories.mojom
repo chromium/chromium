@@ -99,10 +99,10 @@ struct QueryParams {
   // empty string means to return every Memory that matches the other criteria.
   string query;
 
-  // The time threshold (exclusive) for how recent the returned Memories can be.
-  // The sensible default value for this is the present time which should be
-  // explicitly set to base::Time::Now().
-  mojo_base.mojom.Time recency_threshold;
+  // The optional time threshold (exclusive) for how recent the Memories can be.
+  // If specified, Memories before |recency_threshold| and if missing, Memories
+  // until the present time that match the other criteria are returned.
+  mojo_base.mojom.Time? recency_threshold;
 
   // The maximum number of Memories to return. The default value of 0 means to
   // return every Memory that matches the other criteria.

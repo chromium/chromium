@@ -12,11 +12,11 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 
 import {MemoriesResult, PageCallbackRouter, PageHandlerRemote} from '/chrome/browser/ui/webui/memories/memories.mojom-webui.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {MojomConversionMixinBase} from './mojom_conversion_mixin.js';
 
 /**
  * @fileoverview This file provides the root custom element for the Memories
@@ -26,8 +26,7 @@ import {MojomConversionMixinBase} from './mojom_conversion_mixin.js';
 /** @type {number} */
 const RESULTS_PER_PAGE = 5;
 
-/** @polymer */
-class MemoriesAppElement extends MojomConversionMixinBase {
+class MemoriesAppElement extends PolymerElement {
   static get is() {
     return 'memories-app';
   }
@@ -69,6 +68,24 @@ class MemoriesAppElement extends MojomConversionMixinBase {
     this.pageHandler_ = BrowserProxy.getInstance().handler;
     /** @private {!PageCallbackRouter} */
     this.callbackRouter_ = BrowserProxy.getInstance().callbackRouter;
+    /** @private {?number} */
+    this.onMemoriesQueryResultListenerId_ = null;
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+    this.onMemoriesQueryResultListenerId_ =
+        this.callbackRouter_.onMemoriesQueryResult.addListener(
+            this.onMemoriesQueryResult_.bind(this));
+  }
+
+  /** @override */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.callbackRouter_.removeListener(
+        assert(this.onMemoriesQueryResultListenerId_));
+    this.onMemoriesQueryResultListenerId_ = null;
   }
 
   //============================================================================
@@ -96,14 +113,7 @@ class MemoriesAppElement extends MojomConversionMixinBase {
         .clearTriggers();
 
     if (this.result_ && this.result_.continuationQueryParams) {
-      this.pageHandler_.queryMemories(this.result_.continuationQueryParams)
-          .then(({result}) => {
-            // Do not replace the existing result. |result| contains a partial
-            // set of memories that should be appended to the existing ones.
-            this.push('result_.memories', ...result.memories);
-            this.result_.continuationQueryParams =
-                result.continuationQueryParams;
-          });
+      this.pageHandler_.queryMemories(this.result_.continuationQueryParams);
       // Invalidate the existing continuation query params.
       this.result_.continuationQueryParams = null;
     }
@@ -142,6 +152,22 @@ class MemoriesAppElement extends MojomConversionMixinBase {
     });
   }
 
+  /**
+   * @private
+   * @param {!MemoriesResult} result
+   */
+  onMemoriesQueryResult_(result) {
+    if (result.isContinuation) {
+      // Do not replace the existing result. |result| contains a partial set of
+      // memories that should be appended to the existing ones.
+      this.push('result_.memories', ...result.memories);
+      this.result_.continuationQueryParams = result.continuationQueryParams;
+    } else {
+      this.$.container.scrollTop = 0;
+      this.result_ = result;
+    }
+  }
+
   /** @private */
   onQueryChanged_() {
     // Update the value of the search field based on the query, if necessary.
@@ -154,13 +180,9 @@ class MemoriesAppElement extends MojomConversionMixinBase {
       // Request up to |RESULTS_PER_PAGE| of the freshest Memories until now.
       const queryParams = {
         query: this.query_.trim(),
-        recencyThreshold: this.mojoTime(Date.now()),
         maxCount: RESULTS_PER_PAGE,
       };
-      this.pageHandler_.queryMemories(queryParams).then(({result}) => {
-        this.$.container.scrollTop = 0;
-        this.result_ = result;
-      });
+      this.pageHandler_.queryMemories(queryParams);
       // Invalidate the existing continuation query params, if any.
       if (this.result_) {
         this.result_.continuationQueryParams = null;

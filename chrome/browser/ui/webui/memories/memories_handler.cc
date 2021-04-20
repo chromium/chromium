@@ -69,14 +69,21 @@ void MemoriesHandler::SetPage(
 }
 
 void MemoriesHandler::QueryMemories(
-    history_clusters::mojom::QueryParamsPtr query_params,
-    QueryMemoriesCallback callback) {
+    history_clusters::mojom::QueryParamsPtr query_params) {
   auto result_mojom = history_clusters::mojom::MemoriesResult::New();
   result_mojom->title = query_params->query;
   result_mojom->thumbnail_url = GetRandomlySizedThumbnailUrl();
-  auto result_callback = base::BindOnce(
-      &MemoriesHandler::OnMemoriesQueryResults, weak_ptr_factory_.GetWeakPtr(),
-      std::move(callback), std::move(result_mojom));
+  if (!query_params->recency_threshold.has_value()) {
+    // The default value for the recency threshold should be the present time.
+    query_params->recency_threshold = base::Time::Now();
+  } else {
+    // Continuation queries have a value for the recency threshold. Mark the
+    // result as such.
+    result_mojom->is_continuation = true;
+  }
+  auto result_callback =
+      base::BindOnce(&MemoriesHandler::OnMemoriesQueryResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(result_mojom));
   if (history_clusters::RemoteModelEndpointForDebugging().is_valid()) {
     auto* memory_service =
         MemoriesServiceFactory::GetForBrowserContext(profile_);
@@ -84,23 +91,25 @@ void MemoriesHandler::QueryMemories(
                                   std::move(result_callback));
   } else {
 #if defined(CHROME_BRANDED)
-    std::move(callback).Run(history_clusters::mojom::MemoriesResult::New());
+    page_->OnMemoriesQueryResult(
+        history_clusters::mojom::MemoriesResult::New());
 #else
+    // Cancel pending queries, if any.
+    history_task_tracker_.TryCancelAll();
     QueryHistoryService(std::move(query_params), {},
                         std::move(result_callback));
 #endif
   }
 }
 
-void MemoriesHandler::OnMemoriesQueryResults(
-    QueryMemoriesCallback callback,
+void MemoriesHandler::OnMemoriesQueryResult(
     history_clusters::mojom::MemoriesResultPtr result_mojom,
     history_clusters::mojom::QueryParamsPtr continuation_query_params,
     std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms) {
   result_mojom->continuation_query_params =
       std::move(continuation_query_params);
   result_mojom->memories = std::move(memory_mojoms);
-  std::move(callback).Run(std::move(result_mojom));
+  page_->OnMemoriesQueryResult(std::move(result_mojom));
 }
 
 #if !defined(CHROME_BRANDED)
@@ -122,7 +131,8 @@ void MemoriesHandler::QueryHistoryService(
                                            ServiceAccessType::EXPLICIT_ACCESS);
   history::QueryOptions query_options;
   query_options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
-  query_options.end_time = query_params->recency_threshold;
+  query_options.end_time =
+      query_params->recency_threshold.value_or(base::Time::Now());
   // Make sure to look back far enough to find some visits.
   query_options.begin_time =
       query_options.end_time.LocalMidnight() - base::TimeDelta::FromDays(14);
