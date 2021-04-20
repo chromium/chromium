@@ -90,6 +90,8 @@ HRESULT TSFTextStore::QueryInterface(REFIID iid, void** result) {
     *result = static_cast<ITextStoreACP*>(this);
   } else if (iid == IID_ITfContextOwnerCompositionSink) {
     *result = static_cast<ITfContextOwnerCompositionSink*>(this);
+  } else if (iid == IID_ITfLanguageProfileNotifySink) {
+    *result = static_cast<ITfLanguageProfileNotifySink*>(this);
   } else if (iid == IID_ITfTextEditSink) {
     *result = static_cast<ITfTextEditSink*>(this);
   } else if (iid == IID_ITfKeyTraceEventSink) {
@@ -861,6 +863,17 @@ HRESULT TSFTextStore::OnUpdateComposition(ITfCompositionView* composition_view,
 
 HRESULT TSFTextStore::OnEndComposition(ITfCompositionView* composition_view) {
   TRACE_EVENT0("ime", "TSFTextStore::OnEndComposition");
+  return S_OK;
+}
+
+HRESULT TSFTextStore::OnLanguageChange(LANGID langid, BOOL* pfAccept) {
+  *pfAccept = TRUE;
+  return S_OK;
+}
+
+HRESULT TSFTextStore::OnLanguageChanged() {
+  if (text_input_client_)
+    text_input_client_->OnInputMethodChanged();
   return S_OK;
 }
 
