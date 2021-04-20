@@ -21,6 +21,24 @@ message BeaconSeed {
   int64 end_time_millis = 3;
 }
 
+// Data required to verify the remote device.
+// Next ID: 3
+message AttestationData {
+  enum Type {
+    UNKNOWN = 0;
+
+    // A Chrome OS "soft-bind" certificate chain.
+    // The |certificates| field holds a PEM encoded X.509 certificate chain
+    // ordered from leaf to root.
+    CROS_SOFT_BIND_CERT_CHAIN = 1;
+  }
+
+  Type type = 1;
+
+  // The certificate data as specified by |type|.
+  repeated bytes certificates = 2;
+}
+
 // Device metadata relevant to the suite of multi-device (Better Together)
 // features. This data is sent to and received from CryptAuth--using end-to-end
 // encryption--as part of DeviceSync v2.
@@ -39,4 +57,7 @@ message BetterTogetherDeviceMetadata {
   // Bluetooth public address, formatted as a hex string with colons and capital
   // letters. Example: "01:23:45:67:89:AB"
   string bluetooth_public_address = 4;
+
+  // Attestation data associated with this device.
+  AttestationData attestation_data = 5;
 }
