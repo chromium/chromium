@@ -325,7 +325,7 @@ void AddOobeDisplayTypeDefaultResources(content::WebUIDataSource* source) {
 // chrome://oobe/login
 void AddLoginDisplayTypeDefaultResources(content::WebUIDataSource* source) {
   source->SetDefaultResource(IDR_MD_LOGIN_HTML);
-  source->AddResourcePath(kLoginJSPath, IDR_MD_LOGIN_JS);
+  source->AddResourcePath(kLoginJSPath, IDR_OOBE_JS);
   source->AddResourcePath(kCustomElementsHTMLPath,
                           IDR_CUSTOM_ELEMENTS_LOGIN_HTML);
   source->AddResourcePath(kCustomElementsJSPath, IDR_CUSTOM_ELEMENTS_LOGIN_JS);

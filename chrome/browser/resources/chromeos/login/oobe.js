@@ -45,7 +45,7 @@ HTMLImports.whenReady(() => {
         i18nTemplate.process(document, loadTimeData);
 
         // Update localized content of the screens.
-        Oobe.updateLocalizedContent();
+        Oobe.getInstance().updateLocalizedContent_();
       },
 
       /**
@@ -54,15 +54,6 @@ HTMLImports.whenReady(() => {
        */
       setTabletModeState(isInTabletMode) {
         Oobe.getInstance().setTabletModeState_(isInTabletMode);
-      },
-
-      /**
-       * Updates localized content of the screens.
-       * Should be executed on language change.
-       */
-      updateLocalizedContent() {
-        // Buttons, headers and links.
-        Oobe.getInstance().updateLocalizedContent_();
       },
 
       /**

@@ -10,7 +10,6 @@
     <structures>
       <!-- Resources in this section still depend on flattenhtml -->
       <structure name="IDR_MD_LOGIN_HTML" file="md_login.html" flattenhtml="true" type="chrome_html" variables="OOBE=login" expand_variables="true" />
-      <structure name="IDR_MD_LOGIN_JS" file="md_login.js" flattenhtml="true" type="chrome_html" />
       <structure name="IDR_OOBE_HTML" file="oobe.html" flattenhtml="true" type="chrome_html" variables="OOBE=oobe" expand_variables="true" />
       <structure name="IDR_OOBE_JS" file="oobe.js" flattenhtml="true" type="chrome_html" />
 
