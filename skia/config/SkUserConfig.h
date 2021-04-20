@@ -222,7 +222,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_SUPPORT_LEGACY_DITHER
 
-#define SK_DISABLE_BILINEAR_BLUR_OPTIMIZATION
 
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 

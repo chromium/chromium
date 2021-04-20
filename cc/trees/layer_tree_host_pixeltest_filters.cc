@@ -127,11 +127,9 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRect) {
       small_error_allowed));
 #endif
 
-  RunPixelTest(
-      background,
-      use_software_renderer()
-          ? base::FilePath(FILE_PATH_LITERAL("backdrop_filter_blur_sw.png"))
-          : base::FilePath(FILE_PATH_LITERAL("backdrop_filter_blur.png")));
+  RunPixelTest(background,
+               base::FilePath(FILE_PATH_LITERAL("backdrop_filter_blur_.png"))
+                   .InsertBeforeExtensionASCII(GetRendererSuffix()));
 }
 
 TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterInvalid) {
