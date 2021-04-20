@@ -244,28 +244,14 @@ CommandHandler.onCommand = function(command) {
     case 'help':
       (new PanelCommand(PanelCommandType.TUTORIAL)).send();
       return false;
-    case 'toggleScreen':
+    case 'toggleDarkScreen':
       const oldState = sessionStorage.getItem('darkScreen');
       const newState = (oldState === 'true') ? false : true;
-      if (newState && localStorage['acceptToggleScreen'] !== 'true') {
-        // If this is the first time, show a confirmation dialog.
-        chrome.accessibilityPrivate.showConfirmationDialog(
-            Msgs.getMsg('toggle_screen_title'),
-            Msgs.getMsg('toggle_screen_description'), (confirmed) => {
-              if (confirmed) {
-                sessionStorage.setItem('darkScreen', 'true');
-                localStorage['acceptToggleScreen'] = true;
-                chrome.accessibilityPrivate.darkenScreen(true);
-                new Output().format('@toggle_screen_off').go();
-              }
-            });
-      } else {
-        sessionStorage.setItem('darkScreen', (newState) ? 'true' : 'false');
-        chrome.accessibilityPrivate.darkenScreen(newState);
-        new Output()
-            .format((newState) ? '@toggle_screen_off' : '@toggle_screen_on')
-            .go();
-      }
+      sessionStorage.setItem('darkScreen', (newState) ? 'true' : 'false');
+      chrome.accessibilityPrivate.darkenScreen(newState);
+      new Output()
+          .format((newState) ? '@darken_screen' : '@undarken_screen')
+          .go();
       return false;
     case 'toggleSpeechOnOrOff':
       const state = ChromeVox.tts.toggleSpeechOnOrOff();

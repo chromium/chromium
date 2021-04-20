@@ -708,7 +708,7 @@ KeyMap.BINDINGS_ = [
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.J]}}
   },
   {
-    command: 'toggleScreen',
+    command: 'toggleDarkScreen',
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.BRIGHTNESS_UP]}}
   },
   {
