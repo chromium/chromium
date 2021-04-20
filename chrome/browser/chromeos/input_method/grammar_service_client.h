@@ -62,7 +62,8 @@ class GrammarServiceClient {
  private:
   // Parse the result returned from grammar check service.
   void ParseGrammarCheckerResult(
-      const std::u16string& text,
+      const std::string& query_text,
+      const uint32_t query_offset,
       TextCheckCompleteCallback callback,
       chromeos::machine_learning::mojom::GrammarCheckerResultPtr result) const;
 
