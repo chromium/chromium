@@ -373,7 +373,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // single-page-app transitions.
   SurfaceAnimationManager surface_animation_manager_;
 
-  std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
+  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
 
   // Represents whether the DocumentTransition feature is enabled.
   bool document_transitions_enabled_;

@@ -36,6 +36,7 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeVoter {
   // reversals.
   static constexpr base::TimeDelta kAnimationTimeout =
       base::TimeDelta::FromMilliseconds(50);
+  static constexpr base::TimeDelta kVideoTimeout = kAnimationTimeout;
 
   // Software draws can take longer than the rest of animations, so the timeout
   // value for them is higher.

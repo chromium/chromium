@@ -197,7 +197,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // presented.
   base::flat_set<uint32_t> ignorable_submitted_frames_;
 
-  std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
+  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
 
   THREAD_CHECKER(thread_checker_);
 

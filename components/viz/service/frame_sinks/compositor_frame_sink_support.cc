@@ -65,9 +65,13 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
       surface_resource_holder_(this),
       is_root_(is_root),
       allow_copy_output_requests_(is_root),
-      animation_power_mode_voter_(
-          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.Animation")),
+      // Don't track the root surface for PowerMode voting. All child surfaces
+      // are tracked individually instead, and tracking the root surface could
+      // override votes from the children.
+      power_mode_voter_(
+          is_root ? nullptr
+                  : power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+                        "PowerModeVoter.Animation")),
       document_transitions_enabled_(features::IsDocumentTransitionEnabled()) {
   surface_animation_manager_.SetDirectiveFinishedCallback(
       base::BindRepeating(&CompositorFrameSinkSupport::
@@ -842,12 +846,22 @@ void CompositorFrameSinkSupport::UpdateNeedsBeginFramesInternal() {
   added_frame_observer_ = needs_begin_frame;
   if (needs_begin_frame) {
     begin_frame_source_->AddObserver(this);
-    animation_power_mode_voter_->VoteFor(
-        power_scheduler::PowerMode::kAnimation);
+    if (power_mode_voter_) {
+      power_mode_voter_->VoteFor(
+          frame_sink_type_ == mojom::CompositorFrameSinkType::kMediaStream ||
+                  frame_sink_type_ == mojom::CompositorFrameSinkType::kVideo
+              ? power_scheduler::PowerMode::kVideoPlayback
+              : power_scheduler::PowerMode::kAnimation);
+    }
   } else {
     begin_frame_source_->RemoveObserver(this);
-    animation_power_mode_voter_->ResetVoteAfterTimeout(
-        power_scheduler::PowerModeVoter::kAnimationTimeout);
+    if (power_mode_voter_) {
+      power_mode_voter_->ResetVoteAfterTimeout(
+          frame_sink_type_ == mojom::CompositorFrameSinkType::kMediaStream ||
+                  frame_sink_type_ == mojom::CompositorFrameSinkType::kVideo
+              ? power_scheduler::PowerModeVoter::kVideoTimeout
+              : power_scheduler::PowerModeVoter::kAnimationTimeout);
+    }
   }
 }
 

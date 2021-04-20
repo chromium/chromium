@@ -25,6 +25,9 @@ enum class PowerMode {
   // The process is playing audio.
   kAudible,
 
+  // A video is playing in the process and producing frames.
+  kVideoPlayback,
+
   // A page or tab associated with the process is loading.
   kLoading,
 
