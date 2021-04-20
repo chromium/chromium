@@ -1,0 +1,277 @@
+# SQLite abstraction layer
+
+
+## SQLite for system designers
+
+[SQLite](https://www.sqlite.org/) is a
+[relational database management system (RDBMS)](https://en.wikipedia.org/wiki/Relational_database#RDBMS)
+that [supports most of SQL](https://www.sqlite.org/lang.html).
+
+SQLite is architected as a library that can be embedded in another application,
+such as Chrome. SQLite runs in the application's process, and shares its memory
+and other resources. This is similar to embedded databases like
+[LevelDB](https://github.com/google/leveldb) and
+[BerkeleyDB](https://en.wikipedia.org/wiki/Berkeley_DB). By contrast, most
+popular RDMBSes, like [PostgreSQL](https://www.postgresql.org/) and
+[MySQL](https://www.mysql.com/), are structured as standalone server processes
+that accept queries from client processes.
+
+TODO: Explain the process model and locking
+
+TODO: Explain Chrome decisions -- exclusive locking, full per-feature isolation
+(separate databases and page caches)
+
+
+## SQLite for database designers
+
+The section summarizes aspects of SQLite that are relevant to schema and
+query design, and may be surprising to readers with prior experience in other
+popular SQL database systems, such as
+[PostgreSQL](https://www.postgresql.org/) and [MySQL](https://www.mysql.com/).
+
+
+### Data types
+
+SQLite stores data using [5 major types](https://www.sqlite.org/datatype3.html),
+which are summarized below.
+
+1. NULL is a special type for the `NULL` value.
+
+2. INTEGER represents big-endian twos-complement integers. Boolean values
+   (`TRUE` and `FALSE`) are represented as the integer values 1 and 0.
+
+3. REAL represents IEEE 754-2008 64-bit floating point numbers.
+
+4. TEXT represents strings (sequences of characters) encoded using a
+   [supported SQLite encoding](https://www.sqlite.org/c3ref/c_any.html). These
+   values are
+   [sorted](https://www.sqlite.org/datatype3.html#sort_order) according to
+   [a collating sequence](https://www.sqlite.org/datatype3.html#collation) or
+   [a collating function](https://www.sqlite.org/c3ref/create_collation.html).
+
+5. BLOB represents sequences of bytes that are opaque to SQLite. These values are
+   sorted using the bitwise binary comparison offered by
+   [memcmp](https://en.cppreference.com/w/cpp/string/byte/memcmp).
+
+SQLite stores index keys and row values (records / tuples) using
+[a tightly packed format](https://sqlite.org/fileformat2.html#record_format)
+that makes heavy use of [varints](https://sqlite.org/fileformat2.html#varint)
+and variable-length fields. The column types have almost no influence on the
+encoding of values. This has the following consequences.
+
+* All SQL integer types, such as `TINYINT` and `BIGINT`, are treated as aliases
+  for `INTEGER`.
+* All SQL non-integer numeric types, such as `DECIMAL`, `FLOAT`, and
+  `DOUBLE PRECISION` are treated as aliases for `REAL`.
+* Numeric precision and scale specifiers, such as `DECIMAL(5,2)` are ignored.
+* All string types, such as `CHAR`, `CHARACTER VARYING`, `VARCHAR`, and `CLOB`,
+  are treated as aliases for `TEXT`.
+* Maximum string length specifiers, such as `CHAR(255)` are ignored.
+
+SQLite uses clever heuristics, called
+[type affinity](https://www.sqlite.org/datatype3.html#type_affinity),
+to map SQL column types such as `VARCHAR` to the major types above.
+
+Chrome database schemas should avoid type affinity, and should not include any
+information ignored by SQLite.
+
+
+### Indexing
+
+SQLite [uses B-trees](https://www.sqlite.org/fileformat2.html#pages) to store
+both table and index data.
+
+The exclusive use of B-trees reduces the amount of schema design decisions.
+Notable examples:
+
+* There is no equivalent to
+  [PostgreSQL's index types](https://www.postgresql.org/docs/13/indexes-types.html).
+  In particular, since there are no hashed indexes, the design does not need to
+  consider whether the index only needs to support equality queries, as opposed
+  to greater/smaller than comparisons.
+
+* There is no equivalent to
+  [PostgreSQL's table access methods](https://www.postgresql.org/docs/13/tableam.html).
+  Each table is clustered by a primary key index, which is implicitly stored in
+  the table's B-tree.
+
+By default, table rows (records / tuples) are stored in a B-tree keyed by
+[rowid](https://sqlite.org/lang_createtable.html#rowid), an automatically
+assigned 64-bit integer key. Effectively, these tables are clustered by rowid,
+which acts as an implicit primary key. Opting out of this SQLite-specific
+default requires appending
+[`WITHOUT ROWID`](https://sqlite.org/withoutrowid.html) to the `CREATE TABLE`
+instruction.
+
+SQLite's [B-tree page format](https://sqlite.org/fileformat2.html#b_tree_pages)
+has optimized special cases for tables clustered by rowid. This makes rowid the
+most efficient [surrogate key](https://en.wikipedia.org/wiki/Surrogate_key)
+implementation in SQLite. To make this optimization easier to use, any column
+that is a primary key and has an `INTEGER` type is considered an alias for
+rowid.
+
+
+### Query processing
+
+[At a high level](https://www.sqlite.org/arch.html), SQLite compiles SQL queries
+into bytecode executed by a virtual machine called the VDBE, or
+[the bytecode engine](https://www.sqlite.org/opcode.html). A compiled query can
+be executed multiple times, amortizing the costs of query parsing and planning.
+Chrome's SQLite abstraction layer makes it easy to use compiled queries.
+
+The following SQLite documentation pages cover the query planner and
+optimizer.
+
+1. [query planner overview](https://www.sqlite.org/queryplanner.html)
+2. [query optimizer overview](https://www.sqlite.org/optoverview.html)
+3. [`EXPLAIN QUERY PLAN` output description](https://www.sqlite.org/eqp.html)
+
+TODO: Present a simplified model that's sufficient for most database design.
+
+
+## General advice
+
+The following pieces of advice usually come up in code reviews.
+
+### SQL style
+
+SQLite queries are usually embedded as string literals in C++ code. The
+advice here has the following goals.
+
+1. Easy to read queries. The best defense against subtle bugs is making the
+   queries very easy to read, so that any bugs become obvious at code review
+   time. SQL string literals don't benefit from our code analysis
+   infrastructure, so the only lines of defense against bugs are testing and
+   code review.
+
+2. Simplify crash debugging. We will always have a low volume of non-actionable
+   crash reports, because Chrome runs on billions of devices, some of which have
+   faulty RAM or processors.
+
+3. No unnecessary performance overheads. The C++ optimizer doesn't understand
+   SQL query literals, so the queries end up as written in the Chrome binary.
+   Extra characters cost binary size, as well as CPU time (which turns into
+   battery usage) during query parsing.
+
+4. Match the embedding language (C++) style guide. This reduces the mental
+   context switch overhead for folks who write and/or review C++ code that
+   contains SQL.
+
+Format statements like so.
+
+```cc
+  static constexpr char kOriginInfoSql[] =
+      // clang-format off
+      "CREATE TABLE origin_infos("
+        "origin TEXT NOT NULL,"
+        "last_modified INTEGER NOT NULL,"
+        "secure INTEGER NOT NULL)";
+      // clang-format on
+
+  static constexpr char kInsertSql[] =
+     // clang-format off
+     "INSERT INTO infos(origin,last_modified,secure) "
+       "VALUES (?,?,?)";
+     // clang-format on
+```
+
+* SQLite keywords should use ALL CAPS. This makes SQL query literals easier to
+  distinguish and search for.
+
+* Identifiers, such as table and row names, should use snake_case.
+
+* Identifiers, keywords, and parameter placeholders (`?`) should be separated by
+  exactly one character. Separators may be spaces (` `), commas (`,`), or
+  parentheses (`(`, `)`).
+
+* Statement-ending semicolons (`;`) are omitted.
+
+* SQL statements are stored in variables typed `static constexpr char[]`, or in
+  string literals passed directly to methods.
+
+* [`INSERT` statements](https://sqlite.org/lang_insert.html) should list all the
+  table columns by name, in the same order as the corresponding `CREATE TABLE`
+  statements.
+
+* Values must either be embedded in the SQL statement string literal, or bound
+  using [parameters](https://www.sqlite.org/lang_expr.html#varparam).
+
+* Parameter placeholders should always use the `?` syntax. Alternative syntaxes,
+  such as `?NNN` or `:AAAA`, have few benefits in a codebase where the `Bind`
+  statements are right next to the queries, and are less known to readers.
+
+* Do not execute multiple SQL statements (e.g., by calling `Step()` or `Run()`
+  on `sql::Statement`) on the same C++ line. It's difficult to get more than
+  line numbers from crash reports' stack traces.
+
+
+### Schema style
+
+Column types should only be one of the the SQLite storage types (`INTEGER`,
+`REAL`, `TEXT`, `BLOB`), so readers can avoid reasoning about SQLite's type
+affinity.
+
+Columns that will store boolean values should have the `INTEGER` type.
+
+Columns that will store `base::Time` values should have the `INTEGER` type.
+Values should be serialized using `sql::Statement::BindTime()` and deserialized
+using `sql::Statement::ColumnTime()`.
+
+Column types should not include information ignored by SQLite, such as numeric
+precision or scale specifiers, or string length specifiers.
+
+Columns should have the `NOT NULL` constraint whenever possible. This saves
+maintainers from having to reason about the less intuitive cases of
+[`NULL` handling](https://sqlite.org/nulls.html).
+
+Columns should avoid `DEFAULT` values. This moves the burden of checking that
+`INSERT` statements aren't missing any columns from the code reviewer to SQLite.
+
+Surrogate primary keys should use the column type `INTEGER PRIMARY KEY`, to take
+advantage of SQLite's rowid optimizations.
+[`AUTOINCREMENT`](https://www.sqlite.org/autoinc.html) should only be used where
+primary key reuse would be unacceptable.
+
+
+### Discouraged features
+
+[`PRAGMA` statements](https://www.sqlite.org/pragma.html) should never be used
+directly. Chrome's SQLite abstraction layer should be modified to support the
+desired effects instead.
+
+Direct `PRAGMA` use limits our ability to customize and secure our SQLite build.
+`PRAGMA` statements may turn on code paths with less testing / fuzzing coverage.
+Furthermore, some `PRAGMA` statements invalidate previously compiled queries,
+reducing the efficiency of Chrome's compiled query cache.
+
+[SQL foreign key constraints](https://sqlite.org/foreignkeys.html) should not be
+used. All data validation should be performed using explicit `SELECT` statements
+(generally wrapped as helper methods) inside transactions. Cascading deletions
+should be performed using explicit `DELETE` statements inside transactions.
+
+Chrome features cannot rely on foreign key enforcement, due to the
+possibility of data corruption. Furthermore, foreign key constraints make it
+more difficult to reason about system behavior (Chrome feature code + SQLite)
+when the database gets corrupted. Foreign key constraints also make it more
+difficult to reason about query performance.
+
+After
+[WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we plan
+to disable SQLite's foreign key support using
+[SQLITE_OMIT_FOREIGN_KEY](https://sqlite.org/compile.html#omit_foreign_key).
+
+[SQL triggers](https://sqlite.org/lang_createtrigger.html) should not be used.
+
+Triggers significantly increase the difficulty of reviewing and maintaining
+Chrome features that use them.
+
+After [WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we
+plan to disable SQLite's trigger support using
+[SQLITE_OMIT_TRIGGER](https://sqlite.org/compile.html#omit_trigger).
+
+[`ATTACH DATABASE` statements](https://www.sqlite.org/lang_attach.html) should
+not be used. Each Chrome feature should store its data in a single database.
+Chrome code should not assume that transactions across multiple databases are
+atomic.
+
+We plan to remove all existing `ATTACH DATABASE` use from Chrome.
