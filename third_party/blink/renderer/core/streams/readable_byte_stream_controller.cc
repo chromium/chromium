@@ -177,6 +177,16 @@ void ReadableByteStreamController::enqueue(ScriptState* script_state,
     return;
   }
 
+  // Bug fix based on https://github.com/whatwg/streams/pull/1123.
+  // TODO(ricea): Update this when that spec change is landed.
+  if (!pending_pull_intos_.IsEmpty()) {
+    const PullIntoDescriptor* first_descriptor = pending_pull_intos_[0];
+    if (first_descriptor->buffer->IsDetached()) {
+      exception_state.ThrowTypeError("pending view is detached");
+      return;
+    }
+  }
+
   // 5. Return ! ReadableByteStreamControllerEnqueue(this, chunk).
   Enqueue(script_state, this, chunk, exception_state);
 }
