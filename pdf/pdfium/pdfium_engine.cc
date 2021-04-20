@@ -1524,7 +1524,7 @@ bool PDFiumEngine::OnMouseMove(const blink::WebMouseEvent& event) {
     // If in form text area while left mouse button is held down, check if form
     // text selection needs to be updated.
     if (mouse_left_button_down_ && area == PDFiumPage::FORM_TEXT_AREA &&
-        last_focused_page_ != -1) {
+        PageIndexInBounds(last_focused_page_)) {
       SetFormSelectedText(form(), pages_[last_focused_page_]->GetPage());
     }
 
@@ -1681,7 +1681,7 @@ bool PDFiumEngine::OnKeyDown(const blink::WebKeyboardEvent& event) {
   if (event.windows_key_code == FWL_VKEY_Tab)
     return HandleTabEvent(event.GetModifiers());
 
-  if (last_focused_page_ == -1)
+  if (!PageIndexInBounds(last_focused_page_))
     return false;
 
   bool rv = !!FORM_OnKeyDown(form(), pages_[last_focused_page_]->GetPage(),
@@ -1715,7 +1715,7 @@ bool PDFiumEngine::OnKeyDown(const blink::WebKeyboardEvent& event) {
 }
 
 bool PDFiumEngine::OnKeyUp(const blink::WebKeyboardEvent& event) {
-  if (last_focused_page_ == -1)
+  if (!PageIndexInBounds(last_focused_page_))
     return false;
 
   // Check if form text selection needs to be updated.
@@ -1728,7 +1728,7 @@ bool PDFiumEngine::OnKeyUp(const blink::WebKeyboardEvent& event) {
 }
 
 bool PDFiumEngine::OnChar(const blink::WebKeyboardEvent& event) {
-  if (last_focused_page_ == -1)
+  if (!PageIndexInBounds(last_focused_page_))
     return false;
 
   bool rv = !!FORM_OnChar(form(), pages_[last_focused_page_]->GetPage(),
@@ -2213,8 +2213,9 @@ bool PDFiumEngine::CanEditText() {
 
 bool PDFiumEngine::HasEditableText() {
   DCHECK(CanEditText());
-  if (last_focused_page_ == -1)
+  if (!PageIndexInBounds(last_focused_page_))
     return false;
+
   FPDF_PAGE page = pages_[last_focused_page_]->GetPage();
   // If the return value is 2, that corresponds to "\0\0".
   return FORM_GetFocusedText(form(), page, nullptr, 0) > 2;
@@ -2222,36 +2223,36 @@ bool PDFiumEngine::HasEditableText() {
 
 void PDFiumEngine::ReplaceSelection(const std::string& text) {
   DCHECK(CanEditText());
-  if (last_focused_page_ != -1) {
-    std::u16string text_wide = base::UTF8ToUTF16(text);
-    FPDF_WIDESTRING text_pdf_wide =
-        reinterpret_cast<FPDF_WIDESTRING>(text_wide.c_str());
+  if (!PageIndexInBounds(last_focused_page_))
+    return;
 
-    FORM_ReplaceSelection(form(), pages_[last_focused_page_]->GetPage(),
-                          text_pdf_wide);
-  }
+  std::u16string text_wide = base::UTF8ToUTF16(text);
+  FORM_ReplaceSelection(form(), pages_[last_focused_page_]->GetPage(),
+                        reinterpret_cast<FPDF_WIDESTRING>(text_wide.c_str()));
 }
 
 bool PDFiumEngine::CanUndo() {
-  if (last_focused_page_ == -1)
-    return false;
-  return !!FORM_CanUndo(form(), pages_[last_focused_page_]->GetPage());
+  return PageIndexInBounds(last_focused_page_) &&
+         FORM_CanUndo(form(), pages_[last_focused_page_]->GetPage());
 }
 
 bool PDFiumEngine::CanRedo() {
-  if (last_focused_page_ == -1)
-    return false;
-  return !!FORM_CanRedo(form(), pages_[last_focused_page_]->GetPage());
+  return PageIndexInBounds(last_focused_page_) &&
+         FORM_CanRedo(form(), pages_[last_focused_page_]->GetPage());
 }
 
 void PDFiumEngine::Undo() {
-  if (last_focused_page_ != -1)
-    FORM_Undo(form(), pages_[last_focused_page_]->GetPage());
+  if (!PageIndexInBounds(last_focused_page_))
+    return;
+
+  FORM_Undo(form(), pages_[last_focused_page_]->GetPage());
 }
 
 void PDFiumEngine::Redo() {
-  if (last_focused_page_ != -1)
-    FORM_Redo(form(), pages_[last_focused_page_]->GetPage());
+  if (!PageIndexInBounds(last_focused_page_))
+    return;
+
+  FORM_Redo(form(), pages_[last_focused_page_]->GetPage());
 }
 
 void PDFiumEngine::HandleAccessibilityAction(
@@ -4135,7 +4136,7 @@ bool PDFiumEngine::HandleTabEventWithModifiers(int modifiers) {
     case FocusElementType::kDocument:
       return false;
     case FocusElementType::kPage:
-      if (last_focused_page_ == -1)
+      if (!PageIndexInBounds(last_focused_page_))
         return false;
       return !!FORM_OnKeyDown(form(), pages_[last_focused_page_]->GetPage(),
                               FWL_VKEY_Tab, modifiers);
