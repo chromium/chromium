@@ -23,6 +23,10 @@ bool PopulateStoreWithCertsFromPath(net::TrustStoreInMemory* store,
 std::vector<std::string> ReadCertificateChainFromFile(
     const base::FilePath& path);
 
+// Reads a PEM certificate list loaded into a C-string |str| into a
+// vector of their DER data.
+std::vector<std::string> ReadCertificateChainFromString(const char* str);
+
 }  // namespace cast_certificate
 
 #endif  // COMPONENTS_CAST_CERTIFICATE_CAST_CERT_READER_H_

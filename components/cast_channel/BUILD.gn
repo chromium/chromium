@@ -4,6 +4,7 @@
 
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
+import("//third_party/openscreen/src/build/config/data_headers_template.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 static_library("cast_channel") {
@@ -116,7 +117,14 @@ source_set("unit_tests") {
   ]
 }
 
+# TODO(issuetracker.google.com/185815206): fuzzing should move to Open Screen.
 if (use_fuzzing_engine) {
+  data_headers("cast_auth_util_fuzzer_certs") {
+    namespace = "cast"
+    sources =
+        [ "../test/data/cast_certificate/certificates/chromecast_gen1.pem" ]
+  }
+
   fuzzable_proto_library("cast_channel_fuzzer_inputs") {
     sources = [ "proto/fuzzer_inputs.proto" ]
     import_dirs = [
@@ -156,6 +164,7 @@ if (use_fuzzing_engine) {
 fuzzer_test("cast_auth_util_fuzzer") {
   sources = [ "cast_auth_util_fuzzer.cc" ]
   deps = [
+    ":cast_auth_util_fuzzer_certs",
     ":cast_channel",
     ":cast_channel_fuzzer_inputs",
     "//components/cast_certificate",

@@ -22,7 +22,8 @@ specific_include_rules = {
     # For google::protobuf::LogSilencer
     "+third_party/protobuf",
   ],
-  ".*_unittest.cc": [
+  ".*_(unittest|fuzzer).cc": [
     "+third_party/openscreen/src/cast/common/channel/testing",
+    "+components/test/data/cast_certificate",
   ],
 }
