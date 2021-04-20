@@ -444,7 +444,9 @@ def builder(
         in the '$build/goma' property.  By default, args.COMPUTE is set and
         'enable_ats' fields is set only if ats need to be enabled by default.
         The 'enable_ats' on Windows will control cross compiling in server
-        side. cross compile if `enable_ats` is not True.
+        side. cross compile if `enable_ats` is False.
+        Note: if goma_enable_ats is not set, goma recipe modules sets
+        GOMA_ARBITRARY_TOOLCHAIN_SUPPORT=true on windows by default.
       * goma_jobs - a member of the `goma.jobs` enum indicating the number of jobs
         to be used by the builder. Sets the 'jobs' field of the '$build/goma'
         property will be set according to the enum member. By default, the 'jobs'

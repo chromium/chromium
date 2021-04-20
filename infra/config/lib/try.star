@@ -19,7 +19,7 @@ to set the default value. Can also be accessed through `try_.defaults`.
 
 load("./args.star", "args")
 load("./branches.star", "branches")
-load("./builders.star", "builders")
+load("./builders.star", "builders", "os_category")
 
 DEFAULT_EXCLUDE_REGEXPS = [
     # Contains documentation that doesn't affect the outputs
@@ -150,6 +150,14 @@ def try_builder(
     subproject_list_view = defaults.get_value("subproject_list_view", subproject_list_view)
     if subproject_list_view:
         list_view.append(subproject_list_view)
+
+    goma_enable_ats = defaults.get_value_from_kwargs("goma_enable_ats", kwargs)
+    if goma_enable_ats == args.COMPUTE:
+        os = defaults.get_value_from_kwargs("os", kwargs)
+
+        # in CQ/try, disable ATS on windows.
+        if os and os.category == os_category.WINDOWS:
+            kwargs["goma_enable_ats"] = False
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it

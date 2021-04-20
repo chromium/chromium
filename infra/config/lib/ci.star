@@ -107,7 +107,7 @@ def ci_builder(
 
         # in CI, enable ATS on windows.
         if os and os.category == os_category.WINDOWS:
-            goma_enable_ats = True
+            kwargs["goma_enable_ats"] = True
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
@@ -119,7 +119,6 @@ def ci_builder(
         notifies = notifies,
         experiments = experiments,
         resultdb_index_by_timestamp = True,
-        goma_enable_ats = goma_enable_ats,
         **kwargs
     )
 
