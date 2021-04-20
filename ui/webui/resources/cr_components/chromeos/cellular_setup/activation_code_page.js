@@ -111,6 +111,15 @@ Polymer({
       type: Object,
       value: null,
     },
+
+    /**
+     * If true, video is expanded.
+     */
+    expanded_: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+    }
   },
 
   /**
@@ -428,6 +437,14 @@ Polymer({
         this.stopStream_(this.stream_);
       });
     }
+
+    if (this.state_ === PageState.SCANNING_USER_FACING ||
+        this.state_ === PageState.SCANNING_ENVIRONMENT_FACING) {
+      this.expanded_ = true;
+      return;
+    }
+
+    this.expanded_ = false;
   },
 
   /**
@@ -515,5 +532,5 @@ Polymer({
    */
   shouldActivationCodeInputBeInvalid_(state) {
     return state === PageState.MANUAL_ENTRY_INSTALL_FAILURE;
-  }
+  },
 });

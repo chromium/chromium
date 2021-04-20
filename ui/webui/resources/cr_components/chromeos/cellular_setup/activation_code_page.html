@@ -13,12 +13,22 @@
 <dom-module id="activation-code-page">
   <template>
     <style include="iron-positioning">
-      [slot='page-body'] {
-        height: 300px;
-        margin-top: -20px;
+      :host([expanded_]) #pageBody {
+        height: 340px;
+        transition-duration: 200ms;
       }
-      :host {
-        --activation-page-qr-code-detection-height: 155px;
+      :host(:not([expanded_])) #pageBody {
+        height: 282px;
+        transition-duration: 150ms;
+      }
+
+      :host([expanded_]) #esimQrCodeDetection {
+        height: 190px;
+        transition-duration: 200ms;
+      }
+      :host(:not([expanded_])) #esimQrCodeDetection {
+        height: 140px;
+        transition-duration: 150ms;
       }
 
       :host cr-button {
@@ -28,10 +38,17 @@
       #esimQrCodeDetection {
         background-color: var(--google-grey-refresh-100);
         border-radius: 4px;
-        height: var(--activation-page-qr-code-detection-height);
         margin: 20px 0 20px 0;
         overflow: hidden;
         position: relative;
+      }
+
+      paper-spinner-lite {
+        height: 20px;
+        position: absolute;
+        right: 16px;
+        top: 24px;
+        width: 20px;
       }
 
       cr-button {
@@ -45,6 +62,11 @@
 
       cr-button[disabled] {
         background-color: transparent;
+      }
+
+      .animate {
+        transition-property: height;
+        transition-timing-function: cubic-bezier(0.00, 0.00, 0.20, 1.00);
       }
 
       .center {
@@ -132,14 +154,6 @@
         --iron-icon-fill-color: #5F6368;
       }
 
-      paper-spinner-lite {
-        height: 20px;
-        position: absolute;
-        right: 16px;
-        top: 24px;
-        width: 20px;
-      }
-
       #loadingMessage {
         bottom: 0;
         color: var(--google-grey-refresh-500);
@@ -150,18 +164,22 @@
       }
 
       #video {
-        height: var(--activation-page-qr-code-detection-height);
+        height: inherit;
         transform: rotateY(180deg);
+      }
+
+      #pageBody {
+        margin-top: -20px;
       }
     </style>
     <base-page>
-      <div slot="page-body">
+      <div slot="page-body" id="pageBody" class="animate">
         <span id="scanQrCodeDescription">
           [[getDescription_(showNoProfilesMessage, cameraCount_ )]]
         </span>
         <template is="dom-if"
             if="[[isScanningAvailable_(cameraCount_, qrCodeDetector_.*)]]" restamp>
-          <div id="esimQrCodeDetection">
+          <div id="esimQrCodeDetection" class="animate">
             <cr-button id="switchCameraButton"
                 on-click="onSwitchCameraButtonPressed_"
                 hidden$="[[isUiElementHidden_(UiElement.SWITCH_CAMERA, state_, cameraCount_)]]"
