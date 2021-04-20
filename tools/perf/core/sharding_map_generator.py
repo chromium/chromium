@@ -115,7 +115,7 @@ def generate_sharding_map(benchmarks_to_shard,
 
   sharding_map = collections.OrderedDict()
   num_stories = total_story
-  min_shard_time = sys.maxint
+  min_shard_time = sys.maxsize
   min_shard_index = None
   max_shard_time = 0
   max_shard_index = None
