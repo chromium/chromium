@@ -765,6 +765,10 @@ crbug.com/591099 external/wpt/css/css-ui/text-overflow-015.html [ Failure ]
 crbug.com/1003506 external/wpt/css/css-flexbox/percentage-heights-007.html [ Failure ]
 crbug.com/807497 external/wpt/css/css-flexbox/anonymous-flex-item-005.html [ Failure ]
 crbug.com/1155036 external/wpt/css/css-flexbox/contain-size-layout-abspos-flex-container-crash.html [ Crash Pass ]
+# As of Apr-19-2021, the importer hasn't imported a change to this test made 2
+# weeks ago. Before the change, it passed. After the change, it will fail or
+# crash. But apparently it is failing/crashing on some platforms already...?
+crbug.com/1114306 external/wpt/css/css-flexbox/negative-overflow.html [ Pass Failure Crash ]
 
 # These tests are in conflict with overflow-area-*, update them if our change is web compatible.
 crbug.com/1069614 external/wpt/css/css-flexbox/overflow-top-left.html [ Failure ]
@@ -2649,8 +2653,6 @@ crbug.com/626703 [ Mac10.12 ] external/wpt/websockets/Send-unpaired-surrogates.a
 crbug.com/626703 [ Mac10.13 ] external/wpt/websockets/Send-unpaired-surrogates.any.worker.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/websockets/Send-unpaired-surrogates.any.worker.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 [ Win10 ] external/wpt/websockets/Send-unpaired-surrogates.any.worker.html?wpt_flags=h2 [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-flexbox/negative-overflow.html [ Failure Crash ]
-crbug.com/626703 [ Win10 ] external/wpt/css/css-flexbox/negative-overflow.html [ Failure Crash ]
 crbug.com/626703 [ Linux ] external/wpt/websockets/Close-1005-verify-code.any.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/websockets/Close-1005-verify-code.any.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/websockets/Close-1005-verify-code.any.html?wpt_flags=h2 [ Timeout ]
