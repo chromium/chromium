@@ -201,6 +201,14 @@ constexpr CGFloat kSubtitleBottomMarginViewHeight = 0.05;
   actionBottomConstraint.active = YES;
 }
 
+- (void)setPrimaryActionString:(NSString*)text {
+  _primaryActionString = text;
+  if (_primaryActionButton) {
+    [_primaryActionButton setTitle:_primaryActionString
+                          forState:UIControlStateNormal];
+  }
+}
+
 #pragma mark - Private
 
 - (UIScrollView*)scrollView {

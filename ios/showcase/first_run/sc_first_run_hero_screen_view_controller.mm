@@ -24,7 +24,9 @@
 - (void)viewDidLoad {
   self.titleText = @"Hero Screen";
   self.subtitleText =
-      @"New FRE screen with a large hero banner and only one primary button.";
+      @"New FRE screen with a large hero banner and a primary button. Also "
+      @"shows how to define custom buttons in the derived view controllers, "
+      @"and how to dynamically change the primary button label.";
   self.primaryActionString = @"Accept and continue";
   self.bannerImage = [UIImage imageNamed:@"Sample-banner-tall"];
   self.isTallBanner = YES;
@@ -34,7 +36,8 @@
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   label.numberOfLines = 0;
   label.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  label.text = @"The following button is created by the derived VC.";
+  label.text = @"The following button is created by the derived VC and toggles "
+               @"the primary button's text.";
   label.textAlignment = NSTextAlignmentCenter;
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.adjustsFontForContentSizeCategory = YES;
@@ -45,7 +48,8 @@
 
   [NSLayoutConstraint activateConstraints:@[
     [label.topAnchor
-        constraintEqualToAnchor:self.specificContentView.topAnchor],
+        constraintGreaterThanOrEqualToAnchor:self.specificContentView
+                                                 .topAnchor],
     [label.centerXAnchor
         constraintEqualToAnchor:self.specificContentView.centerXAnchor],
     [label.widthAnchor

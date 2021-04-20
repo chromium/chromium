@@ -10,6 +10,9 @@
 #error "This file requires ARC support."
 #endif
 
+NSString* const kButtonLabelMore = @"More";
+NSString* const kButtonLabelAccept = @"Accept and Continue";
+
 @interface SCFirstRunHeroScreenCoordinator () <HeroScreenDelegate>
 
 @property(nonatomic, strong)
@@ -54,23 +57,11 @@
 }
 
 - (void)didTapCustomActionButton {
-  UIAlertController* alert =
-      [UIAlertController alertControllerWithTitle:@"Custom Button Tapped"
-                                          message:@"This is a message from the "
-                                                  @"coordinator triggered by "
-                                                  @"the screen-specific button."
-                                   preferredStyle:UIAlertControllerStyleAlert];
-
-  UIAlertAction* defaultAction =
-      [UIAlertAction actionWithTitle:@"OK"
-                               style:UIAlertActionStyleDefault
-                             handler:^(UIAlertAction* action){
-                             }];
-
-  [alert addAction:defaultAction];
-  [self.screenViewController presentViewController:alert
-                                          animated:YES
-                                        completion:nil];
+  if (self.screenViewController.primaryActionString == kButtonLabelMore) {
+    self.screenViewController.primaryActionString = kButtonLabelAccept;
+  } else {
+    self.screenViewController.primaryActionString = kButtonLabelMore;
+  }
 }
 
 @end
