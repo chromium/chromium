@@ -34,35 +34,28 @@ const int kMaxExtent = std::numeric_limits<int>::max() >> 1;
 
 PaintOpBufferSerializer::PaintOpBufferSerializer(
     SerializeCallback serialize_cb,
-    ImageProvider* image_provider,
-    TransferCacheSerializeHelper* transfer_cache,
-    ClientPaintCache* paint_cache,
-    SkStrikeServer* strike_server,
-    sk_sp<SkColorSpace> color_space,
-    bool can_use_lcd_text,
-    bool context_supports_distance_field_text,
-    int max_texture_size)
+    const PaintOp::SerializeOptions& options)
     : serialize_cb_(std::move(serialize_cb)),
       text_blob_canvas_(
-          strike_server
+          options.strike_server
               ? std::make_unique<SkTextBlobCacheDiffCanvas>(
                     kMaxExtent,
                     kMaxExtent,
                     skia::LegacyDisplayGlobals::ComputeSurfaceProps(
-                        can_use_lcd_text),
-                    strike_server,
-                    color_space,
-                    context_supports_distance_field_text)
+                        options.can_use_lcd_text),
+                    options.strike_server,
+                    options.color_space,
+                    options.context_supports_distance_field_text)
               : std::make_unique<SkNoDrawCanvas>(kMaxExtent, kMaxExtent)),
-      options_(image_provider,
-               transfer_cache,
-               paint_cache,
+      options_(options.image_provider,
+               options.transfer_cache,
+               options.paint_cache,
                text_blob_canvas_.get(),
-               strike_server,
-               std::move(color_space),
-               can_use_lcd_text,
-               context_supports_distance_field_text,
-               max_texture_size) {
+               options.strike_server,
+               options.color_space,
+               options.can_use_lcd_text,
+               options.context_supports_distance_field_text,
+               options.max_texture_size) {
   DCHECK(serialize_cb_);
 }
 
@@ -361,25 +354,11 @@ void PaintOpBufferSerializer::RestoreToCount(
 SimpleBufferSerializer::SimpleBufferSerializer(
     void* memory,
     size_t size,
-    ImageProvider* image_provider,
-    TransferCacheSerializeHelper* transfer_cache,
-    ClientPaintCache* paint_cache,
-    SkStrikeServer* strike_server,
-    sk_sp<SkColorSpace> color_space,
-    bool can_use_lcd_text,
-    bool context_supports_distance_field_text,
-    int max_texture_size)
+    const PaintOp::SerializeOptions& options)
     : PaintOpBufferSerializer(
           base::BindRepeating(&SimpleBufferSerializer::SerializeToMemory,
                               base::Unretained(this)),
-          image_provider,
-          transfer_cache,
-          paint_cache,
-          strike_server,
-          std::move(color_space),
-          can_use_lcd_text,
-          context_supports_distance_field_text,
-          max_texture_size),
+          options),
       memory_(memory),
       total_(size) {}
 

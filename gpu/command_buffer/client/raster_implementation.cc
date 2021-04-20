@@ -1227,16 +1227,18 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
   PaintOpSerializer op_serializer(free_size, this, &stashing_image_provider,
                                   &transfer_cache_serialize_helper,
                                   &font_manager_, max_op_size_hint);
-  cc::PaintOpBufferSerializer::SerializeCallback serialize_cb =
-      base::BindRepeating(&PaintOpSerializer::Serialize,
-                          base::Unretained(&op_serializer));
 
-  cc::PaintOpBufferSerializer serializer(
-      serialize_cb, &stashing_image_provider, &transfer_cache_serialize_helper,
-      GetOrCreatePaintCache(), font_manager_.strike_server(),
-      raster_properties_->color_space, raster_properties_->can_use_lcd_text,
+  cc::PaintOp::SerializeOptions options(
+      &stashing_image_provider, &transfer_cache_serialize_helper,
+      GetOrCreatePaintCache(), /*canvas=*/nullptr,
+      font_manager_.strike_server(), raster_properties_->color_space,
+      raster_properties_->can_use_lcd_text,
       capabilities().context_supports_distance_field_text,
       capabilities().max_texture_size);
+  cc::PaintOpBufferSerializer serializer(
+      base::BindRepeating(&PaintOpSerializer::Serialize,
+                          base::Unretained(&op_serializer)),
+      options);
   serializer.Serialize(&list->paint_op_buffer_, &temp_raster_offsets_,
                        preamble);
   // TODO(piman): raise error if !serializer.valid()?

@@ -48,14 +48,7 @@ class PaintOpPerfTest : public testing::Test {
     do {
       SimpleBufferSerializer serializer(
           serialized_data_.get(), kMaxSerializedBufferBytes,
-          test_options_provider.image_provider(),
-          test_options_provider.transfer_cache_helper(),
-          test_options_provider.client_paint_cache(),
-          test_options_provider.strike_server(),
-          test_options_provider.color_space(),
-          test_options_provider.can_use_lcd_text(),
-          test_options_provider.context_supports_distance_field_text(),
-          test_options_provider.max_texture_size());
+          test_options_provider.serialize_options());
       serializer.Serialize(&buffer, nullptr, preamble);
       bytes_written = serializer.written();
 

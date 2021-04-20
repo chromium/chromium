@@ -895,12 +895,13 @@ void PaintOpWriter::Write(const PaintRecord* record,
   // Nested records are used for picture shaders and filters which don't support
   // using lcd text. Make sure we disable it here to match this in the text
   // analysis canvas.
-  const bool can_use_lcd_text = false;
-  SimpleBufferSerializer serializer(
-      memory_, remaining_bytes_, options_.image_provider,
-      options_.transfer_cache, options_.paint_cache, options_.strike_server,
-      options_.color_space, can_use_lcd_text,
-      options_.context_supports_distance_field_text, options_.max_texture_size);
+  PaintOp::SerializeOptions lcd_disabled_options(
+      options_.image_provider, options_.transfer_cache, options_.paint_cache,
+      /*canvas=*/nullptr, options_.strike_server, options_.color_space,
+      /*can_use_lcd_text=*/false, options_.context_supports_distance_field_text,
+      options_.max_texture_size);
+  SimpleBufferSerializer serializer(memory_, remaining_bytes_,
+                                    lcd_disabled_options);
   serializer.Serialize(record, playback_rect, post_scale,
                        post_matrix_for_analysis);
 

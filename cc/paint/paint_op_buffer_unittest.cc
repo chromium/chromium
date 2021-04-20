@@ -2045,14 +2045,9 @@ TEST(PaintOpSerializationTest, CompleteBufferSerialization) {
       static_cast<char*>(base::AlignedAlloc(PaintOpBuffer::kInitialBufferSize,
                                             PaintOpBuffer::PaintOpAlign)));
   TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(
-      memory.get(), PaintOpBuffer::kInitialBufferSize,
-      options_provider.image_provider(),
-      options_provider.transfer_cache_helper(),
-      options_provider.client_paint_cache(), options_provider.strike_server(),
-      options_provider.color_space(), options_provider.can_use_lcd_text(),
-      options_provider.context_supports_distance_field_text(),
-      options_provider.max_texture_size());
+  SimpleBufferSerializer serializer(memory.get(),
+                                    PaintOpBuffer::kInitialBufferSize,
+                                    options_provider.serialize_options());
   serializer.Serialize(&buffer, nullptr, preamble);
   ASSERT_NE(serializer.written(), 0u);
 
@@ -2124,14 +2119,9 @@ TEST(PaintOpSerializationTest, Preamble) {
       static_cast<char*>(base::AlignedAlloc(PaintOpBuffer::kInitialBufferSize,
                                             PaintOpBuffer::PaintOpAlign)));
   TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(
-      memory.get(), PaintOpBuffer::kInitialBufferSize,
-      options_provider.image_provider(),
-      options_provider.transfer_cache_helper(),
-      options_provider.client_paint_cache(), options_provider.strike_server(),
-      options_provider.color_space(), options_provider.can_use_lcd_text(),
-      options_provider.context_supports_distance_field_text(),
-      options_provider.max_texture_size());
+  SimpleBufferSerializer serializer(memory.get(),
+                                    PaintOpBuffer::kInitialBufferSize,
+                                    options_provider.serialize_options());
   serializer.Serialize(&buffer, nullptr, preamble);
   ASSERT_NE(serializer.written(), 0u);
 
@@ -2226,14 +2216,9 @@ TEST(PaintOpSerializationTest, SerializesNestedRecords) {
       static_cast<char*>(base::AlignedAlloc(PaintOpBuffer::kInitialBufferSize,
                                             PaintOpBuffer::PaintOpAlign)));
   TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(
-      memory.get(), PaintOpBuffer::kInitialBufferSize,
-      options_provider.image_provider(),
-      options_provider.transfer_cache_helper(),
-      options_provider.client_paint_cache(), options_provider.strike_server(),
-      options_provider.color_space(), options_provider.can_use_lcd_text(),
-      options_provider.context_supports_distance_field_text(),
-      options_provider.max_texture_size());
+  SimpleBufferSerializer serializer(memory.get(),
+                                    PaintOpBuffer::kInitialBufferSize,
+                                    options_provider.serialize_options());
   PaintOpBufferSerializer::Preamble preamble;
   serializer.Serialize(&buffer, nullptr, preamble);
   ASSERT_NE(serializer.written(), 0u);
@@ -2302,14 +2287,9 @@ TEST(PaintOpBufferTest, ClipsImagesDuringSerialization) {
         static_cast<char*>(base::AlignedAlloc(PaintOpBuffer::kInitialBufferSize,
                                               PaintOpBuffer::PaintOpAlign)));
     TestOptionsProvider options_provider;
-    SimpleBufferSerializer serializer(
-        memory.get(), PaintOpBuffer::kInitialBufferSize,
-        options_provider.image_provider(),
-        options_provider.transfer_cache_helper(),
-        options_provider.client_paint_cache(), options_provider.strike_server(),
-        options_provider.color_space(), options_provider.can_use_lcd_text(),
-        options_provider.context_supports_distance_field_text(),
-        options_provider.max_texture_size());
+    SimpleBufferSerializer serializer(memory.get(),
+                                      PaintOpBuffer::kInitialBufferSize,
+                                      options_provider.serialize_options());
     PaintOpBufferSerializer::Preamble preamble;
     preamble.playback_rect = test_case.clip_rect;
     preamble.full_raster_rect = gfx::Rect(0, 0, test_case.clip_rect.right(),
@@ -2367,14 +2347,9 @@ TEST(PaintOpBufferSerializationTest, AlphaFoldingDuringSerialization) {
       static_cast<char*>(base::AlignedAlloc(PaintOpBuffer::kInitialBufferSize,
                                             PaintOpBuffer::PaintOpAlign)));
   TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(
-      memory.get(), PaintOpBuffer::kInitialBufferSize,
-      options_provider.image_provider(),
-      options_provider.transfer_cache_helper(),
-      options_provider.client_paint_cache(), options_provider.strike_server(),
-      options_provider.color_space(), options_provider.can_use_lcd_text(),
-      options_provider.context_supports_distance_field_text(),
-      options_provider.max_texture_size());
+  SimpleBufferSerializer serializer(memory.get(),
+                                    PaintOpBuffer::kInitialBufferSize,
+                                    options_provider.serialize_options());
   serializer.Serialize(&buffer, nullptr, preamble);
   ASSERT_NE(serializer.written(), 0u);
 
@@ -3240,14 +3215,9 @@ TEST(PaintOpBufferTest, ReplacesImagesFromProviderOOP) {
       static_cast<char*>(base::AlignedAlloc(PaintOpBuffer::kInitialBufferSize,
                                             PaintOpBuffer::PaintOpAlign)));
   TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(
-      memory.get(), PaintOpBuffer::kInitialBufferSize,
-      options_provider.image_provider(),
-      options_provider.transfer_cache_helper(),
-      options_provider.client_paint_cache(), options_provider.strike_server(),
-      options_provider.color_space(), options_provider.can_use_lcd_text(),
-      options_provider.context_supports_distance_field_text(),
-      options_provider.max_texture_size());
+  SimpleBufferSerializer serializer(memory.get(),
+                                    PaintOpBuffer::kInitialBufferSize,
+                                    options_provider.serialize_options());
   serializer.Serialize(&buffer);
   ASSERT_NE(serializer.written(), 0u);
 
@@ -3383,14 +3353,9 @@ TEST(PaintOpBufferTest, PaintRecordShaderSerialization) {
   PaintOpBuffer buffer;
   buffer.push<DrawRectOp>(SkRect::MakeXYWH(1, 2, 3, 4), flags);
 
-  SimpleBufferSerializer serializer(
-      memory.get(), PaintOpBuffer::kInitialBufferSize,
-      options_provider.image_provider(),
-      options_provider.transfer_cache_helper(),
-      options_provider.client_paint_cache(), options_provider.strike_server(),
-      options_provider.color_space(), options_provider.can_use_lcd_text(),
-      options_provider.context_supports_distance_field_text(),
-      options_provider.max_texture_size());
+  SimpleBufferSerializer serializer(memory.get(),
+                                    PaintOpBuffer::kInitialBufferSize,
+                                    options_provider.serialize_options());
   serializer.Serialize(&buffer);
   ASSERT_TRUE(serializer.valid());
   ASSERT_GT(serializer.written(), 0u);
@@ -3431,14 +3396,9 @@ TEST(PaintOpBufferTest, DrawSkottieOpSerialization) {
 
   // Serialize
   TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(
-      memory.get(), PaintOpBuffer::kInitialBufferSize,
-      options_provider.image_provider(),
-      options_provider.transfer_cache_helper(),
-      options_provider.client_paint_cache(), options_provider.strike_server(),
-      options_provider.color_space(), options_provider.can_use_lcd_text(),
-      options_provider.context_supports_distance_field_text(),
-      options_provider.max_texture_size());
+  SimpleBufferSerializer serializer(memory.get(),
+                                    PaintOpBuffer::kInitialBufferSize,
+                                    options_provider.serialize_options());
   serializer.Serialize(&buffer);
   ASSERT_TRUE(serializer.valid());
   ASSERT_GT(serializer.written(), 0u);
@@ -3484,14 +3444,9 @@ TEST(PaintOpBufferTest, DrawSkottieOpSerializationFailure) {
 
   // Serialize
   TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(
-      memory.get(), PaintOpBuffer::kInitialBufferSize,
-      options_provider.image_provider(),
-      options_provider.transfer_cache_helper(),
-      options_provider.client_paint_cache(), options_provider.strike_server(),
-      options_provider.color_space(), options_provider.can_use_lcd_text(),
-      options_provider.context_supports_distance_field_text(),
-      options_provider.max_texture_size());
+  SimpleBufferSerializer serializer(memory.get(),
+                                    PaintOpBuffer::kInitialBufferSize,
+                                    options_provider.serialize_options());
   serializer.Serialize(&buffer);
   ASSERT_TRUE(serializer.valid());
   ASSERT_GT(serializer.written(), 0u);
@@ -3598,14 +3553,9 @@ TEST(PaintOpBufferTest, DrawImageRectSerializeScaledImages) {
       static_cast<char*>(base::AlignedAlloc(PaintOpBuffer::kInitialBufferSize,
                                             PaintOpBuffer::PaintOpAlign)));
   TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(
-      memory.get(), PaintOpBuffer::kInitialBufferSize,
-      options_provider.image_provider(),
-      options_provider.transfer_cache_helper(),
-      options_provider.client_paint_cache(), options_provider.strike_server(),
-      options_provider.color_space(), options_provider.can_use_lcd_text(),
-      options_provider.context_supports_distance_field_text(),
-      options_provider.max_texture_size());
+  SimpleBufferSerializer serializer(memory.get(),
+                                    PaintOpBuffer::kInitialBufferSize,
+                                    options_provider.serialize_options());
   serializer.Serialize(buffer.get());
 
   ASSERT_EQ(options_provider.decoded_images().size(), 1u);
@@ -3633,14 +3583,9 @@ TEST(PaintOpBufferTest, RecordShadersSerializeScaledImages) {
       static_cast<char*>(base::AlignedAlloc(PaintOpBuffer::kInitialBufferSize,
                                             PaintOpBuffer::PaintOpAlign)));
   TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(
-      memory.get(), PaintOpBuffer::kInitialBufferSize,
-      options_provider.image_provider(),
-      options_provider.transfer_cache_helper(),
-      options_provider.client_paint_cache(), options_provider.strike_server(),
-      options_provider.color_space(), options_provider.can_use_lcd_text(),
-      options_provider.context_supports_distance_field_text(),
-      options_provider.max_texture_size());
+  SimpleBufferSerializer serializer(memory.get(),
+                                    PaintOpBuffer::kInitialBufferSize,
+                                    options_provider.serialize_options());
   serializer.Serialize(buffer.get());
 
   ASSERT_EQ(options_provider.decoded_images().size(), 1u);
@@ -3672,13 +3617,9 @@ TEST(PaintOpBufferTest, RecordShadersCached) {
     flags.setShader(shader);
     buffer->push<DrawRectOp>(SkRect::MakeWH(10.f, 10.f), flags);
 
-    SimpleBufferSerializer serializer(
-        memory.get(), PaintOpBuffer::kInitialBufferSize,
-        options_provider.image_provider(), transfer_cache,
-        options_provider.client_paint_cache(), options_provider.strike_server(),
-        options_provider.color_space(), options_provider.can_use_lcd_text(),
-        options_provider.context_supports_distance_field_text(),
-        options_provider.max_texture_size());
+    SimpleBufferSerializer serializer(memory.get(),
+                                      PaintOpBuffer::kInitialBufferSize,
+                                      options_provider.serialize_options());
     serializer.Serialize(buffer.get());
     memory_written = serializer.written();
   }
@@ -3697,13 +3638,9 @@ TEST(PaintOpBufferTest, RecordShadersCached) {
     buffer->push<ScaleOp>(2.0f, 3.7f);
     buffer->push<DrawRectOp>(SkRect::MakeWH(10.f, 10.f), flags);
 
-    SimpleBufferSerializer serializer(
-        memory_scaled.get(), PaintOpBuffer::kInitialBufferSize,
-        options_provider.image_provider(), transfer_cache,
-        options_provider.client_paint_cache(), options_provider.strike_server(),
-        options_provider.color_space(), options_provider.can_use_lcd_text(),
-        options_provider.context_supports_distance_field_text(),
-        options_provider.max_texture_size());
+    SimpleBufferSerializer serializer(memory_scaled.get(),
+                                      PaintOpBuffer::kInitialBufferSize,
+                                      options_provider.serialize_options());
     serializer.Serialize(buffer.get());
     memory_scaled_written = serializer.written();
   }
@@ -3788,14 +3725,9 @@ TEST(PaintOpBufferTest, RecordShadersCachedSize) {
   flags.setShader(shader);
   buffer->push<DrawRectOp>(SkRect::MakeWH(10.f, 10.f), flags);
 
-  SimpleBufferSerializer serializer(
-      memory.get(), PaintOpBuffer::kInitialBufferSize,
-      options_provider.image_provider(),
-      options_provider.transfer_cache_helper(),
-      options_provider.client_paint_cache(), options_provider.strike_server(),
-      options_provider.color_space(), options_provider.can_use_lcd_text(),
-      options_provider.context_supports_distance_field_text(),
-      options_provider.max_texture_size());
+  SimpleBufferSerializer serializer(memory.get(),
+                                    PaintOpBuffer::kInitialBufferSize,
+                                    options_provider.serialize_options());
   options_provider.context_supports_distance_field_text();
   serializer.Serialize(buffer.get());
 
@@ -3840,14 +3772,9 @@ TEST(PaintOpBufferTest, NullImages) {
       static_cast<char*>(base::AlignedAlloc(PaintOpBuffer::kInitialBufferSize,
                                             PaintOpBuffer::PaintOpAlign)));
   TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(
-      memory.get(), PaintOpBuffer::kInitialBufferSize,
-      options_provider.image_provider(),
-      options_provider.transfer_cache_helper(),
-      options_provider.client_paint_cache(), options_provider.strike_server(),
-      options_provider.color_space(), options_provider.can_use_lcd_text(),
-      options_provider.context_supports_distance_field_text(),
-      options_provider.max_texture_size());
+  SimpleBufferSerializer serializer(memory.get(),
+                                    PaintOpBuffer::kInitialBufferSize,
+                                    options_provider.serialize_options());
   serializer.Serialize(&buffer);
   ASSERT_TRUE(serializer.valid());
   ASSERT_GT(serializer.written(), 0u);

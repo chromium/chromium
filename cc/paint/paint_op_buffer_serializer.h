@@ -11,8 +11,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace cc {
-class ClientPaintCache;
-class TransferCacheSerializeHelper;
 
 class CC_PAINT_EXPORT PaintOpBufferSerializer {
  public:
@@ -23,14 +21,7 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
                                      const SkM44&)>;
 
   PaintOpBufferSerializer(SerializeCallback serialize_cb,
-                          ImageProvider* image_provider,
-                          TransferCacheSerializeHelper* transfer_cache,
-                          ClientPaintCache* paint_cache,
-                          SkStrikeServer* strike_server,
-                          sk_sp<SkColorSpace> color_space,
-                          bool can_use_lcd_text,
-                          bool context_supports_distance_field_text,
-                          int max_texture_size);
+                          const PaintOp::SerializeOptions& options);
   virtual ~PaintOpBufferSerializer();
 
   struct Preamble {
@@ -115,14 +106,7 @@ class CC_PAINT_EXPORT SimpleBufferSerializer : public PaintOpBufferSerializer {
  public:
   SimpleBufferSerializer(void* memory,
                          size_t size,
-                         ImageProvider* image_provider,
-                         TransferCacheSerializeHelper* transfer_cache,
-                         ClientPaintCache* paint_cache,
-                         SkStrikeServer* strike_server,
-                         sk_sp<SkColorSpace> color_space,
-                         bool can_use_lcd_text,
-                         bool context_supports_distance_field_text,
-                         int max_texture_size);
+                         const PaintOp::SerializeOptions& options);
   ~SimpleBufferSerializer() override;
 
   size_t written() const { return written_; }
