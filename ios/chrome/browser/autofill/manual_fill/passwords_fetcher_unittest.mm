@@ -274,14 +274,14 @@ TEST_F(PasswordFetcherTest, FilterPassword) {
   PasswordFetcher* passwordFetcher = [[PasswordFetcher alloc]
       initWithPasswordStore:passwordStore
                    delegate:passwordFetcherDelegate
-                        URL:GURL("http://www.secret.test/")];
+                        URL:GURL("http://www.example.com/accounts/Login")];
   WaitUntilCondition(
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
       },
       true, base::TimeDelta::FromSeconds(1000));
 
-  EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 2u);
+  EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
   EXPECT_TRUE(passwordFetcher);
 }
 
