@@ -170,12 +170,12 @@ void TestControllerAsh::GetMinimizeOnBackKeyWindowProperty(
     GetMinimizeOnBackKeyWindowPropertyCallback cb) {
   aura::Window* window = GetShellSurfaceWindow(window_id);
   if (!window) {
-    std::move(cb).Run(false);
+    std::move(cb).Run(true /*default value*/);
     return;
   }
   bool* value = window->GetProperty(ash::kMinimizeOnBackKey);
   if (!value) {
-    std::move(cb).Run(false);
+    std::move(cb).Run(true /* default value*/);
     return;
   }
   std::move(cb).Run(*value);

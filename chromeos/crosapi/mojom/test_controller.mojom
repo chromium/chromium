@@ -77,8 +77,12 @@ interface TestController {
   GetWindowPositionInScreen@8(string window_id) => (gfx.mojom.Point? position);
 
   // Returns the value of the ash::kMinimizeOnBackKey property for the given
-  // window. This allows the client (eg lacros) to verify assumptions eg whether
+  // window.
+  // This allows the client (eg lacros) to verify assumptions eg whether
   // the current active tab should react to a system wide back gesture.
+  //
+  // Note: For simplicity, the return callback is called with `true` in case
+  // the property is not set, of the window is not found.
   [MinVersion=4]
   GetMinimizeOnBackKeyWindowProperty@9(string windiow_id) => (bool value);
 };

@@ -92,3 +92,66 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest, CanGoBack_ServerSide) {
   EXPECT_TRUE(chrome::CanGoForward(browser()));
   CheckCanGoBackOnServer(id, false /* expected_value */);
 }
+
+IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
+                       CanGoBackMultipleTabs_ServerSide) {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  ASSERT_TRUE(lacros_service);
+  ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::TestController>());
+
+  aura::Window* window = BrowserView::GetBrowserViewForBrowser(browser())
+                             ->frame()
+                             ->GetNativeWindow();
+  std::string id = browser_test_util::GetWindowId(window->GetRootWindow());
+  browser_test_util::WaitForWindowCreation(id);
+
+  EXPECT_FALSE(chrome::CanGoBack(browser()));
+  EXPECT_FALSE(chrome::CanGoForward(browser()));
+  CheckCanGoBackOnServer(id, false /* expected_value */);
+
+  // Navigate away to any valid URL, so the back/forward list changes.
+  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIAboutURL),
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  EXPECT_TRUE(chrome::CanGoBack(browser()));
+  EXPECT_FALSE(chrome::CanGoForward(browser()));
+  CheckCanGoBackOnServer(id, true /* expected_value */);
+
+  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUICreditsURL),
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_FALSE(chrome::CanGoBack(browser()));
+  EXPECT_FALSE(chrome::CanGoForward(browser()));
+  CheckCanGoBackOnServer(id, false /* expected_value */);
+
+  // Navigate the current (second) tab to a different URL, so we can test
+  // back/forward later.
+  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIFlagsURL),
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_TRUE(chrome::CanGoBack(browser()));
+  EXPECT_FALSE(chrome::CanGoForward(browser()));
+  CheckCanGoBackOnServer(id, true /* expected_value */);
+
+  // Tweak the back/forward list of the 2nd tab, and verify.
+  chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  EXPECT_FALSE(chrome::CanGoBack(browser()));
+  EXPECT_TRUE(chrome::CanGoForward(browser()));
+  CheckCanGoBackOnServer(id, false /* expected_value */);
+
+  // Switch to a different tab, and verify whether the `can go back` property
+  // updates accordingly.
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, {TabStripModel::GestureType::kOther});
+  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+
+  EXPECT_TRUE(chrome::CanGoBack(browser()));
+  EXPECT_FALSE(chrome::CanGoForward(browser()));
+  CheckCanGoBackOnServer(id, true /* expected_value */);
+}
