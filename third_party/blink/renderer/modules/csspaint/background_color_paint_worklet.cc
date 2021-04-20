@@ -247,7 +247,7 @@ Animation* BackgroundColorPaintWorklet::GetAnimationIfCompositable(
   DCHECK(effect->IsKeyframeEffect());
   const KeyframeEffectModelBase* model =
       static_cast<const KeyframeEffect*>(effect)->Model();
-  if (model->Composite() != EffectModel::kCompositeReplace)
+  if (model->AffectedByUnderlyingAnimations())
     return nullptr;
   const PropertySpecificKeyframeVector* frames =
       model->GetPropertySpecificKeyframes(
