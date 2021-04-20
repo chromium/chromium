@@ -198,7 +198,6 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
       base::BindOnce(&LockScreenReauthHandler::CheckCredentials,
                      weak_factory_.GetWeakPtr()));
 
-  std::string error_message;
   pending_user_context_ = std::make_unique<UserContext>();
   if (!login::BuildUserContextForGaiaSignIn(
           login::GetUsertypeFromServicesString(services),
@@ -208,7 +207,7 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
           SamlPasswordAttributes::FromJs(*password_attributes),
           /*sync_trusted_vault_keys=*/base::nullopt,
           *extension_provided_client_cert_usage_observer_,
-          pending_user_context_.get(), &error_message)) {
+          pending_user_context_.get(), nullptr)) {
     pending_user_context_.reset();
     NOTREACHED();
     return;

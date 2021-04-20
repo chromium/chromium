@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/login/screens/active_directory_login_screen.h"
 
+#include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_login_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/enrollment_screen_handler.h"
@@ -21,15 +23,15 @@ namespace {
 
 constexpr char kUserActionCancel[] = "cancel";
 
-std::string GetErrorMessage(authpolicy::ErrorType error) {
+chromeos::SigninError GetSigninError(authpolicy::ErrorType error) {
   switch (error) {
     case authpolicy::ERROR_NETWORK_PROBLEM:
-      return l10n_util::GetStringUTF8(IDS_AD_AUTH_NETWORK_ERROR);
+      return chromeos::SigninError::kActiveDirectoryNetworkProblem;
     case authpolicy::ERROR_KDC_DOES_NOT_SUPPORT_ENCRYPTION_TYPE:
-      return l10n_util::GetStringUTF8(IDS_AD_AUTH_NOT_SUPPORTED_ENCRYPTION);
+      return chromeos::SigninError::kActiveDirectoryNotSupportedEncryption;
     default:
       DLOG(WARNING) << "Unhandled error code: " << error;
-      return l10n_util::GetStringUTF8(IDS_AD_AUTH_UNKNOWN_ERROR);
+      return chromeos::SigninError::kActiveDirectoryUnknownError;
   }
 }
 
@@ -165,7 +167,9 @@ void ActiveDirectoryLoginScreen::OnAdAuthResult(
     default:
       view_->SetErrorState(username,
                            static_cast<int>(ActiveDirectoryErrorState::NONE));
-      view_->ShowSignInError(GetErrorMessage(error));
+      LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
+          GetSigninError(error), /*details=*/std::string(),
+          /*login_attempts=*/1);
   }
 }
 

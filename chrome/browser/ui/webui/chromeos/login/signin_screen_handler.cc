@@ -624,12 +624,6 @@ void SigninScreenHandler::OnPreferencesChanged() {
   }
 }
 
-void SigninScreenHandler::ShowError(const std::string& error_text,
-                                    const std::string& help_link_text,
-                                    HelpAppLauncher::HelpTopic help_topic_id) {
-  core_oobe_view_->ShowSignInError(error_text, help_link_text, help_topic_id);
-}
-
 void SigninScreenHandler::ShowAllowlistCheckFailedError() {
   gaia_screen_handler_->ShowAllowlistCheckFailedError();
 }

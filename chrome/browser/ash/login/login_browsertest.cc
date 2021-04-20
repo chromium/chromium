@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/login/test/offline_login_test_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/test/user_adding_screen_utils.h"
@@ -142,6 +143,8 @@ IN_PROC_BROWSER_TEST_F(LoginOnlineCryptohomeError, FatalScreenShown) {
                                 FakeGaiaMixin::kFakeUserPassword,
                                 FakeGaiaMixin::kEmptyUserServices);
   OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
+  test::ClickSignInFatalScreenActionButton();
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
 }
 
 class LoginOfflineManagedTest : public LoginManagerTest {

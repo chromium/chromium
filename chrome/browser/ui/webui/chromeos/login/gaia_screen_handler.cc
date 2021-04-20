@@ -45,6 +45,7 @@
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
+#include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
@@ -519,10 +520,9 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     if (public_saml_url_fetcher_->FetchSucceeded()) {
       params.SetString("frameUrl", public_saml_url_fetcher_->GetRedirectUrl());
     } else {
-      // TODO: make the string localized.
-      std::string msg = "Failed to fetch the SAML redirect URL from the server";
-      core_oobe_view_->ShowSignInError(
-          msg, std::string(), HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
+      LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
+          SigninError::kFailedToFetchSamlRedirect, /*details=*/std::string(),
+          /*login_attempts=*/1);
       return;
     }
   }
@@ -783,7 +783,7 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
                      base::Unretained(LoginDisplayHost::default_host())));
 
   pending_user_context_ = std::make_unique<UserContext>();
-  std::string error_message;
+  SigninError error;
   if (!login::BuildUserContextForGaiaSignIn(
           login::GetUsertypeFromServicesString(services),
           GetAccountId(email, gaia_id, AccountType::GOOGLE), using_saml,
@@ -794,9 +794,9 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
                     SyncTrustedVaultKeys::FromJs(*sync_trusted_vault_keys))
               : base::nullopt,
           *extension_provided_client_cert_usage_observer_,
-          pending_user_context_.get(), &error_message)) {
-    core_oobe_view_->ShowSignInError(error_message, std::string(),
-                                     HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
+          pending_user_context_.get(), &error)) {
+    LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
+        error, /*details=*/std::string(), /*login_attempts=*/1);
     pending_user_context_.reset();
     return;
   }
@@ -816,9 +816,9 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
 
 void GaiaScreenHandler::OnCookieWaitTimeout() {
   LoadAuthExtension(true /* force */);
-  core_oobe_view_->ShowSignInError(
-      l10n_util::GetStringUTF8(IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN),
-      std::string(), HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
+  LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
+      SigninError::kCookieWaitTimeout, /*details=*/std::string(),
+      /*login_attempts=*/1);
 }
 
 void GaiaScreenHandler::HandleCompleteLogin(const std::string& gaia_id,
@@ -1003,16 +1003,16 @@ void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,
       user_manager::UserManager::Get()->FindUser(account_id);
 
   UserContext user_context;
-  std::string error_message;
+  SigninError error;
   if (!login::BuildUserContextForGaiaSignIn(
           user ? user->GetType() : CalculateUserType(account_id),
           GetAccountId(typed_email, gaia_id, AccountType::GOOGLE), using_saml,
           using_saml_api_, password, SamlPasswordAttributes(),
           /*sync_trusted_vault_keys=*/base::nullopt,
           *extension_provided_client_cert_usage_observer_, &user_context,
-          &error_message)) {
-    core_oobe_view_->ShowSignInError(error_message, std::string(),
-                                     HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
+          &error)) {
+    LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
+        error, /*details=*/std::string(), /*login_attempts=*/1);
     return;
   }
 

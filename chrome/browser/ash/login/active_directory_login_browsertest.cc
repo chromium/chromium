@@ -13,9 +13,11 @@
 #include "chrome/browser/ash/login/test/active_directory_login_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
+#include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/network_service_instance.h"
@@ -163,6 +165,10 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryLoginTest, LoginErrors) {
   fake_authpolicy_client()->set_auth_error(authpolicy::ERROR_UNKNOWN);
   ad_login_.SubmitActiveDirectoryCredentials(test_user_, kPassword);
   ad_login_.WaitForAuthError();
+
+  OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
+  test::ClickSignInFatalScreenActionButton();
+
   // Inputs are not invalidated for the unknown error.
   ad_login_.TestNoError();
   ad_login_.TestDomainHidden();

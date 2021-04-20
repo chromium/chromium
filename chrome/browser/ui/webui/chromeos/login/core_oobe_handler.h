@@ -50,9 +50,6 @@ class CoreOobeView {
 
   virtual ~CoreOobeView() = default;
 
-  virtual void ShowSignInError(const std::string& error_text,
-                               const std::string& help_link_text,
-                               HelpAppLauncher::HelpTopic help_topic_id) = 0;
   virtual void ResetSignInUI(bool force_online) = 0;
   virtual void ClearErrors() = 0;
   virtual void ReloadContent(const base::DictionaryValue& dictionary) = 0;
@@ -121,9 +118,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
 
  private:
   // CoreOobeView implementation:
-  void ShowSignInError(const std::string& error_text,
-                       const std::string& help_link_text,
-                       HelpAppLauncher::HelpTopic help_topic_id) override;
   void ResetSignInUI(bool force_online) override;
   void ClearErrors() override;
   void ReloadContent(const base::DictionaryValue& dictionary) override;

@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api.h"
 #include "chromeos/login/auth/cryptohome_authenticator.h"
 #include "components/login/base_screen_handler_utils.h"
@@ -79,7 +80,7 @@ bool BuildUserContextForGaiaSignIn(
     const LoginClientCertUsageObserver&
         extension_provided_client_cert_usage_observer,
     UserContext* user_context,
-    std::string* error_message);
+    SigninError* error);
 
 }  // namespace login
 

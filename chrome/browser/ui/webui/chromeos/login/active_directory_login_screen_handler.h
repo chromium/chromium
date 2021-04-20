@@ -12,7 +12,6 @@
 namespace chromeos {
 
 class ActiveDirectoryLoginScreen;
-class CoreOobeView;
 
 // Interface for dependency injection between ActiveDirectoryLoginScreen and its
 // WebUI representation.
@@ -36,9 +35,6 @@ class ActiveDirectoryLoginView {
 
   // Set error state.
   virtual void SetErrorState(const std::string& username, int errorState) = 0;
-
-  // Shows sign-in error bubble.
-  virtual void ShowSignInError(const std::string& error_text) = 0;
 };
 
 class ActiveDirectoryLoginScreenHandler : public ActiveDirectoryLoginView,
@@ -47,8 +43,7 @@ class ActiveDirectoryLoginScreenHandler : public ActiveDirectoryLoginView,
   using TView = ActiveDirectoryLoginView;
 
   explicit ActiveDirectoryLoginScreenHandler(
-      JSCallsContainer* js_calls_container,
-      CoreOobeView* core_oobe_view);
+      JSCallsContainer* js_calls_container);
 
   ~ActiveDirectoryLoginScreenHandler() override;
 
@@ -67,7 +62,6 @@ class ActiveDirectoryLoginScreenHandler : public ActiveDirectoryLoginView,
   void Unbind() override;
   void Reset() override;
   void SetErrorState(const std::string& username, int errorState) override;
-  void ShowSignInError(const std::string& error_text) override;
 
   // BaseScreenHandler:
   void RegisterMessages() override;
@@ -79,9 +73,6 @@ class ActiveDirectoryLoginScreenHandler : public ActiveDirectoryLoginView,
 
   // Whether the screen should be shown right after initialization.
   bool show_on_init_ = false;
-
-  // Non-owned. Used to display signin error.
-  CoreOobeView* core_oobe_view_ = nullptr;
 };
 
 }  // namespace chromeos

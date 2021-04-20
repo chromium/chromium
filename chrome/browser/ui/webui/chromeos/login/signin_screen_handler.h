@@ -55,9 +55,6 @@ class LoginDisplayWebUIHandler {
  public:
   virtual void ClearAndEnablePassword() = 0;
   virtual void OnPreferencesChanged() = 0;
-  virtual void ShowError(const std::string& error_text,
-                         const std::string& help_link_text,
-                         HelpAppLauncher::HelpTopic help_topic_id) = 0;
   virtual void ShowAllowlistCheckFailedError() = 0;
 
  protected:
@@ -185,9 +182,6 @@ class SigninScreenHandler
   // LoginDisplayWebUIHandler implementation:
   void ClearAndEnablePassword() override;
   void OnPreferencesChanged() override;
-  void ShowError(const std::string& error_text,
-                 const std::string& help_link_text,
-                 HelpAppLauncher::HelpTopic help_topic_id) override;
   void ShowAllowlistCheckFailedError() override;
 
   // content::NotificationObserver implementation:

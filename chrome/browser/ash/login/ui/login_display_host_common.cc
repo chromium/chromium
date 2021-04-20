@@ -138,14 +138,29 @@ int ErrorToMessageId(SigninError error) {
       return IDS_LOGIN_ERROR_AUTHENTICATING;
     case SigninError::kOwnerKeyLost:
       return IDS_LOGIN_ERROR_OWNER_KEY_LOST;
+    case SigninError::kChallengeResponseAuthMultipleClientCerts:
+      return IDS_CHALLENGE_RESPONSE_AUTH_MULTIPLE_CLIENT_CERTS_ERROR;
+    case SigninError::kChallengeResponseAuthInvalidClientCert:
+      return IDS_CHALLENGE_RESPONSE_AUTH_INVALID_CLIENT_CERT_ERROR;
+    case SigninError::kCookieWaitTimeout:
+      return IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN;
+    case SigninError::kFailedToFetchSamlRedirect:
+      return IDS_FAILED_TO_FETCH_SAML_REDIRECT;
+    case SigninError::kActiveDirectoryNetworkProblem:
+      return IDS_AD_AUTH_NETWORK_ERROR;
+    case SigninError::kActiveDirectoryNotSupportedEncryption:
+      return IDS_AD_AUTH_NOT_SUPPORTED_ENCRYPTION;
+    case SigninError::kActiveDirectoryUnknownError:
+      return IDS_AD_AUTH_UNKNOWN_ERROR;
   }
 }
 
 bool IsAuthError(SigninError error) {
-  return error != SigninError::kOwnerKeyLost &&
-         error != SigninError::kOwnerRequired &&
-         error != SigninError::kGoogleAccountNotAllowed &&
-         error != SigninError::kTpmUpdateRequired;
+  return error == SigninError::kCaptivePortalError ||
+         error == SigninError::kAuthenticationError ||
+         error == SigninError::kOfflineFailedNetworkNotConnected ||
+         error == SigninError::kAuthenticatingNew ||
+         error == SigninError::kAuthenticating;
 }
 
 }  // namespace

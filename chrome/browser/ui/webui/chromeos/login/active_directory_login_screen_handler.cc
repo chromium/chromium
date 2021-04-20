@@ -20,10 +20,8 @@ namespace chromeos {
 constexpr StaticOobeScreenId ActiveDirectoryLoginView::kScreenId;
 
 ActiveDirectoryLoginScreenHandler::ActiveDirectoryLoginScreenHandler(
-    JSCallsContainer* js_calls_container,
-    CoreOobeView* core_oobe_view)
-    : BaseScreenHandler(kScreenId, js_calls_container),
-      core_oobe_view_(core_oobe_view) {
+    JSCallsContainer* js_calls_container)
+    : BaseScreenHandler(kScreenId, js_calls_container) {
   set_user_acted_method_path("login.ActiveDirectoryLoginScreen.userActed");
 }
 
@@ -94,13 +92,6 @@ void ActiveDirectoryLoginScreenHandler::SetErrorState(
     int errorState) {
   CallJS("login.ActiveDirectoryLoginScreen.setErrorState", username,
          errorState);
-}
-
-void ActiveDirectoryLoginScreenHandler::ShowSignInError(
-    const std::string& error_text) {
-  core_oobe_view_->ShowSignInError(error_text,
-                                   std::string() /* help_link_text */,
-                                   HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
 }
 
 void ActiveDirectoryLoginScreenHandler::HandleCompleteAuth(

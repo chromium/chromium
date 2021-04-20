@@ -176,6 +176,10 @@ void ExitScreenSyncConsent() {
   WaitForExit(SyncConsentScreenView::kScreenId);
 }
 
+void ClickSignInFatalScreenActionButton() {
+  test::OobeJS().ClickOnPath({"signin-fatal-error", "actionButton"});
+}
+
 bool IsScanningRequestedOnNetworkScreen() {
   return test::OobeJS().GetAttributeBool(
       "enableWifiScans",

@@ -32,6 +32,8 @@ void TapEulaAccept();
 void WaitForSyncConsentScreen();
 void ExitScreenSyncConsent();
 
+void ClickSignInFatalScreenActionButton();
+
 bool IsScanningRequestedOnNetworkScreen();
 bool IsScanningRequestedOnErrorScreen();
 

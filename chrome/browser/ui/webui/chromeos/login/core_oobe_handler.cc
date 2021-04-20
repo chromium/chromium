@@ -147,15 +147,6 @@ void CoreOobeHandler::RegisterMessages() {
   AddCallback("enableShelfButtons", &CoreOobeHandler::HandleEnableShelfButtons);
 }
 
-void CoreOobeHandler::ShowSignInError(
-    const std::string& error_text,
-    const std::string& help_link_text,
-    HelpAppLauncher::HelpTopic help_topic_id) {
-  LOG(ERROR) << "CoreOobeHandler::ShowSignInError: error_text=" << error_text;
-  CallJS("cr.ui.Oobe.showSignInError", error_text, help_link_text,
-         static_cast<int>(help_topic_id));
-}
-
 void CoreOobeHandler::ShowDeviceResetScreen() {
   LaunchResetScreen();
 }
