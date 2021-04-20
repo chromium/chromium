@@ -22,21 +22,23 @@ CPU profiling is not to be confused with tracing or task profiling:
 * https://www.chromium.org/developers/threaded-task-tracking
 ***
 
-## Profiling on Linux
+# Profiling on Linux
+
+## General checkout setup
+Profiling should always be done on a Release build, which has very similar performance characteristics to an official build. Make sure the following appears in your `args.gn` file:
+
+    is_debug = false
+    blink_symbol_level = 2
+    symbol_level = 2
+
+    # Needed for built-in profiling only
+    enable_profiling = true
+
+## Profiling using built-in tcmalloc profiler
 
 Profiling support is built into tcmalloc and exposed in chromium, so any platform that uses tcmalloc should be able to generate profiling data without using external tools.
 
-### Preparing your checkout
-
-Profiling should always be done on a Release build, which has very similiar performance characteristics to an official build. Make sure the following appears in your `args.gn` file:
-
-    is_debug = false
-    enable_profiling = true
-    enable_callgrind = true
-    blink_symbol_level = 2
-    symbol_level = 2
-    
-### Preparing your environment
+#### Preparing your environment
 
 By default, the profiler will take a sample 100 times per second. You can adjust this rate by setting the `CPUPROFILE_FREQUENCY` environment variable before launching chromium:
 
@@ -44,7 +46,7 @@ By default, the profiler will take a sample 100 times per second. You can adjust
     
 The maximum supported rate is 4000 samples per second.
 
-### Profiling a process over its entire lifetime
+#### Profiling a process over its entire lifetime
 
 To profile the main browser process, add the following argument to your chrome invocation:
 
@@ -77,7 +79,7 @@ When the process being profiled ends, you should see one or more `chrome-profile
 Tip for Googlers: running `prodaccess` first will make `pprof` run faster, and eliminate some useless spew to the terminal.
 ***
 
-### Profiling a process or thread for a defined period of time using perf
+## Profiling a process or thread for a defined period of time using perf
 
 First, make sure you have the `linux-perf` package installed:
 
@@ -111,7 +113,7 @@ From the output, find the Thread ID (column header "SPID") of the thread you wan
     
 Use the same `pprof` command as above to view the single-thread results.
 
-### Profiling the renderer process for a period defined in javascript
+## Profiling the renderer process for a period defined in javascript
 
 You can generate a highly-focused profile for any period that can be defined in javascript using the `chrome.gpuBenchmarking` javascript interface. First, adding the following command-line flags when you start chrome:
 
@@ -125,17 +127,9 @@ Open devtools, and in the console, use `chrome.gpuBenchmarking.startProfiling` a
 
     > chrome.gpuBenchmarking.startProfiling('perf.data'); chrome.gpuBenchmarking.smoothScrollByXY(0, 1000, () => { chrome.gpuBenchmarking.stopProfiling() });
 
-### Profiling content_shell with callgrind
+## Profiling content_shell with callgrind
 
 This section contains instructions on how to do profiling using the callgrind/cachegrind tools provided by valgrind. This is not a sampling profiler, but a profiler based on running on a simulated CPU. The instructions are Linux-centered, but might work on other platforms too.
-
-#### GN configuration
-
-As with the other options you typically profile a release build with symbols. In order to do so, add enable_profiling to `args.gn`:
-
-```
-enable_profiling = true
-```
 
 #### Install valgrind
 
@@ -173,7 +167,7 @@ sudo apt-get install kcachegrind
 kcachegrind callgrind.<pid>
 ```
 
-## Profiling on Android
+# Profiling on Android
 
 Android (Nougat and later) supports profiling using the [simpleperf](https://developer.android.com/ndk/guides/simpleperf) tool.
 
@@ -196,7 +190,7 @@ The `--profile-process` and `--profile-thread` arguments support most of the com
 
     $ src/out/Release/bin/chrome_public_apk help profile
 
-## Profiling on ChromeOS
+# Profiling on ChromeOS
 
 Follow the [simple chrome instructions](https://chromium.googlesource.com/chromiumos/docs/+/HEAD/simple_chrome_workflow.md), to build
 and deploy chrome to your chromeos device.  These instructions will set up a
@@ -229,7 +223,7 @@ PPROF\_BINARY\_PATH at the expanded `debug-board.tgz` file that came along with
 the chromeos image does not seem to work.  If you can make this work, please
 update this doc!
 
-## Profiling during a perf benchmark run
+# Profiling during a perf benchmark run
 
 The perf benchmark runner can generate a CPU profile over the course of running a perf test. Currently, this is supported only on Linux and Android. To get info about the relevant options, run:
 
@@ -241,7 +235,7 @@ The perf benchmark runner can generate a CPU profile over the course of running 
 
 The profiling data will be written into the `artifacts/` sub-directory of your perf benchmark output directory (default is `src/tools/perf`), to files with the naming pattern `*.profile.pb`. You can use `pprof` to view the results, as described above.
 
-## Googlers Only
+# Googlers Only
 
 If you use `pprof -proto chrome-profile-renderer-12345` to turn your perf data
 into a proto file, you can then use that resulting file with internal tools.
