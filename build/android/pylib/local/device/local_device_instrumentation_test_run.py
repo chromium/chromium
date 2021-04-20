@@ -110,6 +110,7 @@ RENDER_TEST_MODEL_SDK_CONFIGS = {
     'Android SDK built for x86': [23],
 }
 
+_BATCH_SUFFIX = '_batch'
 _TEST_BATCH_MAX_GROUP_SIZE = 256
 
 
@@ -593,7 +594,8 @@ class LocalDeviceInstrumentationTestRun(
 
       test_names, timeouts = zip(*(name_and_timeout(t) for t in test))
 
-      test_name = instrumentation_test_instance.GetTestName(test[0]) + '_batch'
+      test_name = instrumentation_test_instance.GetTestName(
+          test[0]) + _BATCH_SUFFIX
       extras['class'] = ','.join(test_names)
       test_display_name = test_name
       timeout = min(MAX_BATCH_TEST_TIMEOUT,
@@ -860,7 +862,50 @@ class LocalDeviceInstrumentationTestRun(
           # We don't always detect crashes correctly. In this case,
           # associate with the first test.
           results[0].SetLink('tombstones', tombstone_file.Link())
-    return results, None
+
+    unknown_tests = set(r.GetName() for r in results
+                        if r.GetType() == base_test_result.ResultType.UNKNOWN)
+
+    # If a test that is batched crashes, the rest of the tests in that batch
+    # won't be ran and will have their status left as unknown in results,
+    # so rerun the tests. (see crbug/1127935)
+    # Need to "unbatch" the tests, so that on subsequent tries, the tests can
+    # get ran individually. This prevents an unrecognized crash from preventing
+    # the tests in the batch from being ran. Running the test as unbatched does
+    # not happen until a retry happens at the local_device_test_run/environment
+    # level.
+    tests_to_rerun = []
+    for t in iterable_test:
+      if self._GetUniqueTestName(t) in unknown_tests:
+        prior_attempts = t.get('run_attempts', 0)
+        t['run_attempts'] = prior_attempts + 1
+        # It's possible every test in the batch could crash, so need to
+        # try up to as many times as tests that there are.
+        if prior_attempts < len(results):
+          if t['annotations']:
+            t['annotations'].pop('Batch', None)
+          tests_to_rerun.append(t)
+
+    # If we have a crash that isn't recognized as a crash in a batch, the tests
+    # will be marked as unknown. When they're reran unbatched and pass,
+    # they'll have an UNKNOWN, PASS status, so will be improperly marked as
+    # flaky, so change status to NOTRUN and don't try rerunning. They will
+    # get rerun individually at the local_device_test_run/environment level.
+    # as the "Batch" annotation was removed.
+    found_crash = False
+    for r in results:
+      if r.GetType() == base_test_result.ResultType.CRASH:
+        found_crash = True
+        break
+    if not found_crash:
+      # Don't bother rerunning since the unrecognized crashes in
+      # the batch will keep failing.
+      tests_to_rerun = None
+      for r in results:
+        if r.GetType() == base_test_result.ResultType.UNKNOWN:
+          r.SetType(base_test_result.ResultType.NOTRUN)
+
+    return results, tests_to_rerun if tests_to_rerun else None
 
   def _GetTestsFromRunner(self):
     test_apk_path = self._test_instance.test_apk.path
@@ -1416,7 +1461,7 @@ def _ShouldReportNoMatchingResult(full_test_name):
     False if the failure to find a matching result is expected and should not
     be reported, otherwise True.
   """
-  if full_test_name is not None and full_test_name.endswith('_batch'):
+  if full_test_name is not None and full_test_name.endswith(_BATCH_SUFFIX):
     # Handle batched tests, whose reported name is the first test's name +
     # "_batch".
     return False
