@@ -61,8 +61,8 @@ void SetPrimaryAccount(IdentityManager* identity_manager,
       /*gaia=*/device_account.key.id, device_account.raw_email);
   // TODO(https://crbug.com/1194983): Figure out how split sync settings will
   // work here.
-  identity_manager->GetPrimaryAccountMutator()->SetUnconsentedPrimaryAccount(
-      account_id);
+  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      account_id, ConsentLevel::kSignin);
 
   CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
   CHECK_EQ(identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia,

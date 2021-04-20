@@ -810,7 +810,8 @@ TEST_F(AccountReconcilorMirrorTest, Reauth) {
   auto* account_mutator =
       identity_test_env()->identity_manager()->GetPrimaryAccountMutator();
   DCHECK(account_mutator);
-  account_mutator->SetPrimaryAccount(account_info.account_id);
+  account_mutator->SetPrimaryAccount(account_info.account_id,
+                                     signin::ConsentLevel::kSync);
 
   ASSERT_TRUE(reconcilor->IsRegisteredWithIdentityManager());
 }

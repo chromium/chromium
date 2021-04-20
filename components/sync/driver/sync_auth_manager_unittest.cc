@@ -199,7 +199,8 @@ TEST_F(SyncAuthManagerTest, ForwardsSecondaryAccountEvents) {
   EXPECT_CALL(account_state_changed, Run());
   signin::PrimaryAccountMutator* primary_account_mutator =
       identity_env()->identity_manager()->GetPrimaryAccountMutator();
-  primary_account_mutator->SetPrimaryAccount(account_info.account_id);
+  primary_account_mutator->SetPrimaryAccount(account_info.account_id,
+                                             signin::ConsentLevel::kSync);
 
   EXPECT_TRUE(auth_manager->GetActiveAccountInfo().is_primary);
 }

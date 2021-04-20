@@ -183,7 +183,8 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
       base::SysNSStringToUTF8(identity.email));
   CHECK(_identityManager->HasAccountWithRefreshToken(accountId));
 
-  _identityManager->GetPrimaryAccountMutator()->SetPrimaryAccount(accountId);
+  _identityManager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      accountId, signin::ConsentLevel::kSync);
   CHECK_EQ(_identityManager->GetPrimaryAccountId(signin::ConsentLevel::kSync),
            accountId);
 

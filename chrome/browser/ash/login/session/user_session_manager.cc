@@ -1323,8 +1323,8 @@ void UserSessionManager::InitProfilePreferences(
       // CrashRestoreComplexTest.RestoreSessionForThreeUsers.
       if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin)) {
         // Set the account without recording browser sync consent.
-        identity_manager->GetPrimaryAccountMutator()
-            ->SetUnconsentedPrimaryAccount(account_id);
+        identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+            account_id, ConsentLevel::kSignin);
       }
 
       CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
@@ -1336,7 +1336,7 @@ void UserSessionManager::InitProfilePreferences(
       // created with the feature SplitSettingsSync enabled. Then the
       // profile might only have an unconsented primary account.
       identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-          account_id);
+          account_id, ConsentLevel::kSync);
 
       CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
       CHECK_EQ(

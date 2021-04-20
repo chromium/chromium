@@ -232,7 +232,8 @@ void SyncConsentScreen::UpdateSyncSettings(bool enable_sync) {
   CoreAccountId account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   DCHECK(!account_id.empty());
-  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(account_id);
+  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      account_id, signin::ConsentLevel::kSync);
 
   // Only enable URL-keyed metrics if the user turned on browser sync.
   if (enable_sync) {

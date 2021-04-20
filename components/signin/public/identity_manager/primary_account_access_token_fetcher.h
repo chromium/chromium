@@ -166,7 +166,7 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
   bool access_token_request_retried() { return access_token_retried_; }
 
  private:
-  // Returns the primary account ID. If consent is |kNotRequired| this may be
+  // Returns the primary account ID. If consent is |kSignin| this may be
   // the "unconsented" primary account ID.
   CoreAccountId GetAccountId() const;
 

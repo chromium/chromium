@@ -408,8 +408,8 @@ AccountInfo IdentityTestEnvironment::MakeUnconsentedPrimaryAccountAvailable(
   // Chrome OS sets the unconsented primary account during login and does not
   // allow signout.
   AccountInfo account_info = MakeAccountAvailable(email);
-  identity_manager()->GetPrimaryAccountMutator()->SetUnconsentedPrimaryAccount(
-      account_info.account_id);
+  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      account_info.account_id, signin::ConsentLevel::kSignin);
 #elif defined(OS_IOS)
   // iOS only support the primary account.
   AccountInfo account_info = MakePrimaryAccountAvailable(email);
@@ -421,9 +421,8 @@ AccountInfo IdentityTestEnvironment::MakeUnconsentedPrimaryAccountAvailable(
   // Tests that don't use the |SigninManager| needs the unconsented primary
   // account to be set manually.
   if (!identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin)) {
-    identity_manager()
-        ->GetPrimaryAccountMutator()
-        ->SetUnconsentedPrimaryAccount(account_info.account_id);
+    identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+        account_info.account_id, signin::ConsentLevel::kSignin);
   }
 #endif
   DCHECK(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));

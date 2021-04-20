@@ -207,10 +207,8 @@ void TurnSyncOnHelper::FinishSyncSetup(
       CoreAccountId account_id =
           identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
       DCHECK(!account_id.empty());
-      // TODO(https://crbug.com/1046746): Switch to consent-aware API
-      // PrimaryAccountMutator::GrantSyncConsent() when that exists.
       identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
-          account_id);
+          account_id, signin::ConsentLevel::kSync);
       break;
     }
     case LoginUIService::ABORT_SYNC:

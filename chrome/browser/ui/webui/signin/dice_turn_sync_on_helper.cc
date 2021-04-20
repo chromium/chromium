@@ -479,7 +479,8 @@ void DiceTurnSyncOnHelper::OnNewSignedInProfileCreated(Profile* new_profile) {
 void DiceTurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
   // Signin.
   auto* primary_account_mutator = identity_manager_->GetPrimaryAccountMutator();
-  primary_account_mutator->SetPrimaryAccount(account_info_.account_id);
+  primary_account_mutator->SetPrimaryAccount(account_info_.account_id,
+                                             signin::ConsentLevel::kSync);
   signin_metrics::LogSigninAccessPointCompleted(signin_access_point_,
                                                 signin_promo_action_);
   signin_metrics::LogSigninReason(signin_reason_);

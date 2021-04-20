@@ -855,8 +855,8 @@ TEST_F(DiceTurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
   user_policy_signin_service()->set_client_id("bar");
   enterprise_choice_ = DiceTurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE;
   UseEnterpriseAccount();
-  identity_manager()->GetPrimaryAccountMutator()->SetUnconsentedPrimaryAccount(
-      account_id());
+  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      account_id(), signin::ConsentLevel::kSignin);
 
   // Signin flow.
   CreateDiceTurnOnSyncHelper(

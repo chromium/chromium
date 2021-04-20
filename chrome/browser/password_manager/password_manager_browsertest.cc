@@ -4092,7 +4092,7 @@ class PasswordManagerBrowserTestWithSigninInterception
         browser()->profile(), "dummy_email@example.com", "dummy_gaia_id");
     IdentityManagerFactory::GetForProfile(browser()->profile())
         ->GetPrimaryAccountMutator()
-        ->SetUnconsentedPrimaryAccount(dummy_account);
+        ->SetPrimaryAccount(dummy_account, signin::ConsentLevel::kSignin);
   }
 
  protected:

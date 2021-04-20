@@ -353,7 +353,7 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
       break;
     case RemoveAccountsOption::kKeepAllAccounts:
       if (previous_state.consent_level == signin::ConsentLevel::kSignin) {
-        // Nothing to update as the primary account is already at kNotRequired
+        // Nothing to update as the primary account is already at kSignin
         // consent level. Prefer returning to avoid firing useless
         // OnPrimaryAccountChanged() notifications.
         return;

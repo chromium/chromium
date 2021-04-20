@@ -31,8 +31,8 @@ class PrimaryAccountMutatorImpl : public PrimaryAccountMutator {
   ~PrimaryAccountMutatorImpl() override;
 
   // PrimaryAccountMutator implementation.
-  bool SetPrimaryAccount(const CoreAccountId& account_id) override;
-  void SetUnconsentedPrimaryAccount(const CoreAccountId& account_id) override;
+  bool SetPrimaryAccount(const CoreAccountId& account_id,
+                         ConsentLevel consent_level) override;
   void RevokeSyncConsent(signin_metrics::ProfileSignout source_metric,
                          signin_metrics::SignoutDelete delete_metric) override;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

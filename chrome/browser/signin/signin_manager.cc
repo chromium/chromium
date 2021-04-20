@@ -31,8 +31,8 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
             signin::ConsentLevel::kSignin) != account) {
       DCHECK(
           !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
-      identity_manager_->GetPrimaryAccountMutator()
-          ->SetUnconsentedPrimaryAccount(account->account_id);
+      identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
+          account->account_id, signin::ConsentLevel::kSignin);
     }
   } else if (identity_manager_->HasPrimaryAccount(
                  signin::ConsentLevel::kSignin)) {

@@ -1259,8 +1259,7 @@ TEST_F(IdentityManagerTest, RemoveAccessTokenFromCache) {
   identity_manager()->GetAccountTrackerService()->SeedAccountInfo(kTestGaiaId,
                                                                   kTestEmail);
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      primary_account_id());
-
+      primary_account_id(), ConsentLevel::kSync);
   SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
                             "refresh_token");
 
@@ -1303,7 +1302,7 @@ TEST_F(IdentityManagerTest,
   identity_manager()->GetAccountTrackerService()->SeedAccountInfo(kTestGaiaId,
                                                                   kTestEmail);
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      primary_account_id());
+      primary_account_id(), ConsentLevel::kSync);
   SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
                             "refresh_token");
 
@@ -1396,7 +1395,7 @@ TEST_F(IdentityManagerTest, ObserveAccessTokenFetch) {
   identity_manager()->GetAccountTrackerService()->SeedAccountInfo(kTestGaiaId,
                                                                   kTestEmail);
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      primary_account_id());
+      primary_account_id(), ConsentLevel::kSync);
   SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
                             "refresh_token");
 
@@ -1454,7 +1453,7 @@ TEST_F(IdentityManagerTest,
   identity_manager()->GetAccountTrackerService()->SeedAccountInfo(kTestGaiaId,
                                                                   kTestEmail);
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      primary_account_id());
+      primary_account_id(), ConsentLevel::kSync);
   SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
                             "refresh_token");
   token_service()->set_auto_post_fetch_response_on_message_loop(true);
@@ -2146,7 +2145,7 @@ TEST_F(IdentityManagerTest,
   identity_manager()->GetAccountTrackerService()->SeedAccountInfo(kTestGaiaId,
                                                                   kTestEmail);
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      primary_account_id());
+      primary_account_id(), ConsentLevel::kSync);
   SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
                             "refresh_token");
 
