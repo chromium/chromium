@@ -54,6 +54,7 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
   gfx::Size GetMaxAvailableSizeToFitBubbleOnScreen(int action_index) override;
 
  private:
+  class MenuViewObserver;
   class Wrapper;
 
   // Returns the ExtensionsMenuItemView at the given |index| from the
@@ -68,7 +69,17 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
 
   Browser* const browser_;
   ExtensionsToolbarContainer* extensions_container_ = nullptr;
-  std::unique_ptr<ExtensionsMenuView> menu_view_;
+
+  // Helps make sure that |menu_view_| set to null when destroyed by the widget
+  // or via manual means.
+  std::unique_ptr<MenuViewObserver> menu_view_observer_;
+
+  // The owned version of |menu_view_|. Strongly prefer using |menu_view_|. May
+  // be null when ownership is conditionally transferred to the bubble.
+  std::unique_ptr<ExtensionsMenuView> owned_menu_view_;
+
+  // The actual pointer to an ExtensionsMenuView, non-null if alive.
+  ExtensionsMenuView* menu_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_TEST_UTIL_H_

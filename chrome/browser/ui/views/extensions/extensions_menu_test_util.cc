@@ -27,6 +27,21 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
+
+class ExtensionsMenuTestUtil::MenuViewObserver : public views::ViewObserver {
+ public:
+  explicit MenuViewObserver(ExtensionsMenuView** menu_view_ptr)
+      : menu_view_ptr_(menu_view_ptr) {}
+  ~MenuViewObserver() override = default;
+
+ private:
+  void OnViewIsDeleting(views::View* observed_view) override {
+    *menu_view_ptr_ = nullptr;
+  }
+
+  ExtensionsMenuView** const menu_view_ptr_;
+};
 
 // A view wrapper class that owns the ExtensionsToolbarContainer.
 // This is used when we don't have a "real" browser window, because the
@@ -57,7 +72,8 @@ ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(Browser* browser,
                                                bool is_real_window)
     : scoped_allow_extensions_menu_instances_(
           ExtensionsMenuView::AllowInstancesForTesting()),
-      browser_(browser) {
+      browser_(browser),
+      menu_view_observer_(std::make_unique<MenuViewObserver>(&menu_view_)) {
   if (is_real_window) {
     extensions_container_ = BrowserView::GetBrowserViewForBrowser(browser_)
                                 ->toolbar()
@@ -66,11 +82,24 @@ ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(Browser* browser,
     wrapper_ = std::make_unique<Wrapper>(browser);
     extensions_container_ = wrapper_->extensions_container();
   }
-  menu_view_ = std::make_unique<ExtensionsMenuView>(
+  owned_menu_view_ = std::make_unique<ExtensionsMenuView>(
       extensions_container_->extensions_button(), browser_,
       extensions_container_, true);
+  menu_view_ = owned_menu_view_.get();
+  // The static_cast is needed to disambiguate between View::AddObserver and
+  // DialogDelegate::AddObserver.
+  static_cast<views::View*>(menu_view_)->AddObserver(menu_view_observer_.get());
+  if (is_real_window)
+    views::BubbleDialogDelegateView::CreateBubble(std::move(owned_menu_view_));
 }
-ExtensionsMenuTestUtil::~ExtensionsMenuTestUtil() = default;
+
+ExtensionsMenuTestUtil::~ExtensionsMenuTestUtil() {
+  if (!owned_menu_view_ && menu_view_) {
+    // If we don't own menu_view_, a widget owns menu_view_.
+    menu_view_->GetWidget()->CloseNow();
+    DCHECK_EQ(menu_view_, nullptr);
+  }
+}
 
 int ExtensionsMenuTestUtil::NumberOfBrowserActions() {
   return menu_view_->extensions_menu_items_for_testing().size();
