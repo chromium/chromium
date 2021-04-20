@@ -16,7 +16,6 @@ namespace blink {
 
 class NGConstraintSpace;
 class NGInlineChildLayoutContext;
-class NGInlineNodeLegacy;
 class NGLayoutResult;
 class NGOffsetMapping;
 struct NGInlineItemsData;
@@ -169,7 +168,6 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
                                    NGInlineNodeData* data);
 
   friend class NGLineBreakerTest;
-  friend class NGInlineNodeLegacy;
 };
 
 inline bool NGInlineNode::IsStickyImagesQuirkForContentSize() const {
