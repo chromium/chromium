@@ -35,6 +35,7 @@
 namespace {
 
 using ::testing::ElementsAreArray;
+using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAreArray;
 
 const char kTestLanguage[] = "en";
@@ -1061,7 +1062,8 @@ TEST_F(TranslatePrefsTest, DefaultBlockedLanguages) {
 // Series of tests for the AlwaysTranslateLanguagesList manipulation functions.
 TEST_F(TranslatePrefsTest, AlwaysTranslateLanguages) {
   EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
-  translate_prefs_->AddLanguagePairToAlwaysTranslateList("af", "en");
+  // Add translate language with country code.
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("af-ZA", "en-US");
   EXPECT_TRUE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
 
   // IsLanguagePairOnAlwaysTranslateList
@@ -1110,6 +1112,51 @@ TEST_F(TranslatePrefsTest, AlwaysTranslateLanguages) {
   EXPECT_EQ(std::vector<std::string>({"am"}), always_translate_languages);
   translate_prefs_->SetLanguageAlwaysTranslateState("am", false);
   EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
+}
+
+// Test that a language can not be on both the never and always translate list.
+TEST_F(TranslatePrefsTest, NeverOnAlwaysAndNever) {
+  // "en" is a default blocked language, it should be present already.
+  ExpectBlockedLanguageListContent({"en"});
+
+  // Build up blocked language list to test removing languages.
+  translate_prefs_->BlockLanguage("fr-CA");
+  translate_prefs_->BlockLanguage("es-AR");
+  translate_prefs_->BlockLanguage("de-de");
+  ExpectBlockedLanguageListContent({"en", "fr", "es", "de"});
+
+  // Add "fr" to always translate list.  Should remove from blocked list.
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("fr", "en");
+  ExpectBlockedLanguageListContent({"en", "es", "de"});
+  // Adding "es" as a target language does nothing.
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("af", "es");
+  ExpectBlockedLanguageListContent({"en", "es", "de"});
+
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("en", "hi");
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("es", "en");
+  ExpectBlockedLanguageListContent({"de"});
+
+  // Can not delete the last item from the blocked list.  In this case the
+  // language will be on both list. (https://crbug.com/1196490).
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("de", "en");
+  ExpectBlockedLanguageListContent({"de"});
+
+  // Check that the always translate list is what we expect.
+  EXPECT_THAT(translate_prefs_->GetAlwaysTranslateLanguages(),
+              ElementsAreArray({"af", "de", "en", "es", "fr"}));
+
+  // Build up blocked language list and remove from always translate list.
+  translate_prefs_->BlockLanguage("fr-CA");
+  EXPECT_THAT(translate_prefs_->GetAlwaysTranslateLanguages(),
+              ElementsAreArray({"af", "de", "en", "es"}));
+  translate_prefs_->BlockLanguage("es-AR");
+  translate_prefs_->BlockLanguage("de");
+  translate_prefs_->BlockLanguage("af");
+  EXPECT_THAT(translate_prefs_->GetAlwaysTranslateLanguages(),
+              ElementsAreArray({"en"}));
+
+  translate_prefs_->BlockLanguage("en");
+  EXPECT_THAT(translate_prefs_->GetAlwaysTranslateLanguages(), IsEmpty());
 }
 
 TEST_F(TranslatePrefsTest, CanTranslateLanguage) {

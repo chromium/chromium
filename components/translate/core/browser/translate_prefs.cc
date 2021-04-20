@@ -504,6 +504,8 @@ void TranslatePrefs::GetTranslatableContentLanguages(
 void TranslatePrefs::BlockLanguage(base::StringPiece input_language) {
   DCHECK(!input_language.empty());
   language_prefs_->SetFluent(input_language);
+  // Remove the blocked language from the always translate list if present.
+  SetLanguageAlwaysTranslateState(input_language, false);
 }
 
 void TranslatePrefs::UnblockLanguage(base::StringPiece input_language) {
@@ -577,7 +579,15 @@ void TranslatePrefs::AddLanguagePairToAlwaysTranslateList(
     NOTREACHED() << "Always translate pref is unregistered";
     return;
   }
-  dict->SetStringKey(original_language, target_language);
+  // Get translate version of language codes.
+  std::string translate_original_language(original_language);
+  language::ToTranslateLanguageSynonym(&translate_original_language);
+  std::string translate_target_language(target_language);
+  language::ToTranslateLanguageSynonym(&translate_target_language);
+
+  dict->SetStringKey(translate_original_language, translate_target_language);
+  // Remove original language from block list if present.
+  UnblockLanguage(translate_original_language);
 }
 
 void TranslatePrefs::RemoveLanguagePairFromAlwaysTranslateList(
@@ -589,7 +599,10 @@ void TranslatePrefs::RemoveLanguagePairFromAlwaysTranslateList(
     NOTREACHED() << "Always translate pref is unregistered";
     return;
   }
-  dict->RemoveKey(original_language);
+  // Get translate version of language codes.
+  std::string translate_original_language(original_language);
+  language::ToTranslateLanguageSynonym(&translate_original_language);
+  dict->RemoveKey(translate_original_language);
 }
 
 void TranslatePrefs::SetLanguageAlwaysTranslateState(

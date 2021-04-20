@@ -178,6 +178,8 @@ class TranslatePrefs {
   // Translate is enabled.
   void ResetToDefaults();
 
+  // Before adding to, removing from, or checking the block list the original
+  // language is converted to its translate synonym.
   bool IsBlockedLanguage(base::StringPiece original_language) const;
   void BlockLanguage(base::StringPiece original_language);
   void UnblockLanguage(base::StringPiece original_language);
@@ -243,8 +245,12 @@ class TranslatePrefs {
 
   bool IsLanguagePairOnAlwaysTranslateList(base::StringPiece original_language,
                                            base::StringPiece target_language);
+  // Converts the original and target language to their translate synonym and
+  // adds the pair to the always translate dict.
   void AddLanguagePairToAlwaysTranslateList(base::StringPiece original_language,
                                             base::StringPiece target_language);
+  // Removes the translate synonym of original_language from the always
+  // translate dict.
   void RemoveLanguagePairFromAlwaysTranslateList(
       base::StringPiece original_language,
       base::StringPiece target_language);
