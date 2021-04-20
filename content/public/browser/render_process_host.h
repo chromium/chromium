@@ -511,6 +511,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
       const url::Origin& origin,
       mojo::PendingReceiver<payments::mojom::PaymentManager> receiver) = 0;
   virtual void CreateNotificationService(
+      int render_frame_id,
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver) = 0;
   virtual void CreateWebSocketConnector(

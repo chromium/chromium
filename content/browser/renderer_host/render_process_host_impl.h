@@ -628,8 +628,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // Binds |receiver| to the NotificationService instance owned by
   // |storage_partition_impl_|, and is used by frames and workers via
-  // BrowserInterfaceBroker.
+  // BrowserInterfaceBroker. |render_frame_id| will identify the RenderFrameHost
+  // when the service belongs to one, `MSG_ROUTING_NONE` for workers.
   void CreateNotificationService(
+      int render_frame_id,
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver)
       override;

@@ -140,6 +140,7 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
         notification_context_.get(), &browser_context_,
         embedded_worker_helper_->context_wrapper(),
         url::Origin::Create(GURL(kTestOrigin)),
+        /*document_url=*/GURL(),
         notification_service_remote_.BindNewPipeAndPassReceiver());
 
     // Provide a mock permission manager to the |browser_context_|.

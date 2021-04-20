@@ -1046,8 +1046,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::BindFileSystemAccessManager, host));
   map->Add<blink::mojom::NativeIOHost>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindNativeIOHost, host));
-  map->Add<blink::mojom::NotificationService>(BindWorkerReceiverForOrigin(
-      &RenderProcessHostImpl::CreateNotificationService, host));
   map->Add<blink::mojom::IDBFactory>(
       BindWorkerReceiverForOrigin(&RenderProcessHostImpl::BindIndexedDB, host));
   map->Add<blink::mojom::BucketManagerHost>(BindWorkerReceiverForOrigin(
@@ -1056,6 +1054,9 @@ void PopulateBinderMapWithContext(
   // render process host binders taking a frame id and an origin
   map->Add<blink::mojom::LockManager>(BindWorkerReceiverForOriginAndFrameId(
       &RenderProcessHostImpl::CreateLockManager, host));
+  map->Add<blink::mojom::NotificationService>(
+      BindWorkerReceiverForOriginAndFrameId(
+          &RenderProcessHostImpl::CreateNotificationService, host));
   map->Add<blink::mojom::QuotaManagerHost>(
       BindWorkerReceiverForOriginAndFrameId(
           &RenderProcessHostImpl::BindQuotaManagerHost, host));
@@ -1133,8 +1134,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::BindFileSystemAccessManager, host));
   map->Add<blink::mojom::NativeIOHost>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindNativeIOHost, host));
-  map->Add<blink::mojom::NotificationService>(BindWorkerReceiverForOrigin(
-      &RenderProcessHostImpl::CreateNotificationService, host));
   map->Add<blink::mojom::WebSocketConnector>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreateWebSocketConnector, host));
   map->Add<blink::mojom::IDBFactory>(
@@ -1145,6 +1144,9 @@ void PopulateBinderMapWithContext(
   // render process host binders taking a frame id and an origin
   map->Add<blink::mojom::LockManager>(BindWorkerReceiverForOriginAndFrameId(
       &RenderProcessHostImpl::CreateLockManager, host));
+  map->Add<blink::mojom::NotificationService>(
+      BindWorkerReceiverForOriginAndFrameId(
+          &RenderProcessHostImpl::CreateNotificationService, host));
   map->Add<blink::mojom::QuotaManagerHost>(
       BindWorkerReceiverForOriginAndFrameId(
           &RenderProcessHostImpl::BindQuotaManagerHost, host));
@@ -1239,9 +1241,6 @@ void PopulateBinderMapWithContext(
           &RenderProcessHostImpl::BindFileSystemAccessManager, host));
   map->Add<blink::mojom::NativeIOHost>(BindServiceWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindNativeIOHost, host));
-  map->Add<blink::mojom::NotificationService>(
-      BindServiceWorkerReceiverForOrigin(
-          &RenderProcessHostImpl::CreateNotificationService, host));
   map->Add<blink::mojom::WebSocketConnector>(BindServiceWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreateWebSocketConnector, host));
   map->Add<network::mojom::RestrictedCookieManager>(
@@ -1257,6 +1256,9 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::LockManager>(
       BindServiceWorkerReceiverForOriginAndFrameId(
           &RenderProcessHostImpl::CreateLockManager, host));
+  map->Add<blink::mojom::NotificationService>(
+      BindServiceWorkerReceiverForOriginAndFrameId(
+          &RenderProcessHostImpl::CreateNotificationService, host));
   map->Add<blink::mojom::QuotaManagerHost>(
       BindServiceWorkerReceiverForOriginAndFrameId(
           &RenderProcessHostImpl::BindQuotaManagerHost, host));

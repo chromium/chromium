@@ -8258,8 +8258,8 @@ void RenderFrameHostImpl::CreateQuicTransportConnector(
 
 void RenderFrameHostImpl::CreateNotificationService(
     mojo::PendingReceiver<blink::mojom::NotificationService> receiver) {
-  GetProcess()->CreateNotificationService(GetLastCommittedOrigin(),
-                                          std::move(receiver));
+  GetProcess()->CreateNotificationService(
+      GetRoutingID(), GetLastCommittedOrigin(), std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateInstalledAppProvider(

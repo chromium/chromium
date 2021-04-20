@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -41,6 +42,7 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
       BrowserContext* browser_context,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       const url::Origin& origin,
+      const GURL& document_url,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver);
   ~BlinkNotificationServiceImpl() override;
 
@@ -105,6 +107,9 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
 
   // The origin that this notification service is communicating with.
   url::Origin origin_;
+  // The document url that this notification service is communicating with.
+  // This is empty when used for a worker.
+  GURL document_url_;
 
   mojo::Receiver<blink::mojom::NotificationService> receiver_;
 

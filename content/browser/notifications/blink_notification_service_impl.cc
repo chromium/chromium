@@ -27,7 +27,6 @@
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
-#include "url/gurl.h"
 
 namespace content {
 
@@ -88,11 +87,13 @@ BlinkNotificationServiceImpl::BlinkNotificationServiceImpl(
     BrowserContext* browser_context,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     const url::Origin& origin,
+    const GURL& document_url,
     mojo::PendingReceiver<blink::mojom::NotificationService> receiver)
     : notification_context_(notification_context),
       browser_context_(browser_context),
       service_worker_context_(std::move(service_worker_context)),
       origin_(origin),
+      document_url_(document_url),
       receiver_(this, std::move(receiver)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(notification_context_);
@@ -150,7 +151,7 @@ void BlinkNotificationServiceImpl::DisplayNonPersistentNotification(
       notification_id, std::move(event_listener_remote));
 
   GetNotificationService(browser_context_)
-      ->DisplayNotification(notification_id, origin_.GetURL(),
+      ->DisplayNotification(notification_id, origin_.GetURL(), document_url_,
                             platform_notification_data, notification_resources);
 }
 

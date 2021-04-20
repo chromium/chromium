@@ -31,6 +31,7 @@ MockPlatformNotificationService::~MockPlatformNotificationService() = default;
 void MockPlatformNotificationService::DisplayNotification(
     const std::string& notification_id,
     const GURL& origin,
+    const GURL& document_url,
     const blink::PlatformNotificationData& notification_data,
     const blink::NotificationResources& notification_resources) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

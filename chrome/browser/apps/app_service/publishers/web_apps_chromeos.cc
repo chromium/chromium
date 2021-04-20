@@ -628,16 +628,18 @@ bool WebAppsChromeOs::MaybeAddNotification(const std::string& app_id,
 void WebAppsChromeOs::MaybeAddWebPageNotifications(
     const message_center::Notification& notification,
     const NotificationCommon::Metadata* const metadata) {
-  const GURL& url =
-      metadata
-          ? PersistentNotificationMetadata::From(metadata)->service_worker_scope
-          : notification.origin_url();
+  const PersistentNotificationMetadata* persistent_metadata =
+      PersistentNotificationMetadata::From(metadata);
 
-  if (metadata) {
-    // For persistent notifications, find the web app with the scope url.
+  const NonPersistentNotificationMetadata* non_persistent_metadata =
+      NonPersistentNotificationMetadata::From(metadata);
+
+  if (persistent_metadata) {
+    // For persistent notifications, find the web app with the SW scope url.
     base::Optional<web_app::AppId> app_id =
-        web_app::FindInstalledAppWithUrlInScope(profile(), url,
-                                                /*window_only=*/false);
+        web_app::FindInstalledAppWithUrlInScope(
+            profile(), persistent_metadata->service_worker_scope,
+            /*window_only=*/false);
     if (app_id.has_value()) {
       MaybeAddNotification(app_id.value(), notification.id());
     }
@@ -645,6 +647,12 @@ void WebAppsChromeOs::MaybeAddWebPageNotifications(
     // For non-persistent notifications, find all web apps that are installed
     // under the origin url.
     DCHECK(provider());
+
+    const GURL& url = non_persistent_metadata &&
+                              !non_persistent_metadata->document_url.is_empty()
+                          ? non_persistent_metadata->document_url
+                          : notification.origin_url();
+
     auto app_ids = provider()->registrar().FindAppsInScope(url);
     int count = 0;
     for (const auto& app_id : app_ids) {

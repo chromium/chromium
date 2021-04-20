@@ -510,10 +510,20 @@ bool ExtensionAppsChromeOs::MaybeAddNotification(
 void ExtensionAppsChromeOs::MaybeAddWebPageNotifications(
     const message_center::Notification& notification,
     const NotificationCommon::Metadata* const metadata) {
-  const GURL& url =
-      metadata
-          ? PersistentNotificationMetadata::From(metadata)->service_worker_scope
-          : notification.origin_url();
+  const PersistentNotificationMetadata* persistent_metadata =
+      PersistentNotificationMetadata::From(metadata);
+
+  const NonPersistentNotificationMetadata* non_persistent_metadata =
+      NonPersistentNotificationMetadata::From(metadata);
+
+  GURL url = notification.origin_url();
+
+  if (persistent_metadata) {
+    url = persistent_metadata->service_worker_scope;
+  } else if (non_persistent_metadata &&
+             !non_persistent_metadata->document_url.is_empty()) {
+    url = non_persistent_metadata->document_url;
+  }
 
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile());

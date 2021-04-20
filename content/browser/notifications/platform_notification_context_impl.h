@@ -66,8 +66,10 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   void Shutdown();
 
   // Creates a BlinkNotificationServiceImpl that is owned by this context.
+  // |document_url| is empty when originating from a worker.
   void CreateService(
       const url::Origin& origin,
+      const GURL& document_url,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver);
 
   // Removes |service| from the list of owned services, for example because the

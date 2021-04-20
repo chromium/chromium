@@ -193,6 +193,7 @@ bool PlatformNotificationServiceImpl::WasClosedProgrammatically(
 void PlatformNotificationServiceImpl::DisplayNotification(
     const std::string& notification_id,
     const GURL& origin,
+    const GURL& document_url,
     const blink::PlatformNotificationData& notification_data,
     const blink::NotificationResources& notification_resources) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -208,10 +209,12 @@ void PlatformNotificationServiceImpl::DisplayNotification(
 
   message_center::Notification notification = CreateNotificationFromData(
       origin, notification_id, notification_data, notification_resources);
+  auto metadata = std::make_unique<NonPersistentNotificationMetadata>();
+  metadata->document_url = document_url;
 
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::WEB_NON_PERSISTENT, notification,
-      /*metadata=*/nullptr);
+      std::move(metadata));
 }
 
 void PlatformNotificationServiceImpl::DisplayPersistentNotification(

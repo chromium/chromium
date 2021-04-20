@@ -285,10 +285,11 @@ void PlatformNotificationContextImpl::Shutdown() {
 
 void PlatformNotificationContextImpl::CreateService(
     const url::Origin& origin,
+    const GURL& document_url,
     mojo::PendingReceiver<blink::mojom::NotificationService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   services_.push_back(std::make_unique<BlinkNotificationServiceImpl>(
-      this, browser_context_, service_worker_context_, origin,
+      this, browser_context_, service_worker_context_, origin, document_url,
       std::move(receiver)));
 }
 

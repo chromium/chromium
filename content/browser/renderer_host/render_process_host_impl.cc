@@ -2112,11 +2112,17 @@ void RenderProcessHostImpl::CreatePaymentManagerForOrigin(
 }
 
 void RenderProcessHostImpl::CreateNotificationService(
+    int render_frame_id,
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::NotificationService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  GURL document_url;
+  if (RenderFrameHost* rfh = RenderFrameHost::FromID(GetID(), render_frame_id))
+    document_url = rfh->GetLastCommittedURL();
+
   storage_partition_impl_->GetPlatformNotificationContext()->CreateService(
-      origin, std::move(receiver));
+      origin, document_url, std::move(receiver));
 }
 
 void RenderProcessHostImpl::CreateWebSocketConnector(

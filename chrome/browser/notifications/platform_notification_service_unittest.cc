@@ -133,7 +133,8 @@ TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentThenClose) {
   data.body = u"Hello, world!";
 
   service()->DisplayNotification(kNotificationId, GURL("https://chrome.com/"),
-                                 data, NotificationResources());
+                                 /*document_url=*/GURL(), data,
+                                 NotificationResources());
 
   EXPECT_EQ(1u, GetNotificationCountForType(
                     NotificationHandler::Type::WEB_NON_PERSISTENT));
@@ -183,7 +184,8 @@ TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentPropertiesMatch) {
   data.silent = true;
 
   service()->DisplayNotification(kNotificationId, GURL("https://chrome.com/"),
-                                 data, NotificationResources());
+                                 /*document_url=*/GURL(), data,
+                                 NotificationResources());
 
   ASSERT_EQ(1u, GetNotificationCountForType(
                     NotificationHandler::Type::WEB_NON_PERSISTENT));

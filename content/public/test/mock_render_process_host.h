@@ -211,6 +211,7 @@ class MockRenderProcessHost : public RenderProcessHost {
       mojo::PendingReceiver<payments::mojom::PaymentManager> receiver)
       override {}
   void CreateNotificationService(
+      int render_frame_id,
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver)
       override {}
