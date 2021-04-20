@@ -1,7 +1,7 @@
 importScripts("mediasource-worker-util.js");
 
 onmessage = function(evt) {
-  postMessage("Error: No message expected by Worker");
+  postMessage({ subject: messageSubject.ERROR, info: "No message expected by Worker"});
 };
 
 let util = new MediaSourceWorkerUtil();
@@ -10,7 +10,7 @@ util.mediaSource.addEventListener("sourceopen", () => {
   URL.revokeObjectURL(util.mediaSourceObjectUrl);
   sourceBuffer = util.mediaSource.addSourceBuffer(util.mediaMetadata.type);
   sourceBuffer.onerror = (err) => {
-    postMessage("Error: " + err);
+    postMessage({ subject: messageSubject.ERROR, info: err });
   };
   sourceBuffer.onupdateend = () => {
     // Reset the parser. Unnecessary for this buffering, except helps with test
@@ -27,7 +27,7 @@ util.mediaSource.addEventListener("sourceopen", () => {
     };
   };
   util.mediaLoadPromise.then(mediaData => { sourceBuffer.appendBuffer(mediaData); },
-                             err => { postMessage("Error: " + err) } );
+                             err => { postMessage({ subject: messageSubject.ERROR, info: err }) });
 }, { once : true });
 
-postMessage(util.mediaSourceObjectUrl);
+postMessage({ subject: messageSubject.OBJECT_URL, info: util.mediaSourceObjectUrl });

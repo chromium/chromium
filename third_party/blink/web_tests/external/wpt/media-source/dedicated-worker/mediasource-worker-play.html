@@ -3,6 +3,7 @@
 <title>Simple MediaSource-in-Worker playback test case</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="mediasource-message-util.js"></script>
 <body>
 <script>
 
@@ -19,13 +20,20 @@ async_test(t => {
   let worker = new Worker("mediasource-worker-play.js");
   worker.onerror = t.unreached_func("worker error");
   worker.onmessage = t.step_func(e => {
-    if (e.data.substr(0,6) == "Error:") {
-      assert_unreached("Worker error: " + e.data);
-    } else {
-      const url = e.data;
-      assert_true(url.match(/^blob:.+/) != null);
-      video.src = url;
-      video.play();
+    let subject = e.data.subject;
+    assert_true(subject != undefined, "message must have a subject field");
+    switch (subject) {
+      case messageSubject.ERROR:
+        assert_unreached("Worker error: " + e.data.info);
+        break;
+      case messageSubject.OBJECT_URL:
+        const url = e.data.info;
+        assert_true(url.match(/^blob:.+/) != null);
+        video.src = url;
+        video.play();
+        break;
+      default:
+        assert_unreached("Unexpected message subject: " + subject);
     }
   });
 }, "Test worker MediaSource construction, attachment, buffering and basic playback");
