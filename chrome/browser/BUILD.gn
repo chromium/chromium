@@ -112,8 +112,8 @@ source_set("browser_process") {
     "browser_process.cc",
     "browser_process.h",
   ]
-  deps = [
-    "//base",
+  deps = [ "//base" ]
+  public_deps = [
     "//build:chromeos_buildflags",
     "//chrome/common:buildflags",
     "//media:media_buildflags",
@@ -4200,6 +4200,11 @@ static_library("browser") {
       "//services/device/public/cpp/hid",
       "//third_party/sqlite",
     ]
+    public_deps += [
+      "//chrome/common:buildflags",
+      "//extensions/buildflags",
+    ]
+
     if (!is_chromeos_ash) {
       sources += [
         "accessibility/soda_installer_impl.cc",
