@@ -291,18 +291,16 @@ void ToolbarView::Init() {
     if (ChromeLabsButton::ShouldShowButton(chrome_labs_model_.get())) {
       chrome_labs_button_ = AddChildView(std::make_unique<ChromeLabsButton>(
           browser_, chrome_labs_model_.get()));
-      profile_pref_service_ = browser_->profile()->GetPrefs();
-      profile_registrar_ = std::make_unique<PrefChangeRegistrar>();
-      profile_registrar_->Init(profile_pref_service_);
-      profile_registrar_->Add(
+
+      show_chrome_labs_button_.Init(
           chrome_labs_prefs::kBrowserLabsEnabled,
+          browser_->profile()->GetPrefs(),
           base::BindRepeating(&ToolbarView::OnChromeLabsPrefChanged,
                               base::Unretained(this)));
       // Set the visibility for the button based on initial enterprise policy
       // value. Only call OnChromeLabsPrefChanged if there is a change from the
       // initial value.
-      chrome_labs_button_->SetVisible(profile_pref_service_->GetBoolean(
-          chrome_labs_prefs::kBrowserLabsEnabled));
+      chrome_labs_button_->SetVisible(show_chrome_labs_button_.GetValue());
     }
   }
 
@@ -354,7 +352,8 @@ void ToolbarView::Init() {
       prefs::kShowHomeButton, browser_->profile()->GetPrefs(),
       base::BindRepeating(&ToolbarView::OnShowHomeButtonChanged,
                           base::Unretained(this)));
-  UpdateHomeButtonVisibility();
+
+  home_->SetVisible(show_home_button_.GetValue());
 
   InitLayout();
 
@@ -867,8 +866,7 @@ views::View* ToolbarView::GetViewForDrop() {
 }
 
 void ToolbarView::OnChromeLabsPrefChanged() {
-  chrome_labs_button_->SetVisible(profile_pref_service_->GetBoolean(
-      chrome_labs_prefs::kBrowserLabsEnabled));
+  chrome_labs_button_->SetVisible(show_chrome_labs_button_.GetValue());
   GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
       chrome_labs_button_->GetVisible()
           ? IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_ADDED_BY_ENTERPRISE_POLICY
@@ -900,13 +898,9 @@ void ToolbarView::ShowOutdatedInstallNotification(bool auto_update_enabled) {
 }
 
 void ToolbarView::OnShowHomeButtonChanged() {
-  UpdateHomeButtonVisibility();
+  home_->SetVisible(show_home_button_.GetValue());
   Layout();
   SchedulePaint();
-}
-
-void ToolbarView::UpdateHomeButtonVisibility() {
-  home_->SetVisible(show_home_button_.GetValue());
 }
 
 void ToolbarView::OnTouchUiChanged() {

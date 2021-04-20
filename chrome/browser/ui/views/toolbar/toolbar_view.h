@@ -248,7 +248,6 @@ class ToolbarView : public views::AccessiblePaneView,
   void ShowOutdatedInstallNotification(bool auto_update_enabled);
 
   void OnShowHomeButtonChanged();
-  void UpdateHomeButtonVisibility();
 
   void OnTouchUiChanged();
 
@@ -275,9 +274,6 @@ class ToolbarView : public views::AccessiblePaneView,
   Browser* const browser_;
   BrowserView* const browser_view_;
 
-  PrefService* profile_pref_service_;
-  std::unique_ptr<PrefChangeRegistrar> profile_registrar_;
-
   views::FlexLayout* layout_manager_ = nullptr;
 
   AppMenuIconController app_menu_icon_controller_;
@@ -286,6 +282,8 @@ class ToolbarView : public views::AccessiblePaneView,
 
   // Controls whether or not a home button should be shown on the toolbar.
   BooleanPrefMember show_home_button_;
+
+  BooleanPrefMember show_chrome_labs_button_;
 
   // The display mode used when laying out the toolbar.
   const DisplayMode display_mode_;
