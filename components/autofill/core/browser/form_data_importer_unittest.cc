@@ -2014,7 +2014,7 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_LocalizedCountryName) {
   form.fields.push_back(field);
 
   // Set up language state mock.
-  autofill_client_->GetLanguageState()->SetOriginalLanguage("");
+  autofill_client_->GetLanguageState()->SetSourceLanguage("");
 
   // Verify that the country code is not determined from the country value if
   // the page language is not set.
@@ -2026,7 +2026,7 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_LocalizedCountryName) {
   ASSERT_EQ(0U, personal_data_manager_->GetCreditCards().size());
 
   // Set the page language to match the localized country value and try again.
-  autofill_client_->GetLanguageState()->SetOriginalLanguage("de");
+  autofill_client_->GetLanguageState()->SetSourceLanguage("de");
 
   ImportAddressProfiles(/*extraction_successful=*/true, form_structure);
 

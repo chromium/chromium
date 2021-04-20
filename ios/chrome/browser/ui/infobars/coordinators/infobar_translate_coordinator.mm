@@ -300,7 +300,7 @@ NSString* const kTranslateNotificationSnackbarCategory =
 
 #pragma mark - InfobarTranslateModalDelegate
 
-- (void)showOriginalLanguage {
+- (void)showSourceLanguage {
   DCHECK(self.currentStep ==
          translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE);
   [self performInfobarAction];

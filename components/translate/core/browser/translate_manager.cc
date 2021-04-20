@@ -71,7 +71,7 @@ TranslateManager::LanguageDetectedCallbackList* g_detection_callback_list_ =
 const char kReportLanguageDetectionErrorURL[] =
     "https://translate.google.com/translate_error?client=cr&action=langidc";
 
-// Used in kReportLanguageDetectionErrorURL to specify the original page
+// Used in kReportLanguageDetectionErrorURL to specify the page source
 // language.
 const char kSourceLanguageQueryName[] = "sl";
 
@@ -278,7 +278,7 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
     can_translate = false;
   }
 
-  const std::string source_language = language_state_.original_language();
+  const std::string source_language = language_state_.source_language();
   if (source_language.empty()) {
     if (!menuLogging)
       return false;
@@ -346,7 +346,7 @@ void TranslateManager::InitiateManualTranslation(bool auto_translate,
   std::unique_ptr<TranslatePrefs> translate_prefs(
       translate_client_->GetTranslatePrefs());
   const std::string source_code = TranslateDownloadManager::GetLanguageCode(
-      language_state_.original_language());
+      language_state_.source_language());
   const std::string target_lang = GetManualTargetLanguage(
       source_code, language_state_, translate_prefs.get(), language_model_);
 
@@ -467,7 +467,7 @@ void TranslateManager::RevertTranslation() {
 
   // Revert the translation.
   translate_driver_->RevertTranslation(page_seq_no_);
-  language_state_.SetCurrentLanguage(language_state_.original_language());
+  language_state_.SetCurrentLanguage(language_state_.source_language());
 
   GetActiveTranslateMetricsLogger()->LogReversion();
 }
@@ -483,7 +483,7 @@ void TranslateManager::ReportLanguageDetectionError() {
 
   report_error_url =
       net::AppendQueryParameter(report_error_url, kSourceLanguageQueryName,
-                                language_state_.original_language());
+                                language_state_.source_language());
 
   report_error_url = translate::AddHostLocaleToUrl(report_error_url);
   report_error_url = translate::AddApiKeyToUrl(report_error_url);
@@ -544,8 +544,8 @@ void TranslateManager::PageTranslated(const std::string& source_lang,
                                       TranslateErrors::Type error_type) {
   if (error_type == TranslateErrors::NONE) {
     // The user could have updated the source language before translating, so
-    // update the language state with both original and current.
-    language_state_.SetOriginalLanguage(source_lang);
+    // update the language state with both source and current.
+    language_state_.SetSourceLanguage(source_lang);
     language_state_.SetCurrentLanguage(target_lang);
   }
 
@@ -687,10 +687,10 @@ std::string TranslateManager::GetTargetLanguage(
 
 // static
 std::string TranslateManager::GetAutoTargetLanguage(
-    const std::string& original_language,
+    const std::string& source_language,
     TranslatePrefs* translate_prefs) {
   std::string auto_target_lang;
-  if (translate_prefs->ShouldAutoTranslate(original_language,
+  if (translate_prefs->ShouldAutoTranslate(source_language,
                                            &auto_target_lang)) {
     // We need to confirm that the saved target language is still supported.
     // Also, GetLanguageCode will take care of removing country code if any.

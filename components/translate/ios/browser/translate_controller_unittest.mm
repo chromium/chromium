@@ -115,11 +115,11 @@ class TranslateControllerTest : public PlatformTest,
   }
 
   void OnTranslateComplete(TranslateErrors::Type error_type,
-                           const std::string& original_language,
+                           const std::string& source_language,
                            double translation_time) override {
     on_translate_complete_called_ = true;
     error_type_ = error_type;
-    original_language_ = original_language;
+    source_language_ = source_language;
     translation_time_ = translation_time;
   }
 
@@ -133,7 +133,7 @@ class TranslateControllerTest : public PlatformTest,
   TranslateErrors::Type error_type_;
   double ready_time_;
   double load_time_;
-  std::string original_language_;
+  std::string source_language_;
   double translation_time_;
   bool on_script_ready_called_;
   bool on_translate_complete_called_;
@@ -201,13 +201,13 @@ TEST_F(TranslateControllerTest, OnTranslateScriptReadyCalled) {
 // |translate.status| message is received from the JS side.
 TEST_F(TranslateControllerTest, TranslationSuccess) {
   // Arbitrary values.
-  std::string some_original_language("en");
+  std::string some_source_language("en");
   double some_translation_time = 12.9;
 
   base::DictionaryValue command;
   command.SetString("command", "translate.status");
   command.SetDouble("errorCode", TranslateErrors::NONE);
-  command.SetString("originalPageLanguage", some_original_language);
+  command.SetString("pageSourceLanguage", some_source_language);
   command.SetDouble("translationTime", some_translation_time);
   EXPECT_TRUE(translate_controller_->OnJavascriptCommandReceived(
       command, GURL("http://google.com"), /*interacting*/ false,
@@ -215,7 +215,7 @@ TEST_F(TranslateControllerTest, TranslationSuccess) {
   EXPECT_FALSE(on_script_ready_called_);
   EXPECT_TRUE(on_translate_complete_called_);
   EXPECT_TRUE(error_type_ == TranslateErrors::NONE);
-  EXPECT_EQ(some_original_language, original_language_);
+  EXPECT_EQ(some_source_language, source_language_);
   EXPECT_EQ(some_translation_time, translation_time_);
 }
 

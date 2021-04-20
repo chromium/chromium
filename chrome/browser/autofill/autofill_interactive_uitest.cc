@@ -417,7 +417,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
         "        getDetectedLanguage : function() {"
         "          return \"ja\";"
         "        },"
-        "        translatePage : function(originalLang, targetLang,"
+        "        translatePage : function(sourceLang, targetLang,"
         "                                 onTranslateProgress) {"
         "          document.getElementsByTagName(\"body\")[0].innerHTML = '" +
         std::string(kTestShippingFormString) +

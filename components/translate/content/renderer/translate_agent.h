@@ -84,7 +84,7 @@ class TranslateAgent : public content::RenderFrameObserver,
   // Asks the Translate element in the page what the language of the page is.
   // Can only be called if a translation has happened and was successful.
   // Returns the language code on success, an empty string on failure.
-  virtual std::string GetOriginalPageLanguage();
+  virtual std::string GetPageSourceLanguage();
 
   // Adjusts a delay time for a posted task. This is overridden in tests to do
   // tasks immediately by returning 0.

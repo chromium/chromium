@@ -793,7 +793,7 @@ autofill::LanguageCode ChromePasswordManagerClient::GetPageLanguage() const {
       ChromeTranslateClient::GetManagerFromWebContents(web_contents());
   if (translate_manager)
     return autofill::LanguageCode(
-        translate_manager->GetLanguageState()->original_language());
+        translate_manager->GetLanguageState()->source_language());
   return autofill::LanguageCode();
 }
 

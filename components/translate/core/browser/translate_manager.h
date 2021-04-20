@@ -102,9 +102,9 @@ class TranslateManager {
       const std::set<std::string>& skipped_languages,
       TranslateBrowserMetrics::TargetLanguageOrigin& target_language_origin);
 
-  // Returns the language to automatically translate to. |original_language| is
-  // the webpage's original language.
-  static std::string GetAutoTargetLanguage(const std::string& original_language,
+  // Returns the language to automatically translate to. |source_language| is
+  // the webpage's source language.
+  static std::string GetAutoTargetLanguage(const std::string& source_language,
                                            TranslatePrefs* translate_prefs);
 
   // Returns the target language for a manually triggered translation: the

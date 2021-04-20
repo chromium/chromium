@@ -148,7 +148,7 @@ class TranslateAppInterfaceHelper {
       base::UTF8ToUTF16("__gCrWeb.message.invokeOnHost({"
                         "  'command': 'translate.status',"
                         "  'errorCode': 0,"
-                        "  'originalPageLanguage': 'fr',"
+                        "  'pageSourceLanguage': 'fr',"
                         "  'translationTime': 0});"));
 }
 

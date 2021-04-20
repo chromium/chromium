@@ -21,7 +21,7 @@ LanguageState::LanguageState(TranslateDriver* driver)
   DCHECK(translate_driver_);
 }
 
-LanguageState::~LanguageState() {}
+LanguageState::~LanguageState() = default;
 
 void LanguageState::DidNavigate(bool is_same_document_navigation,
                                 bool is_main_frame,
@@ -34,13 +34,13 @@ void LanguageState::DidNavigate(bool is_same_document_navigation,
 
   if (reload) {
     // We might not get a LanguageDetermined notifications on reloads. Make sure
-    // to keep the original language and to set current_lang_ so
+    // to keep the source language and to set current_lang_ so
     // IsPageTranslated() returns false.
-    current_lang_ = original_lang_;
+    current_lang_ = source_lang_;
   } else {
-    prev_original_lang_ = original_lang_;
+    prev_source_lang_ = source_lang_;
     prev_current_lang_ = current_lang_;
-    original_lang_.clear();
+    source_lang_.clear();
     current_lang_.clear();
   }
 
@@ -58,14 +58,14 @@ void LanguageState::DidNavigate(bool is_same_document_navigation,
 void LanguageState::LanguageDetermined(
     const std::string& page_language,
     bool page_level_translation_critiera_met) {
-  if (is_same_document_navigation_ && !original_lang_.empty()) {
+  if (is_same_document_navigation_ && !source_lang_.empty()) {
     // Same-document navigation, we don't expect our states to change.
-    // Note that we'll set the languages if original_lang_ is empty.  This might
+    // Note that we'll set the languages if source_lang_ is empty.  This might
     // happen if the we did not get called on the top-page.
     return;
   }
   page_level_translation_critiera_met_ = page_level_translation_critiera_met;
-  original_lang_ = page_language;
+  source_lang_ = page_language;
   current_lang_ = page_language;
   SetIsPageTranslated(false);
 }
@@ -76,19 +76,19 @@ bool LanguageState::InTranslateNavigation() const {
   //   - this page is in the same language as the previous page
   //   - the previous page had been translated
   //   - the new page was navigated through a link.
-  return !translation_pending_ && prev_original_lang_ == original_lang_ &&
-         prev_original_lang_ != prev_current_lang_ &&
+  return !translation_pending_ && prev_source_lang_ == source_lang_ &&
+         prev_source_lang_ != prev_current_lang_ &&
          translate_driver_->IsLinkNavigation();
 }
 
-void LanguageState::SetOriginalLanguage(const std::string& language) {
-  original_lang_ = language;
-  SetIsPageTranslated(current_lang_ != original_lang_);
+void LanguageState::SetSourceLanguage(const std::string& language) {
+  source_lang_ = language;
+  SetIsPageTranslated(current_lang_ != source_lang_);
 }
 
 void LanguageState::SetCurrentLanguage(const std::string& language) {
   current_lang_ = language;
-  SetIsPageTranslated(current_lang_ != original_lang_);
+  SetIsPageTranslated(current_lang_ != source_lang_);
 }
 
 std::string LanguageState::AutoTranslateTo() const {
@@ -107,7 +107,7 @@ void LanguageState::SetTranslateEnabled(bool value) {
 }
 
 bool LanguageState::HasLanguageChanged() const {
-  return original_lang_ != prev_original_lang_;
+  return source_lang_ != prev_source_lang_;
 }
 
 void LanguageState::SetIsPageTranslated(bool value) {

@@ -69,7 +69,7 @@ class TranslateBubbleViewBrowserTest : public InProcessBrowserTest {
            ChromeTranslateClient::FromWebContents(
                browser()->tab_strip_model()->GetActiveWebContents())
                ->GetLanguageState()
-               .original_language()) {
+               .source_language()) {
       CreateTranslateWaiter(
           browser()->tab_strip_model()->GetActiveWebContents(),
           TranslateWaiter::WaitEvent::kLanguageDetermined)

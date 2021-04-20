@@ -460,7 +460,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
-    The number of times the original language in the translate infobar has been
+    The number of times the source language in the translate infobar has been
     changed.
   </summary>
 </histogram>

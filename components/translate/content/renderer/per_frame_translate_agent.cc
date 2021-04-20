@@ -183,7 +183,7 @@ bool PerFrameTranslateAgent::StartTranslation() {
       BuildTranslationScript(source_lang_, target_lang_), false);
 }
 
-std::string PerFrameTranslateAgent::GetOriginalPageLanguage() {
+std::string PerFrameTranslateAgent::GetPageSourceLanguage() {
   return ExecuteScriptAndGetStringResult("cr.googleTranslate.sourceLang");
 }
 
@@ -294,7 +294,7 @@ void PerFrameTranslateAgent::CheckTranslateStatus(int check_count) {
     // Translation was successful, if it was auto, retrieve the source
     // language the Translate Element detected.
     if (source_lang_ == kAutoDetectionLanguage) {
-      actual_source_lang = GetOriginalPageLanguage();
+      actual_source_lang = GetPageSourceLanguage();
       if (actual_source_lang.empty()) {
         NotifyBrowserTranslationFailed(TranslateErrors::UNKNOWN_LANGUAGE);
         return;

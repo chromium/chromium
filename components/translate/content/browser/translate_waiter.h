@@ -39,7 +39,7 @@ class TranslateWaiter : TranslateDriver::LanguageDetectionObserver,
   void OnLanguageDetermined(const LanguageDetectionDetails& details) override;
 
   // ContentTranslateDriver::TranslationObserver:
-  void OnPageTranslated(const std::string& original_lang,
+  void OnPageTranslated(const std::string& source_lang,
                         const std::string& translated_lang,
                         TranslateErrors::Type error_type) override;
   void OnIsPageTranslatedChanged(content::WebContents* source) override;

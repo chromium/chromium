@@ -50,7 +50,7 @@ class ContentTranslateDriver : public TranslateDriver,
     virtual void OnTranslateEnabledChanged(content::WebContents* source) {}
 
     // Called when the page has been translated.
-    virtual void OnPageTranslated(const std::string& original_lang,
+    virtual void OnPageTranslated(const std::string& source_lang,
                                   const std::string& translated_lang,
                                   translate::TranslateErrors::Type error_type) {
     }
@@ -100,7 +100,7 @@ class ContentTranslateDriver : public TranslateDriver,
       content::NavigationHandle* navigation_handle) override;
 
   void OnPageTranslated(bool cancelled,
-                        const std::string& original_lang,
+                        const std::string& source_lang,
                         const std::string& translated_lang,
                         TranslateErrors::Type error_type);
 
