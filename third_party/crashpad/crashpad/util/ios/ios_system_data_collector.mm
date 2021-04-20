@@ -88,7 +88,7 @@ IOSSystemDataCollector::IOSSystemDataCollector()
   // util/mac/mac_util.cc).
   const char* model = getenv("SIMULATOR_MODEL_IDENTIFIER");
   if (model == nullptr) {
-    switch (UI_USER_INTERFACE_IDIOM()) {
+    switch ([[UIDevice currentDevice] userInterfaceIdiom]) {
       case UIUserInterfaceIdiomPhone:
         model = "iPhone";
         break;

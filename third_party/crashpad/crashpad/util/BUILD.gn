@@ -405,6 +405,10 @@ crashpad_static_library("util") {
     }
   } else if (crashpad_http_transport_impl == "libcurl") {
     sources += [ "net/http_transport_libcurl.cc" ]
+    if (crashpad_is_in_fuchsia) {
+      # Host Linux builds in Fuchsia don't have libcurl in a sysroot.
+      deps += [ "//third_party/curl:libcurl" ]
+    }
   }
 
   if (crashpad_is_android) {

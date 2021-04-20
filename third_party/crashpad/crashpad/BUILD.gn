@@ -67,7 +67,7 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
   }
 
   if (crashpad_is_in_fuchsia) {
-    import("//src/sys/build/components.gni")
+    import("//build/components.gni")
     fuchsia_test_component("crashpad-test-component") {
       manifest = "test/fuchsia_crashpad_tests.cmx"
       deps = [

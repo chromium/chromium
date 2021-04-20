@@ -133,7 +133,7 @@ void TestGzipDeflateInflate(const std::string& string) {
 std::string MakeString(size_t size) {
   std::string string;
   for (size_t i = 0; i < size; ++i) {
-    string.append(1, (i % 256) ^ ((i >> 8) % 256));
+    string.append(1, static_cast<char>((i % 256) ^ ((i >> 8) % 256)));
   }
   return string;
 }
