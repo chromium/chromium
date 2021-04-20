@@ -105,9 +105,8 @@ class BluetoothServiceRecordBlueZTest : public device::BluetoothTestBlueZ {
 
     BluetoothServiceAttributeValueBlueZ service_handle0 =
         records_[0].GetAttributeValue(ids0[0]);
-    int32_t int_value;
-    EXPECT_TRUE(service_handle0.value().GetAsInteger(&int_value));
-    EXPECT_EQ(0x1337, int_value);
+    ASSERT_TRUE(service_handle0.value().is_int());
+    EXPECT_EQ(0x1337, service_handle0.value().GetInt());
 
     BluetoothServiceAttributeValueBlueZ service_class_list =
         records_[0].GetAttributeValue(ids0[1]);
@@ -121,8 +120,9 @@ class BluetoothServiceRecordBlueZTest : public device::BluetoothTestBlueZ {
 
     BluetoothServiceAttributeValueBlueZ service_handle1 =
         records_[1].GetAttributeValue(ids1[0]);
-    EXPECT_TRUE(service_handle1.value().GetAsInteger(&int_value));
-    EXPECT_EQ(0xffffffff, static_cast<uint32_t>(int_value));
+    ASSERT_TRUE(service_handle1.value().is_int());
+    EXPECT_EQ(0xffffffff,
+              static_cast<uint32_t>(service_handle1.value().GetInt()));
   }
 
  protected:
