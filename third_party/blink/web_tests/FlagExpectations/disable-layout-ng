@@ -923,6 +923,7 @@ crbug.com/958381 external/wpt/css/css-tables/tentative/baseline-table.html [ Fai
 crbug.com/958381 external/wpt/css/css-tables/tentative/baseline-td.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/caption.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/colgroup-col.html [ Failure ]
+crbug.com/174167 external/wpt/css/css-tables/tentative/element-sizing.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/paint/background-image-column.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/paint/collapsed-border-large-cell.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/position-sticky-container.html [ Failure ]
