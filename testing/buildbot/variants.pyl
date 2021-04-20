@@ -9,6 +9,14 @@
 # * trailing commas are allowed.
 
 {
+  # Default variant allows us to run matrix test suites where only some of the
+  # test suites need variant executions. The test suites which need to be
+  # executed differently, can mention DEFAULT as a variant.
+  'DEFAULT' : {
+    'args': [
+    ],
+    'identifier': 'default'
+  },
   'ANDROID_INSTRUMENTATION_RUN_ONLY_UNIT_TESTS' : {
     'args': [
       '--annotation=Batch=UnitTests'
