@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_AURA_SCREEN_POSITION_CLIENT_H_
-#define UI_AURA_SCREEN_POSITION_CLIENT_H_
+#ifndef UI_AURA_CLIENT_SCREEN_POSITION_CLIENT_H_
+#define UI_AURA_CLIENT_SCREEN_POSITION_CLIENT_H_
 
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"
@@ -68,4 +68,4 @@ AURA_EXPORT ScreenPositionClient* GetScreenPositionClient(
 }  // namespace client
 }  // namespace aura
 
-#endif  // UI_AURA_SCREEN_POSITION_CLIENT_H_
+#endif  // UI_AURA_CLIENT_SCREEN_POSITION_CLIENT_H_

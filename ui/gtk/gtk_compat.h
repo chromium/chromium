@@ -124,4 +124,4 @@ guint32 GdkEventGetTime(GdkEvent* event);
 
 }  // namespace gtk
 
-#endif
+#endif  // UI_GTK_GTK_COMPAT_H_

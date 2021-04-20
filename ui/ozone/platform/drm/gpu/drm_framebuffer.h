@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PLATFORM_DRM_GPU_SCANOUT_BUFFER_H_
-#define UI_OZONE_PLATFORM_DRM_GPU_SCANOUT_BUFFER_H_
+#ifndef UI_OZONE_PLATFORM_DRM_GPU_DRM_FRAMEBUFFER_H_
+#define UI_OZONE_PLATFORM_DRM_GPU_DRM_FRAMEBUFFER_H_
 
 #include <drm_fourcc.h>
 #include <stdint.h>
@@ -123,4 +123,4 @@ class DrmFramebuffer : public base::RefCountedThreadSafe<DrmFramebuffer> {
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PLATFORM_DRM_GPU_SCANOUT_BUFFER_H_
+#endif  // UI_OZONE_PLATFORM_DRM_GPU_DRM_FRAMEBUFFER_H_

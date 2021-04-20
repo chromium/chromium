@@ -50,4 +50,4 @@ class EVENTS_EXPORT ScopedTargetHandler : public EventHandler {
 
 }  // namespace ui
 
-#endif  // UI_EVENTsS_SCOPED_TARGET_HANDLER_H_
+#endif  // UI_EVENTS_SCOPED_TARGET_HANDLER_H_

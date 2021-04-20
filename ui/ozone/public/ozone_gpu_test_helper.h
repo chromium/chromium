@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PUBLIC_OZONE_GPU_THREAD_HELPER_H_
-#define UI_OZONE_PUBLIC_OZONE_GPU_THREAD_HELPER_H_
+#ifndef UI_OZONE_PUBLIC_OZONE_GPU_TEST_HELPER_H_
+#define UI_OZONE_PUBLIC_OZONE_GPU_TEST_HELPER_H_
 
 #include <memory>
 
@@ -42,4 +42,4 @@ class COMPONENT_EXPORT(OZONE) OzoneGpuTestHelper {
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PUBLIC_OZONE_GPU_THREAD_HELPER_H_
+#endif  // UI_OZONE_PUBLIC_OZONE_GPU_TEST_HELPER_H_

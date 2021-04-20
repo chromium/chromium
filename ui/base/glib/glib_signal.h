@@ -145,4 +145,4 @@ typedef void* gpointer;
                                                                                \
   virtual RETURN METHOD(SENDER, ARG1, ARG2, ARG3, ARG4, ARG5, ARG6)
 
-#endif
+#endif  // UI_BASE_GLIB_GLIB_SIGNAL_H_

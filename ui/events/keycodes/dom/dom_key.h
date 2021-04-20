@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_KEYCODES_DOM3_DOM_KEY_H_
-#define UI_EVENTS_KEYCODES_DOM3_DOM_KEY_H_
+#ifndef UI_EVENTS_KEYCODES_DOM_DOM_KEY_H_
+#define UI_EVENTS_KEYCODES_DOM_DOM_KEY_H_
 
 #include <stdint.h>
 
@@ -169,4 +169,4 @@ class DomKey {
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_KEYCODES_DOM3_DOM_KEY_H_
+#endif  // UI_EVENTS_KEYCODES_DOM_DOM_KEY_H_

@@ -22,4 +22,4 @@ struct StructTraits<gfx::mojom::MaskFilterInfoDataView, gfx::MaskFilterInfo> {
 };
 
 }  // namespace mojo
-#endif  // UI_GFX_MOJOM_LINEAR_GRADIENT_MOJOM_TRAITS_H_
+#endif  // UI_GFX_MOJOM_MASK_FILTER_INFO_MOJOM_TRAITS_H_

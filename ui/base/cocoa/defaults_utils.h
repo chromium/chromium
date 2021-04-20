@@ -16,4 +16,4 @@ COMPONENT_EXPORT(UI_BASE)
 bool TextInsertionCaretBlinkPeriod(base::TimeDelta* period);
 }
 
-#endif
+#endif  // UI_BASE_COCOA_DEFAULTS_UTILS_H_

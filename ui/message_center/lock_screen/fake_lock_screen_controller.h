@@ -35,4 +35,4 @@ class FakeLockScreenController : public LockScreenController {
 
 }  // namespace message_center
 
-#endif  // UI_MESSAGE_CENTER_LOCK_SCREEN_FAkE_LOCK_SCREEN_CONTROLLER_H_
+#endif  // UI_MESSAGE_CENTER_LOCK_SCREEN_FAKE_LOCK_SCREEN_CONTROLLER_H_

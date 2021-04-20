@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_GEOMETRY_QUATERNION_
-#define UI_GFX_GEOMETRY_QUATERNION_
+#ifndef UI_GFX_GEOMETRY_QUATERNION_H_
+#define UI_GFX_GEOMETRY_QUATERNION_H_
 
 #include <string>
 
@@ -94,4 +94,4 @@ inline Quaternion operator/(const Quaternion& q, double s) {
 
 }  // namespace gfx
 
-#endif  // UI_GFX_GEOMETRY_QUATERNION_
+#endif  // UI_GFX_GEOMETRY_QUATERNION_H_

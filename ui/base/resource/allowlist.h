@@ -36,4 +36,4 @@ __attribute__((used)) constexpr void AllowlistedResource() {}
 
 }  // namespace ui
 
-#endif
+#endif  // UI_BASE_RESOURCE_ALLOWLIST_H_

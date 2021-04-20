@@ -129,4 +129,4 @@ class MessageCenterImpl : public MessageCenter,
 
 }  // namespace message_center
 
-#endif  // UI_MESSAGE_CENTER_MESSAGE_CENTER_H_
+#endif  // UI_MESSAGE_CENTER_MESSAGE_CENTER_IMPL_H_

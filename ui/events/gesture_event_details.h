@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_GESTURE_DETECTION_GESTURE_EVENT_DETAILS_H_
-#define UI_EVENTS_GESTURE_DETECTION_GESTURE_EVENT_DETAILS_H_
+#ifndef UI_EVENTS_GESTURE_EVENT_DETAILS_H_
+#define UI_EVENTS_GESTURE_EVENT_DETAILS_H_
 
 #include <string.h>
 
@@ -237,4 +237,4 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_GESTURE_DETECTION_GESTURE_EVENT_DETAILS_H_
+#endif  // UI_EVENTS_GESTURE_EVENT_DETAILS_H_

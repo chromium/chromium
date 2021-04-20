@@ -39,4 +39,4 @@ class GL_EXPORT GLFenceWin : public GLFence {
 
 }  // namespace gl
 
-#endif
+#endif  // UI_GL_GL_FENCE_WIN_H_

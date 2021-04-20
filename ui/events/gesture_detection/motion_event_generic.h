@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_GESTURE_DETECTION_UI_MOTION_EVENT_GENERIC_H_
-#define UI_EVENTS_GESTURE_DETECTION_UI_MOTION_EVENT_GENERIC_H_
+#ifndef UI_EVENTS_GESTURE_DETECTION_MOTION_EVENT_GENERIC_H_
+#define UI_EVENTS_GESTURE_DETECTION_MOTION_EVENT_GENERIC_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -137,4 +137,4 @@ class GESTURE_DETECTION_EXPORT MotionEventGeneric : public MotionEvent {
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_GESTURE_DETECTION_UI_MOTION_EVENT_GENERIC_H_
+#endif  // UI_EVENTS_GESTURE_DETECTION_MOTION_EVENT_GENERIC_H_

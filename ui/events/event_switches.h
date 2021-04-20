@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_EVENTS_SWITCHES_H_
-#define UI_EVENTS_EVENTS_SWITCHES_H_
+#ifndef UI_EVENTS_EVENT_SWITCHES_H_
+#define UI_EVENTS_EVENT_SWITCHES_H_
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
@@ -25,4 +25,4 @@ EVENTS_BASE_EXPORT extern const char kDisableCancelAllTouches[];
 
 }  // namespace switches
 
-#endif  // UI_EVENTS_EVENTS_SWITCHES_H_
+#endif  // UI_EVENTS_EVENT_SWITCHES_H_

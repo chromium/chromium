@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_OZONE_DEVICE_EVENT_H_
-#define UI_EVENTS_OZONE_DEVICE_EVENT_H_
+#ifndef UI_EVENTS_OZONE_DEVICE_DEVICE_EVENT_H_
+#define UI_EVENTS_OZONE_DEVICE_DEVICE_EVENT_H_
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
@@ -40,4 +40,4 @@ class COMPONENT_EXPORT(EVENTS_OZONE) DeviceEvent {
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_OZONE_DEVICE_EVENT_H_
+#endif  // UI_EVENTS_OZONE_DEVICE_DEVICE_EVENT_H_

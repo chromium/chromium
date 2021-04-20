@@ -8,8 +8,8 @@
 //    clang-format -i -style=chromium filename
 // DO NOT EDIT!
 
-#ifndef UI_GL_GL_STUB_AUTOGEN_H_
-#define UI_GL_GL_STUB_AUTOGEN_H_
+#ifndef UI_GL_GL_STUB_AUTOGEN_GL_H_
+#define UI_GL_GL_STUB_AUTOGEN_GL_H_
 
 void glActiveShaderProgramFn(GLuint pipeline, GLuint program) override {}
 void glActiveTextureFn(GLenum texture) override {}
@@ -1664,4 +1664,4 @@ void glWindowRectanglesEXTFn(GLenum mode,
                              GLsizei n,
                              const GLint* box) override {}
 
-#endif  //  UI_GL_GL_STUB_AUTOGEN_H_
+#endif  // UI_GL_GL_STUB_AUTOGEN_GL_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_RESOURCE_RESOURCE_BUNDLE_WIN_
-#define UI_BASE_RESOURCE_RESOURCE_BUNDLE_WIN_
+#ifndef UI_BASE_RESOURCE_RESOURCE_BUNDLE_WIN_H_
+#define UI_BASE_RESOURCE_RESOURCE_BUNDLE_WIN_H_
 
 #include "build/build_config.h"
 
@@ -25,4 +25,4 @@ HCURSOR LoadCursorFromResourcesDataDLL(const wchar_t* cursor_id);
 
 }  // namespace ui
 
-#endif  // UI_BASE_RESOURCE_RESOURCE_DATA_DLL_WIN_H_
+#endif  // UI_BASE_RESOURCE_RESOURCE_BUNDLE_WIN_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_COCOA_TOUCH_BAR_UTIL_H
-#define UI_BASE_COCOA_TOUCH_BAR_UTIL_H
+#ifndef UI_BASE_COCOA_TOUCH_BAR_UTIL_H_
+#define UI_BASE_COCOA_TOUCH_BAR_UTIL_H_
 
 #import <Cocoa/Cocoa.h>
 #include <os/availability.h>
@@ -40,4 +40,4 @@ NSString* GetTouchBarItemId(NSString* touch_bar_id, NSString* item_id);
 
 }  // namespace ui
 
-#endif  // UI_BASE_COCOA_TOUCH_BAR_UTIL_H
+#endif  // UI_BASE_COCOA_TOUCH_BAR_UTIL_H_

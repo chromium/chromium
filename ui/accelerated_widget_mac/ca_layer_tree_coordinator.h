@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_ACCELERATED_WIDGET_MAC_CA_LAYER_TREE_HOST_H_
-#define UI_ACCELERATED_WIDGET_MAC_CA_LAYER_TREE_HOST_H_
+#ifndef UI_ACCELERATED_WIDGET_MAC_CA_LAYER_TREE_COORDINATOR_H_
+#define UI_ACCELERATED_WIDGET_MAC_CA_LAYER_TREE_COORDINATOR_H_
 
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 #include "ui/accelerated_widget_mac/ca_renderer_layer_tree.h"
@@ -66,4 +66,4 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
 
 }  // namespace ui
 
-#endif  // UI_ACCELERATED_WIDGET_MAC_CA_LAYER_TREE_HOST_H_
+#endif  // UI_ACCELERATED_WIDGET_MAC_CA_LAYER_TREE_COORDINATOR_H_

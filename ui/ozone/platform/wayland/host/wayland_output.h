@@ -85,4 +85,4 @@ class WaylandOutput {
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SCREEN_H_
+#endif  // UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_OUTPUT_H_

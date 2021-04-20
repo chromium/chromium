@@ -52,4 +52,4 @@ void WriteCustomDataToPickle(
 
 }  // namespace ui
 
-#endif  // UI_BASE_CLIPBOARD_CLIPBOARD_H_
+#endif  // UI_BASE_CLIPBOARD_CUSTOM_DATA_HELPER_H_

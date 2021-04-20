@@ -44,4 +44,4 @@ class COLOR_SPACE_EXPORT ColorSpaceWin {
 };
 
 }  // namespace gfx
-#endif
+#endif  // UI_GFX_COLOR_SPACE_WIN_H_

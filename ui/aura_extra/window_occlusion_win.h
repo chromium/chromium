@@ -23,4 +23,4 @@ ComputeNativeWindowOcclusionStatus(
 
 }  // namespace aura_extra
 
-#endif  // UI_AURA_EXTRA_WINDOW_OCCLUSION_WIN_H
+#endif  // UI_AURA_EXTRA_WINDOW_OCCLUSION_WIN_H_

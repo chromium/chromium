@@ -61,4 +61,4 @@ class WaylandShmBuffer {
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PLATFORM_WAYLAND_COMMON_WAYLAND_SHM_BUFFER_H_
+#endif  // UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SHM_BUFFER_H_

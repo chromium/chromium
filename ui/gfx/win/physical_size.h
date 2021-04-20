@@ -28,4 +28,4 @@ GFX_EXPORT std::vector<PhysicalDisplaySize> GetPhysicalSizeForDisplays();
 
 }  // namespace gfx
 
-#endif  // UI_GFX_DPI_WIN_H_
+#endif  // UI_GFX_WIN_PHYSICAL_SIZE_H_

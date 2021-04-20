@@ -26,4 +26,4 @@ MONITORINFOEX CreateMonitorInfo(const gfx::Rect& monitor,
 }  // namespace win
 }  // namespace display
 
-#endif  // UI_GFX_TEST_SCREEN_UTIL_WIN_H_
+#endif  // UI_DISPLAY_WIN_TEST_SCREEN_UTIL_WIN_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PUBLIC_KEYBOARD_LAYOUT_ENGINE_H_
-#define UI_OZONE_PUBLIC_KEYBOARD_LAYOUT_ENGINE_H_
+#ifndef UI_EVENTS_OZONE_LAYOUT_KEYBOARD_LAYOUT_ENGINE_H_
+#define UI_EVENTS_OZONE_LAYOUT_KEYBOARD_LAYOUT_ENGINE_H_
 
 #include <string>
 
@@ -74,4 +74,4 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) KeyboardLayoutEngine {
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PUBLIC_KEYBOARD_LAYOUT_ENGINE_H_
+#endif  // UI_EVENTS_OZONE_LAYOUT_KEYBOARD_LAYOUT_ENGINE_H_

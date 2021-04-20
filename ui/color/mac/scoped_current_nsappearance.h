@@ -25,4 +25,4 @@ class COMPONENT_EXPORT(COLOR) ScopedCurrentNSAppearance {
 
 }  // namespace ui
 
-#endif
+#endif  // UI_COLOR_MAC_SCOPED_CURRENT_NSAPPEARANCE_H_

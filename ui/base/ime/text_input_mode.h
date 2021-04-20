@@ -25,4 +25,4 @@ enum TextInputMode {
 
 }  // namespace ui
 
-#endif  // UI_BASE_IME_TEXT_INPUT_TYPE_H_
+#endif  // UI_BASE_IME_TEXT_INPUT_MODE_H_

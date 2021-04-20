@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_PRIMARY_SELECTION_DEVICE_H_
-#define UI_OZONE_PLATFORM_WAYLAND_HOST_PRIMARY_SELECTION_DEVICE_H_
+#ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_ZWP_PRIMARY_SELECTION_DEVICE_H_
+#define UI_OZONE_PLATFORM_WAYLAND_HOST_ZWP_PRIMARY_SELECTION_DEVICE_H_
 
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_base.h"
@@ -48,4 +48,4 @@ class ZwpPrimarySelectionDevice : public WaylandDataDeviceBase {
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PLATFORM_WAYLAND_HOST_PRIMARY_SELECTION_DEVICE_H_
+#endif  // UI_OZONE_PLATFORM_WAYLAND_HOST_ZWP_PRIMARY_SELECTION_DEVICE_H_

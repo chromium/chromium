@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GL_YUV420_RGB_CONVERTER_H_
-#define UI_GL_YUV420_RGB_CONVERTER_H_
+#ifndef UI_GL_YUV_TO_RGB_CONVERTER_H_
+#define UI_GL_YUV_TO_RGB_CONVERTER_H_
 
 #include "ui/gfx/geometry/size.h"
 
@@ -49,4 +49,4 @@ class YUVToRGBConverter {
 
 }  // namespace gl
 
-#endif  // UI_GL_YUV420_RGB_CONVERTER_H_
+#endif  // UI_GL_YUV_TO_RGB_CONVERTER_H_

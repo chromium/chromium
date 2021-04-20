@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_IDLE_FRACTION_RECORDER_H_
-#define UI_EVENTS_IDLE_FRACTION_RECORDER_H_
+#ifndef UI_EVENTS_FRACTION_OF_TIME_WITHOUT_USER_INPUT_RECORDER_H_
+#define UI_EVENTS_FRACTION_OF_TIME_WITHOUT_USER_INPUT_RECORDER_H_
 
 #include "base/time/time.h"
 #include "ui/events/events_base_export.h"
@@ -48,4 +48,4 @@ class EVENTS_BASE_EXPORT FractionOfTimeWithoutUserInputRecorder {
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_IDLE_FRACTION_RECORDER_H_
+#endif  // UI_EVENTS_FRACTION_OF_TIME_WITHOUT_USER_INPUT_RECORDER_H_

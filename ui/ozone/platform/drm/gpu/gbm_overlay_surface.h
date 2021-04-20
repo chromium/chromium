@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PLATFORM_DRM_GPU_GBM_GBM_OVERLAY_SURFACE_H_
-#define UI_OZONE_PLATFORM_DRM_GPU_GBM_GBM_OVERLAY_SURFACE_H_
+#ifndef UI_OZONE_PLATFORM_DRM_GPU_GBM_OVERLAY_SURFACE_H_
+#define UI_OZONE_PLATFORM_DRM_GPU_GBM_OVERLAY_SURFACE_H_
 
 #include <memory>
 #include <vector>
@@ -62,4 +62,4 @@ class GbmOverlaySurface : public OverlaySurface {
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PLATFORM_DRM_GPU_GBM_GBM_OVERLAY_SURFACE_H_
+#endif  // UI_OZONE_PLATFORM_DRM_GPU_GBM_OVERLAY_SURFACE_H_

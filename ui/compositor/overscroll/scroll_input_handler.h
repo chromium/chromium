@@ -48,4 +48,4 @@ class COMPOSITOR_EXPORT ScrollInputHandler : public cc::InputHandlerClient {
 
 }  // namespace ui
 
-#endif  // UI_COMPOSITOR_OVERSCROLL_UI_INPUT_HANDLER_H_
+#endif  // UI_COMPOSITOR_OVERSCROLL_SCROLL_INPUT_HANDLER_H_

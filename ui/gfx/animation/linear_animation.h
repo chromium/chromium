@@ -86,4 +86,4 @@ class ANIMATION_EXPORT LinearAnimation : public Animation {
 
 }  // namespace gfx
 
-#endif  // APP_LINEAR_ANIMATION_H_
+#endif  // UI_GFX_ANIMATION_LINEAR_ANIMATION_H_
