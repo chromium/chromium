@@ -7087,6 +7087,9 @@ crbug.com/1196317 [ Mac ] scrollbars/custom-scrollbar-thumb-width-changed-on-ina
 # Sheriff 2021-04-16
 crbug.com/1199803 [ Linux ] http/tests/devtools/layers/layers-3d-view-hit-testing.js [ Pass Failure ]
 
+# Sheriff 2021-04-20
+crbug.com/1200671 [ Mac11.0 ] virtual/gpu-rasterization/images/color-profile-animate-rotate.html [ Pass Failure ]
+
 # Crashes caused by forbidden allocation or JS calls inside the scope of
 # V8 Fast API call ([NoAllocDirectCall]), only when DCHECK_IS_ON
 crbug.com/1194226 virtual/no-alloc-direct-call/fast/canvas/canvas-filter-default-color.html [ Crash ]
