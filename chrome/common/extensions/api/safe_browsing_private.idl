@@ -116,6 +116,13 @@ namespace safeBrowsingPrivate {
 
     // Whether this entry may have been launched by an external application.
     boolean? maybeLaunchedByExternalApp;
+
+    // Whether subframe URLs are removed due to user consent restriction.
+    boolean? isSubframeUrlRemoved;
+
+    // Whether subframe referrer URLs are removed due to user consent
+    // restriction.
+    boolean? isSubframeReferrerUrlRemoved;
   };
 
   callback GetReferrerChainCallback = void(ReferrerChainEntry[] entries);

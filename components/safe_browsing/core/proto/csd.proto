@@ -923,7 +923,17 @@ message ReferrerChainEntry {
   // are possible.
   optional bool maybe_launched_by_external_application = 11;
 
-  // next available tag number: 12.
+  // Whether subframe URLs are removed due to user consent restriction.
+  // When this field is set to true, |url| is set to
+  // their relative mainframe URLs and |main_frame_url| is cleared.
+  optional bool is_subframe_url_removed = 12;
+
+  // Whether subframe referrer URLs are removed due to user consent restriction.
+  // When this field is set to true, |referrer_url| is set to
+  // their relative mainframe URLs and |referrer_main_frame_url| is cleared.
+  optional bool is_subframe_referrer_url_removed = 13;
+
+  // next available tag number: 14.
 }  // End of ReferrerChainEntry
 
 message ClientDownloadResponse {

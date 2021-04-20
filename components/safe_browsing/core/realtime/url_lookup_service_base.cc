@@ -179,6 +179,7 @@ void RealTimeUrlLookupServiceBase::SanitizeReferrerChainEntries(
     if (entry.has_main_frame_url()) {
       entry.set_url(entry.main_frame_url());
       entry.clear_main_frame_url();
+      entry.set_is_subframe_url_removed(true);
     }
     // If the entry sets referrer_main_frame_url, that means the referrer_url is
     // triggered in a subframe. Thus replace the referrer_url with the
@@ -186,6 +187,7 @@ void RealTimeUrlLookupServiceBase::SanitizeReferrerChainEntries(
     if (entry.has_referrer_main_frame_url()) {
       entry.set_referrer_url(entry.referrer_main_frame_url());
       entry.clear_referrer_main_frame_url();
+      entry.set_is_subframe_referrer_url_removed(true);
     }
   }
 }

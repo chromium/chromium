@@ -694,6 +694,13 @@ base::Value SerializeReferrer(const ReferrerChainEntry& referrer) {
       "maybe_launched_by_external_application",
       base::Value(referrer.maybe_launched_by_external_application()));
 
+  referrer_dict.SetKey("is_subframe_url_removed",
+                       base::Value(referrer.is_subframe_url_removed()));
+
+  referrer_dict.SetKey(
+      "is_subframe_referrer_url_removed",
+      base::Value(referrer.is_subframe_referrer_url_removed()));
+
   return std::move(referrer_dict);
 }
 

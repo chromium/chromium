@@ -108,6 +108,14 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
     entry.maybe_launched_by_external_app = std::make_unique<bool>(
         referrer.maybe_launched_by_external_application());
   }
+  if (referrer.has_is_subframe_url_removed()) {
+    entry.is_subframe_url_removed =
+        std::make_unique<bool>(referrer.is_subframe_url_removed());
+  }
+  if (referrer.has_is_subframe_referrer_url_removed()) {
+    entry.is_subframe_referrer_url_removed =
+        std::make_unique<bool>(referrer.is_subframe_referrer_url_removed());
+  }
 
   return entry;
 }
