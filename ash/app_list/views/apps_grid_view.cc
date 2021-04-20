@@ -1231,6 +1231,9 @@ void AppsGridView::OnMouseEvent(ui::MouseEvent* event) {
       event->SetHandled();
       mouse_drag_start_point_ = point_in_root;
       last_mouse_drag_point_ = point_in_root;
+      // Manually send the press event to the AppListView to update drag root
+      // location
+      contents_view_->app_list_view()->OnMouseEvent(event);
       break;
     case ui::ET_MOUSE_DRAGGED:
       if (!ShouldHandleDragEvent(*event)) {
@@ -3967,7 +3970,9 @@ bool AppsGridView::ShouldHandleDragEvent(const ui::LocatedEvent& event) {
   if (!folder_delegate_ &&
       (event.IsMouseEvent() || event.type() == ui::ET_GESTURE_SCROLL_BEGIN) &&
       !contents_view_->app_list_view()->is_tablet_mode() &&
-      pagination_model_.selected_page() == 0 && calculate_offset(event) > 0) {
+      ((pagination_model_.selected_page() == 0 &&
+        calculate_offset(event) > 0) ||
+       contents_view_->app_list_view()->is_in_drag())) {
     return false;
   }
 

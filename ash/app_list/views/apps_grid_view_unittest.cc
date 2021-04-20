@@ -464,7 +464,7 @@ INSTANTIATE_TEST_SUITE_P(All, AppsGridViewRTLTest, testing::Bool());
 
 // Tests suite for app list items drag and drop tests. These tests are
 // paramerized to cover both RTL locale and pagination previews behaviour.
-// TODO (anasalazar) : Parametrize by cardified behaviour.
+// TODO(anasalazar) : Parametrize by cardified behaviour.
 class AppsGridViewDragAndDropTest : public AppsGridViewTest,
                                     public testing::WithParamInterface<bool> {
  public:
@@ -796,6 +796,74 @@ TEST_P(AppsGridViewRTLTest, ScrollSequenceHandledByAppListView) {
       "Apps.StateTransition.Drag.PresentationTime.ClamshellMode", 1);
   histogram_tester.ExpectTotalCount(
       "Apps.StateTransition.Drag.PresentationTime.MaxLatency.ClamshellMode", 1);
+}
+
+TEST_P(AppsGridViewRTLTest, MouseScrollSequenceHandledByAppListView) {
+  base::HistogramTester histogram_tester;
+
+  model_->PopulateApps(GetTilesPerPage() + 1);
+  EXPECT_EQ(2, GetPaginationModel()->total_pages());
+
+  const gfx::Point apps_grid_view_origin =
+      apps_grid_view_->GetBoundsInScreen().origin();
+  // Pick a point inside the `AppsGridView`, as well as arbitrary points below
+  // and above it to drag to.
+  gfx::Point drag_start_point = apps_grid_view_origin + gfx::Vector2d(0, 10);
+  gfx::Point below_point = apps_grid_view_origin + gfx::Vector2d(0, 20);
+  gfx::Point above_point = apps_grid_view_origin + gfx::Vector2d(0, -20);
+
+  ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, apps_grid_view_origin,
+                             apps_grid_view_origin, ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+
+  ui::MouseEvent drag_start(ui::ET_MOUSE_DRAGGED, drag_start_point,
+                            drag_start_point, ui::EventTimeForNow(),
+                            ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+
+  ui::MouseEvent drag_below(ui::ET_MOUSE_DRAGGED, below_point, below_point,
+                            ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                            ui::EF_LEFT_MOUSE_BUTTON);
+
+  ui::MouseEvent drag_above(ui::ET_MOUSE_DRAGGED, above_point, above_point,
+                            ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                            ui::EF_LEFT_MOUSE_BUTTON);
+
+  // Send a press event to set the `mouse_drag_start_point_` for scrolling
+  apps_grid_view_->OnMouseEvent(&press_event);
+  EXPECT_TRUE(press_event.handled());
+
+  // Drag down on the app grid when on page 1, this should move the
+  // `AppListView` and not move the `AppsGridView`. We have to send two drag
+  // down events, `drag_start` and `drag_below`, to make sure `AppListView` has
+  // its anchor point and starts dragging down. Event is manually passed to
+  // `AppListview` in `AppsGridView::OnMouseEvent`
+  apps_grid_view_->OnMouseEvent(&drag_start);
+  EXPECT_TRUE(drag_start.handled());
+  histogram_tester.ExpectTotalCount(
+      "Apps.StateTransition.Drag.PresentationTime.ClamshellMode", 0);
+
+  apps_grid_view_->OnMouseEvent(&drag_below);
+  EXPECT_TRUE(drag_below.handled());
+  ASSERT_TRUE(app_list_view_->is_in_drag());
+  ASSERT_EQ(0, GetPaginationModel()->transition().progress);
+  histogram_tester.ExpectTotalCount(
+      "Apps.StateTransition.Drag.PresentationTime.ClamshellMode", 1);
+  histogram_tester.ExpectTotalCount(
+      "Apps.StateTransition.Drag.PresentationTime.MaxLatency.ClamshellMode", 0);
+
+  // Now drag back up. Because we have dragged the launcher down, we want it to
+  // continue dragging to allow the user to fully expand it. If we don't, the
+  // launcher can end up in a "expanded" state with the launcher not reaching
+  // the top of the screen and the app list scrolling.
+  apps_grid_view_->OnMouseEvent(&drag_above);
+  EXPECT_TRUE(drag_above.handled());
+  ASSERT_TRUE(app_list_view_->is_in_drag());
+  ASSERT_EQ(0, GetPaginationModel()->transition().progress);
+  histogram_tester.ExpectTotalCount(
+      "Apps.StateTransition.Drag.PresentationTime.ClamshellMode", 2);
+  histogram_tester.ExpectTotalCount(
+      "Apps.StateTransition.Drag.PresentationTime.MaxLatency.ClamshellMode", 0);
 }
 
 TEST_P(AppsGridViewRTLTest,
