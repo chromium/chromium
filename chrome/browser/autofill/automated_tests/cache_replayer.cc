@@ -47,8 +47,8 @@ constexpr char kLegacyServerUrlPrefix[] =
     "https://clients1.google.com/tbproxy/af/query";
 constexpr char kApiServerDomain[] = "content-autofill.googleapis.com";
 constexpr char kApiServerUrlGetPrefix[] =
-    "https://content-autofill.googleapis.com/v1/pages:get";
-constexpr char kApiServerQueryPath[] = "/v1/pages:get";
+    "https://content-autofill.googleapis.com/v1/pages";
+constexpr char kApiServerQueryPath[] = "/v1/pages";
 
 // Makes an internal error that carries an error message.
 Status MakeInternalError(const std::string& error_message) {
@@ -151,13 +151,19 @@ StatusOr<std::string> GetQueryParameter<ApiEnv>(const GURL& url) {
     // This situation will never happen if check for the query path is
     // done before calling this function.
     return MakeInternalError(
-        base::StrCat({"could not get any value from query path  in "
+        base::StrCat({"could not get any value from query path in "
                       "Query GET URL: ",
                       url.spec()}));
   }
-  // +1 for extra "/".
-  value = value.substr(strlen(kApiServerQueryPath) + 1);
-  return value;
+  size_t slash = value.find('/', strlen(kApiServerQueryPath));
+  if (slash != std::string::npos) {
+    return value.substr(slash + 1);
+  } else {
+    return MakeInternalError(
+        base::StrCat({"could not get any value from query path in "
+                      "Query GET URL: ",
+                      url.spec()}));
+  }
 }
 
 // Returns whether the |url| points to a GET or POST query, or neither.
@@ -185,11 +191,8 @@ RequestType GetRequestTypeFromURL<ApiEnv>(const GURL& url) {
   }
 
   std::string path = url.path().substr(strlen(kApiServerQueryPath));
-  if (path.size() > 0 && path[0] == '/')  // Skip a /
-    path = path.substr(1);
-  if (path.size() == 0)
-    return RequestType::kQueryProtoPOST;
-  return RequestType::kQueryProtoGET;
+  return path == ":get" || path == ":get/" ? RequestType::kQueryProtoPOST
+                                           : RequestType::kQueryProtoGET;
 }
 
 // Gets query request protos from GET URL.
