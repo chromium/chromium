@@ -8,8 +8,12 @@ source_set("auction_worklet") {
   sources = [
     "auction_downloader.cc",
     "auction_downloader.h",
+    "auction_runner.cc",
+    "auction_runner.h",
     "auction_v8_helper.cc",
     "auction_v8_helper.h",
+    "auction_worklet_service_impl.cc",
+    "auction_worklet_service_impl.h",
     "bidder_worklet.cc",
     "bidder_worklet.h",
     "report_bindings.cc",
@@ -29,7 +33,6 @@ source_set("auction_worklet") {
 
   deps = [
     "//base",
-    "//content/public/common",
     "//gin",
     "//mojo/public/cpp/bindings",
     "//net",
@@ -37,6 +40,8 @@ source_set("auction_worklet") {
     "//url",
     "//v8",
   ]
+
+  public_deps = [ "public/mojom" ]
 }
 
 source_set("tests") {
@@ -44,6 +49,7 @@ source_set("tests") {
 
   sources = [
     "auction_downloader_unittest.cc",
+    "auction_runner_unittest.cc",
     "bidder_worklet_unittest.cc",
     "seller_worklet_unittest.cc",
     "trusted_bidding_signals_unittest.cc",
@@ -52,9 +58,9 @@ source_set("tests") {
 
   deps = [
     ":auction_worklet",
+    "public/mojom",
     "//base",
     "//base/test:test_support",
-    "//content/public/common",
     "//net",
     "//services/network:test_support",
     "//services/service_manager/public/cpp/test:test_support",

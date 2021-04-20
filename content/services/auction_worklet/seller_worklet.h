@@ -10,7 +10,9 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "v8/include/v8.h"
@@ -88,7 +90,7 @@ class SellerWorklet {
   // method and ReportResult().
   ScoreResult ScoreAd(const std::string& ad_metadata_json,
                       double bid,
-                      const std::string& auction_config_json,
+                      const blink::mojom::AuctionAdConfig& auction_config,
                       const std::string& browser_signal_top_window_hostname,
                       const url::Origin& browser_signal_interest_group_owner,
                       const std::string& browser_signal_interest_group_name,
@@ -97,7 +99,7 @@ class SellerWorklet {
 
   // Calls reportResult(), and returns reporting information. May only be
   // called once the worklet has successfully loaded.
-  Report ReportResult(const std::string& auction_config_json,
+  Report ReportResult(const blink::mojom::AuctionAdConfig& auction_config,
                       const std::string& browser_signal_top_window_hostname,
                       const url::Origin& browser_signal_interest_group_owner,
                       const std::string& browser_signal_interest_group_name,

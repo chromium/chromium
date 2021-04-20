@@ -1,0 +1,111 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module auction_worklet.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/url_loader_factory.mojom";
+import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+struct PreviousWin {
+  mojo_base.mojom.Time time;
+  string ad_json;
+};
+
+struct BiddingBrowserSignals {
+  int32 join_count;
+  int32 bid_count;
+  array<PreviousWin> prev_wins;
+};
+
+struct BiddingInterestGroup {
+  blink.mojom.InterestGroup group;  // User JS specified, stored by browser.
+  BiddingBrowserSignals signals;  // Collected by browser.
+};
+
+struct BrowserSignals {
+  url.mojom.Origin top_frame_origin;
+  url.mojom.Origin seller;
+};
+
+struct WinningBidderReport {
+  // true if the winning bidder worklet's reporting function ran successfully
+  // and set a reporting URL.
+  bool report_requested;
+
+  // This is checked to be a https:// URL for `report_requested` to be true, but
+  // no restrictions on the destination are performed by AuctionRunner.
+  url.mojom.Url report_url;
+};
+
+struct SellerReport {
+  // true if the seller worklet's reporting function ran successfully and set a
+  // reporting URL.
+  bool report_requested;
+  string signals_for_winner_json;
+
+  // This is checked to be a https:// URL for `report_requested` to be true, but
+  // no restrictions on the destination are performed by AuctionRunner.
+  url.mojom.Url report_url;
+};
+
+// Used to load and run FLEDGE worklets.
+// See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+//
+// This is used from the browser, by AuctionManager, and runs in a dedicated
+// utility process. The implementation is global (and stateless besides what's
+// needed to handle an individual request).
+interface AuctionWorkletService {
+  // Runs an entire FLEDGE auction.
+  //
+  // Arguments:
+  // `url_loader_factory` is used to load worklet scripts and trusted bidding
+  //  signals. It's recommended that the implementation be restricted to exactly
+  //  those URLs (keeping in mind query parameter usage for trusted bidding
+  //  signals and the allowed coalescing).
+  //
+  // `auction_config` is the configuration provided by client JavaScript in
+  //  the renderer in order to initiate the auction.
+  //
+  // `bidders` includes definitions of the interest groups that are selected to
+  //  participate in this auction (initially added by client JS in the renderer,
+  //  but managed by the browser's interest group store), as well as some
+  //  bidding history collected by the interest group store. The bidding
+  //  worklets of these groups will be fetched and executed.
+  //
+  // `browser_signals` signals from the browser about the auction that are the
+  //  same for all worklets.
+  //
+  // Returns:
+  // `render_url` URL of auction winning ad to render.
+  //  An empty URL is used if there is no winner.
+  //
+  // `winning_interest_group_owner` owner of the winning interest group.
+  //  An opaque origin if there is no winner.
+  //
+  // `winning_interest_group_name` name of winning interest group.
+  //  Empty if there is no winner.
+  //
+  // `bidder_report` indicates if the winning buyer wishes to make a report,
+  //  and the URL to use for that.
+  // `seller_report` indicates if the seller wishes to make a report,
+  //  and the URL that the seller wanted fetched for that.
+  //
+  // TODO(mmenke):  May be good to make some way to share worklets between
+  // multiple auctions on the same page, but not auctions across pages.
+  // Could create separate top level AuctionWorkletService objects (using the
+  // same process), one for each tab, or something, to scope reused workets
+  // and bidding signals.
+  RunAuction(pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
+             blink.mojom.AuctionAdConfig auction_config,
+             array<BiddingInterestGroup> bidders,
+             BrowserSignals browser_signals) => (
+                url.mojom.Url render_url,
+                url.mojom.Origin winning_interest_group_owner,
+                string winning_interest_group_name,
+                WinningBidderReport bidder_report,
+                SellerReport seller_report);
+};

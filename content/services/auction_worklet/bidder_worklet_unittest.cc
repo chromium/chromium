@@ -74,7 +74,9 @@ class BidderWorkletTest : public testing::Test {
     interest_group_ads_.push_back(blink::mojom::InterestGroupAd::New(
         GURL("https://response.test/"), base::nullopt /* metadata */));
     auction_signals_ = "[\"auction_signals\"]";
+    null_auction_signals_ = false;
     per_buyer_signals_ = "[\"per_buyer_signals\"]";
+    null_per_buyer_signals_ = false;
     browser_signal_top_window_hostname_ = "browser_signal_top_window_hostname";
     browser_signal_seller_ = "browser_signal_seller";
     browser_signal_join_count_ = 2;
@@ -133,7 +135,13 @@ class BidderWorkletTest : public testing::Test {
       interest_group->ads->emplace_back(ad.Clone());
     }
     return bidder_worket->GenerateBid(
-        *interest_group, auction_signals_, per_buyer_signals_,
+        *interest_group,
+        null_auction_signals_
+            ? base::nullopt
+            : base::make_optional<std::string>(auction_signals_),
+        null_per_buyer_signals_
+            ? base::nullopt
+            : base::make_optional<std::string>(per_buyer_signals_),
         trusted_bidding_signals_keys_, trusted_bidding_signals_.get(),
         browser_signal_top_window_hostname_, browser_signal_seller_,
         browser_signal_join_count_, browser_signal_bid_count_,
@@ -174,9 +182,14 @@ class BidderWorkletTest : public testing::Test {
     ASSERT_TRUE(bidder_worket);
 
     BidderWorklet::ReportWinResult actual_result = bidder_worket->ReportWin(
-        auction_signals_, per_buyer_signals_, seller_signals_,
-        browser_signal_top_window_hostname_, interest_group_owner_,
-        interest_group_name_, browser_signal_render_url_,
+        null_auction_signals_
+            ? base::nullopt
+            : base::make_optional<std::string>(auction_signals_),
+        null_per_buyer_signals_
+            ? base::nullopt
+            : base::make_optional<std::string>(per_buyer_signals_),
+        seller_signals_, browser_signal_top_window_hostname_,
+        interest_group_owner_, interest_group_name_, browser_signal_render_url_,
         browser_signal_ad_render_fingerprint_, browser_signal_bid_);
     EXPECT_EQ(!expected_report_url.is_empty(), actual_result.success);
     EXPECT_EQ(expected_report_url, actual_result.report_url);
@@ -219,8 +232,15 @@ class BidderWorkletTest : public testing::Test {
   // An empty string means nullptr.
   std::string interest_group_user_bidding_signals_;
   std::vector<blink::mojom::InterestGroupAdPtr> interest_group_ads_;
+
   std::string auction_signals_;
+  // true to pass nullopt rather than `auction_signals_`.
+  bool null_auction_signals_ = false;
+
   std::string per_buyer_signals_;
+  // true to pass nullopt rather than `per_buyer_signals_`.
+  bool null_per_buyer_signals_ = false;
+
   std::string browser_signal_top_window_hostname_;
   std::string browser_signal_seller_;
   int browser_signal_join_count_;
@@ -587,6 +607,44 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
                                GURL("https://response.test/")));
 }
 
+// Test handling of null auctionSignals and perBuyerSignals to generateBid.
+TEST_F(BidderWorkletTest, GenerateBidParametersOptionalString) {
+  constexpr char kRetVal[] = R"({
+    ad: "metadata",
+    bid: (auctionSignals === null ? 10 : 0) +
+         (perBuyerSignals === null ? 2 : 1),
+    render: "https://response.test/"
+})";
+
+  SetDefaultParameters();
+  null_auction_signals_ = false;
+  null_per_buyer_signals_ = false;
+  RunGenerateBidWithReturnValueExpectingResult(
+      kRetVal, BidderWorklet::BidResult("\"metadata\"", 1,
+                                        GURL("https://response.test/")));
+
+  SetDefaultParameters();
+  null_auction_signals_ = false;
+  null_per_buyer_signals_ = true;
+  RunGenerateBidWithReturnValueExpectingResult(
+      kRetVal, BidderWorklet::BidResult("\"metadata\"", 2,
+                                        GURL("https://response.test/")));
+
+  SetDefaultParameters();
+  null_auction_signals_ = true;
+  null_per_buyer_signals_ = false;
+  RunGenerateBidWithReturnValueExpectingResult(
+      kRetVal, BidderWorklet::BidResult("\"metadata\"", 11,
+                                        GURL("https://response.test/")));
+
+  SetDefaultParameters();
+  null_auction_signals_ = true;
+  null_per_buyer_signals_ = true;
+  RunGenerateBidWithReturnValueExpectingResult(
+      kRetVal, BidderWorklet::BidResult("\"metadata\"", 12,
+                                        GURL("https://response.test/")));
+}
+
 // Utility methods to create vectors of PreviousWin. Needed because StructPtr's
 // don't allow copying.
 
@@ -841,6 +899,40 @@ TEST_F(BidderWorkletTest, ReportWinParameters) {
       R"(if (browserSignals.bid == 4)
         sendReportTo("https://jumboshrimp.test"))",
       GURL("https://jumboshrimp.test"));
+}
+
+// Test handling of null auctionSignals and perBuyerSignals to reportWin.
+TEST_F(BidderWorkletTest, ReportWinParametersOptionalString) {
+  constexpr char kBody[] = R"(
+    let url = "https://reporter.com/?" +
+                (auctionSignals === null  ? "aN" : "aP") +
+                (perBuyerSignals === null ? "pN" : "pP");
+    sendReportTo(url);
+  )";
+
+  SetDefaultParameters();
+  null_auction_signals_ = false;
+  null_per_buyer_signals_ = false;
+  RunReportWinWithFunctionBodyExpectingResult(
+      kBody, GURL("https://reporter.com/?aPpP"));
+
+  SetDefaultParameters();
+  null_auction_signals_ = false;
+  null_per_buyer_signals_ = true;
+  RunReportWinWithFunctionBodyExpectingResult(
+      kBody, GURL("https://reporter.com/?aPpN"));
+
+  SetDefaultParameters();
+  null_auction_signals_ = true;
+  null_per_buyer_signals_ = false;
+  RunReportWinWithFunctionBodyExpectingResult(
+      kBody, GURL("https://reporter.com/?aNpP"));
+
+  SetDefaultParameters();
+  null_auction_signals_ = true;
+  null_per_buyer_signals_ = true;
+  RunReportWinWithFunctionBodyExpectingResult(
+      kBody, GURL("https://reporter.com/?aNpN"));
 }
 
 // Subsequent runs of the same script should not affect each other. Same is true

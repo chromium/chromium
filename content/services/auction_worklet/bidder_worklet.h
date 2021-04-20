@@ -103,8 +103,8 @@ class BidderWorklet {
   // once BidderWorklet has successfully loaded.
   BidResult GenerateBid(
       const blink::mojom::InterestGroup& interest_group,
-      const std::string& auction_signals_json,
-      const std::string& per_buyer_signals_json,
+      const base::Optional<std::string>& auction_signals_json,
+      const base::Optional<std::string>& per_buyer_signals_json,
       const std::vector<std::string>& trusted_bidding_signals_keys,
       TrustedBiddingSignals* trusted_bidding_signals,
       const std::string& browser_signal_top_window_hostname,
@@ -116,8 +116,8 @@ class BidderWorklet {
   // Calls reportWin(), and returns reporting information. May only be called
   // once the worklet has successfully loaded.
   ReportWinResult ReportWin(
-      const std::string& auction_signals_json,
-      const std::string& per_buyer_signals_json,
+      const base::Optional<std::string>& auction_signals_json,
+      const base::Optional<std::string>& per_buyer_signals_json,
       const std::string& seller_signals_json,
       const std::string& browser_signal_top_window_hostname,
       const url::Origin& browser_signal_interest_group_owner,
