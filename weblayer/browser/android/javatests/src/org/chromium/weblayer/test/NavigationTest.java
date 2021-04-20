@@ -132,7 +132,7 @@ public class NavigationTest {
                         mPage = navigation.getPage();
                     }
                 }
-                if (majorVersion >= 92) {
+                if (majorVersion >= 91) {
                     mResponseHeaders = navigation.getResponseHeaders();
                 }
                 notifyCalled();
@@ -1494,7 +1494,7 @@ public class NavigationTest {
         mCallback.onPageDestroyedCallback.assertCalledWith(curOnPageDestroyedCount, page2);
     }
 
-    @MinWebLayerVersion(92)
+    @MinWebLayerVersion(91)
     @Test
     @SmallTest
     public void testResponseHeaders() throws Exception {

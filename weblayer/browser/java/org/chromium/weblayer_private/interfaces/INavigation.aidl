@@ -49,6 +49,6 @@ interface INavigation {
   // @since 90
   IClientPage getPage() = 18;
 
-  // @since 92
+  // @since 91
   List<String> getResponseHeaders() = 21;
 }

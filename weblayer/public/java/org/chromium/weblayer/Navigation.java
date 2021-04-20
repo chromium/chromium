@@ -93,11 +93,11 @@ public class Navigation extends IClientNavigation.Stub {
      * Returns the HTTP response headers. Returns an empty map if the navigation hasn't completed
      * yet or if a response wasn't received.
      *
-     * @since 92
+     * @since 91
      */
     public Map<String, String> getResponseHeaders() {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 92) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 91) {
             throw new UnsupportedOperationException();
         }
         try {
