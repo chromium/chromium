@@ -768,4 +768,13 @@ suite('CrComponentsEsimFlowUiTest', function() {
             profileLoadingPage.state,
             LoadingPageState.CELLULAR_DISCONNECT_WARNING);
       });
+
+  test('Show final page with error if no EUICC', async function() {
+    eSimPage.initSubflow();
+    await assertProfileLoadingPageAndContinue();
+    await flushAsync();
+    await assertFinalPageAndPressDoneButton(/*shouldBeShowingError=*/ true);
+
+    endFlowAndVerifyResult(ESimSetupFlowResult.ERROR_FETCHING_PROFILES);
+  });
 });

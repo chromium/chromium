@@ -268,10 +268,10 @@ cr.define('cellular_setup', function() {
     async fetchProfiles_() {
       const euicc = await cellular_setup.getEuicc();
       if (!euicc) {
-        // TODO(crbug.com/1093185) User should have at least 1 EUICC or
-        // we shouldn't have gotten to this flow. Add check for this in
-        // cellular_setup.
-        console.error('No Euiccs found');
+        this.hasFailedFetchingProfiles_ = true;
+        this.showError_ = true;
+        this.state_ = ESimUiState.SETUP_FINISH;
+        console.warn('No Euiccs found');
         return;
       }
       this.euicc_ = euicc;
