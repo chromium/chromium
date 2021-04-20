@@ -60,6 +60,8 @@ bool IsEventCandidateForHold(const ui::Event& event) {
     return true;
   if (event.type() == ui::ET_MOUSE_DRAGGED)
     return true;
+  if (event.type() == ui::ET_MOUSE_EXITED)
+    return false;
   if (event.IsMouseEvent() && (event.flags() & ui::EF_IS_SYNTHESIZED))
     return true;
   return false;
