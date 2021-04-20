@@ -24116,6 +24116,7 @@ Called by update_document_policy_enum.py.-->
   <int value="847" label="FileHandlingBlockedForUrls"/>
   <int value="848" label="DeviceAllowedBluetoothServices"/>
   <int value="849" label="ExplicitlyAllowedNetworkPorts"/>
+  <int value="852" label="SharedArrayBufferUnrestrictedAccessAllowed"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

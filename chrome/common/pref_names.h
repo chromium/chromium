@@ -1034,6 +1034,7 @@ extern const char kIsolateOrigins[];
 extern const char kSitePerProcess[];
 
 #if !defined(OS_ANDROID)
+extern const char kSharedArrayBufferUnrestrictedAccessAllowed[];
 extern const char kAutoplayAllowed[];
 extern const char kAutoplayWhitelist[];
 extern const char kBlockAutoplayEnabled[];
