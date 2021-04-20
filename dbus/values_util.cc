@@ -225,10 +225,7 @@ void AppendBasicTypeValueData(MessageWriter* writer, const base::Value& value) {
       break;
     }
     case base::Value::Type::INTEGER: {
-      int int_value = 0;
-      bool success = value.GetAsInteger(&int_value);
-      DCHECK(success);
-      writer->AppendInt32(int_value);
+      writer->AppendInt32(value.GetInt());
       break;
     }
     case base::Value::Type::DOUBLE: {
