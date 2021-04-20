@@ -180,6 +180,7 @@
 <translation id="2169830938017475061">Сега</translation>
 <translation id="2172688499998841696">Описите за слики се исклучени.</translation>
 <translation id="2175927920773552910">QR-код</translation>
+<translation id="2181298861158186289">Сокриј содржини на привремената меморија</translation>
 <translation id="218608176142494674">Се споделува</translation>
 <translation id="2195339740518523951">Добијте ја најсилната безбедност на Chrome</translation>
 <translation id="2200113223741723867">Управувајте со споделувањето податоци за користењето</translation>
@@ -399,6 +400,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="363596933471559332">Автоматски најавувајте се на веб-сајтови со складирани акредитиви. Кога функцијата е исклучена, ќе се бара проверка од вас секогаш пред најавување на веб-сајт.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Ако се ресетира, ќе се избрише историјата на заштеден интернет, заедно со списокот со посетени сајтови.</translation>
+<translation id="3677911431265050325">Побарај мобилна верзија на сајтот</translation>
 <translation id="3687645719033307815">Гледате преглед на страницава</translation>
 <translation id="3692944402865947621">Преземањето на <ph name="FILE_NAME" /> не успеа бидејќи локацијата за складирање не е достапна.</translation>
 <translation id="371230970611282515">Предвидува опасни настани и ве предупредува пред да се случат.</translation>
@@ -842,6 +844,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6539092367496845964">Нешто тргна наопаку. Обидете се повторно подоцна.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Проверено пред 1 час}one{Проверено пред # час}other{Проверено пред # часа}}</translation>
 <translation id="6545017243486555795">Избриши ги сите податоци</translation>
+<translation id="6549142516027084053">Прикажи содржини на привремената меморија</translation>
 <translation id="6560414384669816528">Пребарување со Sogou</translation>
 <translation id="656065428026159829">Прикажи повеќе</translation>
 <translation id="6565959834589222080">Се користи Wi-Fi кога е достапна</translation>
@@ -1149,6 +1152,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8559990750235505898">Понудувај превод на страниците на други јазици</translation>
 <translation id="8560602726703398413">Најдете го списокот за читање во „Обележувачи“</translation>
 <translation id="8562452229998620586">Зачуваните лозинки ќе се појават тука.</translation>
+<translation id="856481929701340285">Барај лок. на раб. пов.</translation>
 <translation id="8569404424186215731">од <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Изминатите 4 седмици</translation>
 <translation id="8572344201470131220">Сликата е копирана</translation>

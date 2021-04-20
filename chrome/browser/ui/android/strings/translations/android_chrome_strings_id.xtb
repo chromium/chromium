@@ -180,6 +180,7 @@ Ketuk kata apa pun untuk menelusuri. Untuk menyaring penelusuran, sentuh lama un
 <translation id="2169830938017475061">Sekarang</translation>
 <translation id="2172688499998841696">Deskripsi gambar nonaktif</translation>
 <translation id="2175927920773552910">Kode QR</translation>
+<translation id="2181298861158186289">Sembunyikan Konten Papan Klip</translation>
 <translation id="218608176142494674">Berbagi</translation>
 <translation id="2195339740518523951">Dapatkan keamanan terkuat Chrome</translation>
 <translation id="2200113223741723867">Kelola pembagian data penggunaan</translation>
@@ -399,6 +400,7 @@ Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah ter
 <translation id="363596933471559332">Otomatis login ke situs web menggunakan kredensial yang tersimpan. Saat fitur dinonaktifkan, Anda akan dimintai verifikasi setiap kali hendak login ke situs web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Penyetalan ulang akan menghapus histori penyimpanan data, termasuk daftar situs yang dibuka.</translation>
+<translation id="3677911431265050325">Minta situs seluler</translation>
 <translation id="3687645719033307815">Anda sedang melihat pratinjau halaman ini</translation>
 <translation id="3692944402865947621">Download <ph name="FILE_NAME" /> gagal karena lokasi penyimpanan tidak dapat dijangkau.</translation>
 <translation id="371230970611282515">Memperkirakan dan memberikan peringatan terkait peristiwa berbahaya sebelum terjadi.</translation>
@@ -842,6 +844,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6539092367496845964">Terjadi masalah. Coba lagi nanti.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Diperiksa 1 jam yang lalu}other{Diperiksa # jam yang lalu}}</translation>
 <translation id="6545017243486555795">Hapus Semua Data</translation>
+<translation id="6549142516027084053">Tampilkan Konten Papan Klip</translation>
 <translation id="6560414384669816528">Menelusuri menggunakan Sogou</translation>
 <translation id="656065428026159829">Lihat lainnya</translation>
 <translation id="6565959834589222080">Wi-Fi akan digunakan jika tersedia</translation>
@@ -1149,6 +1152,7 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="8559990750235505898">Tawarkan penerjemahan halaman ke dalam bahasa lain</translation>
 <translation id="8560602726703398413">Temukan daftar bacaan Anda di Bookmark</translation>
 <translation id="8562452229998620586">Sandi yang disimpan akan muncul di sini.</translation>
+<translation id="856481929701340285">Ubah situs desktop</translation>
 <translation id="8569404424186215731">sejak <ph name="DATE" /></translation>
 <translation id="8571213806525832805">4 minggu terakhir</translation>
 <translation id="8572344201470131220">Gambar Disalin</translation>

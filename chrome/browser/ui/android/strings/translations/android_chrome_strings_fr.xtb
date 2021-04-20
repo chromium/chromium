@@ -180,6 +180,7 @@ Appuyez sur n'importe quel mot pour lancer une recherche. Pour affiner la recher
 <translation id="2169830938017475061">Maintenant</translation>
 <translation id="2172688499998841696">Les descriptions d'images sont désactivées</translation>
 <translation id="2175927920773552910">Code QR</translation>
+<translation id="2181298861158186289">Masquer le contenu du Presse-papiers</translation>
 <translation id="218608176142494674">Partage</translation>
 <translation id="2195339740518523951">Renforcer la sécurité de Chrome</translation>
 <translation id="2200113223741723867">Gérer le partage des données d'utilisation</translation>
@@ -399,6 +400,7 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="363596933471559332">Connexion automatique aux sites Web à l'aide des identifiants enregistrés. Lorsque la fonctionnalité est désactivée, vous êtes invité à effectuer la validation avant chaque connexion à un site Web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" /> : <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Le processus de réinitialisation efface l'historique de l'économiseur de données, y compris la liste des sites consultés.</translation>
+<translation id="3677911431265050325">Demander le site mobile</translation>
 <translation id="3687645719033307815">Ceci est un aperçu de cette page</translation>
 <translation id="3692944402865947621">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison de l'espace de stockage indisponible.</translation>
 <translation id="371230970611282515">Il prédit les événements dangereux et vous en informe avant qu'ils ne surviennent.</translation>
@@ -842,6 +844,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6539092367496845964">Un problème est survenu. Réessayez plus tard.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Vérification effectuée il y a 1 heure}one{Vérification effectuée il y a # heure}other{Vérification effectuée il y a # heures}}</translation>
 <translation id="6545017243486555795">Supprimer toutes les données</translation>
+<translation id="6549142516027084053">Afficher le contenu du Presse-papiers</translation>
 <translation id="6560414384669816528">Rechercher avec Sogou</translation>
 <translation id="656065428026159829">Voir plus</translation>
 <translation id="6565959834589222080">Le réseau Wi-Fi est utilisé s'il est disponible</translation>
@@ -1149,6 +1152,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="8559990750235505898">Proposer de traduire les pages dans d'autres langues</translation>
 <translation id="8560602726703398413">Retrouvez votre liste de lecture dans les favoris</translation>
 <translation id="8562452229998620586">Les mots de passe enregistrés s'affichent ici.</translation>
+<translation id="856481929701340285">Voir version ordinateur</translation>
 <translation id="8569404424186215731">depuis le <ph name="DATE" /></translation>
 <translation id="8571213806525832805">4 dernières semaines</translation>
 <translation id="8572344201470131220">Image copiée</translation>

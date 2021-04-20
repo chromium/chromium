@@ -158,6 +158,7 @@
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="120937472976628837">Informationen zum Lüfter melden</translation>
+<translation id="1214202898523114033">Port 10080 (gültig bis 01.04.2022)</translation>
 <translation id="1216919699175573511">Unterstützung für Signed HTTP Exchange (SXG) aktivieren</translation>
 <translation id="1219695476179627719">Gibt an, ob das Gerät auf die von <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> festgelegte Version zurückgesetzt werden soll, obwohl bereits eine neuere Version ausgeführt wird.
 
@@ -2760,6 +2761,9 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird kein Zertifikat erstellt und Aufrufe der <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> schlagen fehl.</translation>
 <translation id="4742973303930120836">Druckmodus mit Hintergrundgrafiken einschränken</translation>
 <translation id="4752880493649142945">Clientzertifikat zur Herstellung einer Verbindung zu RemoteAccessHostTokenValidationUrl</translation>
+<translation id="475479145997699293">Wenn die Richtlinie auf <ph name="ASK_FILE_HANDLING" /> gesetzt ist, dürfen Webanwendungen um Zugriff auf Dateitypen über die File Handling API bitten. Wenn die Richtlinie auf <ph name="BLOCK_FILE_HANDLING" /> gesetzt ist, wird der Zugriff auf Dateitypen abgelehnt.
+
+      Wird die Richtlinie nicht konfiguriert, können Webanwendungen um Zugriff bitten. Nutzer können diese Einstellung jedoch anpassen.</translation>
 <translation id="4757053978738874325">Mit dieser Richtlinie wird die Bedienungshilfe "Mono-Audio" aktiviert.
 
           Mit dieser Funktion kann die Audio-Ausgabe von der Standardeinstellung Stereo auf Mono-Audio umgestellt werden. Bei Stereo-Audio können über separate linke und rechte Kanäle auf beiden Ohren unterschiedliche Töne gehört werden, bei Mono-Audio werden auf beiden Kanälen die gleichen Töne ausgegeben.
@@ -2934,6 +2938,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="4962262530309732070">Wurde für diese Richtlinie "true" festgelegt oder nichts konfiguriert, ist in <ph name="PRODUCT_NAME" /> die Verwendung der Funktion "Person hinzufügen" über den Nutzermanager zulässig.
 
       Ist für die Richtlinie "false" festgelegt, können in <ph name="PRODUCT_NAME" /> keine neuen Profile im Nutzermanager erstellt werden.</translation>
+<translation id="4970046075219007744">Webanwendungen erlauben, um Zugriff auf Dateitypen über die File Handling API zu bitten</translation>
 <translation id="4970855112942626932">Browseranmeldung deaktivieren</translation>
 <translation id="4977702914571821981">Mit dieser Richtlinie können Sie eine Liste von URL-Mustern festlegen, die angeben, auf welchen Websites blockierbare (aktive) gemischte Inhalte (HTTP-Inhalte auf HTTPS-Websites) nicht angezeigt werden dürfen und auf welchen Websites optional blockierbare (passive) gemischte Inhalte auf HTTPS geändert werden.
 
@@ -4065,6 +4070,15 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 <translation id="6506486086262398387">Wenn die Richtlinie aktiviert ist, verwendet die Funktion zur Netzwerkfreigabe für <ph name="PRODUCT_OS_NAME" /> bei Bedarf NTLM zur Authentifizierung gegenüber SMB-Freigaben. Ist die Richtlinie deaktiviert, wird die NTLM-Authentifizierung gegenüber SMB-Freigaben ausgeschaltet.
 
       Ist sie nicht konfiguriert, wird dieses Verhalten für verwaltete Nutzer standardmäßig deaktiviert und für andere Nutzer hingegen aktiviert.</translation>
+<translation id="651012148496266279">Wenn diese Richtlinie festgelegt ist, ist das Umgehen der in <ph name="PRODUCT_NAME" /> integrierten Liste beschränkter Ports zulässig. Der Wert ist eine durch Kommas getrennte Liste von null oder mehr Ports, an denen ausgehende Verbindungen erlaubt werden.
+
+      Ports sind beschränkt, um zu verhindern, dass <ph name="PRODUCT_NAME" /> als Vektor für die Ausnutzung verschiedener Netzwerk-Sicherheitslücken verwendet wird. Wird diese Richtlinie konfiguriert, kann Ihr Netzwerk dadurch dem Risiko von Angriffen ausgesetzt sein. Diese Richtlinie dient zur vorübergehenden Problemumgehung bei Fehlern mit dem Code „ERR_UNSAFE_PORT“, die während der Migration eines Dienstes auftreten, wenn der Dienst an einem gesperrten Port läuft und an einen Standardport migriert wird (z. B. Port 80 oder 443).
+
+      Schädliche Websites können schnell erkennen, ob und für welche Ports diese Richtlinie konfiguriert ist, und diese Informationen für gezielte Angriffe nutzen.
+
+      Wenn dieser Wert leer gelassen oder nicht konfiguriert wird, werden alle beschränkten Ports blockiert. Wenn gültige und ungültige Werte vorhanden sind, werden die gültigen angewendet.
+
+      Diese Richtlinie überschreibt die Befehlszeilenoption „--explicitly-allowed-ports“.</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" />-Bild</translation>
 <translation id="6518102411616460786">Abwarten, bis die Zielversion auf dem Stand des Versionsdowngrades ist</translation>
 <translation id="6520802717075138474">Suchmaschinen bei erster Ausführung aus Standardbrowser importieren</translation>
@@ -5697,6 +5711,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       Wenn die Richtlinie auf "false" gesetzt ist, werden Tabs nicht deaktiviert.</translation>
 <translation id="8631434304112909927">Bis Version <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">Die Liste der Notizen-Apps, die auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> zulässig sind</translation>
+<translation id="8637566476051166626">Ausdrücklich erlaubte Netzwerkports</translation>
 <translation id="8643838501942693770">Drittanbieter-Cookies zulassen, aber Nutzern ermöglichen, diese Einstellung zu ändern</translation>
 <translation id="8650974590712548439">Windows-Registrierungspfad für Windows-Clients:</translation>
 <translation id="8653085952260859632">Informationen zum Arbeitsspeicher ausgeben</translation>

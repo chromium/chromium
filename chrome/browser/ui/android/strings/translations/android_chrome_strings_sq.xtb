@@ -180,6 +180,7 @@ Trokit te një fjalë për të kërkuar. Për ta përsosur kërkimin, preke dhe 
 <translation id="2169830938017475061">Tani</translation>
 <translation id="2172688499998841696">Përshkrimet e imazheve janë joaktive</translation>
 <translation id="2175927920773552910">Kodi QR</translation>
+<translation id="2181298861158186289">Fshih përmbajtjet e kujtesës së fragmenteve</translation>
 <translation id="218608176142494674">Ndarja</translation>
 <translation id="2195339740518523951">Merr sigurinë më të fortë të Chrome</translation>
 <translation id="2200113223741723867">Menaxho ndarjen e të dhënave të përdorimit</translation>
@@ -399,6 +400,7 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="363596933471559332">Identifikohu automatikisht në sajtet e uebit duke përdorur kredencialet e ruajtura. Kur funksioni është i çaktivizuar, do të të kërkohet gjithmonë verifikimi  përpara se të identifikohesh në një sajt uebi.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Rivendosja spastron historikun e kursimit të të dhënave, duke përfshirë edhe listën e sajteve të vizituara.</translation>
+<translation id="3677911431265050325">Kërko sajtin për celular</translation>
 <translation id="3687645719033307815">Po shikon një pamje paraprake të kësaj faqeje</translation>
 <translation id="3692944402865947621">Shkarkimi i skedarit <ph name="FILE_NAME" /> dështoi sepse vendndodhja e hapësirës ruajtëse nuk është e arritshme.</translation>
 <translation id="371230970611282515">Parashikon dhe të paralajmëron rreth ngjarjeve të rrezikshme përpara se ato të ndodhin.</translation>
@@ -842,6 +844,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6539092367496845964">Ndodhi një gabim. Provo përsëri më vonë.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Kontrolluar 1 orë më parë}other{Kontrolluar # orë më parë}}</translation>
 <translation id="6545017243486555795">Pastro të gjitha të dhënat</translation>
+<translation id="6549142516027084053">Shfaq përmbajtjet e kujtesës së fragmenteve</translation>
 <translation id="6560414384669816528">Kërko me Sogou</translation>
 <translation id="656065428026159829">Shiko më shumë</translation>
 <translation id="6565959834589222080">Wi-Fi përdoret kur ofrohet</translation>
@@ -1149,6 +1152,7 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="8559990750235505898">Ofro që t'i përkthesh faqet në gjuhë të tjera</translation>
 <translation id="8560602726703398413">Gjej listën tënd të leximit te "Faqeshënuesit"</translation>
 <translation id="8562452229998620586">Fjalëkalimet e ruajtura do të shfaqen këtu.</translation>
+<translation id="856481929701340285">Kërko sajtin për desktop</translation>
 <translation id="8569404424186215731">që nga data <ph name="DATE" /></translation>
 <translation id="8571213806525832805">4 javët e fundit</translation>
 <translation id="8572344201470131220">Imazhi u kopjua</translation>

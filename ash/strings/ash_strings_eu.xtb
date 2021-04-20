@@ -129,7 +129,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1989113344093894667">Ezin da kapturatu edukia</translation>
 <translation id="1993072747612765854">Lortu informazio gehiago <ph name="SYSTEM_APP_NAME" /> aplikazioaren azken eguneratzeari buruz</translation>
 <translation id="1995660704900986789">Itzali</translation>
-<translation id="1998100899771863792">Uneko lan-eremua</translation>
+<translation id="1998100899771863792">Oraingo lan-eremua</translation>
 <translation id="2012624427112548395">Ktrl + Bilatu + H</translation>
 <translation id="2016340657076538683">Idatzi mezu bat</translation>
 <translation id="2018630726571919839">Kontatu txiste bat</translation>
@@ -555,7 +555,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5673434351075758678">Ezarpenak sinkronizatu ondoren, "<ph name="FROM_LOCALE" />" ordez, "<ph name="TO_LOCALE" />" ezarri da hizkuntza gisa.</translation>
 <translation id="5677928146339483299">Blokeatuta</translation>
 <translation id="5679050765726761783">Potentzia txikiko egokigailua konektatuta dago</translation>
-<translation id="5682642926269496722">Google-ren Laguntzailea ez dago erabilgarri uneko erabiltzaile-kontuan.</translation>
+<translation id="5682642926269496722">Google-ren Laguntzailea ez dago erabilgarri oraingo erabiltzaile-kontuan.</translation>
 <translation id="5689633613396158040">Gaueko argia eginbideari esker, ez zaizu egingo horren nekagarria argi gutxiko inguruetan pantailari begira egotea. Sakatu hau Gaueko argia aktibatzeko ordua aldatzeko, edo aukera hori erabat desaktibatzeko.</translation>
 <translation id="5691772641933328258">Ez da ezagutu hatz-marka</translation>
 <translation id="5710450975648804523">Aktibatuta dago ez molestatzeko modua</translation>
@@ -693,7 +693,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6816797338148849397">Eskuragarri dago zure hautapenari buruzko informazioa. Erabili gora egiteko gezi-tekla informazioa atzitzeko.</translation>
 <translation id="6818242057446442178">Joan aurreko hitzera</translation>
 <translation id="6820676911989879663">Hartu atseden</translation>
-<translation id="6850010208275816200">Pantaila osoko moduan dago uneko aplikazioa. Aplikazioak pasahitza eskatzen badizu, lehenik atera pantaila osoko modutik.</translation>
+<translation id="6850010208275816200">Pantaila osoko moduan dago oraingo aplikazioa. Aplikazioak pasahitza eskatzen badizu, lehenik atera pantaila osoko modutik.</translation>
 <translation id="6852052252232534364">Sakatu aktibatzeko</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780">Aktibatu <ph name="NETWORKSERVICE" /></translation>

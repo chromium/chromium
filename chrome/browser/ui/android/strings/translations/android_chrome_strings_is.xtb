@@ -180,6 +180,7 @@
 <translation id="2169830938017475061">Núna</translation>
 <translation id="2172688499998841696">Slökkt er á lýsingum mynda</translation>
 <translation id="2175927920773552910">QR-kóði</translation>
+<translation id="2181298861158186289">Fela efni á klippiborði</translation>
 <translation id="218608176142494674">Deiling</translation>
 <translation id="2195339740518523951">Fá mesta öryggi Chrome</translation>
 <translation id="2200113223741723867">Stjórna deilingu notkunargagna</translation>
@@ -399,6 +400,7 @@ Privacy Sandbox er enn í þróun og er í boði á völdum svæðum. Eins og er
 <translation id="363596933471559332">Skrá þig sjálfkrafa inn á vefsvæði með vistuðum skilríkjum. Þegar slökkt er á þessum eiginleika verðurðu beðin(n) um staðfestingu í hvert sinn sem þú skráir þig inn á vefsvæði.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Ef þú endurstillir þurrkast út ferill gagnasparnaðar, þar með talinn listi yfir heimsótt vefsvæði.</translation>
+<translation id="3677911431265050325">Biðja um vefsvæði fyrir farsíma</translation>
 <translation id="3687645719033307815">Þú ert að sjá forskoðun þessarar síðu</translation>
 <translation id="3692944402865947621">Ekki tókst að sækja <ph name="FILE_NAME" /> því að ekki næst í geymslustaðinn.</translation>
 <translation id="371230970611282515">Spáir fyrir um og varar þig við hættulegum viðburðum áður en þeir gerast.</translation>
@@ -842,6 +844,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6539092367496845964">Eitthvað fór úrskeiðis. Reyndu aftur síðar.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Síðast athugað fyrir 1 klukkustund}one{Síðast athugað fyrir # klukkustund}other{Síðast athugað fyrir # klukkustundum}}</translation>
 <translation id="6545017243486555795">Hreinsa öll gögn</translation>
+<translation id="6549142516027084053">Birta allt efni á klippiborði</translation>
 <translation id="6560414384669816528">Leita með Sogou</translation>
 <translation id="656065428026159829">Sjá meira</translation>
 <translation id="6565959834589222080">Wi-Fi er notað þegar það er í boði</translation>
@@ -1149,6 +1152,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="8559990750235505898">Bjóðast til að þýða síður á önnur tungumál</translation>
 <translation id="8560602726703398413">Finndu leslistann þinn í bókamerkjum</translation>
 <translation id="8562452229998620586">Vistuð aðgangsorð munu birtast hér.</translation>
+<translation id="856481929701340285">Biðja um tölvuvefsvæði</translation>
 <translation id="8569404424186215731">síðan <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Síðastliðnar fjórar vikur</translation>
 <translation id="8572344201470131220">Mynd afrituð</translation>

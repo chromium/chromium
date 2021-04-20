@@ -242,7 +242,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1252987234827889034">Wystąpił błąd profilu</translation>
 <translation id="1254593899333212300">Bezpośrednie połączenie internetowe</translation>
 <translation id="1257553931232494454">poziomy powiększenia</translation>
-<translation id="1259152067760398571">Potwierdzenie bezpieczeństwa zostało wykonane wczoraj</translation>
+<translation id="1259152067760398571">Kontrola zabezpieczeń została wykonana wczoraj</translation>
 <translation id="1260451001046713751">Zawsze zezwalaj na wyskakujące okienka i przekierowania z <ph name="HOST" /></translation>
 <translation id="1261380933454402672">Umiarkowana</translation>
 <translation id="126156426083987769">Wystąpił problem z licencjami na urządzenia w trybie demonstracyjnym.</translation>
@@ -664,7 +664,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1703331064825191675">Nie musisz się już martwić o bezpieczeństwo swoich haseł</translation>
 <translation id="1703666494654169921">Nie zezwalaj witrynom na używanie urządzeń ani danych rzeczywistości wirtualnej</translation>
 <translation id="1704230497453185209">Nie zezwalaj witrynom na odtwarzanie dźwięków</translation>
-<translation id="1704970325597567340">Potwierdzenie bezpieczeństwa zostało wykonane <ph name="DATE" /></translation>
+<translation id="1704970325597567340">Kontrola zabezpieczeń została wykonana <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Dodane przez administratora</translation>
 <translation id="1706625117072057435">Poziomy powiększenia</translation>
 <translation id="1708338024780164500">(Nieaktywne)</translation>
@@ -873,7 +873,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="192494336144674234">Otwórz za pomocą</translation>
 <translation id="1925017091976104802">Naciśnij <ph name="MODIFIER_KEY_DESCRIPTION" />, by wkleić</translation>
 <translation id="1925021887439448749">Wpisz niestandardowy adres internetowy</translation>
-<translation id="1925124445985510535">Potwierdzenie bezpieczeństwa zostało wykonane o <ph name="TIME" /></translation>
+<translation id="1925124445985510535">Kontrola zabezpieczeń została wykonana o <ph name="TIME" /></translation>
 <translation id="1925798397307821870">Instaluję profil. Może to potrwać do 30 sekund.</translation>
 <translation id="1926339101652878330">Te ustawienia są kontrolowane przez zasady obowiązujące w firmie. Skontaktuj się z administratorem, by uzyskać więcej informacji.</translation>
 <translation id="1927632033341042996">Palec nr <ph name="NEW_FINGER_NUMBER" /></translation>
@@ -1079,7 +1079,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2154710561487035718">Kopiuj adres URL</translation>
 <translation id="2155772377859296191">Wygląda na <ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Skrypt service worker: <ph name="SCRIPT_URL" /></translation>
-<translation id="2156877321344104010">Uruchom ponownie potwierdzenie bezpieczeństwa</translation>
+<translation id="2156877321344104010">Uruchom ponownie kontrolę zabezpieczeń</translation>
 <translation id="2157474325782140681">Aby korzystać z większej liczby funkcji, używaj stacji dokującej Dell przeznaczonej do tego Chromebooka.</translation>
 <translation id="215753907730220065">Zamknij pełny ekran</translation>
 <translation id="2157875535253991059">Ta strona jest wyświetlana w trybie pełnoekranowym.</translation>
@@ -1980,7 +1980,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3143754809889689516">Odtwórz od początku</translation>
 <translation id="3144647712221361880">Otwórz link jako</translation>
 <translation id="3149510190863420837">Aplikacje Chrome</translation>
-<translation id="3150693969729403281">Sprawdź bezpieczeństwo teraz</translation>
+<translation id="3150693969729403281">Wykonaj kontrolę zabezpieczeń teraz</translation>
 <translation id="3150927491400159470">Wymuś ponowne załadowanie</translation>
 <translation id="315116470104423982">Mobilna transmisja danych</translation>
 <translation id="3151539355209957474">Czas rozpoczęcia</translation>
@@ -2061,7 +2061,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3264544094376351444">Czcionka bezszeryfowa</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3265459715026181080">Zamknij okno</translation>
-<translation id="3266274118485960573">Trwa potwierdzanie bezpieczeństwa.</translation>
+<translation id="3266274118485960573">Trwa kontrola zabezpieczeń.</translation>
 <translation id="3267726687589094446">Dalej zezwalaj na automatyczne pobieranie wielu plików</translation>
 <translation id="3268451620468152448">Otwarte karty</translation>
 <translation id="3269069891205016797">Gdy się wylogujesz, twoje dane zostaną usunięte z urządzenia.</translation>
@@ -2139,7 +2139,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3341703758641437857">Zezwalaj na dostęp do adresów URL plików</translation>
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />” chce usunąć to rozszerzenie.</translation>
 <translation id="3345135638360864351">Nie udało się wysłać żądania dostępu do strony do <ph name="NAME" />. Spróbuj ponownie.</translation>
-<translation id="3345634917232014253">Kontrola zabezpieczeń została wykonane przed chwilą.</translation>
+<translation id="3345634917232014253">Kontrola zabezpieczeń została wykonana przed chwilą.</translation>
 <translation id="3345886924813989455">Nie znaleziono obsługiwanej przeglądarki</translation>
 <translation id="3347086966102161372">K&amp;opiuj adres obrazu</translation>
 <translation id="3348038390189153836">Wykryto urządzenie wymienne</translation>
@@ -4040,7 +4040,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5498967291577176373">Dzięki podpowiedziom w tekście szybciej wpisuj imię i nazwisko, adres oraz numer telefonu</translation>
 <translation id="5499313591153584299">Ten plik może wyrządzić szkody na Twoim komputerze.</translation>
 <translation id="5499453227627332024">Dostępna jest nowa wersja kontenera Linuksa. Aktualizację możesz też przeprowadzić później w aplikacji Ustawienia.</translation>
-<translation id="5500709606820808700">Potwierdzenie bezpieczeństwa zostało wykonane dzisiaj</translation>
+<translation id="5500709606820808700">Kontrola zabezpieczeń została wykonana dzisiaj</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Nie udało się odebrać danych (<ph name="ATTACHMENTS" />) z urządzenia <ph name="DEVICE_NAME" />}few{Nie udało się odebrać danych (<ph name="ATTACHMENTS" />) z urządzenia <ph name="DEVICE_NAME" />}many{Nie udało się odebrać danych (<ph name="ATTACHMENTS" />) z urządzenia <ph name="DEVICE_NAME" />}other{Nie udało się odebrać danych (<ph name="ATTACHMENTS" />) z urządzenia <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Zaimportowane z Firefoxa</translation>
 <translation id="5502915260472117187">Dziecko</translation>
@@ -4753,7 +4753,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6310472381159916879">Usuń profil</translation>
 <translation id="6311220991371174222">Nie można uruchomić Chrome – coś poszło nie tak podczas otwierania Twojego profilu. Spróbuj jeszcze raz uruchomić Chrome.</translation>
 <translation id="6312403991423642364">Nieznany błąd sieci</translation>
-<translation id="6312567056350025599">{NUM_DAYS,plural, =1{Potwierdzenie bezpieczeństwa zostało wykonane 1 dzień temu}few{Potwierdzenie bezpieczeństwa zostało wykonane {NUM_DAYS} dni temu}many{Potwierdzenie bezpieczeństwa zostało wykonane {NUM_DAYS} dni temu}other{Potwierdzenie bezpieczeństwa zostało wykonane {NUM_DAYS} dnia temu}}</translation>
+<translation id="6312567056350025599">{NUM_DAYS,plural, =1{Kontrola zabezpieczeń została wykonana 1 dzień temu}few{Kontrola zabezpieczeń została wykonana {NUM_DAYS} dni temu}many{Kontrola zabezpieczeń została wykonana {NUM_DAYS} dni temu}other{Kontrola zabezpieczeń została wykonana {NUM_DAYS} dnia temu}}</translation>
 <translation id="6312638141433622592">Proponuj wyświetlanie artykułów w trybie czytnika, gdy jest obsługiwany.</translation>
 <translation id="6313641880021325787">WYŁĄCZ TRYB VR</translation>
 <translation id="6313950457058510656">Wyłącz błyskawiczne połączenie w tetheringu</translation>
@@ -4994,7 +4994,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6586451623538375658">Zamień główny przycisk myszy</translation>
 <translation id="6586604979641883411">Aby uaktualnić Linuksa, potrzeba co najmniej <ph name="REQUIRED_SPACE" /> wolnego miejsca na dysku. Zwolnij miejsce na urządzeniu i spróbuj ponownie.</translation>
 <translation id="6588043302623806746">Użyj bezpiecznego serwera DNS</translation>
-<translation id="659005207229852190">Potwierdzenie bezpieczeństwa zostało wykonane.</translation>
+<translation id="659005207229852190">Kontrola zabezpieczeń została wykonana.</translation>
 <translation id="6590458744723262880">Zmień nazwę folderu</translation>
 <translation id="6592267180249644460">Zapisany log WebRTC: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Twój odcisk został zarejestrowany</translation>
@@ -5420,7 +5420,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7055152154916055070">Zablokowano przekierowanie:</translation>
 <translation id="7055451306017383754">Nie udało się cofnąć udostępniania, ponieważ tego folderu używa aplikacja. Folder przestanie być udostępniany po zamknięciu Parallels Desktop.</translation>
 <translation id="7056526158851679338">&amp;Sprawdź urządzenia</translation>
-<translation id="7057184853669165321">{NUM_MINS,plural, =1{Potwierdzenie bezpieczeństwa zostało wykonane 1 minutę temu}few{Potwierdzenie bezpieczeństwa zostało wykonane {NUM_MINS} minuty temu}many{Potwierdzenie bezpieczeństwa zostało wykonane {NUM_MINS} minut temu}other{Potwierdzenie bezpieczeństwa zostało wykonane {NUM_MINS} minuty temu}}</translation>
+<translation id="7057184853669165321">{NUM_MINS,plural, =1{Kontrola zabezpieczeń została wykonana 1 minutę temu}few{Kontrola zabezpieczeń została wykonana {NUM_MINS} minuty temu}many{Kontrola zabezpieczeń została wykonana {NUM_MINS} minut temu}other{Kontrola zabezpieczeń została wykonana {NUM_MINS} minuty temu}}</translation>
 <translation id="7057767408836081338">Nie udało się pobrać danych aplikacji. Próbuję ją jednak uruchomić...</translation>
 <translation id="7058024590501568315">Sieć ukryta</translation>
 <translation id="7059858479264779982">Ustaw automatyczne uruchamianie</translation>
@@ -5720,7 +5720,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7401778920660465883">Zamknij tę wiadomość</translation>
 <translation id="7403642243184989645">Pobieram zasoby</translation>
 <translation id="7404065585741198296">Twój telefon podłączony kablem USB</translation>
-<translation id="7405938989981604410">{NUM_HOURS,plural, =1{Potwierdzenie bezpieczeństwa zostało wykonane 1 godzinę temu}few{Potwierdzenie bezpieczeństwa zostało wykonane {NUM_HOURS} godziny temu}many{Potwierdzenie bezpieczeństwa zostało wykonane {NUM_HOURS} godzin temu}other{Potwierdzenie bezpieczeństwa zostało wykonane {NUM_HOURS} godziny temu}}</translation>
+<translation id="7405938989981604410">{NUM_HOURS,plural, =1{Kontrola zabezpieczeń została wykonana 1 godzinę temu}few{Kontrola zabezpieczeń została wykonana {NUM_HOURS} godziny temu}many{Kontrola zabezpieczeń została wykonana {NUM_HOURS} godzin temu}other{Kontrola zabezpieczeń została wykonana {NUM_HOURS} godziny temu}}</translation>
 <translation id="740624631517654988">Zablokowano wyskakujące okienko</translation>
 <translation id="7407430846095439694">Zaimportuj i powiąż</translation>
 <translation id="7407504355934009739">Większość użytkowników blokuje powiadomienia z tej strony</translation>

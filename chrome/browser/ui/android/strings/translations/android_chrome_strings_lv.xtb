@@ -180,6 +180,7 @@ Pieskarieties jebkuram vārdam, lai to meklētu. Ja vēlaties precizēt meklēš
 <translation id="2169830938017475061">Tikko</translation>
 <translation id="2172688499998841696">Attēlu aprakstu pievienošana ir izslēgta</translation>
 <translation id="2175927920773552910">QR kods</translation>
+<translation id="2181298861158186289">Slēpt starpliktuves saturu</translation>
 <translation id="218608176142494674">Kopīgošana</translation>
 <translation id="2195339740518523951">Visaugstākais Chrome drošības līmenis</translation>
 <translation id="2200113223741723867">Pārvaldīt lietojuma datu kopīgošanu</translation>
@@ -399,6 +400,7 @@ Privacy Sandbox izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģi
 <translation id="363596933471559332">Automātiski pierakstīties vietnēs, izmantojot saglabātos akreditācijas datus. Ja funkcija ir izslēgta, verifikācija būs jāveic ikreiz, kad pierakstīsieties vietnē.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Veicot atiestatīšanu, tiek dzēsta saglabāto datu vēsture, tostarp apmeklēto vietņu saraksts.</translation>
+<translation id="3677911431265050325">Pieprasīt mobilo vietni</translation>
 <translation id="3687645719033307815">Jūs skatāt šīs lapas priekšskatījumu.</translation>
 <translation id="3692944402865947621">Faila <ph name="FILE_NAME" /> lejupielāde neizdevās, jo krātuves vieta nav sasniedzama.</translation>
 <translation id="371230970611282515">Bīstami notikumi tiek prognozēti, un jūs jau iepriekš saņemat brīdinājumus.</translation>
@@ -842,6 +844,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6539092367496845964">Radās kļūda. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Pārbaudīts: pirms 1 stundas}zero{Pārbaudīts: pirms # stundām}one{Pārbaudīts: pirms # stundas}other{Pārbaudīts: pirms # stundām}}</translation>
 <translation id="6545017243486555795">Notīrīt visus datus</translation>
+<translation id="6549142516027084053">Atklāt starpliktuves saturu</translation>
 <translation id="6560414384669816528">Meklēšana, izmantojot Sogou</translation>
 <translation id="656065428026159829">Skatīt vairāk</translation>
 <translation id="6565959834589222080">Wi-Fi tiek izmantots, ja tas ir pieejams</translation>
@@ -1149,6 +1152,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="8559990750235505898">Piedāvāt tulkot lapas citās valodās</translation>
 <translation id="8560602726703398413">Skatiet savu lasīšanas sarakstu grāmatzīmju sadaļā</translation>
 <translation id="8562452229998620586">Šeit tiks parādītas saglabātās paroles.</translation>
+<translation id="856481929701340285">Pieprasīt datora vietni</translation>
 <translation id="8569404424186215731">kopš šāda datuma: <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Pēdējās 4 nedēļas</translation>
 <translation id="8572344201470131220">Attēls ir nokopēts.</translation>

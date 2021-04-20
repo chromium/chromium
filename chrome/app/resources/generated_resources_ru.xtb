@@ -2142,7 +2142,7 @@
 <translation id="3341703758641437857">Разрешить открывать локальные файлы по ссылкам</translation>
 <translation id="3342361181740736773">Программа "<ph name="TRIGGERING_EXTENSION_NAME" />" пытается удалить это расширение.</translation>
 <translation id="3345135638360864351">Не удалось отправить пользователю <ph name="NAME" /> запрос на доступ к этому сайту. Повторите попытку.</translation>
-<translation id="3345634917232014253">Проверка безопасности выполнена только что.</translation>
+<translation id="3345634917232014253">Проверка безопасности выполнена только что</translation>
 <translation id="3345886924813989455">Поддерживаемые браузеры не найдены</translation>
 <translation id="3347086966102161372">&amp;Копировать URL картинки</translation>
 <translation id="3348038390189153836">Обнаружено съемное устройство</translation>
@@ -2289,7 +2289,7 @@
 <translation id="3500417806337761827">Произошла ошибка. Подключено слишком много общих папок SMB.</translation>
 <translation id="3505030558724226696">Запретить доступ к устройствам</translation>
 <translation id="3505100368357440862">Рекомендуемые товары</translation>
-<translation id="3507132249039706973">Стандартная защита включена.</translation>
+<translation id="3507132249039706973">Стандартная защита включена</translation>
 <translation id="3507421388498836150">Текущие разрешения расширения "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3507888235492474624">Повторите поиск устройств Bluetooth</translation>
 <translation id="3508492320654304609">Невозможно удалить ваши учетные данные</translation>

@@ -180,6 +180,7 @@ Trykk på et ord for å søke. For å finstemme søket, trykk og hold inne for �
 <translation id="2169830938017475061">Nå</translation>
 <translation id="2172688499998841696">Bildebeskrivelser er av</translation>
 <translation id="2175927920773552910">QR-kode</translation>
+<translation id="2181298861158186289">Skjul innholdet på utklippstavlen</translation>
 <translation id="218608176142494674">Deling</translation>
 <translation id="2195339740518523951">Få den sterkeste sikkerheten Chrome tilbyr</translation>
 <translation id="2200113223741723867">Administrer deling av bruksdata</translation>
@@ -399,6 +400,7 @@ Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte
 <translation id="363596933471559332">Du logges på nettsteder automatisk ved hjelp av lagret legitimasjon. Når funksjonen er slått av, blir du bedt om å oppgi legitimasjonen din hver gang du logger på et nettsted.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Tilbakestilling fjerner historikken for datasparing, inkludert listen over besøkte nettsteder.</translation>
+<translation id="3677911431265050325">Be om mobilversjonen av nettstedet</translation>
 <translation id="3687645719033307815">Du ser på en forhåndsvisning av denne siden</translation>
 <translation id="3692944402865947621">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt fordi lagringsstedet ikke kan nås.</translation>
 <translation id="371230970611282515">Forutser og advarer deg om farlige hendelser før de inntreffer.</translation>
@@ -842,6 +844,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6539092367496845964">Noe gikk galt. Prøv på nytt senere.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Sjekket for en time siden}other{Sjekket for # timer siden}}</translation>
 <translation id="6545017243486555795">Slett alle data</translation>
+<translation id="6549142516027084053">Vis innholdet på utklippstavlen</translation>
 <translation id="6560414384669816528">Søk med Sogou</translation>
 <translation id="656065428026159829">Se mer</translation>
 <translation id="6565959834589222080">Wi-Fi brukes når det er tilgjengelig</translation>
@@ -1149,6 +1152,7 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="8559990750235505898">Tilby å oversette sider på andre språk</translation>
 <translation id="8560602726703398413">Finn leselisten din i Bokmerker</translation>
 <translation id="8562452229998620586">Lagrede passord listes opp her.</translation>
+<translation id="856481929701340285">Bruk skrivebordsversjon</translation>
 <translation id="8569404424186215731">siden <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Siste 4 uker</translation>
 <translation id="8572344201470131220">Bildet ble kopiert</translation>

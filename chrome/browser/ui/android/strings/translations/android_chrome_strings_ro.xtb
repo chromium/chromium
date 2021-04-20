@@ -180,6 +180,7 @@ Atinge orice cuvânt pentru a-l căuta. Ca să rafinezi căutarea, atinge lung p
 <translation id="2169830938017475061">Acum</translation>
 <translation id="2172688499998841696">Descrierile imaginilor sunt dezactivate</translation>
 <translation id="2175927920773552910">Cod QR</translation>
+<translation id="2181298861158186289">Ascunde conținutul clipboardului</translation>
 <translation id="218608176142494674">Trimitere</translation>
 <translation id="2195339740518523951">Beneficiază de cel mai înalt nivel de securitate de la Chrome</translation>
 <translation id="2200113223741723867">Gestionează accesul la datele de utilizare</translation>
@@ -399,6 +400,7 @@ Privacy Sandbox este încă în dezvoltare și este disponibil în anumite regiu
 <translation id="363596933471559332">Te conectezi automat la site-uri folosind datele de conectare stocate. Când funcția este dezactivată, ți se va solicita verificarea de fiecare dată înainte de a te conecta la un site.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Prin resetare se șterge istoricul economisirii de date, inclusiv lista site-urilor vizitate.</translation>
+<translation id="3677911431265050325">Solicită site mobil</translation>
 <translation id="3687645719033307815">Este afișată o previzualizare a acestei pagini</translation>
 <translation id="3692944402865947621">Descărcarea fișierului <ph name="FILE_NAME" /> nu a reușit, deoarece nu se poate contacta locația de stocare.</translation>
 <translation id="371230970611282515">Anticipează și te avertizează cu privire la evenimente periculoase înainte să aibă loc.</translation>
@@ -842,6 +844,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6539092367496845964">A apărut o eroare. Încearcă din nou mai târziu.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{A rulat acum o oră}few{A rulat acum # ore}other{A rulat acum # de ore}}</translation>
 <translation id="6545017243486555795">Șterge toate datele</translation>
+<translation id="6549142516027084053">Afișează conținutul clipboardului</translation>
 <translation id="6560414384669816528">Caută cu Sogou</translation>
 <translation id="656065428026159829">Vezi mai multe</translation>
 <translation id="6565959834589222080">Conexiunea Wi-Fi este folosită când este disponibilă</translation>
@@ -1149,6 +1152,7 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="8559990750235505898">Oferă traducerea paginilor în alte limbi</translation>
 <translation id="8560602726703398413">Accesează lista de lectură în marcaje</translation>
 <translation id="8562452229998620586">Parolele salvate vor fi afișate aici.</translation>
+<translation id="856481929701340285">Versiune site desktop</translation>
 <translation id="8569404424186215731">începând cu <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Ultimele 4 săptămâni</translation>
 <translation id="8572344201470131220">Imaginea a fost copiată</translation>

@@ -60,7 +60,7 @@
 <translation id="1509960214886564027">Baliteke webgune askotako eginbideek ez funtzionatzea</translation>
 <translation id="152234381334907219">Ez dira inoiz gordeko</translation>
 <translation id="1523341279170789507">Eman baimena cookie guztiei</translation>
-<translation id="1535268707340844072">Baliteke uneko ezarpenek zenbait webgune etetea eragitea. Webgune guztietako cookieak kudeatzeko, ikusi <ph name="BEGIN_LINK" />"Cookieen ezarpenak" atala<ph name="END_LINK" />.</translation>
+<translation id="1535268707340844072">Baliteke oraingo ezarpenek zenbait webgune etetea eragitea. Webgune guztietako cookieak kudeatzeko, ikusi <ph name="BEGIN_LINK" />"Cookieen ezarpenak" atala<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Helbidea (1)</translation>
 <translation id="1545749641540134597">Eskaneatu QR kodea</translation>
 <translation id="1552525382687785070">Sinkronizazioa desgaitu egin du administratzaileak</translation>
@@ -639,7 +639,7 @@ Erabili pasahitz esklusibo bat webgune bakoitzerako.</translation>
 <translation id="7472734401283673885">Enpresaren izena</translation>
 <translation id="7473891865547856676">Ez, eskerrik asko</translation>
 <translation id="7481312909269577407">Aurrera</translation>
-<translation id="7483467499335917849">Erabili uneko kokapena</translation>
+<translation id="7483467499335917849">Erabili oraingo kokapena</translation>
 <translation id="750493650310597496">Ez da bat ere hautatu</translation>
 <translation id="7508728395076009983">Ezkutuko moduko fitxak blokeatzeko, konfiguratu Touch ID, Face ID edo pasakode bat.</translation>
 <translation id="7514365320538308">Deskargatu</translation>

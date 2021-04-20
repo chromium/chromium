@@ -45,7 +45,7 @@
 <translation id="1276279242344007853">إدارة المواقع الإلكترونية التي تتابعها</translation>
 <translation id="1283039547216852943">النقر للتوسيع</translation>
 <translation id="1285310382777185058">تغيير اللغة</translation>
-<translation id="1291207594882862231">محو السجل وملفات تعريف الارتباط وبيانات المواقع وذاكرة التخزين المؤقت...</translation>
+<translation id="1291207594882862231">محو السجل وملفات تعريف الارتباط وبيانات المواقع الإلكترونية وذاكرة التخزين المؤقت…</translation>
 <translation id="129553762522093515">المغلقة حديثًا</translation>
 <translation id="1298077576058087471">توفير ما يصل إلى 60% من البيانات والاطّلاع على أخبار اليوم</translation>
 <translation id="1303339473099049190">يتعذّر العثور على كلمة المرور هذه. يجب إجراء تدقيق إملائي وإعادة المحاولة.</translation>
@@ -180,6 +180,7 @@
 <translation id="2169830938017475061">الآن</translation>
 <translation id="2172688499998841696">ميزة أوصاف الصور غير مفعَّلة.</translation>
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
+<translation id="2181298861158186289">إخفاء محتوى الحافظة</translation>
 <translation id="218608176142494674">المشاركة</translation>
 <translation id="2195339740518523951">‏الحصول على أعلى مستوى من الحماية في متصفِّح Chrome</translation>
 <translation id="2200113223741723867">إدارة مشاركة بيانات الاستخدام</translation>
@@ -376,7 +377,7 @@
 <translation id="3492207499832628349">علامة تبويب جديدة للتصفح المتخفي </translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول المحتوى المقترح</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3507132249039706973">الحماية العادية مفعّلة.</translation>
+<translation id="3507132249039706973">ميزة الحماية العادية مفعّلة.</translation>
 <translation id="3509330069915219067">‏لا يتوفَّر اتصال بالإنترنت. يتعذّر على Chrome البحث عن تحديثات.</translation>
 <translation id="3513704683820682405">الواقع المعزّز</translation>
 <translation id="3518985090088779359">القبول والمتابعة</translation>
@@ -399,6 +400,7 @@
 <translation id="363596933471559332">يمكنك تسجيل الدخول تلقائيًا إلى المواقع الإلكترونية باستخدام بيانات الاعتماد المخزّنة. وعندما تكون هذه الميزة غير مفعّلة، سيُطلب منك التحقّق من بيانات الاعتماد في كل مرة قبل تسجيل الدخول إلى موقع إلكتروني.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">تؤدي إعادة الضبط إلى محو سِجلّ البيانات المحفوظة، بما في ذلك قائمة المواقع الإلكترونية التي تمت زيارتها.</translation>
+<translation id="3677911431265050325">طلب موقع إلكتروني متوافق مع الأجهزة الجوَالة</translation>
 <translation id="3687645719033307815">أنت تعرض معاينة لهذه الصفحة.</translation>
 <translation id="3692944402865947621">تعذّر تنزيل <ph name="FILE_NAME" /> نظرًا لعدم إمكانية الوصول إلى موقع مساحة التخزين.</translation>
 <translation id="371230970611282515">توقّع الأحداث الخطيرة قبل حدوثها والتحذير منها</translation>
@@ -842,6 +844,7 @@
 <translation id="6539092367496845964">حدث خطأ. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{تمّ إجراء عملية التحقُّق قبل ساعة واحدة.}zero{تمّ إجراء عملية التحقُّق قبل # ساعة.}two{تمّ إجراء عملية التحقُّق قبل ساعتَين.}few{تمّ إجراء عملية التحقُّق قبل # ساعات.}many{تمّ إجراء عملية التحقُّق قبل # ساعة.}other{تمّ إجراء عملية التحقُّق قبل # ساعة.}}</translation>
 <translation id="6545017243486555795">محو جميع البيانات</translation>
+<translation id="6549142516027084053">عرض محتوى الحافظة</translation>
 <translation id="6560414384669816528">‏البحث باستخدام Sogou</translation>
 <translation id="656065428026159829">عرض المزيد</translation>
 <translation id="6565959834589222080">‏يتم استخدام شبكة Wi-Fi في حال توفّرها.</translation>
@@ -1149,6 +1152,7 @@
 <translation id="8559990750235505898">اقتراح ترجمة الصفحات المكتوبة بلغات أخرى</translation>
 <translation id="8560602726703398413">العثور على قائمة القراءة في الإشارات المرجعية</translation>
 <translation id="8562452229998620586">ستظهر هنا كلمات المرور المحفوظة.</translation>
+<translation id="856481929701340285">طلب موقع الكمبيوتر</translation>
 <translation id="8569404424186215731">منذ <ph name="DATE" /></translation>
 <translation id="8571213806525832805">الأسابيع الـ4 الأخيرة</translation>
 <translation id="8572344201470131220">تم نسخ الصورة.</translation>

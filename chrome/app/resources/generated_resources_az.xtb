@@ -670,7 +670,7 @@
 <translation id="1714644264617423774">Cihazınızın daha asan istfadəsi üçün əlçatımlıq funksiyalarını aktiv edin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="1717218214683051432">Hərəkət sensorları</translation>
 <translation id="1718835860248848330">Son saat</translation>
-<translation id="1719312230114180055">Qeyd: Barmaq izi güclü kod və ya PIN koddan daha az təhlükəsiz ola bilər.</translation>
+<translation id="1719312230114180055">Nəzərə alın ki, barmaq izi güclü qrafik açar və ya PIN-dən güvənsiz ola bilər.</translation>
 <translation id="1720318856472900922">TLS WWW Server Doğrulaması</translation>
 <translation id="1721312023322545264">Bu sayta daxil olmaq üçün <ph name="NAME" /> adlı şəxsdən icazə almalısınız</translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> cihazını idarə edir<ph name="END_LINK" />: <ph name="ENROLLMENT_DOMAIN" /></translation>
@@ -1987,7 +1987,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3154429428035006212">Bir aydan artıqdır ki, oflayndır</translation>
 <translation id="3157387275655328056">Oxu Siyahısına əlavə edin</translation>
 <translation id="3157931365184549694">Bərpa edin</translation>
-<translation id="3158033540161634471">Barmaq ayarlayın</translation>
+<translation id="3158033540161634471">Barmaq izi ayarlayın</translation>
 <translation id="3159493096109238499">Bej</translation>
 <translation id="3159978855457658359">Cihazın adına düzəliş edin</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (avadanlıqla yedəklənmiş)</translation>
@@ -5465,7 +5465,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Qrupa Tab Əlavə Edin}other{Qrupa Tablar Əlavə Edin}}</translation>
 <translation id="7111822978084196600">Bu pəncərəyə ad verin</translation>
 <translation id="7113502843173351041">E-poçt ünvanınızı bilin</translation>
-<translation id="7114054701490058191">Parollar uyğun gəlmir</translation>
+<translation id="7114054701490058191">Parollar eyni deyil</translation>
 <translation id="7114648273807173152">Smart Lock istifadə etmək üçün Google Hesabına daxil olun, Ayarlar &gt; Qoşulu cihazlar&gt; Telefon &gt; Smart Lock bölməsinə daxil olun.</translation>
 <translation id="7115361495406486998">Əlçatan kontakt yoxdur</translation>
 <translation id="7117228822971127758">Sonra cəhd edin</translation>

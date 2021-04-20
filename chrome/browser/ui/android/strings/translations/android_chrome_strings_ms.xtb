@@ -180,6 +180,7 @@ Ketik mana-mana perkataan untuk mencari. Untuk memperhalus carian anda, sentuh &
 <translation id="2169830938017475061">Sekarang</translation>
 <translation id="2172688499998841696">Perihalan imej dimatikan</translation>
 <translation id="2175927920773552910">Kod QR</translation>
+<translation id="2181298861158186289">Sembunyikan Kandungan Papan Klip</translation>
 <translation id="218608176142494674">Perkongsian</translation>
 <translation id="2195339740518523951">Dapatkan keselamatan Chrome yang paling kukuh</translation>
 <translation id="2200113223741723867">Urus perkongsian data penggunaan</translation>
@@ -399,6 +400,7 @@ Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Bua
 <translation id="363596933471559332">Log masuk secara automatik ke tapak web menggunakan bukti kelayakan yang disimpan. Apabila ciri ini dimatikan, anda akan diminta memberikan pengesahan setiap kali sebelum log masuk ke tapak web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Penetapan semula akan memadamkan sejarah penjimatan data anda, termasuk senarai tapak yang dilawati.</translation>
+<translation id="3677911431265050325">Minta tapak mudah alih</translation>
 <translation id="3687645719033307815">Anda sedang melihat pratonton halaman ini</translation>
 <translation id="3692944402865947621">Muat turun <ph name="FILE_NAME" /> gagal kerana lokasi storan tidak dapat dicapai.</translation>
 <translation id="371230970611282515">Meramalkan dan memberi anda amaran tentang acara berbahaya sebelum acara itu berlaku.</translation>
@@ -842,6 +844,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="6539092367496845964">Kesilapan telah berlaku. Cuba sebentar lagi.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Disemak 1 jam yang lalu}other{Disemak # yang lalu}}</translation>
 <translation id="6545017243486555795">Hapuskan Semua Data</translation>
+<translation id="6549142516027084053">Dedahkan Kandungan Papan Klip</translation>
 <translation id="6560414384669816528">Cari dengan Sogou</translation>
 <translation id="656065428026159829">Lihat lagi</translation>
 <translation id="6565959834589222080">Wi-Fi akan digunakan apabila tersedia</translation>
@@ -1149,6 +1152,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="8559990750235505898">Tawaran untuk menterjemah halaman dalam bahasa lain</translation>
 <translation id="8560602726703398413">Cari senarai bacaan anda dalam Penanda Halaman</translation>
 <translation id="8562452229998620586">Kata laluan yang disimpan akan kelihatan di sini.</translation>
+<translation id="856481929701340285">Minta tapak desktop</translation>
 <translation id="8569404424186215731">sejak <ph name="DATE" /></translation>
 <translation id="8571213806525832805">4 minggu terakhir</translation>
 <translation id="8572344201470131220">Imej Disalin</translation>

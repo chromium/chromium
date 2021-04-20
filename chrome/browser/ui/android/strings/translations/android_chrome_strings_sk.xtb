@@ -180,6 +180,7 @@ Vyhľadávanie spustíte klepnutím na ľubovoľné slovo. Spresníte ho pridrž
 <translation id="2169830938017475061">Teraz</translation>
 <translation id="2172688499998841696">Popisy obrázkov sú vypnuté</translation>
 <translation id="2175927920773552910">QR kód</translation>
+<translation id="2181298861158186289">Skryť obsah schránky</translation>
 <translation id="218608176142494674">Zdieľanie</translation>
 <translation id="2195339740518523951">Získajte najsilnejšie zabezpečenie Chromu</translation>
 <translation id="2200113223741723867">Správa zdieľania údajov o používaní</translation>
@@ -399,6 +400,7 @@ Na vývoji technológií Privacy Sandbox sa stále aktívne pracuje a je k dis
 <translation id="363596933471559332">Povolí automatické prihlasovanie na webové stránky pomocou uložených poverení. Keď je funkcia vypnutá, zobrazí sa výzva na overenie vždy pred prihlásením na web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Obnovením vymažete svoju históriu úspory dát aj zoznam navštívených webov.</translation>
+<translation id="3677911431265050325">Vyžiadať mobilný web</translation>
 <translation id="3687645719033307815">Zobrazujete si ukážku tejto stránky</translation>
 <translation id="3692944402865947621">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť, pretože umiestnenie úložiska nie je k dispozícii.</translation>
 <translation id="371230970611282515">Predpovedá nebezpečné udalosti a upozorní vás, než k nim dôjde.</translation>
@@ -842,6 +844,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6539092367496845964">Vyskytol sa problém. Skúste to neskôr.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Kontrola prebehla pred hodinou}few{Kontrola prebehla pred # hodinami}many{Kontrola prebehla pred # hodiny}other{Kontrola prebehla pred # hodinami}}</translation>
 <translation id="6545017243486555795">Vymazať všetky dáta</translation>
+<translation id="6549142516027084053">Zobraziť obsah schránky</translation>
 <translation id="6560414384669816528">Vyhľadávať pomocou Sogou</translation>
 <translation id="656065428026159829">Zobraziť viac</translation>
 <translation id="6565959834589222080">Wi-Fi sa použije, keď bude k dispozícii</translation>
@@ -1149,6 +1152,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8559990750235505898">Ponúkať preklad stránok v ďalších jazykoch</translation>
 <translation id="8560602726703398413">Zoznam na čítanie nájdete v sekcii Záložky</translation>
 <translation id="8562452229998620586">Tu sa zobrazia uložené heslá.</translation>
+<translation id="856481929701340285">Verzia webu pre počítače</translation>
 <translation id="8569404424186215731">od <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Posledné 4 týždne</translation>
 <translation id="8572344201470131220">Obrázok bol skopírovaný</translation>

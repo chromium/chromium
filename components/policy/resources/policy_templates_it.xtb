@@ -159,6 +159,7 @@
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="120937472976628837">Segnala informazioni sulla ventola</translation>
+<translation id="1214202898523114033">Porta 10080 (scadenza: 01/04/2022)</translation>
 <translation id="1216919699175573511">Attiva il supporto per Signed HTTP Exchange (SXG)</translation>
 <translation id="1219695476179627719">Consente di specificare se il dispositivo deve eseguire il rollback alla versione impostata da <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> nel caso in cui sia già in esecuzione una versione successiva.
 
@@ -4062,6 +4063,15 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="6506486086262398387">Se il criterio viene impostato su Attivato, la funzionalità Condivisione file di rete di <ph name="PRODUCT_OS_NAME" /> utilizza l'autenticazione NTLM per le condivisioni SMB, se necessario. Se viene impostato su Disattivato, l'autenticazione NTLM per le condivisioni SMB viene disattivata.
 
       Se non viene configurato, il comportamento predefinito è off per gli utenti gestiti e on per gli altri utenti.</translation>
+<translation id="651012148496266279">La configurazione del criterio consente di ignorare l'elenco di porte con restrizioni integrato in <ph name="PRODUCT_NAME" />. Il valore è un elenco separato da virgole di nessuna porta o di più porte tramite le quali saranno consentite connessioni in uscita.
+
+      Le porte sono limitate per impedire l'utilizzo di <ph name="PRODUCT_NAME" /> come vettore per sfruttare varie vulnerabilità di rete. La configurazione di questo criterio potrebbe mettere la tua rete a rischio di attacchi. Questo criterio è inteso come soluzione alternativa temporanea per gli errori con codice "ERR_UNSAFE_PORT" durante la migrazione a una porta standard (ossia 80 o 443) di un servizio in esecuzione tramite una porta bloccata.
+
+      I siti web dannosi possono rilevare facilmente che questo criterio è impostato e per quali porte, quindi usano queste informazioni per attacchi mirati.
+
+      Se il criterio viene lasciato vuoto o se non viene configurato, verranno bloccate tutte le porte con restrizioni. Se sono presenti valori validi e non validi, verranno applicati quelli validi.
+
+      Questo criterio sostituisce l'opzione della riga di comando "--explicitly-allowed-ports".</translation>
 <translation id="6515357889978918016">Immagine <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Attendi che il canale di destinazione controlli il downgrade del canale</translation>
 <translation id="6520802717075138474">Importa motori di ricerca dal browser predefinito alla prima esecuzione</translation>
@@ -5698,6 +5708,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se il criterio viene impostato su false, le schede non verranno bloccate.</translation>
 <translation id="8631434304112909927">fino alla versione <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">L'elenco delle app per scrivere note consentite nella schermata di blocco di <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="8637566476051166626">Porte di rete esplicitamente consentite</translation>
 <translation id="8643838501942693770">Consente i cookie di terze parti, ma l'utente può modificare questa impostazione</translation>
 <translation id="8650974590712548439">Posizione del Registro di sistema di Windows per client Windows:</translation>
 <translation id="8653085952260859632">Segnala informazioni sulla memoria</translation>

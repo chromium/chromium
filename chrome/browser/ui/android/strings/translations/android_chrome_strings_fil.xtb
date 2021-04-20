@@ -180,6 +180,7 @@ Mag-tap ng anumang salita para maghanap. Para pinuhin ang iyong paghahanap, pind
 <translation id="2169830938017475061">Ngayon</translation>
 <translation id="2172688499998841696">Naka-off ang mga paglalarawan ng larawan</translation>
 <translation id="2175927920773552910">QR Code</translation>
+<translation id="2181298861158186289">Itago ang Mga Content sa Clipboard</translation>
 <translation id="218608176142494674">Pagbabahagi</translation>
 <translation id="2195339740518523951">Kunin ang pinakamahusay na seguridad ng Chrome</translation>
 <translation id="2200113223741723867">Pamahalaan ang pagbabahagi ng data ng paggamit</translation>
@@ -399,6 +400,7 @@ Kasalukuyan pa ring dine-develop ang Privacy Sandbox at available ito sa mga pil
 <translation id="363596933471559332">Awtomatikong mag-sign in sa mga website gamit ang mga naka-store na kredensyal. Kapag naka-off ang feature, hihilingin sa iyong mag-verify sa tuwing magsa-sign in ka sa isang website.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Kapag na-reset, mabubura ang iyong history ng pagtitipid ng data, kabilang ang listahan ng mga binisitang site.</translation>
+<translation id="3677911431265050325">Hilingin ang pang-mobile na site</translation>
 <translation id="3687645719033307815">Tinitingnan mo ang preview ng page na ito</translation>
 <translation id="3692944402865947621">Hindi na-download ang <ph name="FILE_NAME" /> dahil hindi maabot ang lokasyon ng storage.</translation>
 <translation id="371230970611282515">Hinuhulaan ang mga mapanganib na event at binibigyan ka ng babala tungkol sa mga ito bago mangyari ang mga ito.</translation>
@@ -842,6 +844,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6539092367496845964">Nagkaproblema. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Nagsuri 1 oras ang nakalipas}one{Nagsuri # oras ang nakalipas}other{Nagsuri # na oras ang nakalipas}}</translation>
 <translation id="6545017243486555795">I-clear ang Lahat ng Data</translation>
+<translation id="6549142516027084053">Ipakita ang Mga Content sa Clipboard</translation>
 <translation id="6560414384669816528">Maghanap gamit ang Sogou</translation>
 <translation id="656065428026159829">Tumingin pa</translation>
 <translation id="6565959834589222080">Ginagamit ang Wi-Fi kapag available</translation>
@@ -1149,6 +1152,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="8559990750235505898">Mag-alok na magsalin ng mga page sa iba pang wika</translation>
 <translation id="8560602726703398413">Makita ang iyong listahan ng babasahin sa Mga Bookmark</translation>
 <translation id="8562452229998620586">Lalabas dito ang mga naka-save na password.</translation>
+<translation id="856481929701340285">Hilingin ang desktop site</translation>
 <translation id="8569404424186215731">simula noong <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Huling 4 na linggo</translation>
 <translation id="8572344201470131220">Nakopya ang Larawan</translation>

@@ -158,6 +158,7 @@
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen.  <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="120937472976628837">Ventilatorgegevens rapporteren</translation>
+<translation id="1214202898523114033">poort 10080 (verloopt op 01-04-2022)</translation>
 <translation id="1216919699175573511">Signed HTTP Exchange-ondersteuning (SXG) aanzetten</translation>
 <translation id="1219695476179627719">Geeft aan of het apparaat moet terugkeren naar de versie die is ingesteld met <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> als er al een latere versie is geïnstalleerd.
 
@@ -4036,6 +4037,15 @@ Als je het beleid instelt, kunnen gebruikers dit niet aanpassen in de browserins
 <translation id="6506486086262398387">Als je het beleid toepast, gebruikt de functie Network File Shares voor <ph name="PRODUCT_OS_NAME" /> waar nodig NTLM om SMB-fileshares te verifiëren. Als je het beleid niet toepast, staat NTLM-verificatie voor SMB-fileshares uit.
 
       Als je dit beleid niet instelt, staat dit gedrag standaard uit voor beheerde gebruikers en aan voor andere gebruikers.</translation>
+<translation id="651012148496266279">Als je dit beleid instelt, mag de lijst met beperkte poorten worden omzeild die is ingebouwd in <ph name="PRODUCT_NAME" />. De waarde is een door komma's gescheiden lijst van 0 of meer poorten waarvoor uitgaande verbindingen zijn toegestaan.
+
+      Poorten zijn beperkt om te voorkomen dat <ph name="PRODUCT_NAME" /> als vector wordt gebruikt om misbruik te maken van verschillende kwetsbaarheden in het netwerk. Als je dit beleid instelt, kun je je netwerk blootstellen aan aanvallen. Dit beleid is bedoeld als tijdelijke oplossing voor fouten met de code ERR_UNSAFE_POR terwijl je een service van een geblokkeerde poort overzet naar een standaardpoort (zoals poort 80 of 443).
+
+      Schadelijke websites kunnen makkelijk detecteren dat dit beleid is ingesteld (en voor welke poorten), en die informatie gebruiken voor gerichte aanvallen.
+
+      Als je de waarde leeg laat of niet instelt, worden alle beperkte poorten geblokkeerd. Bij een combinatie van geldige en ongeldige waarden worden de geldige waarden toegepast.
+
+      Dit beleid overschrijft de opdrachtregeloptie --explicitly-allowed-ports.</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" />-afbeelding</translation>
 <translation id="6518102411616460786">Wachten tot het doelkanaal de kanaaldowngrade heeft verwerkt</translation>
 <translation id="6520802717075138474">Zoekmachines importeren uit standaardbrowser bij eerste uitvoering</translation>
@@ -5673,6 +5683,7 @@ Dit beleid wordt verwijderd in M75.</translation>
       Als het beleid is ingesteld op 'False', worden er geen tabbladen vastgezet.</translation>
 <translation id="8631434304112909927">tot versie <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">De lijst met notitie-apps die zijn toegestaan op het <ph name="PRODUCT_OS_NAME" />-vergrendelscherm</translation>
+<translation id="8637566476051166626">Expliciet toegestane netwerkpoorten</translation>
 <translation id="8643838501942693770">Cookies van derden toestaan, maar toestaan dat gebruikers deze instelling wijzigen</translation>
 <translation id="8650974590712548439">Locatie van Windows-register voor Windows-clients:</translation>
 <translation id="8653085952260859632">Informatie over geheugen rapporteren</translation>

@@ -5323,6 +5323,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6957044667612803194">Der Sicherheitsschlüssel unterstützt keine PINs</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{Link}other{# Links}}</translation>
 <translation id="6960507406838246615">Linux-Update erforderlich</translation>
+<translation id="6960565108681981554">Nicht aktiviert. Wenden Sie sich bitte an Ihren Mobilfunkanbieter.</translation>
 <translation id="696103774840402661">Alle Dateien und lokalen Daten für alle Nutzer auf diesem <ph name="DEVICE_TYPE" /> wurden dauerhaft gelöscht.</translation>
 <translation id="6964390816189577014">Held</translation>
 <translation id="6964760285928603117">Aus Gruppe entfernen</translation>

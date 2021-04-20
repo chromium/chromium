@@ -180,6 +180,7 @@
 <translation id="2169830938017475061">現在</translation>
 <translation id="2172688499998841696">圖片描述功能已關閉</translation>
 <translation id="2175927920773552910">二維條碼</translation>
+<translation id="2181298861158186289">隱藏剪貼簿內容</translation>
 <translation id="218608176142494674">共用</translation>
 <translation id="2195339740518523951">取得 Chrome 最強大的安全防護</translation>
 <translation id="2200113223741723867">管理使用情況資料分享設定</translation>
@@ -399,6 +400,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="363596933471559332">使用儲存的憑證自動登入網站。關閉功能時，每次登入網站之前都會要求您驗證。</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">重設將會清除您儲存資料的記錄，包括瀏覽過的網站清單。</translation>
+<translation id="3677911431265050325">切換至流動網站</translation>
 <translation id="3687645719033307815">您正在預覽此網頁的預覽畫面</translation>
 <translation id="3692944402865947621">無法存取儲存位置，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="371230970611282515">在危險事件發生前進行預測並發出警告。</translation>
@@ -842,6 +844,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6539092367496845964">發生錯誤，請稍後再試。</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{曾在 1 小時前檢查}other{曾在 # 小時前檢查}}</translation>
 <translation id="6545017243486555795">清除所有資料</translation>
+<translation id="6549142516027084053">顯示剪貼簿內容</translation>
 <translation id="6560414384669816528">使用「搜狗」搜尋內容</translation>
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6565959834589222080">有可用的 Wi-Fi 時使用 Wi-Fi</translation>
@@ -1149,6 +1152,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="8559990750235505898">詢問是否將網頁內容翻譯成其他語言</translation>
 <translation id="8560602726703398413">在書籤中尋找閱讀清單</translation>
 <translation id="8562452229998620586">已儲存的密碼會顯示在這裡。</translation>
+<translation id="856481929701340285">切換至電腦版網站</translation>
 <translation id="8569404424186215731">自 <ph name="DATE" />起</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
 <translation id="8572344201470131220">已複製圖片</translation>

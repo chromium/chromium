@@ -180,6 +180,7 @@ Puudutage otsimiseks mis tahes sõna. Otsingu täpsustamiseks puudutage pikalt, 
 <translation id="2169830938017475061">Kohe</translation>
 <translation id="2172688499998841696">Pildikirjeldused on välja lülitatud</translation>
 <translation id="2175927920773552910">QR-kood</translation>
+<translation id="2181298861158186289">Lõikelaua sisu varjamine</translation>
 <translation id="218608176142494674">Jagamine</translation>
 <translation id="2195339740518523951">Hankige Chrome'i parim turvatase</translation>
 <translation id="2200113223741723867">Kasutusandmete jagamise haldamine</translation>
@@ -399,6 +400,7 @@ Privaatsuse liivakast on endiselt arendusjärgus ja saadaval vaid valitud piirko
 <translation id="363596933471559332">Teid logitakse salvestatud mandaadiga veebisaitidele automaatselt sisse. Kui funktsioon on välja lülitatud, palutakse teilt kinnitust iga kord enne veebisaidile sisselogimist.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Lähtestamisel kustutatakse säästetud andmemahu ajalugu, sh külastatud saitide loend.</translation>
+<translation id="3677911431265050325">Taotle mobiilisaiti</translation>
 <translation id="3687645719033307815">Vaatate selle lehe eelvaadet</translation>
 <translation id="3692944402865947621">Faili <ph name="FILE_NAME" /> allalaadimine nurjus, kuna salvestuskoht ei ole saadaval.</translation>
 <translation id="371230970611282515">Ennustab ohtlikke sündmusi ette ja hoiatab teid.</translation>
@@ -842,6 +844,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6539092367496845964">Midagi läks valesti. Proovige hiljem uuesti.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Kontrolliti 1 tund tagasi}other{Kontrolliti # tundi tagasi}}</translation>
 <translation id="6545017243486555795">Kustuta kõik andmed</translation>
+<translation id="6549142516027084053">Lõikelaua sisu kuvamine</translation>
 <translation id="6560414384669816528">Otsi teenusega Sogou</translation>
 <translation id="656065428026159829">Kuva rohkem</translation>
 <translation id="6565959834589222080">WiFi-t kasutatakse siis, kui see on saadaval</translation>
@@ -1149,6 +1152,7 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="8559990750235505898">Paku muudes keeltes olevate lehtede tõlkimist</translation>
 <translation id="8560602726703398413">Lugemisloendi leiate järjehoidjatest</translation>
 <translation id="8562452229998620586">Salvestatud paroolid ilmuvad siin.</translation>
+<translation id="856481929701340285">Saidi arvutiversiooni taotlemine</translation>
 <translation id="8569404424186215731">alates kuupäevast <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Viimased 4 nädalat</translation>
 <translation id="8572344201470131220">Pilt on kopeeritud</translation>

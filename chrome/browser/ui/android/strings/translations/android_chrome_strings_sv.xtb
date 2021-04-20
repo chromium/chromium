@@ -180,6 +180,7 @@ Sök genom att trycka på ett ord. Du kan finjustera sökningen genom att trycka
 <translation id="2169830938017475061">Nyss</translation>
 <translation id="2172688499998841696">Bildbeskrivningar har inaktiverats</translation>
 <translation id="2175927920773552910">QR-kod</translation>
+<translation id="2181298861158186289">Dölj innehållet i Urklipp</translation>
 <translation id="218608176142494674">Delar</translation>
 <translation id="2195339740518523951">Få det bästa skyddet i Chrome</translation>
 <translation id="2200113223741723867">Hantera delning av data om användning</translation>
@@ -399,6 +400,7 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="363596933471559332">Logga in automatiskt på webbplatser med hjälp av lagrade inloggningsuppgifter. När funktionen är inaktiverad måste du verifiera dina uppgifter varje gång du besöker webbplatsen innan du kan logga in.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Om du återställer begränsat läge raderas databesparingshistoriken, inklusive listan med webbplatser som du har besökt.</translation>
+<translation id="3677911431265050325">Begär mobilversion</translation>
 <translation id="3687645719033307815">Du tittar på en förhandsgranskning av den här sidan</translation>
 <translation id="3692944402865947621">Det gick inte att ladda ned <ph name="FILE_NAME" /> eftersom det inte gick att nå lagringsplatsen.</translation>
 <translation id="371230970611282515">Förutser och varnar dig om farliga händelser innan de inträffar.</translation>
@@ -842,6 +844,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6539092367496845964">Något gick fel. Försök igen senare.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Genomsöktes för 1 timme sedan}other{Genomsöktes för # timmar sedan}}</translation>
 <translation id="6545017243486555795">Rensa all data</translation>
+<translation id="6549142516027084053">Visa innehållet i Urklipp</translation>
 <translation id="6560414384669816528">Sök med Sogou</translation>
 <translation id="656065428026159829">Visa fler</translation>
 <translation id="6565959834589222080">Wi-Fi används när det är tillgängligt</translation>
@@ -1149,6 +1152,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="8559990750235505898">Erbjud översättning av sidor till andra språk</translation>
 <translation id="8560602726703398413">Du hittar läslistan under Bokmärken</translation>
 <translation id="8562452229998620586">Sparade lösenord visas här.</translation>
+<translation id="856481929701340285">Begär skrivbordsversion</translation>
 <translation id="8569404424186215731">sedan <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Senaste fyra veckorna</translation>
 <translation id="8572344201470131220">Bilden har kopierats</translation>

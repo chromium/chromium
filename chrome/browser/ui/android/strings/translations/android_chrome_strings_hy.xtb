@@ -180,6 +180,7 @@
 <translation id="2169830938017475061">Հիմա</translation>
 <translation id="2172688499998841696">Պատկերների նկարագրություններն անջատված են</translation>
 <translation id="2175927920773552910">QR կոդ</translation>
+<translation id="2181298861158186289">Թաքցնել սեղմատախտակի բովանդակությունը</translation>
 <translation id="218608176142494674">Ընդհանուր օգտագործում</translation>
 <translation id="2195339740518523951">Ուժեղացրեք Chrome-ի անվտանգությունը</translation>
 <translation id="2200113223741723867">Կառավարել օգտագործման տվյալների տրամադրումը</translation>
@@ -399,6 +400,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="363596933471559332">Ավտոմատ կերպով մուտք գործել կայքեր՝ պահված մուտքային տվյալների օգնությամբ: Եթե այս գործառույթն անջատված է, ապա ամեն անգամ կայք մտնելիս ձեզանից կպահանջվի հաստատում:</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />՝ <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Վերակայման արդյունքում կջնջվի թրաֆիկի տնտեսման պատմությունը, ներառյալ այցելած կայքերի ցանկը:</translation>
+<translation id="3677911431265050325">Բջջային տարբերակ</translation>
 <translation id="3687645719033307815">Դուք նախադիտում եք այս էջը</translation>
 <translation id="3692944402865947621">Չհաջողվեց ներբեռնել «<ph name="FILE_NAME" />» ֆայլը, քանի որ պահեստն անհասանելի է։</translation>
 <translation id="371230970611282515">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին։</translation>
@@ -842,6 +844,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="6539092367496845964">Սխալ առաջացավ: Փորձեք ավելի ուշ:</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Ստուգվել է 1 ժամ առաջ}one{Ստուգվել է # ժամ առաջ}other{Ստուգվել է # ժամ առաջ}}</translation>
 <translation id="6545017243486555795">Մաքրել բոլոր տվյալները</translation>
+<translation id="6549142516027084053">Ցուցադրել սեղմատախտակի բովանդակությունը</translation>
 <translation id="6560414384669816528">Որոնել Sogou որոնման համակարգով</translation>
 <translation id="656065428026159829">Տեսնել ավելին</translation>
 <translation id="6565959834589222080">Wi-Fi ցանցը օգտագործվում է հասանելի լինելու դեպքում</translation>
@@ -1149,6 +1152,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="8559990750235505898">Առաջարկել թարգմանել էջերը այլ լեզուներով</translation>
 <translation id="8560602726703398413">Գտեք ձեր ընթերցանության ցանկը էջանիշներում։</translation>
 <translation id="8562452229998620586">Պահված գաղտնաբառերը կտեսնեք այստեղ:</translation>
+<translation id="856481929701340285">Համակարգչային տարբերակ</translation>
 <translation id="8569404424186215731"><ph name="DATE" />-ից սկսած</translation>
 <translation id="8571213806525832805">Վերջին 4 շաբաթվա</translation>
 <translation id="8572344201470131220">Պատկերը պատճենվեց</translation>

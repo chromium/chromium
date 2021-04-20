@@ -14,7 +14,7 @@
 <translation id="106222400312645156">rwhdr</translation>
 <translation id="1065552602950927991">Idatzitakoak ez du balio</translation>
 <translation id="1066085461259044485">Baso-berdea</translation>
-<translation id="1087148255821848488">Tartekatua da uneko bistaratze-estiloa</translation>
+<translation id="1087148255821848488">Tartekatua da oraingo bistaratze-estiloa</translation>
 <translation id="1087788677726983142">Ezkutatu gertaeren jarioaren iragazkiak</translation>
 <translation id="1088402100970133699">Ez dago zerrendako beste elementurik honen aurretik</translation>
 <translation id="1114836634143403764">Iradokizuna</translation>
@@ -23,7 +23,7 @@
 <translation id="1126928665165112660">Ez du formatu etzanik</translation>
 <translation id="113582498867142724"><ph name="NUM" /> elementu dituen <ph name="TAG" /> bilduma</translation>
 <translation id="1146441463334103638">Piztu edo itzali pantaila</translation>
-<translation id="1156488781945104845">Uneko ordua</translation>
+<translation id="1156488781945104845">Oraingo ordua</translation>
 <translation id="1161762950103988776">Saltatu</translation>
 <translation id="1164857107703583584">Web-orri batean nabigatzeko erabil daitezke toki batetik bestera joateko aginduak.</translation>
 <translation id="1175914831232945926">Digituak</translation>
@@ -104,7 +104,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="1612960140435400149">Ez dago beste inprimaki-eremurik honen ondoren</translation>
 <translation id="1613476421962910979">Audio-jakinarazpenak aktibatuta daude</translation>
 <translation id="1616111909442424068">Gari-kolorekoa</translation>
-<translation id="1618597272655350600">Uneko posizioaren azalpen osoa iragartzen du</translation>
+<translation id="1618597272655350600">Oraingo posizioaren azalpen osoa iragartzen du</translation>
 <translation id="1627222324347828322">Zuri gardena</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{handiago ikurra}other{# handiago ikur}}</translation>
 <translation id="1653266918374749391">3. mailako aurreko goiburua</translation>
@@ -170,7 +170,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="2127747486437921899">Etzana</translation>
 <translation id="2152179395627233441">Itxi praktikatzeko eremua</translation>
 <translation id="2163782704988363449">Akatsa</translation>
-<translation id="2169714232367507776">Egin klik uneko elementuan</translation>
+<translation id="2169714232367507776">Egin klik oraingo elementuan</translation>
 <translation id="2179452035581866348">ChromeVox-ek soinuak erabiltzen ditu informazioa eskaintzeko (bai oinarrizkoa, bai gehigarria). Soinu bakoitzak zer esan nahi duen ikasten baduzu, bizkorrago nabigatzeko gida gisa balioko dizute. Ohitzen zaren heinean, audio-azalpenak desaktibatu ahal izango dituzu, eta orriko informazio oinarrizkoenaren berri ematen duten soinuak bakarrik utzi. Hemen duzu soinu guztien eta haien esanahien zerrenda.</translation>
 <translation id="2183409941723714159">Fitxen artean nabigatzeko aukera</translation>
 <translation id="2188751878842439466">{COUNT,plural, =1{eskuin-parentesia}other{# eskuin-parentesi}}</translation>
@@ -208,7 +208,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="242998846562331953">Azpititulua</translation>
 <translation id="2435422727584637732">Urdin argi bizia</translation>
 <translation id="2450814015951372393">Koadroa</translation>
-<translation id="2461822463642141190">Uneko kontsumoa</translation>
+<translation id="2461822463642141190">Oraingo kontsumoa</translation>
 <translation id="2462626033734746142">Aukera-botoi taldea</translation>
 <translation id="2471138580042810658">6. goiburua</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{izartxoa}other{# izartxo}}</translation>
@@ -433,7 +433,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="3935615366277838204"><ph name="LETTER" /> maiuskula</translation>
 <translation id="3936394396199829062">Izpiliku-kolore oso argikoa</translation>
 <translation id="3943857333388298514">Itsatsi</translation>
-<translation id="3962990492275676168">Hasi irakurtzen uneko kokapenetik</translation>
+<translation id="3962990492275676168">Hasi irakurtzen oraingo kokapenetik</translation>
 <translation id="3970951409746498040">Hondar-marroia</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">Mokasin-beixa</translation>
@@ -498,7 +498,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="4432457053224379116">Indiako gorria</translation>
 <translation id="4432896207833262240">Markatutako edukia</translation>
 <translation id="4437615272777527928">Idatzi menuetan bilatu nahi duzuna. Erabili Gora eta Behera geziak emaitza batetik bestera joateko. Erabili Ezkerrera eta Eskuinera geziak testu-kurtsorea doitzeko eta menu batetik bestera aldatzeko.</translation>
-<translation id="4457472090507035117">Hautatu uneko ahotsa:</translation>
+<translation id="4457472090507035117">Hautatu oraingo ahotsa:</translation>
 <translation id="4476183483923481720">lerro berria</translation>
 <translation id="4479068155583208887">Adreilu gorriaren kolorekoa</translation>
 <translation id="4482330759234983253">Aurreko taula</translation>
@@ -534,10 +534,10 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="4780458943471935919">Joan hurrengo orrira</translation>
 <translation id="4784215347943747396">Etengailu bat edo bi erabilita kontrolatu ahal izango duzu gailua</translation>
 <translation id="4786285211967466855">Ez dago lehenengo mailako beste goibururik honen aurretik</translation>
-<translation id="4787577491510559358">Iragarri uneko elementuaren formatua</translation>
+<translation id="4787577491510559358">Iragarri oraingo elementuaren formatua</translation>
 <translation id="479989351350248267">bilaketa</translation>
 <translation id="4804818685124855865">Deskonektatu</translation>
-<translation id="481165870889056555">Iragarri uneko orriaren izenburua</translation>
+<translation id="481165870889056555">Iragarri oraingo orriaren izenburua</translation>
 <translation id="4815668758102003883">Turkesa oso argia</translation>
 <translation id="4826415162591436065">Nabigatu aurrera</translation>
 <translation id="4827410568042294688">hautatu gabe</translation>
@@ -568,7 +568,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="4983588134362688868">Joan orriaren goialdera</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, leihoa</translation>
 <translation id="4993152509206108683">Hizketaren abiadura: ehuneko <ph name="PERCENT" /></translation>
-<translation id="4994420463726586413">Iragarri uneko bateria-maila</translation>
+<translation id="4994420463726586413">Iragarri oraingo bateria-maila</translation>
 <translation id="4997282455736854877"><ph name="NAME" /> aukera-botoia hautatu da</translation>
 <translation id="5011664330025416377">Aktibatzeko, sakatu Bilaketa + Zuriune-barra</translation>
 <translation id="5012724933919010465">Menuko <ph name="NAME" /> elementuaren aukera-botoia hautatuta dago</translation>
@@ -775,7 +775,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="6540201937398578274">ChromeVox zerbitzuan, Bilaketa tekla da tekla aldatzailea. ChromeVox-eko lasterbide gehienek Bilaketa tekla dute hasieran. Gezi-teklak ere erabiliko dituzu nabigatzeko.</translation>
 <translation id="6544923685317771506">Maskor-kolorekoa</translation>
 <translation id="6551185905438378412">Boli-kolorekoa</translation>
-<translation id="6561818612645211875">Joan uneko errenkadaren hasierara</translation>
+<translation id="6561818612645211875">Joan oraingo errenkadaren hasierara</translation>
 <translation id="6579990219486187401">Arrosa argia</translation>
 <translation id="6583174818554398774">Joan hurrengo mailara</translation>
 <translation id="6584162722998608255">Jarraian, pantailan zehar mugitzen ikasiko duzu. Hurrengo elementura joateko, pasatu hatz bat ezkerretik eskuinera. Proba ezazu hurrengo urratsera joateko.</translation>
@@ -811,7 +811,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="6859876496651143278">Pasatu hatz bat ezkerrerantz</translation>
 <translation id="6865519907510167493">Ortografia-akatsa</translation>
 <translation id="6873188295213080042">Aholkua: eduki sakatuta bilaketa-tekla eta sakatu gezi-teklak nabigatzeko.</translation>
-<translation id="6894148351896207544">Esan uneko ordua eta data</translation>
+<translation id="6894148351896207544">Esan oraingo ordua eta data</translation>
 <translation id="6896758677409633944">Kopiatu</translation>
 <translation id="6897341342232909480">Ezkerretara</translation>
 <translation id="6901540140423170855">data</translation>
@@ -908,9 +908,9 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="7592060599656252486">Batzuk</translation>
 <translation id="7595446402663080101">Ez dago beste taularik honen aurretik</translation>
 <translation id="7596131838331109045">Izokin-kolore argikoa</translation>
-<translation id="7604026522577407655">Joan uneko zutabearen hasierara</translation>
+<translation id="7604026522577407655">Joan oraingo zutabearen hasierara</translation>
 <translation id="7604451927827590395">hdng</translation>
-<translation id="7609342235116740824">Iragarri uneko orriaren URLa</translation>
+<translation id="7609342235116740824">Iragarri oraingo orriaren URLa</translation>
 <translation id="7609363189280667021">Aktibatu/Desaktibatu braille-oinak</translation>
 <translation id="761303759119251275">Adierazpena</translation>
 <translation id="762020119231868829">Une honetan erreproduzitzen ari diren multimedia-widgetak pausatzen ditu</translation>
@@ -997,7 +997,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="8179976553408161302">Sartu</translation>
 <translation id="8184828902145951186">err</translation>
 <translation id="8186185314313222077">aldatu pantaila osoko modua</translation>
-<translation id="8199231515320852133">Jakinarazi uneko gelaxkaren goiburuak</translation>
+<translation id="8199231515320852133">Jakinarazi oraingo gelaxkaren goiburuak</translation>
 <translation id="8202174735952881587">Urdin argia</translation>
 <translation id="820469951249669083">Joan hurrengo errenkadara</translation>
 <translation id="8205922869661890178">Ireki garatzaileen erregistroen orria</translation>
@@ -1050,7 +1050,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="8614129468475308349">Bikain! Lortu dituzu ChromeVox-en oinarrizko ezagutzak. Tutoriala berriro irakur dezakezu, edo bertatik irten egin zaitezke beheko botoia sakatuta.</translation>
 <translation id="8625173877182443267">Ez dago seigarren mailako beste goibururik honen ondoren</translation>
 <translation id="8628186274519446680">Tomate-kolorekoa</translation>
-<translation id="8638532244051952400">Adierazi uneko gelaxkaren koordenatuak</translation>
+<translation id="8638532244051952400">Adierazi oraingo gelaxkaren koordenatuak</translation>
 <translation id="8640369214276455272">Ke-zuria</translation>
 <translation id="8651481478098336970">desaktibatu bolumena</translation>
 <translation id="8653646212587894517">Erakutsi esteken zerrenda</translation>
@@ -1112,7 +1112,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="9150735707954472829">Fitxa</translation>
 <translation id="9151249085738989067">Aldatu automatikoki ChromeVox-eko ahotsa, hizkuntzaren arabera</translation>
 <translation id="9153606228985488238">Tonua: ehuneko <ph name="PERCENT" /></translation>
-<translation id="9160096769946561184">Joan uneko zutabearen amaierara</translation>
+<translation id="9160096769946561184">Joan oraingo zutabearen amaierara</translation>
 <translation id="9173115498289768110">Bolumena: ehuneko <ph name="PERCENT" /></translation>
 <translation id="9185200690645120087">ChromeVox-en ukipen-keinuei buruzko tutoriala</translation>
 <translation id="9192904702577636854">Markesina</translation>

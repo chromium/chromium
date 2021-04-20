@@ -180,6 +180,7 @@ Toca cualquier palabra para buscarla. Para acotar la búsqueda, mantén pulsado 
 <translation id="2169830938017475061">Ahora</translation>
 <translation id="2172688499998841696">Las descripciones de imágenes están desactivadas</translation>
 <translation id="2175927920773552910">Código QR</translation>
+<translation id="2181298861158186289">Oculta el contenido del portapapeles</translation>
 <translation id="218608176142494674">Compartir</translation>
 <translation id="2195339740518523951">Obtener la seguridad más potente de Chrome</translation>
 <translation id="2200113223741723867">Gestionar preferencias para compartir datos de uso</translation>
@@ -399,6 +400,7 @@ Privacy Sandbox sigue en desarrollo y está disponible solo en ciertas regiones.
 <translation id="363596933471559332">Permite iniciar sesión automáticamente en sitios web con credenciales almacenadas. Si esta función está desactivada, se solicitará la verificación cada vez que se intente iniciar sesión en un sitio web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Restablecerlo borra tu historial de ahorro de datos, incluidas las listas de los sitios que has visitado.</translation>
+<translation id="3677911431265050325">Solicitar sitio web móvil</translation>
 <translation id="3687645719033307815">Estás viendo una vista previa de esta página</translation>
 <translation id="3692944402865947621">No se ha podido descargar <ph name="FILE_NAME" /> porque no se puede acceder a la ubicación del almacenamiento.</translation>
 <translation id="371230970611282515">Predice y te advierte sobre eventos peligrosos cuando ocurren.</translation>
@@ -842,6 +844,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6539092367496845964">Se ha producido un error. Vuelve a intentarlo más tarde.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Comprobado hace 1 hora}other{Comprobado hace # horas}}</translation>
 <translation id="6545017243486555795">Borrar todos los datos</translation>
+<translation id="6549142516027084053">Revela el contenido del portapapeles</translation>
 <translation id="6560414384669816528">Realizar búsquedas con Sogou</translation>
 <translation id="656065428026159829">Ver más</translation>
 <translation id="6565959834589222080">Se utiliza la red Wi‑Fi si está disponible</translation>
@@ -1149,6 +1152,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="8559990750235505898">Ofrecer la traducción de páginas en otros idiomas</translation>
 <translation id="8560602726703398413">Consulta tu lista de lectura en Marcadores</translation>
 <translation id="8562452229998620586">Las contraseñas guardadas aparecerán aquí.</translation>
+<translation id="856481929701340285">Ver como ordenador</translation>
 <translation id="8569404424186215731">desde el <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8572344201470131220">Imagen copiada</translation>

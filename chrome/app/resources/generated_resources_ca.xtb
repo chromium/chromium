@@ -2239,7 +2239,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3449393517661170867">Finestra amb pestanyes nova</translation>
 <translation id="3449839693241009168">Premeu <ph name="SEARCH_KEY" /> per enviar ordres a <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Percentatge d'ocupació de l'estat d'inactivitat</translation>
-<translation id="3451753556629288767">Amb permís per obrir tipus de fitxers</translation>
+<translation id="3451753556629288767">Amb permís per obrir certs tipus de fitxers</translation>
 <translation id="3453612417627951340">Necessita una autorització.</translation>
 <translation id="3454157711543303649">S'ha completat l'activació</translation>
 <translation id="3454213325559396544">Aquesta actualització de programari i seguretat és l'última que rebràs per a aquest dispositiu de tipus <ph name="DEVICE_TYPE" />. Per obtenir actualitzacions en el futur, canvia el dispositiu per un model més nou.</translation>
@@ -5439,7 +5439,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7067396782363924830">Colors d'ambient</translation>
 <translation id="7067725467529581407">No m'ho tornis a mostrar</translation>
 <translation id="7069811530847688087">Pot ser que <ph name="WEBSITE" /> requereixi un tipus de seguretat més nou o diferent</translation>
-<translation id="7070269827082111569">Sense permís per obrir tipus de fitxers</translation>
+<translation id="7070269827082111569">Sense permís per obrir certs tipus de fitxers</translation>
 <translation id="7070484045139057854">Aquesta extensió pot llegir i modificar les dades dels llocs web</translation>
 <translation id="7072010813301522126">Nom de la drecera</translation>
 <translation id="707392107419594760">Seleccioneu el teclat:</translation>

@@ -180,6 +180,7 @@
 <translation id="2169830938017475061">Сейчас</translation>
 <translation id="2172688499998841696">Описания изображений отключены.</translation>
 <translation id="2175927920773552910">QR-код</translation>
+<translation id="2181298861158186289">Скрыть содержимое буфера обмена</translation>
 <translation id="218608176142494674">Совместный доступ</translation>
 <translation id="2195339740518523951">Обеспечьте максимальную защиту в Chrome</translation>
 <translation id="2200113223741723867">Управление передачей данных об использовании</translation>
@@ -376,7 +377,7 @@
 <translation id="3492207499832628349">Новая вкладка инкогнито</translation>
 <translation id="3493531032208478708">Подробнее <ph name="BEGIN_LINK" />о рекомендованном контенте<ph name="END_LINK" />…</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3507132249039706973">Стандартная защита включена.</translation>
+<translation id="3507132249039706973">Стандартная защита включена</translation>
 <translation id="3509330069915219067">Вы не в Сети. Браузеру Chrome не удается проверить наличие обновлений.</translation>
 <translation id="3513704683820682405">Дополненная реальность</translation>
 <translation id="3518985090088779359">Продолжить</translation>
@@ -399,6 +400,7 @@
 <translation id="363596933471559332">Входить на веб-сайты с помощью сохраненного имени пользователя и пароля. Когда функция отключена, эти данные нужно указывать при каждом входе.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" /> (<ph name="WEBSITE_URL" />)</translation>
 <translation id="3658159451045945436">Будет удалена вся информация о сэкономленных данных, в том числе список просмотренных сайтов.</translation>
+<translation id="3677911431265050325">Мобильная версия</translation>
 <translation id="3687645719033307815">Эта страница показывается в режиме предварительного просмотра.</translation>
 <translation id="3692944402865947621">Не удалось скачать файл <ph name="FILE_NAME" />, так как хранилище недоступно.</translation>
 <translation id="371230970611282515">Предсказывает опасные события и предупреждает вас до того, как они происходят.</translation>
@@ -842,6 +844,7 @@
 <translation id="6539092367496845964">Произошла ошибка. Повторите попытку позже.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Проверено 1 час назад.}one{Проверено # час назад.}few{Проверено # часа назад.}many{Проверено # часов назад.}other{Проверено # часа назад.}}</translation>
 <translation id="6545017243486555795">Удалить все данные</translation>
+<translation id="6549142516027084053">Показать содержимое буфера обмена</translation>
 <translation id="6560414384669816528">Поиск в Sogou</translation>
 <translation id="656065428026159829">Ещё</translation>
 <translation id="6565959834589222080">Использовать сеть Wi-Fi, когда она доступна</translation>
@@ -1149,6 +1152,7 @@
 <translation id="8559990750235505898">Предлагать перевести страницы на других языках</translation>
 <translation id="8560602726703398413">Список для чтения находится в закладках</translation>
 <translation id="8562452229998620586">Здесь будут показаны сохраненные пароли.</translation>
+<translation id="856481929701340285">Полная версия</translation>
 <translation id="8569404424186215731">с <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Последние 4 недели</translation>
 <translation id="8572344201470131220">Изображение скопировано.</translation>

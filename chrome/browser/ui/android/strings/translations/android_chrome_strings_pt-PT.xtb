@@ -180,6 +180,7 @@ Toque em qualquer palavra para pesquisar. Para refinar a sua pesquisa, tocar sem
 <translation id="2169830938017475061">Agora</translation>
 <translation id="2172688499998841696">As descrições das imagens estão desativadas.</translation>
 <translation id="2175927920773552910">Código QR</translation>
+<translation id="2181298861158186289">Oculte conteúdo de Copiar e colar</translation>
 <translation id="218608176142494674">Partilha</translation>
 <translation id="2195339740518523951">Obtenha a segurança mais avançada do Chrome</translation>
 <translation id="2200113223741723867">Efetue a gestão da partilha dos dados de utilização</translation>
@@ -399,6 +400,7 @@ A Privacy Sandbox está em desenvolvimento e está disponível em regiões selec
 <translation id="363596933471559332">Inicie automaticamente sessão em Sites com as credenciais armazenadas. Quando a funcionalidade está desativada, é-lhe sempre pedida validação antes de iniciar sessão num Website.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">A reposição apaga o histórico da poupança de dados, incluindo a lista de sites visitados.</translation>
+<translation id="3677911431265050325">Pedir site para dispositivos móveis</translation>
 <translation id="3687645719033307815">Está a ver uma pré-visualização desta página.</translation>
 <translation id="3692944402865947621">A transferência de <ph name="FILE_NAME" /> falhou porque o local de armazenamento está fora do alcance.</translation>
 <translation id="371230970611282515">Prevê e envia-lhe avisos sobre eventos perigosos antes da sua ocorrência.</translation>
@@ -842,6 +844,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6539092367496845964">Ocorreu um erro. Tente novamente mais tarde.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Última verificação há 1 hora}other{Última verificação há # horas}}</translation>
 <translation id="6545017243486555795">Limpar todos os dados</translation>
+<translation id="6549142516027084053">Mostre conteúdo de Copiar e colar</translation>
 <translation id="6560414384669816528">Pesquisar com o Sogou</translation>
 <translation id="656065428026159829">Ver mais</translation>
 <translation id="6565959834589222080">O Wi-Fi é utilizado quando estiver disponível.</translation>
@@ -1149,6 +1152,7 @@ Os dados da sua sessão de Navegação anónima apenas serão limpos do Chrome q
 <translation id="8559990750235505898">Propor a tradução de páginas noutros idiomas</translation>
 <translation id="8560602726703398413">Encontre a sua lista de leitura nos Marcadores.</translation>
 <translation id="8562452229998620586">As palavras-passe guardadas aparecem aqui.</translation>
+<translation id="856481929701340285">Versão para computador</translation>
 <translation id="8569404424186215731">desde <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8572344201470131220">Imagem copiada.</translation>

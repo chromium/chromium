@@ -1674,7 +1674,7 @@
 <translation id="2805539617243680210">આગળ વધવા માટે તમે સંપૂર્ણ રીતે સજ્જ છો!</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
 <translation id="2805756323405976993">ઍપ</translation>
-<translation id="2805760958323556153">ExtensionInstallForcelistનું નીતિ મૂલ્ય અમાન્ય છે. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
+<translation id="2805760958323556153">ExtensionInstallForcelistનું પૉલિસી મૂલ્ય અમાન્ય છે. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="2805770823691782631">વધારાની વિગતો</translation>
 <translation id="2806372837663997957">તમે જે ડિવાઇસ સાથે શેર કરવાનો પ્રયાસ કરો છો, તેણે વિનંતી સ્વીકારી નથી</translation>
 <translation id="2806891468525657116">શૉર્ટકટ પહેલેથી અસ્તિત્વમાં છે</translation>
@@ -1894,7 +1894,7 @@
 <translation id="3036546437875325427">ફ્લૅશ ચાલુ કરો</translation>
 <translation id="3037754279345160234">ડોમેનમાં જોડાવા માટે ગોઠવણીનું વિશ્લેષણ કરી શકતાં નથી. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="3038612606416062604">પ્રિન્ટરને મેન્યુઅલી ઉમેરો</translation>
-<translation id="3039491566278747710">ડિવાઇસ પર ઇન્ટરનેટ વગર નીતિ ઇન્સ્ટૉલ કરવામાં નિષ્ફળ ગયું.</translation>
+<translation id="3039491566278747710">ડિવાઇસ પર ઑફલાઇન પૉલિસી ઇન્સ્ટૉલ કરવામાં નિષ્ફળ ગયું.</translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" />માંથી</translation>
 <translation id="3045447014237878114">આ સાઇટે એકથી વધુ ફાઇલો ઑટોમૅટિક રીતે ડાઉનલોડ કરી છે</translation>
 <translation id="3046178388369461825">Linuxમાં ડિસ્ક સ્પેસ અત્યંત ઓછી છે</translation>
@@ -2793,7 +2793,7 @@
 <translation id="4033963223187371752">સુરક્ષિત સાઇટ છબીઓ અથવા વેબ ફ્રેમ જેવું અસુરક્ષિત કન્ટેન્ટ શામેલ કરી શકે છે</translation>
 <translation id="4034824040120875894">પ્રિન્ટર</translation>
 <translation id="4035758313003622889">&amp;કાર્ય વ્યવસ્થાપક</translation>
-<translation id="4036778507053569103">સર્વરમાંથી ડાઉનલોડ કરેલી નીતિ અમાન્ય છે.</translation>
+<translation id="4036778507053569103">સર્વરમાંથી ડાઉનલોડ કરેલી પૉલિસી અમાન્ય છે.</translation>
 <translation id="4037084878352560732">ઘોડો</translation>
 <translation id="4037889604535939429">વ્યક્તિની માહિતીમાં ફેરફાર કરો</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{પેજમાંથી બહાર નીકળો}one{પેજમાંથી બહાર નીકળો}other{પેજમાંથી બહાર નીકળો}}</translation>
@@ -2944,7 +2944,7 @@
 <translation id="4241182343707213132">સંસ્થાની ઍપ અપડેટ કરવા માટે, ફરી શરૂ કરો</translation>
 <translation id="4242145785130247982">એકથી વધુ ક્લાયન્ટ પ્રમાણપત્રોને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="4242533952199664413">સેટિંગ્સ ખોલો</translation>
-<translation id="4242577469625748426">આ ઉપકરણ પર નીતિ સેટિંગ્સ ઇન્સ્ટોલ કરવામાં નિષ્ફળ ગયું: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4242577469625748426">આ ડિવાઇસ પર પૉલિસી સેટિંગ ઇન્સ્ટોલ કરવામાં નિષ્ફળ ગયું: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4243504193894350135">પ્રિન્ટર થોભાવેલું છે</translation>
 <translation id="4244238649050961491">વધુ સ્ટાઇલસ ઍપ મેમરીનો શોધો</translation>
 <translation id="424726838611654458">હંમેશાં Adobe Reader માં ખોલો</translation>
@@ -4746,7 +4746,7 @@ USB ડિવાઇસ</translation>
 <translation id="630065524203833229">&amp;બહાર નીકળો</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" />ને ઑટોમૅટિક રીતે ગોઠવી શકાતું નથી. કૃપા કરીને વિગતવાર પ્રિન્ટરની વિગતો જણાવો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="630292539633944562">વ્યક્તિગત માહિતીના સૂચનો</translation>
-<translation id="6305607932814307878">વૈશ્વિક નીતિ:</translation>
+<translation id="6305607932814307878">વૈશ્વિક પૉલિસી:</translation>
 <translation id="6307990684951724544">સિસ્ટમ વ્યસ્ત છે</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> દ્વારા આપવામાં આવેલું સાઇન-ઇન</translation>
 <translation id="6308937455967653460">લિં&amp;કને આ રીતે સાચવો...</translation>
@@ -6600,7 +6600,7 @@ USB ડિવાઇસ</translation>
 <translation id="8379878387931047019">આ ઉપકરણ આ વેબસાઇટ દ્વારા વિનંતી કરાયેલ સુરક્ષા કોડના પ્રકારનું સમર્થન કરતું નથી</translation>
 <translation id="8379991678458444070">આ ટૅબને બુકમાર્ક કરીને તમે અહીં ઝડપથી પાછા ફરી શકશો</translation>
 <translation id="8382913212082956454">&amp;ઇમેઇલ સરનામું કૉપિ કરો</translation>
-<translation id="8386091599636877289">નીતિ મળી નથી.</translation>
+<translation id="8386091599636877289">પૉલિસી મળી નથી.</translation>
 <translation id="8386819192691131213">Assistantને અનુવાદ, વ્યાખ્યા અને એકમના રૂપાંતરણ જેવા અન્ય ઘણા પ્રશ્નોના ઝડપી જવાબો આપવા માટે, સ્ક્રીન પરની માહિતીનો ઉપયોગ કરવાની મંજૂરી આપો</translation>
 <translation id="8386903983509584791">સ્કૅન પૂર્ણ થયું</translation>
 <translation id="8387361103813440603">તમારું સ્થાન જોવાની મંજૂરી નથી</translation>

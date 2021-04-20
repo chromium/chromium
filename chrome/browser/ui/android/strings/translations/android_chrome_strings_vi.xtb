@@ -180,6 +180,7 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="2169830938017475061">Bây giờ</translation>
 <translation id="2172688499998841696">Tính năng mô tả hình ảnh đang tắt</translation>
 <translation id="2175927920773552910">Mã QR</translation>
+<translation id="2181298861158186289">Ẩn nội dung của bảng nhớ tạm</translation>
 <translation id="218608176142494674">Chia sẻ</translation>
 <translation id="2195339740518523951">Tận dụng mức bảo mật mạnh nhất của Chrome</translation>
 <translation id="2200113223741723867">Quản lý cách chia sẻ dữ liệu sử dụng</translation>
@@ -399,6 +400,7 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="363596933471559332">Tự động đăng nhập vào các trang web bằng thông tin đăng nhập được lưu trữ. Khi tính năng này tắt, bạn sẽ luôn được yêu cầu xác minh trước khi đăng nhập vào trang web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Việc đặt lại sẽ xóa lịch sử tiết kiệm dữ liệu, bao gồm cả danh sách các trang web bạn đã truy cập.</translation>
+<translation id="3677911431265050325">Yêu cầu trang web dành cho thiết bị di động</translation>
 <translation id="3687645719033307815">Bạn đang xem bản xem trước của trang này</translation>
 <translation id="3692944402865947621">Không tải <ph name="FILE_NAME" /> xuống được do không tìm thấy vị trí bộ nhớ.</translation>
 <translation id="371230970611282515">Dự đoán và cảnh báo cho bạn các sự kiện nguy hiểm trước khi các sự kiện đó xảy ra.</translation>
@@ -842,6 +844,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6539092367496845964">Đã xảy ra lỗi. Hãy thử lại sau.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Đã kiểm tra 1 giờ trước}other{Đã kiểm tra # giờ trước}}</translation>
 <translation id="6545017243486555795">Xóa tất cả dữ liệu</translation>
+<translation id="6549142516027084053">Hiển thị nội dung của bảng nhớ tạm</translation>
 <translation id="6560414384669816528">Tìm kiếm với Sogou</translation>
 <translation id="656065428026159829">Xem thêm</translation>
 <translation id="6565959834589222080">Dùng mạng Wi-Fi khi có sẵn</translation>
@@ -1149,6 +1152,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="8559990750235505898">Đề xuất dịch trang bằng các ngôn ngữ khác</translation>
 <translation id="8560602726703398413">Tìm danh sách đọc trong phần Dấu trang</translation>
 <translation id="8562452229998620586">Mật khẩu đã lưu của bạn sẽ xuất hiện tại đây.</translation>
+<translation id="856481929701340285">Yêu cầu trang web cho máy tính</translation>
 <translation id="8569404424186215731">kể từ <ph name="DATE" /></translation>
 <translation id="8571213806525832805">4 tuần qua</translation>
 <translation id="8572344201470131220">Đã sao chép hình ảnh</translation>

@@ -180,6 +180,7 @@
 <translation id="2169830938017475061">હમણાં</translation>
 <translation id="2172688499998841696">છબીના વર્ણનોની સુવિધા બંધ છે</translation>
 <translation id="2175927920773552910">QR કોડ</translation>
+<translation id="2181298861158186289">ક્લિપબોર્ડનું કન્ટેન્ટ છુપાવો</translation>
 <translation id="218608176142494674">શેરિંગ</translation>
 <translation id="2195339740518523951">Chromeની સૌથી વધુ મજબૂત સુરક્ષા મેળવો</translation>
 <translation id="2200113223741723867">વપરાશના ડેટાનું શેરિંગ મેનેજ કરો</translation>
@@ -399,6 +400,7 @@
 <translation id="363596933471559332">સંગ્રહિત ઓળખપત્રોનો ઉપયોગ કરીને વેબસાઇટમાં ઑટોમૅટિક રીતે સાઇન ઇન કરો. જ્યારે સુવિધા બંધ હોય છે, ત્યારે વેબસાઇટમાં સાઇન ઇન કરતાં પહેલાં દર વખતે તમને ચકાસણી માટે કહેવામાં આવશે.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">રીસેટ કરવાથી મુલાકાત લીધેલી સાઇટની સૂચિ સહિત તમારા ડેટા બચતના ઇતિહાસને કાઢી નાખે છે.</translation>
+<translation id="3677911431265050325">મોબાઇલ સાઇટની વિનંતી કરો</translation>
 <translation id="3687645719033307815">તમે આ પેજનો પ્રીવ્યૂ જોઈ રહ્યાં છો</translation>
 <translation id="3692944402865947621">સ્ટોરેજ સ્થાન સુધી પહોંચી ન શકવાને કારણે <ph name="FILE_NAME" />નું ડાઉનલોડ નિષ્ફળ થયું.</translation>
 <translation id="371230970611282515">જોખમકારક ઇવેન્ટ થાય તે પહેલાં તેનું અનુમાન લગાવીને તેના વિશે તમને ચેતવણી આપે છે.</translation>
@@ -842,6 +844,7 @@
 <translation id="6539092367496845964">કંઈક ખોટું થયું હતું. થોડીવાર પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 કલાક પહેલાં ચેક કર્યું}one{# કલાક પહેલાં ચેક કર્યું}other{# કલાક પહેલાં ચેક કર્યું}}</translation>
 <translation id="6545017243486555795">બધો ડેટા સાફ કરો</translation>
+<translation id="6549142516027084053">ક્લિપબોર્ડનું કન્ટેન્ટ બતાવો</translation>
 <translation id="6560414384669816528">Sogou થી શોધો</translation>
 <translation id="656065428026159829">વધુ જુઓ</translation>
 <translation id="6565959834589222080">ઉપલબ્ધ હોય ત્યારે વાઇ-ફાઇનો ઉપયોગ કરવામાં આવે છે</translation>
@@ -1149,6 +1152,7 @@
 <translation id="8559990750235505898">પેજનો અન્ય ભાષાઓમાં અનુવાદ કરવાની ઑફર કરો</translation>
 <translation id="8560602726703398413">Bookmarksમાં તમારી વાંચન સૂચિ શોધો</translation>
 <translation id="8562452229998620586">તમારા સાચવેલા પાસવર્ડ્સ અહીં દેખાશે.</translation>
+<translation id="856481929701340285">ડેસ્કટૉપ સાઇટની વિનંતી કરો</translation>
 <translation id="8569404424186215731"><ph name="DATE" /> થી</translation>
 <translation id="8571213806525832805">છેલ્લા 4 અઠવાડિયા</translation>
 <translation id="8572344201470131220">છબી કૉપિ કરી</translation>

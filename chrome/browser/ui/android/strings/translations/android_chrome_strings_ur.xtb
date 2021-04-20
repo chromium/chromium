@@ -180,6 +180,7 @@
 <translation id="2169830938017475061">ابھی</translation>
 <translation id="2172688499998841696">تصویر کی تفصیلات آف ہیں</translation>
 <translation id="2175927920773552910">‏QR کوڈ</translation>
+<translation id="2181298861158186289">کلپ بورڈ کے مواد کو چھپائیں</translation>
 <translation id="218608176142494674">اشتراک</translation>
 <translation id="2195339740518523951">‏Chrome کی مضبوط ترین سیکیورٹی حاصل کریں</translation>
 <translation id="2200113223741723867">استعمال کے ڈیٹا کے اشتراک کا نظم کریں</translation>
@@ -399,6 +400,7 @@
 <translation id="363596933471559332">اسٹور کردہ اسناد کا استعمال کر کے ویب سائٹس میں خود کار طور پر سائن ان کریں۔ خصوصیت آف ہونے پر، کسی ویب سائٹ میں سائن ان کرنے سے پہلے ہر بار آپ سے توثیق کرنے کو کہا جائے گا۔</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">ری سیٹ کرنے سے ملاحظہ کردہ سائٹس کی فہرست سمیت ڈیٹا بچت کی آپ کی سرگزشت صاف ہو جاتی ہے۔</translation>
+<translation id="3677911431265050325">موبائل سائٹ کی درخواست کریں</translation>
 <translation id="3687645719033307815">آپ اس صفحہ کا پیش منظر دیکھ رہے ہیں</translation>
 <translation id="3692944402865947621">اسٹوریج کا مقام ناقابل رسائی ہونے کے سبب <ph name="FILE_NAME" /> ڈاؤن لوڈ کرنا ناکام ہو گیا۔</translation>
 <translation id="371230970611282515">خطرناک ایونٹس ہونے سے پہلے ان کی پیشین گوئی کرتا ہے اور آپ کو ان کے بارے میں متنبہ کرتا ہے۔</translation>
@@ -842,6 +844,7 @@
 <translation id="6539092367496845964">کچھ غلط ہو گیا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 گھنٹہ پہلے چیک کیا گیا}other{# گھنٹے پہلے چیک کیا گیا}}</translation>
 <translation id="6545017243486555795">سبھی ڈیٹا صاف کریں</translation>
+<translation id="6549142516027084053">کلپ بورڈ مواد ظاہر کریں</translation>
 <translation id="6560414384669816528">‏Sogou کے ساتھ تلاش کریں</translation>
 <translation id="656065428026159829">مزید دیکھیں</translation>
 <translation id="6565959834589222080">‏دستیاب ہونے پر Wi-Fi کا استعمال کیا جاتا ہے</translation>
@@ -1149,6 +1152,7 @@
 <translation id="8559990750235505898">صفحات کو دیگر زبانوں میں ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="8560602726703398413">‏Bookmarks میں اپنی پڑھنے کی فہرست پائيں</translation>
 <translation id="8562452229998620586">محفوظ کردہ پاس ورڈز یہاں نمودار ہوں گے۔</translation>
+<translation id="856481929701340285">ڈیسک ٹاپ سائٹ کی درخواست کریں</translation>
 <translation id="8569404424186215731"><ph name="DATE" /> سے</translation>
 <translation id="8571213806525832805">گزشتہ 4 ہفتے</translation>
 <translation id="8572344201470131220">تصویر کو کاپی کر دیا گیا</translation>

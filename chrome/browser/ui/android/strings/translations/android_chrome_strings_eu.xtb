@@ -39,7 +39,7 @@
 <translation id="1231733316453485619">Sinkronizazioa aktibatu nahi duzu?</translation>
 <translation id="123724288017357924">Kargatu orria, cacheko edukiari ez ikusi eginda</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> kargatzen</translation>
-<translation id="124678866338384709">Itxi uneko fitxa</translation>
+<translation id="124678866338384709">Itxi oraingo fitxa</translation>
 <translation id="1258753120186372309">Google doodle-a: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Ezin izan da partekatu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1276279242344007853">Kudeatu jarraitzen diezun webguneak</translation>
@@ -118,7 +118,7 @@
 <translation id="1821253160463689938">Cookieak erabiltzen ditu zure hobespenak gogoratzeko, orri horietara joaten ez bazara ere</translation>
 <translation id="1829244130665387512">Bilatu orrian</translation>
 <translation id="1830550083491357902">Saioa hasi gabe</translation>
-<translation id="1843805151597803366">Itzulpen hobeak lortzeko, eman uneko orria erabiltzeko baimena Google Bilaketa zerbitzuari</translation>
+<translation id="1843805151597803366">Itzulpen hobeak lortzeko, eman oraingo orria erabiltzeko baimena Google Bilaketa zerbitzuari</translation>
 <translation id="1853692000353488670">Ezkutuko moduko fitxa berria</translation>
 <translation id="1856325424225101786">Oinarrizko modua berrezarri nahi duzu?</translation>
 <translation id="1868024384445905608">Chrome-k orain bizkorrago deskargatzen ditu fitxategiak</translation>
@@ -162,7 +162,7 @@
 <translation id="2096012225669085171">Sinkronizatu eta pertsonalizatu gailu guztiak</translation>
 <translation id="2100273922101894616">Saio-hasiera automatikoa</translation>
 <translation id="2100314319871056947">Saiatu testua zati txikiagotan partekatzen</translation>
-<translation id="2109711654079915747">Lortu informazio gehiago beste webgune batzuetan, uneko orritik irten gabe. "Sakatu bilatzeko" eginbideak hitz bat eta haren testuingurua Google Bilaketa zerbitzura bidaltzen ditu, eta definizioak, irudiak, bilaketa-emaitzak eta beste zenbait xehetasun eskaintzen.
+<translation id="2109711654079915747">Lortu informazio gehiago beste webgune batzuetan, oraingo orritik irten gabe. "Sakatu bilatzeko" eginbideak hitz bat eta haren testuingurua Google Bilaketa zerbitzura bidaltzen ditu, eta definizioak, irudiak, bilaketa-emaitzak eta beste zenbait xehetasun eskaintzen.
 
 Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta hautatu hitz gehiago edo gutxiago. Bilaketa editatzeko, ireki panela, sakatu fitxa berri batean irekitzeko ikonoa eta aldatu bilaketa-koadroko testua.</translation>
 <translation id="2111511281910874386">Joan orrira</translation>
@@ -180,6 +180,7 @@ Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta ha
 <translation id="2169830938017475061">Orain</translation>
 <translation id="2172688499998841696">Desaktibatu dira irudien azalpenak</translation>
 <translation id="2175927920773552910">QR kodea</translation>
+<translation id="2181298861158186289">Ezkutatu Arbela eginbideko edukiak</translation>
 <translation id="218608176142494674">Partekatzea</translation>
 <translation id="2195339740518523951">Lortu Chrome-ren segurtasun-neurri sendoenak</translation>
 <translation id="2200113223741723867">Kudeatu erabilera-datuak partekatzeko aukerak</translation>
@@ -218,7 +219,7 @@ Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta ha
 <translation id="2426805022920575512">Aukeratu beste kontu bat</translation>
 <translation id="2433507940547922241">Itxura</translation>
 <translation id="2450083983707403292">Berriro hasi nahi duzu <ph name="FILE_NAME" /> deskargatzen?</translation>
-<translation id="2450907520913474542">Lortu informazio gehiago beste webgune batzuetan, uneko orritik irten gabe. "Sakatu bilatzeko" eginbideak hitz bat eta haren testuingurua Google Bilaketa zerbitzura bidaltzen ditu, eta definizioak, irudiak, bilaketa-emaitzak eta beste zenbait xehetasun eskaintzen.
+<translation id="2450907520913474542">Lortu informazio gehiago beste webgune batzuetan, oraingo orritik irten gabe. "Sakatu bilatzeko" eginbideak hitz bat eta haren testuingurua Google Bilaketa zerbitzura bidaltzen ditu, eta definizioak, irudiak, bilaketa-emaitzak eta beste zenbait xehetasun eskaintzen.
 
 Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago edo gutxiago. Bilaketa editatzeko, ireki panela, sakatu fitxa berri batean irekitzeko ikonoa eta aldatu bilaketa-koadroko testua.</translation>
 <translation id="2459390580524506445">Ahozko bilaketa doitua</translation>
@@ -351,7 +352,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3341058695485821946">Ikusi zenbat datu aurreztu dituzun</translation>
 <translation id="3341262203274374114">Ezin zaio jarraitzeari utzi. Arazoren bat izan da.</translation>
 <translation id="3350687908700087792">Itxi ezkutuko fitxa guztiak</translation>
-<translation id="3359667936385849800">Erabili uneko zerbitzu-hornitzailea</translation>
+<translation id="3359667936385849800">Erabili oraingo zerbitzu-hornitzailea</translation>
 <translation id="3367813778245106622">Hasi saioa berriro sinkronizatzen hasteko</translation>
 <translation id="337236281855091893">Bilatzeko, hitz bat labur sakatu beharrean, eduki ezazu sakatuta tarte batez</translation>
 <translation id="3373979091428520308">Orri hau beste gailu batekin partekatzeko, joan Chrome-ren ezarpenetara eta aktibatu sinkronizazioa beste gailuan</translation>
@@ -364,7 +365,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3414952576877147120">Tamaina:</translation>
 <translation id="3429160811076349561">Probako eginbideak desaktibatuta daude</translation>
 <translation id="3440975416244667276">Informazio esanguratsu gehiago ikusteko, eduki hitzak sakatuta</translation>
-<translation id="3443221991560634068">Kargatu berriro uneko orria</translation>
+<translation id="3443221991560634068">Kargatu berriro oraingo orria</translation>
 <translation id="3451542610083122179">Sare irekia mantentzeko abian den ekimen bat da Privacy Sandbox, eta zu jarraipen-mekanismoetatik babestea du helburu.
 
 Gaur egun, webguneek teknologia ugari erabiltzen dituzte (hirugarrenen cookieak, adibidez) zerbitzu garrantzitsuak eskaintzeko; besteak beste, iragarki egokiak bistaratzeko eta webgune baten errendimendua neurtzeko.
@@ -399,6 +400,7 @@ Privacy Sandbox garapen-prozesuan dago oraindik eta lurralde jakin batzuetan bai
 <translation id="363596933471559332">Hasi saioa automatikoki webguneetan gordetako kredentzialekin. Eginbidea desaktibatuta badago, zeu zarela egiaztatzeko eskatuko dizu webguneak saioa hasten duzun bakoitzean.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Berrezarriz gero, aurreztutako datuen historia ezabatuko da, baita bisitatu dituzun webguneen zerrenda ere.</translation>
+<translation id="3677911431265050325">Eskatu mugikorretarako webgunea</translation>
 <translation id="3687645719033307815">Orri honen aurrebista ikusten ari zara</translation>
 <translation id="3692944402865947621">Ezin izan da deskargatu <ph name="FILE_NAME" />, memoria ez dagoelako eskuragarri.</translation>
 <translation id="371230970611282515">Gertaera arriskutsuak iragartzen ditu eta haien berri ematen dizu gertatu aurretik.</translation>
@@ -842,13 +844,14 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6539092367496845964">Arazoren bat izan da. Saiatu berriro geroago.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Duela ordubete egiaztatu du}other{Duela # ordu egiaztatu du}}</translation>
 <translation id="6545017243486555795">Garbitu datu guztiak</translation>
+<translation id="6549142516027084053">Erakutsi Arbela eginbideko edukiak</translation>
 <translation id="6560414384669816528">Erabili Sogou bilatzaile gisa</translation>
 <translation id="656065428026159829">Ikusi gehiago</translation>
 <translation id="6565959834589222080">Wifia erabilgarri dagoenean, hura erabiltzen da</translation>
 <translation id="6566259936974865419"><ph name="GIGABYTES" /> GB aurreztu dituzu Chrome-ri esker</translation>
 <translation id="6573096386450695060">Eman baimena beti</translation>
 <translation id="6573431926118603307">Beste gailuetan Chrome-n ireki dituzun fitxak hemen agertuko dira.</translation>
-<translation id="6583199322650523874">Egin uneko orriaren laster-marka</translation>
+<translation id="6583199322650523874">Egin oraingo orriaren laster-marka</translation>
 <translation id="6588043302623806746">Erabili DNS segurua</translation>
 <translation id="6590471736817333463">Aurreztu datuen % 60raino</translation>
 <translation id="6590680911007613645">Ziurtatu gordetzera zoazen pasahitza bat datorrela <ph name="SITE" /> webguneko pasahitzarekin</translation>
@@ -1086,7 +1089,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="8115259494083109761">QR kodeak eskaneatzeko, eman Chrome-ri kamera erabiltzeko baimena</translation>
 <translation id="8127542551745560481">Editatu hasierako pantaila</translation>
 <translation id="813082847718468539">Ikusi webgunearen informazioa</translation>
-<translation id="8137558756159375272">"Sakatu bilatzeko" aplikazioak hautatutako hitza eta uneko orria testuinguru gisa bidaltzen ditu Google Bilaketa zerbitzura. <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalean desaktiba dezakezu.</translation>
+<translation id="8137558756159375272">"Sakatu bilatzeko" aplikazioak hautatutako hitza eta oraingo orria testuinguru gisa bidaltzen ditu Google Bilaketa zerbitzura. <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalean desaktiba dezakezu.</translation>
 <translation id="8153351135626613369">Onartuta dagoen webguneetan lagun diezazukeela hautematen duenean agertuko da Laguntzailea</translation>
 <translation id="8156139159503939589">Zein hizkuntza irakur ditzakezu?</translation>
 <translation id="8168435359814927499">Edukia</translation>
@@ -1149,6 +1152,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="8559990750235505898">Eskaini beste hizkuntzetako orriak itzultzea</translation>
 <translation id="8560602726703398413">Aurkitu irakurketa-zerrenda laster-marketan</translation>
 <translation id="8562452229998620586">Gordetako pasahitzak hemen agertuko dira.</translation>
+<translation id="856481929701340285">Eskatu ordenagailuetarako gunea</translation>
 <translation id="8569404424186215731"><ph name="DATE" /> ezkero</translation>
 <translation id="8571213806525832805">Azken lau asteetakoak</translation>
 <translation id="8572344201470131220">Kopiatu da irudia</translation>

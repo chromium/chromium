@@ -9,11 +9,11 @@
 <translation id="1251638888133819822">Aktibatu edo desaktibatu pantaila osoko lupa</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
 <translation id="1293699935367580298">Ihes</translation>
-<translation id="1299858300159559687">Inprimatu uneko orria</translation>
+<translation id="1299858300159559687">Inprimatu oraingo orria</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> edo <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Joan lerroaren amaierara</translation>
-<translation id="1499072997694708844">Itxi irekita dauden bilaketa-leihoak edo utzi uneko orria kargatzeari</translation>
+<translation id="1499072997694708844">Itxi irekita dauden bilaketa-leihoak edo utzi oraingo orria kargatzeari</translation>
 <translation id="1510238584712386396">Abiarazlea</translation>
 <translation id="152892567002884378">Igo bolumena</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> eta, gero, <ph name="ESC" /></translation>
@@ -24,7 +24,7 @@
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Gehitu www. eta .com helbide-barran idatzi duzunari eta, gero, ireki orria</translation>
 <translation id="1768987374400973299">Egin pantaila-argazki edo grabaketa bat</translation>
-<translation id="1872219238824176091">Kendu uneko lan-eremua</translation>
+<translation id="1872219238824176091">Kendu oraingo lan-eremua</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> eta, gero, <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> edo <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Joan hurrengo fitxara</translation>
 <translation id="2010818616644390445">Joan leihoko azken fitxara</translation>
@@ -54,7 +54,7 @@
 <translation id="2574014812750545982">Berrezarri orriko zoom-maila</translation>
 <translation id="2596078834055697711">Atera leihoaren pantaila-argazkia</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> eta, gero, <ph name="TAB" /> edo <ph name="RIGHT" /></translation>
-<translation id="2750942583782703988">Kargatu berriro uneko orria</translation>
+<translation id="2750942583782703988">Kargatu berriro oraingo orria</translation>
 <translation id="2764005613199379871">Fokuratu helbide-barra</translation>
 <translation id="2774822903829597107">Sortu lan-eremu bat</translation>
 <translation id="2789868185375229787">Txikitu orria</translation>
@@ -71,11 +71,11 @@
 <translation id="3126026824346185272">Ktrl</translation>
 <translation id="3140353188828248647">Fokuratu helbide-barra</translation>
 <translation id="3256109297135787951">Utzi apaleko elementu bat nabarmentzeari</translation>
-<translation id="3288816184963444640">Itxi uneko leihoa</translation>
+<translation id="3288816184963444640">Itxi oraingo leihoa</translation>
 <translation id="3407560819924487926">Erakutsi ataza-kudeatzailea</translation>
 <translation id="3417835166382867856">Bilatu fitxak</translation>
 <translation id="3422679037938588196">Itzuli bilaketaren aurreko emaitzara</translation>
-<translation id="353037708190149633">Gorde uneko leihoan irekita dauden orri guztiak laster-marka gisa karpeta berri batean</translation>
+<translation id="353037708190149633">Gorde oraingo leihoan irekita dauden orri guztiak laster-marka gisa karpeta berri batean</translation>
 <translation id="355103131818127604">Ireki esteka beste fitxa batean, atzeko planoan</translation>
 <translation id="3622741593887335780">Handitu (lupa ainguratua EDO pantaila osoko lupa gaituta daudenean)</translation>
 <translation id="3633851487917460983">Ireki arbela</translation>
@@ -84,7 +84,7 @@
 <translation id="3668361878347172356">Berregin azken ekintza</translation>
 <translation id="3710784500737332588">Ireki Laguntza-zentroa</translation>
 <translation id="3720939646656082033">Ireki esteka beste fitxa batean eta joan fitxa horretara</translation>
-<translation id="3725795051337497754">Itxi uneko fitxa</translation>
+<translation id="3725795051337497754">Itxi oraingo fitxa</translation>
 <translation id="3751033133896282964">Desegin azken ekintza</translation>
 <translation id="3792178297143798024">Ireki apaleko elementu nabarmendua</translation>
 <translation id="379295446891231126"><ph name="CTRL" /> <ph name="SEPARATOR" /> 1-8</translation>
@@ -118,7 +118,7 @@
 <translation id="5030659775136592441">Erakutsi laster-marken kudeatzailea</translation>
 <translation id="5034421018520995080">Joan orriaren goialdera</translation>
 <translation id="5042305953558921026">Ikuspegi orokorreko moduaren tekla</translation>
-<translation id="5104462712192763270">Gorde uneko orria</translation>
+<translation id="5104462712192763270">Gorde oraingo orria</translation>
 <translation id="5121628974188116412">Joan orriaren behealdera</translation>
 <translation id="5222676887888702881">Amaitu saioa</translation>
 <translation id="5236674127086649162">Kargatu orria berriro, baina cacheko edukia erabili gabe</translation>
@@ -126,7 +126,7 @@
 <translation id="5316716239522500219">Ispilatu monitoreak</translation>
 <translation id="539072479502328326">Aktibatu edo desaktibatu lupa ainguratua</translation>
 <translation id="5541719484267030947">Sakatu <ph name="ESC" /> fitxa arrastatu bitartean</translation>
-<translation id="5554139136362089836">Bilatu uneko orria</translation>
+<translation id="5554139136362089836">Bilatu oraingo orria</translation>
 <translation id="5563050856984839829">Sakatu <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> eta egin klik esteka batean</translation>
 <translation id="561814908794220892">Ireki web-orria beste fitxa batean</translation>
 <translation id="5620219513321115856">Eraman leiho aktiboa eskuineko lan-eremura</translation>

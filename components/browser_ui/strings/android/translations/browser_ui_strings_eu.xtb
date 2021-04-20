@@ -185,7 +185,7 @@
 <translation id="6042308850641462728">Gehiago</translation>
 <translation id="6064125863973209585">Osatutako deskargak</translation>
 <translation id="6165508094623778733">Lortu informazio gehiago</translation>
-<translation id="6177111841848151710">Blokeatuta dago uneko bilatzailean</translation>
+<translation id="6177111841848151710">Blokeatuta dago oraingo bilatzailean</translation>
 <translation id="6181444274883918285">Gehitu webgune bat salbuespen gisa</translation>
 <translation id="6192792657125177640">Salbuespenak</translation>
 <translation id="6196640612572343990">Blokeatu hirugarrenen cookieak</translation>
@@ -222,7 +222,7 @@
 <translation id="6965382102122355670">Ados</translation>
 <translation id="6992289844737586249">Webguneei mikrofonoa erabiltzeko baimena eman aurretik, eskatu onespena (gomendatua)</translation>
 <translation id="7000754031042624318">Desaktibatuta dago Android-en ezarpenetan</translation>
-<translation id="7016516562562142042">Baimenduta dago uneko bilatzailean</translation>
+<translation id="7016516562562142042">Baimenduta dago oraingo bilatzailean</translation>
 <translation id="7053983685419859001">Blokeatu</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 hautatuta}other{# hautatuta}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> hautatu dira. Pantailaren goialdean daude aukera erabilgarriak.</translation>

@@ -67,7 +67,7 @@
 <translation id="1209206284964581585">હમણાં માટે છુપાવો</translation>
 <translation id="121201262018556460">તમે <ph name="DOMAIN" /> સુધી પહોંચવાનો પ્રયાસ કર્યો, પણ પ્રમાણપત્ર રજૂ કરતા સર્વર પાસે નબળી કી છે. હુમલાખોરે ખાનગી કી તોડી હોઈ શકે છે, અને બને કે સર્વર તમારું અપેક્ષિત સર્વર ન હોય (તમે કોઈ હુમલાખોર સાથે વાર્તાલાપ કરી રહ્યાં હોઈ શકો છો).</translation>
 <translation id="1219129156119358924">સિસ્ટમ સુરક્ષા</translation>
-<translation id="1227224963052638717">અજ્ઞાત નીતિ.</translation>
+<translation id="1227224963052638717">અજ્ઞાત પૉલિસી.</translation>
 <translation id="1228893227497259893">ખોટો અસ્તિત્વ ઓળખકર્તા</translation>
 <translation id="1232569758102978740">શીર્ષક વિનાનું</translation>
 <translation id="1236081509407217141">VRને મંજૂરી આપીએ?</translation>
@@ -230,7 +230,7 @@
 <translation id="1734878702283171397">સિસ્ટમ વ્યવસ્થાપકનો સંપર્ક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="1736420071277903564">કમ્પ્યુટર</translation>
 <translation id="1740951997222943430">એક માન્ય સમાપ્તિ મહિનો દાખલ કરો</translation>
-<translation id="1741613555002899862">જ્યારે DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> હોય, ત્યારે DnsOverHttpsTemplate નીતિ અને માન્ય સ્ટ્રિંગનો ઉલ્લેખ કરવો આવશ્યક છે.</translation>
+<translation id="1741613555002899862">જ્યારે DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> હોય, ત્યારે DnsOverHttpsTemplate પૉલિસી અને માન્ય સ્ટ્રિંગનો ઉલ્લેખ કરવો આવશ્યક છે.</translation>
 <translation id="1743570585616704562">ઓળખાયેલ નથી</translation>
 <translation id="1745880797583122200">તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે</translation>
 <translation id="1746113442205726301">છબીને Y અક્ષ પર ખસેડો</translation>
@@ -241,10 +241,10 @@
 <translation id="1763864636252898013">આ સર્વર સાબિત કરી શક્યું નથી કે એ <ph name="DOMAIN" /> છે; એનું સુરક્ષા પ્રમાણપત્ર તમારા ડિવાઇસની ઑપરેટિંગ સિસ્ટમ દ્વારા વિશ્વસનીય નથી. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows નેટવર્ક ડાયગ્નોસ્ટિક્સ ચલાવવાનો પ્રયાસ કરો<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">તમે જે સર્વર પર જઈ રહ્યાં છો, <ph name="ORIGIN" />, તેણે એવું હેડર સેટ કર્યું છે
-    કે જે તેના માટેની બધી વિનંતીઓ પર ઑરિજિન નીતિ લાગુ કરવાનું જરૂરી બનાવશે. પરંતુ
+    કે જે તેના માટેની બધી વિનંતીઓ પર ઑરિજિન પૉલિસી લાગુ કરવાનું જરૂરી બનાવશે. પરંતુ
     હેડર દૂષિત છે, જે બ્રાઉઝરને
     <ph name="SITE" /> માટેની તમારી વિનંતી પૂરી કરતા અટકાવે છે. સાઇટ ઑપરેટર ઑરિજિન
-    નીતિનો ઉપયોગ સાઇટ માટે સુરક્ષા અને અન્ય પ્રોપર્ટીની ગોઠવણી કરવા માટે કરી શકે છે.</translation>
+    પૉલિસીઓનો ઉપયોગ સાઇટ માટે સુરક્ષા અને અન્ય પ્રોપર્ટીની ગોઠવણી કરવા માટે કરી શકે છે.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1783075131180517613">કૃપા કરી તમારા સમન્વયન પાસફ્રેઝને અપડેટ કરો.</translation>
 <translation id="1787142507584202372">તમારા ખુલ્લા ટૅબ્સ અહીં દેખાય છે</translation>
@@ -261,7 +261,7 @@
 <translation id="1826516787628120939">તપાસી રહ્યાં છે</translation>
 <translation id="1834321415901700177">આ સાઇટમાં હાનિકારક પ્રોગ્રામ્સ છે</translation>
 <translation id="1838374766361614909">શોધ સાફ કરો</translation>
-<translation id="1839551713262164453">ભૂલના લીધે નીતિ મૂલ્યોની માન્યતા નિષ્ફળ થઈ</translation>
+<translation id="1839551713262164453">ભૂલના લીધે પૉલિસી મૂલ્યોની માન્યતા નિષ્ફળ થઈ</translation>
 <translation id="1842969606798536927">ચુકવણી કરો</translation>
 <translation id="1871208020102129563">પ્રૉક્સી નક્કી કરેલા પ્રૉક્સી સર્વરનો ઉપયોગ કરવા માટે સેટ કરેલી છે, .pac સ્ક્રિપ્ટ URL નથી.</translation>
 <translation id="1871284979644508959">જરૂરી ફીલ્ડ</translation>
@@ -357,7 +357,7 @@
 <translation id="2241693394036365668">ફાઇલ ડાઉનલોડ કરવામાં આવે ત્યારે</translation>
 <translation id="2248949050832152960">WebAuthnનો ઉપયોગ કરો</translation>
 <translation id="2250931979407627383">ડાબી બાજુએ કિનારી જોડવી</translation>
-<translation id="225207911366869382">આ નીતિ માટે આ મૂલ્યને નાપસંદ કરેલું છે.</translation>
+<translation id="225207911366869382">આ પૉલિસી માટે આ મૂલ્યને નાપસંદ કરેલું છે.</translation>
 <translation id="2258928405015593961">ભવિષ્યની સમાપ્તિ તારીખ દાખલ કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="225943865679747347">ભૂલ કોડ: <ph name="ERROR_CODE" /></translation>
 <translation id="2262243747453050782">HTTP ભૂલ</translation>
@@ -673,7 +673,7 @@
     <ph name="PAGE_TITLE" />માં શોધો</translation>
 <translation id="350069200438440499">ફાઇલનું નામ:</translation>
 <translation id="3507936815618196901">તમારી આજુબાજુનો 3D નકશો બનાવો અને કૅમેરાની સ્થિતિ ટ્રૅક કરો</translation>
-<translation id="3512163584740124171">આ નીતિને અવગણવામાં આવે છે કારણ કે સમાન નીતિ ગ્રૂપની બીજી નીતિ ઉચ્ચ પ્રાથમિકતા ધરાવે છે.</translation>
+<translation id="3512163584740124171">આ પૉલિસીને અવગણવામાં આવે છે કારણ કે સમાન પૉલિસી ગ્રૂપની બીજી પૉલિસી ઉચ્ચ પ્રાથમિકતા ધરાવે છે.</translation>
 <translation id="35172538073169599">ઍડ્રેસના બટન મેનેજ કરો, તેમજ Chrome સેટિંગમાં ઍડ્રેસ ઉમેરવા અને તેને મેનેજ કરવા માટે Enter કી દબાવો</translation>
 <translation id="3518941727116570328">એકથી વધુ ઑબ્જેક્ટ હૅન્ડલ કરવા</translation>
 <translation id="3528171143076753409">સર્વરનું પ્રમાણપત્ર વિશ્વસનીય નથી.</translation>
@@ -824,7 +824,7 @@
 <translation id="4112140312785995938">પાછળ કરો</translation>
 <translation id="4116663294526079822">હંમેશા આ સાઇટ પર મંજૂરી આપો</translation>
 <translation id="4116701314593212016">JIS B7</translation>
-<translation id="4117700440116928470">નીતિ મર્યાદા સમર્થિત નથી.</translation>
+<translation id="4117700440116928470">પૉલિસી મર્યાદા સમર્થિત નથી.</translation>
 <translation id="4121428309786185360">ના રોજ સમાપ્ત થાય છે</translation>
 <translation id="4123572138124678573">નીચેની તરફ ત્રણ કાણાં પાડો</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 અન્ય}one{# અન્ય}other{# અન્ય}}</translation>
@@ -905,11 +905,11 @@
 <translation id="4318566738941496689">તમારા ડિવાઇસનું નામ અને નેટવર્ક ઍડ્રેસ</translation>
 <translation id="4325863107915753736">લેખ શોધવામાં નિષ્ફળ થયાં</translation>
 <translation id="4326324639298822553">તમારી સમાપ્તિ તારીખ તપાસો અને ફરી પ્રયાસ કરો</translation>
-<translation id="4329871760342656885">નીતિ વિશ્લેષણ ભૂલ: <ph name="ERROR" /></translation>
+<translation id="4329871760342656885">પૉલિસી વિશ્લેષણ ભૂલ: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">સ્ટૅકર 5</translation>
 <translation id="4331708818696583467">સુરક્ષિત નથી</translation>
 <translation id="4340575312453649552">આ જાહેરાતે તમારા ડિવાઇસ માટે ઘણાં વધારે સાધનોનો ઉપયોગ કર્યો, આથી Chrome દ્વારા તેને કાઢી નાખવામાં આવી છે.</translation>
-<translation id="4340982228985273705">આ કમ્પ્યુટર એન્ટરપ્રાઇઝ દ્વારા મેનેજ થતું હોય તેવું જણાયું નથી, તેથી નીતિ માત્ર Chrome Webstore પર હોસ્ટ થયેલા એક્સ્ટેન્શનો ઑટોમૅટિક રીતે ઇન્સ્ટૉલ કરી શકશે. Chrome Webstore અપડેટનું URL "<ph name="CWS_UPDATE_URL" />" છે.</translation>
+<translation id="4340982228985273705">આ કમ્પ્યુટર એન્ટરપ્રાઇઝ દ્વારા મેનેજ થતું હોય તેવું જણાયું નથી, તેથી પૉલિસી માત્ર Chrome Webstore પર હોસ્ટ થયેલા એક્સ્ટેન્શન ઑટોમૅટિક રીતે ઇન્સ્ટૉલ કરી શકશે. Chrome Webstore અપડેટનું URL "<ph name="CWS_UPDATE_URL" />" છે.</translation>
 <translation id="4346197816712207223">સ્વીકૃત ક્રેડિટ કાર્ડ</translation>
 <translation id="4346833872170306413">રૉક-16K</translation>
 <translation id="4349531505348777662">હમણાં જ કોઈ છેતરામણી સાઇટ પર તમે તમારો પાસવર્ડ દાખલ કર્યો. Chrome <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> તેમજ તમે આ પાસવર્ડનો જ્યાં ઉપયોગ કરતા હોય તે અન્ય સાઇટ પર જઈને તેને હમણાં જ બદલવાનો સુઝાવ આપે છે.</translation>
@@ -965,7 +965,7 @@
 <translation id="4579056131138995126">વ્યક્તિગત (એન્વલપ)</translation>
 <translation id="4582204425268416675">કાર્ડ કાઢી નાખો</translation>
 <translation id="4587425331216688090">Chrome માંથી સરનામું દૂર કરીએ?</translation>
-<translation id="459089498662672729">વ્યવસ્થાપકની નીતિ <ph name="ORIGIN_NAME" /> પરથી આ સ્થાન પર પેસ્ટ કરવાનો સુઝાવ આપતી નથી</translation>
+<translation id="459089498662672729">વ્યવસ્થાપકની પૉલિસી <ph name="ORIGIN_NAME" /> પરથી આ સ્થાન પર પેસ્ટ કરવાનો સુઝાવ આપતી નથી</translation>
 <translation id="4592951414987517459">આધુનિક સાઇફર સ્યૂટનો ઉપયોગ કરીને <ph name="DOMAIN" /> સાથેનું તમારું કનેક્શન એન્ક્રિપ્ટ કરાયું છે.</translation>
 <translation id="4594403342090139922">&amp;ડિલીટ રદ કરો</translation>
 <translation id="4597348597567598915">કદ 8</translation>
@@ -1113,7 +1113,7 @@
 <translation id="5135404736266831032">સરનામા મેનેજ કરો…</translation>
 <translation id="5138227688689900538">ઓછું બતાવો</translation>
 <translation id="514010763713772514">આગલી વખતે વધુ ઝડપથી ચેક આઉટ કરો</translation>
-<translation id="5145883236150621069">નીતિ પ્રતિક્રિયામાં ભૂલ કોડ હાજર</translation>
+<translation id="5145883236150621069">પૉલિસી પ્રતિક્રિયામાં ભૂલ કોડ હાજર</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> માટેના નોટિફિકેશન બ્લૉક કર્યા છે</translation>
 <translation id="5148809049217731050">ઉપર તરફ</translation>
 <translation id="515292512908731282">C4 (એન્વલપ)</translation>
@@ -1197,7 +1197,7 @@
 <translation id="5443468954631487277">ઉલટા ક્રમમાં ઉપર તરફ</translation>
 <translation id="5447765697759493033">આ સાઇટનો અનુવાદ થશે નહીં</translation>
 <translation id="5452270690849572955">આ <ph name="HOST_NAME" /> પૃષ્ઠ શોધી શકાતું નથી</translation>
-<translation id="5455374756549232013">ખરાબ નીતિ સમયનોંધ</translation>
+<translation id="5455374756549232013">ખરાબ પૉલિસી ટાઇમસ્ટેમ્પ</translation>
 <translation id="5457113250005438886">અમાન્ય</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> વધુ}one{<ph name="CONTACT_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> વધુ}other{<ph name="CONTACT_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> વધુ}}</translation>
 <translation id="5469868506864199649">ઇટાલિયન</translation>
@@ -2124,7 +2124,7 @@
 <translation id="9069693763241529744">એક્સ્ટેન્શન દ્વારા અવરોધિત કરેલ છે</translation>
 <translation id="9078964945751709336">વધુ માહિતી આવશ્યક</translation>
 <translation id="9080712759204168376">ઑર્ડરનો સારાંશ</translation>
-<translation id="9089260154716455634">બિન-કામકાજી સમય સંબંધી નીતિ:</translation>
+<translation id="9089260154716455634">બિન-કામકાજી સમય સંબંધી પૉલિસી:</translation>
 <translation id="9095388113577226029">વધુ ભાષાઓ...</translation>
 <translation id="9101630580131696064">ટ્રે 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> સામાન્ય રીતે તમારી માહિતીને સુરક્ષિત રાખવા માટે એન્ક્રિપ્શનનો ઉપયોગ કરે છે. જ્યારે આ સમયે Chromium દ્વારા <ph name="SITE" />થી કનેક્ટ કરવાનો પ્રયાસ થયો, ત્યારે વેબસાઇટે અસામાન્ય અને ખોટા લૉગ ઇન વિગતને પાછા મોકલ્યાં. આવું ત્યારે થઈ શકે જ્યારે કોઈ હુમલાખોર <ph name="SITE" /> હોવાનો ડોળ કરવાનો પ્રયાસ કરી રહ્યો હોવ અથવા કોઈ Wi-Fi સાઇન-ઇન સ્ક્રીને કનેક્શનમાં વિક્ષેપ પાડ્યો હોય. તમારી માહિતી હજી પણ સુરક્ષિત છે કારણ કે Chromium એ કોઈ પણ ડેટા વિનિમય થાય એ પહેલાં જ કનેક્શન રોકી દીધું.</translation>

@@ -180,6 +180,7 @@ Arama yapmak için herhangi bir kelimeye dokunun. Aramanızı hassaslaştırmak 
 <translation id="2169830938017475061">Şimdi</translation>
 <translation id="2172688499998841696">Resim açıklamaları kapalı</translation>
 <translation id="2175927920773552910">QR Kodu</translation>
+<translation id="2181298861158186289">Pano İçeriğini Gizle</translation>
 <translation id="218608176142494674">Paylaşım</translation>
 <translation id="2195339740518523951">Chrome’un en güçlü güvenlik özelliklerinden faydalanın</translation>
 <translation id="2200113223741723867">Kullanım verileri paylaşımını yönetin</translation>
@@ -399,6 +400,7 @@ Günümüzde web siteleri, alakalı reklamlar göstermek ve bir sitenin performa
 <translation id="363596933471559332">Depolanmış kimlik bilgileriyle web sitelerinde otomatik olarak oturum açın. Bu özellik kapatıldığında, bir web sitesinde oturum açmadan önce her defasında doğrulama yapmanız istenir.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Sıfırlama işlemi, ziyaret edilen sitelerin listesi de dahil olmak üzere veri tasarrufu geçmişinizi siler.</translation>
+<translation id="3677911431265050325">Mobil site iste</translation>
 <translation id="3687645719033307815">Bu sayfanın önizlemesini görüntülüyorsunuz</translation>
 <translation id="3692944402865947621">Depolama konumuna erişilemediği için <ph name="FILE_NAME" /> dosyası indirilemedi.</translation>
 <translation id="371230970611282515">Tehlikeli etkinlikleri meydana gelmeden önce tahmin ederek sizi uyarır.</translation>
@@ -842,6 +844,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6539092367496845964">Bir sorun oldu. Daha sonra tekrar deneyin.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 saat önce kontrol edildi}other{# saat önce kontrol edildi}}</translation>
 <translation id="6545017243486555795">Tüm Verileri Temizle</translation>
+<translation id="6549142516027084053">Pano İçeriğini Göster</translation>
 <translation id="6560414384669816528">Sogou ile arama</translation>
 <translation id="656065428026159829">Daha fazla göster</translation>
 <translation id="6565959834589222080">Mevcut olduğunda kablosuz bağlantı kullanılır</translation>
@@ -1149,6 +1152,7 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="8559990750235505898">Diğer dillerdeki sayfaları çevirmeyi öner</translation>
 <translation id="8560602726703398413">Okuma listenizi Yer işaretleri'nde görün</translation>
 <translation id="8562452229998620586">Kayıtlı şifreleriniz burada görünür.</translation>
+<translation id="856481929701340285">Masaüstü sitesi iste</translation>
 <translation id="8569404424186215731"><ph name="DATE" /> tarihinden bu yana</translation>
 <translation id="8571213806525832805">Son 4 hafta</translation>
 <translation id="8572344201470131220">Resim kopyalandı</translation>

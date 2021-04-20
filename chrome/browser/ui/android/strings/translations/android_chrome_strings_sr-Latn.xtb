@@ -180,6 +180,7 @@ Dodirnite bilo koju reč za pretragu. Da biste precizirali pretragu, dodirnite i
 <translation id="2169830938017475061">Sada</translation>
 <translation id="2172688499998841696">Opisi slika su isključeni</translation>
 <translation id="2175927920773552910">QR kôd</translation>
+<translation id="2181298861158186289">Sakrij sadržaj privremene memorije</translation>
 <translation id="218608176142494674">Deljenje</translation>
 <translation id="2195339740518523951">Nabavite najjaču zaštitu u Chrome-u</translation>
 <translation id="2200113223741723867">Upravljajte deljenjem podataka o korišćenju</translation>
@@ -399,6 +400,7 @@ Aktivno programiranje Zaštićenog okruženja privatnosti je još uvek u toku i
 <translation id="363596933471559332">Automatski se prijavljujte na veb-sajtove pomoću sačuvanih akreditiva. Kada je ova funkcija isključena, tražićemo vam da se verifikujete pre svakog prijavljivanja na veb-sajt.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Resetovanjem ćete obrisati istoriju Uštede podataka, uključujući listu sajtova koje ste posetili.</translation>
+<translation id="3677911431265050325">Zahtevaj mobilni sajt</translation>
 <translation id="3687645719033307815">Pregledate ovu stranicu</translation>
 <translation id="3692944402865947621">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zato što lokacija memorijskog prostora nije dostupna.</translation>
 <translation id="371230970611282515">Otkriva opasne događaje pre nego što se dogode i upozorava vas na njih.</translation>
@@ -842,6 +844,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6539092367496845964">Nešto nije u redu. Probajte ponovo kasnije.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Provereno pre 1 sat}one{Provereno pre # sat}few{Provereno pre # sata}other{Provereno pre # sati}}</translation>
 <translation id="6545017243486555795">Obriši sve podatke</translation>
+<translation id="6549142516027084053">Otkrij sadržaj privremene memorije</translation>
 <translation id="6560414384669816528">Pretraga pomoću Sogou-a</translation>
 <translation id="656065428026159829">Prikaži još</translation>
 <translation id="6565959834589222080">WiFi se koristi kada je dostupan</translation>
@@ -1149,6 +1152,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="8559990750235505898">Ponudi prevod stranica na druge jezike</translation>
 <translation id="8560602726703398413">Potražite listu za čitanje u Google obeleživačima</translation>
 <translation id="8562452229998620586">Sačuvane lozinke će se pojaviti ovde.</translation>
+<translation id="856481929701340285">Zahtevaj sajt za računar</translation>
 <translation id="8569404424186215731">od <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Poslednje 4 nedelje</translation>
 <translation id="8572344201470131220">Slika je kopirana</translation>
