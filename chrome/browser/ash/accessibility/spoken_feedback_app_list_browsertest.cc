@@ -14,7 +14,6 @@
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/spoken_feedback_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
@@ -562,13 +561,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListFoldering) {
 // well for braille users. The preferred way to handle this is to actually
 // change focus as the user navigates, and to have each object's
 // accessible name describe its position. (See crbug.com/1098495)
-// Times out on Linux CrOS, http://crbug.com/1200264.
-#if defined(OS_CHROMEOS)
-#define MAYBE_AppListReordering DiSABLED_AppListReordering
-#else
-#define MAYBE_AppListReordering AppListReordering
-#endif
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, MAYBE_AppListReordering) {
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListReordering) {
   // Add 7 apps.
   PopulateApps(22);
 
