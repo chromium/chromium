@@ -120,6 +120,7 @@ def InstallXcodeBinaries():
   args = ['cipd', 'ensure', '-root', binaries_root, '-ensure-file', '-']
 
   p = subprocess.Popen(args,
+                       universal_newlines=True,
                        stdin=subprocess.PIPE,
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE)
