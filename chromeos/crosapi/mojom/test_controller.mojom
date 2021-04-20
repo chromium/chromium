@@ -19,6 +19,14 @@ enum TouchEventType {
   kCancelled = 4
 };
 
+// Augments a bool to include an 'unknown' value.
+[Stable, Extensible]
+enum OptionalBoolean {
+  [Default] kUnknown = 0,
+  kFalse,
+  kTrue,
+};
+
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
@@ -84,5 +92,6 @@ interface TestController {
   // Note: For simplicity, the return callback is called with `true` in case
   // the property is not set, of the window is not found.
   [MinVersion=4]
-  GetMinimizeOnBackKeyWindowProperty@9(string windiow_id) => (bool value);
+  GetMinimizeOnBackKeyWindowProperty@10(string windiow_id)
+      => (OptionalBoolean value);
 };

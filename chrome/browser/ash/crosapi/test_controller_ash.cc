@@ -170,15 +170,16 @@ void TestControllerAsh::GetMinimizeOnBackKeyWindowProperty(
     GetMinimizeOnBackKeyWindowPropertyCallback cb) {
   aura::Window* window = GetShellSurfaceWindow(window_id);
   if (!window) {
-    std::move(cb).Run(true /*default value*/);
+    std::move(cb).Run(mojom::OptionalBoolean::kUnknown);
     return;
   }
   bool* value = window->GetProperty(ash::kMinimizeOnBackKey);
   if (!value) {
-    std::move(cb).Run(true /* default value*/);
+    std::move(cb).Run(mojom::OptionalBoolean::kUnknown);
     return;
   }
-  std::move(cb).Run(*value);
+  std::move(cb).Run(*value ? mojom::OptionalBoolean::kTrue
+                           : mojom::OptionalBoolean::kFalse);
 }
 
 void TestControllerAsh::WaiterFinished(OverviewWaiter* waiter) {

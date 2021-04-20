@@ -35,19 +35,24 @@ class WebContentsCanGoBackObserverTest : public InProcessBrowserTest {
           auto* lacros_service = chromeos::LacrosService::Get();
 
           base::RunLoop inner_loop(base::RunLoop::Type::kNestableTasksAllowed);
-          bool out_value = false;
+          crosapi::mojom::OptionalBoolean out_value;
           lacros_service->GetRemote<crosapi::mojom::TestController>()
               ->GetMinimizeOnBackKeyWindowProperty(
-                  window_id,
-                  base::BindOnce(
-                      [](base::RunLoop* loop, bool* out_value, bool value) {
-                        *out_value = !value;
-                        loop->Quit();
-                      },
-                      &inner_loop, &out_value));
+                  window_id, base::BindOnce(
+                                 [](base::RunLoop* loop,
+                                    crosapi::mojom::OptionalBoolean* out_value,
+                                    crosapi::mojom::OptionalBoolean value) {
+                                   *out_value = value;
+                                   loop->Quit();
+                                 },
+                                 &inner_loop, &out_value));
           inner_loop.Run();
 
-          if (out_value == expected_value)
+          // can-go-back and minimize-on-back-gesture are always contrary.
+          if ((expected_value &&
+               out_value == crosapi::mojom::OptionalBoolean::kFalse) ||
+              (!expected_value &&
+               out_value == crosapi::mojom::OptionalBoolean::kTrue))
             outer_loop->Quit();
         },
         &outer_loop, window_id, expected_value);
@@ -107,7 +112,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
 
   EXPECT_FALSE(chrome::CanGoBack(browser()));
   EXPECT_FALSE(chrome::CanGoForward(browser()));
-  CheckCanGoBackOnServer(id, false /* expected_value */);
 
   // Navigate away to any valid URL, so the back/forward list changes.
   NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIAboutURL),
