@@ -293,10 +293,6 @@ void BrowserCommandController::FullscreenStateChanged() {
 void BrowserCommandController::LockedFullscreenStateChanged() {
   UpdateCommandsForLockedFullscreenMode();
 }
-
-void BrowserCommandController::DesksStateChanged(int num_desks) {
-  UpdateCommandsForDesks(num_desks);
-}
 #endif
 
 void BrowserCommandController::PrintingStateChanged() {
@@ -683,19 +679,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_TAKE_SCREENSHOT:
       TakeScreenshot();
       break;
-    case IDC_MOVE_TO_DESK_1:
-    case IDC_MOVE_TO_DESK_2:
-    case IDC_MOVE_TO_DESK_3:
-    case IDC_MOVE_TO_DESK_4:
-    case IDC_MOVE_TO_DESK_5:
-    case IDC_MOVE_TO_DESK_6:
-    case IDC_MOVE_TO_DESK_7:
-    case IDC_MOVE_TO_DESK_8:
-      SendToDeskAtIndex(browser_, id - IDC_MOVE_TO_DESK_1);
-      break;
-    case IDC_TOGGLE_ASSIGN_TO_ALL_DESKS:
-      ToggleAssignedToAllDesks(browser_);
-      break;
 #endif
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case IDC_FEEDBACK:
@@ -999,16 +982,6 @@ void BrowserCommandController::InitCommandState() {
 
   // Move to desks
   command_updater_.UpdateCommandEnabled(IDC_MOVE_TO_DESKS_MENU, true);
-  static_assert(IDC_MOVE_TO_DESK_1 == IDC_MOVE_TO_DESK_2 - 1 &&
-                    IDC_MOVE_TO_DESK_2 == IDC_MOVE_TO_DESK_3 - 1 &&
-                    IDC_MOVE_TO_DESK_3 == IDC_MOVE_TO_DESK_4 - 1 &&
-                    IDC_MOVE_TO_DESK_4 == IDC_MOVE_TO_DESK_5 - 1 &&
-                    IDC_MOVE_TO_DESK_5 == IDC_MOVE_TO_DESK_6 - 1 &&
-                    IDC_MOVE_TO_DESK_6 == IDC_MOVE_TO_DESK_7 - 1 &&
-                    IDC_MOVE_TO_DESK_7 == IDC_MOVE_TO_DESK_8 - 1,
-                "IDC_MOVE_TO_DESK_* commands must be in order.");
-  auto* desks_helper = ash::DesksHelper::Get();
-  UpdateCommandsForDesks(desks_helper ? desks_helper->GetNumberOfDesks() : 1);
   command_updater_.UpdateCommandEnabled(IDC_TOGGLE_ASSIGN_TO_ALL_DESKS, true);
 #endif
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
@@ -1487,15 +1460,6 @@ void BrowserCommandController::UpdateCommandsForLockedFullscreenMode() {
     // DisableAllCommands.
     InitCommandState();
   }
-}
-
-void BrowserCommandController::UpdateCommandsForDesks(int num_desks) {
-  constexpr int kMaxNumberOfDesks = IDC_MOVE_TO_DESK_8 - IDC_MOVE_TO_DESK_1 + 1;
-  for (int i = 0; i < kMaxNumberOfDesks; ++i) {
-    command_updater_.UpdateCommandEnabled(IDC_MOVE_TO_DESK_1 + i,
-                                          i < num_desks);
-  }
-  command_updater_.UpdateCommandEnabled(IDC_MOVE_TO_DESKS_MENU, num_desks > 1);
 }
 #endif
 

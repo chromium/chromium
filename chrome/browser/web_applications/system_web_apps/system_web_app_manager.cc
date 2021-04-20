@@ -78,7 +78,7 @@
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/components/media_app_ui/url_constants.h"
 #include "chromeos/components/personalization_app/personalization_app_url_constants.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/strings/grit/chromeos_strings.h"  // nogncheck
 #include "extensions/common/constants.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ash/web_applications/file_manager_web_app_info.h"

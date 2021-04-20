@@ -39,10 +39,13 @@ source_set("frame") {
     "immersive/immersive_revealed_lock.h",
     "interior_resize_handler_targeter.cc",
     "interior_resize_handler_targeter.h",
+    "move_to_desks_menu_model.cc",
+    "move_to_desks_menu_model.h",
   ]
 
   deps = [
     "//base",
+    "//chromeos/strings:strings_grit",
     "//chromeos/ui/base",
     "//chromeos/ui/vector_icons",
     "//skia",

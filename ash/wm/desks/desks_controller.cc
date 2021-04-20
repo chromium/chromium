@@ -376,8 +376,6 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
   for (auto& observer : observers_)
     observer.OnDeskAdded(new_desk);
 
-  shell->shell_delegate()->DesksStateChanged(desks_.size());
-
   if (!is_first_ever_desk) {
     desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
     desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
@@ -1053,8 +1051,6 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
   for (auto& observer : observers_)
     observer.OnDeskRemoved(removed_desk.get());
-
-  shell->shell_delegate()->DesksStateChanged(desks_.size());
 
   available_container_ids_.push(removed_desk->container_id());
 

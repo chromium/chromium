@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/frame/system_menu_model_delegate.h"
 
-#include "ash/public/cpp/desks_helper.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -16,6 +15,11 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/move_to_desks_menu_delegate.h"
+#include "chromeos/ui/frame/move_to_desks_menu_model.h"
+#endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
@@ -46,6 +50,10 @@ bool SystemMenuModelDelegate::IsCommandIdChecked(int command_id) const {
 }
 
 bool SystemMenuModelDelegate::IsCommandIdEnabled(int command_id) const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (command_id == chromeos::MoveToDesksMenuModel::kMenuCommandId)
+    return ash::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();
+#endif
   return chrome::IsCommandEnabled(browser_, command_id);
 }
 
@@ -62,10 +70,8 @@ bool SystemMenuModelDelegate::IsCommandIdVisible(int command_id) const {
   }
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (command_id == IDC_MOVE_TO_DESKS_MENU) {
-    auto* desks_helper = ash::DesksHelper::Get();
-    return desks_helper && desks_helper->GetNumberOfDesks() > 1;
-  }
+  if (command_id == chromeos::MoveToDesksMenuModel::kMenuCommandId)
+    return ash::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();
 #endif
   return true;
 }

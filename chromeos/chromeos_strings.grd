@@ -238,6 +238,14 @@ Try tapping the mic to ask me anything.
         Launcher
       </message>
 
+      <!-- Virtual desks -->
+      <message name="IDS_MOVE_TO_DESKS_MENU" desc="The text label of the Move to Desks submenu">
+        Move window to desk
+      </message>
+      <message name="IDS_ASSIGN_TO_ALL_DESKS" desc="The text label of the Assign to All Desks menu item">
+        All desks
+      </message>
+
       <!-- Password expiry notifications -->
       <message name="IDS_PASSWORD_CHANGE_OVERDUE_TITLE" desc="Message title for a notification that tells the user they are already late in changing their password, since the password has already expired.">
         Password change overdue

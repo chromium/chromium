@@ -10,6 +10,7 @@
 
 #include "ash/frame/header_view.h"
 #include "ash/public/cpp/ash_constants.h"
+#include "ash/public/cpp/move_to_desks_menu_delegate.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -25,13 +26,17 @@
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
+#include "chromeos/ui/frame/move_to_desks_menu_model.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/hit_test.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/context_menu_controller.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
@@ -244,6 +249,8 @@ NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
   }
 
   frame_window->SetProperty(kNonClientFrameViewAshKey, this);
+
+  header_view_->set_context_menu_controller(this);
 }
 
 NonClientFrameViewAsh::~NonClientFrameViewAsh() = default;
@@ -356,6 +363,32 @@ gfx::Size NonClientFrameViewAsh::GetMaximumSize() const {
     height = NonClientTopBorderHeight() + max_client_size.height();
 
   return gfx::Size(width, height);
+}
+
+void NonClientFrameViewAsh::ShowContextMenuForViewImpl(
+    View* source,
+    const gfx::Point& point,
+    ui::MenuSourceType source_type) {
+  if (!MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu())
+    return;
+
+  gfx::Point point_in_view_coords(point);
+  views::View::ConvertPointFromScreen(this, &point_in_view_coords);
+  if (NonClientHitTest(point_in_view_coords) != HTCAPTION)
+    return;
+
+  auto* widget = GetWidget();
+  if (!move_to_desks_menu_model_) {
+    move_to_desks_menu_model_ =
+        std::make_unique<chromeos::MoveToDesksMenuModel>(
+            std::make_unique<MoveToDesksMenuDelegate>(widget),
+            /*add_title=*/true);
+  }
+
+  menu_runner_ = std::make_unique<views::MenuRunner>(
+      move_to_desks_menu_model_.get(), views::MenuRunner::CONTEXT_MENU);
+  menu_runner_->RunMenuAt(widget, nullptr, gfx::Rect(point, gfx::Size()),
+                          views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
 void NonClientFrameViewAsh::SetShouldPaintHeader(bool paint) {

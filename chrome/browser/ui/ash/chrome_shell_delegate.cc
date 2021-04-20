@@ -88,11 +88,6 @@ void ChromeShellDelegate::OpenKeyboardShortcutHelpPage() const {
   Navigate(&params);
 }
 
-void ChromeShellDelegate::DesksStateChanged(int num_desks) const {
-  for (auto* browser : *BrowserList::GetInstance())
-    browser->command_controller()->DesksStateChanged(num_desks);
-}
-
 bool ChromeShellDelegate::CanGoBack(gfx::NativeWindow window) const {
   content::WebContents* contents =
       GetActiveWebContentsForNativeBrowserWindow(window);

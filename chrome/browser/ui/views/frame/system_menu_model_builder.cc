@@ -20,14 +20,15 @@
 #include "ui/base/models/simple_menu_model.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/desks_helper.h"
+#include "ash/public/cpp/move_to_desks_menu_delegate.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/toolbar/move_to_desks_menu_model.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/ui/frame/move_to_desks_menu_model.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_info.h"
 #include "components/user_manager/user_manager.h"
@@ -147,17 +148,17 @@ void SystemMenuModelBuilder::AddFrameToggleItems(ui::SimpleMenuModel* model) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void SystemMenuModelBuilder::AppendMoveToDesksMenu(ui::SimpleMenuModel* model) {
-  auto* desks_helper = ash::DesksHelper::Get();
-  if (desks_helper && desks_helper->GetNumberOfDesks() > 1) {
-    model->AddSeparator(ui::NORMAL_SEPARATOR);
-    move_to_desks_model_ = std::make_unique<MoveToDesksMenuModel>(
-        &menu_delegate_,
-        views::Widget::GetWidgetForNativeWindow(
-            menu_delegate_.browser()->window()->GetNativeWindow()));
-    model->AddSubMenuWithStringId(IDC_MOVE_TO_DESKS_MENU,
-                                  IDS_MOVE_TO_DESKS_MENU,
-                                  move_to_desks_model_.get());
-  }
+  if (!ash::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu())
+    return;
+
+  model->AddSeparator(ui::NORMAL_SEPARATOR);
+  move_to_desks_model_ = std::make_unique<chromeos::MoveToDesksMenuModel>(
+      std::make_unique<ash::MoveToDesksMenuDelegate>(
+          views::Widget::GetWidgetForNativeWindow(
+              menu_delegate_.browser()->window()->GetNativeWindow())));
+  model->AddSubMenuWithStringId(chromeos::MoveToDesksMenuModel::kMenuCommandId,
+                                IDS_MOVE_TO_DESKS_MENU,
+                                move_to_desks_model_.get());
 }
 #endif
 

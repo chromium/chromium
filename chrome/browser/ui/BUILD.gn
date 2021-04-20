@@ -2139,8 +2139,6 @@ static_library("ui") {
       "settings_window_manager_chromeos.h",
       "settings_window_manager_observer_chromeos.h",
       "supervised_user/parent_permission_dialog.h",
-      "toolbar/move_to_desks_menu_model.cc",
-      "toolbar/move_to_desks_menu_model.h",
       "views/apps/app_dialog/app_block_dialog_view.cc",
       "views/apps/app_dialog/app_block_dialog_view.h",
       "views/apps/app_dialog/app_pause_dialog_view.cc",
@@ -2779,7 +2777,6 @@ static_library("ui") {
       "//chromeos/services/network_config/public/mojom",
       "//chromeos/services/network_health/public/mojom",
       "//chromeos/settings",
-      "//chromeos/strings",
       "//chromeos/system",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
@@ -2855,7 +2852,10 @@ static_library("ui") {
       "views/frame/top_controls_slide_controller_chromeos.cc",
       "views/frame/top_controls_slide_controller_chromeos.h",
     ]
-    deps += [ "//components/account_manager_core:account_manager_core" ]
+    deps += [
+      "//chromeos/strings",
+      "//components/account_manager_core:account_manager_core",
+    ]
   }
 
   if (is_chromeos_lacros) {
