@@ -451,6 +451,14 @@ class CableAuthenticator {
         CableAuthenticatorJni.get().onCloudMessage(event);
     }
 
+    /**
+     * validateServerLinkData returns zero if |serverLink| is a valid argument for
+     * |startServerLink| or else an error value from cablev2::authenticator::Platform::Error.
+     */
+    static int validateServerLinkData(byte[] serverLinkData) {
+        return CableAuthenticatorJni.get().validateServerLinkData(serverLinkData);
+    }
+
     @NativeMethods
     interface Natives {
         /**
@@ -510,6 +518,12 @@ class CableAuthenticator {
          * ownership of.
          */
         void onCloudMessage(long event);
+
+        /**
+         * validateServerLinkData returns zero if |serverLink| is a valid argument for
+         * |startServerLink| or else an error value from cablev2::authenticator::Platform::Error.
+         */
+        int validateServerLinkData(byte[] serverLinkData);
 
         /**
          * Called to alert native code of a response to a makeCredential request.

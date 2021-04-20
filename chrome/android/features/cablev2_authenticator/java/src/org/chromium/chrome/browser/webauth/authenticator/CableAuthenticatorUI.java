@@ -82,6 +82,7 @@ public class CableAuthenticatorUI
         FCM, // Triggered by user selecting notification; handshake already running.
         USB, // Triggered by connecting via USB.
         SERVER_LINK, // Triggered by GMSCore forwarding from GAIA.
+        ERROR, // An invalid request. Error in |mErrorCode|.
     }
     private Mode mMode;
     private AndroidPermissionDelegate mPermissionDelegate;
@@ -92,6 +93,10 @@ public class CableAuthenticatorUI
     private TextView mStatusText;
     private View mErrorView;
     private View mErrorCloseButton;
+
+    // mErrorCode contains a value of the authenticator::Platform::Error
+    // enumeration when |mMode| is |ERROR|.
+    private int mErrorCode;
 
     // The following two members store a pending QR-scan result while Bluetooth
     // is enabled.
@@ -118,6 +123,12 @@ public class CableAuthenticatorUI
             mMode = Mode.FCM;
         } else if (serverLink != null) {
             mMode = Mode.SERVER_LINK;
+
+            mErrorCode = CableAuthenticator.validateServerLinkData(serverLink);
+            if (mErrorCode != 0) {
+                mMode = Mode.ERROR;
+                return;
+            }
         } else {
             mMode = Mode.QR;
         }
@@ -197,8 +208,10 @@ public class CableAuthenticatorUI
                 mUnlinkButton.setOnClickListener(this);
                 break;
 
-            default:
-                assert false;
+            case ERROR:
+                fillOutErrorUI(mErrorCode);
+                v = mErrorView;
+                break;
         }
 
         top.addView(v);
@@ -333,6 +346,11 @@ public class CableAuthenticatorUI
 
             case USB:
                 // In USB mode everything should happen immediately.
+                break;
+
+            case ERROR:
+                // There shouldn't be any status updates in an error condition.
+                assert false;
         }
     }
 
@@ -351,7 +369,9 @@ public class CableAuthenticatorUI
     @Override
     public void onStop() {
         super.onStop();
-        mAuthenticator.close();
+        if (mAuthenticator != null) {
+            mAuthenticator.close();
+        }
     }
 
     @Override
@@ -423,6 +443,18 @@ public class CableAuthenticatorUI
             return;
         }
 
+        fillOutErrorUI(errorCode);
+        ViewGroup top = (ViewGroup) getView();
+        top.removeAllViews();
+        top.addView(mErrorView);
+    }
+
+    /**
+     * Fills out the elements of |mErrorView| for the given error code.
+     *
+     * @param errorCode a value from cablev2::authenticator::Platform::Error.
+     */
+    void fillOutErrorUI(int errorCode) {
         mErrorCloseButton = mErrorView.findViewById(R.id.error_close);
         mErrorCloseButton.setOnClickListener(this);
 
@@ -439,10 +471,6 @@ public class CableAuthenticatorUI
 
         TextView descriptionTextView = (TextView) mErrorView.findViewById(R.id.error_description);
         descriptionTextView.setText(desc);
-
-        ViewGroup top = (ViewGroup) getView();
-        top.removeAllViews();
-        top.addView(mErrorView);
     }
 
     /**

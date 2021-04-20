@@ -21,6 +21,8 @@
 #include "device/fido/cable/v2_registration.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "third_party/boringssl/src/include/openssl/ec.h"
+#include "third_party/boringssl/src/include/openssl/obj.h"
 
 // These "headers" actually contain several function definitions and thus can
 // only be included once across Chromium.
@@ -332,6 +334,8 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
           result = CableV2MobileResult::kUnknownCommand;
           break;
         case Error::INTERNAL_ERROR:
+        case Error::SERVER_LINK_WRONG_LENGTH:
+        case Error::SERVER_LINK_NOT_ON_CURVE:
           result = CableV2MobileResult::kInternalError;
           break;
       }
@@ -541,12 +545,8 @@ static jlong JNI_CableAuthenticator_StartServerLink(
       device::kP256X962Length + device::cablev2::kQRSecretSize;
   const base::Optional<base::span<const uint8_t, kDataSize>> server_link_data =
       JavaByteArrayToFixedSpan<kDataSize>(env, server_link_data_java);
-
-  if (!server_link_data) {
-    FIDO_LOG(ERROR) << "Bad length server-link data length";
-    RecordResult(CableV2MobileResult::kInvalidServerLink);
-    return 0;
-  }
+  // validateServerLinkData should have been called to check this already.
+  CHECK(server_link_data);
 
   // Sending pairing information is disabled when doing a server-linked
   // connection, thus the root secret and authenticator name will not be used.
@@ -623,6 +623,30 @@ static void JNI_CableAuthenticator_OnCloudMessage(JNIEnv* env,
 
   GlobalData& global_data = GetGlobalData();
   global_data.pending_event = std::move(event);
+}
+
+static int JNI_CableAuthenticator_ValidateServerLinkData(
+    JNIEnv* env,
+    const JavaParamRef<jbyteArray>& jdata) {
+  base::span<const uint8_t> data = JavaByteArrayToSpan(env, jdata);
+  if (data.size() != device::kP256X962Length + device::cablev2::kQRSecretSize) {
+    RecordResult(CableV2MobileResult::kInvalidServerLink);
+    return static_cast<int>(device::cablev2::authenticator::Platform::Error::
+                                SERVER_LINK_WRONG_LENGTH);
+  }
+
+  base::span<const uint8_t> x962 = data.subspan(0, device::kP256X962Length);
+  bssl::UniquePtr<EC_GROUP> p256(
+      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
+  bssl::UniquePtr<EC_POINT> point(EC_POINT_new(p256.get()));
+  if (!EC_POINT_oct2point(p256.get(), point.get(), x962.data(), x962.size(),
+                          /*ctx=*/nullptr)) {
+    RecordResult(CableV2MobileResult::kInvalidServerLink);
+    return static_cast<int>(device::cablev2::authenticator::Platform::Error::
+                                SERVER_LINK_NOT_ON_CURVE);
+  }
+
+  return 0;
 }
 
 static void JNI_CableAuthenticator_OnAuthenticatorAttestationResponse(

@@ -82,6 +82,7 @@ public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
                 arguments.putByteArray(SERVER_LINK_EXTRA, serverLink);
             } catch (IllegalArgumentException e) {
                 Log.i(TAG, "Invalid base64 in ServerLink argument");
+                return;
             }
         } else {
             // Since this Activity is not otherwise exported, this only happens when a notification
