@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteActiveProfile) {
                              ProfileMetrics::DELETE_PROFILE_SETTINGS);
   ui_test_utils::WaitForBrowserToClose(original_browser);
 
-  base::RunLoop().RunUntilIdle();
+  content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(1u, browser_list->size());
   EXPECT_EQ(additional_profile, browser_list->get(0)->profile());
