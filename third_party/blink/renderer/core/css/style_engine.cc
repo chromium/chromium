@@ -1796,20 +1796,28 @@ void StyleEngine::NodeWillBeRemoved(Node& node) {
 void StyleEngine::ChildrenRemoved(ContainerNode& parent) {
   if (!parent.isConnected())
     return;
+  DCHECK(!layout_tree_rebuild_root_.GetRootNode());
   if (InDOMRemoval()) {
     // This is necessary for nested removals. There are elements which
     // removes parts of its UA shadow DOM as part of being removed which means
     // we do a removal from within another removal where isConnected() is not
-    // completely up to date which would confuse this code. Instead we will
-    // clean traversal roots properly when we are called from the outer remove.
+    // completely up to date which would confuse this code. Also, the removal
+    // doesn't have to be in the same subtree as the outer removal. For instance
+    // for the ListAttributeTargetChanged mentioned below.
+    //
+    // Instead we fall back to use the document root as the traversal root for
+    // all traversal roots.
+    //
     // TODO(crbug.com/882869): MediaControlLoadingPanelElement
     // TODO(crbug.com/888448): TextFieldInputType::ListAttributeTargetChanged
+    if (style_invalidation_root_.GetRootNode())
+      UpdateStyleInvalidationRoot(nullptr, nullptr);
+    if (style_recalc_root_.GetRootNode())
+      UpdateStyleRecalcRoot(nullptr, nullptr);
     return;
   }
   style_invalidation_root_.SubtreeModified(parent);
   style_recalc_root_.SubtreeModified(parent);
-  DCHECK(!layout_tree_rebuild_root_.GetRootNode());
-  layout_tree_rebuild_root_.SubtreeModified(parent);
 }
 
 void StyleEngine::CollectMatchingUserRules(
