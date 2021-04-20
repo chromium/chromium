@@ -2515,6 +2515,9 @@ const char kRelaunchNotification[] = "browser.relaunch_notification";
 // are in milliseconds.
 const char kRelaunchNotificationPeriod[] =
     "browser.relaunch_notification_period";
+// Pref name for the policy controlling the time interval within which the
+// relaunch should take place.
+const char kRelaunchWindow[] = "browser.relaunch_window";
 #endif  // !defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

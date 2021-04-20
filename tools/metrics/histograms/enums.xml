@@ -24179,6 +24179,7 @@ Called by update_document_policy_enum.py.-->
   <int value="851" label="SuggestLogoutAfterClosingLastWindow"/>
   <int value="852" label="SharedArrayBufferUnrestrictedAccessAllowed"/>
   <int value="853" label="LensCameraAssistedSearchEnabled"/>
+  <int value="854" label="RelaunchWindow"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

@@ -18502,6 +18502,69 @@
       If not set, the default period of 259200000 milliseconds (three days) is used for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices.''',
     },
     {
+      'id': 854,
+      'name': 'RelaunchWindow',
+      'owners': ['snijhara@google.com', 'file://chrome/browser/upgrade_detector/OWNERS'],
+      'tags': [],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'future_on': ['chrome.*', 'chrome_os'],
+      'type': 'dict',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'object',
+          'properties': {
+            'start': {
+              'type': 'object',
+              'description': '''Time interpreted in local wall-clock 24h format.''',
+              'id': 'Time',
+              'properties': {
+                'hour': {
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 23
+                },
+                'minute': {
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 59
+                }
+              },
+              'required': ['hour', 'minute']
+            },
+            'duration_mins': {
+              'description': '''Time period (minutes) that specifies the length of the relaunch window.''',
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1440
+            }
+          },
+          'required': ['start', 'duration_mins']
+        }
+      },
+      'caption': '''Set the time interval for relaunch''',
+      'label': '''Relaunch time window''',
+      'example_value': [
+        {
+          'start': {
+            'hour': 2,
+            'minute': 15
+          },
+          'duration_mins': 240
+        }
+      ],
+      'desc': '''Specify a target time window for the end of the relaunch notification period.
+
+      Users are notified of the need for a browser relaunch or device restart based on the <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME">RelaunchNotification</ph> and <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME">RelaunchNotificationPeriod</ph> policy settings. Browsers and devices are forcibly restarted at the end of the notification period when the <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME">RelaunchNotification</ph> policy is set to 'Required'. This <ph name="RELAUNCH_WINDOW_POLICY_NAME">RelaunchWindow</ph> policy can be used to defer the end of the notification period so that it falls within a specific time window.
+
+      If this policy is not set, the default target time window for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> is between 2 AM and 4 AM. The default target time window for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is the whole day (i.e., the end of the notification period is never deferred).
+
+      Warning: Setting this policy may delay application of software updates.''',
+    },
+    {
       'name': 'VirtualMachinesAllowed',
       'owners': ['timzheng@chromium.org', 'aoldemeier@chromium.org'],
       'type': 'main',
@@ -19214,23 +19277,7 @@
                   'type': 'object',
                   'properties': {
                     'effective_day': { '$ref': 'WeekDay' },
-                    'starts_at': {
-                      'type': 'object',
-                      'id': 'Time',
-                      'properties': {
-                        'hour': {
-                          'type': 'integer',
-                          'minimum': 0,
-                          'maximum': 23
-                        },
-                        'minute': {
-                          'type': 'integer',
-                          'minimum': 0,
-                          'maximum': 59
-                        },
-                      },
-                      'required': ['hour', 'minute']
-                    },
+                    'starts_at': { '$ref': 'Time' },
                     'ends_at': { '$ref': 'Time' },
                     'last_updated_millis': { 'type': 'string' }
                   }
@@ -26565,6 +26612,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 853,
+  'highest_id_currently_used': 854,
   'highest_atomic_group_id_currently_used': 40
 }

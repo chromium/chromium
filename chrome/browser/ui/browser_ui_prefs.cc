@@ -51,6 +51,7 @@ void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
       base::saturated_cast<int>(
           UpgradeDetector::GetDefaultHighAnnoyanceThreshold()
               .InMilliseconds()));
+  registry->RegisterDictionaryPref(prefs::kRelaunchWindow);
 #endif  // !defined(OS_ANDROID)
 }
 

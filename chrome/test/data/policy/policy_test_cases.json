@@ -3508,6 +3508,26 @@
     ]
   },
 
+  "RelaunchWindow": {
+    "os": ["win", "linux", "mac", "chromeos"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "RelaunchWindow": [
+            {
+              "start": {
+                "hour": 2,
+                "minute": 15
+              },
+              "duration_mins": 120
+            }
+          ]
+        },
+        "prefs": { "browser.relaunch_window": { "location": "local_state" } }
+      }
+    ]
+  },
+
   "PromotionalTabsEnabled": {
     "os": ["win", "linux", "mac"],
     "policy_pref_mapping_tests": [
