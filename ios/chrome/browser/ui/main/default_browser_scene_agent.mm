@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/whats_new_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -51,8 +52,25 @@
   // qualifications to be shown the promo.
   if (level == SceneActivationLevelForegroundActive &&
       appState.shouldShowDefaultBrowserPromo && !appState.currentUIBlocker) {
-    [HandlerForProtocol(self.dispatcher, WhatsNewCommands)
-        showDefaultBrowserFullscreenPromo];
+    id<DefaultPromoCommands> defaultPromoHandler =
+        HandlerForProtocol(self.dispatcher, DefaultPromoCommands);
+
+    DefaultPromoType type = MostRecentInterestDefaultPromoType();
+    switch (type) {
+      case DefaultPromoTypeGeneral:
+        [defaultPromoHandler showDefaultBrowserFullscreenPromo];
+        break;
+      case DefaultPromoTypeStaySafe:
+        [defaultPromoHandler showTailoredPromoStaySafe];
+        break;
+      case DefaultPromoTypeMadeForIOS:
+        [defaultPromoHandler showTailoredPromoMadeForIOS];
+        break;
+      case DefaultPromoTypeAllTabs:
+        [defaultPromoHandler showTailoredPromoAllTabs];
+        break;
+    }
+
     appState.shouldShowDefaultBrowserPromo = NO;
   }
 }

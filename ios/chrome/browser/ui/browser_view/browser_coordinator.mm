@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/commands/whats_new_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_coordinator.h"
+#import "ios/chrome/browser/ui/default_promo/tailored_promo_coordinator.h"
 #import "ios/chrome/browser/ui/download/ar_quick_look_coordinator.h"
 #import "ios/chrome/browser/ui/download/pass_kit_coordinator.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
@@ -197,6 +198,9 @@
 @property(nonatomic, strong)
     DefaultBrowserPromoCoordinator* defaultBrowserPromoCoordinator;
 
+// Coordinator that manages the tailored promo modals.
+@property(nonatomic, strong) TailoredPromoCoordinator* tailoredPromoCoordinator;
+
 // The container coordinators for the infobar modalities.
 @property(nonatomic, strong)
     OverlayContainerCoordinator* infobarBannerOverlayContainerCoordinator;
@@ -241,7 +245,7 @@
     @protocol(ActivityServiceCommands), @protocol(BrowserCoordinatorCommands),
     @protocol(FindInPageCommands), @protocol(PageInfoCommands),
     @protocol(PasswordBreachCommands), @protocol(PasswordProtectionCommands),
-    @protocol(TextZoomCommands), @protocol(WhatsNewCommands),
+    @protocol(TextZoomCommands), @protocol(DefaultPromoCommands),
     @protocol(PolicySignoutPromptCommands)
   ];
 
@@ -323,6 +327,21 @@
 }
 
 #pragma mark - Private
+
+// Shows a default promo with the passed type or nothing if a tailored promo is
+// already present.
+- (void)showTailoredPromoWithType:(DefaultPromoType)type {
+  if (self.tailoredPromoCoordinator) {
+    // Another promo is being shown, return early.
+    return;
+  }
+  self.tailoredPromoCoordinator = [[TailoredPromoCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                            type:type];
+  self.tailoredPromoCoordinator.handler = self;
+  [self.tailoredPromoCoordinator start];
+}
 
 // Instantiates a BrowserViewController.
 - (void)createViewController {
@@ -503,6 +522,9 @@
 
   [self.defaultBrowserPromoCoordinator stop];
   self.defaultBrowserPromoCoordinator = nil;
+
+  [self.tailoredPromoCoordinator stop];
+  self.tailoredPromoCoordinator = nil;
 }
 
 // Starts mediators owned by this coordinator.
@@ -614,7 +636,19 @@
   [self.addCreditCardCoordinator start];
 }
 
-#pragma mark - WhatsNewCommands
+#pragma mark - DefaultPromoCommands
+
+- (void)showTailoredPromoStaySafe {
+  [self showTailoredPromoWithType:DefaultPromoTypeStaySafe];
+}
+
+- (void)showTailoredPromoMadeForIOS {
+  [self showTailoredPromoWithType:DefaultPromoTypeMadeForIOS];
+}
+
+- (void)showTailoredPromoAllTabs {
+  [self showTailoredPromoWithType:DefaultPromoTypeAllTabs];
+}
 
 - (void)showDefaultBrowserFullscreenPromo {
   if (!self.defaultBrowserPromoCoordinator) {
