@@ -19,6 +19,7 @@ void OnFileAdded(mojom::Quarantine::QuarantineFileCallback callback,
   if (response.has_error_message()) {
     DVLOG(1) << "Failed to quarantine: " << response.error_message();
     std::move(callback).Run(QuarantineFileResult::ANNOTATION_FAILED);
+    return;
   }
   std::move(callback).Run(QuarantineFileResult::OK);
 }
