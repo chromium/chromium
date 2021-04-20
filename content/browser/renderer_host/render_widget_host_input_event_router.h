@@ -195,10 +195,11 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter
   FRIEND_TEST_ALL_PREFIXES(BrowserSideFlingBrowserTest,
                            InertialGSUBubblingStopsWhenParentCannotScroll);
 
-  using FrameSinkIdOwnerMap = std::unordered_map<viz::FrameSinkId,
-                                                 RenderWidgetHostViewBase*,
-                                                 viz::FrameSinkIdHash>;
-  using TargetMap = std::map<uint32_t, RenderWidgetHostViewBase*>;
+  using FrameSinkIdOwnerMap =
+      std::unordered_map<viz::FrameSinkId,
+                         base::WeakPtr<RenderWidgetHostViewBase>,
+                         viz::FrameSinkIdHash>;
+  using TargetMap = std::map<uint32_t, base::WeakPtr<RenderWidgetHostViewBase>>;
 
   void ClearAllObserverRegistrations();
   RenderWidgetTargetResult FindViewAtLocation(
