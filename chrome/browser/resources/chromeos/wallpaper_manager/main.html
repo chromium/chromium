@@ -194,9 +194,10 @@ found in the LICENSE file.
   <div id="preview-spinner" hidden></div>
   <div id="daily-refresh-banner-template" hidden>
     <div class="daily-refresh-banner">
-      <div class="daily-refresh-label" i18n-content="surpriseMeLabel"
-          aria-hidden="true"></div>
-      <span role="checkbox" tabIndex="0" class="daily-refresh-slider">
+      <div class="daily-refresh-label" id="daily-refresh-label"
+          i18n-content="surpriseMeLabel" aria-hidden="true"></div>
+      <span role="checkbox" tabIndex="0" class="daily-refresh-slider"
+          aria-labelledby="daily-refresh-label">
         <div class="ripple-circle"></div></span>
     </div>
   </div>
