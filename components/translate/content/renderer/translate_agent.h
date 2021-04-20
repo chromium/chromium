@@ -38,6 +38,9 @@ class TranslateAgent : public content::RenderFrameObserver,
                  const std::string& extension_scheme);
   ~TranslateAgent() override;
 
+  // content::RenderFrameObserver implementation.
+  void WasShown() override;
+
   // Informs us that the page's text has been extracted.
   void PageCaptured(const std::u16string& contents);
 
@@ -175,6 +178,10 @@ class TranslateAgent : public content::RenderFrameObserver,
   // The task runner responsible for the translation task, freezing it
   // when the frame is backgrounded.
   scoped_refptr<base::SingleThreadTaskRunner> translate_task_runner_;
+
+  // Whether the render frame observed by |this| was initially hidden and
+  // the request for a model is delayed until the frame is in the foreground.
+  bool waiting_for_first_foreground_ = false;
 
   // The Mojo pipe for communication with the browser process. Due to a
   // refactor, the other end of the pipe is now attached to a

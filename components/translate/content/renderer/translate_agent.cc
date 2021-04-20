@@ -14,6 +14,7 @@
 #include "base/json/string_escape.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/notreached.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
@@ -82,25 +83,67 @@ TranslateAgent::TranslateAgent(content::RenderFrame* render_frame,
                                const std::string& extension_scheme)
     : content::RenderFrameObserver(render_frame),
       world_id_(world_id),
-      extension_scheme_(extension_scheme) {
+      extension_scheme_(extension_scheme),
+      waiting_for_first_foreground_(render_frame->IsHidden()) {
   translate_task_runner_ = this->render_frame()->GetTaskRunner(
       blink::TaskType::kInternalTranslation);
 
-  if (translate::IsTFLiteLanguageDetectionEnabled()) {
-    translate::LanguageDetectionModel& language_detection_model =
-        GetLanguageDetectionModel();
-    if (!language_detection_model.IsAvailable()) {
-      // TODO(crbug.com/1160948): Consider tracking if another agent associated
-      // with the same LanguageDetectionModel has already requested a model be
-      // provided by the translate host.
-      GetTranslateHandler()->GetLanguageDetectionModel(
-          base::BindOnce(&TranslateAgent::UpdateLanguageDetectionModel,
-                         weak_pointer_factory_.GetWeakPtr()));
-    }
+  if (!translate::IsTFLiteLanguageDetectionEnabled()) {
+    return;
+  }
+
+  translate::LanguageDetectionModel& language_detection_model =
+      GetLanguageDetectionModel();
+
+  // If the language detection model is available, we do not
+  // worry about requesting the model.
+  if (language_detection_model.IsAvailable()) {
+    return;
+  }
+
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "LanguageDetection.TFLiteModel.WasModelRequestDeferred",
+      waiting_for_first_foreground_);
+
+  // Ensure the render frame is visible, otherwise the browser-side
+  // translate driver may not exist yet (https://crbug.com/1199397).
+  if (!waiting_for_first_foreground_) {
+    GetTranslateHandler()->GetLanguageDetectionModel(
+        base::BindOnce(&TranslateAgent::UpdateLanguageDetectionModel,
+                       weak_pointer_factory_.GetWeakPtr()));
   }
 }
 
 TranslateAgent::~TranslateAgent() {}
+
+void TranslateAgent::WasShown() {
+  // Check if the the render frame was initially hidden and
+  // the model request was delayed until the frame was in
+  // the foreground.
+  if (!waiting_for_first_foreground_) {
+    return;
+  }
+
+  waiting_for_first_foreground_ = false;
+
+  if (!translate::IsTFLiteLanguageDetectionEnabled()) {
+    return;
+  }
+
+  translate::LanguageDetectionModel& language_detection_model =
+      GetLanguageDetectionModel();
+  if (language_detection_model.IsAvailable()) {
+    return;
+  }
+  // The model request was deferred because the frame was hidden
+  // and now the model is visible and the model is still not available.
+  // The browser-side translate driver should always be available at
+  // this point so we should make the request and race to get the
+  // model loaded for when the page content is available.
+  GetTranslateHandler()->GetLanguageDetectionModel(
+      base::BindOnce(&TranslateAgent::UpdateLanguageDetectionModel,
+                     weak_pointer_factory_.GetWeakPtr()));
+}
 
 void TranslateAgent::PrepareForUrl(const GURL& url) {
   // Navigated to a new url, reset current page translation.
