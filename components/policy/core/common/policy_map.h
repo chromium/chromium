@@ -262,13 +262,6 @@ class POLICY_EXPORT PolicyMap {
                 PolicyScope scope,
                 PolicySource source);
 
-  // Compares this value map against |other| and stores all key names that have
-  // different values or reference different external data in |differing_keys|.
-  // This includes keys that are present only in one of the maps.
-  // |differing_keys| is not cleared before the keys are added.
-  void GetDifferingKeys(const PolicyMap& other,
-                        std::set<std::string>* differing_keys) const;
-
   bool Equals(const PolicyMap& other) const;
   bool empty() const;
   size_t size() const;

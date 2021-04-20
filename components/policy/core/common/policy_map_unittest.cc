@@ -963,64 +963,6 @@ TEST_F(PolicyMapTest, MergeValuesGroup) {
   EXPECT_TRUE(group_merged.Equals(expected_group_merged));
 }
 
-TEST_F(PolicyMapTest, GetDifferingKeys) {
-  PolicyMap a;
-  a.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-        POLICY_SOURCE_CLOUD, base::Value("google.com"), nullptr);
-  a.Set(kTestPolicyName2, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-        POLICY_SOURCE_CLOUD, base::nullopt, CreateExternalDataFetcher("dummy"));
-  a.Set(kTestPolicyName3, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-        POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-  a.Set(kTestPolicyName4, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-        POLICY_SOURCE_CLOUD, base::nullopt, CreateExternalDataFetcher("a"));
-  a.Set(kTestPolicyName5, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER,
-        POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
-  a.Set(kTestPolicyName6, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
-        POLICY_SOURCE_CLOUD, base::Value("google.com/q={x}"), nullptr);
-  a.Set(kTestPolicyName7, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-        POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-
-  PolicyMap b;
-  b.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-        POLICY_SOURCE_CLOUD, base::Value("google.com"), nullptr);
-  b.Set(kTestPolicyName2, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-        POLICY_SOURCE_CLOUD, base::nullopt, CreateExternalDataFetcher("dummy"));
-  b.Set(kTestPolicyName3, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-        POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
-  b.Set(kTestPolicyName4, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-        POLICY_SOURCE_CLOUD, base::nullopt, CreateExternalDataFetcher("b"));
-  b.Set(kTestPolicyName5, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-        POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
-  b.Set(kTestPolicyName6, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER,
-        POLICY_SOURCE_CLOUD, base::Value("google.com/q={x}"), nullptr);
-  b.Set(kTestPolicyName8, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER,
-        POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-
-  std::set<std::string> diff;
-  std::set<std::string> diff2;
-  a.GetDifferingKeys(b, &diff);
-  b.GetDifferingKeys(a, &diff2);
-  // Order shouldn't matter.
-  EXPECT_EQ(diff, diff2);
-  // No change.
-  EXPECT_TRUE(diff.find(kTestPolicyName1) == diff.end());
-  EXPECT_TRUE(diff.find(kTestPolicyName2) == diff.end());
-  // Different values.
-  EXPECT_TRUE(diff.find(kTestPolicyName3) != diff.end());
-  // Different external data references.
-  EXPECT_TRUE(diff.find(kTestPolicyName4) != diff.end());
-  // Different levels.
-  EXPECT_TRUE(diff.find(kTestPolicyName5) != diff.end());
-  // Different scopes.
-  EXPECT_TRUE(diff.find(kTestPolicyName6) != diff.end());
-  // Not in |a|.
-  EXPECT_TRUE(diff.find(kTestPolicyName8) != diff.end());
-  // Not in |b|.
-  EXPECT_TRUE(diff.find(kTestPolicyName7) != diff.end());
-  // No surprises.
-  EXPECT_EQ(6u, diff.size());
-}
-
 TEST_F(PolicyMapTest, LoadFromSetsLevelScopeAndSource) {
   base::DictionaryValue policies;
   policies.SetString("TestPolicy1", "google.com");

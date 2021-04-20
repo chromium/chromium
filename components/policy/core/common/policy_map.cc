@@ -400,34 +400,6 @@ void PolicyMap::LoadFrom(const base::DictionaryValue* policies,
   }
 }
 
-void PolicyMap::GetDifferingKeys(const PolicyMap& other,
-                                 std::set<std::string>* differing_keys) const {
-  // Walk over the maps in lockstep, adding everything that is different.
-  auto iter_this(begin());
-  auto iter_other(other.begin());
-  while (iter_this != end() && iter_other != other.end()) {
-    const int diff = iter_this->first.compare(iter_other->first);
-    if (diff == 0) {
-      if (!iter_this->second.Equals(iter_other->second))
-        differing_keys->insert(iter_this->first);
-      ++iter_this;
-      ++iter_other;
-    } else if (diff < 0) {
-      differing_keys->insert(iter_this->first);
-      ++iter_this;
-    } else {
-      differing_keys->insert(iter_other->first);
-      ++iter_other;
-    }
-  }
-
-  // Add the remaining entries.
-  for (; iter_this != end(); ++iter_this)
-    differing_keys->insert(iter_this->first);
-  for (; iter_other != other.end(); ++iter_other)
-    differing_keys->insert(iter_other->first);
-}
-
 bool PolicyMap::Equals(const PolicyMap& other) const {
   return other.size() == size() &&
          std::equal(begin(), end(), other.begin(), MapEntryEquals);
