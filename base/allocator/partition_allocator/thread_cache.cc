@@ -368,15 +368,15 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   //
   // This also means that deallocation must use RawFreeStatic(), hence the
   // operator delete() implementation below.
+  size_t raw_size = root->AdjustSizeForExtrasAdd(sizeof(ThreadCache));
   size_t usable_size;
   bool already_zeroed;
 
   auto* bucket =
-      root->buckets + PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
-                          sizeof(ThreadCache));
-  void* buffer =
-      root->RawAlloc(bucket, PartitionAllocZeroFill, sizeof(ThreadCache),
-                     &usable_size, &already_zeroed);
+      root->buckets +
+      PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(raw_size);
+  void* buffer = root->RawAlloc(bucket, PartitionAllocZeroFill, raw_size,
+                                &usable_size, &already_zeroed);
   ThreadCache* tcache = new (buffer) ThreadCache(root);
 
   // This may allocate.
