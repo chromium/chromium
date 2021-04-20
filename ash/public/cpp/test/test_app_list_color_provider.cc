@@ -105,11 +105,6 @@ SkColor TestAppListColorProvider::GetFocusRingColor() const {
   return gfx::kGoogleBlue600;
 }
 
-SkColor TestAppListColorProvider::GetPrimaryIconColor(
-    SkColor default_color) const {
-  return default_color;
-}
-
 float TestAppListColorProvider::GetFolderBackgrounBlurSigma() const {
   return 30.0f;
 }

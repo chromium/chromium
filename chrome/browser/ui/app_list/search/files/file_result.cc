@@ -8,9 +8,10 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/file_icon_util.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
@@ -100,16 +101,17 @@ FileResult::FileResult(const std::string& schema,
   }
 
   SetDisplayType(display_type);
+
+  // Launcher search results UI is light by default, so use icons for light
+  // background if dark/light mode feature is not enabled.
+  const bool dark_background = ash::features::IsDarkLightModeEnabled() &&
+                               ash::ColorProvider::Get()->IsDarkModeEnabled();
   switch (display_type) {
     case DisplayType::kChip:
-      SetChipIcon(ash::GetChipIconForPath(
-          filepath, ash::AppListColorProvider::Get()->GetPrimaryIconColor(
-                        /*default_color*/ gfx::kGoogleGrey700)));
+      SetChipIcon(ash::GetChipIconForPath(filepath, dark_background));
       break;
     case DisplayType::kList:
-      SetIcon(ash::GetIconForPath(
-          filepath, ash::AppListColorProvider::Get()->GetPrimaryIconColor(
-                        /*default_color*/ gfx::kGoogleGrey700)));
+      SetIcon(ash::GetIconForPath(filepath, dark_background));
       break;
     default:
       NOTREACHED();

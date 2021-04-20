@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -57,13 +58,7 @@ SkColor ResolveColor(ColorId color_id, bool dark_background) {
   }
 }
 
-gfx::ImageSkia GetVectorIconFromIconType(
-    IconType icon,
-    const base::Optional<bool>& dark_background,
-    const base::Optional<SkColor>& color) {
-  // Either `dark_background` or `color` should be specified but not both.
-  DCHECK(dark_background.has_value() ^ color.has_value());
-
+gfx::ImageSkia GetVectorIconFromIconType(IconType icon, bool dark_background) {
   struct IconParams {
     const gfx::VectorIcon& icon;
     ColorId color_id;
@@ -130,22 +125,9 @@ gfx::ImageSkia GetVectorIconFromIconType(
   const IconParams& params = it->second;
   const gfx::IconDescription description(
       params.icon, kIconDipSize,
-      params.color_id == ColorId::kGrey && color
-          ? color.value()
-          : ResolveColor(params.color_id, dark_background.value_or(false)));
+      ResolveColor(params.color_id, dark_background));
 
   return gfx::CreateVectorIcon(description);
-}
-
-gfx::ImageSkia GetVectorIconFromIconType(IconType icon, SkColor color) {
-  return GetVectorIconFromIconType(icon, /*dark_mode_enabled=*/base::nullopt,
-                                   color);
-}
-
-gfx::ImageSkia GetVectorIconFromIconType(IconType icon,
-                                         bool dark_mode_enabled) {
-  return GetVectorIconFromIconType(icon, dark_mode_enabled,
-                                   /*color=*/base::nullopt);
 }
 
 }  // namespace
@@ -294,11 +276,6 @@ IconType GetIconTypeFromString(const std::string& icon_type_string) {
 
 }  // namespace internal
 
-gfx::ImageSkia GetIconForPath(const base::FilePath& filepath, SkColor color) {
-  return GetVectorIconFromIconType(internal::GetIconTypeForPath(filepath),
-                                   color);
-}
-
 gfx::ImageSkia GetIconForPath(const base::FilePath& filepath,
                               bool dark_background) {
   return GetVectorIconFromIconType(internal::GetIconTypeForPath(filepath),
@@ -306,18 +283,24 @@ gfx::ImageSkia GetIconForPath(const base::FilePath& filepath,
 }
 
 gfx::ImageSkia GetChipIconForPath(const base::FilePath& filepath,
-                                  SkColor color) {
-  // For a chip icon we need to draw 2 icons: a white circle background icon
-  // (kFiletypeChipBackgroundIcon) and the icon of the file.
-  return gfx::ImageSkiaOperations::CreateSuperimposedImage(
-      gfx::CreateVectorIcon(chromeos::kFiletypeChipBackgroundIcon, kIconDipSize,
-                            SK_ColorWHITE),
-      GetVectorIconFromIconType(internal::GetIconTypeForPath(filepath), color));
+                                  bool dark_background) {
+  if (!features::IsDarkLightModeEnabled()) {
+    // For a chip icon we need to draw 2 icons: a white circle background icon
+    // (kFiletypeChipBackgroundIcon) and the icon of the file.
+    return gfx::ImageSkiaOperations::CreateSuperimposedImage(
+        gfx::CreateVectorIcon(chromeos::kFiletypeChipBackgroundIcon,
+                              kIconDipSize, SK_ColorWHITE),
+        GetVectorIconFromIconType(internal::GetIconTypeForPath(filepath),
+                                  /*dark_background=*/false));
+  }
+
+  return GetIconForPath(filepath, dark_background);
 }
 
-gfx::ImageSkia GetIconFromType(const std::string& icon_type, SkColor color) {
+gfx::ImageSkia GetIconFromType(const std::string& icon_type,
+                               bool dark_background) {
   return GetVectorIconFromIconType(internal::GetIconTypeFromString(icon_type),
-                                   color);
+                                   dark_background);
 }
 
 gfx::ImageSkia GetIconFromType(IconType icon_type, bool dark_background) {

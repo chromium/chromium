@@ -52,7 +52,8 @@ gfx::ImageSkia ExtractFileTypeIcon(const gfx::ImageSkia& image) {
 bool ContainsFileTypeIcon(const gfx::ImageSkia& image,
                           const base::FilePath& file_path) {
   gfx::ImageSkia actual = ExtractFileTypeIcon(image);
-  gfx::ImageSkia expected = GetIconForPath(file_path, gfx::kGoogleGrey700);
+  gfx::ImageSkia expected =
+      GetIconForPath(file_path, /*dark_background=*/false);
   return gfx::test::AreImagesEqual(gfx::Image(actual), gfx::Image(expected));
 }
 

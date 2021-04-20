@@ -184,18 +184,20 @@ gfx::ImageSkia GetIconForFileClipboardItem(const ClipboardHistoryItem& item,
   DCHECK_EQ(ClipboardHistoryDisplayFormat::kFile,
             CalculateDisplayFormat(item.data()));
   const int copied_files_count = GetCountOfCopiedFiles(item.data());
-  const SkColor icon_color = ash::AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
 
   if (copied_files_count == 0)
     return gfx::ImageSkia();
-  if (copied_files_count == 1)
-    return GetIconForPath(base::FilePath(file_name), icon_color);
+  if (copied_files_count == 1) {
+    return GetIconForPath(base::FilePath(file_name),
+                          ash::AshColorProvider::Get()->IsDarkModeEnabled());
+  }
   constexpr std::array<const gfx::VectorIcon*, 9> icons = {
       &kTwoFilesIcon,   &kThreeFilesIcon, &kFourFilesIcon,
       &kFiveFilesIcon,  &kSixFilesIcon,   &kSevenFilesIcon,
       &kEightFilesIcon, &kNineFilesIcon,  &kMoreThanNineFilesIcon};
   int icon_index = std::min(copied_files_count - 2, (int)icons.size() - 1);
+  const SkColor icon_color = ash::AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
   return CreateVectorIcon(*icons[icon_index], icon_color);
 }
 

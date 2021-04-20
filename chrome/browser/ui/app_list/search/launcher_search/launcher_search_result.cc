@@ -6,10 +6,11 @@
 
 #include <utility>
 
-#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/file_icon_util.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/launcher_search_provider/launcher_search_provider_service.h"
@@ -80,9 +81,11 @@ void LauncherSearchResult::Initialize() {
   SetResultType(ResultType::kLauncher);
   SetMetricsType(ash::LAUNCHER_SEARCH_PROVIDER_RESULT);
 
+  // Launcher search results UI is light by default, so use icons for light
+  // background if dark/light mode feature is not enabled.
   SetIcon(ash::GetIconFromType(
-      icon_type_, ash::AppListColorProvider::Get()->GetPrimaryIconColor(
-                      gfx::kGoogleGrey700)));
+      icon_type_, ash::features::IsDarkLightModeEnabled() &&
+                      ash::ColorProvider::Get()->IsDarkModeEnabled()));
 }
 
 std::string LauncherSearchResult::GetSearchResultId() {

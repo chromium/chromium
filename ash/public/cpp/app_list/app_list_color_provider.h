@@ -47,7 +47,6 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   virtual SkColor GetContentsBackgroundColor() const = 0;
   virtual SkColor GetSeparatorColor() const = 0;
   virtual SkColor GetFocusRingColor() const = 0;
-  virtual SkColor GetPrimaryIconColor(SkColor default_color) const = 0;
   virtual float GetFolderBackgrounBlurSigma() const = 0;
   virtual SkColor GetRippleAttributesBaseColor(
       SkColor bg_color = gfx::kPlaceholderColor) const = 0;

@@ -39,7 +39,6 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetContentsBackgroundColor() const override;
   SkColor GetSeparatorColor() const override;
   SkColor GetFocusRingColor() const override;
-  SkColor GetPrimaryIconColor(SkColor default_color) const override;
   float GetFolderBackgrounBlurSigma() const override;
   SkColor GetRippleAttributesBaseColor(
       SkColor bg_color = gfx::kPlaceholderColor) const override;
