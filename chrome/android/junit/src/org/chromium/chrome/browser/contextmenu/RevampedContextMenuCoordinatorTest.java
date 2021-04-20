@@ -93,7 +93,7 @@ public class RevampedContextMenuCoordinatorTest {
 
         mCoordinator.initializeHeaderCoordinatorForTesting(
                 mActivity, params, mProfile, mNativeDelegate);
-        ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {});
+        ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {}, true);
 
         assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
         assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
@@ -127,7 +127,7 @@ public class RevampedContextMenuCoordinatorTest {
 
         mCoordinator.initializeHeaderCoordinatorForTesting(
                 mActivity, params, mProfile, mNativeDelegate);
-        ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {});
+        ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {}, true);
 
         assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
         assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
@@ -150,7 +150,7 @@ public class RevampedContextMenuCoordinatorTest {
 
         mCoordinator.initializeHeaderCoordinatorForTesting(
                 mActivity, params, mProfile, mNativeDelegate);
-        ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {});
+        ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {}, true);
 
         assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
         assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));

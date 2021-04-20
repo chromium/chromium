@@ -402,6 +402,8 @@
     <dimen name="revamped_context_menu_header_circle_bg_vertical_margin">22dp</dimen>
     <dimen name="revamped_context_menu_header_monogram_text_size">16dp</dimen>
     <dimen name="revamped_context_menu_header_monogram_size">26dp</dimen>
+    <dimen name="revamped_context_menu_small_width">268dp</dimen>
+    <dimen name="revamped_context_menu_small_lateral_margin">30dp</dimen>
 
     <!-- Defaults for TabbedModeFirstRunActivity values. -->
     <item type="dimen" name="dialog_fixed_width_major">100%</item>

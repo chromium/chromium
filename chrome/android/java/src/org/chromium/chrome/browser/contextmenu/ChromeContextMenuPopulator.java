@@ -140,7 +140,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 Action.DIRECT_SHARE_LINK, Action.DIRECT_SHARE_IMAGE, Action.SEARCH_WITH_GOOGLE_LENS,
                 Action.COPY_IMAGE, Action.SHOP_SIMILAR_PRODUCTS, Action.SHOP_IMAGE_WITH_GOOGLE_LENS,
                 Action.SEARCH_SIMILAR_PRODUCTS, Action.READ_LATER,
-                Action.SHOP_WITH_GOOGLE_LENS_CHIP, Action.TRANSLATE_WITH_GOOGLE_LENS_CHIP})
+                Action.SHOP_WITH_GOOGLE_LENS_CHIP, Action.TRANSLATE_WITH_GOOGLE_LENS_CHIP,
+                Action.SHARE_HIGHLIGHTING, Action.REMOVE_HIGHLIGHTING, Action.LEARN_MORE})
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
             int OPEN_IN_NEW_TAB = 0;
@@ -183,7 +184,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int READ_LATER = 33;
             int SHOP_WITH_GOOGLE_LENS_CHIP = 34;
             int TRANSLATE_WITH_GOOGLE_LENS_CHIP = 35;
-            int NUM_ENTRIES = 36;
+            int SHARE_HIGHLIGHTING = 36;
+            int REMOVE_HIGHLIGHTING = 37;
+            int LEARN_MORE = 38;
+            int NUM_ENTRIES = 39;
         }
 
         // Note: these values must match the ContextMenuSaveLinkType enum in enums.xml.
@@ -237,6 +241,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 histogramName = params.isAnchor() ? "ContextMenu.SelectedOptionAndroid.ImageLink"
                                                   : "ContextMenu.SelectedOptionAndroid.Image";
 
+            } else if (params.getOpenedFromHighlight()) {
+                histogramName = "ContextMenu.SelectedOptionAndroid.SharedHighlightingInteraction";
             } else {
                 assert params.isAnchor();
                 histogramName = "ContextMenu.SelectedOptionAndroid.Link";
@@ -508,6 +514,14 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             groupedItems.add(new Pair<>(R.string.contextmenu_video_title, videoGroup));
         }
 
+        if (mParams.getOpenedFromHighlight()) {
+            ModelList sharedHighlightingGroup = new ModelList();
+            sharedHighlightingGroup.add(createListItem(Item.SHARE_HIGHLIGHT));
+            sharedHighlightingGroup.add(createListItem(Item.REMOVE_HIGHLIGHT));
+            sharedHighlightingGroup.add(createListItem(Item.LEARN_MORE));
+            groupedItems.add(new Pair<>(null, sharedHighlightingGroup));
+        }
+
         if (mMode != ContextMenuMode.NORMAL && FirstRunStatus.getFirstRunFlowComplete()) {
             ModelList items = groupedItems.isEmpty()
                     ? new ModelList()
@@ -738,6 +752,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_open_in_browser_id) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_BROWSER);
             mItemDelegate.onOpenInDefaultBrowser(mParams.getUrl());
+        } else if (itemId == R.id.contextmenu_share_highlighting) {
+            recordContextMenuSelection(ContextMenuUma.Action.SHARE_HIGHLIGHTING);
+        } else if (itemId == R.id.contextmenu_remove_highlighting) {
+            recordContextMenuSelection(ContextMenuUma.Action.REMOVE_HIGHLIGHTING);
+        } else if (itemId == R.id.contextmenu_learn_more) {
+            recordContextMenuSelection(ContextMenuUma.Action.LEARN_MORE);
         } else {
             assert false;
         }

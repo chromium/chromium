@@ -103,7 +103,8 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
             Callback<Integer> onItemClicked, final Runnable onMenuShown,
             final Runnable onMenuClosed, @Nullable ChipDelegate chipDelegate) {
         mOnMenuClosed = onMenuClosed;
-        final boolean isPopup = params.getSourceType() == MenuSourceType.MENU_SOURCE_MOUSE;
+        final boolean isPopup = params.getSourceType() == MenuSourceType.MENU_SOURCE_MOUSE
+                || params.getOpenedFromHighlight();
         Activity activity = window.getActivity().get();
         final float density = activity.getResources().getDisplayMetrics().density;
         final float touchPointXPx = params.getTriggeringTouchXDp() * density;
@@ -131,8 +132,17 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
         final View menu = isPopup
                 ? LayoutInflater.from(activity).inflate(R.layout.context_menu, null)
                 : ((ViewStub) layout.findViewById(R.id.context_menu_stub)).inflate();
+        Integer popupMargin = params.getOpenedFromHighlight()
+                ? activity.getResources().getDimensionPixelSize(
+                        R.dimen.revamped_context_menu_small_lateral_margin)
+                : null;
+        Integer desiredPopupContentWidth = params.getOpenedFromHighlight()
+                ? activity.getResources().getDimensionPixelSize(
+                        R.dimen.revamped_context_menu_small_width)
+                : null;
         mDialog = createContextMenuDialog(activity, layout, menu, isPopup, touchPointXPx,
-                touchPointYPx, dialogTopMarginPx, dialogBottomMarginPx);
+                touchPointYPx, dialogTopMarginPx, dialogBottomMarginPx, popupMargin,
+                desiredPopupContentWidth);
         mDialog.setOnShowListener(dialogInterface -> onMenuShown.run());
         mDialog.setOnDismissListener(dialogInterface -> mOnMenuClosed.run());
 
@@ -145,7 +155,8 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
                 params, Profile.fromWebContents(mWebContents), mNativeDelegate);
 
         // The Integer here specifies the {@link ListItemType}.
-        ModelList listItems = getItemList(activity, items, onItemClicked);
+        ModelList listItems = getItemList(
+                activity, items, onItemClicked, params.getOpenedFromHighlight() ? false : true);
 
         ModelListAdapter adapter = new ModelListAdapter(listItems) {
             @Override
@@ -238,16 +249,20 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
      *                    defined in XML.
      * @param bottomMarginPx An explicit bottom margin for the dialog, or -1 to use default
      *                       defined in XML.
+     * @param popupMargin The margin for the popup window.
+     * @param desiredPopupContentWidth The desired width for the content of the context menu.
      * @return Returns a final dialog that does not have a background can be displayed using
      *         {@link AlertDialog#show()}.
      */
     private ContextMenuDialog createContextMenuDialog(Activity activity, View layout, View view,
             boolean isPopup, float touchPointXPx, float touchPointYPx, int topMarginPx,
-            int bottomMarginPx) {
+            int bottomMarginPx, @Nullable Integer popupMargin,
+            @Nullable Integer desiredPopupContentWidth) {
         // TODO(sinansahin): Refactor ContextMenuDialog as well.
-        final ContextMenuDialog dialog = new ContextMenuDialog(activity,
-                R.style.Theme_Chromium_AlertDialog, touchPointXPx, touchPointYPx,
-                mTopContentOffsetPx, topMarginPx, bottomMarginPx, layout, view, isPopup);
+        final ContextMenuDialog dialog =
+                new ContextMenuDialog(activity, R.style.Theme_Chromium_AlertDialog, touchPointXPx,
+                        touchPointYPx, mTopContentOffsetPx, topMarginPx, bottomMarginPx, layout,
+                        view, isPopup, popupMargin, desiredPopupContentWidth);
         dialog.setContentView(layout);
 
         return dialog;
@@ -255,15 +270,20 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
 
     @VisibleForTesting
     ModelList getItemList(Activity activity, List<Pair<Integer, ModelList>> items,
-            Callback<Integer> onItemClicked) {
+            Callback<Integer> onItemClicked, boolean hasHeader) {
         ModelList itemList = new ModelList();
 
         // Start with the header
-        itemList.add(new ListItem(ListItemType.HEADER, mHeaderCoordinator.getModel()));
+        if (hasHeader) {
+            itemList.add(new ListItem(ListItemType.HEADER, mHeaderCoordinator.getModel()));
+        }
 
         for (Pair<Integer, ModelList> group : items) {
             // Add a divider
-            itemList.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
+            if (itemList.size() > 0) {
+                itemList.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
+            }
+
             // Add the items in the group
             itemList.addAll(group.second);
         }

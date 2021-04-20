@@ -95,6 +95,7 @@ public class ContextMenuHelper {
     private void showContextMenu(final ContextMenuParams params, RenderFrameHost renderFrameHost,
             View view, float topContentOffsetPx) {
         if (params.isFile()) return;
+
         final WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
 
         if (view == null || view.getVisibility() != View.VISIBLE || view.getParent() == null
@@ -201,6 +202,20 @@ public class ContextMenuHelper {
     public static void setMenuShownCallbackForTests(
             Callback<RevampedContextMenuCoordinator> callback) {
         sMenuShownCallbackForTests = callback;
+    }
+
+    @VisibleForTesting
+    public static ContextMenuHelper createForTesting(
+            long nativeContextMenuHelper, WebContents webContents) {
+        return create(nativeContextMenuHelper, webContents);
+    }
+
+    @VisibleForTesting
+    void showContextMenuForTesting(ContextMenuPopulatorFactory populatorFactory,
+            final ContextMenuParams params, RenderFrameHost renderFrameHost, View view,
+            float topContentOffsetPx) {
+        setPopulatorFactory(populatorFactory);
+        showContextMenu(params, renderFrameHost, view, topContentOffsetPx);
     }
 
     @NativeMethods

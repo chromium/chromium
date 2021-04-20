@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.mockito.Mockito.when;
+
 import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuCoordinator.ListItemType.CONTEXT_MENU_ITEM;
 
 import android.content.ClipData;
@@ -24,6 +26,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -42,6 +46,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.share.LensUtils;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -52,12 +57,16 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.contextmenu.RevampedContextMenuUtils;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.base.MenuSourceType;
+import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -74,6 +83,12 @@ import java.util.concurrent.atomic.AtomicReference;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ChromeSwitches.GOOGLE_BASE_URL + "=http://example.com/"})
 public class RevampedContextMenuTest implements DownloadTestRule.CustomMainActivityStart {
+
+    @Mock
+    private ContextMenuItemDelegate mItemDelegate;
+    @Mock
+    private ShareDelegate mShareDelegate;
+
     // clang-format on
     @Rule
     public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
@@ -1132,6 +1147,37 @@ public class RevampedContextMenuTest implements DownloadTestRule.CustomMainActiv
 
         // Clean up the clipboard.
         Clipboard.getInstance().setText("");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "ContextMenu"})
+    public void testContextMenuOpenedFromHighlight() {
+        MockitoAnnotations.initMocks(this);
+        when(mItemDelegate.isIncognito()).thenReturn(false);
+        when(mItemDelegate.getPageTitle()).thenReturn("");
+
+        Tab tab = mDownloadTestRule.getActivity().getActivityTab();
+        ContextMenuHelper contextMenuHelper =
+                ContextMenuHelper.createForTesting(0, tab.getWebContents());
+        ContextMenuParams params = new ContextMenuParams(0, 0, new GURL("http://example.com/"),
+                GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "", null, false, 0, 0,
+                MenuSourceType.MENU_SOURCE_TOUCH, /*getOpenedFromHighlight*/ true);
+        ContextMenuPopulatorFactory populatorFactory = new ChromeContextMenuPopulatorFactory(
+                mItemDelegate,
+                ()
+                        -> mShareDelegate,
+                ChromeContextMenuPopulator.ContextMenuMode.NORMAL, ExternalAuthUtils.getInstance());
+        Integer[] expectedItems = {R.id.contextmenu_share_highlighting,
+                R.id.contextmenu_remove_highlighting, R.id.contextmenu_learn_more};
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ContextMenuHelper.setMenuShownCallbackForTests((coordinator) -> {
+                assertMenuItemsAreEqual(coordinator, expectedItems);
+                ContextMenuHelper.setMenuShownCallbackForTests(null);
+            });
+            contextMenuHelper.showContextMenuForTesting(
+                    populatorFactory, params, null, tab.getView(), 0);
+        });
     }
 
     /**

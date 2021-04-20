@@ -3675,6 +3675,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="The context menu was shown for an image which is also a link"/>
   <suffix name="Link"
       label="The context menu was shown for a (non-image) link"/>
+  <suffix name="SharedHighlightingInteraction"
+      label="The context menu was shown from tap on highlighted text."/>
   <suffix name="Video" label="The context menu was shown for a video"/>
   <affected-histogram name="ContextMenu.SelectedOptionAndroid"/>
 </histogram_suffixes>
