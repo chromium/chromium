@@ -348,6 +348,7 @@ source_set("ios_web_text_fragments_unittests") {
     "//components/shared_highlighting/core/common",
     "//components/ukm:test_support",
     "//ios/web/common:features",
+    "//ios/web/navigation:core",
     "//ios/web/public/navigation:referrer",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

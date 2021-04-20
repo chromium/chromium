@@ -11,8 +11,10 @@
 #import "components/shared_highlighting/core/common/text_fragments_constants.h"
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/web/common/features.h"
+#import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_test.h"
@@ -64,6 +66,10 @@ class TextFragmentsManagerImplTest : public WebTest {
     std::unique_ptr<FakeWebState> web_state = std::make_unique<FakeWebState>();
     web_state_ = web_state.get();
     context_.SetWebState(std::move(web_state));
+    last_committed_item_.SetReferrer(GetSearchEngineReferrer());
+    auto fake_navigation_manager = std::make_unique<FakeNavigationManager>();
+    fake_navigation_manager->SetLastCommittedItem(&last_committed_item_);
+    web_state_->SetNavigationManager(std::move(fake_navigation_manager));
   }
 
   TextFragmentsManagerImpl* CreateDefaultManager() {
@@ -107,12 +113,6 @@ class TextFragmentsManagerImplTest : public WebTest {
     return Referrer(GURL(kNonSearchEngineURL), web::ReferrerPolicyDefault);
   }
 
-  void CreateManagerAndProcessTextFragments() {
-    TextFragmentsManagerImpl* manager = CreateDefaultManager();
-
-    manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
-  }
-
   void ValidateLinkOpenedUkm(const ukm::TestAutoSetUkmRecorder& recorder,
                              bool success,
                              TextFragmentLinkOpenSource source) {
@@ -135,6 +135,7 @@ class TextFragmentsManagerImplTest : public WebTest {
   web::FakeNavigationContext context_;
   FakeWebState* web_state_;
   base::test::ScopedFeatureList feature_list_;
+  NavigationItemImpl last_committed_item_;
 };
 
 // Tests that the manager will execute JavaScript if highlighting is allowed and
@@ -145,7 +146,7 @@ TEST_F(TextFragmentsManagerImplTest, ExecuteJavaScriptSuccess) {
 
   TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
+  manager->DidFinishNavigation(web_state_, &context_);
 
   std::u16string expected_javascript =
       base::UTF8ToUTF16(kScriptForValidFragmentsURL);
@@ -172,7 +173,7 @@ TEST_F(TextFragmentsManagerImplTest, ExecuteJavaScriptWithColorChange) {
 
   // Set up expectation.
 
-  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
+  manager->DidFinishNavigation(web_state_, &context_);
 
   std::u16string expected_javascript =
       base::UTF8ToUTF16(kScriptForValidFragmentsColorChangeURL);
@@ -195,7 +196,7 @@ TEST_F(TextFragmentsManagerImplTest, FeatureDisabledFragmentsDisallowed) {
 
   EXPECT_EQ(std::u16string(), web_state_->GetLastExecutedJavascript());
 
-  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
+  manager->DidFinishNavigation(web_state_, &context_);
 
   // Verify that no callback was set when the flag is disabled.
   EXPECT_FALSE(web_state_->GetLastAddedCallback());
@@ -211,7 +212,7 @@ TEST_F(TextFragmentsManagerImplTest, HasOpenerFragmentsDisallowed) {
                     /*feature_enabled=*/true,
                     /*feature_color_change=*/false);
 
-  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
+  manager->DidFinishNavigation(web_state_, &context_);
 
   EXPECT_EQ(std::u16string(), web_state_->GetLastExecutedJavascript());
 }
@@ -226,7 +227,7 @@ TEST_F(TextFragmentsManagerImplTest, NoGestureFragmentsDisallowed) {
                     /*feature_enabled=*/true,
                     /*feature_color_change=*/false);
 
-  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
+  manager->DidFinishNavigation(web_state_, &context_);
 
   EXPECT_EQ(std::u16string(), web_state_->GetLastExecutedJavascript());
 }
@@ -241,7 +242,7 @@ TEST_F(TextFragmentsManagerImplTest, SameDocumentFragmentsDisallowed) {
                     /*feature_enabled=*/true,
                     /*feature_color_change=*/false);
 
-  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
+  manager->DidFinishNavigation(web_state_, &context_);
 
   EXPECT_EQ(std::u16string(), web_state_->GetLastExecutedJavascript());
 }
@@ -258,7 +259,7 @@ TEST_F(TextFragmentsManagerImplTest, NoFragmentsNoJavaScript) {
                     /*feature_enabled=*/true,
                     /*feature_color_change=*/false);
 
-  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
+  manager->DidFinishNavigation(web_state_, &context_);
 
   EXPECT_EQ(std::u16string(), web_state_->GetLastExecutedJavascript());
 }
@@ -273,7 +274,7 @@ TEST_F(TextFragmentsManagerImplTest, NoMetricsRecordedIfNoFragmentPresent) {
 
   TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
+  manager->DidFinishNavigation(web_state_, &context_);
 
   // Make sure no metrics were logged.
   histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 0);
@@ -294,7 +295,7 @@ TEST_F(TextFragmentsManagerImplTest,
 
   TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
+  manager->DidFinishNavigation(web_state_, &context_);
 
   // Make sure no metrics were logged.
   histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 0);
@@ -312,7 +313,7 @@ TEST_F(TextFragmentsManagerImplTest, LinkSourceMetricSearchEngine) {
 
   TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
+  manager->DidFinishNavigation(web_state_, &context_);
 
   histogram_tester.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 1,
                                       1);
@@ -327,7 +328,8 @@ TEST_F(TextFragmentsManagerImplTest, LinkSourceMetricNonSearchEngine) {
 
   TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-  manager->ProcessTextFragments(&context_, GetNonSearchEngineReferrer());
+  last_committed_item_.SetReferrer(GetNonSearchEngineReferrer());
+  manager->DidFinishNavigation(web_state_, &context_);
 
   histogram_tester.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 0,
                                       1);
@@ -341,7 +343,7 @@ TEST_F(TextFragmentsManagerImplTest, SelectorCountMetricSingleSelector) {
 
   TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
+  manager->DidFinishNavigation(web_state_, &context_);
 
   histogram_tester.ExpectUniqueSample("TextFragmentAnchor.SelectorCount", 1, 1);
 }
@@ -354,7 +356,7 @@ TEST_F(TextFragmentsManagerImplTest, SelectorCountMetricTwoSelectors) {
 
   TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
+  manager->DidFinishNavigation(web_state_, &context_);
 
   histogram_tester.ExpectUniqueSample("TextFragmentAnchor.SelectorCount", 2, 1);
 }
@@ -366,7 +368,7 @@ TEST_F(TextFragmentsManagerImplTest,
   SetLastURL(GURL(kTwoFragmentsURL));
   TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
+  manager->DidFinishNavigation(web_state_, &context_);
 
   auto maybe_callback = web_state_->GetLastAddedCallback();
   ASSERT_TRUE(maybe_callback);

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/gtest_prod_util.h"
 #import "ios/web/public/text_fragments/text_fragments_manager.h"
 #import "ios/web/public/web_state_observer.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
@@ -31,7 +32,12 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
   static TextFragmentsManagerImpl* FromWebState(WebState* web_state);
 
   // WebStateObserver methods:
+  void DidFinishNavigation(WebState* web_state,
+                           NavigationContext* navigation_context) override;
   void WebStateDestroyed(WebState* web_state) override;
+
+ private:
+  friend class web::WebStateUserData<TextFragmentsManagerImpl>;
 
   // Checks the WebState's destination URL for Text Fragments. If found,
   // searches the DOM for matching text, highlights the text, and scrolls the
@@ -39,9 +45,6 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
   // navigation scenario.
   void ProcessTextFragments(const web::NavigationContext* context,
                             const web::Referrer& referrer);
-
- private:
-  friend class web::WebStateUserData<TextFragmentsManagerImpl>;
 
   bool AreTextFragmentsAllowed(const web::NavigationContext* context);
 

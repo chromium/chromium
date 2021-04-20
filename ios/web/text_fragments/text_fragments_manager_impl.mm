@@ -15,6 +15,8 @@
 #import "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
 
@@ -82,6 +84,17 @@ TextFragmentsManagerImpl* TextFragmentsManagerImpl::FromWebState(
     WebState* web_state) {
   return static_cast<TextFragmentsManagerImpl*>(
       TextFragmentsManager::FromWebState(web_state));
+}
+
+void TextFragmentsManagerImpl::DidFinishNavigation(
+    WebState* web_state,
+    NavigationContext* navigation_context) {
+  DCHECK(web_state_ == web_state);
+  web::NavigationItem* item =
+      web_state->GetNavigationManager()->GetLastCommittedItem();
+  if (!item)
+    return;
+  ProcessTextFragments(navigation_context, item->GetReferrer());
 }
 
 void TextFragmentsManagerImpl::WebStateDestroyed(WebState* web_state) {

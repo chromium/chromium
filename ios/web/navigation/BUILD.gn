@@ -30,7 +30,6 @@ source_set("navigation") {
     "//ios/web/public/session",
     "//ios/web/security",
     "//ios/web/session",
-    "//ios/web/text_fragments",
     "//ios/web/web_state:user_interaction",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui:web_view_handler",
