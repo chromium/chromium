@@ -506,6 +506,9 @@ void NavigationPredictor::ReportAnchorElementMetricsOnClick(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
 
+  if (!web_contents())
+    return;
+
   if (browser_context_->IsOffTheRecord())
     return;
 
@@ -651,6 +654,9 @@ void NavigationPredictor::ReportAnchorElementMetricsOnLoad(
 
   // Each document should only report metrics once when page is loaded.
   DCHECK(navigation_scores_map_.empty());
+
+  if (!web_contents())
+    return;
 
   if (browser_context_->IsOffTheRecord())
     return;
@@ -897,6 +903,9 @@ void NavigationPredictor::MaybeTakeActionOnLoad(
 }
 
 void NavigationPredictor::MaybePrefetch() {
+  if (!web_contents())
+    return;
+
   // If prefetches aren't allowed here, this URL has already
   // been prefetched, or the current tab is hidden,
   // we shouldn't prefetch again.
