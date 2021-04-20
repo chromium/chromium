@@ -463,10 +463,7 @@ std::string DesktopWindowTreeHostPlatform::GetWorkspace() const {
 }
 
 gfx::Rect DesktopWindowTreeHostPlatform::GetWorkAreaBoundsInScreen() const {
-  // TODO(sky): GetDisplayNearestWindow() should take a const aura::Window*.
-  return display::Screen::GetScreen()
-      ->GetDisplayNearestWindow(const_cast<aura::Window*>(window()))
-      .work_area();
+  return GetDisplayNearestRootWindow().work_area();
 }
 
 void DesktopWindowTreeHostPlatform::SetShape(
@@ -693,10 +690,8 @@ gfx::Transform DesktopWindowTreeHostPlatform::GetRootTransform() const {
   // This might be called before the |platform_window| is created. Thus,
   // explicitly check if that exists before trying to access its visibility and
   // the display where it is shown.
-  if (platform_window()) {
-    display = display::Screen::GetScreen()->GetDisplayNearestWindow(
-        GetWidget()->GetNativeWindow());
-  }
+  if (platform_window())
+    display = GetDisplayNearestRootWindow();
 
   float scale = display.device_scale_factor();
   gfx::Transform transform;
@@ -842,6 +837,15 @@ void DesktopWindowTreeHostPlatform::AddAdditionalInitProperties(
 
 bool DesktopWindowTreeHostPlatform::ShouldUseLayerForShapedWindow() const {
   return platform_window()->ShouldUseLayerForShapedWindow();
+}
+
+display::Display DesktopWindowTreeHostPlatform::GetDisplayNearestRootWindow()
+    const {
+  DCHECK(window());
+  DCHECK(window()->IsRootWindow());
+  // TODO(sky): GetDisplayNearestWindow() should take a const aura::Window*.
+  return display::Screen::GetScreen()->GetDisplayNearestWindow(
+      const_cast<aura::Window*>(window()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -162,6 +162,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   // window mask, otherwise false when window shape is already updated in views.
   virtual bool ShouldUseLayerForShapedWindow() const;
 
+  // Helper method that returns the display for the |window()|.
+  display::Display GetDisplayNearestRootWindow() const;
+
   internal::NativeWidgetDelegate* const native_widget_delegate_;
   DesktopNativeWidgetAura* const desktop_native_widget_aura_;
 
