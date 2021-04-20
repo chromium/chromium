@@ -5421,6 +5421,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "website-url": "https://www.privacysandbox.com"
+                    },
                     "enable_features": [
                         "PrivacySandboxSettings"
                     ]
