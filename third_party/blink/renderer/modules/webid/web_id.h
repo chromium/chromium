@@ -29,6 +29,7 @@ class WebId final : public ScriptWrappable, public ExecutionContextClient {
   // WebID IDL interface.
   ScriptPromise get(ScriptState*, const WebIdRequestOptions*, ExceptionState&);
   ScriptPromise provide(ScriptState*, String id_token);
+  ScriptPromise logout(ScriptState*);
 
   void Trace(blink::Visitor*) const override;
 
