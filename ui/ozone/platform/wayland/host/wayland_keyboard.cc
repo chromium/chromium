@@ -207,7 +207,7 @@ void WaylandKeyboard::FlushInput(base::OnceClosure closure) {
   // wl_display_sync gives a chance for any key "up" events to arrive.
   // With a well behaved wayland compositor this should ensure we never
   // get spurious repeats.
-  sync_callback_.reset(wl_display_sync(connection_->display()));
+  sync_callback_.reset(wl_display_sync(connection_->display_wrapper()));
   wl_callback_add_listener(sync_callback_.get(), &callback_listener_, this);
   connection_->ScheduleFlush();
 }

@@ -65,7 +65,8 @@ void WaylandDataDeviceBase::ReadClipboardDataFromFD(
 void WaylandDataDeviceBase::RegisterDeferredReadCallback() {
   DCHECK(!deferred_read_callback_);
 
-  deferred_read_callback_.reset(wl_display_sync(connection_->display()));
+  deferred_read_callback_.reset(
+      wl_display_sync(connection_->display_wrapper()));
 
   static const wl_callback_listener kListener = {
       WaylandDataDeviceBase::DeferredReadCallback};

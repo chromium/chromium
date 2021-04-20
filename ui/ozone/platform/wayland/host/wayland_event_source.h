@@ -49,7 +49,9 @@ class WaylandEventSource : public PlatformEventSource,
                            public WaylandPointer::Delegate,
                            public WaylandTouch::Delegate {
  public:
-  WaylandEventSource(wl_display* display, WaylandWindowManager* window_manager);
+  WaylandEventSource(wl_display* display,
+                     wl_event_queue* event_queue,
+                     WaylandWindowManager* window_manager);
   WaylandEventSource(const WaylandEventSource&) = delete;
   WaylandEventSource& operator=(const WaylandEventSource&) = delete;
   ~WaylandEventSource() override;
@@ -67,9 +69,9 @@ class WaylandEventSource : public PlatformEventSource,
   // Starts polling for events from the wayland connection file descriptor.
   // This method assumes connection is already estabilished and input objects
   // are already bound and properly initialized.
-  bool StartProcessingEvents();
+  void StartProcessingEvents();
   // Stops polling for events from input devices.
-  bool StopProcessingEvents();
+  void StopProcessingEvents();
 
   // Tells if pointer |button| is currently pressed.
   bool IsPointerButtonPressed(EventFlags button) const;
@@ -78,6 +80,9 @@ class WaylandEventSource : public PlatformEventSource,
   // pointer state is modified by a button pressed event, but the respective
   // button released event is not delivered (e.g: window moving, drag and drop).
   void ResetPointerFlags();
+
+  // See the comment near WaylandEventWatcher::use_dedicated_polling_thread_.
+  void UseSingleThreadedPollingForTesting();
 
  protected:
   // WaylandKeyboard::Delegate
