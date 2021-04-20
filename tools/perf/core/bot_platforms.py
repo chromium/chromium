@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import os
-import urllib
+import six.moves.urllib.parse  # pylint: disable=import-error
 
 from core import benchmark_finders
 from core import benchmark_utils
@@ -123,7 +123,7 @@ class PerfPlatform(object):
   @property
   def builder_url(self):
     return ('https://ci.chromium.org/p/chrome/builders/ci/%s' %
-             urllib.quote(self._name))
+            six.moves.urllib.parse.quote(self._name))
 
 
 class BenchmarkConfig(object):

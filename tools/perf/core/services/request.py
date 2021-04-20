@@ -4,7 +4,7 @@
 
 import json
 import logging
-import urllib
+import six.moves.urllib.parse  # pylint: disable=import-error
 
 # TODO(crbug.com/996778): Figure out how to get httplib2 hermetically.
 import httplib2  # pylint: disable=import-error
@@ -116,7 +116,7 @@ def Request(url, method='GET', params=None, data=None, accept=None,
   del retries  # Handled by the decorator.
 
   if params:
-    url = '%s?%s' % (url, urllib.urlencode(params))
+    url = '%s?%s' % (url, six.moves.urllib.parse.urlencode(params))
 
   body = None
   headers = {}
@@ -131,7 +131,7 @@ def Request(url, method='GET', params=None, data=None, accept=None,
       body = json.dumps(data, sort_keys=True, separators=(',', ':'))
       headers['Content-Type'] = 'application/json'
     elif content_type == 'urlencoded':
-      body = urllib.urlencode(data)
+      body = six.moves.urllib.parse.urlencode(data)
       headers['Content-Type'] = 'application/x-www-form-urlencoded'
     else:
       raise NotImplementedError('Invalid content type: %s' % content_type)
