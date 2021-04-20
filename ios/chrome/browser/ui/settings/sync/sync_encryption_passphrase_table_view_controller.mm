@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/cells/byo_textfield_item.h"
 #import "ios/chrome/browser/ui/settings/cells/passphrase_error_item.h"
-#import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -236,8 +235,6 @@ const CGFloat kSpinnerButtonPadding = 18;
   _passphrase.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   _passphrase.adjustsFontForContentSizeCategory = YES;
   _passphrase.placeholder = l10n_util::GetNSString(IDS_SYNC_PASSPHRASE_LABEL);
-  _passphrase.accessibilityIdentifier =
-      kSyncEncryptionPassphraseTextFieldAccessibilityIdentifier;
   [self registerTextField:_passphrase];
 
   BYOTextFieldItem* item =
@@ -498,20 +495,9 @@ const CGFloat kSpinnerButtonPadding = 18;
       (service->GetUserSettings()->IsUsingSecondaryPassphrase() ||
        [self forDecryption])) {
     _syncObserver.reset();
-    SettingsNavigationController* settingsNavigationController =
-        base::mac::ObjCCast<SettingsNavigationController>(
-            self.navigationController);
-    // During the sign-in flow it is possible for the Sync state to
-    // change when the user is in the Advanced Settings (e.g., if the user
-    // confirms a Sync passphrase). Because these navigation controllers are
-    // not directly related to Settings, we check the type before dismissal.
-    // TODO(crbug.com/1151287): Revisit with Advanced Sync Settings changes.
-    if (settingsNavigationController) {
-      [settingsNavigationController
-          popViewControllerOrCloseSettingsAnimated:YES];
-    } else {
-      [self.navigationController popViewControllerAnimated:YES];
-    }
+    [base::mac::ObjCCastStrict<SettingsNavigationController>(
+        self.navigationController)
+        popViewControllerOrCloseSettingsAnimated:YES];
     return;
   }
 
