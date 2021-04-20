@@ -1669,11 +1669,6 @@ const char kOmniboxKeywordSpaceTriggeringDescription[] =
     "Controls whether keyword mode can be triggered by space, double space, or "
     "neither.";
 
-const char kOmniboxLocalZeroSuggestFrecencyRankingName[] =
-    "Frecency ranking for local history zero-prefix suggestions";
-const char kOmniboxLocalZeroSuggestFrecencyRankingDescription[] =
-    "Enable frecency ranking for local history zero-prefix suggestions.";
-
 const char kOmniboxMostVisitedTilesName[] = "Omnibox Most Visited Tiles";
 const char kOmniboxMostVisitedTilesDescription[] =
     "Display a list of frquently visited pages from history as a single row "
@@ -2302,13 +2297,6 @@ const char kSmoothScrollingDescription[] =
 const char kWebOTPCrossDeviceName[] = "WebOTP Cross Device";
 const char kWebOTPCrossDeviceDescription[] =
     "Enable the WebOTP API to work across devices";
-
-const char kSpeculativeServiceWorkerStartOnQueryInputName[] =
-    "Enable speculative start of a service worker when a search is predicted.";
-const char kSpeculativeServiceWorkerStartOnQueryInputDescription[] =
-    "If enabled, when the user enters text in the omnibox that looks like a "
-    "a query, any service worker associated with the search engine the query "
-    "will be sent to is started early.";
 
 const char kSplitCacheByNetworkIsolationKeyName[] = "HTTP Cache Partitioning";
 const char kSplitCacheByNetworkIsolationKeyDescription[] =

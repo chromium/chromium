@@ -12,15 +12,12 @@ namespace omnibox {
 // Please do not add more features to this "big blob" list.
 // Instead, use the categorized and alphabetized lists below this "big blob".
 // You can create a new category if none of the existing ones fit.
-extern const base::Feature kHideFileUrlScheme;
-extern const base::Feature kOmniboxTailSuggestions;
 extern const base::Feature kOmniboxTabSwitchSuggestions;
 extern const base::Feature kExperimentalKeywordMode;
 extern const base::Feature kImageSearchSuggestionThumbnail;
 extern const base::Feature kSearchProviderWarmUpOnFocus;
 extern const base::Feature kDisplayTitleForCurrentUrl;
 extern const base::Feature kUIExperimentSwapTitleAndUrl;
-extern const base::Feature kSpeculativeServiceWorkerStartOnQueryInput;
 extern const base::Feature kDocumentProvider;
 extern const base::Feature kOmniboxRemoveSuggestionsFromClipboard;
 extern const base::Feature kDebounceDocumentProvider;
@@ -48,7 +45,6 @@ extern const base::Feature kDynamicMaxAutocomplete;
 extern const base::Feature kClobberTriggersContextualWebZeroSuggest;
 extern const base::Feature kOmniboxLocalZeroSuggestAgeThreshold;
 extern const base::Feature kOmniboxLocalZeroSuggestForAuthenticatedUsers;
-extern const base::Feature kOmniboxLocalZeroSuggestFrecencyRanking;
 extern const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP;
 extern const base::Feature kOmniboxZeroSuggestCaching;
 extern const base::Feature kOnFocusSuggestionsContextualWeb;

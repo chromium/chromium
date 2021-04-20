@@ -50,19 +50,6 @@ const auto enabled_by_default_desktop_ios =
 const base::Feature kAdaptiveSuggestionsCount{
     "OmniboxAdaptiveSuggestionsCount", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Feature used to hide the scheme from steady state URLs displayed in the
-// toolbar. It is restored during editing.
-const base::Feature kHideFileUrlScheme{
-    "OmniboxUIExperimentHideFileUrlScheme",
-    // Android and iOS don't have the File security chip, and therefore still
-    // need to show the file scheme.
-    enabled_by_default_desktop_only};
-
-// Feature used to force on the experiment of transmission of tail suggestions
-// from GWS to this client, currently testing for desktop.
-const base::Feature kOmniboxTailSuggestions{"OmniboxTailSuggestions",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Feature that enables the tab-switch suggestions corresponding to an open
 // tab, for a button or dedicated suggestion. Enabled by default on Desktop
 // and iOS.
@@ -94,13 +81,6 @@ const base::Feature kDisplayTitleForCurrentUrl{
 // Feature used to always swap the title and URL.
 const base::Feature kUIExperimentSwapTitleAndUrl{
     "OmniboxUIExperimentSwapTitleAndUrl", enabled_by_default_desktop_only};
-
-// Feature used to enable speculatively starting a service worker associated
-// with the destination of the default match when the user's input looks like a
-// query.
-const base::Feature kSpeculativeServiceWorkerStartOnQueryInput{
-    "OmniboxSpeculativeServiceWorkerStartOnQueryInput",
-    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature used to fetch document suggestions.
 const base::Feature kDocumentProvider{"OmniboxDocumentProvider",
@@ -182,11 +162,6 @@ const base::Feature kOmniboxLocalZeroSuggestAgeThreshold{
 const base::Feature kOmniboxLocalZeroSuggestForAuthenticatedUsers{
     "OmniboxLocalZeroSuggestForAuthenticatedUsers",
     base::FEATURE_ENABLED_BY_DEFAULT};
-
-// If enabled, ranks the local zero-prefix suggestions based on frecency
-// (combined frequency and recency).
-const base::Feature kOmniboxLocalZeroSuggestFrecencyRanking{
-    "OmniboxLocalZeroSuggestFrecencyRanking", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Used to force enable/disable trending zero-prefix suggestions on the NTP
 // (Omnibox and NTP realbox). This feature triggers a server-side behavior only

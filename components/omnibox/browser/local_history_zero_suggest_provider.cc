@@ -232,17 +232,12 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
       template_url_service->GetDefaultSearchProvider()->id(),
       OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold());
 
-  bool frecency_ranking = base::FeatureList::IsEnabled(
-      omnibox::kOmniboxLocalZeroSuggestFrecencyRanking);
   const base::Time now = base::Time::Now();
   const int kRecencyDecayUnitSec = 60;
   const double kFrequencyExponent = 1.15;
   auto CompareByFrecency = [&](const auto& a, const auto& b) {
-    return frecency_ranking
-               ? a.GetFrecency(now, kRecencyDecayUnitSec, kFrequencyExponent) >
-                     b.GetFrecency(now, kRecencyDecayUnitSec,
-                                   kFrequencyExponent)
-               : a.most_recent_visit_time > b.most_recent_visit_time;
+    return a.GetFrecency(now, kRecencyDecayUnitSec, kFrequencyExponent) >
+           b.GetFrecency(now, kRecencyDecayUnitSec, kFrequencyExponent);
   };
   std::sort(results.begin(), results.end(), CompareByFrecency);
 

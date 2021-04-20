@@ -61,8 +61,10 @@ std::u16string LocationBarModelImpl::GetURLForDisplay() const {
   format_types |= url_formatter::kFormatUrlOmitHTTPS;
   format_types |= url_formatter::kFormatUrlOmitTrivialSubdomains;
 
-  if (base::FeatureList::IsEnabled(omnibox::kHideFileUrlScheme))
-    format_types |= url_formatter::kFormatUrlOmitFileScheme;
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+  // On desktop, the File chip makes the scheme redundant in the steady state.
+  format_types |= url_formatter::kFormatUrlOmitFileScheme;
+#endif
 
   if (dom_distiller::url_utils::IsDistilledPage(GetURL())) {
     // We explicitly elide the scheme here to ensure that HTTPS and HTTP will

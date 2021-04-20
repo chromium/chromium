@@ -973,9 +973,6 @@ extern const char kOmniboxKeywordSpaceTriggeringDescription[];
 extern const char kOmniboxExperimentalSuggestScoringName[];
 extern const char kOmniboxExperimentalSuggestScoringDescription[];
 
-extern const char kOmniboxLocalZeroSuggestFrecencyRankingName[];
-extern const char kOmniboxLocalZeroSuggestFrecencyRankingDescription[];
-
 extern const char kOmniboxMostVisitedTilesName[];
 extern const char kOmniboxMostVisitedTilesDescription[];
 
@@ -1333,9 +1330,6 @@ extern const char kSmoothScrollingDescription[];
 
 extern const char kWebOTPCrossDeviceName[];
 extern const char kWebOTPCrossDeviceDescription[];
-
-extern const char kSpeculativeServiceWorkerStartOnQueryInputName[];
-extern const char kSpeculativeServiceWorkerStartOnQueryInputDescription[];
 
 extern const char kSplitCacheByNetworkIsolationKeyName[];
 extern const char kSplitCacheByNetworkIsolationKeyDescription[];

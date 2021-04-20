@@ -489,9 +489,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   // only do this once per session. Additionally, a default match is expected to
   // be available at this point but we check anyway to guard against an invalid
   // dereference.
-  if (base::FeatureList::IsEnabled(
-          omnibox::kSpeculativeServiceWorkerStartOnQueryInput) &&
-      input.type() == metrics::OmniboxInputType::QUERY &&
+  if (input.type() == metrics::OmniboxInputType::QUERY &&
       !search_service_worker_signal_sent_ && result_.default_match()) {
     search_service_worker_signal_sent_ = true;
     provider_client_->StartServiceWorker(

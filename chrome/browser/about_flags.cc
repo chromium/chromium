@@ -4239,12 +4239,6 @@ const FeatureEntry kFeatureEntries[] = {
          kOmniboxOnFocusSuggestionsContextualWebVariations,
          "OmniboxGoogleOnContent")},
 
-    {"omnibox-local-zero-suggest-frecency-ranking",
-     flag_descriptions::kOmniboxLocalZeroSuggestFrecencyRankingName,
-     flag_descriptions::kOmniboxLocalZeroSuggestFrecencyRankingDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxLocalZeroSuggestFrecencyRanking)},
-
     {"omnibox-experimental-suggest-scoring",
      flag_descriptions::kOmniboxExperimentalSuggestScoringName,
      flag_descriptions::kOmniboxExperimentalSuggestScoringDescription, kOsAll,
@@ -4361,12 +4355,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "OmniboxBundledExperimentV1")},
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
         // defined(OS_WIN)
-
-    {"enable-speculative-service-worker-start-on-query-input",
-     flag_descriptions::kSpeculativeServiceWorkerStartOnQueryInputName,
-     flag_descriptions::kSpeculativeServiceWorkerStartOnQueryInputDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kSpeculativeServiceWorkerStartOnQueryInput)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"scheduler-configuration", flag_descriptions::kSchedulerConfigurationName,
