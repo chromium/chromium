@@ -1472,6 +1472,10 @@ const char kMediaRouterCastAllowAllIPsDescription[] =
     "Have the Media Router connect to Cast devices on all IP addresses, not "
     "just RFC1918/RFC4193 private addresses.";
 
+const char kMediaSessionWebRTCName[] = "Enable WebRTC actions in Media Session";
+const char kMediaSessionWebRTCDescription[] =
+    "Adds new actions into Media Session for video conferencing.";
+
 const char kMemoriesName[] = "Memories";
 const char kMemoriesDescription[] = "Enables chrome://memories.";
 

@@ -863,6 +863,9 @@ extern const char kMediaHistoryDescription[];
 extern const char kMediaRouterCastAllowAllIPsName[];
 extern const char kMediaRouterCastAllowAllIPsDescription[];
 
+extern const char kMediaSessionWebRTCName[];
+extern const char kMediaSessionWebRTCDescription[];
+
 extern const char kMemoriesName[];
 extern const char kMemoriesDescription[];
 
