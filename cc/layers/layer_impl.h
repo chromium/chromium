@@ -373,17 +373,23 @@ class CC_EXPORT LayerImpl {
   // for layers that provide it.
   virtual Region GetInvalidationRegionForDebugging();
 
+  // Returns the visible rect that is used by damage tracker. This damage rect
+  // is computed as an eclosing rect of actual content size x transform to
+  // target space, which can be different from visible_drawing_content_rect. For
+  // example, the actual tile size of picture layer in the target surface can be
+  // bigger when e.g. the layer's raster scale is different from the scale of
+  // the layer's draw transform.
   // If you override this, and are making use of
   // PopulateScaledSharedQuadState(), make sure you call
-  // GetScaledEnclosingRectInTargetSpace(). See comment for
+  // GetScaledEnclosingVisibleRectInTargetSpace(). See comment for
   // PopulateScaledSharedQuadState().
-  virtual gfx::Rect GetEnclosingRectInTargetSpace() const;
+  virtual gfx::Rect GetEnclosingVisibleRectInTargetSpace() const;
 
-  // Returns the bounds of this layer in target space when scaled by |scale|.
-  // This function scales in the same way as
+  // Returns the visible bounds of this layer in target space when scaled by
+  // |scale|.  This function scales in the same way as
   // PopulateScaledSharedQuadStateQuadState(). See
   // PopulateScaledSharedQuadStateQuadState() for more details.
-  gfx::Rect GetScaledEnclosingRectInTargetSpace(float scale) const;
+  gfx::Rect GetScaledEnclosingVisibleRectInTargetSpace(float scale) const;
 
   // GetIdealContentsScale() returns the ideal 2D scale, clamped to not exceed
   // GetPreferredRasterScale().
@@ -445,6 +451,7 @@ class CC_EXPORT LayerImpl {
 
  private:
   void ValidateQuadResourcesInternal(viz::DrawQuad* quad) const;
+  gfx::Transform GetScaledDrawTransform(float layer_to_content_scale) const;
 
   virtual const char* LayerTypeAsString() const;
 

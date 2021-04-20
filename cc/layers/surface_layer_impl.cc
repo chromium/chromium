@@ -211,8 +211,8 @@ bool SurfaceLayerImpl::is_surface_layer() const {
   return true;
 }
 
-gfx::Rect SurfaceLayerImpl::GetEnclosingRectInTargetSpace() const {
-  return GetScaledEnclosingRectInTargetSpace(
+gfx::Rect SurfaceLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
+  return GetScaledEnclosingVisibleRectInTargetSpace(
       layer_tree_impl()->device_scale_factor());
 }
 

@@ -354,19 +354,20 @@ void DamageTracker::AccumulateDamageFromLayer(LayerImpl* layer) {
   // instead.
   bool layer_is_new = false;
   LayerRectMapData& data = RectDataForLayer(layer->id(), &layer_is_new);
-  gfx::Rect old_rect_in_target_space = data.rect_;
+  gfx::Rect old_visible_rect_in_target_space = data.rect_;
 
-  gfx::Rect rect_in_target_space = layer->GetEnclosingRectInTargetSpace();
-  data.Update(rect_in_target_space, mailboxId_);
+  gfx::Rect visible_rect_in_target_space =
+      layer->GetEnclosingVisibleRectInTargetSpace();
+  data.Update(visible_rect_in_target_space, mailboxId_);
 
   if (layer_is_new || layer->LayerPropertyChanged()) {
     // If a layer is new or has changed, then its entire layer rect affects the
     // target surface.
-    damage_for_this_update_.Union(rect_in_target_space);
+    damage_for_this_update_.Union(visible_rect_in_target_space);
 
     // The layer's old region is now exposed on the target surface, too.
-    // Note old_rect_in_target_space is already in target space.
-    damage_for_this_update_.Union(old_rect_in_target_space);
+    // Note old_visible_rect_in_target_space is already in target space.
+    damage_for_this_update_.Union(old_visible_rect_in_target_space);
   } else {
     // If the layer properties haven't changed, then the the target surface is
     // only affected by the layer's damaged area, which could be empty.
@@ -375,9 +376,10 @@ void DamageTracker::AccumulateDamageFromLayer(LayerImpl* layer) {
     damage_rect.Intersect(gfx::Rect(layer->bounds()));
 
     if (!damage_rect.IsEmpty()) {
-      gfx::Rect damage_rect_in_target_space = MathUtil::MapEnclosingClippedRect(
-          layer->DrawTransform(), damage_rect);
-      damage_for_this_update_.Union(damage_rect_in_target_space);
+      gfx::Rect damage_visible_rect_in_target_space =
+          MathUtil::MapEnclosingClippedRect(layer->DrawTransform(),
+                                            damage_rect);
+      damage_for_this_update_.Union(damage_visible_rect_in_target_space);
     }
   }
 

@@ -1006,8 +1006,9 @@ bool PictureLayerImpl::DidCheckerboardQuad() const {
   return did_checkerboard_quad_;
 }
 
-gfx::Rect PictureLayerImpl::GetEnclosingRectInTargetSpace() const {
-  return GetScaledEnclosingRectInTargetSpace(MaximumTilingContentsScale());
+gfx::Rect PictureLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
+  return GetScaledEnclosingVisibleRectInTargetSpace(
+      MaximumTilingContentsScale());
 }
 
 bool PictureLayerImpl::ShouldAnimate(PaintImage::Id paint_image_id) const {

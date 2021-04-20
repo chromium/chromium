@@ -176,9 +176,7 @@ void LayerImpl::PopulateScaledSharedQuadStateWithContentRects(
     const gfx::Rect& visible_content_rect,
     bool contents_opaque) const {
   gfx::Transform scaled_draw_transform =
-      draw_properties_.target_space_transform;
-  scaled_draw_transform.Scale(SK_Scalar1 / layer_to_content_scale,
-                              SK_Scalar1 / layer_to_content_scale);
+      GetScaledDrawTransform(layer_to_content_scale);
 
   EffectNode* effect_node = GetEffectTree().Node(effect_tree_index_);
   base::Optional<gfx::Rect> clip_rect;
@@ -468,6 +466,15 @@ void LayerImpl::ValidateQuadResourcesInternal(viz::DrawQuad* quad) const {
   for (viz::ResourceId resource_id : quad->resources)
     resource_provider->ValidateResource(resource_id);
 #endif
+}
+
+gfx::Transform LayerImpl::GetScaledDrawTransform(
+    float layer_to_content_scale) const {
+  gfx::Transform scaled_draw_transform =
+      draw_properties_.target_space_transform;
+  scaled_draw_transform.Scale(SK_Scalar1 / layer_to_content_scale,
+                              SK_Scalar1 / layer_to_content_scale);
+  return scaled_draw_transform;
 }
 
 const char* LayerImpl::LayerTypeAsString() const {
@@ -776,17 +783,29 @@ Region LayerImpl::GetInvalidationRegionForDebugging() {
   return Region(update_rect_);
 }
 
-gfx::Rect LayerImpl::GetEnclosingRectInTargetSpace() const {
-  return MathUtil::MapEnclosingClippedRect(DrawTransform(),
-                                           gfx::Rect(bounds()));
+gfx::Rect LayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
+  return GetScaledEnclosingVisibleRectInTargetSpace(1.0f);
 }
 
-gfx::Rect LayerImpl::GetScaledEnclosingRectInTargetSpace(float scale) const {
-  gfx::Transform scaled_draw_transform = DrawTransform();
-  scaled_draw_transform.Scale(SK_Scalar1 / scale, SK_Scalar1 / scale);
-  gfx::Size scaled_bounds = gfx::ScaleToCeiledSize(bounds(), scale);
+gfx::Rect LayerImpl::GetScaledEnclosingVisibleRectInTargetSpace(
+    float scale) const {
+  // TODO(oshima): Define an utility function to scale layer and conslidate with
+  // the logic in ComputeDrawPropertiesOfVisibleLayers() in
+  // draw_property_util.cc.
+  DCHECK_GT(scale, 0.0);
+
+  bool only_draws_visible_content = GetPropertyTrees()
+                                        ->effect_tree.Node(effect_tree_index())
+                                        ->only_draws_visible_content;
+  gfx::Rect drawable_bounds = visible_layer_rect();
+  if (!only_draws_visible_content) {
+    drawable_bounds = gfx::Rect(bounds());
+  }
+  gfx::Transform scaled_draw_transform = GetScaledDrawTransform(scale);
+  gfx::Rect scaled_bounds = ScaleToEnclosingRect(drawable_bounds, scale);
+
   return MathUtil::MapEnclosingClippedRect(scaled_draw_transform,
-                                           gfx::Rect(scaled_bounds));
+                                           scaled_bounds);
 }
 
 RenderSurfaceImpl* LayerImpl::render_target() {

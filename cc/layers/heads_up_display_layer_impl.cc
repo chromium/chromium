@@ -533,9 +533,10 @@ void HeadsUpDisplayLayerImpl::ReleaseResources() {
   pool_.reset();
 }
 
-gfx::Rect HeadsUpDisplayLayerImpl::GetEnclosingRectInTargetSpace() const {
+gfx::Rect HeadsUpDisplayLayerImpl::GetEnclosingVisibleRectInTargetSpace()
+    const {
   DCHECK_GT(internal_contents_scale_, 0.f);
-  return GetScaledEnclosingRectInTargetSpace(internal_contents_scale_);
+  return GetScaledEnclosingVisibleRectInTargetSpace(internal_contents_scale_);
 }
 
 void HeadsUpDisplayLayerImpl::SetHUDTypeface(sk_sp<SkTypeface> typeface) {

@@ -157,11 +157,12 @@ void PaintedScrollbarLayerImpl::AppendQuads(
   }
 }
 
-gfx::Rect PaintedScrollbarLayerImpl::GetEnclosingRectInTargetSpace() const {
+gfx::Rect PaintedScrollbarLayerImpl::GetEnclosingVisibleRectInTargetSpace()
+    const {
   if (internal_content_bounds_.IsEmpty())
     return gfx::Rect();
   DCHECK_GT(internal_contents_scale_, 0.f);
-  return GetScaledEnclosingRectInTargetSpace(internal_contents_scale_);
+  return GetScaledEnclosingVisibleRectInTargetSpace(internal_contents_scale_);
 }
 
 void PaintedScrollbarLayerImpl::SetJumpOnTrackClick(bool jump_on_track_click) {

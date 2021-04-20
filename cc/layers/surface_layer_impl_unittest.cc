@@ -278,8 +278,9 @@ TEST(SurfaceLayerImplTest, GetEnclosingRectInTargetSpace) {
   // GetEnclosingRectInTargetSpace() and GetScaledEnclosingRectInTargetSpace()
   // should return the same value, otherwise we may not damage the right
   // pixels.
-  EXPECT_EQ(surface_layer_impl->GetScaledEnclosingRectInTargetSpace(1.33),
-            surface_layer_impl->GetEnclosingRectInTargetSpace());
+  EXPECT_EQ(
+      surface_layer_impl->GetScaledEnclosingVisibleRectInTargetSpace(1.33),
+      surface_layer_impl->GetEnclosingVisibleRectInTargetSpace());
 }
 
 TEST(SurfaceLayerImplTest, WillDrawNotifiesSynchronouslyInCompositeImmediate) {

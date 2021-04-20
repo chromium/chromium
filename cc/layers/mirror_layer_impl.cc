@@ -4,6 +4,8 @@
 
 #include "cc/layers/mirror_layer_impl.h"
 
+#include <memory>
+
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/occlusion.h"
@@ -75,11 +77,10 @@ gfx::Rect MirrorLayerImpl::GetDamageRect() const {
   return gfx::Rect(bounds());
 }
 
-gfx::Rect MirrorLayerImpl::GetEnclosingRectInTargetSpace() const {
+gfx::Rect MirrorLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
   const LayerImpl* mirrored_layer =
       layer_tree_impl()->LayerById(mirrored_layer_id_);
-  // TODO(crbug.com/1196414): Support 2D scales in mirror layers.
-  return GetScaledEnclosingRectInTargetSpace(
+  return GetScaledEnclosingVisibleRectInTargetSpace(
       mirrored_layer->GetIdealContentsScaleKey());
 }
 

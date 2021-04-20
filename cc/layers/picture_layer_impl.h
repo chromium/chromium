@@ -66,7 +66,7 @@ class CC_EXPORT PictureLayerImpl
   void ReleaseTileResources() override;
   void RecreateTileResources() override;
   Region GetInvalidationRegionForDebugging() override;
-  gfx::Rect GetEnclosingRectInTargetSpace() const override;
+  gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override;
   gfx::ContentColorUsage GetContentColorUsage() const override;
 
   // PictureLayerTilingClient overrides.

@@ -3048,14 +3048,15 @@ class LayerTreeHostTestDamageWithScale : public LayerTreeHostTest {
                 host_impl->active_tree()->LayerById(child_layer_->id()));
         // We remove tilings pretty aggressively if they are not ideal. Add this
         // back in so that we can compare
-        // child_layer_impl->GetEnclosingRectInTargetSpace to the damage.
+        // child_layer_impl->GetEnclosingVisibleRectInTargetSpace to the damage.
         child_layer_impl->AddTilingUntilNextDraw(1.3f);
 
         EXPECT_EQ(gfx::Rect(26, 26), root_damage_rect);
-        EXPECT_EQ(child_layer_impl->GetEnclosingRectInTargetSpace(),
+        EXPECT_EQ(child_layer_impl->GetEnclosingVisibleRectInTargetSpace(),
                   root_damage_rect);
-        EXPECT_TRUE(child_layer_impl->GetEnclosingRectInTargetSpace().Contains(
-            gfx::Rect(child_layer_->bounds())));
+        EXPECT_TRUE(
+            child_layer_impl->GetEnclosingVisibleRectInTargetSpace().Contains(
+                gfx::Rect(child_layer_->bounds())));
         break;
       }
       default:

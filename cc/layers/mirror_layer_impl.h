@@ -47,7 +47,7 @@ class CC_EXPORT MirrorLayerImpl : public LayerImpl {
                    AppendQuadsData* append_quads_data) override;
   void PushPropertiesTo(LayerImpl* layer) override;
   gfx::Rect GetDamageRect() const override;
-  gfx::Rect GetEnclosingRectInTargetSpace() const override;
+  gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override;
 
  protected:
   MirrorLayerImpl(LayerTreeImpl* tree_impl, int id);
