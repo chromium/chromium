@@ -137,8 +137,7 @@ class ESimProfileTest : public ESimTestBase {
   mojom::ProfileInstallResult InstallProfile(
       const mojo::Remote<mojom::ESimProfile>& esim_profile,
       bool wait_for_connect,
-      bool fail_connect,
-      const uint64_t& connect_latency_in_ms = 0) {
+      bool fail_connect) {
     mojom::ProfileInstallResult out_install_result;
 
     base::RunLoop run_loop;
@@ -151,9 +150,6 @@ class ESimProfileTest : public ESimTestBase {
             }));
 
     if (wait_for_connect) {
-      base::RunLoop().RunUntilIdle();
-      task_environment()->AdvanceClock(
-          base::TimeDelta::FromMilliseconds(connect_latency_in_ms));
       base::RunLoop().RunUntilIdle();
       EXPECT_LE(1u, network_connection_handler()->connect_calls().size());
       if (fail_connect) {
@@ -213,13 +209,14 @@ TEST_F(ESimProfileTest, InstallProfile) {
   EXPECT_EQ(mojom::ProfileInstallResult::kErrorNeedsConfirmationCode,
             install_result);
 
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "Network.Cellular.ESim.ProfileDownload.PendingProfile.Latency", 0);
+
   // Verify that installing pending profile returns proper results
   // and updates esim_profile properties.
-  base::HistogramTester histogram_tester;
-  const uint64_t connect_latency_in_ms = 3000;
-  install_result =
-      InstallProfile(esim_profile, /*wait_for_connect=*/true,
-                     /*fail_connect=*/false, connect_latency_in_ms);
+  install_result = InstallProfile(esim_profile, /*wait_for_connect=*/true,
+                                  /*fail_connect=*/false);
   // Wait for property changes to propagate.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, install_result);
@@ -228,10 +225,6 @@ TEST_F(ESimProfileTest, InstallProfile) {
   EXPECT_EQ(dbus_properties->iccid().value(), mojo_properties->iccid);
   EXPECT_NE(mojo_properties->state, mojom::ProfileState::kPending);
   EXPECT_EQ(1u, observer()->profile_list_change_calls().size());
-
-  histogram_tester.ExpectTimeBucketCount(
-      "Network.Cellular.ESim.ProfileDownload.PendingProfile.Latency",
-      base::TimeDelta::FromMilliseconds(connect_latency_in_ms), 1);
 
   histogram_tester.ExpectTotalCount(
       "Network.Cellular.ESim.ProfileDownload.PendingProfile.Latency", 1);
@@ -269,11 +262,11 @@ TEST_F(ESimProfileTest, InstallConnectFailure) {
   mojo::Remote<mojom::ESimProfile> esim_profile = GetESimProfileForIccid(
       ESimTestBase::kTestEid, dbus_properties->iccid().value());
 
-  // Verify that connect failures returns error code properly.
+  // Verify that connect failures still return success code.
   mojom::ProfileInstallResult install_result =
       InstallProfile(esim_profile, /*wait_for_connect=*/true,
                      /*fail_connect=*/true);
-  EXPECT_EQ(mojom::ProfileInstallResult::kFailure, install_result);
+  EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, install_result);
 }
 
 TEST_F(ESimProfileTest, UninstallProfile) {
