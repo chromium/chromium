@@ -109,9 +109,6 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
     // may be used by ServiceWorkerMainResourceLoader for navigations handled
     // by this service worker.
     options |= network::mojom::kURLLoadOptionSendSSLInfoWithResponse;
-
-    // TODO(crbug.com/1199892): Investigate if we still need to set the header
-    // here.
     resource_request.headers.SetHeader("Service-Worker", "script");
   }
 
