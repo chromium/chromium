@@ -14,8 +14,8 @@ template("ts_definitions") {
                              "js_files",
                            ])
 
-    inputs = []
-    outputs = []
+    inputs = [ "//tools/typescript/tsconfig_definitions_base.json" ]
+    outputs = [ "$target_gen_dir/tsconfig_definitions.json" ]
 
     root_dir = "."
     if (defined(invoker.root_dir)) {
@@ -37,6 +37,8 @@ template("ts_definitions") {
     args = [
              "--root_dir",
              rebase_path(root_dir, root_build_dir),
+             "--gen_dir",
+             rebase_path(target_gen_dir, root_build_dir),
              "--out_dir",
              rebase_path(out_dir, root_build_dir),
              "--js_files",

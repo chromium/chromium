@@ -29,6 +29,8 @@ class TsLibraryTest(unittest.TestCase):
     ts_definitions.main([
         '--root_dir',
         os.path.join(_HERE_DIR, 'tests', 'project1'),
+        '--gen_dir',
+        gen_dir,
         '--out_dir',
         gen_dir,
         '--js_files',
@@ -55,6 +57,8 @@ class TsLibraryTest(unittest.TestCase):
         'foo.d.ts',
         'foo.js',
         'legacy_file.d.ts',
+        'tsconfig_definitions.json',
+        'tsconfig.json',
         'tsconfig.manifest',
         'tsconfig.tsbuildinfo',
     ]

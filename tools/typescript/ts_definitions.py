@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import argparse
+import json
 import os
 import re
 import sys
@@ -16,14 +17,38 @@ import node
 import node_modules
 
 
+_TSCONFIG_BASE = 'tsconfig_definitions_base.json'
+_TSCONFIG_GEN = 'tsconfig_definitions.json'
+
+
+def _write_tsconfig_json(gen_dir, tsconfig):
+  if not os.path.exists(gen_dir):
+    os.makedirs(gen_dir)
+
+  with open(os.path.join(gen_dir, _TSCONFIG_GEN), 'w') as generated_tsconfig:
+    json.dump(tsconfig, generated_tsconfig, indent=2)
+  return
+
+
 def main(argv):
   parser = argparse.ArgumentParser()
+  parser.add_argument('--gen_dir', required=True)
   parser.add_argument('--out_dir', required=True)
   parser.add_argument('--root_dir', required=True)
   parser.add_argument('--js_files', nargs='*', required=True)
   args = parser.parse_args(argv)
 
-  js_files = [os.path.join(args.root_dir, f) for f in args.js_files]
+  with open(os.path.join(_HERE_DIR, _TSCONFIG_BASE)) as root_tsconfig:
+    tsconfig = json.loads(root_tsconfig.read())
+
+  root_dir = os.path.relpath(args.root_dir, args.gen_dir)
+  out_dir = os.path.relpath(args.out_dir, args.gen_dir)
+
+  tsconfig['files'] = [os.path.join(root_dir, f) for f in args.js_files]
+  tsconfig['compilerOptions']['rootDir'] = root_dir
+  tsconfig['compilerOptions']['outDir'] = out_dir
+
+  _write_tsconfig_json(args.gen_dir, tsconfig)
 
   if (args.root_dir == args.out_dir):
     # Delete .d.ts files if they already exist, otherwise TypeScript compiler
@@ -35,17 +60,9 @@ def main(argv):
         os.remove(to_delete)
 
   node.RunNode([
-      node_modules.PathToTypescript(),
-      '--declaration',
-      '--allowJs',
-      '--emitDeclarationOnly',
-      '--removeComments',
-      '--noResolve',
-      '--rootDir',
-      args.root_dir,
-      '--outDir',
-      args.out_dir,
-  ] + js_files)
+      node_modules.PathToTypescript(), '--project',
+      os.path.join(args.gen_dir, _TSCONFIG_GEN)
+  ])
 
 
 if __name__ == '__main__':
