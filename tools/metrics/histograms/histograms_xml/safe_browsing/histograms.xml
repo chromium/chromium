@@ -28,6 +28,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       summary="dangerous download warning bypass"/>
   <variant name="DatabaseInterstitialBypass"
       summary="Safe Browsing database interstitial bypass"/>
+  <variant name="ExtensionAllowlistInstallBypass"
+      summary="extension allowlist install bypass"/>
+  <variant name="NonAllowlistedExtensionReEnabled"
+      summary="non allowlisted extension re-enabled"/>
   <variant name="PasswordReuseModalBypass"
       summary="password reuse modal warning bypass"/>
   <variant name="RealTimeInterstitialBypass"

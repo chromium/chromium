@@ -113,6 +113,11 @@ class ExtensionAllowlist : private ExtensionPrefsObserver {
       const std::string& extension_id,
       bool show_warning);
 
+  // Adds extension acknowledged events to Safe Browsing metrics collector for
+  // further metrics logging. Called when a user decides to re-enable an
+  // extension that is not on the allowlist.
+  void ReportExtensionReEnabledEvent();
+
   base::ObserverList<Observer> observers_;
 
   Profile* profile_ = nullptr;

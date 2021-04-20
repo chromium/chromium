@@ -800,6 +800,7 @@ static_library("extensions") {
     "//chrome/browser/resource_coordinator:intervention_policy_database_proto",
     "//chrome/browser/resource_coordinator:mojo_bindings",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/safe_browsing:metrics_collector",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/components",
     "//components/site_engagement/core/mojom:mojo_bindings",
