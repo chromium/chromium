@@ -160,7 +160,8 @@ def CheckoutLLVM(commit, dir):
 
 def UrlOpen(url):
   # TODO(crbug.com/1067752): Use urllib once certificates are fixed.
-  return subprocess.check_output(['curl', '--silent', url])
+  return subprocess.check_output(['curl', '--silent', url],
+                                 universal_newlines=True)
 
 
 def GetLatestLLVMCommit():
@@ -178,7 +179,8 @@ def GetCommitDescription(commit):
   Needs to be called from inside the git repository dir."""
   git_exe = 'git.bat' if sys.platform.startswith('win') else 'git'
   return subprocess.check_output(
-      [git_exe, 'describe', '--long', '--abbrev=8', commit]).rstrip()
+      [git_exe, 'describe', '--long', '--abbrev=8', commit],
+      universal_newlines=True).rstrip()
 
 
 def DeleteChromeToolsShim():
@@ -518,7 +520,8 @@ def main():
   MaybeDownloadHostGcc(args)
 
   if sys.platform == 'darwin':
-    isysroot = subprocess.check_output(['xcrun', '--show-sdk-path']).rstrip()
+    isysroot = subprocess.check_output(['xcrun', '--show-sdk-path'],
+                                       universal_newlines=True).rstrip()
 
   global CLANG_REVISION, PACKAGE_VERSION, LLVM_BUILD_DIR
 

@@ -53,7 +53,7 @@ is_win = sys.platform.startswith('win32')
 
 
 def PatchRevision(clang_git_revision, clang_sub_revision):
-  with open(UPDATE_PY_PATH, 'rb') as f:
+  with open(UPDATE_PY_PATH) as f:
     content = f.read()
   m = re.search("CLANG_REVISION = '([0-9a-z-]+)'", content)
   clang_old_git_revision = m.group(1)
@@ -67,7 +67,7 @@ def PatchRevision(clang_git_revision, clang_sub_revision):
   content = re.sub("CLANG_SUB_REVISION = [0-9]+",
                    "CLANG_SUB_REVISION = {}".format(clang_sub_revision),
                    content, count=1)
-  with open(UPDATE_PY_PATH, 'wb') as f:
+  with open(UPDATE_PY_PATH, 'w') as f:
     f.write(content)
   return "{}-{}".format(clang_old_git_revision, clang_old_sub_revision)
 
