@@ -1,3 +1,0 @@
-file://components/permissions/PERMISSIONS_OWNERS
-
-per-file *webxr_permission_context*=file://content/browser/xr/OWNERS
