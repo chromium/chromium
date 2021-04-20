@@ -71,3 +71,57 @@ template("cipd_package_definition") {
     outputs = [ "${_package_staging_dir}/{{source_file_part}}" ]
   }
 }
+
+# Create a cipd file based on inputs and FILES.cfg config. Most of the arguments
+# are similar with |cipd_package_definition| above.
+#
+# Additional parameters:
+#
+#   package_definition_yaml: The output yaml file. Default is
+#                            ${target_name}_cipd.yaml.
+#   files_file: The file defines what files and directories to include.
+#               Example: //tools/build/chromeos/FILES.cfg.
+#   buildtype: str, required. It can be "dev" or "official".
+#              Only when the file has the same buildtype, it will be included.
+#   arch: str, required. It can be "32bit", "64bit", "arm".
+#
+# Example:
+# cipd_package_definition_by_file("chrome_cipd") {
+#     package = "path/to/cipd/package"
+#     description = "Prebuilt test binary."
+#     install_mode = "copy"
+#     files_file = "//chrome/tools/build/chromeos/FILES.json"
+#     buildtype = "dev"
+#     arch = "64bit"
+#     deps = [ "//path/to:test_binary_target" ]
+#   }
+template("cipd_package_definition_by_file") {
+  forward_variables_from(invoker,
+                         [
+                           "deps",
+                           "data",
+                           "data_deps",
+                           "sources",
+                           "testonly",
+                         ])
+  _output_yaml_filename = "${target_name}_cipd.yaml"
+  if (defined(invoker.package_definition_yaml)) {
+    _output_yaml_filename = invoker.package_definition_yaml
+  }
+  action(target_name) {
+    script = "//build/cipd/cipd_from_file.py"
+    inputs = [ "//build/cipd/cipd_from_file.py" ]
+    args = [
+      "--description=" + invoker.description,
+      "--buildtype=" + invoker.buildtype,
+      "--arch=" + invoker.arch,
+      "--files_file=" + rebase_path(invoker.files_file, root_build_dir),
+      "--package=" + invoker.package,
+      "--install_mode=" + invoker.install_mode,
+      "--output_yaml_file=" +
+          rebase_path("${root_out_dir}/" + _output_yaml_filename,
+                      root_build_dir),
+    ]
+    outputs = [ "${root_out_dir}/" + _output_yaml_filename ]
+  }
+}

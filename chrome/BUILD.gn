@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/cipd/cipd.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/chromeos/ui_mode.gni")
@@ -1777,6 +1778,22 @@ if (is_chromeos_lacros && is_official_build) {
     binary_input = "$root_out_dir/chrome"
     symbol_output = "$root_out_dir/chrome.debug"
     stripped_binary_output = "$root_out_dir/chrome.stripped"
+    deps = [ ":chrome" ]
+  }
+}
+
+# This target is for Lacros version skew testing.
+if (is_chromeos_ash) {
+  cipd_package_definition_by_file("gen_linux_ash_chromium_cipd_yaml") {
+    testonly = true
+    buildtype = "dev"
+    arch = "64bit"
+    files_file = "//chrome/tools/build/chromeos/FILES.cfg"
+
+    # TODO(crbug.com/1196133): Change to an official location when it's ready.
+    package = "experimental/svenzheng_at_google.com/chromium/testing/linux-ash-chromium/x86_64/ash.zip"
+    description = "Prebuilt test binary."
+    install_mode = "copy"
     deps = [ ":chrome" ]
   }
 }
