@@ -15640,6 +15640,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="62" label="NEED_UPDATE"/>
   <int value="63" label="SHARE_PATHS_FAILED"/>
   <int value="64" label="UNREGISTERED_APPLICATION"/>
+  <int value="65" label="VSH_CONNECT_FAILED"/>
 </enum>
 
 <enum name="CrostiniSettingsEvent">

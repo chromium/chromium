@@ -54,12 +54,33 @@ CrostiniStartupStatus::~CrostiniStartupStatus() = default;
 
 void CrostiniStartupStatus::OnCrostiniRestarted(
     crostini::CrostiniResult result) {
+  if (result != crostini::CrostiniResult::SUCCESS) {
+    PrintAfterStage(
+        kColor1RedBright,
+        base::StringPrintf("Error starting penguin container: %d\r\n", result));
+    crostini::RecordAppLaunchResultHistogram(
+        crostini::CrostiniAppLaunchAppType::kTerminal, result);
+  } else {
+    if (verbose_) {
+      // We change the stage_string but don't increment the stage number. This
+      // is deliberate, per UX they don't want more pieces in the stage progress
+      // bar.
+      const std::string& stage_string = l10n_util::GetStringUTF8(
+          IDS_CROSTINI_TERMINAL_STATUS_CONNECT_CONTAINER);
+      PrintStage(kColor3Yellow, stage_string);
+    }
+  }
+}
+
+void CrostiniStartupStatus::OnCrostiniConnected(
+    crostini::CrostiniResult result) {
   crostini::RecordAppLaunchResultHistogram(
       crostini::CrostiniAppLaunchAppType::kTerminal, result);
   if (result != crostini::CrostiniResult::SUCCESS) {
     PrintAfterStage(
         kColor1RedBright,
-        base::StringPrintf("Error starting penguin container: %d\r\n", result));
+        base::StringPrintf(
+            "Error connecting shell to penguin container: %d\r\n", result));
   } else {
     if (verbose_) {
       stage_index_ = kMaxStage + 1;  // done.

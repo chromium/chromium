@@ -65,18 +65,22 @@ class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
       base::CommandLine cmdline,
       crostini::CrostiniResult result);
 
-  void OpenVmshellProcess(const std::string& user_id_hash,
-                          base::CommandLine cmdline);
+  void OpenVmshellProcess(
+      const std::string& user_id_hash,
+      base::CommandLine cmdline,
+      std::unique_ptr<CrostiniStartupStatus> startup_status);
 
   void OnGetVshSession(const std::string& user_id_hash,
                        base::CommandLine cmdline,
                        const std::string& terminal_id,
+                       std::unique_ptr<CrostiniStartupStatus> startup_status,
                        bool success,
                        const std::string& failure_reason,
                        int32_t container_shell_pid);
 
   void OpenProcess(const std::string& user_id_hash,
-                   base::CommandLine cmdline);
+                   base::CommandLine cmdline,
+                   std::unique_ptr<CrostiniStartupStatus> startup_status);
 
   using ProcessOutputCallback =
       base::RepeatingCallback<void(const std::string& terminal_id,
@@ -84,10 +88,12 @@ class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
                                    const std::string& output)>;
   using OpenProcessCallback =
       base::OnceCallback<void(bool success, const std::string& terminal_id)>;
-  void OpenOnRegistryTaskRunner(ProcessOutputCallback output_callback,
-                                OpenProcessCallback callback,
-                                base::CommandLine cmdline,
-                                const std::string& user_id_hash);
+  void OpenOnRegistryTaskRunner(
+      ProcessOutputCallback output_callback,
+      OpenProcessCallback callback,
+      base::CommandLine cmdline,
+      const std::string& user_id_hash,
+      std::unique_ptr<CrostiniStartupStatus> startup_status);
   void RespondOnUIThread(bool success, const std::string& terminal_id);
 };
 
