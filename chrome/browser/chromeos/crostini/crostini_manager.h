@@ -49,6 +49,7 @@ namespace crostini {
 extern const char kCrostiniStabilityHistogram[];
 
 class CrostiniUpgradeAvailableNotification;
+class CrostiniSshfs;
 
 class LinuxPackageOperationProgressObserver {
  public:
@@ -586,8 +587,6 @@ class CrostiniManager : public KeyedService,
   void AddRunningVmForTesting(std::string vm_name);
   void AddStoppingVmForTesting(std::string vm_name);
 
-  void SetContainerSshfsMounted(const ContainerId& container_id,
-                                bool is_mounted);
   void SetContainerOsRelease(const ContainerId& container_id,
                              const vm_tools::cicerone::OsRelease& os_release);
   const vm_tools::cicerone::OsRelease* GetContainerOsRelease(
@@ -651,6 +650,12 @@ class CrostiniManager : public KeyedService,
   void SetInstallTerminaNeverCompletesForTesting(bool never_completes) {
     install_termina_never_completes_ = never_completes;
   }
+
+  // Mounts the user's Crostini home directory so it's accessible from the host.
+  // Must be called from the UI thread, no-op if the home directory is already
+  // mounted.
+  void MountCrostiniFiles(ContainerId container_id,
+                          CrostiniResultCallback callback);
 
  private:
   class CrostiniRestarter;
@@ -939,6 +944,8 @@ class CrostiniManager : public KeyedService,
   TerminaInstaller termina_installer_{};
 
   bool install_termina_never_completes_ = false;
+
+  std::unique_ptr<CrostiniSshfs> crostini_sshfs_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
