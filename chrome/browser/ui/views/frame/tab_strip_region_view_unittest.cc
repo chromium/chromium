@@ -264,6 +264,26 @@ TEST_F(TabStripRegionViewTestWithScrollingEnabled,
       tab_strip_->tab_at(tab_strip_->GetModelCount() - 1)->GetVisible());
 }
 
+// When scrolling is enabled, adding enough tabs will cause the tabstrip to
+// enter a scroll state with visible scroll controls. When the last tab that
+// caused the tabstrip to enter the scroll state is removed, the tabstrip should
+// return to a non-scrolling state.
+TEST_F(TabStripRegionViewTestWithScrollingEnabled,
+       TabStripEntersAndExitsScrolling) {
+  // const int minimum_active_width = TabStyleViews::GetMinimumInactiveWidth();
+  controller_->AddTab(0, true);
+  CompleteAnimationAndLayout();
+
+  // Add tabs to the tabstrip until it is full and should start overflowing.
+  while (!tab_strip_region_view_->leading_scroll_button()->GetVisible()) {
+    controller_->AddTab(0, false);
+    CompleteAnimationAndLayout();
+  }
+  EXPECT_TRUE(tab_strip_region_view_->leading_scroll_button()->GetVisible());
+  controller_->CloseTab(0);
+  EXPECT_FALSE(tab_strip_region_view_->leading_scroll_button()->GetVisible());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          TabStripRegionViewTest,
                          ::testing::Values(true, false));
