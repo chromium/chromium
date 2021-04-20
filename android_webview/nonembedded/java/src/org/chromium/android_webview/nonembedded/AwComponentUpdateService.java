@@ -5,6 +5,8 @@ package org.chromium.android_webview.nonembedded;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.SystemClock;
 
 import org.chromium.android_webview.services.ComponentsProviderPathUtil;
@@ -36,17 +38,24 @@ public class AwComponentUpdateService extends JobService {
             "Android.WebView.ComponentUpdater.UpdateJobDuration";
     public static final String HISTOGRAM_AW_COMPONENT_UPDATE_SERVICE_FILES_CHANGED =
             "Android.WebView.ComponentUpdater.UpdateJobFilesChanged";
+    public static final String HISTOGRAM_COMPONENT_UPDATER_UNEXPECTED_EXIT =
+            "Android.WebView.ComponentUpdater.UnexpectedExit";
 
     private static final int BYTES_PER_KILOBYTE = 1024;
     private static final int DIRECTORY_SIZE_MIN_BUCKET = 100;
     private static final int DIRECTORY_SIZE_MAX_BUCKET = 500000;
     private static final int DIRECTORY_SIZE_NUM_BUCKETS = 50;
+    private static final String SHARED_PREFERENCES_NAME = "AwComponentUpdateServicePreferences";
+    private static final String KEY_UNEXPECTED_EXIT = "UnexpectedExit";
 
     @Override
     public boolean onStartJob(JobParameters params) {
+        maybeRecordUnexpectedExit();
+
         // TODO(http://crbug.com/1179297) look at doing this in a task on a background thread
         // instead of the main thread.
         if (WebViewApkApplication.initializeNative()) {
+            setUnexpectedExit(true);
             final long startTime = SystemClock.uptimeMillis();
             // TODO(crbug.com/1171817) Once we can log UMA from native, remove the count parameter.
             AwComponentUpdateServiceJni.get().startComponentUpdateService((count) -> {
@@ -54,6 +63,7 @@ public class AwComponentUpdateService extends JobService {
                 recordFilesChanged(count);
                 recordDirectorySize();
                 jobFinished(params, /* needReschedule= */ false);
+                setUnexpectedExit(false);
             });
             return true;
         }
@@ -63,6 +73,8 @@ public class AwComponentUpdateService extends JobService {
 
     @Override
     public boolean onStopJob(JobParameters params) {
+        setUnexpectedExit(false);
+
         // This should only be called if the service needs to be shut down before we've called
         // jobFinished. Request reschedule so we can finish downloading component updates.
         return /*reschedule= */ true;
@@ -91,6 +103,21 @@ public class AwComponentUpdateService extends JobService {
     private void recordFilesChanged(int filesChanged) {
         RecordHistogram.recordCount1000Histogram(
                 HISTOGRAM_AW_COMPONENT_UPDATE_SERVICE_FILES_CHANGED, filesChanged);
+    }
+
+    private void maybeRecordUnexpectedExit() {
+        final SharedPreferences sharedPreferences =
+                getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        if (sharedPreferences.contains(KEY_UNEXPECTED_EXIT)) {
+            RecordHistogram.recordBooleanHistogram(HISTOGRAM_COMPONENT_UPDATER_UNEXPECTED_EXIT,
+                    sharedPreferences.getBoolean(KEY_UNEXPECTED_EXIT, false));
+        }
+    }
+
+    private void setUnexpectedExit(boolean unfinished) {
+        final SharedPreferences sharedPreferences =
+                getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        sharedPreferences.edit().putBoolean(KEY_UNEXPECTED_EXIT, unfinished).apply();
     }
 
     @NativeMethods
