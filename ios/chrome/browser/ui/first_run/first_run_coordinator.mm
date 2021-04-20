@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/ui/first_run/first_run_coordinator.h"
 
+#import <UIKit/UIKit.h>
+
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_type.h"
+#import "ios/chrome/browser/ui/first_run/welcome_screen_coordinator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -16,6 +19,7 @@
 
 @property(nonatomic, strong) FirstRunScreenProvider* screenProvider;
 @property(nonatomic, strong) ChromeCoordinator* childCoordinator;
+@property(nonatomic, strong) UINavigationController* navigationController;
 
 @end
 
@@ -28,12 +32,19 @@
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _screenProvider = screenProvider;
+    _navigationController =
+        [[UINavigationController alloc] initWithNavigationBarClass:nil
+                                                      toolbarClass:nil];
+    _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
   }
   return self;
 }
 
 - (void)start {
   [self presentScreen:[self.screenProvider nextScreenType]];
+  [self.baseViewController presentViewController:self.navigationController
+                                        animated:NO
+                                      completion:nil];
 }
 
 #pragma mark - FirstRunScreenDelegate
@@ -64,8 +75,19 @@
 
 // Creates a screen coordinator according to |type|.
 - (ChromeCoordinator*)createChildCoordinatorWithScreenType:(NSNumber*)type {
-  // Create a screen coordinator corresponding to the screen type.
-  // TODO (crbug.com/1189807)
+  switch ([type integerValue]) {
+    case kWelcomeAndConsent:
+      return [[WelcomeScreenCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:self.browser
+                                  delegate:self];
+    case kSignIn:
+    case kSync:
+    case kDefaultBrowserPromo:
+      // TODO (crbug.com/1189807): Create screen coordinators for sign-in, sync
+      // an default browser screen.
+      return nil;
+  }
   return nil;
 }
 

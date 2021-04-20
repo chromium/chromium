@@ -38,7 +38,8 @@
 
 - (NSNumber*)nextScreenType {
   DCHECK(self.screens);
-  DCHECK(![self.screens[self.index] isEqualToNumber:@(kFirstRunCompleted)]);
+  DCHECK(self.index == -1 ||
+         ![self.screens[self.index] isEqualToNumber:@(kFirstRunCompleted)]);
   return [self.screens objectAtIndex:++self.index];
 }
 

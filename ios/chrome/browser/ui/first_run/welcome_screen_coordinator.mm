@@ -22,6 +22,8 @@
 // Welcome screen view controller.
 @property(nonatomic, strong) WelcomeScreenViewController* viewController;
 
+@property(nonatomic, weak) id<FirstRunScreenDelegate> delegate;
+
 @end
 
 @implementation WelcomeScreenCoordinator
@@ -30,11 +32,14 @@
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
+                                         browser:(Browser*)browser
+                                        delegate:(id<FirstRunScreenDelegate>)
+                                                     delegate {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
+    _delegate = delegate;
   }
   return self;
 }
@@ -46,8 +51,9 @@
   // if yes:
   self.viewController = [[WelcomeScreenViewController alloc] init];
   self.viewController.delegate = self;
-  [self.baseNavigationController pushViewController:self.viewController
-                                           animated:NO];
+  BOOL animated = self.baseNavigationController.topViewController != nil;
+  [self.baseNavigationController setViewControllers:@[ self.viewController ]
+                                           animated:animated];
 }
 
 - (void)stop {
@@ -80,7 +86,7 @@
                                            animated:YES];
 }
 
-- (void)didTapContinueButton {
+- (void)didTapPrimaryActionButton {
   // TODO(crbug.com/1189815):
   // 1. Update the pref seervice if the checkbox is selected.
   // 2. Store a status that the welcome screen has been shown to an

@@ -17,12 +17,12 @@
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
+                                        delegate:
+                                            (id<FirstRunScreenDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
-
-@property(nonatomic, weak) id<FirstRunScreenDelegate> delegate;
 
 @end
 

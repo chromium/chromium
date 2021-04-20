@@ -5,23 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_WELCOME_SCREEN_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_FIRST_RUN_WELCOME_SCREEN_VIEW_CONTROLLER_H_
 
-#import <UIKit/UIKit.h>
+#import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
 
-// Delegate of welcome screen view controller.
-@protocol WelcomeScreenViewControllerDelegate <NSObject>
+// Extends the base delegate protocol to handle taps on the custom button.
+@protocol
+    WelcomeScreenViewControllerDelegate <FirstRunScreenViewControllerDelegate>
 
-// Called when the user taps on the "Terms of Service" link.
+// Called when the user taps to see the terms and services page.
 - (void)didTapTOSLink;
-
-// Called when the user taps the "Accept & Continue" button.
-- (void)didTapContinueButton;
 
 @end
 
 // View controller of welcome screen.
-// TODO(crbug.com/1189815): conform the shared ScreenViewController when
-// crbug/1186762 is done.
-@interface WelcomeScreenViewController : UIViewController
+@interface WelcomeScreenViewController : FirstRunScreenViewController
 
 @property(nonatomic, weak) id<WelcomeScreenViewControllerDelegate> delegate;
 
