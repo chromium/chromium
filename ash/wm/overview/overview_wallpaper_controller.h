@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "base/macros.h"
 #include "base/optional.h"
 
 namespace ash {
@@ -21,6 +20,9 @@ namespace ash {
 class ASH_EXPORT OverviewWallpaperController : public TabletModeObserver {
  public:
   OverviewWallpaperController();
+  OverviewWallpaperController(const OverviewWallpaperController&) = delete;
+  OverviewWallpaperController& operator=(const OverviewWallpaperController&) =
+      delete;
   ~OverviewWallpaperController() override;
 
   // There may not be a need to blur or dim the wallpaper for tests.
@@ -32,6 +34,7 @@ class ASH_EXPORT OverviewWallpaperController : public TabletModeObserver {
   // TabletModeObserver:
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
+  void OnTabletControllerDestroyed() override;
 
  private:
   // Called when the wallpaper is to be changed and updates all root windows.
@@ -43,8 +46,6 @@ class ASH_EXPORT OverviewWallpaperController : public TabletModeObserver {
 
   // Tracks if the wallpaper blur should be applied.
   bool wallpaper_blurred_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OverviewWallpaperController);
 };
 
 }  // namespace ash
