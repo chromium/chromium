@@ -96,6 +96,7 @@ public class NavigationTest {
             private Uri mUri;
             private boolean mIsSameDocument;
             private int mHttpStatusCode;
+            private Map<String, String> mResponseHeaders;
             private List<Uri> mRedirectChain;
             private @LoadError int mLoadError;
             private @NavigationState int mNavigationState;
@@ -131,6 +132,9 @@ public class NavigationTest {
                         mPage = navigation.getPage();
                     }
                 }
+                if (majorVersion >= 91) {
+                    mResponseHeaders = navigation.getResponseHeaders();
+                }
                 notifyCalled();
             }
 
@@ -161,6 +165,10 @@ public class NavigationTest {
 
             public int getHttpStatusCode() {
                 return mHttpStatusCode;
+            }
+
+            public Map<String, String> getResponseHeaders() {
+                return mResponseHeaders;
             }
 
             @NavigationState
@@ -1484,5 +1492,23 @@ public class NavigationTest {
         assertEquals(page1, page3);
 
         mCallback.onPageDestroyedCallback.assertCalledWith(curOnPageDestroyedCount, page2);
+    }
+
+    @MinWebLayerVersion(91)
+    @Test
+    @SmallTest
+    public void testResponseHeaders() throws Exception {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
+        setNavigationCallback(activity);
+
+        int curCompletedCount = mCallback.onCompletedCallback.getCallCount();
+
+        String url = mActivityTestRule.getTestServer().getURL("/echo");
+        mActivityTestRule.navigateAndWait(url);
+
+        mCallback.onCompletedCallback.assertCalledWith(curCompletedCount, url);
+
+        Map<String, String> headers = mCallback.onCompletedCallback.getResponseHeaders();
+        assertEquals(headers.get("Content-Type"), "text/html");
     }
 }

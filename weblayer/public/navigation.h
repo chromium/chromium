@@ -10,6 +10,10 @@
 
 class GURL;
 
+namespace net {
+class HttpResponseHeaders;
+}
+
 namespace weblayer {
 class Page;
 
@@ -50,6 +54,10 @@ class Navigation {
   // Returns the status code of the navigation. Returns 0 if the navigation
   // hasn't completed yet or if a response wasn't received.
   virtual int GetHttpStatusCode() = 0;
+
+  // Returns the HTTP response headers. Returns nullptr if the navigation
+  // hasn't completed yet or if a response wasn't received.
+  virtual const net::HttpResponseHeaders* GetResponseHeaders() = 0;
 
   // Whether the navigation happened without changing document. Examples of
   // same document navigations are:

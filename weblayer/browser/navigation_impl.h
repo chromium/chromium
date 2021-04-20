@@ -76,6 +76,8 @@ class NavigationImpl : public Navigation {
   base::android::ScopedJavaLocalRef<jstring> GetUri(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobjectArray> GetRedirectChain(JNIEnv* env);
   int GetHttpStatusCode(JNIEnv* env) { return GetHttpStatusCode(); }
+  base::android::ScopedJavaLocalRef<jobjectArray> GetResponseHeaders(
+      JNIEnv* env);
   bool IsSameDocument(JNIEnv* env) { return IsSameDocument(); }
   bool IsErrorPage(JNIEnv* env) { return IsErrorPage(); }
   bool IsDownload(JNIEnv* env) { return IsDownload(); }
@@ -113,6 +115,7 @@ class NavigationImpl : public Navigation {
   const std::vector<GURL>& GetRedirectChain() override;
   NavigationState GetState() override;
   int GetHttpStatusCode() override;
+  const net::HttpResponseHeaders* GetResponseHeaders() override;
   bool IsSameDocument() override;
   bool IsErrorPage() override;
   bool IsDownload() override;

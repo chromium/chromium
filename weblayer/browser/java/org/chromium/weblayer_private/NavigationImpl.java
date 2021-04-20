@@ -103,6 +103,13 @@ public final class NavigationImpl extends INavigation.Stub {
     }
 
     @Override
+    public List<String> getResponseHeaders() {
+        StrictModeWorkaround.apply();
+        throwIfNativeDestroyed();
+        return Arrays.asList(NavigationImplJni.get().getResponseHeaders(mNativeNavigationImpl));
+    }
+
+    @Override
     public boolean isSameDocument() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
@@ -290,6 +297,7 @@ public final class NavigationImpl extends INavigation.Stub {
         String getUri(long nativeNavigationImpl);
         String[] getRedirectChain(long nativeNavigationImpl);
         int getHttpStatusCode(long nativeNavigationImpl);
+        String[] getResponseHeaders(long nativeNavigationImpl);
         boolean isSameDocument(long nativeNavigationImpl);
         boolean isErrorPage(long nativeNavigationImpl);
         boolean isDownload(long nativeNavigationImpl);
