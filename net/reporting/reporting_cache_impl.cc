@@ -240,9 +240,7 @@ void ReportingCacheImpl::OnParsedHeader(
               new_client.network_isolation_key);
     DCHECK_EQ(new_group.group_key.origin, new_client.origin);
 
-    std::set<GURL> new_endpoints;
     for (const auto& parsed_endpoint_info : parsed_endpoint_group.endpoints) {
-      new_endpoints.insert(parsed_endpoint_info.url);
       endpoints_per_group[new_group.group_key].insert(parsed_endpoint_info.url);
       ReportingEndpoint new_endpoint(new_group.group_key,
                                      std::move(parsed_endpoint_info));
