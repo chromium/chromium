@@ -137,8 +137,8 @@ std::unique_ptr<base::Value> ParsedDataPresenter::Result() {
 
 // static
 std::unique_ptr<ParsedDataPresenter> ParsedDataPresenter::CreateForTests() {
-  static const std::string form_type("application/x-www-form-urlencoded");
-  return base::WrapUnique(new ParsedDataPresenter(form_type));
+  return base::WrapUnique(
+      new ParsedDataPresenter("application/x-www-form-urlencoded"));
 }
 
 ParsedDataPresenter::ParsedDataPresenter(const std::string& form_type)

@@ -187,8 +187,8 @@ void LogRequestAction(RequestAction action) {
 // |event_name| is an invalid event, returns EventTypes::kInvalidEvent.
 ExtensionWebRequestEventRouter::EventTypes GetEventTypeFromEventName(
     base::StringPiece event_name) {
-  static const base::flat_map<base::StringPiece,
-                              ExtensionWebRequestEventRouter::EventTypes>
+  static base::NoDestructor<const base::flat_map<
+      base::StringPiece, ExtensionWebRequestEventRouter::EventTypes>>
       kRequestStageMap(
           {{keys::kOnBeforeRequest,
             ExtensionWebRequestEventRouter::kOnBeforeRequest},
@@ -208,7 +208,7 @@ ExtensionWebRequestEventRouter::EventTypes GetEventTypeFromEventName(
             ExtensionWebRequestEventRouter::kOnErrorOccurred},
            {keys::kOnCompleted, ExtensionWebRequestEventRouter::kOnCompleted}});
 
-  DCHECK_EQ(kRequestStageMap.size(), base::size(kWebRequestEvents));
+  DCHECK_EQ(kRequestStageMap->size(), base::size(kWebRequestEvents));
 
   static const size_t kWebRequestEventPrefixLen =
       strlen(kWebRequestEventPrefix);
@@ -223,8 +223,8 @@ ExtensionWebRequestEventRouter::EventTypes GetEventTypeFromEventName(
   else
     return ExtensionWebRequestEventRouter::kInvalidEvent;
 
-  auto it = kRequestStageMap.find(event_name);
-  if (it == kRequestStageMap.end())
+  auto it = kRequestStageMap->find(event_name);
+  if (it == kRequestStageMap->end())
     return ExtensionWebRequestEventRouter::kInvalidEvent;
 
   return it->second;
