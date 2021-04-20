@@ -36,7 +36,7 @@ class InfoBarManager;
 }  // namespace infobars
 
 namespace permissions {
-class ChooserContextBase;
+class ObjectPermissionContextBase;
 class PermissionDecisionAutoBlocker;
 class PermissionManager;
 class PermissionPromptAndroid;
@@ -78,9 +78,10 @@ class PermissionsClient {
   virtual PermissionManager* GetPermissionManager(
       content::BrowserContext* browser_context) = 0;
 
-  // Gets the ChooserContextBase for the given type and context, which must be a
+  // Gets the ObjectPermissionContextBase for the given type and context, which
+  // must be a
   // *_CHOOSER_DATA value. May return null if the context does not exist.
-  virtual ChooserContextBase* GetChooserContext(
+  virtual ObjectPermissionContextBase* GetChooserContext(
       content::BrowserContext* browser_context,
       ContentSettingsType type) = 0;
 

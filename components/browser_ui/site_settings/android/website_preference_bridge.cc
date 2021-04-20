@@ -31,7 +31,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/embedder_support/android/browser_context/browser_context_handle.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_uma_util.h"
@@ -255,7 +255,7 @@ void SetSettingForOrigin(JNIEnv* env,
   content_settings::LogWebSiteSettingsPermissionChange(content_type, setting);
 }
 
-permissions::ChooserContextBase* GetChooserContext(
+permissions::ObjectPermissionContextBase* GetChooserContext(
     const JavaParamRef<jobject>& jbrowser_context_handle,
     ContentSettingsType type) {
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
@@ -471,10 +471,10 @@ static void JNI_WebsitePreferenceBridge_GetChosenObjects(
     const JavaParamRef<jobject>& list) {
   ContentSettingsType type =
       static_cast<ContentSettingsType>(content_settings_type);
-  permissions::ChooserContextBase* context =
+  permissions::ObjectPermissionContextBase* context =
       GetChooserContext(jbrowser_context_handle, type);
-  // The ChooserContextBase can be null if the embedder doesn't support the
-  // given ContentSettingsType.
+  // The ObjectPermissionContextBase can be null if the embedder doesn't support
+  // the given ContentSettingsType.
   if (!context)
     return;
   for (const auto& object : context->GetAllGrantedObjects()) {
@@ -514,7 +514,7 @@ static void JNI_WebsitePreferenceBridge_RevokeObjectPermission(
   std::unique_ptr<base::DictionaryValue> object = base::DictionaryValue::From(
       base::JSONReader::ReadDeprecated(ConvertJavaStringToUTF8(env, jobject)));
   DCHECK(object);
-  permissions::ChooserContextBase* context = GetChooserContext(
+  permissions::ObjectPermissionContextBase* context = GetChooserContext(
       jbrowser_context_handle,
       static_cast<ContentSettingsType>(content_settings_type));
   context->RevokeObjectPermission(url::Origin::Create(origin), *object);

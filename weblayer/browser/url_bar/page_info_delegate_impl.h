@@ -22,7 +22,7 @@ class PageInfoDelegateImpl : public PageInfoDelegate {
   ~PageInfoDelegateImpl() override = default;
 
   // PageInfoDelegate implementation
-  permissions::ChooserContextBase* GetChooserContext(
+  permissions::ObjectPermissionContextBase* GetChooserContext(
       ContentSettingsType type) override;
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()

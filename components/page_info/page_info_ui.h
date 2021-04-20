@@ -13,7 +13,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/page_info.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "components/safe_browsing/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -86,14 +86,16 @@ class PageInfoUI {
   // |ChosenObjectInfo| contains information about a single |chooser_object| of
   // a chooser |type| that the current website has been granted access to.
   struct ChosenObjectInfo {
-    ChosenObjectInfo(const PageInfo::ChooserUIInfo& ui_info,
-                     std::unique_ptr<permissions::ChooserContextBase::Object>
-                         chooser_object);
+    ChosenObjectInfo(
+        const PageInfo::ChooserUIInfo& ui_info,
+        std::unique_ptr<permissions::ObjectPermissionContextBase::Object>
+            chooser_object);
     ~ChosenObjectInfo();
     // |ui_info| for this chosen object type.
     const PageInfo::ChooserUIInfo& ui_info;
     // The opaque |chooser_object| representing the thing the user selected.
-    std::unique_ptr<permissions::ChooserContextBase::Object> chooser_object;
+    std::unique_ptr<permissions::ObjectPermissionContextBase::Object>
+        chooser_object;
   };
 
   // |IdentityInfo| contains information about the site's identity and

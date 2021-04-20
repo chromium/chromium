@@ -17,8 +17,6 @@ source_set("permissions_common") {
 
 source_set("permissions") {
   sources = [
-    "chooser_context_base.cc",
-    "chooser_context_base.h",
     "contexts/clipboard_read_write_permission_context.cc",
     "contexts/clipboard_read_write_permission_context.h",
     "contexts/clipboard_sanitized_write_permission_context.cc",
@@ -41,6 +39,8 @@ source_set("permissions") {
     "contexts/webxr_permission_context.h",
     "notification_permission_ui_selector.cc",
     "notification_permission_ui_selector.h",
+    "object_permission_context_base.cc",
+    "object_permission_context_base.h",
     "permission_auditing_database.cc",
     "permission_auditing_database.h",
     "permission_auditing_service.cc",
@@ -134,14 +134,14 @@ source_set("permissions") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "test/chooser_context_base_mock_permission_observer.cc",
-    "test/chooser_context_base_mock_permission_observer.h",
     "test/mock_permission_prompt.cc",
     "test/mock_permission_prompt.h",
     "test/mock_permission_prompt_factory.cc",
     "test/mock_permission_prompt_factory.h",
     "test/mock_permission_request.cc",
     "test/mock_permission_request.h",
+    "test/object_permission_context_base_mock_permission_observer.cc",
+    "test/object_permission_context_base_mock_permission_observer.h",
     "test/permission_request_observer.cc",
     "test/permission_request_observer.h",
     "test/test_permissions_client.cc",
@@ -168,11 +168,11 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "chooser_context_base_unittest.cc",
     "contexts/geolocation_permission_context_unittest.cc",
     "contexts/midi_permission_context_unittest.cc",
     "contexts/midi_sysex_permission_context_unittest.cc",
     "contexts/nfc_permission_context_unittest.cc",
+    "object_permission_context_base_unittest.cc",
     "permission_auditing_database_unittest.cc",
     "permission_auditing_service_unittest.cc",
     "permission_context_base_unittest.cc",

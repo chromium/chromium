@@ -15,7 +15,7 @@
 #include "base/time/default_clock.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -42,19 +42,19 @@ extern const base::Feature kFileSystemAccessPersistentPermissions;
 //    active permissions for that origin are revoked.
 // 2. Persistent permissions allow for auto-granting permissions which the user
 //    had given access to prior, within a given time window. These are stored
-//    using ChooserContextBase.
+//    using ObjectPermissionContextBase.
 //
 // All methods must be called on the UI thread.
 class ChromeFileSystemAccessPermissionContext
     : public content::FileSystemAccessPermissionContext,
-      public permissions::ChooserContextBase {
+      public permissions::ObjectPermissionContextBase {
  public:
   explicit ChromeFileSystemAccessPermissionContext(
       content::BrowserContext* context,
       const base::Clock* clock = base::DefaultClock::GetInstance());
   ~ChromeFileSystemAccessPermissionContext() override;
 
-  // permissions::ChooserContextBase
+  // permissions::ObjectPermissionContextBase
   std::string GetKeyForObject(const base::Value& object) override;
   bool IsValidObject(const base::Value& object) override;
   std::u16string GetObjectDisplayName(const base::Value& object) override;

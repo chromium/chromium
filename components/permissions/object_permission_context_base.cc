@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 
 #include <utility>
 
@@ -16,9 +16,9 @@ namespace permissions {
 
 const char kObjectListKey[] = "chosen-objects";
 
-ChooserContextBase::ChooserContextBase(
-    const ContentSettingsType guard_content_settings_type,
-    const ContentSettingsType data_content_settings_type,
+ObjectPermissionContextBase::ObjectPermissionContextBase(
+    ContentSettingsType guard_content_settings_type,
+    ContentSettingsType data_content_settings_type,
     HostContentSettingsMap* host_content_settings_map)
     : guard_content_settings_type_(guard_content_settings_type),
       data_content_settings_type_(data_content_settings_type),
@@ -26,46 +26,60 @@ ChooserContextBase::ChooserContextBase(
   DCHECK(host_content_settings_map_);
 }
 
-ChooserContextBase::~ChooserContextBase() = default;
+ObjectPermissionContextBase::ObjectPermissionContextBase(
+    ContentSettingsType data_content_settings_type,
+    HostContentSettingsMap* host_content_settings_map)
+    : guard_content_settings_type_(base::nullopt),
+      data_content_settings_type_(data_content_settings_type),
+      host_content_settings_map_(host_content_settings_map) {
+  DCHECK(host_content_settings_map_);
+}
 
-ChooserContextBase::Object::Object(const url::Origin& origin,
-                                   base::Value value,
-                                   content_settings::SettingSource source,
-                                   bool incognito)
+ObjectPermissionContextBase::~ObjectPermissionContextBase() = default;
+
+ObjectPermissionContextBase::Object::Object(
+    const url::Origin& origin,
+    base::Value value,
+    content_settings::SettingSource source,
+    bool incognito)
     : origin(origin.GetURL()),
       value(std::move(value)),
       source(source),
       incognito(incognito) {}
 
-ChooserContextBase::Object::~Object() = default;
+ObjectPermissionContextBase::Object::~Object() = default;
 
-void ChooserContextBase::PermissionObserver::OnChooserObjectPermissionChanged(
-    ContentSettingsType data_content_settings_type,
-    ContentSettingsType guard_content_settings_type) {}
+void ObjectPermissionContextBase::PermissionObserver::OnObjectPermissionChanged(
+    base::Optional<ContentSettingsType> guard_content_settings_type,
+    ContentSettingsType data_content_settings_type) {}
 
-void ChooserContextBase::PermissionObserver::OnPermissionRevoked(
+void ObjectPermissionContextBase::PermissionObserver::OnPermissionRevoked(
     const url::Origin& origin) {}
 
-void ChooserContextBase::AddObserver(PermissionObserver* observer) {
+void ObjectPermissionContextBase::AddObserver(PermissionObserver* observer) {
   permission_observer_list_.AddObserver(observer);
 }
 
-void ChooserContextBase::RemoveObserver(PermissionObserver* observer) {
+void ObjectPermissionContextBase::RemoveObserver(PermissionObserver* observer) {
   permission_observer_list_.RemoveObserver(observer);
 }
 
-bool ChooserContextBase::CanRequestObjectPermission(const url::Origin& origin) {
+bool ObjectPermissionContextBase::CanRequestObjectPermission(
+    const url::Origin& origin) {
+  if (!guard_content_settings_type_)
+    return true;
+
   ContentSetting content_setting =
       host_content_settings_map_->GetContentSetting(
-          origin.GetURL(), GURL(), guard_content_settings_type_);
+          origin.GetURL(), GURL(), *guard_content_settings_type_);
   DCHECK(content_setting == CONTENT_SETTING_ASK ||
          content_setting == CONTENT_SETTING_BLOCK);
   return content_setting == CONTENT_SETTING_ASK;
 }
 
-std::unique_ptr<ChooserContextBase::Object>
-ChooserContextBase::GetGrantedObject(const url::Origin& origin,
-                                     const base::StringPiece key) {
+std::unique_ptr<ObjectPermissionContextBase::Object>
+ObjectPermissionContextBase::GetGrantedObject(const url::Origin& origin,
+                                              const base::StringPiece key) {
   if (!CanRequestObjectPermission(origin))
     return nullptr;
 
@@ -86,8 +100,8 @@ ChooserContextBase::GetGrantedObject(const url::Origin& origin,
   return nullptr;
 }
 
-std::vector<std::unique_ptr<ChooserContextBase::Object>>
-ChooserContextBase::GetGrantedObjects(const url::Origin& origin) {
+std::vector<std::unique_ptr<ObjectPermissionContextBase::Object>>
+ObjectPermissionContextBase::GetGrantedObjects(const url::Origin& origin) {
   if (!CanRequestObjectPermission(origin))
     return {};
 
@@ -109,8 +123,8 @@ ChooserContextBase::GetGrantedObjects(const url::Origin& origin) {
   return results;
 }
 
-std::vector<std::unique_ptr<ChooserContextBase::Object>>
-ChooserContextBase::GetAllGrantedObjects() {
+std::vector<std::unique_ptr<ObjectPermissionContextBase::Object>>
+ObjectPermissionContextBase::GetAllGrantedObjects() {
   ContentSettingsForOneType content_settings;
   host_content_settings_map_->GetSettingsForOneType(data_content_settings_type_,
                                                     &content_settings);
@@ -150,8 +164,9 @@ ChooserContextBase::GetAllGrantedObjects() {
   return results;
 }
 
-void ChooserContextBase::GrantObjectPermission(const url::Origin& origin,
-                                               base::Value object) {
+void ObjectPermissionContextBase::GrantObjectPermission(
+    const url::Origin& origin,
+    base::Value object) {
   DCHECK(IsValidObject(object));
 
   base::Value setting = GetWebsiteSetting(origin, /*info=*/nullptr);
@@ -185,9 +200,10 @@ void ChooserContextBase::GrantObjectPermission(const url::Origin& origin,
   NotifyPermissionChanged();
 }
 
-void ChooserContextBase::UpdateObjectPermission(const url::Origin& origin,
-                                                const base::Value& old_object,
-                                                base::Value new_object) {
+void ObjectPermissionContextBase::UpdateObjectPermission(
+    const url::Origin& origin,
+    const base::Value& old_object,
+    base::Value new_object) {
   base::Value setting = GetWebsiteSetting(origin, /*info=*/nullptr);
   base::Value* objects = setting.FindListKey(kObjectListKey);
   if (!objects)
@@ -203,8 +219,9 @@ void ChooserContextBase::UpdateObjectPermission(const url::Origin& origin,
   NotifyPermissionChanged();
 }
 
-void ChooserContextBase::RevokeObjectPermission(const url::Origin& origin,
-                                                const base::Value& object) {
+void ObjectPermissionContextBase::RevokeObjectPermission(
+    const url::Origin& origin,
+    const base::Value& object) {
   DCHECK(IsValidObject(object));
 
   base::Value setting = GetWebsiteSetting(origin, /*info=*/nullptr);
@@ -221,8 +238,9 @@ void ChooserContextBase::RevokeObjectPermission(const url::Origin& origin,
   NotifyPermissionRevoked(origin);
 }
 
-void ChooserContextBase::RevokeObjectPermission(const url::Origin& origin,
-                                                const base::StringPiece key) {
+void ObjectPermissionContextBase::RevokeObjectPermission(
+    const url::Origin& origin,
+    const base::StringPiece key) {
   base::Value setting = GetWebsiteSetting(origin, /*info=*/nullptr);
   base::Value* objects = setting.FindListKey(kObjectListKey);
   if (!objects)
@@ -239,37 +257,39 @@ void ChooserContextBase::RevokeObjectPermission(const url::Origin& origin,
   NotifyPermissionRevoked(origin);
 }
 
-bool ChooserContextBase::HasGrantedObjects(const url::Origin& origin) {
+bool ObjectPermissionContextBase::HasGrantedObjects(const url::Origin& origin) {
   base::Value setting = GetWebsiteSetting(origin, /*info=*/nullptr);
   base::Value* objects = setting.FindListKey(kObjectListKey);
 
   return objects && !objects->GetList().empty();
 }
 
-std::string ChooserContextBase::GetKeyForObject(const base::Value& object) {
+std::string ObjectPermissionContextBase::GetKeyForObject(
+    const base::Value& object) {
   return std::string();
 }
 
-bool ChooserContextBase::IsOffTheRecord() {
+bool ObjectPermissionContextBase::IsOffTheRecord() {
   return host_content_settings_map_->IsOffTheRecord();
 }
 
-void ChooserContextBase::NotifyPermissionChanged() {
+void ObjectPermissionContextBase::NotifyPermissionChanged() {
   for (auto& observer : permission_observer_list_) {
-    observer.OnChooserObjectPermissionChanged(guard_content_settings_type_,
-                                              data_content_settings_type_);
+    observer.OnObjectPermissionChanged(guard_content_settings_type_,
+                                       data_content_settings_type_);
   }
 }
 
-void ChooserContextBase::NotifyPermissionRevoked(const url::Origin& origin) {
+void ObjectPermissionContextBase::NotifyPermissionRevoked(
+    const url::Origin& origin) {
   for (auto& observer : permission_observer_list_) {
-    observer.OnChooserObjectPermissionChanged(guard_content_settings_type_,
-                                              data_content_settings_type_);
+    observer.OnObjectPermissionChanged(guard_content_settings_type_,
+                                       data_content_settings_type_);
     observer.OnPermissionRevoked(origin);
   }
 }
 
-base::Value ChooserContextBase::GetWebsiteSetting(
+base::Value ObjectPermissionContextBase::GetWebsiteSetting(
     const url::Origin& origin,
     content_settings::SettingInfo* info) {
   std::unique_ptr<base::Value> value =
@@ -280,8 +300,8 @@ base::Value ChooserContextBase::GetWebsiteSetting(
   return base::Value(base::Value::Type::DICTIONARY);
 }
 
-void ChooserContextBase::SetWebsiteSetting(const url::Origin& origin,
-                                           base::Value value) {
+void ObjectPermissionContextBase::SetWebsiteSetting(const url::Origin& origin,
+                                                    base::Value value) {
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
       origin.GetURL(), GURL(), data_content_settings_type_,
       base::Value::ToUniquePtrValue(std::move(value)));

@@ -173,7 +173,7 @@ void ChromeBluetoothDelegate::RemoveFramePermissionObserver(
 std::vector<blink::mojom::WebBluetoothDevicePtr>
 ChromeBluetoothDelegate::GetPermittedDevices(content::RenderFrameHost* frame) {
   auto* context = GetBluetoothChooserContext(frame);
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
+  std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
       objects = context->GetGrantedObjects(
           frame->GetMainFrame()->GetLastCommittedOrigin());
   std::vector<blink::mojom::WebBluetoothDevicePtr> permitted_devices;
@@ -191,8 +191,9 @@ ChromeBluetoothDelegate::GetPermittedDevices(content::RenderFrameHost* frame) {
 }
 
 ChromeBluetoothDelegate::ChooserContextPermissionObserver::
-    ChooserContextPermissionObserver(ChromeBluetoothDelegate* owning_delegate,
-                                     permissions::ChooserContextBase* context)
+    ChooserContextPermissionObserver(
+        ChromeBluetoothDelegate* owning_delegate,
+        permissions::ObjectPermissionContextBase* context)
     : owning_delegate_(owning_delegate) {
   observer_.Observe(context);
 }

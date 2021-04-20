@@ -143,9 +143,10 @@ void RecordPermissionRevocation(SerialPermissionRevoked type) {
 }  // namespace
 
 SerialChooserContext::SerialChooserContext(Profile* profile)
-    : ChooserContextBase(ContentSettingsType::SERIAL_GUARD,
-                         ContentSettingsType::SERIAL_CHOOSER_DATA,
-                         HostContentSettingsMapFactory::GetForProfile(profile)),
+    : ObjectPermissionContextBase(
+          ContentSettingsType::SERIAL_GUARD,
+          ContentSettingsType::SERIAL_CHOOSER_DATA,
+          HostContentSettingsMapFactory::GetForProfile(profile)),
       is_incognito_(profile->IsOffTheRecord()),
       policy_(profile->GetPrefs()) {}
 
@@ -181,10 +182,10 @@ std::u16string SerialChooserContext::GetObjectDisplayName(
   return base::UTF8ToUTF16(*name);
 }
 
-std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
+std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
 SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
   std::vector<std::unique_ptr<Object>> objects =
-      ChooserContextBase::GetGrantedObjects(origin);
+      ObjectPermissionContextBase::GetGrantedObjects(origin);
 
   if (CanRequestObjectPermission(origin)) {
     auto it = ephemeral_ports_.find(origin);
@@ -211,7 +212,7 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
 
     base::Value object =
         VendorAndProductIdsToValue(entry.first.first, entry.first.second);
-    objects.push_back(std::make_unique<permissions::ChooserContextBase::Object>(
+    objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
         origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
         is_incognito_));
   }
@@ -222,7 +223,7 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
     }
 
     base::Value object = VendorIdToValue(entry.first);
-    objects.push_back(std::make_unique<permissions::ChooserContextBase::Object>(
+    objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
         origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
         is_incognito_));
   }
@@ -232,7 +233,7 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
     object.SetStringKey(
         kPortNameKey,
         l10n_util::GetStringUTF16(IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
-    objects.push_back(std::make_unique<permissions::ChooserContextBase::Object>(
+    objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
         origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
         is_incognito_));
   }
@@ -240,10 +241,10 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
   return objects;
 }
 
-std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
+std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
 SerialChooserContext::GetAllGrantedObjects() {
   std::vector<std::unique_ptr<Object>> objects =
-      ChooserContextBase::GetAllGrantedObjects();
+      ObjectPermissionContextBase::GetAllGrantedObjects();
   for (const auto& map_entry : ephemeral_ports_) {
     const url::Origin& origin = map_entry.first;
 
@@ -266,10 +267,9 @@ SerialChooserContext::GetAllGrantedObjects() {
         VendorAndProductIdsToValue(entry.first.first, entry.first.second);
 
     for (const auto& origin : entry.second) {
-      objects.push_back(
-          std::make_unique<permissions::ChooserContextBase::Object>(
-              origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
-              is_incognito_));
+      objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
+          origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
+          is_incognito_));
     }
   }
 
@@ -277,10 +277,9 @@ SerialChooserContext::GetAllGrantedObjects() {
     base::Value object = VendorIdToValue(entry.first);
 
     for (const auto& origin : entry.second) {
-      objects.push_back(
-          std::make_unique<permissions::ChooserContextBase::Object>(
-              origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
-              is_incognito_));
+      objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
+          origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
+          is_incognito_));
     }
   }
 
@@ -289,7 +288,7 @@ SerialChooserContext::GetAllGrantedObjects() {
       kPortNameKey,
       l10n_util::GetStringUTF16(IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
   for (const auto& origin : policy_.all_ports_policy()) {
-    objects.push_back(std::make_unique<permissions::ChooserContextBase::Object>(
+    objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
         origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
         is_incognito_));
   }
@@ -301,7 +300,7 @@ void SerialChooserContext::RevokeObjectPermission(const url::Origin& origin,
                                                   const base::Value& object) {
   const std::string* token = object.FindStringKey(kTokenKey);
   if (!token) {
-    ChooserContextBase::RevokeObjectPermission(origin, object);
+    ObjectPermissionContextBase::RevokeObjectPermission(origin, object);
     RecordPermissionRevocation(SerialPermissionRevoked::kPersistent);
     return;
   }
@@ -358,7 +357,7 @@ bool SerialChooserContext::HasPortPermission(
     return false;
   }
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
+  std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
       object_list = GetGrantedObjects(origin);
   for (const auto& object : object_list) {
     const base::Value& device = object->value;
@@ -482,8 +481,8 @@ void SerialChooserContext::OnPortRemoved(
 
   for (auto& observer : permission_observer_list_) {
     if (!revoked_origins.empty()) {
-      observer.OnChooserObjectPermissionChanged(guard_content_settings_type_,
-                                                data_content_settings_type_);
+      observer.OnObjectPermissionChanged(guard_content_settings_type_,
+                                         data_content_settings_type_);
     }
     for (const auto& origin : revoked_origins)
       observer.OnPermissionRevoked(origin);
@@ -525,8 +524,8 @@ void SerialChooserContext::OnPortManagerConnectionError() {
   // Notify permission observers that all ephemeral permissions have been
   // revoked.
   for (auto& observer : permission_observer_list_) {
-    observer.OnChooserObjectPermissionChanged(guard_content_settings_type_,
-                                              data_content_settings_type_);
+    observer.OnObjectPermissionChanged(guard_content_settings_type_,
+                                       data_content_settings_type_);
     for (const auto& origin : revoked_origins)
       observer.OnPermissionRevoked(origin);
   }

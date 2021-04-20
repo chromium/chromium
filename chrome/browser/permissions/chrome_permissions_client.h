@@ -25,7 +25,7 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       content::BrowserContext* browser_context) override;
   permissions::PermissionManager* GetPermissionManager(
       content::BrowserContext* browser_context) override;
-  permissions::ChooserContextBase* GetChooserContext(
+  permissions::ObjectPermissionContextBase* GetChooserContext(
       content::BrowserContext* browser_context,
       ContentSettingsType type) override;
   double GetSiteEngagementScore(content::BrowserContext* browser_context,

@@ -11,12 +11,12 @@
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "content/public/browser/hid_delegate.h"
 
 class ChromeHidDelegate
     : public content::HidDelegate,
-      public permissions::ChooserContextBase::PermissionObserver,
+      public permissions::ObjectPermissionContextBase::PermissionObserver,
       public HidChooserContext::DeviceObserver {
  public:
   ChromeHidDelegate();
@@ -41,7 +41,7 @@ class ChromeHidDelegate
       content::WebContents* web_contents,
       const std::string& guid) override;
 
-  // permissions::ChooserContextBase::PermissionObserver:
+  // permissions::ObjectPermissionContextBase::PermissionObserver:
   void OnPermissionRevoked(const url::Origin& origin) override;
 
   // HidChooserContext::DeviceObserver:
@@ -57,8 +57,8 @@ class ChromeHidDelegate
                  &HidChooserContext::AddDeviceObserver,
                  &HidChooserContext::RemoveDeviceObserver>
       device_observer_{this};
-  ScopedObserver<permissions::ChooserContextBase,
-                 permissions::ChooserContextBase::PermissionObserver>
+  ScopedObserver<permissions::ObjectPermissionContextBase,
+                 permissions::ObjectPermissionContextBase::PermissionObserver>
       permission_observer_{this};
   base::ObserverList<content::HidDelegate::Observer> observer_list_;
 };

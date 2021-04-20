@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "content/public/browser/serial_delegate.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,7 +30,7 @@ namespace base {
 class Value;
 }
 
-class SerialChooserContext : public permissions::ChooserContextBase,
+class SerialChooserContext : public permissions::ObjectPermissionContextBase,
                              public device::mojom::SerialPortManagerClient {
  public:
   using PortObserver = content::SerialDelegate::Observer;
@@ -38,12 +38,12 @@ class SerialChooserContext : public permissions::ChooserContextBase,
   explicit SerialChooserContext(Profile* profile);
   ~SerialChooserContext() override;
 
-  // ChooserContextBase:
+  // ObjectPermissionContextBase:
   bool IsValidObject(const base::Value& object) override;
   std::u16string GetObjectDisplayName(const base::Value& object) override;
 
-  // In addition these methods from ChooserContextBase are overridden in order
-  // to expose ephemeral devices through the public interface.
+  // In addition these methods from ObjectPermissionContextBase are overridden
+  // in order to expose ephemeral devices through the public interface.
   std::vector<std::unique_ptr<Object>> GetGrantedObjects(
       const url::Origin& origin) override;
   std::vector<std::unique_ptr<Object>> GetAllGrantedObjects() override;

@@ -18,7 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/permissions/test/chooser_context_base_mock_permission_observer.h"
+#include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/device/public/cpp/test/fake_serial_port_manager.h"
@@ -123,8 +123,8 @@ class SerialChooserContextTest : public testing::Test {
   TestingProfile profile_;
   SerialChooserContext* context_;
   permissions::MockPermissionObserver permission_observer_;
-  ScopedObserver<permissions::ChooserContextBase,
-                 permissions::ChooserContextBase::PermissionObserver>
+  ScopedObserver<permissions::ObjectPermissionContextBase,
+                 permissions::ObjectPermissionContextBase::PermissionObserver>
       scoped_permission_observer_{&permission_observer_};
   MockPortObserver port_observer_;
   ScopedObserver<SerialChooserContext,
@@ -147,19 +147,19 @@ TEST_F(SerialChooserContextTest, GrantAndRevokeEphemeralPermission) {
   EXPECT_FALSE(context()->HasPortPermission(origin, *port));
 
   EXPECT_CALL(permission_observer(),
-              OnChooserObjectPermissionChanged(
-                  ContentSettingsType::SERIAL_GUARD,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
 
   context()->GrantPortPermission(origin, *port);
   EXPECT_TRUE(context()->HasPortPermission(origin, *port));
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      origin_objects = context()->GetGrantedObjects(origin);
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> origin_objects =
+      context()->GetGrantedObjects(origin);
   ASSERT_EQ(1u, origin_objects.size());
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = context()->GetAllGrantedObjects();
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> objects =
+      context()->GetAllGrantedObjects();
   ASSERT_EQ(1u, objects.size());
   EXPECT_EQ(origin.GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
@@ -168,8 +168,8 @@ TEST_F(SerialChooserContextTest, GrantAndRevokeEphemeralPermission) {
   EXPECT_FALSE(objects[0]->incognito);
 
   EXPECT_CALL(permission_observer(),
-              OnChooserObjectPermissionChanged(
-                  ContentSettingsType::SERIAL_GUARD,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
@@ -196,19 +196,19 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentPermission) {
   EXPECT_FALSE(context()->HasPortPermission(origin, *port));
 
   EXPECT_CALL(permission_observer(),
-              OnChooserObjectPermissionChanged(
-                  ContentSettingsType::SERIAL_GUARD,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
 
   context()->GrantPortPermission(origin, *port);
   EXPECT_TRUE(context()->HasPortPermission(origin, *port));
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      origin_objects = context()->GetGrantedObjects(origin);
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> origin_objects =
+      context()->GetGrantedObjects(origin);
   ASSERT_EQ(1u, origin_objects.size());
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = context()->GetAllGrantedObjects();
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> objects =
+      context()->GetAllGrantedObjects();
   ASSERT_EQ(1u, objects.size());
   EXPECT_EQ(origin.GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
@@ -217,8 +217,8 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentPermission) {
   EXPECT_FALSE(objects[0]->incognito);
 
   EXPECT_CALL(permission_observer(),
-              OnChooserObjectPermissionChanged(
-                  ContentSettingsType::SERIAL_GUARD,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
@@ -246,8 +246,8 @@ TEST_F(SerialChooserContextTest, EphemeralPermissionRevokedOnDisconnect) {
   EXPECT_TRUE(context()->HasPortPermission(origin, *port));
 
   EXPECT_CALL(permission_observer(),
-              OnChooserObjectPermissionChanged(
-                  ContentSettingsType::SERIAL_GUARD,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
@@ -285,8 +285,8 @@ TEST_F(SerialChooserContextTest, PersistenceRequiresDisplayName) {
   EXPECT_TRUE(context()->HasPortPermission(origin, *port));
 
   EXPECT_CALL(permission_observer(),
-              OnChooserObjectPermissionChanged(
-                  ContentSettingsType::SERIAL_GUARD,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
@@ -323,8 +323,8 @@ TEST_F(SerialChooserContextTest, PersistentPermissionNotRevokedOnDisconnect) {
   EXPECT_TRUE(context()->HasPortPermission(origin, *port));
 
   EXPECT_CALL(permission_observer(),
-              OnChooserObjectPermissionChanged(
-                  ContentSettingsType::SERIAL_GUARD,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA))
       .Times(0);
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin)).Times(0);
@@ -371,11 +371,11 @@ TEST_F(SerialChooserContextTest, GuardPermission) {
                                      CONTENT_SETTING_BLOCK);
   EXPECT_FALSE(context()->HasPortPermission(origin, *port));
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = context()->GetGrantedObjects(origin);
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> objects =
+      context()->GetGrantedObjects(origin);
   EXPECT_EQ(0u, objects.size());
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
+  std::vector<std::unique_ptr<SerialChooserContext::Object>>
       all_origin_objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(0u, all_origin_objects.size());
 }
@@ -393,11 +393,11 @@ TEST_F(SerialChooserContextTest, PolicyGuardPermission) {
   EXPECT_FALSE(context()->CanRequestObjectPermission(origin));
   EXPECT_FALSE(context()->HasPortPermission(origin, *port));
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = context()->GetGrantedObjects(origin);
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> objects =
+      context()->GetGrantedObjects(origin);
   EXPECT_EQ(0u, objects.size());
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
+  std::vector<std::unique_ptr<SerialChooserContext::Object>>
       all_origin_objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(0u, all_origin_objects.size());
 }
@@ -423,13 +423,13 @@ TEST_F(SerialChooserContextTest, PolicyAskForUrls) {
   EXPECT_FALSE(context()->CanRequestObjectPermission(kBarOrigin));
   EXPECT_FALSE(context()->HasPortPermission(kBarOrigin, *port));
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = context()->GetGrantedObjects(kFooOrigin);
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> objects =
+      context()->GetGrantedObjects(kFooOrigin);
   EXPECT_EQ(1u, objects.size());
   objects = context()->GetGrantedObjects(kBarOrigin);
   EXPECT_EQ(0u, objects.size());
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
+  std::vector<std::unique_ptr<SerialChooserContext::Object>>
       all_origin_objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(1u, all_origin_objects.size());
 }
@@ -452,13 +452,13 @@ TEST_F(SerialChooserContextTest, PolicyBlockedForUrls) {
   EXPECT_TRUE(context()->CanRequestObjectPermission(kBarOrigin));
   EXPECT_TRUE(context()->HasPortPermission(kBarOrigin, *port));
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = context()->GetGrantedObjects(kFooOrigin);
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> objects =
+      context()->GetGrantedObjects(kFooOrigin);
   EXPECT_EQ(0u, objects.size());
   objects = context()->GetGrantedObjects(kBarOrigin);
   EXPECT_EQ(1u, objects.size());
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
+  std::vector<std::unique_ptr<SerialChooserContext::Object>>
       all_origin_objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(1u, all_origin_objects.size());
 }
@@ -654,11 +654,11 @@ TEST_F(SerialChooserContextTest, Blocklist) {
   // permission storage does not include the USB vendor and product IDs on all
   // platforms and users should still be made aware of permissions they've
   // granted even if they are being blocked from taking effect.
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = context()->GetGrantedObjects(origin);
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> objects =
+      context()->GetGrantedObjects(origin);
   EXPECT_EQ(1u, objects.size());
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
+  std::vector<std::unique_ptr<SerialChooserContext::Object>>
       all_origin_objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(1u, all_origin_objects.size());
 }

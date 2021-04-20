@@ -32,7 +32,7 @@ class ExtensionRegistry;
 }
 
 namespace permissions {
-class ChooserContextBase;
+class ObjectPermissionContextBase;
 }
 
 namespace site_settings {
@@ -184,7 +184,7 @@ std::vector<ContentSettingPatternSource> GetSiteExceptionsForContentType(
 // for a given content settings type and is declared early so that it can used
 // by functions below.
 struct ChooserTypeNameEntry {
-  permissions::ChooserContextBase* (*get_context)(Profile*);
+  permissions::ObjectPermissionContextBase* (*get_context)(Profile*);
   const char* name;
 };
 

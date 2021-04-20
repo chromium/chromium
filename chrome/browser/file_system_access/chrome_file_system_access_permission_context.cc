@@ -682,9 +682,10 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
   // NOTE: This always sets the timestamp to |last_used_time_|, but we really
   // should take the max of |last_used_time_| and the last-used time of a
   // currently persisted permission. Doing this would require another lookup in
-  // ChooserContextBase (or some refactoring).
+  // ObjectPermissionContextBase (or some refactoring).
   // This behavior should be updated if either:
-  //  - ChooserContextBase performance for a large number of grants improves, or
+  //  - ObjectPermissionContextBase performance for a large number of grants
+  //    improves, or
   //  - AsValue() is called without updating |last_used_time_| prior.
   base::Value AsValue() const {
     base::Value value(base::Value::Type::DICTIONARY);
@@ -739,9 +740,10 @@ struct ChromeFileSystemAccessPermissionContext::OriginState {
 ChromeFileSystemAccessPermissionContext::
     ChromeFileSystemAccessPermissionContext(content::BrowserContext* context,
                                             const base::Clock* clock)
-    : ChooserContextBase(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
-                         ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA,
-                         HostContentSettingsMapFactory::GetForProfile(context)),
+    : ObjectPermissionContextBase(
+          ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
+          ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA,
+          HostContentSettingsMapFactory::GetForProfile(context)),
       profile_(context),
       clock_(clock) {
   DETACH_FROM_SEQUENCE(sequence_checker_);

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/optional.h"
 #include "base/scoped_multi_source_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
@@ -21,7 +22,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "components/prefs/pref_store.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -39,7 +40,7 @@ class SiteSettingsHandler
     : public SettingsPageUIHandler,
       public content_settings::Observer,
       public ProfileObserver,
-      public permissions::ChooserContextBase::PermissionObserver,
+      public permissions::ObjectPermissionContextBase::PermissionObserver,
       public CookiesTreeModel::Observer {
  public:
   explicit SiteSettingsHandler(Profile* profile,
@@ -83,9 +84,9 @@ class SiteSettingsHandler
   void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
-  // ChooserContextBase::PermissionObserver implementation:
-  void OnChooserObjectPermissionChanged(
-      ContentSettingsType guard_content_settings_type,
+  // ObjectPermissionContextBase::PermissionObserver implementation:
+  void OnObjectPermissionChanged(
+      base::Optional<ContentSettingsType> guard_content_settings_type,
       ContentSettingsType data_content_settings_type) override;
 
   void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change);
@@ -284,8 +285,8 @@ class SiteSettingsHandler
 
   // Change observer for chooser permissions.
   base::ScopedMultiSourceObservation<
-      permissions::ChooserContextBase,
-      permissions::ChooserContextBase::PermissionObserver>
+      permissions::ObjectPermissionContextBase,
+      permissions::ObjectPermissionContextBase::PermissionObserver>
       chooser_observations_{this};
 
   // Change observer for prefs.

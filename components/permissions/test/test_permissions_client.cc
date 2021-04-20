@@ -56,7 +56,7 @@ PermissionManager* TestPermissionsClient::GetPermissionManager(
   return nullptr;
 }
 
-ChooserContextBase* TestPermissionsClient::GetChooserContext(
+ObjectPermissionContextBase* TestPermissionsClient::GetChooserContext(
     content::BrowserContext* browser_context,
     ContentSettingsType type) {
   return nullptr;

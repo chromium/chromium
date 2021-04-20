@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,7 +30,7 @@ class Value;
 
 // Manages the internal state and connection to the device service for the
 // Human Interface Device (HID) chooser UI.
-class HidChooserContext : public permissions::ChooserContextBase,
+class HidChooserContext : public permissions::ObjectPermissionContextBase,
                           public device::mojom::HidManagerClient {
  public:
   // This observer can be used to be notified when HID devices are connected or
@@ -60,10 +60,10 @@ class HidChooserContext : public permissions::ChooserContextBase,
   static bool CanStorePersistentEntry(
       const device::mojom::HidDeviceInfo& device);
 
-  // permissions::ChooserContextBase implementation:
+  // permissions::ObjectPermissionContextBase implementation:
   bool IsValidObject(const base::Value& object) override;
-  // In addition these methods from ChooserContextBase are overridden in order
-  // to expose ephemeral devices through the public interface.
+  // In addition these methods from ObjectPermissionContextBase are overridden
+  // in order to expose ephemeral devices through the public interface.
   std::vector<std::unique_ptr<Object>> GetGrantedObjects(
       const url::Origin& origin) override;
   std::vector<std::unique_ptr<Object>> GetAllGrantedObjects() override;

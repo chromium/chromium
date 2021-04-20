@@ -50,7 +50,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/crx_file/id_util.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
@@ -633,17 +633,18 @@ void SiteSettingsHandler::OnProfileWillBeDestroyed(Profile* profile) {
   StopObservingSourcesForProfile(profile);
 }
 
-void SiteSettingsHandler::OnChooserObjectPermissionChanged(
-    ContentSettingsType guard_content_settings_type,
+void SiteSettingsHandler::OnObjectPermissionChanged(
+    base::Optional<ContentSettingsType> guard_content_settings_type,
     ContentSettingsType data_content_settings_type) {
-  if (!site_settings::HasRegisteredGroupName(guard_content_settings_type) ||
+  if (!guard_content_settings_type ||
+      !site_settings::HasRegisteredGroupName(*guard_content_settings_type) ||
       !site_settings::HasRegisteredGroupName(data_content_settings_type)) {
     return;
   }
 
   FireWebUIListener("contentSettingChooserPermissionChanged",
                     base::Value(site_settings::ContentSettingsTypeToGroupName(
-                        guard_content_settings_type)),
+                        *guard_content_settings_type)),
                     base::Value(site_settings::ContentSettingsTypeToGroupName(
                         data_content_settings_type)));
 }
@@ -1239,7 +1240,7 @@ void SiteSettingsHandler::HandleResetChooserExceptionForSite(
   GURL embedding_origin(embedding_origin_str);
   CHECK(embedding_origin.is_valid());
 
-  permissions::ChooserContextBase* chooser_context =
+  permissions::ObjectPermissionContextBase* chooser_context =
       chooser_type->get_context(profile_);
   chooser_context->RevokeObjectPermission(
       url::Origin::Create(embedding_origin), args->GetList()[3]);

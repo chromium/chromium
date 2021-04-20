@@ -30,7 +30,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
@@ -335,15 +335,18 @@ std::string GetSourceStringForChooserException(
   return SiteSettingSourceToString(calculated_source);
 }
 
-permissions::ChooserContextBase* GetUsbChooserContext(Profile* profile) {
+permissions::ObjectPermissionContextBase* GetUsbChooserContext(
+    Profile* profile) {
   return UsbChooserContextFactory::GetForProfile(profile);
 }
 
-permissions::ChooserContextBase* GetSerialChooserContext(Profile* profile) {
+permissions::ObjectPermissionContextBase* GetSerialChooserContext(
+    Profile* profile) {
   return SerialChooserContextFactory::GetForProfile(profile);
 }
 
-permissions::ChooserContextBase* GetHidChooserContext(Profile* profile) {
+permissions::ObjectPermissionContextBase* GetHidChooserContext(
+    Profile* profile) {
   return HidChooserContextFactory::GetForProfile(profile);
 }
 
@@ -351,7 +354,8 @@ permissions::ChooserContextBase* GetHidChooserContext(Profile* profile) {
 // WebBluetoothNewPermissionsBackend flag is enabled.
 // TODO(https://crbug.com/589228): Remove the feature check when it is enabled
 // by default.
-permissions::ChooserContextBase* GetBluetoothChooserContext(Profile* profile) {
+permissions::ObjectPermissionContextBase* GetBluetoothChooserContext(
+    Profile* profile) {
   if (base::FeatureList::IsEnabled(
           features::kWebBluetoothNewPermissionsBackend)) {
     return BluetoothChooserContextFactory::GetForProfile(profile);
@@ -858,20 +862,21 @@ base::Value GetChooserExceptionListFromProfile(
   // WebBluetoothNewPermissionsBackend flag is enabled.
   // TODO(https://crbug.com/589228): Remove the nullptr check when it is enabled
   // by default.
-  permissions::ChooserContextBase* chooser_context =
+  permissions::ObjectPermissionContextBase* chooser_context =
       chooser_type.get_context(profile);
   if (!chooser_context)
     return exceptions;
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
+  std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
       objects = chooser_context->GetAllGrantedObjects();
 
   if (profile->HasPrimaryOTRProfile()) {
     Profile* incognito_profile =
         profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-    permissions::ChooserContextBase* incognito_chooser_context =
+    permissions::ObjectPermissionContextBase* incognito_chooser_context =
         chooser_type.get_context(incognito_profile);
-    std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
+    std::vector<
+        std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
         incognito_objects = incognito_chooser_context->GetAllGrantedObjects();
     objects.insert(objects.end(),
                    std::make_move_iterator(incognito_objects.begin()),

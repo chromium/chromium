@@ -125,7 +125,7 @@ base::Value DeviceInfoToDeviceObject(
 }  // namespace
 
 BluetoothChooserContext::BluetoothChooserContext(Profile* profile)
-    : ChooserContextBase(
+    : ObjectPermissionContextBase(
           ContentSettingsType::BLUETOOTH_GUARD,
           ContentSettingsType::BLUETOOTH_CHOOSER_DATA,
           HostContentSettingsMapFactory::GetForProfile(profile)) {}
@@ -135,8 +135,8 @@ BluetoothChooserContext::~BluetoothChooserContext() = default;
 WebBluetoothDeviceId BluetoothChooserContext::GetWebBluetoothDeviceId(
     const url::Origin& origin,
     const std::string& device_address) {
-  const std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      object_list = GetGrantedObjects(origin);
+  const std::vector<std::unique_ptr<Object>> object_list =
+      GetGrantedObjects(origin);
   for (const auto& object : object_list) {
     const base::Value& device = object->value;
     DCHECK(IsValidObject(device));
@@ -199,8 +199,8 @@ WebBluetoothDeviceId BluetoothChooserContext::GrantServiceAccessPermission(
   // If |origin| already has permission to access the device with
   // |device_address|, update the allowed GATT services by performing a union of
   // |services|.
-  const std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      object_list = GetGrantedObjects(origin);
+  const std::vector<std::unique_ptr<Object>> object_list =
+      GetGrantedObjects(origin);
   const std::string& device_address = device->GetAddress();
   for (const auto& object : object_list) {
     base::Value& device_object = object->value;
@@ -317,8 +317,8 @@ std::u16string BluetoothChooserContext::GetObjectDisplayName(
 base::Value BluetoothChooserContext::FindDeviceObject(
     const url::Origin& origin,
     const blink::WebBluetoothDeviceId& device_id) {
-  const std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      object_list = GetGrantedObjects(origin);
+  const std::vector<std::unique_ptr<Object>> object_list =
+      GetGrantedObjects(origin);
   for (const auto& object : object_list) {
     base::Value device = std::move(object->value);
     DCHECK(IsValidObject(device));

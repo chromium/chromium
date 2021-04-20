@@ -29,8 +29,8 @@ PageInfoDelegateImpl::PageInfoDelegateImpl(content::WebContents* web_contents)
   DCHECK(web_contents_);
 }
 
-permissions::ChooserContextBase* PageInfoDelegateImpl::GetChooserContext(
-    ContentSettingsType type) {
+permissions::ObjectPermissionContextBase*
+PageInfoDelegateImpl::GetChooserContext(ContentSettingsType type) {
   // TODO(crbug.com/1052375): Once WebLayer has USB and Bluetooth support,
   // add more logic here.
   return nullptr;

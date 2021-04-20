@@ -19,7 +19,7 @@ class PageSpecificContentSettings;
 }
 
 namespace permissions {
-class ChooserContextBase;
+class ObjectPermissionContextBase;
 class PermissionDecisionAutoBlocker;
 }  // namespace permissions
 
@@ -38,7 +38,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
       security_state::VisibleSecurityState visible_security_state);
 
   // PageInfoDelegate implementation
-  permissions::ChooserContextBase* GetChooserContext(
+  permissions::ObjectPermissionContextBase* GetChooserContext(
       ContentSettingsType type) override;
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()

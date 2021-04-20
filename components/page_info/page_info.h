@@ -33,7 +33,7 @@ class X509Certificate;
 }
 
 namespace permissions {
-class ChooserContextBase;
+class ObjectPermissionContextBase;
 }
 
 namespace ui {
@@ -251,10 +251,10 @@ class PageInfo : public content::WebContentsObserver {
   // This method is called when the user pressed "Mark as legitimate" button.
   void OnAllowlistPasswordReuseButtonPressed();
 
-  // Return a pointer to the ChooserContextBase corresponding to the
+  // Return a pointer to the ObjectPermissionContextBase corresponding to the
   // content settings type, |type|. Returns nullptr for content settings
-  // for which there's no ChooserContextBase.
-  permissions::ChooserContextBase* GetChooserContextFromUIInfo(
+  // for which there's no ObjectPermissionContextBase.
+  permissions::ObjectPermissionContextBase* GetChooserContextFromUIInfo(
       const ChooserUIInfo& ui_info) const;
 
   // Accessors.

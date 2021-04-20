@@ -90,7 +90,8 @@ bool ChromePermissionsClient::IsSubresourceFilterActivated(
       ->GetSiteActivationFromMetadata(url);
 }
 
-permissions::ChooserContextBase* ChromePermissionsClient::GetChooserContext(
+permissions::ObjectPermissionContextBase*
+ChromePermissionsClient::GetChooserContext(
     content::BrowserContext* browser_context,
     ContentSettingsType type) {
   switch (type) {

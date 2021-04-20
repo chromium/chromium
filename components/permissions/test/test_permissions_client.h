@@ -29,7 +29,7 @@ class TestPermissionsClient : public PermissionsClient {
       content::BrowserContext* browser_context) override;
   PermissionManager* GetPermissionManager(
       content::BrowserContext* browser_context) override;
-  ChooserContextBase* GetChooserContext(
+  ObjectPermissionContextBase* GetChooserContext(
       content::BrowserContext* browser_context,
       ContentSettingsType type) override;
   void GetUkmSourceId(content::BrowserContext* browser_context,

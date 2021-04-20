@@ -10,7 +10,7 @@
 
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
@@ -85,11 +85,11 @@ class ChromeBluetoothDelegate : public content::BluetoothDelegate {
   // self-delete when the last observer is removed from the |owning_delegate|'s
   // |chooser_observers_| map.
   class ChooserContextPermissionObserver
-      : public permissions::ChooserContextBase::PermissionObserver {
+      : public permissions::ObjectPermissionContextBase::PermissionObserver {
    public:
     explicit ChooserContextPermissionObserver(
         ChromeBluetoothDelegate* owning_delegate,
-        permissions::ChooserContextBase* context);
+        permissions::ObjectPermissionContextBase* context);
     ~ChooserContextPermissionObserver() override;
 
     ChooserContextPermissionObserver(const ChooserContextPermissionObserver&) =
@@ -97,7 +97,7 @@ class ChromeBluetoothDelegate : public content::BluetoothDelegate {
     ChooserContextPermissionObserver& operator=(
         const ChooserContextPermissionObserver) = delete;
 
-    // permissions::ChooserContextBase::PermissionObserver:
+    // permissions::ObjectPermissionContextBase::PermissionObserver:
     void OnPermissionRevoked(const url::Origin& origin) override;
 
     void AddFramePermissionObserver(FramePermissionObserver* observer);
@@ -108,8 +108,9 @@ class ChromeBluetoothDelegate : public content::BluetoothDelegate {
     base::ObserverList<FramePermissionObserver> observer_list_;
     std::list<FramePermissionObserver*> observers_pending_removal_;
     bool is_traversing_observers_ = false;
-    base::ScopedObservation<permissions::ChooserContextBase,
-                            permissions::ChooserContextBase::PermissionObserver>
+    base::ScopedObservation<
+        permissions::ObjectPermissionContextBase,
+        permissions::ObjectPermissionContextBase::PermissionObserver>
         observer_{this};
   };
 

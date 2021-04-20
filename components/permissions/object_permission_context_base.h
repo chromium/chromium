@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERMISSIONS_CHOOSER_CONTEXT_BASE_H_
-#define COMPONENTS_PERMISSIONS_CHOOSER_CONTEXT_BASE_H_
+#ifndef COMPONENTS_PERMISSIONS_OBJECT_PERMISSION_CONTEXT_BASE_H_
+#define COMPONENTS_PERMISSIONS_OBJECT_PERMISSION_CONTEXT_BASE_H_
 
 #include <memory>
 #include <string>
@@ -27,9 +27,10 @@ class Origin;
 namespace permissions {
 
 // This is the base class for services that manage any type of permission that
-// is granted through a chooser-style UI instead of a simple allow/deny prompt.
+// is associated with a more complicated grant than simple allow/deny. This is
+// typically granted through a chooser-style UI.
 // Subclasses must define the structure of the objects that are stored.
-class ChooserContextBase : public KeyedService {
+class ObjectPermissionContextBase : public KeyedService {
  public:
   struct Object {
     Object(const url::Origin& origin,
@@ -44,27 +45,31 @@ class ChooserContextBase : public KeyedService {
     bool incognito;
   };
 
-  // This observer can be used to be notified of changes to the permission of a
-  // chooser object.
+  // This observer can be used to be notified of changes to the permission of
+  // an object.
   class PermissionObserver : public base::CheckedObserver {
    public:
-    // Notify observers that an object permission changed for the chooser
-    // context represented by |guard_content_settings_type| and
+    // Notify observer that an object permission changed for the permission
+    // context represented by |guard_content_settings_type|, if applicable, and
     // |data_content_settings_type|.
-    virtual void OnChooserObjectPermissionChanged(
-        ContentSettingsType guard_content_settings_type,
+    virtual void OnObjectPermissionChanged(
+        base::Optional<ContentSettingsType> guard_content_settings_type,
         ContentSettingsType data_content_settings_type);
-    // Notify obsever that an object permission was revoked for |origin|.
+    // Notify observer that an object permission was revoked for |origin|.
     virtual void OnPermissionRevoked(const url::Origin& origin);
   };
 
   void AddObserver(PermissionObserver* observer);
   void RemoveObserver(PermissionObserver* observer);
 
-  ChooserContextBase(ContentSettingsType guard_content_settings_type,
-                     ContentSettingsType data_content_settings_type,
-                     HostContentSettingsMap* host_content_settings_map);
-  ~ChooserContextBase() override;
+  ObjectPermissionContextBase(
+      ContentSettingsType guard_content_settings_type,
+      ContentSettingsType data_content_settings_type,
+      HostContentSettingsMap* host_content_settings_map);
+  ObjectPermissionContextBase(
+      ContentSettingsType data_content_settings_type,
+      HostContentSettingsMap* host_content_settings_map);
+  ~ObjectPermissionContextBase() override;
 
   // Checks whether |origin| can request permission to access objects. This is
   // done by checking |guard_content_settings_type_| which will usually be "ask"
@@ -155,7 +160,7 @@ class ChooserContextBase : public KeyedService {
   void NotifyPermissionChanged();
   void NotifyPermissionRevoked(const url::Origin& origin);
 
-  const ContentSettingsType guard_content_settings_type_;
+  const base::Optional<ContentSettingsType> guard_content_settings_type_;
   const ContentSettingsType data_content_settings_type_;
   base::ObserverList<PermissionObserver> permission_observer_list_;
 
@@ -169,4 +174,4 @@ class ChooserContextBase : public KeyedService {
 
 }  // namespace permissions
 
-#endif  // COMPONENTS_PERMISSIONS_CHOOSER_CONTEXT_BASE_H_
+#endif  // COMPONENTS_PERMISSIONS_OBJECT_PERMISSION_CONTEXT_BASE_H_

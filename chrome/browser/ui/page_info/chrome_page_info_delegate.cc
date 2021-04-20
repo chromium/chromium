@@ -22,7 +22,7 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
@@ -60,8 +60,8 @@ Profile* ChromePageInfoDelegate::GetProfile() const {
   return Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 }
 
-permissions::ChooserContextBase* ChromePageInfoDelegate::GetChooserContext(
-    ContentSettingsType type) {
+permissions::ObjectPermissionContextBase*
+ChromePageInfoDelegate::GetChooserContext(ContentSettingsType type) {
   switch (type) {
     case ContentSettingsType::USB_CHOOSER_DATA:
       return UsbChooserContextFactory::GetForProfile(GetProfile());

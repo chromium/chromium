@@ -47,10 +47,10 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/infobars/core/infobar.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
-#include "components/permissions/test/chooser_context_base_mock_permission_observer.h"
+#include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_controller.h"
@@ -1961,7 +1961,7 @@ class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
 
   void TearDown() override {
     auto* chooser_context = UsbChooserContextFactory::GetForProfile(profile());
-    chooser_context->permissions::ChooserContextBase::RemoveObserver(
+    chooser_context->permissions::ObjectPermissionContextBase::RemoveObserver(
         &observer_);
   }
 
@@ -2014,7 +2014,8 @@ class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
                                *policy_value);
 
     // Add the observer for permission changes.
-    chooser_context->permissions::ChooserContextBase::AddObserver(&observer_);
+    chooser_context->permissions::ObjectPermissionContextBase::AddObserver(
+        &observer_);
   }
 
   void SetUpOffTheRecordUsbChooserContext() {
@@ -2037,13 +2038,14 @@ class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
                                            *off_the_record_device_);
 
     // Add the observer for permission changes.
-    chooser_context->permissions::ChooserContextBase::AddObserver(&observer_);
+    chooser_context->permissions::ObjectPermissionContextBase::AddObserver(
+        &observer_);
   }
 
   void DestroyIncognitoProfile() override {
     auto* chooser_context =
         UsbChooserContextFactory::GetForProfile(incognito_profile());
-    chooser_context->permissions::ChooserContextBase::RemoveObserver(
+    chooser_context->permissions::ObjectPermissionContextBase::RemoveObserver(
         &observer_);
 
     SiteSettingsHandlerTest::DestroyIncognitoProfile();
@@ -2218,9 +2220,10 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   args.Append(base::Value::ToUniquePtrValue(
       UsbChooserContext::DeviceInfoToValue(*persistent_device_info_)));
 
-  EXPECT_CALL(observer_, OnChooserObjectPermissionChanged(
-                             ContentSettingsType::USB_GUARD,
-                             ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(observer_,
+              OnObjectPermissionChanged(base::Optional<ContentSettingsType>(
+                                            ContentSettingsType::USB_GUARD),
+                                        ContentSettingsType::USB_CHOOSER_DATA));
   EXPECT_CALL(observer_, OnPermissionRevoked(kGoogleOrigin));
   handler()->HandleResetChooserExceptionForSite(&args);
 
@@ -2264,9 +2267,10 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
                                                        kGoogleOriginStr));
   }
 
-  EXPECT_CALL(observer_, OnChooserObjectPermissionChanged(
-                             ContentSettingsType::USB_GUARD,
-                             ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(observer_,
+              OnObjectPermissionChanged(base::Optional<ContentSettingsType>(
+                                            ContentSettingsType::USB_GUARD),
+                                        ContentSettingsType::USB_CHOOSER_DATA));
   EXPECT_CALL(observer_, OnPermissionRevoked(kChromiumOrigin));
   handler()->HandleResetChooserExceptionForSite(&args);
 
@@ -2309,9 +2313,10 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
                                                       kAndroidOriginStr));
   }
 
-  EXPECT_CALL(observer_, OnChooserObjectPermissionChanged(
-                             ContentSettingsType::USB_GUARD,
-                             ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(observer_,
+              OnObjectPermissionChanged(base::Optional<ContentSettingsType>(
+                                            ContentSettingsType::USB_GUARD),
+                                        ContentSettingsType::USB_CHOOSER_DATA));
   EXPECT_CALL(observer_, OnPermissionRevoked(kAndroidOrigin));
   handler()->HandleResetChooserExceptionForSite(&args);
 

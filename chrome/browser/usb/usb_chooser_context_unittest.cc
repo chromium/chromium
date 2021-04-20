@@ -20,7 +20,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/permissions/test/chooser_context_base_mock_permission_observer.h"
+#include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -54,8 +54,7 @@ class UsbChooserContextTest : public testing::Test {
         .Times(AnyNumber());
     EXPECT_CALL(mock_permission_observer_, OnPermissionRevoked(_))
         .Times(AnyNumber());
-    EXPECT_CALL(mock_permission_observer_,
-                OnChooserObjectPermissionChanged(_, _))
+    EXPECT_CALL(mock_permission_observer_, OnObjectPermissionChanged(_, _))
         .Times(AnyNumber());
   }
 
@@ -76,7 +75,7 @@ class UsbChooserContextTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     // Add observers
-    chooser_context->permissions::ChooserContextBase::AddObserver(
+    chooser_context->permissions::ObjectPermissionContextBase::AddObserver(
         &mock_permission_observer_);
     chooser_context->AddObserver(&mock_device_observer_);
     return chooser_context;
@@ -109,29 +108,29 @@ TEST_F(UsbChooserContextTest, CheckGrantAndRevokePermission) {
   object.SetStringKey(kSerialNumberKey, "123ABC");
 
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
-  EXPECT_CALL(
-      mock_permission_observer_,
-      OnChooserObjectPermissionChanged(ContentSettingsType::USB_GUARD,
-                                       ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
 
   store->GrantDevicePermission(origin, *device_info);
   EXPECT_TRUE(store->HasDevicePermission(origin, *device_info));
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = store->GetGrantedObjects(origin);
+  std::vector<std::unique_ptr<UsbChooserContext::Object>> objects =
+      store->GetGrantedObjects(origin);
   ASSERT_EQ(1u, objects.size());
   EXPECT_EQ(object, objects[0]->value);
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      all_origin_objects = store->GetAllGrantedObjects();
+  std::vector<std::unique_ptr<UsbChooserContext::Object>> all_origin_objects =
+      store->GetAllGrantedObjects();
   ASSERT_EQ(1u, all_origin_objects.size());
   EXPECT_EQ(url, all_origin_objects[0]->origin);
   EXPECT_EQ(object, all_origin_objects[0]->value);
   EXPECT_FALSE(all_origin_objects[0]->incognito);
 
-  EXPECT_CALL(
-      mock_permission_observer_,
-      OnChooserObjectPermissionChanged(ContentSettingsType::USB_GUARD,
-                                       ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
   EXPECT_CALL(mock_permission_observer_, OnPermissionRevoked(origin));
 
   store->RevokeObjectPermission(origin, objects[0]->value);
@@ -161,31 +160,31 @@ TEST_F(UsbChooserContextTest, CheckGrantAndRevokeEphemeralPermission) {
   object.SetIntKey(kProductIdKey, device_info->product_id);
 
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
-  EXPECT_CALL(
-      mock_permission_observer_,
-      OnChooserObjectPermissionChanged(ContentSettingsType::USB_GUARD,
-                                       ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
 
   store->GrantDevicePermission(origin, *device_info);
   EXPECT_TRUE(store->HasDevicePermission(origin, *device_info));
   EXPECT_FALSE(store->HasDevicePermission(origin, *other_device_info));
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = store->GetGrantedObjects(origin);
+  std::vector<std::unique_ptr<UsbChooserContext::Object>> objects =
+      store->GetGrantedObjects(origin);
   EXPECT_EQ(1u, objects.size());
   EXPECT_EQ(object, objects[0]->value);
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      all_origin_objects = store->GetAllGrantedObjects();
+  std::vector<std::unique_ptr<UsbChooserContext::Object>> all_origin_objects =
+      store->GetAllGrantedObjects();
   EXPECT_EQ(1u, all_origin_objects.size());
   EXPECT_EQ(url, all_origin_objects[0]->origin);
   EXPECT_EQ(object, all_origin_objects[0]->value);
   EXPECT_FALSE(all_origin_objects[0]->incognito);
 
-  EXPECT_CALL(
-      mock_permission_observer_,
-      OnChooserObjectPermissionChanged(ContentSettingsType::USB_GUARD,
-                                       ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
   EXPECT_CALL(mock_permission_observer_, OnPermissionRevoked(origin));
 
   store->RevokeObjectPermission(origin, objects[0]->value);
@@ -206,20 +205,20 @@ TEST_F(UsbChooserContextTest, DisconnectDeviceWithPermission) {
   UsbChooserContext* store = GetChooserContext(profile());
 
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
-  EXPECT_CALL(
-      mock_permission_observer_,
-      OnChooserObjectPermissionChanged(ContentSettingsType::USB_GUARD,
-                                       ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
 
   store->GrantDevicePermission(origin, *device_info);
   EXPECT_TRUE(store->HasDevicePermission(origin, *device_info));
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = store->GetGrantedObjects(origin);
+  std::vector<std::unique_ptr<UsbChooserContext::Object>> objects =
+      store->GetGrantedObjects(origin);
   EXPECT_EQ(1u, objects.size());
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      all_origin_objects = store->GetAllGrantedObjects();
+  std::vector<std::unique_ptr<UsbChooserContext::Object>> all_origin_objects =
+      store->GetAllGrantedObjects();
   EXPECT_EQ(1u, all_origin_objects.size());
 
   EXPECT_CALL(mock_device_observer_, OnDeviceRemoved(_));
@@ -251,26 +250,26 @@ TEST_F(UsbChooserContextTest, DisconnectDeviceWithEphemeralPermission) {
   UsbChooserContext* store = GetChooserContext(profile());
 
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
-  EXPECT_CALL(
-      mock_permission_observer_,
-      OnChooserObjectPermissionChanged(ContentSettingsType::USB_GUARD,
-                                       ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
 
   store->GrantDevicePermission(origin, *device_info);
   EXPECT_TRUE(store->HasDevicePermission(origin, *device_info));
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = store->GetGrantedObjects(origin);
+  std::vector<std::unique_ptr<UsbChooserContext::Object>> objects =
+      store->GetGrantedObjects(origin);
   EXPECT_EQ(1u, objects.size());
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      all_origin_objects = store->GetAllGrantedObjects();
+  std::vector<std::unique_ptr<UsbChooserContext::Object>> all_origin_objects =
+      store->GetAllGrantedObjects();
   EXPECT_EQ(1u, all_origin_objects.size());
 
-  EXPECT_CALL(
-      mock_permission_observer_,
-      OnChooserObjectPermissionChanged(ContentSettingsType::USB_GUARD,
-                                       ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
   EXPECT_CALL(mock_device_observer_, OnDeviceRemoved(_));
   device_manager_.RemoveDevice(device_info->guid);
   base::RunLoop().RunUntilIdle();
@@ -302,19 +301,19 @@ TEST_F(UsbChooserContextTest, GrantPermissionInIncognito) {
   UsbChooserContext* incognito_store = GetChooserContext(
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
-  EXPECT_CALL(
-      mock_permission_observer_,
-      OnChooserObjectPermissionChanged(ContentSettingsType::USB_GUARD,
-                                       ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
 
   store->GrantDevicePermission(origin, *device_info_1);
   EXPECT_TRUE(store->HasDevicePermission(origin, *device_info_1));
   EXPECT_FALSE(incognito_store->HasDevicePermission(origin, *device_info_1));
 
-  EXPECT_CALL(
-      mock_permission_observer_,
-      OnChooserObjectPermissionChanged(ContentSettingsType::USB_GUARD,
-                                       ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
 
   incognito_store->GrantDevicePermission(origin, *device_info_2);
   EXPECT_TRUE(store->HasDevicePermission(origin, *device_info_1));
@@ -323,20 +322,20 @@ TEST_F(UsbChooserContextTest, GrantPermissionInIncognito) {
   EXPECT_TRUE(incognito_store->HasDevicePermission(origin, *device_info_2));
 
   {
-    std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-        objects = store->GetGrantedObjects(origin);
+    std::vector<std::unique_ptr<UsbChooserContext::Object>> objects =
+        store->GetGrantedObjects(origin);
     EXPECT_EQ(1u, objects.size());
-    std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-        all_origin_objects = store->GetAllGrantedObjects();
+    std::vector<std::unique_ptr<UsbChooserContext::Object>> all_origin_objects =
+        store->GetAllGrantedObjects();
     ASSERT_EQ(1u, all_origin_objects.size());
     EXPECT_FALSE(all_origin_objects[0]->incognito);
   }
   {
-    std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-        objects = incognito_store->GetGrantedObjects(origin);
+    std::vector<std::unique_ptr<UsbChooserContext::Object>> objects =
+        incognito_store->GetGrantedObjects(origin);
     EXPECT_EQ(1u, objects.size());
-    std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-        all_origin_objects = incognito_store->GetAllGrantedObjects();
+    std::vector<std::unique_ptr<UsbChooserContext::Object>> all_origin_objects =
+        incognito_store->GetAllGrantedObjects();
     ASSERT_EQ(1u, all_origin_objects.size());
     EXPECT_TRUE(all_origin_objects[0]->incognito);
   }
@@ -357,25 +356,25 @@ TEST_F(UsbChooserContextTest, UsbGuardPermission) {
       kFooUrl, kFooUrl, ContentSettingsType::USB_GUARD, CONTENT_SETTING_BLOCK);
 
   auto* store = GetChooserContext(profile());
-  EXPECT_CALL(
-      mock_permission_observer_,
-      OnChooserObjectPermissionChanged(ContentSettingsType::USB_GUARD,
-                                       ContentSettingsType::USB_CHOOSER_DATA))
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA))
       .Times(4);
   store->GrantDevicePermission(kFooOrigin, *device_info);
   store->GrantDevicePermission(kFooOrigin, *ephemeral_device_info);
   store->GrantDevicePermission(kBarOrigin, *device_info);
   store->GrantDevicePermission(kBarOrigin, *ephemeral_device_info);
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = store->GetGrantedObjects(kFooOrigin);
+  std::vector<std::unique_ptr<UsbChooserContext::Object>> objects =
+      store->GetGrantedObjects(kFooOrigin);
   EXPECT_EQ(0u, objects.size());
 
   objects = store->GetGrantedObjects(kBarOrigin);
   EXPECT_EQ(2u, objects.size());
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      all_origin_objects = store->GetAllGrantedObjects();
+  std::vector<std::unique_ptr<UsbChooserContext::Object>> all_origin_objects =
+      store->GetAllGrantedObjects();
   for (const auto& object : all_origin_objects) {
     EXPECT_EQ(object->origin, kBarUrl);
   }
@@ -416,12 +415,12 @@ TEST_F(UsbChooserContextTest, PolicyGuardPermission) {
   EXPECT_FALSE(store->CanRequestObjectPermission(origin));
   EXPECT_FALSE(store->HasDevicePermission(origin, *device));
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = store->GetGrantedObjects(origin);
+  std::vector<std::unique_ptr<UsbChooserContext::Object>> objects =
+      store->GetGrantedObjects(origin);
   EXPECT_EQ(0u, objects.size());
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      all_origin_objects = store->GetAllGrantedObjects();
+  std::vector<std::unique_ptr<UsbChooserContext::Object>> all_origin_objects =
+      store->GetAllGrantedObjects();
   EXPECT_EQ(0u, all_origin_objects.size());
 }
 
@@ -449,14 +448,14 @@ TEST_F(UsbChooserContextTest, PolicyAskForUrls) {
   EXPECT_FALSE(store->CanRequestObjectPermission(kBarOrigin));
   EXPECT_FALSE(store->HasDevicePermission(kBarOrigin, *device));
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = store->GetGrantedObjects(kFooOrigin);
+  std::vector<std::unique_ptr<UsbChooserContext::Object>> objects =
+      store->GetGrantedObjects(kFooOrigin);
   EXPECT_EQ(1u, objects.size());
   objects = store->GetGrantedObjects(kBarOrigin);
   EXPECT_EQ(0u, objects.size());
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      all_origin_objects = store->GetAllGrantedObjects();
+  std::vector<std::unique_ptr<UsbChooserContext::Object>> all_origin_objects =
+      store->GetAllGrantedObjects();
   EXPECT_EQ(1u, all_origin_objects.size());
 }
 
@@ -481,14 +480,14 @@ TEST_F(UsbChooserContextTest, PolicyBlockedForUrls) {
   EXPECT_TRUE(store->CanRequestObjectPermission(kBarOrigin));
   EXPECT_TRUE(store->HasDevicePermission(kBarOrigin, *device));
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = store->GetGrantedObjects(kFooOrigin);
+  std::vector<std::unique_ptr<UsbChooserContext::Object>> objects =
+      store->GetGrantedObjects(kFooOrigin);
   EXPECT_EQ(0u, objects.size());
   objects = store->GetGrantedObjects(kBarOrigin);
   EXPECT_EQ(1u, objects.size());
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      all_origin_objects = store->GetAllGrantedObjects();
+  std::vector<std::unique_ptr<UsbChooserContext::Object>> all_origin_objects =
+      store->GetAllGrantedObjects();
   EXPECT_EQ(1u, all_origin_objects.size());
 }
 
@@ -768,14 +767,13 @@ void ExpectDeviceObjectInfo(const base::Value& actual,
   EXPECT_EQ(*actual_device_name, name);
 }
 
-void ExpectChooserObjectInfo(
-    const permissions::ChooserContextBase::Object* actual,
-    const GURL& origin,
-    content_settings::SettingSource source,
-    bool incognito,
-    int vendor_id,
-    int product_id,
-    const std::string& name) {
+void ExpectChooserObjectInfo(const UsbChooserContext::Object* actual,
+                             const GURL& origin,
+                             content_settings::SettingSource source,
+                             bool incognito,
+                             int vendor_id,
+                             int product_id,
+                             const std::string& name) {
   ASSERT_TRUE(actual);
   EXPECT_EQ(actual->origin, origin);
   EXPECT_EQ(actual->source, source);
@@ -986,10 +984,10 @@ TEST_F(UsbChooserContextTest,
 
   auto* store = GetChooserContext(profile());
 
-  EXPECT_CALL(
-      mock_permission_observer_,
-      OnChooserObjectPermissionChanged(ContentSettingsType::USB_GUARD,
-                                       ContentSettingsType::USB_CHOOSER_DATA))
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA))
       .Times(2);
   store->GrantDevicePermission(kGoogleOrigin, *persistent_device_info);
   store->GrantDevicePermission(kGoogleOrigin, *ephemeral_device_info);
@@ -1057,10 +1055,10 @@ TEST_F(UsbChooserContextTest,
   UsbDeviceInfoPtr persistent_device_info = device_manager_.CreateAndAddDevice(
       6353, 5678, "Specific", "Product", "123ABC");
 
-  EXPECT_CALL(
-      mock_permission_observer_,
-      OnChooserObjectPermissionChanged(ContentSettingsType::USB_GUARD,
-                                       ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
   const auto kProductVendorOrigin = url::Origin::Create(ProductVendorUrl());
   store->GrantDevicePermission(kProductVendorOrigin, *persistent_device_info);
 
@@ -1113,10 +1111,10 @@ TEST_F(UsbChooserContextTest,
   profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
                              *base::JSONReader::ReadDeprecated(kPolicySetting));
 
-  EXPECT_CALL(
-      mock_permission_observer_,
-      OnChooserObjectPermissionChanged(ContentSettingsType::USB_GUARD,
-                                       ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
   const auto kVendorOrigin = url::Origin::Create(VendorUrl());
   store->GrantDevicePermission(kVendorOrigin, *persistent_device_info);
 
@@ -1166,10 +1164,10 @@ TEST_F(UsbChooserContextTest,
   profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
                              *base::JSONReader::ReadDeprecated(kPolicySetting));
 
-  EXPECT_CALL(
-      mock_permission_observer_,
-      OnChooserObjectPermissionChanged(ContentSettingsType::USB_GUARD,
-                                       ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
   const auto kAnyDeviceOrigin = url::Origin::Create(AnyDeviceUrl());
   store->GrantDevicePermission(kAnyDeviceOrigin, *persistent_device_info);
 

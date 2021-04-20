@@ -12,7 +12,7 @@
 #include "chrome/browser/hid/mock_hid_device_observer.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/permissions/test/chooser_context_base_mock_permission_observer.h"
+#include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/device/public/cpp/hid/fake_hid_manager.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -121,9 +121,10 @@ TEST_F(HidChooserContextTest, GrantAndRevokeEphemeralDevice) {
       .WillOnce(RunClosure(device_added_loop.QuitClosure()));
 
   base::RunLoop permission_granted_loop;
-  EXPECT_CALL(permission_observer(), OnChooserObjectPermissionChanged(
-                                         ContentSettingsType::HID_GUARD,
-                                         ContentSettingsType::HID_CHOOSER_DATA))
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::HID_GUARD),
+                  ContentSettingsType::HID_CHOOSER_DATA))
       .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
       .WillOnce([]() {
         // Expect a 2nd permission change event when the permission is revoked.
@@ -147,12 +148,12 @@ TEST_F(HidChooserContextTest, GrantAndRevokeEphemeralDevice) {
 
   EXPECT_TRUE(context->HasDevicePermission(origin(), *device));
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      origin_objects = context->GetGrantedObjects(origin());
+  std::vector<std::unique_ptr<HidChooserContext::Object>> origin_objects =
+      context->GetGrantedObjects(origin());
   ASSERT_EQ(1u, origin_objects.size());
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = context->GetAllGrantedObjects();
+  std::vector<std::unique_ptr<HidChooserContext::Object>> objects =
+      context->GetAllGrantedObjects();
   ASSERT_EQ(1u, objects.size());
   EXPECT_EQ(origin().GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
@@ -179,9 +180,10 @@ TEST_F(HidChooserContextTest, GrantAndDisconnectEphemeralDevice) {
   EXPECT_CALL(device_observer(), OnDeviceRemoved(_));
 
   base::RunLoop permission_granted_loop;
-  EXPECT_CALL(permission_observer(), OnChooserObjectPermissionChanged(
-                                         ContentSettingsType::HID_GUARD,
-                                         ContentSettingsType::HID_CHOOSER_DATA))
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::HID_GUARD),
+                  ContentSettingsType::HID_CHOOSER_DATA))
       .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
       .WillOnce([]() {
         // Expect a 2nd permission change event when the permission is revoked.
@@ -205,12 +207,12 @@ TEST_F(HidChooserContextTest, GrantAndDisconnectEphemeralDevice) {
 
   EXPECT_TRUE(context->HasDevicePermission(origin(), *device));
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      origin_objects = context->GetGrantedObjects(origin());
+  std::vector<std::unique_ptr<HidChooserContext::Object>> origin_objects =
+      context->GetGrantedObjects(origin());
   ASSERT_EQ(1u, origin_objects.size());
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = context->GetAllGrantedObjects();
+  std::vector<std::unique_ptr<HidChooserContext::Object>> objects =
+      context->GetAllGrantedObjects();
   ASSERT_EQ(1u, objects.size());
   EXPECT_EQ(origin().GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
@@ -240,9 +242,10 @@ TEST_F(HidChooserContextTest, GrantDisconnectRevokeUsbPersistentDevice) {
       .WillOnce(RunClosure(device_removed_loop.QuitClosure()));
 
   base::RunLoop permission_granted_loop;
-  EXPECT_CALL(permission_observer(), OnChooserObjectPermissionChanged(
-                                         ContentSettingsType::HID_GUARD,
-                                         ContentSettingsType::HID_CHOOSER_DATA))
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::HID_GUARD),
+                  ContentSettingsType::HID_CHOOSER_DATA))
       .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
       .WillOnce([]() {
         // Expect a 2nd permission change event when the permission is revoked.
@@ -266,12 +269,12 @@ TEST_F(HidChooserContextTest, GrantDisconnectRevokeUsbPersistentDevice) {
 
   EXPECT_TRUE(context->HasDevicePermission(origin(), *device));
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      origin_objects = context->GetGrantedObjects(origin());
+  std::vector<std::unique_ptr<HidChooserContext::Object>> origin_objects =
+      context->GetGrantedObjects(origin());
   ASSERT_EQ(1u, origin_objects.size());
 
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = context->GetAllGrantedObjects();
+  std::vector<std::unique_ptr<HidChooserContext::Object>> objects =
+      context->GetAllGrantedObjects();
   ASSERT_EQ(1u, objects.size());
   EXPECT_EQ(origin().GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
@@ -302,9 +305,10 @@ TEST_F(HidChooserContextTest, GuardPermission) {
       .WillOnce(RunClosure(device_added_loop.QuitClosure()));
 
   base::RunLoop permission_granted_loop;
-  EXPECT_CALL(permission_observer(), OnChooserObjectPermissionChanged(
-                                         ContentSettingsType::HID_GUARD,
-                                         ContentSettingsType::HID_CHOOSER_DATA))
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::HID_GUARD),
+                  ContentSettingsType::HID_CHOOSER_DATA))
       .WillOnce(RunClosure(permission_granted_loop.QuitClosure()));
 
   HidChooserContext* context = GetContext();
@@ -343,9 +347,10 @@ TEST_F(HidChooserContextTest, ConnectionErrorWithEphemeralPermission) {
   EXPECT_CALL(device_observer(), OnHidManagerConnectionError());
 
   base::RunLoop permission_granted_loop;
-  EXPECT_CALL(permission_observer(), OnChooserObjectPermissionChanged(
-                                         ContentSettingsType::HID_GUARD,
-                                         ContentSettingsType::HID_CHOOSER_DATA))
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::HID_GUARD),
+                  ContentSettingsType::HID_CHOOSER_DATA))
       .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
       .WillOnce([]() {
         // Expect a 2nd permission change event when the permission is revoked.
@@ -382,9 +387,10 @@ TEST_F(HidChooserContextTest, ConnectionErrorWithPersistentPermission) {
       .WillOnce(RunClosure(connection_error_loop.QuitClosure()));
 
   base::RunLoop permission_granted_loop;
-  EXPECT_CALL(permission_observer(), OnChooserObjectPermissionChanged(
-                                         ContentSettingsType::HID_GUARD,
-                                         ContentSettingsType::HID_CHOOSER_DATA))
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  base::make_optional(ContentSettingsType::HID_GUARD),
+                  ContentSettingsType::HID_CHOOSER_DATA))
       .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
       .WillOnce([]() {
         // Expect a 2nd permission change event when the permission is revoked.

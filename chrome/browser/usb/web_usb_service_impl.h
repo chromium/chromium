@@ -36,7 +36,7 @@ class UsbChooserContext;
 // chooser UI.
 class WebUsbServiceImpl
     : public blink::mojom::WebUsbService,
-      public permissions::ChooserContextBase::PermissionObserver,
+      public permissions::ObjectPermissionContextBase::PermissionObserver,
       public UsbChooserContext::DeviceObserver {
  public:
   WebUsbServiceImpl(content::RenderFrameHost* render_frame_host,
@@ -69,7 +69,7 @@ class WebUsbServiceImpl
       GetDevicesCallback callback,
       std::vector<device::mojom::UsbDeviceInfoPtr> device_info_list);
 
-  // ChooserContextBase::PermissionObserver implementation:
+  // ObjectPermissionContextBase::PermissionObserver implementation:
   void OnPermissionRevoked(const url::Origin& origin) override;
 
   // UsbChooserContext::DeviceObserver implementation:
@@ -98,8 +98,8 @@ class WebUsbServiceImpl
 
   ScopedObserver<UsbChooserContext, UsbChooserContext::DeviceObserver>
       device_observer_;
-  ScopedObserver<permissions::ChooserContextBase,
-                 permissions::ChooserContextBase::PermissionObserver>
+  ScopedObserver<permissions::ObjectPermissionContextBase,
+                 permissions::ObjectPermissionContextBase::PermissionObserver>
       permission_observer_;
 
   base::WeakPtrFactory<WebUsbServiceImpl> weak_factory_{this};

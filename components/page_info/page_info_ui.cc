@@ -257,7 +257,8 @@ PageInfoUI::CookieInfo::CookieInfo() : allowed(-1), blocked(-1) {}
 
 PageInfoUI::ChosenObjectInfo::ChosenObjectInfo(
     const PageInfo::ChooserUIInfo& ui_info,
-    std::unique_ptr<permissions::ChooserContextBase::Object> chooser_object)
+    std::unique_ptr<permissions::ObjectPermissionContextBase::Object>
+        chooser_object)
     : ui_info(ui_info), chooser_object(std::move(chooser_object)) {}
 
 PageInfoUI::ChosenObjectInfo::~ChosenObjectInfo() = default;

@@ -34,7 +34,7 @@
 #include "components/page_info/page_info_delegate.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
@@ -549,7 +549,7 @@ void PageInfo::OnSitePermissionChanged(ContentSettingsType type,
 
 void PageInfo::OnSiteChosenObjectDeleted(const ChooserUIInfo& ui_info,
                                          const base::Value& object) {
-  permissions::ChooserContextBase* context =
+  permissions::ObjectPermissionContextBase* context =
       delegate_->GetChooserContext(ui_info.content_settings_type);
   const auto origin = url::Origin::Create(site_url_);
   context->RevokeObjectPermission(origin, object);
@@ -648,7 +648,7 @@ void PageInfo::OnAllowlistPasswordReuseButtonPressed() {
 #endif
 }
 
-permissions::ChooserContextBase* PageInfo::GetChooserContextFromUIInfo(
+permissions::ObjectPermissionContextBase* PageInfo::GetChooserContextFromUIInfo(
     const ChooserUIInfo& ui_info) const {
   return delegate_->GetChooserContext(ui_info.content_settings_type);
 }
@@ -989,13 +989,13 @@ void PageInfo::PresentSitePermissions() {
 
   const auto origin = url::Origin::Create(site_url_);
   for (const ChooserUIInfo& ui_info : kChooserUIInfo) {
-    permissions::ChooserContextBase* context =
+    permissions::ObjectPermissionContextBase* context =
         delegate_->GetChooserContext(ui_info.content_settings_type);
     if (!context)
       continue;
     auto chosen_objects = context->GetGrantedObjects(origin);
-    for (std::unique_ptr<permissions::ChooserContextBase::Object>& object :
-         chosen_objects) {
+    for (std::unique_ptr<permissions::ObjectPermissionContextBase::Object>&
+             object : chosen_objects) {
       chosen_object_info_list.push_back(
           std::make_unique<PageInfoUI::ChosenObjectInfo>(ui_info,
                                                          std::move(object)));

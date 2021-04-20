@@ -59,9 +59,10 @@ void HidChooserContext::DeviceObserver::OnDeviceChanged(
 void HidChooserContext::DeviceObserver::OnHidManagerConnectionError() {}
 
 HidChooserContext::HidChooserContext(Profile* profile)
-    : ChooserContextBase(ContentSettingsType::HID_GUARD,
-                         ContentSettingsType::HID_CHOOSER_DATA,
-                         HostContentSettingsMapFactory::GetForProfile(profile)),
+    : ObjectPermissionContextBase(
+          ContentSettingsType::HID_GUARD,
+          ContentSettingsType::HID_CHOOSER_DATA,
+          HostContentSettingsMapFactory::GetForProfile(profile)),
       is_incognito_(profile->IsOffTheRecord()) {}
 
 HidChooserContext::~HidChooserContext() {
@@ -112,10 +113,10 @@ bool HidChooserContext::IsValidObject(const base::Value& object) {
   return (guid && !guid->empty()) || (serial_number && !serial_number->empty());
 }
 
-std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
+std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
 HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
-  std::vector<std::unique_ptr<ChooserContextBase::Object>> objects =
-      ChooserContextBase::GetGrantedObjects(origin);
+  std::vector<std::unique_ptr<Object>> objects =
+      ObjectPermissionContextBase::GetGrantedObjects(origin);
 
   if (CanRequestObjectPermission(origin)) {
     auto it = ephemeral_devices_.find(origin);
@@ -128,7 +129,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
         // which always returns after the device list initialization in this
         // class.
         DCHECK(base::Contains(devices_, guid));
-        objects.push_back(std::make_unique<ChooserContextBase::Object>(
+        objects.push_back(std::make_unique<Object>(
             origin, DeviceInfoToValue(*devices_[guid]),
             content_settings::SettingSource::SETTING_SOURCE_USER,
             is_incognito_));
@@ -141,10 +142,10 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
   return objects;
 }
 
-std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
+std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
 HidChooserContext::GetAllGrantedObjects() {
-  std::vector<std::unique_ptr<ChooserContextBase::Object>> objects =
-      ChooserContextBase::GetAllGrantedObjects();
+  std::vector<std::unique_ptr<Object>> objects =
+      ObjectPermissionContextBase::GetAllGrantedObjects();
 
   for (const auto& map_entry : ephemeral_devices_) {
     const url::Origin& origin = map_entry.first;
@@ -154,7 +155,7 @@ HidChooserContext::GetAllGrantedObjects() {
 
     for (const auto& guid : map_entry.second) {
       DCHECK(base::Contains(devices_, guid));
-      objects.push_back(std::make_unique<ChooserContextBase::Object>(
+      objects.push_back(std::make_unique<Object>(
           origin, DeviceInfoToValue(*devices_[guid]),
           content_settings::SettingSource::SETTING_SOURCE_USER, is_incognito_));
     }
@@ -170,7 +171,7 @@ void HidChooserContext::RevokeObjectPermission(const url::Origin& origin,
   const std::string* guid = object.FindStringKey(kHidGuidKey);
 
   if (!guid) {
-    ChooserContextBase::RevokeObjectPermission(origin, object);
+    ObjectPermissionContextBase::RevokeObjectPermission(origin, object);
     // TODO(crbug.com/964041): Record UMA (WEBHID_PERMISSION_REVOKED).
     return;
   }
@@ -216,8 +217,7 @@ bool HidChooserContext::HasDevicePermission(
     return true;
   }
 
-  std::vector<std::unique_ptr<ChooserContextBase::Object>> object_list =
-      GetGrantedObjects(origin);
+  std::vector<std::unique_ptr<Object>> object_list = GetGrantedObjects(origin);
   for (const auto& object : object_list) {
     const base::Value& device_value = object->value;
     DCHECK(IsValidObject(device_value));
@@ -335,8 +335,8 @@ void HidChooserContext::DeviceRemoved(device::mojom::HidDeviceInfoPtr device) {
     return;
 
   for (auto& observer : permission_observer_list_) {
-    observer.OnChooserObjectPermissionChanged(guard_content_settings_type_,
-                                              data_content_settings_type_);
+    observer.OnObjectPermissionChanged(guard_content_settings_type_,
+                                       data_content_settings_type_);
     for (auto& origin : revoked_origins) {
       observer.OnPermissionRevoked(origin);
     }
@@ -413,8 +413,8 @@ void HidChooserContext::OnHidManagerConnectionError() {
   // Notify permission observers that all ephemeral permissions have been
   // revoked.
   for (auto& observer : permission_observer_list_) {
-    observer.OnChooserObjectPermissionChanged(guard_content_settings_type_,
-                                              data_content_settings_type_);
+    observer.OnObjectPermissionChanged(guard_content_settings_type_,
+                                       data_content_settings_type_);
     for (const auto& origin : revoked_origins)
       observer.OnPermissionRevoked(origin);
   }

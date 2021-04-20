@@ -59,7 +59,8 @@ permissions::PermissionManager* WebLayerPermissionsClient::GetPermissionManager(
   return PermissionManagerFactory::GetForBrowserContext(browser_context);
 }
 
-permissions::ChooserContextBase* WebLayerPermissionsClient::GetChooserContext(
+permissions::ObjectPermissionContextBase*
+WebLayerPermissionsClient::GetChooserContext(
     content::BrowserContext* browser_context,
     ContentSettingsType type) {
   return nullptr;

@@ -18,7 +18,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/usb/usb_policy_allowed_devices.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -29,7 +29,7 @@
 
 class Profile;
 
-class UsbChooserContext : public permissions::ChooserContextBase,
+class UsbChooserContext : public permissions::ObjectPermissionContextBase,
                           public device::mojom::UsbDeviceManagerClient {
  public:
   explicit UsbChooserContext(Profile* profile);
@@ -47,11 +47,10 @@ class UsbChooserContext : public permissions::ChooserContextBase,
   static base::Value DeviceInfoToValue(
       const device::mojom::UsbDeviceInfo& device_info);
 
-  // ChooserContextBase:
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-  GetGrantedObjects(const url::Origin& origin) override;
-  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-  GetAllGrantedObjects() override;
+  // ObjectPermissionContextBase:
+  std::vector<std::unique_ptr<Object>> GetGrantedObjects(
+      const url::Origin& origin) override;
+  std::vector<std::unique_ptr<Object>> GetAllGrantedObjects() override;
   void RevokeObjectPermission(const url::Origin& origin,
                               const base::Value& object) override;
   bool IsValidObject(const base::Value& object) override;

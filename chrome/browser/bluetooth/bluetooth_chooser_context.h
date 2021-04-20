@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -33,7 +33,8 @@ class Origin;
 // and is unique for a given Bluetooth device address and origin pair, so this
 // class stores this mapping and provides utility methods to convert between
 // the WebBluetoothDeviceId and Bluetooth device address.
-class BluetoothChooserContext : public permissions::ChooserContextBase {
+class BluetoothChooserContext
+    : public permissions::ObjectPermissionContextBase {
  public:
   explicit BluetoothChooserContext(Profile* profile);
   ~BluetoothChooserContext() override;
@@ -77,7 +78,7 @@ class BluetoothChooserContext : public permissions::ChooserContextBase {
   static blink::WebBluetoothDeviceId GetObjectDeviceId(
       const base::Value& object);
 
-  // ChooserContextBase;
+  // ObjectPermissionContextBase;
   bool IsValidObject(const base::Value& object) override;
   std::u16string GetObjectDisplayName(const base::Value& object) override;
 
