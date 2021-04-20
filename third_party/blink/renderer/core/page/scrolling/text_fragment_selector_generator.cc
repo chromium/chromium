@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/default_tick_clock.h"
+#include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -196,7 +197,9 @@ void TextFragmentSelectorGenerator::UpdateSelection(
       ToPositionInDOMTree(selection_range.StartPosition()),
       ToPositionInDOMTree(selection_range.EndPosition()));
   if (base::FeatureList::IsEnabled(
-          shared_highlighting::kPreemptiveLinkToTextGeneration)) {
+          shared_highlighting::kPreemptiveLinkToTextGeneration) &&
+      shared_highlighting::ShouldOfferLinkToText(
+          selection_frame_->GetDocument()->Url())) {
     Reset();
     GenerateSelector();
   }
