@@ -62,7 +62,7 @@ ShadowRoot::ShadowRoot(Document& document, ShadowRootType type)
       type_(static_cast<unsigned>(type)),
       registered_with_parent_shadow_root_(false),
       delegates_focus_(false),
-      slot_assignment_mode_(static_cast<unsigned>(SlotAssignmentMode::kAuto)),
+      slot_assignment_mode_(static_cast<unsigned>(SlotAssignmentMode::kNamed)),
       needs_dir_auto_attribute_update_(false),
       supports_name_based_slot_assignment_(false),
       unused_(0) {}

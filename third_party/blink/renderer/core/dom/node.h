@@ -908,6 +908,10 @@ class CORE_EXPORT Node : public EventTarget {
   void RegisterScrollTimeline(ScrollTimeline*);
   void UnregisterScrollTimeline(ScrollTimeline*);
 
+  // For the imperative slot distribution API.
+  void SetManuallyAssignedSlot(HTMLSlotElement* slot);
+  HTMLSlotElement* ManuallyAssignedSlot();
+
   // For Element.
   void SetHasDisplayLockContext() { SetFlag(kHasDisplayLockContext); }
   bool HasDisplayLockContext() const { return GetFlag(kHasDisplayLockContext); }

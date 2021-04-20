@@ -121,7 +121,7 @@ enum class ElementFlags {
 
 enum class ShadowRootType;
 
-enum class SlotAssignmentMode { kManual, kAuto };
+enum class SlotAssignmentMode { kManual, kNamed };
 enum class FocusDelegation { kNone, kDelegateFocus };
 
 enum class SelectionBehaviorOnFocus {
@@ -552,7 +552,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   ShadowRoot& AttachShadowRootInternal(
       ShadowRootType,
       FocusDelegation focus_delegation = FocusDelegation::kNone,
-      SlotAssignmentMode slot_assignment_mode = SlotAssignmentMode::kAuto);
+      SlotAssignmentMode slot_assignment_mode = SlotAssignmentMode::kNamed);
 
   // Returns the shadow root attached to this element if it is a shadow host.
   ShadowRoot* GetShadowRoot() const;

@@ -67,10 +67,8 @@ void SlotAssignment::DidRemoveSlot(HTMLSlotElement& slot) {
   needs_collect_slots_ = true;
 
   if (owner_->IsManualSlotting()) {
-    auto& candidates = slot.AssignedNodesCandidates();
+    auto& candidates = slot.ManuallyAssignedNodes();
     if (candidates.size()) {
-      ClearCandidateNodes(candidates);
-      slot.ClearAssignedNodesCandidates();
       SetNeedsAssignmentRecalc();
       slot.DidSlotChangeAfterRemovedFromShadowTree();
     }
@@ -278,56 +276,58 @@ void SlotAssignment::RecalcAssignment() {
           FindSlotByName(HTMLSlotElement::UserAgentCustomAssignSlotName());
     }
 
-    bool is_manual_slot_assignment = owner_->IsManualSlotting();
-    // Replaces candidate_assigned_slot_map_ after the loop, to avoid stale
-    // references resulting from calls to slot->DidRecalcAssignedNodes().
-    HeapHashMap<Member<Node>, Member<HTMLSlotElement>> candidate_map;
+    if (owner_->IsManualSlotting()) {
+      // |children_to_clear| starts with the list of all light-dom children of
+      // the host that are *currently slotted*. Any of those that aren't slotted
+      // during this recalc will then have their flat tree data cleared.
+      HeapHashSet<Member<Node>> children_to_clear;
+      for (Node& child : NodeTraversal::ChildrenOf(owner_->host())) {
+        if (!child.GetFlatTreeNodeData())
+          continue;
+        children_to_clear.insert(&child);
+      }
 
-    for (Node& child : NodeTraversal::ChildrenOf(owner_->host())) {
-      if (!child.IsSlotable())
-        continue;
-
-      HTMLSlotElement* slot = nullptr;
-      if (supports_name_based_slot_assignment) {
-        if (is_manual_slot_assignment) {
-          if (auto* candidate_slot = candidate_assigned_slot_map_.at(&child)) {
-            if (candidate_slot->ContainingShadowRoot() == owner_) {
-              slot = candidate_slot;
-            } else {
-              candidate_assigned_slot_map_.erase(&child);
-              const AtomicString& slot_name =
-                  (candidate_slot->GetName() != g_empty_atom)
-                      ? candidate_slot->GetName()
-                      : "SLOT";
-              owner_->GetDocument().AddConsoleMessage(MakeGarbageCollected<
-                                                      ConsoleMessage>(
-                  mojom::blink::ConsoleMessageSource::kRendering,
-                  mojom::blink::ConsoleMessageLevel::kWarning,
-                  "This code triggered a slot assignment recalculation. At "
-                  "the time of this recalculation, the assigned node '" +
-                      child.nodeName() + "' was no longer a child of '" +
-                      slot_name +
-                      "'s parent shadow host, so it could not be assigned."));
-            }
+      for (Member<HTMLSlotElement> slot : Slots()) {
+        for (Node* slottable : slot->ManuallyAssignedNodes()) {
+          // Some of the manually assigned nodes might have been moved
+          // to other trees or documents. In that case, don't assign them
+          // here, but also don't remove/invalidate them in the manually
+          // assigned nodes list, in case they come back later.
+          if (slottable && slottable->IsChildOfShadowHost() &&
+              slottable->parentElement() == owner_->host()) {
+            slot->AppendAssignedNode(*slottable);
+            children_to_clear.erase(slottable);
           }
-        } else {
-          slot = FindSlotByName(child.SlotName());
-        }
-      } else {
-        if (user_agent_custom_assign_slot && ShouldAssignToCustomSlot(child)) {
-          slot = user_agent_custom_assign_slot;
-        } else {
-          slot = user_agent_default_slot;
         }
       }
 
-      if (slot) {
-        slot->AppendAssignedNode(child);
-        if (is_manual_slot_assignment)
-          candidate_map.Set(&child, slot);
-      } else {
-        child.ClearFlatTreeNodeData();
-        child.RemovedFromFlatTree();
+      for (auto child : children_to_clear) {
+        child->ClearFlatTreeNodeData();
+        child->RemovedFromFlatTree();
+      }
+    } else {
+      for (Node& child : NodeTraversal::ChildrenOf(owner_->host())) {
+        if (!child.IsSlotable())
+          continue;
+
+        HTMLSlotElement* slot = nullptr;
+        if (supports_name_based_slot_assignment) {
+          slot = FindSlotByName(child.SlotName());
+        } else {
+          if (user_agent_custom_assign_slot &&
+              ShouldAssignToCustomSlot(child)) {
+            slot = user_agent_custom_assign_slot;
+          } else {
+            slot = user_agent_default_slot;
+          }
+        }
+
+        if (slot) {
+          slot->AppendAssignedNode(child);
+        } else {
+          child.ClearFlatTreeNodeData();
+          child.RemovedFromFlatTree();
+        }
       }
     }
 
@@ -339,9 +339,6 @@ void SlotAssignment::RecalcAssignment() {
 
     for (auto& slot : Slots())
       slot->DidRecalcAssignedNodes();
-
-    if (is_manual_slot_assignment)
-      candidate_assigned_slot_map_.swap(candidate_map);
   }
 
   // Update an dir=auto flag from a host of slots to its all descendants.
@@ -393,9 +390,10 @@ HTMLSlotElement* SlotAssignment::FindSlotInUserAgentShadow(
   return user_agent_default_slot;
 }
 
-HTMLSlotElement* SlotAssignment::FindSlotInManualSlotting(const Node& node) {
-  auto* slot = candidate_assigned_slot_map_.at(const_cast<Node*>(&node));
-  if (slot && slot->ContainingShadowRoot() == owner_)
+HTMLSlotElement* SlotAssignment::FindSlotInManualSlotting(Node& node) {
+  auto* slot = node.ManuallyAssignedSlot();
+  if (slot && slot->ContainingShadowRoot() == owner_ &&
+      node.IsChildOfShadowHost() && node.parentElement() == owner_->host())
     return slot;
 
   return nullptr;
@@ -423,29 +421,10 @@ HTMLSlotElement* SlotAssignment::GetCachedFirstSlotWithoutAccessingNodeTree(
   return nullptr;
 }
 
-bool SlotAssignment::UpdateCandidateNodeAssignedSlot(Node& node,
-                                                     HTMLSlotElement& slot) {
-  bool updated = false;
-  auto* prev_slot = candidate_assigned_slot_map_.at(&node);
-  if (prev_slot && prev_slot != &slot) {
-    prev_slot->RemoveAssignedNodeCandidate(node);
-    updated = true;
-  }
-
-  candidate_assigned_slot_map_.Set(&node, &slot);
-  return updated;
-}
-
-void SlotAssignment::ClearCandidateNodes(
-    const HeapLinkedHashSet<Member<Node>>& candidates) {
-  candidate_assigned_slot_map_.RemoveAll(candidates);
-}
-
 void SlotAssignment::Trace(Visitor* visitor) const {
   visitor->Trace(slots_);
   visitor->Trace(slot_map_);
   visitor->Trace(owner_);
-  visitor->Trace(candidate_assigned_slot_map_);
   visitor->Trace(candidate_directionality_set_);
 }
 

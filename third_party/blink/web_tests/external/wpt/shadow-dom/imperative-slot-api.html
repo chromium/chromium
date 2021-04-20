@@ -15,45 +15,12 @@ test(() => {
   let tTree = createTestTree(test_basic);
   assert_not_equals(tTree.host1.attachShadow({ mode: 'open', slotAssignment: 'manual'}),
                     null, 'slot assignment manual should work');
-  assert_not_equals(tTree.host2.attachShadow({ mode: 'open', slotAssignment: 'name'}),
+  assert_not_equals(tTree.host2.attachShadow({ mode: 'open', slotAssignment: 'named'}),
                     null, 'slot assignment auto should work');
   assert_throws_js(TypeError, () => {
     tTree.host3.attachShadow({ mode: 'open', slotAssignment: 'exceptional' })},
                 'others should throw exception');
 }, 'attachShadow can take slotAssignment parameter.');
-</script>
-
-<div id="test_errors">
-  <div id="host1">
-    <template data-mode="open" data-slot-assignment="name">
-      <slot id="s1"></slot>
-    </template>
-    <div id="c1"></div>
-  </div>
-  <div id="host2">
-    <template data-mode="open" data-slot-assignment="manual">
-      <slot id="s2"></slot>
-    </template>
-  </div>
-  <div id="c2"></div>
-</div>
-<script>
-test(() => {
-  let tTree = createTestTree(test_errors);
-  assert_array_equals(tTree.s1.assignedElements(), [tTree.c1]);
-  assert_equals(tTree.c1.assignedSlot, tTree.s1);
-
-  assert_throws_dom('NotAllowedError', () => { tTree.s1.assign([]); });
-  assert_array_equals(tTree.s1.assignedElements(), [tTree.c1]);
-  assert_equals(tTree.c1.assignedSlot, tTree.s1);
-}, 'Imperative slot API throws exception when not slotAssignment != \'manual\'.');
-
-test(() => {
-  let tTree = createTestTree(test_errors);
-  assert_throws_dom('NotAllowedError', () => { tTree.s2.assign([tTree.c2]); });
-
-  assert_throws_dom('NotAllowedError', () => { tTree.s2.assign([tTree.host1]); });
-}, 'Imperative slot API throws exception when slottable parentNode != slot\'s host.');
 </script>
 
 <div id="test_assign">
@@ -155,34 +122,31 @@ test(() => {
   let tTree = createTestTree(test_assign);
 
   // tTree.c4 is invalid for tTree.host slot assignment.
-  try {
-    tTree.s1.assign([tTree.c1, tTree.c2, tTree.c4]);
-    assert_unreached('assign() should have failed) ');
-  } catch (err) {
-    assert_equals(err.name, 'NotAllowedError');
-  }
+  // No exception should be thrown here.
+  tTree.s1.assign([tTree.c1, tTree.c4, tTree.c2]);
 
-  assert_array_equals(tTree.s1.assignedNodes(), []);
-  assert_equals(tTree.c1.assignedSlot, null);
-  assert_equals(tTree.c2.assignedSlot, null);
-  assert_equals(tTree.c4.assignedSlot, null);
-
-  tTree.s1.assign([tTree.c2, tTree.c3, tTree.c1]);
-  assert_array_equals(tTree.s1.assignedNodes(), [tTree.c2, tTree.c3, tTree.c1]);
-
-  try {
-    tTree.s1.assign([tTree.c4]);
-    assert_unreached('assign() should have failed) ');
-  } catch (err) {
-    assert_equals(err.name, 'NotAllowedError');
-  }
-
-  // Previous state is preserved.
-  assert_array_equals(tTree.s1.assignedNodes(), [tTree.c2, tTree.c3, tTree.c1]);
+  // All observable assignments should skip c4.
+  assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1, tTree.c2]);
   assert_equals(tTree.c1.assignedSlot, tTree.s1);
   assert_equals(tTree.c2.assignedSlot, tTree.s1);
-  assert_equals(tTree.c3.assignedSlot, tTree.s1);
-}, 'Assigning invalid nodes causes exception and slot returns to its previous state.');
+  assert_equals(tTree.c4.assignedSlot, null);
+
+  // Moving c4 into place should reveal the assignment.
+  tTree.host.append(tTree.c4);
+  assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1, tTree.c4, tTree.c2]);
+  assert_equals(tTree.c1.assignedSlot, tTree.s1);
+  assert_equals(tTree.c2.assignedSlot, tTree.s1);
+  assert_equals(tTree.c4.assignedSlot, tTree.s1);
+
+  // Moving c4 into a different shadow host and back should
+  // also not break the assignment.
+  tTree.host4.append(tTree.c4)
+  assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1, tTree.c2]);
+  assert_equals(tTree.c4.assignedSlot, null);
+  tTree.host.append(tTree.c4);
+  assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1, tTree.c4, tTree.c2]);
+  assert_equals(tTree.c4.assignedSlot, tTree.s1);
+}, 'Assigning invalid nodes should be allowed.');
 
 test(() => {
   let tTree = createTestTree(test_assign);
@@ -235,21 +199,6 @@ test(() => {
 
   tTree.shadow_root4.insertBefore(tTree.s1, tTree.s4);
   assert_array_equals(tTree.s1.assignedNodes(), []);
-  // Don't trigger slot assignment on previous shadow root.
-  // assert_array_equals(tTree.s2.assignedNodes(), []);
-
-  tTree.shadow_root.insertBefore(tTree.s1, tTree.s2);
-  assert_array_equals(tTree.s1.assignedNodes(), []);
-}, 'Previously assigned node should not be assigned if slot moved to a new shadow root. The slot remains empty when moved back, no trigger recalc.');
-
-test(() => {
-  let tTree = createTestTree(test_assign);
-
-  tTree.s1.assign([tTree.c1]);
-  assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1]);
-
-  tTree.shadow_root4.insertBefore(tTree.s1, tTree.s4);
-  assert_array_equals(tTree.s1.assignedNodes(), []);
   // Trigger slot assignment on previous shadow root.
   assert_array_equals(tTree.s2.assignedNodes(), []);
 
@@ -264,8 +213,8 @@ test(() => {
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1]);
 
   tTree.s1.assign([tTree.c1, tTree.c1, tTree.c2, tTree.c2, tTree.c1]);
-  assert_array_equals(tTree.s1.assignedNodes(), [tTree.c2, tTree.c1]);
-}, 'Assignment with the same node in parameters should be ignored, last one wins.');
+  assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1, tTree.c2]);
+}, 'Assignment with the same node in parameters should be ignored, first one wins.');
 
 test(() => {
   let tTree = createTestTree(test_assign);
@@ -281,25 +230,45 @@ test(() => {
 test(() => {
   let tTree = createTestTree(test_assign);
 
-  tTree.s1.assign([tTree.c1]);
-  tTree.s2.assign([tTree.c2]);
-  tTree.s3.assign([tTree.c3]);
-  tTree.shadow_root.insertBefore(tTree.s2, tTree.s1);
-  tTree.shadow_root.insertBefore(tTree.s3, tTree.s1);
+  const isolatedDocNode = document.implementation.createHTMLDocument("").body;
+  isolatedDocNode.appendChild(tTree.c1);
+  const isolatedDocNode2 = document.implementation.createHTMLDocument("").body;
+  isolatedDocNode2.appendChild(tTree.s1);
 
-  assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1]);
-  assert_array_equals(tTree.s2.assignedNodes(), []);
-  assert_array_equals(tTree.s3.assignedNodes(), []);
-  assert_equals(tTree.c1.assignedSlot, tTree.s1);
+  tTree.s1.assign([tTree.c1, tTree.c2]);
+  assert_array_equals(tTree.s1.assignedNodes(), [], 's1 not inside shadow root');
+  assert_equals(tTree.c1.assignedSlot, null);
   assert_equals(tTree.c2.assignedSlot, null);
-  assert_equals(tTree.c3.assignedSlot, null);
 
-  tTree.s2.remove();
-
-  assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1]);
-  assert_array_equals(tTree.s3.assignedNodes(), []);
+  tTree.shadow_root.appendChild(tTree.s1);
+  tTree.host.appendChild(tTree.c1);
+  assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1, tTree.c2]);
   assert_equals(tTree.c1.assignedSlot, tTree.s1);
+  assert_equals(tTree.c2.assignedSlot, tTree.s1);
+}, 'Nodes can be assigned even if slots or nodes aren\'t in the same tree.');
+
+test(() => {
+  let tTree = createTestTree(test_assign);
+
+  tTree.s1.assign([tTree.c1, tTree.c2]);
+  assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1, tTree.c2]);
+  assert_equals(tTree.c1.assignedSlot, tTree.s1);
+  assert_equals(tTree.c2.assignedSlot, tTree.s1);
+
+  const isolatedDocNode = document.implementation.createHTMLDocument("").body;
+  isolatedDocNode.appendChild(tTree.c1);
+  const isolatedDocNode2 = document.implementation.createHTMLDocument("").body;
+  isolatedDocNode2.appendChild(tTree.s1);
+
+  assert_array_equals(tTree.s1.assignedNodes(), [], 's1 not inside shadow root');
+  assert_equals(tTree.c1.assignedSlot, null);
   assert_equals(tTree.c2.assignedSlot, null);
-  assert_equals(tTree.c3.assignedSlot, null);
-}, 'A slot should be cleared of assigned nodes even if it\'s re-inserted into the same shadow root.');
+
+  tTree.shadow_root.appendChild(tTree.s1);
+  tTree.host.appendChild(tTree.c1);
+  assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1, tTree.c2]);
+  assert_equals(tTree.c1.assignedSlot, tTree.s1);
+  assert_equals(tTree.c2.assignedSlot, tTree.s1);
+}, 'Removing a node from the document does not break manually assigned slot linkage.');
+
 </script>

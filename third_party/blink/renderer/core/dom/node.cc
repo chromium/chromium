@@ -3096,7 +3096,8 @@ HTMLSlotElement* Node::AssignedSlot() const {
   // dirty. RecalcAssignment() is almost no-op if we don't need to recalc.
   root->GetSlotAssignment().RecalcAssignment();
   if (FlatTreeNodeData* data = GetFlatTreeNodeData()) {
-    DCHECK_EQ(root->AssignedSlotFor(*this), data->AssignedSlot());
+    DCHECK_EQ(root->AssignedSlotFor(*this), data->AssignedSlot())
+        << "Assigned slot mismatch for node " << this;
     return data->AssignedSlot();
   }
   return nullptr;
@@ -3341,6 +3342,15 @@ void Node::RegisterScrollTimeline(ScrollTimeline* timeline) {
 }
 void Node::UnregisterScrollTimeline(ScrollTimeline* timeline) {
   EnsureRareData().UnregisterScrollTimeline(timeline);
+}
+
+void Node::SetManuallyAssignedSlot(HTMLSlotElement* slot) {
+  EnsureFlatTreeNodeData().SetManuallyAssignedSlot(slot);
+}
+HTMLSlotElement* Node::ManuallyAssignedSlot() {
+  if (FlatTreeNodeData* data = GetFlatTreeNodeData())
+    return data->ManuallyAssignedSlot();
+  return nullptr;
 }
 
 void Node::Trace(Visitor* visitor) const {

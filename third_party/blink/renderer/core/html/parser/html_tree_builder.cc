@@ -1002,7 +1002,7 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
             delegates_focus ? FocusDelegation::kDelegateFocus
                             : FocusDelegation::kNone,
             manual_slotting ? SlotAssignmentMode::kManual
-                            : SlotAssignmentMode::kAuto);
+                            : SlotAssignmentMode::kNamed);
       }
     }
   }

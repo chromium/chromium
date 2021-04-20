@@ -3500,8 +3500,7 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
   auto slot_assignment = (shadow_root_init_dict->hasSlotAssignment() &&
                           shadow_root_init_dict->slotAssignment() == "manual")
                              ? SlotAssignmentMode::kManual
-                             : SlotAssignmentMode::kAuto;
-
+                             : SlotAssignmentMode::kNamed;
   if (const char* error_message = ErrorMessageForAttachShadow()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       error_message);

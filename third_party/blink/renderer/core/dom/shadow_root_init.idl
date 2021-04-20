@@ -5,7 +5,7 @@
 // Spec: https://w3c.github.io/webcomponents/spec/shadow/#shadowrootinit-dictionary
 
 enum ShadowRootMode { "open", "closed" };
-enum SlotAssignmentMode { "manual", "auto" };
+enum SlotAssignmentMode { "manual", "named" };
 
 dictionary ShadowRootInit {
     required ShadowRootMode mode;
