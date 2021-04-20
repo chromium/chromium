@@ -17,7 +17,6 @@ extensions_api_schema_files_ = [
   "bluetooth_low_energy.idl",
   "bluetooth_private.idl",
   "bluetooth_socket.idl",
-  "cast_channel.idl",
   "cec_private.idl",
   "clipboard.idl",
   "declarative_net_request.idl",

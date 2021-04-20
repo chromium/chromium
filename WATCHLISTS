@@ -645,9 +645,7 @@
                   '|components/test/data/cast_certificate/',
     },
     'cast_channel': {
-      'filepath':  'chrome/test/data/extensions/api_test/cast_channel/' \
-                   '|components/cast_channel/' \
-                   '|extensions/browser/api/cast_channel'
+      'filepath':  'components/cast_channel/'
     },
     'cast_streaming': {
       'filepath': 'media/cast/' \
