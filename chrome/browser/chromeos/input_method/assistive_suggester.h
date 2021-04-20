@@ -11,9 +11,11 @@
 #include "chrome/browser/chromeos/input_method/emoji_suggester.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine_base.h"
+#include "chrome/browser/chromeos/input_method/multi_word_suggester.h"
 #include "chrome/browser/chromeos/input_method/personal_info_suggester.h"
 #include "chrome/browser/chromeos/input_method/suggester.h"
 #include "chrome/browser/chromeos/input_method/suggestion_enums.h"
+#include "chrome/browser/chromeos/input_method/suggestions.h"
 #include "chrome/browser/chromeos/input_method/suggestions_source.h"
 
 namespace chromeos {
@@ -52,6 +54,10 @@ class AssistiveSuggester : public SuggestionsSource {
   // Returns true if suggester handles the event and it should stop propagate.
   bool OnKeyEvent(const ui::KeyEvent& event);
 
+  // Called when suggestions are generated outside of the assistive framework.
+  void OnExternalSuggestionsUpdated(
+      const std::vector<TextSuggestion>& suggestions);
+
   // Accepts the suggestion at a given index if a suggester is currently active.
   void AcceptSuggestion(size_t index);
 
@@ -73,6 +79,8 @@ class AssistiveSuggester : public SuggestionsSource {
 
   bool IsEmojiSuggestAdditionEnabled();
 
+  bool IsMultiWordSuggestEnabled();
+
   void RecordAssistiveMatchMetricsForAction(AssistiveType action);
 
   // Only the first applicable reason in DisabledReason enum is returned.
@@ -86,6 +94,7 @@ class AssistiveSuggester : public SuggestionsSource {
   Profile* profile_;
   PersonalInfoSuggester personal_info_suggester_;
   EmojiSuggester emoji_suggester_;
+  MultiWordSuggester multi_word_suggester_;
 
   // ID of the focused text field, 0 if none is focused.
   int context_id_ = -1;

@@ -196,6 +196,12 @@ void PersonalInfoSuggester::OnBlur() {
   context_id_ = -1;
 }
 
+void PersonalInfoSuggester::OnExternalSuggestionsUpdated(
+    const std::vector<TextSuggestion>& suggestions) {
+  // PersonalInfoSuggester doesn't utilize any suggestions produced externally,
+  // so ignore this call.
+}
+
 SuggestionStatus PersonalInfoSuggester::HandleKeyEvent(
     const ui::KeyEvent& event) {
   if (!suggestion_shown_)

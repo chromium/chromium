@@ -25,6 +25,10 @@ class Suggester : public SuggestionsSource {
   // Called when a text field loses focus, and suggester stops working.
   virtual void OnBlur() = 0;
 
+  // Called when suggestions are generated outside of the assisitve framework.
+  virtual void OnExternalSuggestionsUpdated(
+      const std::vector<TextSuggestion>& suggestions) = 0;
+
   // Called when suggestion is being shown.
   // Returns SuggestionStatus as suggester handles the event.
   virtual SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) = 0;

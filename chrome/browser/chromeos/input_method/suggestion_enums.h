@@ -22,7 +22,9 @@ enum class AssistiveType {
   kAutocorrectWindowShown = 10,
   kAutocorrectUnderlined = 11,
   kAutocorrectReverted = 12,
-  kMaxValue = kAutocorrectReverted,
+  kMultiWordPrediction = 13,
+  kMultiWordCompletion = 14,
+  kMaxValue = kMultiWordCompletion,
 };
 
 enum class SuggestionStatus {

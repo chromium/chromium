@@ -163,6 +163,12 @@ void EmojiSuggester::OnBlur() {
   context_id_ = -1;
 }
 
+void EmojiSuggester::OnExternalSuggestionsUpdated(
+    const std::vector<TextSuggestion>& suggestions) {
+  // EmojiSuggester doesn't utilize any suggestions produced externally, so
+  // ignore this call.
+}
+
 SuggestionStatus EmojiSuggester::HandleKeyEvent(const ui::KeyEvent& event) {
   if (!suggestion_shown_)
     return SuggestionStatus::kNotHandled;

@@ -218,6 +218,14 @@ bool IsAllowedUrlOrAppForEmojiSuggestion() {
          IsAllowedApp(kAllowedAppsForEmojiSuggester);
 }
 
+bool ContainsMultiWordSuggestions(
+    const std::vector<TextSuggestion>& suggestions) {
+  if (suggestions.empty())
+    return false;
+  // There should only ever be one multi word suggestion given if any.
+  return suggestions[0].type == SuggestionType::kMultiWord;
+}
+
 }  // namespace
 
 AssistiveSuggester::AssistiveSuggester(InputMethodEngine* engine,
@@ -232,7 +240,8 @@ AssistiveSuggester::AssistiveSuggester(InputMethodEngine* engine,
 }
 
 bool AssistiveSuggester::IsAssistiveFeatureEnabled() {
-  return IsAssistPersonalInfoEnabled() || IsEmojiSuggestAdditionEnabled();
+  return IsAssistPersonalInfoEnabled() || IsEmojiSuggestAdditionEnabled() ||
+         IsMultiWordSuggestEnabled();
 }
 
 bool AssistiveSuggester::IsAssistPersonalInfoEnabled() {
@@ -247,6 +256,11 @@ bool AssistiveSuggester::IsEmojiSuggestAdditionEnabled() {
          profile_->GetPrefs()->GetBoolean(
              prefs::kEmojiSuggestionEnterpriseAllowed) &&
          profile_->GetPrefs()->GetBoolean(prefs::kEmojiSuggestionEnabled);
+}
+
+bool AssistiveSuggester::IsMultiWordSuggestEnabled() {
+  // TODO(b/172617062): Add settings page preference for multi word suggestions.
+  return base::FeatureList::IsEnabled(chromeos::features::kAssistMultiWord);
 }
 
 DisabledReason AssistiveSuggester::GetDisabledReasonForPersonalInfo() {
@@ -337,6 +351,20 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
     }
   }
   return false;
+}
+
+void AssistiveSuggester::OnExternalSuggestionsUpdated(
+    const std::vector<TextSuggestion>& suggestions) {
+  if (current_suggester_) {
+    current_suggester_->OnExternalSuggestionsUpdated(suggestions);
+    return;
+  }
+
+  if (IsMultiWordSuggestEnabled() &&
+      ContainsMultiWordSuggestions(suggestions)) {
+    current_suggester_ = &multi_word_suggester_;
+    current_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  }
 }
 
 void AssistiveSuggester::RecordAssistiveMatchMetricsForAction(

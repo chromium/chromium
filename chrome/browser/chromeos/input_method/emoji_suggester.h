@@ -31,6 +31,8 @@ class EmojiSuggester : public Suggester {
   // Suggester overrides:
   void OnFocus(int context_id) override;
   void OnBlur() override;
+  void OnExternalSuggestionsUpdated(
+      const std::vector<TextSuggestion>& suggestions) override;
   SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;
   bool Suggest(const std::u16string& text) override;
   bool AcceptSuggestion(size_t index) override;
