@@ -45,7 +45,7 @@ void JNI_AwComponentUpdateService_StartComponentUpdateService(
 
   AwComponentUpdateService::GetInstance()->StartComponentUpdateService(
       base::BindOnce(
-          base::android::RunRunnableAndroid,
+          &base::android::RunIntCallbackAndroid,
           base::android::ScopedJavaGlobalRef<jobject>(j_finished_callback)));
 }
 
@@ -62,7 +62,7 @@ AwComponentUpdateService::~AwComponentUpdateService() = default;
 
 // Start ComponentUpdateService once.
 void AwComponentUpdateService::StartComponentUpdateService(
-    base::OnceClosure finished_callback) {
+    UpdateCallback finished_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RegisterComponents(
@@ -97,7 +97,7 @@ bool AwComponentUpdateService::RegisterComponent(
   return true;
 }
 
-void AwComponentUpdateService::CheckForUpdates(base::OnceClosure on_finished) {
+void AwComponentUpdateService::CheckForUpdates(UpdateCallback on_finished) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/1180595): Add the histograms being logged in
@@ -116,16 +116,17 @@ void AwComponentUpdateService::CheckForUpdates(base::OnceClosure on_finished) {
   }
 
   if (unsecure_ids.empty() && secure_ids.empty()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(on_finished));
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(on_finished), 0));
     return;
   }
 
-  auto on_finished_callback = base::BindOnce(
-      [](base::OnceClosure on_finished, update_client::Error error) {
-        std::move(on_finished).Run();
-      },
-      std::move(on_finished));
+  auto on_finished_callback =
+      base::BindOnce(&AwComponentUpdateService::RecordComponentsUpdated,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(on_finished));
+
+  // Reset updated components counter.
+  components_updated_count_ = 0;
 
   if (!unsecure_ids.empty()) {
     update_client_->Update(
@@ -183,9 +184,8 @@ AwComponentUpdateService::GetCrxComponents(
 }
 
 void AwComponentUpdateService::ScheduleUpdatesOfRegisteredComponents(
-    base::OnceClosure on_finished_updates) {
+    UpdateCallback on_finished_updates) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   CheckForUpdates(std::move(on_finished_updates));
 }
 
@@ -193,6 +193,16 @@ void AwComponentUpdateService::RegisterComponents(
     RegisterComponentsCallback register_callback,
     base::OnceClosure on_finished) {
   RegisterComponentsForUpdate(register_callback, std::move(on_finished));
+}
+
+void AwComponentUpdateService::IncrementComponentsUpdatedCount() {
+  components_updated_count_++;
+}
+
+void AwComponentUpdateService::RecordComponentsUpdated(
+    UpdateCallback on_finished,
+    update_client::Error error) {
+  std::move(on_finished).Run(components_updated_count_);
 }
 
 }  // namespace android_webview

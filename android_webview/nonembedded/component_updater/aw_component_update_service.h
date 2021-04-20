@@ -18,6 +18,7 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "components/update_client/update_client.h"
+#include "components/update_client/update_client_errors.h"
 
 namespace android_webview {
 
@@ -31,10 +32,16 @@ class TestAwComponentUpdateService;
 class AwComponentUpdateService {
  public:
   static AwComponentUpdateService* GetInstance();
-  void StartComponentUpdateService(base::OnceClosure finished_callback);
 
+  // Callback used for updating components, with an int that represents how many
+  // components were actually updated.
+  using UpdateCallback = base::OnceCallback<void(int)>;
+
+  void StartComponentUpdateService(UpdateCallback finished_callback);
   bool RegisterComponent(const update_client::CrxComponent& component);
-  void CheckForUpdates(base::OnceClosure on_finished);
+  void CheckForUpdates(UpdateCallback on_finished);
+
+  void IncrementComponentsUpdatedCount();
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -61,7 +68,7 @@ class AwComponentUpdateService {
   std::vector<base::Optional<update_client::CrxComponent>> GetCrxComponents(
       const std::vector<std::string>& ids);
   void ScheduleUpdatesOfRegisteredComponents(
-      base::OnceClosure on_finished_updates);
+      UpdateCallback on_finished_updates);
 
   // Virtual for testing.
   virtual void RegisterComponents(RegisterComponentsCallback register_callback,
@@ -77,6 +84,12 @@ class AwComponentUpdateService {
   // The sooner the component gets registered, the higher its priority, and
   // the closer this component is to the beginning of the vector.
   std::vector<std::string> components_order_;
+
+  void RecordComponentsUpdated(UpdateCallback on_finished,
+                               update_client::Error error);
+
+  // Counts how many components were updated, for UMA logging.
+  int components_updated_count_ = 0;
 
   base::WeakPtrFactory<AwComponentUpdateService> weak_ptr_factory_{this};
 };

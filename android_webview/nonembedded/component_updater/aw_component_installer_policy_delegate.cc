@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "android_webview/common/aw_paths.h"
+#include "android_webview/nonembedded/component_updater/aw_component_update_service.h"
 #include "android_webview/nonembedded/nonembedded_jni_headers/ComponentsProviderPathUtil_jni.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
@@ -126,7 +127,14 @@ void AwComponentInstallerPolicyDelegate::ComponentReady(
   base::CreateDirectory(cps_component_base_path);
   if (!base::Move(temp_copy_path, dest_path)) {
     LOG(ERROR) << "Error moving from " << temp_copy_path << " to " << dest_path;
+    return;
   }
+
+  IncrementComponentsUpdatedCount();
+}
+
+void AwComponentInstallerPolicyDelegate::IncrementComponentsUpdatedCount() {
+  AwComponentUpdateService::GetInstance()->IncrementComponentsUpdatedCount();
 }
 
 base::FilePath

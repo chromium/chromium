@@ -2600,6 +2600,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.ComponentUpdater.UpdateJobDuration" units="ms"
+    expires_after="2021-10-08">
+  <owner>laisminchillo@chromium.org</owner>
+  <owner>nator@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Duration of AwComponentUpdateService update job. This job is responsible for
+    updating and installing components. This is logged once per run of the job.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.ComponentUpdater.UpdateJobFilesChanged"
+    units="count" expires_after="2021-10-08">
+  <owner>laisminchillo@chromium.org</owner>
+  <owner>nator@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    How many components were updated by AwComponentUpdateService update job.
+    This is logged once per run of the job, and is capped at 1000.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ConnectedToVariationService" enum="Boolean"
     expires_after="M93">
   <owner>hazems@chromium.org</owner>
