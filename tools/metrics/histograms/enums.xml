@@ -14572,6 +14572,8 @@ Called by update_net_error_codes.py.-->
   <int value="21" label="CRAS_METRICS_DEVICE_ABNORMAL_FALLBACK"/>
   <int value="22" label="CRAS_METRICS_DEVICE_SILENT_HOTWORD"/>
   <int value="23" label="CRAS_METRICS_DEVICE_UNKNOWN"/>
+  <int value="24" label="CRAS_METRICS_DEVICE_BLUETOOTH_WB_MIC"/>
+  <int value="25" label="CRAS_METRICS_DEVICE_ALSA_LOOPBACK"/>
 </enum>
 
 <enum name="CrashExitCodes">
