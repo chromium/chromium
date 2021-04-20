@@ -494,7 +494,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.Local.ReadPlatformFileError" enum="PlatformFileError"
-    expires_after="2021-05-31">
+    expires_after="2021-11-30">
   <owner>pastarmovj@chromium.org</owner>
   <owner>igorruvinov@chromium.org</owner>
   <summary>
