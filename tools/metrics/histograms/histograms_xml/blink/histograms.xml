@@ -1982,6 +1982,46 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.ResourceRequest.CompletionDelay" units="ms"
+    expires_after="2021-10-08">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures the time from when a resource request completes to when the
+    renderer is notified. Logged for every resource request.
+  </summary>
+</histogram>
+
+<histogram name="Blink.ResourceRequest.RedirectDelay" units="ms"
+    expires_after="2021-10-08">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures the time from when a redirect from a resource request happens to
+    when the renderer is notified. Logged for every resource request redirect.
+  </summary>
+</histogram>
+
+<histogram name="Blink.ResourceRequest.ResponseDelay" units="ms"
+    expires_after="2021-10-08">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures the time from when a response from a resource request is started to
+    when the renderer is notified. Logged for every resource request.
+  </summary>
+</histogram>
+
+<histogram name="Blink.ResourceRequest.StartDelay" units="ms"
+    expires_after="2021-10-08">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures the time from when the renderer starts a resource request to when
+    it is actually started on the network. Logged for every resource request.
+  </summary>
+</histogram>
+
 <histogram name="Blink.ScanPendingActivityDuration" units="ms"
     expires_after="M85">
   <owner>haraken@chromium.org</owner>
