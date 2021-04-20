@@ -300,14 +300,9 @@ bool FileSystemUsageCache::FlushFile(const base::FilePath& file_path) {
 void FileSystemUsageCache::ScheduleCloseTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (timer_.IsRunning()) {
-    timer_.Reset();
-    return;
-  }
-
-  timer_.Start(FROM_HERE, kCloseDelay,
-               base::BindOnce(&FileSystemUsageCache::CloseCacheFiles,
-                              weak_factory_.GetWeakPtr()));
+  // This will restart the timer if it is already running.
+  timer_.Start(FROM_HERE, kCloseDelay, this,
+               &FileSystemUsageCache::CloseCacheFiles);
 }
 
 bool FileSystemUsageCache::HasCacheFileHandle(const base::FilePath& file_path) {
