@@ -43,8 +43,7 @@ std::unique_ptr<base::ListValue> GetNetworkErrorData() {
 
   for (base::DictionaryValue::Iterator itr(*net_error_codes_dict);
             !itr.IsAtEnd(); itr.Advance()) {
-    int error_code;
-    itr.value().GetAsInteger(&error_code);
+    const int error_code = itr.value().GetInt();
     // Exclude the aborted and pending codes as these don't return a page.
     if (error_code != net::Error::ERR_IO_PENDING &&
         error_code != net::Error::ERR_ABORTED) {
