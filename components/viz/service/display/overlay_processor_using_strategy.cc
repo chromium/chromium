@@ -207,9 +207,18 @@ gfx::Rect ComputeDamageExcludingIndex(
   gfx::Rect occluding_rect;
   for (size_t i = 0; i < surface_damage_rect_list->size(); i++) {
     if (overlay_damage_index != i) {
+      gfx::Rect curr_surface_damage = (*surface_damage_rect_list)[i];
+
+      // The |surface_damage_rect_list| can include damage rects coming from
+      // outside and partially outside the original |existing_damage| area. This
+      // is due to the conditional inclusion of these damage rects based on
+      // target damage in surface aggregator. So by restricting this damage to
+      // the |existing_damage| we avoid unnecessary final damage output.
+      // https://crbug.com/1197609
+      curr_surface_damage.Intersect(existing_damage);
       // Only add damage back in if it is not occluded by the overlay.
-      if (!occluding_rect.Contains((*surface_damage_rect_list)[i])) {
-        root_damage_rect.Union((*surface_damage_rect_list)[i]);
+      if (!occluding_rect.Contains(curr_surface_damage)) {
+        root_damage_rect.Union(curr_surface_damage);
       }
     } else {
       // |surface_damage_rect_list| is ordered such that from here on the

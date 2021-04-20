@@ -1092,6 +1092,49 @@ TEST_F(SingleOverlayOnTopTest, DamageRect) {
   EXPECT_TRUE(damage_rect_.IsEmpty());
 }
 
+TEST_F(SingleOverlayOnTopTest, DamageWithMutipleSurfaceDamage) {
+  // This test makes sure that damage is not unnecessarily expanded when there
+  // is |SurfaceDamageRectList| that is outside the original damage bounds. See
+  // https://crbug.com/1197609 for context.
+  auto pass = CreateRenderPass();
+  damage_rect_ = kOverlayTopLeftRect;
+  AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayTopLeftRect));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  SharedQuadState* default_damaged_shared_quad_state =
+      pass->shared_quad_state_list.AllocateAndCopyFrom(
+          pass->shared_quad_state_list.back());
+
+  auto* sqs = pass->shared_quad_state_list.front();
+  surface_damage_rect_list.emplace_back(damage_rect_);
+  // This line adds the unnecessarily damage.
+  surface_damage_rect_list.emplace_back(kOverlayRect);
+  sqs->overlay_damage_index = 0;
+
+  auto* quad = CreateCandidateQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), sqs, pass.get(), kOverlayTopLeftRect);
+  quad->needs_blending = false;
+  // Add something behind it.
+  CreateFullscreenOpaqueQuad(resource_provider_.get(),
+                             default_damaged_shared_quad_state, pass.get());
+
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+  EXPECT_TRUE(damage_rect_.IsEmpty());
+}
+
 TEST_F(SingleOverlayOnTopTest, NoCandidates) {
   auto pass = CreateRenderPass();
   CreateFullscreenOpaqueQuad(resource_provider_.get(),
