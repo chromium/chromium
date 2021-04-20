@@ -45,6 +45,7 @@ class ExtensionInstallFrictionDialogView
 
   content::PageNavigator* navigator_;
   base::OnceCallback<void(bool)> callback_;
+  bool accepted_ = false;
   bool learn_more_clicked_ = false;
 };
 
