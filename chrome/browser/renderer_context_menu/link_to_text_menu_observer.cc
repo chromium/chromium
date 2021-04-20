@@ -70,9 +70,7 @@ void LinkToTextMenuObserver::InitMenu(
         l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_REMOVELINKTOTEXT));
   }
 
-  // Start link generation only if the flag is enabled, and the context menu was
-  // not opened from an existing highlight.
-  if (ShouldPreemptivelyGenerateLink() && !params.opened_from_highlight) {
+  if (ShouldPreemptivelyGenerateLink()) {
     RequestLinkGeneration();
   }
 }
@@ -141,7 +139,8 @@ void LinkToTextMenuObserver::OverrideGeneratedSelectorForTesting(
 
 bool LinkToTextMenuObserver::ShouldPreemptivelyGenerateLink() {
   return base::FeatureList::IsEnabled(
-      shared_highlighting::kPreemptiveLinkToTextGeneration);
+             shared_highlighting::kPreemptiveLinkToTextGeneration) &&
+         !highlight_exists_;
 }
 
 void LinkToTextMenuObserver::RequestLinkGeneration() {

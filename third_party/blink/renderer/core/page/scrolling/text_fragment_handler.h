@@ -34,6 +34,9 @@ class CORE_EXPORT TextFragmentHandler final
   // Remove all text fragments from the current frame.
   void RemoveFragments() override;
 
+  // Determine if |result| represents a click on an existing highlight.
+  static bool IsOverTextFragment(HitTestResult result);
+
   void Trace(Visitor*) const;
 
   TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator();
