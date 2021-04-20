@@ -15,7 +15,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include "net/cert/x509_util.h"
 
 namespace extensions {
 
@@ -338,8 +341,50 @@ EnterpriseReportingPrivateGetCertificateFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetCertificateFunction::Run() {
-  NOTREACHED();
+  std::unique_ptr<api::enterprise_reporting_private::GetCertificate::Params>
+      params(api::enterprise_reporting_private::GetCertificate::Params::Create(
+          *args_));
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+
+  // If AutoSelectCertificateForUrl is not set at the machine level, this
+  // operation is not supported and should return immediately with the
+  // appropriate status field value.
+  if (!chrome::enterprise_util::IsMachinePolicyPref(
+          prefs::kManagedAutoSelectCertificateForUrls)) {
+    api::enterprise_reporting_private::Certificate ret;
+    ret.status = extensions::api::enterprise_reporting_private::
+        CERTIFICATE_STATUS_POLICY_UNSET;
+    return RespondNow(
+        OneArgument(base::Value::FromUniquePtrValue(ret.ToValue())));
+  }
+
+  client_cert_fetcher_ =
+      enterprise_signals::ClientCertificateFetcher::Create(browser_context());
+  client_cert_fetcher_->FetchAutoSelectedCertificateForUrl(
+      GURL(params->url),
+      base::BindOnce(&EnterpriseReportingPrivateGetCertificateFunction::
+                         OnClientCertFetched,
+                     this));
+
   return RespondLater();
+}
+
+void EnterpriseReportingPrivateGetCertificateFunction::OnClientCertFetched(
+    std::unique_ptr<net::ClientCertIdentity> cert) {
+  api::enterprise_reporting_private::Certificate ret;
+
+  // Getting here means the status is always OK, but the |encoded_certificate|
+  // field is only set if there actually was a certificate selected.
+  ret.status =
+      extensions::api::enterprise_reporting_private::CERTIFICATE_STATUS_OK;
+  if (cert) {
+    base::StringPiece der_cert = net::x509_util::CryptoBufferAsStringPiece(
+        cert->certificate()->cert_buffer());
+    ret.encoded_certificate = std::make_unique<std::vector<uint8_t>>(
+        der_cert.begin(), der_cert.end());
+  }
+
+  Respond(OneArgument(base::Value::FromUniquePtrValue(ret.ToValue())));
 }
 
 }  // namespace extensions

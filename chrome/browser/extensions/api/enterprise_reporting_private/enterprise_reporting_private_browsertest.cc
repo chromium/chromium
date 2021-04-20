@@ -4,18 +4,33 @@
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
+#include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
+#include "net/ssl/client_cert_identity_test_util.h"
+#include "net/ssl/client_cert_store.h"
+#include "net/test/cert_test_util.h"
+#include "net/test/test_data_directory.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process_platform_part.h"
@@ -65,6 +80,21 @@ constexpr char kAnotherServiceProvider[] = R"({
         }
       ]
     })";
+
+constexpr char kRequestingUrl[] = "https://www.example.com";
+
+class MockClientCertStore : public net::ClientCertStore {
+ public:
+  explicit MockClientCertStore(net::ClientCertIdentityList certs)
+      : certs_(std::move(certs)) {}
+
+  void GetClientCerts(const net::SSLCertRequestInfo& cert_request_info,
+                      ClientCertListCallback callback) override {
+    std::move(callback).Run(std::move(certs_));
+  }
+
+  net::ClientCertIdentityList certs_;
+};
 
 }  // namespace
 
@@ -357,6 +387,167 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
   EXPECT_EQ(1UL, info.on_security_event_providers.size());
   // SetOnSecurityEventReporting sets the provider name to google
   EXPECT_EQ("google", info.on_security_event_providers[0]);
+}
+
+class EnterpriseReportingPrivateGetCertificateTest : public policy::PolicyTest {
+ public:
+  void SetUpOnMainThread() override {
+    ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+        ->set_client_cert_store_factory_for_testing(base::BindRepeating(
+            &EnterpriseReportingPrivateGetCertificateTest::CreateCertStore,
+            base::Unretained(this)));
+  }
+
+  void SetPolicyValue(const std::string& policy_value) {
+    EXPECT_FALSE(chrome::enterprise_util::IsMachinePolicyPref(
+        prefs::kManagedAutoSelectCertificateForUrls));
+
+    base::Value list(base::Value::Type::LIST);
+    list.Append(policy_value);
+
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kAutoSelectCertificateForUrls,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, std::move(list), nullptr);
+    UpdateProviderPolicy(policies);
+
+    EXPECT_TRUE(chrome::enterprise_util::IsMachinePolicyPref(
+        prefs::kManagedAutoSelectCertificateForUrls));
+  }
+
+  enterprise_reporting_private::Certificate GetCertificate() {
+    auto function = base::MakeRefCounted<
+        EnterpriseReportingPrivateGetCertificateFunction>();
+
+    std::string params = "[\"";
+    params += kRequestingUrl;
+    params += "\"]";
+
+    std::unique_ptr<base::Value> certificate_value =
+        std::unique_ptr<base::Value>(
+            extension_function_test_utils::RunFunctionAndReturnSingleResult(
+                function.get(), params, browser()));
+    EXPECT_TRUE(certificate_value.get());
+
+    enterprise_reporting_private::Certificate cert;
+    EXPECT_TRUE(enterprise_reporting_private::Certificate::Populate(
+        *certificate_value, &cert));
+
+    return cert;
+  }
+
+  void SetupDefaultClientCertList() {
+    EXPECT_EQ(0UL, client_certs_.size());
+
+    client_certs_.push_back(
+        net::ImportCertFromFile(net::GetTestCertsDirectory(), "client_1.pem"));
+    client_certs_.push_back(
+        net::ImportCertFromFile(net::GetTestCertsDirectory(), "client_2.pem"));
+  }
+
+  std::vector<scoped_refptr<net::X509Certificate>>& client_certs() {
+    return client_certs_;
+  }
+
+ private:
+  std::unique_ptr<net::ClientCertStore> CreateCertStore() {
+    return std::make_unique<MockClientCertStore>(
+        net::FakeClientCertIdentityListFromCertificateList(client_certs_));
+  }
+
+  std::vector<scoped_refptr<net::X509Certificate>> client_certs_;
+};
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
+                       TestPolicyUnset) {
+  auto cert = GetCertificate();
+
+  EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_POLICY_UNSET,
+            cert.status);
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
+                       TestPolicySet) {
+  constexpr char kPolicyValue[] = R"({
+      "pattern": "https://www.example.com",
+      "filter": {
+        "ISSUER": {
+          "CN": "B CA"
+        }
+      }
+    })";
+  SetPolicyValue(kPolicyValue);
+
+  auto cert = GetCertificate();
+
+  EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_OK, cert.status);
+  EXPECT_EQ(nullptr, cert.encoded_certificate);
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
+                       TestPolicySetCertsPresentButNotMatching) {
+  SetupDefaultClientCertList();
+
+  constexpr char kPolicyValue[] = R"({
+      "pattern": "https://www.example.com",
+      "filter": {
+        "ISSUER": {
+          "CN": "BAD CA"
+        }
+      }
+    })";
+  SetPolicyValue(kPolicyValue);
+
+  auto cert = GetCertificate();
+
+  EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_OK, cert.status);
+  EXPECT_EQ(nullptr, cert.encoded_certificate);
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
+                       TestPolicySetCertsPresentUrlNotMatching) {
+  SetupDefaultClientCertList();
+
+  constexpr char kPolicyValue[] = R"({
+      "pattern": "https://www.bad.example.com",
+      "filter": {
+        "ISSUER": {
+          "CN": "B CA"
+        }
+      }
+    })";
+  SetPolicyValue(kPolicyValue);
+
+  auto cert = GetCertificate();
+
+  EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_OK, cert.status);
+  EXPECT_EQ(nullptr, cert.encoded_certificate);
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
+                       TestPolicySetCertsPresentAndMatching) {
+  SetupDefaultClientCertList();
+
+  constexpr char kPolicyValue[] = R"({
+      "pattern": "https://www.example.com",
+      "filter": {
+        "ISSUER": {
+          "CN": "B CA"
+        }
+      }
+    })";
+  SetPolicyValue(kPolicyValue);
+
+  auto cert = GetCertificate();
+
+  EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_OK, cert.status);
+  EXPECT_NE(nullptr, cert.encoded_certificate);
+
+  base::StringPiece der_cert = net::x509_util::CryptoBufferAsStringPiece(
+      client_certs()[0]->cert_buffer());
+  std::vector<uint8_t> expected_der_bytes(der_cert.begin(), der_cert.end());
+
+  EXPECT_EQ(expected_der_bytes, *cert.encoded_certificate);
 }
 
 }  // namespace extensions

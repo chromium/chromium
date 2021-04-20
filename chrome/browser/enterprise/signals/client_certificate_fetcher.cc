@@ -5,6 +5,8 @@
 #include "chrome/browser/enterprise/signals/client_certificate_fetcher.h"
 
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -18,6 +20,15 @@ ClientCertificateFetcher::ClientCertificateFetcher(
       profile_(Profile::FromBrowserContext(browser_context)) {}
 
 ClientCertificateFetcher::~ClientCertificateFetcher() = default;
+
+// static
+std::unique_ptr<ClientCertificateFetcher> ClientCertificateFetcher::Create(
+    content::BrowserContext* browser_context) {
+  return std::make_unique<ClientCertificateFetcher>(
+      ProfileNetworkContextServiceFactory::GetForContext(browser_context)
+          ->CreateClientCertStore(),
+      browser_context);
+}
 
 void ClientCertificateFetcher::FetchAutoSelectedCertificateForUrl(
     const GURL& url,

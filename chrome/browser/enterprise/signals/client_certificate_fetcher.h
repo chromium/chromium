@@ -31,6 +31,9 @@ class ClientCertificateFetcher {
       content::BrowserContext* browser_context);
   ~ClientCertificateFetcher();
 
+  static std::unique_ptr<ClientCertificateFetcher> Create(
+      content::BrowserContext* browser_context);
+
   using FetchAutoSelectedCertificateForUrlCallback =
       base::OnceCallback<void(std::unique_ptr<net::ClientCertIdentity>)>;
 
