@@ -561,9 +561,8 @@ bool AutocompleteControllerAndroid::IsValidMatch(JNIEnv* env,
     UMA_HISTOGRAM_ENUMERATION("Android.Omnibox.InvalidMatch",
                               MatchValidationResult::BAD_RESULT_SIZE,
                               MatchValidationResult::COUNT);
-    DCHECK(!base::FeatureList::IsEnabled(omnibox::kNativeVoiceSuggestProvider))
-        << "No match at position " << selected_index
-        << ": Autocomplete result size mismatch.";
+    NOTREACHED() << "No match at position " << selected_index
+                 << ": Autocomplete result size mismatch.";
 
     return false;
   }
@@ -579,8 +578,7 @@ bool AutocompleteControllerAndroid::IsValidMatch(JNIEnv* env,
                                   : MatchValidationResult::WRONG_MATCH,
                             MatchValidationResult::COUNT);
 
-  if (!equal &&
-      base::FeatureList::IsEnabled(omnibox::kNativeVoiceSuggestProvider)) {
+  if (!equal) {
 #ifndef NDEBUG
     int index = 0;
     for (const auto& match : result) {
@@ -590,7 +588,7 @@ bool AutocompleteControllerAndroid::IsValidMatch(JNIEnv* env,
       index++;
     }
 #endif
-    DCHECK(false)
+    NOTREACHED()
         << "AutocompleteMatch mismatch with native-sourced suggestions.";
   }
 

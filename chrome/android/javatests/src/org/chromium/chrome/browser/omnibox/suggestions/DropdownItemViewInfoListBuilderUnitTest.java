@@ -222,8 +222,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         verifyNoMoreInteractions(mMockSuggestionProcessor);
     }
 
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT,
-            ChromeFeatureList.OMNIBOX_NATIVE_VOICE_SUGGEST_PROVIDER})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     @Test
     @SmallTest
     @UiThreadTest
@@ -350,8 +349,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         Assert.assertEquals(1, mBuilder.getVisibleSuggestionsCount(result));
     }
 
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT,
-            ChromeFeatureList.OMNIBOX_NATIVE_VOICE_SUGGEST_PROVIDER})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     @Test
     @SmallTest
     @UiThreadTest

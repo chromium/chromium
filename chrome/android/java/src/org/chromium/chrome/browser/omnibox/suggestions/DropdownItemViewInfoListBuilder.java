@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
-import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
@@ -64,7 +63,6 @@ class DropdownItemViewInfoListBuilder {
     @Px
     private int mDropdownHeight;
     private boolean mEnableAdaptiveSuggestionsCount;
-    private boolean mEnableNativeVoiceSuggestProvider;
     private boolean mBuiltListHasFullyConcealedElements;
 
     DropdownItemViewInfoListBuilder(AutocompleteController controller,
@@ -220,8 +218,6 @@ class DropdownItemViewInfoListBuilder {
     void onNativeInitialized() {
         mEnableAdaptiveSuggestionsCount =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT);
-        mEnableNativeVoiceSuggestProvider = ChromeFeatureList.isEnabled(
-                ChromeFeatureList.OMNIBOX_NATIVE_VOICE_SUGGEST_PROVIDER);
 
         mHeaderProcessor.onNativeInitialized();
         for (int index = 0; index < mPriorityOrderedSuggestionProcessors.size(); index++) {
@@ -333,11 +329,6 @@ class DropdownItemViewInfoListBuilder {
             final AutocompleteMatch suggestion = suggestions.get(lastVisibleIndex);
             // We do not include suggestions with headers in partial grouping, so terminate early.
             if (suggestion.getGroupId() != AutocompleteMatch.INVALID_GROUP) {
-                break;
-            }
-            // We do not include Java-sourced Voice suggestions in partial grouping. Terminate.
-            if (suggestion.getType() == OmniboxSuggestionType.VOICE_SUGGEST
-                    && !mEnableNativeVoiceSuggestProvider) {
                 break;
             }
 

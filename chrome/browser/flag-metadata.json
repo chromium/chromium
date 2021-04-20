@@ -3885,11 +3885,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "omnibox-native-voice-suggestions-provider",
-    "owners": [ "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 93
-  },
-  {
       "name": "omnibox-new-textfield-implementation",
       "owners": ["stkhapugin", "rkgibson@google.com", "chrome-omnibox-team@google.com"],
       "expiry_milestone": 95

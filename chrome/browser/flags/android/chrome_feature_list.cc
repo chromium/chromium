@@ -286,7 +286,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &omnibox::kCompactSuggestions,
     &omnibox::kHideVisitsFromCct,
     &omnibox::kMostVisitedTiles,
-    &omnibox::kNativeVoiceSuggestProvider,
     &omnibox::kOmniboxAssistantVoiceSearch,
     &omnibox::kOmniboxSearchReadyIncognito,
     &password_manager::features::kEditPasswordsInSettings,

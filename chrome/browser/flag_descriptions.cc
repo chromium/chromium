@@ -1674,12 +1674,6 @@ const char kOmniboxMostVisitedTilesDescription[] =
     "Display a list of frquently visited pages from history as a single row "
     "with a carousel instead of one URL per line.";
 
-const char kOmniboxNativeVoiceSuggestProviderName[] =
-    "Native Voice Suggest Provider";
-const char kOmniboxNativeVoiceSuggestProviderDescription[] =
-    "When selected, collects voice suggestions with the help of native (c++) "
-    "voice suggestions provider.";
-
 const char kOmniboxTrendingZeroPrefixSuggestionsOnNTPName[] =
     "Omnibox Trending Zero Prefix Suggestions";
 const char kOmniboxTrendingZeroPrefixSuggestionsOnNTPDescription[] =

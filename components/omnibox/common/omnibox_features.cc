@@ -233,10 +233,6 @@ const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile{
 const base::Feature kDisableCGIParamMatching{"OmniboxDisableCGIParamMatching",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, uses the native VoiceSuggestProvider. Android-specific.
-const base::Feature kNativeVoiceSuggestProvider{
-    "OmniboxNativeVoiceSuggestProvider", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Features used to enable matching short inputs to bookmarks for suggestions.
 // By default, if both of the following are disabled, input words shorter than 3
 //   characters won't prefix match bookmarks. E.g., the inputs 'abc x' or 'x'

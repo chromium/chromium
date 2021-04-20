@@ -62,7 +62,6 @@ extern const base::Feature kOnDeviceHeadProviderNonIncognito;
 extern const base::Feature kOmniboxExperimentalSuggestScoring;
 extern const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile;
 extern const base::Feature kDisableCGIParamMatching;
-extern const base::Feature kNativeVoiceSuggestProvider;
 extern const base::Feature kShortBookmarkSuggestions;
 extern const base::Feature kShortBookmarkSuggestionsByTotalInputLength;
 

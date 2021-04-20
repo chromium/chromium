@@ -50,10 +50,8 @@ public class AutocompleteController {
     private long mNativeAutocompleteControllerAndroid;
     private long mCurrentNativeAutocompleteResult;
     private OnSuggestionsReceivedListener mListener;
-    private final VoiceSuggestionProvider mVoiceSuggestionProvider = new VoiceSuggestionProvider();
 
     private boolean mUseCachedZeroSuggestResults;
-    private boolean mEnableNativeVoiceSuggestProvider;
     private boolean mWaitingForSuggestionsToCache;
     private Profile mProfile;
 
@@ -109,8 +107,6 @@ public class AutocompleteController {
             return;
         }
 
-        mEnableNativeVoiceSuggestProvider = ChromeFeatureList.isEnabled(
-                ChromeFeatureList.OMNIBOX_NATIVE_VOICE_SUGGEST_PROVIDER);
         mNativeAutocompleteControllerAndroid =
                 AutocompleteControllerJni.get().init(AutocompleteController.this, profile);
     }
@@ -240,7 +236,6 @@ public class AutocompleteController {
      */
     public void stop(boolean clear) {
         assert mListener != null : "Ensure a listener is set prior to calling.";
-        if (clear) mVoiceSuggestionProvider.clearVoiceSearchResults();
         mCurrentNativeAutocompleteResult = 0;
         mWaitingForSuggestionsToCache = false;
         if (mNativeAutocompleteControllerAndroid != 0) {
@@ -286,14 +281,6 @@ public class AutocompleteController {
             String inlineAutocompleteText, long currentNativeAutocompleteResult) {
         assert mListener != null : "Ensure a listener is set prior generating suggestions.";
         final AutocompleteResult originalResult = autocompleteResult;
-
-        // Run through new providers to get an updated list of suggestions.
-        if (!mEnableNativeVoiceSuggestProvider) {
-            autocompleteResult = new AutocompleteResult(
-                    mVoiceSuggestionProvider.addVoiceSuggestions(
-                            autocompleteResult.getSuggestionsList(), MAX_VOICE_SUGGESTION_COUNT),
-                    autocompleteResult.getGroupsDetails());
-        }
 
         mCurrentNativeAutocompleteResult = currentNativeAutocompleteResult;
 
@@ -341,20 +328,16 @@ public class AutocompleteController {
      * @param results A list containing the results of a voice recognition.
      */
     void onVoiceResults(@Nullable List<VoiceResult> results) {
-        if (!mEnableNativeVoiceSuggestProvider) {
-            mVoiceSuggestionProvider.setVoiceResults(results);
-        } else {
-            if (results == null || results.size() == 0) return;
-            final int count = Math.min(results.size(), MAX_VOICE_SUGGESTION_COUNT);
-            String[] voiceMatches = new String[count];
-            float[] confidenceScores = new float[count];
-            for (int i = 0; i < count; i++) {
-                voiceMatches[i] = results.get(i).getMatch();
-                confidenceScores[i] = results.get(i).getConfidence();
-            }
-            AutocompleteControllerJni.get().setVoiceMatches(
-                    mNativeAutocompleteControllerAndroid, voiceMatches, confidenceScores);
+        if (results == null || results.size() == 0) return;
+        final int count = Math.min(results.size(), MAX_VOICE_SUGGESTION_COUNT);
+        String[] voiceMatches = new String[count];
+        float[] confidenceScores = new float[count];
+        for (int i = 0; i < count; i++) {
+            voiceMatches[i] = results.get(i).getMatch();
+            confidenceScores[i] = results.get(i).getConfidence();
         }
+        AutocompleteControllerJni.get().setVoiceMatches(
+                mNativeAutocompleteControllerAndroid, voiceMatches, confidenceScores);
     }
 
     /**
