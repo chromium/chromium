@@ -159,6 +159,7 @@ suite('CellularNetworksList', function() {
     assertEquals(2, tetherNetworkList.networks.length);
     assertEquals(2, eSimNetworkList.customItems.length);
   });
+
   test(
       'Fire show cellular setup event on eSim no network link click',
       async () => {
@@ -248,7 +249,7 @@ suite('CellularNetworksList', function() {
         eSimManagerRemote.addEuiccForTest(1);
         await flushAsync();
         // The list should now be showing
-        assertFalse(!!cellularNetworkList.$$('#esimNetworkList'));
+        assertTrue(!!cellularNetworkList.$$('#esimNetworkList'));
 
         // Remove the eSIM slot
         clearSimSlots();
