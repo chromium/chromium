@@ -414,7 +414,7 @@ TEST_P(FrameThrottlingTest, ForAllThrottledLocalFrameViews) {
   EXPECT_EQ(1u, throttled_count);
 }
 
-TEST_P(FrameThrottlingTest, HiddenCrossOriginZeroByZeroFramesAreNotThrottled) {
+TEST_P(FrameThrottlingTest, HiddenCrossOriginZeroByZeroFramesAreThrottled) {
   // Create a document with doubly nested iframes.
   SimRequest main_resource("https://example.com/", "text/html");
   SimRequest frame_resource("https://example.com/iframe.html", "text/html");
@@ -436,12 +436,27 @@ TEST_P(FrameThrottlingTest, HiddenCrossOriginZeroByZeroFramesAreNotThrottled) {
   EXPECT_FALSE(frame_document->View()->CanThrottleRendering());
   EXPECT_FALSE(inner_frame_document->View()->CanThrottleRendering());
 
-  // The frame is not throttled because its dimensions are 0x0.
+  // The frame is throttled because its dimensions are 0x0, as per experimental
+  // feature ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes.
   frame_element->setAttribute(kStyleAttr, "transform: translateY(480px)");
   CompositeFrame();
   EXPECT_FALSE(GetDocument().View()->CanThrottleRendering());
+  // When ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes is enabled,
+  // we will throttle the frame.
   EXPECT_FALSE(frame_document->View()->CanThrottleRendering());
-  EXPECT_FALSE(inner_frame_document->View()->CanThrottleRendering());
+  EXPECT_TRUE(inner_frame_document->View()->CanThrottleRendering());
+  {
+    // Re-test with flag disabled.
+    ScopedThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesForTest
+        scoped_flag_override(false);
+
+    frame_document->View()->GetLayoutView()->SetNeedsLayout("test");
+    frame_document->View()->ScheduleAnimation();
+    frame_document->View()->GetLayoutView()->Layer()->SetNeedsRepaint();
+    frame_document->View()->ForceUpdateViewportIntersections();
+    CompositeFrame();
+    EXPECT_FALSE(inner_frame_document->View()->CanThrottleRendering());
+  }
 }
 
 TEST_P(FrameThrottlingTest, ThrottledLifecycleUpdate) {
@@ -1411,7 +1426,21 @@ TEST_P(FrameThrottlingTest, DisplayNoneNotThrottled) {
   // Setting display:none unthrottles the frame.
   frame_element->setAttribute(kStyleAttr, "display: none");
   CompositeFrame();
-  EXPECT_FALSE(frame_document->View()->CanThrottleRendering());
+  // When ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes is enabled,
+  // we will throttle cross-origin display:none.
+  EXPECT_TRUE(frame_document->View()->CanThrottleRendering());
+  {
+    // Re-test with flag disabled.
+    ScopedThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesForTest
+        scoped_flag_override(false);
+
+    frame_document->View()->GetLayoutView()->SetNeedsLayout("test");
+    frame_document->View()->ScheduleAnimation();
+    frame_document->View()->GetLayoutView()->Layer()->SetNeedsRepaint();
+    frame_document->View()->ForceUpdateViewportIntersections();
+    CompositeFrame();
+    EXPECT_FALSE(frame_document->View()->CanThrottleRendering());
+  }
 }
 
 TEST_P(FrameThrottlingTest, DisplayNoneChildrenRemainThrottled) {
@@ -1438,14 +1467,35 @@ TEST_P(FrameThrottlingTest, DisplayNoneChildrenRemainThrottled) {
   EXPECT_TRUE(
       child_frame_element->contentDocument()->View()->CanThrottleRendering());
 
-  // Setting display:none for the parent frame unthrottles the parent but not
-  // the child. This behavior matches Safari.
+  // Setting display:none for the parent frame throttles the parent and also
+  // the child. This behavior differs from Safari.
   frame_element->setAttribute(kStyleAttr, "display: none");
   CompositeFrame();
-  EXPECT_FALSE(
-      frame_element->contentDocument()->View()->CanThrottleRendering());
+  // When ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes is enabled,
+  // the cross-origin, display:none frame will be throttled.
+  EXPECT_TRUE(frame_element->contentDocument()->View()->CanThrottleRendering());
   EXPECT_TRUE(
       child_frame_element->contentDocument()->View()->CanThrottleRendering());
+  {
+    // Re-test with flag disabled.
+    ScopedThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesForTest
+        scoped_flag_override(false);
+
+    frame_element->contentDocument()->View()->GetLayoutView()->SetNeedsLayout(
+        "test");
+    frame_element->contentDocument()->View()->ScheduleAnimation();
+    frame_element->contentDocument()
+        ->View()
+        ->GetLayoutView()
+        ->Layer()
+        ->SetNeedsRepaint();
+    frame_element->contentDocument()
+        ->View()
+        ->ForceUpdateViewportIntersections();
+    CompositeFrame();
+    EXPECT_FALSE(
+        frame_element->contentDocument()->View()->CanThrottleRendering());
+  }
 }
 
 TEST_P(FrameThrottlingTest, RebuildCompositedLayerTreeOnLayerRemoval) {
