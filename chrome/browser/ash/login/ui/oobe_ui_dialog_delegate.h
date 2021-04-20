@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
@@ -30,7 +31,6 @@ class Accelerator;
 }
 
 namespace views {
-class View;
 class WebDialogView;
 class Widget;
 }  // namespace views
@@ -113,6 +113,7 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
 
   // ChromeKeyboardControllerClient::Observer:
   void OnKeyboardVisibilityChanged(bool visible) override;
@@ -136,6 +137,8 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   // Reference to dialog view stored in widget_.
   OobeWebDialogView* dialog_view_ = nullptr;
 
+  base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
+      this};
   base::ScopedObservation<ChromeKeyboardControllerClient,
                           ChromeKeyboardControllerClient::Observer>
       keyboard_observer_{this};
