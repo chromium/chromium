@@ -8,6 +8,7 @@
 
 #include <lib/zx/vmo.h>
 
+#include "base/fuchsia/fuchsia_logging.h"
 #include "fuchsia/base/fit_adapter.h"
 #include "fuchsia/base/frame_test_util.h"
 #include "fuchsia/base/mem_buffer_util.h"
@@ -44,37 +45,26 @@ class WebEngineIntegrationTest : public WebEngineIntegrationTestBase {
   void RunPermissionTest(bool grant);
 };
 
+// Configures the default filtered service directory with a fake AudioConsumer
+// service for testing.
 class WebEngineIntegrationMediaTest : public WebEngineIntegrationTest {
  protected:
-  WebEngineIntegrationMediaTest() : WebEngineIntegrationTest() {}
+  WebEngineIntegrationMediaTest()
+      : WebEngineIntegrationTest(),
+        fake_audio_consumer_service_(filtered_service_directory()
+                                         .outgoing_directory()
+                                         ->GetOrCreateDirectory("svc")) {}
 
-  // Returns a CreateContextParams that has AUDIO feature enabled with an
-  // injected FakeAudioConsumerService.
-  fuchsia::web::CreateContextParams ContextParamsWithAudio() {
-    // Use a FilteredServiceDirectory in order to inject a fake AudioConsumer
-    // service.
-    fuchsia::web::CreateContextParams create_params =
-        ContextParamsWithFilteredServiceDirectory();
-    create_params.set_features(fuchsia::web::ContextFeatureFlags::AUDIO);
-
-    fake_audio_consumer_service_ =
-        std::make_unique<media::FakeAudioConsumerService>(
-            filtered_service_directory_->outgoing_directory()
-                ->GetOrCreateDirectory("svc"));
-
-    return create_params;
-  }
-
-  // Returns the same CreateContextParams as ContextParamsWithAudio() plus the
-  // testdata content directory.
+  // Returns a CreateContextParams that has AUDIO feature, and the "testdata"
+  // content directory provider configured.
   fuchsia::web::CreateContextParams ContextParamsWithAudioAndTestData() {
-    fuchsia::web::CreateContextParams create_params = ContextParamsWithAudio();
-    create_params.mutable_content_directories()->push_back(
-        CreateTestDataDirectoryProvider());
+    fuchsia::web::CreateContextParams create_params =
+        TestContextParamsWithTestData();
+    create_params.set_features(fuchsia::web::ContextFeatureFlags::AUDIO);
     return create_params;
   }
 
-  std::unique_ptr<media::FakeAudioConsumerService> fake_audio_consumer_service_;
+  media::FakeAudioConsumerService fake_audio_consumer_service_;
 };
 
 class WebEngineIntegrationUserAgentTest : public WebEngineIntegrationTest {
@@ -88,7 +78,7 @@ class WebEngineIntegrationUserAgentTest : public WebEngineIntegrationTest {
 
 TEST_F(WebEngineIntegrationUserAgentTest, ValidProductOnly) {
   // Create a Context with just an embedder product specified.
-  fuchsia::web::CreateContextParams create_params = DefaultContextParams();
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
   create_params.set_user_agent_product(kValidUserAgentProduct);
   CreateContextAndFrameAndLoadUrl(std::move(create_params),
                                   GetEchoUserAgentUrl());
@@ -106,7 +96,7 @@ TEST_F(WebEngineIntegrationUserAgentTest, ValidProductOnly) {
 
 TEST_F(WebEngineIntegrationUserAgentTest, ValidProductAndVersion) {
   // Create a Context with both product and version specified.
-  fuchsia::web::CreateContextParams create_params = DefaultContextParams();
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
   create_params.set_user_agent_product(kValidUserAgentProduct);
   create_params.set_user_agent_version(kValidUserAgentVersion);
   CreateContextAndFrameAndLoadUrl(std::move(create_params),
@@ -127,28 +117,28 @@ TEST_F(WebEngineIntegrationUserAgentTest, ValidProductAndVersion) {
 
 TEST_F(WebEngineIntegrationUserAgentTest, InvalidProduct) {
   // Try to create a Context with an invalid embedder product tag.
-  fuchsia::web::CreateContextParams create_params = DefaultContextParams();
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
   create_params.set_user_agent_product(kInvalidUserAgentProduct);
   CreateContextAndExpectError(std::move(create_params), ZX_ERR_INVALID_ARGS);
 }
 
 TEST_F(WebEngineIntegrationUserAgentTest, VersionOnly) {
   // Try to create a Context with an embedder version but no product.
-  fuchsia::web::CreateContextParams create_params = DefaultContextParams();
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
   create_params.set_user_agent_version(kValidUserAgentVersion);
   CreateContextAndExpectError(std::move(create_params), ZX_ERR_INVALID_ARGS);
 }
 
 TEST_F(WebEngineIntegrationUserAgentTest, ValidProductAndInvalidVersion) {
   // Try to create a Context with valid product tag, but invalid version.
-  fuchsia::web::CreateContextParams create_params = DefaultContextParams();
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
   create_params.set_user_agent_product(kValidUserAgentProduct);
   create_params.set_user_agent_version(kInvalidUserAgentVersion);
   CreateContextAndExpectError(std::move(create_params), ZX_ERR_INVALID_ARGS);
 }
 
 TEST_F(WebEngineIntegrationTest, CreateFrameWithUnclonableFrameParamsFails) {
-  CreateContext(DefaultContextParams());
+  CreateContext(TestContextParams());
 
   zx_rights_t kReadRightsWithoutDuplicate =
       ZX_RIGHT_TRANSFER | ZX_RIGHT_READ | ZX_RIGHT_MAP | ZX_RIGHT_GET_PROPERTY;
@@ -184,14 +174,14 @@ TEST_F(WebEngineIntegrationTest, CreateFrameWithUnclonableFrameParamsFails) {
 // - DevTools closes when the last debuggable Frame is closed.
 TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
   // Create a Context with remote debugging enabled via an ephemeral port.
-  fuchsia::web::CreateContextParams create_params = DefaultContextParams();
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
   create_params.set_remote_debugging_port(0);
 
   // Create a Frame with remote debugging enabled.
   fuchsia::web::CreateFrameParams create_frame_params;
   create_frame_params.set_enable_remote_debugging(true);
-  CreateContextAndFrameWithParams(std::move(create_params),
-                                  std::move(create_frame_params));
+  CreateContext(std::move(create_params));
+  CreateFrameWithParams(std::move(create_frame_params));
 
   // Expect to receive a notification of the selected DevTools port.
   base::RunLoop run_loop;
@@ -208,9 +198,10 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
 
   // Navigate to a URL.
   GURL url = embedded_test_server_.GetURL("/defaultresponse");
+  auto navigation_controller = CreateNavigationController();
   ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller_.get(), fuchsia::web::LoadUrlParams(), url.spec()));
-  navigation_listener_->RunUntilUrlEquals(url);
+      navigation_controller.get(), fuchsia::web::LoadUrlParams(), url.spec()));
+  navigation_listener()->RunUntilUrlEquals(url);
 
   base::Value devtools_list =
       cr_fuchsia::GetDevToolsListFromPort(remote_debugging_port);
@@ -223,7 +214,9 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
 
   // Create a second frame, without remote debugging enabled. The remote
   // debugging service should still report a single Frame is present.
-  fuchsia::web::FramePtr web_frame2 = CreateFrame();
+  fuchsia::web::FramePtr web_frame2;
+  web_frame2.set_error_handler([](zx_status_t) { ADD_FAILURE(); });
+  context()->CreateFrame(web_frame2.NewRequest());
 
   devtools_list = cr_fuchsia::GetDevToolsListFromPort(remote_debugging_port);
   ASSERT_TRUE(devtools_list.is_list());
@@ -236,7 +229,7 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
   // Tear down the debuggable Frame. The remote debugging service should have
   // shut down.
   base::RunLoop controller_run_loop;
-  navigation_controller_.set_error_handler(
+  navigation_controller.set_error_handler(
       [&controller_run_loop](zx_status_t) { controller_run_loop.Quit(); });
   frame_.Unbind();
 
@@ -253,8 +246,8 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
 TEST_F(WebEngineIntegrationTest, RequestDebuggableFrameInNonDebuggableContext) {
   fuchsia::web::CreateFrameParams create_frame_params;
   create_frame_params.set_enable_remote_debugging(true);
-  CreateContextAndFrameWithParams(DefaultContextParams(),
-                                  std::move(create_frame_params));
+  CreateContext(TestContextParams());
+  CreateFrameWithParams(std::move(create_frame_params));
 
   base::RunLoop loop;
   frame_.set_error_handler(
@@ -270,14 +263,14 @@ TEST_F(WebEngineIntegrationTest, ContentDirectoryProvider) {
   const GURL kUrl("fuchsia-dir://testdata/title1.html");
   constexpr char kTitle[] = "title 1";
 
-  CreateContextAndFrame(DefaultContextParamsWithTestData());
+  CreateContextAndFrame(TestContextParamsWithTestData());
 
   // Navigate to test1.html and verify that the resource was correctly
   // downloaded and interpreted by inspecting the document title.
+  auto navigation_controller = CreateNavigationController();
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller_.get(), fuchsia::web::LoadUrlParams(),
-      kUrl.spec()));
-  navigation_listener_->RunUntilUrlAndTitleEquals(kUrl, kTitle);
+      navigation_controller.get(), fuchsia::web::LoadUrlParams(), kUrl.spec()));
+  navigation_listener()->RunUntilUrlAndTitleEquals(kUrl, kTitle);
 }
 
 TEST_F(WebEngineIntegrationMediaTest, PlayAudio) {
@@ -288,18 +281,18 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudio) {
 
   LoadUrlWithUserActivation("fuchsia-dir://testdata/play_audio.html");
 
-  navigation_listener_->RunUntilTitleEquals("ended");
+  navigation_listener()->RunUntilTitleEquals("ended");
 
-  ASSERT_EQ(fake_audio_consumer_service_->num_instances(), 1U);
+  ASSERT_EQ(fake_audio_consumer_service_.num_instances(), 1U);
 
-  auto pos = fake_audio_consumer_service_->instance(0)->GetMediaPosition();
+  auto pos = fake_audio_consumer_service_.instance(0)->GetMediaPosition();
   EXPECT_GT(pos, base::TimeDelta::FromSecondsD(2.0));
   EXPECT_LT(pos, base::TimeDelta::FromSecondsD(2.5));
 
-  EXPECT_EQ(fake_audio_consumer_service_->instance(0)->session_id(),
+  EXPECT_EQ(fake_audio_consumer_service_.instance(0)->session_id(),
             kTestMediaSessionId);
-  EXPECT_EQ(fake_audio_consumer_service_->instance(0)->volume(), 1.0);
-  EXPECT_FALSE(fake_audio_consumer_service_->instance(0)->is_muted());
+  EXPECT_EQ(fake_audio_consumer_service_.instance(0)->volume(), 1.0);
+  EXPECT_FALSE(fake_audio_consumer_service_.instance(0)->is_muted());
 }
 
 // Check that audio cannot play when the AUDIO ContextFeatureFlag is not
@@ -307,24 +300,24 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudio) {
 TEST_F(WebEngineIntegrationMediaTest, PlayAudio_NoFlag) {
   // Both FilteredServiceDirectory and test data are needed.
   fuchsia::web::CreateContextParams create_params =
-      ContextParamsWithFilteredServiceDirectory();
-  create_params.mutable_content_directories()->push_back(
-      CreateTestDataDirectoryProvider());
+      TestContextParamsWithTestData();
   CreateContextAndFrame(std::move(create_params));
 
   bool is_requested = false;
-  ASSERT_EQ(filtered_service_directory_->outgoing_directory()->AddPublicService(
-                std::make_unique<vfs::Service>(
-                    [&is_requested](zx::channel channel,
-                                    async_dispatcher_t* dispatcher) {
-                      is_requested = true;
-                    }),
-                fuchsia::media::SessionAudioConsumerFactory::Name_),
-            ZX_OK);
+  zx_status_t status =
+      filtered_service_directory()
+          .outgoing_directory()
+          ->RemovePublicService<fuchsia::media::SessionAudioConsumerFactory>();
+  ZX_CHECK(status == ZX_OK, status) << "RemovePublicService";
+  status = filtered_service_directory().outgoing_directory()->AddPublicService(
+      fidl::InterfaceRequestHandler<
+          fuchsia::media::SessionAudioConsumerFactory>(
+          [&is_requested](auto request) { is_requested = true; }));
+  ZX_CHECK(status == ZX_OK, status) << "AddPublicService";
 
   LoadUrlWithUserActivation("fuchsia-dir://testdata/play_audio.html");
 
-  navigation_listener_->RunUntilTitleEquals("error");
+  navigation_listener()->RunUntilTitleEquals("error");
   EXPECT_FALSE(is_requested);
 }
 
@@ -333,22 +326,23 @@ TEST_F(WebEngineIntegrationMediaTest, PlayVideo) {
 
   LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html?autoplay");
 
-  navigation_listener_->RunUntilTitleEquals("ended");
+  navigation_listener()->RunUntilTitleEquals("ended");
 }
 
 void WebEngineIntegrationTest::RunPermissionTest(bool grant) {
-  CreateContextAndFrame(DefaultContextParamsWithTestData());
+  CreateContextAndFrame(TestContextParamsWithTestData());
 
   if (grant) {
     GrantPermission(fuchsia::web::PermissionType::MICROPHONE,
                     "fuchsia-dir://testdata/");
   }
 
+  auto navigation_controller = CreateNavigationController();
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller_.get(), fuchsia::web::LoadUrlParams(),
+      navigation_controller.get(), fuchsia::web::LoadUrlParams(),
       "fuchsia-dir://testdata/check_mic_permission.html"));
 
-  navigation_listener_->RunUntilTitleEquals(grant ? "granted" : "denied");
+  navigation_listener()->RunUntilTitleEquals(grant ? "granted" : "denied");
 }
 
 TEST_F(WebEngineIntegrationTest, PermissionDenied) {
@@ -360,26 +354,28 @@ TEST_F(WebEngineIntegrationTest, PermissionGranted) {
 }
 
 TEST_F(WebEngineIntegrationMediaTest, MicrophoneAccess_WithPermission) {
-  CreateContextAndFrame(ContextParamsWithAudio());
+  CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   GrantPermission(fuchsia::web::PermissionType::MICROPHONE,
                   embedded_test_server_.GetURL("/").GetOrigin().spec());
 
+  auto navigation_controller = CreateNavigationController();
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller_.get(), fuchsia::web::LoadUrlParams(),
+      navigation_controller.get(), fuchsia::web::LoadUrlParams(),
       embedded_test_server_.GetURL("/mic.html").spec()));
 
-  navigation_listener_->RunUntilTitleEquals("ended");
+  navigation_listener()->RunUntilTitleEquals("ended");
 }
 
 TEST_F(WebEngineIntegrationMediaTest, MicrophoneAccess_WithoutPermission) {
-  CreateContextAndFrame(ContextParamsWithAudio());
+  CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
+  auto navigation_controller = CreateNavigationController();
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller_.get(), fuchsia::web::LoadUrlParams(),
+      navigation_controller.get(), fuchsia::web::LoadUrlParams(),
       embedded_test_server_.GetURL("/mic.html?NoPermission").spec()));
 
-  navigation_listener_->RunUntilTitleEquals("ended-NotFoundError");
+  navigation_listener()->RunUntilTitleEquals("ended-NotFoundError");
 }
 
 TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_Blocked) {
@@ -390,7 +386,7 @@ TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_Blocked) {
   LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html?autoplay");
 
   // Check different indicators that media has not loaded and is not playing.
-  navigation_listener_->RunUntilTitleEquals("stalled");
+  navigation_listener()->RunUntilTitleEquals("stalled");
   EXPECT_EQ(0 /*HAVE_NOTHING*/,
             ExecuteJavaScriptWithDoubleResult("bear.readyState"));
   EXPECT_EQ(0.0, ExecuteJavaScriptWithDoubleResult("bear.currentTime"));
@@ -407,12 +403,12 @@ TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_AfterUnblock) {
   LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html?autoplay");
 
   // Check that media loading has been blocked.
-  navigation_listener_->RunUntilTitleEquals("stalled");
+  navigation_listener()->RunUntilTitleEquals("stalled");
 
   // Unblock media from loading and see if media loads and plays, since
   // autoplay=true.
   frame_->SetBlockMediaLoading(false);
-  navigation_listener_->RunUntilTitleEquals("playing");
+  navigation_listener()->RunUntilTitleEquals("playing");
   EXPECT_TRUE(ExecuteJavaScriptWithBoolResult("isMetadataLoaded"));
 }
 
@@ -424,22 +420,23 @@ TEST_F(WebEngineIntegrationMediaTest,
 
   LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html");
 
-  navigation_listener_->RunUntilTitleEquals("loaded");
+  navigation_listener()->RunUntilTitleEquals("loaded");
   frame_->SetBlockMediaLoading(true);
   cr_fuchsia::ExecuteJavaScript(frame_.get(), "bear.play()");
-  navigation_listener_->RunUntilTitleEquals("playing");
+  navigation_listener()->RunUntilTitleEquals("playing");
 }
 
 TEST_F(WebEngineIntegrationTest, WebGLContextAbsentWithoutVulkanFeature) {
-  CreateContextAndFrame(DefaultContextParams());
+  CreateContextAndFrame(TestContextParams());
 
+  auto navigation_controller = CreateNavigationController();
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller_.get(), fuchsia::web::LoadUrlParams(),
+      navigation_controller.get(), fuchsia::web::LoadUrlParams(),
       embedded_test_server_.GetURL("/webgl_presence.html").spec()));
 
-  navigation_listener_->RunUntilLoaded();
+  navigation_listener()->RunUntilLoaded();
 
-  EXPECT_EQ(navigation_listener_->title(), "absent");
+  EXPECT_EQ(navigation_listener()->title(), "absent");
 }
 
 #if defined(ARCH_CPU_ARM_FAMILY)
@@ -454,17 +451,18 @@ class MAYBE_VulkanWebEngineIntegrationTest
 
 TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
        WebGLContextPresentWithVulkanFeature) {
-  fuchsia::web::CreateContextParams create_params = DefaultContextParams();
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
   create_params.set_features(fuchsia::web::ContextFeatureFlags::VULKAN);
   CreateContextAndFrame(std::move(create_params));
 
+  auto navigation_controller = CreateNavigationController();
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller_.get(), fuchsia::web::LoadUrlParams(),
+      navigation_controller.get(), fuchsia::web::LoadUrlParams(),
       embedded_test_server_.GetURL("/webgl_presence.html").spec()));
 
-  navigation_listener_->RunUntilLoaded();
+  navigation_listener()->RunUntilLoaded();
 
-  EXPECT_EQ(navigation_listener_->title(), "present");
+  EXPECT_EQ(navigation_listener()->title(), "present");
 }
 
 // Does not start WebEngine automatically as one of the tests requires manually
@@ -477,11 +475,10 @@ class WebEngineIntegrationCameraTest : public WebEngineIntegrationTestBase {
 };
 
 void WebEngineIntegrationCameraTest::RunCameraTest(bool grant_permission) {
-  fuchsia::web::CreateContextParams create_params =
-      ContextParamsWithFilteredServiceDirectory();
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
 
   media::FakeCameraDeviceWatcher fake_camera_device_watcher(
-      filtered_service_directory_->outgoing_directory());
+      filtered_service_directory().outgoing_directory());
 
   CreateContextAndFrame(std::move(create_params));
 
@@ -492,15 +489,15 @@ void WebEngineIntegrationCameraTest::RunCameraTest(bool grant_permission) {
 
   const char* url =
       grant_permission ? "/camera.html" : "/camera.html?NoPermission";
+  auto navigation_controller = CreateNavigationController();
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller_.get(), fuchsia::web::LoadUrlParams(),
+      navigation_controller.get(), fuchsia::web::LoadUrlParams(),
       embedded_test_server_.GetURL(url).spec()));
 
-  navigation_listener_->RunUntilTitleEquals("ended");
+  navigation_listener()->RunUntilTitleEquals("ended");
 }
 
-// TODO(crbug.com/1104562): Flakily times-out.
-TEST_F(WebEngineIntegrationCameraTest, DISABLED_CameraAccess_WithPermission) {
+TEST_F(WebEngineIntegrationCameraTest, CameraAccess_WithPermission) {
   StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   RunCameraTest(/*grant_permission=*/true);
 }
@@ -521,29 +518,25 @@ TEST_F(WebEngineIntegrationCameraTest, CameraNoVideoCaptureProcess) {
 // provided that the CodecFactory service is connected to.
 TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
        HardwareVideoDecoderFlag_Provided) {
-  fuchsia::web::CreateContextParams create_params =
-      ContextParamsWithAudioAndTestData();
+  // Check that the CodecFactory service is requested.
+  bool is_requested = false;
+  zx_status_t status =
+      filtered_service_directory().outgoing_directory()->AddPublicService(
+          fidl::InterfaceRequestHandler<fuchsia::mediacodec::CodecFactory>(
+              [&is_requested](auto request) { is_requested = true; }));
+  ZX_CHECK(status == ZX_OK, status) << "AddPublicService";
 
   // The VULKAN flag is required for hardware video decoders to be available.
+  fuchsia::web::CreateContextParams create_params =
+      ContextParamsWithAudioAndTestData();
   create_params.set_features(
       fuchsia::web::ContextFeatureFlags::VULKAN |
       fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER |
       fuchsia::web::ContextFeatureFlags::AUDIO);
   CreateContextAndFrame(std::move(create_params));
 
-  // Check that the CodecFactory service is requested.
-  bool is_requested = false;
-  ASSERT_EQ(filtered_service_directory_->outgoing_directory()->AddPublicService(
-                std::make_unique<vfs::Service>(
-                    [&is_requested](zx::channel channel,
-                                    async_dispatcher_t* dispatcher) {
-                      is_requested = true;
-                    }),
-                fuchsia::mediacodec::CodecFactory::Name_),
-            ZX_OK);
-
   LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html?autoplay");
-  navigation_listener_->RunUntilTitleEquals("ended");
+  navigation_listener()->RunUntilTitleEquals("ended");
 
   EXPECT_TRUE(is_requested);
 }
@@ -552,23 +545,20 @@ TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
 // HARDWARE_VIDEO_DECODER is not provided.
 // The video should use software decoders and still play.
 TEST_F(WebEngineIntegrationMediaTest, HardwareVideoDecoderFlag_NotProvided) {
+  bool is_requested = false;
+  zx_status_t status =
+      filtered_service_directory().outgoing_directory()->AddPublicService(
+          fidl::InterfaceRequestHandler<fuchsia::mediacodec::CodecFactory>(
+              [&is_requested](auto request) { is_requested = true; }));
+  ZX_CHECK(status == ZX_OK, status) << "AddPublicService";
+
   fuchsia::web::CreateContextParams create_params =
       ContextParamsWithAudioAndTestData();
   CreateContextAndFrame(std::move(create_params));
 
-  bool is_requested = false;
-  ASSERT_EQ(filtered_service_directory_->outgoing_directory()->AddPublicService(
-                std::make_unique<vfs::Service>(
-                    [&is_requested](zx::channel channel,
-                                    async_dispatcher_t* dispatcher) {
-                      is_requested = true;
-                    }),
-                fuchsia::mediacodec::CodecFactory::Name_),
-            ZX_OK);
-
   LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html?autoplay");
 
-  navigation_listener_->RunUntilTitleEquals("ended");
+  navigation_listener()->RunUntilTitleEquals("ended");
 
   EXPECT_FALSE(is_requested);
 }

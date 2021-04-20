@@ -542,8 +542,8 @@ test("web_engine_integration_tests") {
   deps = [
     "//base",
     "//base:test_log_listener_safe",
-    "//base/test:run_all_unittests",
     "//fuchsia/base",
+    "//fuchsia/base:run_all_integration_tests",
     "//fuchsia/base:test_support",
     "//media",
     "//media/fuchsia/audio:test_support",

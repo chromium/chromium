@@ -45,16 +45,33 @@ class WebEngineIntegrationLoggingTest : public WebEngineIntegrationTestBase {
   WebEngineIntegrationLoggingTest()
       : WebEngineIntegrationTestBase(),
         isolated_archivist_service_dir_(
-            StartIsolatedArchivist(archivist_controller_.NewRequest())) {}
+            StartIsolatedArchivist(archivist_controller_.NewRequest())) {
+    // Redirect the LogSink service to an isolated archivist instance.
+    zx_status_t status = filtered_service_directory()
+                             .outgoing_directory()
+                             ->RemovePublicService<fuchsia::logger::LogSink>();
+    ZX_CHECK(status == ZX_OK, status) << "RemovePublicService";
+
+    status =
+        filtered_service_directory().outgoing_directory()->AddPublicService(
+            fidl::InterfaceRequestHandler<fuchsia::logger::LogSink>(
+                [this](auto request) {
+                  isolated_archivist_service_dir_.Connect(std::move(request));
+                }));
+    ZX_CHECK(status == ZX_OK, status) << "AddPublicService";
+  }
 
   void SetUp() override {
     WebEngineIntegrationTestBase::SetUp();
     StartWebEngineForLoggingTest(
         base::CommandLine(base::CommandLine::NO_PROGRAM));
 
-    logger_ = isolated_archivist_service_dir_.Connect<fuchsia::logger::Log>();
+    log_ = isolated_archivist_service_dir_.Connect<fuchsia::logger::Log>();
   }
 
+  fuchsia::logger::Log* log() { return log_.get(); }
+
+ private:
   // Starts WebEngine without redirecting its logs.
   void StartWebEngineForLoggingTest(base::CommandLine command_line) {
     web_context_provider_ = cr_fuchsia::ConnectContextProviderForLoggingTest(
@@ -88,65 +105,35 @@ class WebEngineIntegrationLoggingTest : public WebEngineIntegrationTestBase {
     return archivist_services_dir;
   }
 
-  // Returns a CreateContextParams that has an isolated LogSink service from
-  // |isolated_archivist_service_dir_|.
-  fuchsia::web::CreateContextParams ContextParamsWithIsolatedLogSink() {
-    // Use a FilteredServiceDirectory in order to inject an isolated service.
-    fuchsia::web::CreateContextParams create_params =
-        ContextParamsWithFilteredServiceDirectory();
-
-    EXPECT_EQ(filtered_service_directory_->outgoing_directory()
-                  ->RemovePublicService<fuchsia::logger::LogSink>(),
-              ZX_OK);
-
-    EXPECT_EQ(
-        filtered_service_directory_->outgoing_directory()->AddPublicService(
-            std::make_unique<vfs::Service>(
-                [this](zx::channel channel, async_dispatcher_t* dispatcher) {
-                  isolated_archivist_service_dir_.Connect(
-                      fuchsia::logger::LogSink::Name_, std::move(channel));
-                }),
-            fuchsia::logger::LogSink::Name_),
-        ZX_OK);
-
-    return create_params;
-  }
-
-  void LoadLogTestPage() {
-    EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-        navigation_controller_.get(), fuchsia::web::LoadUrlParams(),
-        embedded_test_server_.GetURL(std::string("/") + kLogTestPageFileName)
-            .spec()));
-  }
-
   fuchsia::sys::ComponentControllerPtr archivist_controller_;
   sys::ServiceDirectory isolated_archivist_service_dir_;
 
-  fuchsia::logger::LogPtr logger_;
+  fuchsia::logger::LogPtr log_;
 };
 
 // Verifies that calling messages from console.debug() calls go to the Fuchsia
 // system log when the script log level is set to DEBUG.
 TEST_F(WebEngineIntegrationLoggingTest, SetJavaScriptLogLevel_DEBUG) {
   base::SimpleTestLogListener log_listener;
-  log_listener.ListenToLog(logger_.get(), nullptr);
+  log_listener.ListenToLog(log(), nullptr);
 
   // Create the Context & Frame with all log severities enabled.
   fuchsia::web::CreateFrameParams frame_params;
   frame_params.set_debug_name(kFrameLogTag);
-  CreateContextAndFrameWithParams(ContextParamsWithIsolatedLogSink(),
-                                  std::move(frame_params));
+  CreateContext(TestContextParams());
+  CreateFrameWithParams(std::move(frame_params));
   frame_->SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel::DEBUG);
 
-  // Re-connect to the NavigationController, to ensure that the new log level
-  // has been applied before the LoadUrl() request is processed.
-  navigation_controller_ = nullptr;
-  navigation_listener_ = nullptr;
-  AddNavigationControllerAndListenerToFrame(&frame_);
+  // Creating the NavigationController after configuring the Frame ensures that
+  // Frame calls have completed before NavigationController calls are processed.
+  auto navigation_controller = CreateNavigationController();
 
   // Navigate to the test page, which will emit console logging.
-  LoadLogTestPage();
-  navigation_listener_->RunUntilTitleEquals("ended");
+  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+      navigation_controller.get(), fuchsia::web::LoadUrlParams(),
+      embedded_test_server_.GetURL(std::string("/") + kLogTestPageFileName)
+          .spec()));
+  navigation_listener()->RunUntilTitleEquals("ended");
 
   // Run until the message passed to console.debug() is received.
   base::Optional<fuchsia::logger::LogMessage> logged_message =

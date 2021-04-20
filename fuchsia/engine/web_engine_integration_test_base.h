@@ -31,50 +31,64 @@ class WebEngineIntegrationTestBase : public testing::Test {
 
   void SetUp() override;
 
-  static fuchsia::web::ContentDirectoryProvider
-  CreateTestDataDirectoryProvider();
-
   void StartWebEngine(base::CommandLine command_line);
 
-  fuchsia::web::CreateContextParams DefaultContextParams() const;
+  // Returns the FilteredServiceDirectory used by DefaultContextParams(), which
+  // is initially configured to provide all of the calling process' services.
+  // Tests may use this to override or remove services for testing.
+  base::FilteredServiceDirectory& filtered_service_directory() {
+    return filtered_service_directory_;
+  }
 
-  fuchsia::web::CreateContextParams DefaultContextParamsWithTestData() const;
-  fuchsia::web::CreateContextParams ContextParamsWithFilteredServiceDirectory();
+  // Returns a TestNavigationListener bound to the current |frame_|.
+  cr_fuchsia::TestNavigationListener* navigation_listener() const {
+    CHECK(navigation_listener_);
+    return navigation_listener_.get();
+  }
 
-  // Populates |navigation_listener_| with a TestNavigationListener and adds it
-  // to |frame|, enabling tests to monitor the state of the Frame.
-  // May only be called once.
-  void CreateNavigationListener(fuchsia::web::FramePtr* frame);
+  // Returns the fuchsia.web.Context.
+  fuchsia::web::Context* context() const {
+    CHECK(context_);
+    return context_.get();
+  }
 
-  // Populates |navigation_controller_| with a NavigationController for |frame|.
-  // May only be called once.
-  void AddNavigationControllerAndListenerToFrame(fuchsia::web::FramePtr* frame);
+  // Returns a new NavigationController connected to |frame_|. Calls made via
+  // the NavigationController are not processed in-order with calls made to the
+  // |frame_|. Tests should therefore (re-)connect a NavigationController after
+  // any Frame configuration calls have been issued, to ensure that they are
+  // processed before any navigation requests.
+  fuchsia::web::NavigationControllerPtr CreateNavigationController();
 
-  // Populates |context_| with a Context with |params|.
+  // Returns CreateContextParams with |service_directory| connected to the
+  // |filtered_service_directory()| (see above).
+  fuchsia::web::CreateContextParams TestContextParams();
+
+  // Returns a default CreateContextParams with a "testdata" content-directory
+  // configured.
+  fuchsia::web::CreateContextParams TestContextParamsWithTestData();
+
+  // Populates |context_| with a Context with |params|, and attaches an error-
+  // handler that invokes ADD_FAILURE().
+  // May be called at most once.
   void CreateContext(fuchsia::web::CreateContextParams context_params);
 
-  // Returns a new Frame created from |context_|.
-  fuchsia::web::FramePtr CreateFrame();
+  // Populates |frame_| with a Frame with |frame_params|, attaches an error-
+  // handler that invokes ADD_FAILURE(), and connects |navigation_listener()|.
+  // May be called at most once.
+  void CreateFrameWithParams(fuchsia::web::CreateFrameParams frame_params);
 
-  // Returns a new Frame with |frame_params| created from |context_|.
-  fuchsia::web::FramePtr CreateFrameWithParams(
-      fuchsia::web::CreateFrameParams frame_params);
-
-  // Populates |context_| with a Context with |context_params|, |frame_| with a
-  // new Frame, |navigation_controller_| with a NavigationController request for
-  // |frame_|, and navigation_listener_| with a TestNavigationListener that is
-  // added to |frame|.
+  // Populates |context_| with a Context with |context_params| and |frame_| with
+  // a new Frame.
+  // TODO(crbug.com/1200314): Audit callers and replace them with calls to
+  // CreateContext()+CreateFrameWithParams(), or context()->CreateFrame(),
+  // depending on what each test is intended to verify.
   void CreateContextAndFrame(fuchsia::web::CreateContextParams context_params);
-
-  // Same as CreateContextAndFrame() but uses |frame_params| to create the
-  // Frame.
-  void CreateContextAndFrameWithParams(
-      fuchsia::web::CreateContextParams context_params,
-      fuchsia::web::CreateFrameParams frame_params);
 
   void CreateContextAndExpectError(fuchsia::web::CreateContextParams params,
                                    zx_status_t expected_error);
 
+  // TODO(crbug.com/1200314): Replace this with a LoadUrl() call that can be
+  // preceded by CreateContext()+CreateFrameWithParams().
   void CreateContextAndFrameAndLoadUrl(fuchsia::web::CreateContextParams params,
                                        const GURL& url);
 
@@ -100,13 +114,15 @@ class WebEngineIntegrationTestBase : public testing::Test {
 
   fuchsia::web::ContextPtr context_;
   fuchsia::web::FramePtr frame_;
-  fuchsia::web::NavigationControllerPtr navigation_controller_;
+
+ private:
+  void CreateNavigationListener();
 
   std::unique_ptr<cr_fuchsia::TestNavigationListener> navigation_listener_;
   std::unique_ptr<fidl::Binding<fuchsia::web::NavigationEventListener>>
       navigation_listener_binding_;
 
-  std::unique_ptr<base::FilteredServiceDirectory> filtered_service_directory_;
+  base::FilteredServiceDirectory filtered_service_directory_;
 };
 
 #endif  // FUCHSIA_ENGINE_WEB_ENGINE_INTEGRATION_TEST_BASE_H_
