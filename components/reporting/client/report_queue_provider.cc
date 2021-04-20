@@ -67,8 +67,6 @@ void ReportQueueProvider::OnInitState(bool provider_configured) {
   if (!provider_configured) {
     // Schedule an InitializingContext to take care of initialization.
     InitializingContext* const context = InstantiateInitializingContext(
-        base::BindOnce(&ReportQueueProvider::OnConfigResult,
-                       base::Unretained(this)),
         base::BindOnce(&ReportQueueProvider::OnInitializationComplete,
                        base::Unretained(this)),
         init_state_tracker_);
@@ -81,11 +79,6 @@ void ReportQueueProvider::OnInitState(bool provider_configured) {
   // Client was configured, build the queue!
   create_request_queue_->Pop(base::BindOnce(
       &ReportQueueProvider::BuildRequestQueue, base::Unretained(this)));
-}
-
-void ReportQueueProvider::OnConfigResult(
-    base::OnceCallback<void(Status)> continue_init_cb) {
-  std::move(continue_init_cb).Run(Status::StatusOK());
 }
 
 void ReportQueueProvider::OnInitializationComplete(Status init_status) {
@@ -177,12 +170,10 @@ ReportQueueProvider::CreateReportQueueRequest::create_cb() {
 // InitializingContext implementation.
 
 ReportQueueProvider::InitializingContext::InitializingContext(
-    UpdateConfigurationCallback update_config_cb,
     InitCompleteCallback init_complete_cb,
     scoped_refptr<ReportQueueProvider::InitializationStateTracker>
         init_state_tracker)
-    : update_config_cb_(std::move(update_config_cb)),
-      init_state_tracker_(init_state_tracker),
+    : init_state_tracker_(init_state_tracker),
       init_complete_cb_(std::move(init_complete_cb)) {}
 
 ReportQueueProvider::InitializingContext::~InitializingContext() = default;
@@ -210,13 +201,14 @@ void ReportQueueProvider::InitializingContext::OnLeaderPromotionResult(
                      base::Unretained(this)));
 }
 
-void ReportQueueProvider::InitializingContext::OnCompleted() {
-  std::move(update_config_cb_)
-      .Run(base::BindOnce(&InitializingContext::Complete,
-                          base::Unretained(this)));
-}
-
 void ReportQueueProvider::InitializingContext::Complete(Status status) {
+  if (status.error_code() == error::RESOURCE_EXHAUSTED) {
+    // There is already a leader initializing the ReportQueueProvider.
+    std::move(init_complete_cb_).Run(status);
+    delete this;
+    return;
+  }
+
   if (status.ok()) {
     // Export the results to the provider.
     OnCompleted();
@@ -226,6 +218,7 @@ void ReportQueueProvider::InitializingContext::Complete(Status status) {
     // update the provider.
     status = Status::StatusOK();
   }
+
   std::move(release_leader_cb_).Run(/*initialization_successful=*/status.ok());
   std::move(init_complete_cb_).Run(status);
   delete this;
@@ -289,6 +282,7 @@ void ReportQueueProvider::InitializationStateTracker::OnLeaderPromotionRequest(
     result = Status(error::RESOURCE_EXHAUSTED,
                     "ReportClient already has a lead initializing context.");
   } else {
+    has_promoted_initializing_context_ = true;
     result = base::BindOnce(
         &ReportQueueProvider::InitializationStateTracker::ReleaseLeader, this);
   }

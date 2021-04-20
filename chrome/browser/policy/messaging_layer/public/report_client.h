@@ -32,7 +32,7 @@ class ReportingClient : public ReportQueueProvider {
   using CreateReportQueueCallback =
       base::OnceCallback<void(CreateReportQueueResponse)>;
 
-  using GetCloudPolicyClientCallback = base::OnceCallback<void(
+  using GetCloudPolicyClientCallback = base::RepeatingCallback<void(
       base::OnceCallback<void(StatusOr<policy::CloudPolicyClient*>)>)>;
 
   class ClientInitializingContext
@@ -41,7 +41,6 @@ class ReportingClient : public ReportQueueProvider {
     ClientInitializingContext(
         GetCloudPolicyClientCallback get_client_cb,
         UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
-        UpdateConfigurationCallback update_config_cb,
         InitCompleteCallback init_complete_cb,
         ReportingClient* client,
         scoped_refptr<InitializationStateTracker> init_state_tracker);
@@ -83,7 +82,6 @@ class ReportingClient : public ReportQueueProvider {
   };
 
   ReportQueueProvider::InitializingContext* InstantiateInitializingContext(
-      InitializingContext::UpdateConfigurationCallback update_config_cb,
       InitCompleteCallback init_complete_cb,
       scoped_refptr<InitializationStateTracker> init_state_tracker) override;
 

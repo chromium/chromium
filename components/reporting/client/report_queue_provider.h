@@ -166,7 +166,7 @@ class ReportQueueProvider {
   // (for non-trivial initialization needs to be subclassed).
   // Once Start is called, it can post an arbitrary set of callbacks
   // to appropriate threads, and then collects the result back.
-  // Once the result is collected, needs to makes a call to |Complete|
+  // Once the result is collected, needs to make a call to |Complete|
   // passing resulting status (if status is OK, |OnCompleted| will be
   // called, and it may update the |ReportQueueProvider|).
   // In order to substitute the context, override
@@ -174,12 +174,10 @@ class ReportQueueProvider {
   //
   // Example:
   //   InitializingContext* InstantiateInitializingContext(
-  //       InitializingContext::UpdateConfigurationCallback update_config_cb,
   //       InitCompleteCallback init_complete_cb,
   //       scoped_refptr<InitializationStateTracker> init_state_tracker,
   //       ...more parameters as needed...) override {
-  //     return new InitializingContextImpl(std::move(update_config_cb),
-  //                                        std::move(init_complete_cb),
+  //     return new InitializingContextImpl(std::move(init_complete_cb),
   //                                        init_state_tracker,
   //                                        ...more parameters as needed...,
   //                                        this);
@@ -188,13 +186,11 @@ class ReportQueueProvider {
   //       : public ReportQueueProvider::InitializingContext {
   //    public:
   //     InitializingContextImpl(
-  //         UpdateConfigurationCallback update_config_cb,
   //         InitCompleteCallback init_complete_cb,
   //         scoped_refptr<InitializationStateTracker> init_state_tracker,
   //         ...more parameters as needed...,
   //         ReportQueueProviderImpl* provider)
-  //         : InitializingContext(std::move(update_config_cb),
-  //                               std::move(init_complete_cb),
+  //         : InitializingContext(std::move(init_complete_cb),
   //                               init_state_tracker),
   //           ...saving parameters to the context,
   //           provider_(provider) {
@@ -247,11 +243,7 @@ class ReportQueueProvider {
   using InitCompleteCallback = base::OnceCallback<void(Status)>;
   class InitializingContext {
    public:
-    using UpdateConfigurationCallback =
-        base::OnceCallback<void(base::OnceCallback<void(Status)>)>;
-
     InitializingContext(
-        UpdateConfigurationCallback update_config_cb,
         InitCompleteCallback init_complete_cb,
         scoped_refptr<InitializationStateTracker> init_state_tracker);
 
@@ -270,7 +262,7 @@ class ReportQueueProvider {
 
     // Called if |Complete| got a success.
     // Needs to be overridden to update the provider.
-    virtual void OnCompleted();
+    virtual void OnCompleted() = 0;
 
    private:
     // Called Upon leader promotion: OK means we are a leader and initialization
@@ -285,7 +277,6 @@ class ReportQueueProvider {
     // initialization.
     virtual void OnStart() = 0;
 
-    UpdateConfigurationCallback update_config_cb_;
     InitializationStateTracker::ReleaseLeaderCallback release_leader_cb_;
     scoped_refptr<InitializationStateTracker> init_state_tracker_;
 
@@ -313,12 +304,8 @@ class ReportQueueProvider {
   // Result owned by itself (passed to InitializingContext::Start and
   // self-destructs upon InitializingContext::Complete call).
   virtual InitializingContext* InstantiateInitializingContext(
-      InitializingContext::UpdateConfigurationCallback update_config_cb,
       InitCompleteCallback init_complete_cb,
       scoped_refptr<InitializationStateTracker> init_state_tracker) = 0;
-
-  virtual void OnConfigResult(
-      base::OnceCallback<void(Status)> continue_init_cb);
 
   // Creates and initializes queue implementation. Returns status in case of
   // error.

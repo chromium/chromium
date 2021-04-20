@@ -35,11 +35,9 @@ namespace {
 class MockReportQueueProvider : public ReportQueueProvider {
  public:
   InitializingContext* InstantiateInitializingContext(
-      InitializingContext::UpdateConfigurationCallback update_config_cb,
       InitCompleteCallback init_complete_cb,
       scoped_refptr<InitializationStateTracker> init_state_tracker) override {
-    return new MockInitializingContext(std::move(update_config_cb),
-                                       std::move(init_complete_cb),
+    return new MockInitializingContext(std::move(init_complete_cb),
                                        init_state_tracker, this);
   }
 
@@ -56,13 +54,10 @@ class MockReportQueueProvider : public ReportQueueProvider {
       : public ReportQueueProvider::InitializingContext {
    public:
     MockInitializingContext(
-        UpdateConfigurationCallback update_config_cb,
         InitCompleteCallback init_complete_cb,
         scoped_refptr<InitializationStateTracker> init_state_tracker,
         MockReportQueueProvider* provider)
-        : InitializingContext(std::move(update_config_cb),
-                              std::move(init_complete_cb),
-                              init_state_tracker),
+        : InitializingContext(std::move(init_complete_cb), init_state_tracker),
           provider_(provider) {
       DCHECK(provider_ != nullptr);
     }

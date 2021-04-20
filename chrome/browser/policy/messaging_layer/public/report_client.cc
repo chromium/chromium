@@ -169,30 +169,28 @@ void ReportingClient::Uploader::Helper::Completed(Status final_status) {
 
 ReportQueueProvider::InitializingContext*
 ReportingClient::InstantiateInitializingContext(
-    InitializingContext::UpdateConfigurationCallback update_config_cb,
     InitCompleteCallback init_complete_cb,
     scoped_refptr<InitializationStateTracker> init_state_tracker) {
   return new ClientInitializingContext(
-      std::move(build_cloud_policy_client_cb_),
+      build_cloud_policy_client_cb_,
       base::BindRepeating(&ReportingClient::AsyncStartUploader),
-      std::move(update_config_cb), std::move(init_complete_cb), this,
-      init_state_tracker);
+      std::move(init_complete_cb), this, init_state_tracker);
 }
 
 ReportingClient::ClientInitializingContext::ClientInitializingContext(
     GetCloudPolicyClientCallback get_client_cb,
     UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
-    UpdateConfigurationCallback update_config_cb,
     InitCompleteCallback init_complete_cb,
     ReportingClient* client,
     scoped_refptr<ReportingClient::InitializationStateTracker>
         init_state_tracker)
-    : ReportQueueProvider::InitializingContext(std::move(update_config_cb),
-                                               std::move(init_complete_cb),
+    : ReportQueueProvider::InitializingContext(std::move(init_complete_cb),
                                                std::move(init_state_tracker)),
       get_client_cb_(std::move(get_client_cb)),
       async_start_upload_cb_(std::move(async_start_upload_cb)),
-      client_(client) {}
+      client_(client) {
+  DCHECK(get_client_cb_);
+}
 
 ReportingClient::ClientInitializingContext::~ClientInitializingContext() =
     default;
@@ -292,11 +290,15 @@ void ReportingClient::ClientInitializingContext::OnUploadClientCreated(
 }
 
 void ReportingClient::ClientInitializingContext::OnCompleted() {
-  DCHECK(!client_->cloud_policy_client_)
-      << "Cloud policy client already recorded";
-  client_->cloud_policy_client_ = cloud_policy_client_;
-  DCHECK(!client_->upload_client_) << "Upload client already recorded";
-  client_->upload_client_ = std::move(upload_client_);
+  if (cloud_policy_client_) {
+    DCHECK(client_->cloud_policy_client_ == nullptr)
+        << "Cloud policy client already recorded";
+    client_->cloud_policy_client_ = cloud_policy_client_;
+  }
+  if (upload_client_) {
+    DCHECK(!client_->upload_client_) << "Upload client already recorded";
+    client_->upload_client_ = std::move(upload_client_);
+  }
   DCHECK(!client_->storage_) << "Storage module already recorded";
   client_->storage_ = std::move(storage_);
 }
@@ -344,7 +346,7 @@ ReportingClient::TestEnvironment::TestEnvironment(
           std::move(static_cast<ReportingClient*>(GetInstance())
                         ->build_cloud_policy_client_cb_)) {
   static_cast<ReportingClient*>(GetInstance())->build_cloud_policy_client_cb_ =
-      base::BindOnce(
+      base::BindRepeating(
           [](policy::CloudPolicyClient* client,
              base::OnceCallback<void(StatusOr<policy::CloudPolicyClient*>)>
                  build_cb) { std::move(build_cb).Run(std::move(client)); },

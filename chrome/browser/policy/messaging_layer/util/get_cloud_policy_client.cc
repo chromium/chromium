@@ -81,8 +81,9 @@ void GetCloudPolicyClient(
 }
 }  // namespace
 
-base::OnceCallback<void(CloudPolicyClientResultCb)> GetCloudPolicyClientCb() {
-  return base::BindOnce(&GetCloudPolicyClient);
+base::RepeatingCallback<void(CloudPolicyClientResultCb)>
+GetCloudPolicyClientCb() {
+  return base::BindRepeating(&GetCloudPolicyClient);
 }
 
 }  // namespace reporting
