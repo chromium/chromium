@@ -227,7 +227,7 @@ class CONTENT_EXPORT RenderThreadImpl
   // Whether gpu compositing is being used or is disabled for software
   // compositing. Clients of the compositor should give resources that match
   // the appropriate mode.
-  bool IsGpuCompositingDisabled() { return is_gpu_compositing_disabled_; }
+  bool IsGpuCompositingDisabled() const { return is_gpu_compositing_disabled_; }
 
   // Synchronously establish a channel to the GPU plugin if not previously
   // established or if it has been lost (for example if the GPU plugin crashed).

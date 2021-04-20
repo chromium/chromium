@@ -444,7 +444,7 @@ void RendererBlinkPlatformImpl::SetIsLockedToSite() {
   is_locked_to_site_ = true;
 }
 
-bool RendererBlinkPlatformImpl::IsGpuCompositingDisabled() {
+bool RendererBlinkPlatformImpl::IsGpuCompositingDisabled() const {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   RenderThreadImpl* thread = RenderThreadImpl::current();
   // |thread| can be NULL in tests.
@@ -729,8 +729,9 @@ RendererBlinkPlatformImpl::GetVideoCaptureImplManager() {
 
 //------------------------------------------------------------------------------
 
-static void Collect3DContextInformation(blink::Platform::GraphicsInfo* gl_info,
-                                        const gpu::GPUInfo& gpu_info) {
+void RendererBlinkPlatformImpl::Collect3DContextInformation(
+    blink::Platform::GraphicsInfo* gl_info,
+    const gpu::GPUInfo& gpu_info) const {
   DCHECK(gl_info);
   const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
   gl_info->vendor_id = active_gpu.vendor_id;
@@ -743,6 +744,8 @@ static void Collect3DContextInformation(blink::Platform::GraphicsInfo* gl_info,
   gl_info->sandboxed = gpu_info.sandboxed;
   gl_info->amd_switchable = gpu_info.amd_switchable;
   gl_info->optimus = gpu_info.optimus;
+  gl_info->using_gpu_compositing = !IsGpuCompositingDisabled();
+  gl_info->using_passthrough_command_decoder = gpu_info.passthrough_cmd_decoder;
 }
 
 std::unique_ptr<blink::WebGraphicsContext3DProvider>

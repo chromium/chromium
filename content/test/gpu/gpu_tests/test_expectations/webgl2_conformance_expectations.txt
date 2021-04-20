@@ -92,6 +92,7 @@ crbug.com/1058744 [ no-passthrough ] WebglExtension_OES_draw_buffers_indexed [ S
 
 crbug.com/1142754 [ linux ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
 crbug.com/1142754 [ fuchsia ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
+crbug.com/1194209 [ mac no-passthrough ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
 
 # Disabling all multiview checks temporarily while ANGLE side changes
 # get merged in.

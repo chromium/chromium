@@ -503,6 +503,8 @@ class BLINK_PLATFORM_EXPORT Platform {
     bool sandboxed = false;
     bool amd_switchable = false;
     bool optimus = false;
+    bool using_gpu_compositing = false;
+    bool using_passthrough_command_decoder = false;
     WebString vendor_info;
     WebString renderer_info;
     WebString driver_version;
@@ -543,7 +545,7 @@ class BLINK_PLATFORM_EXPORT Platform {
   // or software based resources.
   // NOTE: This function should not be called from core/ and modules/, but
   // called by platform/graphics/ is fine.
-  virtual bool IsGpuCompositingDisabled() { return true; }
+  virtual bool IsGpuCompositingDisabled() const { return true; }
 
 #if defined(OS_ANDROID)
   // Returns if synchronous compositing is enabled. Only used for Android

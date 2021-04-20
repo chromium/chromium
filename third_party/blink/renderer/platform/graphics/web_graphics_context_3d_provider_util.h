@@ -26,7 +26,6 @@ PLATFORM_EXPORT std::unique_ptr<WebGraphicsContext3DProvider>
 CreateContextProviderOnWorkerThread(
     Platform::ContextAttributes context_attributes,
     Platform::GraphicsInfo* gl_info,
-    bool* using_gpu_compositing,
     const KURL& url);
 
 }  // namespace blink

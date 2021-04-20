@@ -44,6 +44,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgl_image_conversion.h"
@@ -126,7 +127,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   static scoped_refptr<DrawingBuffer> Create(
       std::unique_ptr<WebGraphicsContext3DProvider>,
-      bool using_gpu_compositing,
+      const Platform::GraphicsInfo& graphics_info,
       bool using_swap_chain,
       Client*,
       const IntSize&,
@@ -159,7 +160,13 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   bool HasDepthBuffer() const { return !!depth_stencil_buffer_; }
   bool HasStencilBuffer() const { return !!depth_stencil_buffer_; }
 
-  bool IsUsingGpuCompositing() const { return using_gpu_compositing_; }
+  bool IsUsingGpuCompositing() const {
+    return graphics_info_.using_gpu_compositing;
+  }
+
+  const Platform::GraphicsInfo& GetGraphicsInfo() const {
+    return graphics_info_;
+  }
 
   // Given the desired buffer size, provides the largest dimensions that will
   // fit in the pixel budget.
@@ -296,7 +303,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
  protected:  // For unittests
   DrawingBuffer(std::unique_ptr<WebGraphicsContext3DProvider>,
-                bool using_gpu_compositing,
+                const Platform::GraphicsInfo& graphics_info,
                 bool using_swap_chain,
                 std::unique_ptr<Extensions3DUtil>,
                 Client*,
@@ -540,7 +547,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // channel.
   bool have_alpha_channel_ = false;
   const bool premultiplied_alpha_;
-  const bool using_gpu_compositing_;
+  Platform::GraphicsInfo graphics_info_;
   const bool using_swap_chain_;
   bool has_implicit_stencil_buffer_ = false;
 

@@ -69,9 +69,10 @@ class DrawingBufferTest : public Test {
         std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
     GLES2InterfaceForTests* gl_ =
         static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
-    bool gpu_compositing = true;
+    Platform::GraphicsInfo graphics_info;
+    graphics_info.using_gpu_compositing = true;
     drawing_buffer_ = DrawingBufferForTests::Create(
-        std::move(provider), gpu_compositing, gl_, initial_size,
+        std::move(provider), graphics_info, gl_, initial_size,
         DrawingBuffer::kPreserve, use_multisampling);
     CHECK(drawing_buffer_);
     SetAndSaveRestoreState(false);
@@ -363,9 +364,10 @@ class DrawingBufferImageChromiumTest : public DrawingBufferTest,
     GLES2InterfaceForTests* gl_ =
         static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
     EXPECT_CALL(*gl_, CreateAndTexStorage2DSharedImageCHROMIUMMock(_)).Times(1);
-    bool gpu_compositing = true;
+    Platform::GraphicsInfo graphics_info;
+    graphics_info.using_gpu_compositing = true;
     drawing_buffer_ = DrawingBufferForTests::Create(
-        std::move(provider), gpu_compositing, gl_, initial_size,
+        std::move(provider), graphics_info, gl_, initial_size,
         DrawingBuffer::kPreserve, kDisableMultisampling);
     CHECK(drawing_buffer_);
     SetAndSaveRestoreState(true);
@@ -673,15 +675,16 @@ TEST(DrawingBufferDepthStencilTest, packedDepthStencilSupported) {
         std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
     DrawingBuffer::PreserveDrawingBuffer preserve = DrawingBuffer::kPreserve;
 
+    Platform::GraphicsInfo graphics_info;
+    graphics_info.using_gpu_compositing = true;
     bool premultiplied_alpha = false;
     bool want_alpha_channel = true;
     bool want_depth_buffer = cases[i].request_depth;
     bool want_stencil_buffer = cases[i].request_stencil;
     bool want_antialiasing = false;
-    bool gpu_compositing = true;
     bool using_swap_chain = false;
     scoped_refptr<DrawingBuffer> drawing_buffer = DrawingBuffer::Create(
-        std::move(provider), gpu_compositing, using_swap_chain, nullptr,
+        std::move(provider), graphics_info, using_swap_chain, nullptr,
         IntSize(10, 10), premultiplied_alpha, want_alpha_channel,
         want_depth_buffer, want_stencil_buffer, want_antialiasing, preserve,
         DrawingBuffer::kWebGL1, DrawingBuffer::kAllowChromiumImage,
@@ -751,9 +754,10 @@ TEST_F(DrawingBufferTest, VerifySetIsHiddenProperlyAffectsMailboxes) {
 TEST_F(DrawingBufferTest,
        VerifyTooBigDrawingBufferExceedingV8MaxSizeFailsToCreate) {
   IntSize too_big_size(1, (v8::TypedArray::kMaxLength / 4) + 1);
-  bool gpu_compositing = true;
+  Platform::GraphicsInfo graphics_info;
+  graphics_info.using_gpu_compositing = true;
   scoped_refptr<DrawingBuffer> too_big_drawing_buffer = DrawingBuffer::Create(
-      nullptr, gpu_compositing, false /* using_swap_chain */, nullptr,
+      nullptr, graphics_info, false /* using_swap_chain */, nullptr,
       too_big_size, false, false, false, false, false, DrawingBuffer::kDiscard,
       DrawingBuffer::kWebGL1, DrawingBuffer::kAllowChromiumImage,
       kLow_SkFilterQuality, CanvasColorParams(),

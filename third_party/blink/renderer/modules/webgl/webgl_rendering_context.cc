@@ -115,16 +115,16 @@ CanvasRenderingContext* WebGLRenderingContext::Factory::Create(
     attribs.xr_compatible = false;
   }
 
-  bool using_gpu_compositing;
+  Platform::GraphicsInfo graphics_info;
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider(
       CreateWebGraphicsContext3DProvider(
-          host, attribs, Platform::kWebGL1ContextType, &using_gpu_compositing));
+          host, attribs, Platform::kWebGL1ContextType, &graphics_info));
   if (!ShouldCreateContext(context_provider.get()))
     return nullptr;
 
   WebGLRenderingContext* rendering_context =
       MakeGarbageCollected<WebGLRenderingContext>(
-          host, std::move(context_provider), using_gpu_compositing, attribs);
+          host, std::move(context_provider), graphics_info, attribs);
   if (!rendering_context->GetDrawingBuffer()) {
     host->HostDispatchEvent(
         WebGLContextEvent::Create(event_type_names::kWebglcontextcreationerror,
@@ -147,11 +147,11 @@ void WebGLRenderingContext::Factory::OnError(HTMLCanvasElement* canvas,
 WebGLRenderingContext::WebGLRenderingContext(
     CanvasRenderingContextHost* host,
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
-    bool using_gpu_compositing,
+    const Platform::GraphicsInfo& graphics_info,
     const CanvasContextCreationAttributesCore& requested_attributes)
     : WebGLRenderingContextBase(host,
                                 std::move(context_provider),
-                                using_gpu_compositing,
+                                graphics_info,
                                 requested_attributes,
                                 Platform::kWebGL1ContextType) {}
 

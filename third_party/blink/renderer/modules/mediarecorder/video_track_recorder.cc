@@ -351,10 +351,8 @@ void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnEncodingTaskRunner(
     attributes.support_grcontext = true;
 
     Platform::GraphicsInfo info;
-    bool using_gpu_compositing = true;
     encoder_thread_context_ = CreateContextProviderOnWorkerThread(
-        attributes, &info, &using_gpu_compositing,
-        KURL("chrome://VideoTrackRecorderImpl"));
+        attributes, &info, KURL("chrome://VideoTrackRecorderImpl"));
 
     if (encoder_thread_context_ &&
         !encoder_thread_context_->BindToCurrentThread()) {

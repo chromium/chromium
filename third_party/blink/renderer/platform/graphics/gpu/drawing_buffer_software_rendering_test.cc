@@ -37,9 +37,10 @@ class DrawingBufferSoftwareCompositingTest : public testing::Test {
         std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
     GLES2InterfaceForTests* gl_ =
         static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
-    bool gpu_compositing = false;
+    Platform::GraphicsInfo graphics_info;
+    graphics_info.using_gpu_compositing = false;
     drawing_buffer_ = DrawingBufferForTests::Create(
-        std::move(provider), gpu_compositing, gl_, initial_size,
+        std::move(provider), graphics_info, gl_, initial_size,
         DrawingBuffer::kPreserve, kDisableMultisampling);
     CHECK(drawing_buffer_);
   }

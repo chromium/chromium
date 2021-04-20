@@ -43,6 +43,10 @@ class WebSecurityOrigin;
 enum class ProtocolHandlerSecurityLevel;
 }  // namespace blink
 
+namespace gpu {
+struct GPUInfo;
+}
+
 namespace media {
 class GpuVideoAcceleratorFactories;
 }
@@ -111,7 +115,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   blink::WebString FileSystemCreateOriginIdentifier(
       const blink::WebSecurityOrigin& origin) override;
   bool IsThreadedAnimationEnabled() override;
-  bool IsGpuCompositingDisabled() override;
+  bool IsGpuCompositingDisabled() const override;
 #if defined(OS_ANDROID)
   bool IsSynchronousCompositingEnabledForAndroidWebView() override;
   bool IsZeroCopySynchronousSwDrawEnabledForAndroidWebView() override;
@@ -231,6 +235,9 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
 
   // Return the mojo interface for making CodeCache calls.
   blink::mojom::CodeCacheHost& GetCodeCacheHost();
+
+  void Collect3DContextInformation(blink::Platform::GraphicsInfo* gl_info,
+                                   const gpu::GPUInfo& gpu_info) const;
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
   std::unique_ptr<blink::WebSandboxSupport> sandbox_support_;

@@ -8,6 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/video/gpu_memory_buffer_video_frame_pool.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_color_space_matrix_id.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_color_space_primary_id.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_color_space_range_id.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_unowned_texture.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -281,6 +283,13 @@ bool WebGLWebCodecsVideoFrame::Supported(WebGLRenderingContextBase* context) {
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_FUCHSIA)
   // TODO(jie.a.chen@intel.com): Add Linux support.
   return false;
+#elif defined(OS_MAC)
+  // This extension is only supported on the passthrough command
+  // decoder on macOS.
+  DrawingBuffer* drawing_buffer = context->GetDrawingBuffer();
+  if (!drawing_buffer)
+    return false;
+  return drawing_buffer->GetGraphicsInfo().using_passthrough_command_decoder;
 #else
   return true;
 #endif

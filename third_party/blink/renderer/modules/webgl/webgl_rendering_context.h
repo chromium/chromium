@@ -85,7 +85,7 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
 
   WebGLRenderingContext(CanvasRenderingContextHost*,
                         std::unique_ptr<WebGraphicsContext3DProvider>,
-                        bool using_gpu_compositing,
+                        const Platform::GraphicsInfo&,
                         const CanvasContextCreationAttributesCore&);
 
   CanvasRenderingContext::ContextType GetContextType() const override {

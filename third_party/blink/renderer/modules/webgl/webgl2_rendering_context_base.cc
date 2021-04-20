@@ -165,12 +165,12 @@ const GLenum kSupportedInternalFormatsStorage[] = {
 WebGL2RenderingContextBase::WebGL2RenderingContextBase(
     CanvasRenderingContextHost* host,
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
-    bool using_gpu_compositing,
+    const Platform::GraphicsInfo& graphics_info,
     const CanvasContextCreationAttributesCore& requested_attributes,
     Platform::ContextType context_type)
     : WebGLRenderingContextBase(host,
                                 std::move(context_provider),
-                                using_gpu_compositing,
+                                graphics_info,
                                 requested_attributes,
                                 context_type) {
   for (size_t i = 0; i < base::size(kSupportedInternalFormatsStorage); ++i) {

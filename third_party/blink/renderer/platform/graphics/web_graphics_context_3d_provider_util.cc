@@ -18,17 +18,14 @@ struct ContextProviderCreationInfo {
   KURL url;
   // Outputs.
   std::unique_ptr<WebGraphicsContext3DProvider> created_context_provider;
-  bool* using_gpu_compositing;
 };
 
 static void CreateContextProviderOnMainThread(
     ContextProviderCreationInfo* creation_info,
     base::WaitableEvent* waitable_event) {
   DCHECK(IsMainThread());
-  // Ask for gpu compositing mode when making the context. The context will be
-  // lost if the mode changes.
-  *creation_info->using_gpu_compositing =
-      !Platform::Current()->IsGpuCompositingDisabled();
+  // The gpu compositing mode is snapshotted in the GraphicsInfo when
+  // making the context. The context will be lost if the mode changes.
   creation_info->created_context_provider =
       Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
           creation_info->context_attributes, creation_info->url,
@@ -40,14 +37,12 @@ std::unique_ptr<WebGraphicsContext3DProvider>
 CreateContextProviderOnWorkerThread(
     Platform::ContextAttributes context_attributes,
     Platform::GraphicsInfo* gl_info,
-    bool* using_gpu_compositing,
     const KURL& url) {
   base::WaitableEvent waitable_event;
   ContextProviderCreationInfo creation_info;
   creation_info.context_attributes = context_attributes;
   creation_info.gl_info = gl_info;
   creation_info.url = url.Copy();
-  creation_info.using_gpu_compositing = using_gpu_compositing;
   PostCrossThreadTask(
       *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(&CreateContextProviderOnMainThread,

@@ -105,7 +105,7 @@ void ForceNextDrawingBufferCreationToFailForTest() {
 
 scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
-    bool using_gpu_compositing,
+    const Platform::GraphicsInfo& graphics_info,
     bool using_swap_chain,
     Client* client,
     const IntSize& size,
@@ -166,7 +166,7 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
 
   scoped_refptr<DrawingBuffer> drawing_buffer =
       base::AdoptRef(new DrawingBuffer(
-          std::move(context_provider), using_gpu_compositing, using_swap_chain,
+          std::move(context_provider), graphics_info, using_swap_chain,
           std::move(extensions_util), client, discard_framebuffer_supported,
           want_alpha_channel, premultiplied_alpha, preserve, webgl_version,
           want_depth_buffer, want_stencil_buffer, chromium_image_usage,
@@ -180,7 +180,7 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
 
 DrawingBuffer::DrawingBuffer(
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
-    bool using_gpu_compositing,
+    const Platform::GraphicsInfo& graphics_info,
     bool using_swap_chain,
     std::unique_ptr<Extensions3DUtil> extensions_util,
     Client* client,
@@ -205,7 +205,7 @@ DrawingBuffer::DrawingBuffer(
       discard_framebuffer_supported_(discard_framebuffer_supported),
       want_alpha_channel_(want_alpha_channel),
       premultiplied_alpha_(premultiplied_alpha),
-      using_gpu_compositing_(using_gpu_compositing),
+      graphics_info_(graphics_info),
       using_swap_chain_(using_swap_chain),
       want_depth_(want_depth),
       want_stencil_(want_stencil),
@@ -378,7 +378,7 @@ bool DrawingBuffer::PrepareTransferableResourceInternal(
   // Resolve the multisampled buffer into the texture attached to fbo_.
   ResolveIfNeeded();
 
-  if (!using_gpu_compositing_ && !force_gpu_result) {
+  if (!IsUsingGpuCompositing() && !force_gpu_result) {
     return FinishPrepareTransferableResourceSoftware(
         bitmap_registrar, out_resource, out_release_callback);
   }

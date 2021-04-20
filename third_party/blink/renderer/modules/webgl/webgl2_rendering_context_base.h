@@ -1043,7 +1043,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   WebGL2RenderingContextBase(
       CanvasRenderingContextHost*,
       std::unique_ptr<WebGraphicsContext3DProvider>,
-      bool using_gpu_compositing,
+      const Platform::GraphicsInfo&,
       const CanvasContextCreationAttributesCore& requested_attributes,
       Platform::ContextType context_type);
 
