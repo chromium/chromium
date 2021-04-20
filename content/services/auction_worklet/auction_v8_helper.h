@@ -132,6 +132,11 @@ class AuctionV8Helper {
   }
 
  private:
+  static void PrintMessage(v8::Local<v8::Context> context,
+                           v8::Local<v8::Message> message);
+  static std::string FormatValue(v8::Isolate* isolate,
+                                 v8::Local<v8::Value> val);
+
   std::unique_ptr<gin::IsolateHolder> isolate_holder_;
   v8::Global<v8::Context> scratch_context_;
   // Script timeout. Can be changed for testing.

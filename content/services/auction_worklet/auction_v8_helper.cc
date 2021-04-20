@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/task_traits.h"
@@ -283,12 +284,16 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
     return v8::MaybeLocal<v8::UnboundScript>();
 
   // Compile script.
+  v8::TryCatch try_catch(isolate());
   v8::ScriptCompiler::Source script_source(
       src_string.ToLocalChecked(),
       v8::ScriptOrigin(v8_isolate, origin_string.ToLocalChecked()));
-  return v8::ScriptCompiler::CompileUnboundScript(
+  auto result = v8::ScriptCompiler::CompileUnboundScript(
       v8_isolate, &script_source, v8::ScriptCompiler::kNoCompileOptions,
       v8::ScriptCompiler::NoCacheReason::kNoCacheNoReason);
+  if (try_catch.HasCaught())
+    PrintMessage(v8_isolate->GetCurrentContext(), try_catch.Message());
+  return result;
 }
 
 v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
@@ -308,7 +313,12 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
   v8::TryCatch try_catch(isolate());
   ScriptTimeoutHelper timeout_helper(isolate(), script_timeout_);
   auto result = local_script->Run(context);
-  if (result.IsEmpty() || try_catch.HasCaught())
+  if (try_catch.HasCaught()) {
+    PrintMessage(context, try_catch.Message());
+    return v8::MaybeLocal<v8::Value>();
+  }
+
+  if (result.IsEmpty())
     return v8::MaybeLocal<v8::Value>();
 
   v8::Local<v8::Value> function;
@@ -318,8 +328,43 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
   if (!function->IsFunction())
     return v8::MaybeLocal<v8::Value>();
 
-  return v8::Function::Cast(*function)->Call(context, context->Global(),
-                                             args.size(), args.data());
+  v8::MaybeLocal<v8::Value> func_result = v8::Function::Cast(*function)->Call(
+      context, context->Global(), args.size(), args.data());
+  if (try_catch.HasCaught()) {
+    PrintMessage(context, try_catch.Message());
+    return v8::MaybeLocal<v8::Value>();
+  }
+  return func_result;
+}
+
+// static
+void AuctionV8Helper::PrintMessage(v8::Local<v8::Context> context,
+                                   v8::Local<v8::Message> message) {
+  if (message.IsEmpty()) {
+    LOG(ERROR) << "Unknown exception";
+  } else {
+    v8::Isolate* isolate = message->GetIsolate();
+    int line_num;
+    LOG(ERROR) << FormatValue(isolate, message->GetScriptResourceName())
+               << (!context.IsEmpty() &&
+                           message->GetLineNumber(context).To(&line_num)
+                       ? std::string(":") + base::NumberToString(line_num)
+                       : std::string())
+               << " " << FormatValue(isolate, message->Get());
+  }
+}
+
+// static
+std::string AuctionV8Helper::FormatValue(v8::Isolate* isolate,
+                                         v8::Local<v8::Value> val) {
+  if (val.IsEmpty()) {
+    return "\"\"";
+  } else {
+    v8::String::Utf8Value val_utf8(isolate, val);
+    if (*val_utf8 == nullptr)
+      return std::string();
+    return std::string(*val_utf8, val_utf8.length());
+  }
 }
 
 }  // namespace auction_worklet
