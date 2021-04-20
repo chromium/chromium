@@ -269,7 +269,6 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
 
   void TearDown() override {
     ResetTestStorageQueue();
-    task_environment_.RunUntilIdle();
     // Make sure all memory is deallocated.
     ASSERT_THAT(GetMemoryResource()->GetUsed(), Eq(0u));
     // Make sure all disk is not reserved (files remain, but Storage is not
@@ -300,8 +299,12 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
   }
 
   void ResetTestStorageQueue() {
+    // Let everything ongoing to finish.
     task_environment_.RunUntilIdle();
     storage_queue_.reset();
+    // StorageQueue is destructed on a thread,
+    // so we need to wait for it to destruct.
+    task_environment_.RunUntilIdle();
   }
 
   void InjectFailures(std::initializer_list<int64_t> sequencing_ids) {
@@ -376,15 +379,7 @@ constexpr std::array<const char*, 3> kData = {"Rec1111", "Rec222", "Rec33"};
 constexpr std::array<const char*, 3> kMoreData = {"More1111", "More222",
                                                   "More33"};
 
-// TODO(1195296): Flaky on windows.
-#if defined(OS_WIN)
-#define MAYBE_WriteIntoNewStorageQueueAndReopen \
-  DISABLED_WriteIntoNewStorageQueueAndReopen
-#else
-#define MAYBE_WriteIntoNewStorageQueueAndReopen \
-  WriteIntoNewStorageQueueAndReopen
-#endif
-TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueAndReopen) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndReopen) {
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull())).Times(0);
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
@@ -396,15 +391,7 @@ TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueAndReopen) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 }
 
-// TODO(1194943): Flaky on windows.
-#if defined(OS_WIN)
-#define MAYBE_WriteIntoNewStorageQueueReopenAndWriteMore \
-  DISABLED_WriteIntoNewStorageQueueReopenAndWriteMore
-#else
-#define MAYBE_WriteIntoNewStorageQueueReopenAndWriteMore \
-  WriteIntoNewStorageQueueReopenAndWriteMore
-#endif
-TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueReopenAndWriteMore) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenAndWriteMore) {
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull())).Times(0);
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
@@ -538,16 +525,8 @@ TEST_P(StorageQueueTest,
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
-// TODO(1194626): Flaky on windows.
-#if defined(OS_WIN)
-#define MAYBE_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload \
-  DISABLED_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload
-#else
-#define MAYBE_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload \
-  WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload
-#endif
 TEST_P(StorageQueueTest,
-       MAYBE_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload) {
+       WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);

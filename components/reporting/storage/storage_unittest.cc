@@ -514,7 +514,6 @@ class StorageTest
 
   void TearDown() override {
     ResetTestStorage();
-    task_environment_.RunUntilIdle();
     // Make sure all memory is deallocated.
     ASSERT_THAT(GetMemoryResource()->GetUsed(), Eq(0u));
     // Make sure all disk is not reserved (files remain, but Storage is not
@@ -570,8 +569,12 @@ class StorageTest
   }
 
   void ResetTestStorage() {
+    // Let everything ongoing to finish.
     task_environment_.RunUntilIdle();
     storage_.reset();
+    // StorageQueue is destructed on a thread,
+    // so we need to wait for all queues to destruct.
+    task_environment_.RunUntilIdle();
     expect_to_need_key_ = false;
   }
 

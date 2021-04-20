@@ -135,7 +135,6 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
 
   void TearDown() override {
     ResetTestStorageQueue();
-    task_environment_.RunUntilIdle();
     // Make sure all memory is deallocated.
     ASSERT_THAT(GetMemoryResource()->GetUsed(), Eq(0u));
     // Make sure all disk is not reserved (files remain, but Storage is not
@@ -166,8 +165,12 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
   }
 
   void ResetTestStorageQueue() {
+    // Let everything ongoing to finish.
     task_environment_.RunUntilIdle();
     storage_queue_.reset();
+    // StorageQueue is destructed on a thread,
+    // so we need to wait for it to destruct.
+    task_environment_.RunUntilIdle();
   }
 
   QueueOptions BuildStorageQueueOptionsImmediate() const {
