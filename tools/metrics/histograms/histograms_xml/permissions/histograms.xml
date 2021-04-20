@@ -135,6 +135,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Permissions.Chip.TimeToDecision.{RequestAction}" units="ms"
+    expires_after="2021-08-22">
+  <owner>bsep@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <owner>olesiamarukhno@google.com</owner>
+  <summary>
+    Records how long it takes for the user to make a decision about permission
+    request when chip request UI is shown, from when permission prompt is shown
+    until when the user clicks on one of the buttons in the prompt (accept,
+    block or close).
+  </summary>
+  <token key="RequestAction">
+    <variant name="Accepted"/>
+    <variant name="AcceptedOnce"/>
+    <variant name="Denied"/>
+    <variant name="Dismissed"/>
+  </token>
+</histogram>
+
 <histogram name="Permissions.Chip.TimeToInteraction" units="ms"
     expires_after="2021-08-22">
   <owner>bsep@chromium.org</owner>
@@ -512,6 +531,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Permissions.Prompt.TimeToDecision" units="ms"
     expires_after="2021-08-22">
+  <obsolete>
+    Replaced with Permissions.Prompt.TimeToDecision.{RequestAction} in April
+    2021.
+  </obsolete>
   <owner>bsep@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>olesiamarukhno@google.com</owner>
@@ -520,6 +543,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     request, from when permission prompt is shown until when the user clicks on
     one of the buttons in the prompt (accept, block or close).
   </summary>
+</histogram>
+
+<histogram name="Permissions.Prompt.TimeToDecision.{RequestAction}" units="ms"
+    expires_after="2021-08-22">
+  <owner>bsep@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <owner>olesiamarukhno@google.com</owner>
+  <summary>
+    Records how long it takes for the user to make a decision about permission
+    request when prompt request UI is shown, from when permission prompt is
+    shown until when the user clicks on one of the buttons in the prompt
+    (accept, block or close).
+  </summary>
+  <token key="RequestAction">
+    <variant name="Accepted"/>
+    <variant name="AcceptedOnce"/>
+    <variant name="Denied"/>
+    <variant name="Dismissed"/>
+  </token>
 </histogram>
 
 <histogram
