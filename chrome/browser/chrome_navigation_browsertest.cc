@@ -801,25 +801,37 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(url::kAboutBlankURL, popup->GetLastCommittedURL());
   EXPECT_EQ(cross_site_origin, popup->GetMainFrame()->GetLastCommittedOrigin());
 
-  // 5. Verify that the about:blank URL is hosted in the same process
+  // 5. Verify that the about:blank URL is hosted in the same SiteInstance
   //    as the navigation initiator (and separate from the opener and the old
-  //    popup process).
-  if (content::AreAllSitesIsolatedForTesting()) {
-    EXPECT_NE(opener->GetSiteInstance(), popup->GetSiteInstance());
-    EXPECT_NE(old_popup_site_instance.get(), popup->GetSiteInstance());
-    EXPECT_EQ(old_subframe_site_instance.get(), popup->GetSiteInstance());
-    EXPECT_NE(url::kAboutBlankURL,
-              popup->GetSiteInstance()->GetSiteURL().scheme());
-    EXPECT_NE(url::kDataScheme,
-              popup->GetSiteInstance()->GetSiteURL().scheme());
-  } else {
+  //    popup SiteInstance).
+  EXPECT_EQ(old_subframe_site_instance.get(), popup->GetSiteInstance());
+  EXPECT_NE(url::kAboutBlankURL,
+            popup->GetSiteInstance()->GetSiteURL().scheme());
+  EXPECT_NE(url::kDataScheme, popup->GetSiteInstance()->GetSiteURL().scheme());
+  if (content::AreDefaultSiteInstancesEnabled()) {
     EXPECT_EQ(opener->GetSiteInstance(), popup->GetSiteInstance());
     EXPECT_EQ(old_popup_site_instance.get(), popup->GetSiteInstance());
-    EXPECT_EQ(old_subframe_site_instance.get(), popup->GetSiteInstance());
-    EXPECT_NE(url::kAboutBlankURL,
-              popup->GetSiteInstance()->GetSiteURL().scheme());
-    EXPECT_NE(url::kDataScheme,
-              popup->GetSiteInstance()->GetSiteURL().scheme());
+  } else {
+    EXPECT_NE(opener->GetSiteInstance(), popup->GetSiteInstance());
+    EXPECT_NE(old_popup_site_instance.get(), popup->GetSiteInstance());
+
+    // Verify that full isolation results in a separate process for each
+    // SiteInstance. Otherwise they share a process because none of the sites
+    // require a dedicated process.
+    if (content::AreAllSitesIsolatedForTesting()) {
+      EXPECT_NE(opener->GetSiteInstance()->GetProcess(),
+                popup->GetSiteInstance()->GetProcess());
+      EXPECT_NE(old_popup_site_instance->GetProcess(),
+                popup->GetSiteInstance()->GetProcess());
+    } else {
+      EXPECT_FALSE(opener->GetSiteInstance()->RequiresDedicatedProcess());
+      EXPECT_FALSE(popup->GetSiteInstance()->RequiresDedicatedProcess());
+      EXPECT_FALSE(old_popup_site_instance->RequiresDedicatedProcess());
+      EXPECT_EQ(opener->GetSiteInstance()->GetProcess(),
+                popup->GetSiteInstance()->GetProcess());
+      EXPECT_EQ(old_popup_site_instance->GetProcess(),
+                popup->GetSiteInstance()->GetProcess());
+    }
   }
 }
 
@@ -922,19 +934,37 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(kRedirectTargetUrl, popup->GetLastCommittedURL());
   EXPECT_TRUE(popup->GetMainFrame()->GetLastCommittedOrigin().opaque());
 
-  // 5. Verify that with site-per-process the data: URL is hosted in a brand
-  //    new, separate process (separate from the opener and the previous popup
-  //    process).
-  if (content::AreAllSitesIsolatedForTesting()) {
-    EXPECT_NE(opener->GetSiteInstance(), popup->GetSiteInstance());
-    EXPECT_NE(old_popup_site_instance.get(), popup->GetSiteInstance());
-    EXPECT_EQ(url::kDataScheme,
-              popup->GetSiteInstance()->GetSiteURL().scheme());
-  } else {
+  // 5. Verify that with strict SiteInstances the data: URL is hosted in a brand
+  //    new, separate SiteInstance (separate from the opener and the previous
+  //    popup SiteInstance).
+  if (content::AreDefaultSiteInstancesEnabled()) {
     EXPECT_EQ(opener->GetSiteInstance(), popup->GetSiteInstance());
     EXPECT_EQ(old_popup_site_instance.get(), popup->GetSiteInstance());
     EXPECT_NE(url::kDataScheme,
               popup->GetSiteInstance()->GetSiteURL().scheme());
+  } else {
+    EXPECT_NE(opener->GetSiteInstance(), popup->GetSiteInstance());
+    EXPECT_NE(old_popup_site_instance.get(), popup->GetSiteInstance());
+    EXPECT_EQ(url::kDataScheme,
+              popup->GetSiteInstance()->GetSiteURL().scheme());
+
+    // Verify that full isolation results in a separate process for each
+    // SiteInstance. Otherwise they share a process because none of the sites
+    // require a dedicated process.
+    if (content::AreAllSitesIsolatedForTesting()) {
+      EXPECT_NE(opener->GetSiteInstance()->GetProcess(),
+                popup->GetSiteInstance()->GetProcess());
+      EXPECT_NE(old_popup_site_instance->GetProcess(),
+                popup->GetSiteInstance()->GetProcess());
+    } else {
+      EXPECT_FALSE(opener->GetSiteInstance()->RequiresDedicatedProcess());
+      EXPECT_FALSE(popup->GetSiteInstance()->RequiresDedicatedProcess());
+      EXPECT_FALSE(old_popup_site_instance->RequiresDedicatedProcess());
+      EXPECT_EQ(opener->GetSiteInstance()->GetProcess(),
+                popup->GetSiteInstance()->GetProcess());
+      EXPECT_EQ(old_popup_site_instance->GetProcess(),
+                popup->GetSiteInstance()->GetProcess());
+    }
   }
 }
 

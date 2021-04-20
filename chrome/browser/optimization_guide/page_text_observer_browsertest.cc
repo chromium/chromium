@@ -23,6 +23,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -281,6 +282,12 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
 }
 
 IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFAMPSubframe) {
+  if (content::IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
+    // Isolate b.com so that it is guaranteed to be in a different process.
+    content::IsolateOriginsForTesting(
+        embedded_test_server(),
+        browser()->tab_strip_model()->GetActiveWebContents(), {"b.com"});
+  }
   PageTextObserver::CreateForWebContents(web_contents());
   ASSERT_TRUE(observer());
 

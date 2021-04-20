@@ -982,13 +982,14 @@ IN_PROC_BROWSER_TEST_F(IsolateOriginsPrintBrowserTest,
 }
 
 // Printing preview a webpage.
-// Test that we use oopif printing by default.
+// Test that we use oopif printing by default when full site isolation is
+// enabled.
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, RegularPrinting) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
   ui_test_utils::NavigateToURL(browser(), url);
 
-  EXPECT_TRUE(IsOopifEnabled());
+  EXPECT_EQ(content::AreAllSitesIsolatedForTesting(), IsOopifEnabled());
 }
 
 // Printing preview a webpage with isolate-origins enabled.

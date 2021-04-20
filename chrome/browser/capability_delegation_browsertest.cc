@@ -53,12 +53,26 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest, PaymentRequest) {
   EXPECT_TRUE(
       NavigateIframeToURL(active_web_contents, "iframe", cross_site_url));
 
-  // Confirm that the subframe is cross-process.
+  // Confirm that the subframe is cross-process depending on the process
+  // model.
   content::RenderFrameHost* frame_host =
       ChildFrameAt(active_web_contents->GetMainFrame(), 0);
   ASSERT_TRUE(frame_host);
   EXPECT_EQ(cross_site_url, frame_host->GetLastCommittedURL());
-  EXPECT_TRUE(frame_host->IsCrossProcessSubframe());
+  auto* main_instance = active_web_contents->GetMainFrame()->GetSiteInstance();
+  auto* subframe_instance = frame_host->GetSiteInstance();
+  if (main_instance->RequiresDedicatedProcess()) {
+    // Subframe is cross process because it can't be place in the main frame's
+    // process.
+    EXPECT_TRUE(frame_host->IsCrossProcessSubframe());
+  } else {
+    // The main frame does not require a dedicated process so the subframe will
+    // be placed in the same process as the main frame.
+    EXPECT_FALSE(frame_host->IsCrossProcessSubframe());
+    EXPECT_FALSE(subframe_instance->RequiresDedicatedProcess());
+    EXPECT_EQ(content::AreDefaultSiteInstancesEnabled(),
+              main_instance == subframe_instance);
+  }
 
   // Without either user activation or payment request token, PaymentRequest
   // dialog is not allowed.

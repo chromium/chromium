@@ -858,6 +858,7 @@ if (!is_android) {
       "//components/translate/content/browser:test_support",
       "//components/translate/core/common",
       "//components/webrtc",
+      "//content/test:browsertest_support",
       "//content/test:test_support",
       "//crypto:platform",
       "//crypto:test_support",

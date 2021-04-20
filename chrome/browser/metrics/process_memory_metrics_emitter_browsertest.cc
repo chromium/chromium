@@ -653,12 +653,15 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   CheckPageInfoUkmMetrics(url, true);
 }
 
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+#define MAYBE_FetchAndEmitMetricsWithExtensionsAndHostReuse \
+  DISABLED_FetchAndEmitMetricsWithExtensionsAndHostReuse
+#else
+#define MAYBE_FetchAndEmitMetricsWithExtensionsAndHostReuse \
+  FetchAndEmitMetricsWithExtensionsAndHostReuse
+#endif
 IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
-                       FetchAndEmitMetricsWithExtensionsAndHostReuse) {
-  // This test does not work with --site-per-process flag since this test
-  // combines multiple extensions in the same process.
-  if (content::AreAllSitesIsolatedForTesting())
-    return;
+                       MAYBE_FetchAndEmitMetricsWithExtensionsAndHostReuse) {
   // Limit the number of renderer processes to force reuse.
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
   const Extension* extension1 = CreateExtension("Extension 1");
@@ -691,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 
   run_loop.Run();
 
-  constexpr int kNumRenderers = 2;
+  constexpr int kNumRenderers = 1;
   EXPECT_EQ(kNumRenderers, GetNumRenderers(browser()));
   constexpr int kNumExtensionProcesses = 1;
 

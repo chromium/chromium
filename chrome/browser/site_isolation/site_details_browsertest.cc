@@ -600,9 +600,14 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, ExtensionWithTwoWebIframes) {
   details->StartFetchAndWait();
   EXPECT_EQ(GetRenderProcessCountFromUma(details->uma()),
             GetRenderProcessCount());
-  // TODO(nick): https://crbug.com/512560 Make the number below agree with the
-  // estimates above, which assume consolidation of subframe processes.
-  EXPECT_THAT(GetRenderProcessCount(), DependingOnPolicy(1, 3, 3));
+
+  if (content::AreAllSitesIsolatedForTesting()) {
+    EXPECT_THAT(GetRenderProcessCount(), DependingOnPolicy(1, 3, 3));
+  } else {
+    // When full isolation is not turned on, the 2 subframes share a process.
+    EXPECT_THAT(GetRenderProcessCount(), DependingOnPolicy(1, 2, 2));
+  }
+
   EXPECT_THAT(details->GetOutOfProcessIframeCount(),
               DependingOnPolicy(0, 2, 2));
 }
