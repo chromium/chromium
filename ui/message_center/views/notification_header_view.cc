@@ -410,6 +410,8 @@ void NotificationHeaderView::UpdateSummaryTextVisibility() {
 }
 
 void NotificationHeaderView::UpdateColors() {
+  if (!GetWidget())
+    return;
   SkColor color = accent_color_.value_or(GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_NotificationDefaultAccentColor));
   app_name_view_->SetEnabledColor(color);

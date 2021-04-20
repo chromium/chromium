@@ -424,7 +424,7 @@ void NotificationInputContainerMD::OnThemeChanged() {
   textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);
   textfield_->set_placeholder_text_color(theme->GetSystemColor(
       ui::NativeTheme::kColorId_NotificationPlaceholderColor));
-  SetButtonImage();
+  UpdateButtonImage();
 }
 
 void NotificationInputContainerMD::Layout() {
@@ -447,10 +447,12 @@ bool NotificationInputContainerMD::HandleKeyEvent(views::Textfield* sender,
 
 void NotificationInputContainerMD::OnAfterUserAction(views::Textfield* sender) {
   DCHECK_EQ(sender, textfield_);
-  SetButtonImage();
+  UpdateButtonImage();
 }
 
-void NotificationInputContainerMD::SetButtonImage() {
+void NotificationInputContainerMD::UpdateButtonImage() {
+  if (!GetWidget())
+    return;
   auto icon_color_id =
       textfield_->GetText().empty()
           ? ui::NativeTheme::kColorId_NotificationPlaceholderColor
@@ -1014,6 +1016,11 @@ void NotificationViewMD::CreateOrUpdateIconView(
 
 void NotificationViewMD::CreateOrUpdateSmallIconView(
     const Notification& notification) {
+  // This is called when the notification view is inserted into a Widget
+  // hierarchy and when the Widget's theme has changed. If not currently in a
+  // Widget hierarchy defer updating the small icon view.
+  if (!GetWidget())
+    return;
   SkColor accent_color =
       notification.accent_color().value_or(GetNativeTheme()->GetSystemColor(
           ui::NativeTheme::kColorId_NotificationDefaultAccentColor));
@@ -1389,6 +1396,9 @@ SkColor NotificationViewMD::GetNotificationHeaderViewBackgroundColor() const {
 }
 
 void NotificationViewMD::UpdateActionButtonsRowBackground() {
+  if (!GetWidget())
+    return;
+
   action_buttons_row_->SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<NotificationBackgroundPainter>(
           /*top_radius=*/0, bottom_radius(),

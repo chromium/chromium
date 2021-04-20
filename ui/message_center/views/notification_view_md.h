@@ -141,7 +141,7 @@ class NotificationInputContainerMD : public views::InkDropHostView,
   views::ImageButton* button() const { return button_; }
 
  private:
-  void SetButtonImage();
+  void UpdateButtonImage();
 
   NotificationInputDelegate* const delegate_;
 

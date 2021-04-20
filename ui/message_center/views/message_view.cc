@@ -177,6 +177,8 @@ void MessageView::SetManuallyExpandedOrCollapsed(bool value) {
 
 void MessageView::UpdateCornerRadius(int top_radius, int bottom_radius) {
   SetCornerRadius(top_radius, bottom_radius);
+  if (!GetWidget())
+    return;
   UpdateBackgroundPainter();
   SchedulePaint();
 }

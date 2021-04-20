@@ -568,6 +568,8 @@ void LabelButton::VisualStateChanged() {
 }
 
 void LabelButton::ResetColorsFromNativeTheme() {
+  if (!GetWidget())
+    return;
   const ui::NativeTheme* theme = GetNativeTheme();
   // Since this is a LabelButton, use the label colors.
   SkColor colors[STATE_COUNT] = {
