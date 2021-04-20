@@ -8,6 +8,7 @@
 #include "cc/layers/texture_layer.h"
 #include "cc/resources/cross_thread_shared_bitmap.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -164,6 +165,23 @@ bool ImageLayerBridge::PrepareTransferableResource(
     *out_resource = viz::TransferableResource::MakeGL(
         mailbox_holder.mailbox, filter, mailbox_holder.texture_target,
         mailbox_holder.sync_token, size, is_overlay_candidate);
+
+    // If the transferred ImageBitmap contained in this ImageLayerBridge was
+    // originated in a WebGPU context, we need to set the layer to be flipped
+    // and check if the underlying resource is RGB or BGR. Canvas2D and WebGL
+    // contexts handle this aspect internally, whereas WebGPU does not.
+
+    if (sii->UsageForMailbox(mailbox_holder.mailbox) &
+        gpu::SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE) {
+      layer_->SetFlipped(false);
+      // TODO (crbug/1200808): We are doing this matching of the color format
+      // only for WebGPU, ideally we'd like to do this for Canvas2d and WebGL as
+      // well, but they have their own logic handling this.
+      SkColorType color_type =
+          image_->PaintImageForCurrentFrame().GetSkImageInfo().colorType();
+      out_resource->format = viz::SkColorTypeToResourceFormat(color_type);
+    }
+
     auto func =
         WTF::Bind(&ImageLayerBridge::ResourceReleasedGpu,
                   WrapWeakPersistent(this), std::move(image_for_compositor));

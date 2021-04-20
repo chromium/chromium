@@ -72,6 +72,47 @@ SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
   return kN32_SkColorType;
 }
 
+ResourceFormat SkColorTypeToResourceFormat(SkColorType color_type) {
+  switch (color_type) {
+    case kARGB_4444_SkColorType:
+      return RGBA_4444;
+    case kBGRA_8888_SkColorType:
+      return BGRA_8888;
+    case kRGBA_8888_SkColorType:
+      return RGBA_8888;
+    case kRGBA_F16_SkColorType:
+      return RGBA_F16;
+    case kAlpha_8_SkColorType:
+      return ALPHA_8;
+    case kRGB_565_SkColorType:
+      return RGB_565;
+    case kGray_8_SkColorType:
+      return LUMINANCE_8;
+    case kRGB_888x_SkColorType:
+      return RGBX_8888;
+    case kRGBA_1010102_SkColorType:
+      return RGBA_1010102;
+    case kBGRA_1010102_SkColorType:
+      return BGRA_1010102;
+    // These colortypes are just for reading from - not to render to
+    case kR8G8_unorm_SkColorType:
+    case kA16_float_SkColorType:
+    case kR16G16_float_SkColorType:
+    case kA16_unorm_SkColorType:
+    case kR16G16_unorm_SkColorType:
+    case kR16G16B16A16_unorm_SkColorType:
+    case kUnknown_SkColorType:
+    // These colortypes are don't have an equivalent in ResourceFormat
+    case kRGB_101010x_SkColorType:
+    case kBGR_101010x_SkColorType:
+    case kRGBA_F16Norm_SkColorType:
+    case kRGBA_F32_SkColorType:
+      break;
+  }
+  NOTREACHED();
+  return RGBA_8888;
+}
+
 int BitsPerPixel(ResourceFormat format) {
   switch (format) {
     case RGBA_F16:
