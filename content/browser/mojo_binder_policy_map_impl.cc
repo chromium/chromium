@@ -24,6 +24,9 @@ namespace {
 // interfaces.
 void RegisterContentBinderPoliciesForSameOriginPrerendering(
     MojoBinderPolicyMap& map) {
+  // For Prerendering, kCancel is usually used for those interfaces that cannot
+  // be granted because they can cause undesirable side-effects (e.g., playing
+  // audio, showing notification) and are non-deferrable.
   // Please update `PrerenderCancelledInterface` and
   // `GetCancelledInterfaceType()` in
   // content/browser/prerender/prerender_metrics.h once you add a new kCancel

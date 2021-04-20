@@ -8156,8 +8156,16 @@ void RenderFrameHostImpl::ActivateForPrerendering() {
     SetLifecycleState(LifecycleStateImpl::kActive);
   }
 
-  // TODO(https://crbug.com/1186796): Loosen the policies of the mojo capability
-  // control during dispatching the prerenderingchange event in the Blink.
+  // Loosen the policies of the mojo capability control during dispatching the
+  // prerenderingchange event in Blink, because the page may start legitimately
+  // using controlled interfaces once prerenderingchange is dispatched. We
+  // cannot release policies at this point, i.e., we cannot run the deferred
+  // binders, because the Mojo message pipes are not channel-associated and we
+  // should ensure that ActivateForPrerendering() arrives on the renderer
+  // earlier than these deferred messages.
+  auto* applier = broker_.GetMojoBinderPolicyApplier();
+  DCHECK(applier) << "prerendering pages should have a policy applier";
+  applier->PrepareToGrantAll();
 
   DCHECK(!is_notifying_activation_for_prerendering_);
   is_notifying_activation_for_prerendering_ = true;

@@ -1624,7 +1624,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RenderDocumentHostUserData) {
 
 // Tests that executing the GamepadMonitor API on a prerendering before
 // navigating to the prerendered page causes cancel prerendering.
-// This Test cannot be a web test because web tests handles the GamepadMonitor
+// This test cannot be a web test because web tests handles the GamepadMonitor
 // interface on the renderer side. See GamepadController::Install().
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, GamepadMonitorCancelPrerendering) {
   base::HistogramTester histogram_tester;
@@ -1655,6 +1655,34 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, GamepadMonitorCancelPrerendering) {
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledInterface",
       PrerenderCancelledInterface::kGamepadMonitor, 1);
+}
+
+// Tests that requesting to bind the GamepadMonitor interface after the
+// prerenderingchange event dispatched does not cancel prerendering.
+// This test cannot be a web test because web tests handles the GamepadMonitor
+// interface on the renderer side. See GamepadController::Install().
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, GamepadMonitorAfterNavigation) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/prerender/restriction-gamepad.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Make a prerendered page.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  AddPrerender(kPrerenderingUrl);
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+
+  // Activate the prerendered page to dispatch the prerenderingchange event and
+  // run the Gamepad API in the event.
+  NavigatePrimaryPage(kPrerenderingUrl);
+  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+  // Wait for the completion of the prerenderingchange event to make sure the
+  // API is called.
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), "prerenderingChanged"));
+  // The API call shouldn't discard the prerendered page and shouldn't restart
+  // navigation.
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 }
 
 // Tests that accessing the clipboard via the execCommand API fails because the

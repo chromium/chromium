@@ -230,7 +230,7 @@ TEST_F(MojoBinderPolicyApplierTest, DeferInPrepareToGrantAll) {
 }
 
 // When MojoBinderPolicyApplier runs in the kPrepareToGrantAll mode, verifies it
-// applies kDefer rather than kCancel policy when receiving a kCancel interface
+// applies kGrant rather than kCancel policy when receiving a kCancel interface
 // binding request.
 TEST_F(MojoBinderPolicyApplierTest, CancelInPrepareToGrantAll) {
   // Initialize Mojo interfaces.
@@ -247,12 +247,7 @@ TEST_F(MojoBinderPolicyApplierTest, CancelInPrepareToGrantAll) {
                      base::Unretained(&collector_),
                      cancel_receiver.As<mojom::TestInterfaceForCancel>()));
   EXPECT_FALSE(collector_.IsCancelled());
-  EXPECT_FALSE(collector_.IsCancelReceiverBound());
-  EXPECT_EQ(1U, deferred_binders().size());
-
-  policy_applier_.GrantAll();
   EXPECT_TRUE(collector_.IsCancelReceiverBound());
-  EXPECT_EQ(0U, deferred_binders().size());
 }
 
 TEST_F(MojoBinderPolicyApplierTest, UnexpectedInPrepareToGrantAll) {
@@ -271,12 +266,7 @@ TEST_F(MojoBinderPolicyApplierTest, UnexpectedInPrepareToGrantAll) {
           base::Unretained(&collector_),
           unexpected_receiver.As<mojom::TestInterfaceForUnexpected>()));
   EXPECT_FALSE(collector_.IsCancelled());
-  EXPECT_FALSE(collector_.IsUnexpectedReceiverBound());
-  EXPECT_EQ(1U, deferred_binders().size());
-
-  policy_applier_.GrantAll();
   EXPECT_TRUE(collector_.IsUnexpectedReceiverBound());
-  EXPECT_EQ(0U, deferred_binders().size());
 }
 
 // Verifies that all interfaces are bound immediately if GrantAll() is called,
