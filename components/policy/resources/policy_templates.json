@@ -7145,19 +7145,19 @@
       'items': [
         {
           'value': True,
-          'caption': 'Enable Lens camera assisted search for Enterprise user',
+          'caption': 'Enable <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> camera assisted search for Enterprise user',
         },
         {
           'value': False,
-          'caption': 'Disable Lens camera assisted search for Enterprise user',
+          'caption': 'Disable <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> camera assisted search for Enterprise user',
         },
       ],
       'example_value': True,
       'default': True,
       'id': 853,
-      'caption': '''Allow <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> Camera Assisted Search''',
+      'caption': '''Allow <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> camera assisted search''',
       'tags': [],
-      'desc': '''Leaving the policy unset or setting it to Enabled allows users to search with their cameras using <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph>. Setting the policy to False means users can't see the <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> button in the search box when <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> Camera Assisted Search is supported.''',
+      'desc': '''Leaving the policy unset or setting it to Enabled allows users to search with their cameras using <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph>. Setting the policy to Disabled means users can't see the <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> button in the search box when <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> camera assisted search is supported.''',
     },
     {
       'name': 'InsecurePrivateNetworkRequestsAllowed',
