@@ -274,6 +274,8 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         } else if (manufacturer.equals("lge")) {
             // https://crbug.com/1090841#c33
             threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
+            // https://crbug.com/1198139
+            threadPolicyBuilder = threadPolicyBuilder.permitDiskWrites();
         } else if (manufacturer.equals("oneplus")) {
             // https://crbug.com/1090841#c37
             threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
