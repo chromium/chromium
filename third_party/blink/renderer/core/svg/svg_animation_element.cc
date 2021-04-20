@@ -170,7 +170,6 @@ void SVGAnimationElement::ParseAttribute(
     if (!ParseValues(params.new_value, values_)) {
       ReportAttributeParsingError(SVGParseStatus::kParsingFailed, name,
                                   params.new_value);
-      return;
     }
     UpdateAnimationMode();
     AnimationAttributeChanged();
