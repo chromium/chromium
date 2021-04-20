@@ -5,13 +5,16 @@
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -177,32 +180,64 @@ TEST_F(ArcIntentHelperTest, TestFilterOutIntentHelper) {
 
 // Tests if observer works as expected.
 TEST_F(ArcIntentHelperTest, TestObserver) {
-  class FakeObserver : public ArcIntentHelperObserver {
+  class MockObserver : public ArcIntentHelperObserver {
    public:
-    FakeObserver() = default;
-    void OnIntentFiltersUpdated(
-        const base::Optional<std::string>& package_name) override {
-      updated_ = true;
-    }
-    bool IsUpdated() { return updated_; }
-    void Reset() { updated_ = false; }
-
-   private:
-    bool updated_ = false;
+    MOCK_METHOD(void,
+                OnArcDownloadAdded,
+                (const base::FilePath& relative_path,
+                 const std::string& owner_package_name),
+                (override));
+    MOCK_METHOD(void,
+                OnIntentFiltersUpdated,
+                (const base::Optional<std::string>& package_name),
+                (override));
+    MOCK_METHOD(void, OnPreferredAppsChanged, (), (override));
   };
 
-  // Observer should be called when intent filter is updated.
-  auto observer = std::make_unique<FakeObserver>();
-  instance_->AddObserver(observer.get());
-  EXPECT_FALSE(observer->IsUpdated());
-  instance_->OnIntentFiltersUpdated(std::vector<IntentFilter>());
-  EXPECT_TRUE(observer->IsUpdated());
+  // Create and add observer.
+  testing::StrictMock<MockObserver> observer;
+  instance_->AddObserver(&observer);
+
+  {
+    // Observer should be called when a download is added.
+    std::string relative_path("Download/foo/bar.pdf");
+    std::string owner_package_name("owner_package_name");
+    EXPECT_CALL(observer,
+                OnArcDownloadAdded(testing::Eq(base::FilePath(relative_path)),
+                                   testing::Ref(owner_package_name)));
+    instance_->OnDownloadAdded(relative_path, owner_package_name);
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
+
+  {
+    // Observer should *not* be called when a download is added outside of the
+    // Download/ folder. This would be an unexpected event coming from ARC but
+    // we protect against it because ARC is treated as an untrusted source.
+    instance_->OnDownloadAdded(/*relative_path=*/"Download/../foo/bar.pdf",
+                               /*owner_package_name=*/"owner_package_name");
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
+
+  {
+    // Observer should be called when an intent filter is updated.
+    EXPECT_CALL(observer, OnIntentFiltersUpdated(testing::Eq(base::nullopt)));
+    instance_->OnIntentFiltersUpdated(/*filters=*/std::vector<IntentFilter>());
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
+
+  {
+    // Observer should be called when preferred apps change.
+    EXPECT_CALL(observer, OnPreferredAppsChanged);
+    instance_->OnPreferredAppsChanged(/*added=*/{}, /*deleted=*/{});
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
 
   // Observer should not be called after it's removed.
-  observer->Reset();
-  instance_->RemoveObserver(observer.get());
-  instance_->OnIntentFiltersUpdated(std::vector<IntentFilter>());
-  EXPECT_FALSE(observer->IsUpdated());
+  instance_->RemoveObserver(&observer);
+  instance_->OnDownloadAdded(/*relative_path=*/"Download/foo/bar.pdf",
+                             /*owner_package_name=*/"owner_package_name");
+  instance_->OnIntentFiltersUpdated(/*filters=*/{});
+  instance_->OnPreferredAppsChanged(/*added=*/{}, /*removed=*/{});
 }
 
 // Tests that ShouldChromeHandleUrl returns true by default.

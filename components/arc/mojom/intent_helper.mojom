@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 44
+// Next MinVersion: 45
 
 module arc.mojom;
 
@@ -244,7 +244,7 @@ interface CustomTabSession {
 
 // Handles intents from ARC in Chrome.
 // Deprecated method ID: 4, 10
-// Next method ID: 18
+// Next method ID: 19
 interface IntentHelperHost {
   // Called when icons associated with the package are no longer up to date.
   [MinVersion=3] OnIconInvalidated@1(string package_name);
@@ -327,6 +327,18 @@ interface IntentHelperHost {
   // Send the preferred app changes from ARC to Chrome.
   [MinVersion=34] OnPreferredAppsChanged@16(array<IntentFilter> added,
                                             array<IntentFilter> deleted);
+
+  // Called when a new entry has been added to the MediaStore.Downloads
+  // collection of downloaded items with the specified metadata.
+  // |relative_path|      relative path of the download within the Download/
+  //                      folder (e.g. "Download/foo/bar.pdf"). The method
+  //                      implementation must verify that the `relative_path` is
+  //                      in fact within the Download/ folder (or subdirectory),
+  //                      treating ARC as an untrusted source.
+  // |owner_package_name| package name that contributed the download (e.g.
+  //                      "com.bar.foo").
+  [MinVersion=44] OnDownloadAdded@18(
+      string relative_path, string owner_package_name);
 };
 
 // Sends intents to ARC on behalf of Chrome.
