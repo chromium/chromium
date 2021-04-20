@@ -136,16 +136,6 @@ cr.define('cr.ui', function() {
   };
 
   /**
-   * Shows sign-in error bubble.
-   * @param {string} message Error message to show.
-   * @param {string} link Text to use for help link.
-   * @param {number} helpId Help topic Id associated with help link.
-   */
-  Oobe.showSignInError = function(message, link, helpId) {
-    DisplayManager.showSignInError(message, link, helpId);
-  };
-
-  /**
    * Show user-pods.
    */
   Oobe.showUserPods = function() {
@@ -155,13 +145,6 @@ cr.define('cr.ui', function() {
     }
     Oobe.showSigninUI();
     Oobe.resetSigninUI(true);
-  };
-
-  /**
-   * Clears error bubble.
-   */
-  Oobe.clearErrors = function() {
-    DisplayManager.clearErrors();
   };
 
   /**

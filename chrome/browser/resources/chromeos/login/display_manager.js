@@ -200,11 +200,6 @@ cr.define('cr.ui.login', function() {
      */
     demoModeStartListener_: null,
 
-    /**
-     * Error message (bubble) was shown. This is checked in tests.
-     */
-    errorMessageWasShownForTesting_: false,
-
     get displayType() {
       return this.displayType_;
     },
@@ -774,63 +769,6 @@ cr.define('cr.ui.login', function() {
       $(SCREEN_GAIA_SIGNIN)
           .reset(currentScreenId == SCREEN_GAIA_SIGNIN, forceOnline);
     }
-  };
-
-  /**
-   * Creates a div element used to display error message in an error bubble.
-   *
-   * @param {string} message The error message.
-   * @param {string} link Text to use for help link.
-   * @param {number} helpId Help topic Id associated with help link.
-   * @return {!HTMLElement} The error bubble content.
-   */
-  DisplayManager.createErrorElement_ = function(message, link, helpId) {
-    var error = document.createElement('div');
-
-    var messageDiv = document.createElement('div');
-    messageDiv.className = 'error-message-bubble';
-    messageDiv.textContent = message;
-    error.appendChild(messageDiv);
-
-    if (link) {
-      messageDiv.classList.add('error-message-bubble-padding');
-
-      var helpLink = document.createElement('a');
-      helpLink.href = '#';
-      helpLink.textContent = link;
-      helpLink.addEventListener('click', function(e) {
-        chrome.send('launchHelpApp', [helpId]);
-        e.preventDefault();
-      });
-      error.appendChild(helpLink);
-    }
-
-    error.setAttribute('aria-live', 'assertive');
-    return error;
-  };
-
-  /**
-   * Shows sign-in error bubble.
-   * @param {string} message Error message to show.
-   * @param {string} link Text to use for help link.
-   * @param {number} helpId Help topic Id associated with help link.
-   */
-  DisplayManager.showSignInError = function(message, link, helpId) {
-    var error = DisplayManager.createErrorElement_(message, link, helpId);
-
-    var currentScreen = Oobe.getInstance().currentScreen;
-    if (currentScreen && typeof currentScreen.showErrorBubble === 'function') {
-      currentScreen.showErrorBubble(error);
-      this.errorMessageWasShownForTesting_ = true;
-    }
-  };
-
-  /**
-   * Clears error bubble.
-   */
-  DisplayManager.clearErrors = function() {
-    $('bubble').hide();
-    this.errorMessageWasShownForTesting_ = false;
   };
 
   /**

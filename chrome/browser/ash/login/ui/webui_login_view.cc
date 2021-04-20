@@ -368,14 +368,6 @@ bool WebUILoginView::HandleKeyboardEvent(content::WebContents* source,
         event, GetFocusManager());
   }
 
-  // Make sure error bubble is cleared on keyboard event. This is needed
-  // when the focus is inside an iframe. Only clear on KeyDown to prevent hiding
-  // an immediate authentication error (See crbug.com/103643).
-  if (GetOobeUI() && event.GetType() == blink::WebInputEvent::Type::kKeyDown) {
-    CoreOobeView* view = GetOobeUI()->GetCoreOobeView();
-    if (view)
-      view->ClearErrors();
-  }
   return handled;
 }
 

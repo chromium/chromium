@@ -11,20 +11,6 @@
 (function() {
 
 /**
- * Horizontal padding for the error bubble.
- * @type {number}
- * @const
- */
-const BUBBLE_HORIZONTAL_PADDING = 65;
-
-/**
- * Vertical padding for the error bubble.
- * @type {number}
- * @const
- */
-const BUBBLE_VERTICAL_PADDING = -144;
-
-/**
  * Possible error states of the screen. Must be in the same order as
  * ActiveDirectoryPasswordChangeErrorState enum values.
  * @enum {number}

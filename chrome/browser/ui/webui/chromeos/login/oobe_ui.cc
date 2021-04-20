@@ -426,8 +426,8 @@ void OobeUI::ConfigureOobeDisplay() {
         std::make_unique<EulaScreenHandler>(js_calls_container_.get()));
   }
 
-  AddScreenHandler(std::make_unique<NetworkScreenHandler>(
-      js_calls_container_.get(), core_handler_));
+  AddScreenHandler(
+      std::make_unique<NetworkScreenHandler>(js_calls_container_.get()));
 
   AddScreenHandler(std::make_unique<EnableAdbSideloadingScreenHandler>(
       js_calls_container_.get()));

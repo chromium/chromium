@@ -144,10 +144,6 @@ button {
   display: none !important;
 }
 
-#bubble {
-  transition: 250ms opacity;
-}
-
 span.bold {
   font-weight: bold;
 }

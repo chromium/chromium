@@ -12,7 +12,6 @@
 
 namespace chromeos {
 
-class CoreOobeView;
 class NetworkScreen;
 
 // Interface of network screen. Owned by NetworkScreen.
@@ -20,7 +19,7 @@ class NetworkScreenView {
  public:
   constexpr static StaticOobeScreenId kScreenId{"network-selection"};
 
-  virtual ~NetworkScreenView() {}
+  virtual ~NetworkScreenView() = default;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
@@ -55,8 +54,7 @@ class NetworkScreenHandler : public NetworkScreenView,
  public:
   using TView = NetworkScreenView;
 
-  NetworkScreenHandler(JSCallsContainer* js_calls_container,
-                       CoreOobeView* core_oobe_view);
+  explicit NetworkScreenHandler(JSCallsContainer* js_calls_container);
   ~NetworkScreenHandler() override;
 
  private:
@@ -77,7 +75,6 @@ class NetworkScreenHandler : public NetworkScreenView,
   void GetAdditionalParameters(base::DictionaryValue* dict) override;
   void Initialize() override;
 
-  CoreOobeView* core_oobe_view_ = nullptr;
   NetworkScreen* screen_ = nullptr;
 
   // Keeps whether screen should be shown right after initialization.

@@ -146,10 +146,6 @@ void CoreOobeHandler::ResetSignInUI(bool force_online) {
   CallJS("cr.ui.Oobe.resetSigninUI", force_online);
 }
 
-void CoreOobeHandler::ClearErrors() {
-  CallJS("cr.ui.Oobe.clearErrors");
-}
-
 void CoreOobeHandler::ReloadContent(const base::DictionaryValue& dictionary) {
   CallJS("cr.ui.Oobe.reloadContent", dictionary);
 }

@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/login/screens/network_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.h"
-#include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/network/network_handler.h"
@@ -22,12 +21,9 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId NetworkScreenView::kScreenId;
 
-NetworkScreenHandler::NetworkScreenHandler(JSCallsContainer* js_calls_container,
-                                           CoreOobeView* core_oobe_view)
-    : BaseScreenHandler(kScreenId, js_calls_container),
-      core_oobe_view_(core_oobe_view) {
+NetworkScreenHandler::NetworkScreenHandler(JSCallsContainer* js_calls_container)
+    : BaseScreenHandler(kScreenId, js_calls_container) {
   set_user_acted_method_path("login.NetworkScreen.userActed");
-  DCHECK(core_oobe_view_);
 }
 
 NetworkScreenHandler::~NetworkScreenHandler() {
@@ -73,12 +69,11 @@ void NetworkScreenHandler::Unbind() {
 }
 
 void NetworkScreenHandler::ShowError(const std::u16string& message) {
-  CallJS("login.NetworkScreen.showError", message);
+  CallJS("login.NetworkScreen.setError", message);
 }
 
 void NetworkScreenHandler::ClearErrors() {
-  if (page_is_ready())
-    core_oobe_view_->ClearErrors();
+  CallJS("login.NetworkScreen.setError", std::string());
 }
 
 void NetworkScreenHandler::ShowConnectingStatus(

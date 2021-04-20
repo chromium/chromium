@@ -194,6 +194,19 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'network-selection',
       kind: ScreenKind.NORMAL,
+      states: [
+        {
+          id: 'no-error',
+        },
+        {
+          id: 'error',
+          trigger: (screen) => {
+            screen.setError(
+                'Chrome OS was unable to connect to Public Wifi. ' +
+                'Please select another network or try again.');
+          }
+        },
+      ],
     },
     {
       id: 'oobe-eula-md',

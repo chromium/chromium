@@ -26,12 +26,6 @@ const HELP_CANT_ACCESS_ACCOUNT = 188036;
 // not be extended by user activity.
 const VIDEO_LOGIN_TIMEOUT = 90 * 1000;
 
-// Horizontal padding for the error bubble.
-const BUBBLE_HORIZONTAL_PADDING = 65;
-
-// Vertical padding for the error bubble.
-const BUBBLE_VERTICAL_PADDING = -213;
-
 /**
  * The authentication mode for the screen.
  * @enum {number}
@@ -708,12 +702,6 @@ Polymer({
    * @private
    */
   onLoginUIVisible_() {
-    // Show deferred error bubble.
-    if (this.errorBubble_) {
-      this.showErrorBubble(this.errorBubble_);
-      this.errorBubble_ = undefined;
-    }
-
     chrome.send('loginWebuiReady');
     chrome.send('loginVisible', ['gaia-signin']);
   },
@@ -862,9 +850,6 @@ Polymer({
     // screen is shown.
     this.navigationButtonsHidden_ = true;
 
-    // Clear any error messages that were shown before login.
-    Oobe.clearErrors();
-
     this.clearVideoTimer_();
     this.authCompleted_ = true;
   },
@@ -942,21 +927,6 @@ Polymer({
     this.loadingFrameContents_ = true;
     this.startLoadingTimer_();
     this.authCompleted_ = false;
-  },
-
-  /**
-   * Shows sign-in error bubble.
-   * @param {HTMLElement} error Content to show in bubble.
-   */
-  showErrorBubble(error) {
-    if (!this.loadingFrameContents_) {
-      $('bubble').showContentForElement(
-          this, cr.ui.Bubble.Attachment.BOTTOM, error,
-          BUBBLE_HORIZONTAL_PADDING, BUBBLE_VERTICAL_PADDING);
-    } else {
-      // Defer the bubble until the frame has been loaded.
-      this.errorBubble_ = error;
-    }
   },
 
   /**

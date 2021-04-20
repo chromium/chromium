@@ -29,6 +29,9 @@
       <div slot="subtitle" hidden$="[[isDemoModeSetup]]">
         [[i18nDynamic(locale, 'networkSectionHint')]]
       </div>
+      <div slot="subtitle" hidden$="[[!errorMessage_]]">
+        [[errorMessage_]]
+      </div>
       <div slot="content" class="layout vertical">
         <network-select-login id="networkSelectLogin"
             enable-wifi-scans="[[enableWifiScans_]]"

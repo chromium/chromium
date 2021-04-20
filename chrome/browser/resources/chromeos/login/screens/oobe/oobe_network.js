@@ -13,7 +13,7 @@ Polymer({
 
   EXTERNAL_API: [
     'setOfflineDemoModeEnabled',
-    'showError',
+    'setError',
   ],
 
   properties: {
@@ -36,6 +36,16 @@ Polymer({
     offlineDemoModeEnabled: {
       type: Boolean,
       value: false,
+    },
+
+    /**
+     * Network error message.
+     * @type {string}
+     * @private
+     */
+    errorMessage_: {
+      type: String,
+      value: '',
     },
 
     /**
@@ -71,6 +81,7 @@ Polymer({
         data && isDemoModeSetupKey in data && data[isDemoModeSetupKey];
     this.isDemoModeSetup = isDemoModeSetup;
     this.enableWifiScans_ = true;
+    this.errorMessage_ = '';
     this.$.networkSelectLogin.onBeforeShow();
     this.show();
   },
@@ -104,19 +115,11 @@ Polymer({
   },
 
   /**
-   * Shows the network error message.
+   * Sets the network error message.
    * @param {string} message Message to be shown.
    */
-  showError(message) {
-    // TODO(crbug.com/1096003): Investigate how showError works here - seems no
-    // error message is shown when this is called. Also need to check how to
-    // close such message and what if it is called multiple times.
-    var error = document.createElement('div');
-    var messageDiv = document.createElement('div');
-    messageDiv.className = 'error-message-bubble';
-    messageDiv.textContent = message;
-    error.appendChild(messageDiv);
-    error.setAttribute('role', 'alert');
+  setError(message) {
+    this.errorMessage_ = message;
   },
 
   /**

@@ -356,7 +356,6 @@ Polymer({
    */
   onBeforeShow(data) {
     this.enableWifiScans_ = true;
-    cr.ui.Oobe.clearErrors();
     this.$['backButton'].disabled = !this.closable;
   },
 

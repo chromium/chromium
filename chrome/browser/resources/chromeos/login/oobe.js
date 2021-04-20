@@ -8,7 +8,6 @@
  */
 
 // <include src="test_util.js">
-// <include src="bubble.js">
 // <include src="display_manager.js">
 // <include src="demo_mode_test_helper.js">
 
@@ -31,8 +30,6 @@ HTMLImports.whenReady(() => {
        */
       initialize() {
         cr.ui.login.DisplayManager.initialize();
-
-        cr.ui.Bubble.decorate($('bubble'));
 
         chrome.send('screenStateInitialize');
       },
