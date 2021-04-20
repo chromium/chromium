@@ -6,7 +6,7 @@ if (!window.testRunner) {
     testRunner.dumpAsText();
     testRunner.waitUntilDone();
     testRunner.setCallCloseOnWebViews(false);
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
     testRunner.checkForLeakedWindows();
     window.open('resources/open-and-close-window-with-plugin.html');
 }

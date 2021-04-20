@@ -12,7 +12,7 @@
       // cause the browser to crash.
       if (window.testRunner) {
           testRunner.setPermission('notifications', 'granted', location.origin, location.origin);
-          testRunner.setCanOpenWindows();
+          testRunner.setPopupBlockingEnabled(false);
       }
 
       async_test(function (test) {

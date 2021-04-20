@@ -13,7 +13,7 @@ function openWindow()
 if (window.testRunner) {
     testRunner.dumpAsText()
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
 } else {
     document.write('<div id="manual-instructions">Click <a href="javascript:openWindow()">this link</a> twice. A window should open and close twice without crashing.</div>')
 }

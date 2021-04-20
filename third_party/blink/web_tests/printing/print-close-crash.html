@@ -3,7 +3,7 @@ if (window.testRunner) {
     testRunner.dumpAsText();
     // DumpRenderTree requires waitUntilDone for this test even though it's not needed.
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
 }
 var w = window.open("about:blank");
 w.print();

@@ -537,7 +537,7 @@ DevToolsAPI._fetch = function(url) {
 
 testRunner.dumpAsText();
 testRunner.waitUntilDone();
-testRunner.setCanOpenWindows(true);
+testRunner.setPopupBlockingEnabled(false);
 
 window.addEventListener('load', () => {
   var params = new URLSearchParams(window.location.search);

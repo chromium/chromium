@@ -5,7 +5,7 @@ if (window.testRunner) {
     testRunner.waitUntilDone();
     testRunner.dumpAsText();
     testRunner.dumpBackForwardList();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
     testRunner.overridePreference("WebKitAllowRunningInsecureContent", true);
 }
 

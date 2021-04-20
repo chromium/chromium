@@ -4,7 +4,7 @@
 if (window.testRunner) {
     testRunner.waitUntilDone();
     testRunner.dumpAsText();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
 }
 
 var remainingMessages = 2;

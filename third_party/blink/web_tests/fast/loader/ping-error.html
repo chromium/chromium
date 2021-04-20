@@ -5,7 +5,7 @@ Reproducible crash in appcache code when closing pgatour.com</p>
 if (window.testRunner) {
     testRunner.dumpAsText();
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
 }
 
 function done()

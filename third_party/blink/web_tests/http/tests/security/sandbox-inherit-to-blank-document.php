@@ -11,7 +11,7 @@ header("Content-Security-Policy: sandbox allow-scripts allow-popups");
     <a target='_blank' rel="opener" href='/security/resources/post-origin-to-opener.html'></a>
     <script>
         if (window.testRunner) {
-            testRunner.setCanOpenWindows();
+            testRunner.setPopupBlockingEnabled(false);
         }
 
         var test = async_test("Testing sandbox inherited via target='_blank'");

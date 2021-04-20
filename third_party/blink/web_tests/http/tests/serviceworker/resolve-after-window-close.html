@@ -6,7 +6,7 @@ window.jsTestIsAsync = true;
 description('Test that resolving a promise after the window gets closed does not assert or crash');
 
 if (window.testRunner) {
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
     openWindow();
 } else {
     document.write('<p>Click <a href="javascript:openWindow()">this link</a>.  A window should open and close without asserting or crashing.</p>');

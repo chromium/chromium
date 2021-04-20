@@ -10,7 +10,7 @@ var output = [];
 var testRunner = {};
 testRunner.dumpAsText = () => {};
 testRunner.waitUntilDone = () => {};
-testRunner.setCanOpenWindows = () => {};
+testRunner.setPopupBlockingEnabled = () => {};
 testRunner.notifyDone = () => {
   sendProtocolMessage(JSON.stringify({id: 0, method: 'DONE', params: {}, result: output.join('\n')}));
 };

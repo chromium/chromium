@@ -310,7 +310,6 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void SetBluetoothFakeAdapter(const std::string& adapter_name,
                                v8::Local<v8::Function> callback);
   void SetBluetoothManualChooser(bool enable);
-  void SetCanOpenWindows();
   void SetCaretBrowsingEnabled();
   void SetColorProfile(const std::string& name,
                        v8::Local<v8::Function> callback);
@@ -700,7 +699,6 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
       .SetMethod("setBluetoothManualChooser",
                  &TestRunnerBindings::SetBluetoothManualChooser)
       .SetMethod("setCallCloseOnWebViews", &TestRunnerBindings::NotImplemented)
-      .SetMethod("setCanOpenWindows", &TestRunnerBindings::SetCanOpenWindows)
       .SetMethod("setCaretBrowsingEnabled",
                  &TestRunnerBindings::SetCaretBrowsingEnabled)
       .SetMethod("setColorProfile", &TestRunnerBindings::SetColorProfile)
@@ -1488,13 +1486,6 @@ void TestRunnerBindings::DumpTitleChanges() {
   if (invalid_)
     return;
   runner_->DumpTitleChanges();
-}
-
-void TestRunnerBindings::SetCanOpenWindows() {
-  if (invalid_)
-    return;
-  // TODO(https://crbug.com/1170931): Remove the alias from the tests.
-  runner_->GetWebTestControlHostRemote()->SetPopupBlockingEnabled(false);
 }
 
 void TestRunnerBindings::SetCaretBrowsingEnabled() {

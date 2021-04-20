@@ -5,7 +5,7 @@
   <script src="/resources/testharnessreport.js"></script>
   <script>
     if (window.testRunner)
-      testRunner.setCanOpenWindows();
+      testRunner.setPopupBlockingEnabled(false);
 
     var t = async_test("Verify that nested documents receive an 'HTTPS' header.");
     window.addEventListener("message", t.step_func(function (message) {

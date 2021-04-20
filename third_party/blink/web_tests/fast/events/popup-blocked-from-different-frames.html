@@ -47,8 +47,6 @@
             if (window.testRunner) {
                 testRunner.dumpAsText();
                 testRunner.waitUntilDone();
-                testRunner.setCanOpenWindows();
-                testRunner.setPopupBlockingEnabled(true);
 
                 var button = document.querySelector("#test");
                 test_driver.click(button);

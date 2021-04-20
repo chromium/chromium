@@ -13,7 +13,7 @@
       // their onclick event. When the test is being run manually, grant
       // Notification permission and click on the notification.
       if (window.testRunner) {
-          testRunner.setCanOpenWindows();
+          testRunner.setPopupBlockingEnabled(false);
       }
 
       function simulateUserClick(x, y) {

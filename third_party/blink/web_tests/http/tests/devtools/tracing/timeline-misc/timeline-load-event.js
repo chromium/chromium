@@ -13,7 +13,7 @@
   await TestRunner.evaluateInPagePromise(`
     function display() {
       return new Promise(resolve => {
-        testRunner.setCanOpenWindows(true);
+        testRunner.setPopupBlockingEnabled(false);
         var popup = window.open("resources/hello.html");
         popup.onload = () => requestAnimationFrame(
             () => testRunner.updateAllLifecyclePhasesAndCompositeThen(resolve));

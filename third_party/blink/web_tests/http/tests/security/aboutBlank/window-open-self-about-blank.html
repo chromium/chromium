@@ -3,7 +3,7 @@
 if (window.testRunner) {
     testRunner.dumpAsText();
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
     window.open("javascript:'<script>console.log(opener.document.domain ? \"PASS\" : \"FAIL: Domain is undefined.\"); setTimeout(\"testRunner.notifyDone();\", 200)</scr" + "ipt>'");
 } else
     console.log("This test should redirect to about:blank without crashing. When run in automated mode, it also checks that the resulting document domain is correct.");

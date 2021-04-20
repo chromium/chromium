@@ -4,7 +4,7 @@
 description('Test tracking event handlers with a reused DOMWindow.');
 
 if (window.testRunner) {
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
     testRunner.waitUntilDone();
 }
 

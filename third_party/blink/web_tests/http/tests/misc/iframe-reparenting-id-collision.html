@@ -7,7 +7,7 @@ var iframeXHRCount = 0;
 if (window.testRunner) {
     testRunner.dumpAsText();
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows(true);
+    testRunner.setPopupBlockingEnabled(false);
 }
 
 function log(message)

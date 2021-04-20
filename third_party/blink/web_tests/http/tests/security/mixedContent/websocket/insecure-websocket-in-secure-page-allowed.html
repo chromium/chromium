@@ -6,7 +6,7 @@
 <script>
 
 if (window.testRunner) {
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
     // Allow insecure WebSockets.
     testRunner.overridePreference("WebKitAllowRunningInsecureContent", true);
 }

@@ -14,7 +14,7 @@ window.targetWindow = frames[0];
 window.onload = function()
 {
     if (window.testRunner)
-        testRunner.setCanOpenWindows(true);
+        testRunner.setPopupBlockingEnabled(false);
 
     description("\n----- tests for calling methods of another frame using Function.call -----\n");
 

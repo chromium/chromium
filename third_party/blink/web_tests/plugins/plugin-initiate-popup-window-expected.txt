@@ -1,6 +1,6 @@
-CONSOLE MESSAGE: line 17: window count: 1
-CONSOLE MESSAGE: line 26: window count: 2
-CONSOLE MESSAGE: line 46: window count: 3
+CONSOLE MESSAGE: line 16: window count: 1
+CONSOLE MESSAGE: line 25: window count: 2
+CONSOLE MESSAGE: line 45: window count: 3
 
 
 Specify a script and a mouse/keyboard event to the plugin. The specified script will be evaluated in the browser when the specified event is received by the plugin. The test is for bug https://bugs.webkit.org/show_bug.cgi?id=41292.

@@ -9,7 +9,7 @@
                 testRunner.dumpChildFrames();
                 testRunner.setDumpConsoleMessages(false);
                 testRunner.waitUntilDone();
-                testRunner.setCanOpenWindows();
+                testRunner.setPopupBlockingEnabled(false);
             }
             window.frames[0].postMessage('run test', '*');
         }

@@ -39,10 +39,8 @@ function testPopupOnEventDuring(eventType, expectPopup, operation) {
 }
 
 if (window.testRunner) {
-    testRunner.setCanOpenWindows();
     testRunner.setPopupBlockingEnabled(true);
 }
-
 
 var rect = target.getBoundingClientRect();
 var targetX = rect.left + rect.width / 2;

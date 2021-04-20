@@ -6,7 +6,7 @@
     if (window.testRunner) {
         testRunner.dumpAsText();
         testRunner.waitUntilDone();
-        testRunner.setCanOpenWindows();
+        testRunner.setPopupBlockingEnabled(false);
     }
 
     // Open a new window with the name matching form.target attribute below.

@@ -17,11 +17,6 @@
     window.jsTestIsAsync = true;
     description("Test that drop event generates user gesture");
 
-    if (window.testRunner) {
-        testRunner.setCanOpenWindows();
-        testRunner.setPopupBlockingEnabled(true);
-    }
-
     function drop() {
         // Consume user gesture.
         shouldBeDefined("window.open('about:blank')");

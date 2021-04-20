@@ -12,9 +12,8 @@
                 win = window.open("about:blank", "blank");
                 assert_equals(win, null);
             }
-
+            
             if (window.testRunner) {
-                testRunner.setCanOpenWindows();
                 testRunner.setPopupBlockingEnabled(true);
             }
 
