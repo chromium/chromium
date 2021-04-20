@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/publishers/remote_apps.h"
 #include "chrome/browser/chromeos/remote_apps/remote_apps_impl.h"
 #include "chrome/browser/chromeos/remote_apps/remote_apps_model.h"
@@ -174,12 +174,13 @@ class RemoteAppsManager : public KeyedService,
   // Map from id to callback. The callback is run after |OnAppUpdate| for the
   // app has been observed.
   std::map<std::string, AddAppCallback> add_app_callback_map_;
-  ScopedObserver<app_list::AppListSyncableService,
-                 app_list::AppListSyncableService::Observer,
-                 &app_list::AppListSyncableService::AddObserverAndStart>
-      app_list_syncable_service_observer_{this};
-  ScopedObserver<AppListModelUpdater, AppListModelUpdaterObserver>
-      app_list_model_updater_observer_{this};
+  base::ScopedObservation<
+      app_list::AppListSyncableService,
+      app_list::AppListSyncableService::Observer,
+      &app_list::AppListSyncableService::AddObserverAndStart>
+      app_list_syncable_service_observation_{this};
+  base::ScopedObservation<AppListModelUpdater, AppListModelUpdaterObserver>
+      app_list_model_updater_observation_{this};
   base::WeakPtrFactory<RemoteAppsManager> weak_factory_{this};
 };
 

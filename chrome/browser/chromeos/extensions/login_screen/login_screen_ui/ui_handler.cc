@@ -98,8 +98,8 @@ void UiHandler::Shutdown() {
 UiHandler::UiHandler(std::unique_ptr<WindowFactory> window_factory)
     : window_factory_(std::move(window_factory)) {
   UpdateSessionState();
-  session_manager_observer_.Add(session_manager::SessionManager::Get());
-  extension_registry_observer_.Add(
+  session_manager_observation_.Observe(session_manager::SessionManager::Get());
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(ProfileHelper::GetSigninProfile()));
 }
 

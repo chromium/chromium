@@ -92,10 +92,10 @@ void LockToSingleUserManager::OnUserAffiliationEstablished(
       user->AddProfileCreatedObserver(
           base::BindOnce(&LockToSingleUserManager::AddVmStartingObservers,
                          weak_factory_.GetWeakPtr(), user));
-      arc_session_observer_.Add(arc::ArcSessionManager::Get());
+      arc_session_observation_.Observe(arc::ArcSessionManager::Get());
       break;
     case RebootOnSignOutPolicy::ARC_SESSION:
-      arc_session_observer_.Add(arc::ArcSessionManager::Get());
+      arc_session_observation_.Observe(arc::ArcSessionManager::Get());
       break;
     case RebootOnSignOutPolicy::NEVER:
       break;
@@ -103,7 +103,7 @@ void LockToSingleUserManager::OnUserAffiliationEstablished(
 }
 
 void LockToSingleUserManager::OnArcStarted() {
-  arc_session_observer_.RemoveAll();
+  arc_session_observation_.Reset();
   LockToSingleUser();
 }
 

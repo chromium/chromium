@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_PRINTING_METRICS_PRINT_JOB_FINISHED_EVENT_DISPATCHER_H_
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/printing/history/print_job_history_service.h"
 #include "chrome/browser/chromeos/printing/history/print_job_history_service_factory.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -51,9 +51,9 @@ class PrintJobFinishedEventDispatcher
 
   content::BrowserContext* browser_context_;
   EventRouter* event_router_;
-  ScopedObserver<chromeos::PrintJobHistoryService,
-                 chromeos::PrintJobHistoryService::Observer>
-      print_job_history_service_observer_;
+  base::ScopedObservation<chromeos::PrintJobHistoryService,
+                          chromeos::PrintJobHistoryService::Observer>
+      print_job_history_service_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrintJobFinishedEventDispatcher);
 };

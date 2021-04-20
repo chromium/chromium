@@ -89,8 +89,7 @@ void MetricsReporter::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 MetricsReporter::MetricsReporter(
     chromeos::PowerManagerClient* power_manager_client,
     PrefService* local_state_pref_service)
-    : power_manager_client_observer_(this),
-      pref_service_(local_state_pref_service),
+    : pref_service_(local_state_pref_service),
       daily_event_(std::make_unique<metrics::DailyEvent>(
           pref_service_,
           prefs::kAutoScreenBrightnessMetricsDailySample,
@@ -99,7 +98,7 @@ MetricsReporter::MetricsReporter(
     daily_counts_[i] = pref_service_->GetInteger(kDailyCountPrefs[i]);
   }
 
-  power_manager_client_observer_.Add(power_manager_client);
+  power_manager_client_observation_.Observe(power_manager_client);
 
   daily_event_->AddObserver(std::make_unique<DailyEventObserver>(this));
   daily_event_->CheckInterval();

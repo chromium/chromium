@@ -48,7 +48,6 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/scoped_observer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
@@ -845,7 +844,7 @@ class WindowStateChangeObserver : public aura::WindowObserver {
       : expected_type_(expected_type), callback_(std::move(callback)) {
     DCHECK_NE(window->GetProperty(chromeos::kWindowStateTypeKey),
               expected_type_);
-    scoped_observer_.Add(window);
+    scoped_observation_.Observe(window);
   }
   ~WindowStateChangeObserver() override {}
 
@@ -853,23 +852,24 @@ class WindowStateChangeObserver : public aura::WindowObserver {
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override {
-    DCHECK(scoped_observer_.IsObserving(window));
+    DCHECK(scoped_observation_.IsObservingSource(window));
     if (key == chromeos::kWindowStateTypeKey &&
         window->GetProperty(chromeos::kWindowStateTypeKey) == expected_type_) {
-      scoped_observer_.RemoveAll();
+      scoped_observation_.Reset();
       std::move(callback_).Run(/*success=*/true);
     }
   }
 
   void OnWindowDestroying(aura::Window* window) override {
-    DCHECK(scoped_observer_.IsObserving(window));
-    scoped_observer_.RemoveAll();
+    DCHECK(scoped_observation_.IsObservingSource(window));
+    scoped_observation_.Reset();
     std::move(callback_).Run(/*success=*/false);
   }
 
  private:
   chromeos::WindowStateType expected_type_;
-  ScopedObserver<aura::Window, aura::WindowObserver> scoped_observer_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      scoped_observation_{this};
   base::OnceCallback<void(bool)> callback_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowStateChangeObserver);
@@ -888,7 +888,7 @@ class WindowBoundsChangeObserver : public aura::WindowObserver {
     wait_for_bounds_change_ = window->GetBoundsInRootWindow() != to_bounds;
     wait_for_display_change_ = state->GetDisplay().id() != display_id;
     DCHECK(wait_for_bounds_change_ || wait_for_display_change_);
-    scoped_observer_.Add(window);
+    scoped_observation_.Observe(window);
   }
   ~WindowBoundsChangeObserver() override = default;
 
@@ -918,16 +918,17 @@ class WindowBoundsChangeObserver : public aura::WindowObserver {
 
  private:
   void MaybeFinishObserving(aura::Window* window, bool success) {
-    DCHECK(scoped_observer_.IsObserving(window));
+    DCHECK(scoped_observation_.IsObservingSource(window));
     if (!wait_for_bounds_change_ && !wait_for_display_change_) {
-      scoped_observer_.RemoveAll();
+      scoped_observation_.Reset();
       std::move(callback_).Run(window->GetBoundsInRootWindow(),
                                ash::WindowState::Get(window)->GetDisplay().id(),
                                success);
     }
   }
 
-  ScopedObserver<aura::Window, aura::WindowObserver> scoped_observer_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      scoped_observation_{this};
   bool wait_for_bounds_change_ = false;
   bool wait_for_display_change_ = false;
   base::OnceCallback<void(const gfx::Rect&, int64_t, bool)> callback_;
@@ -3987,14 +3988,14 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
                     base::OnceCallback<void()> callback)
       : callback_(std::move(callback)), app_banner_manager_(manager) {
     DCHECK(manager);
-    observer_.Add(manager);
+    observation_.Observe(manager);
 
     // If PWA is already loaded, call callback immediately.
     Installable installable =
         app_banner_manager_->GetInstallableWebAppCheckResultForTesting();
     if (installable == Installable::kPromotable ||
         installable == Installable::kByUserRequest) {
-      observer_.RemoveAll();
+      observation_.Reset();
       std::move(callback_).Run();
     }
   }
@@ -4016,7 +4017,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
       case Installable::kPromotable:
         FALLTHROUGH;
       case Installable::kByUserRequest:
-        observer_.RemoveAll();
+        observation_.Reset();
         std::move(callback_).Run();
         break;
     }
@@ -4025,8 +4026,9 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
  private:
   using Installable = webapps::AppBannerManager::InstallableWebAppCheckResult;
 
-  ScopedObserver<webapps::AppBannerManager, webapps::AppBannerManager::Observer>
-      observer_{this};
+  base::ScopedObservation<webapps::AppBannerManager,
+                          webapps::AppBannerManager::Observer>
+      observation_{this};
   base::OnceCallback<void()> callback_;
   webapps::AppBannerManager* app_banner_manager_;
 
@@ -4040,19 +4042,19 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWARegistrarObserver
   PWARegistrarObserver(Profile* profile,
                        base::OnceCallback<void(const web_app::AppId&)> callback)
       : callback_(std::move(callback)) {
-    observer_.Add(
+    observation_.Observe(
         &web_app::WebAppProviderBase::GetProviderBase(profile)->registrar());
   }
   ~PWARegistrarObserver() override {}
 
   void OnWebAppInstalled(const web_app::AppId& app_id) override {
-    observer_.RemoveAll();
+    observation_.Reset();
     std::move(callback_).Run(app_id);
   }
 
  private:
-  ScopedObserver<web_app::AppRegistrar, web_app::AppRegistrarObserver>
-      observer_{this};
+  base::ScopedObservation<web_app::AppRegistrar, web_app::AppRegistrarObserver>
+      observation_{this};
   base::OnceCallback<void(const web_app::AppId&)> callback_;
 
   DISALLOW_COPY_AND_ASSIGN(PWARegistrarObserver);
@@ -5079,8 +5081,8 @@ BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::BuildServiceInstanceFor(
 }
 
 AutotestPrivateAPI::AutotestPrivateAPI(content::BrowserContext* context)
-    : clipboard_observer_(this), browser_context_(context), test_mode_(false) {
-  clipboard_observer_.Add(ui::ClipboardMonitor::GetInstance());
+    : browser_context_(context), test_mode_(false) {
+  clipboard_observation_.Observe(ui::ClipboardMonitor::GetInstance());
 }
 
 AutotestPrivateAPI::~AutotestPrivateAPI() = default;

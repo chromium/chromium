@@ -12,7 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -217,16 +217,17 @@ class ModellerImpl : public Modeller,
   // exported. The error is expressed in terms of percentages.
   double curve_error_tolerance_ = 5.0;
 
-  ScopedObserver<AlsReader, AlsReader::Observer> als_reader_observer_;
+  base::ScopedObservation<AlsReader, AlsReader::Observer>
+      als_reader_observation_{this};
 
-  ScopedObserver<BrightnessMonitor, BrightnessMonitor::Observer>
-      brightness_monitor_observer_;
+  base::ScopedObservation<BrightnessMonitor, BrightnessMonitor::Observer>
+      brightness_monitor_observation_{this};
 
-  ScopedObserver<ModelConfigLoader, ModelConfigLoader::Observer>
-      model_config_loader_observer_;
+  base::ScopedObservation<ModelConfigLoader, ModelConfigLoader::Observer>
+      model_config_loader_observation_{this};
 
-  ScopedObserver<ui::UserActivityDetector, ui::UserActivityObserver>
-      user_activity_observer_;
+  base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
+      user_activity_observation_{this};
 
   // Background task runner for IO work (loading a curve from disk and writing a
   // curve to disk) and training jobs.

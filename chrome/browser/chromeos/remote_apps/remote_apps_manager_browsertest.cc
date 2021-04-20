@@ -15,7 +15,7 @@
 #include "ash/shell.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -72,7 +72,7 @@ class AppUpdateWaiter : public apps::AppRegistryCache::Observer {
       : id_(id), condition_(condition) {
     app_registry_cache_ = &apps::AppServiceProxyFactory::GetForProfile(profile)
                                ->AppRegistryCache();
-    app_registry_cache_observer_.Add(app_registry_cache_);
+    app_registry_cache_observation_.Observe(app_registry_cache_);
   }
 
   void Wait() {
@@ -90,7 +90,7 @@ class AppUpdateWaiter : public apps::AppRegistryCache::Observer {
     if (condition_met_ || update.AppId() != id_ || !condition_.Run(update))
       return;
 
-    app_registry_cache_observer_.RemoveAll();
+    app_registry_cache_observation_.Reset();
     condition_met_ = true;
     if (callback_)
       std::move(callback_).Run();
@@ -99,7 +99,7 @@ class AppUpdateWaiter : public apps::AppRegistryCache::Observer {
   // apps::AppRegistryCache::Observer:
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override {
-    app_registry_cache_observer_.RemoveAll();
+    app_registry_cache_observation_.Reset();
   }
 
  private:
@@ -108,8 +108,9 @@ class AppUpdateWaiter : public apps::AppRegistryCache::Observer {
   base::OnceClosure callback_;
   base::RepeatingCallback<bool(const apps::AppUpdate&)> condition_;
   bool condition_met_ = false;
-  ScopedObserver<apps::AppRegistryCache, apps::AppRegistryCache::Observer>
-      app_registry_cache_observer_{this};
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observation_{this};
 };
 
 class MockImageDownloader : public RemoteAppsManager::ImageDownloader {

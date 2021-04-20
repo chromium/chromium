@@ -188,9 +188,10 @@ SmartChargingManager::SmartChargingManager(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(detector);
   DCHECK(session_manager);
-  user_activity_observer_.Add(detector);
-  power_manager_client_observer_.Add(chromeos::PowerManagerClient::Get());
-  session_manager_observer_.Add(session_manager);
+  user_activity_observation_.Observe(detector);
+  power_manager_client_observation_.Observe(
+      chromeos::PowerManagerClient::Get());
+  session_manager_observation_.Observe(session_manager);
   blocking_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});

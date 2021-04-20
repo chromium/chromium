@@ -22,7 +22,7 @@ void PrintersServiceProvider::Start(
   exported_object_ = exported_object;
   auto* proxy = CupsPrintersManagerFactory::GetInstance()->GetProxy();
   DCHECK(proxy);
-  printers_manager_observer_.Add(proxy);
+  printers_manager_observation_.Observe(proxy);
 }
 
 void PrintersServiceProvider::OnPrintersChanged(

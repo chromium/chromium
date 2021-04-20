@@ -107,9 +107,6 @@ UserActivityManager::UserActivityManager(
     mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
     const ChromeUserManager* user_manager)
     : ukm_logger_(ukm_logger),
-      user_activity_observer_(this),
-      power_manager_client_observer_(this),
-      session_manager_observer_(this),
       session_manager_(session_manager),
       receiver_(this, std::move(receiver)),
       user_manager_(user_manager),
@@ -117,10 +114,10 @@ UserActivityManager::UserActivityManager(
   DCHECK(ukm_logger_);
 
   DCHECK(detector);
-  user_activity_observer_.Add(detector);
+  user_activity_observation_.Observe(detector);
 
   DCHECK(power_manager_client);
-  power_manager_client_observer_.Add(power_manager_client);
+  power_manager_client_observation_.Observe(power_manager_client);
   power_manager_client->RequestStatusUpdate();
   power_manager_client->GetSwitchStates(
       base::BindOnce(&UserActivityManager::OnReceiveSwitchStates,
@@ -130,7 +127,7 @@ UserActivityManager::UserActivityManager(
                      weak_ptr_factory_.GetWeakPtr()));
 
   DCHECK(session_manager);
-  session_manager_observer_.Add(session_manager);
+  session_manager_observation_.Observe(session_manager);
 
   if (chromeos::GetDeviceType() == chromeos::DeviceType::kChromebook) {
     device_type_ = UserActivityEvent::Features::CHROMEBOOK;

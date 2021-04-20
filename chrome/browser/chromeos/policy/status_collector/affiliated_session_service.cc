@@ -32,10 +32,10 @@ AffiliatedSessionService::AffiliatedSessionService(base::Clock* clock)
     : clock_(clock), session_manager_(session_manager::SessionManager::Get()) {
   if (session_manager_) {
     // To alleviate tight coupling in unit tests to DeviceStatusCollector.
-    session_manager_observer_.Add(session_manager_);
+    session_manager_observation_.Observe(session_manager_);
     is_session_locked_ = session_manager_->IsScreenLocked();
   }
-  power_manager_observer_.Add(chromeos::PowerManagerClient::Get());
+  power_manager_observation_.Observe(chromeos::PowerManagerClient::Get());
 }
 
 AffiliatedSessionService::~AffiliatedSessionService() = default;
@@ -75,7 +75,7 @@ void AffiliatedSessionService::OnUserProfileLoaded(
   if (!IsPrimaryAndAffiliated(profile)) {
     return;
   }
-  profile_observer_.Add(profile);
+  profile_observations_.AddObservation(profile);
   for (auto& observer : observers_) {
     observer.OnAffiliatedLogin(profile);
   }
@@ -89,7 +89,7 @@ void AffiliatedSessionService::OnProfileWillBeDestroyed(Profile* profile) {
   for (auto& observer : observers_) {
     observer.OnAffiliatedLogout(profile);
   }
-  profile_observer_.Remove(profile);
+  profile_observations_.RemoveObservation(profile);
 }
 
 void AffiliatedSessionService::SuspendDone(base::TimeDelta sleep_duration) {

@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/metrics/daily_event.h"
@@ -95,8 +95,8 @@ class MetricsReporter : public PowerManagerClient::Observer {
   // Set once and then never changed during the Chrome session.
   base::Optional<DeviceClass> device_class_;
 
-  ScopedObserver<PowerManagerClient, PowerManagerClient::Observer>
-      power_manager_client_observer_;
+  base::ScopedObservation<PowerManagerClient, PowerManagerClient::Observer>
+      power_manager_client_observation_{this};
 
   PrefService* pref_service_;  // Not owned.
 

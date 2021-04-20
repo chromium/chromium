@@ -7,7 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/crostini/ansible/ansible_management_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_installer_ui_delegate.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
@@ -163,8 +163,9 @@ class CrostiniInstaller : public KeyedService,
   ResultCallback result_callback_;
   base::OnceClosure cancel_callback_;
 
-  ScopedObserver<AnsibleManagementService, AnsibleManagementService::Observer>
-      ansible_management_service_observer_{this};
+  base::ScopedObservation<AnsibleManagementService,
+                          AnsibleManagementService::Observer>
+      ansible_management_service_observation_{this};
 
   base::WeakPtrFactory<CrostiniInstaller> weak_ptr_factory_{this};
 

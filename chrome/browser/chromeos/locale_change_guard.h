@@ -15,7 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -97,9 +97,9 @@ class LocaleChangeGuard : public content::NotificationObserver,
   bool reverted_ = false;
   bool main_frame_loaded_ = false;
   content::NotificationRegistrar registrar_;
-  ScopedObserver<session_manager::SessionManager,
-                 session_manager::SessionManagerObserver>
-      session_observer_{this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LocaleChangeGuard);
 };

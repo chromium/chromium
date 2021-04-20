@@ -188,7 +188,7 @@ UserCloudPolicyManagerChromeOS::UserCloudPolicyManagerChromeOS(
   // not be initialized before then because the invalidation service cannot be
   // started because it depends on components initialized at the end of profile
   // creation. https://crbug.com/171406
-  observed_profile_manager_.Add(g_browser_process->profile_manager());
+  observed_profile_manager_.Observe(g_browser_process->profile_manager());
 }
 
 void UserCloudPolicyManagerChromeOS::ForceTimeoutForTest() {
@@ -346,7 +346,7 @@ UserCloudPolicyManagerChromeOS::GetExtensionInstallEventLogUploader() {
 }
 
 void UserCloudPolicyManagerChromeOS::Shutdown() {
-  observed_profile_manager_.RemoveAll();
+  observed_profile_manager_.Reset();
   app_install_event_log_uploader_.reset();
   extension_install_event_log_uploader_.reset();
   report_scheduler_.reset();
@@ -805,7 +805,7 @@ void UserCloudPolicyManagerChromeOS::OnProfileAdded(Profile* profile) {
   if (profile != profile_)
     return;
 
-  observed_profile_manager_.RemoveAll();
+  observed_profile_manager_.Reset();
 
   invalidation::ProfileInvalidationProvider* const invalidation_provider =
       invalidation::ProfileInvalidationProviderFactory::GetForProfile(profile_);

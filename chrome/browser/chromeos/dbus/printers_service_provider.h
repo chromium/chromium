@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_proxy.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
@@ -41,9 +41,9 @@ class PrintersServiceProvider
   // A reference on ExportedObject for sending signals.
   scoped_refptr<dbus::ExportedObject> exported_object_;
 
-  ScopedObserver<chromeos::CupsPrintersManagerProxy,
-                 chromeos::CupsPrintersManager::Observer>
-      printers_manager_observer_{this};
+  base::ScopedObservation<chromeos::CupsPrintersManagerProxy,
+                          chromeos::CupsPrintersManager::Observer>
+      printers_manager_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrintersServiceProvider);
 };

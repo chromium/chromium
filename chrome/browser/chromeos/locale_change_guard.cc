@@ -54,7 +54,7 @@ LocaleChangeGuard::~LocaleChangeGuard() {
 }
 
 void LocaleChangeGuard::OnLogin() {
-  session_observer_.Add(session_manager::SessionManager::Get());
+  session_observation_.Observe(session_manager::SessionManager::Get());
   registrar_.Add(this, content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
                  content::NotificationService::AllBrowserContextsAndSources());
 }
@@ -89,7 +89,7 @@ void LocaleChangeGuard::Observe(int type,
 }
 
 void LocaleChangeGuard::OnUserSessionStarted(bool is_primary_user) {
-  session_observer_.RemoveAll();
+  session_observation_.Reset();
   if (main_frame_loaded_)
     Check();
 }

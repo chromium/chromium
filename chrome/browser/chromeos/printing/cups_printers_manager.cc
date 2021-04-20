@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -83,7 +83,6 @@ class CupsPrintersManagerImpl
       PrinterEventTracker* event_tracker,
       PrefService* pref_service)
       : synced_printers_manager_(synced_printers_manager),
-        synced_printers_manager_observer_(this),
         usb_detector_(std::move(usb_detector)),
         zeroconf_detector_(std::move(zeroconf_detector)),
         ppd_provider_(std::move(ppd_provider)),
@@ -93,7 +92,6 @@ class CupsPrintersManagerImpl
                                      usb_notification_controller_.get()),
         print_servers_manager_(std::move(print_servers_manager)),
         enterprise_printers_provider_(std::move(enterprise_printers_provider)),
-        enterprise_printers_provider_observer_(this),
         event_tracker_(event_tracker) {
     // Add the |auto_usb_printer_configurer_| as an observer.
     AddObserver(&auto_usb_printer_configurer_);
@@ -107,11 +105,11 @@ class CupsPrintersManagerImpl
     // Prime the printer cache with the saved printers.
     printers_.ReplacePrintersInClass(
         PrinterClass::kSaved, synced_printers_manager_->GetSavedPrinters());
-    synced_printers_manager_observer_.Add(synced_printers_manager_);
+    synced_printers_manager_observation_.Observe(synced_printers_manager_);
 
     // Prime the printer cache with the enterprise printers (observer called
     // immediately).
-    enterprise_printers_provider_observer_.Add(
+    enterprise_printers_provider_observation_.Observe(
         enterprise_printers_provider_.get());
 
     // Callbacks may ensue immediately when the observer proxies are set up, so
@@ -717,8 +715,9 @@ class CupsPrintersManagerImpl
 
   // Not owned.
   SyncedPrintersManager* const synced_printers_manager_;
-  ScopedObserver<SyncedPrintersManager, SyncedPrintersManager::Observer>
-      synced_printers_manager_observer_;
+  base::ScopedObservation<SyncedPrintersManager,
+                          SyncedPrintersManager::Observer>
+      synced_printers_manager_observation_{this};
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
@@ -738,9 +737,9 @@ class CupsPrintersManagerImpl
   std::unique_ptr<PrintServersManager> print_servers_manager_;
 
   std::unique_ptr<EnterprisePrintersProvider> enterprise_printers_provider_;
-  ScopedObserver<EnterprisePrintersProvider,
-                 EnterprisePrintersProvider::Observer>
-      enterprise_printers_provider_observer_;
+  base::ScopedObservation<EnterprisePrintersProvider,
+                          EnterprisePrintersProvider::Observer>
+      enterprise_printers_provider_observation_{this};
 
   // Not owned
   PrinterEventTracker* const event_tracker_;

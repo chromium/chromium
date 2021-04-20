@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -88,8 +88,8 @@ class TurnSyncOnHelper : public SyncStartupTracker::Observer,
   Browser* browser_ = nullptr;
   std::unique_ptr<SyncStartupTracker> sync_startup_tracker_;
 
-  ScopedObserver<LoginUIService, LoginUIService::Observer>
-      scoped_login_ui_service_observer_{this};
+  base::ScopedObservation<LoginUIService, LoginUIService::Observer>
+      scoped_login_ui_service_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_ASH_SYNC_TURN_SYNC_ON_HELPER_H_

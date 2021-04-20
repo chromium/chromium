@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
-#include "base/scoped_observer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -785,8 +784,8 @@ class AutotestPrivateAPI : public BrowserContextKeyedAPI,
   // ui::ClipboardObserver
   void OnClipboardDataChanged() override;
 
-  ScopedObserver<ui::ClipboardMonitor, ui::ClipboardObserver>
-      clipboard_observer_;
+  base::ScopedObservation<ui::ClipboardMonitor, ui::ClipboardObserver>
+      clipboard_observation_{this};
 
   content::BrowserContext* const browser_context_;
   bool test_mode_;  // true for AutotestPrivateApiTest.AutotestPrivate test.

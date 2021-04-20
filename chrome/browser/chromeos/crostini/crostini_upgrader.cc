@@ -68,7 +68,6 @@ CrostiniUpgrader* CrostiniUpgrader::GetForProfile(Profile* profile) {
 CrostiniUpgrader::CrostiniUpgrader(Profile* profile)
     : profile_(profile),
       container_id_("", ""),
-      pmc_observer_(this),
       backup_path_(base::nullopt) {
   CrostiniManager::GetForProfile(profile_)->AddUpgradeContainerProgressObserver(
       this);
@@ -200,7 +199,7 @@ void CrostiniUpgrader::OnBackupProgress(int progress_percent) {
 
 void CrostiniUpgrader::StartPrechecks() {
   auto* pmc = chromeos::PowerManagerClient::Get();
-  if (pmc_observer_.IsObserving(pmc)) {
+  if (pmc_observation_.IsObservingSource(pmc)) {
     // This could happen if two StartPrechecks were run at the same time. If it
     // does, drop the second call.
     return;
@@ -211,7 +210,7 @@ void CrostiniUpgrader::StartPrechecks() {
                            base::BindOnce(&CrostiniUpgrader::DoPrechecks,
                                           weak_ptr_factory_.GetWeakPtr()));
 
-  pmc_observer_.Add(pmc);
+  pmc_observation_.Observe(pmc);
   pmc->RequestStatusUpdate();
 
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -235,7 +234,8 @@ void CrostiniUpgrader::PowerChanged(
                            power_manager::PowerSupplyProperties::DISCONNECTED;
 
   auto* pmc = chromeos::PowerManagerClient::Get();
-  pmc_observer_.Remove(pmc);
+  DCHECK(pmc_observation_.IsObservingSource(pmc));
+  pmc_observation_.Reset();
 
   prechecks_callback_.Run();
 }

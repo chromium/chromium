@@ -226,7 +226,7 @@ void SystemTokenArcKpmDelegate::SetPrimaryUserArcKpmDelegate(
   }
 
   primary_user_arc_usage_manager_ = primary_user_arc_usage_manager;
-  primary_user_arc_usage_manager_delegate_observer_.Add(
+  primary_user_arc_usage_manager_delegate_observation_.Observe(
       primary_user_arc_usage_manager_);
   OnArcUsageAllowanceForCorporateKeysChanged(
       primary_user_arc_usage_manager_->AreCorporateKeysAllowedForArcUsage());
@@ -237,8 +237,9 @@ void SystemTokenArcKpmDelegate::ClearPrimaryUserArcKpmDelegate() {
     return;
   }
 
-  primary_user_arc_usage_manager_delegate_observer_.Remove(
-      primary_user_arc_usage_manager_);
+  DCHECK(primary_user_arc_usage_manager_delegate_observation_.IsObservingSource(
+      primary_user_arc_usage_manager_));
+  primary_user_arc_usage_manager_delegate_observation_.Reset();
   primary_user_arc_usage_manager_ = nullptr;
   OnArcUsageAllowanceForCorporateKeysChanged(false);
 }

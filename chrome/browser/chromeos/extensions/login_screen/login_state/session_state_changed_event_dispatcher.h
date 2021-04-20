@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/common/extensions/api/login_state.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -55,9 +55,9 @@ class SessionStateChangedEventDispatcher
   }
   static const bool kServiceIsNULLWhileTesting = true;
 
-  ScopedObserver<session_manager::SessionManager,
-                 session_manager::SessionManagerObserver>
-      session_manager_observer_;
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
   content::BrowserContext* browser_context_;
   EventRouter* event_router_;
   api::login_state::SessionState session_state_;

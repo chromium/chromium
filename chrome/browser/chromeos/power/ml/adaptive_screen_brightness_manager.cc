@@ -127,10 +127,10 @@ AdaptiveScreenBrightnessManager::AdaptiveScreenBrightnessManager(
                                                 kNumUserInputEventsBuckets)) {
   DCHECK(ukm_logger_);
   DCHECK(detector);
-  user_activity_observer_.Add(detector);
+  user_activity_observation_.Observe(detector);
 
   DCHECK(power_manager_client);
-  power_manager_client_observer_.Add(power_manager_client);
+  power_manager_client_observation_.Observe(power_manager_client);
   power_manager_client->RequestStatusUpdate();
   power_manager_client->GetSwitchStates(
       base::BindOnce(&AdaptiveScreenBrightnessManager::OnReceiveSwitchStates,

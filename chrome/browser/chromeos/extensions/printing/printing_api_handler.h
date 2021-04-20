@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/extensions/printing/print_job_controller.h"
 #include "chrome/browser/chromeos/extensions/printing/print_job_submitter.h"
 #include "chrome/browser/chromeos/extensions/printing/printer_capabilities_provider.h"
@@ -174,9 +174,9 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   // extensions.
   base::flat_map<std::string, std::string> print_jobs_extension_ids_;
 
-  ScopedObserver<chromeos::CupsPrintJobManager,
-                 chromeos::CupsPrintJobManager::Observer>
-      print_job_manager_observer_;
+  base::ScopedObservation<chromeos::CupsPrintJobManager,
+                          chromeos::CupsPrintJobManager::Observer>
+      print_job_manager_observation_{this};
 
   base::WeakPtrFactory<PrintingAPIHandler> weak_ptr_factory_{this};
 

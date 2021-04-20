@@ -12,7 +12,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/printing/bulk_printers_calculator_factory.h"
@@ -37,9 +37,8 @@ constexpr char kTestUri[] = "ipps://printer.chromium.org/ipp/print";
 // Helper class to record observed events.
 class LoggingObserver : public SyncedPrintersManager::Observer {
  public:
-  explicit LoggingObserver(SyncedPrintersManager* source)
-      : observer_(this), manager_(source) {
-    observer_.Add(source);
+  explicit LoggingObserver(SyncedPrintersManager* source) : manager_(source) {
+    observation_.Observe(source);
   }
 
   void OnSavedPrintersChanged() override {
@@ -50,8 +49,9 @@ class LoggingObserver : public SyncedPrintersManager::Observer {
 
  private:
   std::vector<Printer> saved_printers_;
-  ScopedObserver<SyncedPrintersManager, SyncedPrintersManager::Observer>
-      observer_;
+  base::ScopedObservation<SyncedPrintersManager,
+                          SyncedPrintersManager::Observer>
+      observation_{this};
   SyncedPrintersManager* manager_;
 };
 

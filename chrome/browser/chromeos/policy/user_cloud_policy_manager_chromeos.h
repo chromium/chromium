@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/policy/wildcard_login_checker.h"
@@ -331,7 +331,7 @@ class UserCloudPolicyManagerChromeOS
   scoped_refptr<network::SharedURLLoaderFactory>
       signin_url_loader_factory_for_tests_;
 
-  ScopedObserver<ProfileManager, ProfileManagerObserver>
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       observed_profile_manager_{this};
 
   // Refresh token used in tests instead of the user context refresh token to

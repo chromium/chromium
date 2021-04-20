@@ -12,7 +12,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -59,9 +59,8 @@ constexpr char kColorLaserJson[] = R"json({
 // Helper class to record observed events.
 class LoggingObserver : public EnterprisePrintersProvider::Observer {
  public:
-  explicit LoggingObserver(EnterprisePrintersProvider* source)
-      : observer_(this) {
-    observer_.Add(source);
+  explicit LoggingObserver(EnterprisePrintersProvider* source) {
+    observation_.Observe(source);
   }
 
   void OnPrintersChanged(bool complete,
@@ -75,9 +74,9 @@ class LoggingObserver : public EnterprisePrintersProvider::Observer {
  private:
   bool complete_ = false;
   std::vector<Printer> printers_;
-  ScopedObserver<EnterprisePrintersProvider,
-                 EnterprisePrintersProvider::Observer>
-      observer_;
+  base::ScopedObservation<EnterprisePrintersProvider,
+                          EnterprisePrintersProvider::Observer>
+      observation_{this};
 };
 
 class EnterprisePrintersProviderTest : public testing::Test {

@@ -8,6 +8,7 @@
 #include "ash/public/cpp/note_taking_client.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -43,7 +44,7 @@ class NoteTakingControllerClient
 
   // Unowned pointer to the active profile.
   Profile* profile_ = nullptr;
-  ScopedObserver<Profile, ProfileObserver> profile_observer_{this};
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   base::WeakPtrFactory<NoteTakingControllerClient> weak_ptr_factory_{this};
 

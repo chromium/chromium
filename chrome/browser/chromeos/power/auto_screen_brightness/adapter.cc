@@ -101,7 +101,7 @@ Adapter::~Adapter() = default;
 
 void Adapter::Init() {
   // Deferred to Init() because it can result in a virtual method being called.
-  power_manager_client_observer_.Add(PowerManagerClient::Get());
+  power_manager_client_observation_.Observe(PowerManagerClient::Get());
 }
 
 void Adapter::OnAmbientLightUpdated(int lux) {
@@ -376,10 +376,10 @@ Adapter::Adapter(Profile* profile,
   DCHECK(modeller);
   DCHECK(model_config_loader);
 
-  als_reader_observer_.Add(als_reader);
-  brightness_monitor_observer_.Add(brightness_monitor);
-  modeller_observer_.Add(modeller);
-  model_config_loader_observer_.Add(model_config_loader);
+  als_reader_observation_.Observe(als_reader);
+  brightness_monitor_observation_.Observe(brightness_monitor);
+  modeller_observation_.Observe(modeller);
+  model_config_loader_observation_.Observe(model_config_loader);
 
   const int lid_open_delay_time_seconds = GetFieldTrialParamByFeatureAsInt(
       features::kAutoScreenBrightness, "lid_open_delay_time_seconds",

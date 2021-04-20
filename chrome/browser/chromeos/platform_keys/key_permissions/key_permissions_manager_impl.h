@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/arc_key_permissions_manager_delegate.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
@@ -205,8 +205,8 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
   std::unique_ptr<ArcKpmDelegate> arc_usage_manager_delegate_;
   PlatformKeysService* platform_keys_service_ = nullptr;
   PrefService* pref_service_ = nullptr;
-  ScopedObserver<ArcKpmDelegate, ArcKpmDelegate::Observer>
-      arc_usage_manager_delegate_observer_{this};
+  base::ScopedObservation<ArcKpmDelegate, ArcKpmDelegate::Observer>
+      arc_usage_manager_delegate_observation_{this};
   base::WeakPtrFactory<KeyPermissionsManagerImpl> weak_ptr_factory_{this};
 };
 

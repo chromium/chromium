@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task_runner_util.h"
 #include "base/timer/timer.h"
@@ -74,9 +74,9 @@ class BrightnessMonitorImpl : public BrightnessMonitor,
   // Called as soon as a user-triggered brightness event is received.
   void NotifyUserBrightnessChangeRequested();
 
-  ScopedObserver<chromeos::PowerManagerClient,
-                 chromeos::PowerManagerClient::Observer>
-      power_manager_client_observer_{this};
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_client_observation_{this};
 
   // Delay after user brightness adjustment before we record the brightness.
   base::TimeDelta brightness_sample_delay_;

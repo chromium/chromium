@@ -7,7 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/crostini/crostini_export_import.h"
 #include "chrome/browser/chromeos/crostini/crostini_export_import_status_tracker.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
@@ -117,9 +117,9 @@ class CrostiniUpgrader : public KeyedService,
   bool power_status_good_ = false;
   int64_t free_disk_space_ = -1;
 
-  ScopedObserver<chromeos::PowerManagerClient,
-                 chromeos::PowerManagerClient::Observer>
-      pmc_observer_;
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      pmc_observation_{this};
 
   // When restoring after a failed upgrade, if the user successfully completed a
   // backup, we will auto-restore from that (if the file still exists),

@@ -12,7 +12,7 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/policy/install_event_log_collector_base.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/profiles/profile.h"
@@ -116,12 +116,12 @@ class ExtensionInstallEventLogCollector
   extensions::ExtensionRegistry* registry_;
   Delegate* const delegate_;
 
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      registry_observer_{this};
-  ScopedObserver<extensions::InstallStageTracker,
-                 extensions::InstallStageTracker::Observer>
-      stage_tracker_observer_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      registry_observation_{this};
+  base::ScopedObservation<extensions::InstallStageTracker,
+                          extensions::InstallStageTracker::Observer>
+      stage_tracker_observation_{this};
 };
 
 }  // namespace policy

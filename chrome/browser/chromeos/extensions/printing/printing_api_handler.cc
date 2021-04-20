@@ -92,9 +92,8 @@ PrintingAPIHandler::PrintingAPIHandler(
       print_job_controller_(std::move(print_job_controller)),
       printer_capabilities_provider_(printers_manager,
                                      std::move(printer_configurer)),
-      cups_wrapper_(std::move(cups_wrapper)),
-      print_job_manager_observer_(this) {
-  print_job_manager_observer_.Add(print_job_manager_);
+      cups_wrapper_(std::move(cups_wrapper)) {
+  print_job_manager_observation_.Observe(print_job_manager_);
 }
 
 PrintingAPIHandler::~PrintingAPIHandler() = default;

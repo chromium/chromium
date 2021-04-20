@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -335,7 +335,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
 
   base::Value input_method_settings_snapshot_;
 
-  ScopedObserver<Profile, ProfileObserver> profile_observer_{this};
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 
 }  // namespace chromeos

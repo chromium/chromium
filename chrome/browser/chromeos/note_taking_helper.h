@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
@@ -297,9 +297,9 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   std::vector<NoteTakingAppInfo> android_apps_;
 
   // Tracks ExtensionRegistry observation for different profiles.
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedMultiSourceObservation<extensions::ExtensionRegistry,
+                                     extensions::ExtensionRegistryObserver>
+      extension_registry_observations_{this};
   // TODO (crbug.com/1185678): Also track web app installs/uninstalls.
 
   // The profile for which lock screen apps are enabled,

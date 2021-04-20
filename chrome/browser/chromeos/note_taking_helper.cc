@@ -435,8 +435,8 @@ void NoteTakingHelper::OnArcPlayStoreEnabledChanged(bool enabled) {
 
 void NoteTakingHelper::OnProfileAdded(Profile* profile) {
   auto* registry = extensions::ExtensionRegistry::Get(profile);
-  DCHECK(!extension_registry_observer_.IsObserving(registry));
-  extension_registry_observer_.Add(registry);
+  DCHECK(!extension_registry_observations_.IsObservingSource(registry));
+  extension_registry_observations_.AddObservation(registry);
 
   // TODO(derat): Remove this once OnArcPlayStoreEnabledChanged() is always
   // called after an ARC-enabled user logs in: http://b/36655474
@@ -486,7 +486,7 @@ NoteTakingHelper::NoteTakingHelper()
   play_store_enabled_ = false;
   for (Profile* profile :
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
-    extension_registry_observer_.Add(
+    extension_registry_observations_.AddObservation(
         extensions::ExtensionRegistry::Get(profile));
     // Check if the profile has already enabled Google Play Store.
     // IsArcPlayStoreEnabledForProfile() can return true only for the primary
@@ -741,7 +741,7 @@ void NoteTakingHelper::OnExtensionUnloaded(
 }
 
 void NoteTakingHelper::OnShutdown(extensions::ExtensionRegistry* registry) {
-  extension_registry_observer_.Remove(registry);
+  extension_registry_observations_.RemoveObservation(registry);
 }
 
 // TODO(crbug.com/1006642): Move this to a lock-screen-specific place.

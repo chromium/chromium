@@ -506,8 +506,9 @@ ExtensionInstallEventLogCollector::ExtensionInstallEventLogCollector(
     : InstallEventLogCollectorBase(profile),
       registry_(registry),
       delegate_(delegate) {
-  registry_observer_.Add(registry_);
-  stage_tracker_observer_.Add(extensions::InstallStageTracker::Get(profile_));
+  registry_observation_.Observe(registry_);
+  stage_tracker_observation_.Observe(
+      extensions::InstallStageTracker::Get(profile_));
 }
 
 ExtensionInstallEventLogCollector::~ExtensionInstallEventLogCollector() {

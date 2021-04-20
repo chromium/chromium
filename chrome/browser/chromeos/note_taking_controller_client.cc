@@ -38,15 +38,16 @@ void NoteTakingControllerClient::ActiveUserChanged(
 void NoteTakingControllerClient::OnProfileWillBeDestroyed(Profile* profile) {
   // Update |profile_| when exiting a session or shutting down.
   DCHECK_EQ(profile_, profile);
-  profile_observer_.Remove(profile_);
+  DCHECK(profile_observation_.IsObservingSource(profile_));
+  profile_observation_.Reset();
   profile_ = nullptr;
 }
 
 void NoteTakingControllerClient::SetProfileByUser(
     const user_manager::User* user) {
   profile_ = ProfileHelper::Get()->GetProfileByUser(user);
-  profile_observer_.RemoveAll();
-  profile_observer_.Add(profile_);
+  profile_observation_.Reset();
+  profile_observation_.Observe(profile_);
 }
 
 }  // namespace chromeos

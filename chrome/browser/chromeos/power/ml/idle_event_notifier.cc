@@ -61,9 +61,7 @@ IdleEventNotifier::IdleEventNotifier(
     PowerManagerClient* power_manager_client,
     ui::UserActivityDetector* detector,
     mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver)
-    : power_manager_client_observer_(this),
-      user_activity_observer_(this),
-      internal_data_(std::make_unique<ActivityDataInternal>()),
+    : internal_data_(std::make_unique<ActivityDataInternal>()),
       receiver_(this, std::move(receiver)),
       key_counter_(
           std::make_unique<RecentEventsCounter>(kUserInputEventsDuration,
@@ -75,9 +73,9 @@ IdleEventNotifier::IdleEventNotifier(
           std::make_unique<RecentEventsCounter>(kUserInputEventsDuration,
                                                 kNumUserInputEventsBuckets)) {
   DCHECK(power_manager_client);
-  power_manager_client_observer_.Add(power_manager_client);
+  power_manager_client_observation_.Observe(power_manager_client);
   DCHECK(detector);
-  user_activity_observer_.Add(detector);
+  user_activity_observation_.Observe(detector);
 }
 
 IdleEventNotifier::~IdleEventNotifier() = default;

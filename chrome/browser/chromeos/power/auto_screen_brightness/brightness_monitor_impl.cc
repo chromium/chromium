@@ -38,7 +38,7 @@ void BrightnessMonitorImpl::Init() {
           ? kBrightnessSampleDelay
           : base::TimeDelta::FromSeconds(brightness_sample_delay_seconds);
 
-  power_manager_client_observer_.Add(PowerManagerClient::Get());
+  power_manager_client_observation_.Observe(PowerManagerClient::Get());
 }
 
 void BrightnessMonitorImpl::AddObserver(

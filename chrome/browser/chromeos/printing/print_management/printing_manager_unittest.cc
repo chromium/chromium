@@ -6,7 +6,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/chromeos/printing/cups_print_job.h"
@@ -72,9 +72,10 @@ class WaitForURLsDeletedObserver : public history::HistoryServiceObserver {
 void WaitForURLsDeletedNotification(history::HistoryService* history_service) {
   base::RunLoop runner;
   WaitForURLsDeletedObserver observer(&runner);
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
       scoped_observer(&observer);
-  scoped_observer.Add(history_service);
+  scoped_observer.Observe(history_service);
   runner.Run();
 }
 }  // namespace

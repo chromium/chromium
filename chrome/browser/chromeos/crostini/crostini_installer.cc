@@ -401,7 +401,7 @@ void CrostiniInstaller::OnContainerSetup(bool success) {
   }
   UpdateInstallingState(InstallerState::kStartContainer);
   if (ShouldConfigureDefaultContainer(profile_)) {
-    ansible_management_service_observer_.Add(
+    ansible_management_service_observation_.Observe(
         AnsibleManagementService::GetForProfile(profile_));
   }
 }
@@ -413,8 +413,9 @@ void CrostiniInstaller::OnAnsibleSoftwareConfigurationStarted() {
 
 void CrostiniInstaller::OnAnsibleSoftwareConfigurationFinished(bool success) {
   DCHECK_EQ(installing_state_, InstallerState::kConfigureContainer);
-  ansible_management_service_observer_.Remove(
-      AnsibleManagementService::GetForProfile(profile_));
+  DCHECK(ansible_management_service_observation_.IsObservingSource(
+      AnsibleManagementService::GetForProfile(profile_)));
+  ansible_management_service_observation_.Reset();
 
   if (!success) {
     LOG(ERROR) << "Failed to configure container";

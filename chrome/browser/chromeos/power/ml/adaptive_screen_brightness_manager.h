@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 // TODO(https://crbug.com/1164001): use forward declaration when moving to
 // chrome/browser/ash/.
@@ -109,11 +109,11 @@ class AdaptiveScreenBrightnessManager
 
   const std::unique_ptr<AdaptiveScreenBrightnessUkmLogger> ukm_logger_;
 
-  ScopedObserver<ui::UserActivityDetector, ui::UserActivityObserver>
-      user_activity_observer_{this};
-  ScopedObserver<chromeos::PowerManagerClient,
-                 chromeos::PowerManagerClient::Observer>
-      power_manager_client_observer_{this};
+  base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
+      user_activity_observation_{this};
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_client_observation_{this};
 
   AccessibilityManager* const accessibility_manager_;
   MagnificationManager* const magnification_manager_;

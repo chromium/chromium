@@ -325,7 +325,8 @@ KeyPermissionsManagerImpl::KeyPermissionsManagerImpl(
   DCHECK(platform_keys_service_);
   DCHECK(pref_service_);
 
-  arc_usage_manager_delegate_observer_.Add(arc_usage_manager_delegate_.get());
+  arc_usage_manager_delegate_observation_.Observe(
+      arc_usage_manager_delegate_.get());
 
   // This waits until the token this KPM is responsible for is available.
   platform_keys_service_->GetTokens(base::BindOnce(

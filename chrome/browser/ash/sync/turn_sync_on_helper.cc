@@ -172,7 +172,7 @@ void TurnSyncOnHelper::SyncStartupFailed() {
 
 void TurnSyncOnHelper::ShowSyncConfirmationUI() {
   // Register as an observer so OnSyncConfirmationUIClosed() will be called.
-  scoped_login_ui_service_observer_.Add(
+  scoped_login_ui_service_observation_.Observe(
       LoginUIServiceFactory::GetForProfile(profile_));
   delegate_->ShowSyncConfirmation(profile_, browser_);
 }

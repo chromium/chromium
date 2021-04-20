@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_EXTENSIONS_PERMISSIONS_TRACKER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_EXTENSIONS_PERMISSIONS_TRACKER_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "extensions/browser/extension_registry.h"
@@ -64,7 +64,8 @@ class ExtensionsPermissionsTracker : public ExtensionRegistryObserver {
   // Set of not yet loaded force installed extensions.
   std::set<ExtensionId> pending_forced_extensions_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver> observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      observation_{this};
 };
 
 }  // namespace extensions

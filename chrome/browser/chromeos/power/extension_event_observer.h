@@ -16,7 +16,7 @@
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -114,7 +114,8 @@ class ExtensionEventObserver : public ProfileManagerObserver,
                      std::unique_ptr<KeepaliveSources>>
       keepalive_sources_;
 
-  ScopedObserver<extensions::ProcessManager, extensions::ProcessManagerObserver>
+  base::ScopedMultiSourceObservation<extensions::ProcessManager,
+                                     extensions::ProcessManagerObserver>
       process_manager_observers_{this};
 
   bool should_delay_suspend_ = true;

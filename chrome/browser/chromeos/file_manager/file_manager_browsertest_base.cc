@@ -25,6 +25,7 @@
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -755,8 +756,8 @@ std::ostream& operator<<(std::ostream& out,
 class FileManagerBrowserTestBase::MockFileTasksObserver
     : public file_tasks::FileTasksObserver {
  public:
-  explicit MockFileTasksObserver(Profile* profile) : observer_(this) {
-    observer_.Add(file_tasks::FileTasksNotifier::GetForProfile(profile));
+  explicit MockFileTasksObserver(Profile* profile) {
+    observation_.Observe(file_tasks::FileTasksNotifier::GetForProfile(profile));
   }
 
   MOCK_METHOD2(OnFilesOpenedImpl,
@@ -770,8 +771,9 @@ class FileManagerBrowserTestBase::MockFileTasksObserver
   }
 
  private:
-  ScopedObserver<file_tasks::FileTasksNotifier, file_tasks::FileTasksObserver>
-      observer_;
+  base::ScopedObservation<file_tasks::FileTasksNotifier,
+                          file_tasks::FileTasksObserver>
+      observation_{this};
 };
 
 // LocalTestVolume: test volume for a local drive.

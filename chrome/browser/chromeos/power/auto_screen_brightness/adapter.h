@@ -11,7 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -284,17 +284,19 @@ class Adapter : public AlsReader::Observer,
 
   Profile* const profile_;
 
-  ScopedObserver<AlsReader, AlsReader::Observer> als_reader_observer_{this};
-  ScopedObserver<BrightnessMonitor, BrightnessMonitor::Observer>
-      brightness_monitor_observer_{this};
-  ScopedObserver<Modeller, Modeller::Observer> modeller_observer_{this};
+  base::ScopedObservation<AlsReader, AlsReader::Observer>
+      als_reader_observation_{this};
+  base::ScopedObservation<BrightnessMonitor, BrightnessMonitor::Observer>
+      brightness_monitor_observation_{this};
+  base::ScopedObservation<Modeller, Modeller::Observer> modeller_observation_{
+      this};
 
-  ScopedObserver<ModelConfigLoader, ModelConfigLoader::Observer>
-      model_config_loader_observer_{this};
+  base::ScopedObservation<ModelConfigLoader, ModelConfigLoader::Observer>
+      model_config_loader_observation_{this};
 
-  ScopedObserver<chromeos::PowerManagerClient,
-                 chromeos::PowerManagerClient::Observer>
-      power_manager_client_observer_{this};
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_client_observation_{this};
 
   // Used to report daily metrics to UMA. This may be null in unit tests.
   MetricsReporter* metrics_reporter_;

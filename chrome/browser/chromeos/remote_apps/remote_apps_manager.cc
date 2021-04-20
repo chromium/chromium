@@ -129,14 +129,14 @@ RemoteAppsManager::RemoteAppsManager(Profile* profile)
   app_list_syncable_service_ =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
   model_updater_ = app_list_syncable_service_->GetModelUpdater();
-  app_list_model_updater_observer_.Add(model_updater_);
+  app_list_model_updater_observation_.Observe(model_updater_);
 
   // |AppListSyncableService| manages the Chrome side AppList and has to be
   // initialized before apps can be added.
   if (app_list_syncable_service_->IsInitialized()) {
     Initialize();
   } else {
-    app_list_syncable_service_observer_.Add(app_list_syncable_service_);
+    app_list_syncable_service_observation_.Observe(app_list_syncable_service_);
   }
 }
 
@@ -279,7 +279,7 @@ apps::mojom::MenuItemsPtr RemoteAppsManager::GetMenuModel(
 void RemoteAppsManager::OnSyncModelUpdated() {
   DCHECK(!is_initialized_);
   Initialize();
-  app_list_syncable_service_observer_.RemoveAll();
+  app_list_syncable_service_observation_.Reset();
 }
 
 void RemoteAppsManager::OnAppListItemAdded(ChromeAppListItem* item) {

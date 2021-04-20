@@ -98,7 +98,8 @@ void ExtensionEventObserver::OnProfileAdded(Profile* profile) {
   // Add the observer when |profile| is added and ProcessManager is available as
   // a keyed service. It will be removed when the ProcessManager instance is
   // shut down (OnProcessManagerShutdown).
-  process_manager_observers_.Add(extensions::ProcessManager::Get(profile));
+  process_manager_observers_.AddObservation(
+      extensions::ProcessManager::Get(profile));
 }
 
 void ExtensionEventObserver::OnBackgroundHostCreated(
@@ -119,7 +120,7 @@ void ExtensionEventObserver::OnBackgroundHostCreated(
 
 void ExtensionEventObserver::OnProcessManagerShutdown(
     extensions::ProcessManager* manager) {
-  process_manager_observers_.Remove(manager);
+  process_manager_observers_.RemoveObservation(manager);
 }
 
 void ExtensionEventObserver::OnExtensionHostDestroyed(

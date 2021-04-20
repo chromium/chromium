@@ -28,11 +28,10 @@ SessionStateChangedEventDispatcher::GetFactoryInstance() {
 
 SessionStateChangedEventDispatcher::SessionStateChangedEventDispatcher(
     content::BrowserContext* browser_context)
-    : session_manager_observer_(this),
-      browser_context_(browser_context),
+    : browser_context_(browser_context),
       event_router_(EventRouter::Get(browser_context)),
       session_state_(api::login_state::SESSION_STATE_UNKNOWN) {
-  session_manager_observer_.Add(session_manager::SessionManager::Get());
+  session_manager_observation_.Observe(session_manager::SessionManager::Get());
 }
 
 SessionStateChangedEventDispatcher::~SessionStateChangedEventDispatcher() =
