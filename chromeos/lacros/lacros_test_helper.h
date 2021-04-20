@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "base/component_export.h"
 #include "chromeos/lacros/lacros_service.h"
 
 namespace chromeos {
@@ -16,7 +15,7 @@ namespace chromeos {
 // Disables crosapi while this instance is alive.
 // This must be instantiate before LacrosService is instantiated.
 // Used only for testing purposes.
-class COMPONENT_EXPORT(CHROMEOS_LACROS) ScopedDisableCrosapiForTesting {
+class ScopedDisableCrosapiForTesting {
  public:
   ScopedDisableCrosapiForTesting();
   ScopedDisableCrosapiForTesting(const ScopedDisableCrosapiForTesting&) =
@@ -33,7 +32,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) ScopedDisableCrosapiForTesting {
 // used for unit tests, not browser tests.
 // Instantiated LacrosService is expected to be accessed via
 // LacrosService::Get().
-class COMPONENT_EXPORT(CHROMEOS_LACROS) ScopedLacrosServiceTestHelper {
+class ScopedLacrosServiceTestHelper {
  public:
   ScopedLacrosServiceTestHelper();
   ScopedLacrosServiceTestHelper(const ScopedLacrosServiceTestHelper&) = delete;

@@ -649,7 +649,7 @@ static_library("test_support") {
   if (is_chromeos_lacros) {
     deps += [
       "//chromeos/crosapi/cpp",
-      "//chromeos/lacros",
+      "//chromeos/lacros:test_support",
       "//chromeos/startup:constants",
     ]
   }
