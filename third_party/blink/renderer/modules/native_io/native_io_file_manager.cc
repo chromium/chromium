@@ -620,12 +620,23 @@ uint64_t NativeIOFileManager::releaseCapacitySync(
 
   int64_t requested_difference = -base::as_signed(requested_release);
 
+  // Reducing available capacity is done before performing the IPC for symmetry
+  // with the async operation.
+  if (!capacity_tracker_->ChangeAvailableCapacity(requested_difference)) {
+    ThrowNativeIOWithError(exception_state,
+                           mojom::blink::NativeIOError::New(
+                               mojom::blink::NativeIOErrorType::kNoSpace,
+                               "No capacity available for this operation"));
+    return 0;
+  }
+
+  // As `requested_difference` < 0, `granted_capacity_delta` is guaranteed to
+  // equal `requested_difference`.
   int64_t granted_capacity_delta;
   bool call_succeeded = backend_->RequestCapacityChange(
       requested_difference, &granted_capacity_delta);
   DCHECK(call_succeeded) << "Mojo call failed";
 
-  capacity_tracker_->ChangeAvailableCapacity(granted_capacity_delta);
   return capacity_tracker_->GetAvailableCapacity();
 }
 
@@ -797,6 +808,11 @@ void NativeIOFileManager::ReleaseCapacityImpl(uint64_t requested_release,
       << "called without checking if storage access was allowed";
   DCHECK(storage_access_allowed_.value())
       << "called even though storage access was denied";
+
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid())
+    return;
+  ScriptState::Scope scope(script_state);
 
   if (!base::IsValueInRangeForNumericType<int64_t>(requested_release)) {
     blink::RejectNativeIOWithError(
