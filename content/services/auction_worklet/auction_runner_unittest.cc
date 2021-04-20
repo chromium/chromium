@@ -121,7 +121,8 @@ std::string MakeBidScript(const std::string& bid,
 }
 
 constexpr char kAuctionScript[] = R"(
-  function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+  function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+      browserSignals) {
     if (adMetadata.bidKey !== ("data for " + bid)) {
       throw new Error("wrong data for bid:" +
                       JSON.stringify(adMetadata) + "/" + bid);

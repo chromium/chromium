@@ -160,6 +160,9 @@ SellerWorklet::ScoreResult SellerWorklet::ScoreAd(
   if (!AppendAuctionConfig(v8_helper_, context, auction_config, &args))
     return ScoreResult();
 
+  // Placeholder for trustedScoringSignals, which isn't wired up yet.
+  args.push_back(v8::Null(isolate));
+
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
   if (!browser_signals_dict.Set("topWindowHostname",
