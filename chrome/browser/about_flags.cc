@@ -3963,6 +3963,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          features::kMagnifierContinuousMouseFollowingModeSetting)},
+    {"enable-system-proxy-for-system-services",
+     flag_descriptions::kSystemProxyForSystemServicesName,
+     flag_descriptions::kSystemProxyForSystemServicesDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kSystemProxyForSystemServices)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(OS_MAC)
     {"enable-immersive-fullscreen-toolbar",

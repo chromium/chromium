@@ -45133,6 +45133,7 @@ from previous Chrome versions.
   <int value="-1176748003"
       label="FramebustingNeedsSameOriginOrUserGesture:disabled"/>
   <int value="-1176493523" label="enable-md-extensions"/>
+  <int value="-1174292609" label="SystemProxyForSystemServices:disabled"/>
   <int value="-1174267639" label="ClientLoFi:disabled"/>
   <int value="-1173361620" label="CCTModulePostMessage:disabled"/>
   <int value="-1172572865" label="NTPShowGoogleGInOmnibox:enabled"/>
@@ -47352,6 +47353,7 @@ from previous Chrome versions.
   <int value="835018878" label="disable-quic"/>
   <int value="835726069" label="NtpWebUI:disabled"/>
   <int value="836406476" label="EnableTouchableAppContextMenu:enabled"/>
+  <int value="837350465" label="SystemProxyForSystemServices:enabled"/>
   <int value="838887742" label="manual-enhanced-bookmarks"/>
   <int value="839230937" label="AutofillEnableCardNicknameUpstream:disabled"/>
   <int value="839798268" label="SafeBrowsingTelemetryForApkDownloads:disabled"/>

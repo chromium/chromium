@@ -2432,6 +2432,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "enable-system-proxy-for-system-services",
+    "owners": [ "acostinas"],
+    "expiry_milestone": 94
+  },
+  {
     "name": "enable-tab-engagement-reporting",
     "owners": [ "memex-team@google.com" ],
     "expiry_milestone": 90

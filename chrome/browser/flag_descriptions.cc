@@ -1556,6 +1556,13 @@ const char kSyncingCompromisedCredentialsDescription[] =
     "Enables syncing of Security issues which includes compromised and phished "
     "passwords.";
 
+const char kSystemProxyForSystemServicesName[] =
+    "Enable system-proxy for selected system services";
+const char kSystemProxyForSystemServicesDescription[] =
+    "Enabling this flag will allow Chrome OS system service which require "
+    "network connectivity to use the system-proxy daemon for authentication to "
+    "remote HTTP web proxies.";
+
 const char kDestroyProfileOnBrowserCloseName[] =
     "Destroy Profile on browser close";
 const char kDestroyProfileOnBrowserCloseDescription[] =
