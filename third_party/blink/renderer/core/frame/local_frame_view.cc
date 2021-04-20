@@ -2865,7 +2865,7 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
                              LocalFrameUkmAggregator::kPrePaint);
 
     GetPage()->GetLinkHighlight().UpdateBeforePrePaint();
-    MakeGarbageCollected<PrePaintTreeWalk>()->WalkTree(*this);
+    PrePaintTreeWalk().WalkTree(*this);
     GetPage()->GetLinkHighlight().UpdateAfterPrePaint();
   }
 

@@ -30,10 +30,13 @@ struct CORE_EXPORT PaintInvalidatorContext {
                           wtf_size_t parent_context_index)
         : tree_walk_(tree_walk), parent_context_index_(parent_context_index) {}
     const PaintInvalidatorContext* ParentContext() const;
-    void Trace(Visitor* visitor) const;
+    void Trace(Visitor* visitor) const {}
 
    private:
-    Member<PrePaintTreeWalk> tree_walk_;
+    GC_PLUGIN_IGNORE(
+        "Plugin detects this as invalid field. This field is a back reference "
+        "to an on-stack object that owns |this| object.")
+    PrePaintTreeWalk* tree_walk_ = nullptr;
     wtf_size_t parent_context_index_ = 0u;
   };
 
@@ -117,8 +120,8 @@ struct CORE_EXPORT PaintInvalidatorContext {
   const TransformPaintPropertyNodeOrAlias* transform_ = nullptr;
 };
 
-class PaintInvalidator {
-  DISALLOW_NEW();
+class PaintInvalidator final {
+  STACK_ALLOCATED();
 
  public:
   // Returns true if the object is invalidated.
@@ -130,8 +133,6 @@ class PaintInvalidator {
   // Process objects needing paint invalidation on the next frame.
   // See the definition of PaintInvalidationDelayedFull for more details.
   void ProcessPendingDelayedPaintInvalidations();
-
-  void Trace(Visitor*) const;
 
  private:
   friend struct PaintInvalidatorContext;

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PRE_PAINT_TREE_WALK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PRE_PAINT_TREE_WALK_H_
 
+#include <atomic>
 #include "third_party/blink/renderer/core/paint/clip_rect.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
@@ -20,18 +21,16 @@ class NGFragmentChildIterator;
 // LocalFrameView, across frame boundaries. Helper classes are called for each
 // tree node to perform actual actions.  It expects to be invoked in InPrePaint
 // phase.
-class CORE_EXPORT PrePaintTreeWalk : public GarbageCollected<PrePaintTreeWalk> {
+class CORE_EXPORT PrePaintTreeWalk final {
+  STACK_ALLOCATED();
+
  public:
   PrePaintTreeWalk() = default;
+  ~PrePaintTreeWalk();
   void WalkTree(LocalFrameView& root_frame);
 
   static bool ObjectRequiresPrePaint(const LayoutObject&);
   static bool ObjectRequiresTreeBuilderContext(const LayoutObject&);
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(context_storage_);
-    visitor->Trace(paint_invalidator_);
-  }
 
   // PrePaintTreewalkContext is large and can lead to stack overflows
   // when recursion is deep so these context objects are allocated on the heap.
@@ -41,8 +40,9 @@ class CORE_EXPORT PrePaintTreeWalk : public GarbageCollected<PrePaintTreeWalk> {
 
    public:
     PrePaintTreeWalkContext() {
-      tree_builder_context =
-          MakeGarbageCollected<PaintPropertyTreeBuilderContext>();
+      tree_builder_context.emplace();
+      tree_builder_context_initialization_guard.store(
+          true, std::memory_order_release);
     }
     PrePaintTreeWalkContext(
         const PrePaintTreeWalkContext& parent_context,
@@ -68,26 +68,70 @@ class CORE_EXPORT PrePaintTreeWalk : public GarbageCollected<PrePaintTreeWalk> {
                   .paint_invalidation_container_for_stacked_contents) {
       if (needs_tree_builder_context || DCHECK_IS_ON()) {
         DCHECK(parent_context.tree_builder_context);
-        tree_builder_context =
-            MakeGarbageCollected<PaintPropertyTreeBuilderContext>(
-                *parent_context.tree_builder_context);
+        tree_builder_context.emplace(*parent_context.tree_builder_context);
       }
 #if DCHECK_IS_ON()
       if (needs_tree_builder_context)
         DCHECK(parent_context.tree_builder_context->is_actually_needed);
       tree_builder_context->is_actually_needed = needs_tree_builder_context;
 #endif
+      tree_builder_context_initialization_guard.store(
+          true, std::memory_order_release);
+    }
+
+    // Move constructor is needed for HeapVector support.
+    PrePaintTreeWalkContext(PrePaintTreeWalkContext&& other)
+        : paint_invalidator_context(std::move(other.paint_invalidator_context)),
+          ancestor_scroll_container_paint_layer(
+              std::move(other.ancestor_scroll_container_paint_layer)),
+          inside_blocking_touch_event_handler(
+              std::move(other.inside_blocking_touch_event_handler)),
+          effective_allowed_touch_action_changed(
+              std::move(other.effective_allowed_touch_action_changed)),
+          inside_blocking_wheel_event_handler(
+              std::move(other.inside_blocking_wheel_event_handler)),
+          blocking_wheel_event_handler_changed(
+              std::move(other.blocking_wheel_event_handler_changed)),
+          clip_changed(std::move(other.clip_changed)),
+          paint_invalidation_container(
+              std::move(other.paint_invalidation_container)),
+          paint_invalidation_container_for_stacked_contents(std::move(
+              other.paint_invalidation_container_for_stacked_contents)) {
+      // Cannot use memmove (kCanMoveWithMemcpy) because:
+      // - Initialization would race without guard.
+      // - |PaintPropertyTreeBuilderContext| contains HeapVector with inline
+      //   storage which cannot be moved with memmove.
+      DCHECK(other.tree_builder_context_initialization_guard.load(
+          std::memory_order_acquire));
+      DCHECK(!tree_builder_context_initialization_guard.load(
+          std::memory_order_relaxed));
+      tree_builder_context = std::move(other.tree_builder_context);
+      tree_builder_context_initialization_guard.store(
+          true, std::memory_order_release);
     }
 
     void Trace(Visitor* visitor) const {
-      visitor->Trace(tree_builder_context);
+      // |tree_builder_context| properties:
+      // * Is initialized at construction time, so semantics never change and
+      //   branching on |has_value()| always yields the same result after
+      //   invoking the constructor.
+      // * An acquire/release load/store pair prevents the GC from seeing an
+      //   uninitialized value of base::Optional. The value is kept alive
+      //   during the constructor by the parent.
+      if (tree_builder_context_initialization_guard.load(
+              std::memory_order_acquire) &&
+          tree_builder_context.has_value())
+        visitor->Trace(*tree_builder_context);
       visitor->Trace(paint_invalidator_context);
       visitor->Trace(ancestor_scroll_container_paint_layer);
       visitor->Trace(paint_invalidation_container);
       visitor->Trace(paint_invalidation_container_for_stacked_contents);
     }
 
-    Member<PaintPropertyTreeBuilderContext> tree_builder_context;
+    // See Trace() for description.
+    std::atomic<bool> tree_builder_context_initialization_guard{false};
+    base::Optional<PaintPropertyTreeBuilderContext> tree_builder_context;
+
     PaintInvalidatorContext paint_invalidator_context;
 
     bool NeedsTreeBuilderContext() const {
@@ -95,7 +139,7 @@ class CORE_EXPORT PrePaintTreeWalk : public GarbageCollected<PrePaintTreeWalk> {
       DCHECK(tree_builder_context);
       return tree_builder_context->is_actually_needed;
 #else
-      return tree_builder_context;
+      return tree_builder_context.has_value();
 #endif
     }
 

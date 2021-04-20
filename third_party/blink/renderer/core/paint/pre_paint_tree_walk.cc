@@ -173,6 +173,12 @@ static void SetNeedsCompositingLayerPropertyUpdate(const LayoutObject& object) {
   mapping->SetNeedsGraphicsLayerUpdate(kGraphicsLayerUpdateLocal);
 }
 
+PrePaintTreeWalk::~PrePaintTreeWalk() {
+  // Eagerly clear the vector which immediately frees up the backing store. This
+  // avoids significant GC memory pressure.
+  context_storage_.clear();
+}
+
 void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
   if (root_frame_view.ShouldThrottleRendering()) {
     // Skip the throttled frame. Will update it when it becomes unthrottled.
@@ -617,9 +623,10 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   if (is_wheel_event_regions_enabled_)
     UpdateBlockingWheelEventHandler(object, context);
 
-  if (paint_invalidator_.InvalidatePaint(object, pre_paint_info,
-                                         context.tree_builder_context,
-                                         paint_invalidator_context))
+  if (paint_invalidator_.InvalidatePaint(
+          object, pre_paint_info,
+          base::OptionalOrNullptr(context.tree_builder_context),
+          paint_invalidator_context))
     needs_invalidate_chrome_client_ = true;
 
   InvalidatePaintForHitTesting(object, context);

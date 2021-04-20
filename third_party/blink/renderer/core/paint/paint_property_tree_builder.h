@@ -169,11 +169,13 @@ struct PaintPropertyTreeBuilderFragmentContext {
   FloatSize translation_2d_to_layout_shift_root_delta;
 };
 
-struct PaintPropertyTreeBuilderContext final
-    : public GarbageCollected<PaintPropertyTreeBuilderContext> {
+struct PaintPropertyTreeBuilderContext final {
+  DISALLOW_NEW();
+
  public:
   PaintPropertyTreeBuilderContext();
-  PaintPropertyTreeBuilderContext(PaintPropertyTreeBuilderContext&) = default;
+  PaintPropertyTreeBuilderContext(const PaintPropertyTreeBuilderContext&) =
+      default;
 
   void Trace(Visitor* visitor) const;
 
