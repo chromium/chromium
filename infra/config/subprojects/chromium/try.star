@@ -1717,14 +1717,12 @@ try_.chromium_win_builder(
     name = "win_chromium_compile_dbg_ng",
     branch_selector = branches.STANDARD_MILESTONE,
     goma_jobs = goma.jobs.J150,
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
     main_list_view = "try",
     tryjob = try_.job(),
 )
 
 try_.chromium_win_builder(
     name = "win_chromium_compile_rel_ng",
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 try_.chromium_win_builder(

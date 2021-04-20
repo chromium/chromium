@@ -97,12 +97,10 @@ try_.chromium_swangle_windows_builder(
     name = "win-swangle-try-x64",
     pool = "luci.chromium.swangle.win.x64.try",
     pinned = False,
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 try_.chromium_swangle_windows_builder(
     name = "win-swangle-try-x86",
     pool = "luci.chromium.swangle.deps.win.x86.try",
     pinned = False,
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
