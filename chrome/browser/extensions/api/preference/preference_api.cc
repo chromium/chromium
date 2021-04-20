@@ -250,8 +250,9 @@ class NetworkPredictionTransformer : public PrefTransformerInterface {
       const base::Value* browser_pref,
       bool is_incognito_profile) override {
     int int_value = chrome_browser_net::NETWORK_PREDICTION_DEFAULT;
-    const bool pref_found = browser_pref->GetAsInteger(&int_value);
-    DCHECK(pref_found) << "Preference not found.";
+    if (browser_pref->is_int()) {
+      int_value = browser_pref->GetInt();
+    }
     return std::make_unique<base::Value>(
         int_value != chrome_browser_net::NETWORK_PREDICTION_NEVER);
   }
