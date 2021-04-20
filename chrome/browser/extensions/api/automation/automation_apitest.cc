@@ -45,7 +45,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/screen.h"
+#include "ui/display/test/display_manager_test_api.h"
 #endif
 
 namespace extensions {
@@ -72,8 +76,7 @@ class AutomationApiTest : public ExtensionApiTest {
     base::FilePath test_data;
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data));
     embedded_test_server()->ServeFilesFromDirectory(
-        test_data.AppendASCII("extensions/api_test")
-        .AppendASCII(kSitesDir));
+        test_data.AppendASCII("extensions/api_test").AppendASCII(kSitesDir));
     ASSERT_TRUE(ExtensionApiTest::StartEmbeddedTestServer());
   }
 
@@ -330,7 +333,53 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopActions) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTest) {
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestOneDisplay) {
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/desktop", .page_url = "hit_test.html"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestPrimaryDisplay) {
+  ash::ShellTestApi shell_test_api;
+  // Create two displays, both 800x800px, next to each other. The primary
+  // display has top left corner at (0, 0), and the secondary display has
+  // top left corner at (801, 0).
+  display::test::DisplayManagerTestApi(shell_test_api.display_manager())
+      .UpdateDisplay("800x800,801+0-800x800");
+  // Ensure it worked. By default InProcessBrowserTest uses just one display.
+  ASSERT_EQ(2u, shell_test_api.display_manager()->GetNumDisplays());
+  display::test::DisplayManagerTestApi display_manager_test_api(
+      shell_test_api.display_manager());
+  // The browser will open in the primary display.
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/desktop", .page_url = "hit_test.html"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestSecondaryDisplay) {
+  ash::ShellTestApi shell_test_api;
+  // Create two displays, both 800x800px, next to each other. The primary
+  // display has top left corner at (0, 0), and the secondary display has
+  // top left corner at (801, 0).
+  display::test::DisplayManagerTestApi(shell_test_api.display_manager())
+      .UpdateDisplay("800x800,801+0-800x800");
+  // Ensure it worked. By default InProcessBrowserTest uses just one display.
+  ASSERT_EQ(2u, shell_test_api.display_manager()->GetNumDisplays());
+  display::test::DisplayManagerTestApi display_manager_test_api(
+      shell_test_api.display_manager());
+
+  display::Screen* screen = display::Screen::GetScreen();
+  int64_t display2 = display_manager_test_api.GetSecondaryDisplay().id();
+  screen->SetDisplayForNewWindows(display2);
+  // Run the test in the browser in the non-primary display.
+  // Open a browser on the secondary display, which is default for new windows.
+  CreateBrowser(browser()->profile());
+  // Close the browser which was already opened on the primary display.
+  CloseBrowserSynchronously(browser());
+  // Sets browser() to return the one created above, instead of the one which
+  // was closed.
+  SelectFirstBrowser();
+  // The test will run in browser().
   ASSERT_TRUE(RunExtensionTest(
       {.name = "automation/tests/desktop", .page_url = "hit_test.html"}))
       << message_;
@@ -342,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopLoadTabs) {
       << message_;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#else  // !defined(USE_AURA)
+#else   // !defined(USE_AURA)
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotSupported) {
   ASSERT_TRUE(RunExtensionTest({.name = "automation/tests/desktop",
 

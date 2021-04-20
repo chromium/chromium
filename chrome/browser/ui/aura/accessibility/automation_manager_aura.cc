@@ -35,6 +35,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #endif
 
 // static
@@ -298,18 +299,24 @@ void AutomationManagerAura::PerformHitTest(
     const ui::AXActionData& original_action) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ui::AXActionData action = original_action;
-  aura::Window* root_window = ash::Shell::Get()->GetPrimaryRootWindow();
+  aura::Window* root_window =
+      ash::window_util::GetRootWindowAt(action.target_point);
   if (!root_window)
     return;
 
+  // Convert to the root window's coordinates.
+  gfx::Point point_in_window(action.target_point);
+  ::wm::ConvertPointFromScreen(root_window, &point_in_window);
+
   // Determine which aura Window is associated with the target point.
-  aura::Window* window =
-      root_window->GetEventHandlerForPoint(action.target_point);
+  aura::Window* window = root_window->GetEventHandlerForPoint(point_in_window);
   if (!window)
     return;
 
-  // Convert point to local coordinates of the hit window.
-  aura::Window::ConvertPointToTarget(root_window, window, &action.target_point);
+  // Convert point to local coordinates of the hit window within the root
+  // window.
+  aura::Window::ConvertPointToTarget(root_window, window, &point_in_window);
+  action.target_point = point_in_window;
 
   // Check for a AX node tree in a remote process (e.g. renderer, mojo app).
   ui::AXTreeID child_ax_tree_id;

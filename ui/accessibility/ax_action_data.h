@@ -66,7 +66,7 @@ struct AX_BASE_EXPORT AXActionData {
   // The target rect for the action.
   gfx::Rect target_rect;
 
-  // The target point for the action.
+  // The target point for the action in screen coordinates.
   gfx::Point target_point;
 
   // The new value for a node, for the SET_VALUE action. UTF-8 encoded.
