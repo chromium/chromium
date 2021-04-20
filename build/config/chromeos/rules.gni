@@ -31,22 +31,26 @@ if (cros_sdk_version != "") {
   _symlink_map = []
   _symlink_targets_map = []
 
-  _boards = [ cros_board ]
-  if (cros_boards != "") {
-    _boards += string_split(cros_boards, ":")
-  }
-  if (cros_boards_with_qemu_images != "") {
-    _boards += string_split(cros_boards_with_qemu_images, ":")
+  if (is_chromeos_ash) {
+    _potential_test_boards = [ cros_board ]
+  } else {
+    _potential_test_boards = []
+    if (cros_boards != "") {
+      _potential_test_boards += string_split(cros_boards, ":")
+    }
+    if (cros_boards_with_qemu_images != "") {
+      _potential_test_boards += string_split(cros_boards_with_qemu_images, ":")
+    }
   }
 
-  foreach(b, _boards) {
+  foreach(b, _potential_test_boards) {
     _cache_path_prefix =
         "//build/cros_cache/chrome-sdk/symlinks/${b}+${cros_sdk_version}"
 
-    cros_is_vm = false
+    _cros_is_vm = false
     foreach(b1, string_split(cros_boards_with_qemu_images, ":")) {
       if (b == b1) {
-        cros_is_vm = true
+        _cros_is_vm = true
       }
     }
 
@@ -61,7 +65,7 @@ if (cros_sdk_version != "") {
           "${_cache_path_prefix}+environment_chromeos-base_chromeos-chrome.tar.xz"),
       rebase_path("${_cache_path_prefix}+target_toolchain"),
     ]
-    if (cros_is_vm) {
+    if (_cros_is_vm) {
       # VM-related tools.
       _symlinks += [
         rebase_path("${_cache_path_prefix}+sys-firmware/seabios"),
@@ -119,6 +123,8 @@ if (cros_sdk_version != "") {
 #       built by an amd64-generic toolchain, but tested on eve devices, and to
 #       accommondate the use case, this variable is introduced to allow
 #       overriding the board to test the built binary.
+#       WARNING: Do not use, this is to be deprecated.
+#       TODO(crbug.com/1195415): deprecate this argument.
 #   tast_vars: A list of "key=value" runtime variable pairs to pass to invoke
 #       the Tast tests. For more details, please see:
 #       https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Runtime-variables
@@ -141,64 +147,80 @@ template("generate_runner_script") {
     cros_board = override_board
   }
 
+  if (is_chromeos_lacros) {
+    # Lacros doesn't need cros_board, so setting it to empty to avoid being used
+    # accidentally below.
+    cros_board = ""
+    not_needed([ cros_board ])
+  }
+
   if (!defined(deploy_chrome)) {
     deploy_chrome = false
   }
-
   if (!defined(deploy_lacros)) {
     deploy_lacros = false
   }
+  assert(!(deploy_chrome && deploy_lacros),
+         "deploy_chrome and deploy_lacros are exclusive.")
 
-  cros_is_vm = false
   is_tast = defined(tast_attr_expr) || defined(tast_tests)
+  assert(!(is_tast && defined(test_exe)),
+         "Tast tests are invoked from binaries shipped with the VM image. " +
+             "There should be no locally built binary needed.")
+  assert(is_tast || !defined(tast_vars),
+         "tast_vars is only support for Tast tests")
+
+  # If we're in the cros chrome-sdk (and not the raw ebuild), the test will
+  # need some additional runtime data located in the SDK cache.
+  _sdk_data = []
   if (cros_sdk_version != "") {
     assert(defined(generated_script),
            "Must specify where to place generated test launcher script via " +
                "'generated_script'")
-    assert(!(is_tast && defined(test_exe)),
-           "Tast tests are invoked from binaries shipped with the VM image. " +
-               "There should be no locally built binary needed.")
-    assert(is_tast || !defined(tast_vars),
-           "tast_vars is only support for Tast tests")
 
-    # Determine the real paths for various items in the SDK, which may be used
-    # in the 'generate_runner_script' template below.
-    foreach(b, string_split(cros_boards_with_qemu_images, ":")) {
-      if (cros_board == b) {
-        cros_is_vm = true
-      }
-    }
-
-    assert(!(deploy_chrome && deploy_lacros),
-           "deploy_chrome and deploy_lacros are exclusive.")
-
-    if (is_tast || cros_is_vm || deploy_chrome) {
-      _symlink_targets = []
-      foreach(m, _symlink_targets_map) {
-        if (cros_board == m[0]) {
-          _symlink_targets = []
-          _symlink_targets = m[1]
+    foreach(b, _potential_test_boards) {
+      _cros_is_vm = false
+      foreach(b1, string_split(cros_boards_with_qemu_images, ":")) {
+        if (b == b1) {
+          _cros_is_vm = true
         }
       }
 
-      if (is_tast) {
-        _tast_sdk_items = [
-          _symlink_targets[0],
-          _symlink_targets[1],
-        ]
-      }
-      if (deploy_chrome) {
-        _toolchain_sdk_items = [
-          _symlink_targets[2],
-          _symlink_targets[3],
-        ]
-      }
-      if (cros_is_vm) {
-        _vm_sdk_items = [
-          _symlink_targets[4],
-          _symlink_targets[5],
-          _symlink_targets[6],
-        ]
+      # Determine the real paths for various items in the SDK, which may be used
+      # in the 'generate_runner_script' template below.
+      if (is_tast || _cros_is_vm || deploy_chrome) {
+        _symlink_targets = []
+        foreach(m, _symlink_targets_map) {
+          if (b == m[0]) {
+            _symlink_targets = []
+            _symlink_targets = m[1]
+          }
+        }
+
+        if (is_tast) {
+          # Add tast sdk items.
+          _sdk_data += [
+            _symlink_targets[0],
+            _symlink_targets[1],
+          ]
+        }
+        if (deploy_chrome) {
+          # To deploy chrome to the VM, it needs to be stripped down to fit into
+          # the VM. This is done by using binutils in the toolchain. So add the
+          # toolchain to the data.
+          _sdk_data += [
+            _symlink_targets[2],
+            _symlink_targets[3],
+          ]
+        }
+        if (_cros_is_vm) {
+          # Add vm sdk items.
+          _sdk_data += [
+            _symlink_targets[4],
+            _symlink_targets[5],
+            _symlink_targets[6],
+          ]
+        }
       }
     }
   }
@@ -276,7 +298,13 @@ template("generate_runner_script") {
         cros_board,
       ]
 
-      if (cros_is_vm) {
+      _cros_is_vm = false
+      foreach(b, string_split(cros_boards_with_qemu_images, ":")) {
+        if (cros_board == b) {
+          _cros_is_vm = true
+        }
+      }
+      if (_cros_is_vm) {
         executable_args += [ "--use-vm" ]
       } else {
         executable_args += [ "--flash" ]
@@ -322,6 +350,9 @@ template("generate_runner_script") {
       "//chromeos/CHROMEOS_LKGM",
       "//third_party/chromite/",
     ]
+
+    data += _sdk_data
+
     if (defined(invoker.data)) {
       data += invoker.data
     }
@@ -329,24 +360,6 @@ template("generate_runner_script") {
     data_deps = [ "//testing:test_scripts_shared" ]
     if (defined(invoker.data_deps)) {
       data_deps += invoker.data_deps
-    }
-
-    # If we're in the cros chrome-sdk (and not the raw ebuild), the test will
-    # need some additional runtime data located in the SDK cache.
-    if (cros_sdk_version != "") {
-      # Add the VM/QEMU-launching bits if needed.
-      if (cros_is_vm) {
-        data += _vm_sdk_items
-      }
-      if (is_tast) {
-        data += _tast_sdk_items
-      }
-      if (deploy_chrome) {
-        # To deploy chrome to the VM, it needs to be stripped down to fit into
-        # the VM. This is done by using binutils in the toolchain. So add the
-        # toolchain to the data.
-        data += _toolchain_sdk_items
-      }
     }
   }
 }
