@@ -7,10 +7,22 @@
  * 'os-settings-reset-page' is the OS settings page containing reset
  * settings.
  */
+import './os_powerwash_dialog.js';
+
+import {assert} from '//resources/js/assert.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-reset-page',
 
-  behaviors: [DeepLinkingBehavior, settings.RouteObserverBehavior],
+  behaviors: [DeepLinkingBehavior, RouteObserverBehavior],
 
   properties: {
     /** @private */
@@ -39,18 +51,18 @@ Polymer({
   /** @private */
   onPowerwashDialogClose_() {
     this.showPowerwashDialog_ = false;
-    cr.ui.focusWithoutInk(assert(this.$.powerwash));
+    focusWithoutInk(assert(this.$.powerwash));
   },
 
   /**
-   * settings.RouteObserverBehavior
-   * @param {!settings.Route} newRoute
-   * @param {!settings.Route} oldRoute
+   * RouteObserverBehavior
+   * @param {!Route} newRoute
+   * @param {!Route} oldRoute
    * @protected
    */
   currentRouteChanged(newRoute, oldRoute) {
     // Does not apply to this page.
-    if (newRoute !== settings.routes.OS_RESET) {
+    if (newRoute !== routes.OS_RESET) {
       return;
     }
 

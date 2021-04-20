@@ -47,8 +47,8 @@ import './os_printing_page/cups_settings_add_printer_dialog.m.js';
 import './os_printing_page/os_printing_page.m.js';
 import './os_privacy_page/os_privacy_page.m.js';
 import './os_privacy_page/peripheral_data_access_protection_dialog.m.js';
-import './os_reset_page/os_powerwash_dialog.m.js';
-import './os_reset_page/os_reset_page.m.js';
+import './os_reset_page/os_powerwash_dialog.js';
+import './os_reset_page/os_reset_page.js';
 import './os_files_page/smb_shares_page.m.js';
 
 export {SmbBrowserProxyImpl, SmbMountResult} from 'chrome://resources/cr_components/chromeos/smb_shares/smb_browser_proxy.m.js';
@@ -63,4 +63,4 @@ export {PrinterType} from './os_printing_page/cups_printer_types.m.js';
 export {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, PrinterSetupResult, PrintServerResult} from './os_printing_page/cups_printers_browser_proxy.m.js';
 export {CupsPrintersEntryManager} from './os_printing_page/cups_printers_entry_manager.m.js';
 export {PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.m.js';
-export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.m.js';
+export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
