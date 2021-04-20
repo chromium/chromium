@@ -32,7 +32,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowActivity;
-import org.robolectric.shadows.multidex.ShadowMultiDex;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -40,8 +39,7 @@ import java.util.List;
 
 /** Unit tests for {@link ApplicationStatus}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {ApplicationStatusTest.TrackingShadowActivity.class, ShadowMultiDex.class})
+@Config(manifest = Config.NONE, shadows = {ApplicationStatusTest.TrackingShadowActivity.class})
 public class ApplicationStatusTest {
     private static class WindowCallbackWrapper implements Window.Callback {
         final Window.Callback mWrapped;
