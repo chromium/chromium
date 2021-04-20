@@ -78,7 +78,7 @@ class AXTreeSerializer {
   // for no maximum. This is not a hard maximum - once it hits or
   // exceeds this maximum it stops walking the children of nodes, but
   // it may exceed this value a bit in order to create a consistent
-  // tree. This is only intended to be used for one-time tree snapshots.
+  // tree.
   void set_max_node_count(size_t max_node_count) {
     max_node_count_ = max_node_count;
   }
@@ -95,6 +95,11 @@ class AXTreeSerializer {
   // this only happens when the source tree has a problem like duplicate
   // ids or changing during serialization.
   bool SerializeChanges(AXSourceNode node, AXTreeUpdate* out_update);
+
+  // Get incompletely serialized nodes. This will only be nonempty if either
+  // set_max_node_count or set_timeout were used. This is only valid after a
+  // call to SerializeChanges, and it's reset with each call.
+  std::vector<AXNodeID> GetIncompleteNodeIds();
 
   // Invalidate the subtree rooted at this node, ensuring that the whole
   // subtree is re-serialized the next time any of those nodes end up
@@ -212,7 +217,14 @@ class AXTreeSerializer {
   // The maximum time to spend serializing before timing out, or 0
   // if there's no maximum.
   base::TimeDelta timeout_;
+
+  // The timer, which runs if there's a nonzero timeout and it hasn't
+  // yet expired. Once the timeout elapses, the timer is deleted.
   std::unique_ptr<base::ElapsedTimer> timer_;
+
+  // The IDs of nodes that weren't able to be completely serialized due to
+  // max_node_count_ or timeout_.
+  std::vector<AXNodeID> incomplete_node_ids_;
 
   // Keeps track of if Reset() was called. If so, we need to always
   // explicitly set node_id_to_clear to ensure that the next serialized
@@ -424,6 +436,7 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChanges(
     AXTreeUpdate* out_update) {
   if (!timeout_.is_zero())
     timer_ = std::make_unique<base::ElapsedTimer>();
+  incomplete_node_ids_.clear();
 
   // Send the tree data if it's changed since the last update, or if
   // out_update->has_tree_data is already set to true.
@@ -490,6 +503,12 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChanges(
   }
 
   return true;
+}
+
+template <typename AXSourceNode>
+std::vector<AXNodeID> AXTreeSerializer<AXSourceNode>::GetIncompleteNodeIds() {
+  DCHECK(max_node_count_ > 0 || !timeout_.is_zero());
+  return incomplete_node_ids_;
 }
 
 template <typename AXSourceNode>
@@ -573,8 +592,18 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
     should_terminate_early = true;
 
   // Also terminate early if a timeout is reached.
-  if (!timeout_.is_zero() && timer_->Elapsed() >= timeout_)
-    should_terminate_early = true;
+  if (!timeout_.is_zero()) {
+    if (timer_ && timer_->Elapsed() >= timeout_) {
+      // Terminate early and delete the timer so that we don't have to
+      // keep checking if we timed out.
+      should_terminate_early = true;
+      timer_.reset();
+    } else if (!timer_) {
+      // Already timed out; keep terminating early until the serialization
+      // is done.
+      should_terminate_early = true;
+    }
+  }
 
   // Iterate over the ids of the children of |node|.
   // Create a set of the child ids so we can quickly look
@@ -585,25 +614,10 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
   std::set<AXNodeID> new_ignored_ids;
   std::set<AXNodeID> new_child_ids;
   std::vector<AXSourceNode> children;
-  if (!should_terminate_early) {
-    tree_->GetChildren(node, &children);
+  if (should_terminate_early) {
+    incomplete_node_ids_.push_back(id);
   } else {
-    static bool logged_once = false;
-    if (!logged_once) {
-      logged_once = true;
-
-      LOG(WARNING) << "Warning: stopped serializing AX nodes before "
-                   << "serialization was complete.";
-      if (max_node_count_) {
-        LOG(WARNING) << "Nodes serialized so far: " << out_update->nodes.size()
-                     << ", max_node_count: " << max_node_count_;
-      }
-      if (!timeout_.is_zero()) {
-        LOG(WARNING) << "Elapsed time in ms: "
-                     << timer_->Elapsed().InMilliseconds()
-                     << ", timeout: " << timeout_.InMilliseconds();
-      }
-    }
+    tree_->GetChildren(node, &children);
   }
   for (size_t i = 0; i < children.size(); ++i) {
     AXSourceNode& child = children[i];
