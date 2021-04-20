@@ -227,6 +227,7 @@ source_set("unit_tests") {
     "common/post_cancellable_task_unittest.cc",
     "common/scheduler_helper_unittest.cc",
     "common/thread_load_tracker_unittest.cc",
+    "common/thread_unittest.cc",
     "common/throttling/budget_pool_unittest.cc",
     "common/throttling/task_queue_throttler_unittest.cc",
     "common/tracing_helper_unittest.cc",
