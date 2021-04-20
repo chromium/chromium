@@ -556,7 +556,7 @@ LayoutRect LayoutMultiColumnSet::FragmentsBoundingBox(
 
 void LayoutMultiColumnSet::ComputeVisualOverflow(bool recompute_floats) {
   NOT_DESTROYED();
-  LayoutRect previous_visual_overflow_rect = VisualOverflowRectAllowingUnset();
+  LayoutRect previous_visual_overflow_rect = VisualOverflowRect();
   ClearVisualOverflow();
   AddVisualOverflowFromChildren();
   AddVisualEffectOverflow();

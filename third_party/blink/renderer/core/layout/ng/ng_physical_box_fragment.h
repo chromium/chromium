@@ -286,9 +286,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   NGInkOverflow::Type InkOverflowType() const {
     return static_cast<NGInkOverflow::Type>(ink_overflow_type_);
   }
-  bool IsInkOverflowComputed() const {
-    return InkOverflowType() != NGInkOverflow::kNotSet;
-  }
   bool HasInkOverflow() const {
     return InkOverflowType() != NGInkOverflow::kNone;
   }

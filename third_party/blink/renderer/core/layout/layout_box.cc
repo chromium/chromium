@@ -7411,7 +7411,7 @@ void LayoutBox::CopyVisualOverflowFromFragmentsRecursively() {
 void LayoutBox::CopyVisualOverflowFromFragments() {
   NOT_DESTROYED();
   DCHECK(CanUseFragmentsForVisualOverflow());
-  const LayoutRect previous_visual_overflow = VisualOverflowRectAllowingUnset();
+  const LayoutRect previous_visual_overflow = VisualOverflowRect();
   CopyVisualOverflowFromFragmentsWithoutInvalidations();
   const LayoutRect visual_overflow = VisualOverflowRect();
   if (visual_overflow == previous_visual_overflow)
@@ -7733,25 +7733,6 @@ LayoutRect LayoutBox::VisualOverflowRect() const {
   ApplyOverflowClip(overflow_clip_axes, self_visual_overflow_rect, result);
   return result;
 }
-
-#if DCHECK_IS_ON()
-LayoutRect LayoutBox::VisualOverflowRectAllowingUnset() const {
-  NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
-  return VisualOverflowRect();
-}
-
-void LayoutBox::CheckIsVisualOverflowComputed() const {
-  if (NGInkOverflow::ReadUnsetAsNoneScope::IsActive())
-    return;
-  if (!CanUseFragmentsForVisualOverflow())
-    return;
-  // TODO(crbug.com/1144203): NG block fragmentation needs more work.
-  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
-    return;
-  for (const NGPhysicalBoxFragment& fragment : PhysicalFragments())
-    DCHECK(fragment.IsInkOverflowComputed());
-}
-#endif
 
 PhysicalOffset LayoutBox::OffsetPoint(const Element* parent) const {
   NOT_DESTROYED();

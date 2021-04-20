@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/paint/paint_and_raster_invalidation_test.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
@@ -56,12 +55,9 @@ class BoxPaintInvalidatorTest : public PaintAndRasterInvalidationTest {
     target.setAttribute(
         html_names::kStyleAttr,
         target.getAttribute(html_names::kStyleAttr) + "; width: 200px");
-    base::Optional<NGInkOverflow::ReadUnsetAsNoneScope> read_unset_as_none;
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
       GetDocument().View()->UpdateLifecycleToLayoutClean(
           DocumentUpdateReason::kTest);
-      // |VisualOverflow| is not computed yet, allow it read as no-overflow.
-      read_unset_as_none.emplace();
     } else {
       GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
           DocumentUpdateReason::kTest);
@@ -131,12 +127,9 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonEmptyContent) {
   target.setAttribute(html_names::kStyleAttr, "width: 200px");
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
-  {
-    // |VisualOverflow| is not computed yet, allow it read as no-overflow.
-    NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
-    EXPECT_EQ(PaintInvalidationReason::kIncremental,
-              ComputePaintInvalidationReason(box, paint_offset));
-  }
+
+  EXPECT_EQ(PaintInvalidationReason::kIncremental,
+            ComputePaintInvalidationReason(box, paint_offset));
 }
 
 TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonBasic) {
@@ -160,12 +153,9 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonBasic) {
   target.setAttribute(html_names::kStyleAttr, "background: blue; width: 200px");
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
-  {
-    // |VisualOverflow| is not computed yet, allow it read as no-overflow.
-    NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
-    EXPECT_EQ(PaintInvalidationReason::kIncremental,
-              ComputePaintInvalidationReason(box, paint_offset));
-  }
+
+  EXPECT_EQ(PaintInvalidationReason::kIncremental,
+            ComputePaintInvalidationReason(box, paint_offset));
 
   // Add visual overflow.
   target.setAttribute(html_names::kStyleAttr,

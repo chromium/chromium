@@ -2446,7 +2446,7 @@ void LayoutBlockFlow::ComputeVisualOverflow(bool recompute_floats) {
   NOT_DESTROYED();
   DCHECK(!SelfNeedsLayout());
 
-  LayoutRect previous_visual_overflow_rect = VisualOverflowRectAllowingUnset();
+  LayoutRect previous_visual_overflow_rect = VisualOverflowRect();
   ClearVisualOverflow();
   AddVisualOverflowFromChildren();
   AddVisualEffectOverflow();
