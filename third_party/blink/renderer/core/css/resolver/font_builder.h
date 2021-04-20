@@ -84,7 +84,7 @@ class CORE_EXPORT FontBuilder {
   void UpdateFontDescription(FontDescription&,
                              FontOrientation = FontOrientation::kHorizontal);
   void CreateFont(ComputedStyle&, const ComputedStyle* parent_style);
-  void CreateFontForDocument(ComputedStyle&);
+  void CreateInitialFont(ComputedStyle&);
 
   bool FontDirty() const { return flags_; }
 

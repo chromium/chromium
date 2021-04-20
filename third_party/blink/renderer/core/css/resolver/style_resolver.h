@@ -92,6 +92,10 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   const ComputedStyle* StyleForText(Text*);
   ComputedStyle* StyleForViewport();
 
+  // Propagate computed values from the root or body element to the viewport
+  // when specified to do so.
+  void PropagateStyleToViewport();
+
   // Create ComputedStyle for anonymous boxes.
   ComputedStyle* CreateAnonymousStyleWithDisplay(
       const ComputedStyle& parent_style,

@@ -453,23 +453,23 @@ void FontBuilder::CreateFont(ComputedStyle& style,
   flags_ = 0;
 }
 
-void FontBuilder::CreateFontForDocument(ComputedStyle& document_style) {
+void FontBuilder::CreateInitialFont(ComputedStyle& style) {
   DCHECK(document_);
   FontDescription font_description = FontDescription();
-  font_description.SetLocale(document_style.GetFontDescription().Locale());
+  font_description.SetLocale(style.GetFontDescription().Locale());
 
   SetFamilyDescription(font_description,
                        FontBuilder::InitialFamilyDescription());
   SetSize(font_description,
           FontDescription::Size(FontSizeFunctions::InitialKeywordSize(), 0.0f,
                                 false));
-  UpdateSpecifiedSize(font_description, document_style, &document_style);
-  UpdateComputedSize(font_description, document_style);
+  UpdateSpecifiedSize(font_description, style, &style);
+  UpdateComputedSize(font_description, style);
 
-  font_description.SetOrientation(document_style.ComputeFontOrientation());
+  font_description.SetOrientation(style.ComputeFontOrientation());
 
   FontSelector* font_selector = document_->GetStyleEngine().GetFontSelector();
-  document_style.SetFontInternal(Font(font_description, font_selector));
+  style.SetFontInternal(Font(font_description, font_selector));
 }
 
 }  // namespace blink

@@ -1614,7 +1614,7 @@ bool LayoutBox::HasScrollbarGutters(ScrollbarOrientation orientation) const {
     return false;
 
   // Scrollbar-gutter propagates to the viewport
-  // (see:|Document::PropagateStyleToViewport|).
+  // (see:|StyleResolver::PropagateStyleToViewport|).
   if (orientation == kVerticalScrollbar) {
     EOverflow overflow = StyleRef().OverflowY();
     return (StyleRef().IsScrollbarGutterForce() ||

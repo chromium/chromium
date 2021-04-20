@@ -157,8 +157,8 @@ void SnapCoordinator::RemoveSnapContainer(LayoutBox& snap_container) {
 
 void SnapCoordinator::SnapContainerDidChange(LayoutBox& snap_container) {
   // Scroll snap properties have no effect on the document element instead they
-  // are propagated to (See Document::PropagateStyleToViewport) and handled by
-  // the LayoutView.
+  // are propagated to (See StyleResolver::PropagateStyleToViewport) and handled
+  // by the LayoutView.
   if (snap_container.GetNode() ==
       snap_container.GetDocument().documentElement())
     return;

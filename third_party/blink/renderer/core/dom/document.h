@@ -558,8 +558,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // Special support for editing
   Text* CreateEditingTextNode(const String&);
 
-  void SetupFontBuilder(ComputedStyle& document_style);
-
   bool NeedsLayoutTreeUpdate() const;
   // Whether we need layout tree update for this node or not, without
   // considering nodes in display locked subtrees.
@@ -1721,8 +1719,6 @@ class CORE_EXPORT Document : public ContainerNode,
   void ScheduleLayoutTreeUpdate();
 
   bool NeedsFullLayoutTreeUpdate() const;
-
-  void PropagateStyleToViewport();
 
   void UpdateUseShadowTreesIfNeeded();
   void EvaluateMediaQueryListIfNeeded();
