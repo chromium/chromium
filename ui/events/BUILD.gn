@@ -158,6 +158,15 @@ component("events_base") {
     "//ui/gfx/geometry",
   ]
 
+  if (is_fuchsia) {
+    sources += [
+      "keycodes/keyboard_code_conversion_fuchsia.cc",
+      "keycodes/keyboard_code_conversion_fuchsia.h",
+    ]
+
+    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3" ]
+  }
+
   if (use_x11 || ozone_platform_x11) {
     public_deps += [ "//ui/events/keycodes:x11" ]
 
@@ -706,8 +715,15 @@ if (!is_ios) {
     }
 
     if (is_fuchsia) {
-      sources += [ "fuchsia/input_event_dispatcher_unittest.cc" ]
-      deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input" ]
+      sources += [
+        "fuchsia/input_event_dispatcher_unittest.cc",
+        "keycodes/keyboard_code_conversion_fuchsia_unittest.cc",
+      ]
+
+      deps += [
+        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
+        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3",
+      ]
     }
 
     if (is_win || is_mac || use_ozone) {
