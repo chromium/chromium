@@ -7,14 +7,9 @@
  */
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {DownloadShelfApiProxy, DownloadShelfApiProxyImpl} from './download_shelf_api_proxy.js';
 
-/** @enum {string} */
-export const ITEM_STATE = {
-  IN_PROGRESS: 'in_progress',
-  INTERRUPTED: 'interrupted',
-  COMPLETE: 'complete',
-};
+import {DownloadItem, DownloadState} from './download_shelf.mojom-webui.js';
+import {DownloadShelfApiProxy, DownloadShelfApiProxyImpl} from './download_shelf_api_proxy.js';
 
 export class DownloadItemElement extends CustomElement {
   static get template() {
@@ -24,14 +19,14 @@ export class DownloadItemElement extends CustomElement {
   constructor() {
     super();
 
-    /** @private {chrome.downloads.DownloadItem} */
+    /** @private {DownloadItem} */
     this.item_;
 
     /** @private {!DownloadShelfApiProxy} */
     this.apiProxy_ = DownloadShelfApiProxyImpl.getInstance();
   }
 
-  /** @param {chrome.downloads.DownloadItem} value  */
+  /** @param {!DownloadItem} value */
   set item(value) {
     if (this.item_ === value) {
       return;
@@ -40,7 +35,7 @@ export class DownloadItemElement extends CustomElement {
     this.update_();
   }
 
-  /** @return {chrome.downloads.DownloadItem} */
+  /** @return {DownloadItem} */
   get item() {
     return this.item_;
   }
@@ -52,23 +47,27 @@ export class DownloadItemElement extends CustomElement {
       return;
     }
     const downloadElement = this.$('.download-item');
+    // Convert the value to a string as it might be a uint16 array for some
+    // platforms.
+    const filePath = String(item.fileNameToReportUser.path);
     this.$('#filename').innerText =
-        item.filename.substring(item.filename.lastIndexOf('/') + 1);
+        filePath.substring(filePath.lastIndexOf('/') + 1);
+
     downloadElement.dataset.state = item.state;
     switch (item.state) {
-      case ITEM_STATE.IN_PROGRESS:
-        this.progress =
-            item.totalBytes > 0 ? item.bytesReceived / item.totalBytes : 0;
+      case DownloadState.kInProgress:
+        this.progress = Number(
+            item.totalBytes > 0 ? item.receivedBytes / item.totalBytes : 0);
         break;
-      case ITEM_STATE.COMPLETE:
+      case DownloadState.kComplete:
         this.progress = 1;
         break;
-      case ITEM_STATE.INTERRUPTED:
+      case DownloadState.kInterrupted:
         this.progress = 0;
         break;
     }
 
-    if (item.paused) {
+    if (item.isPaused) {
       downloadElement.dataset.paused = true;
     } else {
       delete downloadElement.dataset.paused;

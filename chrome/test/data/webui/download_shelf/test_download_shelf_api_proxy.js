@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageRemote} from 'chrome://download-shelf.top-chrome/download_shelf.mojom-webui.js';
+import {DownloadItem, PageCallbackRouter, PageRemote} from 'chrome://download-shelf.top-chrome/download_shelf.mojom-webui.js';
 import {DownloadShelfApiProxy, DownloadShelfApiProxyImpl} from 'chrome://download-shelf.top-chrome/download_shelf_api_proxy.js';
 import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 
@@ -10,8 +10,9 @@ import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 export class TestDownloadShelfApiProxy extends TestBrowserProxy {
   constructor() {
     super([
-      'getDownloads', 'getDownloadById', 'getFileIcon', 'onCreated',
-      'onChanged', 'onErased', 'showContextMenu'
+      'getDownloads',
+      'getFileIcon',
+      'showContextMenu',
     ]);
 
     /** @type {!PageCallbackRouter} */
@@ -21,54 +22,20 @@ export class TestDownloadShelfApiProxy extends TestBrowserProxy {
     this.callbackRouterRemote =
         this.callbackRouter.$.bindNewPipeAndPassRemote();
 
-    /** @private {!Array} */
+    /** @private {!Array<DownloadItem>} */
     this.downloadItems_ = [];
-
-    /** @private {Function} */
-    this.onCreatedCallback_;
-
-    /** @private {Function} */
-    this.onChangedCallback_;
-
-    /** @private {Function} */
-    this.onErasedCallback_;
   }
 
   /** @override */
   getDownloads() {
     this.methodCalled('getDownloads');
-    return Promise.resolve(this.downloadItems_);
-  }
-
-  /** @override */
-  getDownloadById(downloadId) {
-    this.methodCalled('getDownloadById', [downloadId]);
-    const item = this.downloadItems_.find(item => item.id === downloadId);
-    return Promise.resolve([item]);
+    return Promise.resolve({downloadItems: this.downloadItems_});
   }
 
   /** @override */
   getFileIcon(downloadId) {
     this.methodCalled('getFileIcon', [downloadId]);
     return Promise.resolve('');
-  }
-
-  /** @override */
-  onCreated(callback) {
-    this.methodCalled('onCreated', [callback]);
-    this.onCreatedCallback_ = callback;
-  }
-
-  /** @override */
-  onChanged(callback) {
-    this.methodCalled('onChanged', [callback]);
-    this.onChangedCallback_ = callback;
-  }
-
-  /** @override */
-  onErased(callback) {
-    this.methodCalled('onErased', [callback]);
-    this.onErasedCallback_ = callback;
   }
 
   /** @override */
@@ -81,30 +48,13 @@ export class TestDownloadShelfApiProxy extends TestBrowserProxy {
     return this.callbackRouter;
   }
 
-  /** return {!PageRemote} */
+  /** @return {!PageRemote} */
   getCallbackRouterRemote() {
     return this.callbackRouterRemote;
   }
 
+  /** @param {!Array<DownloadItem>} items */
   setDownloadItems(items) {
     this.downloadItems_ = items;
-  }
-
-  create(item) {
-    if (this.onCreatedCallback_) {
-      this.onCreatedCallback_(item);
-    }
-  }
-
-  change(changes) {
-    if (this.onChangedCallback_) {
-      this.onChangedCallback_(changes);
-    }
-  }
-
-  erase(id) {
-    if (this.onErasedCallback_) {
-      this.onErasedCallback_(id);
-    }
   }
 }

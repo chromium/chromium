@@ -6,14 +6,17 @@
  * @fileoverview UI element of a download list.
  */
 
+import './download_item.js';
+
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {ITEM_STATE} from './download_item.js';
+import {DownloadItem, DownloadState} from './download_shelf.mojom-webui.js';
 import {DownloadShelfApiProxy, DownloadShelfApiProxyImpl} from './download_shelf_api_proxy.js';
 
 /** @type {number} */
 const PROGRESS_UPDATE_INTERVAL = 500;
+
 export class DownloadListElement extends CustomElement {
   static get template() {
     return `{__html_template__}`;
@@ -25,7 +28,7 @@ export class DownloadListElement extends CustomElement {
     /** @private {!Array} */
     this.elements_ = [];
 
-    /** @private {!Array} */
+    /** @private {!Array<!DownloadItem>} */
     this.items_ = [];
 
     /** @private {!DownloadShelfApiProxy} */
@@ -41,7 +44,7 @@ export class DownloadListElement extends CustomElement {
     this.resizeObserver_ = new ResizeObserver(() => this.updateElements_());
     this.resizeObserver_.observe(this.listElement_);
 
-    this.apiProxy_.getDownloads().then(downloadItems => {
+    this.apiProxy_.getDownloads().then(({downloadItems}) => {
       this.items_ = downloadItems;
       this.updateElements_();
     });
@@ -52,60 +55,30 @@ export class DownloadListElement extends CustomElement {
 
     // Triggers for downloads other than the first one, as the page handler will
     // not be ready by the first download.
-    this.listenerIds_.push(callbackRouter.onNewDownload.addListener(
-        (download_model) => {
-            // TODO(romanarora): Implement this method as replacement to
-            // onCreated.
+    this.listenerIds_.push(
+        callbackRouter.onNewDownload.addListener((downloadItem) => {
+          this.items_.unshift(downloadItem);
+          this.updateElements_();
         }));
 
-    this.apiProxy_.onCreated(item => {
-      this.items_.unshift(item);
-      this.updateElements_();
-    });
-
-    this.apiProxy_.onChanged(changes => {
-      const id = changes.id;
-      const index = this.items_.findIndex(item => item.id === id);
-      if (index >= 0) {
-        const item = Object.assign({}, this.items_[index]);
-        for (const key in changes) {
-          if (key !== 'id') {
-            item[key] = changes[key].current;
-          }
-        }
-        this.items_[index] = item;
-        this.updateElements_();
-      }
-    });
-
-    this.apiProxy_.onErased(id => {
-      const index = this.items_.findIndex(item => item.id === id);
-      if (index >= 0) {
-        this.items_.splice(index, 1);
-        this.updateElements_();
-      }
-    });
-
-    setInterval(() => this.onProgress_(), PROGRESS_UPDATE_INTERVAL);
-  }
-
-  /** @private */
-  onProgress_() {
-    for (const item of this.items_) {
-      if (item.state !== ITEM_STATE.IN_PROGRESS || item.paused) {
-        continue;
-      }
-      const downloadId = item.id;
-      this.apiProxy_.getDownloadById(downloadId).then(items => {
-        if (items.length > 0) {
-          const index = this.items_.findIndex(item => item.id === downloadId);
+    this.listenerIds_.push(
+        callbackRouter.onDownloadUpdated.addListener((downloadItem) => {
+          const index =
+              this.items_.findIndex(item => item.id === downloadItem.id);
           if (index >= 0) {
-            this.items_[index] = items[0];
+            this.items_[index] = downloadItem;
             this.updateElements_();
           }
-        }
-      });
-    }
+        }));
+
+    this.listenerIds_.push(
+        callbackRouter.onDownloadErased.addListener((downloadId) => {
+          const index = this.items_.findIndex(item => item.id === downloadId);
+          if (index >= 0) {
+            this.items_.splice(index, 1);
+            this.updateElements_();
+          }
+        }));
   }
 
   /** @private */

@@ -1366,6 +1366,7 @@ static_library("ui") {
       "webui/devtools_ui.h",
       "webui/devtools_ui_data_source.cc",
       "webui/devtools_ui_data_source.h",
+      "webui/download_shelf/download_shelf_handler.h",
       "webui/download_shelf/download_shelf_page_handler.cc",
       "webui/download_shelf/download_shelf_page_handler.h",
       "webui/download_shelf/download_shelf_ui.cc",

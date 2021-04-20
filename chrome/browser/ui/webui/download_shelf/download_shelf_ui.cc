@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_ui.h"
+
+#include "base/location.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "chrome/browser/ui/webui/download_shelf/download_shelf_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/download_shelf_resources.h"
@@ -13,8 +18,21 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+namespace {
+
+bool isDownloading(DownloadItem* download) {
+  return !download->IsPaused() && download->PercentComplete() != 100;
+}
+
+}  // namespace
+
 DownloadShelfUI::DownloadShelfUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, true),
+      progress_timer_(std::make_unique<base::RetainingOneShotTimer>(
+          FROM_HERE,
+          base::TimeDelta::FromMilliseconds(30),
+          base::BindRepeating(&DownloadShelfUI::NotifyDownloadProgress,
+                              base::Unretained(this)))),
       download_manager_(content::BrowserContext::GetDownloadManager(
           Profile::FromWebUI(web_ui))) {
   content::WebUIDataSource* source =
@@ -28,7 +46,12 @@ DownloadShelfUI::DownloadShelfUI(content::WebUI* web_ui)
                                 source);
 }
 
-DownloadShelfUI::~DownloadShelfUI() = default;
+DownloadShelfUI::~DownloadShelfUI() {
+  // The destructor can take place before DownloadItem calls to
+  // OnDownloadDestroyed.
+  for (const auto& download_entry : items_)
+    download_entry.second->download()->RemoveObserver(this);
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DownloadShelfUI)
 
@@ -42,23 +65,14 @@ void DownloadShelfUI::CreatePageHandler(
     mojo::PendingRemote<download_shelf::mojom::Page> page,
     mojo::PendingReceiver<download_shelf::mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<DownloadShelfPageHandler>(
-      std::move(receiver), std::move(page), web_ui(), this);
+      std::move(receiver), std::move(page), this);
 }
 
 void DownloadShelfUI::ShowContextMenu(uint32_t download_id,
                                       int32_t client_x,
                                       int32_t client_y) {
   DownloadUIModel* download_ui_model = FindDownloadById(download_id);
-  if (!download_ui_model) {
-    // TODO: Remove this block. After we implement
-    // DownloadShelf::DoShowDownload(), FindDownloadById() should always find a
-    // DownloadUIMdodel.
-    download::DownloadItem* download =
-        download_manager_->GetDownload(download_id);
-    DCHECK(download);
-    download_ui_model = AddDownload(DownloadItemModel::Wrap(download));
-    DCHECK(download_ui_model);
-  }
+  DCHECK(download_ui_model);
 
   if (embedder()) {
     embedder()->ShowDownloadContextMenu(download_ui_model,
@@ -69,9 +83,41 @@ void DownloadShelfUI::ShowContextMenu(uint32_t download_id,
 void DownloadShelfUI::DoShowDownload(
     DownloadUIModel::DownloadUIModelPtr download_model) {
   DownloadUIModel* download = AddDownload(std::move(download_model));
+  // Observe any changes on the download item in order to propagate such changes
+  // to the UI.
+  download->download()->AddObserver(this);
+  progress_timer_->Reset();
 
   if (page_handler_)
     page_handler_->DoShowDownload(download);
+}
+
+std::vector<DownloadUIModel*> DownloadShelfUI::GetDownloads() {
+  std::vector<DownloadUIModel*> downloads;
+  for (const auto& download_entry : items_)
+    downloads.push_back(download_entry.second.get());
+
+  return downloads;
+}
+
+void DownloadShelfUI::OnDownloadUpdated(DownloadItem* download) {
+  if (page_handler_) {
+    DownloadUIModel* download_model = FindDownloadById(download->GetId());
+    page_handler_->OnDownloadUpdated(download_model);
+  }
+
+  if (isDownloading(download) && !progress_timer_->IsRunning())
+    progress_timer_->Reset();
+}
+
+void DownloadShelfUI::OnDownloadRemoved(DownloadItem* download) {
+  if (page_handler_)
+    page_handler_->OnDownloadErased(download->GetId());
+}
+
+void DownloadShelfUI::OnDownloadDestroyed(DownloadItem* download) {
+  download->RemoveObserver(this);
+  items_.erase(download->GetId());
 }
 
 DownloadUIModel* DownloadShelfUI::AddDownload(
@@ -83,4 +129,35 @@ DownloadUIModel* DownloadShelfUI::AddDownload(
 
 DownloadUIModel* DownloadShelfUI::FindDownloadById(uint32_t download_id) const {
   return items_.count(download_id) ? items_.at(download_id).get() : nullptr;
+}
+
+void DownloadShelfUI::NotifyDownloadProgress() {
+  bool download_in_progress = false;
+  for (const auto& download_entry : items_) {
+    DownloadUIModel* download_model = download_entry.second.get();
+    if (isDownloading(download_model->download())) {
+      download_in_progress = true;
+      // TODO(romanarora): Optimize by introducing a new OnDownloadProgress()
+      // method.
+      if (page_handler_)
+        page_handler_->OnDownloadUpdated(download_model);
+    }
+  }
+
+  if (download_in_progress)
+    progress_timer_->Reset();
+}
+
+void DownloadShelfUI::SetPageHandlerForTesting(
+    std::unique_ptr<DownloadShelfHandler> page_handler) {
+  page_handler_ = std::move(page_handler);
+}
+
+void DownloadShelfUI::SetProgressTimerForTesting(
+    std::unique_ptr<base::RetainingOneShotTimer> timer) {
+  progress_timer_ = std::move(timer);
+  progress_timer_->Start(
+      FROM_HERE, base::TimeDelta::FromMilliseconds(30),
+      base::BindRepeating(&DownloadShelfUI::NotifyDownloadProgress,
+                          base::Unretained(this)));
 }

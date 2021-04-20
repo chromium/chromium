@@ -58,13 +58,22 @@ class DownloadItem;
 DownloadShelfPageHandler::DownloadShelfPageHandler(
     mojo::PendingReceiver<download_shelf::mojom::PageHandler> receiver,
     mojo::PendingRemote<download_shelf::mojom::Page> page,
-    content::WebUI* web_ui,
     DownloadShelfUI* download_shelf_ui)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       download_shelf_ui_(download_shelf_ui) {}
 
 DownloadShelfPageHandler::~DownloadShelfPageHandler() = default;
+
+void DownloadShelfPageHandler::GetDownloads(GetDownloadsCallback callback) {
+  TRACE_EVENT0("browser",
+               "custom_metric:DownloadShelfPageHandler:GetDownloads");
+  std::vector<download_shelf::mojom::DownloadItemPtr> download_items;
+  for (DownloadUIModel* download_model : download_shelf_ui_->GetDownloads())
+    download_items.push_back(GetDownloadItemFromUIModel(download_model));
+
+  std::move(callback).Run(std::move(download_items));
+}
 
 void DownloadShelfPageHandler::ShowContextMenu(uint32_t download_id,
                                                int32_t client_x,
@@ -74,4 +83,13 @@ void DownloadShelfPageHandler::ShowContextMenu(uint32_t download_id,
 
 void DownloadShelfPageHandler::DoShowDownload(DownloadUIModel* download_model) {
   page_->OnNewDownload(GetDownloadItemFromUIModel(download_model));
+}
+
+void DownloadShelfPageHandler::OnDownloadUpdated(
+    DownloadUIModel* download_model) {
+  page_->OnDownloadUpdated(GetDownloadItemFromUIModel(download_model));
+}
+
+void DownloadShelfPageHandler::OnDownloadErased(uint32_t download_id) {
+  page_->OnDownloadErased(download_id);
 }

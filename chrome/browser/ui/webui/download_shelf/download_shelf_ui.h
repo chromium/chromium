@@ -11,15 +11,18 @@
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf.mojom.h"
-#include "chrome/browser/ui/webui/download_shelf/download_shelf_page_handler.h"
+#include "chrome/browser/ui/webui/download_shelf/download_shelf_handler.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_ui_embedder.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
+using download::DownloadItem;
+
 class DownloadShelfUI : public ui::MojoWebUIController,
-                        public download_shelf::mojom::PageHandlerFactory {
+                        public download_shelf::mojom::PageHandlerFactory,
+                        public DownloadItem::Observer {
  public:
   explicit DownloadShelfUI(content::WebUI* web_ui);
   DownloadShelfUI(const DownloadShelfUI&) = delete;
@@ -41,6 +44,14 @@ class DownloadShelfUI : public ui::MojoWebUIController,
 
   void DoShowDownload(DownloadUIModel::DownloadUIModelPtr download_model);
 
+  std::vector<DownloadUIModel*> GetDownloads();
+
+ protected:
+  void SetPageHandlerForTesting(
+      std::unique_ptr<DownloadShelfHandler> page_handler);
+  void SetProgressTimerForTesting(
+      std::unique_ptr<base::RetainingOneShotTimer> timer);
+
  private:
   // download_shelf::mojom::PageHandlerFactory
   void CreatePageHandler(
@@ -48,11 +59,17 @@ class DownloadShelfUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<download_shelf::mojom::PageHandler> receiver)
       override;
 
+  // DownloadItem::Observer
+  void OnDownloadUpdated(DownloadItem* download) override;
+  void OnDownloadRemoved(DownloadItem* download) override;
+  void OnDownloadDestroyed(DownloadItem* download) override;
+
   DownloadUIModel* AddDownload(DownloadUIModel::DownloadUIModelPtr download);
-
   DownloadUIModel* FindDownloadById(uint32_t download_id) const;
+  void NotifyDownloadProgress();
 
-  std::unique_ptr<DownloadShelfPageHandler> page_handler_;
+  std::unique_ptr<DownloadShelfHandler> page_handler_;
+  std::unique_ptr<base::RetainingOneShotTimer> progress_timer_;
 
   mojo::Receiver<download_shelf::mojom::PageHandlerFactory>
       page_factory_receiver_{this};

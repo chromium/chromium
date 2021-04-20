@@ -7,6 +7,7 @@
 
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf.mojom.h"
+#include "chrome/browser/ui/webui/download_shelf/download_shelf_handler.h"
 #include "content/public/browser/download_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -16,24 +17,27 @@
 
 class DownloadShelfUI;
 
-class DownloadShelfPageHandler : public download_shelf::mojom::PageHandler {
+class DownloadShelfPageHandler : public download_shelf::mojom::PageHandler,
+                                 public DownloadShelfHandler {
  public:
   DownloadShelfPageHandler(
       mojo::PendingReceiver<download_shelf::mojom::PageHandler> receiver,
       mojo::PendingRemote<download_shelf::mojom::Page> page,
-      content::WebUI* web_ui,
       DownloadShelfUI* download_shelf_ui);
   DownloadShelfPageHandler(const DownloadShelfPageHandler&) = delete;
   DownloadShelfPageHandler& operator=(const DownloadShelfPageHandler&) = delete;
   ~DownloadShelfPageHandler() override;
 
   // download_shelf::mojom::PageHandler:
+  void GetDownloads(GetDownloadsCallback callback) override;
   void ShowContextMenu(uint32_t download_id,
                        int32_t client_x,
                        int32_t client_y) override;
 
-  // Notify the view to show a new download.
-  void DoShowDownload(DownloadUIModel* download_model);
+  // DownloadShelfHandler:
+  void DoShowDownload(DownloadUIModel* download_model) override;
+  void OnDownloadUpdated(DownloadUIModel* download_model) override;
+  void OnDownloadErased(uint32_t download_id) override;
 
  private:
   mojo::Receiver<download_shelf::mojom::PageHandler> receiver_;

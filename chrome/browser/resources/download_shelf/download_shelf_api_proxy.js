@@ -4,7 +4,7 @@
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './download_shelf.mojom-webui.js';
+import {DownloadItem, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './download_shelf.mojom-webui.js';
 
 /** @interface */
 export class DownloadShelfApiProxy {
@@ -12,7 +12,9 @@ export class DownloadShelfApiProxy {
   getCallbackRouter() {}
 
   /**
-   * @return {!Promise<!Array<!chrome.downloads.DownloadItem>>}
+   * @return {!Promise<{
+        downloadItems: !Array<!DownloadItem>,
+   *  }>}
    */
   getDownloads() {}
 
@@ -20,28 +22,7 @@ export class DownloadShelfApiProxy {
    * @param {number} downloadId
    * @return {!Promise}
    */
-  getDownloadById(downloadId) {}
-
-  /**
-   * @param {number} downloadId
-   * @return {!Promise}
-   */
   getFileIcon(downloadId) {}
-
-  /**
-   * @param {function(!Object)} callback
-   */
-  onCreated(callback) {}
-
-  /**
-   * @param {function(!Object)} callback
-   */
-  onChanged(callback) {}
-
-  /**
-   * @param {function(number)} callback
-   */
-  onErased(callback) {}
 
   /**
    * @param {number} downloadId
@@ -73,25 +54,7 @@ export class DownloadShelfApiProxyImpl {
 
   /** @override */
   getDownloads() {
-    return new Promise(resolve => {
-      chrome.downloads.search(
-          {
-            orderBy: ['-startTime'],
-            limit: 100,
-          },
-          resolve);
-    });
-  }
-
-  /** @override */
-  getDownloadById(downloadId) {
-    return new Promise(resolve => {
-      chrome.downloads.search(
-          {
-            id: downloadId,
-          },
-          resolve);
-    });
+    return this.handler.getDownloads();
   }
 
   /** @override */
@@ -99,21 +62,6 @@ export class DownloadShelfApiProxyImpl {
     return new Promise(resolve => {
       chrome.downloads.getFileIcon(downloadId, resolve);
     });
-  }
-
-  /** @override */
-  onCreated(callback) {
-    chrome.downloads.onCreated.addListener(callback);
-  }
-
-  /** @override */
-  onChanged(callback) {
-    chrome.downloads.onChanged.addListener(callback);
-  }
-
-  /** @override */
-  onErased(callback) {
-    chrome.downloads.onErased.addListener(callback);
   }
 
   /** @override */
