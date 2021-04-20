@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/release_notes/release_notes_storage.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -50,12 +51,17 @@ HelpAppResult::HelpAppResult(float relevance,
 HelpAppResult::~HelpAppResult() = default;
 
 void HelpAppResult::Open(int event_flags) {
+  // Note: event_flags is ignored, LaunchSWA doesn't need it.
   base::RecordAction(
       base::UserMetricsAction("ReleaseNotes.SuggestionChipLaunched"));
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->LaunchAppWithUrl(
-      web_app::kHelpAppId, event_flags, GURL("chrome://help-app/updates"),
-      apps::mojom::LaunchSource::kFromAppListRecommendation,
+
+  web_app::SystemAppLaunchParams params;
+  params.url = GURL("chrome://help-app/updates");
+  params.launch_source = apps::mojom::LaunchSource::kFromAppListRecommendation;
+  web_app::LaunchSystemWebAppAsync(
+      profile_, web_app::SystemAppType::HELP, params,
       apps::MakeWindowInfo(display::kDefaultDisplayId));
+
   chromeos::ReleaseNotesStorage(profile_).StopShowingSuggestionChip();
 }
 
