@@ -20,6 +20,7 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/default_style.h"
@@ -817,12 +818,11 @@ bool Label::OnMousePressed(const ui::MouseEvent& event) {
     GetFocusManager()->SetFocusedView(this);
   }
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (event.IsOnlyMiddleMouseButton() && GetFocusManager() && !had_focus)
-    GetFocusManager()->SetFocusedView(this);
-#endif
+  if (ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
+    if (event.IsOnlyMiddleMouseButton() && GetFocusManager() && !had_focus)
+      GetFocusManager()->SetFocusedView(this);
+  }
 
   return selection_controller_->OnMousePressed(
       event, false,
@@ -1006,14 +1006,13 @@ bool Label::PasteSelectionClipboard() {
 }
 
 void Label::UpdateSelectionClipboard() {
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!GetObscured()) {
-    ui::ScopedClipboardWriter(ui::ClipboardBuffer::kSelection)
-        .WriteText(GetSelectedText());
+  if (ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
+    if (!GetObscured()) {
+      ui::ScopedClipboardWriter(ui::ClipboardBuffer::kSelection)
+          .WriteText(GetSelectedText());
+    }
   }
-#endif
 }
 
 bool Label::IsCommandIdChecked(int command_id) const {

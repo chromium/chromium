@@ -274,9 +274,9 @@ TYPED_TEST(ClipboardTest, RTFTest) {
 }
 #endif  // !defined(OS_ANDROID)
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// MultipleBufferTest only ran on Linux because Linux is the only platform that
+// supports the selection buffer by default.
+#if defined(OS_LINUX)
 TYPED_TEST(ClipboardTest, MultipleBufferTest) {
   if (!ui::Clipboard::IsSupportedClipboardBuffer(
           ui::ClipboardBuffer::kSelection)) {
@@ -330,7 +330,7 @@ TYPED_TEST(ClipboardTest, MultipleBufferTest) {
   EXPECT_EQ(markup,
             markup_result.substr(fragment_end - markup.size(), markup.size()));
 }
-#endif
+#endif  // defined(OS_LINUX)
 
 TYPED_TEST(ClipboardTest, TrickyHTMLTest) {
   std::u16string markup(u"<em>Bye!<!--EndFragment --></em>"), markup_result;

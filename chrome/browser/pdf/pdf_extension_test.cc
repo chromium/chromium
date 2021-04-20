@@ -2185,16 +2185,15 @@ class PDFExtensionClipboardTest : public PDFExtensionTest,
   // Runs `action` and checks the Linux selection clipboard contains `expected`.
   void DoActionAndCheckSelectionClipboard(base::OnceClosure action,
                                           const std::string& expected) {
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-    DoActionAndCheckClipboard(std::move(action),
-                              ui::ClipboardBuffer::kSelection, expected);
-#else
-    // Even though there is no selection clipboard to check, `action` still
-    // needs to run.
-    std::move(action).Run();
-#endif
+    if (ui::Clipboard::IsSupportedClipboardBuffer(
+            ui::ClipboardBuffer::kSelection)) {
+      DoActionAndCheckClipboard(std::move(action),
+                                ui::ClipboardBuffer::kSelection, expected);
+    } else {
+      // Even though there is no selection clipboard to check, `action` still
+      // needs to run.
+      std::move(action).Run();
+    }
   }
 
   // Sends a copy command and checks the copy/paste clipboard.
@@ -2316,10 +2315,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
   SendCopyCommandAndCheckCopyPasteClipboard("HEL");
 }
 
-// Flaky on ChromeOS (https://crbug.com/1121446)
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Flaky on Linux (https://crbug.com/1121446)
+#if defined(OS_LINUX)
 #define MAYBE_CombinedShiftArrowPresses DISABLED_CombinedShiftArrowPresses
 #else
 #define MAYBE_CombinedShiftArrowPresses CombinedShiftArrowPresses

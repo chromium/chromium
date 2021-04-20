@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -25,22 +24,30 @@ namespace ui {
 
 // static
 bool Clipboard::IsSupportedClipboardBuffer(ClipboardBuffer buffer) {
+  // Use lambda instead of local helper function in order to access private
+  // member IsSelectionBufferAvailable().
+  static auto IsSupportedSelectionClipboard = []() -> bool {
+#if defined(USE_OZONE) && !defined(OS_CHROMEOS)
+    if (features::IsUsingOzonePlatform()) {
+      ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+      CHECK(clipboard);
+      return clipboard->IsSelectionBufferAvailable();
+    }
+#endif
+#if !defined(OS_WIN) && !defined(OS_APPLE) && !defined(OS_CHROMEOS)
+    return true;
+#else
+    return false;
+#endif
+  };
+
   switch (buffer) {
     case ClipboardBuffer::kCopyPaste:
       return true;
     case ClipboardBuffer::kSelection:
-#if defined(USE_OZONE) && !BUILDFLAG(IS_CHROMEOS_ASH)
-      if (features::IsUsingOzonePlatform()) {
-        ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-        CHECK(clipboard);
-        return clipboard->IsSelectionBufferAvailable();
-      }
-#endif
-#if !defined(OS_WIN) && !defined(OS_APPLE) && !BUILDFLAG(IS_CHROMEOS_ASH)
-      return true;
-#else
-      return false;
-#endif
+      // Cache the result to make this function cheap.
+      static bool selection_result = IsSupportedSelectionClipboard();
+      return selection_result;
     case ClipboardBuffer::kDrag:
       return false;
   }

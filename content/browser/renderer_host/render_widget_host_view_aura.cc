@@ -69,6 +69,7 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
@@ -2533,16 +2534,17 @@ void RenderWidgetHostViewAura::OnTextSelectionChanged(
   if (GetInputMethod())
     GetInputMethod()->OnCaretBoundsChanged(this);
 
-#if defined(USE_X11) || (defined(USE_OZONE) && !BUILDFLAG(IS_CHROMEOS_ASH))
-  const TextInputManager::TextSelection* selection =
-      GetTextInputManager()->GetTextSelection(focused_view);
-  if (selection->selected_text().length()) {
-    // Set the ClipboardBuffer::kSelection to the ui::Clipboard.
-    ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kSelection);
-    clipboard_writer.WriteText(selection->selected_text());
+  if (ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
+    const TextInputManager::TextSelection* selection =
+        GetTextInputManager()->GetTextSelection(focused_view);
+    if (selection->selected_text().length()) {
+      // Set the ClipboardBuffer::kSelection to the ui::Clipboard.
+      ui::ScopedClipboardWriter clipboard_writer(
+          ui::ClipboardBuffer::kSelection);
+      clipboard_writer.WriteText(selection->selected_text());
+    }
   }
-#endif  // defined(USE_X11) || (defined(USE_OZONE) &&
-        // !BUILDFLAG(IS_CHROMEOS_ASH))
 }
 
 void RenderWidgetHostViewAura::SetPopupChild(

@@ -516,7 +516,7 @@ void ClipboardOzone::WritePortableRepresentations(
 
   // Just like Non-Backed/X11 implementation does, copy text data from the
   // copy/paste selection to the primary selection.
-  if (buffer == ClipboardBuffer::kCopyPaste) {
+  if (buffer == ClipboardBuffer::kCopyPaste && IsSelectionBufferAvailable()) {
     auto text_iter = objects.find(PortableFormat::kText);
     if (text_iter != objects.end()) {
       const ObjectMapParams& params_vector = text_iter->second;

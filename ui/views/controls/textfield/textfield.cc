@@ -24,6 +24,7 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/default_style.h"
@@ -676,12 +677,11 @@ bool Textfield::OnMousePressed(const ui::MouseEvent& event) {
 #endif
   }
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!handled && !had_focus && event.IsOnlyMiddleMouseButton())
-    RequestFocusWithPointer(ui::EventPointerType::kMouse);
-#endif
+  if (ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
+    if (!handled && !had_focus && event.IsOnlyMiddleMouseButton())
+      RequestFocusWithPointer(ui::EventPointerType::kMouse);
+  }
 
   return selection_controller_.OnMousePressed(
       event, handled,
@@ -2363,16 +2363,15 @@ bool Textfield::PasteSelectionClipboard() {
 }
 
 void Textfield::UpdateSelectionClipboard() {
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (text_input_type_ != ui::TEXT_INPUT_TYPE_PASSWORD) {
-    ui::ScopedClipboardWriter(ui::ClipboardBuffer::kSelection)
-        .WriteText(GetSelectedText());
-    if (controller_)
-      controller_->OnAfterCutOrCopy(ui::ClipboardBuffer::kSelection);
+  if (ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
+    if (text_input_type_ != ui::TEXT_INPUT_TYPE_PASSWORD) {
+      ui::ScopedClipboardWriter(ui::ClipboardBuffer::kSelection)
+          .WriteText(GetSelectedText());
+      if (controller_)
+        controller_->OnAfterCutOrCopy(ui::ClipboardBuffer::kSelection);
+    }
   }
-#endif
 }
 
 void Textfield::UpdateBackgroundColor() {
