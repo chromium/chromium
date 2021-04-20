@@ -6,14 +6,18 @@ import os
 import sys
 
 
-_CATAPULT_PATH = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '..', '..', '..', 'third_party', 'catapult'))
+_THIRD_PARTY_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..', '..', 'third_party'))
+
+_CATAPULT_PATH = os.path.join(_THIRD_PARTY_PATH, 'catapult')
 
 _DEVIL_PATH = os.path.join(_CATAPULT_PATH, 'devil')
 
 _PYTRACE_PATH = os.path.join(_CATAPULT_PATH, 'common', 'py_trace_event')
 
 _PY_UTILS_PATH = os.path.join(_CATAPULT_PATH, 'common', 'py_utils')
+
+_SIX_PATH = os.path.join(_THIRD_PARTY_PATH, 'six', 'src')
 
 _TRACE2HTML_PATH = os.path.join(_CATAPULT_PATH, 'tracing')
 
@@ -29,3 +33,6 @@ if _PY_UTILS_PATH not in sys.path:
 
 if _TRACE2HTML_PATH not in sys.path:
   sys.path.append(_TRACE2HTML_PATH)
+
+if _SIX_PATH not in sys.path:
+  sys.path.append(_SIX_PATH)

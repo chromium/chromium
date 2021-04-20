@@ -6,6 +6,10 @@ import cgi
 import json
 import os
 
+import six
+if not six.PY2:
+  import html  # pylint: disable=import-error
+
 from pylib.base import base_test_result
 import requests  # pylint: disable=import-error
 
@@ -83,7 +87,10 @@ class ResultSinkClient(object):
 
     # Slightly smaller to allow addition of <pre> tags and message.
     report_check_size = MAX_REPORT_LEN - 45
-    test_log_escaped = cgi.escape(test_log)
+    if six.PY2:
+      test_log_escaped = cgi.escape(test_log)
+    else:
+      test_log_escaped = html.escape(test_log)
     if len(test_log_escaped) > report_check_size:
       test_log_formatted = ('<pre>' + test_log_escaped[:report_check_size] +
                             '...Full output in Artifact.</pre>')
