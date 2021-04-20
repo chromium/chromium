@@ -43,12 +43,12 @@ class ShowGenericUiActionTest : public content::RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
-    ON_CALL(mock_action_delegate_, OnSetGenericUi(_, _, _))
+    ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _))
         .WillByDefault(
             Invoke([&](std::unique_ptr<GenericUserInterfaceProto> generic_ui,
-                       base::OnceCallback<void(const ClientStatus&)>&
+                       base::OnceCallback<void(const ClientStatus&)>
                            end_action_callback,
-                       base::OnceCallback<void(const ClientStatus&)>&
+                       base::OnceCallback<void(const ClientStatus&)>
                            view_inflation_finished_callback) {
               std::move(view_inflation_finished_callback)
                   .Run(ClientStatus(ACTION_APPLIED));
@@ -95,13 +95,12 @@ class ShowGenericUiActionTest : public content::RenderViewHostTestHarness {
 };
 
 TEST_F(ShowGenericUiActionTest, FailedViewInflationEndsAction) {
-  ON_CALL(mock_action_delegate_, OnSetGenericUi(_, _, _))
-      .WillByDefault(
-          Invoke([&](std::unique_ptr<GenericUserInterfaceProto> generic_ui,
-                     base::OnceCallback<void(const ClientStatus&)>&
-                         end_action_callback,
-                     base::OnceCallback<void(const ClientStatus&)>&
-                         view_inflation_finished_callback) {
+  ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _))
+      .WillByDefault(Invoke(
+          [&](std::unique_ptr<GenericUserInterfaceProto> generic_ui,
+              base::OnceCallback<void(const ClientStatus&)> end_action_callback,
+              base::OnceCallback<void(const ClientStatus&)>
+                  view_inflation_finished_callback) {
             std::move(view_inflation_finished_callback)
                 .Run(ClientStatus(INVALID_ACTION));
           }));
@@ -117,7 +116,7 @@ TEST_F(ShowGenericUiActionTest, FailedViewInflationEndsAction) {
 TEST_F(ShowGenericUiActionTest, GoesIntoPromptState) {
   InSequence seq;
   EXPECT_CALL(mock_action_delegate_, Prompt(_, _, _, _, _)).Times(1);
-  EXPECT_CALL(mock_action_delegate_, OnSetGenericUi(_, _, _)).Times(1);
+  EXPECT_CALL(mock_action_delegate_, SetGenericUi(_, _, _)).Times(1);
   EXPECT_CALL(mock_action_delegate_, ClearGenericUi()).Times(1);
   EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt()).Times(1);
   EXPECT_CALL(
@@ -157,13 +156,13 @@ TEST_F(ShowGenericUiActionTest, NonEmptyOutputModel) {
 
   proto_.add_output_model_identifiers("value_2");
 
-  ON_CALL(mock_action_delegate_, OnSetGenericUi(_, _, _))
-      .WillByDefault(
-          Invoke([this](std::unique_ptr<GenericUserInterfaceProto> generic_ui,
-                        base::OnceCallback<void(const ClientStatus&)>&
-                            end_action_callback,
-                        base::OnceCallback<void(const ClientStatus&)>&
-                            view_inflation_finished_callback) {
+  ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _))
+      .WillByDefault(Invoke(
+          [this](
+              std::unique_ptr<GenericUserInterfaceProto> generic_ui,
+              base::OnceCallback<void(const ClientStatus&)> end_action_callback,
+              base::OnceCallback<void(const ClientStatus&)>
+                  view_inflation_finished_callback) {
             std::move(view_inflation_finished_callback)
                 .Run(ClientStatus(ACTION_APPLIED));
             user_model_.SetValue("value_2", SimpleValue(std::string("change")));
@@ -200,7 +199,7 @@ TEST_F(ShowGenericUiActionTest, OutputModelNotSubsetOfInputModel) {
   proto_.add_output_model_identifiers("value_2");
   proto_.add_output_model_identifiers("value_3");
 
-  EXPECT_CALL(mock_action_delegate_, OnSetGenericUi(_, _, _)).Times(0);
+  EXPECT_CALL(mock_action_delegate_, SetGenericUi(_, _, _)).Times(0);
   EXPECT_CALL(mock_action_delegate_, ClearGenericUi()).Times(1);
   EXPECT_CALL(
       callback_,
@@ -445,7 +444,7 @@ TEST_F(ShowGenericUiActionTest, ElementPreconditionMissesIdentifier) {
       ->add_filters()
       ->set_css_selector("selector");
 
-  EXPECT_CALL(mock_action_delegate_, OnSetGenericUi(_, _, _)).Times(0);
+  EXPECT_CALL(mock_action_delegate_, SetGenericUi(_, _, _)).Times(0);
   EXPECT_CALL(mock_action_delegate_, ClearGenericUi()).Times(1);
   EXPECT_CALL(
       callback_,
@@ -459,13 +458,12 @@ TEST_F(ShowGenericUiActionTest, ElementPreconditionMissesIdentifier) {
 }
 
 TEST_F(ShowGenericUiActionTest, EndActionOnNavigation) {
-  ON_CALL(mock_action_delegate_, OnSetGenericUi(_, _, _))
-      .WillByDefault(
-          Invoke([&](std::unique_ptr<GenericUserInterfaceProto> generic_ui,
-                     base::OnceCallback<void(const ClientStatus&)>&
-                         end_action_callback,
-                     base::OnceCallback<void(const ClientStatus&)>&
-                         view_inflation_finished_callback) {
+  ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _))
+      .WillByDefault(Invoke(
+          [&](std::unique_ptr<GenericUserInterfaceProto> generic_ui,
+              base::OnceCallback<void(const ClientStatus&)> end_action_callback,
+              base::OnceCallback<void(const ClientStatus&)>
+                  view_inflation_finished_callback) {
             std::move(view_inflation_finished_callback)
                 .Run(ClientStatus(ACTION_APPLIED));
           }));
@@ -498,13 +496,12 @@ TEST_F(ShowGenericUiActionTest, BreakingNavigationBeforeUiIsSet) {
                    bool browse_mode, bool browse_mode_invisible) {
         std::move(end_navigation_callback).Run();
       });
-  ON_CALL(mock_action_delegate_, OnSetGenericUi(_, _, _))
-      .WillByDefault(
-          Invoke([&](std::unique_ptr<GenericUserInterfaceProto> generic_ui,
-                     base::OnceCallback<void(const ClientStatus&)>&
-                         end_action_callback,
-                     base::OnceCallback<void(const ClientStatus&)>&
-                         view_inflation_finished_callback) {
+  ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _))
+      .WillByDefault(Invoke(
+          [&](std::unique_ptr<GenericUserInterfaceProto> generic_ui,
+              base::OnceCallback<void(const ClientStatus&)> end_action_callback,
+              base::OnceCallback<void(const ClientStatus&)>
+                  view_inflation_finished_callback) {
             std::move(view_inflation_finished_callback)
                 .Run(ClientStatus(ACTION_APPLIED));
             // Also end action when UI is set. At this point, the action should

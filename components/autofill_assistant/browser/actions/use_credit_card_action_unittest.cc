@@ -168,10 +168,9 @@ TEST_F(UseCreditCardActionTest, CreditCardInUserDataSucceeds) {
   ActionProto action;
   auto* use_card = action.mutable_use_card();
   *use_card->mutable_form_field_element() = ToSelectorProto(kFakeSelector);
-  EXPECT_CALL(
-      mock_action_delegate_,
-      OnFillCardForm(Pointee(Eq(credit_card_)), base::UTF8ToUTF16(kFakeCvc),
-                     Selector({kFakeSelector}), _))
+  EXPECT_CALL(mock_action_delegate_, FillCardForm(Pointee(Eq(credit_card_)),
+                                                  base::UTF8ToUTF16(kFakeCvc),
+                                                  Selector({kFakeSelector}), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_EQ(ProcessedActionStatusProto::ACTION_APPLIED, ProcessAction(action));
 }
@@ -205,10 +204,9 @@ TEST_F(UseCreditCardActionTest, CreditCardInUserModelSucceeds) {
   auto* use_card = action.mutable_use_card();
   *use_card->mutable_form_field_element() = ToSelectorProto(kFakeSelector);
   use_card->set_model_identifier(kModelIdentifier);
-  EXPECT_CALL(
-      mock_action_delegate_,
-      OnFillCardForm(Pointee(Eq(credit_card_)), base::UTF8ToUTF16(kFakeCvc),
-                     Selector({kFakeSelector}), _))
+  EXPECT_CALL(mock_action_delegate_, FillCardForm(Pointee(Eq(credit_card_)),
+                                                  base::UTF8ToUTF16(kFakeCvc),
+                                                  Selector({kFakeSelector}), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_EQ(ProcessedActionStatusProto::ACTION_APPLIED, ProcessAction(action));
 }
@@ -218,8 +216,8 @@ TEST_F(UseCreditCardActionTest, FillCreditCard) {
 
   user_data_.selected_card_ = std::make_unique<autofill::CreditCard>();
   EXPECT_CALL(mock_action_delegate_,
-              OnFillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
-                             Selector({kFakeSelector}), _))
+              FillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
+                           Selector({kFakeSelector}), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
 
   EXPECT_EQ(ProcessedActionStatusProto::ACTION_APPLIED, ProcessAction(action));
@@ -242,8 +240,8 @@ TEST_F(UseCreditCardActionTest, FillCreditCardRequiredFieldsFilled) {
 
   user_data_.selected_card_ = std::make_unique<autofill::CreditCard>();
   EXPECT_CALL(mock_action_delegate_,
-              OnFillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
-                             Selector({kFakeSelector}), _))
+              FillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
+                           Selector({kFakeSelector}), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
 
   EXPECT_EQ(ProcessedActionStatusProto::ACTION_APPLIED, ProcessAction(action));
@@ -308,8 +306,8 @@ TEST_F(UseCreditCardActionTest, FillCreditCardWithFallback) {
                    "#network");
 
   EXPECT_CALL(mock_action_delegate_,
-              OnFillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
-                             Selector({kFakeSelector}), _))
+              FillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
+                           Selector({kFakeSelector}), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
 
   Selector cvc_selector({"#cvc"});
@@ -401,8 +399,8 @@ TEST_F(UseCreditCardActionTest, ForcedFallbackWithKeystrokes) {
 
   user_data_.selected_card_ = std::make_unique<autofill::CreditCard>();
   EXPECT_CALL(mock_action_delegate_,
-              OnFillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
-                             Selector({kFakeSelector}), _))
+              FillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
+                           Selector({kFakeSelector}), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
 
   // Do not check required field.
@@ -464,7 +462,7 @@ TEST_F(UseCreditCardActionTest, SkippingAutofill) {
   Selector cvc_selector({"#cvc"});
 
   EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(_, _)).Times(0);
-  EXPECT_CALL(mock_action_delegate_, OnFillCardForm(_, _, _, _)).Times(0);
+  EXPECT_CALL(mock_action_delegate_, FillCardForm(_, _, _, _)).Times(0);
 
   // First validation fails.
   EXPECT_CALL(mock_web_controller_,
@@ -494,8 +492,8 @@ TEST_F(UseCreditCardActionTest, AutofillFailureWithoutRequiredFieldsIsFatal) {
 
   user_data_.selected_card_ = std::make_unique<autofill::CreditCard>();
   EXPECT_CALL(mock_action_delegate_,
-              OnFillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
-                             Selector({kFakeSelector}), _))
+              FillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
+                           Selector({kFakeSelector}), _))
       .WillOnce(RunOnceCallback<3>(ClientStatus(OTHER_ACTION_STATUS)));
 
   ProcessedActionProto processed_action;
@@ -529,8 +527,8 @@ TEST_F(UseCreditCardActionTest,
 
   user_data_.selected_card_ = std::make_unique<autofill::CreditCard>();
   EXPECT_CALL(mock_action_delegate_,
-              OnFillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
-                             Selector({kFakeSelector}), _))
+              FillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
+                           Selector({kFakeSelector}), _))
       .WillOnce(RunOnceCallback<3>(ClientStatus(OTHER_ACTION_STATUS)));
 
   // First validation fails.
@@ -579,8 +577,8 @@ TEST_F(UseCreditCardActionTest, FallbackForCardExpirationSucceeds) {
 
   // Autofill succeeds.
   EXPECT_CALL(mock_action_delegate_,
-              OnFillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
-                             Selector({kFakeSelector}), _))
+              FillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
+                           Selector({kFakeSelector}), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
 
   // Validation fails when getting expiration date.
@@ -623,8 +621,8 @@ TEST_F(UseCreditCardActionTest, FallbackFails) {
 
   // Autofill succeeds.
   EXPECT_CALL(mock_action_delegate_,
-              OnFillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
-                             Selector({kFakeSelector}), _))
+              FillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
+                           Selector({kFakeSelector}), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
 
   // Validation fails when getting expiration date.

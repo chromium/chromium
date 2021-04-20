@@ -15,6 +15,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/timer/timer.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
+#include "components/autofill_assistant/browser/wait_for_dom_observer.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -44,7 +45,7 @@ class PromptActionTest : public testing::Test {
     ON_CALL(mock_web_controller_, OnFindElement(_, _))
         .WillByDefault(RunOnceCallback<1>(
             ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
-    EXPECT_CALL(mock_action_delegate_, OnWaitForDom(_, _, _, _))
+    EXPECT_CALL(mock_action_delegate_, WaitForDom(_, _, _, _, _))
         .WillRepeatedly(Invoke(this, &PromptActionTest::FakeWaitForDom));
     ON_CALL(mock_action_delegate_, Prompt(_, _, _, _, _))
         .WillByDefault(
@@ -65,10 +66,11 @@ class PromptActionTest : public testing::Test {
   void FakeWaitForDom(
       base::TimeDelta max_wait_time,
       bool allow_interrupt,
+      WaitForDomObserver* observer,
       base::RepeatingCallback<
           void(BatchElementChecker*,
-               base::OnceCallback<void(const ClientStatus&)>)>& check_elements,
-      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>&
+               base::OnceCallback<void(const ClientStatus&)>)> check_elements,
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
           done_waiting_callback) {
     fake_wait_for_dom_done_ = std::move(done_waiting_callback);
     RunFakeWaitForDom(check_elements);

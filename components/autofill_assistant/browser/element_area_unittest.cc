@@ -72,10 +72,10 @@ class ElementAreaTest : public testing::Test {
         base::TimeDelta::FromMilliseconds(100);
 
     test_util::MockFindAnyElement(mock_web_controller_);
-    ON_CALL(mock_web_controller_, OnGetElementRect(_, _))
+    ON_CALL(mock_web_controller_, GetElementRect(_, _))
         .WillByDefault(
             RunOnceCallback<1>(ClientStatus(UNEXPECTED_JS_ERROR), RectF()));
-    ON_CALL(mock_web_controller_, OnGetVisualViewport(_))
+    ON_CALL(mock_web_controller_, GetVisualViewport(_))
         .WillByDefault(
             RunOnceCallback<0>(OkClientStatus(), RectF(0, 0, 200, 400)));
 
@@ -149,9 +149,9 @@ TEST_F(ElementAreaTest, GetVisualViewport) {
 TEST_F(ElementAreaTest, OneRectangle) {
   Selector expected_selector({"#found"});
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
 
   SetElement("#found");
@@ -163,9 +163,9 @@ TEST_F(ElementAreaTest, OneRectangle) {
 TEST_F(ElementAreaTest, CallOnUpdate) {
   Selector expected_selector({"#found"});
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
 
   SetElement("#found");
@@ -177,9 +177,9 @@ TEST_F(ElementAreaTest, CallOnUpdate) {
 TEST_F(ElementAreaTest, CallOnUpdateAfterSetFromProto) {
   Selector expected_selector({"#found"});
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector, 2)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector, 2)),
+                             _))
       .Times(2)
       .WillRepeatedly(
           RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
@@ -193,14 +193,13 @@ TEST_F(ElementAreaTest, CallOnUpdateAfterSetFromProto) {
 TEST_F(ElementAreaTest, DontCallOnUpdateWhenViewportMissing) {
   Selector expected_selector({"#found"});
 
-  // Swallowing calls to OnGetVisualViewport guarantees that the viewport
+  // Swallowing calls to GetVisualViewport guarantees that the viewport
   // position will never be known.
-  EXPECT_CALL(mock_web_controller_, OnGetVisualViewport(_))
-      .WillOnce(DoNothing());
+  EXPECT_CALL(mock_web_controller_, GetVisualViewport(_)).WillOnce(DoNothing());
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
 
   SetElement("#found");
@@ -208,7 +207,7 @@ TEST_F(ElementAreaTest, DontCallOnUpdateWhenViewportMissing) {
 }
 
 TEST_F(ElementAreaTest, CallOnUpdateWhenViewportMissingAndEmptyRect) {
-  EXPECT_CALL(mock_web_controller_, OnGetVisualViewport(_))
+  EXPECT_CALL(mock_web_controller_, GetVisualViewport(_))
       .WillRepeatedly(
           RunOnceCallback<0>(ClientStatus(UNEXPECTED_JS_ERROR), RectF()));
 
@@ -229,15 +228,15 @@ TEST_F(ElementAreaTest, TwoRectangles) {
 
   EXPECT_CALL(
       mock_web_controller_,
-      OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                           mock_web_controller_, expected_selector_top_left)),
-                       _))
+      GetElementRect(EqualsElement(test_util::MockFindElement(
+                         mock_web_controller_, expected_selector_top_left)),
+                     _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 0, 25, 25)));
-  EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(
-                  EqualsElement(test_util::MockFindElement(
-                      mock_web_controller_, expected_selector_bottom_right)),
-                  _))
+  EXPECT_CALL(
+      mock_web_controller_,
+      GetElementRect(EqualsElement(test_util::MockFindElement(
+                         mock_web_controller_, expected_selector_bottom_right)),
+                     _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 100, 100)));
 
   ElementAreaProto area_proto;
@@ -257,14 +256,14 @@ TEST_F(ElementAreaTest, OneRectangleTwoElements) {
   Selector expected_selector_2({"#element2"});
 
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector_1)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_1)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(1, 3, 2, 4)));
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector_2)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_2)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(5, 2, 6, 5)));
 
   ElementAreaProto area_proto;
@@ -281,18 +280,18 @@ TEST_F(ElementAreaTest, OneRectangleTwoElements) {
 TEST_F(ElementAreaTest, DoNotReportIncompleteRectangles) {
   Selector expected_selector_1({"#element1"});
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector_1)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_1)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(1, 3, 2, 4)));
 
   // Getting the position of #element2 neither succeeds nor fails, simulating an
   // intermediate state which shouldn't be reported to the callback.
   Selector expected_selector_2({"#element2"});
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector_2)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_2)),
+                             _))
       .WillOnce(DoNothing());  // overrides default action
 
   ElementAreaProto area_proto;
@@ -315,24 +314,24 @@ TEST_F(ElementAreaTest, OneRectangleFourElements) {
   Selector expected_selector_4({"#element4"});
 
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector_1)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_1)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 0, 1, 1)));
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector_2)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_2)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(9, 9, 100, 100)));
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector_3)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_3)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 9, 1, 100)));
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector_4)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_4)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(9, 0, 100, 1)));
 
   ElementAreaProto area_proto;
@@ -353,14 +352,14 @@ TEST_F(ElementAreaTest, OneRectangleMissingElementsReported) {
   Selector expected_selector_2({"#element2"});
 
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector_1)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_1)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(1, 1, 2, 2)));
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector_2)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_2)),
+                             _))
       .WillOnce(RunOnceCallback<1>(ClientStatus(UNEXPECTED_JS_ERROR), RectF()));
 
   ElementAreaProto area_proto;
@@ -381,16 +380,16 @@ TEST_F(ElementAreaTest, FullWidthRectangle) {
   Selector expected_selector_2({"#element2"});
 
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector_1)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_1)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(1, 3, 2, 4)));
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector_2)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_2)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(5, 7, 6, 8)));
-  EXPECT_CALL(mock_web_controller_, OnGetVisualViewport(_))
+  EXPECT_CALL(mock_web_controller_, GetVisualViewport(_))
       .WillRepeatedly(
           RunOnceCallback<0>(OkClientStatus(), RectF(100, 0, 200, 400)));
 
@@ -415,14 +414,14 @@ TEST_F(ElementAreaTest, ElementMovesAfterUpdate) {
   Selector expected_selector({"#element"});
 
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 25, 100, 50)));
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 50, 100, 75)));
 
   SetElement("#element");
@@ -449,19 +448,19 @@ TEST_F(ElementAreaTest, ElementMovesWithTime) {
   Selector expected_selector({"#element"});
 
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 25, 100, 50)));
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 50, 100, 75)));
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 50, 100, 75)));
 
   SetElement("#element");
@@ -488,9 +487,9 @@ TEST_F(ElementAreaTest, RestrictedElement) {
   Selector expected_selector({"#restricted_element"});
 
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementRect(EqualsElement(test_util::MockFindElement(
-                                   mock_web_controller_, expected_selector)),
-                               _))
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
 
   SetElement("#restricted_element", /* restricted= */ true);

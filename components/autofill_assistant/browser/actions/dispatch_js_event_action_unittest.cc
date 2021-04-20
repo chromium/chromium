@@ -22,7 +22,7 @@ class DispatchJsEventActionTest : public testing::Test {
   DispatchJsEventActionTest() {}
 
   void SetUp() override {
-    ON_CALL(mock_action_delegate_, OnDispatchJsEvent(_))
+    ON_CALL(mock_action_delegate_, DispatchJsEvent(_))
         .WillByDefault(RunOnceCallback<0>(OkClientStatus()));
   }
 
@@ -40,7 +40,7 @@ class DispatchJsEventActionTest : public testing::Test {
 };
 
 TEST_F(DispatchJsEventActionTest, EmptyProtoSetsMessageDoesNothing) {
-  EXPECT_CALL(mock_action_delegate_, OnDispatchJsEvent(_));
+  EXPECT_CALL(mock_action_delegate_, DispatchJsEvent(_));
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));

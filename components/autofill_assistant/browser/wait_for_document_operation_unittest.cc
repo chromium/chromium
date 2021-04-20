@@ -51,7 +51,7 @@ class WaitForDocumentOperationTest : public testing::Test {
 
 TEST_F(WaitForDocumentOperationTest, ReportsSuccess) {
   EXPECT_CALL(mock_web_controller_,
-              OnWaitForDocumentReadyState(_, DOCUMENT_COMPLETE, _))
+              WaitForDocumentReadyState(_, DOCUMENT_COMPLETE, _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus(), DOCUMENT_COMPLETE,
                                    base::TimeDelta::FromSeconds(0)));
   EXPECT_CALL(mock_callback_,
@@ -62,7 +62,7 @@ TEST_F(WaitForDocumentOperationTest, ReportsSuccess) {
 
 TEST_F(WaitForDocumentOperationTest, ReportsFailure) {
   EXPECT_CALL(mock_web_controller_,
-              OnWaitForDocumentReadyState(_, DOCUMENT_COMPLETE, _))
+              WaitForDocumentReadyState(_, DOCUMENT_COMPLETE, _))
       .WillOnce(RunOnceCallback<2>(ClientStatus(TIMED_OUT),
                                    DOCUMENT_UNKNOWN_READY_STATE,
                                    base::TimeDelta::FromSeconds(0)));
@@ -76,11 +76,11 @@ TEST_F(WaitForDocumentOperationTest, TimesOutAfterWaiting) {
   // Capture the call without answering it.
   WaitForDocumentOperation::Callback captured_callback;
   EXPECT_CALL(mock_web_controller_,
-              OnWaitForDocumentReadyState(_, DOCUMENT_COMPLETE, _))
+              WaitForDocumentReadyState(_, DOCUMENT_COMPLETE, _))
       .WillOnce(Invoke([&captured_callback](
                            const ElementFinder::Result& optional_frame_element,
                            DocumentReadyState min_ready_state,
-                           WaitForDocumentOperation::Callback& callback) {
+                           WaitForDocumentOperation::Callback callback) {
         captured_callback = std::move(callback);
       }));
   EXPECT_CALL(mock_callback_, Run(_, _, _)).Times(0);
@@ -99,7 +99,7 @@ TEST_F(WaitForDocumentOperationTest, TimesOutAfterWaiting) {
 
 TEST_F(WaitForDocumentOperationTest, TimeoutIsIgnoredAfterSuccess) {
   EXPECT_CALL(mock_web_controller_,
-              OnWaitForDocumentReadyState(_, DOCUMENT_COMPLETE, _))
+              WaitForDocumentReadyState(_, DOCUMENT_COMPLETE, _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus(), DOCUMENT_COMPLETE,
                                    base::TimeDelta::FromSeconds(0)));
   EXPECT_CALL(mock_callback_, Run(_, _, _)).Times(0);

@@ -41,8 +41,8 @@ class WaitForDocumentActionTest : public testing::Test {
   void SetUp() override {
     ON_CALL(mock_action_delegate_, GetWebController)
         .WillByDefault(Return(&mock_web_controller_));
-    ON_CALL(mock_action_delegate_, OnWaitForDocumentReadyState(_, _, _))
-        .WillByDefault(RunOnceCallback<2>(OkClientStatus(), DOCUMENT_COMPLETE,
+    ON_CALL(mock_action_delegate_, WaitForDocumentReadyState(_, _, _, _))
+        .WillByDefault(RunOnceCallback<3>(OkClientStatus(), DOCUMENT_COMPLETE,
                                           base::TimeDelta::FromSeconds(0)));
   }
 
@@ -138,8 +138,8 @@ TEST_F(WaitForDocumentActionTest, WaitForDocumentInteractive) {
   EXPECT_CALL(mock_web_controller_, GetDocumentReadyState(_, _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), DOCUMENT_LOADING));
   EXPECT_CALL(mock_action_delegate_,
-              OnWaitForDocumentReadyState(DOCUMENT_INTERACTIVE, _, _))
-      .WillOnce(RunOnceCallback<2>(OkClientStatus(), DOCUMENT_INTERACTIVE,
+              WaitForDocumentReadyState(_, DOCUMENT_INTERACTIVE, _, _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus(), DOCUMENT_INTERACTIVE,
                                    base::TimeDelta::FromSeconds(0)));
   proto_.set_timeout_ms(1000);
   Run();
@@ -157,8 +157,8 @@ TEST_F(WaitForDocumentActionTest, WaitForDocumentInteractiveTimesOut) {
   EXPECT_CALL(mock_web_controller_, GetDocumentReadyState(_, _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), DOCUMENT_LOADING));
   EXPECT_CALL(mock_action_delegate_,
-              OnWaitForDocumentReadyState(DOCUMENT_COMPLETE, _, _))
-      .WillOnce(RunOnceCallback<2>(ClientStatus(TIMED_OUT),
+              WaitForDocumentReadyState(_, DOCUMENT_COMPLETE, _, _))
+      .WillOnce(RunOnceCallback<3>(ClientStatus(TIMED_OUT),
                                    DOCUMENT_UNKNOWN_READY_STATE,
                                    base::TimeDelta::FromSeconds(0)));
   // The second time the document is reported interactive.
