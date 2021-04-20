@@ -395,8 +395,7 @@ CommandStore.CMD_ALLOWLIST = {
     category: 'information'
   },
 
-  'toggleScreen':
-      {announce: false, msgId: 'toggle_screen', category: 'modifier_keys'},
+  'toggleDarkScreen': {announce: false, msgId: 'toggle_dark_screen'},
 
   'toggleBrailleTable':
       {msgId: 'toggle_braille_table', category: 'help_commands'},
