@@ -122,19 +122,19 @@ def CheckOutagesConfigOnCommit(input_api, output_api):
                               for k, v in sorted(outages_config.items())]
       return [
           output_api.PresubmitError('\n'.join([
-              'The following outages configuration is in effect:\n  {}'
-              .format('\n  '.join(outages_config_lines)),
+              'The following outages configuration is in effect:\n  {}'.format(
+                  '\n  '.join(outages_config_lines)),
               ('The effect of your change may not be visible '
                'in the generated configuration.'),
               ('If your change is addressing the outage, '
-               'please add the footer {} with a link for the outage.')
-              .format(_OUTAGE_ACTION_FOOTER),
+               'please add the footer {} with a link for the outage.'
+               ).format(_OUTAGE_ACTION_FOOTER),
               ('If your change is not addressing the outage '
                'but you still wish to land it, please add the footer '
-               '{} with a reason.')
-              .format(_IGNORE_OUTAGE_FOOTER),
+               '{} with a reason.').format(_IGNORE_OUTAGE_FOOTER),
               ('For more information on outages configuration, '
-               'see https://chromium.googlesource.com/chromium/src/+/refs/heads/master/infra/config/outages'),
+               'see https://chromium.googlesource.com/chromium/src/+/HEAD/infra/config/outages'
+               ),
           ])),
       ]
 

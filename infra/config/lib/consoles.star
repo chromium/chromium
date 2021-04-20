@@ -319,7 +319,7 @@ def console_view_entry(
         short_name = None):
     """Specifies the details of a console view entry.
 
-    See https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/master/lucicfg/doc/README.md#luci.console_view_entry
+    See https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md#luci.console_view_entry
     for more details on the arguments.
 
     Args:
