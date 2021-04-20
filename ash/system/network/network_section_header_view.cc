@@ -13,7 +13,6 @@
 #include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/tray_network_state_model.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "base/bind.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
@@ -178,9 +177,12 @@ MobileSectionHeaderView::MobileSectionHeaderView()
                            model()->GetDeviceState(NetworkType::kTether) ==
                                DeviceStateType::kEnabled;
   NetworkSectionHeaderView::Init(initially_enabled);
+  model()->AddObserver(this);
 }
 
-MobileSectionHeaderView::~MobileSectionHeaderView() {}
+MobileSectionHeaderView::~MobileSectionHeaderView() {
+  model()->RemoveObserver(this);
+}
 
 const char* MobileSectionHeaderView::GetClassName() const {
   return "MobileSectionHeaderView";
@@ -348,23 +350,31 @@ void MobileSectionHeaderView::AddExtraButtons(bool enabled) {
     PerformAddExtraButtons(enabled);
 }
 
+void MobileSectionHeaderView::DeviceStateListChanged() {
+  if (!add_esim_button_)
+    return;
+  add_esim_button_->SetEnabled(can_add_esim_button_be_enabled_ &&
+                               !IsCellularDeviceInhibited());
+}
+
 void MobileSectionHeaderView::PerformAddExtraButtons(bool enabled) {
+  can_add_esim_button_be_enabled_ = enabled;
   // If the device state is inhibited, add a tool tip specific to modem
   // reset.
   int tooltip_message_id = IsCellularDeviceInhibited()
                                ? IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR
                                : IDS_ASH_STATUS_TRAY_ADD_CELLULAR_LABEL;
-  TopShortcutButton* add_cellular_button = new TopShortcutButton(
+  add_esim_button_ = new TopShortcutButton(
       base::BindRepeating(&MobileSectionHeaderView::AddCellularButtonPressed,
                           base::Unretained(this)),
       vector_icons::kAddCellularNetworkIcon, tooltip_message_id);
 
-  add_cellular_button->SetEnabled(enabled && !IsCellularDeviceInhibited());
+  add_esim_button_->SetEnabled(enabled && !IsCellularDeviceInhibited());
 
   // Because the toggle is added conditionally and the check is asynchronous, we
   // need override the view index here in order for correct ordering of the
   // toggle and the add cellular button.
-  container()->AddViewAt(TriView::Container::END, add_cellular_button,
+  container()->AddViewAt(TriView::Container::END, add_esim_button_,
                          /*index=*/0);
   if (!IsToggleVisible()) {
     container()->SetBorder(views::CreateEmptyBorder(

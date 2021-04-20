@@ -89,6 +89,7 @@ class ASH_EXPORT TrayNetworkStateModel {
   void NotifyVpnProvidersChanged();
   void SendActiveNetworkStateChanged();
   void SendNetworkListChanged();
+  void SendDeviceStateListChanged();
 
   class Impl;
   std::unique_ptr<Impl> impl_;

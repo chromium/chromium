@@ -196,6 +196,7 @@ void TrayNetworkStateModel::OnGetDeviceStateList(
   }
 
   impl_->GetActiveNetworks();  // Will trigger an observer event.
+  SendDeviceStateListChanged();
 }
 
 void TrayNetworkStateModel::UpdateActiveNetworks(
@@ -278,6 +279,11 @@ void TrayNetworkStateModel::SendActiveNetworkStateChanged() {
 void TrayNetworkStateModel::SendNetworkListChanged() {
   for (auto& observer : observer_list_)
     observer.NetworkListChanged();
+}
+
+void TrayNetworkStateModel::SendDeviceStateListChanged() {
+  for (auto& observer : observer_list_)
+    observer.DeviceStateListChanged();
 }
 
 }  // namespace ash
