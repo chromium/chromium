@@ -30,7 +30,7 @@ chrome.test.runTests([
       target: {
         tabId: tab.id,
       },
-      function: injectedFunction,
+      func: injectedFunction,
     });
     chrome.test.assertEq(1, results.length);
     chrome.test.assertEq(NEW_TITLE_FROM_FUNCTION, results[0].result);
@@ -64,7 +64,7 @@ chrome.test.runTests([
       },
       // Note: This function has no return statement; in JS, this means
       // the return value will be undefined.
-      function: () => {},
+      func: () => {},
     });
     chrome.test.assertEq(1, results.length);
     // NOTE: Undefined results are mapped to null in our bindings layer,
@@ -83,7 +83,7 @@ chrome.test.runTests([
       target: {
         tabId: tab.id,
       },
-      function: () => {
+      func: () => {
         return null;
       },
     });
@@ -103,7 +103,7 @@ chrome.test.runTests([
       },
       // This will throw a runtime error, since foo, bar, and baz aren't
       // defined.
-      function: () => {
+      func: () => {
         foo.bar = baz;
         return 3;
       },
@@ -117,6 +117,45 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  // The `func` property used to be called `function`. This should still work
+  // for backwards compatibility.
+  async function usingOldFunctionPropertyNameWorks() {
+    const changeTitleAgain = function() {
+      document.title = 'Some New Title';
+      return document.title;
+    };
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    const results = await chrome.scripting.executeScript({
+      target: {
+        tabId: tab.id,
+      },
+      function: changeTitleAgain,
+    });
+    const newTitle = 'Some New Title';
+    chrome.test.assertEq(1, results.length);
+    chrome.test.assertEq(newTitle, results[0].result);
+    tab = await getSingleTab(query);
+    chrome.test.assertEq(newTitle, tab.title);
+    chrome.test.succeed();
+  },
+
+  async function onlyOneOfFunctionAndFunc() {
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.executeScript({
+          target: {
+            tabId: tab.id,
+          },
+          func: injectedFunction,
+          function: injectedFunction,
+        }),
+        `Error: Both 'func' and 'function' were specified. ` +
+        `Only 'func' should be used.`);
+    chrome.test.succeed();
+  },
+
   async function noSuchTab() {
     const nonExistentTabId = 99999;
     await chrome.test.assertPromiseRejects(
@@ -124,7 +163,7 @@ chrome.test.runTests([
           target: {
             tabId: nonExistentTabId,
           },
-          function: injectedFunction,
+          func: injectedFunction,
         }),
         `Error: No tab with id: ${nonExistentTabId}`);
     chrome.test.succeed();
@@ -183,7 +222,7 @@ chrome.test.runTests([
           target: {
             tabId: tab.id,
           },
-          function: injectedFunction,
+          func: injectedFunction,
         }),
         `Error: Cannot access contents of url "${tab.url}". ` +
             'Extension manifest must request permission ' +

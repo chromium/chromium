@@ -52,7 +52,7 @@ async function getFrameIds(tabId) {
 async function getCurrentColor(tabId, frameId) {
   const scriptResults = await chrome.scripting.executeScript({
     target: {tabId, frameIds: [frameId]},
-    function: () => {
+    func: () => {
       const element = document.getElementById('main');
       const style = getComputedStyle(element);
       return style.getPropertyValue('color');

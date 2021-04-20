@@ -49,7 +49,7 @@ chrome.test.runTests([
         tabId: tab.id,
         allFrames: true,
       },
-      function: injectedFunction,
+      func: injectedFunction,
     });
     chrome.test.assertEq(2, results.length);
 
@@ -76,7 +76,7 @@ chrome.test.runTests([
             tabId: tab.id,
             allFrames: true,
           },
-          function: injectedFunction,
+          func: injectedFunction,
         }),
         getAccessError(tab.url));
     chrome.test.succeed();
@@ -94,7 +94,7 @@ chrome.test.runTests([
         tabId: tab.id,
         frameIds: [frameId],
       },
-      function: injectedFunction,
+      func: injectedFunction,
     });
     chrome.test.assertEq(1, results.length);
 
@@ -119,7 +119,7 @@ chrome.test.runTests([
         tabId: tab.id,
         frameIds: frameIds,
       },
-      function: injectedFunction,
+      func: injectedFunction,
     });
     chrome.test.assertEq(2, results.length);
 
@@ -147,7 +147,7 @@ chrome.test.runTests([
         tabId: tab.id,
         frameIds: [frameId, frameId],
       },
-      function: injectedFunction,
+      func: injectedFunction,
     });
     chrome.test.assertEq(1, results.length);
 
@@ -177,7 +177,7 @@ chrome.test.runTests([
             tabId: tab.id,
             frameIds: frameIds,
           },
-          function: injectedFunction,
+          func: injectedFunction,
         }),
         getAccessError(deniedFrame.url));
     chrome.test.succeed();
@@ -200,7 +200,7 @@ chrome.test.runTests([
             tabId: tab.id,
             frameIds: frameIds,
           },
-          function: injectedFunction,
+          func: injectedFunction,
         }),
         `Error: No frame with id ${nonExistentFrameId} in ` +
             `tab with id ${tab.id}`);
@@ -223,7 +223,7 @@ chrome.test.runTests([
             frameIds: frameIds,
             allFrames: true,
           },
-          function: injectedFunction,
+          func: injectedFunction,
         }),
         `Error: Cannot specify both 'allFrames' and 'frameIds'.`);
     chrome.test.succeed();

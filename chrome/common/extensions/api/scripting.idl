@@ -33,14 +33,21 @@ namespace scripting {
     // A JavaScript function to inject. This function will be serialized, and
     // then deserialized for injection. This means that any bound parameters
     // and execution context will be lost.
-    // Exactly one of <code>files</code> and <code>function</code> must be
+    // Exactly one of <code>files</code> and <code>func</code> must be
     // specified.
-    [serializableFunction]InjectedFunction? function;
+    [serializableFunction]InjectedFunction? func;
+
+    // We used to call the injected function `function`, but this is
+    // incompatible with JavaScript's object declaration shorthand (see
+    // https://crbug.com/1166438). We leave this silently in for backwards
+    // compatibility.
+    // TODO(devlin): Remove this in M95.
+    [nodoc, serializableFunction]InjectedFunction? function;
 
     // The path of the JS or CSS files to inject, relative to the extension's
     // root directory.
     // NOTE: Currently a maximum of one file is supported.
-    // Exactly one of <code>files</code> and <code>function</code> must be
+    // Exactly one of <code>files</code> and <code>func</code> must be
     // specified.
     DOMString[]? files;
 

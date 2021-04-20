@@ -228,10 +228,21 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   injection_ = std::move(params->injection);
 
-  if ((injection_.files && injection_.function) ||
-      (!injection_.files && !injection_.function)) {
+  // Silently alias `function` to `func` for backwards compatibility.
+  // TODO(devlin): Remove this in M95.
+  if (injection_.function) {
+    if (injection_.func) {
+      return RespondNow(
+          Error("Both 'func' and 'function' were specified. "
+                "Only 'func' should be used."));
+    }
+    injection_.func = std::move(injection_.function);
+  }
+
+  if ((injection_.files && injection_.func) ||
+      (!injection_.files && !injection_.func)) {
     return RespondNow(
-        Error("Exactly one of 'function' and 'files' must be specified"));
+        Error("Exactly one of 'func' and 'files' must be specified"));
   }
 
   if (injection_.files) {
@@ -248,13 +259,13 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
     return RespondLater();
   }
 
-  DCHECK(injection_.function);
+  DCHECK(injection_.func);
 
   // TODO(devlin): This (wrapping a function to create an IIFE) is pretty hacky,
   // and won't work well when we support currying arguments. Add support to the
   // ScriptExecutor to better support this case.
   std::string code_to_execute =
-      base::StringPrintf("(%s)()", injection_.function->c_str());
+      base::StringPrintf("(%s)()", injection_.func->c_str());
 
   std::string error;
   if (!Execute(std::move(code_to_execute), /*script_src=*/GURL(), &error))

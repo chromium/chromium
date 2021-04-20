@@ -31,7 +31,7 @@ async function getBodyColorsForTab(tabId) {
       tabId: tabId,
       allFrames: true,
     },
-    function: getBodyColor,
+    func: getBodyColor,
   });
   return results.map(res => res.result);
 }
