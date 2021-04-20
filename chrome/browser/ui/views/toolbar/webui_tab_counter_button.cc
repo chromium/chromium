@@ -279,22 +279,19 @@ void TabCounterAnimator::MaybeStartPendingAnimation() {
     return;
 
   if (pending_throbber_) {
-    // If the throbber is already showing, just reset the timer so that the
-    // animation continues smoothly for tabs created in quick succession.
-    if (throbber_timer_.IsRunning()) {
-      throbber_timer_.Reset();
-    } else {
+    // Start the throbber if it is not already showing.
+    if (!throbber_timer_.IsRunning())
       throbber_->Start();
 
-      // Automatically stop the throbber after 1 second. Currently we do not
-      // check the real loading state of the new tab(s), as that adds
-      // unnecessary complexity. The purpose of the throbber is just to
-      // indicate to the user that some activity has happened in the
-      // background, which may not otherwise have been obvious because the tab
-      // strip is hidden in this mode.
-      throbber_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1000),
-                            throbber_, &views::Throbber::Stop);
-    }
+    // Automatically stop the throbber after 1 second. This will reset the timer
+    // if it is already running. Currently we do not check the real loading
+    // state of the new tab(s), as that adds unnecessary complexity. The purpose
+    // of the throbber is just to indicate to the user that some activity has
+    // happened in the background, which may not otherwise have been obvious
+    // because the tab strip is hidden in this mode.
+    throbber_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1000),
+                          throbber_, &views::Throbber::Stop);
+
     pending_throbber_ = false;
   }
 
