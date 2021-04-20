@@ -262,6 +262,7 @@ source_set("app_framework_shared_headers") {
     "src/AppFramework/Matcher/GREYAnyOf.h",
     "src/AppFramework/Matcher/GREYMatchers.h",
     "src/AppFramework/Matcher/GREYMatchersShorthand.h",
+    "src/AppFramework/Synchronization/GREYUIThreadExecutor+GREYApp.h",
     "src/AppFramework/Synchronization/GREYUIThreadExecutor.h",
   ]
 }
@@ -402,6 +403,7 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/Synchronization/GREYRunLoopSpinner.m",
     "src/AppFramework/Synchronization/GREYSyncAPI.h",
     "src/AppFramework/Synchronization/GREYSyncAPI.m",
+    "src/AppFramework/Synchronization/GREYUIThreadExecutor+GREYApp.h",
     "src/AppFramework/Synchronization/GREYUIThreadExecutor+Private.h",
     "src/AppFramework/Synchronization/GREYUIThreadExecutor.m",
   ]

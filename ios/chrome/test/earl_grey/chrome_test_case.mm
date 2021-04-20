@@ -267,8 +267,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 
 + (void)closeAllTabs {
   [ChromeEarlGrey closeAllTabs];
-  [[GREYUIThreadExecutor sharedInstance]
-      drainUntilIdleWithTimeout:kDrainTimeout];
+  GREYWaitForAppToIdleWithTimeout(kDrainTimeout, @"App failed to idle");
 }
 
 - (void)disableMockAuthentication {

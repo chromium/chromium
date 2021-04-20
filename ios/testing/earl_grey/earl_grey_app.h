@@ -15,6 +15,7 @@
 #import <AppFramework/EarlGreyApp.h>
 #import <AppFramework/Matcher/GREYMatchersShorthand.h>
 #import <AppFramework/Synchronization/GREYSyncAPI.h>
+#import <AppFramework/Synchronization/GREYUIThreadExecutor+GREYApp.h>
 #import <CommonLib/Error/GREYErrorConstants.h>
 #import <CommonLib/GREYAppleInternals.h>
 
