@@ -19,6 +19,7 @@ static_library("core") {
     "//base",
     "//components/history/core/browser",
     "//components/keyed_service/core",
+    "//components/query_parser",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//url",

@@ -109,9 +109,9 @@ history_clusters::mojom::MemoryPtr ValueToMemory(
   memory->top_visits = FindListKeyAndCast<history_clusters::mojom::VisitPtr>(
       value, "visitIds", base::BindRepeating(&ValueToVisit, visits));
 
-  memory->keywords = FindListKeyAndCast<std::string>(
+  memory->keywords = FindListKeyAndCast<std::u16string>(
       value, "keywords", base::BindRepeating([](const base::Value& value) {
-        return value.GetIfString() ? *value.GetIfString() : "";
+        return value.is_string() ? base::UTF8ToUTF16(value.GetString()) : u"";
       }));
 
   // TODO(manukh) fill out:

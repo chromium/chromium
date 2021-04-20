@@ -4,11 +4,15 @@
 
 #include "components/history_clusters/core/memories_service.h"
 
+#include <numeric>
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/i18n/case_conversion.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/memories_remote_model_helper.h"
+#include "components/query_parser/query_parser.h"
 
 namespace history_clusters {
 
@@ -55,7 +59,43 @@ void MemoriesService::CompleteVisitIfReady(int64_t nav_id) {
 void MemoriesService::QueryMemories(mojom::QueryParamsPtr query_params,
                                     QueryMemoriesCallback callback) {
   remote_model_helper_->GetMemories(
-      visits_, base::BindOnce(std::move(callback), nullptr));
+      visits_, base::BindOnce(&MemoriesService::OnQueryMemoriesResult,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              std::move(query_params), std::move(callback)));
+}
+
+void MemoriesService::OnQueryMemoriesResult(
+    mojom::QueryParamsPtr query_params,
+    QueryMemoriesCallback callback,
+    std::vector<mojom::MemoryPtr> memories) {
+  if (query_params->query.empty()) {
+    std::move(callback).Run(nullptr, std::move(memories));
+    return;
+  }
+
+  // Extract query nodes from the query string.
+  query_parser::QueryNodeVector query_nodes;
+  query_parser::QueryParser::ParseQueryNodes(
+      base::UTF8ToUTF16(query_params->query),
+      query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH, &query_nodes);
+
+  std::vector<mojom::MemoryPtr> matching_memories;
+  std::copy_if(
+      std::make_move_iterator(memories.begin()),
+      std::make_move_iterator(memories.end()),
+      std::back_inserter(matching_memories), [&](const auto& memory) {
+        // Combine lowercase keywords into a string to extract query words from.
+        std::u16string keywords = std::accumulate(
+            memory->keywords.begin(), memory->keywords.end(), std::u16string(),
+            [](std::u16string accumulated, std::u16string str) {
+              return accumulated + u" " + str;
+            });
+        query_parser::QueryWordVector query_words;
+        query_parser::QueryParser::ExtractQueryWords(keywords, &query_words);
+        return query_parser::QueryParser::DoesQueryMatch(query_words,
+                                                         query_nodes);
+      });
+  std::move(callback).Run(nullptr, std::move(matching_memories));
 }
 
 }  // namespace history_clusters

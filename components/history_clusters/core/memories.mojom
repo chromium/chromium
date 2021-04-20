@@ -4,6 +4,7 @@
 
 module history_clusters.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -77,7 +78,7 @@ struct Memory {
   // These strings should never be exposed to the user directly in case they are
   // offensively wrong, but may be queried over with search terms to find
   // memories.
-  array<string> keywords;
+  array<mojo_base.mojom.String16> keywords;
 
   // Search queries related to the constituent visits.
   array<SearchQuery> related_searches;

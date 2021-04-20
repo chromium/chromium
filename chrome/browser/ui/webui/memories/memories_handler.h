@@ -39,10 +39,9 @@ class MemoriesHandler : public history_clusters::mojom::PageHandler {
                       pending_page_handler,
                   Profile* profile,
                   content::WebContents* web_contents);
-  ~MemoriesHandler() override;
-
   MemoriesHandler(const MemoriesHandler&) = delete;
   MemoriesHandler& operator=(const MemoriesHandler&) = delete;
+  ~MemoriesHandler() override;
 
   // history_clusters::mojom::PageHandler:
   void SetPage(

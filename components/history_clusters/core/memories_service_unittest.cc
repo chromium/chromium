@@ -127,7 +127,7 @@ class MemoriesServiceTest : public testing::Test {
 // Useless, but required by the C++14 standard. Please deliver us, C++17.
 constexpr char MemoriesServiceTest::kFakeEndpoint[];
 
-TEST_F(MemoriesServiceTest, QueryMemories) {
+TEST_F(MemoriesServiceTest, QueryMemories_EmptyQuery) {
   EnableMemoriesWithEndpoint(kFakeEndpoint);
 
   auto AddVisitWithDetails = [&](int time, const GURL& url,
@@ -171,8 +171,8 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
             EXPECT_EQ(memories[0]->top_visits[1]->page_title, "Github title");
 
             ASSERT_EQ(memories[0]->keywords.size(), 2u);
-            EXPECT_EQ(memories[0]->keywords[0], "topic 1");
-            EXPECT_EQ(memories[0]->keywords[1], "topic 2");
+            EXPECT_EQ(memories[0]->keywords[0], u"topic 1");
+            EXPECT_EQ(memories[0]->keywords[1], u"topic 2");
 
             EXPECT_FALSE(memories[1]->id.is_empty());
             ASSERT_EQ(memories[1]->top_visits.size(), 1u);
@@ -181,7 +181,117 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
             EXPECT_EQ(memories[1]->top_visits[0]->time, IntToTime(4));
             EXPECT_EQ(memories[1]->top_visits[0]->page_title, "Github title");
             EXPECT_TRUE(memories[1]->keywords.empty());
+            run_loop_quit_.Run();
+          }));
 
+  // Verify the serialized request.
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+  EXPECT_EQ(GetPendingRequestBody(), StripWhitespace(R"(
+      {
+        "visits": [
+          {
+            "foregroundTimeSecs": 0,
+            "isFromGoogleSearch": false,
+            "navigationTimeMs": 2.0,
+            "origin": "https://google.com/",
+            "pageEndReason": 3,
+            "pageTransition": 0,
+            "siteEngagementScore": 0,
+            "url": "https://google.com/",
+            "visitId": 2.0
+          },
+          {
+            "foregroundTimeSecs": 0,
+            "isFromGoogleSearch": false,
+            "navigationTimeMs": 4.0,
+            "origin": "https://github.com/",
+            "pageEndReason": 5,
+            "pageTransition": 0,
+            "siteEngagementScore": 0,
+            "url": "https://github.com/",
+            "visitId": 4.0
+          }
+        ]
+      })"));
+
+  // Fake a response from the endpoint. There's a 'description' field even
+  // though we don't parse it. This is to test that we can handle extra fields.
+  test_url_loader_factory_.AddResponse(kFakeEndpoint, R"(
+      {
+        "clusters": [
+          {
+            "description": "description 1",
+            "keywords": [
+              "topic 1",
+              "topic 2"
+            ],
+            "visitIds": [
+              2,
+              4
+            ]
+          },
+          {
+            "visitIds": [
+              4
+            ]
+          }
+        ]
+      })");
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+
+  // Verify the callback is invoked.
+  run_loop_.Run();
+}
+
+TEST_F(MemoriesServiceTest, QueryMemories) {
+  EnableMemoriesWithEndpoint(kFakeEndpoint);
+
+  auto AddVisitWithDetails = [&](int time, const GURL& url,
+                                 const std::u16string title, int visit_id,
+                                 int page_end_reason) {
+    history_clusters::MemoriesVisit visit;
+    visit.visit_row.visit_time = IntToTime(time);
+    visit.url_row.set_url(url);
+    visit.url_row.set_title(title);
+    visit.visit_row.visit_id = visit_id;
+    visit.context_signals.page_end_reason = page_end_reason;
+    AddVisit(visit);
+  };
+
+  AddVisitWithDetails(2, GURL{"https://google.com"}, u"Google title", 2, 3);
+  AddVisitWithDetails(4, GURL{"https://github.com"}, u"Github title", 4, 5);
+
+  auto query_params = history_clusters::mojom::QueryParams::New();
+  query_params->query = "Topic";
+
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+  memories_service_->QueryMemories(
+      std::move(query_params),
+      // This "expect" block is not run until after the fake response is sent
+      // further down in this method.
+      base::BindLambdaForTesting(
+          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
+              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+            // Verify that the continuation query params is nullptr.
+            ASSERT_FALSE(!!continuation_query_params);
+
+            // Verify the parsed response.
+            ASSERT_EQ(memories.size(), 1u);
+            EXPECT_FALSE(memories[0]->id.is_empty());
+
+            ASSERT_EQ(memories[0]->top_visits.size(), 2u);
+            EXPECT_EQ(memories[0]->top_visits[0]->id, 2);
+            EXPECT_EQ(memories[0]->top_visits[0]->url, "https://google.com/");
+            EXPECT_EQ(memories[0]->top_visits[0]->time, IntToTime(2));
+            EXPECT_EQ(memories[0]->top_visits[0]->page_title, "Google title");
+            EXPECT_EQ(memories[0]->top_visits[1]->id, 4);
+            EXPECT_EQ(memories[0]->top_visits[1]->url, "https://github.com/");
+            EXPECT_EQ(memories[0]->top_visits[1]->time, IntToTime(4));
+            EXPECT_EQ(memories[0]->top_visits[1]->page_title, "Github title");
+
+            ASSERT_EQ(memories[0]->keywords.size(), 2u);
+            EXPECT_EQ(memories[0]->keywords[0], u"topic 1");
+            EXPECT_EQ(memories[0]->keywords[1], u"topic 2");
             run_loop_quit_.Run();
           }));
 

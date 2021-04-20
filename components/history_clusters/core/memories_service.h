@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history_clusters/core/memories.mojom.h"
 #include "components/history_clusters/core/visit_data.h"
@@ -28,6 +28,8 @@ class MemoriesService : public KeyedService {
   explicit MemoriesService(
       history::HistoryService* history_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  MemoriesService(const MemoriesService&) = delete;
+  MemoriesService& operator=(const MemoriesService&) = delete;
   ~MemoriesService() override;
 
   // KeyedService:
@@ -53,8 +55,7 @@ class MemoriesService : public KeyedService {
   // along with continuation query params meant to be used in the follow-up
   // request to load older Memories.
   // Note: At the moment, this method asks |remote_model_helper_| to construct
-  // Memories from |visits_|. It ignores |query_params| and returns nullptr as
-  // continuation query params in the callback.
+  // Memories from |visits_|.
   using QueryMemoriesCallback =
       base::OnceCallback<void(mojom::QueryParamsPtr,
                               std::vector<mojom::MemoryPtr>)>;
@@ -63,6 +64,18 @@ class MemoriesService : public KeyedService {
 
  private:
   friend class MemoriesServiceTestApi;
+
+  // Called with |memories| when the results of requesting Memories from
+  // |remote_model_helper_| are available. Uses the bound |query_params|
+  // parameter to filter the Memories and invokes |callback| with matching
+  // Memories and continuation query params meant to be used in the follow-up
+  // request to load older Memories.
+  // Note: At the moment, the recency threshold of |query_params| is ignored and
+  // |callback| is invoked with nullptr continuation query params as the service
+  // does not support paging.
+  void OnQueryMemoriesResult(mojom::QueryParamsPtr query_params,
+                             QueryMemoriesCallback callback,
+                             std::vector<mojom::MemoryPtr> memories);
 
   // If the Memories flag is enabled, this contains all the visits in-memory
   // during the Profile lifetime.
@@ -77,7 +90,7 @@ class MemoriesService : public KeyedService {
   // instead.
   std::unique_ptr<MemoriesRemoteModelHelper> remote_model_helper_;
 
-  DISALLOW_COPY_AND_ASSIGN(MemoriesService);
+  base::WeakPtrFactory<MemoriesService> weak_ptr_factory_{this};
 };
 
 }  // namespace history_clusters
