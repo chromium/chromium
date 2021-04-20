@@ -31,10 +31,10 @@
 <hr>
 
 <p>
-<label for="filter">Filter: (regex)</label>
+<label for="filter">Filter: (regex, includes:&lt;file&gt;, or includedBy:&lt;file&gt;)</label>
 <input type="text" id="filter" name="filter" size="60" onKeyUp="if (event.keyCode == 13) document.getElementById('apply').click()">
-<button onClick="changeState('filter', document.getElementById('filter').value)" id="apply">Apply</button>
-<button onClick="changeState('filter', '')">Clear</button>
+<button onClick="changeState({filter: document.getElementById('filter').value})" id="apply">Apply</button>
+<button onClick="changeState({filter: ''})">Clear</button>
 <span id="filterResults"></span>
 </p>
 
@@ -42,13 +42,13 @@
   <thead>
     <tr>
       <th>#</th>
-      <th id="filename" onclick="changeState('sort', 'filename')">Filename</th>
-      <th id="isize" colspan="2" onclick="changeState('sort', 'isize')" title="The size of the individual file. Also shown as percentage of the total file size.">Individual Size (B) &#9432;</th>
-      <th id="tsize" colspan="2" onclick="changeState('sort', 'tsize')" title="The size of the file and all the files it includes, directly and indirectly. Also shown as percentage of the total build size.">Expanded Size (B) &#9432;</th>
-      <th id="asize" colspan="2" onclick="changeState('sort', 'asize')" title="The size added by this file being part of the build. In other words, if this file were empty and had no includes, how much smaller would the build be. Also shown as percentage of the total build size.">Added Size (B) &#9432;</th>
-      <th id="prevalence" colspan="2" onclick="changeState('sort', 'prevalence')" title="Number of translation units that this file is part of. Also shown as percentage of the number of translation units.">Occurrences &#9432;</th>
-      <th id="includedby" onclick="changeState('sort', 'includedby')" title="In how many files this file is included directly. Click the number to see the files.">Directly Included In &#9432;</th>
-      <th id="includes" onclick="changeState('sort', 'includes')" title="How many files this file includes directly. Click the number to see the files.">Direct Includes &#9432;</th>
+      <th id="filename" onclick="changeState({sort:, 'filename'})">Filename</th>
+      <th id="isize" colspan="2" onclick="changeState({sort: 'isize'})" title="The size of the individual file. Also shown as percentage of the total file size.">Individual Size (B) &#9432;</th>
+      <th id="tsize" colspan="2" onclick="changeState({sort: 'tsize'})" title="The size of the file and all the files it includes, directly and indirectly. Also shown as percentage of the total build size.">Expanded Size (B) &#9432;</th>
+      <th id="asize" colspan="2" onclick="changeState({sort: 'asize'})" title="The size added by this file being part of the build. In other words, if this file were empty and had no includes, how much smaller would the build be. Also shown as percentage of the total build size.">Added Size (B) &#9432;</th>
+      <th id="prevalence" colspan="2" onclick="changeState({sort: 'prevalence'})" title="Number of translation units that this file is part of. Also shown as percentage of the number of translation units.">Occurrences &#9432;</th>
+      <th id="includedby" onclick="changeState({sort: 'includedby'})" title="In how many files this file is included directly. Click the number to see the files.">Directly Included In &#9432;</th>
+      <th id="includes" onclick="changeState({sort: 'includes'})" title="How many files this file includes directly. Click the number to see the files.">Direct Includes &#9432;</th>
     </tr>
   </thead>
   <tbody>
@@ -97,14 +97,14 @@ document.getElementById('totFileSize').textContent = fmt(totFileSize);
 function buildRow(i, rank) {
   return `
 <tr>
-<td><a href="javascript:changeState('filter', '^' + regexEscape('${data.files[i]}' + '$'))" title="Filter on this file.">${rank + 1}</a></td>
+<td><a href="#${changedStateHash({filter: '^' + regexEscape(data.files[i] + '$')})}" title="Filter on this file.">${rank + 1}</a></td>
 <td><a href="https://source.chromium.org/chromium/chromium/src/+/HEAD:${data.files[i]}">${data.files[i]}</a></td>
 <td>${fmt(data.sizes[i])}</td> <td>${(100 * data.sizes[i] / totFileSize).toFixed(2)}&nbsp;%</td>
 <td>${fmt(data.tsizes[i])}</td> <td>${(100 * data.tsizes[i] / totBuildSize).toFixed(2)}&nbsp;%</td>
 <td>${fmt(data.asizes[i])}</td> <td>${(100 * data.asizes[i] / totBuildSize).toFixed(2)}&nbsp;%</td>
 <td>${fmt(data.prevalence[i])}</td> <td>${(100 * data.prevalence[i] / numRoots).toFixed(2)}&nbsp;%</td>
-<td><a href="javascript:changeState('filter', 'includes:${data.files[i]}')">${fmt(data.included_by[i].length)}</a></td>
-<td><a href="javascript:changeState('filter', 'includedby:${data.files[i]}')">${fmt(data.includes[i].length)}</a></td>
+<td><a href="#${changedStateHash({filter: 'includes:' + data.files[i], sort: 'filename'})}">${fmt(data.included_by[i].length)}</a></td>
+<td><a href="#${changedStateHash({filter: 'includedby:' + data.files[i], sort: 'filename'})}">${fmt(data.includes[i].length)}</a></td>
 </tr>
   `;
 }
@@ -180,10 +180,6 @@ function buildTable() {
   document.querySelector('table').appendChild(tbody);
 }
 
-function setState(params) {
-  window.location.hash = params.toString();
-}
-
 function getState() {
   let params = new URLSearchParams(window.location.hash.substring(1));
 
@@ -195,10 +191,16 @@ function getState() {
   return params;
 }
 
-function changeState(key, value) {
+function changedStateHash(changes) {
   let s = getState();
-  s.set(key, value);
-  setState(s);
+  for (const [key, value] of Object.entries(changes)) {
+    s.set(key, value);
+  }
+  return s.toString();
+}
+
+function changeState(changes) {
+  window.location.hash = changedStateHash(changes);
 }
 
 window.onhashchange = buildTable;
