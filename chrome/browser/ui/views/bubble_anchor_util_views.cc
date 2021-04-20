@@ -53,7 +53,7 @@ AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
   if (base::FeatureList::IsEnabled(permissions::features::kPermissionChip) &&
       browser_view->GetLocationBarView()->IsDrawn()) {
     return {browser_view->GetLocationBarView(),
-            browser_view->GetLocationBarView()->permission_chip()->button(),
+            browser_view->GetLocationBarView()->chip()->button(),
             views::BubbleBorder::TOP_LEFT};
   }
   return GetPageInfoAnchorConfiguration(browser);

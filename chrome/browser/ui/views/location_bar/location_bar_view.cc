@@ -189,7 +189,7 @@ void LocationBarView::Init() {
   const gfx::FontList& font_list = views::style::GetFont(
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
 
-  permission_chip_ = AddChildView(std::make_unique<PermissionChip>(browser()));
+  chip_ = AddChildView(std::make_unique<PermissionRequestChip>(browser()));
 
   auto location_icon_view =
       std::make_unique<LocationIconView>(font_list, this, this);
@@ -533,9 +533,9 @@ void LocationBarView::Layout() {
   // label/chip.
   const double kLeadingDecorationMaxFraction = 0.5;
 
-  if (permission_chip_->GetVisible() && !ShouldShowKeywordBubble()) {
+  if (chip_->GetVisible() && !ShouldShowKeywordBubble()) {
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
-                                      0, edge_padding, permission_chip_);
+                                      0, edge_padding, chip_);
   }
 
   if (ShouldShowKeywordBubble()) {
@@ -1184,7 +1184,7 @@ void LocationBarView::OnChanged() {
   SchedulePaint();
   UpdateSendTabToSelfIcon();
   UpdateQRCodeGeneratorIcon();
-  UpdatePermissionChipVisibility();
+  UpdateChipVisibility();
 }
 
 void LocationBarView::OnPopupVisibilityChanged() {
@@ -1319,16 +1319,16 @@ ui::ImageModel LocationBarView::GetLocationIcon(
              : ui::ImageModel();
 }
 
-void LocationBarView::UpdatePermissionChipVisibility() {
-  if (!permission_chip()->GetActiveRequest()) {
-    DCHECK(!permission_chip()->GetVisible());
+void LocationBarView::UpdateChipVisibility() {
+  if (!chip()->GetActiveRequest()) {
+    DCHECK(!chip()->GetVisible());
     return;
   }
 
   if (IsEditingOrEmpty()) {
-    permission_chip()->Hide();
+    chip()->Hide();
   } else {
-    permission_chip()->Reshow();
+    chip()->Reshow();
   }
 }
 

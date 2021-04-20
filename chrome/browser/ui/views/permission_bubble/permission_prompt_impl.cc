@@ -65,19 +65,19 @@ void PermissionPromptImpl::OnWidgetClosing(views::Widget* widget) {
 PermissionPromptImpl::~PermissionPromptImpl() {
   switch (prompt_style_) {
     case PermissionPromptStyle::kBubbleOnly:
-      DCHECK(!permission_chip_);
+      DCHECK(!chip_);
       if (prompt_bubble_)
         prompt_bubble_->GetWidget()->Close();
       break;
     case PermissionPromptStyle::kChip:
       DCHECK(!prompt_bubble_);
-      DCHECK(permission_chip_);
-      permission_chip_->FinalizeRequest();
-      permission_chip_ = nullptr;
+      DCHECK(chip_);
+      chip_->FinalizeRequest();
+      chip_ = nullptr;
       break;
     case PermissionPromptStyle::kQuiet:
       DCHECK(!prompt_bubble_);
-      DCHECK(!permission_chip_);
+      DCHECK(!chip_);
       content_settings::UpdateLocationBarUiForWebContents(web_contents_);
       break;
   }
@@ -98,7 +98,7 @@ void PermissionPromptImpl::UpdateAnchor() {
   const bool is_location_bar_drawn = lbv && lbv->IsDrawn();
   switch (prompt_style_) {
     case PermissionPromptStyle::kBubbleOnly:
-      DCHECK(!permission_chip_);
+      DCHECK(!chip_);
       // TODO(crbug.com/1175231): Investigate why prompt_bubble_ can be null
       // here. Early return is preventing the crash from happening but we still
       // don't know the reason why it is null here and cannot reproduce it.
@@ -111,7 +111,7 @@ void PermissionPromptImpl::UpdateAnchor() {
         prompt_bubble_->SetPromptStyle(PermissionPromptStyle::kChip);
         prompt_bubble_->GetWidget()->Close();
         ShowChipUI();
-        permission_chip_->OpenBubble();
+        chip_->OpenBubble();
       } else {
         // If |browser_| changed, recreate bubble for correct browser.
         if (was_browser_changed) {
@@ -125,15 +125,15 @@ void PermissionPromptImpl::UpdateAnchor() {
       break;
     case PermissionPromptStyle::kChip:
       DCHECK(!prompt_bubble_);
-      DCHECK(permission_chip_);
-      permission_chip_ = lbv->permission_chip();
-      if (!permission_chip_->GetActiveRequest())
-        permission_chip_->DisplayRequest(delegate_);
+      DCHECK(chip_);
+      chip_ = lbv->chip();
+      if (!chip_->GetActiveRequest())
+        chip_->DisplayRequest(delegate_);
       // If there is fresh pending request shown as chip UI and location bar
       // isn't visible anymore, show bubble UI instead.
-      if (!permission_chip_->is_fully_collapsed() && !is_location_bar_drawn) {
-        permission_chip_->FinalizeRequest();
-        permission_chip_ = nullptr;
+      if (!chip_->is_fully_collapsed() && !is_location_bar_drawn) {
+        chip_->FinalizeRequest();
+        chip_ = nullptr;
         ShowBubble();
       }
       break;
@@ -151,8 +151,8 @@ void PermissionPromptImpl::ShowChipUI() {
   LocationBarView* lbv = GetLocationBarView();
   DCHECK(lbv);
 
-  permission_chip_ = lbv->permission_chip();
-  permission_chip_->DisplayRequest(delegate_);
+  chip_ = lbv->chip();
+  chip_->DisplayRequest(delegate_);
   prompt_style_ = PermissionPromptStyle::kChip;
 }
 

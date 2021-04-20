@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/location_bar/permission_chip.h"
+#include "chrome/browser/ui/views/location_bar/permission_request_chip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
@@ -19,15 +19,16 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 
-class PermissionChipBrowserTest : public UiBrowserTest {
+class PermissionRequestChipBrowserTest : public UiBrowserTest {
  public:
-  PermissionChipBrowserTest() {
+  PermissionRequestChipBrowserTest() {
     feature_list_.InitAndEnableFeature(permissions::features::kPermissionChip);
   }
 
-  PermissionChipBrowserTest(const PermissionChipBrowserTest&) = delete;
-  PermissionChipBrowserTest& operator=(const PermissionChipBrowserTest&) =
+  PermissionRequestChipBrowserTest(const PermissionRequestChipBrowserTest&) =
       delete;
+  PermissionRequestChipBrowserTest& operator=(
+      const PermissionRequestChipBrowserTest&) = delete;
 
   // UiBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -41,15 +42,14 @@ class PermissionChipBrowserTest : public UiBrowserTest {
 
     LocationBarView* lbv = GetLocationBarView();
     lbv->GetFocusManager()->ClearFocus();
-    auto* button =
-        static_cast<OmniboxChipButton*>(lbv->permission_chip()->button());
+    auto* button = static_cast<OmniboxChipButton*>(lbv->chip()->button());
     button->SetForceExpandedForTesting(true);
   }
 
   bool VerifyUi() override {
     LocationBarView* lbv = GetLocationBarView();
-    PermissionChip* permission_chip = lbv->permission_chip();
-    if (!permission_chip || !permission_chip->GetVisible())
+    PermissionChip* chip = lbv->chip();
+    if (!chip || !chip->GetVisible())
       return false;
 
 // TODO(olesiamrukhno): VerifyPixelUi works only for these platforms, revise
@@ -58,7 +58,7 @@ class PermissionChipBrowserTest : public UiBrowserTest {
     auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
     const std::string screenshot_name =
         base::StrCat({test_info->test_case_name(), "_", test_info->name()});
-    return VerifyPixelUi(permission_chip, "BrowserUi", screenshot_name);
+    return VerifyPixelUi(chip, "BrowserUi", screenshot_name);
 #else
     return true;
 #endif
@@ -84,7 +84,7 @@ class PermissionChipBrowserTest : public UiBrowserTest {
 };
 
 // Temporarily disabled per https://crbug.com/1197280
-IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest,
+IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserTest,
                        DISABLED_InvokeUi_geolocation) {
   ShowAndVerifyUi();
 }

@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/permission_chip.h"
+#include "chrome/browser/ui/views/location_bar/permission_request_chip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -78,7 +78,7 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
 
     // The permission prompt is shown asynchronously.
     base::RunLoop().RunUntilIdle();
-    OpenBubbleIfChipUiIsShown();
+    OpenBubbleIfRequestChipUiIsShown();
 
     EnsureWindowActive(test_api_->GetPromptWindow(), "show permission bubble");
   }
@@ -99,15 +99,14 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
 #endif
   }
 
-  void OpenBubbleIfChipUiIsShown() {
+  void OpenBubbleIfRequestChipUiIsShown() {
     // If the permission request is displayed using the chip UI, simulate a
     // click on the chip to trigger showing the prompt.
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    PermissionChip* permission_chip =
-        browser_view->toolbar()->location_bar()->permission_chip();
-    if (permission_chip->GetVisible()) {
-      views::test::ButtonTestApi(permission_chip->button())
+    PermissionChip* chip = browser_view->toolbar()->location_bar()->chip();
+    if (chip->GetVisible()) {
+      views::test::ButtonTestApi(chip->button())
           .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                       gfx::Point(), ui::EventTimeForNow(),
                                       ui::EF_LEFT_MOUSE_BUTTON, 0));
@@ -123,7 +122,7 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
     chrome::FocusLocationBar(browser());
     SendAcceleratorSync(ui::VKEY_OEM_4, true, false);
     EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
-    OpenBubbleIfChipUiIsShown();
+    OpenBubbleIfRequestChipUiIsShown();
     EnsureWindowActive(test_api_->GetPromptWindow(),
                        "switch to permission tab with curly brace");
     EXPECT_TRUE(test_api_->GetPromptWindow());
@@ -190,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest, SwitchTabs) {
   JumpToPreviousOpenTab();
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
-  OpenBubbleIfChipUiIsShown();
+  OpenBubbleIfRequestChipUiIsShown();
 
   // Note we don't need to makeKeyAndOrderFront for mac os: the permission
   // window will take focus when it is shown again.

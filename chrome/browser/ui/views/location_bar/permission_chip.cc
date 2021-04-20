@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/features.h"
@@ -17,18 +16,15 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
-bool IsCameraPermission(permissions::RequestType type) {
-  return type == permissions::RequestType::kCameraStream;
-}
-
 bool IsCameraOrMicPermission(permissions::RequestType type) {
-  return IsCameraPermission(type) ||
+  return type == permissions::RequestType::kCameraStream ||
          type == permissions::RequestType::kMicStream;
 }
 }  // namespace
@@ -64,7 +60,7 @@ class BubbleButtonController : public views::ButtonController {
   BubbleOwnerDelegate* bubble_owner_ = nullptr;
 };
 
-PermissionChip::PermissionChip(Browser* browser) : browser_(browser) {
+PermissionChip::PermissionChip() {
   SetUseDefaultFillLayout(true);
   SetVisible(false);
 
@@ -85,8 +81,6 @@ PermissionChip::PermissionChip(Browser* browser) : browser_(browser) {
 }
 
 PermissionChip::~PermissionChip() {
-  if (prompt_bubble_)
-    prompt_bubble_->GetWidget()->Close();
   CHECK(!IsInObserverList());
 }
 
@@ -94,7 +88,6 @@ void PermissionChip::DisplayRequest(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
   delegate_ = delegate;
-  requested_time_ = base::TimeTicks::Now();
 
   const std::vector<permissions::PermissionRequest*>& requests =
       delegate_->Requests();
@@ -124,20 +117,17 @@ void PermissionChip::FinalizeRequest() {
   collapse_timer_.AbandonAndStop();
   dismiss_timer_.AbandonAndStop();
   delegate_ = nullptr;
-  if (prompt_bubble_)
-    prompt_bubble_->GetWidget()->Close();
-  already_recorded_interaction_ = false;
   PreferredSizeChanged();
+}
+
+void PermissionChip::Hide() {
+  SetVisible(false);
 }
 
 void PermissionChip::Reshow() {
   if (GetVisible())
     return;
   Show(/*always_open_bubble=*/false);
-}
-
-void PermissionChip::Hide() {
-  SetVisible(false);
 }
 
 bool PermissionChip::GetActiveRequest() const {
@@ -150,28 +140,15 @@ void PermissionChip::OnMouseEntered(const ui::MouseEvent& event) {
 }
 
 void PermissionChip::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK_EQ(widget, prompt_bubble_->GetWidget());
   widget->RemoveObserver(this);
-  prompt_bubble_ = nullptr;
   // If permission request is still active after the prompt was closed,
   // collapse the chip.
   if (delegate_)
     Collapse(/*allow_restart=*/false);
 }
 
-void PermissionChip::OpenBubble() {
-  // The prompt bubble is either not opened yet or already closed on
-  // deactivation.
-  DCHECK(!prompt_bubble_);
-
-  prompt_bubble_ = new PermissionPromptBubbleView(
-      browser_, delegate_, requested_time_, PermissionPromptStyle::kChip);
-  prompt_bubble_->Show();
-  prompt_bubble_->GetWidget()->AddObserver(this);
-}
-
 bool PermissionChip::IsBubbleShowing() const {
-  return prompt_bubble_ != nullptr;
+  return false;
 }
 
 bool PermissionChip::ShouldBubbleStartOpen() const {
@@ -222,11 +199,6 @@ void PermissionChip::ExpandAnimationEnded() {
 void PermissionChip::ChipButtonPressed() {
   OpenBubble();
   RestartTimersOnInteraction();
-  if (!already_recorded_interaction_) {
-    base::UmaHistogramLongTimes("Permissions.Chip.TimeToInteraction",
-                                base::TimeTicks::Now() - requested_time_);
-    already_recorded_interaction_ = true;
-  }
 }
 
 void PermissionChip::RestartTimersOnInteraction() {
@@ -246,7 +218,7 @@ void PermissionChip::StartCollapseTimer() {
 }
 
 void PermissionChip::Collapse(bool allow_restart) {
-  if (allow_restart && (IsMouseHovered() || prompt_bubble_)) {
+  if (allow_restart && (IsMouseHovered() || IsBubbleShowing())) {
     StartCollapseTimer();
   } else {
     chip_button_->AnimateCollapse();
@@ -267,29 +239,6 @@ void PermissionChip::Dismiss() {
   }
   GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
       IDS_PERMISSIONS_EXPIRED_SCREENREADER_ANNOUNCEMENT));
-}
-
-const gfx::VectorIcon& PermissionChip::GetPermissionIconId() const {
-  auto requests = delegate_->Requests();
-  if (requests.size() == 1)
-    return permissions::GetIconId(requests[0]->GetRequestType());
-
-  // When we have two requests, it must be microphone & camera. Then we need to
-  // use the icon from the camera request.
-  return IsCameraPermission(requests[0]->GetRequestType())
-             ? permissions::GetIconId(requests[0]->GetRequestType())
-             : permissions::GetIconId(requests[1]->GetRequestType());
-}
-
-std::u16string PermissionChip::GetPermissionMessage() const {
-  if (!delegate_)
-    return std::u16string();
-  auto requests = delegate_->Requests();
-
-  return requests.size() == 1
-             ? requests[0]->GetChipText().value()
-             : l10n_util::GetStringUTF16(
-                   IDS_MEDIA_CAPTURE_VIDEO_AND_AUDIO_PERMISSION_CHIP);
 }
 
 BEGIN_METADATA(PermissionChip, views::View)

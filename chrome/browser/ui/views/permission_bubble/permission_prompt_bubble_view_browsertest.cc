@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/permission_chip.h"
+#include "chrome/browser/ui/views/location_bar/permission_request_chip.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_impl.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -72,9 +72,9 @@ class PermissionPromptBubbleViewBrowserTest
     }
     base::RunLoop().RunUntilIdle();
 
-    PermissionChip* permission_chip = GetPermissionChipView();
-    if (permission_chip->GetVisible()) {
-      views::test::ButtonTestApi(permission_chip->button())
+    PermissionChip* chip = GetPermissionRequestChipView();
+    if (chip->GetVisible()) {
+      views::test::ButtonTestApi(chip->button())
           .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                       gfx::Point(), ui::EventTimeForNow(),
                                       ui::EF_LEFT_MOUSE_BUTTON, 0));
@@ -84,7 +84,7 @@ class PermissionPromptBubbleViewBrowserTest
 
   bool VerifyUi() override {
     const bool should_close_on_deactivate =
-        GetPermissionChipView()->GetVisible();
+        GetPermissionRequestChipView()->GetVisible();
     views::Widget* prompt_widget = test_api_->GetPromptWindow();
     views::BubbleDialogDelegate* bubble_dialog =
         prompt_widget->widget_delegate()->AsBubbleDialogDelegate();
@@ -99,10 +99,10 @@ class PermissionPromptBubbleViewBrowserTest
     return browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
   }
 
-  PermissionChip* GetPermissionChipView() {
+  PermissionChip* GetPermissionRequestChipView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->toolbar()->location_bar()->permission_chip();
+    return browser_view->toolbar()->location_bar()->chip();
   }
 
   permissions::PermissionRequest* MakeRegisterProtocolHandlerRequest() {
@@ -195,10 +195,10 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
 // AnnounceText doesn't go through the path that uses Event::kAlert. Therefore
 // we can't test it.
 #if !defined(OS_MAC)
-  PermissionChip* permission_chip = GetPermissionChipView();
+  PermissionChip* chip = GetPermissionRequestChipView();
   // If chip UI is used, two notifications will be announced: one that
   // permission was requested and second when bubble is opened.
-  if (permission_chip->GetVisible())
+  if (chip->GetVisible())
     EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kAlert));
   else
     EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));

@@ -3884,6 +3884,8 @@ static_library("ui") {
       "views/location_bar/omnibox_chip_button.h",
       "views/location_bar/permission_chip.cc",
       "views/location_bar/permission_chip.h",
+      "views/location_bar/permission_request_chip.cc",
+      "views/location_bar/permission_request_chip.h",
       "views/location_bar/selected_keyword_view.cc",
       "views/location_bar/selected_keyword_view.h",
       "views/location_bar/star_menu_model.cc",
