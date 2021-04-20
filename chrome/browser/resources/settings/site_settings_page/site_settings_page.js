@@ -63,9 +63,9 @@ function getCategoryItemMap() {
       id: Id.AR,
       label: 'siteSettingsAr',
       icon: 'settings:vr-headset',
-      enabledLabel: redesignEnabled ? 'siteSettingsArAllowed' :
-                                      'siteSettingsArAsk',
-      disabledLabel: redesignEnabled ? 'siteSettingsArBlocked' :
+      // TODO(crbug.com/1196900): Fix redesign string when available.
+      enabledLabel: redesignEnabled ? 'siteSettingsArAsk' : 'siteSettingsArAsk',
+      disabledLabel: redesignEnabled ? 'siteSettingsArBlock' :
                                        'siteSettingsArBlock',
     },
     {
