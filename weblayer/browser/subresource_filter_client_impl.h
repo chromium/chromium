@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "build/build_config.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
 #include "url/gurl.h"
 
@@ -22,14 +21,12 @@ class ContentSubresourceFilterThrottleManager;
 
 namespace weblayer {
 
-class InfoBarService;
-
 // WebLayer implementation of SubresourceFilterClient. Instances are associated
 // with and owned by ContentSubresourceFilterThrottleManager instances.
 class SubresourceFilterClientImpl
     : public subresource_filter::SubresourceFilterClient {
  public:
-  explicit SubresourceFilterClientImpl(content::WebContents* web_contents);
+  SubresourceFilterClientImpl();
   ~SubresourceFilterClientImpl() override;
 
   SubresourceFilterClientImpl(const SubresourceFilterClientImpl&) = delete;
@@ -43,15 +40,9 @@ class SubresourceFilterClientImpl
       content::WebContents* web_contents);
 
   // SubresourceFilterClient:
-  void ShowNotification() override;
+  void OnNotificationShown() override {}
 
  private:
-  // These members are only used on Android, so it's necessary to ifdef them to
-  // avoid a compiler error on other platforms.
-#if defined(OS_ANDROID)
-  content::WebContents* web_contents_;
-  InfoBarService* infobar_service_;
-#endif
   std::unique_ptr<subresource_filter::ContentSubresourceFilterThrottleManager>
       throttle_manager_;
 };

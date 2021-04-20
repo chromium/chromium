@@ -11,8 +11,6 @@
 #include "build/build_config.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
 
-class InfoBarService;
-
 namespace content {
 class WebContents;
 }  // namespace content
@@ -36,17 +34,13 @@ class ChromeSubresourceFilterClient
       content::WebContents* web_contents);
 
   // SubresourceFilterClient:
-  void ShowNotification() override;
+  void OnNotificationShown() override {}
 
  private:
   content::WebContents* web_contents_;
 
   std::unique_ptr<subresource_filter::ContentSubresourceFilterThrottleManager>
       throttle_manager_;
-
-#if defined(OS_ANDROID)
-  InfoBarService* infobar_service_;
-#endif
 
   DISALLOW_COPY_AND_ASSIGN(ChromeSubresourceFilterClient);
 };

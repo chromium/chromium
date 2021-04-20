@@ -36,7 +36,7 @@ TestSubresourceFilterClient::~TestSubresourceFilterClient() {
   settings_map_->ShutdownOnUIThread();
 }
 
-void TestSubresourceFilterClient::ShowNotification() {
+void TestSubresourceFilterClient::OnNotificationShown() {
   ++disallowed_notification_count_;
 }
 

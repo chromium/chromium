@@ -21,6 +21,9 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/infobars/core/infobar.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/subframe_navigation_test_utils.h"
@@ -63,6 +66,19 @@ const char kTestURLWithNoActivation[] =
 enum PageActivationNotificationTiming {
   WILL_START_REQUEST,
   WILL_PROCESS_RESPONSE,
+};
+
+class TestInfoBarManager : public infobars::ContentInfoBarManager {
+ public:
+  explicit TestInfoBarManager(content::WebContents* web_contents)
+      : ContentInfoBarManager(web_contents) {}
+
+  // infobars::InfoBarManager:
+  std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
+      std::unique_ptr<ConfirmInfoBarDelegate> delegate) override {
+    NOTREACHED();
+    return nullptr;
+  }
 };
 
 class FakeSubresourceFilterAgent : public mojom::SubresourceFilterAgent {
@@ -206,10 +222,13 @@ class ContentSubresourceFilterThrottleManagerTest
     // Turn off smart UI to make it easier to reason about expectations on
     // ShowNotification() being invoked.
     client_->SetShouldUseSmartUI(false);
+
+    infobar_manager_ = std::make_unique<TestInfoBarManager>(web_contents);
     throttle_manager_ =
         std::make_unique<ContentSubresourceFilterThrottleManager>(
             std::move(subresource_filter_client), client_->profile_context(),
-            /*database_manager=*/nullptr, dealer_handle_.get(), web_contents);
+            infobar_manager_.get(), /*database_manager=*/nullptr,
+            dealer_handle_.get(), web_contents);
 
     Observe(web_contents);
   }
@@ -345,6 +364,7 @@ class ContentSubresourceFilterThrottleManagerTest
   testing::TestRulesetCreator test_ruleset_creator_;
   testing::TestRulesetPair test_ruleset_pair_;
   TestSubresourceFilterClient* client_;
+  std::unique_ptr<TestInfoBarManager> infobar_manager_;
 
   std::unique_ptr<VerifiedRulesetDealer::Handle> dealer_handle_;
 
@@ -811,6 +831,8 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
   auto client =
       std::make_unique<TestSubresourceFilterClient>(web_contents.get());
   SubresourceFilterProfileContext* profile_context = client->profile_context();
+  auto infobar_manager =
+      std::make_unique<TestInfoBarManager>(web_contents.get());
 
   {
     base::test::ScopedFeatureList scoped_feature;
@@ -820,7 +842,7 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
     // feature is not enabled.
     ContentSubresourceFilterThrottleManager::CreateForWebContents(
         web_contents.get(), std::move(client), profile_context,
-        /*database_manager=*/nullptr, dealer_handle());
+        infobar_manager.get(), /*database_manager=*/nullptr, dealer_handle());
     EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromWebContents(
                   web_contents.get()),
               nullptr);
@@ -832,7 +854,7 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
   profile_context = client->profile_context();
   ContentSubresourceFilterThrottleManager::CreateForWebContents(
       web_contents.get(), std::move(client), profile_context,
-      /*database_manager=*/nullptr, dealer_handle());
+      infobar_manager.get(), /*database_manager=*/nullptr, dealer_handle());
   auto* throttle_manager =
       ContentSubresourceFilterThrottleManager::FromWebContents(
           web_contents.get());
@@ -843,7 +865,7 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
   profile_context = client->profile_context();
   ContentSubresourceFilterThrottleManager::CreateForWebContents(
       web_contents.get(), std::move(client), profile_context,
-      /*database_manager=*/nullptr, dealer_handle());
+      infobar_manager.get(), /*database_manager=*/nullptr, dealer_handle());
   EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromWebContents(
                 web_contents.get()),
             throttle_manager);

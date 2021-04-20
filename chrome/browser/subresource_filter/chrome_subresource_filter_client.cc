@@ -15,7 +15,6 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/infobars/infobar_service.h"
-#include "components/subresource_filter/content/browser/ads_blocked_infobar_delegate.h"
 #endif
 
 namespace {
@@ -36,9 +35,6 @@ ChromeSubresourceFilterClient::ChromeSubresourceFilterClient(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {
   DCHECK(web_contents_);
-#if defined(OS_ANDROID)
-  infobar_service_ = InfoBarService::FromWebContents(web_contents_);
-#endif
 }
 
 ChromeSubresourceFilterClient::~ChromeSubresourceFilterClient() = default;
@@ -57,11 +53,6 @@ void ChromeSubresourceFilterClient::
           std::make_unique<ChromeSubresourceFilterClient>(web_contents),
           SubresourceFilterProfileContextFactory::GetForProfile(
               Profile::FromBrowserContext(web_contents->GetBrowserContext())),
+          InfoBarService::FromWebContents(web_contents),
           GetDatabaseManagerFromSafeBrowsingService(), dealer);
-}
-
-void ChromeSubresourceFilterClient::ShowNotification() {
-#if defined(OS_ANDROID)
-  subresource_filter::AdsBlockedInfobarDelegate::Create(infobar_service_);
-#endif
 }

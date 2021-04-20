@@ -19,6 +19,9 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/infobars/core/infobar.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
@@ -65,6 +68,19 @@ const char kSafeBrowsingCheckTime[] =
 const char kActivationListHistogram[] =
     "SubresourceFilter.PageLoad.ActivationList";
 const char kSubresourceFilterActionsHistogram[] = "SubresourceFilter.Actions2";
+
+class TestInfoBarManager : public infobars::ContentInfoBarManager {
+ public:
+  explicit TestInfoBarManager(content::WebContents* web_contents)
+      : ContentInfoBarManager(web_contents) {}
+
+  // infobars::InfoBarManager:
+  std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
+      std::unique_ptr<ConfirmInfoBarDelegate> delegate) override {
+    NOTREACHED();
+    return nullptr;
+  }
+};
 
 class TestSafeBrowsingActivationThrottleDelegate
     : public SubresourceFilterSafeBrowsingActivationThrottle::Delegate {
@@ -164,10 +180,12 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
     auto subresource_filter_client =
         std::make_unique<TestSubresourceFilterClient>(contents);
     client_ = subresource_filter_client.get();
+    infobar_manager_ = std::make_unique<TestInfoBarManager>(contents);
     throttle_manager_ =
         std::make_unique<ContentSubresourceFilterThrottleManager>(
             std::move(subresource_filter_client), client_->profile_context(),
-            /*database_manager=*/nullptr, ruleset_dealer_.get(), contents);
+            infobar_manager_.get(), /*database_manager=*/nullptr,
+            ruleset_dealer_.get(), contents);
     fake_safe_browsing_database_ = new FakeSafeBrowsingDatabaseManager();
     NavigateAndCommit(GURL("https://test.com"));
     Observe(contents);
@@ -352,6 +370,7 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
 
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
   TestSubresourceFilterClient* client_;
+  std::unique_ptr<TestInfoBarManager> infobar_manager_;
   std::unique_ptr<TestSubresourceFilterObserver> observer_;
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
   base::HistogramTester tester_;

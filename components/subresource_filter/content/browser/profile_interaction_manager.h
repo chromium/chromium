@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_PROFILE_INTERACTION_MANAGER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_PROFILE_INTERACTION_MANAGER_H_
 
+#include "build/build_config.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -14,6 +15,10 @@ namespace content {
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
+
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 namespace subresource_filter {
 
@@ -28,7 +33,8 @@ class ProfileInteractionManager
       public SubresourceFilterSafeBrowsingActivationThrottle::Delegate {
  public:
   ProfileInteractionManager(content::WebContents* web_contents,
-                            SubresourceFilterProfileContext* profile_context);
+                            SubresourceFilterProfileContext* profile_context,
+                            infobars::ContentInfoBarManager* infobar_manager);
   ~ProfileInteractionManager() override;
 
   ProfileInteractionManager(const ProfileInteractionManager&) = delete;
@@ -62,6 +68,11 @@ class ProfileInteractionManager
  private:
   // Unowned and must outlive this object.
   SubresourceFilterProfileContext* profile_context_ = nullptr;
+
+#if defined(OS_ANDROID)
+  // Unowned and must outlive this object.
+  infobars::ContentInfoBarManager* infobar_manager_ = nullptr;
+#endif
 
   bool ads_violation_triggered_for_last_committed_navigation_ = false;
 };

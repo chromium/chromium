@@ -17,13 +17,23 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
+#if defined(OS_ANDROID)
+#include "components/subresource_filter/content/browser/ads_blocked_infobar_delegate.h"
+#endif
+
 namespace subresource_filter {
 
 ProfileInteractionManager::ProfileInteractionManager(
     content::WebContents* web_contents,
-    SubresourceFilterProfileContext* profile_context)
+    SubresourceFilterProfileContext* profile_context,
+    infobars::ContentInfoBarManager* infobar_manager)
     : content::WebContentsObserver(web_contents),
-      profile_context_(profile_context) {
+      profile_context_(profile_context)
+#if defined(OS_ANDROID)
+      ,
+      infobar_manager_(infobar_manager)
+#endif
+{
   DCHECK(web_contents);
 }
 
@@ -124,7 +134,11 @@ void ProfileInteractionManager::MaybeShowNotification(
   const GURL& top_level_url = web_contents()->GetLastCommittedURL();
   if (profile_context_->settings_manager()->ShouldShowUIForSite(
           top_level_url)) {
-    client->ShowNotification();
+#if defined(OS_ANDROID)
+    subresource_filter::AdsBlockedInfobarDelegate::Create(infobar_manager_);
+#endif
+
+    client->OnNotificationShown();
 
     // TODO(https://crbug.com/1103176): Plumb the actual frame reference here
     // (it comes from

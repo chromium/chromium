@@ -28,7 +28,7 @@ class TestSubresourceFilterClient : public SubresourceFilterClient {
   ~TestSubresourceFilterClient() override;
 
   // SubresourceFilterClient:
-  void ShowNotification() override;
+  void OnNotificationShown() override;
 
   SubresourceFilterProfileContext* profile_context() {
     return profile_context_.get();

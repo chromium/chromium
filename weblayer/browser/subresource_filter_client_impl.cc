@@ -22,7 +22,6 @@
 
 #if defined(OS_ANDROID)
 #include "components/safe_browsing/android/remote_database_manager.h"
-#include "components/subresource_filter/content/browser/ads_blocked_infobar_delegate.h"
 #include "weblayer/browser/infobar_service.h"
 #endif
 
@@ -52,15 +51,7 @@ GetDatabaseManagerFromSafeBrowsingService() {
 
 }  // namespace
 
-SubresourceFilterClientImpl::SubresourceFilterClientImpl(
-    content::WebContents* web_contents)
-#if defined(OS_ANDROID)
-    : web_contents_(web_contents),
-      infobar_service_(InfoBarService::FromWebContents(web_contents_))
-#endif
-{
-}
-
+SubresourceFilterClientImpl::SubresourceFilterClientImpl() = default;
 SubresourceFilterClientImpl::~SubresourceFilterClientImpl() = default;
 
 // static
@@ -72,17 +63,18 @@ void SubresourceFilterClientImpl::CreateThrottleManagerWithClientForWebContents(
       ruleset_service ? ruleset_service->GetRulesetDealer() : nullptr;
   subresource_filter::ContentSubresourceFilterThrottleManager::
       CreateForWebContents(
-          web_contents,
-          std::make_unique<SubresourceFilterClientImpl>(web_contents),
+          web_contents, std::make_unique<SubresourceFilterClientImpl>(),
           SubresourceFilterProfileContextFactory::GetForBrowserContext(
               web_contents->GetBrowserContext()),
-          GetDatabaseManagerFromSafeBrowsingService(), dealer);
-}
-
-void SubresourceFilterClientImpl::ShowNotification() {
+  // Infobars are supported only on Android in WebLayer. This is not a
+  // problem as the subresource filter shows the infobar only on Android
+  // as well.
 #if defined(OS_ANDROID)
-  subresource_filter::AdsBlockedInfobarDelegate::Create(infobar_service_);
+          InfoBarService::FromWebContents(web_contents),
+#else
+          nullptr,
 #endif
+          GetDatabaseManagerFromSafeBrowsingService(), dealer);
 }
 
 }  // namespace weblayer

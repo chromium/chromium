@@ -10,6 +10,9 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/infobars/core/infobar.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
@@ -34,6 +37,23 @@
 #include "url/gurl.h"
 
 namespace subresource_filter {
+
+namespace {
+
+class TestInfoBarManager : public infobars::ContentInfoBarManager {
+ public:
+  explicit TestInfoBarManager(content::WebContents* web_contents)
+      : ContentInfoBarManager(web_contents) {}
+
+  // infobars::InfoBarManager:
+  std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
+      std::unique_ptr<ConfirmInfoBarDelegate> delegate) override {
+    NOTREACHED();
+    return nullptr;
+  }
+};
+
+}  // namespace
 
 constexpr char const SubresourceFilterTestHarness::kDefaultAllowedSuffix[];
 constexpr char const SubresourceFilterTestHarness::kDefaultDisallowedSuffix[];
@@ -89,9 +109,10 @@ void SubresourceFilterTestHarness::SetUp() {
   auto client = std::make_unique<TestSubresourceFilterClient>(web_contents());
   client_ = client.get();
   database_manager_ = base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
+  infobar_manager_ = std::make_unique<TestInfoBarManager>(web_contents());
   ContentSubresourceFilterThrottleManager::CreateForWebContents(
       web_contents(), std::move(client), client_->profile_context(),
-      database_manager_, dealer);
+      infobar_manager_.get(), database_manager_, dealer);
 
   // Observe web_contents() to add subresource filter navigation throttles at
   // the start of navigations.

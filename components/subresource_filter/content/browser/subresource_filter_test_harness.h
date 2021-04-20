@@ -23,6 +23,10 @@ class NavigationThrottle;
 class RenderFrameHost;
 }  // namespace content
 
+namespace infobars {
+class ContentInfoBarManager;
+}
+
 namespace subresource_filter {
 
 class RulesetService;
@@ -102,6 +106,7 @@ class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness,
   testing::ScopedSubresourceFilterConfigurator scoped_configuration_;
   scoped_refptr<FakeSafeBrowsingDatabaseManager> database_manager_;
   TestSubresourceFilterClient* client_;
+  std::unique_ptr<infobars::ContentInfoBarManager> infobar_manager_;
   std::unique_ptr<RulesetService> ruleset_service_;
 };
 
