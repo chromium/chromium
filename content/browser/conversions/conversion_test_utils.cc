@@ -130,6 +130,8 @@ TestConversionManager::~TestConversionManager() = default;
 void TestConversionManager::HandleImpression(
     const StorableImpression& impression) {
   num_impressions_++;
+  last_impression_source_type_ = impression.source_type();
+  last_impression_origin_ = impression.impression_origin();
 }
 
 void TestConversionManager::HandleConversion(
@@ -192,7 +194,8 @@ ImpressionBuilder::ImpressionBuilder(base::Time time)
       expiry_(base::TimeDelta::FromMilliseconds(kExpiryTime)),
       impression_origin_(url::Origin::Create(GURL(kDefaultImpressionOrigin))),
       conversion_origin_(url::Origin::Create(GURL(kDefaultConversionOrigin))),
-      reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))) {}
+      reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))),
+      source_type_(StorableImpression::SourceType::kNavigation) {}
 
 ImpressionBuilder::~ImpressionBuilder() = default;
 
@@ -224,6 +227,12 @@ ImpressionBuilder& ImpressionBuilder::SetReportingOrigin(
   return *this;
 }
 
+ImpressionBuilder& ImpressionBuilder::SetSourceType(
+    StorableImpression::SourceType source_type) {
+  source_type_ = source_type;
+  return *this;
+}
+
 ImpressionBuilder& ImpressionBuilder::SetImpressionId(
     base::Optional<int64_t> impression_id) {
   impression_id_ = impression_id;
@@ -231,10 +240,11 @@ ImpressionBuilder& ImpressionBuilder::SetImpressionId(
 }
 
 StorableImpression ImpressionBuilder::Build() const {
-  return StorableImpression(
-      impression_data_, impression_origin_, conversion_origin_,
-      reporting_origin_, impression_time_,
-      impression_time_ + expiry_ /* expiry_time */, impression_id_);
+  return StorableImpression(impression_data_, impression_origin_,
+                            conversion_origin_, reporting_origin_,
+                            impression_time_,
+                            impression_time_ + expiry_ /* expiry_time */,
+                            source_type_, impression_id_);
 }
 
 StorableConversion DefaultConversion() {

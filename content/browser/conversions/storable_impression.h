@@ -26,7 +26,11 @@ class CONTENT_EXPORT StorableImpression {
   enum class SourceType {
     // An impression which was associated with a top-level navigation.
     kNavigation = 0,
-    kMaxValue = kNavigation,
+    // An impression which was not associated with a navigation, such as an
+    // impression for an anchor element with the registerattributionsource
+    // attribute set.
+    kEvent = 1,
+    kMaxValue = kEvent,
   };
 
   // If |impression_id| is not available, 0 should be provided.
@@ -36,6 +40,7 @@ class CONTENT_EXPORT StorableImpression {
                      const url::Origin& reporting_origin,
                      base::Time impression_time,
                      base::Time expiry_time,
+                     SourceType source_type,
                      const base::Optional<int64_t>& impression_id);
   StorableImpression(const StorableImpression& other);
   StorableImpression& operator=(const StorableImpression& other) = delete;
@@ -71,7 +76,7 @@ class CONTENT_EXPORT StorableImpression {
   url::Origin reporting_origin_;
   base::Time impression_time_;
   base::Time expiry_time_;
-  SourceType source_type_ = SourceType::kNavigation;
+  SourceType source_type_;
 
   // If null, an ID has not been assigned yet.
   base::Optional<int64_t> impression_id_;

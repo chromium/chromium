@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/conversions/conversion_host.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/navigation_handle.h"
@@ -31,6 +32,8 @@
 #include "url/gurl.h"
 
 namespace content {
+
+namespace {
 
 // WebContentsObserver that waits until an impression is available on a
 // navigation handle for a finished navigation.
@@ -84,6 +87,56 @@ class ImpressionObserver : public TestNavigationObserver {
   base::RunLoop impression_loop_;
 };
 
+// A mock conversion host which waits until an impression registration
+// mojo message is received. Tracks the last seen impression data.
+class TestConversionHost : public ConversionHost {
+ public:
+  static std::unique_ptr<TestConversionHost> ReplaceAndGetConversionHost(
+      WebContents* contents) {
+    static_cast<WebContentsImpl*>(contents)->RemoveReceiverSetForTesting(
+        blink::mojom::ConversionHost::Name_);
+    return std::make_unique<TestConversionHost>(contents);
+  }
+
+  explicit TestConversionHost(WebContents* contents)
+      : ConversionHost(contents) {}
+
+  void RegisterImpression(const blink::Impression& impression) override {
+    last_impression_data_ = impression.impression_data;
+    num_impressions_++;
+
+    // Don't quit the run loop if we have not seen the expected number of
+    // impressions.
+    if (num_impressions_ < expected_num_impressions_)
+      return;
+    impression_waiter_.Quit();
+  }
+
+  // Returns the last impression data after |expected_num_impressions| have been
+  // observed.
+  uint64_t WaitForNumImpressions(size_t expected_num_impressions) {
+    if (expected_num_impressions == num_impressions_)
+      return last_impression_data_;
+    expected_num_impressions_ = expected_num_impressions;
+    impression_waiter_.Run();
+    return last_impression_data_;
+  }
+
+  size_t num_impressions() { return num_impressions_; }
+
+  void ResetImpressionWaitData() {
+    last_impression_data_ = 0;
+    num_impressions_ = 0;
+    expected_num_impressions_ = 0;
+  }
+
+ private:
+  uint64_t last_impression_data_ = 0;
+  size_t num_impressions_ = 0;
+  size_t expected_num_impressions_ = 0;
+  base::RunLoop impression_waiter_;
+};
+
 class ImpressionDisabledBrowserTest : public ContentBrowserTest {
  public:
   ImpressionDisabledBrowserTest() {
@@ -118,6 +171,8 @@ class ImpressionDisabledBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
+
+}  // namespace
 
 // Verifies that impressions are not logged when the Runtime feature isn't
 // enabled.
@@ -663,6 +718,93 @@ IN_PROC_BROWSER_TEST_F(
 
   histograms.ExpectBucketCount("Conversions.RegisteredImpressionsPerPage", 2,
                                1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ImpressionDeclarationBrowserTest,
+    ImpressionTagWithRegisterAttributionSource_ImpressionReceived) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
+
+  std::unique_ptr<TestConversionHost> host =
+      TestConversionHost::ReplaceAndGetConversionHost(web_contents());
+
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    createImpressionTagWithRegisterAttributionSource("link" /* id */,
+                        "page_with_conversion_redirect.html" /* url */,
+                        "200" /* impression data */,
+                        "https://a.com" /* conversion_destination */);)"));
+
+  EXPECT_EQ(200UL, host->WaitForNumImpressions(1));
+  EXPECT_EQ(1u, host->num_impressions());
+
+  host->ResetImpressionWaitData();
+
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    document.getElementById("link").removeAttribute("registerattributionsource");)"));
+
+  // Conversion mojo messages are sent on the same message pipe as navigation
+  // messages. Because the conversion would have been sequenced prior to the
+  // navigation message, it would be observed before the NavigateToURL() call
+  // finishes.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  EXPECT_EQ(0u, host->num_impressions());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ImpressionDeclarationBrowserTest,
+    ImpressionTagWithRegisterAttributionSource_ImpressionReceivedWithNewData) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
+
+  std::unique_ptr<TestConversionHost> host =
+      TestConversionHost::ReplaceAndGetConversionHost(web_contents());
+
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    createImpressionTagWithRegisterAttributionSource("link" /* id */,
+                        "page_with_conversion_redirect.html" /* url */,
+                        "200" /* impression data */,
+                        "https://a.com" /* conversion_destination */);)"));
+
+  EXPECT_EQ(200UL, host->WaitForNumImpressions(1));
+  EXPECT_EQ(1u, host->num_impressions());
+
+  host->ResetImpressionWaitData();
+
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    let link = document.getElementById("link");
+    link.removeAttribute("registerattributionsource");
+    link.setAttribute("impressiondata", "300");
+    link.setAttribute("registerattributionsource", "");)"));
+
+  EXPECT_EQ(300UL, host->WaitForNumImpressions(1));
+  EXPECT_EQ(1u, host->num_impressions());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ImpressionDeclarationBrowserTest,
+    RegisterAttributionSourceInSubFrameWithoutPermissionsPolicy_NotReceived) {
+  GURL page_url = https_server()->GetURL("b.test", "/page_with_iframe.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL subframe_url =
+      https_server()->GetURL("c.test", "/page_with_impression_creator.html");
+  NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
+
+  std::unique_ptr<TestConversionHost> host =
+      TestConversionHost::ReplaceAndGetConversionHost(web_contents());
+
+  RenderFrameHost* subframe = ChildFrameAt(web_contents()->GetMainFrame(), 0);
+  EXPECT_TRUE(ExecJs(subframe, R"(
+    createImpressionTagWithRegisterAttributionSource("link" /* id */,
+                        "page_with_conversion_redirect.html" /* url */,
+                        "200" /* impression data */,
+                        "https://a.com" /* conversion_destination */);)"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  EXPECT_EQ(0u, host->num_impressions());
 }
 
 }  // namespace content

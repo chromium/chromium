@@ -43,4 +43,9 @@ interface ConversionHost {
   // registration redirect. Only called for requests loaded in the top-level
   // browsing context.
   RegisterConversion(Conversion conversion);
+
+  // Registers an impression. Triggered by the registerattributionsource
+  // attribute being added to an anchor element alongside other API attributes.
+  // These impressions are not associated with a browser navigation.
+  RegisterImpression(Impression impression);
 };

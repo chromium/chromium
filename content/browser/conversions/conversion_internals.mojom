@@ -9,6 +9,7 @@ import "url/mojom/origin.mojom";
 // Represents StorableImpression::SourceType.
 enum SourceType {
   kNavigation,
+  kEvent,
 };
 
 // Struct containing stored data that will be sent in a future conversion

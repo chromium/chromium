@@ -214,7 +214,7 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
       "conversion_origin, impression_time, expiry_time "
       "FROM impressions "
       "WHERE conversion_destination = ? AND reporting_origin = ? "
-      "AND active = 1 AND expiry_time > ? "
+      "AND active = 1 AND expiry_time > ? AND source_type = ?"
       "ORDER BY impression_time DESC";
 
   sql::Statement statement(
@@ -222,6 +222,9 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
   statement.BindString(0, serialized_conversion_destination);
   statement.BindString(1, SerializeOrigin(reporting_origin));
   statement.BindInt64(2, serialized_current_time);
+  // TODO(apaseltiner): Support kEvent as well as kNavigation.
+  statement.BindInt(
+      3, static_cast<int>(StorableImpression::SourceType::kNavigation));
 
   // Create a set of default reports to add to storage.
   std::vector<ConversionReport> new_reports;
@@ -245,9 +248,10 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
     base::Time impression_time = DeserializeTime(statement.ColumnInt64(4));
     base::Time expiry_time = DeserializeTime(statement.ColumnInt64(5));
 
-    StorableImpression impression(impression_data, impression_origin,
-                                  conversion_origin, reporting_origin,
-                                  impression_time, expiry_time, impression_id);
+    StorableImpression impression(
+        impression_data, impression_origin, conversion_origin, reporting_origin,
+        impression_time, expiry_time,
+        StorableImpression::SourceType::kNavigation, impression_id);
 
     ConversionReport report(std::move(impression), conversion.conversion_data(),
                             /*conversion_time=*/current_time,
@@ -365,7 +369,7 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
       "C.report_time, "
       "C.conversion_id, I.impression_origin, I.conversion_origin, "
       "I.reporting_origin, I.impression_data, I.impression_time, "
-      "I.expiry_time, I.impression_id "
+      "I.expiry_time, I.impression_id, I.source_type "
       "FROM conversions C JOIN impressions I ON "
       "C.impression_id = I.impression_id WHERE C.report_time <= ?";
   sql::Statement statement(
@@ -388,6 +392,8 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
     base::Time impression_time = DeserializeTime(statement.ColumnInt64(9));
     base::Time expiry_time = DeserializeTime(statement.ColumnInt64(10));
     int64_t impression_id = statement.ColumnInt64(11);
+    StorableImpression::SourceType source_type =
+        static_cast<StorableImpression::SourceType>(statement.ColumnInt(12));
 
     // Ensure origins are valid before continuing. This could happen if there is
     // database corruption.
@@ -400,9 +406,9 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
 
     // Create the impression and ConversionReport objects from the retrieved
     // columns.
-    StorableImpression impression(impression_data, impression_origin,
-                                  conversion_origin, reporting_origin,
-                                  impression_time, expiry_time, impression_id);
+    StorableImpression impression(
+        impression_data, impression_origin, conversion_origin, reporting_origin,
+        impression_time, expiry_time, source_type, impression_id);
 
     ConversionReport report(std::move(impression), conversion_data,
                             conversion_time, report_time, conversion_id);
@@ -745,11 +751,15 @@ int ConversionStorageSql::GetCapacityForStoringConversion(
   return std::max(0, delegate_->GetMaxConversionsPerOrigin() - count);
 }
 
-std::vector<StorableImpression> ConversionStorageSql::GetImpressions(
-    ImpressionFilter active,
-    base::Time min_expiry_time,
-    int64_t start_impression_id,
-    int num_impressions) {
+// We can't read the |source_type| column during migrations, as it may not exist
+// yet, so we make a separate function that does not read it.
+// TODO(johnidel): Move migration-specific code to
+// conversion_storage_sql_migrations.cc.
+std::vector<StorableImpression>
+ConversionStorageSql::GetImpressionsForMigration(ImpressionFilter active,
+                                                 base::Time min_expiry_time,
+                                                 int64_t start_impression_id,
+                                                 int num_impressions) {
   DCHECK_GE(num_impressions, 0);
   const char kGetImpressionsSql[] =
       "SELECT impression_data, impression_origin, conversion_origin, "
@@ -777,9 +787,58 @@ std::vector<StorableImpression> ConversionStorageSql::GetImpressions(
     base::Time expiry_time = DeserializeTime(statement.ColumnInt64(5));
     int64_t impression_id = statement.ColumnInt64(6);
 
+    // All impressions prior to the addition of the |source_type| column are
+    // |kNavigation|.
+    StorableImpression impression(
+        impression_data, impression_origin, conversion_destination,
+        reporting_origin, impression_time, expiry_time,
+        StorableImpression::SourceType::kNavigation, impression_id);
+    impressions.push_back(std::move(impression));
+  }
+  if (!statement.Succeeded())
+    return {};
+  return impressions;
+}
+
+std::vector<StorableImpression> ConversionStorageSql::GetImpressions(
+    ImpressionFilter active,
+    base::Time min_expiry_time,
+    int64_t start_impression_id,
+    int num_impressions) {
+  DCHECK_GE(num_impressions, 0);
+  const char kGetImpressionsSql[] =
+      "SELECT impression_data, impression_origin, conversion_origin, "
+      "reporting_origin, impression_time, expiry_time, impression_id, "
+      "source_type "
+      "FROM impressions "
+      "WHERE impression_id >= ? AND active >= ? AND expiry_time > ? "
+      "LIMIT ?";
+
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kGetImpressionsSql));
+  statement.BindInt64(0, start_impression_id);
+  statement.BindInt(1, active == ImpressionFilter::kOnlyActive ? 1 : 0);
+  statement.BindInt64(2, SerializeTime(min_expiry_time));
+  statement.BindInt(3, num_impressions);
+
+  std::vector<StorableImpression> impressions;
+  while (statement.Step()) {
+    std::string impression_data = statement.ColumnString(0);
+    url::Origin impression_origin =
+        DeserializeOrigin(statement.ColumnString(1));
+    url::Origin conversion_destination =
+        DeserializeOrigin(statement.ColumnString(2));
+    url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(3));
+    base::Time impression_time = DeserializeTime(statement.ColumnInt64(4));
+    base::Time expiry_time = DeserializeTime(statement.ColumnInt64(5));
+    int64_t impression_id = statement.ColumnInt64(6);
+    StorableImpression::SourceType source_type =
+        static_cast<StorableImpression::SourceType>(statement.ColumnInt(7));
+
     StorableImpression impression(impression_data, impression_origin,
                                   conversion_destination, reporting_origin,
-                                  impression_time, expiry_time, impression_id);
+                                  impression_time, expiry_time, source_type,
+                                  impression_id);
     impressions.push_back(std::move(impression));
   }
   if (!statement.Succeeded())

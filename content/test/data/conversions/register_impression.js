@@ -43,6 +43,13 @@ function createImpressionTagWithReporting(
   anchor.setAttribute("reportingorigin", report_origin);
 }
 
+function createImpressionTagWithRegisterAttributionSource(
+    id, url, data, destination) {
+  let anchor = createImpressionTagWithTarget(
+      id, url, data, destination, "_top");
+  anchor.setAttribute("registerattributionsource", "");
+}
+
 function createImpressionTagWithTarget(id, url, data, destination, target) {
   let anchor = document.createElement("a");
   anchor.href = url;

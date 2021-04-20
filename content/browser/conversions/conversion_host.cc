@@ -174,6 +174,15 @@ void ConversionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
+  VerifyAndStoreImpression(StorableImpression::SourceType::kNavigation,
+                           impression_origin, impression, *conversion_manager);
+}
+
+void ConversionHost::VerifyAndStoreImpression(
+    StorableImpression::SourceType source_type,
+    const url::Origin& impression_origin,
+    const blink::Impression& impression,
+    ConversionManager& conversion_manager) {
   // Convert |impression| into a StorableImpression that can be forwarded to
   // storage. If a reporting origin was not provided, default to the conversion
   // destination for reporting.
@@ -200,15 +209,16 @@ void ConversionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
   base::Time impression_time = base::Time::Now();
 
-  const ConversionPolicy& policy = conversion_manager->GetConversionPolicy();
+  const ConversionPolicy& policy = conversion_manager.GetConversionPolicy();
   StorableImpression storable_impression(
       policy.GetSanitizedImpressionData(impression.impression_data),
       impression_origin, impression.conversion_destination, reporting_origin,
       impression_time,
       policy.GetExpiryTimeForImpression(impression.expiry, impression_time),
+      source_type,
       /*impression_id=*/base::nullopt);
 
-  conversion_manager->HandleImpression(storable_impression);
+  conversion_manager.HandleImpression(storable_impression);
 }
 
 void ConversionHost::RegisterConversion(
@@ -262,6 +272,20 @@ void ConversionHost::RegisterConversion(
 void ConversionHost::NotifyImpressionNavigationInitiatedByPage() {
   if (conversion_page_metrics_)
     conversion_page_metrics_->OnImpression();
+}
+
+void ConversionHost::RegisterImpression(const blink::Impression& impression) {
+  // If there is no conversion manager available, ignore any impression
+  // registrations.
+  ConversionManager* conversion_manager =
+      conversion_manager_provider_->GetManager(web_contents());
+  if (!conversion_manager)
+    return;
+  const url::Origin& impression_origin = receiver_.GetCurrentTargetFrame()
+                                             ->GetMainFrame()
+                                             ->GetLastCommittedOrigin();
+  VerifyAndStoreImpression(StorableImpression::SourceType::kEvent,
+                           impression_origin, impression, *conversion_manager);
 }
 
 void ConversionHost::SetCurrentTargetFrameForTesting(

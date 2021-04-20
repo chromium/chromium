@@ -30,6 +30,8 @@ namespace {
   switch (input) {
     case StorableImpression::SourceType::kNavigation:
       return ::mojom::SourceType::kNavigation;
+    case StorableImpression::SourceType::kEvent:
+      return ::mojom::SourceType::kEvent;
   }
 }
 

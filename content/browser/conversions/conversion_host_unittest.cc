@@ -626,4 +626,55 @@ TEST_F(ConversionHostTest,
   }
 }
 
+TEST_F(ConversionHostTest,
+       ImpressionInSubframe_ImpressionOriginMatchesTopPageOrigin) {
+  contents()->NavigateAndCommit(GURL("https://www.example.com"));
+
+  // Create a subframe and use it as a target for the impression registration
+  // mojo.
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
+  subframe = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
+      GURL("https://www.impression.com"), subframe);
+  conversion_host()->SetCurrentTargetFrameForTesting(subframe);
+
+  // Create a fake dispatch context to trigger a bad message in.
+  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  const blink::Impression impression = CreateValidImpression();
+  conversion_host()->RegisterImpression(impression);
+
+  // Run loop to allow the bad message code to run if a bad message was
+  // triggered.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+  EXPECT_EQ(1u, test_manager_.num_impressions());
+
+  EXPECT_EQ(url::Origin::Create(GURL("https://www.example.com")),
+            test_manager_.last_impression_origin());
+}
+
+TEST_F(ConversionHostTest, ValidImpression_NoBadMessage) {
+  // Create a page with a secure origin.
+  contents()->NavigateAndCommit(GURL("https://www.example.com"));
+  conversion_host()->SetCurrentTargetFrameForTesting(main_rfh());
+
+  // Create a fake dispatch context to listen for bad messages.
+  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  const blink::Impression impression = CreateValidImpression();
+  conversion_host()->RegisterImpression(impression);
+
+  // Run loop to allow the bad message code to run if a bad message was
+  // triggered.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+  EXPECT_EQ(1u, test_manager_.num_impressions());
+  EXPECT_EQ(StorableImpression::SourceType::kEvent,
+            test_manager_.last_impression_source_type());
+}
+
 }  // namespace content

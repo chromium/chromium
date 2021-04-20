@@ -67,6 +67,8 @@ function SourceTypeToText(sourceType) {
   switch (sourceType) {
     case SourceType.kNavigation:
       return 'Navigation';
+    case SourceType.kEvent:
+      return 'Event';
     default:
       return sourceType.toString();
   }

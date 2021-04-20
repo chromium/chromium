@@ -33,7 +33,7 @@ const std::string kWellKnownUrl = ".well-known/register-conversion";
 
 }  // namespace
 
-// A mock conversion host which waits for a conversion registration
+// A mock conversion host which waits until a conversion registration
 // mojo message is received. Tracks the last seen conversion data.
 class TestConversionHost : public ConversionHost {
  public:

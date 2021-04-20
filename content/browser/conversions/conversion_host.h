@@ -64,6 +64,10 @@ class CONTENT_EXPORT ConversionHost
                            ValidConversionWithEmbedderDisable_NoConversion);
   FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
                            EmbedderDisabledContext_ConversionDisallowed);
+  FRIEND_TEST_ALL_PREFIXES(
+      ConversionHostTest,
+      ImpressionInSubframe_ImpressionOriginMatchesTopPageOrigin);
+  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest, ValidImpression_NoBadMessage);
 
   friend class WebContentsUserData<ConversionHost>;
 
@@ -73,6 +77,7 @@ class CONTENT_EXPORT ConversionHost
 
   // blink::mojom::ConversionHost:
   void RegisterConversion(blink::mojom::ConversionPtr conversion) override;
+  void RegisterImpression(const blink::Impression& impression) override;
 
   // WebContentsObserver:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
@@ -83,6 +88,14 @@ class CONTENT_EXPORT ConversionHost
 
   // Sets the target frame on |receiver_|.
   void SetCurrentTargetFrameForTesting(RenderFrameHost* render_frame_host);
+
+  // Stores the impression if conversion measurement is allowed for the
+  // impression origin and reporting origin and the impressionorigin, reporting
+  // origin, and conversion destination are potentially trustworthy.
+  void VerifyAndStoreImpression(StorableImpression::SourceType source_type,
+                                const url::Origin& impression_origin,
+                                const blink::Impression& impression,
+                                ConversionManager& conversion_manager);
 
   // Map which stores the top-frame origin an impression occurred on for all
   // navigations with an associated impression, keyed by navigation ID.

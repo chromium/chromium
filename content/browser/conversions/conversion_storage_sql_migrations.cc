@@ -104,7 +104,7 @@ bool ConversionStorageSqlMigrations::MigrateToVersion2(
   int64_t start_impression_id = 0;
   const size_t kNumImpressionsPerUpdate = 100u;
   std::vector<StorableImpression> impressions =
-      conversion_storage->GetImpressions(
+      conversion_storage->GetImpressionsForMigration(
           ConversionStorageSql::ImpressionFilter::kAll, base::Time::Min(),
           start_impression_id, kNumImpressionsPerUpdate);
 
@@ -134,7 +134,7 @@ bool ConversionStorageSqlMigrations::MigrateToVersion2(
 
     // Fetch the next batch of rows from the database.
     start_impression_id += 1;
-    impressions = conversion_storage->GetImpressions(
+    impressions = conversion_storage->GetImpressionsForMigration(
         ConversionStorageSql::ImpressionFilter::kAll, base::Time::Min(),
         start_impression_id, kNumImpressionsPerUpdate);
   }

@@ -347,6 +347,7 @@ html element a
     property port
     property protocol
     property referrerPolicy
+    property registerAttributionSource
     property rel
     property relList
     property reportingOrigin

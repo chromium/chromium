@@ -2819,6 +2819,7 @@ interface HTMLAnchorElement : HTMLElement
     getter port
     getter protocol
     getter referrerPolicy
+    getter registerAttributionSource
     getter rel
     getter relList
     getter reportingOrigin
@@ -2850,6 +2851,7 @@ interface HTMLAnchorElement : HTMLElement
     setter port
     setter protocol
     setter referrerPolicy
+    setter registerAttributionSource
     setter rel
     setter relList
     setter reportingOrigin

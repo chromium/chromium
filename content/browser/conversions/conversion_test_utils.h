@@ -176,9 +176,20 @@ class TestConversionManager : public ConversionManager {
     return last_conversion_destination_;
   }
 
+  const base::Optional<StorableImpression::SourceType>&
+  last_impression_source_type() {
+    return last_impression_source_type_;
+  }
+
+  const base::Optional<url::Origin>& last_impression_origin() {
+    return last_impression_origin_;
+  }
+
  private:
   ConversionPolicy policy_;
   net::SchemefulSite last_conversion_destination_;
+  base::Optional<StorableImpression::SourceType> last_impression_source_type_;
+  base::Optional<url::Origin> last_impression_origin_;
   size_t num_impressions_ = 0;
   size_t num_conversions_ = 0;
 
@@ -204,6 +215,8 @@ class ImpressionBuilder {
 
   ImpressionBuilder& SetReportingOrigin(const url::Origin& origin);
 
+  ImpressionBuilder& SetSourceType(StorableImpression::SourceType source_type);
+
   ImpressionBuilder& SetImpressionId(base::Optional<int64_t> impression_id);
 
   StorableImpression Build() const;
@@ -215,6 +228,7 @@ class ImpressionBuilder {
   url::Origin impression_origin_;
   url::Origin conversion_origin_;
   url::Origin reporting_origin_;
+  StorableImpression::SourceType source_type_;
   base::Optional<int64_t> impression_id_;
 };
 

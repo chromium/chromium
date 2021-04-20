@@ -177,7 +177,9 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   TestConversionManager manager;
   manager.SetActiveImpressionsForWebUI(
       {ImpressionBuilder(base::Time::Now()).SetData("100").Build(),
-       ImpressionBuilder(base::Time::Now()).Build()});
+       ImpressionBuilder(base::Time::Now())
+           .SetSourceType(StorableImpression::SourceType::kEvent)
+           .Build()});
   OverrideWebUIConversionManager(&manager);
 
   std::string wait_script = R"(
@@ -185,7 +187,8 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
     let obs = new MutationObserver(() => {
       if (table.children.length === 2 &&
           table.children[0].children[0].innerText === "100" &&
-          table.children[0].children[6].innerText === "Navigation") {
+          table.children[0].children[6].innerText === "Navigation" &&
+          table.children[1].children[6].innerText === "Event") {
         document.title = $1;
       }
     });
@@ -272,15 +275,23 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
       ImpressionBuilder(base::Time::Now()).SetData("100").Build(),
       "7" /* conversion_data */, base::Time::Now() /* conversion_time */,
       base::Time::Now() /* report_time */, 1 /* conversion_id */);
-  manager.SetReportsForWebUI({report});
+  ConversionReport report2(
+      ImpressionBuilder(base::Time::Now())
+          .SetData("200")
+          .SetSourceType(StorableImpression::SourceType::kEvent)
+          .Build(),
+      "7" /* conversion_data */, base::Time::Now() /* conversion_time */,
+      base::Time::Now() /* report_time */, 1 /* conversion_id */);
+  manager.SetReportsForWebUI({report, report2});
   OverrideWebUIConversionManager(&manager);
 
   std::string wait_script = R"(
     let table = document.getElementById("report-table-body");
     let obs = new MutationObserver(() => {
-      if (table.children.length === 1 &&
+      if (table.children.length === 2 &&
           table.children[0].children[1].innerText === "7" &&
-          table.children[0].children[6].innerText === "Navigation") {
+          table.children[0].children[6].innerText === "Navigation" &&
+          table.children[1].children[6].innerText === "Event") {
         document.title = $1;
       }
     });

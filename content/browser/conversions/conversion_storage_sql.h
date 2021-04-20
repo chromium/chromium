@@ -109,6 +109,16 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
                                                  int64_t start_impression_id,
                                                  int num_impressions);
 
+  // Returns rows of the impressions table, with the same parameters as
+  // |GetImpressions()|, but does not access the |source_type| column.
+  // TODO(johnidel): Move migration-specific code to
+  // conversion_storage_sql_migrations.h.
+  std::vector<StorableImpression> GetImpressionsForMigration(
+      ImpressionFilter filter,
+      base::Time min_expiry_time,
+      int64_t start_impression_id,
+      int num_impressions);
+
   // Initializes the database if necessary, and returns whether the database is
   // open. |should_create| indicates whether the database should be created if
   // it is not already.

@@ -15,6 +15,7 @@ StorableImpression::StorableImpression(
     const url::Origin& reporting_origin,
     base::Time impression_time,
     base::Time expiry_time,
+    SourceType source_type,
     const base::Optional<int64_t>& impression_id)
     : impression_data_(impression_data),
       impression_origin_(impression_origin),
@@ -22,6 +23,7 @@ StorableImpression::StorableImpression(
       reporting_origin_(reporting_origin),
       impression_time_(impression_time),
       expiry_time_(expiry_time),
+      source_type_(source_type),
       impression_id_(impression_id) {
   // 30 days is the max allowed expiry for an impression.
   DCHECK_GE(base::TimeDelta::FromDays(30), expiry_time - impression_time);
