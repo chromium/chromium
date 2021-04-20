@@ -3386,11 +3386,11 @@ message PrintJobEvent {
     // The final status of the job.
     optional int32 status = 3;
 
-    // The time the print job was created.
-    optional int64 creation_timestamp = 4;
+    // The time the print job was created in milliseconds since epoch.
+    optional int64 creation_timestamp_ms = 4;
 
-    // The time the print job was completed.
-    optional int64 completion_timestamp = 5;
+    // The time the print job was completed in milliseconds since epoch.
+    optional int64 completion_timestamp_ms = 5;
 
     // The number of pages in the document.
     optional int32 number_of_pages = 6;

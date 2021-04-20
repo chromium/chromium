@@ -50,9 +50,9 @@ em::PrintJobEvent CreateJobEvent(
   job_config->set_status(status);
   base::Time time;
   EXPECT_TRUE(base::Time::FromUTCString("14 Feb 2021 10:00", &time));
-  job_config->set_creation_timestamp(time.ToJavaTime());
+  job_config->set_creation_timestamp_ms(time.ToJavaTime());
   EXPECT_TRUE(base::Time::FromUTCString("14 Feb 2021 10:30", &time));
-  job_config->set_completion_timestamp(time.ToJavaTime());
+  job_config->set_completion_timestamp_ms(time.ToJavaTime());
   job_config->set_number_of_pages(10);
   // Print settings
   auto* settings = job_config->mutable_settings();
@@ -145,8 +145,10 @@ class PrintJobEventMatcher : public MatcherInterface<const em::PrintJobEvent&> {
         title_(event.job_configuration().title()),
         status_(static_cast<reporting::error::Code>(
             event.job_configuration().status())),
-        creation_timestamp_(event.job_configuration().creation_timestamp()),
-        completion_timestamp_(event.job_configuration().completion_timestamp()),
+        creation_timestamp_ms_(
+            event.job_configuration().creation_timestamp_ms()),
+        completion_timestamp_ms_(
+            event.job_configuration().completion_timestamp_ms()),
         pages_(event.job_configuration().number_of_pages()),
         color_(event.job_configuration().settings().color()),
         duplex_(event.job_configuration().settings().duplex()),
@@ -171,18 +173,19 @@ class PrintJobEventMatcher : public MatcherInterface<const em::PrintJobEvent&> {
     if (!status_equal) {
       *listener << " |status| is " << event.job_configuration().status();
     }
-    bool creation_timestamp_equal =
-        event.job_configuration().creation_timestamp() == creation_timestamp_;
-    if (!creation_timestamp_equal) {
-      *listener << " |creation timestamp| is "
-                << event.job_configuration().creation_timestamp();
+    bool creation_timestamp_ms_equal =
+        event.job_configuration().creation_timestamp_ms() ==
+        creation_timestamp_ms_;
+    if (!creation_timestamp_ms_equal) {
+      *listener << " |creation timestamp_ms| is "
+                << event.job_configuration().creation_timestamp_ms();
     }
-    bool completion_timestamp_equal =
-        event.job_configuration().completion_timestamp() ==
-        completion_timestamp_;
-    if (!completion_timestamp_equal) {
-      *listener << " |completion timestamp| is "
-                << event.job_configuration().completion_timestamp();
+    bool completion_timestamp_ms_equal =
+        event.job_configuration().completion_timestamp_ms() ==
+        completion_timestamp_ms_;
+    if (!completion_timestamp_ms_equal) {
+      *listener << " |completion timestamp_ms| is "
+                << event.job_configuration().completion_timestamp_ms();
     }
     bool pages_equal = event.job_configuration().number_of_pages() == pages_;
     if (!pages_equal) {
@@ -231,7 +234,7 @@ class PrintJobEventMatcher : public MatcherInterface<const em::PrintJobEvent&> {
     }
 
     return id_equal && title_equal && status_equal &&
-           creation_timestamp_equal && completion_timestamp_equal &&
+           creation_timestamp_ms_equal && completion_timestamp_ms_equal &&
            pages_equal && color_equal && duplex_equal && media_equal &&
            copies_equal && printer_uri_equal && printer_name_equal &&
            user_type_equal;
@@ -243,8 +246,8 @@ class PrintJobEventMatcher : public MatcherInterface<const em::PrintJobEvent&> {
   std::string id_;
   std::string title_;
   reporting::error::Code status_;
-  uint64_t creation_timestamp_;
-  uint64_t completion_timestamp_;
+  uint64_t creation_timestamp_ms_;
+  uint64_t completion_timestamp_ms_;
   uint32_t pages_;
   em::PrintJobEvent_PrintSettings_ColorMode color_;
   em::PrintJobEvent_PrintSettings_DuplexMode duplex_;
