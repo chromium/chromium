@@ -1243,6 +1243,14 @@ def _verify_benchmark_owners(benchmark_metadatas):
       'benchmarks:\n%s' % '\n'.join(unowned_benchmarks))
 
 
+# Open a CSV file for writing, handling the differences between Python 2 and 3.
+def _create_csv(file_path):
+  if sys.version_info.major == 2:
+    return open(file_path, 'wb')
+  else:
+    return open(file_path, 'w', newline='')
+
+
 def update_benchmark_csv(file_path):
   """Updates go/chrome-benchmarks.
 
@@ -1306,7 +1314,7 @@ def update_benchmark_csv(file_path):
   csv_data = sorted(csv_data, key=lambda b: b[0])
   csv_data = header_data + csv_data
 
-  with open(file_path, 'wb') as f:
+  with _create_csv(file_path) as f:
     writer = csv.writer(f, lineterminator='\n')
     writer.writerows(csv_data)
   return True
@@ -1337,7 +1345,7 @@ def update_system_health_stories(filepath):
         stories[story.name]['platforms'].add(platform)
         stories[story.name]['tags'].update(story.tags)
 
-  with open(filepath, 'wb') as f:
+  with _create_csv(filepath) as f:
     writer = csv.writer(f, lineterminator='\n')
     for row in header_data:
       writer.writerow(row)
