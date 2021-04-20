@@ -131,7 +131,7 @@ void MediaStreamTrackProcessor::CreateVideoSourceStream(
           script_state, input_track_->Component(), this, buffer_size_);
   source_stream_ = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, video_underlying_source_,
-      /*high_water_mark=*/0, AllowPerChunkTransferring(false),
+      /*high_water_mark=*/0, AllowPerChunkTransferring(true),
       video_underlying_source_->GetStreamTransferOptimizer());
 }
 
