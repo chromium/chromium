@@ -25,6 +25,7 @@
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/top_padding.h"
 #include "components/autofill_assistant/browser/web/check_on_top_worker.h"
+#include "components/autofill_assistant/browser/web/click_or_tap_worker.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/element_position_getter.h"
 #include "components/autofill_assistant/browser/web/element_rect_getter.h"
@@ -376,32 +377,10 @@ class WebController {
       base::TimeTicks wait_time_start,
       base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback,
       const ClientStatus& status);
-  void TapOrClickOnCoordinates(
-      ElementPositionGetter* getter_to_release,
-      const std::string& node_frame_id,
-      ClickType click_type,
+  void OnClickOrTapElement(
+      ClickOrTapWorker* getter_to_release,
       base::OnceCallback<void(const ClientStatus&)> callback,
       const ClientStatus& status);
-  void OnDispatchPressMouseEvent(
-      const std::string& node_frame_id,
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      int x,
-      int y,
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<input::DispatchMouseEventResult> result);
-  void OnDispatchReleaseMouseEvent(
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<input::DispatchMouseEventResult> result);
-  void OnDispatchTouchEventStart(
-      const std::string& node_frame_id,
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<input::DispatchTouchEventResult> result);
-  void OnDispatchTouchEventEnd(
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<input::DispatchTouchEventResult> result);
   void OnWaitForWindowHeightChange(
       base::OnceCallback<void(const ClientStatus&)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,

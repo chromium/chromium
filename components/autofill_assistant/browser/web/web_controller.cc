@@ -551,150 +551,28 @@ void WebController::ClickOrTapElement(
   auto wrapped_callback = GetAssistantActionRunningStateRetainingCallback(
       element, std::move(callback));
 
-  std::unique_ptr<ElementPositionGetter> getter =
-      std::make_unique<ElementPositionGetter>(
-          devtools_client_.get(), /* max_rounds= */ 1,
-          /* check_interval= */ base::TimeDelta::FromMilliseconds(0),
-          element.node_frame_id());
-  auto* ptr = getter.get();
-  pending_workers_.emplace_back(std::move(getter));
+  std::unique_ptr<ClickOrTapWorker> worker =
+      std::make_unique<ClickOrTapWorker>(devtools_client_.get());
+  auto* ptr = worker.get();
+  pending_workers_.emplace_back(std::move(worker));
   ptr->Start(
-      element.container_frame_host, element.object_id(),
+      element, click_type,
       base::BindOnce(
-          &WebController::TapOrClickOnCoordinates,
-          weak_ptr_factory_.GetWeakPtr(), ptr, element.node_frame_id(),
-          click_type,
+          &WebController::OnClickOrTapElement, weak_ptr_factory_.GetWeakPtr(),
+          ptr,
           base::BindOnce(&DecorateWebControllerStatus,
                          WebControllerErrorInfoProto::CLICK_OR_TAP_ELEMENT,
                          std::move(wrapped_callback))));
 }
 
-void WebController::TapOrClickOnCoordinates(
-    ElementPositionGetter* getter_to_release,
-    const std::string& node_frame_id,
-    ClickType click_type,
+void WebController::OnClickOrTapElement(
+    ClickOrTapWorker* getter_to_release,
     base::OnceCallback<void(const ClientStatus&)> callback,
     const ClientStatus& status) {
-  int x = getter_to_release->x();
-  int y = getter_to_release->y();
   base::EraseIf(pending_workers_, [getter_to_release](const auto& worker) {
     return worker.get() == getter_to_release;
   });
-
-  if (!status.ok()) {
-    VLOG(1) << __func__ << " Failed to get element position.";
-    std::move(callback).Run(status);
-    return;
-  }
-
-  DCHECK(click_type == ClickType::TAP || click_type == ClickType::CLICK);
-  if (click_type == ClickType::CLICK) {
-    devtools_client_->GetInput()->DispatchMouseEvent(
-        input::DispatchMouseEventParams::Builder()
-            .SetX(x)
-            .SetY(y)
-            .SetClickCount(1)
-            .SetButton(input::MouseButton::LEFT)
-            .SetType(input::DispatchMouseEventType::MOUSE_PRESSED)
-            .Build(),
-        node_frame_id,
-        base::BindOnce(&WebController::OnDispatchPressMouseEvent,
-                       weak_ptr_factory_.GetWeakPtr(), node_frame_id,
-                       std::move(callback), x, y));
-    return;
-  }
-
-  std::vector<std::unique_ptr<::autofill_assistant::input::TouchPoint>>
-      touch_points;
-  touch_points.emplace_back(
-      input::TouchPoint::Builder().SetX(x).SetY(y).Build());
-  devtools_client_->GetInput()->DispatchTouchEvent(
-      input::DispatchTouchEventParams::Builder()
-          .SetType(input::DispatchTouchEventType::TOUCH_START)
-          .SetTouchPoints(std::move(touch_points))
-          .Build(),
-      node_frame_id,
-      base::BindOnce(&WebController::OnDispatchTouchEventStart,
-                     weak_ptr_factory_.GetWeakPtr(), node_frame_id,
-                     std::move(callback)));
-}
-
-void WebController::OnDispatchPressMouseEvent(
-    const std::string& node_frame_id,
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    int x,
-    int y,
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<input::DispatchMouseEventResult> result) {
-  if (!result) {
-    VLOG(1) << __func__
-            << " Failed to dispatch mouse left button pressed event.";
-    std::move(callback).Run(
-        UnexpectedDevtoolsErrorStatus(reply_status, __FILE__, __LINE__));
-    return;
-  }
-
-  devtools_client_->GetInput()->DispatchMouseEvent(
-      input::DispatchMouseEventParams::Builder()
-          .SetX(x)
-          .SetY(y)
-          .SetClickCount(1)
-          .SetButton(input::MouseButton::LEFT)
-          .SetType(input::DispatchMouseEventType::MOUSE_RELEASED)
-          .Build(),
-      node_frame_id,
-      base::BindOnce(&WebController::OnDispatchReleaseMouseEvent,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void WebController::OnDispatchReleaseMouseEvent(
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<input::DispatchMouseEventResult> result) {
-  if (!result) {
-    VLOG(1) << __func__ << " Failed to dispatch release mouse event.";
-    std::move(callback).Run(
-        UnexpectedDevtoolsErrorStatus(reply_status, __FILE__, __LINE__));
-    return;
-  }
-  std::move(callback).Run(OkClientStatus());
-}
-
-void WebController::OnDispatchTouchEventStart(
-    const std::string& node_frame_id,
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<input::DispatchTouchEventResult> result) {
-  if (!result) {
-    VLOG(1) << __func__ << " Failed to dispatch touch start event.";
-    std::move(callback).Run(
-        UnexpectedDevtoolsErrorStatus(reply_status, __FILE__, __LINE__));
-    return;
-  }
-
-  std::vector<std::unique_ptr<::autofill_assistant::input::TouchPoint>>
-      touch_points;
-  devtools_client_->GetInput()->DispatchTouchEvent(
-      input::DispatchTouchEventParams::Builder()
-          .SetType(input::DispatchTouchEventType::TOUCH_END)
-          .SetTouchPoints(std::move(touch_points))
-          .Build(),
-      node_frame_id,
-      base::BindOnce(&WebController::OnDispatchTouchEventEnd,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void WebController::OnDispatchTouchEventEnd(
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<input::DispatchTouchEventResult> result) {
-  if (!result) {
-    VLOG(1) << __func__ << " Failed to dispatch touch end event.";
-    std::move(callback).Run(
-        UnexpectedDevtoolsErrorStatus(reply_status, __FILE__, __LINE__));
-    return;
-  }
-  std::move(callback).Run(OkClientStatus());
+  std::move(callback).Run(status);
 }
 
 void WebController::WaitForWindowHeightChange(

@@ -21,7 +21,7 @@
 
 namespace autofill_assistant {
 
-// Worker class to for sending keypress events.
+// Worker class for sending keypress events.
 class SendKeyboardInputWorker : public WebControllerWorker {
  public:
   // |devtools_client| must be valid for the lifetime of the instance.
