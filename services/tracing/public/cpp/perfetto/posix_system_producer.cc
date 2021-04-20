@@ -417,7 +417,8 @@ void PosixSystemProducer::ConnectSocket() {
   if (!SandboxForbidsSocketConnection()) {
     auto service = perfetto::ProducerIPCClient::Connect(
         socket_name_.c_str(), this, std::move(producer_name), task_runner(),
-        perfetto::TracingService::ProducerSMBScrapingMode::kEnabled);
+        perfetto::TracingService::ProducerSMBScrapingMode::kEnabled,
+        kSMBSizeBytes, kSMBPageSizeBytes);
 
     base::AutoLock lock(lock_);
     services_.push_back(std::move(service));
@@ -448,7 +449,8 @@ void PosixSystemProducer::ConnectSocket() {
             perfetto::ipc::Client::ConnArgs(
                 perfetto::base::ScopedFile(file.TakePlatformFile())),
             self.get(), std::move(producer_name), self->task_runner(),
-            perfetto::TracingService::ProducerSMBScrapingMode::kEnabled);
+            perfetto::TracingService::ProducerSMBScrapingMode::kEnabled,
+            kSMBSizeBytes, kSMBPageSizeBytes);
 
         base::AutoLock lock(self->lock_);
         self->services_.push_back(std::move(service));
