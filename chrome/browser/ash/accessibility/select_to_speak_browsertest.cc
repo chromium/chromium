@@ -10,6 +10,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_test_api.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
@@ -37,6 +38,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/screen.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
 #include "url/url_constants.h"
 
@@ -203,6 +207,63 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, ActivatesWithTapOnSelectToSpeakTray) {
   generator_->PressLeftButton();
   generator_->MoveMouseTo(bounds.x() + bounds.width(),
                           bounds.y() + bounds.height());
+  generator_->ReleaseLeftButton();
+
+  sm_.ExpectSpeechPattern("This is some text*");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, WorksWithTouchSelection) {
+  base::RepeatingCallback<void()> callback = base::BindRepeating(
+      &SelectToSpeakTest::SetSelectToSpeakState, GetWeakPtr());
+  AccessibilityManager::Get()->SetSelectToSpeakStateObserverForTest(callback);
+  // Click in the tray bounds to start 'selection' mode.
+  TapSelectToSpeakTray();
+
+  // We should be in "selection" mode, so tapping and dragging should
+  // start speech.
+  ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html;charset=utf-8,<p>This is some text</p>"));
+  gfx::Rect bounds = GetWebContentsBounds();
+  generator_->PressTouch(gfx::Point(bounds.x(), bounds.y()));
+  generator_->PressMoveAndReleaseTouchTo(bounds.x() + bounds.width(),
+                                         bounds.y() + bounds.height());
+  generator_->ReleaseLeftButton();
+
+  sm_.ExpectSpeechPattern("This is some text*");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
+                       WorksWithTouchSelectionOnNonPrimaryMonitor) {
+  ash::ShellTestApi shell_test_api;
+  display::test::DisplayManagerTestApi(shell_test_api.display_manager())
+      .UpdateDisplay("1+0-800x800,801+1-800x800");
+  ASSERT_EQ(2u, shell_test_api.display_manager()->GetNumDisplays());
+  display::test::DisplayManagerTestApi display_manager_test_api(
+      shell_test_api.display_manager());
+
+  display::Screen* screen = display::Screen::GetScreen();
+  int64_t display2 = display_manager_test_api.GetSecondaryDisplay().id();
+  screen->SetDisplayForNewWindows(display2);
+  Browser* browser_on_secondary_display = CreateBrowser(browser()->profile());
+
+  base::RepeatingCallback<void()> callback = base::BindRepeating(
+      &SelectToSpeakTest::SetSelectToSpeakState, GetWeakPtr());
+  AccessibilityManager::Get()->SetSelectToSpeakStateObserverForTest(callback);
+
+  // Create a window on the non-primary display.
+  ui_test_utils::NavigateToURL(
+      browser_on_secondary_display,
+      GURL("data:text/html;charset=utf-8,<p>This is some text</p>"));
+  // Click in the tray bounds to start 'selection' mode.
+  TapSelectToSpeakTray();
+  // We should be in "selection" mode, so tapping and dragging should
+  // start speech.
+  gfx::Rect bounds = GetWebContentsBounds();
+  generator_->PressTouch(gfx::Point(bounds.x() + 800, bounds.y()));
+  generator_->PressMoveAndReleaseTouchTo(bounds.x() + 800 + bounds.width(),
+                                         bounds.y() + bounds.height());
   generator_->ReleaseLeftButton();
 
   sm_.ExpectSpeechPattern("This is some text*");
