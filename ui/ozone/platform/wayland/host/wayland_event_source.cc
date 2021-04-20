@@ -198,6 +198,10 @@ void WaylandEventSource::OnResetPointerFlags() {
   ResetPointerFlags();
 }
 
+const gfx::PointF& WaylandEventSource::GetPointerLocation() const {
+  return pointer_location_;
+}
+
 void WaylandEventSource::OnPointerFrameEvent() {
   base::TimeTicks now = EventTimeForNow();
   current_pointer_frame_.dt = now - last_pointer_frame_time_;

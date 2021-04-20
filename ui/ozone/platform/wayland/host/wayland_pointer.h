@@ -94,6 +94,7 @@ class WaylandPointer::Delegate {
   virtual void OnPointerAxisSourceEvent(uint32_t axis_source) = 0;
   virtual void OnPointerAxisStopEvent(uint32_t axis) = 0;
   virtual void OnResetPointerFlags() = 0;
+  virtual const gfx::PointF& GetPointerLocation() const = 0;
 };
 
 }  // namespace ui

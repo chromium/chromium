@@ -102,6 +102,7 @@ class WaylandEventSource : public PlatformEventSource,
   void OnPointerAxisSourceEvent(uint32_t axis_source) override;
   void OnPointerAxisStopEvent(uint32_t axis) override;
   void OnResetPointerFlags() override;
+  const gfx::PointF& GetPointerLocation() const override;
 
   // WaylandTouch::Delegate
   void OnTouchPressEvent(WaylandWindow* window,
