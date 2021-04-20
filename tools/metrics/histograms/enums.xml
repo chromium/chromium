@@ -3345,6 +3345,17 @@ Unknown properties are collapsed to zero. -->
   <int value="18" label="Printing turned off"/>
 </enum>
 
+<enum name="AppMenuHighlightItem">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="DOWNLOADS"/>
+  <int value="2" label="BOOKMARKS"/>
+  <int value="3" label="TRANSLATE"/>
+  <int value="4" label="ADD_TO_HOMESCREEN"/>
+  <int value="5" label="DOWNLOAD_THIS_PAGE"/>
+  <int value="6" label="BOOKMARK_THIS_PAGE"/>
+  <int value="7" label="DATA_REDUCTION_FOOTER"/>
+</enum>
+
 <enum name="AppMenuSimilarSelectionType">
   <obsolete>
     Deprecated as of 03/2021.

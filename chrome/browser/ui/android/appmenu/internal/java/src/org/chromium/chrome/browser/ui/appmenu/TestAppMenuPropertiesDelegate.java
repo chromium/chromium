@@ -114,4 +114,10 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
     public boolean shouldShowIconBeforeItem() {
         return iconBeforeItem;
     }
+
+    @Override
+    public void recordHighlightedMenuItemShown(Integer menuItemId) {}
+
+    @Override
+    public void recordHighlightedMenuItemClicked(Integer menuItemId) {}
 }

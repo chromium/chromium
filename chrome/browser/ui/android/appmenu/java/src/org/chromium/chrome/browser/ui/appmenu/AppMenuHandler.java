@@ -37,7 +37,7 @@ public interface AppMenuHandler {
      * @param highlightItemId The id of a menu item to highlight or {@code null} to turn off the
      *                        highlight.
      */
-    void setMenuHighlight(Integer highlightItemIdt);
+    void setMenuHighlight(Integer highlightItemId);
 
     /**
      * Clears the menu highlight.

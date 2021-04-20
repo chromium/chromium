@@ -214,6 +214,7 @@ class AppMenuHandlerImpl
         mAppMenu.show(wrapper, anchorView, isByPermanentButton, rotation, appRect, pt.y,
                 footerResourceId, headerResourceId, mDelegate.getGroupDividerId(), mHighlightMenuId,
                 mDelegate.getCustomViewBinders());
+        if (mHighlightMenuId != null) mDelegate.recordHighlightedMenuItemShown(mHighlightMenuId);
         mAppMenuDragHelper.onShow(startDragging);
         clearMenuHighlight();
         RecordUserAction.record("MobileMenuShow");
@@ -281,7 +282,7 @@ class AppMenuHandlerImpl
     }
 
     @VisibleForTesting
-    void onOptionsItemSelected(MenuItem item) {
+    void onOptionsItemSelected(MenuItem item, boolean highlighted) {
         if (mTestOptionsItemSelectedListener != null) {
             mTestOptionsItemSelectedListener.onResult(item);
             return;
@@ -289,6 +290,7 @@ class AppMenuHandlerImpl
 
         mAppMenuDelegate.onOptionsItemSelected(
                 item.getItemId(), mDelegate.getBundleForMenuItem(item));
+        if (highlighted) mDelegate.recordHighlightedMenuItemClicked(item.getItemId());
     }
 
     /**

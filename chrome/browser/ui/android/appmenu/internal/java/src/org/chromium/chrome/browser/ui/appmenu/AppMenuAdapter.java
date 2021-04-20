@@ -323,6 +323,13 @@ class AppMenuAdapter extends BaseAdapter {
         return convertView;
     }
 
+    /**
+     * @return Whether the menu item corresponding to {@code menuItemId} is currently highlighted.
+     */
+    boolean isMenuItemHighlighted(int menuItemId) {
+        return mHighlightedItemId != null && mHighlightedItemId == menuItemId;
+    }
+
     private void setupCheckBox(AppMenuItemIcon button, final MenuItem item) {
         button.setChecked(item.isChecked());
 
