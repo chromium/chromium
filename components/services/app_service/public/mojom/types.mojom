@@ -228,6 +228,7 @@ enum LaunchSource {
   kFromReleaseNotesNotification = 19, // Release Notes Notification.
   kFromFullRestore = 20,              // Full restore.
   kFromSmartTextContextMenu = 21,     // Smart text selection context menu.
+  kFromDiscoverTabNotification = 22,  // Discover Tab Notification.
 };
 
 enum TriState {

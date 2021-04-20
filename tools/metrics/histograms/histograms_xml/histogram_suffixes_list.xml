@@ -4876,6 +4876,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="From app list recommendation."/>
   <suffix name="FromArc" label="From ARC."/>
   <suffix name="FromChromeInternal" label="From Chrome Internal."/>
+  <suffix name="FromDiscoverTabNotification"
+      label="From Discover Tab notification."/>
   <suffix name="FromFileManager" label="From FileManager."/>
   <suffix name="FromFullRestore" label="From full restore."/>
   <suffix name="FromInstalledNotification"
@@ -4885,6 +4887,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="FromMenu" label="From menu."/>
   <suffix name="FromOmnibox" label="From Omnibox."/>
   <suffix name="FromOtherApp" label="From another app."/>
+  <suffix name="FromReleaseNotesNotification"
+      label="From Release Notes notification."/>
   <suffix name="FromSharesheet" label="From sharesheet."/>
   <suffix name="FromShelf" label="From shelf."/>
   <suffix name="FromSmartTextContextMenu"

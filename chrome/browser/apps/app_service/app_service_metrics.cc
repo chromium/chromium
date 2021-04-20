@@ -155,6 +155,11 @@ void RecordDefaultAppLaunch(DefaultAppName default_app_name,
       base::UmaHistogramEnumeration(
           "Apps.DefaultAppLaunch.FromSmartTextContextMenu", default_app_name);
       break;
+    case apps::mojom::LaunchSource::kFromDiscoverTabNotification:
+      base::UmaHistogramEnumeration(
+          "Apps.DefaultAppLaunch.FromDiscoverTabNotification",
+          default_app_name);
+      break;
   }
 }
 
@@ -190,6 +195,7 @@ void RecordBuiltInAppLaunch(apps::BuiltInAppName built_in_app_name,
     case apps::mojom::LaunchSource::kFromReleaseNotesNotification:
     case apps::mojom::LaunchSource::kFromFullRestore:
     case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
+    case apps::mojom::LaunchSource::kFromDiscoverTabNotification:
       break;
   }
 }
