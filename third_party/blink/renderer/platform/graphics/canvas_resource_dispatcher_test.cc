@@ -49,7 +49,6 @@ class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
  public:
   MockCanvasResourceDispatcher()
       : CanvasResourceDispatcher(nullptr /* client */,
-                                 base::ThreadTaskRunnerHandle::Get(),
                                  kClientId,
                                  kSinkId,
                                  0 /* placeholder_canvas_id* */,
