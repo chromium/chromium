@@ -152,4 +152,27 @@ promise_test(async (t) => {
     'report-only-endpoint', targetUrl, iframe.src, 'reporting');
 }, 'COEP violation on nested frame navigation');
 
+promise_test(async (t) => {
+  const iframe = document.createElement('iframe');
+  t.add_cleanup(() => iframe.remove());
+
+  iframe.src = 'resources/reporting-empty-frame-multiple-headers.html.asis';
+  const targetUrl = `/common/blank.html?${token()}`;
+
+  iframe.addEventListener('load', t.step_func(() => {
+    const nested = iframe.contentDocument.createElement('iframe');
+    nested.src = targetUrl;
+    // |nested| doesn't have COEP whereas |iframe| has, so it is blocked.
+    iframe.contentDocument.body.appendChild(nested);
+  }), {once: true});
+
+  document.body.appendChild(iframe);
+
+  await checkNavigationReportExistence(
+      'endpoint', targetUrl, iframe.src, 'enforce');
+  await checkNavigationReportExistence(
+    'report-only-endpoint', targetUrl, iframe.src, 'reporting');
+
+}, 'Two COEP headers, split inside report-to value');
+
 </script>

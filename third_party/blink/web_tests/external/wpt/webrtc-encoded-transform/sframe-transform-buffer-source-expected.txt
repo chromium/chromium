@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Uint8Array as input to SFrameTransform promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'importKey' of undefined"
+Harness: the test ran to completion.
+

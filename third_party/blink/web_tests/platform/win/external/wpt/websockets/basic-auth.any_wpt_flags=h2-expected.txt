@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL HTTP basic authentication should work with WebSockets assert_unreached: open should succeed Reached unreachable code
+Harness: the test ran to completion.
+

@@ -11,7 +11,7 @@ partial interface ServiceWorkerRegistration {
 interface PaymentManager {
   [SameObject] readonly attribute PaymentInstruments instruments;
   attribute DOMString userHint;
-  Promise<void> enableDelegations(sequence<PaymentDelegation> delegations);
+  Promise<undefined> enableDelegations(sequence<PaymentDelegation> delegations);
 };
 
 enum PaymentDelegation {
@@ -27,8 +27,8 @@ interface PaymentInstruments {
   Promise<any> get(DOMString instrumentKey);
   Promise<sequence<DOMString>>  keys();
   Promise<boolean> has(DOMString instrumentKey);
-  Promise<void> set(DOMString instrumentKey, PaymentInstrument details);
-  Promise<void> clear();
+  Promise<undefined> set(DOMString instrumentKey, PaymentInstrument details);
+  Promise<undefined> clear();
 };
 
 dictionary PaymentInstrument {
@@ -54,7 +54,7 @@ interface CanMakePaymentEvent : ExtendableEvent {
   readonly attribute USVString topOrigin;
   readonly attribute USVString paymentRequestOrigin;
   readonly attribute FrozenArray<PaymentMethodData> methodData;
-  void respondWith(Promise<boolean> canMakePaymentResponse);
+  undefined respondWith(Promise<boolean> canMakePaymentResponse);
 };
 
 dictionary CanMakePaymentEventInit : ExtendableEventInit {
@@ -93,7 +93,7 @@ interface PaymentRequestEvent : ExtendableEvent {
   Promise<PaymentRequestDetailsUpdate?> changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
   Promise<PaymentRequestDetailsUpdate?> changeShippingAddress(optional AddressInit shippingAddress = {});
   Promise<PaymentRequestDetailsUpdate?> changeShippingOption(DOMString shippingOption);
-  void respondWith(Promise<PaymentHandlerResponse> handlerResponsePromise);
+  undefined respondWith(Promise<PaymentHandlerResponse> handlerResponsePromise);
 };
 
 dictionary PaymentRequestEventInit : ExtendableEventInit {

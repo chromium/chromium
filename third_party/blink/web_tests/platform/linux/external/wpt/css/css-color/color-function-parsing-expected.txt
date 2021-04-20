@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+FAIL Basic sRGB white assert_equals: expected "color(srgb 1 1 1)" but got "rgb(0, 0, 0)"
+FAIL White with lots of space assert_equals: expected "color(srgb 1 1 1)" but got "rgb(0, 0, 0)"
+FAIL sRGB color assert_equals: expected "color(srgb 0.25 0.5 0.75)" but got "rgb(0, 0, 0)"
+FAIL Different case for sRGB assert_equals: expected "color(srgb 0.25 0.5 0.75)" but got "rgb(0, 0, 0)"
+FAIL sRGB color with unnecessary decimals assert_equals: expected "color(srgb 1 0.5 0.2)" but got "rgb(0, 0, 0)"
+FAIL sRGB white with 0.5 alpha assert_equals: expected "color(srgb 1 1 1 / 0.5)" but got "rgb(0, 0, 0)"
+FAIL sRGB white with 0 alpha assert_equals: expected "color(srgb 1 1 1 / 0)" but got "rgb(0, 0, 0)"
+FAIL sRGB white with 50% alpha assert_equals: expected "color(srgb 1 1 1 / 0.5)" but got "rgb(0, 0, 0)"
+FAIL sRGB white with 0% alpha assert_equals: expected "color(srgb 1 1 1 / 0)" but got "rgb(0, 0, 0)"
+FAIL One missing component is 0 assert_equals: expected "color(srgb 1 1 0)" but got "rgb(0, 0, 0)"
+FAIL Two missing components are 0 assert_equals: expected "color(srgb 1 0 0)" but got "rgb(0, 0, 0)"
+FAIL All components missing assert_equals: expected "color(srgb 0 0 0)" but got "rgb(0, 0, 0)"
+FAIL Display P3 color assert_equals: expected "color(display-p3 0.6 0.7 0.8)" but got "rgb(0, 0, 0)"
+FAIL Different case for Display P3 assert_equals: expected "color(display-p3 0.6 0.7 0.8)" but got "rgb(0, 0, 0)"
+FAIL Unknown color space should fallback assert_equals: expected "color(unknown 1 2 3, red)" but got "rgb(0, 0, 0)"
+FAIL sRGB color with negative component should clamp to 0 assert_equals: expected "color(srgb 0 0.5 0.75)" but got "rgb(0, 0, 0)"
+FAIL sRGB color with component > 1 should clamp assert_equals: expected "color(srgb 0.25 1 0.75)" but got "rgb(0, 0, 0)"
+FAIL Display P3 color with negative component should clamp to 0 assert_equals: expected "color(display-p3 0.5 0 0.75)" but got "rgb(0, 0, 0)"
+FAIL Display P3 color with component > 1 should clamp assert_equals: expected "color(display-p3 1 1 1)" but got "rgb(0, 0, 0)"
+FAIL Alpha > 1 should clamp assert_equals: expected "color(srgb 0.1 0.2 0.3)" but got "rgb(0, 0, 0)"
+FAIL Negative alpha should clamp assert_equals: expected "color(srgb 1 1 1 / 0)" but got "rgb(0, 0, 0)"
+PASS Empty
+PASS Bad color space
+PASS Bad Display P3 color space
+PASS No color space
+PASS Too many parameters
+PASS Way too many parameters
+PASS Bad parameters
+PASS Bad alpha
+PASS Junk after alpha
+Harness: the test ran to completion.
+

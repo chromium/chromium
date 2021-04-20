@@ -1,4 +1,7 @@
-// META: script=websocket.sub.js
+// META: script=constants.sub.js
+// META: variant=
+// META: variant=?wpt_flags=h2
+// META: variant=?wss
 
 var testOpen = async_test("Send binary data on a WebSocket - ArrayBufferView - Int16Array with offset - Connection should be opened");
 var testMessage = async_test("Send binary data on a WebSocket - ArrayBufferView - Int16Array with offset - Message should be received");
@@ -7,7 +10,7 @@ var testClose = async_test("Send binary data on a WebSocket - ArrayBufferView - 
 var data = "";
 var datasize = 8;
 var view;
-var wsocket = CreateWebSocket(false, false, false);
+var wsocket = CreateWebSocket(false, false);
 var isOpenCalled = false;
 
 wsocket.addEventListener('open', testOpen.step_func(function(evt) {

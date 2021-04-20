@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL button element with accesskey in the shadow tree of open mode promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL button element with accesskey in the shadow tree of closed mode promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+Harness: the test ran to completion.
+

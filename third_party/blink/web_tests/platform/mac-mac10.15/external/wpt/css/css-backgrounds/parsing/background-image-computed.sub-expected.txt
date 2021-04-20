@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+PASS Property background-image value 'none'
+PASS Property background-image value 'url("http://web-platform.test/")'
+PASS Property background-image value 'none, url("http://web-platform.test/")'
+PASS Property background-image value 'linear-gradient(to left bottom, red, blue)'
+PASS Property background-image value 'radial-gradient(rgb(255, 0, 0), rgb(0, 0, 255))'
+FAIL Property background-image value 'radial-gradient(at center, red, blue)' assert_equals: expected "radial-gradient(rgb(255, 0, 0), rgb(0, 0, 255))" but got "radial-gradient(at center center, rgb(255, 0, 0), rgb(0, 0, 255))"
+FAIL Property background-image value 'radial-gradient(at 50%, red, blue)' assert_equals: expected "radial-gradient(rgb(255, 0, 0), rgb(0, 0, 255))" but got "radial-gradient(at 50% center, rgb(255, 0, 0), rgb(0, 0, 255))"
+PASS Property background-image value 'radial-gradient(at 10px 10px, rgb(255, 0, 0), rgb(0, 0, 255))'
+PASS Property background-image value 'radial-gradient(farthest-side, rgb(255, 0, 0), rgb(0, 0, 255))'
+PASS Property background-image value 'radial-gradient(farthest-side at 10px 10px, rgb(255, 0, 0), rgb(0, 0, 255))'
+PASS Property background-image value 'radial-gradient(farthest-corner, red, blue)'
+FAIL Property background-image value 'radial-gradient(farthest-corner at center, red, blue)' assert_equals: expected "radial-gradient(rgb(255, 0, 0), rgb(0, 0, 255))" but got "radial-gradient(at center center, rgb(255, 0, 0), rgb(0, 0, 255))"
+FAIL Property background-image value 'radial-gradient(farthest-corner at 50%, red, blue)' assert_equals: expected "radial-gradient(rgb(255, 0, 0), rgb(0, 0, 255))" but got "radial-gradient(at 50% center, rgb(255, 0, 0), rgb(0, 0, 255))"
+PASS Property background-image value 'radial-gradient(farthest-corner at 10px 10px, red, blue)'
+PASS Property background-image value 'radial-gradient(10px at 20px 30px, rgb(255, 0, 0), rgb(0, 0, 255))'
+FAIL Property background-image value 'radial-gradient(circle calc(-0.5em + 10px) at calc(-1em + 10px) calc(-2em + 10px), red, blue)' assert_equals: expected "radial-gradient(0px at -30px -70px, rgb(255, 0, 0), rgb(0, 0, 255))" but got "radial-gradient(calc(-0.5em + 10px) at calc(-1em + 10px) calc(-2em + 10px), rgb(255, 0, 0), rgb(0, 0, 255))"
+FAIL Property background-image value 'radial-gradient(ellipse calc(-0.5em + 10px) calc(0.5em + 10px) at 20px 30px, red, blue)' assert_equals: expected "radial-gradient(0px 30px at 20px 30px, rgb(255, 0, 0), rgb(0, 0, 255))" but got "radial-gradient(calc(-0.5em + 10px) calc(0.5em + 10px) at 20px 30px, rgb(255, 0, 0), rgb(0, 0, 255))"
+FAIL Property background-image value 'radial-gradient(ellipse calc(0.5em + 10px) calc(-0.5em + 10px) at 20px 30px, red, blue)' assert_equals: expected "radial-gradient(30px 0px at 20px 30px, rgb(255, 0, 0), rgb(0, 0, 255))" but got "radial-gradient(calc(0.5em + 10px) calc(-0.5em + 10px) at 20px 30px, rgb(255, 0, 0), rgb(0, 0, 255))"
+PASS Property background-image value 'conic-gradient(rgb(255, 0, 0), rgb(0, 0, 255))'
+FAIL Property background-image value 'conic-gradient(at center, red, blue)' assert_equals: expected "conic-gradient(rgb(255, 0, 0), rgb(0, 0, 255))" but got "conic-gradient(at center center, rgb(255, 0, 0), rgb(0, 0, 255))"
+FAIL Property background-image value 'conic-gradient(at 50%, red, blue)' assert_equals: expected "conic-gradient(rgb(255, 0, 0), rgb(0, 0, 255))" but got "conic-gradient(at 50% center, rgb(255, 0, 0), rgb(0, 0, 255))"
+PASS Property background-image value 'conic-gradient(at 10px 10px, rgb(255, 0, 0), rgb(0, 0, 255))'
+FAIL Property background-image value 'conic-gradient(from 0deg, red, blue)' assert_equals: expected "conic-gradient(rgb(255, 0, 0), rgb(0, 0, 255))" but got "conic-gradient(from 0deg, rgb(255, 0, 0), rgb(0, 0, 255))"
+FAIL Property background-image value 'conic-gradient(from 0deg at center, red, blue)' assert_equals: expected "conic-gradient(rgb(255, 0, 0), rgb(0, 0, 255))" but got "conic-gradient(from 0deg at center center, rgb(255, 0, 0), rgb(0, 0, 255))"
+FAIL Property background-image value 'conic-gradient(from 0deg at 50%, red, blue)' assert_equals: expected "conic-gradient(rgb(255, 0, 0), rgb(0, 0, 255))" but got "conic-gradient(from 0deg at 50% center, rgb(255, 0, 0), rgb(0, 0, 255))"
+FAIL Property background-image value 'conic-gradient(from 0deg at 10px 10px, red, blue)' assert_equals: expected "conic-gradient(at 10px 10px, rgb(255, 0, 0), rgb(0, 0, 255))" but got "conic-gradient(from 0deg at 10px 10px, rgb(255, 0, 0), rgb(0, 0, 255))"
+PASS Property background-image value 'conic-gradient(from 45deg, rgb(255, 0, 0), rgb(0, 0, 255))'
+FAIL Property background-image value 'conic-gradient(from 45deg at center, red, blue)' assert_equals: expected "conic-gradient(from 45deg, rgb(255, 0, 0), rgb(0, 0, 255))" but got "conic-gradient(from 45deg at center center, rgb(255, 0, 0), rgb(0, 0, 255))"
+FAIL Property background-image value 'conic-gradient(from 45deg at 50%, red, blue)' assert_equals: expected "conic-gradient(from 45deg, rgb(255, 0, 0), rgb(0, 0, 255))" but got "conic-gradient(from 45deg at 50% center, rgb(255, 0, 0), rgb(0, 0, 255))"
+PASS Property background-image value 'conic-gradient(from 45deg at 10px 10px, red, blue)'
+PASS Property background-image value 'conic-gradient(from -45deg, rgb(255, 0, 0), rgb(0, 0, 255))'
+FAIL Property background-image value 'conic-gradient(from -45deg at center, red, blue)' assert_equals: expected "conic-gradient(from -45deg, rgb(255, 0, 0), rgb(0, 0, 255))" but got "conic-gradient(from -45deg at center center, rgb(255, 0, 0), rgb(0, 0, 255))"
+FAIL Property background-image value 'conic-gradient(from -45deg at 50%, red, blue)' assert_equals: expected "conic-gradient(from -45deg, rgb(255, 0, 0), rgb(0, 0, 255))" but got "conic-gradient(from -45deg at 50% center, rgb(255, 0, 0), rgb(0, 0, 255))"
+PASS Property background-image value 'conic-gradient(from -45deg at 10px 10px, red, blue)'
+Harness: the test ran to completion.
+

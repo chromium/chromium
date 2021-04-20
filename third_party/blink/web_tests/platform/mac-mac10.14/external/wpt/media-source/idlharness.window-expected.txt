@@ -1,0 +1,116 @@
+This is a testharness.js-based test.
+Found 112 tests; 109 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface URL: original interface defined
+PASS Partial interface URL: valid exposure set
+PASS Partial interface URL: member names are unique
+PASS Partial interface AudioTrack: original interface defined
+PASS Partial interface AudioTrack: member names are unique
+PASS Partial interface VideoTrack: original interface defined
+PASS Partial interface VideoTrack: member names are unique
+PASS Partial interface TextTrack: original interface defined
+PASS Partial interface TextTrack: member names are unique
+PASS MediaSource interface: existence and properties of interface object
+PASS MediaSource interface object length
+PASS MediaSource interface object name
+PASS MediaSource interface: existence and properties of interface prototype object
+PASS MediaSource interface: existence and properties of interface prototype object's "constructor" property
+PASS MediaSource interface: existence and properties of interface prototype object's @@unscopables property
+PASS MediaSource interface: attribute sourceBuffers
+PASS MediaSource interface: attribute activeSourceBuffers
+PASS MediaSource interface: attribute readyState
+PASS MediaSource interface: attribute duration
+PASS MediaSource interface: attribute onsourceopen
+PASS MediaSource interface: attribute onsourceended
+PASS MediaSource interface: attribute onsourceclose
+PASS MediaSource interface: operation addSourceBuffer(DOMString)
+PASS MediaSource interface: operation removeSourceBuffer(SourceBuffer)
+PASS MediaSource interface: operation endOfStream(optional EndOfStreamError)
+PASS MediaSource interface: operation setLiveSeekableRange(double, double)
+PASS MediaSource interface: operation clearLiveSeekableRange()
+PASS MediaSource interface: operation isTypeSupported(DOMString)
+PASS MediaSource must be primary interface of mediaSource
+PASS Stringification of mediaSource
+PASS MediaSource interface: mediaSource must inherit property "sourceBuffers" with the proper type
+PASS MediaSource interface: mediaSource must inherit property "activeSourceBuffers" with the proper type
+PASS MediaSource interface: mediaSource must inherit property "readyState" with the proper type
+PASS MediaSource interface: mediaSource must inherit property "duration" with the proper type
+PASS MediaSource interface: mediaSource must inherit property "onsourceopen" with the proper type
+PASS MediaSource interface: mediaSource must inherit property "onsourceended" with the proper type
+PASS MediaSource interface: mediaSource must inherit property "onsourceclose" with the proper type
+PASS MediaSource interface: mediaSource must inherit property "addSourceBuffer(DOMString)" with the proper type
+PASS MediaSource interface: calling addSourceBuffer(DOMString) on mediaSource with too few arguments must throw TypeError
+PASS MediaSource interface: mediaSource must inherit property "removeSourceBuffer(SourceBuffer)" with the proper type
+PASS MediaSource interface: calling removeSourceBuffer(SourceBuffer) on mediaSource with too few arguments must throw TypeError
+PASS MediaSource interface: mediaSource must inherit property "endOfStream(optional EndOfStreamError)" with the proper type
+PASS MediaSource interface: calling endOfStream(optional EndOfStreamError) on mediaSource with too few arguments must throw TypeError
+PASS MediaSource interface: mediaSource must inherit property "setLiveSeekableRange(double, double)" with the proper type
+PASS MediaSource interface: calling setLiveSeekableRange(double, double) on mediaSource with too few arguments must throw TypeError
+PASS MediaSource interface: mediaSource must inherit property "clearLiveSeekableRange()" with the proper type
+PASS MediaSource interface: mediaSource must inherit property "isTypeSupported(DOMString)" with the proper type
+PASS MediaSource interface: calling isTypeSupported(DOMString) on mediaSource with too few arguments must throw TypeError
+PASS SourceBuffer interface: existence and properties of interface object
+PASS SourceBuffer interface object length
+PASS SourceBuffer interface object name
+PASS SourceBuffer interface: existence and properties of interface prototype object
+PASS SourceBuffer interface: existence and properties of interface prototype object's "constructor" property
+PASS SourceBuffer interface: existence and properties of interface prototype object's @@unscopables property
+PASS SourceBuffer interface: attribute mode
+PASS SourceBuffer interface: attribute updating
+PASS SourceBuffer interface: attribute buffered
+PASS SourceBuffer interface: attribute timestampOffset
+PASS SourceBuffer interface: attribute audioTracks
+PASS SourceBuffer interface: attribute videoTracks
+FAIL SourceBuffer interface: attribute textTracks assert_true: The prototype object must have a property "textTracks" expected true got false
+PASS SourceBuffer interface: attribute appendWindowStart
+PASS SourceBuffer interface: attribute appendWindowEnd
+PASS SourceBuffer interface: attribute onupdatestart
+PASS SourceBuffer interface: attribute onupdate
+PASS SourceBuffer interface: attribute onupdateend
+PASS SourceBuffer interface: attribute onerror
+PASS SourceBuffer interface: attribute onabort
+PASS SourceBuffer interface: operation appendBuffer(BufferSource)
+PASS SourceBuffer interface: operation abort()
+PASS SourceBuffer interface: operation remove(double, unrestricted double)
+PASS SourceBuffer must be primary interface of sourceBuffer
+PASS Stringification of sourceBuffer
+PASS SourceBuffer interface: sourceBuffer must inherit property "mode" with the proper type
+PASS SourceBuffer interface: sourceBuffer must inherit property "updating" with the proper type
+PASS SourceBuffer interface: sourceBuffer must inherit property "buffered" with the proper type
+PASS SourceBuffer interface: sourceBuffer must inherit property "timestampOffset" with the proper type
+PASS SourceBuffer interface: sourceBuffer must inherit property "audioTracks" with the proper type
+PASS SourceBuffer interface: sourceBuffer must inherit property "videoTracks" with the proper type
+FAIL SourceBuffer interface: sourceBuffer must inherit property "textTracks" with the proper type assert_inherits: property "textTracks" not found in prototype chain
+PASS SourceBuffer interface: sourceBuffer must inherit property "appendWindowStart" with the proper type
+PASS SourceBuffer interface: sourceBuffer must inherit property "appendWindowEnd" with the proper type
+PASS SourceBuffer interface: sourceBuffer must inherit property "onupdatestart" with the proper type
+PASS SourceBuffer interface: sourceBuffer must inherit property "onupdate" with the proper type
+PASS SourceBuffer interface: sourceBuffer must inherit property "onupdateend" with the proper type
+PASS SourceBuffer interface: sourceBuffer must inherit property "onerror" with the proper type
+PASS SourceBuffer interface: sourceBuffer must inherit property "onabort" with the proper type
+PASS SourceBuffer interface: sourceBuffer must inherit property "appendBuffer(BufferSource)" with the proper type
+PASS SourceBuffer interface: calling appendBuffer(BufferSource) on sourceBuffer with too few arguments must throw TypeError
+PASS SourceBuffer interface: sourceBuffer must inherit property "abort()" with the proper type
+PASS SourceBuffer interface: sourceBuffer must inherit property "remove(double, unrestricted double)" with the proper type
+PASS SourceBuffer interface: calling remove(double, unrestricted double) on sourceBuffer with too few arguments must throw TypeError
+PASS SourceBufferList interface: existence and properties of interface object
+PASS SourceBufferList interface object length
+PASS SourceBufferList interface object name
+PASS SourceBufferList interface: existence and properties of interface prototype object
+PASS SourceBufferList interface: existence and properties of interface prototype object's "constructor" property
+PASS SourceBufferList interface: existence and properties of interface prototype object's @@unscopables property
+PASS SourceBufferList interface: attribute length
+PASS SourceBufferList interface: attribute onaddsourcebuffer
+PASS SourceBufferList interface: attribute onremovesourcebuffer
+PASS SourceBufferList must be primary interface of mediaSource.sourceBuffers
+PASS Stringification of mediaSource.sourceBuffers
+PASS SourceBufferList interface: mediaSource.sourceBuffers must inherit property "length" with the proper type
+PASS SourceBufferList interface: mediaSource.sourceBuffers must inherit property "onaddsourcebuffer" with the proper type
+PASS SourceBufferList interface: mediaSource.sourceBuffers must inherit property "onremovesourcebuffer" with the proper type
+PASS AudioTrack interface: attribute sourceBuffer
+PASS VideoTrack interface: attribute sourceBuffer
+FAIL TextTrack interface: attribute sourceBuffer assert_true: The prototype object must have a property "sourceBuffer" expected true got false
+PASS URL interface: operation createObjectURL(MediaSource)
+Harness: the test ran to completion.
+

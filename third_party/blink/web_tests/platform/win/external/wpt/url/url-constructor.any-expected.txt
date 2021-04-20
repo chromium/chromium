@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 596 tests; 412 PASS, 184 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 604 tests; 416 PASS, 188 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -534,6 +534,14 @@ FAIL Parsing: </c:/foo/bar> against <file://host/path> assert_equals: href expec
 FAIL Parsing: <file://example.net/C:/> against <about:blank> assert_equals: href expected "file://example.net/C:/" but got "file:///C:/"
 FAIL Parsing: <file://1.2.3.4/C:/> against <about:blank> assert_equals: href expected "file://1.2.3.4/C:/" but got "file:///C:/"
 FAIL Parsing: <file://[1::8]/C:/> against <about:blank> assert_equals: href expected "file://[1::8]/C:/" but got "file:///C:/"
+FAIL Parsing: <C|/> against <file://host/> assert_equals: href expected "file://host/C:/" but got "file:///C:/"
+FAIL Parsing: </C:/> against <file://host/> assert_equals: href expected "file://host/C:/" but got "file:///C:/"
+FAIL Parsing: <file:C:/> against <file://host/> assert_equals: href expected "file://host/C:/" but got "file:///C:/"
+FAIL Parsing: <file:/C:/> against <file://host/> assert_equals: href expected "file://host/C:/" but got "file:///C:/"
+PASS Parsing: <//C:/> against <file://host/>
+PASS Parsing: <file://C:/> against <file://host/>
+PASS Parsing: <///C:/> against <file://host/>
+PASS Parsing: <file:///C:/> against <file://host/>
 PASS Parsing: <file:/C|/> against <about:blank>
 PASS Parsing: <file://C|/> against <about:blank>
 PASS Parsing: <file:> against <about:blank>

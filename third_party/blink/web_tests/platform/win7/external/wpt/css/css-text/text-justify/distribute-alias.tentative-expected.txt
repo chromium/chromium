@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL text-justify: distribute is a parse-time alias of inter-character assert_equals: expected "inter-character" but got "distribute"
+Harness: the test ran to completion.
+

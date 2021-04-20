@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: A network error occurred
+PASS constructing with no URL should throw
+PASS constructing with an invalid URL should throw
+PASS constructing with invalid options should throw
+PASS protocols should be required to be a list
+FAIL constructing with a valid URL should work promise_test: Unhandled rejection with value: object "NetworkError: A network error occurred"
+FAIL setting a protocol in the constructor should work promise_test: Unhandled rejection with value: object "NetworkError: A network error occurred"
+PASS connection failure should reject the promises
+FAIL wss.connection should resolve to the right types promise_test: Unhandled rejection with value: object "NetworkError: A network error occurred"
+Harness: the test ran to completion.
+
