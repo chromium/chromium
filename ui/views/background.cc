@@ -99,7 +99,8 @@ class ThemedSolidBackground : public SolidBackground, public ViewObserver {
       : SolidBackground(gfx::kPlaceholderColor),
         color_id_(color_id) {
     observation_.Observe(view);
-    OnViewThemeChanged(view);
+    if (view->GetWidget())
+      OnViewThemeChanged(view);
   }
   ~ThemedSolidBackground() override = default;
 
