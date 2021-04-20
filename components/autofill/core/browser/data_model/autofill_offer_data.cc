@@ -71,6 +71,25 @@ int AutofillOfferData::Compare(
   if (eligible_instrument_id_copy > other_eligible_instrument_id_copy)
     return 1;
 
+  comparison = promo_code.compare(other_offer_data.promo_code);
+  if (comparison != 0)
+    return comparison;
+
+  comparison = display_strings.value_prop_text.compare(
+      other_offer_data.display_strings.value_prop_text);
+  if (comparison != 0)
+    return comparison;
+
+  comparison = display_strings.see_details_text.compare(
+      other_offer_data.display_strings.see_details_text);
+  if (comparison != 0)
+    return comparison;
+
+  comparison = display_strings.usage_instructions_text.compare(
+      other_offer_data.display_strings.usage_instructions_text);
+  if (comparison != 0)
+    return comparison;
+
   return 0;
 }
 
