@@ -1989,6 +1989,13 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
     RebuildLayoutTree();
   }
 
+  if (IsA<HTMLHtmlElement>(container)) {
+    // If the container is the HTML root element, the body styles may have
+    // changed as a result of the new container query evaluation and if
+    // properties propagated from body changed, we need to update the viewport
+    // styles.
+    GetStyleResolver().PropagateStyleToViewport();
+  }
   GetDocument().GetLayoutView()->UpdateMarkersAndCountersAfterStyleChange();
 }
 
@@ -2098,6 +2105,7 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
   }
   ClearWhitespaceReattachSet();
   UpdateColorSchemeBackground();
+  GetStyleResolver().PropagateStyleToViewport();
 }
 
 void StyleEngine::ViewportDefiningElementDidChange() {

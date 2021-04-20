@@ -2127,8 +2127,6 @@ void Document::UpdateStyle() {
 
   ClearChildNeedsStyleRecalc();
 
-  GetStyleResolver().PropagateStyleToViewport();
-
   GetLayoutView()->UpdateMarkersAndCountersAfterStyleChange();
   GetLayoutView()->RecalcLayoutOverflow();
 
