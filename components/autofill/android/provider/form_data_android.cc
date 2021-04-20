@@ -99,7 +99,10 @@ bool FormDataAndroid::SimilarFormAs(const FormData& form) {
 }
 
 void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {
-  DCHECK(form_structure.field_count() == fields_.size());
+  // This form has been changed after the query starts, ignore this response,
+  // new one is on the way.
+  if (form_structure.field_count() != fields_.size())
+    return;
   auto form_field_data_android = fields_.begin();
   for (const auto& autofill_field : form_structure) {
     DCHECK(form_field_data_android->get()->SimilarFieldAs(*autofill_field));
