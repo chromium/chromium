@@ -44,8 +44,6 @@ class TabStripRegionView final : public views::AccessiblePaneView,
 
   NewTabButton* new_tab_button() { return new_tab_button_; }
 
-  views::View* leading_scroll_button() { return leading_scroll_button_; }
-
   TabSearchButton* tab_search_button() { return tab_search_button_; }
 
   TipMarqueeView* tip_marquee_view() { return tip_marquee_view_; }
