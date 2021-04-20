@@ -277,13 +277,9 @@
       'Mac10.15 Tests (dbg)': {
         'args': [
           '--debug',
-          # crbug.com/1196416
-          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
         ],
         'swarming': {
-          # These shards are liable to time out when running on macmini7,1.
-          # crbug.com/1042757
-          'cores': '8|12',
+          'shards': 25,
         },
       },
       'ToTFuchsia x64': {
@@ -595,9 +591,18 @@
         ],
       },
       'Mac10.15 Tests (dbg)': {
-        # https://crbug.com/1152770
+        'args': [
+          # crbug.com/1196416
+          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
+        ],
+        # crbug.com/1042757
         'swarming': {
-          'shards': 40,
+          'dimension_sets': [
+            {
+              # These shards are liable to time out when running on macmini7,1.
+              'cores': '8|12',
+            }
+          ],
         },
       },
       'ToTWin(dbg)': {

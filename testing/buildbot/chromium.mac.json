@@ -8927,6 +8927,9 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -8935,11 +8938,12 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8|12",
               "os": "Mac-10.15"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 40
+          "shards": 10
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -10132,8 +10136,7 @@
       {
         "args": [
           "--num-retries=3",
-          "--debug",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter"
+          "--debug"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -10149,14 +10152,13 @@
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "cores": "8|12",
           "dimension_sets": [
             {
               "os": "Mac-10.15"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
+          "shards": 25
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
