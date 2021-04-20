@@ -9528,6 +9528,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
     blink::mojom::PolicyContainerPtr policy_container,
     const base::UnguessableToken& devtools_navigation_token) {
   DCHECK_EQ(net::OK, navigation_request->GetNetErrorCode());
+  IncreaseCommitNavigationCounter();
   navigation_client->CommitNavigation(
       std::move(common_params), std::move(commit_params),
       std::move(response_head), std::move(response_body),
@@ -9554,6 +9555,7 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
   DCHECK(navigation_client && navigation_request);
   DCHECK_NE(GURL(), common_params->url);
   DCHECK_NE(net::OK, error_code);
+  IncreaseCommitNavigationCounter();
   navigation_client->CommitFailedNavigation(
       std::move(common_params), std::move(commit_params),
       has_stale_copy_in_cache, error_code, extended_error_code,
@@ -10980,6 +10982,13 @@ void RenderFrameHostImpl::OnDidDisplayContentWithCertificateErrors() {
       "content",
       "RenderFrameHostImpl::OnDidDisplayContentWithCertificateErrors");
   frame_tree_->controller().ssl_manager()->DidDisplayContentWithCertErrors();
+}
+
+void RenderFrameHostImpl::IncreaseCommitNavigationCounter() {
+  if (commit_navigation_sent_counter_ < std::numeric_limits<int>::max())
+    ++commit_navigation_sent_counter_;
+  else
+    commit_navigation_sent_counter_ = 0;
 }
 
 std::ostream& operator<<(std::ostream& o,

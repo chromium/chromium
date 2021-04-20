@@ -1708,6 +1708,10 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationRequest.
   std::vector<ConsoleMessage> console_messages_;
 
+  // The `commit_navigation_sent_counter` of the initiator RenderFrameHost at
+  // the time when this NavigationRequest was created.
+  int initiator_commit_navigation_sent_counter_ = -1;
+
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NavigationRequest);

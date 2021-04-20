@@ -1668,6 +1668,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetPolicyContainerForEarlyCommitAfterCrash(
       scoped_refptr<PolicyContainerHost> policy_container_host);
 
+  // A counter which is incremented by one every time `CommitNavigation` or
+  // `CommitFailedNavigation` is sent to the renderer.
+  int commit_navigation_sent_counter() {
+    return commit_navigation_sent_counter_;
+  }
+
   // This function mimics DidCommitProvisionalLoad for navigations served from
   // the back-forward cache.
   void DidCommitBackForwardCacheNavigation(
@@ -2870,6 +2876,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //  that are in the same process.)
   bool RequiresProxyToParent();
 
+  // Increases by one `commit_navigation_sent_counter_`.
+  void IncreaseCommitNavigationCounter();
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts
@@ -3639,6 +3648,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   network::mojom::URLResponseHeadPtr last_response_head_;
 
   std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager_;
+
+  // A counter which is incremented by one every time this RenderFrameHost sends
+  // a `CommitNavigation` or `CommitFailedNavigation` IPC to the renderer.
+  int commit_navigation_sent_counter_ = 0;
 
   // NOTE: This must be the last member.
   base::WeakPtrFactory<RenderFrameHostImpl> weak_ptr_factory_{this};

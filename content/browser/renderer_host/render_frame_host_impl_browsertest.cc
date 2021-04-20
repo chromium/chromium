@@ -5155,4 +5155,77 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
             root_frame_host()->GetCrossOriginIsolationStatus());
 }
 
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       CommitNavigationCounter) {
+  GURL initial_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL same_document_url =
+      embedded_test_server()->GetURL("a.com", "/title1.html#index");
+  GURL other_url = embedded_test_server()->GetURL("a.com", "/title2.html");
+
+  GURL blocked_url(embedded_test_server()->GetURL("a.com", "/blocked.html"));
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(blocked_url,
+                                                   net::ERR_BLOCKED_BY_CLIENT);
+
+  // Regular, initial navigation.
+  {
+    RenderFrameHostImpl* initial_rfh =
+        static_cast<RenderFrameHostImpl*>(web_contents()->GetMainFrame());
+    int initial_counter = initial_rfh->commit_navigation_sent_counter();
+
+    EXPECT_TRUE(NavigateToURL(shell(), initial_url));
+
+    EXPECT_EQ(initial_rfh, web_contents()->GetMainFrame())
+        << "No RFH swap expected.";
+    EXPECT_GT(web_contents()->GetMainFrame()->commit_navigation_sent_counter(),
+              initial_counter)
+        << "The commit_navigation_sent_counter has been increased.";
+  }
+
+  // Same document navigation.
+  {
+    RenderFrameHostImpl* initial_rfh =
+        static_cast<RenderFrameHostImpl*>(web_contents()->GetMainFrame());
+    int initial_counter = initial_rfh->commit_navigation_sent_counter();
+
+    EXPECT_TRUE(NavigateToURL(shell(), same_document_url));
+
+    EXPECT_EQ(initial_rfh, web_contents()->GetMainFrame())
+        << "No RFH swap expected.";
+    EXPECT_EQ(initial_counter,
+              web_contents()->GetMainFrame()->commit_navigation_sent_counter())
+        << "The commit_navigation_sent_counter has not been increased.";
+  }
+
+  // New document navigation.
+  {
+    RenderFrameHostImpl* initial_rfh =
+        static_cast<RenderFrameHostImpl*>(web_contents()->GetMainFrame());
+    int initial_counter = initial_rfh->commit_navigation_sent_counter();
+
+    EXPECT_TRUE(NavigateToURL(shell(), other_url));
+
+    EXPECT_TRUE(
+        initial_rfh != web_contents()->GetMainFrame() ||
+        web_contents()->GetMainFrame()->commit_navigation_sent_counter() >
+            initial_counter)
+        << "Either the RFH has been swapped or the counter has been increased.";
+  }
+
+  // Failed navigation.
+  {
+    RenderFrameHostImpl* initial_rfh =
+        static_cast<RenderFrameHostImpl*>(web_contents()->GetMainFrame());
+    int initial_counter = initial_rfh->commit_navigation_sent_counter();
+
+    EXPECT_FALSE(NavigateToURL(shell(), blocked_url));
+
+    EXPECT_TRUE(
+        initial_rfh != web_contents()->GetMainFrame() ||
+        web_contents()->GetMainFrame()->commit_navigation_sent_counter() >
+            initial_counter)
+        << "Either the RFH has been swapped or the counter has been increased.";
+  }
+}
+
 }  // namespace content

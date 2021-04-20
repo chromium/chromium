@@ -1202,6 +1202,15 @@ NavigationRequest::NavigationRequest(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("navigation", "Initializing",
                                     navigation_id_);
 
+  if (GetInitiatorFrameToken().has_value()) {
+    RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
+        GetInitiatorProcessID(), GetInitiatorFrameToken().value());
+    if (initiator_rfh) {
+      initiator_commit_navigation_sent_counter_ =
+          initiator_rfh->commit_navigation_sent_counter();
+    }
+  }
+
   policy_container_navigation_bundle_.emplace(
       GetParentFrame(),
       initiator_frame_token_.has_value() ? &*initiator_frame_token_ : nullptr,
@@ -4218,9 +4227,6 @@ net::Error NavigationRequest::CheckCSPDirectives(
   if (base::FeatureList::IsEnabled(
           features::kExperimentalContentSecurityPolicyFeatures) &&
       initiator_policies) {
-    RenderFrameHostCSPContext initiator_csp_context(
-        RenderFrameHostImpl::FromFrameToken(GetInitiatorProcessID(),
-                                            GetInitiatorFrameToken().value()));
     // [navigate-to]
     if (!IsAllowedByCSPDirective(
             initiator_policies->content_security_policies, &initiator_context,
@@ -4313,15 +4319,19 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
   // Note: the initiator RenderFrameHost could have been deleted by
   // now. Then this RenderFrameHostCSPContext will do nothing and we won't
   // report violations for this check.
-  //
-  // TODO(https://crbug.com/1189966): Check that the initiator RenderFrameHost
-  // has not committed a new document in between, see failing WPT
-  // content-security-policy/navigate-to/spv-only-sent-to-initiator.sub.html
-  RenderFrameHostCSPContext initiator_context(
+  RenderFrameHostImpl* initiator_rfh =
       GetInitiatorFrameToken().has_value()
           ? RenderFrameHostImpl::FromFrameToken(
                 GetInitiatorProcessID(), GetInitiatorFrameToken().value())
-          : nullptr);
+          : nullptr;
+  if (initiator_rfh && initiator_rfh->commit_navigation_sent_counter() !=
+                           initiator_commit_navigation_sent_counter_) {
+    // If the initiator frame has navigated away in between, we use a no-op
+    // `initiator_csp_context`, so that we won't trigger
+    // securitypolicyviolation events in the wrong document.
+    initiator_rfh = nullptr;
+  }
+  RenderFrameHostCSPContext initiator_context(initiator_rfh);
 
   net::Error report_only_csp_status = CheckCSPDirectives(
       parent_context, parent_policies, initiator_context, initiator_policies,
