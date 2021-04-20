@@ -380,7 +380,8 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
     // We don't track metrics for frames submitted to |display_| but it still
     // expects that every frame will receive a swap ack and presentation
     // feedback so we send null signals here.
-    display_->DidReceiveSwapBuffersAck(gfx::SwapTimings());
+    base::TimeTicks now = base::TimeTicks::Now();
+    display_->DidReceiveSwapBuffersAck({now, now});
     display_->DidReceivePresentationFeedback(
         gfx::PresentationFeedback::Failure());
   } else {
