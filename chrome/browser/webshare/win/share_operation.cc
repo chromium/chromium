@@ -155,8 +155,8 @@ class DataWriterFileStreamWriter final : public storage::FileStreamWriter {
       return net::ERR_UNEXPECTED;
 
     flush_callback_ = std::move(callback);
-    base::win::PostAsyncResults(
-        flush_operation_,
+    base::win::PostAsyncHandlers(
+        flush_operation_.Get(),
         base::BindOnce(&DataWriterFileStreamWriter::OnFlushCompleted,
                        weak_factory_.GetWeakPtr()));
     return net::ERR_IO_PENDING;
@@ -189,8 +189,8 @@ class DataWriterFileStreamWriter final : public storage::FileStreamWriter {
       return net::ERR_UNEXPECTED;
 
     write_callback_ = std::move(callback);
-    base::win::PostAsyncResults(
-        write_operation_,
+    base::win::PostAsyncHandlers(
+        write_operation_.Get(),
         base::BindOnce(&DataWriterFileStreamWriter::OnWriteCompleted,
                        weak_factory_.GetWeakPtr()));
     return net::ERR_IO_PENDING;
@@ -563,11 +563,14 @@ bool ShareOperation::PutShareContentInDataPackage(IDataRequest* data_request) {
         return false;
       }
 
-      if (FAILED(base::win::PostAsyncResults(
-              async_operation,
+      async_operations_.push_back(async_operation);
+
+      if (FAILED(base::win::PostAsyncHandlers(
+              async_operation.Get(),
               base::BindOnce(&ShareOperation::OnStreamedFileCreated,
-                             weak_factory_.GetWeakPtr()))))
+                             weak_factory_.GetWeakPtr())))) {
         return false;
+      }
     }
   }
 

@@ -87,6 +87,7 @@ class ShareOperation final : content::WebContentsObserver {
   const GURL url_;
   const std::vector<blink::mojom::SharedFilePtr> files_;
 
+  std::vector<Microsoft::WRL::ComPtr<IUnknown>> async_operations_;
   blink::mojom::ShareService::ShareCallback callback_;
   Microsoft::WRL::ComPtr<
       ABI::Windows::ApplicationModel::DataTransfer::IDataPackage>
