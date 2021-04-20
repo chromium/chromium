@@ -80,7 +80,6 @@ void PerformanceElementTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.Add("naturalWidth", naturalWidth_);
   builder.Add("naturalHeight", naturalHeight_);
   builder.Add("id", id_);
-  builder.Add("element", element());
   builder.Add("url", url_);
 }
 

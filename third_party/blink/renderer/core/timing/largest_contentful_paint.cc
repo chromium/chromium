@@ -55,7 +55,6 @@ void LargestContentfulPaint::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.Add("loadTime", load_time_.InMillisecondsF());
   builder.Add("id", id_);
   builder.Add("url", url_);
-  builder.Add("element", element());
 }
 
 void LargestContentfulPaint::Trace(Visitor* visitor) const {
