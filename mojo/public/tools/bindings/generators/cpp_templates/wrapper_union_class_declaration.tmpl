@@ -97,8 +97,8 @@ class {{export_attribute}} {{union.name}} {
 
  private:
   union Union_ {
-    Union_() {}
-    ~Union_() {}
+    Union_() = default;
+    ~Union_() = default;
 
 {%- for field in union.fields %}
 {%-   if field.kind|is_object_kind or

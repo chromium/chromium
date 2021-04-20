@@ -4,7 +4,7 @@ class {{union.name}}DataView {
  public:
   using Tag = internal::{{union.name}}_Data::{{union.name}}_Tag;
 
-  {{union.name}}DataView() {}
+  {{union.name}}DataView() = default;
 
   {{union.name}}DataView(
       internal::{{union.name}}_Data* data,
