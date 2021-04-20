@@ -532,6 +532,7 @@ source_set("unit_tests") {
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:form_util_feature",
     "//components/autofill/ios/form_util:test_support",
     "//components/infobars/core",
     "//components/keyed_service/core",

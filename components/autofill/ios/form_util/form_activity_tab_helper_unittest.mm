@@ -6,6 +6,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/ios/form_util/form_activity_observer.h"
+#import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/test_form_activity_observer.h"
 #include "ios/web/public/js_messaging/web_frame.h"
@@ -20,23 +21,16 @@ using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using web::WebFrame;
 
-class FormTestClient : public web::FakeWebClient {
- public:
-  NSString* GetDocumentStartScriptForAllFrames(
-      web::BrowserState* browser_state) const override {
-    return web::test::GetPageScript(@"form_util_js");
-  }
-};
-
 // Tests fixture for autofill::FormActivityTabHelper class.
 class FormActivityTabHelperTest : public web::WebTestWithWebState {
  public:
   FormActivityTabHelperTest()
-      : web::WebTestWithWebState(std::make_unique<FormTestClient>()) {
+      : web::WebTestWithWebState(std::make_unique<web::FakeWebClient>()) {
     web::FakeWebClient* web_client =
         static_cast<web::FakeWebClient*>(GetWebClient());
     web_client->SetJavaScriptFeatures(
-        {autofill::FormUtilJavaScriptFeature::GetInstance()});
+        {autofill::FormUtilJavaScriptFeature::GetInstance(),
+         autofill::FormHandlersJavaScriptFeature::GetInstance()});
   }
 
   void SetUp() override {

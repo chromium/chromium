@@ -61,7 +61,7 @@ let formSubmitOriginalFunction = null;
 function sendMessageOnNextLoop_(mesg) {
   if (!messageToSend) {
     setTimeout(function() {
-      __gCrWeb.message.invokeOnHost(messageToSend);
+      __gCrWeb.common.sendWebKitMessage('FormHandlersMessage', messageToSend);
       messageToSend = null;
     }, 0);
   }
@@ -126,6 +126,7 @@ function trackPasswordField_(field) {
       if (target.value === '') {
         const msg = {
           'command': 'form.activity',
+          'frameID': __gCrWeb.message.getFrameId(),
           'formName': '',
           'uniqueFormID': '',
           'fieldIdentifier': '',
@@ -221,6 +222,7 @@ function formActivity_(evt) {
 
   const msg = {
     'command': 'form.activity',
+    'frameID': __gCrWeb.message.getFrameId(),
     'formName': __gCrWeb.form.getFormIdentifier(form),
     'uniqueFormID': formUniqueId,
     'fieldIdentifier': __gCrWeb.form.getFieldIdentifier(field),
@@ -250,8 +252,9 @@ function submitHandler_(evt) {
 function formSubmitted_(form) {
   // Default action is to re-submit to same page.
   const action = form.getAttribute('action') || document.location.href;
-  __gCrWeb.message.invokeOnHost({
+  __gCrWeb.common.sendWebKitMessage('FormHandlersMessage', {
     'command': 'form.submit',
+    'frameID': __gCrWeb.message.getFrameId(),
     'formName': __gCrWeb.form.getFormIdentifier(form),
     'href': getFullyQualifiedUrl_(action),
     'formData': __gCrWeb.fill.autofillSubmissionData(form)
@@ -267,7 +270,8 @@ function sendFormMutationMessageAfterDelay_(msg, delay) {
 
   formMutationMessageToSend = msg;
   setTimeout(function() {
-    __gCrWeb.message.invokeOnHost(formMutationMessageToSend);
+    __gCrWeb.common.sendWebKitMessage(
+        'FormHandlersMessage', formMutationMessageToSend);
     formMutationMessageToSend = null;
   }, delay);
 }
@@ -356,6 +360,7 @@ __gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
       if (formChanged) {
         const msg = {
           'command': 'form.activity',
+          'frameID': __gCrWeb.message.getFrameId(),
           'formName': '',
           'uniqueFormID': '',
           'fieldIdentifier': '',
@@ -394,6 +399,7 @@ __gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
       if (formGone) {
         const msg = {
           'command': 'form.activity',
+          'frameID': __gCrWeb.message.getFrameId(),
           'formName': '',
           'uniqueFormID': uniqueFormId,
           'fieldIdentifier': '',
@@ -421,9 +427,5 @@ __gCrWeb.formHandlers['toggleTrackingUserEditedFields'] = function(track) {
     __gCrWeb.form.wasEditedByUser = null;
   }
 };
-/** Flush the message queue. */
-if (__gCrWeb.message) {
-  __gCrWeb.message.invokeQueues();
-}
 
 }());  // End of anonymous object

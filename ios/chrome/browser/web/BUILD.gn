@@ -170,14 +170,6 @@ source_set("unit_tests") {
   ]
 }
 
-js_compile_bundle("chrome_bundle_all_frames") {
-  closure_entry_point = "__crWeb.chromeBundleAllFrames"
-  sources = [
-    "//components/autofill/ios/form_util/resources/form_handlers.js",
-    "resources/chrome_bundle_all_frames.js",
-  ]
-}
-
 js_compile_bundle("chrome_bundle_main_frame") {
   closure_entry_point = "__crWeb.chromeBundleMainFrame"
   sources = [
@@ -210,17 +202,17 @@ source_set("web_internal") {
     "chrome_web_client.mm",
   ]
   deps = [
-    ":chrome_bundle_all_frames",
     ":chrome_bundle_main_frame",
     ":web",
     "//base",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/form_util:form_handler_feature",
     "//components/content_settings/core/browser",
     "//components/dom_distiller/core",
     "//components/google/core/common",
     "//components/infobars/core",
     "//components/password_manager/core/common",
-    "//components/password_manager/ios",
+    "//components/password_manager/ios:password_manager_feature",
     "//components/payments/core",
     "//components/prefs",
     "//components/resources",

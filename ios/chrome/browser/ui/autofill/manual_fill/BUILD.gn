@@ -39,6 +39,7 @@ source_set("manual_fill") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:util",
     "//components/autofill/ios/form_util",
     "//components/keyed_service/core:core",
     "//components/password_manager/core/browser",

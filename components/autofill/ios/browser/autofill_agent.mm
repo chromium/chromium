@@ -46,6 +46,7 @@
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -716,19 +717,18 @@ autofillManagerFromWebState:(web::WebState*)webState
     _typedValue = nil;
   }
 
-  std::vector<base::Value> formMutationsParameters;
+  autofill::FormHandlersJavaScriptFeature* formHandlerFeature =
+      autofill::FormHandlersJavaScriptFeature::GetInstance();
+
   // Use a delay of 200ms when tracking form mutations to reduce the
   // communication overhead (as mutations are likely to come in batch).
   constexpr int kMutationTrackingEnabledDelayInMs = 200;
-  formMutationsParameters.push_back(
-      base::Value(kMutationTrackingEnabledDelayInMs));
-  frame->CallJavaScriptFunction("formHandlers.trackFormMutations",
-                                formMutationsParameters);
+  formHandlerFeature->TrackFormMutations(frame,
+                                         kMutationTrackingEnabledDelayInMs);
 
-  std::vector<base::Value> trackUserEditedFieldsParameters;
-  trackUserEditedFieldsParameters.push_back(base::Value(true));
-  frame->CallJavaScriptFunction("formHandlers.toggleTrackingUserEditedFields",
-                                trackUserEditedFieldsParameters);
+  formHandlerFeature->ToggleTrackingUserEditedFields(
+      frame,
+      /*track_user_edited_fields=*/true);
 
   [self scanFormsInWebState:webState inFrame:frame];
 }

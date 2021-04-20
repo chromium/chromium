@@ -39,8 +39,6 @@ class ChromeWebClient : public web::WebClient {
       web::BrowserURLRewriter* rewriter) override;
   std::vector<web::JavaScriptFeature*> GetJavaScriptFeatures(
       web::BrowserState* browser_state) const override;
-  NSString* GetDocumentStartScriptForAllFrames(
-      web::BrowserState* browser_state) const override;
   NSString* GetDocumentStartScriptForMainFrame(
       web::BrowserState* browser_state) const override;
   bool IsLegacyTLSAllowedForHost(web::WebState* web_state,

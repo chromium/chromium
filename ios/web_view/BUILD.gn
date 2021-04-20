@@ -247,14 +247,15 @@ source_set("web_view_sources") {
   ]
 
   public_deps = [
-    ":web_view_all_frames",
     ":web_view_main_frame",
     ":web_view_resources",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:util",
     "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:form_handler_feature",
     "//components/browser_sync",
     "//components/flags_ui",
     "//components/flags_ui:switches",
@@ -475,14 +476,6 @@ test("ios_web_view_inttests") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   assert_no_deps = ios_assert_no_deps
-}
-
-js_compile_bundle("web_view_all_frames") {
-  closure_entry_point = "__crWeb.webViewAllFrames"
-  sources = [
-    "//components/autofill/ios/form_util/resources/form_handlers.js",
-    "resources/web_view_all_frames.js",
-  ]
 }
 
 js_compile_bundle("web_view_main_frame") {

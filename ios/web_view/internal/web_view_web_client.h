@@ -29,8 +29,6 @@ class WebViewWebClient : public web::WebClient {
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) const override;
   std::vector<web::JavaScriptFeature*> GetJavaScriptFeatures(
       web::BrowserState* browser_state) const override;
-  NSString* GetDocumentStartScriptForAllFrames(
-      web::BrowserState* browser_state) const override;
   NSString* GetDocumentStartScriptForMainFrame(
       web::BrowserState* browser_state) const override;
   std::u16string GetPluginNotSupportedText() const override;

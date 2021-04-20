@@ -15,17 +15,43 @@ source_set("form_util") {
     "form_activity_params.h",
     "form_activity_tab_helper.h",
     "form_activity_tab_helper.mm",
-    "form_util_java_script_feature.h",
-    "form_util_java_script_feature.mm",
     "unique_id_data_tab_helper.h",
     "unique_id_data_tab_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
+source_set("form_util_feature") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "form_util_java_script_feature.h",
+    "form_util_java_script_feature.mm",
   ]
   deps = [
     ":fill_js",
     ":form_js",
     "//base",
-    "//components/autofill/core/common",
-    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
+source_set("form_handler_feature") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "form_handlers_java_script_feature.h",
+    "form_handlers_java_script_feature.mm",
+  ]
+  deps = [
+    ":form_handlers_js",
+    ":form_util",
+    ":form_util_feature",
+    "//base",
+    "//components/password_manager/ios:password_manager_feature",
     "//ios/web/public/js_messaging",
   ]
 }
@@ -38,6 +64,11 @@ js_compile_bundle("fill_js") {
 js_compile_bundle("form_js") {
   closure_entry_point = "__crWeb.form"
   sources = [ "resources/form.js" ]
+}
+
+js_compile_bundle("form_handlers_js") {
+  closure_entry_point = "__crWeb.formHandlers"
+  sources = [ "resources/form_handlers.js" ]
 }
 
 source_set("test_support") {
@@ -69,22 +100,15 @@ source_set("unit_tests") {
   ]
   deps = [
     ":form_util",
-    ":form_util_js",
+    ":form_util_feature",
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/ios/form_util:form_handler_feature",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//ios/web/web_state/js",
     "//testing/gtest",
   ]
-}
-
-js_compile_bundle("form_util_js") {
-  visibility = [ ":unit_tests" ]
-  testonly = true
-
-  closure_entry_point = "__crWeb.formHandlers"
-  sources = [ "resources/form_handlers.js" ]
 }

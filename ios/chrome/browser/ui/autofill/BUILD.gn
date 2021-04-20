@@ -17,6 +17,7 @@ source_set("autofill") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:util",
     "//components/autofill/ios/form_util",
     "//components/browser_sync",
     "//components/infobars/core",

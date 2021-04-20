@@ -8,12 +8,15 @@ component("ios") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
-    ":password_controller_js",
+    ":account_select_fill_data",
+    ":password_manager_feature",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:util",
     "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:form_util_feature",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/common",
@@ -27,8 +30,6 @@ component("ios") {
   ]
 
   sources = [
-    "account_select_fill_data.cc",
-    "account_select_fill_data.h",
     "password_form_helper.h",
     "password_form_helper.mm",
     "password_generation_provider.h",
@@ -36,12 +37,43 @@ component("ios") {
     "password_manager_driver_bridge.h",
     "password_manager_ios_util.h",
     "password_manager_ios_util.mm",
-    "password_manager_java_script_feature.h",
-    "password_manager_java_script_feature.mm",
     "password_suggestion_helper.h",
     "password_suggestion_helper.mm",
     "shared_password_controller.h",
     "shared_password_controller.mm",
+  ]
+}
+
+source_set("password_manager_feature") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":account_select_fill_data",
+    ":password_controller_js",
+    "//base",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser:util",
+    "//components/autofill/ios/form_util:form_util_feature",
+    "//ios/web/public/js_messaging",
+  ]
+
+  sources = [
+    "password_manager_java_script_feature.h",
+    "password_manager_java_script_feature.mm",
+  ]
+}
+
+source_set("account_select_fill_data") {
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser:util",
+    "//url",
+  ]
+
+  sources = [
+    "account_select_fill_data.cc",
+    "account_select_fill_data.h",
   ]
 }
 
@@ -58,6 +90,7 @@ static_library("test_support") {
   ]
 
   deps = [
+    ":account_select_fill_data",
     ":ios",
     "//base",
     "//components/autofill/core/common",
@@ -74,6 +107,7 @@ source_set("unit_tests") {
     "shared_password_controller_unittest.mm",
   ]
   deps = [
+    ":account_select_fill_data",
     ":ios",
     ":test_support",
     "//base",
@@ -81,8 +115,10 @@ source_set("unit_tests") {
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:form_util_feature",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/ios:password_manager_feature",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
