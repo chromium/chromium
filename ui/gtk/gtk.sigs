@@ -56,7 +56,6 @@ void gtk_window_destroy(GtkWindow* window);
 GtkIconTheme* gtk_icon_theme_get_for_display(GdkDisplay* display);
 GtkIconTheme* gtk_icon_theme_get_default(void);
 gboolean gtk_widget_path_iter_has_class(const GtkWidgetPath* path, gint pos, const gchar* name);
-void gtk_style_context_get_background_color(GtkStyleContext* context, GtkStateFlags state, GdkRGBA* color);
 GdkWindow* gtk_widget_get_window(GtkWidget* widget);
 void gtk_main_do_event(GdkEvent *event);
 guint gtk_get_major_version(void);
@@ -167,7 +166,6 @@ void gtk_style_context_add_class(GtkStyleContext* context, const gchar* class_na
 void gtk_style_context_add_provider(GtkStyleContext* context, GtkStyleProvider* provider, guint priority);
 GtkStateFlags gtk_style_context_get_state(GtkStyleContext* context);
 gboolean gtk_style_context_has_class(GtkStyleContext* context, const gchar* class_name);
-gboolean gtk_style_context_lookup_color(GtkStyleContext* context, const gchar* color_name, GdkRGBA* color);
 void gtk_style_context_set_scale(GtkStyleContext* context, gint scale);
 void gtk_style_context_set_state(GtkStyleContext* context, GtkStateFlags flags);
 PangoContext* gtk_widget_get_pango_context(GtkWidget* widget);

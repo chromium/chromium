@@ -336,11 +336,6 @@ GtkStateFlags StateToStateFlags(ui::NativeTheme::State state) {
   }
 }
 
-SkColor GdkRgbaToSkColor(const GdkRGBA& color) {
-  return SkColorSetARGB(color.alpha * 255, color.red * 255, color.green * 255,
-                        color.blue * 255);
-}
-
 NO_SANITIZE("cfi-icall")
 GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
                                           const std::string& css_node) {
@@ -456,10 +451,6 @@ GtkCssContext GetStyleContextFromCss(const std::string& css_selector) {
   return context;
 }
 
-SkColor GetFgColorFromStyleContext(GtkStyleContext* context) {
-  return GdkRgbaToSkColor(GtkStyleContextGetColor(context));
-}
-
 SkColor GetBgColorFromStyleContext(GtkCssContext context) {
   // Backgrounds are more general than solid colors (eg. gradients),
   // but chromium requires us to boil this down to one color.  We
@@ -480,7 +471,7 @@ SkColor GetBgColorFromStyleContext(GtkCssContext context) {
 }
 
 SkColor GetFgColor(const std::string& css_selector) {
-  return GetFgColorFromStyleContext(GetStyleContextFromCss(css_selector));
+  return GtkStyleContextGetColor(GetStyleContextFromCss(css_selector));
 }
 
 ScopedCssProvider GetCssProvider(const std::string& css) {
@@ -533,12 +524,7 @@ SkColor GetSelectionBgColor(const std::string& css_selector) {
   DCHECK(!GtkCheckVersion(4));
   // This is verbatim how Gtk gets the selection color on versions
   // before 3.20.
-  GdkRGBA selection_color;
-  G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
-  gtk_style_context_get_background_color(
-      context, gtk_style_context_get_state(context), &selection_color);
-  G_GNUC_END_IGNORE_DEPRECATIONS;
-  return GdkRgbaToSkColor(selection_color);
+  return GtkStyleContextGetBackgroundColor(context);
 }
 
 bool ContextHasClass(GtkCssContext context, const std::string& style_class) {
@@ -977,12 +963,10 @@ base::Optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
       return GetBgColor(GtkCheckVersion(3, 20) ? "GtkTextView#textview.view"
                                                : "GtkTextView.view");
     case ui::kColorTextfieldForegroundPlaceholder:
-      if (!GtkCheckVersion(3, 90)) {
+      if (!GtkCheckVersion(4)) {
         auto context = GetStyleContextFromCss("GtkEntry#entry");
         // This is copied from gtkentry.c.
-        GdkRGBA fg = {0.5, 0.5, 0.5};
-        gtk_style_context_lookup_color(context, "placeholder_text_color", &fg);
-        return GdkRgbaToSkColor(fg);
+        return GtkStyleContextLookupColor(context, "placeholder_text_color");
       }
       return GetFgColor("GtkEntry#entry #text #placeholder");
     case ui::kColorTextfieldForegroundDisabled:
@@ -1012,7 +996,7 @@ base::Optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
     case ui::kColorTooltipForeground: {
       auto context = GetTooltipContext();
       context = AppendCssNodeToStyleContext(context, "GtkLabel#label");
-      return GetFgColorFromStyleContext(context);
+      return GtkStyleContextGetColor(context);
     }
 
     // Trees and Tables (implemented on GTK using the same class)

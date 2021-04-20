@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/no_destructor.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gtk/gtk_stubs.h"
 
 namespace gtk {
@@ -18,6 +19,26 @@ namespace gtk {
 // functions should be annotated with DISABLE_CFI_ICALL.
 
 namespace {
+
+struct Gdk3Rgba {
+  gdouble r;
+  gdouble g;
+  gdouble b;
+  gdouble a;
+};
+
+struct Gdk4Rgba {
+  float r;
+  float g;
+  float b;
+  float a;
+};
+
+template <typename T>
+SkColor GdkRgbaToSkColor(const T& color) {
+  return SkColorSetARGB(color.a * 255, color.r * 255, color.g * 255,
+                        color.b * 255);
+}
 
 void* DlOpen(const char* library_name, bool check = true) {
   void* library = dlopen(library_name, RTLD_LAZY | RTLD_GLOBAL);
@@ -178,16 +199,42 @@ gfx::Insets GtkStyleContextGetMargin(GtkStyleContext* context) {
 }
 
 DISABLE_CFI_ICALL
-GdkRGBA GtkStyleContextGetColor(GtkStyleContext* context) {
+SkColor GtkStyleContextGetColor(GtkStyleContext* context) {
   static void* get_color = DlSym(GetLibGtk(), "gtk_style_context_get_color");
-  GdkRGBA color;
   if (GtkCheckVersion(4)) {
-    DlCast<void(GtkStyleContext*, GdkRGBA*)>(get_color)(context, &color);
-  } else {
-    DlCast<void(GtkStyleContext*, GtkStateFlags, GdkRGBA*)>(get_color)(
-        context, gtk_style_context_get_state(context), &color);
+    Gdk4Rgba color;
+    DlCast<void(GtkStyleContext*, Gdk4Rgba*)>(get_color)(context, &color);
+    return GdkRgbaToSkColor(color);
   }
-  return color;
+  Gdk3Rgba color;
+  DlCast<void(GtkStyleContext*, GtkStateFlags, Gdk3Rgba*)>(get_color)(
+      context, gtk_style_context_get_state(context), &color);
+  return GdkRgbaToSkColor(color);
+}
+
+DISABLE_CFI_ICALL
+SkColor GtkStyleContextGetBackgroundColor(GtkStyleContext* context) {
+  DCHECK(!GtkCheckVersion(4));
+  static void* get_bg_color =
+      DlSym(GetLibGtk(), "gtk_style_context_get_background_color");
+  Gdk3Rgba color;
+  DlCast<void(GtkStyleContext*, GtkStateFlags, Gdk3Rgba*)>(get_bg_color)(
+      context, gtk_style_context_get_state(context), &color);
+  return GdkRgbaToSkColor(color);
+}
+
+DISABLE_CFI_ICALL
+SkColor GtkStyleContextLookupColor(GtkStyleContext* context,
+                                   const gchar* color_name) {
+  DCHECK(!GtkCheckVersion(4));
+  static void* lookup_color =
+      DlSym(GetLibGtk(), "gtk_style_context_lookup_color");
+  Gdk3Rgba color;
+  if (DlCast<gboolean(GtkStyleContext*, const gchar*, Gdk3Rgba*)>(lookup_color)(
+          context, color_name, &color)) {
+    return GdkRgbaToSkColor(color);
+  }
+  return gfx::kPlaceholderColor;
 }
 
 DISABLE_CFI_ICALL

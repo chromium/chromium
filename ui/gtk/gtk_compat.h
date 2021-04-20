@@ -28,6 +28,8 @@ extern "C" {
 #include "ui/gtk/gtk.sigs"
 }
 
+using SkColor = uint32_t;
+
 namespace gtk {
 
 // Loads libgtk and related libraries and returns true on success.
@@ -51,7 +53,14 @@ gfx::Insets GtkStyleContextGetBorder(GtkStyleContext* context);
 
 gfx::Insets GtkStyleContextGetMargin(GtkStyleContext* context);
 
-GdkRGBA GtkStyleContextGetColor(GtkStyleContext* context);
+SkColor GtkStyleContextGetColor(GtkStyleContext* context);
+
+// Only available in Gtk3.
+SkColor GtkStyleContextGetBackgroundColor(GtkStyleContext* context);
+
+// Only available in Gtk3.
+SkColor GtkStyleContextLookupColor(GtkStyleContext* context,
+                                   const gchar* color_name);
 
 bool GtkImContextFilterKeypress(GtkIMContext* context, GdkEventKey* event);
 

@@ -10,6 +10,9 @@
 
 // This file provides types that are only available in specific versions of GTK.
 
+// This struct uses doubles in Gtk3, but floats in Gtk4.
+#define GdkRGBA Do_not_use_GdkRGBA_because_it_is_not_ABI_compatible
+
 extern "C" {
 #if GTK_MAJOR_VERSION == 3
 using GskRenderNodeType = enum {

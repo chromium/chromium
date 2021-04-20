@@ -275,7 +275,7 @@ void NativeThemeGtk::PaintArrowButton(
   }
 
   PaintWidget(canvas, rect, context, BG_RENDER_NORMAL, false);
-  PaintArrow(canvas, rect, direction, GetFgColorFromStyleContext(context));
+  PaintArrow(canvas, rect, direction, GtkStyleContextGetColor(context));
 }
 
 void NativeThemeGtk::PaintScrollbarTrack(
@@ -405,7 +405,7 @@ void NativeThemeGtk::PaintMenuSeparator(
       PaintWidget(canvas, gfx::Rect(x, y, w, h), context, BG_RENDER_NONE, true);
     } else {
       cc::PaintFlags flags;
-      flags.setColor(GetFgColorFromStyleContext(context));
+      flags.setColor(GtkStyleContextGetColor(context));
       flags.setAntiAlias(true);
       flags.setStrokeWidth(1);
       canvas->drawLine(x + 0.5f, y + 0.5f, x + w + 0.5f, y + 0.5f, flags);

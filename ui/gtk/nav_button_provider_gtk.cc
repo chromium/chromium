@@ -116,7 +116,7 @@ gfx::Size LoadNavButtonIcon(
     SkColor* pixels = reinterpret_cast<SkColor*>(g_malloc(nbytes));
     size_t stride = sizeof(SkColor) * width;
     gdk_texture_download(texture, reinterpret_cast<guchar*>(pixels), stride);
-    SkColor fg = GetFgColorFromStyleContext(button_context);
+    SkColor fg = GtkStyleContextGetColor(button_context);
     for (int i = 0; i < width * height; ++i)
       pixels[i] = SkColorSetA(fg, SkColorGetA(pixels[i]));
     icon->texture = TakeGObject(

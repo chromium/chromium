@@ -148,8 +148,6 @@ namespace gtk {
 // Converts ui::NativeTheme::State to GtkStateFlags.
 GtkStateFlags StateToStateFlags(ui::NativeTheme::State state);
 
-SkColor GdkRgbaToSkColor(const GdkRGBA& color);
-
 // If |context| is nullptr, creates a new top-level style context
 // specified by parsing |css_node|.  Otherwise, creates the child
 // context with |context| as the parent.
@@ -163,8 +161,6 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
 // is "GtkButton.button.suggested-action:hover:active".  The caller
 // must g_object_unref() the returned context.
 GtkCssContext GetStyleContextFromCss(const std::string& css_selector);
-
-SkColor GetFgColorFromStyleContext(GtkStyleContext* context);
 
 SkColor GetBgColorFromStyleContext(GtkCssContext context);
 
