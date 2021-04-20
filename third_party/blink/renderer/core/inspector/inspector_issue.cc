@@ -41,15 +41,19 @@ const mojom::blink::InspectorIssueDetailsPtr& InspectorIssue::Details() const {
 
 void InspectorIssue::Trace(blink::Visitor* visitor) const {}
 
-void ReportAttributionIssue(LocalFrame* frame,
-                            mojom::blink::AttributionReportingIssueType type,
-                            Element* element,
-                            const base::Optional<String>& request_id,
-                            const base::Optional<String>& invalid_parameter) {
+void ReportAttributionIssue(
+    LocalFrame* reporting_frame,
+    mojom::blink::AttributionReportingIssueType type,
+    const base::Optional<base::UnguessableToken>& offending_frame_token,
+    Element* element,
+    const base::Optional<String>& request_id,
+    const base::Optional<String>& invalid_parameter) {
   auto attribution_issue = mojom::blink::AttributionReportingIssue::New();
   attribution_issue->violation_type = type;
-  attribution_issue->frame = mojom::blink::AffectedFrame::New(
-      IdentifiersFactory::IdFromToken(frame->GetDevToolsFrameToken()));
+  if (offending_frame_token) {
+    attribution_issue->frame = mojom::blink::AffectedFrame::New(
+        IdentifiersFactory::IdFromToken(*offending_frame_token));
+  }
   if (element)
     attribution_issue->violating_node_id = DOMNodeIds::IdForNode(element);
   if (request_id) {
@@ -65,7 +69,7 @@ void ReportAttributionIssue(LocalFrame* frame,
   auto issue = mojom::blink::InspectorIssueInfo::New(
       mojom::blink::InspectorIssueCode::kAttributionReportingIssue,
       std::move(issue_details));
-  frame->AddInspectorIssue(std::move(issue));
+  reporting_frame->AddInspectorIssue(std::move(issue));
 }
 
 }  // namespace blink

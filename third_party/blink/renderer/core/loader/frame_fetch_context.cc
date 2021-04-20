@@ -817,7 +817,7 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
     ReportAttributionIssue(
         GetFrame(),
         mojom::blink::AttributionReportingIssueType::kPermissionPolicyDisabled,
-        nullptr, devtools_request_id);
+        GetFrame()->GetDevToolsFrameToken(), nullptr, devtools_request_id);
 
     // TODO(crbug.com/1178400): Remove console message once the issue reported
     //     above is actually shown in DevTools.

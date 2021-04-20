@@ -46,7 +46,7 @@ base::Optional<WebImpression> GetImpression(
     ReportAttributionIssue(
         frame,
         mojom::blink::AttributionReportingIssueType::kPermissionPolicyDisabled,
-        element, base::nullopt);
+        frame->GetDevToolsFrameToken(), element);
 
     // TODO(crbug.com/1178400): Remove console message once the issue reported
     //     above is actually shown in DevTools.
@@ -87,7 +87,8 @@ base::Optional<WebImpression> GetImpression(
     ReportAttributionIssue(
         frame,
         mojom::blink::AttributionReportingIssueType::kInvalidAttributionData,
-        element, base::nullopt, impression_data_string);
+        frame->GetDevToolsFrameToken(), element, base::nullopt,
+        impression_data_string);
   }
 
   // Provide a default of 0 if the impression data was not valid.

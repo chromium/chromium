@@ -13,10 +13,19 @@ namespace blink {
 class Element;
 class LocalFrame;
 
+// Reports an Attribution Reporting API issue to DevTools.
+// |reporting_frame| is the current execution context in which the issue
+// happens and is reported in (the "target" in DevTools terms).
+// |offending_frame_token| is the offending frame that triggered the issue.
+// |offending_frame_token| does not necessarly correspond to |reporting_frame|,
+// e.g. when an impression click in an iframe is blocked due to an
+// insecure main frame.
 void ReportAttributionIssue(
-    LocalFrame* frame,
+    LocalFrame* reporting_frame,
     mojom::blink::AttributionReportingIssueType type,
-    Element* element,
+    const base::Optional<base::UnguessableToken>& offending_frame_token =
+        base::nullopt,
+    Element* element = nullptr,
     const base::Optional<String>& request_id = base::nullopt,
     const base::Optional<String>& invalid_parameter = base::nullopt);
 
