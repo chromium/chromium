@@ -127,7 +127,7 @@ class MemoriesServiceTest : public testing::Test {
 // Useless, but required by the C++14 standard. Please deliver us, C++17.
 constexpr char MemoriesServiceTest::kFakeEndpoint[];
 
-TEST_F(MemoriesServiceTest, QueryMemories_EmptyQuery) {
+TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
   EnableMemoriesWithEndpoint(kFakeEndpoint);
 
   auto AddVisitWithDetails = [&](int time, const GURL& url,
@@ -169,7 +169,6 @@ TEST_F(MemoriesServiceTest, QueryMemories_EmptyQuery) {
             EXPECT_EQ(memories[0]->top_visits[1]->url, "https://github.com/");
             EXPECT_EQ(memories[0]->top_visits[1]->time, IntToTime(4));
             EXPECT_EQ(memories[0]->top_visits[1]->page_title, "Github title");
-
             ASSERT_EQ(memories[0]->keywords.size(), 2u);
             EXPECT_EQ(memories[0]->keywords[0], u"topic 1");
             EXPECT_EQ(memories[0]->keywords[1], u"topic 2");
@@ -192,24 +191,24 @@ TEST_F(MemoriesServiceTest, QueryMemories_EmptyQuery) {
           {
             "foregroundTimeSecs": 0,
             "isFromGoogleSearch": false,
-            "navigationTimeMs": 2.0,
+            "navigationTimeMs": "2",
             "origin": "https://google.com/",
             "pageEndReason": 3,
             "pageTransition": 0,
             "siteEngagementScore": 0,
             "url": "https://google.com/",
-            "visitId": 2.0
+            "visitId": "2"
           },
           {
             "foregroundTimeSecs": 0,
             "isFromGoogleSearch": false,
-            "navigationTimeMs": 4.0,
+            "navigationTimeMs": "4",
             "origin": "https://github.com/",
             "pageEndReason": 5,
             "pageTransition": 0,
             "siteEngagementScore": 0,
             "url": "https://github.com/",
-            "visitId": 4.0
+            "visitId": "4"
           }
         ]
       })"));
@@ -226,13 +225,13 @@ TEST_F(MemoriesServiceTest, QueryMemories_EmptyQuery) {
               "topic 2"
             ],
             "visitIds": [
-              2,
-              4
+              "2",
+              "4"
             ]
           },
           {
             "visitIds": [
-              4
+              "4"
             ]
           }
         ]
@@ -303,24 +302,24 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
           {
             "foregroundTimeSecs": 0,
             "isFromGoogleSearch": false,
-            "navigationTimeMs": 2.0,
+            "navigationTimeMs": "2",
             "origin": "https://google.com/",
             "pageEndReason": 3,
             "pageTransition": 0,
             "siteEngagementScore": 0,
             "url": "https://google.com/",
-            "visitId": 2.0
+            "visitId": "2"
           },
           {
             "foregroundTimeSecs": 0,
             "isFromGoogleSearch": false,
-            "navigationTimeMs": 4.0,
+            "navigationTimeMs": "4",
             "origin": "https://github.com/",
             "pageEndReason": 5,
             "pageTransition": 0,
             "siteEngagementScore": 0,
             "url": "https://github.com/",
-            "visitId": 4.0
+            "visitId": "4"
           }
         ]
       })"));
@@ -337,13 +336,13 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
               "topic 2"
             ],
             "visitIds": [
-              2,
-              4
+              "2",
+              "4"
             ]
           },
           {
             "visitIds": [
-              4
+              "4"
             ]
           }
         ]
