@@ -7158,7 +7158,7 @@
             ]
         }
     ],
-    "V8Sparkplug": [
+    "V8SparkplugTurboprop": [
         {
             "platforms": [
                 "chromeos",
@@ -7169,15 +7169,78 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledSparkplug",
                     "enable_features": [
                         "V8Sparkplug"
+                    ],
+                    "disable_features": [
+                        "V8TurboProp"
+                    ]
+                },
+                {
+                    "name": "EnabledTurboprop",
+                    "enable_features": [
+                        "V8TurboProp"
+                    ],
+                    "disable_features": [
+                        "V8Sparkplug"
+                    ]
+                },
+                {
+                    "name": "EnabledSparkplugTurboprop",
+                    "enable_features": [
+                        "V8Sparkplug",
+                        "V8TurboProp"
                     ]
                 },
                 {
                     "name": "Disabled",
                     "disable_features": [
+                        "V8Sparkplug",
+                        "V8TurboProp"
+                    ]
+                }
+            ]
+        }
+    ],
+    "V8SparkplugTurboprop_Mobile": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "V8Sparkplug",
+                        "V8TurboProp"
+                    ]
+                },
+                {
+                    "name": "EnabledSparkplug",
+                    "enable_features": [
                         "V8Sparkplug"
+                    ],
+                    "disable_features": [
+                        "V8TurboProp"
+                    ]
+                },
+                {
+                    "name": "EnabledTurboprop",
+                    "enable_features": [
+                        "V8TurboProp"
+                    ],
+                    "disable_features": [
+                        "V8Sparkplug"
+                    ]
+                },
+                {
+                    "name": "EnabledSparkplugTurboprop",
+                    "enable_features": [
+                        "V8Sparkplug",
+                        "V8TurboProp"
                     ]
                 }
             ]
