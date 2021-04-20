@@ -64,7 +64,7 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
 
   void TearDown() override {
     // Make sure the bubble is destroyed before the profile to avoid a crash.
-    bubble_.reset();
+    bubble_->GetWidget()->CloseNow();
 
     TestWithBrowserView::TearDown();
   }
@@ -109,13 +109,15 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
                             app.display_name);
     }
 
-    bubble_ = IntentPickerBubbleView::CreateBubbleViewForTesting(
+    auto bubble = IntentPickerBubbleView::CreateBubbleViewForTesting(
         anchor_view_, /*icon_view=*/nullptr, icon_type, std::move(app_info),
         show_stay_in_chrome,
         /*show_remember_selection=*/true, initiating_origin,
         base::BindOnce(&IntentPickerBubbleViewTest::OnBubbleClosed,
                        base::Unretained(this)),
         web_contents);
+    bubble_ = bubble.get();
+    views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
   }
 
   void FillAppListWithDummyIcons() {
@@ -132,7 +134,7 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
                       apps::IntentPickerCloseReason close_reason,
                       bool should_persist) {}
 
-  std::unique_ptr<IntentPickerBubbleView> bubble_;
+  IntentPickerBubbleView* bubble_;
   views::View* anchor_view_;
   std::vector<AppInfo> app_info_;
 
