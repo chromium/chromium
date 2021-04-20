@@ -322,15 +322,13 @@ TEST(TimeFormattingTest, TimeDurationFormat) {
 
   // Persian, with non-Arabic numbers.
   i18n::SetICUDefaultLocale("fa");
-  std::u16string fa_wide = UTF8ToUTF16(
-      u8"\u06f1\u06f5 \u0633\u0627\u0639\u062a \u0648 \u06f4\u06f2 \u062f\u0642"
-      u8"\u06cc\u0642\u0647");
-  std::u16string fa_short = UTF8ToUTF16(
-      u8"\u06f1\u06f5 \u0633\u0627\u0639\u062a\u060c\u200f \u06f4\u06f2 \u062f"
-      u8"\u0642\u06cc\u0642\u0647");
-  std::u16string fa_narrow = UTF8ToUTF16(
-      u8"\u06f1\u06f5 \u0633\u0627\u0639\u062a \u06f4\u06f2 \u062f\u0642\u06cc"
-      u8"\u0642\u0647");
+  std::u16string fa_wide =
+      u"\u06f1\u06f5 \u0633\u0627\u0639\u062a \u0648 \u06f4\u06f2 \u062f\u0642"
+      u"\u06cc\u0642\u0647";
+  std::u16string fa_short =
+      u"\u06f1\u06f5 \u0633\u0627\u0639\u062a\u060c\u200f \u06f4\u06f2 \u062f"
+      u"\u0642\u06cc\u0642\u0647";
+  std::u16string fa_narrow = u"\u06f1\u06f5h \u06f4\u06f2m";
   std::u16string fa_numeric = u"\u06f1\u06f5:\u06f4\u06f2";
   EXPECT_EQ(fa_wide, TimeDurationFormatString(delta, DURATION_WIDTH_WIDE));
   EXPECT_EQ(fa_short, TimeDurationFormatString(delta, DURATION_WIDTH_SHORT));
