@@ -4200,36 +4200,7 @@ static_library("browser") {
       "//services/device/public/cpp/hid",
       "//third_party/sqlite",
     ]
-    if (is_chromeos_ash) {
-      sources += [
-        "speech/cros_speech_recognition_service.cc",
-        "speech/cros_speech_recognition_service.h",
-        "speech/cros_speech_recognition_service_factory.cc",
-        "speech/cros_speech_recognition_service_factory.h",
-        "speech/on_device_speech_recognizer.cc",
-        "speech/on_device_speech_recognizer.h",
-      ]
-
-      deps += [ "//chrome/services/speech:lib" ]
-    }
-    if (is_chromeos_ash) {
-      sources += [
-        "sharing/webrtc/ice_config_fetcher.cc",
-        "sharing/webrtc/ice_config_fetcher.h",
-        "sharing/webrtc/sharing_mojo_service.cc",
-        "sharing/webrtc/sharing_mojo_service.h",
-      ]
-      deps += [
-        "//build:chromeos_buildflags",
-        "//chrome/browser/supervised_user:supervised_user_unscaled_resources",
-        "//chrome/services/sharing/public/cpp",
-        "//chrome/services/sharing/public/proto",
-        "//chromeos/dbus/session_manager",
-        "//chromeos/login/session",
-        "//chromeos/services/nearby/public/mojom",
-        "//components/arc:arc_base_utils",
-      ]
-    } else {
+    if (!is_chromeos_ash) {
       sources += [
         "accessibility/soda_installer_impl.cc",
         "accessibility/soda_installer_impl.h",
@@ -4329,6 +4300,8 @@ static_library("browser") {
       "download/notification/download_notification_manager.h",
       "enterprise/reporting/android_app_info_generator.cc",
       "enterprise/reporting/android_app_info_generator.h",
+      "feedback/system_logs/log_sources/user_log_files_log_source.cc",
+      "feedback/system_logs/log_sources/user_log_files_log_source.h",
       "google/google_brand_chromeos.cc",
       "google/google_brand_chromeos.h",
       "google/google_brand_code_map_chromeos.cc",
@@ -4499,9 +4472,19 @@ static_library("browser") {
       "resource_coordinator/tab_manager_delegate_chromeos.h",
       "sharesheet/drive_share_action.cc",
       "sharesheet/drive_share_action.h",
+      "sharing/webrtc/ice_config_fetcher.cc",
+      "sharing/webrtc/ice_config_fetcher.h",
+      "sharing/webrtc/sharing_mojo_service.cc",
+      "sharing/webrtc/sharing_mojo_service.h",
       "shell_integration_chromeos.cc",
       "signin/signin_status_metrics_provider_chromeos.cc",
       "signin/signin_status_metrics_provider_chromeos.h",
+      "speech/cros_speech_recognition_service.cc",
+      "speech/cros_speech_recognition_service.h",
+      "speech/cros_speech_recognition_service_factory.cc",
+      "speech/cros_speech_recognition_service_factory.h",
+      "speech/on_device_speech_recognizer.cc",
+      "speech/on_device_speech_recognizer.h",
       "speech/tts_chromeos.cc",
       "speech/tts_chromeos.h",
       "speech/tts_controller_delegate_impl.cc",
@@ -4542,6 +4525,7 @@ static_library("browser") {
       "//ash/components/account_manager",
       "//ash/public/cpp",
       "//ash/public/cpp/external_arc",
+      "//build:chromeos_buildflags",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/power/ml/smart_dim",
       "//chrome/browser/nearby_sharing:share_target",
@@ -4554,17 +4538,23 @@ static_library("browser") {
       "//chrome/browser/nearby_sharing/logging:util",
       "//chrome/browser/nearby_sharing/proto",
       "//chrome/browser/nearby_sharing/scheduling",
+      "//chrome/browser/supervised_user:supervised_user_unscaled_resources",
       "//chrome/browser/ui/webui/nearby_share:mojom",
       "//chrome/browser/ui/webui/nearby_share/public/mojom",
       "//chrome/browser/webshare:storage",
+      "//chrome/services/sharing/public/cpp",
+      "//chrome/services/sharing/public/proto",
+      "//chrome/services/speech:lib",
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
       "//chromeos/components/quick_answers",
       "//chromeos/components/sync_wifi",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus",
+      "//chromeos/dbus/session_manager",
       "//chromeos/geolocation",
       "//chromeos/login/login_state",
+      "//chromeos/login/session",
       "//chromeos/memory",
       "//chromeos/memory/userspace_swap",
       "//chromeos/memory/userspace_swap:mojom",
@@ -4579,6 +4569,7 @@ static_library("browser") {
       "//chromeos/services/multidevice_setup/public/cpp:first_run_field_trial",
       "//chromeos/services/multidevice_setup/public/mojom",
       "//chromeos/services/nearby/public/cpp",
+      "//chromeos/services/nearby/public/mojom",
       "//chromeos/services/network_config",
       "//chromeos/services/network_config/public/mojom",
       "//chromeos/services/secure_channel/public/mojom",
@@ -4588,6 +4579,7 @@ static_library("browser") {
       "//chromeos/ui/vector_icons",
       "//components/arc",
       "//components/arc:arc_base",
+      "//components/arc:arc_base_utils",
       "//components/arc/enterprise",
       "//components/arc/mojom",
       "//components/full_restore",
@@ -4602,6 +4594,15 @@ static_library("browser") {
       "//ui/wm/public",
     ]
     allow_circular_includes_from += [ "//chrome/browser/chromeos" ]
+
+    if (use_allocator == "tcmalloc") {
+      deps += [ "//chrome/common/performance_manager/mojom" ]
+
+      sources += [
+        "performance_manager/policies/dynamic_tcmalloc_policy_chromeos.cc",
+        "performance_manager/policies/dynamic_tcmalloc_policy_chromeos.h",
+      ]
+    }
   } else {  # Non - ChromeOS.
     sources += [
       "fullscreen.h",
@@ -4622,13 +4623,6 @@ static_library("browser") {
     sources += [
       "metrics/cached_metrics_profile.cc",
       "metrics/cached_metrics_profile.h",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
-      "feedback/system_logs/log_sources/user_log_files_log_source.cc",
-      "feedback/system_logs/log_sources/user_log_files_log_source.h",
     ]
   }
 
@@ -5060,11 +5054,14 @@ static_library("browser") {
       "upgrade_detector/directory_monitor.cc",
       "upgrade_detector/directory_monitor.h",
       "upgrade_detector/get_installed_version_mac.mm",
+      "webshare/mac/sharing_service_operation.h",
+      "webshare/mac/sharing_service_operation.mm",
     ]
     deps += [
       "//chrome/app_shim",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/ui/cocoa/notifications:common",
+      "//chrome/browser/webshare:storage",
       "//chrome/services/mac_notifications",
       "//chrome/services/mac_notifications/public/cpp",
       "//chrome/services/mac_notifications/public/mojom",
@@ -5133,17 +5130,6 @@ static_library("browser") {
     }
     if (use_x11) {
       deps += [ "//ui/gfx/x" ]
-    }
-  }
-
-  if (is_chromeos_ash) {
-    if (use_allocator == "tcmalloc") {
-      deps += [ "//chrome/common/performance_manager/mojom" ]
-
-      sources += [
-        "performance_manager/policies/dynamic_tcmalloc_policy_chromeos.cc",
-        "performance_manager/policies/dynamic_tcmalloc_policy_chromeos.h",
-      ]
     }
   }
 
@@ -5232,14 +5218,6 @@ static_library("browser") {
       "webshare/share_service_impl.cc",
       "webshare/share_service_impl.h",
     ]
-  }
-
-  if (is_mac) {
-    sources += [
-      "webshare/mac/sharing_service_operation.h",
-      "webshare/mac/sharing_service_operation.mm",
-    ]
-    deps += [ "//chrome/browser/webshare:storage" ]
   }
 
   if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
