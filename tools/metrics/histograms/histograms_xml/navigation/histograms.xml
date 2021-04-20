@@ -971,13 +971,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Navigation.ReadyToCommitUntilCommit2" units="ms"
-    expires_after="M85">
+    expires_after="2021-10-09">
   <owner>clamy@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
   <summary>
     The time needed to commit a navigation once it is ready to commit. This is
     the time between ReadyToCommit and DidFinishNavigation (for a navigation
     that commits).
+
+    Warning: this histogram was expired after M85 and brought back 2021-04-13;
+    data may be missing.
   </summary>
 </histogram>
 
@@ -1014,12 +1017,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Navigation.StartToCommit" units="ms" expires_after="M85">
+<histogram name="Navigation.StartToCommit" units="ms"
+    expires_after="2021-10-09">
   <owner>nasko@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
     The time delta between the start of a navigation and the time it is
     committed.
+
+    Warning: this histogram was expired after M85 and brought back 2021-04-13;
+    data may be missing.
   </summary>
 </histogram>
 
@@ -1046,12 +1053,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Navigation.TimeToReadyToCommit2" units="ms"
-    expires_after="M85">
+    expires_after="2021-10-09">
   <owner>clamy@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
   <summary>
     The time delta between the start of a navigation and the time it is ready to
     commit.
+
+    Warning: this histogram was expired after M85 and brought back 2021-04-13;
+    data may be missing.
   </summary>
 </histogram>
 

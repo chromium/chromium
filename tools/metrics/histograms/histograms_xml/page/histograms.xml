@@ -2338,12 +2338,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.ParseTiming.ParseDuration" units="ms"
-    expires_after="M81">
+    expires_after="2021-10-09">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Measures the time that the HTML parser was active, for main frame documents
     that finished parsing.
+
+    Warning: this histogram was expired after M81 and brought back 2021-04-13;
+    data may be missing.
   </summary>
 </histogram>
 
