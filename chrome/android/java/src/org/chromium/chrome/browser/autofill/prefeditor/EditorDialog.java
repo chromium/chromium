@@ -535,6 +535,9 @@ public class EditorDialog
         prepareEditor();
         prepareFooter();
         prepareButtons();
+
+        // Temporarily hide the content to avoid blink before animation starts.
+        mLayout.setVisibility(View.INVISIBLE);
         show();
     }
 
@@ -557,6 +560,7 @@ public class EditorDialog
             mEditableTextFields.get(i).setEnabled(false);
         }
 
+        mLayout.setVisibility(View.VISIBLE);
         mLayout.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         mLayout.buildLayer();
         Animator popUp =
