@@ -3051,6 +3051,10 @@ static_library("ui") {
         "views/profiles/profile_customization_bubble_sync_controller.h",
         "views/profiles/profile_customization_bubble_view.cc",
         "views/profiles/profile_customization_bubble_view.h",
+        "views/sync/dice_bubble_sync_promo_view.cc",
+        "views/sync/dice_bubble_sync_promo_view.h",
+        "views/sync/dice_signin_button_view.cc",
+        "views/sync/dice_signin_button_view.h",
         "webui/signin/dice_turn_sync_on_helper.cc",
         "webui/signin/dice_turn_sync_on_helper.h",
         "webui/signin/dice_turn_sync_on_helper_delegate_impl.cc",
@@ -4506,10 +4510,6 @@ static_library("ui") {
         "views/relaunch_notification/relaunch_required_dialog_view.cc",
         "views/relaunch_notification/relaunch_required_dialog_view.h",
         "views/screen_capture_notification_ui_views.cc",
-        "views/sync/dice_bubble_sync_promo_view.cc",
-        "views/sync/dice_bubble_sync_promo_view.h",
-        "views/sync/dice_signin_button_view.cc",
-        "views/sync/dice_signin_button_view.h",
       ]
       deps += [ "//ui/views/window/vector_icons" ]
     }
