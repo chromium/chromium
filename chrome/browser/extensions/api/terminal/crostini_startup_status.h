@@ -28,7 +28,6 @@ class CrostiniStartupStatus
 
   // Called when startup is complete.
   void OnCrostiniRestarted(crostini::CrostiniResult result);
-  void OnCrostiniConnected(crostini::CrostiniResult result);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CrostiniStartupStatusTest, TestNotVerbose);
