@@ -254,8 +254,7 @@ gfx::Size ApplyWaylandTransform(const gfx::Size& size,
 }
 
 bool IsMenuType(ui::PlatformWindowType type) {
-  return type == ui::PlatformWindowType::kMenu ||
-         type == ui::PlatformWindowType::kPopup;
+  return type == ui::PlatformWindowType::kMenu;
 }
 
 ui::WaylandWindow* RootWindowFromWlSurface(wl_surface* surface) {

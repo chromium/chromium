@@ -142,7 +142,9 @@ uint32_t WaylandWindow::GetPreferredEnteredOutputId() {
   if (entered_outputs_.empty())
     return 0;
 
-  DCHECK_EQ(PlatformWindowType::kWindow, type());
+  // PlatformWindowType::kPopup are created as toplevel windows as well.
+  DCHECK(type() == PlatformWindowType::kWindow ||
+         type() == PlatformWindowType::kPopup);
 
   // A window can be located on two or more displays. Thus, return the id of the
   // output that has the biggest scale factor. Otherwise, use the very first one
