@@ -54,6 +54,7 @@
       "third_party/angle/DEPS",
       "third_party/chaijs/.*(css|html|js)",
       "third_party/closure_compiler/.*(css|html|js)",
+      "third_party/dawn/DEPS",
       "third_party/hunspell_dictionaries/.*",
       "third_party/jstemplate/.*(css|html|js)",
       "third_party/mocha/.*(css|html|js)",
