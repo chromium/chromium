@@ -6,14 +6,6 @@
   --oobe-adaptive-dialog-content-top-padding: 0;
 }
 
-#intro-title-text {
-  color: var(--oobe-header-text-color);
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 22px;
-  padding-bottom: 8px;
-}
-
 #intro-text {
   padding: 0 8px 16px 0;
 }

@@ -271,7 +271,6 @@ Polymer({
     this.$['value-prop-dialog'].setAttribute(
         'aria-label', data['valuePropTitle']);
     this.$['title-text'].textContent = data['valuePropTitle'];
-    this.$['intro-title-text'].textContent = data['valuePropIntroTitle'];
     this.$['intro-text'].textContent = data['valuePropIntro'];
     this.$['user-image'].src = data['valuePropUserImage'];
     this.$['user-name'].textContent = data['valuePropIdentity'];
