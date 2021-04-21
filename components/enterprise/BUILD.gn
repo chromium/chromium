@@ -100,6 +100,7 @@ source_set("unit_tests") {
 
     deps += [
       "//build:chromeos_buildflags",
+      "//components/enterprise/common/proto:extensions_workflow_events_proto",
       "//components/policy/core/common:test_support",
       "//components/reporting/client:test_support",
     ]
