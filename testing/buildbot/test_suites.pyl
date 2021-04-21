@@ -1744,6 +1744,9 @@
           '--use-cmd-decoder=passthrough',
         ],
         'linux_args': ['--no-xvfb'],
+        'swarming': {
+          'shards': 2,
+        },
       },
       'gl_unittests': {},
     },
@@ -2675,6 +2678,9 @@
           '--use-gpu-in-tests',
         ],
         'linux_args': ['--no-xvfb'],
+        'swarming': {
+          'shards': 2,
+        },
       },
       'gl_unittests': {
         'desktop_args': ['--use-gpu-in-tests'],
