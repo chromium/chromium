@@ -18,7 +18,9 @@
 #include "sql/database.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -86,9 +88,10 @@ TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
 TEST_F(InterestGroupStorageTest, DatabaseJoin) {
   url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
+  InterestGroupPtr test_group = NewInterestGroup(test_origin, "example");
   {
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
-    storage->JoinInterestGroup(NewInterestGroup(test_origin, "example"));
+    storage->JoinInterestGroup(test_group.Clone());
   }
   {
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
@@ -200,7 +203,7 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
 
   std::vector<BiddingInterestGroupPtr> interest_groups =
       storage->GetInterestGroupsForOwner(test_origin);
-  EXPECT_EQ(1u, interest_groups.size());
+  ASSERT_EQ(1u, interest_groups.size());
   EXPECT_EQ("example", interest_groups[0]->group->name);
   EXPECT_EQ(1, interest_groups[0]->signals->join_count);
   EXPECT_EQ(0, interest_groups[0]->signals->bid_count);
@@ -210,7 +213,7 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
   storage->RecordInterestGroupWin(test_origin, "example", ad1_json);
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
-  EXPECT_EQ(1u, interest_groups.size());
+  ASSERT_EQ(1u, interest_groups.size());
   EXPECT_EQ("example", interest_groups[0]->group->name);
   EXPECT_EQ(1, interest_groups[0]->signals->join_count);
   EXPECT_EQ(1, interest_groups[0]->signals->bid_count);
@@ -220,7 +223,7 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
   storage->RecordInterestGroupWin(test_origin, "example", ad2_json);
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
-  EXPECT_EQ(1u, interest_groups.size());
+  ASSERT_EQ(1u, interest_groups.size());
   EXPECT_EQ("example", interest_groups[0]->group->name);
   EXPECT_EQ(1, interest_groups[0]->signals->join_count);
   EXPECT_EQ(2, interest_groups[0]->signals->bid_count);
@@ -234,6 +237,42 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(0u, origins.size());
+}
+
+TEST_F(InterestGroupStorageTest, StoresAllFields) {
+  url::Origin partial_origin =
+      url::Origin::Create(GURL("https://partial.example.com"));
+  InterestGroupPtr partial = NewInterestGroup(partial_origin, "partial");
+  url::Origin full_origin =
+      url::Origin::Create(GURL("https://full.example.com"));
+  InterestGroupPtr full = blink::mojom::InterestGroup::New();
+  full->owner = full_origin;
+  full->name = "full";
+  full->bidding_url = GURL("https://full.example.com/bid");
+  full->update_url = GURL("https://full.example.com/update");
+  full->trusted_bidding_signals_url = GURL("https://full.example.com/signals");
+  full->trusted_bidding_signals_keys =
+      base::make_optional(std::vector<std::string>{"a", "b", "c", "d"});
+  full->user_bidding_signals = "foo";
+  full->ads = std::vector<blink::mojom::InterestGroupAdPtr>();
+  full->ads->emplace_back(blink::mojom::InterestGroupAd::New(
+      GURL("https://full.example.com/ad1"), "metadata1"));
+  full->ads->emplace_back(blink::mojom::InterestGroupAd::New(
+      GURL("https://full.example.com/ad2"), "metadata2"));
+
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  storage->JoinInterestGroup(partial.Clone());
+  storage->JoinInterestGroup(full.Clone());
+
+  std::vector<BiddingInterestGroupPtr> bidding_interest_groups =
+      storage->GetInterestGroupsForOwner(partial_origin);
+  ASSERT_EQ(1u, bidding_interest_groups.size());
+  EXPECT_EQ(partial, bidding_interest_groups[0]->group);
+
+  bidding_interest_groups = storage->GetInterestGroupsForOwner(full_origin);
+  ASSERT_EQ(1u, bidding_interest_groups.size());
+  EXPECT_EQ(full, bidding_interest_groups[0]->group);
 }
 
 TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {

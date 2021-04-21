@@ -625,7 +625,8 @@ DoGetInterestGroupsForOwner(sql::Database& db, const url::Origin& owner) {
         DeserializeURL(load.ColumnString(6));
     interest_group->trusted_bidding_signals_keys =
         DeserializeStringVector(load.ColumnString(7));
-    interest_group->user_bidding_signals = load.ColumnString(8);
+    if (load.GetColumnType(8) != sql::ColumnType::kNull)
+      interest_group->user_bidding_signals = load.ColumnString(8);
     interest_group->ads =
         DeserializeInterestGroupAdPtrVector(load.ColumnString(9));
     bidding_interest_group->group = std::move(interest_group);
