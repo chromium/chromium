@@ -54,6 +54,7 @@
 #include "content/public/test/fake_local_frame.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
@@ -111,8 +112,6 @@ class WebContentsImplTest : public RenderViewHostImplTestHarness {
  public:
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    WebUIControllerFactory::RegisterFactory(
-        ContentWebUIControllerFactory::GetInstance());
 
     if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
       // Isolate |isolated_cross_site_url()| so it cannot share a process
@@ -128,12 +127,6 @@ class WebContentsImplTest : public RenderViewHostImplTestHarness {
     }
   }
 
-  void TearDown() override {
-    WebUIControllerFactory::UnregisterFactoryForTesting(
-        ContentWebUIControllerFactory::GetInstance());
-    RenderViewHostImplTestHarness::TearDown();
-  }
-
   bool has_audio_wake_lock() {
     return contents()
         ->media_web_contents_observer()
@@ -143,6 +136,10 @@ class WebContentsImplTest : public RenderViewHostImplTestHarness {
   GURL isolated_cross_site_url() const {
     return GURL("http://isolated-cross-site.com");
   }
+
+ private:
+  ScopedWebUIControllerFactoryRegistration factory_registration_{
+      ContentWebUIControllerFactory::GetInstance()};
 };
 
 class TestWebContentsObserver : public WebContentsObserver {

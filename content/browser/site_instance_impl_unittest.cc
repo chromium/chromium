@@ -29,7 +29,6 @@
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "content/public/browser/web_ui_controller_factory.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
@@ -39,6 +38,7 @@
 #include "content/public/common/url_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/test_content_browser_client.h"
@@ -73,19 +73,6 @@ const char kCustomStandardScheme[] = "custom-standard";
 
 class SiteInstanceTestBrowserClient : public TestContentBrowserClient {
  public:
-  SiteInstanceTestBrowserClient()
-      : privileged_process_id_(-1),
-        site_instance_delete_count_(0),
-        browsing_instance_delete_count_(0) {
-    WebUIControllerFactory::RegisterFactory(
-        ContentWebUIControllerFactory::GetInstance());
-  }
-
-  ~SiteInstanceTestBrowserClient() override {
-    WebUIControllerFactory::UnregisterFactoryForTesting(
-        ContentWebUIControllerFactory::GetInstance());
-  }
-
   bool IsSuitableHost(RenderProcessHost* process_host,
                       const GURL& site_url) override {
     return (privileged_process_id_ == process_host->GetID()) ==
@@ -118,10 +105,13 @@ class SiteInstanceTestBrowserClient : public TestContentBrowserClient {
   }
 
  private:
-  int privileged_process_id_;
+  int privileged_process_id_ = -1;
 
-  int site_instance_delete_count_;
-  int browsing_instance_delete_count_;
+  int site_instance_delete_count_ = 0;
+  int browsing_instance_delete_count_ = 0;
+
+  ScopedWebUIControllerFactoryRegistration factory_registration_{
+      ContentWebUIControllerFactory::GetInstance()};
 };
 
 class SiteInstanceTest : public testing::Test {
@@ -1847,7 +1837,8 @@ TEST_F(SiteInstanceTest, DoWebUIURLsWithSubdomainsUseTLDForProcessLock) {
     }
   };
   CustomWebUIWebUIControllerFactory factory;
-  WebUIControllerFactory::RegisterFactory(&factory);
+  content::ScopedWebUIControllerFactoryRegistration factory_registration(
+      &factory);
 
   const GURL webui_tld_url = GetWebUIURL("foo");
   const GURL webui_host_bar_url = GetWebUIURL("bar.foo");
@@ -1869,8 +1860,6 @@ TEST_F(SiteInstanceTest, DoWebUIURLsWithSubdomainsUseTLDForProcessLock) {
   EXPECT_EQ(webui_tld_url, webui_tld_site_info.process_lock_url());
   EXPECT_EQ(webui_tld_url, webui_host_bar_site_info.process_lock_url());
   EXPECT_EQ(webui_tld_url, webui_host_baz_site_info.process_lock_url());
-
-  WebUIControllerFactory::UnregisterFactoryForTesting(&factory);
 }
 
 TEST_F(SiteInstanceTest, ErrorPage) {

@@ -26,8 +26,6 @@ class CONTENT_EXPORT WebUIControllerFactory {
   // Call to register a factory.
   static void RegisterFactory(WebUIControllerFactory* factory);
 
-  static void UnregisterFactoryForTesting(WebUIControllerFactory* factory);
-
   // Returns a WebUIController instance for the given URL, or nullptr if the URL
   // doesn't correspond to a WebUI.
   virtual std::unique_ptr<WebUIController> CreateWebUIControllerForURL(
@@ -45,6 +43,11 @@ class CONTENT_EXPORT WebUIControllerFactory {
   // (faster) and can be used to determine security policy.
   virtual bool UseWebUIForURL(BrowserContext* browser_context,
                               const GURL& url) = 0;
+
+ private:
+  friend class ScopedWebUIControllerFactoryRegistration;
+
+  static void UnregisterFactoryForTesting(WebUIControllerFactory* factory);
 };
 
 }  // namespace content

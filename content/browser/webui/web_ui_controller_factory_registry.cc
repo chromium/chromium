@@ -25,19 +25,6 @@ void WebUIControllerFactory::RegisterFactory(WebUIControllerFactory* factory) {
   g_web_ui_controller_factories.Pointer()->push_back(factory);
 }
 
-void WebUIControllerFactory::UnregisterFactoryForTesting(
-    WebUIControllerFactory* factory) {
-  std::vector<WebUIControllerFactory*>* factories =
-      g_web_ui_controller_factories.Pointer();
-  for (size_t i = 0; i < factories->size(); ++i) {
-    if ((*factories)[i] == factory) {
-      factories->erase(factories->begin() + i);
-      return;
-    }
-  }
-  NOTREACHED() << "Tried to unregister a factory but it wasn't found";
-}
-
 WebUIControllerFactoryRegistry* WebUIControllerFactoryRegistry::GetInstance() {
   return base::Singleton<WebUIControllerFactoryRegistry>::get();
 }
@@ -94,5 +81,23 @@ bool WebUIControllerFactoryRegistry::IsURLAcceptableForWebUI(
 WebUIControllerFactoryRegistry::WebUIControllerFactoryRegistry() = default;
 
 WebUIControllerFactoryRegistry::~WebUIControllerFactoryRegistry() = default;
+
+void WebUIControllerFactory::UnregisterFactoryForTesting(
+    WebUIControllerFactory* factory) {
+  std::vector<WebUIControllerFactory*>* factories =
+      g_web_ui_controller_factories.Pointer();
+  for (size_t i = 0; i < factories->size(); ++i) {
+    if ((*factories)[i] == factory) {
+      factories->erase(factories->begin() + i);
+      return;
+    }
+  }
+  NOTREACHED() << "Tried to unregister a factory but it wasn't found. Tip: if "
+                  "trying to unregister a global like "
+                  "ChromeWebUIControllerFactory::GetInstance(), create the "
+                  "ScopedWebUIControllerFactoryRegistration in the "
+                  "setup method instead of the constructor, to ensure the "
+                  "global exists.";
+}
 
 }  // namespace content
