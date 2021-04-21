@@ -6,6 +6,13 @@
 config("libhwy_external_config") {
   include_dirs = [ "src" ]
   defines = []
+  if (target_cpu == "x86") {
+    # Highway automatically disables AVX2 and AVX3 targets when compiling in
+    # 32-bit mode due to bugs in the generated code. However, when doing so it
+    # prints a warning (#pragma message). This flag silences that warning by
+    # explicitly disabling AVX2 and AVX3 targets.
+    defines += [ "HWY_BROKEN_TARGETS=(HWY_AVX2|HWY_AVX3)" ]
+  }
 }
 
 source_set("libhwy") {
