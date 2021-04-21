@@ -14,6 +14,12 @@
   <message name="IDS_FILE_SYSTEM_PROVIDER_MANY_UNRESPONSIVE_WARNING" desc="A warning shown in a notification that more than one operations are taking longer than expected.">
     Some operations are taking longer than expected. Do you want to abort them?
   </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_CONFIRM_COPY_TO_SHARED_DRIVE" desc="Confirmation dialog message when copying a file to a shared location.">
+    Copying this item will share it with everyone who can see the shared folder '<ph name="DESTINATION_NAME">$1</ph>'.
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_CONFIRM_MOVE_TO_SHARED_DRIVE" desc="Confirmation dialog message when moving a file to a shared location.">
+    Moving this item will share it with everyone who can see the shared folder '<ph name="DESTINATION_NAME">$1</ph>'.
+  </message>
   <message name="IDS_FILE_BROWSER_DRIVE_CONFIRM_TD_MEMBERS_LOSE_ACCESS" desc="Part of message in the confirmation dialog box when moving a file out of a Team Drive.">
     Members of '<ph name="SOURCE_NAME">$1</ph>' will lose access unless these items are shared with them.
   </message>
