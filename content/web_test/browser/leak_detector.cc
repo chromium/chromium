@@ -64,9 +64,11 @@ void LeakDetector::TryLeakDetection(RenderProcessHost* process,
                                     ReportCallback callback) {
   callback_ = std::move(callback);
 
-  process->BindReceiver(leak_detector_.BindNewPipeAndPassReceiver());
-  leak_detector_.set_disconnect_handler(base::BindOnce(
-      &LeakDetector::OnLeakDetectorIsGone, base::Unretained(this)));
+  if (!leak_detector_) {
+    process->BindReceiver(leak_detector_.BindNewPipeAndPassReceiver());
+    leak_detector_.set_disconnect_handler(base::BindOnce(
+        &LeakDetector::OnLeakDetectorIsGone, base::Unretained(this)));
+  }
   leak_detector_->PerformLeakDetection(base::BindOnce(
       &LeakDetector::OnLeakDetectionComplete, weak_factory_.GetWeakPtr()));
 }
@@ -162,11 +164,13 @@ void LeakDetector::OnLeakDetectionComplete(
   }
 
   previous_result_ = std::move(result);
-  leak_detector_.reset();
   std::move(callback_).Run(report);
 }
 
 void LeakDetector::OnLeakDetectorIsGone() {
+  leak_detector_.reset();
+  if (!callback_)
+    return;
   LeakDetectionReport report;
   report.leaked = false;
   std::move(callback_).Run(report);
