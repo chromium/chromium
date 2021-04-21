@@ -101,11 +101,8 @@ void IncomingFramesReader::ReadNextFrame() {
 void IncomingFramesReader::OnTimeout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!callback_)
-    return;
-
   NS_LOG(WARNING) << __func__ << ": Timed out reading from NearbyConnection.";
-  connection_->Close();
+  Done(base::nullopt);
 }
 
 void IncomingFramesReader::OnDataReadFromConnection(

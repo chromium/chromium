@@ -113,6 +113,12 @@ TEST_F(IncomingFramesReaderTest, ReadTimedOut) {
           }),
       kTimeout);
   run_loop.Run();
+
+  // Ensure that the OnDataReadFromConnection callback is not run since the read
+  // timed out.
+  EXPECT_FALSE(connection().has_read_callback_been_run());
+  // Ensure that the IncomingFramesReader does not close the connection.
+  EXPECT_FALSE(connection().IsClosed());
 }
 
 TEST_F(IncomingFramesReaderTest, ReadAnyFrameSuccessful) {
