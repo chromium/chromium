@@ -29,7 +29,7 @@ const base::Feature kEvDetailsInPageInfo{"EvDetailsInPageInfo",
 // Enables the new profile picker.
 // https:://crbug.com/1063856
 const base::Feature kNewProfilePicker{"NewProfilePicker",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables updated tabstrip animations, required for a scrollable tabstrip.
 // https://crbug.com/958173
