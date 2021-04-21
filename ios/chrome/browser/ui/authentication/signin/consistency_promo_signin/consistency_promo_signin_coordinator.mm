@@ -6,8 +6,13 @@
 
 #import "base/mac/foundation_util.h"
 #import "components/signin/public/base/account_consistency_method.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/constants.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_navigation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_presentation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_slide_transition_animator.h"
@@ -22,6 +27,7 @@
 @interface ConsistencyPromoSigninCoordinator () <
     BottomSheetPresentationControllerPresentationDelegate,
     ConsistencyDefaultAccountCoordinatorDelegate,
+    IdentityManagerObserverBridgeDelegate,
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>
 
@@ -35,16 +41,27 @@
 // Coordinator for the first screen.
 @property(nonatomic, strong)
     ConsistencyDefaultAccountCoordinator* defaultAccountCoordinator;
-
+// Chrome interface to the iOS shared authentication library.
+@property(nonatomic, assign) AuthenticationService* authenticationService;
+// Manager for user's Google identities.
+@property(nonatomic, assign) signin::IdentityManager* identityManager;
 @end
 
-@implementation ConsistencyPromoSigninCoordinator
+@implementation ConsistencyPromoSigninCoordinator {
+  // Observer for changes to the user's Google identities.
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserverBridge;
+  // Callback used when the user's primary account is set or changes
+  // its consent level.
+  signin_ui::CompletionCallback _onPrimaryAccountSetCompletion;
+}
 
 #pragma mark - SigninCoordinator
 
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
                  completion:(ProceduralBlock)completion {
   __weak __typeof(self) weakSelf = self;
+  _onPrimaryAccountSetCompletion = nil;
   [self.navigationController
       dismissViewControllerAnimated:YES
                          completion:^() {
@@ -62,6 +79,13 @@
   self.defaultAccountCoordinator.delegate = self;
   [self.defaultAccountCoordinator start];
 
+  self.authenticationService = AuthenticationServiceFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
+  self.identityManager = IdentityManagerFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
+  _identityManagerObserverBridge.reset(
+      new signin::IdentityManagerObserverBridge(self.identityManager, self));
+
   self.navigationController = [[BottomSheetNavigationController alloc]
       initWithRootViewController:self.defaultAccountCoordinator.viewController];
   self.navigationController.delegate = self;
@@ -76,6 +100,11 @@
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
                                       completion:nil];
+}
+
+- (void)stop {
+  [super stop];
+  DCHECK(!_onPrimaryAccountSetCompletion);
 }
 
 #pragma mark - Private
@@ -169,13 +198,34 @@
             (ConsistencyDefaultAccountCoordinator*)coordinator
                             selectedIdentity:(ChromeIdentity*)identity {
   __weak __typeof(self) weakSelf = self;
-  [self.navigationController
-      dismissViewControllerAnimated:YES
-                         completion:^() {
-                           [weakSelf finishedWithResult:
-                                         SigninCoordinatorResultCanceledByUser
-                                               identity:identity];
-                         }];
+  // |onPrimaryAccountChanged| notification is sent immediately after calling
+  // SignIn. All callbacks should be set prior to this operation.
+  _onPrimaryAccountSetCompletion = ^(BOOL success) {
+    [weakSelf.navigationController
+        dismissViewControllerAnimated:YES
+                           completion:^() {
+                             [weakSelf finishedWithResult:
+                                           SigninCoordinatorResultSuccess
+                                                 identity:identity];
+                           }];
+  };
+  self.authenticationService->SignIn(identity);
+}
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  if (_onPrimaryAccountSetCompletion == nil) {
+    return;
+  }
+  // Since sign-in UI blocks all other Chrome screens until it is dismissed
+  // an account change event must come from the bottomsheet.
+  // TODO(crbug.com/1081764): Update if sign-in UI becomes non-blocking.
+  DCHECK(event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+         signin::PrimaryAccountChangeEvent::Type::kSet);
+  _onPrimaryAccountSetCompletion(/*success=*/YES);
+  _onPrimaryAccountSetCompletion = nil;
 }
 
 #pragma mark - UINavigationControllerDelegate
