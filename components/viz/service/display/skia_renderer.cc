@@ -770,6 +770,7 @@ void SkiaRenderer::FinishDrawingFrame() {
         current_frame()->output_surface_plane.value());
   }
   ScheduleOverlays();
+  debug_tint_modulate_count_++;
 }
 
 void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
@@ -2320,32 +2321,48 @@ half4 main(half4 color) {
   return effect->makeColorFilter(std::move(data));
 }
 
+namespace {
+SkColorMatrix ToColorMatrix(const SkMatrix44& mat) {
+  std::array<float, 20> values;
+  values.fill(0.0f);
+  for (uint32_t r = 0; r < 4; r++) {
+    for (uint32_t c = 0; c < 4; c++) {
+      values[r * 5 + c] = mat.getFloat(r, c);
+    }
+  }
+  SkColorMatrix mat_out;
+  mat_out.setRowMajor(values.data());
+  return mat_out;
+}
+}  // namespace
+
 sk_sp<SkColorFilter> SkiaRenderer::GetContentColorFilter() {
   sk_sp<SkColorFilter> color_transform = nullptr;
   if (current_canvas_ == root_canvas_ &&
       !output_surface_->color_matrix().isIdentity()) {
-    std::array<float, 20> values;
-    values.fill(0.0f);
-    for (uint32_t r = 0; r < 4; r++) {
-      for (uint32_t c = 0; c < 4; c++) {
-        values[r * 5 + c] = output_surface_->color_matrix().getFloat(r, c);
-      }
-    }
-    color_transform = SkColorFilters::Matrix(values.data());
+    color_transform =
+        SkColorFilters::Matrix(ToColorMatrix(output_surface_->color_matrix()));
   }
 
   sk_sp<SkColorFilter> tint_transform = nullptr;
   if (current_canvas_ == root_canvas_ &&
       debug_settings_->tint_composited_content) {
-    std::array<float, 20> values;
-    values.fill(0.0f);
-    auto tint = cc::DebugColors::TintCompositedContentColorTransformMatrix();
-    for (int r = 0; r < 4; r++) {
-      for (int c = 0; c < 4; c++) {
-        values[r * 5 + c] = tint[c * 4 + r];
+    if (debug_settings_->tint_composited_content_modulate) {
+      // Integer counter causes modulation through rgb dimming variations.
+      std::array<float, 3> rgb;
+      uint32_t ci = debug_tint_modulate_count_ % 7u;
+      for (int rc = 0; rc < 3; rc++) {
+        rgb[rc] = (ci & (1u << rc)) ? 0.7f : 1.0f;
       }
+      SkColorMatrix color_mat;
+      color_mat.setScale(rgb[0], rgb[1], rgb[2]);
+      tint_transform = SkColorFilters::Matrix(color_mat);
+    } else {
+      SkMatrix44 mat44;
+      mat44.setColMajorf(
+          cc::DebugColors::TintCompositedContentColorTransformMatrix().data());
+      tint_transform = SkColorFilters::Matrix(ToColorMatrix(mat44));
     }
-    tint_transform = SkColorFilters::Matrix(values.data());
   }
 
   if (color_transform) {

@@ -72,6 +72,7 @@ class VIZ_COMMON_EXPORT RendererSettings {
 // HostFrameSinkManager.
 struct VIZ_COMMON_EXPORT DebugRendererSettings {
   bool tint_composited_content = false;
+  bool tint_composited_content_modulate = false;
   bool show_overdraw_feedback = false;
   bool show_dc_layer_debug_borders = false;
   bool show_aggregated_damage = false;

@@ -35,6 +35,7 @@ struct RendererSettings {
 
 struct DebugRendererSettings {
   bool tint_composited_content;
+  bool tint_composited_content_modulate;
   bool show_overdraw_feedback;
   bool show_dc_layer_debug_borders;
   bool show_aggregated_damage;

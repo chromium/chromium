@@ -112,6 +112,8 @@ DebugRendererSettings CreateDefaultDebugRendererSettings() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   result.tint_composited_content =
       command_line->HasSwitch(switches::kTintCompositedContent);
+  result.tint_composited_content_modulate =
+      command_line->HasSwitch(switches::kTintCompositedContentModulate);
   result.show_overdraw_feedback =
       command_line->HasSwitch(switches::kShowOverdrawFeedback);
   result.show_dc_layer_debug_borders =

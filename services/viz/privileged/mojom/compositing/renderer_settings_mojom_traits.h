@@ -24,6 +24,11 @@ struct StructTraits<viz::mojom::DebugRendererSettingsDataView,
     return input.tint_composited_content;
   }
 
+  static bool tint_composited_content_modulate(
+      const viz::DebugRendererSettings& input) {
+    return input.tint_composited_content_modulate;
+  }
+
   static bool show_overdraw_feedback(const viz::DebugRendererSettings& input) {
     return input.show_overdraw_feedback;
   }

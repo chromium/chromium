@@ -352,6 +352,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       color_filter_cache_;
 
   bool UsingSkiaForDelegatedInk() const;
+  uint32_t debug_tint_modulate_count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(SkiaRenderer);
 };

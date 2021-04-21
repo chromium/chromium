@@ -54,12 +54,15 @@ TEST_F(StructTraitsTest, DebugRendererSettings) {
   input.show_overdraw_feedback = true;
   input.tint_composited_content = true;
   input.show_dc_layer_debug_borders = true;
+  input.tint_composited_content_modulate = true;
 
   DebugRendererSettings output;
   mojom::DebugRendererSettings::Deserialize(
       mojom::DebugRendererSettings::Serialize(&input), &output);
   EXPECT_EQ(input.show_overdraw_feedback, output.show_overdraw_feedback);
   EXPECT_EQ(input.tint_composited_content, output.tint_composited_content);
+  EXPECT_EQ(input.tint_composited_content_modulate,
+            output.tint_composited_content_modulate);
   EXPECT_EQ(input.show_dc_layer_debug_borders,
             output.show_dc_layer_debug_borders);
 }
