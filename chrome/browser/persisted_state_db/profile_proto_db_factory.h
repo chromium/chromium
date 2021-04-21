@@ -15,12 +15,14 @@
 #if !defined(OS_ANDROID)
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #else
+#include "chrome/browser/commerce/merchant_viewer/merchant_signal_db_content.pb.h"
 #include "chrome/browser/commerce/subscriptions/commerce_subscription_db_content.pb.h"
 #endif
 
 namespace {
 const char kPersistedStateDBFolder[] = "persisted_state_db";
 const char kChromeCartDBFolder[] = "chrome_cart_db";
+const char kMerchantTrustSignalDBFolder[] = "merchant_signal_db";
 const char kCommerceSubscriptionDBFolder[] = "commerce_subscription_db";
 }  // namespace
 
@@ -34,6 +36,8 @@ GetChromeCartProfileProtoDBFactory();
 ProfileProtoDBFactory<
     commerce_subscription_db::CommerceSubscriptionContentProto>*
 GetCommerceSubscriptionProfileProtoDBFactory();
+ProfileProtoDBFactory<merchant_signal_db::MerchantSignalContentProto>*
+GetMerchantSignalProfileProtoDBFactory();
 #endif
 
 // Factory to create a ProtoDB per profile and per proto. Incognito is
@@ -115,6 +119,12 @@ KeyedService* ProfileProtoDBFactory<T>::BuildServiceInstanceFor(
         context, proto_database_provider,
         context->GetPath().AppendASCII(kCommerceSubscriptionDBFolder),
         leveldb_proto::ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE);
+  } else if (std::is_base_of<merchant_signal_db::MerchantSignalContentProto,
+                             T>::value) {
+    return new ProfileProtoDB<T>(
+        context, proto_database_provider,
+        context->GetPath().AppendASCII(kMerchantTrustSignalDBFolder),
+        leveldb_proto::ProtoDbType::MERCHANT_TRUST_SIGNAL_DATABASE);
 #endif
   } else {
     // Must add in leveldb_proto::ProtoDbType and database directory folder for

@@ -54,4 +54,19 @@ ProfileProtoDBFactory<
     commerce_subscription_db::CommerceSubscriptionContentProto>::GetInstance() {
   return GetCommerceSubscriptionProfileProtoDBFactory();
 }
+
+ProfileProtoDBFactory<merchant_signal_db::MerchantSignalContentProto>*
+GetMerchantSignalProfileProtoDBFactory() {
+  static base::NoDestructor<
+      ProfileProtoDBFactory<merchant_signal_db::MerchantSignalContentProto>>
+      instance;
+  return instance.get();
+}
+
+template <>
+ProfileProtoDBFactory<merchant_signal_db::MerchantSignalContentProto>*
+ProfileProtoDBFactory<
+    merchant_signal_db::MerchantSignalContentProto>::GetInstance() {
+  return GetMerchantSignalProfileProtoDBFactory();
+}
 #endif
