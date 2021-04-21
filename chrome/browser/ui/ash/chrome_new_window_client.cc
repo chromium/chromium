@@ -34,7 +34,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
-#include "chrome/browser/ui/ash/launcher/app_window_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -693,10 +693,10 @@ void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,
 
 void ChromeNewWindowClient::CloseCameraApp() {
   const ash::ShelfID shelf_id(extension_misc::kCameraAppId);
-  AppWindowLauncherItemController* const app_controller =
+  AppWindowShelfItemController* const app_controller =
       ChromeLauncherController::instance()
           ->shelf_model()
-          ->GetAppWindowLauncherItemController(shelf_id);
+          ->GetAppWindowShelfItemController(shelf_id);
   if (!app_controller)
     return;
 

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
 
-#include "chrome/browser/ui/ash/launcher/app_window_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
 #include "ui/views/widget/widget.h"
 
 AppWindowBase::AppWindowBase(const ash::ShelfID& shelf_id,
@@ -16,7 +16,7 @@ AppWindowBase::~AppWindowBase() {
     controller_->RemoveWindow(this);
 }
 
-void AppWindowBase::SetController(AppWindowLauncherItemController* controller) {
+void AppWindowBase::SetController(AppWindowShelfItemController* controller) {
   DCHECK(!controller_ || !controller);
   if (!controller && controller_)
     controller_->RemoveWindow(this);

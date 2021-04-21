@@ -18,7 +18,7 @@
 #include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
-#include "chrome/browser/ui/ash/launcher/app_window_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
 #include "chrome/test/base/testing_profile.h"
@@ -178,7 +178,7 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
 
   ash::ShelfID shelf_id(kPluginVmShelfAppId);
   auto launcher_item_controller =
-      std::make_unique<AppWindowLauncherItemController>(shelf_id);
+      std::make_unique<AppWindowShelfItemController>(shelf_id);
   MockAppWindowBase mock_window(shelf_id, nullptr);
   launcher_item_controller->AddWindow(&mock_window);
   mock_window.SetController(launcher_item_controller.get());

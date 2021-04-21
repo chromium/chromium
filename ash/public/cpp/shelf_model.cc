@@ -318,10 +318,10 @@ ShelfItemDelegate* ShelfModel::GetShelfItemDelegate(
   return nullptr;
 }
 
-AppWindowLauncherItemController* ShelfModel::GetAppWindowLauncherItemController(
+AppWindowShelfItemController* ShelfModel::GetAppWindowShelfItemController(
     const ShelfID& shelf_id) {
   ShelfItemDelegate* item_delegate = GetShelfItemDelegate(shelf_id);
-  return item_delegate ? item_delegate->AsAppWindowLauncherItemController()
+  return item_delegate ? item_delegate->AsAppWindowShelfItemController()
                        : nullptr;
 }
 

@@ -51,9 +51,9 @@
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_arc_tracker.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_service/launcher_app_service_app_updater.h"
-#include "chrome/browser/ui/ash/launcher/app_shortcut_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/app_window_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/browser_shortcut_launcher_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/browser_status_monitor.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
@@ -363,7 +363,7 @@ void ChromeLauncherController::CloseLauncherItem(const ash::ShelfID& id) {
     // Create a new shortcut delegate.
     SetItemStatus(id, ash::STATUS_CLOSED);
     model_->SetShelfItemDelegate(id,
-                                 AppShortcutLauncherItemController::Create(id));
+                                 AppShortcutShelfItemController::Create(id));
   } else {
     RemoveShelfItem(id);
   }
@@ -399,7 +399,7 @@ void ChromeLauncherController::SetV1AppStatus(const std::string& app_id,
     SetItemStatusOrRemove(id, status);
   } else if (status != ash::STATUS_CLOSED && !app_id.empty()) {
     InsertAppLauncherItem(
-        AppShortcutLauncherItemController::Create(ash::ShelfID(app_id)), status,
+        AppShortcutShelfItemController::Create(ash::ShelfID(app_id)), status,
         model_->item_count(), ash::TYPE_APP);
   }
 }
@@ -452,8 +452,8 @@ void ChromeLauncherController::ActivateApp(const std::string& app_id,
     return;
   }
 
-  std::unique_ptr<AppShortcutLauncherItemController> item_delegate =
-      AppShortcutLauncherItemController::Create(shelf_id);
+  std::unique_ptr<AppShortcutShelfItemController> item_delegate =
+      AppShortcutShelfItemController::Create(shelf_id);
   if (item_delegate->HasRunningApplications()) {
     SelectItemWithSource(item_delegate.get(), source, display_id);
   } else {
@@ -552,8 +552,8 @@ void ChromeLauncherController::SetRefocusURLPatternForTest(
   if (item && !IsPlatformApp(id) &&
       (item->type == ash::TYPE_PINNED_APP || item->type == ash::TYPE_APP)) {
     ash::ShelfItemDelegate* delegate = model_->GetShelfItemDelegate(id);
-    AppShortcutLauncherItemController* item_controller =
-        static_cast<AppShortcutLauncherItemController*>(delegate);
+    AppShortcutShelfItemController* item_controller =
+        static_cast<AppShortcutShelfItemController*>(delegate);
     item_controller->set_refocus_url(url);
   } else {
     NOTREACHED() << "Invalid launcher item or type";
@@ -642,8 +642,8 @@ void ChromeLauncherController::ActivateShellApp(const std::string& app_id,
   if (item &&
       (item->type == ash::TYPE_APP || item->type == ash::TYPE_PINNED_APP)) {
     ash::ShelfItemDelegate* delegate = model_->GetShelfItemDelegate(item->id);
-    AppWindowLauncherItemController* item_controller =
-        delegate->AsAppWindowLauncherItemController();
+    AppWindowShelfItemController* item_controller =
+        delegate->AsAppWindowShelfItemController();
     item_controller->ActivateIndexedApp(window_index);
   }
 }
@@ -1040,9 +1040,9 @@ ash::ShelfID ChromeLauncherController::CreateAppShortcutLauncherItem(
     const ash::ShelfID& shelf_id,
     int index,
     const std::u16string& title) {
-  return InsertAppLauncherItem(
-      AppShortcutLauncherItemController::Create(shelf_id), ash::STATUS_CLOSED,
-      index, ash::TYPE_PINNED_APP, title);
+  return InsertAppLauncherItem(AppShortcutShelfItemController::Create(shelf_id),
+                               ash::STATUS_CLOSED, index, ash::TYPE_PINNED_APP,
+                               title);
 }
 
 void ChromeLauncherController::RememberUnpinnedRunningApplicationOrder() {
@@ -1453,7 +1453,7 @@ void ChromeLauncherController::ShelfItemAdded(int index) {
   // set properly when FetchImage() calls OnAppImageUpdated() synchronously.
   if (!model_->GetShelfItemDelegate(id)) {
     model_->SetShelfItemDelegate(id,
-                                 AppShortcutLauncherItemController::Create(id));
+                                 AppShortcutShelfItemController::Create(id));
   }
 
   // Fetch the app icon, this may synchronously update the item's image.

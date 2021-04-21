@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 
-class AppWindowLauncherItemController;
+class AppWindowShelfItemController;
 
 namespace ash {
 
@@ -174,9 +174,9 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   // Returns ShelfItemDelegate for |shelf_id|, or nullptr if none exists.
   ShelfItemDelegate* GetShelfItemDelegate(const ShelfID& shelf_id) const;
 
-  // Returns AppWindowLauncherItemController for |shelf_id|, or nullptr if none
+  // Returns AppWindowShelfItemController for |shelf_id|, or nullptr if none
   // exists.
-  AppWindowLauncherItemController* GetAppWindowLauncherItemController(
+  AppWindowShelfItemController* GetAppWindowShelfItemController(
       const ShelfID& shelf_id);
 
   void AddObserver(ShelfModelObserver* observer);

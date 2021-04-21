@@ -17,7 +17,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_skia.h"
 
-class AppWindowLauncherItemController;
+class AppWindowShelfItemController;
 
 namespace aura {
 class Window;
@@ -91,8 +91,8 @@ class ASH_PUBLIC_EXPORT ShelfItemDelegate {
   virtual void GetContextMenu(int64_t display_id,
                               GetContextMenuCallback callback);
 
-  // Returns nullptr if class is not AppWindowLauncherItemController.
-  virtual AppWindowLauncherItemController* AsAppWindowLauncherItemController();
+  // Returns nullptr if class is not AppWindowShelfItemController.
+  virtual AppWindowShelfItemController* AsAppWindowShelfItemController();
 
   // Attempts to execute a context menu command; returns true if it was run.
   bool ExecuteContextMenuCommand(int64_t command_id, int32_t event_flags);

@@ -6,7 +6,7 @@
 
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/shell.h"
-#include "chrome/browser/ui/ash/launcher/app_window_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -35,13 +35,13 @@ void AppWindowLauncherController::OnWindowActivated(
     aura::Window* new_active,
     aura::Window* old_active) {
   // Make the newly active window the active (first) entry in the controller.
-  AppWindowLauncherItemController* new_controller =
+  AppWindowShelfItemController* new_controller =
       ControllerForWindow(new_active);
   if (new_controller)
     new_controller->SetActiveWindow(new_active);
 
   // Mark the old active window's launcher item as running (if different).
-  AppWindowLauncherItemController* old_controller =
+  AppWindowShelfItemController* old_controller =
       ControllerForWindow(old_active);
   if (old_controller && old_controller != new_controller)
     owner_->SetItemStatus(old_controller->shelf_id(), ash::STATUS_RUNNING);

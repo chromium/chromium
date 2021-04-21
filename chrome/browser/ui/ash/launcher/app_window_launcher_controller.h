@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "ui/wm/public/activation_change_observer.h"
 
-class AppWindowLauncherItemController;
+class AppWindowShelfItemController;
 class ChromeLauncherController;
 class Profile;
 
@@ -46,7 +46,7 @@ class AppWindowLauncherController : public wm::ActivationChangeObserver,
  protected:
   explicit AppWindowLauncherController(ChromeLauncherController* owner);
 
-  virtual AppWindowLauncherItemController* ControllerForWindow(
+  virtual AppWindowShelfItemController* ControllerForWindow(
       aura::Window* window) = 0;
 
   // Called to update local caches when the item |delegate| is replaced. Note,

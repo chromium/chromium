@@ -24,7 +24,7 @@
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
-#include "chrome/browser/ui/ash/launcher/app_window_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chromeos/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/dbus/cicerone_client.h"
@@ -67,13 +67,13 @@ void FocusAllPluginVmWindows() {
   ash::ShelfModel* shelf_model =
       ChromeLauncherController::instance()->shelf_model();
   DCHECK(shelf_model);
-  AppWindowLauncherItemController* launcher_item_controller =
-      shelf_model->GetAppWindowLauncherItemController(
+  AppWindowShelfItemController* item_controller =
+      shelf_model->GetAppWindowShelfItemController(
           ash::ShelfID(kPluginVmShelfAppId));
-  if (!launcher_item_controller) {
+  if (!item_controller) {
     return;
   }
-  for (auto* app_window : launcher_item_controller->windows()) {
+  for (auto* app_window : item_controller->windows()) {
     app_window->Activate();
   }
 }

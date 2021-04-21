@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SHORTCUT_LAUNCHER_ITEM_CONTROLLER_H_
-#define CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SHORTCUT_LAUNCHER_ITEM_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SHORTCUT_SHELF_ITEM_CONTROLLER_H_
+#define CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SHORTCUT_SHELF_ITEM_CONTROLLER_H_
 
 #include <memory>
 #include <string>
@@ -26,18 +26,18 @@ class ShelfContextMenu;
 
 // Item controller for an app shortcut.
 // If the associated app is a platform or ARC app, launching the app replaces
-// this instance with an AppWindowLauncherItemController to handle the app's
+// this instance with an AppWindowShelfItemController to handle the app's
 // windows. Closing all associated AppWindows will replace that delegate with
 // a new instance of this class (if the app is pinned to the shelf).
 //
 // Non-platform app types do not use AppWindows. This delegate is not replaced
 // when browser windows are opened for those app types.
-class AppShortcutLauncherItemController : public ash::ShelfItemDelegate,
-                                          public BrowserListObserver {
+class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
+                                       public BrowserListObserver {
  public:
-  ~AppShortcutLauncherItemController() override;
+  ~AppShortcutShelfItemController() override;
 
-  static std::unique_ptr<AppShortcutLauncherItemController> Create(
+  static std::unique_ptr<AppShortcutShelfItemController> Create(
       const ash::ShelfID& shelf_id);
 
   // ash::ShelfItemDelegate overrides:
@@ -66,7 +66,7 @@ class AppShortcutLauncherItemController : public ash::ShelfItemDelegate,
   bool HasRunningApplications();
 
  protected:
-  explicit AppShortcutLauncherItemController(const ash::ShelfID& shelf_id);
+  explicit AppShortcutShelfItemController(const ash::ShelfID& shelf_id);
 
  private:
   // BrowserListObserver:
@@ -113,7 +113,7 @@ class AppShortcutLauncherItemController : public ash::ShelfItemDelegate,
 
   std::unique_ptr<ShelfContextMenu> context_menu_;
 
-  DISALLOW_COPY_AND_ASSIGN(AppShortcutLauncherItemController);
+  DISALLOW_COPY_AND_ASSIGN(AppShortcutShelfItemController);
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SHORTCUT_LAUNCHER_ITEM_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SHORTCUT_SHELF_ITEM_CONTROLLER_H_

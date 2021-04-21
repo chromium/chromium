@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "ui/base/base_window.h"
 
-class AppWindowLauncherItemController;
+class AppWindowShelfItemController;
 
 namespace gfx {
 class ImageSkia;
@@ -35,7 +35,7 @@ class AppWindowBase : public ui::BaseWindow {
 
   virtual ~AppWindowBase();
 
-  void SetController(AppWindowLauncherItemController* controller);
+  void SetController(AppWindowShelfItemController* controller);
 
   const std::string& app_id() const { return shelf_id_.app_id; }
 
@@ -45,7 +45,7 @@ class AppWindowBase : public ui::BaseWindow {
 
   views::Widget* widget() const { return widget_; }
 
-  AppWindowLauncherItemController* controller() const { return controller_; }
+  AppWindowShelfItemController* controller() const { return controller_; }
 
   virtual void SetDescription(const std::string& title,
                               const gfx::ImageSkia& icon) {}
@@ -79,7 +79,7 @@ class AppWindowBase : public ui::BaseWindow {
  private:
   ash::ShelfID shelf_id_;
   views::Widget* const widget_;
-  AppWindowLauncherItemController* controller_ = nullptr;
+  AppWindowShelfItemController* controller_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AppWindowBase);
 };

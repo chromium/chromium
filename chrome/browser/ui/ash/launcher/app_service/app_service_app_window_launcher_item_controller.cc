@@ -27,12 +27,12 @@ AppServiceAppWindowLauncherItemController::
     AppServiceAppWindowLauncherItemController(
         const ash::ShelfID& shelf_id,
         AppServiceAppWindowLauncherController* controller)
-    : AppWindowLauncherItemController(shelf_id), controller_(controller) {
+    : AppWindowShelfItemController(shelf_id), controller_(controller) {
   DCHECK(controller_);
 }
 
 AppServiceAppWindowLauncherItemController::
-    ~AppServiceAppWindowLauncherItemController() {}
+    ~AppServiceAppWindowLauncherItemController() = default;
 
 void AppServiceAppWindowLauncherItemController::ItemSelected(
     std::unique_ptr<ui::Event> event,
@@ -57,9 +57,9 @@ void AppServiceAppWindowLauncherItemController::ItemSelected(
         return;
       }
     }
-    AppWindowLauncherItemController::ItemSelected(std::move(event), display_id,
-                                                  source, std::move(callback),
-                                                  filter_predicate);
+    AppWindowShelfItemController::ItemSelected(std::move(event), display_id,
+                                               source, std::move(callback),
+                                               filter_predicate);
     return;
   }
 
@@ -77,8 +77,8 @@ AppServiceAppWindowLauncherItemController::GetAppMenuItems(
     int event_flags,
     const ItemFilterPredicate& filter_predicate) {
   if (!IsChromeApp()) {
-    return AppWindowLauncherItemController::GetAppMenuItems(event_flags,
-                                                            filter_predicate);
+    return AppWindowShelfItemController::GetAppMenuItems(event_flags,
+                                                         filter_predicate);
   }
 
   // The window could be teleported from the inactive user's profile to the

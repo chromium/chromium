@@ -183,15 +183,15 @@ void AppServiceAppWindowCrostiniTracker::OnAppLaunchRequested(
   if (index >= static_cast<int>(model->items().size()) || index < 0)
     return;
 
-  AppWindowLauncherItemController* launcher_item_controller =
-      model->GetAppWindowLauncherItemController(model->items()[index].id);
+  AppWindowShelfItemController* item_controller =
+      model->GetAppWindowShelfItemController(model->items()[index].id);
 
   // Apps run for the first time won't have a launcher controller yet, return
   // early because they won't have windows either so permissions aren't
   // necessary.
-  if (!launcher_item_controller)
+  if (!item_controller)
     return;
-  for (AppWindowBase* app_window : launcher_item_controller->windows()) {
+  for (AppWindowBase* app_window : item_controller->windows()) {
     exo::GrantPermissionToActivate(app_window->GetNativeWindow(),
                                    kSelfActivationTimeout);
     activation_permissions_.insert(app_window->GetNativeWindow());

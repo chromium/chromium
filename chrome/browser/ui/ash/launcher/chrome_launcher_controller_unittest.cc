@@ -69,7 +69,7 @@
 #include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/app_window_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/arc_app_window.h"
 #include "chrome/browser/ui/ash/launcher/browser_status_monitor.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
@@ -473,7 +473,7 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
   }
 
   ui::BaseWindow* GetLastActiveWindowForItemController(
-      AppWindowLauncherItemController* item_controller) {
+      AppWindowShelfItemController* item_controller) {
     return item_controller->last_active_window_;
   }
 
@@ -3510,8 +3510,8 @@ TEST_F(ChromeLauncherControllerTest, Active) {
   ash::ShelfItemDelegate* app_item_delegate_1 =
       model_->GetShelfItemDelegate(model_->items()[initial_item_count].id);
   ASSERT_TRUE(app_item_delegate_1);
-  AppWindowLauncherItemController* app_item_controller_1 =
-      app_item_delegate_1->AsAppWindowLauncherItemController();
+  AppWindowShelfItemController* app_item_controller_1 =
+      app_item_delegate_1->AsAppWindowShelfItemController();
   ASSERT_TRUE(app_item_controller_1);
   ui::BaseWindow* last_active =
       GetLastActiveWindowForItemController(app_item_controller_1);
@@ -3530,8 +3530,8 @@ TEST_F(ChromeLauncherControllerTest, Active) {
   ash::ShelfItemDelegate* app_item_delegate_2 =
       model_->GetShelfItemDelegate(model_->items()[initial_item_count + 1].id);
   ASSERT_TRUE(app_item_delegate_2);
-  AppWindowLauncherItemController* app_item_controller_2 =
-      app_item_delegate_2->AsAppWindowLauncherItemController();
+  AppWindowShelfItemController* app_item_controller_2 =
+      app_item_delegate_2->AsAppWindowShelfItemController();
   ASSERT_TRUE(app_item_controller_2);
   last_active = GetLastActiveWindowForItemController(app_item_controller_2);
   EXPECT_EQ(app_2.window()->GetNativeWindow(), last_active->GetNativeWindow());

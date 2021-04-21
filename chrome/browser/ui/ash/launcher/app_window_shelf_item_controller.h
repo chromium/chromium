@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_APP_WINDOW_LAUNCHER_ITEM_CONTROLLER_H_
-#define CHROME_BROWSER_UI_ASH_LAUNCHER_APP_WINDOW_LAUNCHER_ITEM_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_APP_WINDOW_SHELF_ITEM_CONTROLLER_H_
+#define CHROME_BROWSER_UI_ASH_LAUNCHER_APP_WINDOW_SHELF_ITEM_CONTROLLER_H_
 
 #include <list>
 #include <memory>
@@ -24,13 +24,13 @@ class ShelfContextMenu;
 // app and their activation order. Instances are owned by ash::ShelfModel.
 //
 // Tests are in chrome_launcher_controller_browsertest.cc
-class AppWindowLauncherItemController : public ash::ShelfItemDelegate,
-                                        public aura::WindowObserver {
+class AppWindowShelfItemController : public ash::ShelfItemDelegate,
+                                     public aura::WindowObserver {
  public:
   using WindowList = std::list<AppWindowBase*>;
 
-  explicit AppWindowLauncherItemController(const ash::ShelfID& shelf_id);
-  ~AppWindowLauncherItemController() override;
+  explicit AppWindowShelfItemController(const ash::ShelfID& shelf_id);
+  ~AppWindowShelfItemController() override;
 
   void AddWindow(AppWindowBase* window);
   void RemoveWindow(AppWindowBase* window);
@@ -39,7 +39,7 @@ class AppWindowLauncherItemController : public ash::ShelfItemDelegate,
   AppWindowBase* GetAppWindow(aura::Window* window, bool include_hidden);
 
   // ash::ShelfItemDelegate overrides:
-  AppWindowLauncherItemController* AsAppWindowLauncherItemController() override;
+  AppWindowShelfItemController* AsAppWindowShelfItemController() override;
   void ItemSelected(std::unique_ptr<ui::Event> event,
                     int64_t display_id,
                     ash::ShelfLaunchSource source,
@@ -104,7 +104,7 @@ class AppWindowLauncherItemController : public ash::ShelfItemDelegate,
 
   std::unique_ptr<ShelfContextMenu> context_menu_;
 
-  DISALLOW_COPY_AND_ASSIGN(AppWindowLauncherItemController);
+  DISALLOW_COPY_AND_ASSIGN(AppWindowShelfItemController);
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_APP_WINDOW_LAUNCHER_ITEM_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_APP_WINDOW_SHELF_ITEM_CONTROLLER_H_

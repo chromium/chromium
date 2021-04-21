@@ -7,13 +7,13 @@
 
 #include <set>
 
-#include "chrome/browser/ui/ash/launcher/app_window_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
 
 class AppServiceAppWindowLauncherController;
 
 // Shelf item delegate for extension app windows.
 class AppServiceAppWindowLauncherItemController
-    : public AppWindowLauncherItemController {
+    : public AppWindowShelfItemController {
  public:
   explicit AppServiceAppWindowLauncherItemController(
       const ash::ShelfID& shelf_id,
@@ -26,7 +26,7 @@ class AppServiceAppWindowLauncherItemController
   AppServiceAppWindowLauncherItemController& operator=(
       const AppServiceAppWindowLauncherItemController&) = delete;
 
-  // AppWindowLauncherItemController:
+  // AppWindowShelfItemController:
   void ItemSelected(std::unique_ptr<ui::Event> event,
                     int64_t display_id,
                     ash::ShelfLaunchSource source,

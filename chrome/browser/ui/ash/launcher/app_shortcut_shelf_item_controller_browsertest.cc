@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/launcher/app_shortcut_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_shortcut_shelf_item_controller.h"
 
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -22,12 +22,11 @@
 
 // Unit tests for the left click menu and interaction with the menu items. There
 // are integration tests in ./chrome_launcher_controller_browsertest.cc which
-// covers different cases in AppShortcutLauncherItemController::ItemSelected().
+// covers different cases in AppShortcutShelfItemController::ItemSelected().
 //
 // We do tests on the terminal system web app because it uses tabbed window,
 // which allows us to test app menu with either windows or tabs (shift click).
-class AppShortcutLauncherItemControllerBrowserTest
-    : public InProcessBrowserTest {
+class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     controller_ = ChromeLauncherController::instance();
@@ -67,7 +66,7 @@ class AppShortcutLauncherItemControllerBrowserTest
 
 // Test interacting with the app menu without shift key down: the app menu has
 // one entry per browser window.
-IN_PROC_BROWSER_TEST_F(AppShortcutLauncherItemControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(AppShortcutShelfItemControllerBrowserTest,
                        AppMenuByWindows) {
   InstallApp();
 
@@ -111,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(AppShortcutLauncherItemControllerBrowserTest,
 
 // Test interacting with the app menu with shift key down: the app menu has
 // one entry per tabs.
-IN_PROC_BROWSER_TEST_F(AppShortcutLauncherItemControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(AppShortcutShelfItemControllerBrowserTest,
                        AppMenuByTabs) {
   InstallApp();
 

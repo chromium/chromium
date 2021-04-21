@@ -28,7 +28,7 @@
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_crostini_tracker.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
-#include "chrome/browser/ui/ash/launcher/app_window_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/arc_app_window.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/crostini_app_window.h"
@@ -120,7 +120,7 @@ AppServiceAppWindowLauncherController::
   observed_windows_.RemoveAll();
 }
 
-AppWindowLauncherItemController*
+AppWindowShelfItemController*
 AppServiceAppWindowLauncherController::ControllerForWindow(
     aura::Window* window) {
   if (!window)
@@ -520,8 +520,8 @@ void AppServiceAppWindowLauncherController::RegisterWindow(
   // ARC window, calls OnItemDelegateDiscarded to remove the ARC apps
   // window.
   if (shelf_id.app_id == arc::kPlayStoreAppId) {
-    AppWindowLauncherItemController* item_controller =
-        owner()->shelf_model()->GetAppWindowLauncherItemController(shelf_id);
+    AppWindowShelfItemController* item_controller =
+        owner()->shelf_model()->GetAppWindowShelfItemController(shelf_id);
     if (item_controller && shelf_id.app_id == arc::kPlayStoreAppId &&
         arc_tracker_) {
       OnItemDelegateDiscarded(item_controller);
@@ -551,7 +551,7 @@ void AppServiceAppWindowLauncherController::UnregisterAppWindow(
   if (!app_window)
     return;
 
-  AppWindowLauncherItemController* const controller = app_window->controller();
+  AppWindowShelfItemController* const controller = app_window->controller();
   if (controller)
     controller->RemoveWindow(app_window);
 
@@ -562,8 +562,8 @@ void AppServiceAppWindowLauncherController::AddAppWindowToShelf(
     AppWindowBase* app_window) {
   const ash::ShelfID shelf_id = app_window->shelf_id();
 
-  AppWindowLauncherItemController* item_controller =
-      owner()->shelf_model()->GetAppWindowLauncherItemController(shelf_id);
+  AppWindowShelfItemController* item_controller =
+      owner()->shelf_model()->GetAppWindowShelfItemController(shelf_id);
   if (item_controller) {
     item_controller->AddWindow(app_window);
     app_window->SetController(item_controller);
@@ -593,8 +593,8 @@ void AppServiceAppWindowLauncherController::RemoveAppWindowFromShelf(
 
   // Check if we may close controller now, at this point we can safely remove
   // controllers without window.
-  AppWindowLauncherItemController* item_controller =
-      owner()->shelf_model()->GetAppWindowLauncherItemController(
+  AppWindowShelfItemController* item_controller =
+      owner()->shelf_model()->GetAppWindowShelfItemController(
           app_window->shelf_id());
 
   if (item_controller && item_controller->window_count() == 0)

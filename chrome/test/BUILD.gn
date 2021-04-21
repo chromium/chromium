@@ -2836,7 +2836,7 @@ if (!is_android) {
         "../browser/ui/ash/keyboard/keyboard_end_to_end_browsertest.cc",
         "../browser/ui/ash/launcher/app_service/app_service_app_window_browsertest.cc",
         "../browser/ui/ash/launcher/app_service/app_service_shelf_context_menu_browsertest.cc",
-        "../browser/ui/ash/launcher/app_shortcut_launcher_item_controller_browsertest.cc",
+        "../browser/ui/ash/launcher/app_shortcut_shelf_item_controller_browsertest.cc",
         "../browser/ui/ash/launcher/arc_app_launcher_browsertest.cc",
         "../browser/ui/ash/launcher/browser_shortcut_launcher_item_controller_browsertest.cc",
         "../browser/ui/ash/launcher/chrome_launcher_controller_browsertest.cc",

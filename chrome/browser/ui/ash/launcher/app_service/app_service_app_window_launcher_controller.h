@@ -49,7 +49,7 @@ class AppServiceAppWindowLauncherController
   ~AppServiceAppWindowLauncherController() override;
 
   // AppWindowLauncherController:
-  AppWindowLauncherItemController* ControllerForWindow(
+  AppWindowShelfItemController* ControllerForWindow(
       aura::Window* window) override;
   void ActiveUserChanged(const std::string& user_email) override;
   void AdditionalUserAddedToSession(Profile* profile) override;
@@ -78,12 +78,12 @@ class AppServiceAppWindowLauncherController
   // ArcAppWindowDelegate:
   int GetActiveTaskId() const override;
 
-  // Removes an AppWindowBase from its AppWindowLauncherItemController by
+  // Removes an AppWindowBase from its AppWindowShelfItemController by
   // |window|.
   void UnregisterWindow(aura::Window* window);
 
   // Creates an AppWindowBase, adds it to |aura_window_to_app_window_|,
-  // and updates its AppWindowLauncherItemController by |window| and |shelf_id|.
+  // and updates its AppWindowShelfItemController by |window| and |shelf_id|.
   // This function is used by AppServiceAppWindowArcTracker when the task id is
   // created after the window created, to make sure the AppWindowBase and
   // the shelf item are created.
@@ -114,10 +114,10 @@ class AppServiceAppWindowLauncherController
   void SetWindowActivated(aura::Window* window, bool active);
 
   // Creates an AppWindowBase and updates its
-  // AppWindowLauncherItemController by |window| and |shelf_id|.
+  // AppWindowShelfItemController by |window| and |shelf_id|.
   void RegisterWindow(aura::Window* window, const ash::ShelfID& shelf_id);
 
-  // Removes an AppWindowBase from its AppWindowLauncherItemController.
+  // Removes an AppWindowBase from its AppWindowShelfItemController.
   void UnregisterAppWindow(AppWindowBase* app_window);
 
   void AddAppWindowToShelf(AppWindowBase* app_window);

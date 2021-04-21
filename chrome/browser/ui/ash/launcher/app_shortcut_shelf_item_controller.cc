@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/launcher/app_shortcut_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_shortcut_shelf_item_controller.h"
 
 #include <stddef.h>
 
@@ -244,15 +244,15 @@ class AppMatcher {
 }  // namespace
 
 // static
-std::unique_ptr<AppShortcutLauncherItemController>
-AppShortcutLauncherItemController::Create(const ash::ShelfID& shelf_id) {
+std::unique_ptr<AppShortcutShelfItemController>
+AppShortcutShelfItemController::Create(const ash::ShelfID& shelf_id) {
   if (shelf_id.app_id == arc::kPlayStoreAppId)
     return std::make_unique<ArcPlaystoreShortcutLauncherItemController>();
-  return base::WrapUnique<AppShortcutLauncherItemController>(
-      new AppShortcutLauncherItemController(shelf_id));
+  return base::WrapUnique<AppShortcutShelfItemController>(
+      new AppShortcutShelfItemController(shelf_id));
 }
 
-AppShortcutLauncherItemController::AppShortcutLauncherItemController(
+AppShortcutShelfItemController::AppShortcutShelfItemController(
     const ash::ShelfID& shelf_id)
     : ash::ShelfItemDelegate(shelf_id) {
   BrowserList::AddObserver(this);
@@ -268,11 +268,11 @@ AppShortcutLauncherItemController::AppShortcutLauncherItemController(
   }
 }
 
-AppShortcutLauncherItemController::~AppShortcutLauncherItemController() {
+AppShortcutShelfItemController::~AppShortcutShelfItemController() {
   BrowserList::RemoveObserver(this);
 }
 
-void AppShortcutLauncherItemController::ItemSelected(
+void AppShortcutShelfItemController::ItemSelected(
     std::unique_ptr<ui::Event> event,
     int64_t display_id,
     ash::ShelfLaunchSource source,
@@ -329,13 +329,13 @@ void AppShortcutLauncherItemController::ItemSelected(
   }
 }
 
-bool AppShortcutLauncherItemController::HasRunningApplications() {
+bool AppShortcutShelfItemController::HasRunningApplications() {
   return IsWindowedWebApp() ? !GetAppBrowsers(base::NullCallback()).empty()
                             : !GetAppWebContents(base::NullCallback()).empty();
 }
 
 ash::ShelfItemDelegate::AppMenuItems
-AppShortcutLauncherItemController::GetAppMenuItems(
+AppShortcutShelfItemController::GetAppMenuItems(
     int event_flags,
     const ItemFilterPredicate& filter_predicate) {
   ChromeLauncherController* controller = ChromeLauncherController::instance();
@@ -363,7 +363,7 @@ AppShortcutLauncherItemController::GetAppMenuItems(
   return items;
 }
 
-void AppShortcutLauncherItemController::GetContextMenu(
+void AppShortcutShelfItemController::GetContextMenu(
     int64_t display_id,
     GetContextMenuCallback callback) {
   ChromeLauncherController* controller = ChromeLauncherController::instance();
@@ -372,10 +372,10 @@ void AppShortcutLauncherItemController::GetContextMenu(
   context_menu_->GetMenuModel(std::move(callback));
 }
 
-void AppShortcutLauncherItemController::ExecuteCommand(bool from_context_menu,
-                                                       int64_t command_id,
-                                                       int32_t event_flags,
-                                                       int64_t display_id) {
+void AppShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
+                                                    int64_t command_id,
+                                                    int32_t event_flags,
+                                                    int64_t display_id) {
   if (from_context_menu && ExecuteContextMenuCommand(command_id, event_flags))
     return;
 
@@ -423,7 +423,7 @@ void AppShortcutLauncherItemController::ExecuteCommand(bool from_context_menu,
   ClearAppMenu();
 }
 
-void AppShortcutLauncherItemController::Close() {
+void AppShortcutShelfItemController::Close() {
   // Close all running 'programs' of this type.
   if (IsWindowedWebApp()) {
     for (Browser* browser : GetAppBrowsers(base::NullCallback()))
@@ -443,7 +443,7 @@ void AppShortcutLauncherItemController::Close() {
   }
 }
 
-void AppShortcutLauncherItemController::OnBrowserClosing(Browser* browser) {
+void AppShortcutShelfItemController::OnBrowserClosing(Browser* browser) {
   if (!app_menu_cached_by_browsers_)
     return;
   // Reset pointers to the closed browser, but leave menu indices intact.
@@ -454,7 +454,7 @@ void AppShortcutLauncherItemController::OnBrowserClosing(Browser* browser) {
 }
 
 std::vector<content::WebContents*>
-AppShortcutLauncherItemController::GetAppWebContents(
+AppShortcutShelfItemController::GetAppWebContents(
     const ItemFilterPredicate& filter_predicate) {
   URLPattern refocus_pattern(URLPattern::SCHEME_ALL);
   refocus_pattern.SetMatchAllURLs(true);
@@ -489,7 +489,7 @@ AppShortcutLauncherItemController::GetAppWebContents(
   return items;
 }
 
-std::vector<Browser*> AppShortcutLauncherItemController::GetAppBrowsers(
+std::vector<Browser*> AppShortcutShelfItemController::GetAppBrowsers(
     const ItemFilterPredicate& filter_predicate) {
   DCHECK(IsWindowedWebApp());
   std::vector<Browser*> browsers;
@@ -512,7 +512,7 @@ std::vector<Browser*> AppShortcutLauncherItemController::GetAppBrowsers(
 }
 
 base::Optional<ash::ShelfAction>
-AppShortcutLauncherItemController::AdvanceToNextApp(
+AppShortcutShelfItemController::AdvanceToNextApp(
     const ItemFilterPredicate& filter_predicate) {
   if (!chrome::FindLastActive())
     return base::nullopt;
@@ -559,13 +559,13 @@ AppShortcutLauncherItemController::AdvanceToNextApp(
       }));
 }
 
-bool AppShortcutLauncherItemController::IsV2App() {
+bool AppShortcutShelfItemController::IsV2App() {
   const Extension* extension = GetExtensionForAppID(
       app_id(), ChromeLauncherController::instance()->profile());
   return extension && extension->is_platform_app();
 }
 
-bool AppShortcutLauncherItemController::AllowNextLaunchAttempt() {
+bool AppShortcutShelfItemController::AllowNextLaunchAttempt() {
   if (last_launch_attempt_.is_null() ||
       last_launch_attempt_ +
               base::TimeDelta::FromMilliseconds(kClickSuppressionInMS) <
@@ -576,7 +576,7 @@ bool AppShortcutLauncherItemController::AllowNextLaunchAttempt() {
   return false;
 }
 
-bool AppShortcutLauncherItemController::IsWindowedWebApp() {
+bool AppShortcutShelfItemController::IsWindowedWebApp() {
   if (web_app::WebAppProviderBase* provider =
           web_app::WebAppProviderBase::GetProviderBase(
               ChromeLauncherController::instance()->profile())) {
@@ -589,12 +589,12 @@ bool AppShortcutLauncherItemController::IsWindowedWebApp() {
   return false;
 }
 
-size_t AppShortcutLauncherItemController::AppMenuSize() {
+size_t AppShortcutShelfItemController::AppMenuSize() {
   return app_menu_cached_by_browsers_ ? app_menu_browsers_.size()
                                       : app_menu_web_contents_.size();
 }
 
-void AppShortcutLauncherItemController::ClearAppMenu() {
+void AppShortcutShelfItemController::ClearAppMenu() {
   app_menu_browsers_.clear();
   app_menu_web_contents_.clear();
 }

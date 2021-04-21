@@ -16,7 +16,7 @@
 
 ArcPlaystoreShortcutLauncherItemController::
     ArcPlaystoreShortcutLauncherItemController()
-    : AppShortcutLauncherItemController(ash::ShelfID(arc::kPlayStoreAppId)) {}
+    : AppShortcutShelfItemController(ash::ShelfID(arc::kPlayStoreAppId)) {}
 
 ArcPlaystoreShortcutLauncherItemController::
     ~ArcPlaystoreShortcutLauncherItemController() {}

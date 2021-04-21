@@ -35,8 +35,8 @@ void ShelfItemDelegate::GetContextMenu(int64_t display_id,
   std::move(callback).Run(nullptr);
 }
 
-AppWindowLauncherItemController*
-ShelfItemDelegate::AsAppWindowLauncherItemController() {
+AppWindowShelfItemController*
+ShelfItemDelegate::AsAppWindowShelfItemController() {
   return nullptr;
 }
 
