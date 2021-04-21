@@ -65,7 +65,7 @@ public class MessageBannerView extends BoundedLinearLayout {
         if (mOnTitleChanged != null) mOnTitleChanged.run();
     }
 
-    void setDescription(String description) {
+    void setDescription(CharSequence description) {
         mDescription.setVisibility(VISIBLE);
         mDescription.setText(description);
     }

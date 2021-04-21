@@ -56,11 +56,12 @@ public final class MessageWrapper {
 
     @CalledByNative
     String getDescription() {
-        return mMessageProperties.get(MessageBannerProperties.DESCRIPTION);
+        CharSequence description = mMessageProperties.get(MessageBannerProperties.DESCRIPTION);
+        return description == null ? null : description.toString();
     }
 
     @CalledByNative
-    void setDescription(String description) {
+    void setDescription(CharSequence description) {
         mMessageProperties.set(MessageBannerProperties.DESCRIPTION, description);
     }
 
