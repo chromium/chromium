@@ -71,6 +71,10 @@ const base::Feature kV8ShortBuiltinCalls{"V8ShortBuiltinCalls",
 const base::Feature kV8TurboFastApiCalls{"V8TurboFastApiCalls",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables untrusted code mitigations.
+const base::Feature kV8UntrustedCodeMitigations{
+    "V8UntrustedCodeMitigations", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Artificially delays script execution.
 const base::Feature kV8ScriptAblation{"V8ScriptAblation",
                                       base::FEATURE_DISABLED_BY_DEFAULT};

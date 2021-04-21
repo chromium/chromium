@@ -295,6 +295,12 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
     SetV8Flags("--sparkplug");
   }
 
+  if (base::FeatureList::IsEnabled(features::kV8UntrustedCodeMitigations)) {
+    SetV8Flags("--untrusted-code-mitigations");
+  } else {
+    SetV8Flags("--no-untrusted-code-mitigations");
+  }
+
   if (base::FeatureList::IsEnabled(features::kV8ScriptAblation)) {
     if (int delay = features::kV8ScriptDelayMs.Get()) {
       SetV8FlagsFormatted("--script-delay=%i", delay);
