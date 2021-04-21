@@ -381,8 +381,8 @@ struct PaymentsCustomerData;
 //
 //   vpa_id             A string representing the UPI ID (a.k.a. VPA) value.
 //
-// offer_data           The data for credit card offers which will be presented
-//                      in payments autofill flows.
+// offer_data           The data for Autofill offers which will be presented in
+//                      payments autofill flows.
 //
 //   offer_id           The unique server ID for this offer data.
 //   offer_reward_amount
@@ -392,6 +392,14 @@ struct PaymentsCustomerData;
 //   expiry             The timestamp when the offer will go expired. Expired
 //                      offers will not be shown in the frontend.
 //   offer_details_url  The link leading to the offer details page on Gpay app.
+//   promo_code         The promo code to be autofilled for a promo code offer.
+//   value_prop_text    Server-driven UI string to explain the value of the
+//                      offer.
+//   see_details_text   Server-driven UI string to imply or link additional
+//                      details.
+//   usage_instructions_text
+//                      Server-driven UI string to instruct the user on how they
+//                      can redeem the offer.
 //
 // offer_eligible_instrument
 //                      Contains the mapping of credit cards and card linked
@@ -688,6 +696,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion91AddMoreStructuredAddressColumns();
   bool MigrateToVersion92AddNewPrefixedNameColumn();
   bool MigrateToVersion93AddAutofillProfileLabelColumn();
+  bool MigrateToVersion94AddPromoCodeColumnsToOfferData();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.

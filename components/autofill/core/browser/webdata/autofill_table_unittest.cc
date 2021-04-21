@@ -3641,10 +3641,12 @@ TEST_F(AutofillTableTest, SetAndGetCreditCardOfferData) {
   credit_card_offer_2.offer_id = 2;
   credit_card_offer_3.offer_id = 3;
 
-  // Set reward amounts.
+  // Set reward amounts for card-linked offers on offer 1 and 2.
   credit_card_offer_1.offer_reward_amount = "$5";
   credit_card_offer_2.offer_reward_amount = "10%";
-  credit_card_offer_3.offer_reward_amount = "5%";
+
+  // Set promo code for offer 3.
+  credit_card_offer_3.promo_code = "5PCTOFFSHOES";
 
   // Set expiry.
   credit_card_offer_1.expiry = base::Time::FromDoubleT(1000);
@@ -3675,15 +3677,28 @@ TEST_F(AutofillTableTest, SetAndGetCreditCardOfferData) {
   credit_card_offer_3.merchant_domain.emplace_back(
       "http://www.merchant_domain_3_2.com/");
 
-  // Set eligible instrument ID for offer 1.
+  // Set display strings for all 3 offers.
+  credit_card_offer_1.display_strings.value_prop_text = "$5 off your purchase";
+  credit_card_offer_2.display_strings.value_prop_text = "10% off your purchase";
+  credit_card_offer_3.display_strings.value_prop_text =
+      "5% off shoes. Up to $50.";
+  credit_card_offer_1.display_strings.see_details_text = "Terms apply.";
+  credit_card_offer_2.display_strings.see_details_text = "Terms apply.";
+  credit_card_offer_3.display_strings.see_details_text = "See details.";
+  credit_card_offer_1.display_strings.usage_instructions_text =
+      "Check out with this card to activate.";
+  credit_card_offer_2.display_strings.usage_instructions_text =
+      "Check out with this card to activate.";
+  credit_card_offer_3.display_strings.usage_instructions_text =
+      "Click the promo code field at checkout to autofill it.";
+
+  // Set eligible card-linked instrument ID for offer 1.
   credit_card_offer_1.eligible_instrument_id.push_back(10);
   credit_card_offer_1.eligible_instrument_id.push_back(11);
-  // Set eligible instrument ID for offer 2.
+  // Set eligible card-linked instrument ID for offer 2.
   credit_card_offer_2.eligible_instrument_id.push_back(20);
   credit_card_offer_2.eligible_instrument_id.push_back(21);
   credit_card_offer_2.eligible_instrument_id.push_back(22);
-  // Set eligible instrument ID for offer 3.
-  credit_card_offer_3.eligible_instrument_id.push_back(30);
 
   // Create vector of offer data.
   std::vector<AutofillOfferData> autofill_offer_data;
@@ -3715,9 +3730,18 @@ TEST_F(AutofillTableTest, SetAndGetCreditCardOfferData) {
     EXPECT_EQ(data.offer_id, output_offer_data[output_index]->offer_id);
     EXPECT_EQ(data.offer_reward_amount,
               output_offer_data[output_index]->offer_reward_amount);
+    EXPECT_EQ(data.promo_code, output_offer_data[output_index]->promo_code);
     EXPECT_EQ(data.expiry, output_offer_data[output_index]->expiry);
     EXPECT_EQ(data.offer_details_url.spec(),
               output_offer_data[output_index]->offer_details_url.spec());
+    EXPECT_EQ(data.display_strings.value_prop_text,
+              output_offer_data[output_index]->display_strings.value_prop_text);
+    EXPECT_EQ(
+        data.display_strings.see_details_text,
+        output_offer_data[output_index]->display_strings.see_details_text);
+    EXPECT_EQ(data.display_strings.usage_instructions_text,
+              output_offer_data[output_index]
+                  ->display_strings.usage_instructions_text);
     ASSERT_THAT(data.merchant_domain,
                 testing::UnorderedElementsAreArray(
                     output_offer_data[output_index]->merchant_domain));

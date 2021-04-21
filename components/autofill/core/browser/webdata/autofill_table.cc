@@ -791,6 +791,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 93:
       *update_compatible_version = false;
       return MigrateToVersion93AddAutofillProfileLabelColumn();
+    case 94:
+      *update_compatible_version = false;
+      return MigrateToVersion94AddPromoCodeColumnsToOfferData();
   }
   return true;
 }
@@ -2056,11 +2059,15 @@ void AutofillTable::SetCreditCardOffers(
   // Insert new values.
   sql::Statement insert_offers(
       db_->GetUniqueStatement("INSERT INTO offer_data("
-                              "offer_id, "             // 0
-                              "offer_reward_amount, "  // 1
-                              "expiry, "               // 2
-                              "offer_details_url) "    // 3
-                              "VALUES (?,?,?,?)"));
+                              "offer_id, "                 // 0
+                              "offer_reward_amount, "      // 1
+                              "expiry, "                   // 2
+                              "offer_details_url, "        // 3
+                              "promo_code, "               // 4
+                              "value_prop_text, "          // 5
+                              "see_details_text, "         // 6
+                              "usage_instructions_text) "  // 7
+                              "VALUES (?,?,?,?,?,?,?,?)"));
 
   for (const AutofillOfferData& data : autofill_offer_data) {
     insert_offers.BindInt64(0, data.offer_id);
@@ -2068,6 +2075,10 @@ void AutofillTable::SetCreditCardOffers(
     insert_offers.BindInt64(
         2, data.expiry.ToDeltaSinceWindowsEpoch().InMilliseconds());
     insert_offers.BindString(3, data.offer_details_url.spec());
+    insert_offers.BindString(4, data.promo_code);
+    insert_offers.BindString(5, data.display_strings.value_prop_text);
+    insert_offers.BindString(6, data.display_strings.see_details_text);
+    insert_offers.BindString(7, data.display_strings.usage_instructions_text);
     insert_offers.Run();
     insert_offers.Reset(true);
 
@@ -2107,10 +2118,14 @@ bool AutofillTable::GetCreditCardOffers(
 
   sql::Statement s(
       db_->GetUniqueStatement("SELECT "
-                              "offer_id, "             // 0
-                              "offer_reward_amount, "  // 1
-                              "expiry, "               // 2
-                              "offer_details_url "     // 3
+                              "offer_id, "                // 0
+                              "offer_reward_amount, "     // 1
+                              "expiry, "                  // 2
+                              "offer_details_url, "       // 3
+                              "promo_code, "              // 4
+                              "value_prop_text, "         // 5
+                              "see_details_text, "        // 6
+                              "usage_instructions_text "  // 7
                               "FROM offer_data"));
 
   while (s.Step()) {
@@ -2122,6 +2137,10 @@ bool AutofillTable::GetCreditCardOffers(
     data->expiry = base::Time::FromDeltaSinceWindowsEpoch(
         base::TimeDelta::FromMilliseconds(s.ColumnInt64(index++)));
     data->offer_details_url = GURL(s.ColumnString(index++));
+    data->promo_code = s.ColumnString(index++);
+    data->display_strings.value_prop_text = s.ColumnString(index++);
+    data->display_strings.see_details_text = s.ColumnString(index++);
+    data->display_strings.usage_instructions_text = s.ColumnString(index++);
 
     sql::Statement s_offer_eligible_instrument(
         db_->GetUniqueStatement("SELECT "
@@ -3418,6 +3437,28 @@ bool AutofillTable::
              "DEFAULT 0");
 }
 
+bool AutofillTable::MigrateToVersion94AddPromoCodeColumnsToOfferData() {
+  sql::Transaction transaction(db_);
+  if (!transaction.Begin())
+    return false;
+
+  if (!db_->DoesTableExist("offer_data"))
+    InitOfferDataTable();
+
+  // Add the new promo_code and DisplayStrings text columns to the offer_data
+  // table.
+  for (const char* column : {"promo_code", "value_prop_text",
+                             "see_details_text", "usage_instructions_text"}) {
+    if (!db_->DoesColumnExist("offer_data", column) &&
+        !db_->Execute(base::StrCat({"ALTER TABLE offer_data ADD COLUMN ",
+                                    column, " VARCHAR"})
+                          .c_str())) {
+      return false;
+    }
+  }
+  return transaction.Commit();
+}
+
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
     std::vector<AutofillChange>* changes,
@@ -3985,7 +4026,11 @@ bool AutofillTable::InitOfferDataTable() {
                       "offer_reward_amount VARCHAR, "
                       "expiry UNSIGNED LONG, "
                       "offer_details_url VARCHAR, "
-                      "merchant_domain VARCHAR)")) {
+                      "merchant_domain VARCHAR, "
+                      "promo_code VARCHAR, "
+                      "value_prop_text VARCHAR, "
+                      "see_details_text VARCHAR, "
+                      "usage_instructions_text VARCHAR)")) {
       NOTREACHED();
       return false;
     }
