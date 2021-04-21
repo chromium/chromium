@@ -87,6 +87,9 @@ class TextInput : public ui::TextInputClient,
   // during the text input session.
   void Resync();
 
+  // Resets the current input method state.
+  void Reset();
+
   // Sets the surrounding text in the app.
   void SetSurroundingText(const std::u16string& text,
                           uint32_t cursor_pos,

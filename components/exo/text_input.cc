@@ -73,6 +73,12 @@ void TextInput::Resync() {
     input_method_->OnCaretBoundsChanged(this);
 }
 
+void TextInput::Reset() {
+  composition_ = ui::CompositionText();
+  if (input_method_)
+    input_method_->CancelComposition(this);
+}
+
 void TextInput::SetSurroundingText(const std::u16string& text,
                                    uint32_t cursor_pos,
                                    uint32_t anchor) {
@@ -122,6 +128,7 @@ uint32_t TextInput::ConfirmCompositionText(bool keep_selection) {
   const uint32_t composition_text_length =
       static_cast<uint32_t>(composition_.text.length());
   delegate_->Commit(composition_.text);
+  composition_ = ui::CompositionText();
   return composition_text_length;
 }
 

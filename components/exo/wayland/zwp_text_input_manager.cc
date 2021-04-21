@@ -222,7 +222,7 @@ void text_input_hide_input_panel(wl_client* client, wl_resource* resource) {
 }
 
 void text_input_reset(wl_client* client, wl_resource* resource) {
-  GetUserDataAs<TextInput>(resource)->Resync();
+  GetUserDataAs<TextInput>(resource)->Reset();
 }
 
 void text_input_set_surrounding_text(wl_client* client,
