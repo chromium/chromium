@@ -281,8 +281,10 @@ window.addEventListener('resize', () => {
 
 // When the account overlay is shown, it does not close on blur. It does close
 // when clicking the body.
-window.addEventListener('blur', () => {
-  document.body.click();
+window.addEventListener('blur', e => {
+  if (e.target === window && document.activeElement === document.body) {
+    document.body.click();
+  }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
