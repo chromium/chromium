@@ -41,6 +41,7 @@ source_set("sync") {
     "//ios/chrome/browser/ui/scoped_ui_blocker",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/ui/table_view",
@@ -107,11 +108,14 @@ source_set("eg2_tests") {
   sources = [ "sync_encryption_passphrase_table_view_controller_egtest.mm" ]
   deps = [
     "//base/test:test_support",
+    "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }
