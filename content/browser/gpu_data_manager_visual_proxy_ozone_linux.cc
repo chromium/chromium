@@ -8,6 +8,7 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "ui/gfx/switches.h"
 
 #if defined(USE_OZONE)
@@ -25,7 +26,7 @@ namespace content {
 #if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
 namespace {
 
-void ShutdownGpuOnIO() {
+void ShutdownGpuOnProcessThread() {
   // The GPU process sent back bad visuals, which should never happen.
   auto* gpu_process_host =
       GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, false);
@@ -71,8 +72,12 @@ void GpuDataManagerVisualProxyOzoneLinux::OnUpdate() {
           gpu_info.software_rendering ||
               !gpu_data_manager_->GpuAccessAllowed(nullptr),
           gpu_extra_info.system_visual, gpu_extra_info.rgba_visual)) {
-    GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
-                                        base::BindOnce(&ShutdownGpuOnIO));
+    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      ShutdownGpuOnProcessThread();
+    } else {
+      GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&ShutdownGpuOnProcessThread));
+    }
   }
 #endif
 }
