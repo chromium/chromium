@@ -64,12 +64,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   explicit ProfilePickerView(const GURL& on_select_profile_target_url);
   ~ProfilePickerView() override;
 
-  enum State {
-    kNotStarted = 0,
-    kInitializing = 1,
-    kReady = 2,
-    kFinalizing = 3
-  };
+  enum State { kNotStarted = 0, kInitializing = 1, kReady = 2 };
 
   class NavigationFinishedObserver : public content::WebContentsObserver {
    public:
@@ -112,9 +107,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
     // GetSignInColor() as the getter.
     SkColor profile_color;
 
-    // Controls whether `profile` browser window should be shown at the end of
-    // the sign-in flow.
-    bool is_aborted = false;
+    // Controls whether the flow still needs to finalize (which includes showing
+    // `profile` browser window at the end of the sign-in flow).
+    bool is_finished = false;
 
     // Email of the signed-in account. It is set after the user finishes the
     // sign-in flow on GAIA and Chrome receives the account info.

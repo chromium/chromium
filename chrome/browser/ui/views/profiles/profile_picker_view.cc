@@ -492,8 +492,8 @@ ProfilePickerView::~ProfilePickerView() {
   if (system_profile_contents_)
     system_profile_contents_->SetDelegate(nullptr);
 
-  // Abort signed-in profile creation.
-  if (sign_in_ && !sign_in_->is_aborted && state_ != kFinalizing) {
+  // Abort unfinished signed-in profile creation.
+  if (sign_in_ && !sign_in_->is_finished) {
     // TODO(crbug.com/1196290): Schedule the profile for deletion here, it's not
     // needed any more. This triggers a crash if the browser is shutting down
     // completely. Figure a way how to delete the profile only if that does not
@@ -569,7 +569,7 @@ void ProfilePickerView::Display(ProfilePicker::EntryPoint entry_point) {
 }
 
 void ProfilePickerView::Clear() {
-  if (state_ == kReady || state_ == kFinalizing) {
+  if (state_ == kReady) {
     GetWidget()->Close();
     return;
   }
@@ -684,9 +684,9 @@ void ProfilePickerView::CancelSignIn() {
       return;
     }
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile: {
-      // Finished here, avoid aborting the flow again in the destructor (which
-      // is called as a result of Clear()).
-      sign_in_->is_aborted = true;
+      // Finished here, avoid aborting the flow in the destructor (which is
+      // called as a result of Clear()).
+      sign_in_->is_finished = true;
       Clear();
       return;
     }
@@ -793,7 +793,8 @@ void ProfilePickerView::SwitchToSyncConfirmationFinished() {
 void ProfilePickerView::SwitchToProfileSwitch(
     const base::FilePath& profile_path) {
   DCHECK(sign_in_);
-  sign_in_->is_aborted = true;
+  // The sign-in flow is finished, no profile window should be shown in the end.
+  sign_in_->is_finished = true;
 
   switch_profile_path_ = profile_path;
   ShowScreen(system_profile_contents_.get(),
@@ -1189,15 +1190,13 @@ void ProfilePickerView::FinishSignedInCreationFlow(
     BrowserOpenedCallback callback,
     bool enterprise_sync_consent_needed) {
   DCHECK(sign_in_);
-  // Sign-in flow is aborted, do nothing.
-  if (sign_in_->is_aborted)
+  // Do nothing if the sign-in flow is aborted or if this has already been
+  // called. Note that this can get called first time from a special case
+  // handling (such as the Settings link) and than second time when the
+  // DiceTurnSyncOnHelper finishes.
+  if (sign_in_->is_finished)
     return;
-  // This can get called first time from a special case handling (such as the
-  // Settings link) and than second time when the consent flow finishes. We need
-  // to make sure only the first call gets handled.
-  if (state_ == kFinalizing)
-    return;
-  state_ = kFinalizing;
+  sign_in_->is_finished = true;
 
   if (sign_in_->name_for_signed_in_profile.empty()) {
     sign_in_->on_profile_name_available =
@@ -1224,10 +1223,10 @@ void ProfilePickerView::FinishSignedInCreationFlowForSAML() {
 }
 
 void ProfilePickerView::OnSignInContentsFreedUp() {
-  DCHECK_NE(state_, kFinalizing);
-  state_ = kFinalizing;
-  DCHECK(sign_in_->name_for_signed_in_profile.empty());
+  DCHECK(!sign_in_->is_finished);
+  sign_in_->is_finished = true;
 
+  DCHECK(sign_in_->name_for_signed_in_profile.empty());
   sign_in_->name_for_signed_in_profile =
       profiles::GetDefaultNameForNewEnterpriseProfile();
   sign_in_->contents->SetDelegate(nullptr);
