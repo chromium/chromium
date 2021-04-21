@@ -361,77 +361,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   AppState* appState = self.sceneState.appState;
-  if (appState.initStage <= InitStageSafeMode) {
-    // Nothing at all should happen in safe mode. Code in
-    // appStateDidExitSafeMode will ensure the updates happen once safe mode
-    // ends.
-    return;
-  }
-  BOOL initializingUIInColdStart = level > SceneActivationLevelBackground &&
-                                   !self.sceneState.hasInitializedUI;
-  if (initializingUIInColdStart) {
-    [self initializeUI];
-    if (base::ios::IsMultiwindowSupported()) {
-      if (@available(iOS 13, *)) {
-        // Add the scene to the list of connected scene, to restore in case of
-        // crashes.
-        [[PreviousSessionInfo sharedInstance]
-            addSceneSessionID:sceneState.sceneSessionID];
-      }
-    }
-  }
-
-  // When the scene transitions to inactive (such as when it's being shown in
-  // the OS app-switcher), update the title for display on iPadOS.
-  if (@available(iOS 13, *)) {
-    if (level == SceneActivationLevelForegroundInactive) {
-      sceneState.scene.title = [self displayTitleForAppSwitcher];
-    }
-  }
-
-  if (level == SceneActivationLevelForegroundActive) {
-    if (![self presentSigninUpgradePromoIfPossible]) {
-      [self presentSignInAccountsViewControllerIfNecessary];
-    }
-
-    [self handleExternalIntents];
-
-    if (!initializingUIInColdStart && self.mainCoordinator.isTabGridActive &&
-        [self shouldOpenNTPTabOnActivationOfBrowser:self.currentInterface
-                                                        .browser]) {
-      DCHECK(!self.activatingBrowser);
-      [self beginActivatingBrowser:self.mainInterface.browser
-                dismissTabSwitcher:YES
-                      focusOmnibox:NO];
-
-      OpenNewTabCommand* command = [OpenNewTabCommand commandWithIncognito:NO];
-      command.userInitiated = NO;
-      Browser* browser = self.currentInterface.browser;
-      id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-          browser->GetCommandDispatcher(), ApplicationCommands);
-      [applicationHandler openURLInNewTab:command];
-      [self finishActivatingBrowserDismissingTabSwitcher:YES];
-    }
-
-    [self handleShowStartSurfaceIfNecessary];
-  }
-
-  [self recordWindowCreationForSceneState:sceneState];
-
-  if (self.sceneState.hasInitializedUI &&
-      level == SceneActivationLevelUnattached) {
-    if (base::ios::IsMultiwindowSupported()) {
-      if (@available(iOS 13, *)) {
-        if (base::ios::IsMultipleScenesSupported()) {
-          // If Multiple scenes are not supported, the session shouldn't be
-          // removed as it can be used for normal restoration.
-          [[PreviousSessionInfo sharedInstance]
-              removeSceneSessionID:sceneState.sceneSessionID];
-        }
-      }
-    }
-    [self teardownUI];
-  }
+  [self transitionToSceneActivationLevel:level appInitStage:appState.initStage];
 }
 
 - (void)handleExternalIntents {
@@ -699,13 +629,94 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 #pragma mark - AppStateObserver
 
-- (void)appStateDidExitSafeMode:(AppState*)appState {
-  // All events were postponed in safe mode. Resend them.
-  [self sceneState:self.sceneState
-      transitionedToActivationLevel:self.sceneState.activationLevel];
+- (void)appState:(AppState*)appState
+    didTransitionFromInitStage:(InitStage)previousInitStage {
+  [self transitionToSceneActivationLevel:self.sceneState.activationLevel
+                            appInitStage:appState.initStage];
 }
 
 #pragma mark - private
+
+// A sink for appState:didTransitionFromInitStage: and
+// sceneState:transitionedToActivationLevel: events. Discussion: the scene
+// controller cares both about the app and the scene init stages. This method is
+// called from both observer callbacks and allows to handle all the transitions
+// in one place.
+- (void)transitionToSceneActivationLevel:(SceneActivationLevel)level
+                            appInitStage:(InitStage)appInitStage {
+  if (appInitStage <= InitStageSafeMode) {
+    // Nothing per-scene should happen before the app completes the global
+    // setup, like executing Safe mode, or creating the main BrowserState.
+    return;
+  }
+
+  BOOL initializingUIInColdStart = level > SceneActivationLevelBackground &&
+                                   !self.sceneState.hasInitializedUI;
+  if (initializingUIInColdStart) {
+    [self initializeUI];
+    if (base::ios::IsMultiwindowSupported()) {
+      if (@available(iOS 13, *)) {
+        // Add the scene to the list of connected scene, to restore in case of
+        // crashes.
+        [[PreviousSessionInfo sharedInstance]
+            addSceneSessionID:self.sceneState.sceneSessionID];
+      }
+    }
+  }
+
+  // When the scene transitions to inactive (such as when it's being shown in
+  // the OS app-switcher), update the title for display on iPadOS.
+  if (@available(iOS 13, *)) {
+    if (level == SceneActivationLevelForegroundInactive) {
+      self.sceneState.scene.title = [self displayTitleForAppSwitcher];
+    }
+  }
+
+  if (level == SceneActivationLevelForegroundActive &&
+      appInitStage == InitStageFinal) {
+    if (![self presentSigninUpgradePromoIfPossible]) {
+      [self presentSignInAccountsViewControllerIfNecessary];
+    }
+
+    [self handleExternalIntents];
+
+    if (!initializingUIInColdStart && self.mainCoordinator.isTabGridActive &&
+        [self shouldOpenNTPTabOnActivationOfBrowser:self.currentInterface
+                                                        .browser]) {
+      DCHECK(!self.activatingBrowser);
+      [self beginActivatingBrowser:self.mainInterface.browser
+                dismissTabSwitcher:YES
+                      focusOmnibox:NO];
+
+      OpenNewTabCommand* command = [OpenNewTabCommand commandWithIncognito:NO];
+      command.userInitiated = NO;
+      Browser* browser = self.currentInterface.browser;
+      id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+          browser->GetCommandDispatcher(), ApplicationCommands);
+      [applicationHandler openURLInNewTab:command];
+      [self finishActivatingBrowserDismissingTabSwitcher:YES];
+    }
+
+    [self handleShowStartSurfaceIfNecessary];
+  }
+
+  [self recordWindowCreationForSceneState:self.sceneState];
+
+  if (self.sceneState.hasInitializedUI &&
+      level == SceneActivationLevelUnattached) {
+    if (base::ios::IsMultiwindowSupported()) {
+      if (@available(iOS 13, *)) {
+        if (base::ios::IsMultipleScenesSupported()) {
+          // If Multiple scenes are not supported, the session shouldn't be
+          // removed as it can be used for normal restoration.
+          [[PreviousSessionInfo sharedInstance]
+              removeSceneSessionID:self.sceneState.sceneSessionID];
+        }
+      }
+    }
+    [self teardownUI];
+  }
+}
 
 - (void)initializeUI {
   if (self.sceneState.hasInitializedUI) {
