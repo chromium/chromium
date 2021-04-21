@@ -1810,6 +1810,44 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, NonFastScrollableRegionBasic) {
   GetInputHandler().ScrollEnd();
 }
 
+TEST_P(ScrollUnifiedLayerTreeHostImplTest,
+       NonFastScrollRegionInNonScrollingRoot) {
+  LayerImpl* root_layer = SetupDefaultRootLayer(gfx::Size(50, 50));
+  auto AddNewLayer = [&]() {
+    LayerImpl* layer = AddLayer();
+    layer->SetBounds(gfx::Size(50, 50));
+    layer->SetHitTestable(true);
+    CopyProperties(root_layer, layer);
+    return layer;
+  };
+  LayerImpl* layers[3] = {AddNewLayer(), AddNewLayer(), AddNewLayer()};
+  DrawFrame();
+
+  auto& input_handler = GetInputHandler();
+  std::unique_ptr<ScrollState> begin_state = BeginState(
+      gfx::Point(20, 20), gfx::Vector2dF(0, 10), ui::ScrollInputType::kWheel);
+  InputHandler::ScrollStatus status;
+
+  for (LayerImpl* layer : layers) {
+    layer->SetNonFastScrollableRegion(gfx::Rect(10, 10, 20, 20));
+    status = input_handler.ScrollBegin(begin_state.get(),
+                                       ui::ScrollInputType::kWheel);
+    input_handler.ScrollEnd();
+    layer->SetNonFastScrollableRegion(Region());
+
+    if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
+      EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+      EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+                status.main_thread_scrolling_reasons);
+      EXPECT_TRUE(status.needs_main_thread_hit_test);
+    } else {
+      EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
+      EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+                status.main_thread_scrolling_reasons);
+    }
+  }
+}
+
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, NonFastScrollableRegionWithOffset) {
   SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
 

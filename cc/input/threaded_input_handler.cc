@@ -1423,26 +1423,15 @@ ThreadedInputHandler::HitTestScrollNode(
       ActiveTree().FindAllLayersUpToAndIncludingFirstScrollable(
           device_viewport_point);
 
-  // It's theoretically possible to hit no layers or only non-scrolling layers.
-  // e.g. an API hit test outside the viewport. In that case, just fallback to
-  // scrolling the viewport.
-  if (layers.empty() || !layers.back()->IsScrollerOrScrollbar()) {
-    result.hit_test_successful = true;
-    if (InnerViewportScrollNode())
-      result.scroll_node = GetNodeToScroll(InnerViewportScrollNode());
+  const LayerImpl* scroller_layer =
+      (!layers.empty() && layers.back()->IsScrollerOrScrollbar())
+          ? layers.back()
+          : nullptr;
 
-    return result;
-  }
-
-  const LayerImpl* scroller_layer = layers.back();
-  layers.pop_back();
-
-  // Go through each layer in front of the scroller. Any of them may block
+  // Go through each layer up to (and including) the scroller. Any may block
   // scrolling if they come from outside the scroller's scroll-subtree or if we
   // hit a non-fast-scrolling-region.
   for (const auto* layer_impl : layers) {
-    DCHECK(!layer_impl->IsScrollbarLayer());
-
     // There are some cases where the hit layer may not be correct (e.g. layer
     // squashing, pointer-events:none layer) because the compositor doesn't
     // know what parts of the layer (if any) are actually visible to hit
@@ -1458,11 +1447,23 @@ ThreadedInputHandler::HitTestScrollNode(
     // If we hit a non-fast scrollable region, that means there's some reason we
     // can't scroll in this region. Primarily, because there's another scroller
     // there that isn't composited and we don't know about so we'll return
-    // nullptr in that case.
+    // failure.
     if (ActiveTree().PointHitsNonFastScrollableRegion(device_viewport_point,
                                                       *layer_impl)) {
       return result;
     }
+  }
+
+  // It's theoretically possible to hit no layers or only non-scrolling layers.
+  // e.g. an API hit test outside the viewport, or sending a scroll to an OOPIF
+  // that does not have overflow. If we made it to here, we also don't have any
+  // non-fast scroll regions. Fallback to scrolling the viewport.
+  if (!scroller_layer) {
+    result.hit_test_successful = true;
+    if (InnerViewportScrollNode())
+      result.scroll_node = GetNodeToScroll(InnerViewportScrollNode());
+
+    return result;
   }
 
   // If we hit a scrollbar layer, get the ScrollNode from its associated
@@ -1472,12 +1473,6 @@ ThreadedInputHandler::HitTestScrollNode(
     scroller_layer = ActiveTree().LayerByElementId(
         ToScrollbarLayer(scroller_layer)->scroll_element_id());
     DCHECK(scroller_layer);
-  } else {
-    // We need to also make sure the scroller itself doesn't have a non-fast
-    // scrolling region in the hit tested area.
-    if (ActiveTree().PointHitsNonFastScrollableRegion(device_viewport_point,
-                                                      *scroller_layer))
-      return result;
   }
 
   ScrollNode* scroll_node =
