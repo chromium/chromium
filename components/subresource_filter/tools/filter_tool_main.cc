@@ -99,8 +99,8 @@ int main(int argc, char* argv[]) {
                         base::File::FLAG_OPEN | base::File::FLAG_READ);
 
   if (!rules_file.IsValid()) {
-    std::cerr << "Could not open file: "
-              << command_line.GetSwitchValueASCII(kSwitchRuleset) << std::endl;
+    LOG(ERROR) << "Could not open file: "
+               << command_line.GetSwitchValueASCII(kSwitchRuleset);
     PrintHelp();
     return 1;
   }
@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
 
   if (cmd != kMatchCommand && cmd != kMatchRulesCommand &&
       cmd != kMatchBatchCommand) {
-    std::cerr << "Not a recognized command " << cmd << std::endl;
+    LOG(ERROR) << "Not a recognized command " << cmd;
     PrintHelp();
     return 1;
   }
@@ -136,8 +136,8 @@ int main(int argc, char* argv[]) {
         if (!command_line.HasSwitch(arg))
           missing_args.push_back(arg);
       }
-      std::cerr << "Missing arguments for match command: "
-                << base::JoinString(missing_args, ",") << std::endl;
+      LOG(ERROR) << "Missing arguments for match command: "
+                 << base::JoinString(missing_args, ",");
       PrintHelp();
       return 1;
     }
@@ -156,9 +156,8 @@ int main(int argc, char* argv[]) {
   if (command_line.HasSwitch(kSwitchMinMatches) &&
       !base::StringToInt(command_line.GetSwitchValueASCII(kSwitchMinMatches),
                          &min_match_count)) {
-    std::cerr << "Could not convert min matches to integer: "
-              << command_line.GetSwitchValueASCII(kSwitchMinMatches)
-              << std::endl;
+    LOG(ERROR) << "Could not convert min matches to integer: "
+               << command_line.GetSwitchValueASCII(kSwitchMinMatches);
     PrintHelp();
     return 1;
   }

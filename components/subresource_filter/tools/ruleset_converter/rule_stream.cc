@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "components/subresource_filter/core/common/unindexed_ruleset.h"
 #include "components/subresource_filter/tools/rule_parser/rule.h"
 #include "components/subresource_filter/tools/rule_parser/rule_parser.h"
@@ -84,7 +85,7 @@ class FilterListRuleInputStream : public RuleInputStream {
       if (rule_type != url_pattern_index::proto::RULE_TYPE_UNSPECIFIED)
         return rule_type;
       if (!IsTrivialParseError(parser_.parse_error())) {
-        std::cerr << parser_.parse_error() << std::endl;
+        LOG(ERROR) << parser_.parse_error();
       }
       // TODO(pkalinnikov): Export the number of processed/skipped rules.
     }
