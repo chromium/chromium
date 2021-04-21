@@ -141,9 +141,9 @@ static void RecordReplayAttach(int* pargc, const char*** pargv) {
     return;
   }
 
-  const char* dispatchAddress = getenv("RECORD_REPLAY_DISPATCH");
+  const char* dispatchAddress = getenv("RECORD_REPLAY_SERVER");
   if (!dispatchAddress) {
-    fprintf(stderr, "RECORD_REPLAY_DISPATCH not set.\n");
+    fprintf(stderr, "RECORD_REPLAY_SERVER not set.\n");
     return;
   }
 
