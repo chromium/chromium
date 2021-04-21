@@ -41,6 +41,8 @@ const char kClientInstanceId[] = "feedv2.client_instance_id";
 const char kDiscoverAPIEndpointOverride[] = "feedv2.actions_endpoint_override";
 const char kExperiments[] = "feedv2.experiments";
 const char kEnableWebFeedUI[] = "webfeed_ui.enable";
+const char kEnableWebFeedFollowIntroDebug[] =
+    "webfeed_follow_intro_debug.enable";
 const char kReliabilityLoggingIdSalt[] = "feedv2.reliability_logging_id_salt";
 
 }  // namespace prefs
@@ -99,6 +101,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(feed::prefs::kNoticeCardClicksCount, 0);
   registry->RegisterDictionaryPref(feed::prefs::kExperiments);
   registry->RegisterBooleanPref(feed::prefs::kEnableWebFeedUI, false);
+  registry->RegisterBooleanPref(feed::prefs::kEnableWebFeedFollowIntroDebug,
+                                false);
   registry->RegisterUint64Pref(feed::prefs::kReliabilityLoggingIdSalt, 0);
 
 #if defined(OS_IOS)

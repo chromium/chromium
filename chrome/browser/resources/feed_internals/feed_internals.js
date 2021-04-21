@@ -27,6 +27,8 @@ function updatePageWithProperties() {
     $('feed-fetch-url').textContent = properties.feedFetchUrl.url;
     $('feed-actions-url').textContent = properties.feedActionsUrl.url;
     $('webfeed-ui-enabled-status').textContent = properties.isWebFeedUiEnabled;
+    $('webfeed-follow-intro-debug-enabled-status').textContent =
+        properties.isWebFeedFollowIntroDebugEnabled;
   });
 }
 
@@ -171,6 +173,12 @@ function setupEventListeners() {
   $('enable-webfeed-ui-apply').addEventListener('click', function() {
     pageHandler.setWebFeedUIEnabled($('enable-webfeed-ui').checked);
   });
+
+  $('enable-webfeed-follow-intro-debug-apply')
+      .addEventListener('click', function() {
+        pageHandler.setWebFeedFollowIntroDebugEnabled(
+            $('enable-webfeed-follow-intro-debug').checked);
+      });
 }
 
 function updatePage() {

@@ -16,6 +16,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
@@ -25,6 +26,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 
@@ -55,7 +58,8 @@ public class WebFeedFollowIntroController {
 
     private final Activity mActivity;
     private final CurrentTabObserver mCurrentTabObserver;
-    private final EmptyTabObserver mEmptyTabObserver;
+    private final EmptyTabObserver mTabObserver;
+    private final PrefService mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
     private final SharedPreferencesManager mSharedPreferencesManager =
             SharedPreferencesManager.getInstance();
     private final Tracker mFeatureEngagementTracker;
@@ -100,7 +104,7 @@ public class WebFeedFollowIntroController {
                 ChromeFeatureList.WEB_FEED, PARAM_NUM_VISIT_MIN, DEFAULT_NUM_VISIT_MIN);
         int dailyVisitMin = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.WEB_FEED, PARAM_DAILY_VISIT_MIN, DEFAULT_DAILY_VISIT_MIN);
-        mEmptyTabObserver = new EmptyTabObserver() {
+        mTabObserver = new EmptyTabObserver() {
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
                 mPageLoadTime = mClock.currentTimeMillis();
@@ -144,7 +148,7 @@ public class WebFeedFollowIntroController {
             }
         };
         mCurrentTabObserver =
-                new CurrentTabObserver(tabSupplier, mEmptyTabObserver, /*swapCallback=*/null);
+                new CurrentTabObserver(tabSupplier, mTabObserver, /*swapCallback=*/null);
     }
 
     public void destroy() {
@@ -161,13 +165,13 @@ public class WebFeedFollowIntroController {
 
     private void showFollowAccelerator() {
         mIntroShown = true;
-        long currentTimeMillis = mClock.currentTimeMillis();
-        mSharedPreferencesManager.writeLong(
-                ChromePreferenceKeys.WEB_FEED_INTRO_LAST_SHOWN_TIME_MS, currentTimeMillis);
-        mSharedPreferencesManager.writeLong(
-                ChromePreferenceKeys.WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX.createKey(
-                        Base64.encodeToString(mWebFeedId, Base64.DEFAULT)),
-                currentTimeMillis);
+        if (!mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
+            long currentTimeMillis = mClock.currentTimeMillis();
+            mSharedPreferencesManager.writeLong(
+                    ChromePreferenceKeys.WEB_FEED_INTRO_LAST_SHOWN_TIME_MS, currentTimeMillis);
+            mSharedPreferencesManager.writeLong(
+                    getWebFeedIntroWebFeedIdShownTimeMsKey(mWebFeedId), currentTimeMillis);
+        }
 
         GestureDetector gestureDetector = new GestureDetector(
                 mActivity.getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
@@ -189,7 +193,9 @@ public class WebFeedFollowIntroController {
     }
 
     private void performFollowWithAccelerator() {
-        mFeatureEngagementTracker.notifyEvent(EventConstants.WEB_FEED_FOLLOW_INTRO_CLICKED);
+        if (!mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
+            mFeatureEngagementTracker.notifyEvent(EventConstants.WEB_FEED_FOLLOW_INTRO_CLICKED);
+        }
 
         mWebFeedFollowIntroView.showLoadingUI();
         WebFeedBridge bridge = new WebFeedBridge();
@@ -215,12 +221,16 @@ public class WebFeedFollowIntroController {
         if (!mIsRecommended) return false;
 
         long currentTimeMillis = mClock.currentTimeMillis();
+        boolean hasBeenOnPageLongEnough = (currentTimeMillis - mPageLoadTime) > INTRO_WAIT_TIME_MS;
+        if (mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
+            return !mIntroShown && hasBeenOnPageLongEnough;
+        }
+
         long lastShownTime = mSharedPreferencesManager.readLong(
                 ChromePreferenceKeys.WEB_FEED_INTRO_LAST_SHOWN_TIME_MS);
         long lastShownForWebFeedIdMs = mSharedPreferencesManager.readLong(
                 getWebFeedIntroWebFeedIdShownTimeMsKey(mWebFeedId));
-        return !mIntroShown && mMeetsVisitRequirement
-                && ((currentTimeMillis - mPageLoadTime) > INTRO_WAIT_TIME_MS)
+        return !mIntroShown && mMeetsVisitRequirement && hasBeenOnPageLongEnough
                 && ((currentTimeMillis - lastShownTime) > mAppearanceThresholdMs)
                 && ((currentTimeMillis - lastShownForWebFeedIdMs)
                         > WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS)
@@ -240,7 +250,7 @@ public class WebFeedFollowIntroController {
 
     @VisibleForTesting
     EmptyTabObserver getEmptyTabObserverForTesting() {
-        return mEmptyTabObserver;
+        return mTabObserver;
     }
 
     @VisibleForTesting

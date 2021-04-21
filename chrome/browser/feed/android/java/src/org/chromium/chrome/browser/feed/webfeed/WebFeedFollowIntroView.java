@@ -9,12 +9,16 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.view.View;
 
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.textbubble.ClickableTextBubble;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -26,6 +30,7 @@ class WebFeedFollowIntroView {
 
     private final Activity mActivity;
     private final Handler mHandler = new Handler();
+    private final PrefService mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
     private final View mMenuButtonAnchorView;
 
     private ClickableTextBubble mFollowBubble;
@@ -48,7 +53,9 @@ class WebFeedFollowIntroView {
         mFollowBubble.addOnDismissListener(() -> {
             mHandler.postDelayed(this::turnOffHighlightForFollowMenuItem,
                     ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS);
-            featureEngagementTracker.dismissed(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE);
+            if (!mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
+                featureEngagementTracker.dismissed(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE);
+            }
         });
         // TODO(crbug/1152592): Figure out a way to dismiss on outside taps as well.
         mFollowBubble.setAutoDismissTimeout(sAcceleratorTimeout);
