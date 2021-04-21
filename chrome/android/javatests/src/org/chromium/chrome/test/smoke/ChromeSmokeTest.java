@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
 import org.chromium.chrome.test.pagecontroller.utils.IUi2Locator;
 import org.chromium.chrome.test.pagecontroller.utils.Ui2Locators;
@@ -43,6 +44,7 @@ public class ChromeSmokeTest {
     }
 
     @Test
+    @FlakyTest(message = "crbug.com/1107896")
     public void testHello() {
         Context context = InstrumentationRegistry.getContext();
         final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(DATA_URL));
