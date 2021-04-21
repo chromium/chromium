@@ -269,8 +269,6 @@ const char kChromeUILockScreenNetworkHost[] = "lock-network";
 const char kChromeUILockScreenNetworkURL[] = "chrome://lock-network";
 const char kChromeUILockScreenStartReauthHost[] = "lock-reauth";
 const char kChromeUILockScreenStartReauthURL[] = "chrome://lock-reauth";
-const char kChromeUIMachineLearningInternalsHost[] =
-    "machine-learning-internals";
 const char kChromeUIMobileSetupHost[] = "mobilesetup";
 const char kChromeUIMobileSetupURL[] = "chrome://mobilesetup/";
 const char kChromeUIMultiDeviceInternalsHost[] = "multidevice-internals";
@@ -573,7 +571,6 @@ const char* const kChromeHostURLs[] = {
     kChromeUICrostiniCreditsHost,
     kChromeUICryptohomeHost,
     kChromeUIDriveInternalsHost,
-    kChromeUIMachineLearningInternalsHost,
     kChromeUINetworkHost,
     kChromeUILockScreenNetworkHost,
     kChromeUIOobeHost,

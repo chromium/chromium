@@ -302,7 +302,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://internet-config-dialog",
     "chrome://internet-detail-dialog",
     "chrome://linux-proxy-config",
-    "chrome://machine-learning-internals",
     "chrome://multidevice-setup",
     "chrome://network",
     "chrome://oobe",

@@ -400,7 +400,6 @@ if (include_js_tests) {
         "chromeos/crostini_installer_browsertest.js",
         "chromeos/crostini_upgrader_browsertest.js",
         "chromeos/diagnostics/diagnostics_browsertest.js",
-        "chromeos/machine_learning_internals_browsertest.js",
         "chromeos/personalization_app/personalization_app_browsertest.js",
         "chromeos/print_management/print_management_browsertest.js",
         "chromeos/scanning/scanning_app_browsertest.js",
@@ -409,7 +408,6 @@ if (include_js_tests) {
         "nearby_share/nearby_browsertest.js",
         "nearby_share/shared/nearby_shared_v3_browsertest.js",
       ]
-      deps += [ "//chromeos/services/machine_learning/public/cpp:stub" ]
     }
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -471,10 +469,6 @@ if (include_js_tests) {
       "../../../renderer/resources/extensions/notifications_test_util.js",
       "//ui/webui/resources/js/cr.js",
     ]
-    if (is_chromeos_ash) {
-      sources += [ "../../../browser/resources/chromeos/machine_learning/machine_learning_internals_utils_unittest.js" ]
-      extra_js_files += [ "../../../browser/resources/chromeos/machine_learning/machine_learning_internals_utils.js" ]
-    }
   }
 }
 
