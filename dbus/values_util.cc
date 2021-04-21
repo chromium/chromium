@@ -218,10 +218,7 @@ std::unique_ptr<base::Value> PopDataAsValue(MessageReader* reader) {
 void AppendBasicTypeValueData(MessageWriter* writer, const base::Value& value) {
   switch (value.type()) {
     case base::Value::Type::BOOLEAN: {
-      bool bool_value = false;
-      bool success = value.GetAsBoolean(&bool_value);
-      DCHECK(success);
-      writer->AppendBool(bool_value);
+      writer->AppendBool(value.GetBool());
       break;
     }
     case base::Value::Type::INTEGER: {

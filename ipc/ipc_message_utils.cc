@@ -95,10 +95,7 @@ void WriteValue(base::Pickle* m, const base::Value* value, int recursion) {
     case base::Value::Type::NONE:
       break;
     case base::Value::Type::BOOLEAN: {
-      bool val;
-      result = value->GetAsBoolean(&val);
-      DCHECK(result);
-      WriteParam(m, val);
+      WriteParam(m, value->GetBool());
       break;
     }
     case base::Value::Type::INTEGER: {

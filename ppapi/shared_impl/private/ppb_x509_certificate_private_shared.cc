@@ -44,9 +44,7 @@ PP_Var PPB_X509Certificate_Fields::GetFieldAsPPVar(
     case base::Value::Type::NONE:
       return PP_MakeNull();
     case base::Value::Type::BOOLEAN: {
-      bool val;
-      value->GetAsBoolean(&val);
-      return PP_MakeBool(PP_FromBool(val));
+      return PP_MakeBool(PP_FromBool(value->GetBool()));
     }
     case base::Value::Type::INTEGER: {
       return PP_MakeInt32(value->GetInt());
