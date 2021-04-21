@@ -6,42 +6,26 @@
 #define UI_BASE_CURSOR_CURSOR_H_
 
 #include "base/component_export.h"
-#include "build/build_config.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/gfx/geometry/point.h"
 
-#if defined(OS_WIN)
-#include "base/win/windows_types.h"
-#endif
-
 namespace ui {
-
-// NOTE: On Ozone platforms, the type is chosen at runtime, and is either
-// X11Cursor* or BitmapCursorOzone*.
-// On Windows, it's WinCursor*.
-using PlatformCursor = void*;
 
 // Ref-counted cursor that supports both default and custom cursors.
 class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) Cursor {
  public:
   Cursor();
-
-  // Implicit constructor.
   Cursor(mojom::CursorType type);
-
-  // Allow copy.
   Cursor(const Cursor& cursor);
-
   ~Cursor();
 
-  void SetPlatformCursor(const PlatformCursor& platform);
-
-  void RefCustomCursor();
-  void UnrefCustomCursor();
+  void SetPlatformCursor(scoped_refptr<PlatformCursor> platform_cursor);
 
   mojom::CursorType type() const { return type_; }
-  PlatformCursor platform() const { return platform_cursor_; }
+  scoped_refptr<PlatformCursor> platform() const { return platform_cursor_; }
   float image_scale_factor() const { return image_scale_factor_; }
   void set_image_scale_factor(float scale) { image_scale_factor_ = scale; }
 
@@ -60,14 +44,12 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) Cursor {
   bool operator==(mojom::CursorType type) const { return type_ == type; }
   bool operator!=(mojom::CursorType type) const { return type_ != type; }
 
-  void operator=(const Cursor& cursor);
-
  private:
   // The basic cursor type.
   mojom::CursorType type_ = mojom::CursorType::kNull;
 
   // The native platform cursor.
-  PlatformCursor platform_cursor_ = 0;
+  scoped_refptr<PlatformCursor> platform_cursor_;
 
   // The scale factor for the cursor bitmap.
   float image_scale_factor_ = 1.0f;

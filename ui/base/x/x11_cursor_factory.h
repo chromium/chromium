@@ -21,7 +21,7 @@ namespace ui {
 class X11Cursor;
 class XCursorLoader;
 
-// CursorFactoryOzone implementation for X11 cursors.
+// CursorFactory implementation for X11 cursors.
 class COMPONENT_EXPORT(UI_BASE_X) X11CursorFactory
     : public CursorFactory,
       public CursorThemeManagerObserver {
@@ -32,16 +32,17 @@ class COMPONENT_EXPORT(UI_BASE_X) X11CursorFactory
   ~X11CursorFactory() override;
 
   // CursorFactory:
-  PlatformCursor GetDefaultCursor(mojom::CursorType type) override;
-  PlatformCursor CreateImageCursor(mojom::CursorType type,
-                                   const SkBitmap& bitmap,
-                                   const gfx::Point& hotspot) override;
-  PlatformCursor CreateAnimatedCursor(mojom::CursorType type,
-                                      const std::vector<SkBitmap>& bitmaps,
-                                      const gfx::Point& hotspot,
-                                      base::TimeDelta frame_delay) override;
-  void RefImageCursor(PlatformCursor cursor) override;
-  void UnrefImageCursor(PlatformCursor cursor) override;
+  scoped_refptr<PlatformCursor> GetDefaultCursor(
+      mojom::CursorType type) override;
+  scoped_refptr<PlatformCursor> CreateImageCursor(
+      mojom::CursorType type,
+      const SkBitmap& bitmap,
+      const gfx::Point& hotspot) override;
+  scoped_refptr<PlatformCursor> CreateAnimatedCursor(
+      mojom::CursorType type,
+      const std::vector<SkBitmap>& bitmaps,
+      const gfx::Point& hotspot,
+      base::TimeDelta frame_delay) override;
   void ObserveThemeChanges() override;
 
  private:

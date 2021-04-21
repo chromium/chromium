@@ -4,12 +4,19 @@
 
 #include "ui/base/x/x11_cursor.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "ui/base/x/x11_cursor_loader.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {
+
+// static
+scoped_refptr<X11Cursor> X11Cursor::FromPlatformCursor(
+    scoped_refptr<PlatformCursor> platform_cursor) {
+  return base::WrapRefCounted(static_cast<X11Cursor*>(platform_cursor.get()));
+}
 
 X11Cursor::X11Cursor() = default;
 

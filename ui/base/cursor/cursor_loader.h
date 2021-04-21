@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/scoped_refptr.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
@@ -20,6 +21,7 @@ class Point;
 
 namespace ui {
 class CursorFactory;
+class PlatformCursor;
 
 class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorLoader {
  public:
@@ -51,15 +53,15 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorLoader {
   void LoadImageCursor(mojom::CursorType id,
                        int resource_id,
                        const gfx::Point& hot);
-  PlatformCursor CursorFromType(mojom::CursorType type);
-  PlatformCursor LoadCursorFromAsset(mojom::CursorType type);
+  scoped_refptr<PlatformCursor> CursorFromType(mojom::CursorType type);
+  scoped_refptr<PlatformCursor> LoadCursorFromAsset(mojom::CursorType type);
 
   // Whether to use cursors provided by the underlying platform (e.g. X11
   // cursors). If false or in the case of a failure, Chromium assets will be
   // used instead.
   const bool use_platform_cursors_;
 
-  std::map<mojom::CursorType, PlatformCursor> image_cursors_;
+  std::map<mojom::CursorType, scoped_refptr<PlatformCursor>> image_cursors_;
   CursorFactory* factory_ = nullptr;
 
   // The current scale of the mouse cursor icon.

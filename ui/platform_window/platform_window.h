@@ -14,6 +14,9 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/platform_window/platform_window_delegate.h"
 
+template <class T>
+class scoped_refptr;
+
 namespace gfx {
 class ImageSkia;
 class Point;
@@ -23,7 +26,7 @@ class Transform;
 }  // namespace gfx
 
 namespace ui {
-using PlatformCursor = void*;
+class PlatformCursor;
 
 // Generic PlatformWindow interface.
 class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
@@ -73,7 +76,12 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   virtual void SetUseNativeFrame(bool use_native_frame) = 0;
   virtual bool ShouldUseNativeFrame() const = 0;
 
-  virtual void SetCursor(PlatformCursor cursor) = 0;
+  // This method sets the current cursor to `cursor`. Note that the platform
+  // window should keep a copy of `cursor` and also avoid replacing it until the
+  // new value has been set if any kind of platform-specific resources are
+  // managed by the platform cursor, e.g. HCURSOR on Windows, which are
+  // destroyed once the last copy of the platform cursor goes out of scope.
+  virtual void SetCursor(scoped_refptr<PlatformCursor> cursor) = 0;
 
   // Moves the cursor to |location|. Location is in platform window coordinates.
   virtual void MoveCursorTo(const gfx::Point& location) = 0;

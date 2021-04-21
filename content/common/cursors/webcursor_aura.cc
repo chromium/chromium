@@ -23,11 +23,9 @@ gfx::NativeCursor WebCursor::GetNativeCursor() {
       custom_cursor_->set_custom_bitmap(bitmap);
       custom_cursor_->set_custom_hotspot(hotspot);
       custom_cursor_->set_image_scale_factor(scale);
-
-      DCHECK(!platform_cursor_);
-      platform_cursor_ = ui::CursorFactory::GetInstance()->CreateImageCursor(
-          ui::mojom::CursorType::kCustom, bitmap, hotspot);
-      custom_cursor_->SetPlatformCursor(platform_cursor_);
+      custom_cursor_->SetPlatformCursor(
+          ui::CursorFactory::GetInstance()->CreateImageCursor(
+              ui::mojom::CursorType::kCustom, bitmap, hotspot));
     }
     return *custom_cursor_;
   }
@@ -64,12 +62,6 @@ float WebCursor::GetCursorScaleFactor(SkBitmap* bitmap) {
 
 void WebCursor::CopyPlatformData(const WebCursor& other) {
   custom_cursor_ = other.custom_cursor_;
-  if (platform_cursor_)
-    ui::CursorFactory::GetInstance()->UnrefImageCursor(platform_cursor_);
-  platform_cursor_ = other.platform_cursor_;
-  if (platform_cursor_)
-    ui::CursorFactory::GetInstance()->RefImageCursor(platform_cursor_);
-
   device_scale_factor_ = other.device_scale_factor_;
 #if defined(USE_OZONE)
   maximum_cursor_size_ = other.maximum_cursor_size_;
@@ -77,10 +69,6 @@ void WebCursor::CopyPlatformData(const WebCursor& other) {
 }
 
 void WebCursor::CleanupPlatformData() {
-  if (platform_cursor_) {
-    ui::CursorFactory::GetInstance()->UnrefImageCursor(platform_cursor_);
-    platform_cursor_ = nullptr;
-  }
   custom_cursor_.reset();
 }
 

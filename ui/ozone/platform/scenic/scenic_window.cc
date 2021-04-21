@@ -14,6 +14,8 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/memory/scoped_refptr.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -195,7 +197,7 @@ bool ScenicWindow::ShouldUseNativeFrame() const {
   return false;
 }
 
-void ScenicWindow::SetCursor(PlatformCursor cursor) {
+void ScenicWindow::SetCursor(scoped_refptr<PlatformCursor> cursor) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

@@ -36,7 +36,8 @@ class WaylandCursorFactory : public BitmapCursorFactoryOzone,
   void ObserveThemeChanges() override;
 
   // CursorFactory:
-  PlatformCursor GetDefaultCursor(mojom::CursorType type) override;
+  scoped_refptr<PlatformCursor> GetDefaultCursor(
+      mojom::CursorType type) override;
   void SetDeviceScaleFactor(float scale) override;
 
  protected:

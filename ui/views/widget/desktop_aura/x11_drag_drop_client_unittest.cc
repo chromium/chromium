@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,9 +23,9 @@
 #include "ui/aura/test/test_screen.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_loader.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -323,10 +324,10 @@ DragOperation SimpleTestDragDropClient::StartDragAndDrop(
   ui::CursorLoader cursor_loader;
   ui::Cursor grabbing = ui::mojom::CursorType::kGrabbing;
   cursor_loader.SetPlatformCursor(&grabbing);
-  auto* last_cursor = static_cast<ui::X11Cursor*>(
-      source_window->GetHost()->last_cursor().platform());
-  loop_->RunMoveLoop(!source_window->HasCapture(), last_cursor,
-                     static_cast<ui::X11Cursor*>(grabbing.platform()));
+  auto last_cursor = source_window->GetHost()->last_cursor();
+  loop_->RunMoveLoop(!source_window->HasCapture(),
+                     ui::X11Cursor::FromPlatformCursor(last_cursor.platform()),
+                     ui::X11Cursor::FromPlatformCursor(grabbing.platform()));
 
   auto resulting_operation = negotiated_operation();
   CleanupDrag();

@@ -333,7 +333,7 @@ SkBitmap GetDefaultBitmap(const Cursor& cursor) {
   CursorLoader cursor_loader;
   cursor_loader.SetPlatformCursor(&cursor_copy);
   return IconUtil::CreateSkBitmapFromHICON(
-      static_cast<WinCursor*>(cursor_copy.platform())->hcursor());
+      WinCursor::FromPlatformCursor(cursor_copy.platform())->hcursor());
 #else
   int resource_id;
   gfx::Point hotspot;
@@ -354,7 +354,7 @@ gfx::Point GetDefaultHotspot(const Cursor& cursor) {
   CursorLoader cursor_loader;
   cursor_loader.SetPlatformCursor(&cursor_copy);
   return IconUtil::GetHotSpotFromHICON(
-      static_cast<WinCursor*>(cursor_copy.platform())->hcursor());
+      WinCursor::FromPlatformCursor(cursor_copy.platform())->hcursor());
 #else
   int resource_id;
   gfx::Point hotspot;

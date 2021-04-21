@@ -4,10 +4,12 @@
 
 #include "ui/base/cursor/cursor_loader.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/cursor/platform_cursor.h"
 
 #if defined(OS_WIN)
 #include "ui/base/cursor/win/win_cursor.h"
@@ -25,12 +27,13 @@
 #endif
 
 namespace ui {
-
 namespace {
 
-PlatformCursor LoadInvisibleCursor() {
+using mojom::CursorType;
+
+scoped_refptr<PlatformCursor> LoadInvisibleCursor() {
   CursorLoader cursor_loader;
-  Cursor cursor(mojom::CursorType::kNone);
+  Cursor cursor(CursorType::kNone);
   cursor_loader.SetPlatformCursor(&cursor);
   return cursor.platform();
 }
@@ -40,19 +43,20 @@ PlatformCursor LoadInvisibleCursor() {
 #if defined(OS_WIN)
 TEST(CursorLoaderTest, InvisibleCursor) {
   WinCursorFactory cursor_factory;
-  auto* invisible_cursor = static_cast<WinCursor*>(LoadInvisibleCursor());
+  auto invisible_cursor = LoadInvisibleCursor();
   ASSERT_NE(invisible_cursor, nullptr);
-  EXPECT_EQ(invisible_cursor->hcursor(), nullptr);
+  EXPECT_EQ(WinCursor::FromPlatformCursor(invisible_cursor)->hcursor(),
+            nullptr);
 }
 #endif
 
 #if defined(USE_OZONE) && !defined(USE_X11)
 TEST(CursorLoaderTest, InvisibleCursor) {
   BitmapCursorFactoryOzone cursor_factory;
-  auto* invisible_cursor =
-      static_cast<BitmapCursorOzone*>(LoadInvisibleCursor());
+  auto invisible_cursor = LoadInvisibleCursor();
   ASSERT_NE(invisible_cursor, nullptr);
-  EXPECT_EQ(invisible_cursor->type(), mojom::CursorType::kNone);
+  EXPECT_EQ(BitmapCursorOzone::FromPlatformCursor(invisible_cursor)->type(),
+            CursorType::kNone);
 }
 #endif
 
@@ -61,13 +65,10 @@ TEST(CursorLoaderTest, InvisibleCursor) {
   X11CursorFactory cursor_factory;
   // Building an image cursor with an invalid SkBitmap should return the
   // invisible cursor in X11.
-  auto* invisible_cursor =
+  auto invisible_cursor =
       cursor_factory.CreateImageCursor({}, SkBitmap(), gfx::Point());
   ASSERT_NE(invisible_cursor, nullptr);
   EXPECT_EQ(invisible_cursor, LoadInvisibleCursor());
-
-  // Release our refcount on the cursor
-  cursor_factory.UnrefImageCursor(invisible_cursor);
 }
 #endif
 

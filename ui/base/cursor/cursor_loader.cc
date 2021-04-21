@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
@@ -15,6 +16,7 @@
 #include "ui/base/cursor/cursor_util.h"
 #include "ui/base/cursor/cursors_aura.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace ui {
@@ -38,8 +40,6 @@ CursorLoader::~CursorLoader() {
 }
 
 void CursorLoader::UnloadCursors() {
-  for (const auto& image_cursor : image_cursors_)
-    factory_->UnrefImageCursor(image_cursor.second);
   image_cursors_.clear();
 }
 
@@ -91,7 +91,8 @@ void CursorLoader::LoadImageCursor(mojom::CursorType type,
   }
 }
 
-PlatformCursor CursorLoader::CursorFromType(mojom::CursorType type) {
+scoped_refptr<PlatformCursor> CursorLoader::CursorFromType(
+    mojom::CursorType type) {
   // An image cursor is loaded for this type.
   if (image_cursors_.count(type))
     return image_cursors_[type];
@@ -99,7 +100,7 @@ PlatformCursor CursorLoader::CursorFromType(mojom::CursorType type) {
   // Check if there's a default platform cursor available.
   // For the none cursor, we also need to use the platform factory to take
   // into account the different ways of creating an invisible cursor.
-  PlatformCursor cursor;
+  scoped_refptr<PlatformCursor> cursor;
   if (use_platform_cursors_ || type == mojom::CursorType::kNone) {
     cursor = factory_->GetDefaultCursor(type);
     if (cursor)
@@ -112,14 +113,14 @@ PlatformCursor CursorLoader::CursorFromType(mojom::CursorType type) {
   cursor = LoadCursorFromAsset(type);
   if (!cursor && type != mojom::CursorType::kPointer) {
     cursor = CursorFromType(mojom::CursorType::kPointer);
-    factory_->RefImageCursor(cursor);
     image_cursors_[type] = cursor;
   }
   DCHECK(cursor) << "Failed to load a bitmap for the pointer cursor.";
   return cursor;
 }
 
-PlatformCursor CursorLoader::LoadCursorFromAsset(mojom::CursorType type) {
+scoped_refptr<PlatformCursor> CursorLoader::LoadCursorFromAsset(
+    mojom::CursorType type) {
   int resource_id;
   gfx::Point hotspot;
   if (GetCursorDataFor(size(), type, scale(), &resource_id, &hotspot)) {

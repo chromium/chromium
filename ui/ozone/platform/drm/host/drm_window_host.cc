@@ -5,6 +5,9 @@
 #include "ui/ozone/platform/drm/host/drm_window_host.h"
 
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
+#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/display/display.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
@@ -125,8 +128,8 @@ bool DrmWindowHost::ShouldUseNativeFrame() const {
   return false;
 }
 
-void DrmWindowHost::SetCursor(PlatformCursor cursor) {
-  cursor_->SetCursor(widget_, cursor);
+void DrmWindowHost::SetCursor(scoped_refptr<PlatformCursor> cursor) {
+  cursor_->SetCursor(widget_, BitmapCursorOzone::FromPlatformCursor(cursor));
 }
 
 void DrmWindowHost::MoveCursorTo(const gfx::Point& location) {

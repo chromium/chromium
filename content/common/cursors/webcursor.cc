@@ -13,9 +13,7 @@ namespace content {
 
 WebCursor::WebCursor() = default;
 
-WebCursor::~WebCursor() {
-  CleanupPlatformData();
-}
+WebCursor::~WebCursor() = default;
 
 WebCursor::WebCursor(const ui::Cursor& cursor) {
   SetCursor(cursor);

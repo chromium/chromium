@@ -12,22 +12,14 @@
 #include "base/notreached.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/windows_types.h"
-#include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/resource/resource_bundle_win.h"
 #include "ui/gfx/icon_util.h"
 #include "ui/resources/grit/ui_unscaled_resources.h"
 
 namespace ui {
 namespace {
-
-WinCursor* ToWinCursor(PlatformCursor cursor) {
-  return static_cast<WinCursor*>(cursor);
-}
-
-PlatformCursor ToPlatformCursor(WinCursor* cursor) {
-  return static_cast<PlatformCursor>(cursor);
-}
 
 const wchar_t* GetCursorId(mojom::CursorType type) {
   switch (type) {
@@ -135,7 +127,8 @@ WinCursorFactory::WinCursorFactory() = default;
 
 WinCursorFactory::~WinCursorFactory() = default;
 
-PlatformCursor WinCursorFactory::GetDefaultCursor(mojom::CursorType type) {
+scoped_refptr<PlatformCursor> WinCursorFactory::GetDefaultCursor(
+    mojom::CursorType type) {
   if (!default_cursors_.count(type)) {
     // Using a dark 1x1 bit bmp for the kNone cursor may still cause DWM to do
     // composition work unnecessarily. Better to totally remove it from the
@@ -153,25 +146,16 @@ PlatformCursor WinCursorFactory::GetDefaultCursor(mojom::CursorType type) {
     default_cursors_[type] = base::MakeRefCounted<WinCursor>(hcursor);
   }
 
-  auto cursor = default_cursors_[type];
-  return ToPlatformCursor(cursor.get());
+  return default_cursors_[type];
 }
 
-PlatformCursor WinCursorFactory::CreateImageCursor(mojom::CursorType type,
-                                                   const SkBitmap& bitmap,
-                                                   const gfx::Point& hotspot) {
-  auto cursor = base::MakeRefCounted<WinCursor>(
-      IconUtil::CreateCursorFromSkBitmap(bitmap, hotspot).release());
-  cursor->AddRef();
-  return ToPlatformCursor(cursor.get());
-}
-
-void WinCursorFactory::RefImageCursor(PlatformCursor cursor) {
-  ToWinCursor(cursor)->AddRef();
-}
-
-void WinCursorFactory::UnrefImageCursor(PlatformCursor cursor) {
-  ToWinCursor(cursor)->Release();
+scoped_refptr<PlatformCursor> WinCursorFactory::CreateImageCursor(
+    mojom::CursorType type,
+    const SkBitmap& bitmap,
+    const gfx::Point& hotspot) {
+  return base::MakeRefCounted<WinCursor>(
+      IconUtil::CreateCursorFromSkBitmap(bitmap, hotspot).release(),
+      /*should_destroy=*/true);
 }
 
 }  // namespace ui

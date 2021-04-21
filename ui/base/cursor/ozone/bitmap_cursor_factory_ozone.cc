@@ -85,15 +85,14 @@ bool UseDefaultCursorForType(mojom::CursorType type) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-BitmapCursorOzone* ToBitmapCursorOzone(PlatformCursor cursor) {
-  return static_cast<BitmapCursorOzone*>(cursor);
-}
-
-PlatformCursor ToPlatformCursor(BitmapCursorOzone* cursor) {
-  return static_cast<PlatformCursor>(cursor);
-}
-
 }  // namespace
+
+// static
+scoped_refptr<BitmapCursorOzone> BitmapCursorOzone::FromPlatformCursor(
+    scoped_refptr<PlatformCursor> platform_cursor) {
+  return base::WrapRefCounted(
+      static_cast<BitmapCursorOzone*>(platform_cursor.get()));
+}
 
 BitmapCursorOzone::BitmapCursorOzone(mojom::CursorType type) : type_(type) {}
 
@@ -148,13 +147,7 @@ BitmapCursorFactoryOzone::BitmapCursorFactoryOzone() {}
 
 BitmapCursorFactoryOzone::~BitmapCursorFactoryOzone() {}
 
-// static
-scoped_refptr<BitmapCursorOzone> BitmapCursorFactoryOzone::GetBitmapCursor(
-    PlatformCursor platform_cursor) {
-  return base::WrapRefCounted(ToBitmapCursorOzone(platform_cursor));
-}
-
-PlatformCursor BitmapCursorFactoryOzone::GetDefaultCursor(
+scoped_refptr<PlatformCursor> BitmapCursorFactoryOzone::GetDefaultCursor(
     mojom::CursorType type) {
   if (!default_cursors_.count(type)) {
     if (type == mojom::CursorType::kNone
@@ -171,37 +164,24 @@ PlatformCursor BitmapCursorFactoryOzone::GetDefaultCursor(
     }
   }
 
-  // Returns owned default cursor for this type.
-  return default_cursors_[type].get();
+  return default_cursors_[type];
 }
 
-PlatformCursor BitmapCursorFactoryOzone::CreateImageCursor(
+scoped_refptr<PlatformCursor> BitmapCursorFactoryOzone::CreateImageCursor(
     mojom::CursorType type,
     const SkBitmap& bitmap,
     const gfx::Point& hotspot) {
-  BitmapCursorOzone* cursor = new BitmapCursorOzone(type, bitmap, hotspot);
-  cursor->AddRef();  // Balanced by UnrefImageCursor.
-  return ToPlatformCursor(cursor);
+  return base::MakeRefCounted<BitmapCursorOzone>(type, bitmap, hotspot);
 }
 
-PlatformCursor BitmapCursorFactoryOzone::CreateAnimatedCursor(
+scoped_refptr<PlatformCursor> BitmapCursorFactoryOzone::CreateAnimatedCursor(
     mojom::CursorType type,
     const std::vector<SkBitmap>& bitmaps,
     const gfx::Point& hotspot,
     base::TimeDelta frame_delay) {
   DCHECK_LT(0U, bitmaps.size());
-  auto cursor = base::MakeRefCounted<BitmapCursorOzone>(type, bitmaps, hotspot,
-                                                        frame_delay);
-  cursor->AddRef();  // Balanced by UnrefImageCursor.
-  return ToPlatformCursor(cursor.get());
-}
-
-void BitmapCursorFactoryOzone::RefImageCursor(PlatformCursor cursor) {
-  ToBitmapCursorOzone(cursor)->AddRef();
-}
-
-void BitmapCursorFactoryOzone::UnrefImageCursor(PlatformCursor cursor) {
-  ToBitmapCursorOzone(cursor)->Release();
+  return base::MakeRefCounted<BitmapCursorOzone>(type, bitmaps, hotspot,
+                                                 frame_delay);
 }
 
 }  // namespace ui

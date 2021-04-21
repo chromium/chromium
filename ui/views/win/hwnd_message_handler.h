@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/win/scoped_gdi_object.h"
@@ -43,9 +44,10 @@ class Insets;
 namespace ui {
 class AXFragmentRootWin;
 class AXSystemCaretWin;
+class SessionChangeObserver;
 class TextInputClient;
 class ViewProp;
-class SessionChangeObserver;
+class WinCursor;
 }  // namespace ui
 
 namespace views {
@@ -159,7 +161,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // Returns true if the title changed.
   bool SetTitle(const std::u16string& title);
 
-  void SetCursor(HCURSOR cursor);
+  void SetCursor(scoped_refptr<ui::WinCursor> cursor);
 
   void FrameTypeChanged();
 
@@ -624,7 +626,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   bool restored_enabled_;
 
   // The current cursor.
-  HCURSOR current_cursor_;
+  scoped_refptr<ui::WinCursor> current_cursor_;
 
   // The icon created from the bitmap image of the window icon.
   base::win::ScopedHICON window_icon_;

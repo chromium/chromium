@@ -17,7 +17,6 @@
 
 #if defined(USE_AURA)
 #include "base/optional.h"
-
 #include "ui/base/cursor/cursor.h"
 #endif
 
@@ -75,7 +74,6 @@ class CONTENT_EXPORT WebCursor {
 
 #if defined(USE_AURA) || defined(USE_OZONE)
   // Only used for custom cursors.
-  ui::PlatformCursor platform_cursor_ = nullptr;
   float device_scale_factor_ = 1.f;
   display::Display::Rotation rotation_ = display::Display::ROTATE_0;
 #endif

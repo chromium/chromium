@@ -6,6 +6,7 @@
 
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/x/x11_cursor.h"
 #include "ui/base/x/x11_cursor_loader.h"
 #include "ui/base/x/x11_util.h"
@@ -15,14 +16,6 @@
 namespace ui {
 
 namespace {
-
-X11Cursor* ToX11Cursor(PlatformCursor cursor) {
-  return static_cast<X11Cursor*>(cursor);
-}
-
-PlatformCursor ToPlatformCursor(X11Cursor* cursor) {
-  return static_cast<PlatformCursor>(cursor);
-}
 
 scoped_refptr<X11Cursor> CreateInvisibleCursor(XCursorLoader* cursor_loader) {
   SkBitmap bitmap;
@@ -37,28 +30,20 @@ X11CursorFactory::X11CursorFactory()
 
 X11CursorFactory::~X11CursorFactory() = default;
 
-PlatformCursor X11CursorFactory::CreateImageCursor(mojom::CursorType type,
-                                                   const SkBitmap& bitmap,
-                                                   const gfx::Point& hotspot) {
+scoped_refptr<PlatformCursor> X11CursorFactory::CreateImageCursor(
+    mojom::CursorType type,
+    const SkBitmap& bitmap,
+    const gfx::Point& hotspot) {
   // There is a problem with custom cursors that have no custom data. The
   // resulting SkBitmap is empty and X crashes when creating a zero size cursor
   // image. Return invisible cursor here instead.
-  if (bitmap.drawsNothing()) {
-    // The result of `CreateImageCursor()` is owned by the caller, and will be
-    // Unref()ed by code far away. (Usually in web_cursor.cc in content, among
-    // others.) If we don't manually add another reference before we cast this
-    // to a void*, we can end up with the cursor being freed out from under us.
-    auto* invisible_cursor = GetDefaultCursor(mojom::CursorType::kNone);
-    RefImageCursor(invisible_cursor);
-    return invisible_cursor;
-  }
+  if (bitmap.drawsNothing())
+    return GetDefaultCursor(mojom::CursorType::kNone);
 
-  auto cursor = cursor_loader_->CreateCursor(bitmap, hotspot);
-  cursor->AddRef();
-  return ToPlatformCursor(cursor.get());
+  return cursor_loader_->CreateCursor(bitmap, hotspot);
 }
 
-PlatformCursor X11CursorFactory::CreateAnimatedCursor(
+scoped_refptr<PlatformCursor> X11CursorFactory::CreateAnimatedCursor(
     mojom::CursorType type,
     const std::vector<SkBitmap>& bitmaps,
     const gfx::Point& hotspot,
@@ -67,17 +52,7 @@ PlatformCursor X11CursorFactory::CreateAnimatedCursor(
   images.reserve(bitmaps.size());
   for (const auto& bitmap : bitmaps)
     images.push_back(XCursorLoader::Image{bitmap, hotspot, frame_delay});
-  auto cursor = cursor_loader_->CreateCursor(images);
-  cursor->AddRef();
-  return ToPlatformCursor(cursor.get());
-}
-
-void X11CursorFactory::RefImageCursor(PlatformCursor cursor) {
-  ToX11Cursor(cursor)->AddRef();
-}
-
-void X11CursorFactory::UnrefImageCursor(PlatformCursor cursor) {
-  ToX11Cursor(cursor)->Release();
+  return cursor_loader_->CreateCursor(images);
 }
 
 void X11CursorFactory::ObserveThemeChanges() {
@@ -95,7 +70,8 @@ void X11CursorFactory::OnCursorThemeSizeChanged(int cursor_theme_size) {
   ClearThemeCursors();
 }
 
-PlatformCursor X11CursorFactory::GetDefaultCursor(mojom::CursorType type) {
+scoped_refptr<PlatformCursor> X11CursorFactory::GetDefaultCursor(
+    mojom::CursorType type) {
   if (!default_cursors_.count(type)) {
     // Try to load a predefined X11 cursor.
     default_cursors_[type] =
@@ -104,8 +80,7 @@ PlatformCursor X11CursorFactory::GetDefaultCursor(mojom::CursorType type) {
             : cursor_loader_->LoadCursor(CursorNamesFromType(type));
   }
 
-  // Returns owned default cursor for this type.
-  return default_cursors_[type].get();
+  return default_cursors_[type];
 }
 
 void X11CursorFactory::ClearThemeCursors() {

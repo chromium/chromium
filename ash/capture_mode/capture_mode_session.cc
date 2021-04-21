@@ -251,12 +251,10 @@ ui::Cursor GetCursorForFullscreenOrWindowCapture(bool capture_image) {
   ui::ScaleAndRotateCursorBitmapAndHotpoint(
       device_scale_factor, display.panel_rotation(), &bitmap, &hotspot);
   auto* cursor_factory = ui::CursorFactory::GetInstance();
-  ui::PlatformCursor platform_cursor =
-      cursor_factory->CreateImageCursor(cursor.type(), bitmap, hotspot);
-  cursor.SetPlatformCursor(platform_cursor);
+  cursor.SetPlatformCursor(
+      cursor_factory->CreateImageCursor(cursor.type(), bitmap, hotspot));
   cursor.set_custom_bitmap(bitmap);
   cursor.set_custom_hotspot(hotspot);
-  cursor_factory->UnrefImageCursor(platform_cursor);
 
   return cursor;
 }

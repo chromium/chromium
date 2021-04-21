@@ -9,19 +9,22 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/gfx/x/xproto.h"
+
+template <class T>
+class scoped_refptr;
 
 namespace ui {
 
 // Ref counted class to hold an X11 cursor resource.  Clears the X11 resources
 // on destruction
-class COMPONENT_EXPORT(UI_BASE_X) X11Cursor
-    : public base::RefCounted<X11Cursor> {
+class COMPONENT_EXPORT(UI_BASE_X) X11Cursor : public PlatformCursor {
  public:
-  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
-
   using Callback = base::OnceCallback<void(x11::Cursor)>;
+
+  static scoped_refptr<X11Cursor> FromPlatformCursor(
+      scoped_refptr<PlatformCursor> platform_cursor);
 
   X11Cursor();
   explicit X11Cursor(x11::Cursor cursor);
@@ -35,15 +38,15 @@ class COMPONENT_EXPORT(UI_BASE_X) X11Cursor
   x11::Cursor xcursor() const { return xcursor_; }
 
  private:
-  friend class base::RefCounted<X11Cursor>;
+  friend class base::RefCounted<PlatformCursor>;
   friend class XCursorLoader;
+
+  ~X11Cursor() override;
 
   void SetCursor(x11::Cursor cursor);
 
   // This cannot be named Release() since it conflicts with base::RefCounted.
   x11::Cursor ReleaseCursor();
-
-  ~X11Cursor();
 
   bool loaded_ = false;
   x11::Cursor xcursor_ = x11::Cursor::None;

@@ -6,17 +6,22 @@
 #define UI_BASE_CURSOR_WIN_WIN_CURSOR_H_
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
 #include "base/win/windows_types.h"
+#include "ui/base/cursor/platform_cursor.h"
+
+template <class T>
+class scoped_refptr;
 
 namespace ui {
 
-// Ref counted class to hold a Windows cursor, i.e. an HCURSOR.  Clears the
+// Ref counted class to hold a Windows cursor, i.e. an HCURSOR. Clears the
 // resources on destruction.
-class COMPONENT_EXPORT(UI_BASE_CURSOR) WinCursor
-    : public base::RefCounted<WinCursor> {
+class COMPONENT_EXPORT(UI_BASE_CURSOR) WinCursor : public PlatformCursor {
  public:
-  explicit WinCursor(HCURSOR hcursor = nullptr);
+  static scoped_refptr<WinCursor> FromPlatformCursor(
+      scoped_refptr<PlatformCursor> platform_cursor);
+
+  explicit WinCursor(HCURSOR hcursor = nullptr, bool should_destroy = false);
   WinCursor(const WinCursor&) = delete;
   WinCursor& operator=(const WinCursor&) = delete;
 
@@ -24,9 +29,10 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) WinCursor
 
  private:
   friend class base::RefCounted<WinCursor>;
+  ~WinCursor() override;
 
-  ~WinCursor();
-
+  // Release the cursor on deletion. To be used by custom image cursors.
+  bool should_destroy_;
   HCURSOR hcursor_;
 };
 

@@ -68,7 +68,7 @@ component("x") {
 
   defines = [ "IS_UI_BASE_X_IMPL" ]
 
-  public_deps = []
+  public_deps = [ "//ui/base/cursor:cursor_base" ]
   deps = [
     "//base",
     "//base:i18n",
@@ -79,7 +79,6 @@ component("x") {
     "//ui/base:features",
     "//ui/base/clipboard:clipboard_types",
     "//ui/base/clipboard:file_info",
-    "//ui/base/cursor:cursor_base",
     "//ui/base/cursor:theme_manager",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/display/util",

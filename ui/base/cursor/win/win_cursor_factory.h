@@ -29,12 +29,12 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) WinCursorFactory : public CursorFactory {
   ~WinCursorFactory() override;
 
   // CursorFactory:
-  PlatformCursor GetDefaultCursor(mojom::CursorType type) override;
-  PlatformCursor CreateImageCursor(mojom::CursorType type,
-                                   const SkBitmap& bitmap,
-                                   const gfx::Point& hotspot) override;
-  void RefImageCursor(PlatformCursor cursor) override;
-  void UnrefImageCursor(PlatformCursor cursor) override;
+  scoped_refptr<PlatformCursor> GetDefaultCursor(
+      mojom::CursorType type) override;
+  scoped_refptr<PlatformCursor> CreateImageCursor(
+      mojom::CursorType type,
+      const SkBitmap& bitmap,
+      const gfx::Point& hotspot) override;
 
  private:
   std::map<mojom::CursorType, scoped_refptr<WinCursor>> default_cursors_;

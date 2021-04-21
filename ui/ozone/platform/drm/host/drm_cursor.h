@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
-#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -53,8 +53,9 @@ class DrmCursor : public CursorDelegateEvdev {
   void SetDrmCursorProxy(std::unique_ptr<DrmCursorProxy> proxy);
   void ResetDrmCursorProxy();
 
-  // Change the cursor over the specifed window.
-  void SetCursor(gfx::AcceleratedWidget window, PlatformCursor platform_cursor);
+  // Change the cursor over the specified window.
+  void SetCursor(gfx::AcceleratedWidget window,
+                 scoped_refptr<BitmapCursorOzone> platform_cursor);
 
   // Handle window lifecycle.
   void OnWindowAdded(gfx::AcceleratedWidget window,

@@ -4,6 +4,7 @@
 
 #include "ui/platform_window/x11/x11_window.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -12,6 +13,7 @@
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -760,10 +762,10 @@ bool X11Window::ShouldUseNativeFrame() const {
   return use_native_frame_;
 }
 
-void X11Window::SetCursor(PlatformCursor cursor) {
+void X11Window::SetCursor(scoped_refptr<PlatformCursor> cursor) {
   DCHECK(cursor);
 
-  last_cursor_ = static_cast<X11Cursor*>(cursor);
+  last_cursor_ = X11Cursor::FromPlatformCursor(cursor);
   on_cursor_loaded_.Reset(base::BindOnce(DefineCursor, xwindow_));
   last_cursor_->OnCursorLoaded(on_cursor_loaded_.callback());
 }

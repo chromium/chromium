@@ -13,38 +13,13 @@ Cursor::Cursor() = default;
 
 Cursor::Cursor(mojom::CursorType type) : type_(type) {}
 
-Cursor::Cursor(const Cursor& cursor)
-    : type_(cursor.type_),
-      platform_cursor_(cursor.platform_cursor_),
-      image_scale_factor_(cursor.image_scale_factor_) {
-  if (type_ == mojom::CursorType::kCustom) {
-    custom_hotspot_ = cursor.custom_hotspot_;
-    custom_bitmap_ = cursor.custom_bitmap_;
-    RefCustomCursor();
-  }
-}
+Cursor::Cursor(const Cursor& cursor) = default;
 
-Cursor::~Cursor() {
-  if (type_ == mojom::CursorType::kCustom)
-    UnrefCustomCursor();
-}
+Cursor::~Cursor() = default;
 
-void Cursor::SetPlatformCursor(const PlatformCursor& platform) {
-  if (type_ == mojom::CursorType::kCustom)
-    UnrefCustomCursor();
-  platform_cursor_ = platform;
-  if (type_ == mojom::CursorType::kCustom)
-    RefCustomCursor();
+void Cursor::SetPlatformCursor(scoped_refptr<PlatformCursor> platform_cursor) {
+  platform_cursor_ = platform_cursor;
 }
-
-#if !defined(USE_AURA)
-void Cursor::RefCustomCursor() {
-  NOTIMPLEMENTED();
-}
-void Cursor::UnrefCustomCursor() {
-  NOTIMPLEMENTED();
-}
-#endif
 
 bool Cursor::operator==(const Cursor& cursor) const {
   return type_ == cursor.type_ && platform_cursor_ == cursor.platform_cursor_ &&
@@ -52,21 +27,6 @@ bool Cursor::operator==(const Cursor& cursor) const {
          (type_ != mojom::CursorType::kCustom ||
           (custom_hotspot_ == cursor.custom_hotspot_ &&
            gfx::BitmapsAreEqual(custom_bitmap_, cursor.custom_bitmap_)));
-}
-
-void Cursor::operator=(const Cursor& cursor) {
-  if (*this == cursor)
-    return;
-  if (type_ == mojom::CursorType::kCustom)
-    UnrefCustomCursor();
-  type_ = cursor.type_;
-  platform_cursor_ = cursor.platform_cursor_;
-  if (type_ == mojom::CursorType::kCustom) {
-    RefCustomCursor();
-    custom_hotspot_ = cursor.custom_hotspot_;
-    custom_bitmap_ = cursor.custom_bitmap_;
-  }
-  image_scale_factor_ = cursor.image_scale_factor_;
 }
 
 }  // namespace ui

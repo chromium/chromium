@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/events/event.h"
@@ -316,49 +317,41 @@ bool WaylandWindow::ShouldUseNativeFrame() const {
   return false;
 }
 
-void WaylandWindow::SetCursor(PlatformCursor cursor) {
-  DCHECK(cursor);
+void WaylandWindow::SetCursor(scoped_refptr<PlatformCursor> platform_cursor) {
+  DCHECK(platform_cursor);
 
-  scoped_refptr<BitmapCursorOzone> bitmap =
-      BitmapCursorFactoryOzone::GetBitmapCursor(cursor);
-  if (bitmap_ == bitmap)
+  if (bitmap_ == platform_cursor)
     return;
 
-  bitmap_ = bitmap;
-
-  if (bitmap_->type() == CursorType::kNone) {
-    // Hide the cursor.
+  auto cursor = BitmapCursorOzone::FromPlatformCursor(platform_cursor);
+  base::Optional<int32_t> shape =
+      WaylandZcrCursorShapes::ShapeFromType(cursor->type());
+  if (cursor->type() == CursorType::kNone) {  // Hide the cursor.
     connection_->SetCursorBitmap(std::vector<SkBitmap>(), gfx::Point(),
                                  buffer_scale());
-    return;
-  }
-  // Check for theme-provided cursor.
-  if (bitmap_->platform_data()) {
+  } else if (cursor->platform_data()) {  // Check for theme-provided cursor.
     connection_->SetPlatformCursor(
-        reinterpret_cast<wl_cursor*>(bitmap_->platform_data()), buffer_scale());
-    return;
-  }
-  // Check for Wayland server-side cursor support (e.g. exo for lacros).
-  if (connection_->zcr_cursor_shapes()) {
-    base::Optional<int32_t> shape =
-        WaylandZcrCursorShapes::ShapeFromType(bitmap->type());
-    // If the server supports this cursor type, use a server-side cursor.
-    if (shape.has_value()) {
+        reinterpret_cast<wl_cursor*>(cursor->platform_data()), buffer_scale());
+  } else if (connection_->zcr_cursor_shapes() &&
+             shape.has_value()) {  // Check for Wayland server-side cursor
+                                   // support (e.g. exo for lacros).
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // Lacros should not load image assets for default cursors. See
-      // BitmapCursorFactoryOzone::GetDefaultCursor().
-      DCHECK(bitmap_->bitmaps().empty());
+    // Lacros should not load image assets for default cursors. See
+    // BitmapCursorFactoryOzone::GetDefaultCursor().
+    DCHECK(cursor->bitmaps().empty());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-      connection_->zcr_cursor_shapes()->SetCursorShape(shape.value());
-      return;
-    }
-    // Fall through to client-side bitmap cursors.
+    connection_->zcr_cursor_shapes()->SetCursorShape(shape.value());
+  } else {  // Use client-side bitmap cursors as fallback.
+    // Translate physical pixels to DIPs.
+    gfx::Point hotspot_in_dips =
+        gfx::ScaleToRoundedPoint(cursor->hotspot(), 1.0f / ui_scale_);
+    connection_->SetCursorBitmap(cursor->bitmaps(), hotspot_in_dips,
+                                 buffer_scale());
   }
-  // Translate physical pixels to DIPs.
-  gfx::Point hotspot_in_dips =
-      gfx::ScaleToRoundedPoint(bitmap_->hotspot(), 1.0f / ui_scale_);
-  connection_->SetCursorBitmap(bitmap_->bitmaps(), hotspot_in_dips,
-                               buffer_scale());
+
+  // The new cursor needs to be stored last to avoid deleting the old cursor
+  // while it's still in use.
+  bitmap_ = cursor;
 }
 
 void WaylandWindow::MoveCursorTo(const gfx::Point& location) {

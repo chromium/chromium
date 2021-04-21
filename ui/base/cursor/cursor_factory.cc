@@ -8,8 +8,10 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/cursor/platform_cursor.h"
 
 namespace ui {
 
@@ -34,33 +36,27 @@ CursorFactory* CursorFactory::GetInstance() {
   return g_instance;
 }
 
-PlatformCursor CursorFactory::GetDefaultCursor(mojom::CursorType type) {
+scoped_refptr<PlatformCursor> CursorFactory::GetDefaultCursor(
+    mojom::CursorType type) {
   NOTIMPLEMENTED();
   return nullptr;
 }
 
-PlatformCursor CursorFactory::CreateImageCursor(mojom::CursorType type,
-                                                const SkBitmap& bitmap,
-                                                const gfx::Point& hotspot) {
+scoped_refptr<PlatformCursor> CursorFactory::CreateImageCursor(
+    mojom::CursorType type,
+    const SkBitmap& bitmap,
+    const gfx::Point& hotspot) {
   NOTIMPLEMENTED();
-  return 0;
+  return nullptr;
 }
 
-PlatformCursor CursorFactory::CreateAnimatedCursor(
+scoped_refptr<PlatformCursor> CursorFactory::CreateAnimatedCursor(
     mojom::CursorType type,
     const std::vector<SkBitmap>& bitmaps,
     const gfx::Point& hotspot,
     base::TimeDelta frame_delay) {
   NOTIMPLEMENTED();
-  return 0;
-}
-
-void CursorFactory::RefImageCursor(PlatformCursor cursor) {
-  NOTIMPLEMENTED();
-}
-
-void CursorFactory::UnrefImageCursor(PlatformCursor cursor) {
-  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 void CursorFactory::ObserveThemeChanges() {

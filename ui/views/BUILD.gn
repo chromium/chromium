@@ -1362,7 +1362,10 @@ test("views_unittests") {
           "widget/desktop_aura/desktop_screen_x11_unittest.cc",
           "widget/desktop_aura/x11_drag_drop_client_unittest.cc",
         ]
-        deps += [ "//ui/base/x:test_support" ]
+        deps += [
+          "//ui/base/x",
+          "//ui/base/x:test_support",
+        ]
       }
       if (is_linux || is_chromeos || is_fuchsia) {
         sources += [

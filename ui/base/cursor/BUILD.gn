@@ -14,6 +14,7 @@ component("cursor_base") {
     "cursor_factory.cc",
     "cursor_factory.h",
     "cursor_size.h",
+    "platform_cursor.h",
   ]
   defines = [ "IS_UI_BASE_CURSOR_BASE_IMPL" ]
   public_deps = [
@@ -23,10 +24,6 @@ component("cursor_base") {
     "//ui/gfx/geometry",
   ]
   deps = [ "//ui/gfx:geometry_skia" ]
-
-  if (use_aura) {
-    sources += [ "cursor_aura.cc" ]
-  }
 }
 
 component("theme_manager") {

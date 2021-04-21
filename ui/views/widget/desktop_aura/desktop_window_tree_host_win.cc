@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
@@ -22,6 +23,8 @@
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/class_property.h"
+#include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/cursor/win/win_cursor.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ui_base_features.h"
@@ -633,10 +636,8 @@ void DesktopWindowTreeHostWin::SetCursorNative(gfx::NativeCursor cursor) {
   TRACE_EVENT1("ui,input", "DesktopWindowTreeHostWin::SetCursorNative",
                "cursor", cursor.type());
 
-  ui::WinCursor* platform_cursor =
-      static_cast<ui::WinCursor*>(cursor.platform());
-  DCHECK(platform_cursor);
-  message_handler_->SetCursor(platform_cursor->hcursor());
+  message_handler_->SetCursor(
+      ui::WinCursor::FromPlatformCursor(cursor.platform()));
 }
 
 void DesktopWindowTreeHostWin::OnCursorVisibilityChangedNative(bool show) {

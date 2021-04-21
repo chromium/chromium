@@ -8,10 +8,12 @@
 #include <cmath>
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
@@ -275,10 +277,8 @@ TEST_P(WaylandPointerTest, SetBitmapOnPointerFocus) {
   dummy_cursor.allocPixels(info, 10 * 4);
 
   BitmapCursorFactoryOzone cursor_factory;
-  PlatformCursor cursor = cursor_factory.CreateImageCursor(
+  auto cursor = cursor_factory.CreateImageCursor(
       mojom::CursorType::kCustom, dummy_cursor, gfx::Point(5, 8));
-  scoped_refptr<BitmapCursorOzone> bitmap =
-      BitmapCursorFactoryOzone::GetBitmapCursor(cursor);
 
   EXPECT_CALL(*pointer_, SetCursor(Ne(nullptr), 5, 8));
   window_->SetCursor(cursor);

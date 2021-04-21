@@ -766,16 +766,14 @@ void Pointer::UpdateCursor() {
     ui::ScaleAndRotateCursorBitmapAndHotpoint(scale, display.panel_rotation(),
                                               &bitmap, &hotspot);
 
-    ui::PlatformCursor platform_cursor;
     // TODO(reveman): Add interface for creating cursors from GpuMemoryBuffers
     // and use that here instead of the current bitmap API.
     // https://crbug.com/686600
-    platform_cursor = ui::CursorFactory::GetInstance()->CreateImageCursor(
-        cursor_.type(), bitmap, hotspot);
-    cursor_.SetPlatformCursor(platform_cursor);
+    cursor_.SetPlatformCursor(
+        ui::CursorFactory::GetInstance()->CreateImageCursor(cursor_.type(),
+                                                            bitmap, hotspot));
     cursor_.set_custom_bitmap(bitmap);
     cursor_.set_custom_hotspot(hotspot);
-    ui::CursorFactory::GetInstance()->UnrefImageCursor(platform_cursor);
   }
 
   // If there is a focused surface, update its widget as the views framework

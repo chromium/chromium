@@ -35,6 +35,7 @@
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/ax_system_caret_win.h"
+#include "ui/base/cursor/win/win_cursor.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/ui_base_features.h"
@@ -402,7 +403,7 @@ HWNDMessageHandler::HWNDMessageHandler(HWNDMessageHandlerDelegate* delegate,
       waiting_for_close_now_(false),
       use_system_default_icon_(false),
       restored_enabled_(false),
-      current_cursor_(nullptr),
+      current_cursor_(base::MakeRefCounted<ui::WinCursor>()),
       dpi_(0),
       called_enable_non_client_dpi_scaling_(false),
       active_mouse_tracking_flags_(0),
@@ -863,10 +864,12 @@ bool HWNDMessageHandler::SetTitle(const std::u16string& title) {
   return true;
 }
 
-void HWNDMessageHandler::SetCursor(HCURSOR cursor) {
+void HWNDMessageHandler::SetCursor(scoped_refptr<ui::WinCursor> cursor) {
+  DCHECK(cursor);
+
   TRACE_EVENT1("ui,input", "HWNDMessageHandler::SetCursor", "cursor",
-               static_cast<const void*>(cursor));
-  ::SetCursor(cursor);
+               static_cast<const void*>(cursor->hcursor()));
+  ::SetCursor(cursor->hcursor());
   current_cursor_ = cursor;
 }
 
@@ -2486,12 +2489,15 @@ LRESULT HWNDMessageHandler::OnSetCursor(UINT message,
   if (is_pen_active_in_client_area_)
     return 1;
 
+  // current_cursor_ must be a ui::WinCursor, so that custom image cursors are
+  // properly ref-counted. cursor below is only used for system cursors and
+  // doesn't replace the current cursor so an HCURSOR can be used directly.
+  wchar_t* cursor = IDC_ARROW;
   // Reimplement the necessary default behavior here. Calling DefWindowProc can
   // trigger weird non-client painting for non-glass windows with custom frames.
   // Using a ScopedRedrawLock to prevent caption rendering artifacts may allow
   // content behind this window to incorrectly paint in front of this window.
   // Invalidating the window to paint over either set of artifacts is not ideal.
-  wchar_t* cursor = IDC_ARROW;
   switch (LOWORD(l_param)) {
     case HTSIZE:
       cursor = IDC_SIZENWSE;

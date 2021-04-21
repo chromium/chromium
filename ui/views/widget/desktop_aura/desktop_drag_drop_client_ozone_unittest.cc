@@ -9,12 +9,14 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -60,7 +62,7 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
   }
   void Activate() override {}
   void Deactivate() override {}
-  void SetCursor(ui::PlatformCursor cursor) override {}
+  void SetCursor(scoped_refptr<ui::PlatformCursor> cursor) override {}
   void MoveCursorTo(const gfx::Point& location) override {}
   void ConfineCursorToBounds(const gfx::Rect& bounds) override {}
   void SetRestoredBoundsInPixels(const gfx::Rect& bounds) override {}

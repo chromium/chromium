@@ -14,6 +14,9 @@
 
 class SkBitmap;
 
+template <class T>
+class scoped_refptr;
+
 namespace base {
 class TimeDelta;
 }
@@ -23,7 +26,7 @@ class Point;
 }
 
 namespace ui {
-using PlatformCursor = void*;
+class PlatformCursor;
 
 class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) CursorFactory {
  public:
@@ -33,36 +36,25 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) CursorFactory {
   // Returns the thread-local instance.
   static CursorFactory* GetInstance();
 
-  // Return the default cursor of the specified type. The types are listed in
-  // ui/base/cursor/cursor.h. Default cursors are managed by the implementation
-  // and must live indefinitely; there's no way to know when to free them.
-  // When a default cursor is not available, nullptr is returned.
-  virtual PlatformCursor GetDefaultCursor(mojom::CursorType type);
+  // Return the default cursor of the specified type. When a default cursor is
+  // not available, nullptr is returned.
+  virtual scoped_refptr<PlatformCursor> GetDefaultCursor(
+      mojom::CursorType type);
 
-  // Return an image cursor for the specified |type| with a |bitmap| and
-  // |hotspot|. Image cursors are referenced counted and have an initial
-  // refcount of 1. Therefore, each CreateImageCursor call must be matched with
-  // a call to UnrefImageCursor.
-  virtual PlatformCursor CreateImageCursor(mojom::CursorType type,
-                                           const SkBitmap& bitmap,
-                                           const gfx::Point& hotspot);
+  // Return an image cursor for the specified `type` with a `bitmap` and
+  // `hotspot`.
+  virtual scoped_refptr<PlatformCursor> CreateImageCursor(
+      mojom::CursorType type,
+      const SkBitmap& bitmap,
+      const gfx::Point& hotspot);
 
-  // Return a animated cursor from the specified image & hotspot. Animated
-  // cursors are referenced counted and have an initial refcount of 1.
-  // Therefore, each CreateAnimatedCursor call must be matched with a call to
-  // UnrefImageCursor.
-  // |frame_delay| is the delay between frames.
-  virtual PlatformCursor CreateAnimatedCursor(
+  // Return a animated cursor from the specified `bitmaps` and `hotspot`.
+  // `frame_delay` is the delay between frames.
+  virtual scoped_refptr<PlatformCursor> CreateAnimatedCursor(
       mojom::CursorType type,
       const std::vector<SkBitmap>& bitmaps,
       const gfx::Point& hotspot,
       base::TimeDelta frame_delay);
-
-  // Increment platform image cursor refcount.
-  virtual void RefImageCursor(PlatformCursor cursor);
-
-  // Decrement platform image cursor refcount.
-  virtual void UnrefImageCursor(PlatformCursor cursor);
 
   // Called after CursorThemeManager is initialized, to be able to track
   // cursor theme and size changes.

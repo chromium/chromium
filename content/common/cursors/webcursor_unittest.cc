@@ -211,7 +211,7 @@ void ScaleCursor(float scale, int hotspot_x, int hotspot_y) {
   webcursor.SetDisplayInfo(display);
 
   HCURSOR windows_cursor_handle =
-      static_cast<ui::WinCursor*>(webcursor.GetNativeCursor().platform())
+      ui::WinCursor::FromPlatformCursor(webcursor.GetNativeCursor().platform())
           ->hcursor();
   EXPECT_NE(nullptr, windows_cursor_handle);
   ICONINFO windows_icon_info;

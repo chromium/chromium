@@ -8,6 +8,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
+#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 namespace ui {
@@ -85,7 +88,7 @@ TEST_P(WaylandCursorFactoryTest, RetainOldThemeUntilNewBufferIsAttached) {
   // that theme.
   {
     auto* const current_theme = cursor_factory_->current_theme_.get();
-    auto* const cursor =
+    auto const cursor =
         cursor_factory_->GetDefaultCursor(mojom::CursorType::kPointer);
     EXPECT_NE(cursor, nullptr);
     EXPECT_GT(cursor_factory_->current_theme_->cache.size(), 0U);
@@ -105,19 +108,19 @@ TEST_P(WaylandCursorFactoryTest, RetainOldThemeUntilNewBufferIsAttached) {
     EXPECT_EQ(cursor_factory_->unloaded_theme_.get(), current_theme);
 
     cursor_factory_->OnCursorBufferAttached(static_cast<wl_cursor*>(
-        static_cast<BitmapCursorOzone*>(cursor)->platform_data()));
+        BitmapCursorOzone::FromPlatformCursor(cursor)->platform_data()));
     EXPECT_EQ(cursor_factory_->unloaded_theme_.get(), current_theme);
   }
 
   // Finally, tell the factory that we have attached a buffer from the current
   // theme.  This time the old theme held since a while ago should be freed.
   {
-    auto* const cursor =
+    auto const cursor =
         cursor_factory_->GetDefaultCursor(mojom::CursorType::kPointer);
     EXPECT_NE(cursor, nullptr);
 
     cursor_factory_->OnCursorBufferAttached(static_cast<wl_cursor*>(
-        static_cast<BitmapCursorOzone*>(cursor)->platform_data()));
+        BitmapCursorOzone::FromPlatformCursor(cursor)->platform_data()));
 
     EXPECT_EQ(cursor_factory_->unloaded_theme_.get(), nullptr);
   }

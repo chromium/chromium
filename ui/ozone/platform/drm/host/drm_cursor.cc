@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
+#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/ozone/platform/drm/host/drm_window_host.h"
 #include "ui/ozone/platform/drm/host/drm_window_host_manager.h"
@@ -75,21 +76,18 @@ gfx::Point DrmCursor::GetBitmapLocationLocked() {
 }
 
 void DrmCursor::SetCursor(gfx::AcceleratedWidget window,
-                          PlatformCursor platform_cursor) {
+                          scoped_refptr<BitmapCursorOzone> platform_cursor) {
   TRACE_EVENT0("drmcursor", "DrmCursor::SetCursor");
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_NE(window, gfx::kNullAcceleratedWidget);
   DCHECK(platform_cursor);
 
-  scoped_refptr<BitmapCursorOzone> bitmap =
-      BitmapCursorFactoryOzone::GetBitmapCursor(platform_cursor);
-
   base::AutoLock lock(lock_);
 
-  if (window_ != window || bitmap_ == bitmap)
+  if (window_ != window || bitmap_ == platform_cursor)
     return;
 
-  bitmap_ = bitmap;
+  bitmap_ = platform_cursor;
 
   SendCursorShowLocked();
 }

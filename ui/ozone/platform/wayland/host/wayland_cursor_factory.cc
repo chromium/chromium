@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/task_runner_util.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm.h"
 
@@ -48,7 +49,8 @@ void WaylandCursorFactory::ObserveThemeChanges() {
   cursor_theme_observer_.Observe(cursor_theme_manager);
 }
 
-PlatformCursor WaylandCursorFactory::GetDefaultCursor(mojom::CursorType type) {
+scoped_refptr<PlatformCursor> WaylandCursorFactory::GetDefaultCursor(
+    mojom::CursorType type) {
   if (current_theme_->cache.count(type) == 0) {
     for (const std::string& name : CursorNamesFromType(type)) {
       wl_cursor* cursor = GetCursorFromTheme(name);
@@ -68,7 +70,7 @@ PlatformCursor WaylandCursorFactory::GetDefaultCursor(mojom::CursorType type) {
   if (current_theme_->cache[type].get() == nullptr)
     return BitmapCursorFactoryOzone::GetDefaultCursor(type);
 
-  return static_cast<PlatformCursor>(current_theme_->cache[type].get());
+  return current_theme_->cache[type];
 }
 
 void WaylandCursorFactory::SetDeviceScaleFactor(float scale) {
