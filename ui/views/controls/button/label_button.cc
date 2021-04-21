@@ -59,6 +59,12 @@ LabelButton::LabelButton(PressedCallback callback,
 LabelButton::~LabelButton() = default;
 
 gfx::ImageSkia LabelButton::GetImage(ButtonState for_state) const {
+  if (!GetWidget()) {
+    // Getting an image requires colors from a NativeTheme and is only available
+    // when hosted.
+    return gfx::ImageSkia();
+  }
+
   for_state = ImageStateForState(for_state);
   return GetImageSkiaFromImageModel(button_state_image_models_[for_state],
                                     GetNativeTheme());
@@ -568,8 +574,12 @@ void LabelButton::VisualStateChanged() {
 }
 
 void LabelButton::ResetColorsFromNativeTheme() {
-  if (!GetWidget())
+  if (!GetWidget()) {
+    // If there is no widget, we can't actually get the real colors here.
+    // An OnThemeChanged() will fire once a widget is available.
     return;
+  }
+
   const ui::NativeTheme* theme = GetNativeTheme();
   // Since this is a LabelButton, use the label colors.
   SkColor colors[STATE_COUNT] = {
