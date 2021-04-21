@@ -3236,18 +3236,12 @@ bool DoesUndoRolePresentation(const AtomicString& name) {
   // This is the list of global ARIA properties that force
   // role="presentation"/"none" to be exposed, and does not contain ARIA
   // properties who's global status is being deprecated.
-  // TODO(accessibility) aria-label/labelledby is not allowed on
-  // role="none"/"presentation", therefore it should not be listed here.
-  // However, this breaks a few name tests that assume aria-label causes
-  // role="none"/"presentation" to be exposed, even though the property is
-  // prohibited there. See https://github.com/w3c/accname/issues/121.
   // clang-format off
   DEFINE_STATIC_LOCAL(
       HashSet<AtomicString>, aria_global_properties,
       ({
         "ARIA-ATOMIC",
-        // TODO(accessibility/ARIA 1.3) Add these (and test in aria-global.html)
-        // "ARIA-BRAILLELABEL",
+        // TODO(accessibility/ARIA 1.3) Add (and test in aria-global.html)
         // "ARIA-BRAILLEROLEDESCRIPTION",
         "ARIA-BUSY",
         "ARIA-CONTROLS",
