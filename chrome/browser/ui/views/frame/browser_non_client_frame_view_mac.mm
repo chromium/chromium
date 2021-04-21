@@ -448,6 +448,11 @@ void BrowserNonClientFrameViewMac::LayoutTitleBarForWebApp() {
   int leading_x = kFramePaddingLeft;
   int trailing_x = width();
 
+  if (CaptionButtonsOnLeadingEdge() && base::i18n::IsRTL()) {
+    leading_x = 0;
+    trailing_x = width() - kFramePaddingLeft;
+  }
+
   std::pair<int, int> remaining_bounds =
       web_app_frame_toolbar()->LayoutInContainer(leading_x, trailing_x, 0,
                                                  available_height);
