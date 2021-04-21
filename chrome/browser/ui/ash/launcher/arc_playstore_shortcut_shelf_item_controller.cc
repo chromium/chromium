@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/launcher/arc_playstore_shortcut_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/arc_playstore_shortcut_shelf_item_controller.h"
 
 #include <utility>
 
@@ -14,14 +14,14 @@
 #include "ui/events/event_constants.h"
 #include "ui/gfx/image/image_skia.h"
 
-ArcPlaystoreShortcutLauncherItemController::
-    ArcPlaystoreShortcutLauncherItemController()
+ArcPlaystoreShortcutShelfItemController::
+    ArcPlaystoreShortcutShelfItemController()
     : AppShortcutShelfItemController(ash::ShelfID(arc::kPlayStoreAppId)) {}
 
-ArcPlaystoreShortcutLauncherItemController::
-    ~ArcPlaystoreShortcutLauncherItemController() {}
+ArcPlaystoreShortcutShelfItemController::
+    ~ArcPlaystoreShortcutShelfItemController() = default;
 
-void ArcPlaystoreShortcutLauncherItemController::ItemSelected(
+void ArcPlaystoreShortcutShelfItemController::ItemSelected(
     std::unique_ptr<ui::Event> event,
     int64_t display_id,
     ash::ShelfLaunchSource source,
@@ -40,7 +40,7 @@ void ArcPlaystoreShortcutLauncherItemController::ItemSelected(
             true /* deferred_launch_allowed */, display_id,
             apps::mojom::LaunchSource::kFromShelf);
     // ArcAppLauncher may launch Play Store in case it exists already. In this
-    // case this instance of ArcPlaystoreShortcutLauncherItemController may be
+    // case this instance of ArcPlaystoreShortcutShelfItemController may be
     // deleted. If Play Store does not exist at this moment, then let
     // |playstore_launcher_| wait until it appears.
     if (!playstore_launcher->app_launched())

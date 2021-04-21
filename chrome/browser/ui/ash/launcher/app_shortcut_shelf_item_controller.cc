@@ -16,7 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/ash_util.h"
-#include "chrome/browser/ui/ash/launcher/arc_playstore_shortcut_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/arc_playstore_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
 #include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
@@ -247,7 +247,7 @@ class AppMatcher {
 std::unique_ptr<AppShortcutShelfItemController>
 AppShortcutShelfItemController::Create(const ash::ShelfID& shelf_id) {
   if (shelf_id.app_id == arc::kPlayStoreAppId)
-    return std::make_unique<ArcPlaystoreShortcutLauncherItemController>();
+    return std::make_unique<ArcPlaystoreShortcutShelfItemController>();
   return base::WrapUnique<AppShortcutShelfItemController>(
       new AppShortcutShelfItemController(shelf_id));
 }

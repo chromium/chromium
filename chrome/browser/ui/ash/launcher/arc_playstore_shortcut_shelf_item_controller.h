@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_ARC_PLAYSTORE_SHORTCUT_LAUNCHER_ITEM_CONTROLLER_H_
-#define CHROME_BROWSER_UI_ASH_LAUNCHER_ARC_PLAYSTORE_SHORTCUT_LAUNCHER_ITEM_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_ARC_PLAYSTORE_SHORTCUT_SHELF_ITEM_CONTROLLER_H_
+#define CHROME_BROWSER_UI_ASH_LAUNCHER_ARC_PLAYSTORE_SHORTCUT_SHELF_ITEM_CONTROLLER_H_
 
 #include <memory>
 
@@ -12,11 +12,11 @@
 
 class ArcAppLauncher;
 
-class ArcPlaystoreShortcutLauncherItemController
+class ArcPlaystoreShortcutShelfItemController
     : public AppShortcutShelfItemController {
  public:
-  ArcPlaystoreShortcutLauncherItemController();
-  ~ArcPlaystoreShortcutLauncherItemController() override;
+  ArcPlaystoreShortcutShelfItemController();
+  ~ArcPlaystoreShortcutShelfItemController() override;
 
   // AppShortcutShelfItemController overrides:
   void ItemSelected(std::unique_ptr<ui::Event> event,
@@ -28,7 +28,7 @@ class ArcPlaystoreShortcutLauncherItemController
  private:
   std::unique_ptr<ArcAppLauncher> playstore_launcher_;
 
-  DISALLOW_COPY_AND_ASSIGN(ArcPlaystoreShortcutLauncherItemController);
+  DISALLOW_COPY_AND_ASSIGN(ArcPlaystoreShortcutShelfItemController);
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_ARC_PLAYSTORE_SHORTCUT_LAUNCHER_ITEM_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_ARC_PLAYSTORE_SHORTCUT_SHELF_ITEM_CONTROLLER_H_
