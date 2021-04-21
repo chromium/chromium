@@ -1048,7 +1048,15 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
       GetPrivateProfileIfRequested(command_line, last_used_profile);
   if (MaybeLaunchApplication(command_line, cur_dir, profile_to_launch,
                              std::make_unique<LaunchModeRecorder>())) {
-    return true;
+    // At this point we've opened the app. As a temporary fix for
+    // https://crbug.com/1199203, if this startup is also from an unclean exit
+    // we also need to open a blank browser window so that users have the
+    // opportunity to restore, but also to prevent a potential crash loop.
+    // To achieve that, stop this from returning here, and allow it to continue
+    // to hit a standard crash reopen codepath and show an empty browser window
+    // with the restore dialog.
+    if (!HasPendingUncleanExit(profile_to_launch))
+      return true;
   }
 
   // Web app URL handling.
