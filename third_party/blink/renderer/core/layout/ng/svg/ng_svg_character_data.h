@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_NG_SVG_CHARACTER_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_NG_SVG_CHARACTER_DATA_H_
 
+#include <iosfwd>
+
 #include "third_party/blink/renderer/core/layout/svg/svg_character_data.h"
 
 namespace blink {
@@ -14,6 +16,8 @@ namespace blink {
 struct NGSVGCharacterData final : public SVGCharacterData {
   bool anchored_chunk = false;
 };
+
+std::ostream& operator<<(std::ostream& ostream, const NGSVGCharacterData& data);
 
 }  // namespace blink
 
