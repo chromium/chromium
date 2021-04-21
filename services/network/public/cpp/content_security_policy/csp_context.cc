@@ -37,6 +37,7 @@ bool CSPContext::IsAllowedByCsp(
     const std::vector<mojom::ContentSecurityPolicyPtr>& policies,
     mojom::CSPDirectiveName directive_name,
     const GURL& url,
+    const GURL& url_before_redirects,
     bool has_followed_redirect,
     bool is_response_check,
     const mojom::SourceLocationPtr& source_location,
@@ -46,8 +47,9 @@ bool CSPContext::IsAllowedByCsp(
   for (const auto& policy : policies) {
     if (ShouldCheckPolicy(policy, check_csp_disposition)) {
       allow &= CheckContentSecurityPolicy(
-          policy, directive_name, url, has_followed_redirect, is_response_check,
-          this, source_location, is_form_submission);
+          policy, directive_name, url, url_before_redirects,
+          has_followed_redirect, is_response_check, this, source_location,
+          is_form_submission);
     }
   }
 

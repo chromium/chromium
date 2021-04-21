@@ -3832,6 +3832,7 @@ void NavigationControllerImpl::LoadPostCommitErrorPage(
   common_params->url = url.is_empty() ? GURL("about:blank") : url;
   mojom::CommitNavigationParamsPtr commit_params =
       CreateCommitNavigationParams();
+  commit_params->original_url = common_params->url;
 
   // Error pages have a fully permissive FramePolicy.
   // TODO(arthursonzogni): Consider providing the minimal capabilities to the

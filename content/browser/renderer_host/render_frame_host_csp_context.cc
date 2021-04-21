@@ -33,7 +33,16 @@ void RenderFrameHostCSPContext::SanitizeDataForUseInCspViolation(
   // The main goal of this is to avoid leaking information between potentially
   // separate renderers, in the event of one of them being compromised.
   // See https://crbug.com/633306.
-  bool sanitize_blocked_url = true;
+  //
+  // We need to sanitize the `blocked_url` only for frame-src. All other
+  // directive checks pass as `blocked_url` the initial URL (before redirects),
+  // which the renderer already knows.
+  //
+  // Temporarily, we also sanitize for form-action, because the form-action
+  // check in the browser is reporting to the wrong frame.
+  bool sanitize_blocked_url =
+      directive == network::mojom::CSPDirectiveName::FrameSrc ||
+      directive == network::mojom::CSPDirectiveName::FormAction;
   bool sanitize_source_location = true;
 
   // There is no need to sanitize data when it is same-origin with the current
@@ -48,11 +57,6 @@ void RenderFrameHostCSPContext::SanitizeDataForUseInCspViolation(
       sanitize_source_location = false;
     }
   }
-
-  // When a renderer tries to do a form submission, it already knows the url of
-  // the blocked url, except when it is redirected.
-  if (!is_redirect && directive == network::mojom::CSPDirectiveName::FormAction)
-    sanitize_blocked_url = false;
 
   if (sanitize_blocked_url)
     *blocked_url = blocked_url->GetOrigin();

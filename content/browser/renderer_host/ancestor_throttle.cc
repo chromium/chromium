@@ -405,6 +405,7 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
             content_security_policy,
             network::mojom::CSPDirectiveName::FrameAncestors,
             parent->GetLastCommittedOrigin().GetURL(),
+            GURL(),  // url_before_redirects is ignored for frame-ancestors
             navigation_handle()->WasServerRedirect(),
             true /* is_response_check */, empty_source_location,
             network::CSPContext::CheckCSPDisposition::CHECK_ALL_CSP,

@@ -1171,6 +1171,7 @@ NavigationRequest::NavigationRequest(
   DCHECK(browser_initiated_ || common_params_->initiator_origin.has_value());
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
   DCHECK(common_params_->method == "POST" || !common_params_->post_data);
+  DCHECK_EQ(common_params_->url, commit_params_->original_url);
   ScopedNavigationRequestCrashKeys crash_keys(this);
 
   // There should be no navigations to about:newtab, about:version or other
@@ -4182,10 +4183,10 @@ bool NavigationRequest::IsAllowedByCSPDirective(
   } else {
     url = common_params_->url;
   }
-  return context->IsAllowedByCsp(policies, directive, url,
-                                 has_followed_redirect, is_response_check,
-                                 common_params_->source_location, disposition,
-                                 begin_params_->is_form_submission);
+  return context->IsAllowedByCsp(
+      policies, directive, url, commit_params_->original_url,
+      has_followed_redirect, is_response_check, common_params_->source_location,
+      disposition, begin_params_->is_form_submission);
 }
 
 net::Error NavigationRequest::CheckCSPDirectives(

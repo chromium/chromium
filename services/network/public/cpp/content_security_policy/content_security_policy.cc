@@ -1184,6 +1184,7 @@ mojom::AllowCSPFromHeaderValuePtr ParseAllowCSPFromHeader(
 bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
                                 CSPDirectiveName directive_name,
                                 const GURL& url,
+                                const GURL& url_before_redirects,
                                 bool has_followed_redirect,
                                 bool is_response_check,
                                 CSPContext* context,
@@ -1215,7 +1216,10 @@ bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
 
     if (!allowed) {
       ReportViolation(context, policy, effective_directive_name, directive_name,
-                      url, has_followed_redirect, source_location);
+                      directive_name == CSPDirectiveName::FrameSrc
+                          ? url
+                          : url_before_redirects,
+                      has_followed_redirect, source_location);
     }
 
     return allowed ||

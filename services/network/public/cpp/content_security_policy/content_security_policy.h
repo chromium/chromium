@@ -60,6 +60,7 @@ COMPONENT_EXPORT(NETWORK_CPP)
 bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
                                 mojom::CSPDirectiveName directive,
                                 const GURL& url,
+                                const GURL& url_before_redirects,
                                 bool has_followed_redirect,
                                 bool is_response_check,
                                 CSPContext* context,

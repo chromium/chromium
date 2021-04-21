@@ -44,6 +44,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CSPContext {
       const std::vector<mojom::ContentSecurityPolicyPtr>& policies,
       mojom::CSPDirectiveName directive_name,
       const GURL& url,
+      const GURL& url_before_redirects,
       bool has_followed_redirect,
       bool is_response_check,
       const mojom::SourceLocationPtr& source_location,
