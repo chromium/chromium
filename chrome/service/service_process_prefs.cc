@@ -46,11 +46,10 @@ void ServiceProcessPrefs::SetString(const std::string& key,
 bool ServiceProcessPrefs::GetBoolean(const std::string& key,
                                      bool default_value) const {
   const base::Value* value;
-  bool result = false;
-  if (!prefs_->GetValue(key, &value) || !value->GetAsBoolean(&result))
+  if (!prefs_->GetValue(key, &value) || !value->is_bool())
     return default_value;
 
-  return result;
+  return value->GetBool();
 }
 
 void ServiceProcessPrefs::SetBoolean(const std::string& key, bool value) {

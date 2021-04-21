@@ -153,10 +153,7 @@ class SupervisedUserExtensionTest : public ExtensionServiceTestWithInstall {
 
     std::unique_ptr<base::Value> result(RunFunctionAndReturnSingleResult(
         function.get(), "[\"" + extension_id + "\"]", browser_context()));
-
-    bool copy_bool_result = false;
-    EXPECT_TRUE(result->GetAsBoolean(&copy_bool_result));
-    return copy_bool_result;
+    return result->GetBool();
   }
 
   base::FilePath base_path() const {

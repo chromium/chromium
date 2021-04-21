@@ -344,8 +344,8 @@ SystemNetworkContextManager::SystemNetworkContextManager(
           ->GetPolicies(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
                                                 std::string()))
           .GetValue(policy::key::kQuicAllowed);
-  if (value)
-    value->GetAsBoolean(&is_quic_allowed_);
+  if (value && value->is_bool())
+    is_quic_allowed_ = value->GetBool();
 #endif
   shared_url_loader_factory_ = new URLLoaderFactoryForSystem(this);
 
