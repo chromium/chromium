@@ -445,8 +445,6 @@ void TaskQueueImpl::ScheduleDelayedWorkTask(Task pending_task) {
     main_thread_only().delayed_incoming_queue.push(std::move(pending_task));
     LazyNow lazy_now(time_domain_now);
     MoveReadyDelayedTasksToWorkQueue(&lazy_now);
-    // if (IsQueueEnabled() || !main_thread_only().current_fence)
-    //  sequence_manager_->ScheduleWork();
   } else {
     // If |delayed_run_time| is in the future we can queue it as normal.
     PushOntoDelayedIncomingQueueFromMainThread(std::move(pending_task),
