@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="target"></div>
+<script>
+
+assert_true(document.prerendering);
+
+async function requestFullscreen() {
+  const bc = new BroadcastChannel('prerender-channel');
+
+  try {
+    const _ = await target.requestFullscreen();
+    bc.postMessage('unexpected success');
+  } catch (err) {
+    bc.postMessage('request failed');
+  } finally {
+    bc.close();
+  }
+}
+
+requestFullscreen();
+
+</script>
