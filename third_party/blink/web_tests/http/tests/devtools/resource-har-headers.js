@@ -82,7 +82,7 @@
     '_transferSize': 'formatAsTypeName',
     '_error': 'skip'
   };
-  var har = await SDK.HARLog.Entry.build(testRequest);
+  var har = await NetworkTestRunner.buildHARLogEntry(testRequest);
   TestRunner.addObject(har, stillNondeterministic, '', 'HAR:');
   TestRunner.completeTest();
 })();

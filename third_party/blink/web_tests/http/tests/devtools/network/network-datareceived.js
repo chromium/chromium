@@ -23,7 +23,8 @@
 
   var encodedBytesReceived = 0;
   function responseReceived(requestId, loaderId, time, resourceType, response, frameId) {
-    var request = SDK.NetworkLog.instance().requestByManagerAndId(TestRunner.networkManager, requestId);
+    var request = NetworkTestRunner.networkLog().requestByManagerAndId(
+        TestRunner.networkManager, requestId);
     if (/resource\.php/.exec(request.url())) {
       TestRunner.addResult('Received response.');
       encodedBytesReceived += response.encodedDataLength;
@@ -31,7 +32,8 @@
   }
 
   function loadingFinished(requestId, finishTime, encodedDataLength) {
-    var request = SDK.NetworkLog.instance().requestByManagerAndId(TestRunner.networkManager, requestId);
+    var request = NetworkTestRunner.networkLog().requestByManagerAndId(
+        TestRunner.networkManager, requestId);
     if (/resource\.php/.exec(request.url())) {
       TestRunner.assertEquals(encodedBytesReceived, encodedDataLength, 'Data length mismatch');
       TestRunner.addResult('SUCCESS');
@@ -40,7 +42,8 @@
   }
 
   function loadingFailed(requestId, time, localizedDescription, canceled) {
-    var request = SDK.NetworkLog.instance().requestByManagerAndId(TestRunner.networkManager, requestId);
+    var request = NetworkTestRunner.networkLog().requestByManagerAndId(
+        TestRunner.networkManager, requestId);
     if (/resource\.php/.exec(request.url())) {
       TestRunner.addResult('Loading failed!');
       TestRunner.completeTest();
@@ -49,7 +52,8 @@
 
   function dataReceived(requestId, time, dataLength, encodedDataLength) {
     TestRunner.addSniffer(SDK.NetworkDispatcher.prototype, 'dataReceived', dataReceived);
-    var request = SDK.NetworkLog.instance().requestByManagerAndId(TestRunner.networkManager, requestId);
+    var request = NetworkTestRunner.networkLog().requestByManagerAndId(
+        TestRunner.networkManager, requestId);
     if (/resource\.php/.exec(request.url()))
       encodedBytesReceived += encodedDataLength;
   }

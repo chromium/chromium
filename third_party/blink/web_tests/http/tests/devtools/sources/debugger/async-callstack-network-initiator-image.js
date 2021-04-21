@@ -4,8 +4,11 @@
 
 (async function() {
   TestRunner.addResult(`Tests asynchronous network initiator for image loaded from JS.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadModule('sources');
+  await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadModule('console');
+  await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
@@ -24,7 +27,8 @@
     if (!event.data.url().endsWith('resources/image.png'))
       return;
 
-    var initiatorInfo = SDK.NetworkLog.instance().initiatorInfoForRequest(event.data);
+    var initiatorInfo =
+        NetworkTestRunner.networkLog().initiatorInfoForRequest(event.data);
     var element = new Components.Linkifier().linkifyScriptLocation(
         TestRunner.mainTarget, initiatorInfo.scriptId, initiatorInfo.url, initiatorInfo.lineNumber,
         initiatorInfo.columnNumber - 1);

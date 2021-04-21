@@ -29,7 +29,9 @@
     if (!/post-target\.cgi/.test(request.url()))
       return;
     TestRunner.addResult(request.url());
-    TestRunner.addObject(await SDK.HARLog.Entry.build(request), NetworkTestRunner.HARPropertyFormattersWithSize);
+    TestRunner.addObject(
+        await NetworkTestRunner.buildHARLogEntry(request),
+        NetworkTestRunner.HARPropertyFormattersWithSize);
     TestRunner.completeTest();
   }
 })();

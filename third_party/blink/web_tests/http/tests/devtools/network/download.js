@@ -4,8 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that responseReceived is called on NetworkDispatcher for downloads.\n`);
-
-  await TestRunner.loadModule('browser_sdk');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   await TestRunner.evaluateInPagePromise(`
@@ -23,7 +22,8 @@
   TestRunner.addIframe('resources/download.zzz');
 
   function responseReceived(requestId, time, resourceType, response) {
-    var request = SDK.NetworkLog.instance().requestByManagerAndId(TestRunner.networkManager, requestId);
+    var request = NetworkTestRunner.networkLog().requestByManagerAndId(
+        TestRunner.networkManager, requestId);
 
     if (/download\.zzz/.exec(request.url())) {
       TestRunner.addResult('Received response for download.zzz');
@@ -33,13 +33,15 @@
   }
 
   function loadingFinished(requestId, finishTime) {
-    var request = SDK.NetworkLog.instance().requestByManagerAndId(TestRunner.networkManager, requestId);
+    var request = NetworkTestRunner.networkLog().requestByManagerAndId(
+        TestRunner.networkManager, requestId);
 
     if (/download\.zzz/.exec(request.url())) TestRunner.completeTest();
   }
 
   function loadingFailed(requestId, time, localizedDescription, canceled) {
-    var request = SDK.NetworkLog.instance().requestByManagerAndId(TestRunner.networkManager, requestId);
+    var request = NetworkTestRunner.networkLog().requestByManagerAndId(
+        TestRunner.networkManager, requestId);
 
     if (/download\.zzz/.exec(request.url())) TestRunner.completeTest();
   }

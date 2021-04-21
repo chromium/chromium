@@ -6,7 +6,7 @@
   await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
-  SDK.NetworkLog.instance().reset();
+  NetworkTestRunner.networkLog().reset();
   await TestRunner.addIframe('/loading/sxg/resources/sxg-larger-than-10k.sxg');
   await ConsoleTestRunner.dumpConsoleMessages();
   NetworkTestRunner.dumpNetworkRequestsWithSignedExchangeInfo();

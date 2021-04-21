@@ -61,7 +61,8 @@
       TestRunner.evaluateInPage(`loadResource('${url}')`, firstXhrCallback);
 
       function firstXhrCallback() {
-        requestWithResource = SDK.NetworkLog.instance().requestForURL(resource.url);
+        requestWithResource =
+            NetworkTestRunner.networkLog().requestForURL(resource.url);
         TestRunner.evaluateInPage('loadResource(\'missing.js\')', secondXhrCallback);
       }
 
