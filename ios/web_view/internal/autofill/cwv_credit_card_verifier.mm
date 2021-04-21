@@ -104,17 +104,27 @@ class WebViewCardUnmaskPromptView : public autofill::CardUnmaskPromptView {
   self = [super init];
   if (self) {
     _creditCard = [[CWVCreditCard alloc] initWithCreditCard:creditCard];
-    _unmaskingView =
-        std::make_unique<ios_web_view::WebViewCardUnmaskPromptView>(self);
     _unmaskingController =
         std::make_unique<autofill::CardUnmaskPromptControllerImpl>(prefs);
+    __weak CWVCreditCardVerifier* weakSelf = self;
     _unmaskingController->ShowPrompt(
         base::BindOnce(^autofill::CardUnmaskPromptView*() {
-          return _unmaskingView.get();
+          return [weakSelf createUnmaskingView];
         }),
         creditCard, reason, delegate);
   }
   return self;
+}
+
+// Factory function to CardUnmaskPromptController::ShowPrompt. This should
+// return std:unique_ptr<autofill::CardUnmaskPromptView>> but there are tests
+// which don't do the ownership correctly, so ownership is retained in the
+// CWVCreditCardVerifier instance.
+- (autofill::CardUnmaskPromptView*)createUnmaskingView {
+  DCHECK(!_unmaskingView);
+  _unmaskingView =
+      std::make_unique<ios_web_view::WebViewCardUnmaskPromptView>(self);
+  return _unmaskingView.get();
 }
 
 - (void)dealloc {
