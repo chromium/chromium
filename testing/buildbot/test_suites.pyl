@@ -1471,88 +1471,7 @@
       }
     },
 
-    'fuchsia_gpu_telemetry_tests': {
-      'context_lost_validating': {
-        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
-        'name': 'context_lost_validating_tests',
-        'telemetry_test_name': 'context_lost',
-        'args': [
-          '--extra-browser-args=--use-cmd-decoder=validating',
-        ],
-        'mixins': [
-          'enable_resultdb',
-        ],
-      },
-      'depth_capture': {
-        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
-        'mixins': [
-          'enable_resultdb',
-        ],
-      },
-      'gpu_process': {
-        'name': 'gpu_process_launch_tests',
-        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
-        'mixins': [
-          'enable_resultdb',
-        ],
-      },
-      'hardware_accelerated_feature': {
-        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
-        'mixins': [
-          'enable_resultdb',
-        ],
-      },
-      'info_collection': {
-        'args': [
-          '--expected-vendor-id',
-          '${gpu_vendor_id}',
-          '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId',
-        ],
-        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
-        'mixins': [
-          'enable_resultdb',
-        ],
-      },
-      'maps': {
-        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
-        'mixins': [
-          'chrome-gpu-gold-service-account',
-          'skia_gold_test',
-          'enable_resultdb',
-        ],
-      },
-      'pixel': {
-        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
-        'mixins': [
-          'chrome-gpu-gold-service-account',
-          'skia_gold_test',
-          'enable_resultdb',
-        ],
-      },
-      'screenshot_sync': {
-        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
-        'mixins': [
-          'enable_resultdb',
-        ],
-      },
-      'trace_test': {
-        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
-        'mixins': [
-          'enable_resultdb',
-        ],
-      },
-      'webgl_conformance': {
-        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
-        'mixins': [
-          'enable_resultdb',
-        ],
-        'swarming': {
-          'shards': 6,
-        },
-      }
-    },
-
-    'fuchsia_gtests': {
+    'fuchsia_common_gtests': {
       'absl_hardening_tests': {},
       'accessibility_unittests': {
         'mixins': ['fuchsia_runner_logs'],
@@ -1590,15 +1509,6 @@
       'capture_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
-      'cast_runner_browsertests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'cast_runner_integration_tests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'cast_runner_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
       'cc_unittests': {
         'swarming': {
           'shards': 2,
@@ -1619,9 +1529,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_unittests.filter',
         ],
-      },
-      'cr_fuchsia_base_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
       },
       'cronet_tests': {
         'mixins': ['fuchsia_runner_logs'],
@@ -1732,21 +1639,90 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter',
         ],
       },
-      'web_engine_browsertests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'web_engine_integration_tests': {
-        'args': [
-          '--child-arg=--vmodule=test_navigation_listener=1',
-        ],
-      },
-      'web_engine_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'web_runner_integration_tests': {},
       'wtf_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
+    },
+
+    'fuchsia_gpu_telemetry_tests': {
+      'context_lost_validating': {
+        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'name': 'context_lost_validating_tests',
+        'telemetry_test_name': 'context_lost',
+        'args': [
+          '--extra-browser-args=--use-cmd-decoder=validating',
+        ],
+        'mixins': [
+          'enable_resultdb',
+        ],
+      },
+      'depth_capture': {
+        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'mixins': [
+          'enable_resultdb',
+        ],
+      },
+      'gpu_process': {
+        'name': 'gpu_process_launch_tests',
+        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'mixins': [
+          'enable_resultdb',
+        ],
+      },
+      'hardware_accelerated_feature': {
+        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'mixins': [
+          'enable_resultdb',
+        ],
+      },
+      'info_collection': {
+        'args': [
+          '--expected-vendor-id',
+          '${gpu_vendor_id}',
+          '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId',
+        ],
+        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'mixins': [
+          'enable_resultdb',
+        ],
+      },
+      'maps': {
+        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'mixins': [
+          'chrome-gpu-gold-service-account',
+          'skia_gold_test',
+          'enable_resultdb',
+        ],
+      },
+      'pixel': {
+        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'mixins': [
+          'chrome-gpu-gold-service-account',
+          'skia_gold_test',
+          'enable_resultdb',
+        ],
+      },
+      'screenshot_sync': {
+        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'mixins': [
+          'enable_resultdb',
+        ],
+      },
+      'trace_test': {
+        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'mixins': [
+          'enable_resultdb',
+        ],
+      },
+      'webgl_conformance': {
+        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'mixins': [
+          'enable_resultdb',
+        ],
+        'swarming': {
+          'shards': 6,
+        },
+      }
     },
 
     'fuchsia_sizes_tests': {
@@ -5166,6 +5142,33 @@
       'vr_pixeltests': {},
     },
 
+    'web_engine_gtests': {
+      'cast_runner_browsertests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'cast_runner_integration_tests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'cast_runner_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'cr_fuchsia_base_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'web_engine_browsertests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'web_engine_integration_tests': {
+        'args': [
+          '--child-arg=--vmodule=test_navigation_listener=1',
+        ],
+      },
+      'web_engine_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'web_runner_integration_tests': {},
+    },
+
     'weblayer_android_gtests': {
       'weblayer_bundle_test': {
       },
@@ -5939,6 +5942,11 @@
     'fuchsia_arm64_isolated_scripts': [
       'fuchsia_sizes_tests',
       'gpu_angle_fuchsia_unittests_isolated_scripts',
+    ],
+
+    'fuchsia_gtests': [
+      'fuchsia_common_gtests',
+      'web_engine_gtests',
     ],
 
     'fuchsia_x64_isolated_scripts': [

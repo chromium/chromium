@@ -2897,8 +2897,7 @@
           'all',
         ],
         'test_suites': {
-          'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
+          'gtest_tests': 'web_engine_gtests',
         },
         'mixins': [
           'arm64',
@@ -2942,9 +2941,7 @@
           ],
         },
         'test_suites': {
-          'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'fuchsia_x64_isolated_scripts',
-          'gpu_telemetry_tests': 'fuchsia_gpu_telemetry_tests',
+          'gtest_tests': 'web_engine_gtests',
         },
       },
       'ios-asan': {
