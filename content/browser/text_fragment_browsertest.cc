@@ -4,7 +4,9 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -502,6 +504,58 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
       FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop.Run();
   EXPECT_DID_SCROLL(false);
+}
+
+// Ensure same-document navigation to a text-fragment is blocked when initiated
+// from a different origin.
+IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
+                       SameDocumentScriptNavigationCrossOrigin) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL(
+      "a.com", "/scrollable_page_with_content.html"));
+  GURL target_text_url(embedded_test_server()->GetURL(
+      "a.com", "/scrollable_page_with_content.html#:~:text=some"));
+  GURL cross_origin_inner_url(
+      embedded_test_server()->GetURL("b.com", "/hello.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsImpl* main_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* root = main_contents->GetFrameTree()->root();
+
+  // Insert a cross-origin iframe from which we'll execute script.
+  {
+    const auto script = JsReplace(
+        R"JS(
+            let f = document.createElement("iframe");
+            f.src=$1;
+            document.body.appendChild(f);
+          )JS",
+        cross_origin_inner_url);
+
+    TestNavigationObserver observer(main_contents);
+    EXPECT_TRUE(ExecJs(main_contents, script, EXECUTE_SCRIPT_NO_USER_GESTURE));
+    observer.Wait();
+    ASSERT_EQ(1u, root->child_count());
+  }
+
+  // Try navigating the top frame to a same-document text fragment from inside
+  // the iframe. This should be blocked as its cross-origin. Note, the script
+  // executes with a user gesture but this is still blocked. Same-document
+  // navigations are allowed only when initiated from same-origin or
+  // browser-UI.
+  {
+    TestNavigationObserver observer(main_contents);
+    RenderFrameHostImpl* child_rfh = root->child_at(0)->current_frame_host();
+    EXPECT_TRUE(ExecJs(
+        child_rfh, JsReplace("window.top.location = $1;", target_text_url)));
+    observer.Wait();
+    EXPECT_EQ(target_text_url, main_contents->GetLastCommittedURL());
+
+    WaitForPageLoad(main_contents);
+    EXPECT_DID_SCROLL(false);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest, EnabledByDocumentPolicy) {

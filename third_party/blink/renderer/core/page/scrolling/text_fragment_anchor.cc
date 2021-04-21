@@ -120,7 +120,7 @@ bool TextFragmentAnchor::GenerateNewToken(const DocumentLoader& loader) {
 bool TextFragmentAnchor::GenerateNewTokenForSameDocument(
     const String& fragment,
     WebFrameLoadType load_type,
-    bool is_content_initiated,
+    bool is_browser_initiated,
     SameDocumentNavigationSource source) {
   if (load_type != WebFrameLoadType::kStandard ||
       source != kSameDocumentNavigationDefault)
@@ -134,7 +134,7 @@ bool TextFragmentAnchor::GenerateNewTokenForSameDocument(
   // since the latter's state isn't updated by same document navigations (and
   // hence why we pass individual properties to this method rather than a
   // DocumentLoader reference).
-  if (is_content_initiated)
+  if (!is_browser_initiated)
     return false;
 
   // Only generate a token if it's going to be consumed (i.e. the new fragment

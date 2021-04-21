@@ -75,7 +75,8 @@ TEST_F(AppHistoryTest, NavigateEventCancelable) {
   auto result = frame_loader.GetDocumentLoader()->CommitSameDocumentNavigation(
       item->Url(), WebFrameLoadType::kBackForward, item,
       ClientRedirectPolicy::kNotClientRedirect,
-      false /* has_transient_user_activation */, nullptr,
+      false /* has_transient_user_activation */, nullptr /* initiator_origin */,
+      false /* is_content_initiated */,
       mojom::blink::TriggeringEventInfo::kUnknown, nullptr);
 
   EXPECT_EQ(result, mojom::blink::CommitResult::Ok);

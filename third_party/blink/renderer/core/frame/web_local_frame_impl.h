@@ -338,6 +338,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       const WebHistoryItem&,
       bool is_client_redirect,
       bool has_transient_user_activation,
+      const WebSecurityOrigin& initiator_origin,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) override;
   FallbackContentResult MaybeRenderFallbackContent(
       const WebURLError&) const override;

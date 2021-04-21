@@ -173,6 +173,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
                                        scoped_refptr<SerializedScriptValue>,
                                        mojom::blink::ScrollRestorationType,
                                        WebFrameLoadType,
+                                       const SecurityOrigin* initiator_origin,
                                        bool is_content_initiated);
 
   const ResourceResponse& GetResponse() const { return response_; }
@@ -210,13 +211,21 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // Called when the browser process has asked this renderer process to commit a
   // same document navigation in that frame. Returns false if the navigation
   // cannot commit, true otherwise.
+  // |initiator_origin| is the origin of the document or script that initiated
+  // the navigation or nullptr if the navigation is browser-initiated (e.g.
+  // typed in omnibox).
+  // |is_content_initiated| is true iff the navigation comes internally from
+  // *this* renderer's content (e.g. link click, script). E.g. this argument is
+  // false when script in another renderer initiates the navigation (even
+  // though it is "content initiated").
   mojom::CommitResult CommitSameDocumentNavigation(
       const KURL&,
       WebFrameLoadType,
       HistoryItem*,
       ClientRedirectPolicy,
       bool has_transient_user_activation,
-      LocalDOMWindow* origin_window,
+      const SecurityOrigin* initiator_origin,
+      bool is_content_initiated,
       mojom::blink::TriggeringEventInfo,
       std::unique_ptr<WebDocumentLoader::ExtraData>);
 
@@ -386,6 +395,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       HistoryItem*,
       ClientRedirectPolicy,
       bool has_transient_user_activation,
+      const SecurityOrigin* initiator_origin,
       bool is_content_initiated,
       mojom::blink::TriggeringEventInfo,
       std::unique_ptr<WebDocumentLoader::ExtraData>);

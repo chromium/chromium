@@ -50,7 +50,7 @@ class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
   static bool GenerateNewTokenForSameDocument(
       const String& fragment,
       WebFrameLoadType load_type,
-      bool is_content_initiated,
+      bool is_browser_initiated,
       SameDocumentNavigationSource source);
 
   static TextFragmentAnchor* TryCreateFragmentDirective(

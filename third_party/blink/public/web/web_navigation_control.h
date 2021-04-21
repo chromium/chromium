@@ -15,6 +15,7 @@
 
 namespace blink {
 
+class WebSecurityOrigin;
 class WebURL;
 struct WebURLError;
 struct WebNavigationInfo;
@@ -43,8 +44,9 @@ class WebNavigationControl : public WebLocalFrame {
       std::unique_ptr<WebNavigationParams> navigation_params,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) = 0;
 
-  // Commits a same-document navigation in the frame. For history navigations, a
-  // valid WebHistoryItem should be provided. Returns CommitResult::Ok if the
+  // Commits a same-document navigation in the frame. For history navigations,
+  // a valid WebHistoryItem should be provided. |initiator_origin| is null
+  // for browser-initiated navigations. Returns CommitResult::Ok if the
   // navigation has actually committed.
   virtual mojom::CommitResult CommitSameDocumentNavigation(
       const WebURL&,
@@ -52,6 +54,7 @@ class WebNavigationControl : public WebLocalFrame {
       const WebHistoryItem&,
       bool is_client_redirect,
       bool has_transient_user_activation,
+      const WebSecurityOrigin& initiator_origin,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) = 0;
 
   enum FallbackContentResult {
