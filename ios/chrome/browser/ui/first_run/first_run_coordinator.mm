@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_type.h"
 #import "ios/chrome/browser/ui/first_run/signin_screen_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/welcome_screen_coordinator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -48,6 +49,10 @@
                                       completion:nil];
 }
 
+- (void)stop {
+  [self.baseViewController dismissViewControllerAnimated:NO completion:nil];
+}
+
 #pragma mark - FirstRunScreenDelegate
 
 - (void)willFinishPresenting {
@@ -68,8 +73,10 @@
 - (void)presentScreen:(NSNumber*)type {
   // If no more screen need to be present, call delegate to stop presenting
   // screens.
-  if ([type isEqualToNumber:@(kFirstRunCompleted)])
+  if ([type isEqualToNumber:@(kFirstRunCompleted)]) {
     [self.delegate willFinishPresentingScreens];
+    return;
+  }
   self.childCoordinator = [self createChildCoordinatorWithScreenType:type];
   [self.childCoordinator start];
 }
@@ -88,9 +95,12 @@
                                    browser:self.browser
                                   delegate:self];
     case kSync:
+      return [[SyncScreenCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:self.browser
+                                  delegate:self];
     case kDefaultBrowserPromo:
-      // TODO (crbug.com/1189807): Create screen coordinators for sign-in, sync
-      // an default browser screen.
+      // TODO (crbug.com/1189807): Create the default browser screen.
       return nil;
   }
   return nil;

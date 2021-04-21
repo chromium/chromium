@@ -16,6 +16,8 @@
 // Sync screen view controller.
 @property(nonatomic, strong) SyncScreenViewController* viewController;
 
+@property(nonatomic, weak) id<FirstRunScreenDelegate> delegate;
+
 @end
 
 @implementation SyncScreenCoordinator
@@ -24,11 +26,14 @@
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
+                                         browser:(Browser*)browser
+                                        delegate:(id<FirstRunScreenDelegate>)
+                                                     delegate {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
+    _delegate = delegate;
   }
   return self;
 }
@@ -39,12 +44,10 @@
   // [self.delegate willFinishPresenting]
   // if yes:
   self.viewController = [[SyncScreenViewController alloc] init];
-  // TODO(crbug.com/1189840): once the view controller's delegate is unified
-  // with the base FirstRunScreenViewController delegate, change this back to
-  // self.viewController.delegate = self;
-  self.viewController.delegate2 = self;
-  [self.baseNavigationController pushViewController:self.viewController
-                                           animated:YES];
+  self.viewController.delegate = self;
+  BOOL animated = self.baseNavigationController.topViewController != nil;
+  [self.baseNavigationController setViewControllers:@[ self.viewController ]
+                                           animated:animated];
 }
 
 - (void)stop {
@@ -54,18 +57,14 @@
 
 #pragma mark - SyncScreenViewControllerDelegate
 
-- (void)continueWithSync {
+- (void)didTapPrimaryActionButton {
   // TODO(crbug.com/1189840): record sync status.
-  [self.delegate willFinishPresenting];
-}
 
-- (void)continueWithoutSync {
-  // TODO(crbug.com/1189840): record sync status.
   [self.delegate willFinishPresenting];
 }
 
 - (void)showSyncSettings {
-  // TODO(crbug.com/1189840): show settings UI.
+  // TODO(crbug.com/1189840): show sync settings.
 }
 
 @end

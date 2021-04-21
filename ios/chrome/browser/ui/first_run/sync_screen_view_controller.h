@@ -10,15 +10,10 @@
 #import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
 
 // Delegate of sync screen view controller.
-@protocol SyncScreenViewControllerDelegate <NSObject>
+@protocol
+    SyncScreenViewControllerDelegate <FirstRunScreenViewControllerDelegate>
 
-// Called when the user wants to continue with sync.
-- (void)continueWithSync;
-
-// Called when the user wants to continue without sync.
-- (void)continueWithoutSync;
-
-// Called when the user taps "Customize Sync Settings".
+// Called when the user taps to see sync settings.
 - (void)showSyncSettings;
 
 @end
@@ -26,11 +21,7 @@
 // View controller of sync screen.
 @interface SyncScreenViewController : FirstRunScreenViewController
 
-// TODO(crbug.com/1189840): unify this delegate with
-// FirstRunScreenViewController's delegate property, by making the
-// SyncScreenViewControllerDelegate protocol extend the
-// FirstRunScreenViewControllerDelegate protocol.
-@property(nonatomic, weak) id<SyncScreenViewControllerDelegate> delegate2;
+@property(nonatomic, weak) id<SyncScreenViewControllerDelegate> delegate;
 
 @end
 

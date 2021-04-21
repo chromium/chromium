@@ -9,5 +9,13 @@
 #endif
 
 @implementation SyncScreenViewController
+@dynamic delegate;
+
+- (void)viewDidLoad {
+  // TODO(crbug.com/1189840): set strings and images to the view.
+  self.titleText = @"Test Sync Screen";
+  self.primaryActionString = @"Test Continue Button";
+  [super viewDidLoad];
+}
 
 @end
