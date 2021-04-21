@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.init.ChromeStartupDelegate;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
-import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.metrics.VariationsSession;
 import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
@@ -62,9 +61,6 @@ import java.util.List;
  */
 public abstract class AppHooks {
     private static AppHooksImpl sInstance;
-
-    @Nullable
-    private LensController mLensController;
 
     /**
      * Sets a mocked instance for testing.
@@ -167,20 +163,6 @@ public abstract class AppHooks {
 
     public InstantAppsHandler createInstantAppsHandler() {
         return new InstantAppsHandler();
-    }
-
-    /** Creates a new instance of LensController. */
-    protected LensController createLensController() {
-        return new LensController();
-    }
-
-    /**
-     * Return LensController. Create a new one if not available.
-     **/
-    public LensController getLensController() {
-        if (mLensController == null) mLensController = createLensController();
-
-        return mLensController;
     }
 
     /**

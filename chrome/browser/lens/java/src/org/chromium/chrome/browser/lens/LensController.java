@@ -6,10 +6,8 @@ package org.chromium.chrome.browser.lens;
 import android.content.Intent;
 import android.net.Uri;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.contextmenu.ChipRenderParams;
@@ -121,31 +119,6 @@ public class LensController {
      */
     public void startLens(WindowAndroid window, LensIntentParams lensIntentParams) {
         mDelegate.startLens(window, lensIntentParams);
-    }
-
-    /**
-     * Retrieve the Text resource id for "Shop with Google Lens".
-     * @return The resource id for "Shop with Google Lens" string.
-     */
-    protected @StringRes int getShopWithGoogleLensTextResourceId() {
-        return R.string.contextmenu_shop_image_with_google_lens;
-    }
-
-    /**
-     * Retrieve the Lens icon resource id.
-     * Need to put the resource id on the base class to suppress the UnusedResources warning.
-     * @return The resource id for Lens icon.
-     */
-    protected @DrawableRes int getLensIconResourceId() {
-        return R.drawable.lens_icon;
-    }
-
-    /**
-     * Retrieve the Text resource id for "Translate image with Google Lens".
-     * @return The resource id for "Translate image with Google Lens" string.
-     */
-    protected @StringRes int getTranslateWithGoogleLensTextResourceId() {
-        return R.string.contextmenu_translate_image_with_google_lens;
     }
 
     /** Starts the Lens connection. */
