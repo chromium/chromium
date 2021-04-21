@@ -49,7 +49,7 @@
 using web_app::GenerateAppIdFromURL;
 using web_app::WebAppProviderBase;
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 namespace {
@@ -438,4 +438,4 @@ TEST_F(AppServiceWrapperTest, IgnoreOtherExtensions) {
 // landed.
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

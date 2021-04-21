@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/child_accounts/time_limit_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace utils = time_limit_test_utils;
 
@@ -44,4 +44,4 @@ TEST_F(ConsistencyGoldenLoaderTest, LoadTestGoldenCases) {
 }
 
 }  // namespace time_limit_consistency
-}  // namespace chromeos
+}  // namespace ash

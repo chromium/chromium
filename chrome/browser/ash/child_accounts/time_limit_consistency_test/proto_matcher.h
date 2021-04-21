@@ -13,7 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/protobuf/src/google/protobuf/text_format.h"
 
-namespace chromeos {
+namespace ash {
 namespace time_limit_consistency {
 
 MATCHER_P(EqualsProto, message, "equals golden proto") {
@@ -38,6 +38,6 @@ MATCHER_P(EqualsProto, message, "equals golden proto") {
 }
 
 }  // namespace time_limit_consistency
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_CONSISTENCY_TEST_PROTO_MATCHER_H_

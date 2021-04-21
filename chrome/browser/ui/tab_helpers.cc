@@ -413,7 +413,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   app_list::CrOSActionRecorderTabTracker::CreateForWebContents(web_contents);
-  chromeos::app_time::WebTimeNavigationObserver::MaybeCreateForWebContents(
+  ash::app_time::WebTimeNavigationObserver::MaybeCreateForWebContents(
       web_contents);
   policy::DlpContentTabHelper::CreateForWebContents(web_contents);
 #endif

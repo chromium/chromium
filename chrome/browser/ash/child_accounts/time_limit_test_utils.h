@@ -92,4 +92,25 @@ std::string PolicyToString(const base::Value& policy);
 }  // namespace time_limit_test_utils
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //c/b/ash/child_accounts moved
+// to ash.
+namespace ash {
+namespace time_limit_test_utils {
+using ::chromeos::time_limit_test_utils::AddOverride;
+using ::chromeos::time_limit_test_utils::AddOverrideWithDuration;
+using ::chromeos::time_limit_test_utils::AddTimeUsageLimit;
+using ::chromeos::time_limit_test_utils::AddTimeWindowLimit;
+using ::chromeos::time_limit_test_utils::CreateTime;
+using ::chromeos::time_limit_test_utils::CreateTimeLimitPolicy;
+using ::chromeos::time_limit_test_utils::kFriday;
+using ::chromeos::time_limit_test_utils::kMonday;
+using ::chromeos::time_limit_test_utils::kSaturday;
+using ::chromeos::time_limit_test_utils::kSunday;
+using ::chromeos::time_limit_test_utils::kThursday;
+using ::chromeos::time_limit_test_utils::kTuesday;
+using ::chromeos::time_limit_test_utils::kWednesday;
+using ::chromeos::time_limit_test_utils::TimeFromString;
+}  // namespace time_limit_test_utils
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_TEST_UTILS_H_

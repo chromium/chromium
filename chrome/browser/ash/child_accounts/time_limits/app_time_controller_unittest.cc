@@ -38,7 +38,7 @@
 #include "ui/gfx/image/image_skia_rep_default.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 namespace {
@@ -611,4 +611,4 @@ TEST_F(AppTimeControllerTest, SetLastResetTimeTest) {
 }
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

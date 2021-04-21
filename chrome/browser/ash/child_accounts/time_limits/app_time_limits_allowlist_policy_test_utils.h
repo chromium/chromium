@@ -9,7 +9,7 @@
 
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 class AppId;
@@ -38,6 +38,6 @@ class AppTimeLimitsAllowlistPolicyBuilder {
 };
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_LIMITS_ALLOWLIST_POLICY_TEST_UTILS_H_

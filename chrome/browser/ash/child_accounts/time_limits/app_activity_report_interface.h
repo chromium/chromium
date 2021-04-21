@@ -13,7 +13,7 @@ namespace enterprise_management {
 class ChildStatusReportRequest;
 }  // namespace enterprise_management
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 // Interface of the object generating app activity for child user.
@@ -47,6 +47,13 @@ class AppActivityReportInterface {
       base::Time report_generation_timestamp) = 0;
 };
 
+}  // namespace app_time
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+namespace app_time {
+using ::ash::app_time::AppActivityReportInterface;
 }  // namespace app_time
 }  // namespace chromeos
 

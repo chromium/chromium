@@ -40,7 +40,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 namespace {
@@ -181,8 +181,8 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
   Profile* GetCurrentProfile() {
     const user_manager::UserManager* const user_manager =
         user_manager::UserManager::Get();
-    Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(
-        user_manager->GetActiveUser());
+    Profile* profile =
+        ProfileHelper::Get()->GetProfileByUser(user_manager->GetActiveUser());
     EXPECT_TRUE(profile);
 
     return profile;
@@ -347,4 +347,4 @@ IN_PROC_BROWSER_TEST_F(WebTimeLimitDisabledTest, WebTimeLimitDisabled) {
 }
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

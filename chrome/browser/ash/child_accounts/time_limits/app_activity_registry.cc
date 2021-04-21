@@ -25,7 +25,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 namespace {
@@ -1194,4 +1194,4 @@ void AppActivityRegistry::AppLimitUpdated(const AppId& app_id) {
 }
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

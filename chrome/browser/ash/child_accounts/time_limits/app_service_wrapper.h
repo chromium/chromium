@@ -12,6 +12,8 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+// TODO(https://crbug.com/1164001): forward declare when moved ash
+#include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 
@@ -25,12 +27,11 @@ class InstanceUpdate;
 
 namespace gfx {
 class ImageSkia;
-}
+}  // namespace gfx
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
-class AppId;
 struct PauseAppInfo;
 
 // Wrapper around AppService.
@@ -170,6 +171,13 @@ class AppServiceWrapper : public apps::AppRegistryCache::Observer,
   Profile* const profile_;
 };
 
+}  // namespace app_time
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+namespace app_time {
+using ::ash::app_time::AppServiceWrapper;
 }  // namespace app_time
 }  // namespace chromeos
 

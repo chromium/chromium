@@ -19,7 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 namespace {
@@ -251,4 +251,4 @@ WebTimeActivityProvider::CalculateChromeAppActivityState() const {
 }
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

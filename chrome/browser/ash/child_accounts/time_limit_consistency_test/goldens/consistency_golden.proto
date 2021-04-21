@@ -1,7 +1,7 @@
 syntax = "proto2";
 
-// Used to generate the ChromeOS C++ namespace
-package chromeos.time_limit_consistency;
+// Used to generate the Ash C++ namespace
+package ash.time_limit_consistency;
 
 // Used to generate the Java package
 option java_package = "com.google.kids.timelimit.consistency";

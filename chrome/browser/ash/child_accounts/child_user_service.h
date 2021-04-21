@@ -11,7 +11,13 @@
 
 #include "chrome/browser/ash/child_accounts/family_user_parental_control_metrics.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_report_interface.h"
+// TODO(https://crbug.com/1164001): forward declare when moved ash
+#include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
+// TODO(https://crbug.com/1164001): forward declare when moved ash
+#include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
+// TODO(https://crbug.com/1164001): forward declare when moved ash
+#include "chrome/browser/ash/child_accounts/time_limits/web_time_limit_enforcer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace base {
@@ -29,11 +35,6 @@ class ChildStatusReportRequest;
 class GURL;
 
 namespace chromeos {
-namespace app_time {
-class AppId;
-class AppTimeController;
-class WebTimeLimitEnforcer;
-}  // namespace app_time
 
 // Facade that exposes child user related functionality on Chrome OS.
 // TODO(crbug.com/1022231): Migrate ConsumerStatusReportingService,
@@ -110,5 +111,11 @@ class ChildUserService : public KeyedService,
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when //c/b/ash/child_accounts moved
+// to ash.
+namespace ash {
+using ::chromeos::ChildUserService;
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_CHILD_USER_SERVICE_H_

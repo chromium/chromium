@@ -10,10 +10,10 @@
 namespace apps {
 namespace mojom {
 enum class AppType;
-}
+}  // namespace mojom
 }  // namespace apps
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 class AppId;
@@ -29,6 +29,13 @@ bool IsWebAppOrExtension(const AppId& app_id);
 // Returns true if the application shares chrome's time limit.
 bool ContributesToWebTimeLimit(const AppId& app_id, AppState app_state);
 
+}  // namespace app_time
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+namespace app_time {
+using ::ash::app_time::GetChromeAppId;
 }  // namespace app_time
 }  // namespace chromeos
 

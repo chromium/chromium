@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_policy_helpers.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 AppTimeLimitsAllowlistPolicyWrapper::AppTimeLimitsAllowlistPolicyWrapper(
@@ -61,4 +61,4 @@ std::vector<AppId> AppTimeLimitsAllowlistPolicyWrapper::GetAllowlistAppList()
 }
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

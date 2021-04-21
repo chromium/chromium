@@ -12,9 +12,9 @@
 
 namespace extensions {
 class Extension;
-}
+}  // namespace extensions
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 arc::mojom::ArcPackageInfoPtr CreateArcAppPackage(
@@ -29,6 +29,13 @@ scoped_refptr<extensions::Extension> CreateExtension(
     const std::string& url,
     bool is_bookmark_app = false);
 
+}  // namespace app_time
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+namespace app_time {
+using ::ash::app_time::CreateExtension;
 }  // namespace app_time
 }  // namespace chromeos
 

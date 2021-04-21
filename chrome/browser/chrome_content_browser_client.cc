@@ -3980,7 +3980,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   MaybeAddThrottle(
-      chromeos::WebTimeLimitNavigationThrottle::MaybeCreateThrottleFor(handle),
+      ash::WebTimeLimitNavigationThrottle::MaybeCreateThrottleFor(handle),
       &throttles);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

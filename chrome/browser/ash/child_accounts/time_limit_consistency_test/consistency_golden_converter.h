@@ -16,7 +16,7 @@ namespace base {
 class Value;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace time_limit_consistency {
 
 // Converts the input part of a consistency golden case to the structure used by
@@ -39,6 +39,6 @@ GenerateUnlockUsageLimitOverrideStateFromInput(
     const ConsistencyGoldenInput& input);
 
 }  // namespace time_limit_consistency
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_CONSISTENCY_TEST_CONSISTENCY_GOLDEN_CONVERTER_H_

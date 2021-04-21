@@ -214,4 +214,14 @@ void GetEnabledTimeLimitPolicies(
 }  // namespace usage_time_limit
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //c/b/ash/child_accounts moved
+// to ash.
+namespace ash {
+namespace usage_time_limit {
+using ::chromeos::usage_time_limit::GetState;
+using ::chromeos::usage_time_limit::PolicyType;
+using ::chromeos::usage_time_limit::State;
+}  // namespace usage_time_limit
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_USAGE_TIME_LIMIT_PROCESSOR_H_

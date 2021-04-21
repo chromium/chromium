@@ -13,7 +13,7 @@ namespace content {
 class NavigationHandle;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 // Throttles disallowed navigation for WebContents when time limit has
 // been reached. It blocks the navigation and loads the web time limit error
@@ -44,6 +44,6 @@ class WebTimeLimitNavigationThrottle : public content::NavigationThrottle {
   ThrottleCheckResult WillStartOrRedirectRequest();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_LIMIT_NAVIGATION_THROTTLE_H_

@@ -17,7 +17,7 @@ namespace url_matcher {
 class URLMatcher;
 }  // namespace url_matcher
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 class AppTimeLimitsAllowlistPolicyWrapper;
@@ -59,6 +59,13 @@ class WebTimeLimitEnforcer {
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
 };
 
+}  // namespace app_time
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+namespace app_time {
+using ::ash::app_time::WebTimeLimitEnforcer;
 }  // namespace app_time
 }  // namespace chromeos
 

@@ -16,7 +16,7 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 // Interface of the object controlling UI for app time limits feature.
@@ -53,6 +53,13 @@ class AppTimeLimitInterface {
       apps::mojom::AppType app_type) = 0;
 };
 
+}  // namespace app_time
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+namespace app_time {
+using ::ash::app_time::AppTimeLimitInterface;
 }  // namespace app_time
 }  // namespace chromeos
 

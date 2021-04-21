@@ -9,7 +9,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 enterprise_management::App::AppType AppTypeForReporting(
@@ -50,4 +50,4 @@ bool ContributesToWebTimeLimit(const AppId& app_id, AppState state) {
 }
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

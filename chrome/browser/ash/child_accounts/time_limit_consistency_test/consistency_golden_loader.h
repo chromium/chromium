@@ -14,7 +14,7 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/goldens/consistency_golden.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace time_limit_consistency {
 
 // Holds information for one golden case and metadata used to generate the name
@@ -36,6 +36,6 @@ std::vector<GoldenParam> LoadGoldenCasesFromPath(
     const base::FilePath& directory_path);
 
 }  // namespace time_limit_consistency
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_CONSISTENCY_TEST_CONSISTENCY_GOLDEN_LOADER_H_

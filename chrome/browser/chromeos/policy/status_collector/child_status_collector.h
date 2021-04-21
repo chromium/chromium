@@ -137,7 +137,7 @@ class ChildStatusCollector : public StatusCollector,
   int64_t last_reported_end_timestamp_ = 0;
 
   // The parameters associated with last app activity report.
-  base::Optional<chromeos::app_time::AppActivityReportInterface::ReportParams>
+  base::Optional<ash::app_time::AppActivityReportInterface::ReportParams>
       last_report_params_;
 
   base::RepeatingTimer update_child_usage_timer_;

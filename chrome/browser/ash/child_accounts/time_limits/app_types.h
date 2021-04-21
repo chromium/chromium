@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 // Type of usage restriction that can be applied to the installed app.
@@ -255,6 +255,15 @@ class AppActivity {
   base::TimeTicks last_updated_time_ticks_;
 };
 
+}  // namespace app_time
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+namespace app_time {
+using ::ash::app_time::AppId;
+using ::ash::app_time::AppLimit;
+using ::ash::app_time::AppRestriction;
 }  // namespace app_time
 }  // namespace chromeos
 

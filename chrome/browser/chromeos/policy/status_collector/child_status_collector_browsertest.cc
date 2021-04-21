@@ -295,7 +295,7 @@ class ChildStatusCollectorTest : public testing::Test {
 
   // If `should_run_tasks` is true, then use FastForwardBy() to run tasks.
   // Otherwise use AdvanceClock() to skip running tasks.
-  void SimulateAppActivity(const chromeos::app_time::AppId& app_id,
+  void SimulateAppActivity(const ash::app_time::AppId& app_id,
                            TimeDelta duration,
                            bool should_run_tasks = true) {
     chromeos::ChildUserService::TestApi child_user_service =
@@ -304,8 +304,8 @@ class ChildStatusCollectorTest : public testing::Test {
                 testing_profile_.get()));
     EXPECT_TRUE(child_user_service.app_time_controller());
 
-    chromeos::app_time::AppActivityRegistry* app_registry =
-        chromeos::app_time::AppTimeController::TestApi(
+    ash::app_time::AppActivityRegistry* app_registry =
+        ash::app_time::AppTimeController::TestApi(
             child_user_service.app_time_controller())
             .app_registry();
     app_registry->OnAppInstalled(app_id);
@@ -702,9 +702,8 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivity) {
   status_collector_->OnSubmittedSuccessfully();
 
   // Report activity for two different apps.
-  const chromeos::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
-  const chromeos::app_time::AppId app2(apps::mojom::AppType::kExtension,
-                                       "app2");
+  const ash::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
+  const ash::app_time::AppId app2(apps::mojom::AppType::kExtension, "app2");
   const Time start_time = Time::Now();
   const TimeDelta app1_interval = TimeDelta::FromMinutes(1);
   const TimeDelta app2_interval = TimeDelta::FromMinutes(2);
@@ -760,9 +759,8 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivityNoReport) {
   EXPECT_EQ(0, child_status_.app_activity_size());
   status_collector_->OnSubmittedSuccessfully();
 
-  const chromeos::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
-  const chromeos::app_time::AppId app2(apps::mojom::AppType::kExtension,
-                                       "app2");
+  const ash::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
+  const ash::app_time::AppId app2(apps::mojom::AppType::kExtension, "app2");
   const TimeDelta app1_interval = TimeDelta::FromMinutes(1);
   const TimeDelta app2_interval = TimeDelta::FromMinutes(2);
 
@@ -773,7 +771,7 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivityNoReport) {
   SimulateAppActivity(app1, app1_interval);
 
   {
-    chromeos::app_time::AppTimeLimitsPolicyBuilder builder;
+    ash::app_time::AppTimeLimitsPolicyBuilder builder;
     builder.SetAppActivityReportingEnabled(/* enabled */ false);
     DictionaryPrefUpdate update(testing_profile()->GetPrefs(),
                                 prefs::kPerAppTimeLimitsPolicy);
@@ -807,9 +805,8 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivityMetrics) {
       /*expected_count=*/0);
 
   // Report activity for two different apps.
-  const chromeos::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
-  const chromeos::app_time::AppId app2(apps::mojom::AppType::kExtension,
-                                       "app2");
+  const ash::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
+  const ash::app_time::AppId app2(apps::mojom::AppType::kExtension, "app2");
   const TimeDelta app1_interval = TimeDelta::FromSeconds(1);
   const TimeDelta app2_interval = TimeDelta::FromSeconds(2);
   SimulateAppActivity(app1, app1_interval);

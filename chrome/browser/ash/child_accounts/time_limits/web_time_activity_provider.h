@@ -24,7 +24,7 @@ class Time;
 
 class Browser;
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 class AppId;
@@ -100,6 +100,6 @@ class WebTimeActivityProvider : public WebTimeNavigationObserver::EventListener,
 };
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_ACTIVITY_PROVIDER_H_

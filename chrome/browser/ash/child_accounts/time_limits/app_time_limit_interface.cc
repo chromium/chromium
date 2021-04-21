@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 // static
@@ -20,4 +20,4 @@ AppTimeLimitInterface* AppTimeLimitInterface::Get(Profile* profile) {
 AppTimeLimitInterface::~AppTimeLimitInterface() = default;
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

@@ -214,8 +214,8 @@ void ExtensionAppsChromeOs::PauseApp(const std::string& app_id) {
     return;
   }
 
-  chromeos::app_time::AppTimeLimitInterface* app_limit =
-      chromeos::app_time::AppTimeLimitInterface::Get(profile());
+  ash::app_time::AppTimeLimitInterface* app_limit =
+      ash::app_time::AppTimeLimitInterface::Get(profile());
   DCHECK(app_limit);
   app_limit->PauseWebActivity(app_id);
 }
@@ -230,8 +230,8 @@ void ExtensionAppsChromeOs::UnpauseApps(const std::string& app_id) {
                                              app_id, kPaused),
           subscribers());
 
-  chromeos::app_time::AppTimeLimitInterface* app_time =
-      chromeos::app_time::AppTimeLimitInterface::Get(profile());
+  ash::app_time::AppTimeLimitInterface* app_time =
+      ash::app_time::AppTimeLimitInterface::Get(profile());
   DCHECK(app_time);
   app_time->ResumeWebActivity(app_id);
 }

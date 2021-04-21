@@ -22,7 +22,7 @@ class NavigationEntry;
 
 class GURL;
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 class WebTimeNavigationObserver
@@ -94,6 +94,6 @@ class WebTimeNavigationObserver
 };
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_NAVIGATION_OBSERVER_H_

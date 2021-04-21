@@ -82,4 +82,12 @@ class TimeLimitOverride {
 }  // namespace usage_time_limit
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //c/b/ash/child_accounts moved
+// to ash.
+namespace ash {
+namespace usage_time_limit {
+using ::chromeos::usage_time_limit::TimeLimitOverride;
+}  // namespace usage_time_limit
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_OVERRIDE_H_

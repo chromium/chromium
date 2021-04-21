@@ -15,7 +15,7 @@ namespace base {
 class Value;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 class PersistedAppInfo {
@@ -66,6 +66,6 @@ class PersistedAppInfo {
 };
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_PERSISTED_APP_INFO_H_

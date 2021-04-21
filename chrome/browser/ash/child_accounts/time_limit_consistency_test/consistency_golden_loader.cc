@@ -13,7 +13,7 @@
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl.h"
 #include "third_party/protobuf/src/google/protobuf/text_format.h"
 
-namespace chromeos {
+namespace ash {
 namespace time_limit_consistency {
 namespace {
 
@@ -68,4 +68,4 @@ std::vector<GoldenParam> LoadGoldenCasesFromPath(
 }
 
 }  // namespace time_limit_consistency
-}  // namespace chromeos
+}  // namespace ash

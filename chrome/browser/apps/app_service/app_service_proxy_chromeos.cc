@@ -304,8 +304,8 @@ bool AppServiceProxyChromeOs::MaybeShowLaunchPreventionDialog(
   // is paused.
   if (update.Paused() == apps::mojom::OptionalBool::kTrue ||
       pending_pause_requests_.IsPaused(update.AppId())) {
-    chromeos::app_time::AppTimeLimitInterface* app_limit =
-        chromeos::app_time::AppTimeLimitInterface::Get(profile_);
+    ash::app_time::AppTimeLimitInterface* app_limit =
+        ash::app_time::AppTimeLimitInterface::Get(profile_);
     DCHECK(app_limit);
     auto time_limit =
         app_limit->GetTimeLimitForApp(update.AppId(), update.AppType());

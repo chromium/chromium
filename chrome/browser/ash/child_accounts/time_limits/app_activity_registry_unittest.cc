@@ -29,7 +29,7 @@
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/window.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 namespace {
@@ -50,9 +50,9 @@ class AppTimeNotificationDelegateMock : public AppTimeNotificationDelegate {
   ~AppTimeNotificationDelegateMock() = default;
 
   MOCK_METHOD3(ShowAppTimeLimitNotification,
-               void(const chromeos::app_time::AppId&,
+               void(const AppId&,
                     const base::Optional<base::TimeDelta>&,
-                    chromeos::app_time::AppNotification));
+                    AppNotification));
 };
 
 class AppStateObserverMock : public AppActivityRegistry::AppStateObserver {
@@ -251,29 +251,26 @@ TEST_F(AppActivityRegistryTest, AppTimeLimitReachedActiveApp) {
   registry().OnAppActive(kApp1, app1_window, start);
 
   // Expect 5 minute left notification.
-  EXPECT_CALL(
-      notification_delegate_mock(),
-      ShowAppTimeLimitNotification(
-          kApp1, testing::_, chromeos::app_time::AppNotification::kFiveMinutes))
+  EXPECT_CALL(notification_delegate_mock(),
+              ShowAppTimeLimitNotification(kApp1, testing::_,
+                                           AppNotification::kFiveMinutes))
       .Times(1);
   task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(5));
   EXPECT_EQ(base::TimeDelta::FromMinutes(5), registry().GetActiveTime(kApp1));
   EXPECT_TRUE(registry().IsAppActive(kApp1));
 
   // Expect One minute left notification.
-  EXPECT_CALL(
-      notification_delegate_mock(),
-      ShowAppTimeLimitNotification(
-          kApp1, testing::_, chromeos::app_time::AppNotification::kOneMinute))
+  EXPECT_CALL(notification_delegate_mock(),
+              ShowAppTimeLimitNotification(kApp1, testing::_,
+                                           AppNotification::kOneMinute))
       .Times(1);
   task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(4));
   EXPECT_EQ(base::TimeDelta::FromMinutes(9), registry().GetActiveTime(kApp1));
 
   // Expect time limit reached notification.
   EXPECT_CALL(notification_delegate_mock(),
-              ShowAppTimeLimitNotification(
-                  kApp1, testing::_,
-                  chromeos::app_time::AppNotification::kTimeLimitReached))
+              ShowAppTimeLimitNotification(kApp1, testing::_,
+                                           AppNotification::kTimeLimitReached))
       .Times(1);
   task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(1));
   EXPECT_EQ(base::TimeDelta::FromMinutes(10), registry().GetActiveTime(kApp1));
@@ -302,10 +299,9 @@ TEST_F(AppActivityRegistryTest, SkippedFiveMinuteNotification) {
   SetAppLimit(kApp1, new_limit);
 
   // Notice that the 5 minute notification is jumped.
-  EXPECT_CALL(
-      notification_delegate_mock(),
-      ShowAppTimeLimitNotification(
-          kApp1, testing::_, chromeos::app_time::AppNotification::kOneMinute))
+  EXPECT_CALL(notification_delegate_mock(),
+              ShowAppTimeLimitNotification(kApp1, testing::_,
+                                           AppNotification::kOneMinute))
       .Times(1);
   task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(3));
 }
@@ -435,20 +431,17 @@ TEST_F(AppActivityRegistryTest, SharedTimeLimitForChromeAndWebApps) {
 
   // Make |kApp2| active for 30 minutes. Expect that it reaches its time limit.
   registry().OnAppActive(kApp2, app2_window, start + kHalfHour);
-  EXPECT_CALL(
-      notification_delegate_mock(),
-      ShowAppTimeLimitNotification(
-          kApp2, testing::_, chromeos::app_time::AppNotification::kFiveMinutes))
-      .Times(1);
-  EXPECT_CALL(
-      notification_delegate_mock(),
-      ShowAppTimeLimitNotification(
-          kApp2, testing::_, chromeos::app_time::AppNotification::kOneMinute))
+  EXPECT_CALL(notification_delegate_mock(),
+              ShowAppTimeLimitNotification(kApp2, testing::_,
+                                           AppNotification::kFiveMinutes))
       .Times(1);
   EXPECT_CALL(notification_delegate_mock(),
-              ShowAppTimeLimitNotification(
-                  kApp2, testing::_,
-                  chromeos::app_time::AppNotification::kTimeLimitReached))
+              ShowAppTimeLimitNotification(kApp2, testing::_,
+                                           AppNotification::kOneMinute))
+      .Times(1);
+  EXPECT_CALL(notification_delegate_mock(),
+              ShowAppTimeLimitNotification(kApp2, testing::_,
+                                           AppNotification::kTimeLimitReached))
       .Times(1);
 
   task_environment()->FastForwardBy(kHalfHour);
@@ -872,16 +865,15 @@ TEST_F(AppActivityRegistryTest, AvoidReduntantNotifications) {
                       base::Time::Now() + delta);
   std::map<AppId, AppLimit> app_limits = {{GetChromeAppId(), chrome_limit},
                                           {kApp1, app1_limit}};
-  EXPECT_CALL(notification_delegate_mock(),
-              ShowAppTimeLimitNotification(
-                  GetChromeAppId(), chrome_limit.daily_limit(),
-                  chromeos::app_time::AppNotification::kTimeLimitChanged))
+  EXPECT_CALL(
+      notification_delegate_mock(),
+      ShowAppTimeLimitNotification(GetChromeAppId(), chrome_limit.daily_limit(),
+                                   AppNotification::kTimeLimitChanged))
       .Times(1);
 
   EXPECT_CALL(notification_delegate_mock(),
-              ShowAppTimeLimitNotification(
-                  kApp1, app1_limit.daily_limit(),
-                  chromeos::app_time::AppNotification::kTimeLimitChanged))
+              ShowAppTimeLimitNotification(kApp1, app1_limit.daily_limit(),
+                                           AppNotification::kTimeLimitChanged))
       .Times(1);
 
   registry().UpdateAppLimits(app_limits);
@@ -895,14 +887,12 @@ TEST_F(AppActivityRegistryTest, AvoidReduntantNotifications) {
   registry().OnAppInstalled(kApp2);
 
   EXPECT_CALL(notification_delegate_mock(),
-              ShowAppTimeLimitNotification(
-                  GetChromeAppId(), testing::_,
-                  chromeos::app_time::AppNotification::kTimeLimitChanged))
+              ShowAppTimeLimitNotification(GetChromeAppId(), testing::_,
+                                           AppNotification::kTimeLimitChanged))
       .Times(0);
   EXPECT_CALL(notification_delegate_mock(),
-              ShowAppTimeLimitNotification(
-                  kApp1, testing::_,
-                  chromeos::app_time::AppNotification::kTimeLimitChanged))
+              ShowAppTimeLimitNotification(kApp1, testing::_,
+                                           AppNotification::kTimeLimitChanged))
       .Times(0);
 
   registry().UpdateAppLimits(app_limits);
@@ -915,14 +905,13 @@ TEST_F(AppActivityRegistryTest, AvoidReduntantNotifications) {
 
   // Expect that there will be a notification for Chrome but not for kApp1.
   EXPECT_CALL(notification_delegate_mock(),
-              ShowAppTimeLimitNotification(
-                  GetChromeAppId(), new_chrome_limit.daily_limit(),
-                  chromeos::app_time::AppNotification::kTimeLimitChanged))
+              ShowAppTimeLimitNotification(GetChromeAppId(),
+                                           new_chrome_limit.daily_limit(),
+                                           AppNotification::kTimeLimitChanged))
       .Times(1);
   EXPECT_CALL(notification_delegate_mock(),
-              ShowAppTimeLimitNotification(
-                  kApp1, testing::_,
-                  chromeos::app_time::AppNotification::kTimeLimitChanged))
+              ShowAppTimeLimitNotification(kApp1, testing::_,
+                                           AppNotification::kTimeLimitChanged))
       .Times(0);
   registry().UpdateAppLimits(app_limits);
 }
@@ -933,9 +922,8 @@ TEST_F(AppActivityRegistryTest, NoNotification) {
   std::map<AppId, AppLimit> app_limits = {{kApp1, app1_limit}};
 
   EXPECT_CALL(notification_delegate_mock(),
-              ShowAppTimeLimitNotification(
-                  kApp1, app1_limit.daily_limit(),
-                  chromeos::app_time::AppNotification::kTimeLimitChanged))
+              ShowAppTimeLimitNotification(kApp1, app1_limit.daily_limit(),
+                                           AppNotification::kTimeLimitChanged))
       .Times(0);
   registry().SaveAppActivity();
   ReInitializeRegistry();
@@ -948,9 +936,8 @@ TEST_F(AppActivityRegistryTest, NotificationAfterAppInstall) {
   std::map<AppId, AppLimit> app_limits = {{kApp1, app1_limit}};
 
   EXPECT_CALL(notification_delegate_mock(),
-              ShowAppTimeLimitNotification(
-                  kApp1, app1_limit.daily_limit(),
-                  chromeos::app_time::AppNotification::kTimeLimitChanged))
+              ShowAppTimeLimitNotification(kApp1, app1_limit.daily_limit(),
+                                           AppNotification::kTimeLimitChanged))
       .Times(1);
 
   registry().SaveAppActivity();
@@ -1107,17 +1094,15 @@ TEST_F(AppActivityRegistryTest, AppBlocked) {
                             base::Time::Now());
   const std::map<AppId, AppLimit> limits{{kApp1, app1_limit}};
 
-  EXPECT_CALL(
-      notification_delegate_mock(),
-      ShowAppTimeLimitNotification(
-          kApp1, testing::_, chromeos::app_time::AppNotification::kBlocked))
+  EXPECT_CALL(notification_delegate_mock(),
+              ShowAppTimeLimitNotification(kApp1, testing::_,
+                                           AppNotification::kBlocked))
       .Times(1);
   registry().UpdateAppLimits(limits);
 
-  EXPECT_CALL(
-      notification_delegate_mock(),
-      ShowAppTimeLimitNotification(
-          kApp1, testing::_, chromeos::app_time::AppNotification::kAvailable))
+  EXPECT_CALL(notification_delegate_mock(),
+              ShowAppTimeLimitNotification(kApp1, testing::_,
+                                           AppNotification::kAvailable))
       .Times(1);
 
   registry().UpdateAppLimits(std::map<AppId, AppLimit>());
@@ -1154,4 +1139,4 @@ TEST_F(AppActivityRegistryTest, GoogleSlidesPaused) {
 }
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

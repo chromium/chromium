@@ -9,8 +9,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace app_time {
 
 namespace {
@@ -261,4 +260,4 @@ std::vector<AppActivity::ActiveTime> AppActivity::TakeActiveTimes() {
 }
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

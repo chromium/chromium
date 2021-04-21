@@ -33,7 +33,7 @@ namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 extern const char kAppsWithTimeLimitMetric[];
@@ -183,6 +183,13 @@ class AppTimeController : public SystemClockClient::Observer,
   base::WeakPtrFactory<AppTimeController> weak_ptr_factory_{this};
 };
 
+}  // namespace app_time
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+namespace app_time {
+using ::ash::app_time::AppTimeController;
 }  // namespace app_time
 }  // namespace chromeos
 

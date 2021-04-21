@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 namespace {
@@ -133,4 +133,4 @@ TEST_F(ActiveTimeTest, MergeActiveTimesTest) {
 // TODO(agawronska) : Add more tests for app activity.
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

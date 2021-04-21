@@ -7,7 +7,7 @@
 
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 class AppId;
@@ -36,6 +36,13 @@ class AppTimeLimitsPolicyBuilder {
   base::Value value_{base::Value::Type::DICTIONARY};
 };
 
+}  // namespace app_time
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+namespace app_time {
+using ::ash::app_time::AppTimeLimitsPolicyBuilder;
 }  // namespace app_time
 }  // namespace chromeos
 

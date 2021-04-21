@@ -29,7 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -52,8 +52,7 @@ bool IsURLAllowlisted(const GURL& url, content::BrowserContext* context) {
 
 bool IsWebAppAllowlisted(const std::string& app_id_string,
                          content::BrowserContext* context) {
-  const chromeos::app_time::AppId app_id(apps::mojom::AppType::kWeb,
-                                         app_id_string);
+  const app_time::AppId app_id(apps::mojom::AppType::kWeb, app_id_string);
   auto* child_user_service =
       ChildUserServiceFactory::GetForBrowserContext(context);
   DCHECK(child_user_service);
@@ -213,4 +212,4 @@ WebTimeLimitNavigationThrottle::WillStartOrRedirectRequest() {
       GetWebTimeLimitAppErrorPage(time_limit, app_locale, app_name));
 }
 
-}  // namespace chromeos
+}  // namespace ash

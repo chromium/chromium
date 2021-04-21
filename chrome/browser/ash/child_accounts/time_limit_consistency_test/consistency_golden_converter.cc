@@ -8,7 +8,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limit_test_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace utils = time_limit_test_utils;
 
@@ -184,4 +184,4 @@ GenerateUnlockUsageLimitOverrideStateFromInput(
 }
 
 }  // namespace time_limit_consistency
-}  // namespace chromeos
+}  // namespace ash

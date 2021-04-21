@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/consistency_test_utils.h"
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/goldens/consistency_golden.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace time_limit_consistency_utils {
 
 void AddWindowLimitEntryToGoldenInput(
@@ -65,4 +65,4 @@ void AddTimedOverrideToGoldenInput(
 }
 
 }  // namespace time_limit_consistency_utils
-}  // namespace chromeos
+}  // namespace ash

@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 using PersistedAppInfoTest = testing::Test;
@@ -97,4 +97,4 @@ TEST_F(PersistedAppInfoTest, UpdateAppActivityPreference) {
 }
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

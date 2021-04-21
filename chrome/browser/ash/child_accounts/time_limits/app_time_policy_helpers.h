@@ -16,7 +16,7 @@ class TimeDelta;
 class Value;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 class AppId;
@@ -85,6 +85,6 @@ std::map<AppId, AppLimit> AppLimitsFromDict(const base::Value& dict);
 
 }  // namespace policy
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_POLICY_HELPERS_H_

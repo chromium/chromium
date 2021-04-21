@@ -99,4 +99,9 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) SystemClockClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
+namespace ash {
+using ::chromeos::SystemClockClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_SYSTEM_CLOCK_SYSTEM_CLOCK_CLIENT_H_

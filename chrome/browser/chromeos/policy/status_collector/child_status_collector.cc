@@ -219,8 +219,8 @@ void ChildStatusCollector::UpdateReportingSettings() {
 void ChildStatusCollector::OnAppActivityReportSubmitted() {
   DCHECK(last_report_params_);
   if (last_report_params_->anything_reported) {
-    chromeos::app_time::AppActivityReportInterface* app_activity_reporting =
-        chromeos::app_time::AppActivityReportInterface::Get(profile_);
+    ash::app_time::AppActivityReportInterface* app_activity_reporting =
+        ash::app_time::AppActivityReportInterface::Get(profile_);
     DCHECK(app_activity_reporting);
     app_activity_reporting->AppActivityReportSubmitted(
         last_report_params_->generation_time);
@@ -298,8 +298,8 @@ bool ChildStatusCollector::GetActivityTimes(
 
 bool ChildStatusCollector::GetAppActivity(
     em::ChildStatusReportRequest* status) {
-  chromeos::app_time::AppActivityReportInterface* app_activity_reporting =
-      chromeos::app_time::AppActivityReportInterface::Get(profile_);
+  ash::app_time::AppActivityReportInterface* app_activity_reporting =
+      ash::app_time::AppActivityReportInterface::Get(profile_);
   DCHECK(app_activity_reporting);
 
   last_report_params_ =

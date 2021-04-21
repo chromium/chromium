@@ -69,7 +69,7 @@ class WebTimeCalculationBrowserTest : public MixinBasedInProcessBrowserTest {
                                  const std::string& url_in,
                                  WindowOpenDisposition disposition);
 
-  chromeos::app_time::ChromeAppActivityState GetChromeAppActivityState();
+  ash::app_time::ChromeAppActivityState GetChromeAppActivityState();
 
  private:
   void UpdatePolicy();
@@ -78,7 +78,7 @@ class WebTimeCalculationBrowserTest : public MixinBasedInProcessBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  chromeos::app_time::AppTimeLimitsAllowlistPolicyBuilder builder_;
+  ash::app_time::AppTimeLimitsAllowlistPolicyBuilder builder_;
 
   chromeos::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kChild,
@@ -141,7 +141,7 @@ content::WebContents* WebTimeCalculationBrowserTest::Navigate(
   return params.navigated_or_inserted_contents;
 }
 
-chromeos::app_time::ChromeAppActivityState
+ash::app_time::ChromeAppActivityState
 WebTimeCalculationBrowserTest::GetChromeAppActivityState() {
   chromeos::ChildUserService* service =
       chromeos::ChildUserServiceFactory::GetForBrowserContext(profile_);
@@ -173,11 +173,11 @@ IN_PROC_BROWSER_TEST_F(WebTimeCalculationBrowserTest, TabSelectionChanges) {
   // Create a new tab and navigate it to some url.
   Navigate(browser(), kExampleHost2, WindowOpenDisposition::NEW_FOREGROUND_TAB);
 
-  EXPECT_EQ(chromeos::app_time::ChromeAppActivityState::kActive,
+  EXPECT_EQ(ash::app_time::ChromeAppActivityState::kActive,
             GetChromeAppActivityState());
 
   browser()->tab_strip_model()->ActivateTabAt(0);
-  EXPECT_EQ(chromeos::app_time::ChromeAppActivityState::kActiveAllowlisted,
+  EXPECT_EQ(ash::app_time::ChromeAppActivityState::kActiveAllowlisted,
             GetChromeAppActivityState());
 
   bool destroyed = browser()->tab_strip_model()->CloseWebContentsAt(
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(WebTimeCalculationBrowserTest, TabSelectionChanges) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(chromeos::app_time::ChromeAppActivityState::kActive,
+  EXPECT_EQ(ash::app_time::ChromeAppActivityState::kActive,
             GetChromeAppActivityState());
 }
 
@@ -200,12 +200,12 @@ IN_PROC_BROWSER_TEST_F(WebTimeCalculationBrowserTest, TabDetached) {
 
   browser()->tab_strip_model()->ActivateTabAt(0);
 
-  EXPECT_EQ(chromeos::app_time::ChromeAppActivityState::kActiveAllowlisted,
+  EXPECT_EQ(ash::app_time::ChromeAppActivityState::kActiveAllowlisted,
             GetChromeAppActivityState());
 
   Browser* new_browser = DetachTabToNewBrowser(browser(), 1);
 
-  EXPECT_EQ(chromeos::app_time::ChromeAppActivityState::kActive,
+  EXPECT_EQ(ash::app_time::ChromeAppActivityState::kActive,
             GetChromeAppActivityState());
 
   // Now we have two browser windows. One hosting a allowlisted url and the
@@ -214,14 +214,14 @@ IN_PROC_BROWSER_TEST_F(WebTimeCalculationBrowserTest, TabDetached) {
       0, TabStripModel::CloseTypes::CLOSE_USER_GESTURE));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(chromeos::app_time::ChromeAppActivityState::kActiveAllowlisted,
+  EXPECT_EQ(ash::app_time::ChromeAppActivityState::kActiveAllowlisted,
             GetChromeAppActivityState());
 
   EXPECT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
       0, TabStripModel::CloseTypes::CLOSE_USER_GESTURE));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(chromeos::app_time::ChromeAppActivityState::kInactive,
+  EXPECT_EQ(ash::app_time::ChromeAppActivityState::kInactive,
             GetChromeAppActivityState());
 }
 

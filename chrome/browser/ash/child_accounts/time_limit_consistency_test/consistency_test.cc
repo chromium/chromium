@@ -18,7 +18,7 @@
 #include "chromeos/settings/timezone_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace time_limit_consistency {
 
 using TimeLimitConsistencyTest = testing::TestWithParam<GoldenParam>;
@@ -65,4 +65,4 @@ INSTANTIATE_TEST_SUITE_P(Parameterized,
                          GetTestCaseName);
 
 }  // namespace time_limit_consistency
-}  // namespace chromeos
+}  // namespace ash

@@ -14,7 +14,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 // static
@@ -88,4 +88,4 @@ WebTimeNavigationObserver::WebTimeNavigationObserver(
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebTimeNavigationObserver)
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

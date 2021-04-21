@@ -49,7 +49,7 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 const char kAppsWithTimeLimitMetric[] =
@@ -656,4 +656,4 @@ void AppTimeController::ShowNotificationForApp(
 }
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

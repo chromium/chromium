@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 namespace policy {
 
@@ -268,4 +268,4 @@ std::map<AppId, AppLimit> AppLimitsFromDict(const base::Value& dict) {
 
 }  // namespace policy
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

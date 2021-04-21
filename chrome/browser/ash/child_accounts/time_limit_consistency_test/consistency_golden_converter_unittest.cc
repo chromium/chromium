@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace utils = time_limit_test_utils;
 namespace consistency_utils = time_limit_consistency_utils;
@@ -275,4 +275,4 @@ TEST_F(ConsistencyGoldenConverterTest, GeneratePreviousStateOtherOverrides) {
 }
 
 }  // namespace time_limit_consistency
-}  // namespace chromeos
+}  // namespace ash

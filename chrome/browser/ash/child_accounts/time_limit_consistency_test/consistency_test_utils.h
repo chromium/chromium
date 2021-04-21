@@ -10,7 +10,7 @@
 #include "base/optional.h"
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/goldens/consistency_golden.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace time_limit_consistency_utils {
 
 // A time of day composed of hours and minutes, used when generating bedtime
@@ -51,6 +51,6 @@ void AddTimedOverrideToGoldenInput(
     int64_t created_at);
 
 }  // namespace time_limit_consistency_utils
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_CONSISTENCY_TEST_CONSISTENCY_TEST_UTILS_H_

@@ -92,9 +92,9 @@ class WebTimeLimitEnforcerThrottleTest : public MixinBasedInProcessBrowserTest {
   void SetUpOnMainThread() override;
   bool IsErrorPageBeingShownInWebContents(content::WebContents* tab);
   void AllowlistUrlRegx(const std::string& host);
-  void AllowlistApp(const chromeos::app_time::AppId& app_id);
+  void AllowlistApp(const ash::app_time::AppId& app_id);
   void BlockWeb();
-  chromeos::app_time::WebTimeLimitEnforcer* GetWebTimeLimitEnforcer();
+  ash::app_time::WebTimeLimitEnforcer* GetWebTimeLimitEnforcer();
   content::WebContents* InstallAndLaunchWebApp(const GURL& url,
                                                bool allowlisted_app);
 
@@ -103,7 +103,7 @@ class WebTimeLimitEnforcerThrottleTest : public MixinBasedInProcessBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  chromeos::app_time::AppTimeLimitsAllowlistPolicyBuilder builder_;
+  ash::app_time::AppTimeLimitsAllowlistPolicyBuilder builder_;
 
   chromeos::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kChild,
@@ -153,7 +153,7 @@ void WebTimeLimitEnforcerThrottleTest::AllowlistUrlRegx(
 }
 
 void WebTimeLimitEnforcerThrottleTest::AllowlistApp(
-    const chromeos::app_time::AppId& app_id) {
+    const ash::app_time::AppId& app_id) {
   builder_.AppendToAllowlistAppList(app_id);
   UpdatePolicy();
 }
@@ -163,7 +163,7 @@ void WebTimeLimitEnforcerThrottleTest::BlockWeb() {
       base::TimeDelta::FromHours(1));
 }
 
-chromeos::app_time::WebTimeLimitEnforcer*
+ash::app_time::WebTimeLimitEnforcer*
 WebTimeLimitEnforcerThrottleTest::GetWebTimeLimitEnforcer() {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -188,7 +188,7 @@ content::WebContents* WebTimeLimitEnforcerThrottleTest::InstallAndLaunchWebApp(
       web_app::InstallWebApp(browser()->profile(), std::move(web_app_info));
 
   if (allowlisted_app)
-    AllowlistApp(chromeos::app_time::AppId(apps::mojom::AppType::kWeb, app_id));
+    AllowlistApp(ash::app_time::AppId(apps::mojom::AppType::kWeb, app_id));
   base::RunLoop().RunUntilIdle();
 
   // Add a tab to |browser()| and return the newly added WebContents.
@@ -211,7 +211,7 @@ void WebTimeLimitEnforcerThrottleTest::UpdatePolicy() {
   const user_manager::UserManager* const user_manager =
       user_manager::UserManager::Get();
 
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager->GetActiveUser());
 
   logged_in_user_mixin_.GetUserPolicyTestHelper()->RefreshPolicyAndWait(
@@ -417,8 +417,7 @@ IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest, WebContentTitleSet) {
   ui_test_utils::NavigateToURL(&params);
   auto* web_contents = params.navigated_or_inserted_contents;
   auto* navigation_observer =
-      chromeos::app_time::WebTimeNavigationObserver::FromWebContents(
-          web_contents);
+      ash::app_time::WebTimeNavigationObserver::FromWebContents(web_contents);
   std::u16string title = web_contents->GetTitle();
   EXPECT_EQ(title, navigation_observer->previous_title());
 

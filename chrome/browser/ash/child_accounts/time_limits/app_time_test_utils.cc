@@ -11,7 +11,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 arc::mojom::ArcPackageInfoPtr CreateArcAppPackage(
@@ -61,4 +61,4 @@ scoped_refptr<extensions::Extension> CreateExtension(
 }
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

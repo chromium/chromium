@@ -27,7 +27,7 @@
 #include "extensions/common/extension.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 namespace {
@@ -335,4 +335,4 @@ bool AppServiceWrapper::ShouldIncludeApp(const AppId& app_id) const {
 }
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

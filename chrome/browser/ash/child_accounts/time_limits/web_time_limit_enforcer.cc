@@ -23,7 +23,7 @@
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents.h"
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 // static
@@ -112,4 +112,4 @@ void WebTimeLimitEnforcer::ReloadAllWebContents() {
 }
 
 }  // namespace app_time
-}  // namespace chromeos
+}  // namespace ash

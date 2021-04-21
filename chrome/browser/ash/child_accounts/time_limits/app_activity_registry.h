@@ -29,7 +29,7 @@ class ChildStatusReportRequest;
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace app_time {
 
 class AppTimeLimitsAllowlistPolicyWrapper;
@@ -331,6 +331,13 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
   bool activity_reporting_enabled_ = true;
 };
 
+}  // namespace app_time
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+namespace app_time {
+using ::ash::app_time::AppActivityRegistry;
 }  // namespace app_time
 }  // namespace chromeos
 
