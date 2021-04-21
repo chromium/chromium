@@ -14,6 +14,7 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointResponse;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class PageAnnotationsServiceProxy {
                 mProfile,
                 String.format(PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL.getValue()
                                 + GET_ANNOTATIONS_QUERY_PARAMS_TEMPLATE,
-                        url.getSpec()),
+                        UrlUtilities.escapeQueryParamValue(url.getSpec(), false)),
                 HTTPS_METHOD, CONTENT_TYPE, EMPTY_POST_DATA, TIMEOUT_MS,
                 new String[] {ACCEPT_LANGUAGE_KEY, LocaleUtils.getDefaultLocaleListString()});
     }

@@ -220,6 +220,17 @@ public class UrlUtilities {
     }
 
     /**
+     * Escapes characters in text suitable for use as a query parameter value.
+     * This method calls into net::EscapeQueryParamValue.
+     * @param text string to be escaped.
+     * @param usePlus whether or not to use "+" in place of spaces.
+     * @return the escaped string.
+     */
+    public static String escapeQueryParamValue(String text, boolean usePlus) {
+        return UrlUtilitiesJni.get().escapeQueryParamValue(text, usePlus);
+    }
+
+    /**
      * This variation of #isNTPUrl is for already parsed URLs, not for direct use on user-provided
      * url input. Do not do isNTPUrl(new GURL(user_string)), as this will not handle legacy schemes
      * like about: correctly. You should use {@link #isNTPUrl(String)} instead, or call
@@ -282,5 +293,7 @@ public class UrlUtilities {
         boolean isUrlWithinScope(String url, String scopeUrl);
         boolean urlsMatchIgnoringFragments(String url, String url2);
         boolean urlsFragmentsDiffer(String url, String url2);
+
+        String escapeQueryParamValue(String url, boolean usePlus);
     }
 }

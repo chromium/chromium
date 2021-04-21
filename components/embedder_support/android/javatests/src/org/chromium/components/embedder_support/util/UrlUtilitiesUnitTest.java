@@ -241,4 +241,16 @@ public class UrlUtilitiesUnitTest {
         Assert.assertEquals("", UrlUtilities.getTelNumber(new GURL("about:123456789")));
         Assert.assertEquals("", UrlUtilities.getTelNumber(null));
     }
+
+    @Test
+    @SmallTest
+    public void testEscapeQueryParamValue() {
+        Assert.assertEquals("foo", UrlUtilities.escapeQueryParamValue("foo", false));
+        Assert.assertEquals("foo%20bar", UrlUtilities.escapeQueryParamValue("foo bar", false));
+        Assert.assertEquals("foo%2B%2B", UrlUtilities.escapeQueryParamValue("foo++", false));
+
+        Assert.assertEquals("foo", UrlUtilities.escapeQueryParamValue("foo", true));
+        Assert.assertEquals("foo+bar", UrlUtilities.escapeQueryParamValue("foo bar", true));
+        Assert.assertEquals("foo%2B%2B", UrlUtilities.escapeQueryParamValue("foo++", true));
+    }
 }
