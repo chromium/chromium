@@ -58,6 +58,10 @@ void FakeArCore::SetDisplayGeometry(
   frame_size_ = frame_size;
 }
 
+gfx::Size FakeArCore::GetUncroppedCameraImageSize() const {
+  return {1920, 960};
+}
+
 void FakeArCore::SetCameraTexture(uint32_t texture) {
   DCHECK(IsOnGlThread());
   // This is a no-op for the FakeArCore implementation. We might want to

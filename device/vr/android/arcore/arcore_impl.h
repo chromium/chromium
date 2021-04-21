@@ -180,6 +180,8 @@ class ArCoreImpl : public ArCore {
 
   mojom::XRTrackedImagesDataPtr GetTrackedImages() override;
 
+  gfx::Size GetUncroppedCameraImageSize() const override;
+
  protected:
   std::vector<float> TransformDisplayUvCoords(
       const base::span<const float> uvs) const override;
@@ -201,6 +203,8 @@ class ArCoreImpl : public ArCore {
   // multiple XRSessions.
   internal::ScopedArCoreObject<ArSession*> arcore_session_;
   internal::ScopedArCoreObject<ArFrame*> arcore_frame_;
+
+  gfx::Size uncropped_camera_image_size_;
 
   // Target framerate reflecting the current camera configuration.
   MinMaxRange target_framerate_range_ = {30.f, 30.f};

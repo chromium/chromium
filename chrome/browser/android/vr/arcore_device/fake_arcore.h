@@ -35,6 +35,7 @@ class FakeArCore : public ArCore {
   void SetCameraTexture(uint32_t texture) override;
   void SetDisplayGeometry(const gfx::Size& frame_size,
                           display::Display::Rotation display_rotation) override;
+  gfx::Size GetUncroppedCameraImageSize() const override;
 
   gfx::Transform GetProjectionMatrix(float near, float far) override;
   mojom::VRPosePtr Update(bool* camera_updated) override;

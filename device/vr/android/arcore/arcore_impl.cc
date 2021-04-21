@@ -883,6 +883,10 @@ std::vector<float> ArCoreImpl::TransformDisplayUvCoords(
   return uvs_out;
 }
 
+gfx::Size ArCoreImpl::GetUncroppedCameraImageSize() const {
+  return uncropped_camera_image_size_;
+}
+
 mojom::VRPosePtr ArCoreImpl::Update(bool* camera_updated) {
   TRACE_EVENT0("gpu", "ArCoreImpl Update");
 
@@ -917,6 +921,27 @@ mojom::VRPosePtr ArCoreImpl::Update(bool* camera_updated) {
     DLOG(ERROR) << "ArFrame_acquireCamera failed!";
     return nullptr;
   }
+
+  // Get the camera image dimensions via ARCore's intrinsics methods. We don't
+  // currently use the raw focal length and principal point that's exported by
+  // ARCore. Instead, WebXR uses the projection matrix provided by
+  // ARCore. Currently, it seems that ARCore simply uses a centered virtual
+  // camera, ignoring the low-level principal point which may be offset from
+  // center by a few pixels. This is unlikely to make a noticeable difference in
+  // practice.
+  internal::ScopedArCoreObject<ArCameraIntrinsics*> intrinsics;
+  ArCameraIntrinsics_create(
+      arcore_session_.get(),
+      internal::ScopedArCoreObject<ArCameraIntrinsics*>::Receiver(intrinsics)
+          .get());
+  ArCamera_getTextureIntrinsics(arcore_session_.get(), arcore_camera.get(),
+                                intrinsics.get());
+  int32_t intrinsics_width, intrinsics_height;
+  ArCameraIntrinsics_getImageDimensions(arcore_session_.get(), intrinsics.get(),
+                                        &intrinsics_width, &intrinsics_height);
+  DVLOG(3) << __func__ << ": intrinsics_width=" << intrinsics_width
+           << " intrinsics_height=" << intrinsics_height;
+  uncropped_camera_image_size_ = {intrinsics_width, intrinsics_height};
 
   ArTrackingState tracking_state;
   ArCamera_getTrackingState(arcore_session_.get(), arcore_camera.get(),

@@ -88,6 +88,8 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
       display::Display::Rotation display_rotation) = 0;
   virtual void SetCameraTexture(uint32_t camera_texture_id) = 0;
 
+  virtual gfx::Size GetUncroppedCameraImageSize() const;
+
   gfx::Transform GetCameraUvFromScreenUvTransform() const;
   gfx::Transform GetDepthUvFromScreenUvTransform() const;
 

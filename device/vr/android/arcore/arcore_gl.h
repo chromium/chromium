@@ -240,6 +240,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   void OnReclaimedGpuFenceAvailable(WebXrFrame* frame,
                                     std::unique_ptr<gfx::GpuFence> gpu_fence);
   void ClearRenderingFrame(WebXrFrame* frame);
+  void RecalculateUvsAndProjection();
 
   // Set of features enabled on this session. Required to correctly configure
   // the session and only send out necessary data related to reference spaces to
@@ -298,11 +299,15 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   // in their WebXrFrame state.
   gfx::RectF viewport_bounds_ = gfx::RectF(0.f, 0.f, 1.f, 1.f);
 
-  // The camera image size stays locked to the screen size even if
+  // The screen size stays locked to the output screen size even if
   // framebufferScaleFactor changes.
+  gfx::Size screen_size_ = gfx::Size(0, 0);
+
+  // The camera image size is used for the camera image buffer. It has the
+  // same aspect ratio as the screen size, but may have a different resolution.
   gfx::Size camera_image_size_ = gfx::Size(0, 0);
+
   display::Display::Rotation display_rotation_ = display::Display::ROTATE_0;
-  bool should_update_display_geometry_ = true;
 
   // UV transform for drawing the camera texture, this is supplied by ARCore
   // and can include 90 degree rotations or other nontrivial transforms.
@@ -312,7 +317,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   gfx::Transform inverse_projection_;
   // The first run of ProduceFrame should set uv_transform_ and projection_
   // using the default settings in ArCore.
-  bool should_recalculate_uvs_ = true;
+  bool recalculate_uvs_and_projection_ = true;
   bool have_camera_image_ = false;
 
   ArCoreGlInitializeCallback initialized_callback_;
