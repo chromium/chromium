@@ -338,6 +338,10 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
       CompleteRequest(RequestIdTokenStatus::kError, "");
       return;
     }
+    case IdpNetworkRequestManager::TokenResponse::kInvalidRequestError: {
+      CompleteRequest(RequestIdTokenStatus::kErrorInvalidTokenResponse, "");
+      return;
+    }
     case IdpNetworkRequestManager::TokenResponse::kInvalidResponseError: {
       CompleteRequest(RequestIdTokenStatus::kErrorInvalidTokenResponse, "");
       return;

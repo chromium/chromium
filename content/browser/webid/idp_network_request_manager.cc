@@ -5,11 +5,13 @@
 #include "content/browser/webid/idp_network_request_manager.h"
 
 #include "base/base64url.h"
+#include "base/json/json_writer.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -35,7 +37,11 @@ constexpr char kSigninUrlKey[] = "signin_url";
 constexpr char kIdTokenKey[] = "id_token";
 constexpr char kAccountsKey[] = "accounts";
 
-constexpr char kAcceptMimeType[] = "application/json";
+// Token request body keys
+constexpr char kAccountKey[] = "sub";
+constexpr char kRequestKey[] = "request";
+
+constexpr char kJSONMimeType[] = "application/json";
 
 // `Sec-` prefix makes this a forbidden header and cannot be added by
 // JavaScript.
@@ -92,7 +98,7 @@ std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
   resource_request->url = target_url;
   resource_request->site_for_cookies = site_for_cookies;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                                      kAcceptMimeType);
+                                      kJSONMimeType);
   // This header is present exclusively for CSRF resistance.
   // TODO(kenrb): To avoid the value being depended on  set it to a random
   // value. We can later change it if something more useful e.g., a version is
@@ -171,7 +177,7 @@ void IdpNetworkRequestManager::FetchIdpWellKnown(
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                                      kAcceptMimeType);
+                                      kJSONMimeType);
   // TODO(kenrb): Not following redirects is important for security because
   // this bypasses CORB. Ensure there is a test added.
   // https://crbug.com/1155312.
@@ -258,6 +264,29 @@ void IdpNetworkRequestManager::SendAccountsRequest(
       maxResponseSizeInKiB * 1024);
 }
 
+// TODO(majidvp): Should accept request in base::Value form instead of string.
+std::string CreateTokenRequestBody(const std::string& account,
+                                   const std::string& request) {
+  // Given account and id_request creates the following JSON
+  // ```json
+  // {
+  //   "sub": "1234",
+  //   "request": "nonce=abc987987cba&client_id=89898"
+  //   }
+  // }```
+  base::Value request_data(base::Value::Type::DICTIONARY);
+  request_data.SetStringKey(kAccountKey, account);
+  if (!request.empty())
+    request_data.SetStringKey(kRequestKey, request);
+
+  std::string request_body;
+  if (!base::JSONWriter::Write(request_data, &request_body)) {
+    LOG(ERROR) << "Not able to serialize token request body.";
+    return std::string();
+  }
+  return request_body;
+}
+
 void IdpNetworkRequestManager::SendTokenRequest(const GURL& token_url,
                                                 const std::string& account,
                                                 const std::string& request,
@@ -267,13 +296,24 @@ void IdpNetworkRequestManager::SendTokenRequest(const GURL& token_url,
 
   token_request_callback_ = std::move(callback);
 
-  // TODO(majidvp): Append account and request to the post body.
+  std::string token_request_body = CreateTokenRequestBody(account, request);
+  if (token_request_body.empty()) {
+    std::move(token_request_callback_)
+        .Run(TokenResponse::kInvalidRequestError, std::string());
+    return;
+  }
+
   auto resource_request = CreateCredentialedResourceRequest(
       token_url, render_frame_host_->GetLastCommittedOrigin());
+  resource_request->method = net::HttpRequestHeaders::kPostMethod;
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                                      kJSONMimeType);
+
   auto traffic_annotation = CreateTrafficAnnotation();
   // TODO(kenrb): Make this not send cookies. https://crbug.com/1141125.
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
+  url_loader_->AttachStringForUpload(token_request_body, kJSONMimeType);
 
   auto loader_factory = GetUrlLoaderFactory(render_frame_host_);
 

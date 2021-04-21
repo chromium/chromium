@@ -75,6 +75,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   enum class TokenResponse {
     kSuccess,
     kNetError,
+    kInvalidRequestError,
     kInvalidResponseError,
   };
 
