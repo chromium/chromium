@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_CLIENT_VIDEO_STATE_DISPATCHER_H_
-#define REMOTING_PROTOCOL_CLIENT_VIDEO_STATE_DISPATCHER_H_
+#ifndef REMOTING_PROTOCOL_CLIENT_VIDEO_STATS_DISPATCHER_H_
+#define REMOTING_PROTOCOL_CLIENT_VIDEO_STATS_DISPATCHER_H_
 
 #include <list>
 
@@ -36,4 +36,4 @@ class ClientVideoStatsDispatcher : public ChannelDispatcherBase {
 }  // namespace protocol
 }  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_CLIENT_VIDEO_STATE_DISPATCHER_H_
+#endif  // REMOTING_PROTOCOL_CLIENT_VIDEO_STATS_DISPATCHER_H_

@@ -95,4 +95,4 @@ class TokenValidatorBase
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_TOKEN_VALIDATOR_BASE_H
+#endif  // REMOTING_HOST_TOKEN_VALIDATOR_BASE_H_

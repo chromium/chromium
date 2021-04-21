@@ -122,4 +122,4 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_D3D11_WINDOWS_H264_ACCELERATOR_H_
+#endif  // MEDIA_GPU_WINDOWS_D3D11_H264_ACCELERATOR_H_

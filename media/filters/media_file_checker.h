@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_MEDIA_FILE_CHECKER_H_
-#define MEDIA_BASE_MEDIA_FILE_CHECKER_H_
+#ifndef MEDIA_FILTERS_MEDIA_FILE_CHECKER_H_
+#define MEDIA_FILTERS_MEDIA_FILE_CHECKER_H_
 
 #include "base/files/file.h"
 #include "base/macros.h"
@@ -36,4 +36,4 @@ class MEDIA_EXPORT MediaFileChecker {
 
 }  // namespace media
 
-#endif  // MEDIA_BASE_MEDIA_FILE_CHECKER_H_
+#endif  // MEDIA_FILTERS_MEDIA_FILE_CHECKER_H_

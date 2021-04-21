@@ -98,4 +98,4 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer {
 };
 
 }  // namespace media
-#endif  // MEDIA_GPU_ANDROID_CODEC_OUTPUT_BUFFER_RENDERER_H
+#endif  // MEDIA_GPU_ANDROID_CODEC_OUTPUT_BUFFER_RENDERER_H_

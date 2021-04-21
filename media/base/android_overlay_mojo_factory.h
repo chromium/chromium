@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_ANDROID_OVERLAY_MOJO_FACTORY_CB_H_
-#define MEDIA_BASE_ANDROID_OVERLAY_MOJO_FACTORY_CB_H_
+#ifndef MEDIA_BASE_ANDROID_OVERLAY_MOJO_FACTORY_H_
+#define MEDIA_BASE_ANDROID_OVERLAY_MOJO_FACTORY_H_
 
 #include "base/callback.h"
 #include "base/macros.h"
@@ -20,4 +20,4 @@ using AndroidOverlayMojoFactoryCB =
 
 }  // namespace media
 
-#endif  // MEDIA_BASE_ANDROID_OVERLAY_MOJO_FACTORY_CB_H_
+#endif  // MEDIA_BASE_ANDROID_OVERLAY_MOJO_FACTORY_H_

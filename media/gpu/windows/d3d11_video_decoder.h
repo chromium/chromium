@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_D3D11_VIDEO_DECODER_H_
-#define MEDIA_GPU_D3D11_VIDEO_DECODER_H_
+#ifndef MEDIA_GPU_WINDOWS_D3D11_VIDEO_DECODER_H_
+#define MEDIA_GPU_WINDOWS_D3D11_VIDEO_DECODER_H_
 
 #include <d3d11.h>
 #include <string>
@@ -308,4 +308,4 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_D3D11_VIDEO_DECODER_H_
+#endif  // MEDIA_GPU_WINDOWS_D3D11_VIDEO_DECODER_H_

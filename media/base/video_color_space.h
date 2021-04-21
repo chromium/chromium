@@ -107,4 +107,4 @@ class MEDIA_EXPORT VideoColorSpace {
 
 }  // namespace media
 
-#endif
+#endif  // MEDIA_BASE_VIDEO_COLOR_SPACE_H_

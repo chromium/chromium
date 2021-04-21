@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_ANDROID_VIDEO_FRAME_FACTORY_IMPL_
-#define MEDIA_GPU_ANDROID_VIDEO_FRAME_FACTORY_IMPL_
+#ifndef MEDIA_GPU_ANDROID_VIDEO_FRAME_FACTORY_IMPL_H_
+#define MEDIA_GPU_ANDROID_VIDEO_FRAME_FACTORY_IMPL_H_
 
 #include <memory>
 
@@ -141,4 +141,4 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl : public VideoFrameFactory {
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_ANDROID_VIDEO_FRAME_FACTORY_IMPL_
+#endif  // MEDIA_GPU_ANDROID_VIDEO_FRAME_FACTORY_IMPL_H_

@@ -6,8 +6,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_BASE_IDISPATCH_DRIVER_WIN_H_
-#define REMOTING_BASE_IDISPATCH_DRIVER_WIN_H_
+#ifndef REMOTING_BASE_DISPATCH_WIN_H_
+#define REMOTING_BASE_DISPATCH_WIN_H_
 
 #include <oaidl.h>
 
@@ -642,4 +642,4 @@ HRESULT Invoke(IDispatch* object,
 
 } // namespace remoting
 
-#endif // REMOTING_BASE_IDISPATCH_DRIVER_WIN_H_
+#endif  // REMOTING_BASE_DISPATCH_WIN_H_

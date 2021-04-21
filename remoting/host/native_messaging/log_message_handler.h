@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_NATIVE_MESSAGIN_LOG_HANDLER_H_
-#define REMOTING_HOST_NATIVE_MESSAGIN_LOG_HANDLER_H_
+#ifndef REMOTING_HOST_NATIVE_MESSAGING_LOG_MESSAGE_HANDLER_H_
+#define REMOTING_HOST_NATIVE_MESSAGING_LOG_MESSAGE_HANDLER_H_
 
 #include <stddef.h>
 
@@ -54,4 +54,4 @@ class LogMessageHandler {
 
 }  // namespace remoting
 
-#endif
+#endif  // REMOTING_HOST_NATIVE_MESSAGING_LOG_MESSAGE_HANDLER_H_

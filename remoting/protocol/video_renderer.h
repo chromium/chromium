@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_CLIENT_VIDEO_RENDERER_H_
-#define REMOTING_CLIENT_VIDEO_RENDERER_H_
+#ifndef REMOTING_PROTOCOL_VIDEO_RENDERER_H_
+#define REMOTING_PROTOCOL_VIDEO_RENDERER_H_
 
 namespace remoting {
 
@@ -53,4 +53,4 @@ class VideoRenderer {
 }  // namespace protocol
 }  // namespace remoting
 
-#endif  // REMOTING_CLIENT_VIDEO_RENDERER_H_
+#endif  // REMOTING_PROTOCOL_VIDEO_RENDERER_H_

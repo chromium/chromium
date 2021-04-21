@@ -41,4 +41,4 @@ class VideoDecoderVpx : public VideoDecoder {
 
 }  // namespace remoting
 
-#endif  // REMOTING_CODEC_VIDEO_DECODER_VP8_H_
+#endif  // REMOTING_CODEC_VIDEO_DECODER_VPX_H_

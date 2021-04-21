@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_VIDEO_STATE_STUB_H_
-#define REMOTING_PROTOCOL_VIDEO_STATE_STUB_H_
+#ifndef REMOTING_PROTOCOL_VIDEO_STATS_STUB_H_
+#define REMOTING_PROTOCOL_VIDEO_STATS_STUB_H_
 
 #include <cstdint>
 
@@ -31,4 +31,4 @@ class VideoStatsStub {
 }  // namespace protocol
 }  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_VIDEO_SSTATE_TUB_H_
+#endif  // REMOTING_PROTOCOL_VIDEO_STATS_STUB_H_

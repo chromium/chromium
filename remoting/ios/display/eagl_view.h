@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_IOS_DISPAY_EAGL_VIEW_H_
-#define REMOTING_IOS_DISPAY_EAGL_VIEW_H_
+#ifndef REMOTING_IOS_DISPLAY_EAGL_VIEW_H_
+#define REMOTING_IOS_DISPLAY_EAGL_VIEW_H_
 
 #import <UIKit/UIKit.h>
 
@@ -28,4 +28,4 @@
     displayTaskRunner;
 @end
 
-#endif  // REMOTING_IOS_DISPAY_EAGL_VIEW_H_
+#endif  // REMOTING_IOS_DISPLAY_EAGL_VIEW_H_

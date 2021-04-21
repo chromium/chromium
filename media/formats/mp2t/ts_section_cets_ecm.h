@@ -47,4 +47,4 @@ class TsSectionCetsEcm : public TsSection {
 }  // namespace mp2t
 }  // namespace media
 
-#endif
+#endif  // MEDIA_FORMATS_MP2T_TS_SECTION_CETS_ECM_H_

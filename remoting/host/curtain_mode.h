@@ -46,4 +46,4 @@ class CurtainMode {
 
 }  // namespace remoting
 
-#endif
+#endif  // REMOTING_HOST_CURTAIN_MODE_H_

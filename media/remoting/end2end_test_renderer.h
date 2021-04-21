@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_REMOTING_END2END_RENDERER_H_
-#define MEDIA_REMOTING_END2END_RENDERER_H_
+#ifndef MEDIA_REMOTING_END2END_TEST_RENDERER_H_
+#define MEDIA_REMOTING_END2END_TEST_RENDERER_H_
 
 #include <memory>
 #include <vector>
@@ -102,4 +102,4 @@ class End2EndTestRenderer final : public Renderer {
 }  // namespace remoting
 }  // namespace media
 
-#endif  // MEDIA_REMOTING_END2END_RENDERER_H_
+#endif  // MEDIA_REMOTING_END2END_TEST_RENDERER_H_

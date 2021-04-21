@@ -118,4 +118,4 @@ class AutoThread : base::PlatformThread::Delegate {
 
 }  // namespace remoting
 
-#endif  // REMOTING_AUTO_THREAD_H_
+#endif  // REMOTING_BASE_AUTO_THREAD_H_

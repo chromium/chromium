@@ -47,4 +47,4 @@ class TokenValidatorFactoryImpl : public protocol::TokenValidatorFactory {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_URL_FETCHER_TOKEN_VALIDATOR_FACTORY_H_
+#endif  // REMOTING_HOST_TOKEN_VALIDATOR_FACTORY_IMPL_H_

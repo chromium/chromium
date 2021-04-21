@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_AUDIO_VIDEO_METADATA_EXTRACTOR_H_
-#define MEDIA_BASE_AUDIO_VIDEO_METADATA_EXTRACTOR_H_
+#ifndef MEDIA_FILTERS_AUDIO_VIDEO_METADATA_EXTRACTOR_H_
+#define MEDIA_FILTERS_AUDIO_VIDEO_METADATA_EXTRACTOR_H_
 
 #include <map>
 #include <string>
@@ -110,4 +110,4 @@ class MEDIA_EXPORT AudioVideoMetadataExtractor {
 
 }  // namespace media
 
-#endif  // MEDIA_BASE_AUDIO_VIDEO_METADATA_EXTRACTOR_H_
+#endif  // MEDIA_FILTERS_AUDIO_VIDEO_METADATA_EXTRACTOR_H_

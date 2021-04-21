@@ -109,4 +109,4 @@ class MEDIA_EXPORT RendererFactorySelector {
 
 }  // namespace media
 
-#endif  // MEDIA_BASE_RENDERER_FACTORY_H_
+#endif  // MEDIA_BASE_RENDERER_FACTORY_SELECTOR_H_

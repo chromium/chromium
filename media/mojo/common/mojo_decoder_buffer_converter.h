@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_MOJO_COMMON_MOJO_DECODER_BUFFER_CONVERTER_
-#define MEDIA_MOJO_COMMON_MOJO_DECODER_BUFFER_CONVERTER_
+#ifndef MEDIA_MOJO_COMMON_MOJO_DECODER_BUFFER_CONVERTER_H_
+#define MEDIA_MOJO_COMMON_MOJO_DECODER_BUFFER_CONVERTER_H_
 
 #include <memory>
 
@@ -156,4 +156,4 @@ class MojoDecoderBufferWriter {
 
 }  // namespace media
 
-#endif  // MEDIA_MOJO_COMMON_MOJO_DECODER_BUFFER_CONVERTER_
+#endif  // MEDIA_MOJO_COMMON_MOJO_DECODER_BUFFER_CONVERTER_H_

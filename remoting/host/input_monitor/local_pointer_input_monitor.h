@@ -41,4 +41,4 @@ class LocalPointerInputMonitor {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_INPUT_MONITOR_LOCAL_MOUSE_INPUT_MONITOR_H_
+#endif  // REMOTING_HOST_INPUT_MONITOR_LOCAL_POINTER_INPUT_MONITOR_H_

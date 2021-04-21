@@ -47,4 +47,4 @@ class ScopedVAContext {
 }  // namespace vaapi_test
 }  // namespace media
 
-#endif
+#endif  // MEDIA_GPU_VAAPI_TEST_SCOPED_VA_CONTEXT_H_

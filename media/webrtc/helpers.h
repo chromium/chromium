@@ -23,4 +23,4 @@ bool LeftAndRightChannelsAreSymmetric(const AudioBus& audio);
 
 }  // namespace media
 
-#endif  // MEDIA_WEBRTC_WEBRTC_HELPERS_H_
+#endif  // MEDIA_WEBRTC_HELPERS_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_IOS_MDC_MDC_ACTION_VIEW_IMAGE_H_
-#define REMOTING_IOS_MDC_MDC_ACTION_VIEW_IMAGE_H_
+#ifndef REMOTING_IOS_MDC_MDCACTIONIMAGEVIEW_H_
+#define REMOTING_IOS_MDC_MDCACTIONIMAGEVIEW_H_
 
 // TODO(nicholss): Currently working on getting this into MDC for iOS, at that
 // time we will remove this version from chromium.
@@ -25,4 +25,4 @@
 
 @end
 
-#endif  // REMOTING_IOS_MDC_MDC_ACTION_VIEW_IMAGE_H_
+#endif  // REMOTING_IOS_MDC_MDCACTIONIMAGEVIEW_H_

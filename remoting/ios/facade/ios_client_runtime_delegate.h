@@ -38,4 +38,4 @@ class IosClientRuntimeDelegate : public ChromotingClientRuntime::Delegate {
 
 }  // namespace remoting
 
-#endif  // REMOTING_IOS_FACADE_CLIENT_RUNTIME_DELEGATE_H_
+#endif  // REMOTING_IOS_FACADE_IOS_CLIENT_RUNTIME_DELEGATE_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_CLIENT_JNI_JNI_OAUTH_TOKEN_GETTER_
-#define REMOTING_CLIENT_JNI_JNI_OAUTH_TOKEN_GETTER_
+#ifndef REMOTING_CLIENT_JNI_JNI_OAUTH_TOKEN_GETTER_H_
+#define REMOTING_CLIENT_JNI_JNI_OAUTH_TOKEN_GETTER_H_
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -46,4 +46,4 @@ class JniOAuthTokenGetter : public OAuthTokenGetter {
 
 }  // namespace remoting
 
-#endif  // REMOTING_CLIENT_JNI_JNI_OAUTH_TOKEN_GETTER_
+#endif  // REMOTING_CLIENT_JNI_JNI_OAUTH_TOKEN_GETTER_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_CONSTANTS_MAC_H_
-#define REMOTING_HOST_CONSTANTS_MAC_H_
+#ifndef REMOTING_HOST_MAC_CONSTANTS_MAC_H_
+#define REMOTING_HOST_MAC_CONSTANTS_MAC_H_
 
 namespace remoting {
 
@@ -60,4 +60,4 @@ extern const char kUnbrandedUninstallerPath[];
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_CONSTANTS_MAC_H_
+#endif  // REMOTING_HOST_MAC_CONSTANTS_MAC_H_

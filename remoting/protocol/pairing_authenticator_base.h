@@ -88,4 +88,4 @@ class PairingAuthenticatorBase : public Authenticator {
 }  // namespace protocol
 }  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_PAIRING_AUTHENTICATOR_H_
+#endif  // REMOTING_PROTOCOL_PAIRING_AUTHENTICATOR_BASE_H_

@@ -68,4 +68,4 @@ class Descriptors {
 }  // namespace mp2t
 }  // namespace media
 
-#endif  // MEDIA_FORMATS_MP2T_DESCRIPTOR_LIST_H_
+#endif  // MEDIA_FORMATS_MP2T_DESCRIPTORS_H_

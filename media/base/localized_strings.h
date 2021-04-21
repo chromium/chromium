@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_MEDIA_LOCALIZED_STRINGS_H_
-#define MEDIA_BASE_MEDIA_LOCALIZED_STRINGS_H_
+#ifndef MEDIA_BASE_LOCALIZED_STRINGS_H_
+#define MEDIA_BASE_LOCALIZED_STRINGS_H_
 
 #include <string>
 
@@ -46,4 +46,4 @@ std::u16string GetLocalizedStringUTF16(MessageId message_id);
 
 }  // namespace media
 
-#endif  // MEDIA_BASE_MEDIA_LOCALIZED_STRINGS_H_
+#endif  // MEDIA_BASE_LOCALIZED_STRINGS_H_

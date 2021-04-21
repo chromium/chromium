@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_CLIENT_IOS_CLIENT_KEYBOARD_H_
-#define REMOTING_CLIENT_IOS_CLIENT_KEYBOARD_H_
+#ifndef REMOTING_IOS_CLIENT_KEYBOARD_H_
+#define REMOTING_IOS_CLIENT_KEYBOARD_H_
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -48,4 +48,4 @@ struct KeypressInfo;
 
 @end
 
-#endif  //  REMOTING_CLIENT_IOS_CLIENT_KEYBOARD_H_
+#endif  // REMOTING_IOS_CLIENT_KEYBOARD_H_

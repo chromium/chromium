@@ -22,4 +22,4 @@ using RequestRoutingTokenCallback =
 
 }  // namespace media
 
-#endif  // MEDIA_BASE_ANDROID_ROUTING_TOKEN_CALLBACK_H_
+#endif  // MEDIA_BASE_ROUTING_TOKEN_CALLBACK_H_

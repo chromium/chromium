@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_PAIRING_REGISTRY_DELEGATE_WIN_H_
-#define REMOTING_PROTOCOL_PAIRING_REGISTRY_DELEGATE_WIN_H_
+#ifndef REMOTING_HOST_PAIRING_REGISTRY_DELEGATE_WIN_H_
+#define REMOTING_HOST_PAIRING_REGISTRY_DELEGATE_WIN_H_
 
 #include <memory>
 #include <string>
@@ -68,4 +68,4 @@ class PairingRegistryDelegateWin
 
 }  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_PAIRING_REGISTRY_DELEGATE_WIN_H_
+#endif  // REMOTING_HOST_PAIRING_REGISTRY_DELEGATE_WIN_H_

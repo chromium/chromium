@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_FACTORY_H_
-#define REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_FACTORY_H_
+#ifndef REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_H_
+#define REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_H_
 
 #include <string>
 
@@ -41,4 +41,4 @@ class RejectingAuthenticator : public Authenticator {
 }  // namespace protocol
 }  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_FACTORY_H_
+#endif  // REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_H_

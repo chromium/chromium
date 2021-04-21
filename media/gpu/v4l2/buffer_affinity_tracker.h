@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_V4L2_V4L2_BUFFER_AFFINITY_TRACKER_H_
-#define MEDIA_GPU_V4L2_V4L2_BUFFER_AFFINITY_TRACKER_H_
+#ifndef MEDIA_GPU_V4L2_BUFFER_AFFINITY_TRACKER_H_
+#define MEDIA_GPU_V4L2_BUFFER_AFFINITY_TRACKER_H_
 
 #include <cstddef>
 #include <map>
@@ -53,4 +53,4 @@ class BufferAffinityTracker {
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_V4L2_V4L2_BUFFER_AFFINITY_TRACKER_H_
+#endif  // MEDIA_GPU_V4L2_BUFFER_AFFINITY_TRACKER_H_

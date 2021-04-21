@@ -74,4 +74,4 @@ class MEDIA_GPU_EXPORT CodecImageGroup
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_ANDROID_CODEC_IMAGE_H_
+#endif  // MEDIA_GPU_ANDROID_CODEC_IMAGE_GROUP_H_

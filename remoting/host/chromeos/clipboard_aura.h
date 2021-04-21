@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_CLIPBOARD_AURA_H_
-#define REMOTING_HOST_CLIPBOARD_AURA_H_
+#ifndef REMOTING_HOST_CHROMEOS_CLIPBOARD_AURA_H_
+#define REMOTING_HOST_CHROMEOS_CLIPBOARD_AURA_H_
 
 #include <stdint.h>
 
@@ -57,4 +57,4 @@ class ClipboardAura : public Clipboard {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_CLIPBOARD_AURA_H_
+#endif  // REMOTING_HOST_CHROMEOS_CLIPBOARD_AURA_H_
