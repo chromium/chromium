@@ -119,11 +119,13 @@ public class BrowserAccessibilityState {
             String serviceId = service.getId();
             sServiceIds[i++] = serviceId;
 
-            // Canonicalize the component name. This shouldn't ever fail, but if it ever
-            // does fail in the wild, we should add some fallback here.
+            // Try to canonicalize the component name.
             ComponentName componentName = ComponentName.unflattenFromString(serviceId);
-            assert componentName != null;
-            runningServiceNames.add(componentName.flattenToShortString());
+            if (componentName != null) {
+                runningServiceNames.add(componentName.flattenToShortString());
+            } else {
+                runningServiceNames.add(serviceId);
+            }
         }
 
         // Get the list of enabled accessibility services, from settings, in
@@ -134,10 +136,13 @@ public class BrowserAccessibilityState {
         if (serviceNamesString != null && !serviceNamesString.isEmpty()) {
             String[] serviceNames = serviceNamesString.split(":");
             for (String name : serviceNames) {
-                // Canonicalize the component name and assert that it succeeds.
+                // Try to canonicalize the component name if possible.
                 ComponentName componentName = ComponentName.unflattenFromString(name);
-                assert componentName != null;
-                enabledServiceNames.add(componentName.flattenToShortString());
+                if (componentName != null) {
+                    enabledServiceNames.add(componentName.flattenToShortString());
+                } else {
+                    enabledServiceNames.add(name);
+                }
             }
         }
 
