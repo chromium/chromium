@@ -4,7 +4,14 @@
 
 #include "chrome/browser/chromeos/input_method/multi_word_suggester.h"
 
+#include "chromeos/services/ime/public/cpp/suggestions.h"
+
 namespace chromeos {
+namespace {
+
+using TextSuggestion = ::chromeos::ime::TextSuggestion;
+
+}  // namespace
 
 MultiWordSuggester::~MultiWordSuggester() = default;
 

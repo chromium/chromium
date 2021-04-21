@@ -492,9 +492,8 @@ void NativeInputMethodEngine::ImeObserver::OnScreenProjectionChanged(
 
 void NativeInputMethodEngine::ImeObserver::OnSuggestionsGathered(
     RequestSuggestionsCallback callback,
-    const std::vector<TextSuggestion>& suggestions) {
-  // TODO(crbug/1146266): Map suggestions to expected format for mojom.
-  std::move(callback).Run(ime::mojom::SuggestionsResponse::New());
+    ime::mojom::SuggestionsResponsePtr response) {
+  std::move(callback).Run(std::move(response));
 }
 
 void NativeInputMethodEngine::ImeObserver::OnSuggestionsChanged(
@@ -562,12 +561,11 @@ void NativeInputMethodEngine::ImeObserver::HandleAutocorrect(
 void NativeInputMethodEngine::ImeObserver::RequestSuggestions(
     ime::mojom::SuggestionsRequestPtr request,
     RequestSuggestionsCallback callback) {
-  // TODO(crbug/1146266): Map request to suggestion context.
-  SuggestionContext context;
   suggestions_collector_->GatherSuggestions(
-      context, base::BindOnce(
-                   &NativeInputMethodEngine::ImeObserver::OnSuggestionsGathered,
-                   base::Unretained(this), std::move(callback)));
+      std::move(request),
+      base::BindOnce(
+          &NativeInputMethodEngine::ImeObserver::OnSuggestionsGathered,
+          base::Unretained(this), std::move(callback)));
 }
 
 void NativeInputMethodEngine::ImeObserver::FlushForTesting() {

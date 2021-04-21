@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -23,6 +24,9 @@
 namespace chromeos {
 
 namespace {
+
+using TextSuggestion = ::chromeos::ime::TextSuggestion;
+using TextSuggestionType = ::chromeos::ime::TextSuggestionType;
 
 const char kMaxTextBeforeCursorLength = 50;
 
@@ -223,7 +227,7 @@ bool ContainsMultiWordSuggestions(
   if (suggestions.empty())
     return false;
   // There should only ever be one multi word suggestion given if any.
-  return suggestions[0].type == SuggestionType::kMultiWord;
+  return suggestions[0].type == TextSuggestionType::kMultiWord;
 }
 
 }  // namespace
@@ -467,7 +471,7 @@ bool AssistiveSuggester::IsSuggestionShown() {
   return current_suggester_ != nullptr;
 }
 
-std::vector<TextSuggestion> AssistiveSuggester::GetSuggestions() {
+std::vector<ime::TextSuggestion> AssistiveSuggester::GetSuggestions() {
   if (IsSuggestionShown())
     return current_suggester_->GetSuggestions();
   return {};

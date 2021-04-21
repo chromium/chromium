@@ -13,6 +13,10 @@ buildflag_header("buildflags") {
   flags = [ "ENABLE_CROS_IME_SHARED_DATA=$enable_cros_ime_shared_data" ]
 }
 
+source_set("structs") {
+  sources = [ "suggestions.h" ]
+}
+
 source_set("rulebased") {
   sources = [
     "rulebased/def/ar.cc",

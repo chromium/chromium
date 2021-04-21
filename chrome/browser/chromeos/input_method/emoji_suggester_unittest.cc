@@ -15,6 +15,13 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace chromeos {
+namespace {
+
+using TextSuggestion = ::chromeos::ime::TextSuggestion;
+using TextSuggestionMode = ::chromeos::ime::TextSuggestionMode;
+using TextSuggestionType = ::chromeos::ime::TextSuggestionType;
+
+}  // namespace
 
 ui::KeyEvent CreateKeyEventFromCode(const ui::DomCode& code) {
   return ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, code, ui::EF_NONE,
@@ -369,14 +376,14 @@ TEST_F(EmojiSuggesterTest, GetSuggestionReturnsCandidatesWhenAvailable) {
   EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
   EXPECT_EQ(emoji_suggester_->GetSuggestions(),
             (std::vector<TextSuggestion>{
-                TextSuggestion{.mode = SuggestionMode::kPrediction,
-                               .type = SuggestionType::kAssistiveEmoji,
+                TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                               .type = TextSuggestionType::kAssistiveEmoji,
                                .text = "😀"},
-                TextSuggestion{.mode = SuggestionMode::kPrediction,
-                               .type = SuggestionType::kAssistiveEmoji,
+                TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                               .type = TextSuggestionType::kAssistiveEmoji,
                                .text = "😃"},
-                TextSuggestion{.mode = SuggestionMode::kPrediction,
-                               .type = SuggestionType::kAssistiveEmoji,
+                TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                               .type = TextSuggestionType::kAssistiveEmoji,
                                .text = "😄"},
             }));
 }

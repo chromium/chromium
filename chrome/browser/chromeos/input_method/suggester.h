@@ -10,7 +10,6 @@
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine_base.h"
 #include "chrome/browser/chromeos/input_method/suggestion_enums.h"
-#include "chrome/browser/chromeos/input_method/suggestions.h"
 #include "chrome/browser/chromeos/input_method/suggestions_source.h"
 
 namespace chromeos {
@@ -27,7 +26,7 @@ class Suggester : public SuggestionsSource {
 
   // Called when suggestions are generated outside of the assisitve framework.
   virtual void OnExternalSuggestionsUpdated(
-      const std::vector<TextSuggestion>& suggestions) = 0;
+      const std::vector<ime::TextSuggestion>& suggestions) = 0;
 
   // Called when suggestion is being shown.
   // Returns SuggestionStatus as suggester handles the event.

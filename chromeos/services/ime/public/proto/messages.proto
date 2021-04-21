@@ -217,11 +217,19 @@ message CompletionCandidate {
   optional float normalized_score = 2;
 }
 
+// Protobuf version of SuggestionMode in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+enum SuggestionMode {
+  COMPLETION = 1;
+  PREDICTION = 2;
+}
+
 // Protobuf version of SuggestionType in
 // chromeos/services/ime/public/mojom/input_engine.mojom
 enum SuggestionType {
-  COMPLETION = 0;
-  PREDICTION = 1;
+  ASSISTIVE_PERSONAL_INFO = 1;
+  ASSISTIVE_EMOJI = 2;
+  MULTI_WORD = 3;
 }
 
 // Protobuf version of SuggestionsRequest in
@@ -229,20 +237,15 @@ enum SuggestionType {
 message SuggestionsRequest {
   optional string text = 1;
   repeated CompletionCandidate completion_candidates = 2;
-  optional SuggestionType suggestion_type = 3;
-}
-
-// Protobuf version of MultiWordSuggestionCandidate in
-// chromeos/services/ime/public/mojom/input_engine.mojom
-message MultiWordSuggestionCandidate {
-  optional string text = 1;
-  optional float normalized_score = 2;
+  optional SuggestionMode suggestion_mode = 3;
 }
 
 // Protobuf version of SuggestionCandidate in
 // chromeos/services/ime/public/mojom/input_engine.mojom
 message SuggestionCandidate {
-  oneof candidate { MultiWordSuggestionCandidate multi_word = 1; }
+  optional SuggestionMode mode = 1;
+  optional SuggestionType type = 2;
+  optional string text = 3;
 }
 
 // Protobuf version of SuggestionsResponse in

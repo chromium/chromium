@@ -45,18 +45,6 @@ enum class DisabledReason {
   kMaxValue = kUrlOrAppNotAllowed,
 };
 
-enum class SuggestionMode {
-  kPrediction = 0,
-  kCompletion = 1,
-};
-
-enum class SuggestionType {
-  kAssistivePersonalInfo = 0,
-  kAssistiveEmoji = 1,
-  kMultiWord = 2,
-  kEmoji = 3,
-};
-
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_INPUT_METHOD_SUGGESTION_ENUMS_H_

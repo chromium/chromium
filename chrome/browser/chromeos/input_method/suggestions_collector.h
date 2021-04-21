@@ -8,8 +8,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "chrome/browser/chromeos/input_method/suggestions.h"
 #include "chrome/browser/chromeos/input_method/suggestions_source.h"
+#include "chromeos/services/ime/public/cpp/suggestions.h"
+#include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
 
 namespace chromeos {
 
@@ -20,10 +21,10 @@ class SuggestionsCollector {
   explicit SuggestionsCollector(SuggestionsSource* assistive_suggester);
 
   using GatherSuggestionsCallback =
-      base::OnceCallback<void(const std::vector<TextSuggestion>&)>;
+      base::OnceCallback<void(ime::mojom::SuggestionsResponsePtr)>;
 
   // Collects all suggestions from the system.
-  void GatherSuggestions(const SuggestionContext& suggestion_context,
+  void GatherSuggestions(ime::mojom::SuggestionsRequestPtr request,
                          GatherSuggestionsCallback callback);
 
  private:

@@ -9,9 +9,9 @@
 #include "chrome/browser/chromeos/input_method/assistive_suggester.h"
 #include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
-#include "chrome/browser/chromeos/input_method/suggestions.h"
 #include "chrome/browser/chromeos/input_method/suggestions_collector.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom-forward.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -159,7 +159,7 @@ class NativeInputMethodEngine
     // Called when suggestions are collected from the system via
     // suggestions_collector_.
     void OnSuggestionsGathered(RequestSuggestionsCallback request_callback,
-                               const std::vector<TextSuggestion>& suggestions);
+                               ime::mojom::SuggestionsResponsePtr response);
 
     // Flush all relevant Mojo pipes.
     void FlushForTesting();

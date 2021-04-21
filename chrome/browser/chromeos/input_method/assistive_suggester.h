@@ -15,8 +15,8 @@
 #include "chrome/browser/chromeos/input_method/personal_info_suggester.h"
 #include "chrome/browser/chromeos/input_method/suggester.h"
 #include "chrome/browser/chromeos/input_method/suggestion_enums.h"
-#include "chrome/browser/chromeos/input_method/suggestions.h"
 #include "chrome/browser/chromeos/input_method/suggestions_source.h"
+#include "chromeos/services/ime/public/cpp/suggestions.h"
 
 namespace chromeos {
 
@@ -29,7 +29,7 @@ class AssistiveSuggester : public SuggestionsSource {
   bool IsAssistiveFeatureEnabled();
 
   // SuggestionsSource overrides
-  std::vector<TextSuggestion> GetSuggestions() override;
+  std::vector<ime::TextSuggestion> GetSuggestions() override;
 
   // Called when a text field gains focus, and suggester starts working.
   void OnFocus(int context_id);
@@ -56,7 +56,7 @@ class AssistiveSuggester : public SuggestionsSource {
 
   // Called when suggestions are generated outside of the assistive framework.
   void OnExternalSuggestionsUpdated(
-      const std::vector<TextSuggestion>& suggestions);
+      const std::vector<ime::TextSuggestion>& suggestions);
 
   // Accepts the suggestion at a given index if a suggester is currently active.
   void AcceptSuggestion(size_t index);

@@ -12,4 +12,27 @@ mojom("mojom") {
     "//ui/gfx/range/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chromeos.ime.mojom.SuggestionMode"
+          cpp = "::chromeos::ime::TextSuggestionMode"
+        },
+        {
+          mojom = "chromeos.ime.mojom.SuggestionType"
+          cpp = "::chromeos::ime::TextSuggestionType"
+        },
+        {
+          mojom = "chromeos.ime.mojom.SuggestionCandidate"
+          cpp = "::chromeos::ime::TextSuggestion"
+        },
+      ]
+
+      traits_headers = [ "mojom_traits.h" ]
+      traits_sources = [ "mojom_traits.cc" ]
+      traits_public_deps = [ "//chromeos/services/ime/public/cpp:structs" ]
+    },
+  ]
 }

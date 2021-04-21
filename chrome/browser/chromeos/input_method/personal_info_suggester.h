@@ -13,9 +13,9 @@
 #include "chrome/browser/chromeos/input_method/suggester.h"
 #include "chrome/browser/chromeos/input_method/suggestion_enums.h"
 #include "chrome/browser/chromeos/input_method/suggestion_handler_interface.h"
-#include "chrome/browser/chromeos/input_method/suggestions.h"
 #include "chrome/browser/chromeos/input_method/tts_handler.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
+#include "chromeos/services/ime/public/cpp/suggestions.h"
 
 namespace autofill {
 class PersonalDataManager;
@@ -53,7 +53,7 @@ class PersonalInfoSuggester : public Suggester {
   void OnFocus(int context_id) override;
   void OnBlur() override;
   void OnExternalSuggestionsUpdated(
-      const std::vector<TextSuggestion>& suggestions) override;
+      const std::vector<ime::TextSuggestion>& suggestions) override;
   SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;
   bool Suggest(const std::u16string& text) override;
   // index defaults to 0 as not required for this suggester.
@@ -61,7 +61,7 @@ class PersonalInfoSuggester : public Suggester {
   void DismissSuggestion() override;
   AssistiveType GetProposeActionType() override;
   bool HasSuggestions() override;
-  std::vector<TextSuggestion> GetSuggestions() override;
+  std::vector<ime::TextSuggestion> GetSuggestions() override;
 
  private:
   // Get the suggestion according to |text|.

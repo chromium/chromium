@@ -8,7 +8,7 @@
 #include "chrome/browser/chromeos/input_method/suggester.h"
 #include "chrome/browser/chromeos/input_method/suggestion_enums.h"
 #include "chrome/browser/chromeos/input_method/suggestion_handler_interface.h"
-#include "chrome/browser/chromeos/input_method/suggestions.h"
+#include "chromeos/services/ime/public/cpp/suggestions.h"
 
 namespace chromeos {
 
@@ -23,14 +23,14 @@ class MultiWordSuggester : public Suggester {
   void OnFocus(int context_id) override;
   void OnBlur() override;
   void OnExternalSuggestionsUpdated(
-      const std::vector<TextSuggestion>& suggestions) override;
+      const std::vector<ime::TextSuggestion>& suggestions) override;
   SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;
   bool Suggest(const std::u16string& text) override;
   bool AcceptSuggestion(size_t index = 0) override;
   void DismissSuggestion() override;
   AssistiveType GetProposeActionType() override;
   bool HasSuggestions() override;
-  std::vector<TextSuggestion> GetSuggestions() override;
+  std::vector<ime::TextSuggestion> GetSuggestions() override;
 };
 
 }  // namespace chromeos

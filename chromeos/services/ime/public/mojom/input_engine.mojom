@@ -167,7 +167,7 @@ struct CompletionCandidate {
   float normalized_score;
 };
 
-enum SuggestionType {
+enum SuggestionMode {
   // A completion suggestion is text that completes an incomplete word. For
   // example, the text "hello wor" may have a completion candidate like the
   // following "hello world".
@@ -179,33 +179,45 @@ enum SuggestionType {
   kPrediction = 1,
 };
 
+enum SuggestionType {
+  // Personal info suggestions from the assistive framework
+  kAssistivePersonalInfo = 0,
+
+  // Emoji suggestions from the assistive framework
+  kAssistiveEmoji = 1,
+
+  // Multi word suggestions from the system
+  kMultiWord = 2,
+};
+
 // Single request to generate suggestion candidates from the given context.
 struct SuggestionsRequest {
-  // TODO(crbug/1146266): As noted in crrev/c/2810539, we will remove this
-  // struct's params for the moment and add them back as we begin to use them
-  // in future CLs.
-};
+  // The mode of suggestions that should be generated.
+  SuggestionMode mode;
 
-// A suggestion candidate containing multiple predicted words.
-struct MultiWordSuggestionCandidate {
-  // The words predicted.
+  // The preceding text used to produced the suggestions.
   string text;
 
-  // The normalized confidence scoring for the prediction.
-  float normalized_score;
+  // Optional: any candidates generated to complete the current text.
+  array<CompletionCandidate> completion_candidates;
 };
 
-// Represents a single generated suggestion candidate.
-union SuggestionCandidate {
-  // A suggestion candidate that contains multiple words.
-  MultiWordSuggestionCandidate multi_word;
+// The text candidate to use as a suggestion to the user
+struct SuggestionCandidate {
+  // How should a consumer use this suggestion.
+  SuggestionMode mode;
+
+  // What kind of suggestion is this.
+  SuggestionType type;
+
+  // The text to suggest
+  string text;
 };
 
 // Encapsulates the results of a suggestions request.
 struct SuggestionsResponse {
-  // TODO(crbug/1146266): As noted in crrev/c/2810539, we will remove this
-  // struct's params for the moment and add them back as we begin to use them
-  // in future CLs.
+  // A list of suggestion candidates generated.
+  array<SuggestionCandidate> candidates;
 };
 
 // Manages access to a set of IME engines, implemented by the IME service

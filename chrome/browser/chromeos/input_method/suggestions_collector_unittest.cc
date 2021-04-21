@@ -7,24 +7,27 @@
 #include <vector>
 
 #include "base/test/bind.h"
-#include "chrome/browser/chromeos/input_method/suggestion_enums.h"
-#include "chrome/browser/chromeos/input_method/suggestions.h"
 #include "chrome/browser/chromeos/input_method/suggestions_source.h"
+#include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 namespace {
+
+using TextSuggestion = ::chromeos::ime::TextSuggestion;
+using TextSuggestionMode = ::chromeos::ime::TextSuggestionMode;
+using TextSuggestionType = ::chromeos::ime::TextSuggestionType;
 
 class FakeAssistiveSuggester : public SuggestionsSource {
  public:
   // SuggestionsSource overrides
   std::vector<TextSuggestion> GetSuggestions() override {
     return std::vector<TextSuggestion>{
-        TextSuggestion{.mode = SuggestionMode::kCompletion,
-                       .type = SuggestionType::kAssistivePersonalInfo,
+        TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                       .type = TextSuggestionType::kAssistivePersonalInfo,
                        .text = "my name is Mr Robot"},
-        TextSuggestion{.mode = SuggestionMode::kCompletion,
-                       .type = SuggestionType::kAssistivePersonalInfo,
+        TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                       .type = TextSuggestionType::kAssistivePersonalInfo,
                        .text = "my address is 123 Fake St"},
     };
   }
@@ -34,24 +37,24 @@ TEST(SuggestionsCollectorTest,
      ReturnsSuggestionsFromInjectedSuggestionsSource) {
   FakeAssistiveSuggester suggester;
   SuggestionsCollector collector(&suggester);
-  SuggestionContext context = {.mode = SuggestionMode::kCompletion};
+  auto request = ime::mojom::SuggestionsRequest::New();
 
   std::vector<TextSuggestion> suggestions_returned;
   auto callback = base::BindLambdaForTesting(
-      [&suggestions_returned](const std::vector<TextSuggestion>& suggestions) {
-        suggestions_returned = suggestions;
+      [&suggestions_returned](ime::mojom::SuggestionsResponsePtr response) {
+        suggestions_returned = response->candidates;
       });
 
   std::vector<TextSuggestion> expected_suggestions = {
-      TextSuggestion{.mode = SuggestionMode::kCompletion,
-                     .type = SuggestionType::kAssistivePersonalInfo,
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kAssistivePersonalInfo,
                      .text = "my name is Mr Robot"},
-      TextSuggestion{.mode = SuggestionMode::kCompletion,
-                     .type = SuggestionType::kAssistivePersonalInfo,
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kAssistivePersonalInfo,
                      .text = "my address is 123 Fake St"},
   };
 
-  collector.GatherSuggestions(context, callback);
+  collector.GatherSuggestions(std::move(request), callback);
 
   EXPECT_EQ(suggestions_returned, expected_suggestions);
 }
