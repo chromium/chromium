@@ -376,7 +376,7 @@ void CrossProcessFrameConnector::OnVisibilityChanged(
     return;
   }
 
-  if (visible && !view_->host()->delegate()->IsHidden()) {
+  if (visible && !view_->host()->frame_tree()->IsHidden()) {
     view_->Show();
   } else if (!visible) {
     view_->Hide();

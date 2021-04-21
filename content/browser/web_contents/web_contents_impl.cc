@@ -3258,11 +3258,8 @@ void WebContentsImpl::FullscreenFrameSetUpdated() {
     display_cutout_host_impl_->DidAcquireFullscreen(new_fullscreen_frame);
 }
 
-void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
-    Visibility new_visibility) {
-  OPTIONAL_TRACE_EVENT1("content",
-                        "WebContentsImpl::UpdateVisibilityAndNotifyPageAndView",
-                        "new_visibility", static_cast<int>(new_visibility));
+PageVisibilityState WebContentsImpl::CalculatePageVisibilityState(
+    Visibility visibility) const {
   // Only hide the page if there are no entities capturing screenshots
   // or video (e.g. mirroring or WebXR). If there are, apply the correct state
   // of kHidden or kHiddenButPainting.
@@ -3272,15 +3269,24 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
       XRRuntimeManagerImpl::GetImmersiveSessionWebContents() == this;
 #endif
 
-  PageVisibilityState page_visibility;
-  if (new_visibility == Visibility::VISIBLE || visible_capturer_count_ > 0 ||
+  if (visibility == Visibility::VISIBLE || visible_capturer_count_ > 0 ||
       web_contents_visible_in_vr) {
-    page_visibility = PageVisibilityState::kVisible;
+    return PageVisibilityState::kVisible;
   } else if (hidden_capturer_count_ > 0) {
-    page_visibility = PageVisibilityState::kHiddenButPainting;
-  } else {
-    page_visibility = PageVisibilityState::kHidden;
+    return PageVisibilityState::kHiddenButPainting;
   }
+  return PageVisibilityState::kHidden;
+}
+
+PageVisibilityState WebContentsImpl::GetPageVisibilityState() const {
+  return CalculatePageVisibilityState(visibility_);
+}
+
+void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
+    Visibility new_visibility) {
+  PageVisibilityState page_visibility =
+      CalculatePageVisibilityState(new_visibility);
+
   // If there are entities in Picture-in-Picture mode, don't activate the
   // "disable rendering" optimization. A crashed frame might be covered by a sad
   // tab. See docs on SadTabHelper exactly when it is or isn't. Either way,
@@ -3310,7 +3316,7 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
     // to be producing frames when the Page is hidden. So we make sure the Page
     // is shown first.
     for (auto* rvh : GetRenderViewHostsIncludingBackForwardCached()) {
-      rvh->SetVisibility(page_visibility);
+      rvh->SetFrameTreeVisibility(page_visibility);
     }
   }
 
@@ -3344,7 +3350,7 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
     // Similar to when showing the page, we only hide the page after
     // hiding the individual RenderWidgets.
     for (auto* rvh : GetRenderViewHostsIncludingBackForwardCached()) {
-      rvh->SetVisibility(page_visibility);
+      rvh->SetFrameTreeVisibility(page_visibility);
     }
 
   } else {
@@ -7025,6 +7031,10 @@ void WebContentsImpl::DidChangeLoadProgress() {
       min_delay);
 }
 
+bool WebContentsImpl::IsHidden() {
+  return GetPageVisibilityState() == PageVisibilityState::kHidden;
+}
+
 std::vector<std::unique_ptr<NavigationThrottle>>
 WebContentsImpl::CreateThrottlesForNavigation(
     NavigationHandle* navigation_handle) {
@@ -7759,10 +7769,6 @@ void WebContentsImpl::OnDialogClosed(int render_process_id,
 
   is_showing_javascript_dialog_ = false;
   is_showing_before_unload_dialog_ = false;
-}
-
-bool WebContentsImpl::IsHidden() {
-  return !IsBeingCaptured() && visibility_ != Visibility::VISIBLE;
 }
 
 int WebContentsImpl::GetOuterDelegateFrameTreeNodeId() {

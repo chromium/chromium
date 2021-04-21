@@ -31,15 +31,23 @@ promise_test(async t => {
   const result = await gotMessage;
   const expected = [
     {
-      event: 'started waiting navigator.wakeLock.request',
+      event: 'started waiting navigator.wakeLock.request test',
       prerendering: true
+    },
+    {
+      event: 'navigator.wakeLock.request failed',
+      prerendering: true
+    },
+    {
+      event: 'requesting navigator.wakeLock.request on prerendering change',
+      prerendering: false
     },
     {
       event: 'prerendering change',
       prerendering: false
     },
     {
-      event: 'finished waiting navigator.wakeLock.request',
+      event: 'finished waiting navigator.wakeLock.request test',
       prerendering: false
     },
   ];

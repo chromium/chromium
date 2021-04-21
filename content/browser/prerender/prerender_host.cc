@@ -192,6 +192,11 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
       rfh->frame_tree_node()->SetFrameTree(*target_frame_tree);
       rfh->SetFrameTree(*target_frame_tree);
       rfh->render_view_host()->SetFrameTree(*target_frame_tree);
+      // The visibility state of the prerendering page has not been updated by
+      // WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(). So updates
+      // the visibility state using the PageVisibilityState of |web_contents_|.
+      rfh->render_view_host()->SetFrameTreeVisibility(
+          web_contents_.GetPageVisibilityState());
       if (rfh->GetRenderWidgetHost()) {
         rfh->GetRenderWidgetHost()->SetFrameTree(*target_frame_tree);
       }

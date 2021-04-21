@@ -113,10 +113,6 @@ TextInputManager* RenderWidgetHostDelegate::GetTextInputManager() {
   return nullptr;
 }
 
-bool RenderWidgetHostDelegate::IsHidden() {
-  return false;
-}
-
 RenderViewHostDelegateView* RenderWidgetHostDelegate::GetDelegateView() {
   return nullptr;
 }

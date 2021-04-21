@@ -17,12 +17,25 @@ if (!isPrerendering) {
   loadInitiatorPage();
 } else {
   const prerenderEventCollector = new PrerenderEventCollector();
-  const promise = new Promise(async resolve => {
-    navigator.wakeLock.request('screen').then(function() {
-      lock => lock.release(); resolve();
+  const promise = new Promise((resolve, reject) => {
+    navigator.wakeLock.request('screen')
+      .then(() => {
+        reject('unexpected success');
+      })
+      .catch((e) => {
+        prerenderEventCollector.addEvent('navigator.wakeLock.request failed');
+      });
+
+    document.addEventListener('prerenderingchange', () => {
+      prerenderEventCollector.addEvent(
+        'requesting navigator.wakeLock.request on prerendering change');
+      navigator.wakeLock.request('screen')
+        .then(function() {
+          lock => lock.release(); resolve();
+        });
     });
   });
-  prerenderEventCollector.start(promise, 'navigator.wakeLock.request');
+  prerenderEventCollector.start(promise, 'navigator.wakeLock.request test');
 }
 
 </script>

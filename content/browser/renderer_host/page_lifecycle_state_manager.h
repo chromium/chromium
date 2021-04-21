@@ -35,11 +35,11 @@ class CONTENT_EXPORT PageLifecycleStateManager {
 
   explicit PageLifecycleStateManager(
       RenderViewHostImpl* render_view_host_impl,
-      blink::mojom::PageVisibilityState web_contents_visibility_state);
+      blink::mojom::PageVisibilityState frame_tree_visibility);
   ~PageLifecycleStateManager();
 
   void SetIsFrozen(bool frozen);
-  void SetWebContentsVisibility(
+  void SetFrameTreeVisibility(
       blink::mojom::PageVisibilityState visibility_state);
   void SetIsInBackForwardCache(
       bool is_in_back_forward_cache,
@@ -105,11 +105,12 @@ class CONTENT_EXPORT PageLifecycleStateManager {
 
   bool did_receive_back_forward_cache_ack_ = false;
 
-  // This represents the visibility set by |SetVisibility|, which is web
-  // contents visibility state. Effective visibility, i.e. per-page visibility
-  // is computed based on |is_in_back_forward_cache_| and
-  // |web_contents_visibility_|.
-  blink::mojom::PageVisibilityState web_contents_visibility_;
+  // This represents the frame tree visibility (same as web contents visibility
+  // state for primary frame tree, hidden for prerendering frame tree) which is
+  // set by |SetFrameTreeVisibility|. Effective visibility, i.e. per-page
+  // visibility is computed based on |is_in_back_forward_cache_| and
+  // |frame_tree_visibility_|.
+  blink::mojom::PageVisibilityState frame_tree_visibility_;
 
   blink::mojom::PagehideDispatch pagehide_dispatch_ =
       blink::mojom::PagehideDispatch::kNotDispatched;
@@ -118,7 +119,7 @@ class CONTENT_EXPORT PageLifecycleStateManager {
 
   // This is the per-page state computed based on web contents / tab lifecycle
   // states, i.e. |is_set_frozen_called_|, |is_in_back_forward_cache_| and
-  // |web_contents_visibility_|.
+  // |frame_tree_visibility_|.
   blink::mojom::PageLifecycleStatePtr last_acknowledged_state_;
 
   // This is the per-page state that is sent to renderer most lately.

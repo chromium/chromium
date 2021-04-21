@@ -978,7 +978,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       RenderFrameHostImpl* old_frame,
       RenderFrameHostImpl* new_frame) override;
   bool FocusLocationBarByDefault() override;
-  bool IsHidden() override;
   int GetOuterDelegateFrameTreeNodeId() override;
   void OnFrameTreeNodeDestroyed(FrameTreeNode* node) override;
 
@@ -998,6 +997,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                        bool to_different_document) override;
   void DidStopLoading() override;
   void DidChangeLoadProgress() override;
+  bool IsHidden() override;
 
   // NavigationControllerDelegate ----------------------------------------------
 
@@ -1065,6 +1065,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Update the web contents visibility.
   void UpdateWebContentsVisibility(Visibility visibility);
+
+  // Returns the PageVisibilityState for the primary page of this web contents,
+  // taking the capturing state into account.
+  PageVisibilityState GetPageVisibilityState() const;
 
   // Called by FindRequestManager when find replies come in from a renderer
   // process.
@@ -1724,6 +1728,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Called when the base::ScopedClosureRunner returned by
   // IncrementCapturerCount() is destructed.
   void DecrementCapturerCount(bool stay_hidden, bool stay_awake);
+
+  // Calculates the PageVisibilityState for |visibility|, taking the capturing
+  // state into account.
+  PageVisibilityState CalculatePageVisibilityState(Visibility visibility) const;
 
   // Data for core operation ---------------------------------------------------
 

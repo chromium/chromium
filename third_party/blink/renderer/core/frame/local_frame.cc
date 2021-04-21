@@ -2090,9 +2090,10 @@ LocalFrame::LazyLoadImageSetting LocalFrame::GetLazyLoadImageSetting() const {
       !GetSettings()->GetLazyLoadEnabled()) {
     return LocalFrame::LazyLoadImageSetting::kDisabled;
   }
-  // Disable explicit and automatic lazyload for backgrounded or prerendered
-  // pages.
-  if (!GetDocument()->IsPageVisible() || GetDocument()->IsPrefetchOnly()) {
+
+  // Disable explicit and automatic lazyload for backgrounded pages including
+  // NoStatePrefetch and Prerender.
+  if (!GetDocument()->IsPageVisible()) {
     return LocalFrame::LazyLoadImageSetting::kDisabled;
   }
 

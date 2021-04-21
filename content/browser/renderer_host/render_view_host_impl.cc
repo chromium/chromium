@@ -329,10 +329,10 @@ RenderViewHostImpl::RenderViewHostImpl(
   input_device_change_observer_ =
       std::make_unique<InputDeviceChangeObserver>(this);
 
-  bool initially_visible = !GetWidget()->delegate()->IsHidden();
+  bool initially_hidden = frame_tree_->delegate()->IsHidden();
   page_lifecycle_state_manager_ = std::make_unique<PageLifecycleStateManager>(
-      this, initially_visible ? blink::mojom::PageVisibilityState::kVisible
-                              : blink::mojom::PageVisibilityState::kHidden);
+      this, initially_hidden ? blink::mojom::PageVisibilityState::kHidden
+                             : blink::mojom::PageVisibilityState::kVisible);
 
   GetWidget()->set_owner_delegate(this);
   frame_tree_->RegisterRenderViewHost(render_view_host_map_id_, this);
@@ -473,7 +473,7 @@ bool RenderViewHostImpl::CreateRenderView(
 
   params->session_storage_namespace_id =
       frame_tree_->controller().GetSessionStorageNamespace(site_info_)->id();
-  params->hidden = GetWidget()->delegate()->IsHidden();
+  params->hidden = frame_tree_->delegate()->IsHidden();
   params->never_composited = delegate_->IsNeverComposited();
   params->window_was_created_with_opener = window_was_created_with_opener;
   // GuestViews in the same StoragePartition need to find each other's frames.
@@ -556,9 +556,9 @@ void RenderViewHostImpl::LeaveBackForwardCache(
       is_in_back_forward_cache_, std::move(page_restore_params));
 }
 
-void RenderViewHostImpl::SetVisibility(
+void RenderViewHostImpl::SetFrameTreeVisibility(
     blink::mojom::PageVisibilityState visibility) {
-  page_lifecycle_state_manager_->SetWebContentsVisibility(visibility);
+  page_lifecycle_state_manager_->SetFrameTreeVisibility(visibility);
 }
 
 void RenderViewHostImpl::SetIsFrozen(bool frozen) {

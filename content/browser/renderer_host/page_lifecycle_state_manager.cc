@@ -32,8 +32,8 @@ void PageLifecycleStateManager::TestDelegate::OnDeleted() {}
 
 PageLifecycleStateManager::PageLifecycleStateManager(
     RenderViewHostImpl* render_view_host_impl,
-    blink::mojom::PageVisibilityState web_contents_visibility_state)
-    : web_contents_visibility_(web_contents_visibility_state),
+    blink::mojom::PageVisibilityState frame_tree_visibility)
+    : frame_tree_visibility_(frame_tree_visibility),
       render_view_host_impl_(render_view_host_impl) {
   last_acknowledged_state_ = CalculatePageLifecycleState();
   last_state_sent_to_renderer_ = last_acknowledged_state_.Clone();
@@ -53,12 +53,12 @@ void PageLifecycleStateManager::SetIsFrozen(bool frozen) {
                                 base::NullCallback());
 }
 
-void PageLifecycleStateManager::SetWebContentsVisibility(
+void PageLifecycleStateManager::SetFrameTreeVisibility(
     blink::mojom::PageVisibilityState visibility) {
-  if (web_contents_visibility_ == visibility)
+  if (frame_tree_visibility_ == visibility)
     return;
 
-  web_contents_visibility_ = visibility;
+  frame_tree_visibility_ = visibility;
   SendUpdatesToRendererIfNeeded(/*page_restore_params=*/nullptr,
                                 base::NullCallback());
   // TODO(yuzus): When a page is frozen and made visible, the page should
@@ -185,12 +185,12 @@ PageLifecycleStateManager::CalculatePageLifecycleState() {
   state->pagehide_dispatch = pagehide_dispatch_;
   // If a page is stored in the back-forward cache, or we have already
   // dispatched/are dispatching pagehide for the page, it should be treated as
-  // "hidden" regardless of what |web_contents_visibility_| is set to.
+  // "hidden" regardless of what |frame_tree_visibility_| is set to.
   state->visibility =
       (is_in_back_forward_cache_ ||
        pagehide_dispatch_ != blink::mojom::PagehideDispatch::kNotDispatched)
           ? blink::mojom::PageVisibilityState::kHidden
-          : web_contents_visibility_;
+          : frame_tree_visibility_;
   state->eviction_enabled = eviction_enabled_;
   return state;
 }

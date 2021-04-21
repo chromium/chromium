@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/input/synthetic_tap_gesture.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -1829,6 +1830,101 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, InputRoutedToPrimaryFrameTree) {
   navigation_observer.Wait();
 
   EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, VisibilityWhilePrerendering) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  AddPrerender(kPrerenderingUrl);
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+
+  // A prerender host for the URL should be registered.
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+
+  // The visibility state must be "hidden" while prerendering.
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHost();
+  auto* rvh = static_cast<RenderViewHostImpl*>(
+      prerendered_render_frame_host->GetRenderViewHost());
+  EXPECT_EQ(rvh->GetPageLifecycleStateManager()
+                ->CalculatePageLifecycleState()
+                ->visibility,
+            PageVisibilityState::kHidden);
+}
+
+class ScopedDataSaverTestContentBrowserClient
+    : public TestContentBrowserClient {
+ public:
+  ScopedDataSaverTestContentBrowserClient()
+      : old_client(SetBrowserClientForTesting(this)) {}
+  ~ScopedDataSaverTestContentBrowserClient() override {
+    SetBrowserClientForTesting(old_client);
+  }
+
+  // ContentBrowserClient overrides:
+  bool IsDataSaverEnabled(BrowserContext* context) override { return true; }
+
+  void OverrideWebkitPrefs(WebContents* web_contents,
+                           blink::web_pref::WebPreferences* prefs) override {
+    prefs->data_saver_enabled = true;
+  }
+
+ private:
+  ContentBrowserClient* old_client;
+};
+
+// Tests that the data saver doesn't prevent image load in a prerendered page.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DataSaver) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/prerender/image.html");
+  const GURL kImageUrl = GetUrl("/blank.jpg");
+
+  // Enable data saver.
+  ScopedDataSaverTestContentBrowserClient scoped_content_browser_client;
+  shell()->web_contents()->OnWebPreferencesChanged();
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  AddPrerender(kPrerenderingUrl);
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+
+  // A request for the image in the prerendered page shouldn't be prevented by
+  // the data saver.
+  EXPECT_EQ(GetRequestCount(kImageUrl), 1);
+}
+
+// Tests that loading=lazy doesn't prevent image load in a prerendered page.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LazyLoading) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/prerender/image_loading_lazy.html");
+  const GURL kImageUrl = GetUrl("/blank.jpg");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  AddPrerender(kPrerenderingUrl);
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+
+  // A request for the image in the prerendered page shouldn't be prevented by
+  // loading=lazy.
+  EXPECT_EQ(GetRequestCount(kImageUrl), 1);
 }
 
 class PrerenderWithProactiveBrowsingInstanceSwap : public PrerenderBrowserTest {
