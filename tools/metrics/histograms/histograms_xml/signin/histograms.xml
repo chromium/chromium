@@ -890,6 +890,26 @@ should be kept to monitor/debug signin Multilogin issues-->
   </summary>
 </histogram>
 
+<histogram
+    name="Signin.Reconciler.RejectedRequestsDueToThrottler.{RequestType}"
+    units="requests" expires_after="M95">
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>msalama@chromium.org</owner>
+  <summary>
+    Records the number of consecutive {RequestType} requests not allowed by the
+    account reconcilor throttler due to back off time required between
+    successive requests with the same paramaters. Recorded on the throttler
+    destruction, a reset upon a new different request or a no operation
+    reconciliation cycle or an allowed request upon a sufficient time to refill.
+  </summary>
+  <token key="RequestType">
+    <variant name="LogoutAll" summary="logout all"/>
+    <variant name="Preserve" summary="preserve"/>
+    <variant name="Update" summary="update"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.Reconciler.RemovedFromCookieJar" units="accounts"
     expires_after="never">
 <!-- expires-never: used to detect and debug signin issues -->

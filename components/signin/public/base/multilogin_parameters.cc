@@ -6,8 +6,7 @@
 
 namespace signin {
 
-MultiloginParameters::MultiloginParameters()
-    : mode(gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER) {}
+MultiloginParameters::MultiloginParameters() = default;
 
 MultiloginParameters::MultiloginParameters(
     const gaia::MultiloginMode mode,

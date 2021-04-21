@@ -20,6 +20,8 @@ static_library("browser") {
     "account_reconcilor.h",
     "account_reconcilor_delegate.cc",
     "account_reconcilor_delegate.h",
+    "account_reconcilor_throttler.cc",
+    "account_reconcilor_throttler.h",
     "chrome_connected_header_helper.cc",
     "chrome_connected_header_helper.h",
     "cookie_reminter.cc",

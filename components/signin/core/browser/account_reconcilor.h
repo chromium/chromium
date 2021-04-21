@@ -21,6 +21,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
+#include "components/signin/core/browser/account_reconcilor_throttler.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -135,6 +136,7 @@ class AccountReconcilor : public KeyedService,
   friend class AccountReconcilorTest;
   friend class DiceBrowserTest;
   friend class BaseAccountReconcilorTestTable;
+  friend class AccountReconcilorThrottlerTest;
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTestForceDiceMigration,
                            TableRowTestCheckNoOp);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest,
@@ -228,6 +230,11 @@ class AccountReconcilor : public KeyedService,
                            TableRowTestMultilogin);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest, ReconcileAfterShutdown);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest, UnlockAfterShutdown);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorThrottlerTest, RefillOneRequest);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorThrottlerTest, RefillFiveRequests);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorThrottlerTest,
+                           NewRequestParamsPasses);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorThrottlerTest, BlockFiveRequests);
 
   void set_timer_for_testing(std::unique_ptr<base::OneShotTimer> timer);
 
@@ -316,6 +323,7 @@ class AccountReconcilor : public KeyedService,
   bool WasShutDown() const;
 
   std::unique_ptr<signin::AccountReconcilorDelegate> delegate_;
+  AccountReconcilorThrottler throttler_;
 
   // The IdentityManager associated with this reconcilor.
   signin::IdentityManager* identity_manager_;

@@ -2909,3 +2909,201 @@ TEST_F(AccountReconcilorTest, UnlockAfterShutdown) {
   lock.reset();  // This should not crash.
   EXPECT_FALSE(reconcilor->is_reconcile_started_);
 }
+
+class AccountReconcilorThrottlerTest : public AccountReconcilorTest {
+ public:
+  AccountReconcilorThrottlerTest() {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    signin::AccountConsistencyMethod account_consistency =
+        signin::AccountConsistencyMethod::kDice;
+    SetAccountConsistency(account_consistency);
+#else
+    signin::AccountConsistencyMethod account_consistency =
+        signin::AccountConsistencyMethod::kMirror;
+    SetAccountConsistency(account_consistency);
+#endif
+    minutes_to_refill_per_request_ =
+        1 / AccountReconcilorThrottler::kRefillRequestsBucketRatePerMinute;
+  }
+
+  void ConsumeRequests(size_t number_of_requests,
+                       const signin::MultiloginParameters& expected_params) {
+    AccountReconcilor* reconcilor = GetMockReconcilor();
+    for (size_t i = 0; i < number_of_requests; ++i) {
+      EXPECT_CALL(*GetMockReconcilor(),
+                  PerformSetCookiesAction(expected_params));
+      ASSERT_FALSE(reconcilor->is_reconcile_started_);
+      reconcilor->StartReconcile();
+      base::RunLoop().RunUntilIdle();
+      // Reconciliation not blocked.
+      ASSERT_TRUE(reconcilor->is_reconcile_started_);
+
+      SimulateSetAccountsInCookieCompleted(
+          reconcilor, signin::SetAccountsInCookieResult::kSuccess);
+      ASSERT_FALSE(reconcilor->is_reconcile_started_);
+      ASSERT_EQ(GoogleServiceAuthError::State::NONE,
+                reconcilor->error_during_last_reconcile_.state());
+      testing::Mock::VerifyAndClearExpectations(GetMockReconcilor());
+    }
+  }
+
+  void VerifyRequestsBlockedByThrottler() {
+    AccountReconcilor* reconcilor = GetMockReconcilor();
+    reconcilor->StartReconcile();
+    base::RunLoop().RunUntilIdle();
+    // Reconciliation should fail.
+    ASSERT_FALSE(reconcilor->is_reconcile_started_);
+    ASSERT_EQ(GoogleServiceAuthError::State::REQUEST_CANCELED,
+              reconcilor->error_during_last_reconcile_.state());
+  }
+
+  void FastForwadTimeToRefillRequests(size_t number_of_requests) {
+    task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(
+        minutes_to_refill_per_request_ * number_of_requests));
+  }
+
+ private:
+  size_t minutes_to_refill_per_request_;
+  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorThrottlerTest);
+};
+
+TEST_F(AccountReconcilorThrottlerTest, RefillOneRequest) {
+  AccountInfo account_info = ConnectProfileToAccount("user@gmail.com");
+  const CoreAccountId account_id = account_info.account_id;
+  signin::SetListAccountsResponseOneAccount(
+      "other@gmail.com", signin::GetTestGaiaIdForEmail("other@gmail.com"),
+      &test_url_loader_factory_);
+
+  signin::MultiloginParameters params(
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
+      {account_id});
+
+  // Consume all available requests.
+  ConsumeRequests(AccountReconcilorThrottler::kMaxAllowedRequestsPerBucket,
+                  params);
+
+  // At this point all the requests in the available request buckets should
+  // have been consumed.
+  VerifyRequestsBlockedByThrottler();
+
+  // Allow enough time to refill 1 request.
+  FastForwadTimeToRefillRequests(1);
+  ConsumeRequests(1, params);
+
+  // The blocked request recorded upon allowing a new request.
+  histogram_tester()->ExpectBucketCount(
+      "Signin.Reconciler.RejectedRequestsDueToThrottler.Update", 1, 1);
+
+  // No Available requests.
+  VerifyRequestsBlockedByThrottler();
+
+  DeleteReconcilor();
+  histogram_tester()->ExpectBucketCount(
+      "Signin.Reconciler.RejectedRequestsDueToThrottler.Update", 1, 2);
+}
+
+TEST_F(AccountReconcilorThrottlerTest, RefillFiveRequests) {
+  AccountInfo account_info = ConnectProfileToAccount("user@gmail.com");
+  const CoreAccountId account_id = account_info.account_id;
+  signin::SetListAccountsResponseOneAccount(
+      "other@gmail.com", signin::GetTestGaiaIdForEmail("other@gmail.com"),
+      &test_url_loader_factory_);
+
+  signin::MultiloginParameters params(
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
+      {account_id});
+
+  // Consume all available requests.
+  ConsumeRequests(AccountReconcilorThrottler::kMaxAllowedRequestsPerBucket,
+                  params);
+
+  // At this point all the requests in the available request buckets should
+  // have been consumed.
+  VerifyRequestsBlockedByThrottler();
+
+  // Allow enough time to refill 1 request.
+  FastForwadTimeToRefillRequests(5);
+  ConsumeRequests(5, params);
+
+  // The blocked request recorded upon allowing a new request.
+  histogram_tester()->ExpectBucketCount(
+      "Signin.Reconciler.RejectedRequestsDueToThrottler.Update", 1, 1);
+
+  // No Available requests.
+  VerifyRequestsBlockedByThrottler();
+
+  DeleteReconcilor();
+  histogram_tester()->ExpectBucketCount(
+      "Signin.Reconciler.RejectedRequestsDueToThrottler.Update", 1, 2);
+}
+
+TEST_F(AccountReconcilorThrottlerTest, NewRequestParamsPasses) {
+  AccountInfo account_info = ConnectProfileToAccount("user@gmail.com");
+  const CoreAccountId account_id = account_info.account_id;
+  signin::SetListAccountsResponseOneAccount(
+      "other@gmail.com", signin::GetTestGaiaIdForEmail("other@gmail.com"),
+      &test_url_loader_factory_);
+
+  signin::MultiloginParameters params(
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
+      {account_id});
+
+  // Consume all available requests.
+  ConsumeRequests(AccountReconcilorThrottler::kMaxAllowedRequestsPerBucket,
+                  params);
+
+  // Next request should fail.
+  VerifyRequestsBlockedByThrottler();
+
+  // Trigger different params.
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(testing::_));
+  identity_test_env()->MakeAccountAvailable("other@gmail.com");
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(reconcilor->is_reconcile_started_);
+  SimulateSetAccountsInCookieCompleted(
+      reconcilor, signin::SetAccountsInCookieResult::kSuccess);
+  ASSERT_FALSE(reconcilor->is_reconcile_started_);
+
+  histogram_tester()->ExpectBucketCount(
+      "Signin.Reconciler.RejectedRequestsDueToThrottler.Update", 1, 1);
+}
+
+TEST_F(AccountReconcilorThrottlerTest, BlockFiveRequests) {
+  AccountInfo account_info = ConnectProfileToAccount("user@gmail.com");
+  const CoreAccountId account_id = account_info.account_id;
+  signin::SetListAccountsResponseOneAccount(
+      "other@gmail.com", signin::GetTestGaiaIdForEmail("other@gmail.com"),
+      &test_url_loader_factory_);
+
+  signin::MultiloginParameters params(
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
+      {account_id});
+
+  // Consume all available requests.
+  ConsumeRequests(AccountReconcilorThrottler::kMaxAllowedRequestsPerBucket,
+                  params);
+
+  // At this point all the requests in the available request buckets should
+  // have been consumed.
+  size_t rejected_requests = 5;
+  for (size_t i = 0; i < rejected_requests; ++i) {
+    VerifyRequestsBlockedByThrottler();
+  }
+
+  // Allow enough time to refill 1 request.
+  FastForwadTimeToRefillRequests(1);
+  ConsumeRequests(1, params);
+
+  // The blocked request recorded upon allowing a new request.
+  histogram_tester()->ExpectBucketCount(
+      "Signin.Reconciler.RejectedRequestsDueToThrottler.Update",
+      rejected_requests, 1);
+
+  // Allow a new request with no blocked requests in between.
+  FastForwadTimeToRefillRequests(1);
+  ConsumeRequests(1, params);
+  // The number of samples should remain 1.
+  histogram_tester()->ExpectTotalCount(
+      "Signin.Reconciler.RejectedRequestsDueToThrottler.Update", 1);
+}
