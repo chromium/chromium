@@ -78,6 +78,8 @@ class BASE_EXPORT PCScan final {
   // Performs scanning only if a certain quarantine threshold was reached.
   void PerformScanIfNeeded(InvocationMode invocation_mode);
 
+  void PerformDelayedScan(TimeDelta delay);
+
   // Join scan from safepoint in mutator thread. As soon as PCScan is scheduled,
   // mutators can join PCScan helping out with clearing and scanning.
   void JoinScanIfNeeded();
@@ -89,6 +91,8 @@ class BASE_EXPORT PCScan final {
   void SetProcessName(const char* name);
 
   void ClearRootsForTesting();
+
+  PCScanScheduler& scheduler() { return scheduler_; }
 
  private:
   class PCScanThread;

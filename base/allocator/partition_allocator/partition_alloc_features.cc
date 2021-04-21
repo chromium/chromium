@@ -34,5 +34,10 @@ const Feature kPartitionAllocLargeThreadCacheSize{
 const Feature kPartitionAllocLazyCommit{"PartitionAllocLazyCommit",
                                         FEATURE_ENABLED_BY_DEFAULT};
 
+// If enabled, switches PCScan scheduling to a mutator-aware scheduler. Does not
+// affect whether PCScan is enabled itself.
+const Feature kPartitionAllocPCScanMUAwareScheduler{
+    "PartitionAllocPCScanMUAwareScheduler", FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace base

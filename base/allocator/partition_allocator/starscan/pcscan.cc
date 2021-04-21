@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <chrono>
 #include <condition_variable>
 #include <mutex>
 #include <numeric>
@@ -24,6 +25,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_page.h"
+#include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/compiler_specific.h"
 #include "base/cpu.h"
@@ -354,6 +356,13 @@ class StatsCollector final {
   void IncreaseSweptSize(size_t size) { swept_size_ += size; }
   size_t swept_size() const { return swept_size_; }
 
+  base::TimeDelta GetOverallTime() const {
+    return GetTimeImpl<Context::kMutator>(mutator_trace_events_,
+                                          MutatorId::kOverall) +
+           GetTimeImpl<Context::kScanner>(scanner_trace_events_,
+                                          ScannerId::kOverall);
+  }
+
   void ReportTracesAndHists() {
     ReportTracesAndHistsImpl<Context::kMutator>(mutator_trace_events_);
     ReportTracesAndHistsImpl<Context::kScanner>(scanner_trace_events_);
@@ -435,6 +444,18 @@ class StatsCollector final {
   }
   void RegisterEndEventFromCurrentThread(ScannerId id) {
     scanner_trace_events_.RegisterEndEventFromCurrentThread(id);
+  }
+
+  template <Context context, typename EventMap>
+  base::TimeDelta GetTimeImpl(const EventMap& event_map,
+                              IdType<context> id) const {
+    base::TimeDelta overall;
+    for (const auto& tid_and_events : event_map.get_underlying_map_unsafe()) {
+      const auto& events = tid_and_events.second;
+      const auto& event = events[static_cast<size_t>(id)];
+      overall += (event.end_time - event.start_time);
+    }
+    return overall;
   }
 
   template <Context context, typename EventMap>
@@ -881,6 +902,8 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask> {
   // Execute PCScan from the scanner thread. Must be called only once from the
   // scanner thread.
   void RunFromScanner();
+
+  PCScanScheduler& scheduler() const { return pcscan_.scheduler(); }
 
  private:
   class ScanLoop;
@@ -1389,7 +1412,7 @@ void PCScanTask::FinishScanner() {
       stats_.survived_quarantine_size());
 
   pcscan_.scheduler_.scheduling_backend().UpdateScheduleAfterScan(
-      stats_.survived_quarantine_size(),
+      stats_.survived_quarantine_size(), stats_.GetOverallTime(),
       PCScanInternal::Instance().CalculateTotalHeapSize());
 
   PCScanInternal::Instance().ResetCurrentPCScanTask();
@@ -1473,8 +1496,20 @@ class PCScan::PCScanThread final {
       std::lock_guard<std::mutex> lock(mutex_);
       PA_DCHECK(!posted_task_.get());
       posted_task_ = std::move(task);
+      wanted_delay_ = TimeDelta();
     }
-    condvar_.notify_all();
+    condvar_.notify_one();
+  }
+
+  void PostDelayedTask(TimeDelta delay) {
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      if (posted_task_.get()) {
+        return;
+      }
+      wanted_delay_ = delay;
+    }
+    condvar_.notify_one();
   }
 
  private:
@@ -1490,21 +1525,62 @@ class PCScan::PCScanThread final {
     }}.detach();
   }
 
+  // Waits and returns whether the delay should be recomputed.
+  bool Wait(std::unique_lock<std::mutex>& lock) {
+    PA_DCHECK(lock.owns_lock());
+    if (wanted_delay_.is_zero()) {
+      condvar_.wait(lock, [this] {
+        // Re-evaluate if either delay changed, or a task was
+        // enqueued.
+        return !wanted_delay_.is_zero() || posted_task_.get();
+      });
+      // The delay has already been set up and should not be queried again.
+      return false;
+    }
+    condvar_.wait_for(
+        lock, std::chrono::microseconds(wanted_delay_.InMicroseconds()));
+    // If no task has been posted, the delay should be recomputed at this point.
+    return !posted_task_.get();
+  }
+
   void TaskLoop() {
     while (true) {
       TaskHandle current_task;
       {
         std::unique_lock<std::mutex> lock(mutex_);
-        condvar_.wait(lock, [this] { return posted_task_.get(); });
-        std::swap(current_task, posted_task_);
+        // Scheduling.
+        while (!posted_task_.get()) {
+          if (Wait(lock)) {
+            wanted_delay_ =
+                scheduler().scheduling_backend().UpdateDelayedSchedule();
+            if (wanted_delay_.is_zero()) {
+              break;
+            }
+          }
+        }
+        // Differentiate between a posted task and a delayed task schedule.
+        if (posted_task_.get()) {
+          std::swap(current_task, posted_task_);
+          wanted_delay_ = TimeDelta();
+        } else {
+          PA_DCHECK(wanted_delay_.is_zero());
+        }
       }
-      current_task->RunFromScanner();
+      // Differentiate between a posted task and a delayed task schedule.
+      if (current_task.get()) {
+        current_task->RunFromScanner();
+      } else {
+        PCScan::Instance().PerformScan(PCScan::InvocationMode::kNonBlocking);
+      }
     }
   }
+
+  PCScanScheduler& scheduler() const { return PCScan::Instance().scheduler(); }
 
   std::mutex mutex_;
   std::condition_variable condvar_;
   TaskHandle posted_task_;
+  TimeDelta wanted_delay_;
 };
 
 void PCScan::PerformScan(InvocationMode invocation_mode) {
@@ -1559,6 +1635,10 @@ void PCScan::PerformScanIfNeeded(InvocationMode invocation_mode) {
           .GetQuarantineData()
           .MinimumScanningThresholdReached())
     PerformScan(invocation_mode);
+}
+
+void PCScan::PerformDelayedScan(TimeDelta delay) {
+  PCScanThread::Instance().PostDelayedTask(delay);
 }
 
 void PCScan::JoinScan() {

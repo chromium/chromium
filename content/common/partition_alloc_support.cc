@@ -11,8 +11,12 @@
 #include "base/allocator/partition_allocator/extended_api.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
+#include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
@@ -262,6 +266,19 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 
 #endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
         // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+  if (base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocPCScanMUAwareScheduler)) {
+    // Assign PCScan a task-based scheduling backend.
+    static base::NoDestructor<base::internal::MUAwareTaskBasedBackend>
+        mu_aware_task_based_backend{
+            base::internal::PCScan::Instance().scheduler(),
+            base::BindRepeating([](base::TimeDelta delay) {
+              base::internal::PCScan::Instance().PerformDelayedScan(delay);
+            })};
+    base::internal::PCScan::Instance().scheduler().SetNewSchedulingBackend(
+        *mu_aware_task_based_backend.get());
+  }
 }
 
 void PartitionAllocSupport::OnForegrounded() {

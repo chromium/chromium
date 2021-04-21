@@ -35,6 +35,8 @@ extern const BASE_EXPORT Feature kPartitionAllocThreadCachePeriodicPurge;
 extern const BASE_EXPORT Feature kPartitionAllocLargeThreadCacheSize;
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
+extern const BASE_EXPORT Feature kPartitionAllocPCScanMUAwareScheduler;
+
 extern const BASE_EXPORT Feature kPartitionAllocLazyCommit;
 
 ALWAYS_INLINE bool IsPartitionAllocGigaCageEnabled() {

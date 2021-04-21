@@ -9,7 +9,10 @@
 #include <cstdint>
 
 #include "base/base_export.h"
+#include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/synchronization/lock.h"
+#include "base/time/time.h"
 
 namespace base {
 namespace internal {
@@ -32,7 +35,7 @@ struct QuarantineData final {
   size_t last_size{0u};
 };
 
-class PCScanSchedulingBackend {
+class BASE_EXPORT PCScanSchedulingBackend {
  public:
   explicit inline constexpr PCScanSchedulingBackend(PCScanScheduler&);
   // No virtual destructor to allow constant initialization of PCScan as
@@ -48,11 +51,16 @@ class PCScanSchedulingBackend {
   virtual bool LimitReached() = 0;
 
   // Invoked on starting a scan.
-  virtual void ScanStarted() = 0;
+  virtual void ScanStarted();
 
   // Invoked at the end of a scan to compute a new limit.
   virtual void UpdateScheduleAfterScan(size_t survived_bytes,
+                                       base::TimeDelta time_spent_in_scan,
                                        size_t heap_size) = 0;
+
+  // Invoked by PCScan to ask for a new timeout for a scheduled PCScan task.
+  // Only invoked if scheduler requests a delayed scan at some point.
+  virtual TimeDelta UpdateDelayedSchedule();
 
  protected:
   PCScanScheduler& scheduler_;
@@ -66,8 +74,49 @@ class BASE_EXPORT LimitBackend final : public PCScanSchedulingBackend {
   explicit inline constexpr LimitBackend(PCScanScheduler&);
 
   bool LimitReached() final;
+  void UpdateScheduleAfterScan(size_t, base::TimeDelta, size_t) final;
+};
+
+// Task based backend that is aware of a target mutator utilization that
+// specifies how much percent of the execution should be reserved for the
+// mutator. I.e., the MU-aware scheduler ensures that scans are limit and
+// there is enough time left for the mutator to execute the actual application
+// workload.
+//
+// See constants below for trigger mechanisms.
+class BASE_EXPORT MUAwareTaskBasedBackend final
+    : public PCScanSchedulingBackend {
+ public:
+  MUAwareTaskBasedBackend(PCScanScheduler&,
+                          base::RepeatingCallback<void(TimeDelta)>);
+  ~MUAwareTaskBasedBackend();
+
+  bool LimitReached() final;
   void ScanStarted() final;
-  void UpdateScheduleAfterScan(size_t, size_t) final;
+  void UpdateScheduleAfterScan(size_t, base::TimeDelta, size_t) final;
+  TimeDelta UpdateDelayedSchedule() final;
+
+ private:
+  // Limit triggering the scheduler. If `kTargetMutatorUtilizationPercent` is
+  // satisfied at this point then a scan is triggered immediately.
+  static constexpr double kSoftLimitQuarantineSizePercent = 0.1;
+  // Hard limit at which a scan is triggered in any case. Avoids blowing up the
+  // heap completely.
+  static constexpr double kHardLimitQuarantineSizePercent = 0.5;
+  // Target mutator utilization that is respected when invoking a scan.
+  // Specifies how much percent of walltime should be spent in the mutator.
+  // Inversely, specifies how much walltime (indirectly CPU) is spent on
+  // memory management in scan.
+  static constexpr double kTargetMutatorUtilizationPercent = 0.90;
+
+  // Callback to schedule a delayed scan.
+  const base::RepeatingCallback<void(TimeDelta)> schedule_delayed_scan_;
+
+  base::Lock scheduler_lock_;
+  size_t hard_limit_ GUARDED_BY(scheduler_lock_){0};
+  base::TimeTicks earliest_next_scan_time_ GUARDED_BY(scheduler_lock_);
+
+  friend class PCScanMUAwareTaskBasedBackendTest;
 };
 
 // The scheduler that is embedded in the PCSCan frontend which requires a fast
