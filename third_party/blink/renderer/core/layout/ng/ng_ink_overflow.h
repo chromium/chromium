@@ -125,6 +125,8 @@ class CORE_EXPORT NGInkOverflow {
    public:
     ReadUnsetAsNoneScope() { ++read_unset_as_none_; }
     ~ReadUnsetAsNoneScope() { --read_unset_as_none_; }
+
+    static bool IsActive() { return read_unset_as_none_; }
   };
 #endif
 
