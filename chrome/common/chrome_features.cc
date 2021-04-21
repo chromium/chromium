@@ -576,6 +576,9 @@ const base::Feature kKernelnextVMs{"KernelnextVMs",
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// When enabled, the Ash browser only manages system web apps, and non-system
+// web apps are managed by the Lacros browser. When disabled, the Ash browser
+// manages all web apps.
 const base::Feature kLacrosWebApps{"LacrosWebApps",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif

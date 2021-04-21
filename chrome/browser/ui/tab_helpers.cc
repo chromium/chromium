@@ -85,6 +85,7 @@
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -374,7 +375,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
         web_contents);
   }
 #else
-  webapps::AppBannerManagerDesktop::CreateForWebContents(web_contents);
+  if (web_app::AreWebAppsUserInstallable(profile))
+    webapps::AppBannerManagerDesktop::CreateForWebContents(web_contents);
   BookmarkTabHelper::CreateForWebContents(web_contents);
   BrowserSyncedTabDelegate::CreateForWebContents(web_contents);
   FocusTabAfterNavigationHelper::CreateForWebContents(web_contents);

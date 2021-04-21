@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
@@ -735,8 +736,14 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, UninstallMenuOption) {
 // incognito windows.
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutMenuOptionsInIncognito) {
   Browser* const incognito_browser = CreateIncognitoBrowser(profile());
-  EXPECT_FALSE(NavigateAndAwaitInstallabilityCheck(incognito_browser,
-                                                   GetSecureAppURL()));
+  EXPECT_EQ(webapps::AppBannerManagerDesktop::FromWebContents(
+                incognito_browser->tab_strip_model()->GetActiveWebContents()),
+            nullptr);
+  NavigateToURLAndWait(incognito_browser, GetInstallableAppURL());
+
+  // Wait sufficient time for an installability check to occur.
+  EXPECT_TRUE(
+      NavigateAndAwaitInstallabilityCheck(browser(), GetInstallableAppURL()));
 
   EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, incognito_browser),
             kDisabled);
