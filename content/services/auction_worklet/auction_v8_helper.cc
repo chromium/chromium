@@ -169,10 +169,20 @@ AuctionV8Helper::AuctionV8Helper() {
       base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kUseLocker,
       gin::IsolateHolder::IsolateType::kUtility);
   FullIsolateScope v8_scope(this);
-  scratch_context_.Reset(isolate(), v8::Context::New(isolate()));
+  scratch_context_.Reset(isolate(), CreateContext());
 }
 
 AuctionV8Helper::~AuctionV8Helper() = default;
+
+v8::Local<v8::Context> AuctionV8Helper::CreateContext(
+    v8::Handle<v8::ObjectTemplate> global_template) {
+  v8::Local<v8::Context> context =
+      v8::Context::New(isolate(), nullptr /* extensions */, global_template);
+  auto result =
+      context->Global()->Delete(context, CreateStringFromLiteral("Date"));
+  DCHECK(!result.IsNothing());
+  return context;
+}
 
 v8::Local<v8::String> AuctionV8Helper::CreateStringFromLiteral(
     const char* ascii_string) {

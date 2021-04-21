@@ -136,7 +136,8 @@ void AuctionRunner::RunBid(BidState* state) {
       state->trusted_bidding_signals.get(),
       browser_signals_->top_frame_origin.host(),
       browser_signals_->seller.Serialize(), state->bidder->signals->join_count,
-      state->bidder->signals->bid_count, state->bidder->signals->prev_wins);
+      state->bidder->signals->bid_count, state->bidder->signals->prev_wins,
+      auction_start_time_);
   state->bid_duration = base::TimeTicks::Now() - start;
 }
 

@@ -15,41 +15,42 @@
 
 namespace auction_worklet {
 
+class AuctionV8HelperTest : public testing::Test {
+ public:
+  AuctionV8HelperTest() = default;
+  ~AuctionV8HelperTest() override = default;
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  AuctionV8Helper helper_;
+  AuctionV8Helper::FullIsolateScope v8_scope_{&helper_};
+};
+
 // Compile a script with the scratch context, and then run it in two different
 // contexts.
-TEST(AuctionV8HelperTest, Basic) {
-  base::test::TaskEnvironment task_environment;
-
-  AuctionV8Helper helper;
-  AuctionV8Helper::FullIsolateScope v8_scope(&helper);
-
+TEST_F(AuctionV8HelperTest, Basic) {
   v8::Local<v8::UnboundScript> script;
   {
-    v8::Context::Scope ctx(helper.scratch_context());
+    v8::Context::Scope ctx(helper_.scratch_context());
     ASSERT_TRUE(
-        helper.Compile("function foo() { return 1;}", GURL("https://foo.test/"))
+        helper_
+            .Compile("function foo() { return 1;}", GURL("https://foo.test/"))
             .ToLocal(&script));
   }
 
   for (v8::Local<v8::Context> context :
-       {helper.scratch_context(),
-        v8::Context::New(helper.isolate(), nullptr /* extensions */)}) {
+       {helper_.scratch_context(), helper_.CreateContext()}) {
     v8::Context::Scope ctx(context);
     v8::Local<v8::Value> result;
-    ASSERT_TRUE(helper.RunScript(context, script, "foo").ToLocal(&result));
+    ASSERT_TRUE(helper_.RunScript(context, script, "foo").ToLocal(&result));
     int int_result = 0;
-    ASSERT_TRUE(gin::ConvertFromV8(helper.isolate(), result, &int_result));
+    ASSERT_TRUE(gin::ConvertFromV8(helper_.isolate(), result, &int_result));
     EXPECT_EQ(1, int_result);
   }
 }
 
 // Check that timing out scripts works.
-TEST(AuctionV8HelperTest, Timeout) {
-  base::test::TaskEnvironment task_environment;
-
-  AuctionV8Helper helper;
-  AuctionV8Helper::FullIsolateScope v8_scope(&helper);
-
+TEST_F(AuctionV8HelperTest, Timeout) {
   const char* kHangingScripts[] = {
       // Script that times out when run. Its foo() method returns 1, but should
       // never be called.
@@ -64,19 +65,19 @@ TEST(AuctionV8HelperTest, Timeout) {
 
   // Use a sorter timeout so test runs faster.
   const base::TimeDelta kScriptTimeout = base::TimeDelta::FromMilliseconds(20);
-  helper.set_script_timeout_for_testing(kScriptTimeout);
+  helper_.set_script_timeout_for_testing(kScriptTimeout);
 
   for (const char* hanging_script : kHangingScripts) {
     base::TimeTicks start_time = base::TimeTicks::Now();
-    v8::Local<v8::Context> context =
-        v8::Context::New(helper.isolate(), nullptr /* extensions */);
+    v8::Local<v8::Context> context = helper_.CreateContext();
     v8::Context::Scope context_scope(context);
 
     v8::Local<v8::UnboundScript> script;
-    ASSERT_TRUE(helper.Compile(hanging_script, GURL("https://foo.test/"))
+    ASSERT_TRUE(helper_.Compile(hanging_script, GURL("https://foo.test/"))
                     .ToLocal(&script));
 
-    v8::MaybeLocal<v8::Value> result = helper.RunScript(context, script, "foo");
+    v8::MaybeLocal<v8::Value> result =
+        helper_.RunScript(context, script, "foo");
     EXPECT_TRUE(result.IsEmpty());
 
     // Make sure at least `kScriptTimeout` has passed, allowing for some time
@@ -89,18 +90,32 @@ TEST(AuctionV8HelperTest, Timeout) {
 
   // Make sure it's still possible to run a script with the isolate after the
   // timeouts.
-  v8::Local<v8::Context> context =
-      v8::Context::New(helper.isolate(), nullptr /* extensions */);
+  v8::Local<v8::Context> context = helper_.CreateContext();
   v8::Context::Scope context_scope(context);
   v8::Local<v8::UnboundScript> script;
   ASSERT_TRUE(
-      helper.Compile("function foo() { return 1;}", GURL("https://foo.test/"))
+      helper_.Compile("function foo() { return 1;}", GURL("https://foo.test/"))
           .ToLocal(&script));
   v8::Local<v8::Value> result;
-  ASSERT_TRUE(helper.RunScript(context, script, "foo").ToLocal(&result));
+  ASSERT_TRUE(helper_.RunScript(context, script, "foo").ToLocal(&result));
   int int_result = 0;
-  ASSERT_TRUE(gin::ConvertFromV8(helper.isolate(), result, &int_result));
+  ASSERT_TRUE(gin::ConvertFromV8(helper_.isolate(), result, &int_result));
   EXPECT_EQ(1, int_result);
+}
+
+// Make sure the when CreateContext() is used, there's no access to the time,
+// which mitigates Specter-style attacks.
+TEST_F(AuctionV8HelperTest, NoTime) {
+  v8::Local<v8::Context> context = helper_.CreateContext();
+  v8::Context::Scope context_scope(context);
+
+  // Make sure Date() is not accessible.
+  v8::Local<v8::UnboundScript> script;
+  ASSERT_TRUE(helper_
+                  .Compile("function foo() { return Date();}",
+                           GURL("https://foo.test/"))
+                  .ToLocal(&script));
+  EXPECT_TRUE(helper_.RunScript(context, script, "foo").IsEmpty());
 }
 
 }  // namespace auction_worklet
