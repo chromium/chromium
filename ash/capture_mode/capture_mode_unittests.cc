@@ -1482,6 +1482,84 @@ TEST_F(CaptureModeTest, WindowCursorStates) {
   EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
 }
 
+// Tests that nothing crashes when windows are destroyed while being observed.
+TEST_F(CaptureModeTest, WindowDestruction) {
+  using ui::mojom::CursorType;
+
+  // Create 2 windows that overlap with each other.
+  const gfx::Rect bounds1(0, 0, 200, 200);
+  const gfx::Rect bounds2(150, 150, 200, 200);
+  const gfx::Rect bounds3(50, 50, 200, 200);
+  std::unique_ptr<aura::Window> window1(CreateTestWindow(bounds1));
+  std::unique_ptr<aura::Window> window2(CreateTestWindow(bounds2));
+
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  CursorType original_cursor_type = cursor_manager->GetCursor().type();
+  EXPECT_FALSE(cursor_manager->IsCursorLocked());
+  EXPECT_EQ(CursorType::kPointer, original_cursor_type);
+
+  // Start capture session with Image type, so we have a custom cursor.
+  auto* event_generator = GetEventGenerator();
+  CaptureModeController* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
+  EXPECT_EQ(controller->type(), CaptureModeType::kImage);
+
+  // If the mouse is above the window, use the image capture icon.
+  event_generator->MoveMouseToCenterOf(window2.get());
+  EXPECT_TRUE(cursor_manager->IsCursorLocked());
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+  EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
+  auto* capture_mode_session = controller->capture_mode_session();
+  CaptureModeSessionTestApi test_api(capture_mode_session);
+  EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kImage));
+
+  // Destroy the window while hovering. There is no window underneath, so it
+  // should revert back to the original cursor.
+  window2.reset();
+  EXPECT_FALSE(cursor_manager->IsCursorLocked());
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+  EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
+
+  // Destroy the window while mouse is in a pressed state. Cursor should revert
+  // back to the original cursor.
+  std::unique_ptr<aura::Window> window3(CreateTestWindow(bounds2));
+  EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
+  EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kImage));
+  event_generator->PressLeftButton();
+  EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
+  EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kImage));
+  window3.reset();
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
+
+  // When hovering over a window, if it is destroyed and there is another window
+  // under the cursor location in screen, then the selected window is
+  // automatically updated.
+  std::unique_ptr<aura::Window> window4(CreateTestWindow(bounds3));
+  event_generator->MoveMouseToCenterOf(window4.get());
+  EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
+  EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kImage));
+  EXPECT_EQ(capture_mode_session->GetSelectedWindow(), window4.get());
+  window4.reset();
+  EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
+  EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kImage));
+  // Check to see it's observing window1.
+  EXPECT_EQ(capture_mode_session->GetSelectedWindow(), window1.get());
+
+  // Cursor is over a window in the mouse pressed state. If the window is
+  // destroyed and there is another window under the cursor, the selected window
+  // is updated and the new selected window is captured.
+  std::unique_ptr<aura::Window> window5(CreateTestWindow(bounds3));
+  EXPECT_EQ(capture_mode_session->GetSelectedWindow(), window5.get());
+  event_generator->PressLeftButton();
+  window5.reset();
+  EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
+  EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kImage));
+  EXPECT_EQ(capture_mode_session->GetSelectedWindow(), window1.get());
+  event_generator->ReleaseLeftButton();
+  EXPECT_FALSE(controller->IsActive());
+}
+
 TEST_F(CaptureModeTest, CursorUpdatedOnDisplayRotation) {
   using ui::mojom::CursorType;
 

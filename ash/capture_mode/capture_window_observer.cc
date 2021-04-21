@@ -55,6 +55,7 @@ void CaptureWindowObserver::UpdateSelectedWindowAtPosition(
   if (window)
     StartObserving(window);
   RepaintCaptureRegion();
+  capture_mode_session_->UpdateCursor(location_in_screen, /*is_touch=*/false);
 }
 
 void CaptureWindowObserver::OnWindowBoundsChanged(

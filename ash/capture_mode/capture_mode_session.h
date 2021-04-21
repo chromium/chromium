@@ -128,6 +128,12 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 
+  // Updates the current cursor depending on current |location_in_screen| and
+  // current capture type and source. |is_touch| is used when calculating fine
+  // tune position in region capture mode. We'll have a larger hit test region
+  // for the touch events than the mouse events.
+  void UpdateCursor(const gfx::Point& location_in_screen, bool is_touch);
+
  private:
   friend class CaptureModeSessionFocusCycler;
   friend class CaptureModeSessionTestApi;
@@ -234,12 +240,6 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
 
   // Updates |root_window_dimmers_| to dim the correct root windows.
   void UpdateRootWindowDimmers();
-
-  // Updates the current cursor depending on current |location_in_screen| and
-  // current capture type and source. |is_touch| is used when calculating fine
-  // tune position in region capture mode. We'll have a larger hit test region
-  // for the touch events than the mouse events.
-  void UpdateCursor(const gfx::Point& location_in_screen, bool is_touch);
 
   // Returns true if we're using custom image capture icon when |type| is
   // kImage or using custom video capture icon when |type| is kVideo.
