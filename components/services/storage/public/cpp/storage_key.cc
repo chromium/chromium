@@ -25,4 +25,8 @@ bool operator!=(const StorageKey& lhs, const StorageKey& rhs) {
   return !(lhs == rhs);
 }
 
+bool operator<(const StorageKey& lhs, const StorageKey& rhs) {
+  return lhs.origin_ < rhs.origin_;
+}
+
 }  // namespace storage

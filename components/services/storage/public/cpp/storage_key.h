@@ -17,6 +17,12 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC) StorageKey {
   StorageKey() = default;
   explicit StorageKey(const url::Origin& origin) : origin_(origin) {}
 
+  // Copyable and Moveable.
+  StorageKey(const StorageKey& other) = default;
+  StorageKey& operator=(const StorageKey& other) = default;
+  StorageKey(StorageKey&& other) = default;
+  StorageKey& operator=(StorageKey&& other) = default;
+
   ~StorageKey() = default;
 
   // Returns a newly constructed StorageKey from, a previously serialized, `in`.
@@ -32,7 +38,7 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC) StorageKey {
 
   bool opaque() const { return origin_.opaque(); }
 
-  const url::Origin& origin() { return origin_; }
+  const url::Origin& origin() const { return origin_; }
 
  private:
   COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC)
@@ -41,7 +47,12 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC) StorageKey {
   COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC)
   friend bool operator!=(const StorageKey& lhs, const StorageKey& rhs);
 
-  const url::Origin origin_;
+  // Allows StorageKey to be used as a key in STL (for example, a std::set or
+  // std::map).
+  COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC)
+  friend bool operator<(const StorageKey& lhs, const StorageKey& rhs);
+
+  url::Origin origin_;
 };
 
 }  // namespace storage
