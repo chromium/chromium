@@ -1110,6 +1110,11 @@ PrintRenderFrameHelper::GetPrintManagerHost() {
   if (!print_manager_host_) {
     render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
         &print_manager_host_);
+    // Makes sure that it quits the runloop that runs while a Mojo call waits
+    // for a reply if |print_manager_host_| is disconnected before the reply.
+    print_manager_host_.set_disconnect_handler(
+        base::BindOnce(&PrintRenderFrameHelper::QuitRunLoopForMojoReply,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
   return print_manager_host_;
 }
@@ -2270,14 +2275,14 @@ mojom::PrintPagesParamsPtr PrintRenderFrameHelper::GetPrintSettingsFromUser(
   mojom::PrintPagesParamsPtr print_settings;
   base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
   GetPrintManagerHost()->ScriptedPrint(
-      std::move(params), base::BindOnce(
-                             [](base::RepeatingClosure quit_closure,
-                                mojom::PrintPagesParamsPtr* output,
-                                mojom::PrintPagesParamsPtr input) {
-                               *output = std::move(input);
-                               std::move(quit_closure).Run();
-                             },
-                             loop.QuitClosure(), &print_settings));
+      std::move(params),
+      base::BindOnce(
+          [](base::OnceClosure quit_closure, mojom::PrintPagesParamsPtr* output,
+             mojom::PrintPagesParamsPtr input) {
+            *output = std::move(input);
+            std::move(quit_closure).Run();
+          },
+          SetQuitRunLoopForMojoReply(loop.QuitClosure()), &print_settings));
   // Runs the nested run loop until ScriptedPrint() gets the reply.
   loop.Run();
   return print_settings;
@@ -2436,7 +2441,8 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
       }
       auto self = weak_ptr_factory_.GetWeakPtr();
       base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
-      GetPrintManagerHost()->SetupScriptedPrintPreview(loop.QuitClosure());
+      GetPrintManagerHost()->SetupScriptedPrintPreview(
+          SetQuitRunLoopForMojoReply(loop.QuitClosure()));
       loop.Run();
 
       // Check if |this| is still valid.
@@ -2849,6 +2855,18 @@ void PrintRenderFrameHelper::SetPrintPagesParams(
     const mojom::PrintPagesParams& settings) {
   print_pages_params_ = settings.Clone();
   GetPrintManagerHost()->DidGetDocumentCookie(settings.params->document_cookie);
+}
+
+void PrintRenderFrameHelper::QuitRunLoopForMojoReply() {
+  if (quit_closure_for_mojo_reply_)
+    std::move(quit_closure_for_mojo_reply_).Run();
+}
+
+base::OnceClosure PrintRenderFrameHelper::SetQuitRunLoopForMojoReply(
+    base::OnceClosure closure) {
+  quit_closure_for_mojo_reply_ = std::move(closure);
+  return base::BindOnce(&PrintRenderFrameHelper::QuitRunLoopForMojoReply,
+                        weak_ptr_factory_.GetWeakPtr());
 }
 
 PrintRenderFrameHelper::ScopedIPC::ScopedIPC(
