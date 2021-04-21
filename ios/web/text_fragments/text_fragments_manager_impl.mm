@@ -49,18 +49,16 @@ TextFragmentsManagerImpl::TextFragmentsManagerImpl(WebState* web_state)
   DCHECK(web_state_);
   web_state_->AddObserver(this);
 
-  if (base::FeatureList::IsEnabled(web::features::kScrollToTextIOS)) {
-    const web::WebState::ScriptCommandCallback callback = base::BindRepeating(
-        ^(const base::DictionaryValue& message, const GURL& page_url,
-          bool interacted, web::WebFrame* sender_frame) {
-          if (web_state_ && sender_frame && sender_frame->IsMainFrame()) {
-            DidReceiveJavaScriptResponse(message);
-          }
-        });
+  const web::WebState::ScriptCommandCallback callback = base::BindRepeating(
+      ^(const base::DictionaryValue& message, const GURL& page_url,
+        bool interacted, web::WebFrame* sender_frame) {
+        if (web_state_ && sender_frame && sender_frame->IsMainFrame()) {
+          DidReceiveJavaScriptResponse(message);
+        }
+      });
 
-    subscription_ =
-        web_state_->AddScriptCommandCallback(callback, kScriptCommandPrefix);
-  }
+  subscription_ =
+      web_state_->AddScriptCommandCallback(callback, kScriptCommandPrefix);
 }
 
 TextFragmentsManagerImpl::~TextFragmentsManagerImpl() {
@@ -156,10 +154,6 @@ void TextFragmentsManagerImpl::ProcessTextFragments(
 // |context|.
 bool TextFragmentsManagerImpl::AreTextFragmentsAllowed(
     const web::NavigationContext* context) {
-  if (!base::FeatureList::IsEnabled(web::features::kScrollToTextIOS)) {
-    return false;
-  }
-
   if (!web_state_ || web_state_->HasOpener()) {
     // TODO(crbug.com/1099268): Loosen this restriction if the opener has the
     // same domain.

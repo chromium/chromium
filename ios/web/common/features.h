@@ -51,12 +51,6 @@ extern const base::Feature kUseDefaultUserAgentInWebClient;
 // of properties using hard coded logic.
 extern const base::Feature kPreserveScrollViewProperties;
 
-// When enabled, opening a URL with a text fragment (e.g.,
-// example.com/#:~:text=examples) will cause matching text in the page to be
-// highlighted and scrolled into view.
-// See also: https://wicg.github.io/scroll-to-text-fragment/
-extern const base::Feature kScrollToTextIOS;
-
 // When enabled, display an interstitial on legacy TLS connections.
 extern const base::Feature kIOSLegacyTLSInterstitial;
 

@@ -377,12 +377,6 @@ const char kScreenTimeIntegrationName[] = "Enables ScreenTime Integration";
 const char kScreenTimeIntegrationDescription[] =
     "Enables integration with ScreenTime in iOS 14.0 and above.";
 
-const char kScrollToTextIOSName[] = "Enable Scroll to Text";
-const char kScrollToTextIOSDescription[] =
-    "When enabled, opening a URL with a text fragment (e.g., "
-    "example.com/#:~:text=examples) will cause matching text in the page to be "
-    "highlighted and scrolled into view.";
-
 const char kSearchHistoryLinkIOSName[] = "Enables Search History Link";
 const char kSearchHistoryLinkIOSDescription[] =
     "Changes the Clear Browsing Data "
@@ -406,7 +400,7 @@ const char kSettingsRefreshDescription[] =
 const char kSharedHighlightingIOSName[] = "Enable Shared Highlighting features";
 const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "
-    "text fragment. Works best with the #scroll-to-text-ios flag.";
+    "text fragment.";
 
 const char kShowAutofillTypePredictionsName[] = "Show Autofill predictions";
 const char kShowAutofillTypePredictionsDescription[] =

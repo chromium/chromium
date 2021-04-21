@@ -136,7 +136,6 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(web::features::kScrollToTextIOS);
   config.features_enabled.push_back(kSharedHighlightingIOS);
   return config;
 }

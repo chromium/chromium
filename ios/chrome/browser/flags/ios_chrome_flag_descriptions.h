@@ -319,10 +319,6 @@ extern const char kSafeBrowsingRealTimeLookupDescription[];
 extern const char kScreenTimeIntegrationName[];
 extern const char kScreenTimeIntegrationDescription[];
 
-// Title and description for the flag to enable the Scroll to Text feature.
-extern const char kScrollToTextIOSName[];
-extern const char kScrollToTextIOSDescription[];
-
 // Title and description for the flag to enable the Search History Link feature.
 extern const char kSearchHistoryLinkIOSName[];
 extern const char kSearchHistoryLinkIOSDescription[];

@@ -76,24 +76,16 @@ class TextFragmentsManagerImplTest : public WebTest {
     return CreateManager(/*has_opener=*/false,
                          /*has_user_gesture=*/true,
                          /*is_same_document=*/false,
-                         /*feature_enabled=*/true,
                          /*feature_color_change=*/false);
   }
 
   TextFragmentsManagerImpl* CreateManager(bool has_opener,
                                           bool has_user_gesture,
                                           bool is_same_document,
-                                          bool feature_enabled,
                                           bool feature_color_change) {
-    if (feature_enabled && feature_color_change) {
+    if (feature_color_change) {
       feature_list_.InitWithFeatures(
-          {features::kScrollToTextIOS,
-           features::kIOSSharedHighlightingColorChange},
-          {});
-    } else if (feature_enabled) {
-      feature_list_.InitAndEnableFeature(web::features::kScrollToTextIOS);
-    } else {
-      feature_list_.InitAndDisableFeature(web::features::kScrollToTextIOS);
+          {features::kIOSSharedHighlightingColorChange}, {});
     }
     web_state_->SetHasOpener(has_opener);
     context_.SetHasUserGesture(has_user_gesture);
@@ -168,7 +160,6 @@ TEST_F(TextFragmentsManagerImplTest, ExecuteJavaScriptWithColorChange) {
       CreateManager(/*has_opener=*/false,
                     /*has_user_gesture=*/true,
                     /*is_same_document=*/false,
-                    /*feature_enabled=*/true,
                     /*feature_color_change=*/true);
 
   // Set up expectation.
@@ -184,24 +175,6 @@ TEST_F(TextFragmentsManagerImplTest, ExecuteJavaScriptWithColorChange) {
   EXPECT_EQ("textFragments", web_state_->GetLastCommandPrefix());
 }
 
-// Tests that the manager will not execute JavaScript if the scroll to text
-// feature is disabled.
-TEST_F(TextFragmentsManagerImplTest, FeatureDisabledFragmentsDisallowed) {
-  TextFragmentsManagerImpl* manager =
-      CreateManager(/*has_opener=*/false,
-                    /*has_user_gesture=*/true,
-                    /*is_same_document=*/false,
-                    /*feature_enabled=*/false,
-                    /*feature_color_change=*/false);
-
-  EXPECT_EQ(std::u16string(), web_state_->GetLastExecutedJavascript());
-
-  manager->DidFinishNavigation(web_state_, &context_);
-
-  // Verify that no callback was set when the flag is disabled.
-  EXPECT_FALSE(web_state_->GetLastAddedCallback());
-}
-
 // Tests that the manager will not execute JavaScript if the WebState has an
 // opener.
 TEST_F(TextFragmentsManagerImplTest, HasOpenerFragmentsDisallowed) {
@@ -209,7 +182,6 @@ TEST_F(TextFragmentsManagerImplTest, HasOpenerFragmentsDisallowed) {
       CreateManager(/*has_opener=*/true,
                     /*has_user_gesture=*/true,
                     /*is_same_document=*/false,
-                    /*feature_enabled=*/true,
                     /*feature_color_change=*/false);
 
   manager->DidFinishNavigation(web_state_, &context_);
@@ -224,7 +196,6 @@ TEST_F(TextFragmentsManagerImplTest, NoGestureFragmentsDisallowed) {
       CreateManager(/*has_opener=*/false,
                     /*has_user_gesture=*/false,
                     /*is_same_document=*/false,
-                    /*feature_enabled=*/true,
                     /*feature_color_change=*/false);
 
   manager->DidFinishNavigation(web_state_, &context_);
@@ -239,7 +210,6 @@ TEST_F(TextFragmentsManagerImplTest, SameDocumentFragmentsDisallowed) {
       CreateManager(/*has_opener=*/false,
                     /*has_user_gesture=*/true,
                     /*is_same_document=*/true,
-                    /*feature_enabled=*/true,
                     /*feature_color_change=*/false);
 
   manager->DidFinishNavigation(web_state_, &context_);
@@ -256,7 +226,6 @@ TEST_F(TextFragmentsManagerImplTest, NoFragmentsNoJavaScript) {
       CreateManager(/*has_opener=*/false,
                     /*has_user_gesture=*/true,
                     /*is_same_document=*/false,
-                    /*feature_enabled=*/true,
                     /*feature_color_change=*/false);
 
   manager->DidFinishNavigation(web_state_, &context_);
