@@ -7496,7 +7496,7 @@
             ]
         }
     ],
-    "VisualFeaturesInPasswordProtectionAndroid": [
+    "VisualFeaturesInPasswordProtectionPingsAndroid": [
         {
             "platforms": [
                 "android"
