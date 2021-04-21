@@ -329,7 +329,20 @@ TEST_F(MobileFriendlinessCheckerTest, TextTooWide) {
   EXPECT_NE(actual_mf.text_content_outside_viewport_percentage, 0);
 }
 
-TEST_F(MobileFriendlinessCheckerTest, TextTooWideInvisible) {
+TEST_F(MobileFriendlinessCheckerTest, TextTooWideOpacityZero) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
+      R"(
+<html>
+  <body>
+    <pre style="opacity:0">)" +
+      std::string(10000, 'a') + R"(</pre>
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 0);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, TextTooWideVisibilityHidden) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
       R"(
 <html>

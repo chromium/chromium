@@ -441,14 +441,14 @@ void MobileFriendlinessChecker::ComputeTextContentOutsideViewport(
     const ComputedStyle* style = text->Style();
     if (style->Visibility() != EVisibility::kVisible ||
         style->ContentVisibility() != EContentVisibility::kVisible ||
-        CheckParentHasOverflowXHidden(&object))
+        style->Opacity() == 0.0 || CheckParentHasOverflowXHidden(&object))
       return;
     total_text_width = text->PhysicalRightOffset().ToInt();
   } else if (const auto* image = DynamicTo<LayoutImage>(object)) {
     const ComputedStyle* style = image->Style();
     if (style->Visibility() != EVisibility::kVisible ||
         style->ContentVisibility() != EContentVisibility::kVisible ||
-        CheckParentHasOverflowXHidden(&object))
+        style->Opacity() == 0.0 || CheckParentHasOverflowXHidden(&object))
       return;
     total_text_width = image->FrameRect().MaxX().ToInt();
   } else {
