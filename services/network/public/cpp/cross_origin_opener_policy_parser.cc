@@ -61,29 +61,34 @@ CrossOriginOpenerPolicy ParseCrossOriginOpenerPolicy(
     return coop;
 
   std::string header_value;
+
+  // Parse Cross-Orign-Opener-Policy:
   if (headers.GetNormalizedHeader(kCrossOriginOpenerPolicyHeader,
                                   &header_value)) {
     std::tie(coop.value, coop.reporting_endpoint) = ParseHeader(header_value);
     if (coop.value == mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
-        coep.value == mojom::CrossOriginEmbedderPolicyValue::kRequireCorp)
+        CompatibleWithCrossOriginIsolated(coep.value)) {
       coop.value = mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
+    }
   } else if (base::FeatureList::IsEnabled(
                  features::kCrossOriginOpenerPolicyByDefault)) {
     coop.value = mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups;
   }
+
+  // Parse Cross-Orign-Opener-Policy-Report-Only:
   if (headers.GetNormalizedHeader(kCrossOriginOpenerPolicyHeaderReportOnly,
                                   &header_value)) {
     std::tie(coop.report_only_value, coop.report_only_reporting_endpoint) =
-      ParseHeader(header_value);
+        ParseHeader(header_value);
     if (coop.report_only_value ==
             mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
-        (coep.value == mojom::CrossOriginEmbedderPolicyValue::kRequireCorp ||
-         coep.report_only_value ==
-             mojom::CrossOriginEmbedderPolicyValue::kRequireCorp)) {
+        (CompatibleWithCrossOriginIsolated(coep.value) ||
+         CompatibleWithCrossOriginIsolated(coep.report_only_value))) {
       coop.report_only_value =
           mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
     }
   }
+
   return coop;
 }
 

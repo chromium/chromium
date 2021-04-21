@@ -26,4 +26,19 @@ bool CrossOriginEmbedderPolicy::operator==(
          report_only_reporting_endpoint == other.report_only_reporting_endpoint;
 }
 
+bool CompatibleWithCrossOriginIsolated(const CrossOriginEmbedderPolicy& coep) {
+  return CompatibleWithCrossOriginIsolated(coep.value);
+}
+
+bool CompatibleWithCrossOriginIsolated(
+    mojom::CrossOriginEmbedderPolicyValue value) {
+  switch (value) {
+    case mojom::CrossOriginEmbedderPolicyValue::kNone:
+      return false;
+    case mojom::CrossOriginEmbedderPolicyValue::kCorsOrCredentialless:
+    case mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:
+      return true;
+  }
+}
+
 }  // namespace network

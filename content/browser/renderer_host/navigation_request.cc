@@ -792,8 +792,8 @@ network::mojom::IPAddressSpace CalculateIPAddressSpace(
 bool CoepBlockIframe(
     network::mojom::CrossOriginEmbedderPolicyValue parent_coep,
     network::mojom::CrossOriginEmbedderPolicyValue child_coep) {
-  return parent_coep != network::mojom::CrossOriginEmbedderPolicyValue::kNone &&
-         child_coep == network::mojom::CrossOriginEmbedderPolicyValue::kNone;
+  return network::CompatibleWithCrossOriginIsolated(parent_coep) &&
+         !network::CompatibleWithCrossOriginIsolated(child_coep);
 }
 
 }  // namespace
@@ -5989,8 +5989,7 @@ bool NavigationRequest::CoopCoepSanityCheck() {
                             .value;
   if (coop_value ==
           network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep &&
-      cross_origin_embedder_policy_.value !=
-          network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp) {
+      !CompatibleWithCrossOriginIsolated(cross_origin_embedder_policy_)) {
     NOTREACHED();
     base::debug::DumpWithoutCrashing();
     return false;
