@@ -107,12 +107,12 @@ ScriptResource::ScriptResource(
     const ResourceLoaderOptions& options,
     const TextResourceDecoderOptions& decoder_options,
     StreamingAllowed streaming_allowed,
-    mojom::blink::ScriptType script_type)
+    mojom::blink::ScriptType initial_request_script_type)
     : TextResource(resource_request,
                    ResourceType::kScript,
                    options,
                    decoder_options),
-      script_type_(script_type) {
+      initial_request_script_type_(initial_request_script_type) {
   static bool script_streaming_enabled =
       base::FeatureList::IsEnabled(features::kScriptStreaming);
 
@@ -132,13 +132,6 @@ void ScriptResource::Trace(Visitor* visitor) const {
   visitor->Trace(streamer_);
   visitor->Trace(cached_metadata_handler_);
   TextResource::Trace(visitor);
-}
-
-Resource::MatchStatus ScriptResource::CanReuse(
-    const FetchParameters& params) const {
-  if (script_type_ != params.GetScriptType())
-    return Resource::MatchStatus::kScriptTypeDoesNotMatch;
-  return Resource::CanReuse(params);
 }
 
 void ScriptResource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,

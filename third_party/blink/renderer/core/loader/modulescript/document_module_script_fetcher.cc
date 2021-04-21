@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/loader/modulescript/document_module_script_fetcher.h"
 
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
@@ -55,8 +56,8 @@ void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
   // Check if we can use the script streamer.
   ScriptStreamer* streamer;
   ScriptStreamer::NotStreamingReason not_streamed_reason;
-  std::tie(streamer, not_streamed_reason) =
-      ScriptStreamer::TakeFrom(script_resource);
+  std::tie(streamer, not_streamed_reason) = ScriptStreamer::TakeFrom(
+      script_resource, mojom::blink::ScriptType::kModule);
 
   ScriptStreamer::RecordStreamingHistogram(ScriptSchedulingType::kAsync,
                                            streamer, not_streamed_reason);

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/script/classic_pending_script.h"
 
+#include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
@@ -328,7 +329,8 @@ ClassicScript* ClassicPendingScript::GetSource(const KURL& document_url) const {
   // Check if we can use the script streamer.
   ScriptStreamer* streamer;
   ScriptStreamer::NotStreamingReason not_streamed_reason;
-  std::tie(streamer, not_streamed_reason) = ScriptStreamer::TakeFrom(resource);
+  std::tie(streamer, not_streamed_reason) =
+      ScriptStreamer::TakeFrom(resource, mojom::blink::ScriptType::kClassic);
 
   if (ready_state_ == kErrorOccurred) {
     not_streamed_reason = ScriptStreamer::NotStreamingReason::kErrorOccurred;

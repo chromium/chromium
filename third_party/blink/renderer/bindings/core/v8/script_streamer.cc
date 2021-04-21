@@ -13,6 +13,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -270,7 +272,8 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
 size_t ScriptStreamer::small_script_threshold_ = 30 * 1024;
 
 std::tuple<ScriptStreamer*, ScriptStreamer::NotStreamingReason>
-ScriptStreamer::TakeFrom(ScriptResource* script_resource) {
+ScriptStreamer::TakeFrom(ScriptResource* script_resource,
+                         mojom::blink::ScriptType expected_type) {
   ScriptStreamer::NotStreamingReason not_streamed_reason =
       script_resource->NoStreamerReason();
   ScriptStreamer* streamer = script_resource->TakeStreamer();
@@ -281,6 +284,15 @@ ScriptStreamer::TakeFrom(ScriptResource* script_resource) {
     } else {
       DCHECK_EQ(not_streamed_reason,
                 ScriptStreamer::NotStreamingReason::kInvalid);
+      mojom::blink::ScriptType streamer_script_type =
+          streamer->GetScriptType() == v8::ScriptType::kClassic
+              ? mojom::blink::ScriptType::kClassic
+              : mojom::blink::ScriptType::kModule;
+      if (streamer_script_type != expected_type) {
+        streamer = nullptr;
+        not_streamed_reason =
+            ScriptStreamer::NotStreamingReason::kErrorScriptTypeMismatch;
+      }
     }
   }
   return std::make_tuple(streamer, not_streamed_reason);
@@ -531,7 +543,7 @@ bool ScriptStreamer::TryStartStreamingTask() {
   // Skip non-JS modules based on the mime-type.
   // TODO(crbug/1132413),TODO(crbug/1061857): Disable streaming for non-JS
   // based the specific import statements.
-  if (script_resource_->GetScriptType() == mojom::blink::ScriptType::kModule &&
+  if (script_type_ == v8::ScriptType::kModule &&
       !MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
           script_resource_->GetResponse().HttpContentType())) {
     SuppressStreaming(NotStreamingReason::kNonJavascriptModule);
@@ -598,10 +610,7 @@ bool ScriptStreamer::TryStartStreamingTask() {
       script_streaming_task =
           base::WrapUnique(v8::ScriptCompiler::StartStreaming(
               V8PerIsolateData::MainThreadIsolate(), source_.get(),
-              script_resource_->GetScriptType() ==
-                      mojom::blink::ScriptType::kClassic
-                  ? v8::ScriptType::kClassic
-                  : v8::ScriptType::kModule));
+              script_type_));
 
   if (!script_streaming_task) {
     // V8 cannot stream the script.
@@ -641,6 +650,21 @@ bool ScriptStreamer::TryStartStreamingTask() {
   return true;
 }
 
+v8::ScriptType ScriptStreamer::ScriptTypeForStreamingTask(
+    ScriptResource* script_resource) {
+  switch (script_resource->GetInitialRequestScriptType()) {
+    case mojom::blink::ScriptType::kModule:
+      return v8::ScriptType::kModule;
+    case mojom::blink::ScriptType::kClassic:
+      return v8::ScriptType::kClassic;
+  }
+  NOTREACHED();
+}
+
+v8::ScriptType ScriptStreamer::GetScriptType() const {
+  return script_type_;
+}
+
 ScriptStreamer::ScriptStreamer(
     ScriptResource* script_resource,
     mojo::ScopedDataPipeConsumerHandle data_pipe,
@@ -654,6 +678,7 @@ ScriptStreamer::ScriptStreamer(
       // Unfortunately there's no dummy encoding value in the enum; let's use
       // one we don't stream.
       encoding_(v8::ScriptCompiler::StreamedSource::TWO_BYTE),
+      script_type_(ScriptTypeForStreamingTask(script_resource)),
       loading_task_runner_(std::move(loading_task_runner)) {
   watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,

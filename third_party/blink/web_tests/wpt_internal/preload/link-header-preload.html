@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<title>Makes sure that Link headers preload resources</title>
+<!--
+  This and the line below ensure that the trailing crossorigin in the link
+  header is honored, otherwise we'd load this resource twice and the test would
+  fail.
+-->
+<script src="resources/module1.mjs" type="module" crossorigin></script>
+<script src="resources/module1.js" type="module" crossorigin></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/preload/resources/preload_helper.js"></script>
+
+<body>
+  <script>
+    setup({ single_test: true });
+
+    var iterations = 0;
+
+    function check_finished() {
+      if (numberOfResourceTimingEntries("resources/module1.js") == 1 &&
+        numberOfResourceTimingEntries("resources/module1.mjs") == 1) {
+        done();
+      }
+      iterations++;
+      if (iterations == 10) {
+        // At least one is expected to fail, but this should give details to the exact failure(s).
+        verifyNumberOfResourceTimingEntries("resources/module1.js", 1);
+        verifyNumberOfResourceTimingEntries("resources/module1.mjs", 1);
+        done();
+      } else {
+        step_timeout(check_finished, 500);
+      }
+    }
+
+    window.addEventListener("load", function () {
+      verifyPreloadAndRTSupport();
+      step_timeout(check_finished, 500);
+    });
+  </script>
+</body>

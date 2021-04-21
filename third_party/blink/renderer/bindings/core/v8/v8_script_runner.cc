@@ -129,8 +129,9 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
     // TODO(leszeks): Add compile timer to streaming compilation.
     DCHECK(streamer->IsFinished());
     DCHECK(!streamer->IsStreamingSuppressed());
-    return v8::ScriptCompiler::Compile(isolate->GetCurrentContext(),
-                                       streamer->Source(), code, origin);
+    return v8::ScriptCompiler::Compile(
+        isolate->GetCurrentContext(),
+        streamer->Source(v8::ScriptType::kClassic), code, origin);
   }
 
   // Allow inspector to use its own compilation cache store.
@@ -292,7 +293,8 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
     DCHECK(streamer->IsFinished());
     DCHECK(!streamer->IsStreamingSuppressed());
     script = v8::ScriptCompiler::CompileModule(
-        isolate->GetCurrentContext(), streamer->Source(), code, origin);
+        isolate->GetCurrentContext(), streamer->Source(v8::ScriptType::kModule),
+        code, origin);
   } else {
     switch (compile_options) {
       case v8::ScriptCompiler::kNoCompileOptions:

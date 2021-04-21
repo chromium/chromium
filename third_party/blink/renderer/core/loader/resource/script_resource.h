@@ -48,8 +48,8 @@ class ScriptCachedMetadataHandler;
 class SingleCachedMetadataHandler;
 
 // ScriptResource is a resource representing a JavaScript, either a classic or
-// module script. ScriptResources are not shared between classic and module
-// scripts.
+// module script. Based on discussions (crbug.com/1178198) ScriptResources are
+// shared between classic and module scripts.
 //
 // In addition to loading the script, a ScriptResource can optionally stream the
 // script to the JavaScript parser/compiler, using a ScriptStreamer. In this
@@ -83,8 +83,6 @@ class CORE_EXPORT ScriptResource final : public TextResource {
                  mojom::blink::ScriptType);
   ~ScriptResource() override;
 
-  Resource::MatchStatus CanReuse(const FetchParameters& params) const override;
-
   size_t CodeCacheSize() const override;
   void ResponseReceived(const ResourceResponse&) override;
   void ResponseBodyReceived(
@@ -106,7 +104,9 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   SingleCachedMetadataHandler* CacheHandler();
 
-  mojom::blink::ScriptType GetScriptType() const { return script_type_; }
+  mojom::blink::ScriptType GetInitialRequestScriptType() const {
+    return initial_request_script_type_;
+  }
 
   // Gets the script streamer from the ScriptResource, clearing the resource's
   // streamer so that it cannot be used twice.
@@ -156,24 +156,26 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   class ScriptResourceFactory : public ResourceFactory {
    public:
-    explicit ScriptResourceFactory(StreamingAllowed streaming_allowed,
-                                   mojom::blink::ScriptType script_type)
+    explicit ScriptResourceFactory(
+        StreamingAllowed streaming_allowed,
+        mojom::blink::ScriptType initial_request_script_type)
         : ResourceFactory(ResourceType::kScript,
                           TextResourceDecoderOptions::kPlainTextContent),
           streaming_allowed_(streaming_allowed),
-          script_type_(script_type) {}
+          initial_request_script_type_(initial_request_script_type) {}
 
     Resource* Create(
         const ResourceRequest& request,
         const ResourceLoaderOptions& options,
         const TextResourceDecoderOptions& decoder_options) const override {
       return MakeGarbageCollected<ScriptResource>(
-          request, options, decoder_options, streaming_allowed_, script_type_);
+          request, options, decoder_options, streaming_allowed_,
+          initial_request_script_type_);
     }
 
    private:
     StreamingAllowed streaming_allowed_;
-    mojom::blink::ScriptType script_type_;
+    mojom::blink::ScriptType initial_request_script_type_;
   };
 
   bool CanUseCacheValidator() const override;
@@ -195,7 +197,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
       ScriptStreamer::NotStreamingReason::kInvalid;
   StreamingState streaming_state_ = StreamingState::kWaitingForDataPipe;
   Member<ScriptCachedMetadataHandler> cached_metadata_handler_;
-  const mojom::blink::ScriptType script_type_;
+  const mojom::blink::ScriptType initial_request_script_type_;
 };
 
 template <>

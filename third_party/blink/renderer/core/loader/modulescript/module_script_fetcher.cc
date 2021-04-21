@@ -39,8 +39,6 @@ bool ModuleScriptFetcher::WasModuleLoadSuccessful(
     ModuleType expected_module_type,
     HeapVector<Member<ConsoleMessage>>* error_messages) {
   DCHECK(error_messages);
-  DCHECK_EQ(resource->GetScriptType(), mojom::blink::ScriptType::kModule);
-
   if (resource) {
     SubresourceIntegrityHelper::GetConsoleMessages(
         resource->IntegrityReportInfo(), error_messages);
