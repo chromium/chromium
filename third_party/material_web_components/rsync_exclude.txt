@@ -1,0 +1,11 @@
+index.html
+*.js.map
+*.d.ts.map
+*.css.map
+*.ts
+*.scss
+manifest.json
+*.md
+.npmignore
+*/test/
+*/tests/

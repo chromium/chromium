@@ -1,0 +1,9 @@
+{
+  "name": "chromium-material-web-components",
+  "version": "1.0.0",
+  "author": "calamity@chromium.org",
+  "dependencies": {
+    "@material/mwc-button": "0.20.0"
+  },
+  "devDependencies": {}
+}
