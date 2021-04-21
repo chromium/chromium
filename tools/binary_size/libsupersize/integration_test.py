@@ -110,6 +110,10 @@ def _RunApp(name, args, debug_measures=False):
     return subprocess.check_output(argv, env=env).decode('utf-8').splitlines()
 
 
+def _AllMetadata(size_info):
+  return [c.metadata for c in size_info.containers]
+
+
 class IntegrationTest(unittest.TestCase):
   maxDiff = None  # Don't trucate diffs in errors.
   cached_size_info = {}
@@ -373,7 +377,7 @@ class IntegrationTest(unittest.TestCase):
         use_minimal_apks=use_minimal_apks,
         use_pak=use_pak,
         use_aux_elf=use_aux_elf)
-    self.assertEqual(expected_size_info.metadata, size_info.metadata)
+    self.assertEqual(_AllMetadata(expected_size_info), _AllMetadata(size_info))
     # Don't cluster.
     expected_size_info.symbols = expected_size_info.raw_symbols
     size_info.symbols = size_info.raw_symbols
@@ -388,7 +392,7 @@ class IntegrationTest(unittest.TestCase):
       merged_data_desc = describe.DescribeDict(size_info.metadata_legacy)
     else:
       merged_data_desc = describe.DescribeDict(size_info.build_config)
-      for m in size_info.metadata:
+      for m in _AllMetadata(size_info):
         merged_data_desc.extend(describe.DescribeDict(m))
     return itertools.chain(merged_data_desc, stats, sym_strs)
 

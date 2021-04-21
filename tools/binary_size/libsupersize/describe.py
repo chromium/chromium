@@ -538,14 +538,10 @@ class DescriberText(Describer):
         name = c.name
         desc_list.append(('', ))
         desc_list.append(('Container: <%s>' % name, ))
-        c_before = diff.before.ContainerForName(
-            name, default=models.Container.Empty())
-        c_after = diff.after.ContainerForName(name,
-                                              default=models.Container.Empty())
         desc_list.append(
             self._DescribeDeltaDict('Metadata',
-                                    c_before.metadata,
-                                    c_after.metadata,
+                                    c.before.metadata,
+                                    c.after.metadata,
                                     indent='    '))
         unsummed_sections, summed_sections = c.ClassifySections()
         desc_list.append(

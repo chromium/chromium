@@ -534,7 +534,7 @@ def _LoadSizeInfoFromFile(file_obj, size_path):
         models.Container(name='',
                          metadata=metadata,
                          section_sizes=section_sizes))
-  models.Container.AssignShortNames(containers)
+  models.BaseContainer.AssignShortNames(containers)
 
   has_components = fields.get('has_components', False)
   has_padding = fields.get('has_padding', False)

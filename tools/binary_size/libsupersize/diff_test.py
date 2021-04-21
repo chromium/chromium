@@ -40,7 +40,7 @@ def _CreateSizeInfo(aliases=None, containers=None):
     containers = [
         models.Container('', metadata=metadata, section_sizes=section_sizes)
     ]
-  models.Container.AssignShortNames(containers)
+  models.BaseContainer.AssignShortNames(containers)
   TEXT = models.SECTION_TEXT
   symbols = [
       _MakeSym(models.SECTION_DEX_METHOD, 10, 'a', 'com.Foo#bar()'),
