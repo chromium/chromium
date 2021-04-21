@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
@@ -41,12 +42,20 @@ class VIEWS_EXPORT ImageView : public View {
   ~ImageView() override;
 
   // Set the image that should be displayed.
-  void SetImage(const gfx::ImageSkia& img);
+  // TODO(pkasting): Change callers to pass an ImageModel and eliminate this.
+  void SetImage(const gfx::ImageSkia& image) {
+    SetImage(ui::ImageModel::FromImageSkia(image));
+  }
 
   // Set the image that should be displayed from a pointer. Reset the image
-  // if the pointer is NULL. The pointer contents is copied in the receiver's
-  // image.
-  void SetImage(const gfx::ImageSkia* image_skia);
+  // if the pointer is NULL.
+  // TODO(pkasting): Change callers to pass an ImageModel and eliminate this.
+  void SetImage(const gfx::ImageSkia* image_skia) {
+    SetImage(image_skia ? *image_skia : gfx::ImageSkia());
+  }
+
+  // Sets the image that should be displayed.
+  void SetImage(const ui::ImageModel& image_model);
 
   // Sets the desired size of the image to be displayed.
   void SetImageSize(const gfx::Size& size);
@@ -58,8 +67,8 @@ class VIEWS_EXPORT ImageView : public View {
   gfx::Rect GetImageBounds() const;
 
   // Returns the image currently displayed, which can be empty if not set.
-  // The returned image is still owned by the ImageView.
-  const gfx::ImageSkia& GetImage() const;
+  // TODO(pkasting): Convert to an ImageModel getter.
+  gfx::ImageSkia GetImage() const;
 
   // Set / Get the horizontal alignment.
   void SetHorizontalAlignment(Alignment ha);
@@ -86,6 +95,9 @@ class VIEWS_EXPORT ImageView : public View {
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void PreferredSizeChanged() override;
 
+ protected:
+  void OnThemeChanged() override;
+
  private:
   friend class ImageViewTest;
 
@@ -96,10 +108,10 @@ class VIEWS_EXPORT ImageView : public View {
   // operation to create one. The resize may be time consuming for a big image.
   gfx::ImageSkia GetPaintImage(float scale);
 
-  // Returns true if |img| is the same as the last image we painted. This is
-  // intended to be a quick check, not exhaustive. In other words it's possible
-  // for this to return false even though the images are in fact equal.
-  bool IsImageEqual(const gfx::ImageSkia& img) const;
+  // Returns true if |image_model| is the same as the last image we painted.
+  // This is intended to be a quick check, not exhaustive. In other words it's
+  // possible for this to return false even though the images are in fact equal.
+  bool IsImageEqual(const ui::ImageModel& image_model) const;
 
   // Recomputes and updates the |image_origin_|.
   void UpdateImageOrigin();
@@ -122,7 +134,7 @@ class VIEWS_EXPORT ImageView : public View {
   Alignment vertical_alignment_ = Alignment::kCenter;
 
   // The underlying image.
-  gfx::ImageSkia image_;
+  ui::ImageModel image_model_;
 
   // Caches the scaled image reps.
   gfx::ImageSkia scaled_image_;

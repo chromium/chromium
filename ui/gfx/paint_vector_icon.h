@@ -81,10 +81,6 @@ GFX_EXPORT ImageSkia CreateVectorIconFromSource(const std::string& source,
                                                 SkColor color);
 #endif
 
-// Calculates the size that will be default for |icon|, in dip. This will be the
-// smallest icon size |icon| contains.
-GFX_EXPORT int GetDefaultSizeOfVectorIcon(const gfx::VectorIcon& icon);
-
 }  // namespace gfx
 
 #endif  // UI_GFX_PAINT_VECTOR_ICON_H_

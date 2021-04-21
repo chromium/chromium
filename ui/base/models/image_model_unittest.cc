@@ -50,7 +50,8 @@ TEST(ImageModelTest, DefaultVectorIconEmpty) {
 }
 
 TEST(ImageModelTest, CheckForVectorIcon) {
-  ImageModel image_model = ImageModel::FromVectorIcon(GetCircleVectorIcon());
+  ImageModel image_model =
+      ImageModel::FromVectorIcon(GetCircleVectorIcon(), -1, 16);
 
   EXPECT_FALSE(image_model.IsEmpty());
   EXPECT_TRUE(image_model.IsVectorIcon());
@@ -75,7 +76,7 @@ TEST(ImageModelTest, Size) {
 TEST(ImageModelTest, CheckAssignVectorIcon) {
   VectorIconModel vector_icon_model_dest;
   VectorIconModel vector_icon_model_src =
-      ImageModel::FromVectorIcon(GetCircleVectorIcon()).GetVectorIcon();
+      ImageModel::FromVectorIcon(GetCircleVectorIcon(), -1, 16).GetVectorIcon();
 
   EXPECT_TRUE(vector_icon_model_dest.is_empty());
   EXPECT_FALSE(vector_icon_model_src.is_empty());
@@ -100,7 +101,7 @@ TEST(ImageModelTest, CheckAssignImage) {
   EXPECT_TRUE(image_model_dest.IsImage());
   EXPECT_FALSE(image_model_dest.IsVectorIcon());
 
-  image_model_src = ImageModel::FromVectorIcon(GetCircleVectorIcon());
+  image_model_src = ImageModel::FromVectorIcon(GetCircleVectorIcon(), -1, 16);
 
   EXPECT_TRUE(image_model_src.IsVectorIcon());
 
@@ -125,28 +126,28 @@ TEST(ImageModelTest, CheckEqual) {
   image_model_src = image_model_dest;
   EXPECT_EQ(image_model_src, image_model_dest);
 
-  image_model_dest = ImageModel::FromVectorIcon(GetRectVectorIcon());
+  image_model_dest = ImageModel::FromVectorIcon(GetRectVectorIcon(), -1, 16);
   EXPECT_NE(image_model_src, image_model_dest);
-  image_model_src = ImageModel::FromVectorIcon(GetRectVectorIcon());
+  image_model_src = ImageModel::FromVectorIcon(GetRectVectorIcon(), -1, 16);
   EXPECT_EQ(image_model_src, image_model_dest);
-  image_model_dest = ImageModel::FromVectorIcon(GetCircleVectorIcon());
+  image_model_dest = ImageModel::FromVectorIcon(GetCircleVectorIcon(), -1, 16);
   EXPECT_NE(image_model_src, image_model_dest);
   image_model_src = image_model_dest;
   EXPECT_EQ(image_model_src, image_model_dest);
 
-  image_model_src = ImageModel::FromVectorIcon(GetCircleVectorIcon(), 1);
+  image_model_src = ImageModel::FromVectorIcon(GetCircleVectorIcon(), 1, 16);
   image_model_dest =
-      ImageModel::FromVectorIcon(GetCircleVectorIcon(), SK_ColorMAGENTA);
+      ImageModel::FromVectorIcon(GetCircleVectorIcon(), SK_ColorMAGENTA, 16);
   EXPECT_NE(image_model_src, image_model_dest);
 
-  image_model_src = ImageModel::FromVectorIcon(GetCircleVectorIcon(), 1);
-  image_model_dest = ImageModel::FromVectorIcon(GetCircleVectorIcon(), 2);
+  image_model_src = ImageModel::FromVectorIcon(GetCircleVectorIcon(), 1, 16);
+  image_model_dest = ImageModel::FromVectorIcon(GetCircleVectorIcon(), 2, 16);
   EXPECT_NE(image_model_src, image_model_dest);
 
   image_model_src =
-      ImageModel::FromVectorIcon(GetCircleVectorIcon(), SK_ColorCYAN);
+      ImageModel::FromVectorIcon(GetCircleVectorIcon(), SK_ColorCYAN, 16);
   image_model_dest =
-      ImageModel::FromVectorIcon(GetCircleVectorIcon(), SK_ColorMAGENTA);
+      ImageModel::FromVectorIcon(GetCircleVectorIcon(), SK_ColorMAGENTA, 16);
   EXPECT_NE(image_model_src, image_model_dest);
 
   image_model_src =

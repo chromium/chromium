@@ -129,6 +129,8 @@ ChosenObjectView::ChosenObjectView(
   }
 
   layout->AddPaddingRow(column_set_id, list_item_padding);
+
+  UpdateIconImage(/*is_deleted=*/false);
 }
 
 void ChosenObjectView::AddObserver(ChosenObjectViewObserver* observer) {
@@ -158,17 +160,8 @@ void ChosenObjectView::ExecuteDeleteCommand() {
   }
 }
 
-void ChosenObjectView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  UpdateIconImage(/*is_deleted=*/false);
-}
-
 void ChosenObjectView::UpdateIconImage(bool is_deleted) const {
-  // TODO(crbug.com/1096944): Why are we using label color for an icon?
-  icon_->SetImage(PageInfoUI::GetChosenObjectIcon(
-      *info_, is_deleted,
-      views::style::GetColor(*this, views::style::CONTEXT_LABEL,
-                             views::style::STYLE_PRIMARY)));
+  icon_->SetImage(PageInfoUI::GetChosenObjectIcon(*info_, is_deleted));
 }
 
 BEGIN_METADATA(ChosenObjectView, views::View)

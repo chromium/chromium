@@ -20,14 +20,7 @@ class PermissionIcon : public NonAccessibleImageView {
 
   void OnPermissionChanged(const PageInfo::PermissionInfo& permission_info);
 
-  // NonAccessibleImageView:
-  void OnThemeChanged() override;
-
  private:
-  SkColor GetIconColor() const;
-
-  void UpdateImage();
-
   PageInfo::PermissionInfo permission_info_;
 };
 

@@ -48,7 +48,7 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
   // Updates the details for the currently displayed image.
   void UpdateImageDetails(const std::u16string& details);
 
-  const gfx::ImageSkia& GetCurrentImage();
+  gfx::ImageSkia GetCurrentImage();
 
   gfx::Rect GetImageBoundsForTesting() const;
   gfx::Rect GetRelatedImageBoundsForTesting() const;

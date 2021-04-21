@@ -148,6 +148,9 @@ component("gfx") {
     "ui_gfx_exports.cc",
     "utf16_indexing.cc",
     "utf16_indexing.h",
+    "vector_icon_types.h",
+    "vector_icon_utils.cc",
+    "vector_icon_utils.h",
     "video_types.h",
     "vsync_provider.cc",
     "vsync_provider.h",
@@ -377,7 +380,6 @@ component("gfx") {
       "render_text_harfbuzz.cc",
       "render_text_harfbuzz.h",
       "text_utils_skia.cc",
-      "vector_icon_types.h",
     ]
   }
 

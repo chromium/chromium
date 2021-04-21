@@ -122,7 +122,7 @@ void AmbientBackgroundImageView::UpdateImageDetails(
   ambient_info_view_->UpdateImageDetails(details);
 }
 
-const gfx::ImageSkia& AmbientBackgroundImageView::GetCurrentImage() {
+gfx::ImageSkia AmbientBackgroundImageView::GetCurrentImage() {
   return image_view_->GetImage();
 }
 

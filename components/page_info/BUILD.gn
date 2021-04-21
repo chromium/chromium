@@ -49,6 +49,8 @@ static_library("page_info") {
       "//components/password_manager/core/browser:password_manager_java_enums_srcjar",
       "//components/resources:android_resources",
     ]
+  } else {
+    deps += [ "//ui/native_theme" ]
   }
 }
 

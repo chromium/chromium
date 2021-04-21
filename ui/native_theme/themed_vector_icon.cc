@@ -6,33 +6,37 @@
 
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/gfx/vector_icon_utils.h"
 
 namespace ui {
 
 ThemedVectorIcon::ThemedVectorIcon() = default;
 
 ThemedVectorIcon::ThemedVectorIcon(const gfx::VectorIcon* icon,
-                                   NativeTheme::ColorId color_id,
-                                   int icon_size)
-    : icon_(icon), icon_size_(icon_size), color_id_(color_id) {}
+                                   int color_id,
+                                   int icon_size,
+                                   const gfx::VectorIcon* badge)
+    : icon_(icon), icon_size_(icon_size), color_(color_id), badge_(badge) {}
 
 ThemedVectorIcon::ThemedVectorIcon(const VectorIconModel& vector_icon_model)
     : icon_(vector_icon_model.vector_icon()),
-      icon_size_(vector_icon_model.icon_size()) {
+      icon_size_(vector_icon_model.icon_size()),
+      badge_(vector_icon_model.badge_icon()) {
   if (vector_icon_model.has_color()) {
     color_ = vector_icon_model.color();
   } else if (vector_icon_model.color_id() >= 0) {
-    color_id_ =
+    color_ =
         static_cast<ui::NativeTheme::ColorId>(vector_icon_model.color_id());
   } else {
-    color_id_ = ui::NativeTheme::kColorId_MenuIconColor;
+    color_ = ui::NativeTheme::kColorId_MenuIconColor;
   }
 }
 
 ThemedVectorIcon::ThemedVectorIcon(const gfx::VectorIcon* icon,
                                    SkColor color,
-                                   int icon_size)
-    : icon_(icon), icon_size_(icon_size), color_(color) {}
+                                   int icon_size,
+                                   const gfx::VectorIcon* badge)
+    : icon_(icon), icon_size_(icon_size), color_(color), badge_(badge) {}
 
 ThemedVectorIcon::ThemedVectorIcon(const ThemedVectorIcon&) = default;
 
@@ -45,25 +49,35 @@ ThemedVectorIcon& ThemedVectorIcon::operator=(ThemedVectorIcon&&) = default;
 
 gfx::ImageSkia ThemedVectorIcon::GetImageSkia(const NativeTheme* theme) const {
   DCHECK(!empty());
-  return icon_size_ > 0 ? CreateVectorIcon(*icon_, icon_size_, GetColor(theme))
-                        : CreateVectorIcon(*icon_, GetColor(theme));
+  return GetImageSkia(theme, (icon_size_ > 0)
+                                 ? icon_size_
+                                 : GetDefaultSizeOfVectorIcon(*icon_));
 }
 
 gfx::ImageSkia ThemedVectorIcon::GetImageSkia(const NativeTheme* theme,
                                               int icon_size) const {
   DCHECK(!empty());
-  return CreateVectorIcon(*icon_, icon_size, GetColor(theme));
+  return GetImageSkia(GetColor(theme), icon_size);
 }
 
 gfx::ImageSkia ThemedVectorIcon::GetImageSkia(SkColor color) const {
   DCHECK(!empty());
-  return icon_size_ > 0 ? CreateVectorIcon(*icon_, icon_size_, color)
-                        : CreateVectorIcon(*icon_, color);
+  return GetImageSkia(color, (icon_size_ > 0)
+                                 ? icon_size_
+                                 : GetDefaultSizeOfVectorIcon(*icon_));
 }
 
 SkColor ThemedVectorIcon::GetColor(const NativeTheme* theme) const {
-  DCHECK(color_id_ || color_);
-  return color_id_ ? theme->GetSystemColor(color_id_.value()) : color_.value();
+  return absl::holds_alternative<int>(color_)
+             ? theme->GetSystemColor(static_cast<ui::NativeTheme::ColorId>(
+                   absl::get<int>(color_)))
+             : absl::get<SkColor>(color_);
+}
+
+gfx::ImageSkia ThemedVectorIcon::GetImageSkia(SkColor color,
+                                              int icon_size) const {
+  return badge_ ? CreateVectorIconWithBadge(*icon_, icon_size, color, *badge_)
+                : CreateVectorIcon(*icon_, icon_size, color);
 }
 
 }  // namespace ui

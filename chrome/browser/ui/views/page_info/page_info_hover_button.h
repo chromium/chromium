@@ -10,13 +10,13 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/views/hover_button.h"
 
-namespace gfx {
-class ImageSkia;
-}  // namespace gfx
-
 namespace test {
 class PageInfoBubbleViewTestApi;
 }  // namespace test
+
+namespace ui {
+class ImageModel;
+}  // namespace ui
 
 namespace views {
 class Label;
@@ -54,14 +54,14 @@ class PageInfoHoverButton : public HoverButton {
   // *-------------------------------------------------------------------------*
   PageInfoHoverButton(
       views::Button::PressedCallback callback,
-      const gfx::ImageSkia& main_image_icon,
+      const ui::ImageModel& main_image_icon,
       int title_resource_id,
       const std::u16string& secondary_text,
       int click_target_id,
       const std::u16string& tooltip_text,
       const std::u16string& subtitle_text,
-      base::Optional<gfx::ImageSkia> action_image_icon = base::nullopt);
-  ~PageInfoHoverButton() override {}
+      base::Optional<ui::ImageModel> action_image_icon = base::nullopt);
+  ~PageInfoHoverButton() override = default;
 
   // Updates the title text, and applies the secondary style to the secondary
   // text portion, if present.

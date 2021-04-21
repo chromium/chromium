@@ -62,9 +62,7 @@ class ManagePasswordsIconViewTest : public ManagePasswordsTest,
     return GetView()->GetTooltipText(gfx::Point());
   }
 
-  const gfx::ImageSkia& GetImage() {
-    return GetView()->GetImageView()->GetImage();
-  }
+  gfx::ImageSkia GetImage() { return GetView()->GetImageView()->GetImage(); }
 
   void WaitForAnimationToEnd() {
     auto* const animating_layout = GetAnimatingLayoutManager();

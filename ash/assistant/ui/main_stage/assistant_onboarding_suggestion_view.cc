@@ -113,7 +113,7 @@ void AssistantOnboardingSuggestionView::RemoveLayerBeneathView(
   ink_drop_container_->RemoveLayerBeneathView(layer);
 }
 
-const gfx::ImageSkia& AssistantOnboardingSuggestionView::GetIcon() const {
+gfx::ImageSkia AssistantOnboardingSuggestionView::GetIcon() const {
   return icon_->GetImage();
 }
 

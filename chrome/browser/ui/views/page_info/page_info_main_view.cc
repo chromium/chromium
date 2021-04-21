@@ -31,22 +31,6 @@
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #endif
 
-namespace {
-
-SkColor GetRelatedTextColor() {
-  views::Label label;
-  return views::style::GetColor(label, views::style::CONTEXT_LABEL,
-                                views::style::STYLE_PRIMARY);
-}
-
-SkColor GetSecondaryLabelColor() {
-  views::Label label;
-  return views::style::GetColor(label, views::style::CONTEXT_LABEL,
-                                views::style::STYLE_SECONDARY);
-}
-
-}  // namespace
-
 PageInfoMainView::PageInfoMainView(PageInfo* presenter,
                                    PageInfoUiDelegate* ui_delegate,
                                    Profile* profile)
@@ -98,11 +82,10 @@ PageInfoMainView::PageInfoMainView(PageInfo* presenter,
               view->HandleMoreInfoRequest(view->site_settings_link);
             },
             this),
-        PageInfoUI::GetSiteSettingsIcon(GetRelatedTextColor()),
-        IDS_PAGE_INFO_SITE_SETTINGS_LINK, std::u16string(),
+        PageInfoUI::GetSiteSettingsIcon(), IDS_PAGE_INFO_SITE_SETTINGS_LINK,
+        std::u16string(),
         PageInfoMainView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
-        tooltip, std::u16string(),
-        PageInfoUI::GetLaunchIcon(GetSecondaryLabelColor())));
+        tooltip, std::u16string(), PageInfoUI::GetLaunchIcon()));
   }
 
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
@@ -136,8 +119,7 @@ void PageInfoMainView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
     PageInfo::PermissionInfo info;
     info.type = ContentSettingsType::COOKIES;
     info.setting = CONTENT_SETTING_ALLOW;
-    const gfx::ImageSkia icon =
-        PageInfoUI::GetPermissionIcon(info, GetRelatedTextColor());
+    const ui::ImageModel icon = PageInfoUI::GetPermissionIcon(info);
 
     const std::u16string& tooltip =
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
@@ -151,8 +133,7 @@ void PageInfoMainView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
                 this),
             icon, IDS_PAGE_INFO_COOKIES, num_cookies_text,
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG, tooltip,
-            std::u16string(),
-            PageInfoUI::GetLaunchIcon(GetSecondaryLabelColor()))
+            std::u16string(), PageInfoUI::GetLaunchIcon())
             .release();
     site_settings_view_->AddChildView(cookie_button_);
   }
@@ -294,8 +275,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
     }
 
     // Add the Certificate Section.
-    const gfx::ImageSkia icon =
-        PageInfoUI::GetCertificateIcon(GetRelatedTextColor());
+    const ui::ImageModel icon = PageInfoUI::GetCertificateIcon();
     const std::u16string secondary_text = l10n_util::GetStringUTF16(
         valid_identity ? IDS_PAGE_INFO_CERTIFICATE_VALID_PARENTHESIZED
                        : IDS_PAGE_INFO_CERTIFICATE_INVALID_PARENTHESIZED);
@@ -336,7 +316,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
                 this),
             icon, IDS_PAGE_INFO_CERTIFICATE, secondary_text,
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER, tooltip,
-            subtitle_text, PageInfoUI::GetLaunchIcon(GetSecondaryLabelColor()))
+            subtitle_text, PageInfoUI::GetLaunchIcon())
             .release());
   }
 
@@ -378,7 +358,7 @@ void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
       views::BoxLayout::CrossAxisAlignment::kStretch);
 
   auto icon = std::make_unique<NonAccessibleImageView>();
-  icon->SetImage(PageInfoUI::GetVrSettingsIcon(GetRelatedTextColor()));
+  icon->SetImage(PageInfoUI::GetVrSettingsIcon());
   auto exit_button = std::make_unique<views::MdTextButton>(
       base::BindRepeating(
           [](PageInfoMainView* view) {

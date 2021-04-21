@@ -34,6 +34,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/native_theme/native_theme.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -653,9 +654,8 @@ int PageInfoUI::GetConnectionIconColorID(
 
 #else  // !defined(OS_ANDROID)
 // static
-const gfx::ImageSkia PageInfoUI::GetPermissionIcon(
-    const PageInfo::PermissionInfo& info,
-    SkColor related_text_color) {
+const ui::ImageModel PageInfoUI::GetPermissionIcon(
+    const PageInfo::PermissionInfo& info) {
   const gfx::VectorIcon* icon = &gfx::kNoneIcon;
   switch (info.type) {
     case ContentSettingsType::COOKIES:
@@ -753,22 +753,16 @@ const gfx::ImageSkia PageInfoUI::GetPermissionIcon(
   ContentSetting setting = info.setting == CONTENT_SETTING_DEFAULT
                                ? info.default_setting
                                : info.setting;
-  if (setting == CONTENT_SETTING_BLOCK) {
-    return gfx::CreateVectorIconWithBadge(
-        *icon, kVectorIconSize,
-        color_utils::DeriveDefaultIconColor(related_text_color),
-        vector_icons::kBlockedBadgeIcon);
-  }
-  return gfx::CreateVectorIcon(
-      *icon, kVectorIconSize,
-      color_utils::DeriveDefaultIconColor(related_text_color));
+  return ui::ImageModel::FromVectorIcon(
+      *icon, ui::NativeTheme::kColorId_DefaultIconColor, kVectorIconSize,
+      (setting == CONTENT_SETTING_BLOCK) ? &vector_icons::kBlockedBadgeIcon
+                                         : nullptr);
 }
 
 // static
-const gfx::ImageSkia PageInfoUI::GetChosenObjectIcon(
+const ui::ImageModel PageInfoUI::GetChosenObjectIcon(
     const ChosenObjectInfo& object,
-    bool deleted,
-    SkColor related_text_color) {
+    bool deleted) {
   // The permissions data for device APIs will always appear even if the device
   // is not currently conncted to the system.
   // TODO(https://crbug.com/1048860): Check the connected status of devices and
@@ -794,46 +788,37 @@ const gfx::ImageSkia PageInfoUI::GetChosenObjectIcon(
       break;
   }
 
-  if (deleted) {
-    return gfx::CreateVectorIconWithBadge(
-        *icon, kVectorIconSize,
-        color_utils::DeriveDefaultIconColor(related_text_color),
-        vector_icons::kBlockedBadgeIcon);
-  }
-  return gfx::CreateVectorIcon(
-      *icon, kVectorIconSize,
-      color_utils::DeriveDefaultIconColor(related_text_color));
+  return ui::ImageModel::FromVectorIcon(
+      *icon, ui::NativeTheme::kColorId_DefaultIconColor, kVectorIconSize,
+      deleted ? &vector_icons::kBlockedBadgeIcon : nullptr);
 }
 
 // static
-const gfx::ImageSkia PageInfoUI::GetCertificateIcon(
-    const SkColor related_text_color) {
-  return gfx::CreateVectorIcon(
-      vector_icons::kCertificateIcon, kVectorIconSize,
-      color_utils::DeriveDefaultIconColor(related_text_color));
+const ui::ImageModel PageInfoUI::GetCertificateIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kCertificateIcon,
+      ui::NativeTheme::kColorId_DefaultIconColor, kVectorIconSize);
 }
 
 // static
-const gfx::ImageSkia PageInfoUI::GetSiteSettingsIcon(
-    const SkColor related_text_color) {
-  return gfx::CreateVectorIcon(
-      vector_icons::kSettingsIcon, kVectorIconSize,
-      color_utils::DeriveDefaultIconColor(related_text_color));
+const ui::ImageModel PageInfoUI::GetSiteSettingsIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kSettingsIcon, ui::NativeTheme::kColorId_DefaultIconColor,
+      kVectorIconSize);
 }
 
 // static
-const gfx::ImageSkia PageInfoUI::GetVrSettingsIcon(SkColor related_text_color) {
-  return gfx::CreateVectorIcon(
-      vector_icons::kVrHeadsetIcon, kVectorIconSize,
-      color_utils::DeriveDefaultIconColor(related_text_color));
+const ui::ImageModel PageInfoUI::GetVrSettingsIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kVrHeadsetIcon, ui::NativeTheme::kColorId_DefaultIconColor,
+      kVectorIconSize);
 }
 
 // static
-const gfx::ImageSkia PageInfoUI::GetLaunchIcon(
-    const SkColor related_text_color) {
-  return gfx::CreateVectorIcon(
-      vector_icons::kLaunchIcon, kVectorIconSize,
-      color_utils::DeriveDefaultIconColor(related_text_color));
+const ui::ImageModel PageInfoUI::GetLaunchIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kLaunchIcon, ui::NativeTheme::kColorId_DefaultIconColor,
+      kVectorIconSize);
 }
 #endif
 

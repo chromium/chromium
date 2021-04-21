@@ -5,7 +5,7 @@
 #ifndef UI_NATIVE_THEME_THEMED_VECTOR_ICON_H_
 #define UI_NATIVE_THEME_THEMED_VECTOR_ICON_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 #include "ui/native_theme/native_theme.h"
@@ -21,16 +21,17 @@ namespace ui {
 class NATIVE_THEME_EXPORT ThemedVectorIcon {
  public:
   ThemedVectorIcon();
-  explicit ThemedVectorIcon(
-      const gfx::VectorIcon* icon,
-      NativeTheme::ColorId color_id = NativeTheme::kColorId_MenuIconColor,
-      int icon_size = 0);
+  explicit ThemedVectorIcon(const gfx::VectorIcon* icon,
+                            int color_id = NativeTheme::kColorId_MenuIconColor,
+                            int icon_size = 0,
+                            const gfx::VectorIcon* badge = nullptr);
   explicit ThemedVectorIcon(const VectorIconModel& vector_icon_model);
   // TODO (kylixrd): Remove this once all the hard-coded uses of color are
   // removed.
   ThemedVectorIcon(const gfx::VectorIcon* icon,
                    SkColor color,
-                   int icon_size = 0);
+                   int icon_size = 0,
+                   const gfx::VectorIcon* badge = nullptr);
 
   // Copyable and moveable
   ThemedVectorIcon(const ThemedVectorIcon& other);
@@ -46,11 +47,12 @@ class NATIVE_THEME_EXPORT ThemedVectorIcon {
 
  private:
   SkColor GetColor(const NativeTheme* theme) const;
+  gfx::ImageSkia GetImageSkia(SkColor color, int icon_size) const;
 
   const gfx::VectorIcon* icon_ = nullptr;
   int icon_size_ = 0;
-  base::Optional<NativeTheme::ColorId> color_id_;
-  base::Optional<SkColor> color_;
+  absl::variant<int, SkColor> color_ = gfx::kPlaceholderColor;
+  const gfx::VectorIcon* badge_ = nullptr;
 };
 
 }  // namespace ui

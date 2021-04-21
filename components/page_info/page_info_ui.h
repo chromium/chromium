@@ -15,6 +15,7 @@
 #include "components/page_info/page_info.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/safe_browsing/buildflags.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if !defined(OS_ANDROID)
@@ -197,30 +198,25 @@ class PageInfoUI {
   // Returns icons for the given PageInfo::PermissionInfo |info|. If |info|'s
   // current setting is CONTENT_SETTING_DEFAULT, it will return the icon for
   // |info|'s default setting.
-  static const gfx::ImageSkia GetPermissionIcon(
-      const PageInfo::PermissionInfo& info,
-      const SkColor related_text_color);
+  static const ui::ImageModel GetPermissionIcon(
+      const PageInfo::PermissionInfo& info);
 
   // Returns the icon for the given object |info|.
-  static const gfx::ImageSkia GetChosenObjectIcon(
-      const ChosenObjectInfo& info,
-      bool deleted,
-      const SkColor related_text_color);
+  static const ui::ImageModel GetChosenObjectIcon(const ChosenObjectInfo& info,
+                                                  bool deleted);
 
   // Returns the icon for the page Certificate.
-  static const gfx::ImageSkia GetCertificateIcon(
-      const SkColor related_text_color);
+  static const ui::ImageModel GetCertificateIcon();
 
   // Returns the icon for the button / link to Site settings.
-  static const gfx::ImageSkia GetSiteSettingsIcon(
-      const SkColor related_text_color);
+  static const ui::ImageModel GetSiteSettingsIcon();
 
   // Returns the icon for VR settings.
-  static const gfx::ImageSkia GetVrSettingsIcon(SkColor related_text_color);
+  static const ui::ImageModel GetVrSettingsIcon();
 
   // Returns the icon for a button which opens an external dialog or page (ex.
   // cookies dialog or site settings page).
-  static const gfx::ImageSkia GetLaunchIcon(const SkColor related_text_color);
+  static const ui::ImageModel GetLaunchIcon();
 #endif
 
   // Return true if the given ContentSettingsType is in PageInfoUI.

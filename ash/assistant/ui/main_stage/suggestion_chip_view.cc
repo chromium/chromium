@@ -170,7 +170,7 @@ void SuggestionChipView::SetIcon(const gfx::ImageSkia& icon) {
   icon_view_->SetVisible(!icon.isNull());
 }
 
-const gfx::ImageSkia& SuggestionChipView::GetIcon() const {
+gfx::ImageSkia SuggestionChipView::GetIcon() const {
   return icon_view_->GetImage();
 }
 

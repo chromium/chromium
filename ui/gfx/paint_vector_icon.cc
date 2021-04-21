@@ -24,6 +24,7 @@
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/gfx/vector_icon_utils.h"
 
 namespace gfx {
 
@@ -596,18 +597,6 @@ ImageSkia CreateVectorIconFromSource(const std::string& source,
                                      SkColor color) {
   return CanvasImageSource::MakeImageSkia<VectorIconSource>(source, dip_size,
                                                             color);
-}
-
-int GetDefaultSizeOfVectorIcon(const VectorIcon& icon) {
-  if (icon.is_empty())
-    return kEmptyIconSize;
-  DCHECK_EQ(icon.reps[icon.reps_size - 1].path[0].command, CANVAS_DIMENSIONS)
-      << " " << icon.name
-      << " has no size in its icon definition, and it seems unlikely you want "
-         "to display at the default of 48dip. Please specify a size in "
-         "CreateVectorIcon().";
-  const PathElement* default_icon_path = icon.reps[icon.reps_size - 1].path;
-  return GetCanvasDimensions(default_icon_path);
 }
 
 }  // namespace gfx

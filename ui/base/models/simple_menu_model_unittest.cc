@@ -203,7 +203,7 @@ TEST(SimpleMenuModelTest, HasIconsViaVectorIcon) {
 
   simple_menu_model.AddItemWithIcon(
       /*command_id*/ 11, u"menu item",
-      ui::ImageModel::FromVectorIcon(circle_icon));
+      ui::ImageModel::FromVectorIcon(circle_icon, -1, 16));
   EXPECT_TRUE(simple_menu_model.HasIcons());
 }
 

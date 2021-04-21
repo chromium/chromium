@@ -48,22 +48,26 @@ class COMPONENT_EXPORT(UI_BASE) VectorIconModel {
   int color_id() const { return absl::get<int>(color_); }
   SkColor color() const { return absl::get<SkColor>(color_); }
   bool has_color() const { return absl::holds_alternative<SkColor>(color_); }
+  const gfx::VectorIcon* badge_icon() const { return badge_icon_; }
 
  private:
   friend class ImageModel;
 
   VectorIconModel(const gfx::VectorIcon& vector_icon,
                   int color_id,
-                  int icon_size);
+                  int icon_size,
+                  const gfx::VectorIcon* badge_icon);
   // TODO (kylixrd): This should be eventually removed once all instances of
   // hard-coded SkColor constants are removed in favor of using a color id.
   VectorIconModel(const gfx::VectorIcon& vector_icon,
                   SkColor color,
-                  int icon_size);
+                  int icon_size,
+                  const gfx::VectorIcon* badge_icon);
 
   const gfx::VectorIcon* vector_icon_ = nullptr;
   int icon_size_ = 0;
   absl::variant<int, SkColor> color_ = gfx::kPlaceholderColor;
+  const gfx::VectorIcon* badge_icon_ = nullptr;
 };
 
 // ImageModel encapsulates either a gfx::Image or a VectorIconModel. Only one
@@ -81,10 +85,12 @@ class COMPONENT_EXPORT(UI_BASE) ImageModel {
 
   static ImageModel FromVectorIcon(const gfx::VectorIcon& vector_icon,
                                    int color_id = -1,
-                                   int icon_size = 0);
+                                   int icon_size = 0,
+                                   const gfx::VectorIcon* badge_icon = nullptr);
   static ImageModel FromVectorIcon(const gfx::VectorIcon& vector_icon,
                                    SkColor color,
-                                   int icon_size = 0);
+                                   int icon_size = 0,
+                                   const gfx::VectorIcon* badge_icon = nullptr);
   static ImageModel FromImage(const gfx::Image& image);
   static ImageModel FromImageSkia(const gfx::ImageSkia& image_skia);
   static ImageModel FromResourceId(int resource_id);

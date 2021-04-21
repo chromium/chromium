@@ -32,9 +32,6 @@ class ChosenObjectView : public views::View {
 
   void AddObserver(ChosenObjectViewObserver* observer);
 
-  // views:View:
-  void OnThemeChanged() override;
-
  private:
   void UpdateIconImage(bool is_deleted) const;
 

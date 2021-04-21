@@ -145,7 +145,7 @@ bool PhotoView::NeedToAnimateTransition() const {
   return !image_views_.back()->GetCurrentImage().isNull();
 }
 
-const gfx::ImageSkia& PhotoView::GetVisibleImageForTesting() {
+gfx::ImageSkia PhotoView::GetVisibleImageForTesting() {
   return image_views_.at(image_index_)->GetCurrentImage();
 }
 

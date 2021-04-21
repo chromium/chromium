@@ -360,7 +360,7 @@ void ShelfAppButton::SetImage(const gfx::ImageSkia& image) {
       image, skia::ImageOperations::RESIZE_BEST, preferred_size));
 }
 
-const gfx::ImageSkia& ShelfAppButton::GetImage() const {
+gfx::ImageSkia ShelfAppButton::GetImage() const {
   return icon_view_->GetImage();
 }
 

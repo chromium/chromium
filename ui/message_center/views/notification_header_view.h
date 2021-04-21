@@ -83,7 +83,7 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
 
   const std::u16string& app_name_for_testing() const;
 
-  const gfx::ImageSkia& app_icon_for_testing() const;
+  gfx::ImageSkia app_icon_for_testing() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(NotificationHeaderViewTest, SettingsMode);

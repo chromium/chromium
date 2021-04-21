@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/page_info/features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -23,7 +24,7 @@
 
 namespace {
 
-std::unique_ptr<views::View> CreateIconView(const gfx::ImageSkia& icon_image) {
+std::unique_ptr<views::View> CreateIconView(const ui::ImageModel& icon_image) {
   auto icon = std::make_unique<NonAccessibleImageView>();
   icon->SetImage(icon_image);
   // Make sure hovering over the icon also hovers the `PageInfoHoverButton`.
@@ -38,13 +39,13 @@ std::unique_ptr<views::View> CreateIconView(const gfx::ImageSkia& icon_image) {
 
 PageInfoHoverButton::PageInfoHoverButton(
     views::Button::PressedCallback callback,
-    const gfx::ImageSkia& main_image_icon,
+    const ui::ImageModel& main_image_icon,
     int title_resource_id,
     const std::u16string& secondary_text,
     int click_target_id,
     const std::u16string& tooltip_text,
     const std::u16string& subtitle_text,
-    base::Optional<gfx::ImageSkia> action_image_icon)
+    base::Optional<ui::ImageModel> action_image_icon)
     : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
 

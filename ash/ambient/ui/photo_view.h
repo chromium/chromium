@@ -57,7 +57,7 @@ class ASH_EXPORT PhotoView : public views::View,
   // Return if can start transition animation.
   bool NeedToAnimateTransition() const;
 
-  const gfx::ImageSkia& GetVisibleImageForTesting();
+  gfx::ImageSkia GetVisibleImageForTesting();
 
   // Note that we should be careful when using |delegate_|, as there is no
   // strong guarantee on the life cycle.

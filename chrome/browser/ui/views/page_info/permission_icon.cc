@@ -4,25 +4,13 @@
 
 #include "chrome/browser/ui/views/page_info/permission_icon.h"
 
-#include "chrome/browser/ui/views/chrome_typography.h"
-
-PermissionIcon::PermissionIcon(const PageInfo::PermissionInfo& permission_info)
-    : permission_info_(permission_info) {}
+PermissionIcon::PermissionIcon(
+    const PageInfo::PermissionInfo& permission_info) {
+  OnPermissionChanged(permission_info);
+}
 
 void PermissionIcon::OnPermissionChanged(
     const PageInfo::PermissionInfo& permission_info) {
   permission_info_ = permission_info;
-  UpdateImage();
-}
-
-void PermissionIcon::OnThemeChanged() {
-  NonAccessibleImageView::OnThemeChanged();
-  UpdateImage();
-}
-
-void PermissionIcon::UpdateImage() {
-  SetImage(PageInfoUI::GetPermissionIcon(
-      permission_info_,
-      views::style::GetColor(*this, views::style::CONTEXT_LABEL,
-                             views::style::STYLE_PRIMARY)));
+  SetImage(PageInfoUI::GetPermissionIcon(permission_info_));
 }

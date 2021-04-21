@@ -6,6 +6,7 @@
 
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/vector_icon_utils.h"
 
 namespace ui {
 
@@ -13,13 +14,21 @@ VectorIconModel::VectorIconModel() = default;
 
 VectorIconModel::VectorIconModel(const gfx::VectorIcon& vector_icon,
                                  int color_id,
-                                 int icon_size)
-    : vector_icon_(&vector_icon), icon_size_(icon_size), color_(color_id) {}
+                                 int icon_size,
+                                 const gfx::VectorIcon* badge_icon)
+    : vector_icon_(&vector_icon),
+      icon_size_(icon_size),
+      color_(color_id),
+      badge_icon_(badge_icon) {}
 
 VectorIconModel::VectorIconModel(const gfx::VectorIcon& vector_icon,
                                  SkColor color,
-                                 int icon_size)
-    : vector_icon_(&vector_icon), icon_size_(icon_size), color_(color) {}
+                                 int icon_size,
+                                 const gfx::VectorIcon* badge_icon)
+    : vector_icon_(&vector_icon),
+      icon_size_(icon_size),
+      color_(color),
+      badge_icon_(badge_icon) {}
 
 VectorIconModel::~VectorIconModel() = default;
 
@@ -32,8 +41,9 @@ VectorIconModel::VectorIconModel(VectorIconModel&&) = default;
 VectorIconModel& VectorIconModel::operator=(VectorIconModel&&) = default;
 
 bool VectorIconModel::operator==(const VectorIconModel& other) const {
-  return std::tie(vector_icon_, icon_size_, color_) ==
-         std::tie(other.vector_icon_, other.icon_size_, other.color_);
+  return std::tie(vector_icon_, icon_size_, color_, badge_icon_) ==
+         std::tie(other.vector_icon_, other.icon_size_, other.color_,
+                  other.badge_icon_);
 }
 
 bool VectorIconModel::operator!=(const VectorIconModel& other) const {
@@ -63,15 +73,22 @@ ImageModel& ImageModel::operator=(ImageModel&&) = default;
 // static
 ImageModel ImageModel::FromVectorIcon(const gfx::VectorIcon& vector_icon,
                                       int color_id,
-                                      int icon_size) {
-  return ImageModel(VectorIconModel(vector_icon, color_id, icon_size));
+                                      int icon_size,
+                                      const gfx::VectorIcon* badge_icon) {
+  if (!icon_size)
+    icon_size = gfx::GetDefaultSizeOfVectorIcon(vector_icon);
+  return ImageModel(
+      VectorIconModel(vector_icon, color_id, icon_size, badge_icon));
 }
 
 // static
 ImageModel ImageModel::FromVectorIcon(const gfx::VectorIcon& vector_icon,
                                       SkColor color,
-                                      int icon_size) {
-  return ImageModel(VectorIconModel(vector_icon, color, icon_size));
+                                      int icon_size,
+                                      const gfx::VectorIcon* badge_icon) {
+  if (!icon_size)
+    icon_size = gfx::GetDefaultSizeOfVectorIcon(vector_icon);
+  return ImageModel(VectorIconModel(vector_icon, color, icon_size, badge_icon));
 }
 
 // static

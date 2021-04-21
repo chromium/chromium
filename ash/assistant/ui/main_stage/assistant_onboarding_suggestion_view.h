@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingSuggestionView
   void RemoveLayerBeneathView(ui::Layer* layer) override;
 
   // Returns the icon for the suggestion.
-  const gfx::ImageSkia& GetIcon() const;
+  gfx::ImageSkia GetIcon() const;
 
   // Returns the text for the suggestion.
   const std::u16string& GetText() const;

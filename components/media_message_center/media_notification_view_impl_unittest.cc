@@ -254,7 +254,7 @@ class MediaNotificationViewImplTest : public views::ViewsTestBase {
         ->artwork_;
   }
 
-  const gfx::ImageSkia& GetAppIcon() const {
+  gfx::ImageSkia GetAppIcon() const {
     return header_row()->app_icon_for_testing();
   }
 

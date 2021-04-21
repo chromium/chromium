@@ -102,12 +102,6 @@ namespace {
 constexpr int kMinBubbleWidth = 320;
 constexpr int kMaxBubbleWidth = 1000;
 
-SkColor GetRelatedTextColor() {
-  views::Label label;
-  return views::style::GetColor(label, views::style::CONTEXT_LABEL,
-                                views::style::STYLE_PRIMARY);
-}
-
 }  // namespace
 
 // The regular PageInfoBubbleView is not supported for internal Chrome pages and
@@ -310,8 +304,8 @@ PageInfoBubbleView::PageInfoBubbleView(
               view->HandleMoreInfoRequest(view->site_settings_link);
             },
             this),
-        PageInfoUI::GetSiteSettingsIcon(GetRelatedTextColor()),
-        IDS_PAGE_INFO_SITE_SETTINGS_LINK, std::u16string(),
+        PageInfoUI::GetSiteSettingsIcon(), IDS_PAGE_INFO_SITE_SETTINGS_LINK,
+        std::u16string(),
         PageInfoBubbleView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
         tooltip, std::u16string()));
   }
@@ -402,8 +396,7 @@ void PageInfoBubbleView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
     PageInfo::PermissionInfo info;
     info.type = ContentSettingsType::COOKIES;
     info.setting = CONTENT_SETTING_ALLOW;
-    const gfx::ImageSkia icon =
-        PageInfoUI::GetPermissionIcon(info, GetRelatedTextColor());
+    const ui::ImageModel icon = PageInfoUI::GetPermissionIcon(info);
 
     const std::u16string& tooltip =
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
@@ -562,8 +555,7 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
     }
 
     // Add the Certificate Section.
-    const gfx::ImageSkia icon =
-        PageInfoUI::GetCertificateIcon(GetRelatedTextColor());
+    const ui::ImageModel icon = PageInfoUI::GetCertificateIcon();
     const std::u16string secondary_text = l10n_util::GetStringUTF16(
         valid_identity ? IDS_PAGE_INFO_CERTIFICATE_VALID_PARENTHESIZED
                        : IDS_PAGE_INFO_CERTIFICATE_INVALID_PARENTHESIZED);
@@ -646,7 +638,7 @@ void PageInfoBubbleView::SetPageFeatureInfo(const PageFeatureInfo& info) {
       views::BoxLayout::CrossAxisAlignment::kStretch);
 
   auto icon = std::make_unique<NonAccessibleImageView>();
-  icon->SetImage(PageInfoUI::GetVrSettingsIcon(GetRelatedTextColor()));
+  icon->SetImage(PageInfoUI::GetVrSettingsIcon());
   auto exit_button = std::make_unique<views::MdTextButton>(
       base::BindRepeating(
           [](PageInfoBubbleView* view) {

@@ -392,7 +392,7 @@ const std::u16string& NotificationHeaderView::app_name_for_testing() const {
   return app_name_view_->GetText();
 }
 
-const gfx::ImageSkia& NotificationHeaderView::app_icon_for_testing() const {
+gfx::ImageSkia NotificationHeaderView::app_icon_for_testing() const {
   return app_icon_view_->GetImage();
 }
 

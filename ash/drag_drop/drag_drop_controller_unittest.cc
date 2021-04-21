@@ -446,7 +446,7 @@ class DragDropControllerTest : public AshTestBase {
     drag_source_window->AddObserver(drag_drop_controller_.get());
   }
 
-  const gfx::ImageSkia& GetDragImage() {
+  gfx::ImageSkia GetDragImage() {
     return static_cast<DragImageView*>(
                drag_drop_controller_->drag_image_widget_->GetContentsView())
         ->GetImage();
