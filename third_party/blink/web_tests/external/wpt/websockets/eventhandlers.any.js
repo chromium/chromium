@@ -1,11 +1,9 @@
-// META: script=constants.sub.js
-// META: variant=
-// META: variant=?wss
-// META: variant=?wpt_flags=h2
+// META: script=websocket.sub.js
 
 function testEventHandler(name) {
   test(function() {
-    var ws = CreateWebSocket(true, false);
+    var ws = new WebSocket("ws://" + __SERVER__NAME + ":" + __PORT + "/" + __PATH,
+      "echo")
     assert_equals(ws["on" + name], null);
     ws["on" + name] = function() {};
     ws["on" + name] = 2;

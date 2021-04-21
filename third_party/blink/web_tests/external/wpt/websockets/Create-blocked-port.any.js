@@ -1,7 +1,4 @@
-// META: script=constants.sub.js
-// META: variant=
-// META: variant=?wss
-// META: variant=?wpt_flags=h2
+// META: script=websocket.sub.js
 
 async_test(t => {
   const ws = CreateWebSocketWithBlockedPort(__PORT)
@@ -85,7 +82,6 @@ async_test(t => {
   6668, // irc (alternate)
   6669, // irc (alternate)
   6697, // irc+tls
-  10080, // amanda
 ].forEach(blockedPort => {
   async_test(t => {
     const ws = CreateWebSocketWithBlockedPort(blockedPort)

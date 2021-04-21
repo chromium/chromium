@@ -70,7 +70,6 @@ function createIframe(t, values) {
   ['require-corp\t '],
   ['require-corp; foo=bar'],
   ['require-corp;require-corp'],
-  ['require-corp; report-to="data:', '"'], // `require-corp; report-to="data:, "`
 
 ].forEach((values) => {
   promise_test((t) => {

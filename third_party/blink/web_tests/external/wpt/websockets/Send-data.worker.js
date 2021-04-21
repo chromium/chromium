@@ -1,15 +1,11 @@
-// META: variant=
-// META: variant=?wss
-// META: variant=?wpt_flags=h2
-
 importScripts("/resources/testharness.js");
-importScripts('constants.sub.js')
+importScripts('websocket.sub.js')
 
 var data = "test data";
 
 async_test(function(t) {
 
-    var wsocket = CreateWebSocket(false, false);
+    var wsocket = CreateWebSocket(false, false, false);
 
     wsocket.addEventListener('open', function (e) {
         wsocket.send(data)

@@ -1,12 +1,9 @@
-// META: script=constants.sub.js
-// META: variant=
-// META: variant=?wpt_flags=h2
-// META: variant=?wss
+// META: script=websocket.sub.js
 
 var testOpen = async_test("Create WebSocket - Pass a valid URL and array of protocol strings - Connection should be opened");
 var testClose = async_test("Create WebSocket - Pass a valid URL and array of protocol strings - Connection should be closed");
 
-var wsocket = CreateWebSocket(false, true);
+var wsocket = CreateWebSocket(false, false, true);
 var isOpenCalled = false;
 
 wsocket.addEventListener('open', testOpen.step_func(function(evt) {

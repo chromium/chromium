@@ -1,11 +1,9 @@
-// META: script=constants.sub.js
+// META: script=websocket.sub.js
 // META: timeout=long
-// META: variant=
-// META: variant=?wss
-// META: variant=?wpt_flags=h2
 
 async_test(t => {
-  window.wsurl = SCHEME_DOMAIN_PORT + '/does-not-exist';
+  window.wsurl = 'wss://' + __SERVER__NAME + ':' + __SECURE__PORT +
+      '/does-not-exist';
   let wsframe;
   window.wsonerror = () => {
     wsframe.remove();

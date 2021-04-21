@@ -1116,7 +1116,7 @@ IdlArray.prototype.assert_type_is = function(value, type)
 
     switch(type)
     {
-        case "undefined":
+        case "void":
             assert_equals(value, undefined);
             return;
 
@@ -1236,11 +1236,11 @@ IdlArray.prototype.assert_type_is = function(value, type)
         // We don't want to run the full
         // IdlInterface.prototype.test_instance_of, because that could result
         // in an infinite loop.  TODO: This means we don't have tests for
-        // LegacyNoInterfaceObject interfaces, and we also can't test objects
-        // that come from another self.
+        // NoInterfaceObject interfaces, and we also can't test objects that
+        // come from another self.
         assert_in_array(typeof value, ["object", "function"], "wrong type: not object or function");
         if (value instanceof Object
-        && !this.members[type].has_extended_attribute("LegacyNoInterfaceObject")
+        && !this.members[type].has_extended_attribute("NoInterfaceObject")
         && type in self)
         {
             assert_true(value instanceof self[type], "instanceof " + type);
@@ -1415,10 +1415,10 @@ IdlInterface.prototype.should_have_interface_object = function()
     // environment and:
     // * is a callback interface that has constants declared on it, or
     // * is a non-callback interface that is not declared with the
-    //   [LegacyNoInterfaceObject] extended attribute,
+    //   [NoInterfaceObject] extended attribute,
     // a corresponding property MUST exist on the ECMAScript global object.
 
-    return this.is_callback() ? this.has_constants() : !this.has_extended_attribute("LegacyNoInterfaceObject");
+    return this.is_callback() ? this.has_constants() : !this.has_extended_attribute("NoInterfaceObject");
 };
 
 IdlInterface.prototype.assert_interface_object_exists = function()
@@ -1429,7 +1429,7 @@ IdlInterface.prototype.assert_interface_object_exists = function()
 
 IdlInterface.prototype.get_interface_object = function() {
     if (!this.should_have_interface_object()) {
-        var reason = this.is_callback() ? "lack of declared constants" : "declared [LegacyNoInterfaceObject] attribute";
+        var reason = this.is_callback() ? "lack of declared constants" : "declared [NoInterfaceObject] attribute";
         throw new IdlHarnessError(this.name + " has no interface object due to " + reason);
     }
 
@@ -1572,7 +1572,7 @@ function _traverse_inherited_and_consequential_interfaces(stack, callback) {
 
 IdlInterface.prototype.test = function()
 {
-    if (this.has_extended_attribute("LegacyNoInterfaceObject") || this.is_mixin())
+    if (this.has_extended_attribute("NoInterfaceObject") || this.is_mixin())
     {
         // No tests to do without an instance.  TODO: We should still be able
         // to run tests on the prototype object, if we obtain one through some
@@ -1603,10 +1603,15 @@ IdlInterface.prototype.test = function()
     this.test_members();
 };
 
+// This supports both Constructor extended attributes and constructor
+// operations until all idl fragments have been updated.
 IdlInterface.prototype.constructors = function()
 {
-    return this.members
+    var extendedAttributes = this.extAttrs
+        .filter(function(attr) { return attr.name == "Constructor"; });
+    var operations = this.members
         .filter(function(m) { return m.type == "constructor"; });
+    return extendedAttributes.concat(operations);
 }
 
 IdlInterface.prototype.test_self = function()
@@ -1676,7 +1681,7 @@ IdlInterface.prototype.test_self = function()
             //    value of [[Prototype]] is the interface object for that other
             //    interface."
             var inherited_interface = this.array.members[this.base];
-            if (!inherited_interface.has_extended_attribute("LegacyNoInterfaceObject")) {
+            if (!inherited_interface.has_extended_attribute("NoInterfaceObject")) {
                 inherited_interface.assert_interface_object_exists();
                 assert_equals(prototype, inherited_interface.get_interface_object(),
                               'prototype of ' + this.name + ' is not ' +
@@ -1691,7 +1696,11 @@ IdlInterface.prototype.test_self = function()
         }
 
         if (!this.constructors().length) {
-            // "If I was not declared with a constructor operation, then throw a TypeError."
+            // "The internal [[Call]] method of the interface object behaves as
+            // follows . . .
+            //
+            // "If I was not declared with a [Constructor] extended attribute,
+            // then throw a TypeError."
             var interface_object = this.get_interface_object();
             assert_throws_js(globalOf(interface_object).TypeError, function() {
                 interface_object();
@@ -1764,7 +1773,7 @@ IdlInterface.prototype.test_self = function()
             if (!this.exposureSet.has("Window")) {
                 throw new IdlHarnessError("Invalid IDL: LegacyWindowAlias extended attribute on " + this.name + " which is not exposed in Window");
             }
-            // TODO: when testing of [LegacyNoInterfaceObject] interfaces is supported,
+            // TODO: when testing of [NoInterfaceObject] interfaces is supported,
             // check that it's not specified together with LegacyWindowAlias.
 
             // TODO: maybe check that [LegacyWindowAlias] is not specified on a partial interface.
@@ -1954,7 +1963,7 @@ IdlInterface.prototype.test_self = function()
 
         // Next, test that the [[Prototype]] of the interface prototype object
         // is correct. (This is made somewhat difficult by the existence of
-        // [LegacyNoInterfaceObject].)
+        // [NoInterfaceObject].)
         // TODO: Aryeh thinks there's at least other place in this file where
         //       we try to figure out if an interface prototype object is
         //       correct. Consolidate that code.
@@ -1987,7 +1996,7 @@ IdlInterface.prototype.test_self = function()
             if (this.base) {
                 inherit_interface = this.base;
                 var parent = this.array.members[inherit_interface];
-                if (!parent.has_extended_attribute("LegacyNoInterfaceObject")) {
+                if (!parent.has_extended_attribute("NoInterfaceObject")) {
                     parent.assert_interface_object_exists();
                     inherit_interface_interface_object = parent.get_interface_object();
                 }
@@ -2063,8 +2072,8 @@ IdlInterface.prototype.test_self = function()
         assert_own_property(this.get_interface_object(), "prototype",
                             'interface "' + this.name + '" does not have own property "prototype"');
 
-        // "If the [LegacyNoInterfaceObject] extended attribute was not specified
-        // on the interface, then the interface prototype object must also have a
+        // "If the [NoInterfaceObject] extended attribute was not specified on
+        // the interface, then the interface prototype object must also have a
         // property named “constructor” with attributes { [[Writable]]: true,
         // [[Enumerable]]: false, [[Configurable]]: true } whose value is a
         // reference to the interface object for the interface."

@@ -1,4 +1,4 @@
-// META: script=constants.sub.js
+// META: script=constants.js?pipe=sub
 
 async_test(t => {
   const ws = new WebSocket(SCHEME_DOMAIN_PORT + "/referrer");

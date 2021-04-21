@@ -24,7 +24,6 @@ dictionary SVGBoundingBoxOptions {
   boolean clipped = false;
 };
 
-[Exposed=Window]
 interface SVGGraphicsElement : SVGElement {
   [SameObject] readonly attribute SVGAnimatedTransformList transform;
 
@@ -71,8 +70,8 @@ interface SVGLength {
            attribute float valueInSpecifiedUnits;
            attribute DOMString valueAsString;
 
-  undefined newValueSpecifiedUnits(unsigned short unitType, float valueInSpecifiedUnits);
-  undefined convertToSpecifiedUnits(unsigned short unitType);
+  void newValueSpecifiedUnits(unsigned short unitType, float valueInSpecifiedUnits);
+  void convertToSpecifiedUnits(unsigned short unitType);
 };
 
 [Exposed=Window]
@@ -90,8 +89,8 @@ interface SVGAngle {
            attribute float valueInSpecifiedUnits;
            attribute DOMString valueAsString;
 
-  undefined newValueSpecifiedUnits(unsigned short unitType, float valueInSpecifiedUnits);
-  undefined convertToSpecifiedUnits(unsigned short unitType);
+  void newValueSpecifiedUnits(unsigned short unitType, float valueInSpecifiedUnits);
+  void convertToSpecifiedUnits(unsigned short unitType);
 };
 
 [Exposed=Window]
@@ -100,14 +99,14 @@ interface SVGNumberList {
   readonly attribute unsigned long length;
   readonly attribute unsigned long numberOfItems;
 
-  undefined clear();
+  void clear();
   SVGNumber initialize(SVGNumber newItem);
   getter SVGNumber getItem(unsigned long index);
   SVGNumber insertItemBefore(SVGNumber newItem, unsigned long index);
   SVGNumber replaceItem(SVGNumber newItem, unsigned long index);
   SVGNumber removeItem(unsigned long index);
   SVGNumber appendItem(SVGNumber newItem);
-  setter undefined (unsigned long index, SVGNumber newItem);
+  setter void (unsigned long index, SVGNumber newItem);
 };
 
 [Exposed=Window]
@@ -116,14 +115,14 @@ interface SVGLengthList {
   readonly attribute unsigned long length;
   readonly attribute unsigned long numberOfItems;
 
-  undefined clear();
+  void clear();
   SVGLength initialize(SVGLength newItem);
   getter SVGLength getItem(unsigned long index);
   SVGLength insertItemBefore(SVGLength newItem, unsigned long index);
   SVGLength replaceItem(SVGLength newItem, unsigned long index);
   SVGLength removeItem(unsigned long index);
   SVGLength appendItem(SVGLength newItem);
-  setter undefined (unsigned long index, SVGLength newItem);
+  setter void (unsigned long index, SVGLength newItem);
 };
 
 [Exposed=Window]
@@ -132,14 +131,14 @@ interface SVGStringList {
   readonly attribute unsigned long length;
   readonly attribute unsigned long numberOfItems;
 
-  undefined clear();
+  void clear();
   DOMString initialize(DOMString newItem);
   getter DOMString getItem(unsigned long index);
   DOMString insertItemBefore(DOMString newItem, unsigned long index);
   DOMString replaceItem(DOMString newItem, unsigned long index);
   DOMString removeItem(unsigned long index);
   DOMString appendItem(DOMString newItem);
-  setter undefined (unsigned long index, DOMString newItem);
+  setter void (unsigned long index, DOMString newItem);
 };
 
 [Exposed=Window]
@@ -244,7 +243,7 @@ interface SVGSVGElement : SVGGraphicsElement {
   boolean checkIntersection(SVGElement element, DOMRectReadOnly rect);
   boolean checkEnclosure(SVGElement element, DOMRectReadOnly rect);
 
-  undefined deselectAll();
+  void deselectAll();
 
   SVGNumber createSVGNumber();
   SVGLength createSVGLength();
@@ -260,9 +259,9 @@ interface SVGSVGElement : SVGGraphicsElement {
   // Deprecated methods that have no effect when called,
   // but which are kept for compatibility reasons.
   unsigned long suspendRedraw(unsigned long maxWaitMilliseconds);
-  undefined unsuspendRedraw(unsigned long suspendHandleID);
-  undefined unsuspendRedrawAll();
-  undefined forceRedraw();
+  void unsuspendRedraw(unsigned long suspendHandleID);
+  void unsuspendRedrawAll();
+  void forceRedraw();
 };
 
 SVGSVGElement includes SVGFitToViewBox;
@@ -354,12 +353,12 @@ interface SVGTransform {
   [SameObject] readonly attribute DOMMatrix matrix;
   readonly attribute float angle;
 
-  undefined setMatrix(optional DOMMatrix2DInit matrix);
-  undefined setTranslate(float tx, float ty);
-  undefined setScale(float sx, float sy);
-  undefined setRotate(float angle, float cx, float cy);
-  undefined setSkewX(float angle);
-  undefined setSkewY(float angle);
+  void setMatrix(optional DOMMatrix2DInit matrix);
+  void setTranslate(float tx, float ty);
+  void setScale(float sx, float sy);
+  void setRotate(float angle, float cx, float cy);
+  void setSkewX(float angle);
+  void setSkewY(float angle);
 };
 
 [Exposed=Window]
@@ -368,14 +367,14 @@ interface SVGTransformList {
   readonly attribute unsigned long length;
   readonly attribute unsigned long numberOfItems;
 
-  undefined clear();
+  void clear();
   SVGTransform initialize(SVGTransform newItem);
   getter SVGTransform getItem(unsigned long index);
   SVGTransform insertItemBefore(SVGTransform newItem, unsigned long index);
   SVGTransform replaceItem(SVGTransform newItem, unsigned long index);
   SVGTransform removeItem(unsigned long index);
   SVGTransform appendItem(SVGTransform newItem);
-  setter undefined (unsigned long index, SVGTransform newItem);
+  setter void (unsigned long index, SVGTransform newItem);
 
   // Additional methods not common to other list interfaces.
   SVGTransform createSVGTransformFromMatrix(optional DOMMatrix2DInit matrix);
@@ -467,14 +466,14 @@ interface SVGPointList {
   readonly attribute unsigned long length;
   readonly attribute unsigned long numberOfItems;
 
-  undefined clear();
+  void clear();
   DOMPoint initialize(DOMPoint newItem);
   getter DOMPoint getItem(unsigned long index);
   DOMPoint insertItemBefore(DOMPoint newItem, unsigned long index);
   DOMPoint replaceItem(DOMPoint newItem, unsigned long index);
   DOMPoint removeItem(unsigned long index);
   DOMPoint appendItem(DOMPoint newItem);
-  setter undefined (unsigned long index, DOMPoint newItem);
+  setter void (unsigned long index, DOMPoint newItem);
 };
 
 [Exposed=Window]
@@ -508,7 +507,7 @@ interface SVGTextContentElement : SVGGraphicsElement {
   DOMRect getExtentOfChar(unsigned long charnum);
   float getRotationOfChar(unsigned long charnum);
   long getCharNumAtPosition(optional DOMPointInit point = {});
-  undefined selectSubString(unsigned long charnum, unsigned long nchars);
+  void selectSubString(unsigned long charnum, unsigned long nchars);
 };
 
 [Exposed=Window]
@@ -590,8 +589,8 @@ interface SVGMarkerElement : SVGElement {
   [SameObject] readonly attribute SVGAnimatedAngle orientAngle;
   attribute DOMString orient;
 
-  undefined setOrientToAuto();
-  undefined setOrientToAngle(SVGAngle angle);
+  void setOrientToAuto();
+  void setOrientToAngle(SVGAngle angle);
 };
 
 SVGMarkerElement includes SVGFitToViewBox;
@@ -673,20 +672,7 @@ interface SVGAElement : SVGGraphicsElement {
 };
 
 SVGAElement includes SVGURIReference;
-
-// Inline HTMLHyperlinkElementUtils except href, which conflicts.
-partial interface SVGAElement {
-  readonly attribute USVString origin;
-  [CEReactions] attribute USVString protocol;
-  [CEReactions] attribute USVString username;
-  [CEReactions] attribute USVString password;
-  [CEReactions] attribute USVString host;
-  [CEReactions] attribute USVString hostname;
-  [CEReactions] attribute USVString port;
-  [CEReactions] attribute USVString pathname;
-  [CEReactions] attribute USVString search;
-  [CEReactions] attribute USVString hash;
-};
+SVGAElement includes HTMLHyperlinkElementUtils;
 
 [Exposed=Window]
 interface SVGViewElement : SVGElement {};

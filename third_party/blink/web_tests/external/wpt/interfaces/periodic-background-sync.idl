@@ -14,9 +14,9 @@ partial interface ServiceWorkerRegistration {
 
 [Exposed=(Window,Worker)]
 interface PeriodicSyncManager {
-    Promise<undefined> register(DOMString tag, optional BackgroundSyncOptions options = {});
+    Promise<void> register(DOMString tag, optional BackgroundSyncOptions options);
     Promise<sequence<DOMString>> getTags();
-    Promise<undefined> unregister(DOMString tag);
+    Promise<void> unregister(DOMString tag);
 };
 
 dictionary BackgroundSyncOptions {
@@ -27,8 +27,9 @@ dictionary PeriodicSyncEventInit : ExtendableEventInit {
     required DOMString tag;
 };
 
-[Exposed=ServiceWorker]
-interface PeriodicSyncEvent : ExtendableEvent {
-    constructor(DOMString type, PeriodicSyncEventInit init);
+[
+    Constructor(DOMString type, PeriodicSyncEventInit init),
+    Exposed=ServiceWorker
+] interface PeriodicSyncEvent : ExtendableEvent {
     readonly attribute DOMString tag;
-};
+  };

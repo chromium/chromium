@@ -23,12 +23,12 @@ dictionary XRTransientInputHitTestOptionsInit {
 
 [SecureContext, Exposed=Window]
 interface XRHitTestSource {
-  undefined cancel();
+  void cancel();
 };
 
 [SecureContext, Exposed=Window]
 interface XRTransientInputHitTestSource {
-  undefined cancel();
+  void cancel();
 };
 
 [SecureContext, Exposed=Window]

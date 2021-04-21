@@ -1,14 +1,11 @@
-// META: script=constants.sub.js
-// META: variant=
-// META: variant=?wpt_flags=h2
-// META: variant=?wss
+// META: script=websocket.sub.js
 
-var testOpen = async_test("Send  65K data on a WebSocket - Connection should be opened");
+var testOpen = async_test("Send 65K data on a WebSocket -  Connection should be opened");
 var testMessage = async_test("Send 65K data on a WebSocket - Message should be received");
 var testClose = async_test("Send 65K data on a WebSocket - Connection should be closed");
 
 var data = "";
-var wsocket = CreateWebSocket(false, false);
+var wsocket = CreateWebSocket(false, false, false);
 var isOpenCalled = false;
 
 wsocket.addEventListener('open', testOpen.step_func(function(evt) {

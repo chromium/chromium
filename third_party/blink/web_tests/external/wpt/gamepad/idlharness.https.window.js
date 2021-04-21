@@ -8,7 +8,7 @@
 
 idl_test(
   ['gamepad'],
-  ['html', 'dom'],
+  ['dom', 'html'],
   idl_array => {
     idl_array.add_objects({
       GamepadEvent: ['new GamepadEvent("gamepad")'],

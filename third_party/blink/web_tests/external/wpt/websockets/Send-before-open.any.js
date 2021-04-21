@@ -1,10 +1,7 @@
-// META: script=constants.sub.js
-// META: variant=
-// META: variant=?wss
-// META: variant=?wpt_flags=h2
+// META: script=websocket.sub.js
 
 test(function() {
-  var wsocket = CreateWebSocket(false, false);
+  var wsocket = CreateWebSocket(false, false, false);
   assert_throws_dom("INVALID_STATE_ERR", function() {
     wsocket.send("Message to send")
   });

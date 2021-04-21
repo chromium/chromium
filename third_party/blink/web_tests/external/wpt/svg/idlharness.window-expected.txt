@@ -1,11 +1,9 @@
 This is a testharness.js-based test.
-Found 1633 tests; 1493 PASS, 140 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1612 tests; 1491 PASS, 121 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
 PASS Partial interface Document: member names are unique
-PASS Partial interface SVGAElement: original interface defined
-PASS Partial interface SVGAElement: member names are unique
 PASS Partial interface Document[2]: member names are unique
 PASS Partial interface Document[3]: member names are unique
 PASS Partial interface Document[4]: member names are unique
@@ -30,6 +28,7 @@ PASS SVGPatternElement includes SVGFitToViewBox: member names are unique
 PASS SVGPatternElement includes SVGURIReference: member names are unique
 PASS SVGScriptElement includes SVGURIReference: member names are unique
 PASS SVGAElement includes SVGURIReference: member names are unique
+FAIL SVGAElement includes HTMLHyperlinkElementUtils: member names are unique assert_true: member href is unique expected true got false
 PASS SVGViewElement includes SVGFitToViewBox: member names are unique
 PASS Element includes Animatable: member names are unique
 PASS Element includes ParentNode: member names are unique
@@ -1570,16 +1569,6 @@ FAIL SVGAElement interface: attribute hreflang assert_true: The prototype object
 FAIL SVGAElement interface: attribute type assert_true: The prototype object must have a property "type" expected true got false
 FAIL SVGAElement interface: attribute text assert_true: The prototype object must have a property "text" expected true got false
 FAIL SVGAElement interface: attribute referrerPolicy assert_true: The prototype object must have a property "referrerPolicy" expected true got false
-FAIL SVGAElement interface: attribute origin assert_true: The prototype object must have a property "origin" expected true got false
-FAIL SVGAElement interface: attribute protocol assert_true: The prototype object must have a property "protocol" expected true got false
-FAIL SVGAElement interface: attribute username assert_true: The prototype object must have a property "username" expected true got false
-FAIL SVGAElement interface: attribute password assert_true: The prototype object must have a property "password" expected true got false
-FAIL SVGAElement interface: attribute host assert_true: The prototype object must have a property "host" expected true got false
-FAIL SVGAElement interface: attribute hostname assert_true: The prototype object must have a property "hostname" expected true got false
-FAIL SVGAElement interface: attribute port assert_true: The prototype object must have a property "port" expected true got false
-FAIL SVGAElement interface: attribute pathname assert_true: The prototype object must have a property "pathname" expected true got false
-FAIL SVGAElement interface: attribute search assert_true: The prototype object must have a property "search" expected true got false
-FAIL SVGAElement interface: attribute hash assert_true: The prototype object must have a property "hash" expected true got false
 PASS SVGAElement interface: attribute href
 PASS SVGAElement must be primary interface of objects.a
 PASS Stringification of objects.a
@@ -1592,16 +1581,6 @@ FAIL SVGAElement interface: objects.a must inherit property "hreflang" with the 
 FAIL SVGAElement interface: objects.a must inherit property "type" with the proper type assert_inherits: property "type" not found in prototype chain
 FAIL SVGAElement interface: objects.a must inherit property "text" with the proper type assert_inherits: property "text" not found in prototype chain
 FAIL SVGAElement interface: objects.a must inherit property "referrerPolicy" with the proper type assert_inherits: property "referrerPolicy" not found in prototype chain
-FAIL SVGAElement interface: objects.a must inherit property "origin" with the proper type assert_inherits: property "origin" not found in prototype chain
-FAIL SVGAElement interface: objects.a must inherit property "protocol" with the proper type assert_inherits: property "protocol" not found in prototype chain
-FAIL SVGAElement interface: objects.a must inherit property "username" with the proper type assert_inherits: property "username" not found in prototype chain
-FAIL SVGAElement interface: objects.a must inherit property "password" with the proper type assert_inherits: property "password" not found in prototype chain
-FAIL SVGAElement interface: objects.a must inherit property "host" with the proper type assert_inherits: property "host" not found in prototype chain
-FAIL SVGAElement interface: objects.a must inherit property "hostname" with the proper type assert_inherits: property "hostname" not found in prototype chain
-FAIL SVGAElement interface: objects.a must inherit property "port" with the proper type assert_inherits: property "port" not found in prototype chain
-FAIL SVGAElement interface: objects.a must inherit property "pathname" with the proper type assert_inherits: property "pathname" not found in prototype chain
-FAIL SVGAElement interface: objects.a must inherit property "search" with the proper type assert_inherits: property "search" not found in prototype chain
-FAIL SVGAElement interface: objects.a must inherit property "hash" with the proper type assert_inherits: property "hash" not found in prototype chain
 PASS SVGAElement interface: objects.a must inherit property "href" with the proper type
 PASS SVGGraphicsElement interface: objects.a must inherit property "transform" with the proper type
 PASS SVGGraphicsElement interface: objects.a must inherit property "getBBox(optional SVGBoundingBoxOptions)" with the proper type

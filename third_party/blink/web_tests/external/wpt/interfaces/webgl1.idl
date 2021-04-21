@@ -731,9 +731,10 @@ interface WebGLRenderingContext
 WebGLRenderingContext includes WebGLRenderingContextBase;
 WebGLRenderingContext includes WebGLRenderingContextOverloads;
 
-[Exposed=(Window,Worker)]
+[Exposed=(Window,Worker),
+ Constructor(DOMString type,
+ optional WebGLContextEventInit eventInit = {})]
 interface WebGLContextEvent : Event {
-    constructor(DOMString type, optional WebGLContextEventInit eventInit = {});
     readonly attribute DOMString statusMessage;
 };
 

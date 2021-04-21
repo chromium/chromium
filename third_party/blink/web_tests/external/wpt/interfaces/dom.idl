@@ -93,8 +93,6 @@ interface AbortController {
 
 [Exposed=(Window,Worker)]
 interface AbortSignal : EventTarget {
-  [NewObject] static AbortSignal abort();
-
   readonly attribute boolean aborted;
 
   attribute EventHandler onabort;
@@ -333,13 +331,11 @@ interface DocumentFragment : Node {
 [Exposed=Window]
 interface ShadowRoot : DocumentFragment {
   readonly attribute ShadowRootMode mode;
-  readonly attribute SlotAssignmentMode slotAssignment;
   readonly attribute Element host;
   attribute EventHandler onslotchange;
 };
 
 enum ShadowRootMode { "open", "closed" };
-enum SlotAssignmentMode { "manual", "named" };
 
 [Exposed=Window]
 interface Element : Node {
@@ -390,7 +386,6 @@ interface Element : Node {
 dictionary ShadowRootInit {
   required ShadowRootMode mode;
   boolean delegatesFocus = false;
-  SlotAssignmentMode slotAssignment = "named";
 };
 
 [Exposed=Window,
