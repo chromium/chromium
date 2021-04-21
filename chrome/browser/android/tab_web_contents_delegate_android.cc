@@ -19,6 +19,7 @@
 #include "base/optional.h"
 #include "base/rand_util.h"
 #include "chrome/android/chrome_jni_headers/TabWebContentsDelegateAndroidImpl_jni.h"
+#include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
 #include "chrome/browser/android/hung_renderer_infobar_delegate.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
@@ -379,6 +380,20 @@ void TabWebContentsDelegateAndroid::AddNewContents(
   if (source && blocked_content::ConsiderForPopupBlocking(disposition)) {
     blocked_content::PopupTracker::CreateForWebContents(new_contents.get(),
                                                         source, disposition);
+  }
+
+  // Add the CCT header observer if it was present on the source contents.
+  if (source) {
+    auto* source_observer =
+        customtabs::ClientDataHeaderWebContentsObserver::FromWebContents(
+            source);
+    if (source_observer) {
+      customtabs::ClientDataHeaderWebContentsObserver::CreateForWebContents(
+          new_contents.get());
+      customtabs::ClientDataHeaderWebContentsObserver::FromWebContents(
+          new_contents.get())
+          ->SetHeader(source_observer->header());
+    }
   }
 
   TabHelpers::AttachTabHelpers(new_contents.get());
