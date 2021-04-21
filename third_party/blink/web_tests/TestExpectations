@@ -7221,3 +7221,5 @@ crbug.com/1197444 virtual/scroll-unification-prefer_compositing_to_lcd_text/scro
 crbug.com/1200671 [ Linux ] external/wpt/webrtc/protocol/rtp-payloadtypes.html [ Pass Crash ]
 crbug.com/1201225 [ Linux ] external/wpt/pointerevents/pointerlock/pointerevent_pointerrawupdate_in_pointerlock-manual.html [ Pass Failure Timeout ]
 crbug.com/1198232 [ Win ] virtual/scroll-unification/fast/events/mouseenter-mouseleave-on-drag.html [ Pass Failure ]
+crbug.com/1201346 http/tests/origin_trials/webexposed/bfcache-experiment-http-header-origin-trial.php [ Pass Failure ]
+crbug.com/1201348 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/inspector-protocol/issues/mixed-content-issue-creation-js-within-oopif.js [ Timeout Pass ]
