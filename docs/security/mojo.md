@@ -521,6 +521,87 @@ for (size_t i = 0; i < request->element_size(); ++i) {
 ```
 
 
+### All possible message values are semantically valid
+
+When possible, messages should be defined in such a way that all possible values
+are semantically valid. As a corollary, avoid having the value of one field
+dictate the validity of other fields.
+
+**_Good_**
+
+```c++
+union CreateTokenResult {
+  // Implies success.
+  string token;
+
+  // Implies failure.
+  string error_message;
+};
+
+struct TokenManager {
+  CreateToken() => (CreateTokenResult result);
+};
+```
+
+**_Bad_**
+```c++
+struct TokenManager {
+  // Requires caller to handle edge case where |success| is set to true, but
+  // |token| is null.
+  CreateToken() => (bool success, string? token, string? error_message);
+
+  // Requires caller to handle edge case where both |token| and |error_message|
+  // are set, or both are null.
+  CreateToken() => (string? token, string? error_message);
+};
+```
+
+There are some known exceptions to this rule because mojo does not handle
+optional primitives.
+
+**_Allowed because mojo has no support for optional primitives_**
+```c++
+  struct Foo {
+    int32 x;
+    bool has_x;  // does the value of `x` have meaning?
+    int32 y;
+    bool has_y;  // does the value of `y` have meaning?
+  };
+```
+
+Another common case where we tolerate imperfect message semantics is
+with weakly typed integer [bitfields](#handling-bitfields).
+
+### Handling bitfields
+
+Mojom has no native support for bitfields. There are two common approaches: a
+type-safe struct of bools which is a bit clunky (preferred) and an integer-based
+approach (allowed but not preferred).
+
+**_Type-safe bitfields_**
+```c++
+struct VehicleBits {
+  bool has_car;
+  bool has_bicycle;
+  bool has_boat;
+};
+
+struct Person {
+  VehicleBits bits;
+};
+```
+
+**_Integer based approach_**
+```c++
+struct Person {
+  const uint64 kHasCar = 1;
+  const uint64 kHasBicycle = 2;
+  const uint64 kHasGoat= 4;
+
+  uint32 vehicle_bitfield;
+};
+```
+
 ## C++ Best Practices
 
 
