@@ -305,6 +305,7 @@ void PaintPreviewTabService::CaptureTabInternal(
   capture_params.capture_links = true;
   capture_params.max_per_capture_size = kMaxPerCaptureSizeBytes;
   capture_params.max_decoded_image_size_bytes = kMaxDecodedImageSizeBytes;
+  capture_params.skip_accelerated_content = true;
   CapturePaintPreview(capture_params,
                       base::BindOnce(&PaintPreviewTabService::OnCaptured,
                                      weak_ptr_factory_.GetWeakPtr(), task));

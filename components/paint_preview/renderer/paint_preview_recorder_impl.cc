@@ -297,7 +297,8 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
   base::TimeTicks start_time = base::TimeTicks::Now();
   TRACE_EVENT_BEGIN0("paint_preview", "WebLocalFrame::CapturePaintPreview");
   bool success = frame->CapturePaintPreview(
-      bounds, canvas, /*include_linked_destinations=*/params->capture_links);
+      bounds, canvas, /*include_linked_destinations=*/params->capture_links,
+      /*skip_accelerated_content=*/params->skip_accelerated_content);
   TRACE_EVENT_END0("paint_preview", "WebLocalFrame::CapturePaintPreview");
   canvas->restore();
   base::TimeDelta capture_time = base::TimeTicks::Now() - start_time;

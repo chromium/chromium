@@ -91,6 +91,16 @@ class PaintPreviewBaseService : public KeyedService {
     // This can be used to reduce the chance of an OOM during serialization and
     // later during playback.
     uint64_t max_decoded_image_size_bytes{std::numeric_limits<uint64_t>::max()};
+
+    // This flag will skip GPU accelerated content where applicable when
+    // capturing. This reduces hangs, capture time and may also reduce OOM
+    // crashes, but results in a lower fideltiy capture (i.e. the contents
+    // captured may not accurately reflect the content visible to the user at
+    // time of capture).
+    //
+    // At present this flag:
+    // - Shows a poster or blank space instead of live video frames.
+    bool skip_accelerated_content{false};
   };
 
   using OnCapturedCallback =

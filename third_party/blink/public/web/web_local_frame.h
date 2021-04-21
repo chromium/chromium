@@ -740,10 +740,14 @@ class WebLocalFrame : public WebFrame {
 
   // Captures a full frame paint preview of the WebFrame including subframes. If
   // |include_linked_destinations| is true, the capture will include annotations
-  // about linked destinations within the document.
+  // about linked destinations within the document. If
+  // |skip_accelerated_content| is true, the capture will omit GPU accelerated
+  // content where applicable. Currently, this setting replaces video frames
+  // with a poster or empty space.
   virtual bool CapturePaintPreview(const gfx::Rect& bounds,
                                    cc::PaintCanvas* canvas,
-                                   bool include_linked_destinations) = 0;
+                                   bool include_linked_destinations,
+                                   bool skip_accelerated_content) = 0;
 
   // Focus --------------------------------------------------------------
 

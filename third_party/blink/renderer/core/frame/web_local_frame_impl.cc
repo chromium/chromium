@@ -1762,11 +1762,16 @@ bool WebLocalFrameImpl::GetPrintPresetOptionsForPlugin(
 
 bool WebLocalFrameImpl::CapturePaintPreview(const gfx::Rect& bounds,
                                             cc::PaintCanvas* canvas,
-                                            bool include_linked_destinations) {
+                                            bool include_linked_destinations,
+                                            bool skip_accelerated_content) {
   FloatSize float_bounds(bounds.width(), bounds.height());
   bool success = false;
   {
-    Document::PaintPreviewScope paint_preview(*GetFrame()->GetDocument());
+    Document::PaintPreviewScope paint_preview(
+        *GetFrame()->GetDocument(),
+        skip_accelerated_content
+            ? Document::kPaintingPreviewSkipAcceleratedContent
+            : Document::kPaintingPreview);
     GetFrame()->StartPaintPreview();
     PaintPreviewContext* paint_preview_context =
         MakeGarbageCollected<PaintPreviewContext>(GetFrame());

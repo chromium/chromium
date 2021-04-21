@@ -197,7 +197,8 @@ void PhishingClassifier::ExtractVisualFeatures() {
       /*is_main_frame=*/true);
   cc_canvas.SetPaintPreviewTracker(tracker.get());
   VisualExtractionFinished(frame->CapturePaintPreview(
-      bounds, &cc_canvas, /*include_linked_destinations=*/false));
+      bounds, &cc_canvas, /*include_linked_destinations=*/false,
+      /*skip_accelerated_content=*/false));
   base::UmaHistogramTimes("SBClientPhishing.VisualFeatureTime",
                           base::TimeTicks::Now() - start_time);
 }

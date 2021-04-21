@@ -62,6 +62,8 @@ void PaintPreviewBaseService::CapturePaintPreview(CaptureParams capture_params,
   params.inner.max_capture_size = capture_params.max_per_capture_size;
   params.inner.max_decoded_image_size_bytes =
       capture_params.max_decoded_image_size_bytes;
+  params.inner.skip_accelerated_content =
+      capture_params.skip_accelerated_content;
 
   // TODO(crbug/1064253): Consider moving to client so that this always happens.
   // Although, it is harder to get this right in the client due to its

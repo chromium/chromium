@@ -289,7 +289,8 @@ void RemoteFrameView::Paint(GraphicsContext& context,
       // Inform the remote frame to print.
       content_id = Print(FrameRect(), context.Canvas());
     } else {
-      DCHECK(owner_layout_object.GetDocument().IsPaintingPreview());
+      DCHECK_NE(Document::kNotPaintingPreview,
+                owner_layout_object.GetDocument().GetPaintPreviewState());
       // Inform the remote frame to capture a paint preview.
       content_id = CapturePaintPreview(FrameRect(), context.Canvas());
     }

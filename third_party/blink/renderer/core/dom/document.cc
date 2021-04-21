@@ -655,7 +655,7 @@ Document::Document(const DocumentInit& initializer,
       cookie_url_(dom_window_ ? initializer.GetCookieUrl()
                               : KURL(g_empty_string)),
       printing_(kNotPrinting),
-      is_painting_preview_(false),
+      paint_preview_(kNotPaintingPreview),
       compatibility_mode_(kNoQuirksMode),
       compatibility_mode_locked_(false),
       last_focus_type_(mojom::blink::FocusType::kNone),
@@ -8122,14 +8122,15 @@ bool Document::InStyleRecalc() const {
          style_engine_->InContainerQueryStyleRecalc();
 }
 
-Document::PaintPreviewScope::PaintPreviewScope(Document& document)
+Document::PaintPreviewScope::PaintPreviewScope(Document& document,
+                                               PaintPreviewState state)
     : document_(document) {
-  document_.is_painting_preview_ = true;
+  document_.paint_preview_ = state;
   document_.GetDisplayLockDocumentState().NotifyPrintingOrPreviewChanged();
 }
 
 Document::PaintPreviewScope::~PaintPreviewScope() {
-  document_.is_painting_preview_ = false;
+  document_.paint_preview_ = kNotPaintingPreview;
   document_.GetDisplayLockDocumentState().NotifyPrintingOrPreviewChanged();
 }
 

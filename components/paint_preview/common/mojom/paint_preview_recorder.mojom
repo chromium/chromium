@@ -74,6 +74,14 @@ struct PaintPreviewCaptureParams {
   // Limit on the maximum size of a decoded image that can be serialized.
   // Any images with a decoded size exceeding this value will be discarded.
   uint64 max_decoded_image_size_bytes;
+
+  // This flag will skip GPU accelerated content where applicable when
+  // capturing. This reduces hangs, capture time and may also reduce OOM
+  // crashes, but results in a lower fideltiy capture (i.e. the contents
+  // captured may not accurately reflect the content visible to the user at
+  // time of capture). See PaintPreviewBaseService::CaptureParams for a
+  // description of the effects of this flag.
+  bool skip_accelerated_content;
 };
 
 struct LinkData {

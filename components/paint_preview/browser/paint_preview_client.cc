@@ -117,6 +117,8 @@ mojom::PaintPreviewCaptureParamsPtr CreateRecordingRequestParams(
   // when clip_rects are used intentionally to limit capture time.
   mojo_params->clip_rect_is_hint = true;
   mojo_params->is_main_frame = capture_params.is_main_frame;
+  mojo_params->skip_accelerated_content =
+      capture_params.skip_accelerated_content;
   mojo_params->file = std::move(file);
   mojo_params->max_capture_size = capture_params.max_capture_size;
   mojo_params->max_decoded_image_size_bytes =
@@ -317,6 +319,8 @@ void PaintPreviewClient::CapturePaintPreview(
   document_data.max_per_capture_size = params.inner.max_capture_size;
   document_data.max_decoded_image_size_bytes =
       params.inner.max_decoded_image_size_bytes;
+  document_data.skip_accelerated_content =
+      params.inner.skip_accelerated_content;
   all_document_data_.insert(
       {params.inner.document_guid, std::move(document_data)});
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
@@ -342,6 +346,7 @@ void PaintPreviewClient::CaptureSubframePaintPreview(
   params.capture_links = it->second.capture_links;
   params.max_capture_size = it->second.max_per_capture_size;
   params.max_decoded_image_size_bytes = it->second.max_decoded_image_size_bytes;
+  params.skip_accelerated_content = it->second.skip_accelerated_content;
   CapturePaintPreviewInternal(params, render_subframe_host);
 }
 

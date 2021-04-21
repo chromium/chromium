@@ -2193,7 +2193,7 @@ void LocalFrame::WasShown() {
 bool LocalFrame::ClipsContent() const {
   // A paint preview shouldn't clip to the viewport. Each frame paints to a
   // separate canvas in full to allow scrolling.
-  if (GetDocument()->IsPaintingPreview())
+  if (GetDocument()->GetPaintPreviewState() != Document::kNotPaintingPreview)
     return false;
 
   if (ShouldUsePrintingLayout())

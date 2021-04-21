@@ -799,9 +799,22 @@ class CORE_EXPORT Document : public ContainerNode,
   }
   void SetPrinting(PrintingState);
 
-  bool IsPaintingPreview() const { return is_painting_preview_; }
+  enum PaintPreviewState {
+    // A paint preview is not in the process of being captured.
+    kNotPaintingPreview = 0,
+
+    // A paint preview is in the process of being captured.
+    kPaintingPreview,
+
+    // The same as `kPaintingPreview`, but where appropriate GPU accelerated
+    // content should be skipped during painting. This can reduce hangs and
+    // memory usage at the expense of a lower fidelity capture.
+    kPaintingPreviewSkipAcceleratedContent,
+  };
+  PaintPreviewState GetPaintPreviewState() const { return paint_preview_; }
   bool IsPrintingOrPaintingPreview() const {
-    return Printing() || IsPaintingPreview();
+    return Printing() ||
+           GetPaintPreviewState() != Document::kNotPaintingPreview;
   }
 
   enum CompatibilityMode { kQuirksMode, kLimitedQuirksMode, kNoQuirksMode };
@@ -1657,7 +1670,7 @@ class CORE_EXPORT Document : public ContainerNode,
     STACK_ALLOCATED();
 
    public:
-    explicit PaintPreviewScope(Document& document);
+    PaintPreviewScope(Document& document, PaintPreviewState state);
     ~PaintPreviewScope();
 
     PaintPreviewScope(PaintPreviewScope&) = delete;
@@ -1870,7 +1883,7 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<CSSStyleSheet> elem_sheet_;
 
   PrintingState printing_;
-  bool is_painting_preview_;
+  PaintPreviewState paint_preview_;
 
   CompatibilityMode compatibility_mode_;
   // This is cheaper than making setCompatibilityMode virtual.

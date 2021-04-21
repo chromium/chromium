@@ -144,6 +144,14 @@ class PaintPreviewClient
     // destruction
     bool should_clean_up_files = false;
 
+    // This flag will skip GPU accelerated content where applicable when
+    // capturing. This reduces hangs, capture time and may also reduce OOM
+    // crashes, but results in a lower fideltiy capture (i.e. the contents
+    // captured may not accurately reflect the content visible to the user at
+    // time of capture). See PaintPreviewBaseService::CaptureParams for a
+    // description of the effects of this flag.
+    bool skip_accelerated_content = false;
+
     // Generates a file path based off |root_dir| and |frame_guid|. Will be in
     // the form "{hexadecimal}.skp".
     base::FilePath FilePathForFrame(const base::UnguessableToken& frame_guid);

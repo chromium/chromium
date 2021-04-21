@@ -38,6 +38,28 @@ void ExtractLinks(const cc::PaintOpBuffer* buffer,
   }
 }
 
+size_t CountImagesOfType(const cc::PaintOpBuffer* buffer,
+                         cc::ImageType image_type) {
+  size_t count = 0;
+  for (cc::PaintOpBuffer::Iterator it(buffer); it; ++it) {
+    if (it->GetType() == cc::PaintOpType::DrawImage) {
+      auto* image_op = static_cast<cc::DrawImageOp*>(*it);
+      if (image_op->image.GetImageHeaderMetadata()->image_type == image_type) {
+        ++count;
+      }
+    } else if (it->GetType() == cc::PaintOpType::DrawImageRect) {
+      auto* image_op = static_cast<cc::DrawImageRectOp*>(*it);
+      if (image_op->image.GetImageHeaderMetadata()->image_type == image_type) {
+        ++count;
+      }
+    } else if (it->GetType() == cc::PaintOpType::DrawRecord) {
+      auto* record_op = static_cast<cc::DrawRecordOp*>(*it);
+      count += CountImagesOfType(record_op->record.get(), image_type);
+    }
+  }
+  return count;
+}
+
 class StubWebMediaPlayer : public EmptyWebMediaPlayer {
  public:
   StubWebMediaPlayer(WebMediaPlayerClient* client) : client_(client) {}
@@ -120,11 +142,32 @@ TEST_F(VideoPainterTestForCAP, VideoLayerAppearsInLayerTree) {
   EXPECT_EQ(gfx::Size(300, 150), layer->bounds());
 }
 
+class MockWebMediaPlayer : public EmptyWebMediaPlayer {
+ public:
+  MOCK_CONST_METHOD0(HasAvailableVideoFrame, bool());
+  MOCK_METHOD3(Paint,
+               void(cc::PaintCanvas*, const gfx::Rect&, cc::PaintFlags&));
+};
+
+class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
+ public:
+  WebMediaPlayer* CreateMediaPlayer(
+      const WebMediaPlayerSource&,
+      WebMediaPlayerClient*,
+      blink::MediaInspectorContext*,
+      WebMediaPlayerEncryptedMediaClient*,
+      WebContentDecryptionModule*,
+      const WebString& sink_id,
+      const cc::LayerTreeSettings& settings) override {
+    return new MockWebMediaPlayer();
+  }
+};
+
 class VideoPaintPreviewTest : public testing::Test,
                               public PaintTestConfigurations {
  public:
   void SetUp() override {
-    web_view_helper_.Initialize();
+    web_view_helper_.Initialize(&web_frame_client_);
 
     WebLocalFrameImpl& frame_impl = GetLocalMainFrame();
     frame_impl.ViewImpl()->MainFrameViewWidget()->Resize(
@@ -148,11 +191,48 @@ class VideoPaintPreviewTest : public testing::Test,
 
   const gfx::Rect& bounds() { return bounds_; }
 
+  bool PlayVideo() {
+    LocalFrame::NotifyUserActivation(
+        GetFrame(), mojom::UserActivationNotificationType::kTest);
+    auto* element = To<HTMLMediaElement>(GetDocument().body()->firstChild());
+    MockWebMediaPlayer* player =
+        static_cast<MockWebMediaPlayer*>(element->GetWebMediaPlayer());
+    EXPECT_CALL(*player, HasAvailableVideoFrame)
+        .WillRepeatedly(testing::Return(true));
+    auto play_result = element->Play();
+    EXPECT_FALSE(play_result.has_value())
+        << "DOM Exception when playing: "
+        << static_cast<int>(play_result.value());
+    return !play_result.has_value();
+  }
+
+  sk_sp<cc::PaintRecord> CapturePaintPreview(bool skip_accelerated_content) {
+    auto token = base::UnguessableToken::Create();
+    const base::UnguessableToken embedding_token =
+        base::UnguessableToken::Create();
+    const bool is_main_frame = true;
+
+    cc::PaintRecorder recorder;
+    paint_preview::PaintPreviewTracker tracker(token, embedding_token,
+                                               is_main_frame);
+    cc::PaintCanvas* canvas =
+        recorder.beginRecording(bounds().width(), bounds().height());
+    canvas->SetPaintPreviewTracker(&tracker);
+
+    GetLocalMainFrame().CapturePaintPreview(
+        bounds(), canvas,
+        /*include_linked_destinations=*/true,
+        /*skip_accelerated_content=*/skip_accelerated_content);
+    return recorder.finishRecordingAsPicture();
+  }
+
  private:
   LocalFrame* GetFrame() { return GetLocalMainFrame().GetFrame(); }
 
   frame_test_helpers::WebViewHelper web_view_helper_;
   gfx::Rect bounds_ = {0, 0, 640, 480};
+
+  TestWebFrameClientImpl web_frame_client_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(VideoPaintPreviewTest);
@@ -172,27 +252,88 @@ TEST_P(VideoPaintPreviewTest, URLIsRecordedWhenPaintingPreview) {
   )HTML");
   test::RunPendingTasks();
 
-  auto token = base::UnguessableToken::Create();
-  const base::UnguessableToken embedding_token =
-      base::UnguessableToken::Create();
-  const bool is_main_frame = true;
+  auto record = CapturePaintPreview(/*skip_accelerated_content=*/false);
 
-  cc::PaintRecorder recorder;
-  paint_preview::PaintPreviewTracker tracker(token, embedding_token,
-                                             is_main_frame);
-  cc::PaintCanvas* canvas =
-      recorder.beginRecording(bounds().width(), bounds().height());
-  canvas->SetPaintPreviewTracker(&tracker);
-
-  GetLocalMainFrame().CapturePaintPreview(bounds(), canvas,
-                                          /*include_linked_destinations=*/true);
-  auto record = recorder.finishRecordingAsPicture();
   std::vector<std::pair<GURL, SkRect>> links;
   ExtractLinks(record.get(), &links);
-
   ASSERT_EQ(1lu, links.size());
   EXPECT_EQ("http://test.com/", links[0].first);
-  EXPECT_EQ(SkRect::MakeWH(300, 300), links[0].second);
+
+  // The captured record will contain a poster image (GIF) even through the flag
+  // is not set since the video is not playing.
+  EXPECT_EQ(1U, CountImagesOfType(record.get(), cc::ImageType::kGIF));
+}
+
+TEST_P(VideoPaintPreviewTest, PosterFlagToggleFrameCapture) {
+  // Insert a <video> and allow it to begin loading. The image was taken from
+  // the RFC for the data URI scheme https://tools.ietf.org/html/rfc2397.
+  SetBodyInnerHTML(R"HTML(
+    <style>body{margin:0}</style>
+    <video width=300 height=300 src="test.ogv" poster="data:image/gif;base64,R0
+      lGODdhMAAwAPAAAAAAAP///ywAAAAAMAAwAAAC8IyPqcvt3wCcDkiLc7C0qwyGHhSWpjQu5yq
+      mCYsapyuvUUlvONmOZtfzgFzByTB10QgxOR0TqBQejhRNzOfkVJ+5YiUqrXF5Y5lKh/DeuNcP
+      5yLWGsEbtLiOSpa/TPg7JpJHxyendzWTBfX0cxOnKPjgBzi4diinWGdkF8kjdfnycQZXZeYGe
+      jmJlZeGl9i2icVqaNVailT6F5iJ90m6mvuTS4OK05M0vDk0Q4XUtwvKOzrcd3iq9uisF81M1O
+      IcR7lEewwcLp7tuNNkM3uNna3F2JQFo97Vriy/Xl4/f1cf5VWzXyym7PHhhx4dbgYKAAA7"
+      controls loop>
+  )HTML");
+  test::RunPendingTasks();
+
+  // Play the video.
+  ASSERT_TRUE(PlayVideo());
+
+  // Capture using poster.
+  auto record = CapturePaintPreview(/*skip_accelerated_content=*/true);
+
+  std::vector<std::pair<GURL, SkRect>> links;
+  ExtractLinks(record.get(), &links);
+  ASSERT_EQ(1lu, links.size());
+  EXPECT_EQ("http://test.com/", links[0].first);
+
+  // The captured record will contain a poster image (GIF) even though the video
+  // is playing.
+  EXPECT_EQ(1U, CountImagesOfType(record.get(), cc::ImageType::kGIF));
+
+  // Capture using video frame.
+  record = CapturePaintPreview(/*skip_accelerated_content=*/false);
+
+  links.clear();
+  ExtractLinks(record.get(), &links);
+  ASSERT_EQ(1lu, links.size());
+  EXPECT_EQ("http://test.com/", links[0].first);
+
+  // A video frame is recorded rather than the poster image (GIF) as the video
+  // is "playing". Note: this is actually just empty since we are using a
+  // MockWebMediaPlayer.
+  EXPECT_EQ(0U, CountImagesOfType(record.get(), cc::ImageType::kGIF));
+}
+
+TEST_P(VideoPaintPreviewTest, PosterFlagToggleNoPosterFrameCapture) {
+  // Insert a <video> and allow it to begin loading. The image was taken from
+  // the RFC for the data URI scheme https://tools.ietf.org/html/rfc2397.
+  SetBodyInnerHTML(R"HTML(
+    <style>body{margin:0}</style>
+    <video width=300 height=300 src="test.ogv" controls loop>
+  )HTML");
+  test::RunPendingTasks();
+
+  // Play the video.
+  ASSERT_TRUE(PlayVideo());
+
+  // Expect to not have to paint the video as empty will be painted without a
+  // poster.
+  auto* element = To<HTMLMediaElement>(GetDocument().body()->firstChild());
+  MockWebMediaPlayer* player =
+      static_cast<MockWebMediaPlayer*>(element->GetWebMediaPlayer());
+  EXPECT_CALL(*player, Paint(testing::_, testing::_, testing::_)).Times(0);
+
+  // Capture without poster.
+  auto record = CapturePaintPreview(/*skip_accelerated_content=*/true);
+
+  std::vector<std::pair<GURL, SkRect>> links;
+  ExtractLinks(record.get(), &links);
+  ASSERT_EQ(1lu, links.size());
+  EXPECT_EQ("http://test.com/", links[0].first);
 }
 
 }  // namespace
