@@ -26,6 +26,7 @@
 #include "chromeos/components/personalization_app/untrusted_personalization_app_ui_config.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chromeos/components/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
+#include "chromeos/components/telemetry_extension_ui/telemetry_extension_untrusted_ui.h"
 #endif  // !defined(OFFICIAL_BUILD)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -60,6 +61,8 @@ WebUIConfigList CreateConfigs() {
   register_config(
       std::make_unique<chromeos::UntrustedPersonalizationAppUIConfig>());
 #if !defined(OFFICIAL_BUILD)
+  register_config(
+      std::make_unique<chromeos::TelemetryExtensionUntrustedUIConfig>());
   register_config(
       std::make_unique<chromeos::UntrustedSampleSystemWebAppUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)

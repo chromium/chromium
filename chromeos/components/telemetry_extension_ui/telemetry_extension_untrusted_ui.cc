@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/telemetry_extension_ui/telemetry_extension_untrusted_source.h"
+#include "chromeos/components/telemetry_extension_ui/telemetry_extension_untrusted_ui.h"
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -15,6 +15,10 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/components/telemetry_extension_ui/url_constants.h"
+#include "chromeos/grit/chromeos_telemetry_extension_resources.h"
+#include "content/public/browser/url_data_source.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/mime_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -53,13 +57,45 @@ void ReadFile(const base::FilePath& path,
   std::move(callback).Run(response.get());
 }
 
-}  // namespace
+// A data source that helps with loading resources needed by
+// chrome-untrusted://telemetry-extension/ WebUI pages.
+// There are two types of resources:
+// 1. GRIT resourse if the resource path exist in |path_to_idr_map_|; otherwise,
+// 2. Resource from the directory specified by
+// |chromeos::switches::kTelemetryExtensionDirectory| command line switch.
+class TelemetryExtensionUntrustedSource : public content::URLDataSource {
+ public:
+  explicit TelemetryExtensionUntrustedSource(const std::string& source);
 
-// static
-std::unique_ptr<TelemetryExtensionUntrustedSource>
-TelemetryExtensionUntrustedSource::Create(std::string source) {
-  return base::WrapUnique(new TelemetryExtensionUntrustedSource(source));
-}
+  TelemetryExtensionUntrustedSource(const TelemetryExtensionUntrustedSource&) =
+      delete;
+  TelemetryExtensionUntrustedSource& operator=(
+      const TelemetryExtensionUntrustedSource&) = delete;
+  ~TelemetryExtensionUntrustedSource() override;
+
+  void AddResourcePath(base::StringPiece path, int resource_id);
+  void OverrideContentSecurityPolicy(network::mojom::CSPDirectiveName directive,
+                                     const std::string& value);
+
+  // content::URLDataSource overrides:
+  std::string GetSource() override;
+  void StartDataRequest(
+      const GURL& url,
+      const content::WebContents::Getter& wc_getter,
+      content::URLDataSource::GotDataCallback callback) override;
+  std::string GetMimeType(const std::string& path) override;
+  std::string GetContentSecurityPolicy(
+      network::mojom::CSPDirectiveName directive) override;
+
+ private:
+  base::Optional<int> PathToIdr(const std::string& path);
+
+  const base::FilePath root_directory_;
+  const std::string source_;
+  std::map<std::string, int> path_to_idr_map_;
+  base::flat_map<network::mojom::CSPDirectiveName, std::string>
+      csp_overrides_map_;
+};
 
 TelemetryExtensionUntrustedSource::TelemetryExtensionUntrustedSource(
     const std::string& source)
@@ -142,5 +178,44 @@ base::Optional<int> TelemetryExtensionUntrustedSource::PathToIdr(
   }
   return base::Optional<int>(it->second);
 }
+
+}  // namespace
+
+TelemetryExtensionUntrustedUIConfig::TelemetryExtensionUntrustedUIConfig()
+    : WebUIConfig(content::kChromeUIUntrustedScheme,
+                  chromeos::kChromeUITelemetryExtensionHost) {}
+
+TelemetryExtensionUntrustedUIConfig::~TelemetryExtensionUntrustedUIConfig() =
+    default;
+
+std::unique_ptr<content::WebUIController>
+TelemetryExtensionUntrustedUIConfig::CreateWebUIController(
+    content::WebUI* web_ui) {
+  return std::make_unique<TelemetryExtensionUntrustedUI>(web_ui);
+}
+
+TelemetryExtensionUntrustedUI::TelemetryExtensionUntrustedUI(
+    content::WebUI* web_ui)
+    : ui::UntrustedWebUIController(web_ui) {
+  auto untrusted_source = std::make_unique<TelemetryExtensionUntrustedSource>(
+      chromeos::kChromeUIUntrustedTelemetryExtensionURL);
+
+  untrusted_source->AddResourcePath("dpsl.js", IDR_TELEMETRY_EXTENSION_DPSL_JS);
+
+  untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameAncestors,
+      std::string("frame-ancestors ") +
+          chromeos::kChromeUITelemetryExtensionURL + ";");
+  untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src 'self';");
+  untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types telemetry-extension-static;");
+
+  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
+  content::URLDataSource::Add(browser_context, std::move(untrusted_source));
+}
+
+TelemetryExtensionUntrustedUI::~TelemetryExtensionUntrustedUI() = default;
 
 }  // namespace chromeos

@@ -27,8 +27,8 @@ source_set("telemetry_extension_ui") {
     "system_events_service.h",
     "telemetry_extension_ui.cc",
     "telemetry_extension_ui.h",
-    "telemetry_extension_untrusted_source.cc",
-    "telemetry_extension_untrusted_source.h",
+    "telemetry_extension_untrusted_ui.cc",
+    "telemetry_extension_untrusted_ui.h",
     "url_constants.cc",
     "url_constants.h",
   ]
