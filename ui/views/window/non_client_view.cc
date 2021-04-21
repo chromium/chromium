@@ -155,18 +155,18 @@ NonClientView::~NonClientView() {
 
 void NonClientView::SetFrameView(
     std::unique_ptr<NonClientFrameView> frame_view) {
-  // If there is an existing frame view, remove the client view before removing
-  // the frame view to prevent the client view from being deleted.
-  if (frame_view_.get()) {
-    frame_view_->RemoveChildView(client_view_);
-    RemoveChildView(frame_view_.get());
-  }
-
+  // If there is an existing frame view, ensure that the ClientView remains
+  // attached to the Widget by moving the ClientView to the new frame before
+  // removing the old frame from the view hierarchy.
+  std::unique_ptr<NonClientFrameView> old_frame_view = std::move(frame_view_);
   frame_view_ = std::move(frame_view);
   if (parent()) {
     AddChildViewAt(frame_view_.get(), 0);
     frame_view_->AddChildViewAt(client_view_, 0);
   }
+
+  if (old_frame_view)
+    RemoveChildView(old_frame_view.get());
 }
 
 void NonClientView::SetOverlayView(View* view) {
