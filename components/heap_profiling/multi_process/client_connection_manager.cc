@@ -76,15 +76,25 @@ bool ShouldProfileNonRendererProcessType(Mode mode, int process_type) {
   return false;
 }
 
+void StartProfilingClientOnIOThread(
+    base::WeakPtr<Controller> controller,
+    mojo::PendingRemote<mojom::ProfilingClient> client,
+    base::ProcessId pid,
+    mojom::ProcessType process_type) {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
+
+  if (!controller)
+    return;
+
+  controller->StartProfilingClient(std::move(client), pid, process_type);
+}
+
 void StartProfilingNonRendererChildOnProcessThread(
     base::WeakPtr<Controller> controller,
     const content::ChildProcessData& data) {
   DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
                           ? content::BrowserThread::UI
                           : content::BrowserThread::IO);
-
-  if (!controller)
-    return;
 
   content::BrowserChildProcessHost* host =
       content::BrowserChildProcessHost::FromID(data.id);
@@ -99,21 +109,16 @@ void StartProfilingNonRendererChildOnProcessThread(
   // Tell the child process to start profiling.
   mojo::PendingRemote<mojom::ProfilingClient> client;
   host->GetHost()->BindReceiver(client.InitWithNewPipeAndPassReceiver());
-  controller->StartProfilingClient(std::move(client), data.GetProcess().Pid(),
-                                   process_type);
-}
 
-void StartProfilingClientOnIOThread(
-    base::WeakPtr<Controller> controller,
-    mojo::PendingRemote<mojom::ProfilingClient> client,
-    base::ProcessId pid,
-    mojom::ProcessType process_type) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
-
-  if (!controller)
-    return;
-
-  controller->StartProfilingClient(std::move(client), pid, process_type);
+  auto start_task =
+      base::BindOnce(&StartProfilingClientOnIOThread, std::move(controller),
+                     std::move(client), data.GetProcess().Pid(), process_type);
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                 std::move(start_task));
+  } else {
+    std::move(start_task).Run();
+  }
 }
 
 void StartProfilingBrowserProcessOnIOThread(
@@ -136,12 +141,11 @@ void StartProfilingPidOnProcessThread(base::WeakPtr<Controller> controller,
                           ? content::BrowserThread::UI
                           : content::BrowserThread::IO);
 
-  if (!controller)
-    return;
-
   // Check if the request is for the current process.
   if (pid == base::GetCurrentProcId()) {
-    StartProfilingBrowserProcessOnIOThread(std::move(controller));
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&StartProfilingBrowserProcessOnIOThread,
+                                  std::move(controller)));
     return;
   }
 
@@ -166,9 +170,6 @@ void StartProfilingNonRenderersIfNecessaryOnProcessThread(
   DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
                           ? content::BrowserThread::UI
                           : content::BrowserThread::IO);
-
-  if (!controller)
-    return;
 
   for (content::BrowserChildProcessHostIterator browser_child_iter;
        !browser_child_iter.Done(); ++browser_child_iter) {
@@ -209,9 +210,7 @@ Mode ClientConnectionManager::GetMode() {
 }
 
 void ClientConnectionManager::StartProfilingProcess(base::ProcessId pid) {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? content::BrowserThread::UI
-                          : content::BrowserThread::IO);
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   mode_ = Mode::kManual;
 
