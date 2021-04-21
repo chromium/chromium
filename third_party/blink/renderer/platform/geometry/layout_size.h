@@ -43,8 +43,6 @@
 
 namespace blink {
 
-enum AspectRatioFit { kAspectRatioFitShrink, kAspectRatioFitGrow };
-
 class PLATFORM_EXPORT LayoutSize {
   DISALLOW_NEW();
 
@@ -85,8 +83,6 @@ class PLATFORM_EXPORT LayoutSize {
     return width_.RawValue() <= 0 || height_.RawValue() <= 0;
   }
   constexpr bool IsZero() const { return !width_ && !height_; }
-
-  float AspectRatio() const { return width_.ToFloat() / height_.ToFloat(); }
 
   void Expand(LayoutUnit width, LayoutUnit height) {
     width_ += width;
@@ -142,21 +138,6 @@ class PLATFORM_EXPORT LayoutSize {
   }
 
   LayoutSize TransposedSize() const { return LayoutSize(height_, width_); }
-
-  LayoutSize FitToAspectRatio(const LayoutSize& aspect_ratio,
-                              AspectRatioFit fit) const {
-    const float height_float = Height().ToFloat();
-    const float width_float = Width().ToFloat();
-    float height_scale = height_float / aspect_ratio.Height().ToFloat();
-    float width_scale = width_float / aspect_ratio.Width().ToFloat();
-    if ((width_scale > height_scale) != (fit == kAspectRatioFitGrow)) {
-      return LayoutSize(
-          height_float * aspect_ratio.Width() / aspect_ratio.Height(),
-          Height());
-    }
-    return LayoutSize(
-        Width(), width_float * aspect_ratio.Height() / aspect_ratio.Width());
-  }
 
   LayoutSize Fraction() const {
     return LayoutSize(width_.Fraction(), height_.Fraction());

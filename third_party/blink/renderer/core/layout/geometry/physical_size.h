@@ -13,6 +13,8 @@
 
 namespace blink {
 
+enum AspectRatioFit { kAspectRatioFitShrink, kAspectRatioFitGrow };
+
 class LayoutSize;
 struct LogicalSize;
 

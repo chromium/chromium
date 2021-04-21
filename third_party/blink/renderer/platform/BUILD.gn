@@ -2026,7 +2026,6 @@ source_set("blink_platform_unittests_sources") {
     "geometry/geometry_test_helpers.h",
     "geometry/int_rect_test.cc",
     "geometry/layout_rect_test.cc",
-    "geometry/layout_size_test.cc",
     "geometry/layout_unit_test.cc",
     "geometry/length_functions_test.cc",
     "geometry/length_test.cc",
