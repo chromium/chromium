@@ -38,6 +38,7 @@ using ::testing::Return;
 using ::testing::Sequence;
 using ::testing::StrEq;
 using ::testing::WithArg;
+using ::testing::WithoutArgs;
 
 namespace reporting {
 namespace {
@@ -174,7 +175,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
   // completion.
   class SetUp {
    public:
-    explicit SetUp(MockUploadClient* client, test::TestCallbackWaiter* waiter)
+    SetUp(MockUploadClient* client, test::TestCallbackWaiter* waiter)
         : client_(client), waiter_(waiter) {}
     ~SetUp() {
       test::TestCallbackWaiter* const waiter =
@@ -182,7 +183,8 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
       EXPECT_CALL(*client_, UploadComplete(Eq(Status::StatusOK())))
           .InSequence(client_->test_upload_sequence_,
                       client_->test_encounter_sequence_)
-          .WillOnce(Invoke([waiter] { waiter->Signal(); }));
+          .WillOnce(
+              WithoutArgs(Invoke(waiter, &test::TestCallbackWaiter::Signal)));
     }
 
     SetUp& Required(int64_t sequence_number, base::StringPiece value) {
