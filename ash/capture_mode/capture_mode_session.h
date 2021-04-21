@@ -104,6 +104,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // Called when starting 3-seconds count down before recording video.
   void StartCountDown(base::OnceClosure countdown_finished_callback);
 
+  // Returns true if we are currently in video recording countdown animation.
+  bool IsInCountDownAnimation() const;
+
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
@@ -231,9 +234,6 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
 
   // Updates |root_window_dimmers_| to dim the correct root windows.
   void UpdateRootWindowDimmers();
-
-  // Returns true if we are currently in video recording countdown animation.
-  bool IsInCountDownAnimation() const;
 
   // Updates the current cursor depending on current |location_in_screen| and
   // current capture type and source. |is_touch| is used when calculating fine

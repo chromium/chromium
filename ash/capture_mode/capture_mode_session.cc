@@ -737,6 +737,15 @@ void CaptureModeSession::StartCountDown(
   }
 }
 
+bool CaptureModeSession::IsInCountDownAnimation() const {
+  if (is_shutting_down_)
+    return false;
+
+  CaptureLabelView* label_view =
+      static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
+  return label_view->IsInCountDownAnimation();
+}
+
 void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
   ui::PaintRecorder recorder(context, layer()->size());
 
@@ -1768,12 +1777,6 @@ void CaptureModeSession::UpdateRootWindowDimmers() {
     dimmer->window()->Show();
     root_window_dimmers_.emplace(std::move(dimmer));
   }
-}
-
-bool CaptureModeSession::IsInCountDownAnimation() const {
-  CaptureLabelView* label_view =
-      static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
-  return label_view->IsInCountDownAnimation();
 }
 
 void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,

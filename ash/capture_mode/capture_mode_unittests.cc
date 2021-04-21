@@ -36,6 +36,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
@@ -1591,6 +1592,53 @@ TEST_F(CaptureModeTest, DoNotHandleEventDuringCountDown) {
   EXPECT_NE(capture_mode_session->GetSelectedWindow(), window2.get());
 
   WaitForCountDownToFinish();
+}
+
+// Test that during countdown, window changes or crashes are handled.
+TEST_F(CaptureModeTest, WindowChangesDuringCountdown) {
+  // We need a non-zero duration to avoid infinite loop on countdown.
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  std::unique_ptr<aura::Window> window;
+
+  auto* controller = CaptureModeController::Get();
+  controller->SetSource(CaptureModeSource::kWindow);
+  controller->SetType(CaptureModeType::kVideo);
+
+  auto start_countdown = [this, &window, controller]() {
+    window = CreateTestWindow(gfx::Rect(200, 200));
+    controller->Start(CaptureModeEntryType::kQuickSettings);
+
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseToCenterOf(window.get());
+    event_generator->ClickLeftButton();
+
+    EXPECT_TRUE(controller->IsActive());
+    EXPECT_FALSE(controller->is_recording_in_progress());
+  };
+
+  // Destroying or minimizing the observed window terminates the countdown and
+  // exits capture mode.
+  start_countdown();
+  window.reset();
+  EXPECT_FALSE(controller->IsActive());
+
+  start_countdown();
+  WindowState::Get(window.get())->Minimize();
+  EXPECT_FALSE(controller->IsActive());
+
+  // Activation changes (such as opening overview) should not terminate the
+  // countdown.
+  start_countdown();
+  Shell::Get()->overview_controller()->StartOverview();
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_FALSE(controller->is_recording_in_progress());
+
+  // Wait for countdown to finish and check that recording starts.
+  WaitForCountDownToFinish();
+  EXPECT_FALSE(controller->IsActive());
+  EXPECT_TRUE(controller->is_recording_in_progress());
 }
 
 // Tests that metrics are recorded properly for capture mode entry points.
