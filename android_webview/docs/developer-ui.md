@@ -95,7 +95,7 @@ tool.
 
 ![WebView flag UI](images/webview_flag_ui.png)
 
-Tap the "Flags" option in the bottom navgation bar. You can scroll through the
+Tap the "Flags" option in the bottom navigation bar. You can scroll through the
 list to find your desired feature/flag (ex. "highlight-all-webviews"), tap the
 dropdown (look for "Default"), and tap "Enabled" in the dialog popup. You can
 enable (or disable) as many flags as you need.
