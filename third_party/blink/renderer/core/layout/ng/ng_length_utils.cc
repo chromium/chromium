@@ -742,21 +742,30 @@ base::Optional<LogicalSize> ComputeNormalizedNaturalSize(
     const NGBlockNode& node,
     const NGBoxStrut& border_padding,
     const LogicalSize& aspect_ratio) {
+  // Returns the default natural size (if we have no aspect-ratio).
+  auto NaturalSize = [&]() -> LogicalSize {
+    DCHECK(aspect_ratio.IsEmpty());
+    const auto& style = node.Style();
+    PhysicalSize natural_size(LayoutUnit(300), LayoutUnit(150));
+    natural_size.Scale(style.EffectiveZoom());
+    return natural_size.ConvertToLogical(style.GetWritingMode());
+  };
+
   base::Optional<LayoutUnit> intrinsic_inline;
   base::Optional<LayoutUnit> intrinsic_block;
   node.IntrinsicSize(&intrinsic_inline, &intrinsic_block);
 
   // Add the border-padding. If we *don't* have an aspect-ratio use the default
-  // replaced size (300x150).
+  // natural size (300x150).
   if (intrinsic_inline)
     intrinsic_inline = *intrinsic_inline + border_padding.InlineSum();
   else if (aspect_ratio.IsEmpty())
-    intrinsic_inline = LayoutUnit(300) + border_padding.InlineSum();
+    intrinsic_inline = NaturalSize().inline_size + border_padding.InlineSum();
 
   if (intrinsic_block)
     intrinsic_block = *intrinsic_block + border_padding.BlockSum();
   else if (aspect_ratio.IsEmpty())
-    intrinsic_block = LayoutUnit(150) + border_padding.BlockSum();
+    intrinsic_block = NaturalSize().block_size + border_padding.BlockSum();
 
   // If we have one natural size reflect via. the aspect-ratio.
   if (!intrinsic_inline && intrinsic_block) {
