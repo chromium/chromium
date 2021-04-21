@@ -1180,10 +1180,10 @@ void AccessibilityTreeFormatterUia::ProcessValueForOutput(
       break;
     }
     case base::Value::Type::INTEGER: {
-      int int_value = 0;
-      value->GetAsInteger(&int_value);
-      WriteAttribute(
-          false, base::StringPrintf("%s=%d", name.c_str(), int_value), &line);
+      WriteAttribute(false,
+                     base::StringPrintf("%s=%d", name.c_str(),
+                                        value->GetIfInt().value_or(0)),
+                     &line);
       break;
     }
     case base::Value::Type::DOUBLE: {
