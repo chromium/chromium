@@ -394,6 +394,10 @@ const base::Feature kEventBasedStatusReporting{
 // Enables real-time reporting for extension request
 const base::Feature kEnterpriseRealtimeExtensionRequest{
     "EnterpriseRealtimeExtensionRequest", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::FeatureParam<base::TimeDelta>
+    kEnterpiseRealtimeExtensionRequestThrottleDelay{
+        &kEnterpriseRealtimeExtensionRequest, "throttle_delay",
+        base::TimeDelta::FromMinutes(1)};
 #endif
 
 // If enabled, this feature's |kExternalInstallDefaultButtonKey| field trial

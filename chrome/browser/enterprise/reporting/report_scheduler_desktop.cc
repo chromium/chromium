@@ -22,8 +22,6 @@ namespace enterprise_reporting {
 
 namespace {
 
-constexpr int kThrottleTimeInMinute = 1;
-
 // Returns true if this build should generate basic reports when an update is
 // detected.
 // TODO(crbug.com/1102047): Get rid of this function after Chrome OS reporting
@@ -108,7 +106,7 @@ void ReportSchedulerDesktop::StartWatchingExtensionRequestIfNeeded() {
     return;
 
   ExtensionRequestReportThrottler::Get()->Enable(
-      base::TimeDelta::FromMinutes(kThrottleTimeInMinute),
+      features::kEnterpiseRealtimeExtensionRequestThrottleDelay.Get(),
       base::BindRepeating(&ReportSchedulerDesktop::TriggerExtensionRequest,
                           base::Unretained(this)));
 }
