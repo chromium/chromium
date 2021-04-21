@@ -16,7 +16,7 @@ import {EmojiButton} from './emoji_button.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK} from './events.js';
 import {RecentEmojiStore} from './store.js';
-import {Emoji, EmojiGroup, EmojiGroupData, EmojiVariants} from './types.js';
+import {Emoji, EmojiGroup, EmojiGroupData, EmojiVariants, StoredEmoji} from './types.js';
 
 const EMOJI_ORDERING_JSON = '/emoji_13_1_ordering.json';
 
@@ -81,16 +81,17 @@ const GROUP_TABS = [
 ];
 
 /**
- * Constructs the emoji group data structure from a given list of emoji
- * strings. Note: returned emoji have no variants.
+ * Constructs the emoji group data structure from a given list of recent emoji
+ * data from localstorage.
  *
- * @param {!Array<string>} recentEmoji list of recently used emoji strings.
+ * @param {!Array<StoredEmoji>} recentEmoji list of recently used emoji strings.
  * @return {!Array<EmojiVariants>} list of emoji data structures
  */
 function makeRecentlyUsed(recentEmoji) {
-  return recentEmoji.map(
-      emoji =>
-          ({base: {string: emoji, name: '', keywords: []}, alternates: []}));
+  return recentEmoji.map(emoji => ({
+                           base: {string: emoji.base, name: '', keywords: []},
+                           alternates: emoji.alternates
+                         }));
 }
 
 export class EmojiPicker extends PolymerElement {
@@ -163,7 +164,8 @@ export class EmojiPicker extends PolymerElement {
     this.addEventListener(
         EMOJI_BUTTON_CLICK,
         ev => this.insertEmoji(
-            ev.detail.emoji, ev.detail.isVariant, ev.detail.baseEmoji));
+            ev.detail.emoji, ev.detail.isVariant, ev.detail.baseEmoji,
+            ev.detail.allVariants));
     this.addEventListener(
         EMOJI_CLEAR_RECENTS_CLICK, ev => this.clearRecentEmoji());
     // variant popup related handlers
@@ -221,12 +223,15 @@ export class EmojiPicker extends PolymerElement {
 
   /**
    * @param {!string} emoji
+   * @param {boolean} isVariant
+   * @param {!string} baseEmoji
+   * @param {!Array<!string>} allVariants
    */
-  async insertEmoji(emoji, isVariant, baseEmoji) {
+  async insertEmoji(emoji, isVariant, baseEmoji, allVariants) {
     this.$.message.textContent = emoji + ' inserted.';
     const incognito = (await this.apiProxy_.isIncognitoTextField()).incognito;
     if (!incognito) {
-      this.recentEmojiStore.bumpEmoji(emoji);
+      this.recentEmojiStore.bumpEmoji({base: emoji, alternates: allVariants});
       this.recentEmojiStore.savePreferredVariant(baseEmoji, emoji);
       this.set(
           ['history', 'emoji'],

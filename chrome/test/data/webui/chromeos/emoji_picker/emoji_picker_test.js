@@ -133,8 +133,54 @@ suite('<emoji-picker>', () => {
         assertTrue(recentText.includes(String.fromCodePoint(128512)));
       });
 
+  test('recently-used should have variants for variant emoji', async () => {
+    EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
+        new Promise((resolve) => resolve({incognito: false}));
+    // yield to allow emoji-group and emoji buttons to render.
+    const emojiButton = (await waitForCondition(
+                             () => findInEmojiPicker(
+                                 '[data-group="0"] > emoji-group',
+                                 'emoji-button:nth-child(2)')))
+                            .shadowRoot.querySelector('button');
+    emojiButton.click();
+
+    // wait until emoji exists in recently used section.
+    const recentlyUsed =
+        (await waitForCondition(
+             () => findInEmojiPicker(
+                 '[data-group=history] > emoji-group', 'emoji-button')))
+            .shadowRoot.querySelector('button');
+
+    // check variants class is applied
+    assertTrue(recentlyUsed.classList.contains('has-variants'));
+  });
+
   test(
-      'recently used should be empty after emoji is clicked in incognito mode',
+      'recently-used should have no variants for non-variant emoji',
+      async () => {
+        EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
+            new Promise((resolve) => resolve({incognito: false}));
+        // yield to allow emoji-group and emoji buttons to render.
+        const emojiButton = (await waitForCondition(
+                                 () => findInEmojiPicker(
+                                     '[data-group="0"] > emoji-group',
+                                     'emoji-button:nth-child(1)')))
+                                .shadowRoot.querySelector('button');
+        emojiButton.click();
+
+        // wait until emoji exists in recently used section.
+        const recentlyUsed =
+            (await waitForCondition(
+                 () => findInEmojiPicker(
+                     '[data-group=history] > emoji-group', 'emoji-button')))
+                .shadowRoot.querySelector('button');
+
+        // check variants class is not applied
+        assertFalse(recentlyUsed.classList.contains('has-variants'));
+      });
+
+  test(
+      'recently-used should be empty after emoji is clicked in incognito mode',
       async () => {
         EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
             new Promise((resolve) => resolve({incognito: true}));

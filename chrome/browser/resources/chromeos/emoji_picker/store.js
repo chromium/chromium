@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {StoredEmoji} from './types.js';
+
 const LOCALSTORAGE_KEY = 'emoji-recently-used';
 const MAX_RECENTS = 18;
 
 /**
- * Recently used emoji, most recent first. Each emoji is stored as a string.
- * @typedef {!Array<string>} RecentlyUsedEmoji
- */
-let RecentlyUsedEmoji;
-
-/**
- * @return {{history:RecentlyUsedEmoji, preference:Object<string,string>}}
+ * @return {{history:!Array<StoredEmoji>, preference:Object<string,string>}}
  *     recently used emoji, most recent first.
  */
 function load() {
@@ -26,7 +22,7 @@ function load() {
 }
 
 /**
- * @param {{history:RecentlyUsedEmoji, preference:Object<string,string>}} data
+ * @param {{history:!Array<StoredEmoji>, preference:Object<string,string>}} data
  *     recently used emoji, most recent first.
  */
 function save(data) {
@@ -58,10 +54,12 @@ export class RecentEmojiStore {
   /**
    * Moves the given emoji to the front of the MRU list, inserting it if
    * it did not previously exist.
-   * @param {!string} newEmoji most recently used emoji.
+   * @param {!StoredEmoji} newEmoji most recently used emoji.
    */
   bumpEmoji(newEmoji) {
     // find and remove newEmoji from array if it previously existed.
+    // Note, this explicitly allows for multiple recent emoji entries for the
+    // same "base" emoji just with a different variant.
     const oldIndex = this.data.history.findIndex(x => x === newEmoji);
     if (oldIndex !== -1) {
       this.data.history.splice(oldIndex, 1);
