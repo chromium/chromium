@@ -166,6 +166,7 @@ void TranslateMetricsLoggerImpl::RecordMetrics(bool is_final) {
           int(base::HashMetricName(model_detected_language_)))
       .SetHTMLContentLanguage(int(base::HashMetricName(html_content_language_)))
       .SetHTMLDocumentLanguage(int(base::HashMetricName(html_doc_language_)))
+      .SetWasContentEmpty(was_content_empty_)
       .Record(ukm_recorder);
 
   sequence_no_++;
@@ -563,6 +564,10 @@ void TranslateMetricsLoggerImpl::LogDetectedLanguage(
 void TranslateMetricsLoggerImpl::LogDetectionReliabilityScore(
     const float& model_detection_reliability_score) {
   model_detection_reliability_score_ = model_detection_reliability_score;
+}
+
+void TranslateMetricsLoggerImpl::LogWasContentEmpty(bool was_content_empty) {
+  was_content_empty_ = was_content_empty;
 }
 
 }  // namespace translate

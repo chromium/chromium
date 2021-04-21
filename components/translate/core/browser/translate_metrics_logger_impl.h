@@ -86,6 +86,7 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
   void LogUIInteraction(UIInteraction ui_interaction) override {}
   TranslationType GetNextManualTranslationType() override;
   void SetHasHrefTranslateTarget(bool has_href_translate_target) override {}
+  void LogWasContentEmpty(bool was_content_empty) override {}
 };
 
 class TranslateManager;
@@ -143,6 +144,7 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   void LogUIInteraction(UIInteraction ui_interaction) override;
   TranslationType GetNextManualTranslationType() override;
   void SetHasHrefTranslateTarget(bool has_href_translate_target) override;
+  void LogWasContentEmpty(bool was_content_empty) override;
 
   // TODO(curranmax): Add appropriate functions for the Translate code to log
   // relevant events. https://crbug.com/1114868.
@@ -289,6 +291,10 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   // Tracks if this page load has an href translate target language on a link
   // from Google Search.
   bool has_href_translate_target_ = false;
+
+  // Tracks whether the page content used to detect the page language
+  // was empty or not.
+  bool was_content_empty_ = true;
 
   base::WeakPtrFactory<TranslateMetricsLoggerImpl> weak_method_factory_{this};
 };

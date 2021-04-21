@@ -325,6 +325,8 @@ void ContentTranslateDriver::RegisterPage(
       details.model_detected_language);
   translate_manager_->GetActiveTranslateMetricsLogger()
       ->LogDetectionReliabilityScore(details.model_reliability_score);
+  translate_manager_->GetActiveTranslateMetricsLogger()->LogWasContentEmpty(
+      details.contents.length() > 0);
 }
 
 void ContentTranslateDriver::OnPageTranslated(

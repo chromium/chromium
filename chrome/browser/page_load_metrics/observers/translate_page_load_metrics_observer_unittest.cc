@@ -141,6 +141,10 @@ class MockTranslateMetricsLoggerContainer
         model_detection_reliability_score);
   }
 
+  void LogWasContentEmpty(bool was_content_empty) override {
+    mock_translate_metrics_logger_->LogWasContentEmpty(was_content_empty);
+  }
+
  private:
   translate::testing::MockTranslateMetricsLogger*
       mock_translate_metrics_logger_;  // Weak.

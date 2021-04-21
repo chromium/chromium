@@ -15436,6 +15436,12 @@ be describing additional metrics about the same event.
       Translate for this page load.
     </summary>
   </metric>
+  <metric name="WasContentEmpty" enum="Boolean">
+    <summary>
+      Whether the page content used to detect the page language was empty or
+      not.
+    </summary>
+  </metric>
 </event>
 
 <event name="TrustedWebActivity.Open" singular="True">

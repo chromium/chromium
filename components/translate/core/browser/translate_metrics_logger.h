@@ -177,6 +177,10 @@ class TranslateMetricsLogger {
   virtual TranslationType GetNextManualTranslationType() = 0;
 
   virtual void SetHasHrefTranslateTarget(bool has_href_translate_target) = 0;
+
+  // Records whether the page content used to detect the page language
+  // was empty or not.
+  virtual void LogWasContentEmpty(bool was_content_empty) = 0;
 };
 
 }  // namespace translate
