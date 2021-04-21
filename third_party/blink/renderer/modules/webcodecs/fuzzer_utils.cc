@@ -163,9 +163,17 @@ VideoEncoderEncodeOptions* MakeEncodeOptions(
 
 VideoFrame* MakeVideoFrame(ScriptState* script_state,
                            const wc_fuzzer::VideoFrameBitmapInit& proto) {
+  constexpr size_t kBytesPerPixel = 4;
+  auto bitmap_size = proto.rgb_bitmap().size();
+  // ImageData::Create() rejects inputs if data size is not a multiple of
+  // width * 4.
+  // Round down bitmap size to width * 4, it makes more fuzzer inputs
+  // acceptable and incresease fuzzing penetration.
+  if (proto.bitmap_width() > 0)
+    bitmap_size -= bitmap_size % (proto.bitmap_width() * kBytesPerPixel);
   NotShared<DOMUint8ClampedArray> data_u8(DOMUint8ClampedArray::Create(
       reinterpret_cast<const unsigned char*>(proto.rgb_bitmap().data()),
-      proto.rgb_bitmap().size()));
+      bitmap_size));
 
   ImageData* image_data = ImageData::Create(data_u8, proto.bitmap_width(),
                                             IGNORE_EXCEPTION_FOR_TESTING);
