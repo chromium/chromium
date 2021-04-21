@@ -77,10 +77,6 @@ static_library("gcm_driver") {
     "//components/gcm_driver/instance_id",
   ]
 
-  if (is_chromeos_ash) {
-    deps += [ "//components/timers" ]
-  }
-
   if (use_gcm_from_platform) {
     assert(is_android)
     sources += [

@@ -454,7 +454,6 @@ test("components_unittests") {
       "//components/guest_os:unit_tests",
       "//components/metrics/structured:unit_tests",
       "//components/ownership:unit_tests",
-      "//components/timers:unit_tests",
       "//components/user_manager:unit_tests",
     ]
   }

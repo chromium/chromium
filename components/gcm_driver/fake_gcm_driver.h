@@ -46,7 +46,6 @@ class FakeGCMDriver : public GCMDriver {
   void RemoveAccountMapping(const CoreAccountId& account_id) override;
   base::Time GetLastTokenFetchTime() override;
   void SetLastTokenFetchTime(const base::Time& time) override;
-  void WakeFromSuspendForHeartbeat(bool wake) override;
   InstanceIDHandler* GetInstanceIDHandlerInternal() override;
   void AddHeartbeatInterval(const std::string& scope, int interval_ms) override;
   void RemoveHeartbeatInterval(const std::string& scope) override;

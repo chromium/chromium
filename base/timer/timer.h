@@ -140,14 +140,6 @@ class BASE_EXPORT TimerBase {
   virtual void OnStop() = 0;
   virtual void RunUserTask() = 0;
 
-  // Returns the current tick count.
-  TimeTicks Now() const;
-
-  void set_desired_run_time(TimeTicks desired) { desired_run_time_ = desired; }
-  void set_is_running(bool running) { is_running_ = running; }
-
-  const Location& posted_from() const { return posted_from_; }
-
   // The task runner on which the task should be scheduled. If it is null, the
   // task runner for the current sequence will be used.
   scoped_refptr<SequencedTaskRunner> task_runner_;
@@ -171,6 +163,9 @@ class BASE_EXPORT TimerBase {
   // corresponding |task_runner_| field is null, the task runner for the current
   // sequence is returned.
   scoped_refptr<SequencedTaskRunner> GetTaskRunner();
+
+  // Returns the current tick count.
+  TimeTicks Now() const;
 
   // Disable |scheduled_task_| and abandon it so that it no longer refers back
   // to this object.
@@ -331,9 +326,6 @@ class BASE_EXPORT RetainingOneShotTimer : public internal::TimerBase {
   }
 
   const RepeatingClosure& user_task() const { return user_task_; }
-
- protected:
-  void set_user_task(const RepeatingClosure& task) { user_task_ = task; }
 
  private:
   // Mark this final, so that the destructor can call this safely.

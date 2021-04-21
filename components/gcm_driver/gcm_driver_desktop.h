@@ -95,7 +95,6 @@ class GCMDriverDesktop : public GCMDriver,
   void RemoveAccountMapping(const CoreAccountId& account_id) override;
   base::Time GetLastTokenFetchTime() override;
   void SetLastTokenFetchTime(const base::Time& time) override;
-  void WakeFromSuspendForHeartbeat(bool wake) override;
   InstanceIDHandler* GetInstanceIDHandlerInternal() override;
   void AddHeartbeatInterval(const std::string& scope, int interval_ms) override;
   void RemoveHeartbeatInterval(const std::string& scope) override;
@@ -224,10 +223,6 @@ class GCMDriverDesktop : public GCMDriver,
   scoped_refptr<base::SequencedTaskRunner> io_thread_;
 
   std::unique_ptr<GCMDelayedTaskController> delayed_task_controller_;
-
-  // Whether the HeartbeatManager should try to wake the system from suspend for
-  // sending heartbeat messages.
-  bool wake_from_suspend_enabled_;
 
   // For all the work occurring on the IO thread. Must be destroyed on the IO
   // thread.

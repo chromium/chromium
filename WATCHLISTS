@@ -1825,8 +1825,7 @@
       'filepath': 'chrome/browser/win/conflicts/'
     },
     'timers': {
-      'filepath': 'base/timer/'\
-                  '|components/timers/'
+      'filepath': 'base/timer/'
     },
     'tools_win_chromeexts': {
       'filepath': 'tools/win/chromeexts',

@@ -30,10 +30,6 @@
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/timers/alarm_timer_chromeos.h"
-#endif
-
 namespace gcm {
 
 class GCMDriverDesktop::IOWorker : public GCMClient::Delegate {
@@ -99,7 +95,6 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Delegate {
   void UpdateAccountMapping(const AccountMapping& account_mapping);
   void RemoveAccountMapping(const CoreAccountId& account_id);
   void SetLastTokenFetchTime(const base::Time& time);
-  void WakeFromSuspendForHeartbeat(bool wake);
   void AddHeartbeatInterval(const std::string& scope, int interval_ms);
   void RemoveHeartbeatInterval(const std::string& scope);
 
@@ -480,24 +475,6 @@ void GCMDriverDesktop::IOWorker::DeleteToken(
   gcm_client_->Unregister(std::move(instance_id_token_info));
 }
 
-void GCMDriverDesktop::IOWorker::WakeFromSuspendForHeartbeat(bool wake) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK(io_thread_->RunsTasksInCurrentSequence());
-
-  std::unique_ptr<base::RetainingOneShotTimer> timer;
-  if (wake)
-    timer = timers::SimpleAlarmTimer::Create();
-
-  // If not |wake|, or SimpleAlarmTimer is not supported on the running
-  // platform (please see SimpleAlarmTimer for the details), fall back to
-  // RetainingOneShotTimer.
-  if (!timer)
-    timer = std::make_unique<base::RetainingOneShotTimer>();
-
-  gcm_client_->UpdateHeartbeatTimer(std::move(timer));
-#endif
-}
-
 void GCMDriverDesktop::IOWorker::AddHeartbeatInterval(const std::string& scope,
                                                       int interval_ms) {
   DCHECK(io_thread_->RunsTasksInCurrentSequence());
@@ -542,8 +519,7 @@ GCMDriverDesktop::GCMDriverDesktop(
       // in which case the fetching will be triggered.
       last_token_fetch_time_(base::Time::Max()),
       ui_thread_(ui_thread),
-      io_thread_(io_thread),
-      wake_from_suspend_enabled_(false) {
+      io_thread_(io_thread) {
   // Create and initialize the GCMClient. Note that this does not initiate the
   // GCM check-in.
   io_worker_ = std::make_unique<IOWorker>(ui_thread, io_thread);
@@ -1135,32 +1111,6 @@ void GCMDriverDesktop::DeleteTokenFinished(const std::string& app_id,
   std::move(callback).Run(result);
 }
 
-void GCMDriverDesktop::WakeFromSuspendForHeartbeat(bool wake) {
-  DCHECK(ui_thread_->RunsTasksInCurrentSequence());
-
-  wake_from_suspend_enabled_ = wake;
-
-  // The GCM service has not been initialized.
-  if (!delayed_task_controller_)
-    return;
-
-  if (!delayed_task_controller_->CanRunTaskWithoutDelay()) {
-    // The GCM service was initialized but has not started yet.
-    delayed_task_controller_->AddTask(base::BindOnce(
-        &GCMDriverDesktop::WakeFromSuspendForHeartbeat,
-        weak_ptr_factory_.GetWeakPtr(), wake_from_suspend_enabled_));
-    return;
-  }
-
-  // The GCMClient is ready so we can go ahead and post this task to the
-  // IOWorker.
-  io_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GCMDriverDesktop::IOWorker::WakeFromSuspendForHeartbeat,
-                     base::Unretained(io_worker_.get()),
-                     wake_from_suspend_enabled_));
-}
-
 void GCMDriverDesktop::AddHeartbeatInterval(const std::string& scope,
                                             int interval_ms) {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
@@ -1309,8 +1259,6 @@ void GCMDriverDesktop::GCMClientReady(
   UMA_HISTOGRAM_BOOLEAN("GCM.UserSignedIn", signed_in_);
 
   gcm_started_ = true;
-  if (wake_from_suspend_enabled_)
-    WakeFromSuspendForHeartbeat(wake_from_suspend_enabled_);
 
   last_token_fetch_time_ = last_token_fetch_time;
 

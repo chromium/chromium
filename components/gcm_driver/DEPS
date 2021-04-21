@@ -6,7 +6,6 @@ include_rules = [
   "+components/prefs",
   "+components/signin/public",
   "+components/sync/base",
-  "+components/timers",  # Only used for Chrome OS builds.
   "+components/version_info",
   "+content/public/browser/browser_context.h",
   "+content/public/test",  # Only used for tests.

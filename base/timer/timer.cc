@@ -154,11 +154,6 @@ void TimerBase::Reset() {
   PostNewScheduledTask(delay_);
 }
 
-TimeTicks TimerBase::Now() const {
-  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
-  return tick_clock_ ? tick_clock_->NowTicks() : TimeTicks::Now();
-}
-
 void TimerBase::PostNewScheduledTask(TimeDelta delay) {
   DCHECK(origin_sequence_checker_.CalledOnValidSequence());
   DCHECK(!scheduled_task_);
@@ -179,6 +174,11 @@ void TimerBase::PostNewScheduledTask(TimeDelta delay) {
 
 scoped_refptr<SequencedTaskRunner> TimerBase::GetTaskRunner() {
   return task_runner_.get() ? task_runner_ : SequencedTaskRunnerHandle::Get();
+}
+
+TimeTicks TimerBase::Now() const {
+  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  return tick_clock_ ? tick_clock_->NowTicks() : TimeTicks::Now();
 }
 
 void TimerBase::AbandonScheduledTask() {

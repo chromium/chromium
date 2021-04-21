@@ -141,7 +141,6 @@ static_library("arc") {
     # in intent_filter and this dependency will be removed.
     "//components/services/app_service/public/cpp:intents",
     "//components/session_manager/core",
-    "//components/timers",
     "//components/url_formatter",
     "//components/user_manager",
     "//components/user_prefs:user_prefs",

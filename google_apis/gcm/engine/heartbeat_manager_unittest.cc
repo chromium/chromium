@@ -183,26 +183,6 @@ TEST_F(HeartbeatManagerTest, StartThenUpdateInterval) {
   EXPECT_NE(heartbeat, manager()->GetNextHeartbeatTime());
 }
 
-// Updating the timer used for heartbeats before starting should not start the
-// timer.
-TEST_F(HeartbeatManagerTest, UpdateTimerBeforeStart) {
-  manager()->UpdateHeartbeatTimer(
-      std::make_unique<base::RetainingOneShotTimer>());
-  EXPECT_TRUE(manager()->GetNextHeartbeatTime().is_null());
-}
-
-// Updating the timer used for heartbeats after starting should restart the
-// timer but not increase the heartbeat time by more than a millisecond.
-TEST_F(HeartbeatManagerTest, UpdateTimerAfterStart) {
-  StartManager();
-  base::TimeTicks heartbeat = manager()->GetNextHeartbeatTime();
-
-  manager()->UpdateHeartbeatTimer(
-      std::make_unique<base::RetainingOneShotTimer>());
-  EXPECT_LT(manager()->GetNextHeartbeatTime() - heartbeat,
-            base::TimeDelta::FromMilliseconds(5));
-}
-
 // Stopping the manager should reset the heartbeat timer.
 TEST_F(HeartbeatManagerTest, Stop) {
   StartManager();

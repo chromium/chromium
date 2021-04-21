@@ -206,8 +206,6 @@ void GCMDriverAndroid::SetLastTokenFetchTime(const base::Time& time) {
   NOTIMPLEMENTED();
 }
 
-void GCMDriverAndroid::WakeFromSuspendForHeartbeat(bool wake) {}
-
 InstanceIDHandler* GCMDriverAndroid::GetInstanceIDHandlerInternal() {
   // Not supported for Android.
   return NULL;
