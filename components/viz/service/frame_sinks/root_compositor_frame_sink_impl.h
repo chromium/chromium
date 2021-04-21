@@ -120,7 +120,8 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
       std::unique_ptr<ExternalBeginFrameSource> external_begin_frame_source,
       std::unique_ptr<Display> display,
       bool use_preferred_interval_for_video,
-      bool hw_support_for_multiple_refresh_rates);
+      bool hw_support_for_multiple_refresh_rates,
+      bool apply_simple_frame_rate_throttling);
 
   // DisplayClient:
   void DisplayOutputSurfaceLost() override;
@@ -169,6 +170,10 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
   base::TimeDelta display_frame_interval_ = BeginFrameArgs::DefaultInterval();
   base::TimeDelta preferred_frame_interval_ =
       FrameRateDecider::UnspecifiedFrameInterval();
+
+  // Determines whether to throttle frame rate by half.
+  // TODO(http://crbug.com/1153404): Remove this field when experiment is over.
+  bool apply_simple_frame_rate_throttling_ = false;
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.

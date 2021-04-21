@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/system/sys_info.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/delegated_ink_prediction_configuration.h"
@@ -33,6 +34,9 @@ const base::Feature kEnableOverlayPrioritization {
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 };
+
+const base::Feature kSimpleFrameRateThrottling{
+    "SimpleFrameRateThrottling", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Use the SkiaRenderer.
 const base::Feature kUseSkiaRenderer {
@@ -145,6 +149,10 @@ bool IsSyncWindowDestructionEnabled() {
       "SyncWindowDestruction", base::FEATURE_ENABLED_BY_DEFAULT};
 
   return base::FeatureList::IsEnabled(kSyncWindowDestruction);
+}
+
+bool IsSimpleFrameRateThrottlingEnabled() {
+  return base::FeatureList::IsEnabled(kSimpleFrameRateThrottling);
 }
 
 bool IsUsingSkiaRenderer() {

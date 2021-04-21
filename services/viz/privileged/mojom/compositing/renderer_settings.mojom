@@ -9,6 +9,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 
 struct RendererSettings {
+  bool apply_simple_frame_rate_throttling;
   bool allow_antialiasing;
   bool force_antialiasing;
   bool force_blending_with_shaders;

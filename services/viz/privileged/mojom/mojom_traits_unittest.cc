@@ -19,6 +19,7 @@ TEST_F(StructTraitsTest, RendererSettings) {
   RendererSettings input;
 
   // Set |input| to non-default values.
+  input.apply_simple_frame_rate_throttling = false;
   input.allow_antialiasing = false;
   input.force_antialiasing = true;
   input.force_blending_with_shaders = true;
@@ -31,6 +32,8 @@ TEST_F(StructTraitsTest, RendererSettings) {
   RendererSettings output;
   mojom::RendererSettings::Deserialize(
       mojom::RendererSettings::Serialize(&input), &output);
+  EXPECT_EQ(input.apply_simple_frame_rate_throttling,
+            output.apply_simple_frame_rate_throttling);
   EXPECT_EQ(input.allow_antialiasing, output.allow_antialiasing);
   EXPECT_EQ(input.force_antialiasing, output.force_antialiasing);
   EXPECT_EQ(input.force_blending_with_shaders,
