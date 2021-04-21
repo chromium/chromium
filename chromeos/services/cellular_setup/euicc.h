@@ -79,10 +79,16 @@ class Euicc : public mojom::Euicc {
   void OnNewProfileEnableSuccess(const dbus::ObjectPath& profile_path,
                                  const std::string& service_path);
   void OnNewProfileConnectSuccess(const dbus::ObjectPath& profile_path);
+  void OnPrepareCellularNetworkForConnectionFailure(
+      const dbus::ObjectPath& profile_path,
+      const std::string& service_path,
+      const std::string& error_name);
   void OnNewProfileConnectFailure(
       const dbus::ObjectPath& profile_path,
       const std::string& error_name,
       std::unique_ptr<base::DictionaryValue> error_data);
+  void HandleNewProfileConnectFailure(const dbus::ObjectPath& profile_path,
+                                      const std::string& error_name);
   void PerformRequestPendingProfiles(
       RequestPendingProfilesCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);

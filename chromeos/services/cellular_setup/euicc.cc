@@ -264,12 +264,13 @@ void Euicc::OnProfileInstallResult(
   }
 
   install_calls_pending_connect_.emplace(*profile_path, std::move(callback));
-  esim_manager_->cellular_connection_handler()->EnableNewProfileForConnection(
-      path_, *profile_path, std::move(inhibit_lock),
-      base::BindOnce(&Euicc::OnNewProfileEnableSuccess,
-                     weak_ptr_factory_.GetWeakPtr(), *profile_path),
-      base::BindOnce(&Euicc::OnNewProfileConnectFailure,
-                     weak_ptr_factory_.GetWeakPtr(), *profile_path));
+  esim_manager_->cellular_connection_handler()
+      ->PrepareNewlyInstalledCellularNetworkForConnection(
+          path_, *profile_path, std::move(inhibit_lock),
+          base::BindOnce(&Euicc::OnNewProfileEnableSuccess,
+                         weak_ptr_factory_.GetWeakPtr(), *profile_path),
+          base::BindOnce(&Euicc::OnPrepareCellularNetworkForConnectionFailure,
+                         weak_ptr_factory_.GetWeakPtr(), *profile_path));
 }
 
 void Euicc::OnNewProfileEnableSuccess(const dbus::ObjectPath& profile_path,
@@ -277,9 +278,8 @@ void Euicc::OnNewProfileEnableSuccess(const dbus::ObjectPath& profile_path,
   const NetworkState* network_state =
       esim_manager_->network_state_handler()->GetNetworkState(service_path);
   if (!network_state) {
-    OnNewProfileConnectFailure(profile_path,
-                               NetworkConnectionHandler::kErrorNotFound,
-                               /*error_data=*/nullptr);
+    HandleNewProfileConnectFailure(profile_path,
+                                   NetworkConnectionHandler::kErrorNotFound);
     return;
   }
 
@@ -321,10 +321,22 @@ void Euicc::OnNewProfileConnectSuccess(const dbus::ObjectPath& profile_path) {
                           esim_profile->CreateRemote());
 }
 
+void Euicc::OnPrepareCellularNetworkForConnectionFailure(
+    const dbus::ObjectPath& profile_path,
+    const std::string& service_path,
+    const std::string& error_name) {
+  HandleNewProfileConnectFailure(profile_path, error_name);
+}
+
 void Euicc::OnNewProfileConnectFailure(
     const dbus::ObjectPath& profile_path,
     const std::string& error_name,
     std::unique_ptr<base::DictionaryValue> error_data) {
+  HandleNewProfileConnectFailure(profile_path, error_name);
+}
+
+void Euicc::HandleNewProfileConnectFailure(const dbus::ObjectPath& profile_path,
+                                           const std::string& error_name) {
   NET_LOG(ERROR) << "Error connecting to newly created profile path="
                  << profile_path.value() << " error_name=" << error_name;
 

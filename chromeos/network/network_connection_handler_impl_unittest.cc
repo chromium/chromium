@@ -946,6 +946,7 @@ TEST_F(NetworkConnectionHandlerImplTest,
 TEST_F(NetworkConnectionHandlerImplTest, PSimProfile_NotConnectable) {
   AddNonConnectablePSimService();
   Connect(kTestCellularServicePath);
+  SetCellularServiceConnectable();
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
 }
 

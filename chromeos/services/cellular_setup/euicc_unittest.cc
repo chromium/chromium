@@ -199,7 +199,7 @@ TEST_F(EuiccTest, InstallPendingProfileFromActivationCode) {
 
   HermesEuiccClient::TestInterface* euicc_test =
       HermesEuiccClient::Get()->GetTestInterface();
-  // Verify that installing a pending profile with it's activation code returns
+  // Verify that installing a pending profile with its activation code returns
   // proper status code and profile object.
   dbus::ObjectPath profile_path = euicc_test->AddFakeCarrierProfile(
       dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kPending, "",

@@ -380,20 +380,22 @@ void ESimProfile::OnPendingProfileInstallResult(
 
   // inhibit_lock will be released by esim connection handler.
   // Cellular device will uninhibit automatically at that point.
-  esim_manager_->cellular_connection_handler()->EnableNewProfileForConnection(
-      euicc_->path(), path_, std::move(inhibit_lock),
-      base::BindOnce(&ESimProfile::OnNewProfileEnableSuccess,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&ESimProfile::OnNewProfileEnableFailure,
-                     weak_ptr_factory_.GetWeakPtr()));
+  esim_manager_->cellular_connection_handler()
+      ->PrepareNewlyInstalledCellularNetworkForConnection(
+          euicc_->path(), path_, std::move(inhibit_lock),
+          base::BindOnce(&ESimProfile::OnNewProfileEnableSuccess,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(
+              &ESimProfile::OnPrepareCellularNetworkForConnectionFailure,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ESimProfile::OnNewProfileEnableSuccess(const std::string& service_path) {
   const NetworkState* network_state =
       esim_manager_->network_state_handler()->GetNetworkState(service_path);
   if (!network_state) {
-    OnNewProfileEnableFailure(NetworkConnectionHandler::kErrorNotFound,
-                              /*error_data=*/nullptr);
+    OnPrepareCellularNetworkForConnectionFailure(
+        service_path, NetworkConnectionHandler::kErrorNotFound);
     return;
   }
 
@@ -410,13 +412,12 @@ void ESimProfile::OnNewProfileEnableSuccess(const std::string& service_path) {
   std::move(install_callback_).Run(mojom::ProfileInstallResult::kSuccess);
 }
 
-void ESimProfile::OnNewProfileEnableFailure(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
-  NET_LOG(ERROR) << "Error enabling newly created profile path="
-                 << path_.value() << " error_name=" << error_name;
-
-  DCHECK(install_callback_);
+void ESimProfile::OnPrepareCellularNetworkForConnectionFailure(
+    const std::string& service_path,
+    const std::string& error_name) {
+  NET_LOG(ERROR) << "Error preparing network for connection. "
+                 << "Error: " << error_name
+                 << ", Service path: " << service_path;
   std::move(install_callback_).Run(mojom::ProfileInstallResult::kFailure);
 }
 
