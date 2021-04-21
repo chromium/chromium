@@ -2909,11 +2909,6 @@ void NavigationRequest::OnResponseStarted(
 
   if (!browser_initiated_ && render_frame_host_ &&
       render_frame_host_ != frame_tree_node_->current_frame_host()) {
-    // Reset the source location information if the navigation will not commit
-    // in the current renderer process. This information originated in another
-    // process (the current one), it should not be transferred to the new one.
-    common_params_->source_location = network::mojom::SourceLocation::New();
-
     // Allow the embedder to cancel the cross-process commit if needed.
     // TODO(clamy): Rename ShouldTransferNavigation.
     if (!frame_tree_node_->navigator().GetDelegate()->ShouldTransferNavigation(
@@ -5197,6 +5192,11 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
     DCHECK(!IsSameDocument() && !IsPageActivation());
     render_frame_host_->SetLifecycleStateToPendingCommit();
   }
+
+  // Reset the source location information, which is not needed anymore. This
+  // avoids leaking cross-origin data to another process in case the navigation
+  // doesn't commit in the same process as the document that initiated it.
+  common_params_->source_location = network::mojom::SourceLocation::New();
 
   SetState(READY_TO_COMMIT);
   ready_to_commit_time_ = base::TimeTicks::Now();

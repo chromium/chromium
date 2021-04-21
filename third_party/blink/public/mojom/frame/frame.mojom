@@ -178,6 +178,12 @@ struct OpenURLParams {
   Impression? impression;
   NavigationDownloadPolicy download_policy;
 
+  // Information about the Javascript source for this navigation. Used for
+  // providing information in console error messages triggered by the
+  // navigation. If the navigation is not caused by Javascript, the
+  // SourceLocation's URL is empty.
+  network.mojom.SourceLocation source_location;
+
   // Passing the |initiator_policy_container_keep_alive_handle| is just a mean
   // to ensure that the PolicyContainerHost of the initiator RenderFrameHost is
   // kept alive, even if the RenderFrameHost itself has already been deleted in

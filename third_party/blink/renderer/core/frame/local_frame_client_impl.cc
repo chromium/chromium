@@ -484,6 +484,7 @@ void LocalFrameClientImpl::BeginNavigation(
     const base::Optional<WebImpression>& impression,
     network::mojom::IPAddressSpace initiator_address_space,
     const LocalFrameToken* initiator_frame_token,
+    std::unique_ptr<SourceLocation> source_location,
     mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
         initiator_policy_container_keep_alive_handle) {
   if (!web_frame_->Client())
@@ -573,15 +574,16 @@ void LocalFrameClientImpl::BeginNavigation(
   // The frame has navigated either by itself or by the action of the
   // |origin_window| when it is defined. |source_location| represents the
   // line of code that has initiated the navigation. It is used to let web
-  // developpers locate the root cause of blocked navigations.
-  // TODO(crbug.com/804504): This is likely wrong -- this is often invoked
-  // asynchronously as a result of ScheduledURLNavigation::Fire(), so JS
-  // stack is not available here.
-  std::unique_ptr<SourceLocation> source_location =
-      origin_window
-          ? SourceLocation::Capture(origin_window)
-          : SourceLocation::Capture(web_frame_->GetFrame()->DomWindow());
-  if (source_location && !source_location->IsUnknown()) {
+  // developers locate the root cause of blocked navigations.
+  // If `origin_window` is defined, then `source_location` must be, too, since
+  // it should have been captured when creating the `FrameLoadRequest`.
+  // Otherwise, try to capture the `source_location` from the current frame.
+  if (!source_location) {
+    DCHECK(!origin_window);
+    source_location =
+        SourceLocation::Capture(web_frame_->GetFrame()->DomWindow());
+  }
+  if (!source_location->IsUnknown()) {
     navigation_info->source_location.url = source_location->Url();
     navigation_info->source_location.line_number =
         source_location->LineNumber();

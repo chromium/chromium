@@ -71,6 +71,8 @@ FrameLoadRequest::FrameLoadRequest(LocalDOMWindow* origin_window,
     }
 
     SetReferrerForRequest(origin_window, resource_request_);
+
+    SetSourceLocation(SourceLocation::Capture(origin_window));
   }
 }
 

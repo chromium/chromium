@@ -160,6 +160,7 @@ inline FormSubmission::FormSubmission(
     WebFrameLoadType load_type,
     LocalDOMWindow* origin_window,
     const LocalFrameToken& initiator_frame_token,
+    std::unique_ptr<SourceLocation> source_location,
     mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
         initiator_policy_container_keep_alive_handle)
     : method_(method),
@@ -176,6 +177,7 @@ inline FormSubmission::FormSubmission(
       load_type_(load_type),
       origin_window_(origin_window),
       initiator_frame_token_(initiator_frame_token),
+      source_location_(std::move(source_location)),
       initiator_policy_container_keep_alive_handle_(
           std::move(initiator_policy_container_keep_alive_handle)) {}
 
@@ -337,6 +339,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
       std::move(resource_request), target_frame, load_type,
       form->GetDocument().domWindow(),
       form->GetDocument().GetFrame()->GetLocalFrameToken(),
+      SourceLocation::Capture(form->GetDocument().domWindow()),
       form->GetDocument()
           .domWindow()
           ->GetPolicyContainer()
@@ -365,6 +368,7 @@ void FormSubmission::Navigate() {
   frame_request.SetInitiatorFrameToken(initiator_frame_token_);
   frame_request.SetInitiatorPolicyContainerKeepAliveHandle(
       std::move(initiator_policy_container_keep_alive_handle_));
+  frame_request.SetSourceLocation(std::move(source_location_));
 
   if (target_frame_ && !target_frame_->GetPage())
     return;

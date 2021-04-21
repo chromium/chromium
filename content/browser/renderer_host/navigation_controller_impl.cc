@@ -2449,6 +2449,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     const std::string& method,
     scoped_refptr<network::ResourceRequestBody> post_body,
     const std::string& extra_headers,
+    network::mojom::SourceLocationPtr source_location,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     const base::Optional<blink::Impression>& impression) {
   if (is_renderer_initiated)
@@ -2571,8 +2572,9 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   std::unique_ptr<NavigationRequest> request =
       CreateNavigationRequestFromLoadParams(
           node, params, override_user_agent, should_replace_current_entry,
-          false /* has_user_gesture */, download_policy, ReloadType::NONE,
-          entry.get(), frame_entry.get(), params.transition_type);
+          false /* has_user_gesture */, std::move(source_location),
+          download_policy, ReloadType::NONE, entry.get(), frame_entry.get(),
+          params.transition_type);
 
   if (!request)
     return;
@@ -3269,9 +3271,9 @@ void NavigationControllerImpl::NavigateWithoutEntry(
   std::unique_ptr<NavigationRequest> request =
       CreateNavigationRequestFromLoadParams(
           node, params, override_user_agent, should_replace_current_entry,
-          params.has_user_gesture, blink::NavigationDownloadPolicy(),
-          reload_type, pending_entry_, pending_entry_->GetFrameEntry(node),
-          transition_type);
+          params.has_user_gesture, network::mojom::SourceLocation::New(),
+          blink::NavigationDownloadPolicy(), reload_type, pending_entry_,
+          pending_entry_->GetFrameEntry(node), transition_type);
 
   // If the navigation couldn't start, return immediately and discard the
   // pending NavigationEntry.
@@ -3426,6 +3428,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     bool override_user_agent,
     bool should_replace_current_entry,
     bool has_user_gesture,
+    network::mojom::SourceLocationPtr source_location,
     blink::NavigationDownloadPolicy download_policy,
     ReloadType reload_type,
     NavigationEntryImpl* entry,
@@ -3547,7 +3550,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           should_replace_current_entry, params.base_url_for_data_url,
           history_url_for_data_url, previews_state, navigation_start,
           params.load_type == LOAD_TYPE_HTTP_POST ? "POST" : "GET",
-          params.post_data, network::mojom::SourceLocation::New(),
+          params.post_data, std::move(source_location),
           params.started_from_context_menu, has_user_gesture,
           false /* has_text_fragment_token */,
           network::mojom::CSPDisposition::CHECK, std::vector<int>(),

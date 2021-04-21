@@ -804,7 +804,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       should_check_main_world_csp, request.GetBlobURLToken(),
       request.GetInputStartTime(), request.HrefTranslate().GetString(),
       request.Impression(), initiator_address_space,
-      request.GetInitiatorFrameToken(),
+      request.GetInitiatorFrameToken(), request.TakeSourceLocation(),
       request.TakeInitiatorPolicyContainerKeepAliveHandle());
 }
 

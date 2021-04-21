@@ -5250,6 +5250,10 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
 
   params->initiator_frame_token = info->initiator_frame_token;
 
+  // TODO(antoniosartori): Consider plumbing in the source location also for
+  // navigations performed via OpenURL.
+  params->source_location = network::mojom::SourceLocation::New();
+
   if (info->impression) {
     params->impression =
         blink::ConvertWebImpressionToImpression(*info->impression);

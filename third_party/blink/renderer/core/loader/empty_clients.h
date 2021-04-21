@@ -284,6 +284,7 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       const base::Optional<WebImpression>&,
       network::mojom::IPAddressSpace,
       const LocalFrameToken* initiator_frame_token,
+      std::unique_ptr<SourceLocation>,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>)
       override;
 

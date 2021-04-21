@@ -36,6 +36,7 @@
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/public/web/web_window_features.h"
+#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
@@ -104,6 +105,13 @@ struct CORE_EXPORT FrameLoadRequest {
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
           handle) {
     initiator_policy_container_keep_alive_handle_ = std::move(handle);
+  }
+
+  std::unique_ptr<SourceLocation> TakeSourceLocation() {
+    return std::move(source_location_);
+  }
+  void SetSourceLocation(std::unique_ptr<SourceLocation> source_location) {
+    source_location_ = std::move(source_location);
   }
 
   HTMLFormElement* Form() const { return form_; }
@@ -198,6 +206,7 @@ struct CORE_EXPORT FrameLoadRequest {
   base::Optional<LocalFrameToken> initiator_frame_token_;
   mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
       initiator_policy_container_keep_alive_handle_;
+  std::unique_ptr<SourceLocation> source_location_;
 };
 
 }  // namespace blink

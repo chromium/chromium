@@ -98,6 +98,7 @@ class RemoteFrame;
 class ResourceError;
 class ResourceRequest;
 class ResourceResponse;
+class SourceLocation;
 class WebContentCaptureClient;
 class WebDedicatedWorkerHostFactoryClient;
 class WebLocalFrame;
@@ -167,6 +168,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       const base::Optional<WebImpression>& impression,
       network::mojom::IPAddressSpace,
       const LocalFrameToken* initiator_frame_token,
+      std::unique_ptr<SourceLocation> source_location,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
           initiator_policy_container_handle) = 0;
 

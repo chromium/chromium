@@ -285,6 +285,16 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
       std::move(initiator_policy_container_keep_alive_handle);
   params->initiator_frame_token =
       base::OptionalFromPtr(base::OptionalOrNullptr(initiator_frame_token));
+  params->source_location = network::mojom::blink::SourceLocation::New();
+
+  std::unique_ptr<SourceLocation> source_location =
+      frame_request.TakeSourceLocation();
+  if (!source_location->IsUnknown()) {
+    params->source_location->url =
+        source_location->Url() ? source_location->Url() : "";
+    params->source_location->line = source_location->LineNumber();
+    params->source_location->column = source_location->ColumnNumber();
+  }
 
   if (frame_request.Impression()) {
     params->impression =

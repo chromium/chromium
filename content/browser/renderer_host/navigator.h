@@ -155,6 +155,7 @@ class CONTENT_EXPORT Navigator {
       scoped_refptr<network::ResourceRequestBody> post_body,
       const std::string& extra_headers,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
+      network::mojom::SourceLocationPtr source_location,
       bool has_user_gesture,
       const base::Optional<blink::Impression>& impression);
 

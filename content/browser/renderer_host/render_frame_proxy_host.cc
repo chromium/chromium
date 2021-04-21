@@ -730,7 +730,8 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
       params->should_replace_current_entry, download_policy,
       params->post_body ? "POST" : "GET", params->post_body,
       params->extra_headers, std::move(blob_url_loader_factory),
-      params->user_gesture, params->impression);
+      std::move(params->source_location), params->user_gesture,
+      params->impression);
 }
 
 void RenderFrameProxyHost::UpdateViewportIntersection(

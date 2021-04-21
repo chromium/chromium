@@ -256,8 +256,8 @@ void Portal::Navigate(const GURL& url,
       owner_render_frame_host_->GetLastCommittedOrigin(),
       owner_render_frame_host_->GetSiteInstance(),
       mojo::ConvertTo<Referrer>(referrer), ui::PAGE_TRANSITION_LINK,
-      should_replace_entry, download_policy, "GET", nullptr, "", nullptr, false,
-      base::nullopt);
+      should_replace_entry, download_policy, "GET", nullptr, "", nullptr,
+      network::mojom::SourceLocation::New(), false, base::nullopt);
 
   std::move(callback).Run();
 }

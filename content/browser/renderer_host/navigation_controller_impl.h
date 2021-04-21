@@ -30,6 +30,7 @@
 #include "content/public/browser/navigation_type.h"
 #include "content/public/browser/reload_type.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "services/network/public/mojom/source_location.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
@@ -177,6 +178,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       const std::string& method,
       scoped_refptr<network::ResourceRequestBody> post_body,
       const std::string& extra_headers,
+      network::mojom::SourceLocationPtr source_location,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       const base::Optional<blink::Impression>& impression);
 
@@ -495,6 +497,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool override_user_agent,
       bool should_replace_current_entry,
       bool has_user_gesture,
+      network::mojom::SourceLocationPtr source_location,
       blink::NavigationDownloadPolicy download_policy,
       ReloadType reload_type,
       NavigationEntryImpl* entry,
