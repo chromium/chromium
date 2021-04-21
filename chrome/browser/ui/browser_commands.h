@@ -192,6 +192,7 @@ void ToggleDevToolsWindow(Browser* browser,
                           DevToolsToggleAction action,
                           DevToolsOpenedByAction opened_by);
 bool CanOpenTaskManager();
+// Opens task manager UI. Note that |browser| can be nullptr as input.
 void OpenTaskManager(Browser* browser);
 void OpenFeedbackDialog(
     Browser* browser,

@@ -159,6 +159,10 @@
 #include "components/rlz/rlz_tracker.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
 namespace {
 
 const char kOsOverrideForTabletSite[] = "Linux; Android 9; Chrome tablet";
@@ -1461,7 +1465,22 @@ bool CanOpenTaskManager() {
 }
 
 void OpenTaskManager(Browser* browser) {
-#if !defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Open linux version of task manager UI if ash TaskManager
+  // interface is in an old version.
+  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
+          crosapi::mojom::TaskManager::Uuid_) < 1) {
+    base::RecordAction(UserMetricsAction("TaskManager"));
+    chrome::ShowTaskManager(browser);
+    return;
+  }
+  // Invoke task manager UI in ash, which will call chrome::OpenTaskManager()
+  // in ash to run through the code path in the next section
+  // (!defined(OS_ANDROID)).
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::TaskManager>()
+      ->ShowTaskManager();
+#elif !defined(OS_ANDROID)
   base::RecordAction(UserMetricsAction("TaskManager"));
   chrome::ShowTaskManager(browser);
 #else

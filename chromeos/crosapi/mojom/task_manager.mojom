@@ -150,8 +150,8 @@ interface TaskManagerProvider {
 };
 
 // Interface for task manager. Implemented by ash-chrome.
-// Next version: 1
-// Next method id: 1
+// Next version: 2
+// Next method id: 2
 [Stable, Uuid="c5073375-8e4b-43c3-85ca-8813adeb0324"]
 interface TaskManager {
   // A crosapi client can register itself as a task manager provider. This
@@ -160,4 +160,8 @@ interface TaskManager {
   RegisterTaskManagerProvider@0(
       pending_remote<TaskManagerProvider> provider,
       mojo_base.mojom.UnguessableToken token);
+
+  // Shows the Task Manager window, or re-activates an existing one.
+  [MinVersion=1]
+  ShowTaskManager@1();
 };

@@ -35,6 +35,7 @@ class TaskManagerAsh : public mojom::TaskManager {
   void RegisterTaskManagerProvider(
       mojo::PendingRemote<mojom::TaskManagerProvider> provider,
       const base::UnguessableToken& token) override;
+  void ShowTaskManager() override;
 
   // Sets task refreshing flags. Forward the call to the registered remote
   // providers.

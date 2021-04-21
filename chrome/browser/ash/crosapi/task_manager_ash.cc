@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/task_manager_ash.h"
 
+#include "chrome/browser/ui/browser_commands.h"
+
 namespace crosapi {
 
 TaskManagerAsh::TaskManagerAsh() = default;
@@ -30,6 +32,10 @@ void TaskManagerAsh::RegisterTaskManagerProvider(
   remote_ptr->QueryVersion(
       base::BindOnce(&TaskManagerAsh::OnProviderVersionReady,
                      weak_factory_.GetWeakPtr(), token, std::move(new_remote)));
+}
+
+void TaskManagerAsh::ShowTaskManager() {
+  chrome::OpenTaskManager(/*browser=*/nullptr);
 }
 
 void TaskManagerAsh::TaskManagerProviderDisconnected(
