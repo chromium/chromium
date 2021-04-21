@@ -524,13 +524,14 @@ by a child template that "extends" this file.
         </activity>
         <activity android:name="org.chromium.chrome.browser.firstrun.LightweightFirstRunActivity"
             android:theme="@style/Theme.Chromium.AlertDialog.NoActionBar"
+            android:launchMode="singleInstance"
             {{ self.first_run_activity_common() }}>
         </activity>
         <activity android:name="org.chromium.chrome.browser.firstrun.FirstRunActivity"
             android:theme="@style/Theme.Chromium.DialogWhenLarge"
+            android:launchMode="singleTop"
             {% block first_run_activity_common %}
             android:label="@string/fre_activity_label"
-            android:launchMode="singleInstance"
             android:excludeFromRecents="true"
             android:autoRemoveFromRecents="true"
             android:windowSoftInputMode="stateHidden|adjustPan"
@@ -539,6 +540,7 @@ by a child template that "extends" this file.
         </activity>
         <activity android:name="org.chromium.chrome.browser.firstrun.TabbedModeFirstRunActivity"
             android:theme="@style/Theme.Chromium.TabbedMode"
+            android:launchMode="singleTop"
             {{ self.first_run_activity_common() }}>
         </activity>
         {% if enable_vr == "true" %}

@@ -33,6 +33,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.task.PostTask;
@@ -42,9 +44,11 @@ import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.DeferredStartupHandler;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.firstrun.FirstRunActivityTestObserver.ScopedObserverData;
 import org.chromium.chrome.browser.locale.DefaultSearchEngineDialogHelperUtils;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManager.SearchEnginePromoType;
@@ -60,11 +64,13 @@ import org.chromium.components.policy.AbstractAppRestrictionsProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -72,7 +78,10 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class FirstRunIntegrationTest {
-    private static final long DEFERRED_START_UP_POLL_TIME = 10000L;
+    private static final String TEST_URL = "https://test.com";
+    private static final String FOO_URL = "https://foo.com";
+    private static final long ACTIVITY_WAIT_LONG_MS = TimeUnit.SECONDS.toMillis(10);
+
     @Rule
     public MultiActivityTestRule mTestRule = new MultiActivityTestRule();
 
@@ -113,12 +122,18 @@ public class FirstRunIntegrationTest {
 
     @After
     public void tearDown() {
+        // Tear down the last activity first, otherwise the other cleanup, in particular skipped by
+        // policy pref, might trigger an assert in activity initialization because of the statics
+        // we reset below. Run it on UI so there are no threading issues.
+        if (mLastActivity != null) {
+            TestThreadUtils.runOnUiThreadBlocking(() -> mLastActivity.finish());
+        }
+
         FirstRunStatus.setFirstRunSkippedByPolicy(false);
         FirstRunUtils.setDisableDelayOnExitFreForTest(false);
         FirstRunAppRestrictionInfo.setInitializedInstanceForTest(null);
         ToSAndUMAFirstRunFragment.setShowUmaCheckBoxForTesting(false);
         EnterpriseInfo.setInstanceForTest(null);
-        if (mLastActivity != null) mLastActivity.finish();
     }
 
     private ActivityMonitor getMonitor(Class activityClass) {
@@ -127,7 +142,7 @@ public class FirstRunIntegrationTest {
     }
 
     private FirstRunActivity launchFirstRunActivity() {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://test.com"));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(TEST_URL));
         intent.setPackage(mContext.getPackageName());
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
@@ -141,9 +156,8 @@ public class FirstRunIntegrationTest {
     private <T extends Activity> T waitForActivity(Class<T> activityClass) {
         Assert.assertTrue(mSupportedActivities.contains(activityClass));
         ActivityMonitor monitor = getMonitor(activityClass);
-        mLastActivity = mInstrumentation.waitForMonitorWithTimeout(
-                monitor, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
-        Assert.assertNotNull(mLastActivity);
+        mLastActivity = mInstrumentation.waitForMonitorWithTimeout(monitor, ACTIVITY_WAIT_LONG_MS);
+        Assert.assertNotNull("Could not find " + activityClass.getName(), mLastActivity);
         return (T) mLastActivity;
     }
 
@@ -177,11 +191,119 @@ public class FirstRunIntegrationTest {
         setDeviceOwnedForMock();
     }
 
+    private void launchCustomTabs(String url) {
+        mContext.startActivity(CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, url));
+    }
+
+    private void launchViewIntent(String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.setPackage(mContext.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
+    }
+
+    private void clickThroughFirstRun(FirstRunActivity firstRunActivity,
+            @SearchEnginePromoType final int searchPromoType) throws Exception {
+        ScopedObserverData scopedObserverData = getObserverData(firstRunActivity);
+        scopedObserverData.createPostNativeAndPoliciesPageSequenceCallback.waitForCallback(
+                "Failed to finalize the flow and create subsequent pages", 0);
+        Bundle freProperties = scopedObserverData.freProperties;
+        Assert.assertEquals("Search engine name should not have been set yet", 0,
+                scopedObserverData.updateCachedEngineCallback.getCallCount());
+
+        // Accept the ToS.
+        clickButton(firstRunActivity, R.id.terms_accept, "Failed to accept ToS");
+        scopedObserverData.jumpToPageCallback.waitForCallback(
+                "Failed to try moving to the next screen", 0);
+        scopedObserverData.acceptTermsOfServiceCallback.waitForCallback(
+                "Failed to accept the ToS", 0);
+
+        // Acknowledge that Data Saver will be enabled.
+        if (freProperties.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE)) {
+            int jumpCallCount = scopedObserverData.jumpToPageCallback.getCallCount();
+            clickButton(firstRunActivity, R.id.next_button, "Failed to skip data saver");
+            scopedObserverData.jumpToPageCallback.waitForCallback(
+                    "Failed try to move past the data saver fragment", jumpCallCount);
+        }
+
+        // Select a default search engine.
+        if (searchPromoType == LocaleManager.SearchEnginePromoType.DONT_SHOW) {
+            Assert.assertFalse("Search engine page was shown.",
+                    freProperties.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
+        } else {
+            Assert.assertTrue("Search engine page wasn't shown.",
+                    freProperties.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
+            int jumpCallCount = scopedObserverData.jumpToPageCallback.getCallCount();
+            DefaultSearchEngineDialogHelperUtils.clickOnFirstEngine(
+                    firstRunActivity.findViewById(android.R.id.content));
+
+            scopedObserverData.jumpToPageCallback.waitForCallback(
+                    "Failed trying to move past the search engine fragment", jumpCallCount);
+        }
+
+        // Don't sign in the user.
+        if (freProperties.getBoolean(FirstRunActivityBase.SHOW_SIGNIN_PAGE)) {
+            int jumpCallCount = scopedObserverData.jumpToPageCallback.getCallCount();
+            clickButton(firstRunActivity, R.id.negative_button, "Failed to skip signing-in");
+            scopedObserverData.jumpToPageCallback.waitForCallback(
+                    "Failed trying to move past the sign in fragment", jumpCallCount);
+        }
+    }
+
+    private void verifyUrlEquals(String expected, Uri actual) {
+        Assert.assertEquals("Expected " + expected + " did not match actual " + actual,
+                Uri.parse(expected), actual);
+    }
+
+    /**
+     * When launching a second Chrome, the new FRE should replace the old FRE. In order to know when
+     * the second FirstRunActivity is ready, use object inequality with old one.
+     * @param previousFreActivity The previous activity.
+     */
+    private FirstRunActivity waitForDifferentFirstRunActivity(
+            FirstRunActivity previousFreActivity) {
+        CriteriaHelper.pollInstrumentationThread(
+                ()
+                        -> {
+                    for (Activity runningActivity : ApplicationStatus.getRunningActivities()) {
+                        @ActivityState
+                        int state = ApplicationStatus.getStateForActivity(runningActivity);
+                        if (runningActivity.getClass() == FirstRunActivity.class
+                                && runningActivity != previousFreActivity
+                                && (state == ActivityState.STARTED
+                                        || state == ActivityState.RESUMED)) {
+                            mLastActivity = runningActivity;
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                "Did not find a different FirstRunActivity from " + previousFreActivity,
+                /*maxTimeoutMs*/ ACTIVITY_WAIT_LONG_MS,
+                /*checkIntervalMs*/ CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        CriteriaHelper.pollInstrumentationThread(()
+                                                         -> previousFreActivity.isFinishing(),
+                "The original FirstRunActivity should be finished, instead "
+                        + ApplicationStatus.getStateForActivity(previousFreActivity));
+        return (FirstRunActivity) mLastActivity;
+    }
+
+    private <T extends ChromeActivity> Uri waitAndGetUriFromChromeActivity(Class<T> activityClass)
+            throws Exception {
+        ChromeActivity chromeActivity = waitForActivity(activityClass);
+        return chromeActivity.getIntent().getData();
+    }
+
+    private ScopedObserverData getObserverData(FirstRunActivity freActivity) {
+        return mTestObserver.getScopedObserverData(freActivity);
+    }
+
     @Test
     @SmallTest
     public void testHelpPageSkipsFirstRun() {
         // Fire an Intent to load a generic URL.
-        CustomTabActivity.showInfoPage(mContext, "http://google.com");
+        CustomTabActivity.showInfoPage(mContext, TEST_URL);
 
         // The original activity should be started because it's a "help page".
         waitForActivity(CustomTabActivity.class);
@@ -194,22 +316,19 @@ public class FirstRunIntegrationTest {
     @Test
     @SmallTest
     public void testAbortFirstRun() throws Exception {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://test.com"));
-        intent.setPackage(mContext.getPackageName());
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(intent);
-
+        launchViewIntent(TEST_URL);
         Activity chromeLauncherActivity = waitForActivity(ChromeLauncherActivity.class);
 
         // Because the ChromeLauncherActivity notices that the FRE hasn't been run yet, it
         // redirects to it.
-        waitForActivity(FirstRunActivity.class);
+        FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
 
         // Once the user closes the FRE, the user should be kicked back into the
         // startup flow where they were interrupted.
-        Assert.assertEquals(0, mTestObserver.abortFirstRunExperienceCallback.getCallCount());
+        ScopedObserverData scopedObserverData = getObserverData(firstRunActivity);
+        Assert.assertEquals(0, scopedObserverData.abortFirstRunExperienceCallback.getCallCount());
         mLastActivity.onBackPressed();
-        mTestObserver.abortFirstRunExperienceCallback.waitForCallback(
+        scopedObserverData.abortFirstRunExperienceCallback.waitForCallback(
                 "FirstRunActivity didn't abort", 0);
 
         CriteriaHelper.pollInstrumentationThread(() -> mLastActivity.isFinishing());
@@ -254,54 +373,16 @@ public class FirstRunIntegrationTest {
         };
         LocaleManager.setInstanceForTest(mockManager);
 
-        launchFirstRunActivity();
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
 
-        mTestObserver.flowIsKnownCallback.waitForCallback("Failed to finalize the flow", 0);
-        Bundle freProperties = mTestObserver.freProperties;
-        Assert.assertEquals(0, mTestObserver.updateCachedEngineCallback.getCallCount());
-
-        // Accept the ToS.
-        clickButton(mLastActivity, R.id.terms_accept, "Failed to accept ToS");
-        mTestObserver.jumpToPageCallback.waitForCallback(
-                "Failed to try moving to the next screen", 0);
-        mTestObserver.acceptTermsOfServiceCallback.waitForCallback("Failed to accept the ToS", 0);
-
-        // Acknowledge that Data Saver will be enabled.
-        if (freProperties.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE)) {
-            int jumpCallCount = mTestObserver.jumpToPageCallback.getCallCount();
-            clickButton(mLastActivity, R.id.next_button, "Failed to skip data saver");
-            mTestObserver.jumpToPageCallback.waitForCallback(
-                    "Failed to try moving to next screen", jumpCallCount);
-        }
-
-        // Select a default search engine.
-        if (searchPromoType == LocaleManager.SearchEnginePromoType.DONT_SHOW) {
-            Assert.assertFalse("Search engine page was shown.",
-                    freProperties.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-        } else {
-            Assert.assertTrue("Search engine page wasn't shown.",
-                    freProperties.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-            int jumpCallCount = mTestObserver.jumpToPageCallback.getCallCount();
-            DefaultSearchEngineDialogHelperUtils.clickOnFirstEngine(
-                    mLastActivity.findViewById(android.R.id.content));
-
-            mTestObserver.jumpToPageCallback.waitForCallback(
-                    "Failed to try moving to next screen", jumpCallCount);
-        }
-
-        // Don't sign in the user.
-        if (freProperties.getBoolean(FirstRunActivityBase.SHOW_SIGNIN_PAGE)) {
-            int jumpCallCount = mTestObserver.jumpToPageCallback.getCallCount();
-            clickButton(mLastActivity, R.id.negative_button, "Failed to skip signing-in");
-            mTestObserver.jumpToPageCallback.waitForCallback(
-                    "Failed to try moving to next screen", jumpCallCount);
-        }
+        clickThroughFirstRun(firstRunActivity, searchPromoType);
 
         // FRE should be completed now, which will kick the user back into the interrupted flow.
         // In this case, the user gets sent to the ChromeTabbedActivity after a View Intent is
         // processed by ChromeLauncherActivity.
-        mTestObserver.updateCachedEngineCallback.waitForCallback(
-                "Failed to alert search widgets that an update is necessary", 0);
+        getObserverData(firstRunActivity)
+                .updateCachedEngineCallback.waitForCallback(
+                        "Failed to alert search widgets that an update is necessary", 0);
         waitForActivity(ChromeTabbedActivity.class);
     }
 
@@ -310,14 +391,13 @@ public class FirstRunIntegrationTest {
     public void testExitFirstRunWithPolicy() {
         skipTosDialogViaPolicy();
 
-        Intent intent =
-                CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, "https://test.com");
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, TEST_URL);
         mContext.startActivity(intent);
 
         FirstRunActivity freActivity = waitForActivity(FirstRunActivity.class);
         CriteriaHelper.pollUiThread(
                 () -> freActivity.getSupportFragmentManager().getFragments().size() > 0);
-        // Make sure native is initialized so that the subseuqent transition doesn't get blocked.
+        // Make sure native is initialized so that the subsequent transition is not blocked.
         CriteriaHelper.pollUiThread((() -> freActivity.isNativeSideIsInitializedForTest()),
                 "native never initialized.");
 
@@ -337,7 +417,8 @@ public class FirstRunIntegrationTest {
         // policy set in this test case.
         FirstRunStatus.setFirstRunSkippedByPolicy(true);
 
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, "about:blank");
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
+                mContext, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         mContext.startActivity(intent);
         CustomTabActivity activity = waitForActivity(CustomTabActivity.class);
         CriteriaHelper.pollUiThread(() -> activity.didFinishNativeInitialization());
@@ -347,7 +428,7 @@ public class FirstRunIntegrationTest {
         CriteriaHelper.pollUiThread(() -> activity.deferredStartupPostedForTesting());
         Assert.assertTrue("Deferred startup never completed",
                 DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
-                        ScalableTimeout.scaleTimeout(DEFERRED_START_UP_POLL_TIME)));
+                        ScalableTimeout.scaleTimeout(ACTIVITY_WAIT_LONG_MS)));
 
         // FirstRun status should be refreshed by TosDialogBehaviorSharedPrefInvalidator in deferred
         // start up task.
@@ -357,15 +438,16 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     public void testSkipTosPage() throws TimeoutException {
-        // Test case that verifies when the ToS Page is accepted before thus skipped, and FRE should
-        // transitioning to the next page.
+        // Test case that verifies when the ToS Page was previously accepted, launching the FRE
+        // should transition to the next page.
         FirstRunStatus.setSkipWelcomePage(true);
 
         FirstRunActivity freActivity = launchFirstRunActivity();
         CriteriaHelper.pollUiThread(
                 () -> freActivity.getSupportFragmentManager().getFragments().size() > 0);
 
-        mTestObserver.jumpToPageCallback.waitForCallback("Welcome page should be skipped.", 0);
+        getObserverData(freActivity)
+                .jumpToPageCallback.waitForCallback("Welcome page should be skipped.", 0);
     }
 
     @Test
@@ -376,8 +458,7 @@ public class FirstRunIntegrationTest {
         skipTosDialogViaPolicy();
         FirstRunStatus.setSkipWelcomePage(true);
 
-        Intent intent =
-                CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, "https://test.com");
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, TEST_URL);
         mContext.startActivity(intent);
 
         FirstRunActivity freActivity = waitForActivity(FirstRunActivity.class);
@@ -385,7 +466,8 @@ public class FirstRunIntegrationTest {
                 () -> freActivity.getSupportFragmentManager().getFragments().size() > 0);
 
         // A page skip should happen, while we are still staying at FRE.
-        mTestObserver.jumpToPageCallback.waitForCallback("Welcome page should be skipped.", 0);
+        getObserverData(freActivity)
+                .jumpToPageCallback.waitForCallback("Welcome page should be skipped.", 0);
         Assert.assertFalse(
                 "FRE should not be skipped for CCT.", FirstRunStatus.isFirstRunSkippedByPolicy());
         Assert.assertFalse(
@@ -397,8 +479,7 @@ public class FirstRunIntegrationTest {
     public void testFastDestroy() {
         // Inspired by crbug.com/1119548, where onDestroy() before triggerLayoutInflation() caused
         // a crash.
-        Intent intent =
-                CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, "https://test.com");
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, TEST_URL);
         mContext.startActivity(intent);
     }
 
@@ -417,10 +498,12 @@ public class FirstRunIntegrationTest {
 
         // ToS page should be skipped and jumped to the next page, since ToS is marked accepted in
         // shared preference.
-        mTestObserver.flowIsKnownCallback.waitForCallback("Failed to finalize the flow.", 0);
+        ScopedObserverData scopedObserverData = getObserverData(freActivity);
+        scopedObserverData.createPostNativeAndPoliciesPageSequenceCallback.waitForCallback(
+                "Failed to finalize the flow.", 0);
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(freActivity.isNativeSideIsInitializedForTest(), is(true)));
-        mTestObserver.jumpToPageCallback.waitForCallback(
+        scopedObserverData.jumpToPageCallback.waitForCallback(
                 "ToS should be skipped after native initialized.", 0);
 
         // Press back button.
@@ -432,6 +515,65 @@ public class FirstRunIntegrationTest {
         Assert.assertNotNull(umaCheckbox);
         Assert.assertEquals(View.VISIBLE, tosAndPrivacy.getVisibility());
         Assert.assertEquals(View.VISIBLE, umaCheckbox.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    public void testMultipleFresCustomIntoView() throws Exception {
+        launchCustomTabs(TEST_URL);
+        FirstRunActivity firstFreActivity = waitForActivity(FirstRunActivity.class);
+
+        launchViewIntent(FOO_URL);
+        FirstRunActivity secondFreActivity = waitForDifferentFirstRunActivity(firstFreActivity);
+
+        clickThroughFirstRun(secondFreActivity, LocaleManager.SearchEnginePromoType.DONT_SHOW);
+        verifyUrlEquals(FOO_URL, waitAndGetUriFromChromeActivity(ChromeTabbedActivity.class));
+    }
+
+    @Test
+    @MediumTest
+    public void testMultipleFresViewIntoCustom() throws Exception {
+        launchViewIntent(TEST_URL);
+        FirstRunActivity firstFreActivity = waitForActivity(FirstRunActivity.class);
+
+        launchCustomTabs(FOO_URL);
+        FirstRunActivity secondFreActivity = waitForDifferentFirstRunActivity(firstFreActivity);
+
+        clickThroughFirstRun(secondFreActivity, LocaleManager.SearchEnginePromoType.DONT_SHOW);
+        verifyUrlEquals(FOO_URL, waitAndGetUriFromChromeActivity(CustomTabActivity.class));
+    }
+
+    @Test
+    @MediumTest
+    public void testMultipleFresBothView() throws Exception {
+        launchViewIntent(TEST_URL);
+        FirstRunActivity firstFreActivity = waitForActivity(FirstRunActivity.class);
+
+        launchViewIntent(FOO_URL);
+        FirstRunActivity secondFreActivity = waitForDifferentFirstRunActivity(firstFreActivity);
+
+        clickThroughFirstRun(secondFreActivity, LocaleManager.SearchEnginePromoType.DONT_SHOW);
+        verifyUrlEquals(FOO_URL, waitAndGetUriFromChromeActivity(ChromeTabbedActivity.class));
+    }
+
+    @Test
+    @MediumTest
+    public void testMultipleFresBackButton() throws Exception {
+        launchViewIntent(TEST_URL);
+        FirstRunActivity firstFreActivity = waitForActivity(FirstRunActivity.class);
+
+        launchViewIntent(TEST_URL);
+        FirstRunActivity secondFreActivity = waitForDifferentFirstRunActivity(firstFreActivity);
+
+        ScopedObserverData secondFreData = getObserverData(secondFreActivity);
+        Assert.assertEquals("Second FRE should not have aborted before back button is pressed.", 0,
+                secondFreData.abortFirstRunExperienceCallback.getCallCount());
+
+        secondFreActivity.onBackPressed();
+        secondFreData.abortFirstRunExperienceCallback.waitForCallback(
+                "Second FirstRunActivity didn't abort", 0);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> secondFreActivity.isFinishing(), "Second FRE should be finishing now.");
     }
 
     private void clickButton(final Activity activity, final int id, final String message) {

@@ -300,7 +300,7 @@
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
         android:excludeFromRecents="true"
         android:label="@string/fre_activity_label"
-        android:launchMode="singleInstance"
+        android:launchMode="singleTop"
         android:name="org.chromium.chrome.browser.firstrun.FirstRunActivity"
         android:theme="@style/Theme.Chromium.DialogWhenLarge"
         android:windowSoftInputMode="stateHidden|adjustPan">
@@ -320,7 +320,7 @@
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
         android:excludeFromRecents="true"
         android:label="@string/fre_activity_label"
-        android:launchMode="singleInstance"
+        android:launchMode="singleTop"
         android:name="org.chromium.chrome.browser.firstrun.TabbedModeFirstRunActivity"
         android:theme="@style/Theme.Chromium.TabbedMode"
         android:windowSoftInputMode="stateHidden|adjustPan">

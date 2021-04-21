@@ -332,7 +332,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         if (requiresFirstRunToBeCompleted(intent)
                 && FirstRunFlowSequencer.launch(this, intent, false /* requiresBroadcast */,
                         shouldPreferLightweightFre(intent))) {
-            abortLaunch(LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK);
+            abortLaunch(LaunchIntentDispatcher.Action.FINISH_ACTIVITY);
             return;
         }
 
@@ -475,6 +475,15 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     public void onStart() {
         super.onStart();
         mNativeInitializationController.onStart();
+
+        // Since this activity is being started, the FRE should have been handled somehow already.
+        Intent intent = getIntent();
+        if (FirstRunFlowSequencer.checkIfFirstRunIsNecessary(
+                    shouldPreferLightweightFre(intent), intent)
+                && requiresFirstRunToBeCompleted(intent)) {
+            throw new IllegalStateException("The app has not completed the FRE yet "
+                    + getClass().getName() + " is trying to start.");
+        }
     }
 
     @CallSuper

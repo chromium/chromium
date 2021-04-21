@@ -160,24 +160,25 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         mExitCount = 0;
         FirstRunActivity.setObserverForTest(new FirstRunActivity.FirstRunActivityObserver() {
             @Override
-            public void onFlowIsKnown(Bundle freProperties) {}
+            public void onCreatePostNativeAndPoliciesPageSequence(
+                    FirstRunActivity caller, Bundle freProperties) {}
 
             @Override
-            public void onAcceptTermsOfService() {
+            public void onAcceptTermsOfService(FirstRunActivity caller) {
                 mAcceptTosCallbackHelper.notifyCalled();
             }
 
             @Override
-            public void onJumpToPage(int position) {}
+            public void onJumpToPage(FirstRunActivity caller, int position) {}
 
             @Override
-            public void onUpdateCachedEngineName() {}
+            public void onUpdateCachedEngineName(FirstRunActivity caller) {}
 
             @Override
-            public void onAbortFirstRunExperience() {}
+            public void onAbortFirstRunExperience(FirstRunActivity caller) {}
 
             @Override
-            public void onExitFirstRun() {
+            public void onExitFirstRun(FirstRunActivity caller) {
                 mExitCount++;
             }
         });
