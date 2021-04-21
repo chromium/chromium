@@ -27,6 +27,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ApplicationLifetime;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.language.settings.LanguageSettings;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.password_check.PasswordCheckComponentUiFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckEditFragmentView;
@@ -361,6 +363,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             ((PrivacySandboxSettingsFragment) fragment)
                     .setCctHelpers(LaunchIntentDispatcher::createCustomTabActivityIntent,
                             IntentHandler::addTrustedIntentExtras);
+        }
+        if (fragment instanceof LanguageSettings) {
+            ((LanguageSettings) fragment).setRestartAction(() -> {
+                ApplicationLifetime.terminate(true);
+            });
         }
     }
 

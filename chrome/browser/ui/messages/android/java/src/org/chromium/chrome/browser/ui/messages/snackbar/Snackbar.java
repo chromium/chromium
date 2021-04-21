@@ -95,6 +95,7 @@ public class Snackbar {
     public static final int UMA_WEB_FEED_FOLLOW_FAILURE = 40;
     public static final int UMA_WEB_FEED_UNFOLLOW_SUCCESS = 41;
     public static final int UMA_WEB_FEED_UNFOLLOW_FAILURE = 42;
+    public static final int UMA_LANGUAGE_SPLIT_RESTART = 43;
 
     private SnackbarController mController;
     private CharSequence mText;

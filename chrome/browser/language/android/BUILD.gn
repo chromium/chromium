@@ -22,6 +22,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/language/settings/AddLanguageFragment.java",
     "java/src/org/chromium/chrome/browser/language/settings/AlwaysTranslateListFragment.java",
+    "java/src/org/chromium/chrome/browser/language/settings/AppLanguagePreferenceDelegate.java",
     "java/src/org/chromium/chrome/browser/language/settings/ContentLanguagesPreference.java",
     "java/src/org/chromium/chrome/browser/language/settings/LanguageItem.java",
     "java/src/org/chromium/chrome/browser/language/settings/LanguageItemListFragment.java",
@@ -44,6 +45,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/messages/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:browser_context_java",

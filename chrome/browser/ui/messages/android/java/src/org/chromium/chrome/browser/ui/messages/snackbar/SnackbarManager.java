@@ -131,6 +131,13 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     }
 
     /**
+     * @return True if a Snackbar can currently be shown by this SnackbarManager.
+     */
+    public boolean canShowSnackbar() {
+        return mActivityInForeground && !mIsDisabledForTesting;
+    }
+
+    /**
      * Shows a snackbar at the bottom of the screen, or above the keyboard if the keyboard is
      * visible.
      */
