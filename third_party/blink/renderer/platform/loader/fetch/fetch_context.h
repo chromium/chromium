@@ -200,4 +200,4 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_CONTEXT_H_

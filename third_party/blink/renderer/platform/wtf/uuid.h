@@ -56,4 +56,4 @@ WTF_EXPORT bool IsValidUUID(const String& uuid);
 
 }  // namespace WTF
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_UUID_H_

@@ -148,4 +148,4 @@ PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const FloatBox&);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_BOX_H_

@@ -28,4 +28,4 @@ class ModuleScriptLoaderClient : public GarbageCollectedMixin {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_MODULESCRIPT_MODULE_SCRIPT_LOADER_CLIENT_H_

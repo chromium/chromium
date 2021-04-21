@@ -57,4 +57,4 @@ class SimNetwork final : public WebURLLoaderTestDelegate {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_NETWORK_H_

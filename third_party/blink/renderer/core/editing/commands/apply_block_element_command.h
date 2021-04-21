@@ -73,4 +73,4 @@ class CORE_EXPORT ApplyBlockElementCommand : public CompositeEditCommand {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_APPLY_BLOCK_ELEMENT_COMMAND_H_

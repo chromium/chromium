@@ -202,4 +202,4 @@ class CORE_EXPORT HTMLPreloadScanner {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PRELOAD_SCANNER_H_

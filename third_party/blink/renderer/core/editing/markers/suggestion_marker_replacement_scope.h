@@ -28,4 +28,4 @@ class CORE_EXPORT SuggestionMarkerReplacementScope {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_SUGGESTION_MARKER_REPLACEMENT_SCOPE_H_

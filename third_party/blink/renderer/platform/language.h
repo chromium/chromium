@@ -48,4 +48,4 @@ PLATFORM_EXPORT void InitializePlatformLanguage();
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LANGUAGE_H_

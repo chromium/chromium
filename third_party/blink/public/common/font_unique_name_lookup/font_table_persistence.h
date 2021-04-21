@@ -40,4 +40,4 @@ PersistToFile(const base::MappedReadOnlyRegion& name_table_region,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_FONT_UNIQUE_NAME_LOOKUP_FONT_TABLE_PERSISTENCE_H_x
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_FONT_UNIQUE_NAME_LOOKUP_FONT_TABLE_PERSISTENCE_H_

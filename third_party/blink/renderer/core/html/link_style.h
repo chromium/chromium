@@ -84,4 +84,4 @@ class LinkStyle final : public LinkResource, ResourceClient {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_LINK_STYLE_H_

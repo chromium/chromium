@@ -35,4 +35,4 @@ class TableCellPaintInvalidator {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TABLE_CELL_PAINT_INVALIDATOR_H_

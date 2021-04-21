@@ -24,4 +24,4 @@ class WebSpellCheckPanelHostClient {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_SPELL_CHECK_PANEL_HOST_CLIENT_H_

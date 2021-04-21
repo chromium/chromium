@@ -54,4 +54,4 @@ class CORE_EXPORT EventTiming final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_EVENT_TIMING_H_

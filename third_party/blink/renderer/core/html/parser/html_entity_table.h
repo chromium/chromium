@@ -57,4 +57,4 @@ class HTMLEntityTable {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_ENTITY_TABLE_H_

@@ -51,4 +51,4 @@ class SelectRuleFeatureSet : public RuleFeatureSet {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECT_RULE_FEATURE_SET_H_

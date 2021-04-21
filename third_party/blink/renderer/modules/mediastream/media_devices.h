@@ -139,4 +139,4 @@ class MODULES_EXPORT MediaDevices final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_DEVICES_H_

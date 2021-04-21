@@ -169,4 +169,4 @@ struct DowncastTraits<DateTimeEditElement> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_EDIT_ELEMENT_H_

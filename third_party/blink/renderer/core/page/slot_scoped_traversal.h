@@ -29,4 +29,4 @@ class CORE_EXPORT SlotScopedTraversal {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SLOT_SCOPED_TRAVERSAL_H_

@@ -44,4 +44,4 @@ struct DowncastTraits<AXObjectCacheBase> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ACCESSIBILITY_AX_OBJECT_CACHE_BASE_H_

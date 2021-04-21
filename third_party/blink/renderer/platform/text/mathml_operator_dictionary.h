@@ -37,4 +37,4 @@ FindCategory(const String& content, MathMLOperatorDictionaryForm);
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_MATHML_MATHML_OPERATOR_ELEMENT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_MATHML_OPERATOR_DICTIONARY_H_

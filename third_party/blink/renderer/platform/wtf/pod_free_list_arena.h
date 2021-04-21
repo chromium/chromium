@@ -127,4 +127,4 @@ class PODFreeListArena : public RefCounted<PODFreeListArena<T>> {
 
 }  // namespace WTF
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_FREE_LIST_ARENA_H_

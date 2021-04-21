@@ -52,4 +52,4 @@ class PagePopup {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PAGE_POPUP_H_

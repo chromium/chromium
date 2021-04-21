@@ -113,4 +113,4 @@ class PLATFORM_EXPORT CachedMetadata : public RefCounted<CachedMetadata> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_CACHED_METADATA_H_

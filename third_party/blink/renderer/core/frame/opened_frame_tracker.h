@@ -41,4 +41,4 @@ class OpenedFrameTracker {
 
 }  // namespace blink
 
-#endif  // WebFramePrivate_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_OPENED_FRAME_TRACKER_H_

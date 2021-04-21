@@ -81,4 +81,4 @@ class CORE_EXPORT LinkLoader final : public SingleModuleClient {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_LINK_LOADER_H_

@@ -95,4 +95,4 @@ class PLATFORM_EXPORT FastSharedBufferReader final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_FAST_SHARED_BUFFER_READER_H_

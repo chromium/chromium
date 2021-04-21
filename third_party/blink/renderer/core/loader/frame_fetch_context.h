@@ -225,4 +225,4 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_FETCH_CONTEXT_H_

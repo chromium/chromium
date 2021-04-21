@@ -39,4 +39,4 @@ class InspectorWebSocketEvent {
 
 }  // namespace blink
 
-#endif  // !defined(InspectorWebSocketEvents_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBSOCKETS_INSPECTOR_WEBSOCKET_EVENTS_H_

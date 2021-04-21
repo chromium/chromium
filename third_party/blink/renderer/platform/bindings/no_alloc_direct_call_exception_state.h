@@ -42,4 +42,4 @@ class PLATFORM_EXPORT NoAllocDirectCallExceptionState : public ExceptionState {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_NO_ALLOC_DIRECT_CALL_EXCEPTION_STATE_H_

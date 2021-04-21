@@ -708,4 +708,4 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_ENGINE_H_

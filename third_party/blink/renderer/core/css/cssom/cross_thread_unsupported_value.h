@@ -47,4 +47,4 @@ struct DowncastTraits<CrossThreadUnsupportedValue> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CROSS_THREAD_UNSUPPORTED_VALUE_H_

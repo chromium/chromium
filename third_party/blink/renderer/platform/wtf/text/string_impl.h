@@ -948,4 +948,4 @@ using WTF::EqualNonNull;
 using WTF::LengthOfNullTerminatedString;
 using WTF::ReverseFind;
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_IMPL_H_

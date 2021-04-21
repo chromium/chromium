@@ -98,4 +98,4 @@ class CORE_EXPORT PageWidgetDelegate {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PAGE_WIDGET_DELEGATE_H_

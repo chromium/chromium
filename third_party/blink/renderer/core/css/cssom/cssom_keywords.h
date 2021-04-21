@@ -26,4 +26,4 @@ class CSSOMKeywords {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSSOM_KEYWORDS_H_

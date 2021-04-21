@@ -68,4 +68,4 @@ class PLATFORM_EXPORT ContentSecurityPolicyResponseHeaders final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_CONTENT_SECURITY_POLICY_RESPONSE_HEADERS_H_

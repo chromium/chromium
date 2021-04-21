@@ -15,4 +15,4 @@ mojom::FetchImportanceMode GetFetchImportanceAttributeValue(
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_IMPORTANCE_ATTRIBUTE_H_

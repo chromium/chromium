@@ -78,4 +78,4 @@ class CORE_EXPORT PolicyContainer {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_POLICY_CONTAINER_H_

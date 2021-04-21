@@ -24,4 +24,4 @@ class PLATFORM_EXPORT FetchUtils {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_UTILS_H_

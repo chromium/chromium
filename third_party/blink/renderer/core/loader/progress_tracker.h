@@ -105,4 +105,4 @@ class CORE_EXPORT ProgressTracker final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PROGRESS_TRACKER_H_

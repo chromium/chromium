@@ -52,4 +52,4 @@ class WebImageCache {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_IMAGE_CACHE_H_

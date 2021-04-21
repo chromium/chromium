@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WebProcessMemoryDump_h
-#define WebProcessMemoryDump_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_TRACING_WEB_PROCESS_MEMORY_DUMP_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_TRACING_WEB_PROCESS_MEMORY_DUMP_H_
 
 #include <memory>
 #include <unordered_map>
@@ -168,4 +168,4 @@ class PLATFORM_EXPORT WebProcessMemoryDump final {
 
 }  // namespace blink
 
-#endif  // WebProcessMemoryDump_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_TRACING_WEB_PROCESS_MEMORY_DUMP_H_

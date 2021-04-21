@@ -263,4 +263,4 @@ class NetworkResourcesData final
 
 }  // namespace blink
 
-#endif  // !defined(NetworkResourcesData_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_NETWORK_RESOURCES_DATA_H_

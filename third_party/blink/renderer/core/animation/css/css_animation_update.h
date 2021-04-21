@@ -302,4 +302,4 @@ class CORE_EXPORT CSSAnimationUpdate final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_ANIMATION_UPDATE_H_

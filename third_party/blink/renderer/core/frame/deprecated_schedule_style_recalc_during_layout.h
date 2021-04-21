@@ -27,4 +27,4 @@ class DeprecatedScheduleStyleRecalcDuringLayout {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_DEPRECATED_SCHEDULE_STYLE_RECALC_DURING_LAYOUT_H_

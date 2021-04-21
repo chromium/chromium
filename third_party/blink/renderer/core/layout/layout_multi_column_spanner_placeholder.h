@@ -104,4 +104,4 @@ struct DowncastTraits<LayoutMultiColumnSpannerPlaceholder> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_MULTI_COLUMN_SPANNER_PLACEHOLDER_H_

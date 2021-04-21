@@ -77,4 +77,4 @@ class ScheduledAction final : public GarbageCollected<ScheduledAction>,
 
 }  // namespace blink
 
-#endif  // ScheduledAction
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCHEDULED_ACTION_H_

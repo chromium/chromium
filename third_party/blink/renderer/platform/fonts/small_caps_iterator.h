@@ -43,4 +43,4 @@ class PLATFORM_EXPORT SmallCapsIterator {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SMALL_CAPS_ITERATOR_H_

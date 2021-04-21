@@ -32,4 +32,4 @@ class HotModeSpellCheckRequester {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SPELLCHECK_HOT_MODE_SPELL_CHECK_REQUESTER_H_

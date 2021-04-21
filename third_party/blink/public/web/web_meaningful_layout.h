@@ -23,4 +23,4 @@ enum class WebMeaningfulLayout {
 };
 }
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_MEANINGFUL_LAYOUT_H_

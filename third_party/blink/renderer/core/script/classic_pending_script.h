@@ -130,4 +130,4 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
 
 }  // namespace blink
 
-#endif  // PendingScript_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_CLASSIC_PENDING_SCRIPT_H_

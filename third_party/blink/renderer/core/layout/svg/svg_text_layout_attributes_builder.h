@@ -85,4 +85,4 @@ class SVGTextLayoutAttributesBuilder {
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(
     blink::SVGTextLayoutAttributesBuilder::TextPosition)
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_LAYOUT_ATTRIBUTES_BUILDER_H_

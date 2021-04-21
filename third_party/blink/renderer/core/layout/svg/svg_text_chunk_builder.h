@@ -95,4 +95,4 @@ float CalculateTextAnchorShift(const ComputedStyle&, float length);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_CHUNK_BUILDER_H_

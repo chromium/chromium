@@ -26,4 +26,4 @@ class CORE_EXPORT ModuleImportMeta final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_MODULE_IMPORT_META_H_

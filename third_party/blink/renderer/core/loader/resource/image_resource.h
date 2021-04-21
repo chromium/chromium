@@ -156,4 +156,4 @@ struct DowncastTraits<ImageResource> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_H_

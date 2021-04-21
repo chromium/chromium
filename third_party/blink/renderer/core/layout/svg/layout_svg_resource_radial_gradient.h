@@ -84,4 +84,4 @@ struct DowncastTraits<LayoutSVGResourceRadialGradient> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_RESOURCE_RADIAL_GRADIENT_H_

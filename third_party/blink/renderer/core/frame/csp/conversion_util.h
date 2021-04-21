@@ -34,4 +34,4 @@ Vector<network::mojom::blink::ContentSecurityPolicyPtr> ConvertToMojoBlink(
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CSP_CONVERSION_UTIL_H_

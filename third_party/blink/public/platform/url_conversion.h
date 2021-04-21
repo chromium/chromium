@@ -17,4 +17,4 @@ BLINK_PLATFORM_EXPORT GURL WebStringToGURL(const WebString&);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_URL_CONVERSION_H_

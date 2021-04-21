@@ -118,4 +118,4 @@ class Parser {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_PARSER_H_

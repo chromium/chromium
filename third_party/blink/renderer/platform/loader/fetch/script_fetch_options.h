@@ -126,4 +126,4 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_SCRIPT_FETCH_OPTIONS_H_

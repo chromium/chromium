@@ -162,4 +162,4 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_INPUT_TYPE_VIEW_H_

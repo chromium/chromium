@@ -173,4 +173,4 @@ class WebFrameSerializerImpl {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WEB_FRAME_SERIALIZER_IMPL_H_

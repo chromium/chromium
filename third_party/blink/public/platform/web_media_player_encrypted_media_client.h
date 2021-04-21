@@ -50,4 +50,4 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerEncryptedMediaClient {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MEDIA_PLAYER_ENCRYPTED_MEDIA_CLIENT_H_

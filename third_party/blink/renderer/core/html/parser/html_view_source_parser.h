@@ -73,4 +73,4 @@ class CORE_EXPORT HTMLViewSourceParser final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_VIEW_SOURCE_PARSER_H_

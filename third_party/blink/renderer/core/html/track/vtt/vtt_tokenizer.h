@@ -59,4 +59,4 @@ class VTTTokenizer {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_TOKENIZER_H_

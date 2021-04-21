@@ -47,4 +47,4 @@ class MODULES_EXPORT DeviceOrientationInspectorAgent final
 
 }  // namespace blink
 
-#endif  // !defined(DeviceOrientationInspectorAgent_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_ORIENTATION_INSPECTOR_AGENT_H_

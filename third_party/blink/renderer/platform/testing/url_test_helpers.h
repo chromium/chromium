@@ -100,4 +100,4 @@ void ServeAsynchronousRequests();
 }  // namespace url_test_helpers
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_TEST_HELPERS_H_

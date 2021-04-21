@@ -57,4 +57,4 @@ typedef HashMap<unsigned, SVGCharacterData> SVGCharacterDataMap;
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_CHARACTER_DATA_H_

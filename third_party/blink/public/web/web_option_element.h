@@ -64,4 +64,4 @@ DECLARE_WEB_NODE_TYPE_CASTS(WebOptionElement);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_OPTION_ELEMENT_H_

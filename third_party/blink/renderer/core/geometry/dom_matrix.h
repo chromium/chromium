@@ -131,4 +131,4 @@ class CORE_EXPORT DOMMatrix : public DOMMatrixReadOnly {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_MATRIX_H_

@@ -454,4 +454,4 @@ class WebView {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_H_

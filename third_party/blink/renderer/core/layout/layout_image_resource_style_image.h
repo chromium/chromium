@@ -64,4 +64,4 @@ class LayoutImageResourceStyleImage final : public LayoutImageResource {
 
 }  // namespace blink
 
-#endif  // LayoutImageStyleImage_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_IMAGE_RESOURCE_STYLE_IMAGE_H_

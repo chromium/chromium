@@ -35,4 +35,4 @@ class CORE_EXPORT ModuleTreeLinkerRegistry final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_MODULESCRIPT_MODULE_TREE_LINKER_REGISTRY_H_

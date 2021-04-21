@@ -42,4 +42,4 @@ hb_position_t SkiaScalarToHarfBuzzPosition(SkScalar value);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SKIA_SKIA_TEXT_METRICS_H_

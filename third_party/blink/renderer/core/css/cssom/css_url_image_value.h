@@ -42,4 +42,4 @@ class CORE_EXPORT CSSURLImageValue final : public CSSStyleImageValue {
 
 }  // namespace blink
 
-#endif  // CSSResourceValue_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_URL_IMAGE_VALUE_H_

@@ -153,4 +153,4 @@ String BestFitSourceForImageAttributes(float device_scale_factor,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_SRCSET_PARSER_H_

@@ -57,4 +57,4 @@ class CORE_EXPORT CSSPerspective final : public CSSTransformComponent {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_PERSPECTIVE_H_

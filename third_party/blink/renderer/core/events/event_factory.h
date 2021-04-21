@@ -59,4 +59,4 @@ class EventFactory final : public EventFactoryBase {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_EVENT_FACTORY_H_

@@ -116,4 +116,4 @@ class CORE_EXPORT MediaQueryEvaluator final
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_EVALUATOR_H_

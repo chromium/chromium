@@ -45,4 +45,4 @@ class MailboxRef : public ThreadSafeRefCounted<MailboxRef> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MAILBOX_REF_H_

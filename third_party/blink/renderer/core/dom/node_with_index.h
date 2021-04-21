@@ -59,4 +59,4 @@ class NodeWithIndex {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_WITH_INDEX_H_

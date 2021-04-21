@@ -27,4 +27,4 @@ class CORE_EXPORT URLFileAPI {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_URL_FILE_API_H_

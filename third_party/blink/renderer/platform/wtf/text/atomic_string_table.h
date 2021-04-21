@@ -171,4 +171,4 @@ inline bool operator==(const AtomicString& lhs,
 
 using WTF::AtomicStringTable;
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ATOMIC_STRING_TABLE_H_

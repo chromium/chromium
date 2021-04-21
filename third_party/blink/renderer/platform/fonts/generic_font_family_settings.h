@@ -126,4 +126,4 @@ class PLATFORM_EXPORT GenericFontFamilySettings {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_GENERIC_FONT_FAMILY_SETTINGS_H_

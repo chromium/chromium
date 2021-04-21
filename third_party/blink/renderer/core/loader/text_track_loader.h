@@ -88,4 +88,4 @@ class TextTrackLoader final : public GarbageCollected<TextTrackLoader>,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_TEXT_TRACK_LOADER_H_

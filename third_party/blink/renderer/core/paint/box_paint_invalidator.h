@@ -56,4 +56,4 @@ class CORE_EXPORT BoxPaintInvalidator {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BOX_PAINT_INVALIDATOR_H_

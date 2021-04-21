@@ -285,4 +285,4 @@ CORE_EXPORT TextControlElement* EnclosingTextControl(const Node*);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_TEXT_CONTROL_ELEMENT_H_

@@ -65,4 +65,4 @@ class CORE_EXPORT ImageResourceInfo : public GarbageCollectedMixin {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_INFO_H_

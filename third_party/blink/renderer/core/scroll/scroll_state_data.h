@@ -16,4 +16,4 @@ struct ScrollStateData : public cc::ScrollStateData {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLL_STATE_DATA_H_

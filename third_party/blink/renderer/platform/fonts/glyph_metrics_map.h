@@ -139,4 +139,4 @@ GlyphMetricsMap<T>::LocatePageSlowCase(unsigned page_number) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_GLYPH_METRICS_MAP_H_

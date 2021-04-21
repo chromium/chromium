@@ -72,4 +72,4 @@ class PLATFORM_EXPORT PathTraversalState final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATH_TRAVERSAL_STATE_H_

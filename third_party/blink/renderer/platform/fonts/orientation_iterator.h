@@ -41,4 +41,4 @@ class PLATFORM_EXPORT OrientationIterator {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_ORIENTATION_ITERATOR_H_

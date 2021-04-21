@@ -323,4 +323,4 @@ struct DowncastTraits<ChromeClientImpl> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_CHROME_CLIENT_IMPL_H_

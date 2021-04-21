@@ -141,4 +141,4 @@ struct DowncastTraits<CSSFontFaceSrcValue> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FACE_SRC_VALUE_H_

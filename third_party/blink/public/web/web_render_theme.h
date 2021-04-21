@@ -53,4 +53,4 @@ BLINK_EXPORT void ColorSchemeChanged();
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_RENDER_THEME_H_

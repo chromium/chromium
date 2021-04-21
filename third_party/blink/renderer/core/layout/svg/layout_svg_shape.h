@@ -240,4 +240,4 @@ struct DowncastTraits<LayoutSVGShape> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_SHAPE_H_

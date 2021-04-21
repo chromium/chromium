@@ -170,4 +170,4 @@ struct SVGTextFragment {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_FRAGMENT_H_

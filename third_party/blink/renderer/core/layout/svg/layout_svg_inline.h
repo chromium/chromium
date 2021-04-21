@@ -82,4 +82,4 @@ struct DowncastTraits<LayoutSVGInline> {
 
 }  // namespace blink
 
-#endif  // LayoutSVGInline_H
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_INLINE_H_

@@ -24,4 +24,4 @@ class KeyframeStyleRuleCSSStyleDeclaration final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_KEYFRAME_STYLE_RULE_CSS_STYLE_DECLARATION_H_

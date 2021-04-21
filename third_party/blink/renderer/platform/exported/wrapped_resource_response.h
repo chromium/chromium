@@ -55,4 +55,4 @@ class WrappedResourceResponse : public WebURLResponse {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_EXPORTED_WRAPPED_RESOURCE_RESPONSE_H_

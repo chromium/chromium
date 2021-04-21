@@ -287,4 +287,4 @@ class InspectorStyleSheetForInlineStyle final : public InspectorStyleSheetBase {
 
 }  // namespace blink
 
-#endif  // !defined(InspectorStyleSheet_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_STYLE_SHEET_H_

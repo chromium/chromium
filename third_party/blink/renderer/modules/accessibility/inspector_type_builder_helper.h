@@ -47,4 +47,4 @@ std::unique_ptr<AXValueSource> CreateValueSource(NameSource&);
 
 }  // namespace blink
 
-#endif  // InspectorAccessibilityAgent_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_INSPECTOR_TYPE_BUILDER_HELPER_H_

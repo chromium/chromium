@@ -82,4 +82,4 @@ TextStream& operator<<(TextStream& ts, const Vector<Item>& vector) {
 
 }  // namespace WTF
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_STREAM_H_

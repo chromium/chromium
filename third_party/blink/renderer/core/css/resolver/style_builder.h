@@ -66,4 +66,4 @@ class CORE_EXPORT StyleBuilder {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_BUILDER_H_

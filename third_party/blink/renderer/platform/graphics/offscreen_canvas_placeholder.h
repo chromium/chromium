@@ -78,4 +78,4 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_OFFSCREEN_CANVAS_PLACEHOLDER_H_

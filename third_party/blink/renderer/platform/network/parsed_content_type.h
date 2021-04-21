@@ -73,4 +73,4 @@ class PLATFORM_EXPORT ParsedContentType final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_PARSED_CONTENT_TYPE_H_

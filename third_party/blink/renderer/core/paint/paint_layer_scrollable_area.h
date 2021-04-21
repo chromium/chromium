@@ -831,4 +831,4 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
 }  // namespace blink
 
-#endif  // LayerScrollableArea_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_SCROLLABLE_AREA_H_

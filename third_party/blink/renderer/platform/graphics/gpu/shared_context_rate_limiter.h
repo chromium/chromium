@@ -56,4 +56,4 @@ class SharedContextRateLimiter final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_SHARED_CONTEXT_RATE_LIMITER_H_

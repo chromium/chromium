@@ -16,4 +16,4 @@ enum class RenderBlockingBehavior : uint8_t {
 };
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RENDER_BLOCKING_BEHAVIOR_H_

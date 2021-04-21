@@ -40,4 +40,4 @@ void RegisterInstallOriginTrialFeaturesForTesting();
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_V8_WEB_CORE_TEST_SUPPORT_H_

@@ -87,4 +87,4 @@ class SlotAssignment final : public GarbageCollected<SlotAssignment> {
 
 }  // namespace blink
 
-#endif  // HTMLSlotAssignment_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SLOT_ASSIGNMENT_H_

@@ -57,4 +57,4 @@ class CORE_EXPORT LinkLoaderClient : public GarbageCollectedMixin {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_LINK_LOADER_CLIENT_H_

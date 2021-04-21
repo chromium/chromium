@@ -34,4 +34,4 @@ bool CSPSourceMatchesAsSelf(const network::mojom::blink::CSPSource& source,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CSP_CSP_SOURCE_H_

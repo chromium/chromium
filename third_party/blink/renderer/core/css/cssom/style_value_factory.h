@@ -52,4 +52,4 @@ class CORE_EXPORT StyleValueFactory {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_STYLE_VALUE_FACTORY_H_

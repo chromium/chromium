@@ -84,4 +84,4 @@ class WebHTTPLoadInfo {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_HTTP_LOAD_INFO_H_

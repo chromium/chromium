@@ -87,4 +87,4 @@ class CORE_EXPORT FirstMeaningfulPaintDetector
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FIRST_MEANINGFUL_PAINT_DETECTOR_H_

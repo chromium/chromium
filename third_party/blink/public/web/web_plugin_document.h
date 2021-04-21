@@ -63,4 +63,4 @@ DECLARE_WEB_NODE_TYPE_CASTS(WebPluginDocument);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PLUGIN_DOCUMENT_H_

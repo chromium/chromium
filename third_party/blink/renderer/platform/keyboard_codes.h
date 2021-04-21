@@ -574,4 +574,4 @@ enum {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_KEYBOARD_CODES_H_

@@ -101,4 +101,4 @@ class DOMEditor final : public GarbageCollected<DOMEditor> {
 
 }  // namespace blink
 
-#endif  // !defined(DOMEditor_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DOM_EDITOR_H_

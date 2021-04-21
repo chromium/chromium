@@ -256,4 +256,4 @@ inline void AtomicHTMLToken::InitializeAttributes(
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_ATOMIC_HTML_TOKEN_H_

@@ -67,4 +67,4 @@ class XRFrameRequestCallbackCollection final
 
 }  // namespace blink
 
-#endif  // FrameRequestCallbackCollection_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_FRAME_REQUEST_CALLBACK_COLLECTION_H_

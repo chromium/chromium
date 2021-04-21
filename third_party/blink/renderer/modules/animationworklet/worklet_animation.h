@@ -245,4 +245,4 @@ class MODULES_EXPORT WorkletAnimation : public WorkletAnimationBase,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ANIMATIONWORKLET_WORKLET_ANIMATION_H_

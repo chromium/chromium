@@ -145,4 +145,4 @@ class CORE_EXPORT DataObject : public GarbageCollected<DataObject>,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_DATA_OBJECT_H_

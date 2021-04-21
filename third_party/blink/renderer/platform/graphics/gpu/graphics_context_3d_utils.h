@@ -37,4 +37,4 @@ class PLATFORM_EXPORT GraphicsContext3DUtils {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_GRAPHICS_CONTEXT_3D_UTILS_H_

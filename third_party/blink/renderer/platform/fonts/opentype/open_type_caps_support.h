@@ -64,4 +64,4 @@ class PLATFORM_EXPORT OpenTypeCapsSupport {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_CAPS_SUPPORT_H_

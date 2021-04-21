@@ -38,4 +38,4 @@ class TimedCanvasDrawListener final : public OnRequestCanvasDrawListener {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIACAPTUREFROMELEMENT_TIMED_CANVAS_DRAW_LISTENER_H_

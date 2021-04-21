@@ -66,4 +66,4 @@ struct DowncastTraits<InbandTextTrack> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_INBAND_TEXT_TRACK_H_

@@ -39,4 +39,4 @@ PLATFORM_EXPORT void RemoveEnabledStateObserver(EnabledStateObserver*);
 }  // namespace trace_event
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_TRACING_TRACE_EVENT_H_

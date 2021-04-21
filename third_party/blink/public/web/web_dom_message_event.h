@@ -79,4 +79,4 @@ class WebDOMMessageEvent : public WebDOMEvent {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOM_MESSAGE_EVENT_H_

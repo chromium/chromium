@@ -24,4 +24,4 @@ enum WebMenuSourceType {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_INPUT_WEB_MENU_SOURCE_TYPE_H_

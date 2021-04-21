@@ -54,4 +54,4 @@ class ElementDataCache final : public GarbageCollected<ElementDataCache> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_DATA_CACHE_H_

@@ -47,4 +47,4 @@ struct WebPluginParams {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PLUGIN_PARAMS_H_

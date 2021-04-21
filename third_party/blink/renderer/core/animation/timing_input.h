@@ -49,4 +49,4 @@ class CORE_EXPORT TimingInput {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TIMING_INPUT_H_

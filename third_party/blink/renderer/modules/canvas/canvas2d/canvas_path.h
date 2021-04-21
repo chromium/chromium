@@ -106,4 +106,4 @@ class MODULES_EXPORT CanvasPath : public NoAllocDirectCallHost {
 };
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_PATH_H_

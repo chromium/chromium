@@ -61,4 +61,4 @@ NavigationPolicyForCreateWindow(const WebWindowFeatures&);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_NAVIGATION_POLICY_H_

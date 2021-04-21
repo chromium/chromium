@@ -86,4 +86,4 @@ class PLATFORM_EXPORT GIFImageDecoder final : public ImageDecoder {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_GIF_GIF_IMAGE_DECODER_H_

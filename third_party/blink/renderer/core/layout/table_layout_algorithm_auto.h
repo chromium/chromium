@@ -98,4 +98,4 @@ class TableLayoutAlgorithmAuto final : public TableLayoutAlgorithm {
 
 }  // namespace blink
 
-#endif  // TableLayoutAlgorithmAuto
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_LAYOUT_ALGORITHM_AUTO_H_

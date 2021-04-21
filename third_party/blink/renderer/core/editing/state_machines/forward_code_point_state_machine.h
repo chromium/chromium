@@ -50,4 +50,4 @@ class CORE_EXPORT ForwardCodePointStateMachine {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_STATE_MACHINES_FORWARD_CODE_POINT_STATE_MACHINE_H_

@@ -49,4 +49,4 @@ struct DowncastTraits<StyleRay> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_RAY_H_

@@ -75,4 +75,4 @@ class CORE_EXPORT ForwardGraphemeBoundaryStateMachine {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_STATE_MACHINES_FORWARD_GRAPHEME_BOUNDARY_STATE_MACHINE_H_

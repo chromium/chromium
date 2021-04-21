@@ -38,4 +38,4 @@ class IgnoreOpensDuringUnloadCountIncrementer {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_IGNORE_OPENS_DURING_UNLOAD_COUNT_INCREMENTER_H_

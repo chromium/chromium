@@ -68,4 +68,4 @@ class CORE_EXPORT InsertParagraphSeparatorCommand final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_INSERT_PARAGRAPH_SEPARATOR_COMMAND_H_

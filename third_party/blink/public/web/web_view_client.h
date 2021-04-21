@@ -119,4 +119,4 @@ class WebViewClient {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_CLIENT_H_

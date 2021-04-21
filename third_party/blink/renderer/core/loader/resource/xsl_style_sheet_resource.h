@@ -78,4 +78,4 @@ struct DowncastTraits<XSLStyleSheetResource> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_XSL_STYLE_SHEET_RESOURCE_H_

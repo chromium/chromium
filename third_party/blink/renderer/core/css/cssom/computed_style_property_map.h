@@ -64,4 +64,4 @@ class CORE_EXPORT ComputedStylePropertyMap
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_COMPUTED_STYLE_PROPERTY_MAP_H_

@@ -160,4 +160,4 @@ class VTTParser final : public GarbageCollected<VTTParser> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_PARSER_H_

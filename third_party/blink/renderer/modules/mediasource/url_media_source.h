@@ -50,4 +50,4 @@ class URLMediaSource {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_URL_MEDIA_SOURCE_H_

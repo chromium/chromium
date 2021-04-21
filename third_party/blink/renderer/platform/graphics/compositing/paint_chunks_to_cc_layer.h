@@ -82,4 +82,4 @@ class PLATFORM_EXPORT PaintChunksToCcLayer {
 
 }  // namespace blink
 
-#endif  // PaintArtifactCompositor_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PAINT_CHUNKS_TO_CC_LAYER_H_

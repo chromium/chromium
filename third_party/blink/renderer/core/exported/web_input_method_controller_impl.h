@@ -75,4 +75,4 @@ class CORE_EXPORT WebInputMethodControllerImpl
 };
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_INPUT_METHOD_CONTROLLER_IMPL_H_

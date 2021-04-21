@@ -123,4 +123,4 @@ class CORE_EXPORT DocumentAnimations final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_DOCUMENT_ANIMATIONS_H_

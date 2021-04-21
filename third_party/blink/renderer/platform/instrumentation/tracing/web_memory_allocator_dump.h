@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WebMemoryAllocatorDump_h
-#define WebMemoryAllocatorDump_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_TRACING_WEB_MEMORY_ALLOCATOR_DUMP_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_TRACING_WEB_MEMORY_ALLOCATOR_DUMP_H_
 
 #include <stdint.h>
 
@@ -59,4 +59,4 @@ class PLATFORM_EXPORT WebMemoryAllocatorDump final {
 
 }  // namespace blink
 
-#endif  // WebMemoryAllocatorDump_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_TRACING_WEB_MEMORY_ALLOCATOR_DUMP_H_

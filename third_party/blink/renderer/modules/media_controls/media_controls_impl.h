@@ -430,4 +430,4 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
 };
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_IMPL_H_

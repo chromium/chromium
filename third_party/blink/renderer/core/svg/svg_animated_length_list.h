@@ -59,4 +59,4 @@ class SVGAnimatedLengthList final : public ScriptWrappable,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ANIMATED_LENGTH_LIST_H_

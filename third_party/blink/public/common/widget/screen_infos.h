@@ -32,4 +32,4 @@ struct BLINK_COMMON_EXPORT ScreenInfos {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_SCREEN_INFOS_H_

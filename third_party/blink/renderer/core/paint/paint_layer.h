@@ -1535,4 +1535,4 @@ CORE_EXPORT void showLayerTree(const blink::PaintLayer*);
 CORE_EXPORT void showLayerTree(const blink::LayoutObject*);
 #endif
 
-#endif  // Layer_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_H_

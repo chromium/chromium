@@ -109,4 +109,4 @@ struct WebContentSecurityPolicy {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CONTENT_SECURITY_POLICY_STRUCT_H_

@@ -136,4 +136,4 @@ struct DowncastTraits<LayoutTableCol> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TABLE_COL_H_

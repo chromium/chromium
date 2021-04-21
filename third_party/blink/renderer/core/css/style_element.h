@@ -70,4 +70,4 @@ class CORE_EXPORT StyleElement : public GarbageCollectedMixin {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_ELEMENT_H_

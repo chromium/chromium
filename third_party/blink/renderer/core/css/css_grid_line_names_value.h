@@ -59,4 +59,4 @@ struct DowncastTraits<cssvalue::CSSGridLineNamesValue> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_GRID_LINE_NAMES_VALUE_H_

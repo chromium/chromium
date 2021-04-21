@@ -131,4 +131,4 @@ class RadialGradientAttributesWrapper final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_RADIAL_GRADIENT_ATTRIBUTES_H_

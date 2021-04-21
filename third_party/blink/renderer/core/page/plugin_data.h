@@ -118,4 +118,4 @@ class CORE_EXPORT PluginData final : public GarbageCollected<PluginData> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PLUGIN_DATA_H_

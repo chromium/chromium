@@ -59,4 +59,4 @@ PLATFORM_EXPORT bool DetectTextEncoding(const char* data,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_ENCODING_DETECTOR_H_

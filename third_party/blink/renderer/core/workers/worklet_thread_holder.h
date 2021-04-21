@@ -97,4 +97,4 @@ WorkletThreadHolder<DerivedWorkletThread>*
 
 }  // namespace blink
 
-#endif  // WorkletBackingThreadHolder_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKLET_THREAD_HOLDER_H_

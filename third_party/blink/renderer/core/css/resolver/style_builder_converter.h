@@ -395,4 +395,4 @@ AtomicString StyleBuilderConverter::ConvertString(StyleResolverState&,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_BUILDER_CONVERTER_H_

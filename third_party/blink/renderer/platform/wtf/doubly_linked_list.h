@@ -291,4 +291,4 @@ DoublyLinkedList<T, PointerType>::InsertAfter(T* node, T* insertion_point) {
 using WTF::DoublyLinkedListNode;
 using WTF::DoublyLinkedList;
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DOUBLY_LINKED_LIST_H_

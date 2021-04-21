@@ -372,4 +372,4 @@ v8::Local<v8::Value> ToV8(const void* value,
 
 }  // namespace blink
 
-#endif  // ToV8ForPlatform_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_TO_V8_H_

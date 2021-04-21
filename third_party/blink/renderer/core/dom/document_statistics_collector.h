@@ -22,4 +22,4 @@ class CORE_EXPORT DocumentStatisticsCollector {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_STATISTICS_COLLECTOR_H_

@@ -129,4 +129,4 @@ PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const DoublePoint&);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_DOUBLE_POINT_H_

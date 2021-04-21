@@ -190,4 +190,4 @@ bool IsStyleSpanOrSpanWithOnlyStyleAttribute(const Element*);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_APPLY_STYLE_COMMAND_H_

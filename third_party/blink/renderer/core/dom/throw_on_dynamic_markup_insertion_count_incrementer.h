@@ -38,4 +38,4 @@ class ThrowOnDynamicMarkupInsertionCountIncrementer {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_THROW_ON_DYNAMIC_MARKUP_INSERTION_COUNT_INCREMENTER_H_

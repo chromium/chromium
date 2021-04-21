@@ -85,4 +85,4 @@ class WebBlobInfo {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_BLOB_INFO_H_

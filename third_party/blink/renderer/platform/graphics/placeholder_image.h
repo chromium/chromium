@@ -101,4 +101,4 @@ class PLATFORM_EXPORT PlaceholderImage final : public Image {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PLACEHOLDER_IMAGE_H_

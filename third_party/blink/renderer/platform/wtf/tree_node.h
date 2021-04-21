@@ -210,4 +210,4 @@ using WTF::TreeNode;
 using WTF::TraverseNext;
 using WTF::TraverseNextPostOrder;
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TREE_NODE_H_

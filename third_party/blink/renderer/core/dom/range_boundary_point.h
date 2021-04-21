@@ -222,4 +222,4 @@ inline bool operator==(const RangeBoundaryPoint& a,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_RANGE_BOUNDARY_POINT_H_

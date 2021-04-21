@@ -181,4 +181,4 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_ICO_ICO_IMAGE_DECODER_H_

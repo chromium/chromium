@@ -100,4 +100,4 @@ class DateTimeFieldsState {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_FIELDS_STATE_H_

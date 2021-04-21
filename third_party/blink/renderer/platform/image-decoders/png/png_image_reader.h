@@ -171,4 +171,4 @@ class PLATFORM_EXPORT PNGImageReader final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_PNG_PNG_IMAGE_READER_H_

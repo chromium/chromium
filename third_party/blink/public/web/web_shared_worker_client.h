@@ -52,4 +52,4 @@ class WebSharedWorkerClient {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SHARED_WORKER_CLIENT_H_

@@ -528,4 +528,4 @@ struct HashTraits<blink::FontDescription>
 
 }  // namespace WTF
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_DESCRIPTION_H_

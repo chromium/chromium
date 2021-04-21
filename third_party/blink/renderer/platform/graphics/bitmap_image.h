@@ -203,4 +203,4 @@ struct DowncastTraits<BitmapImage> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_BITMAP_IMAGE_H_

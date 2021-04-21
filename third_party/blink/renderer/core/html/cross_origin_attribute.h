@@ -14,4 +14,4 @@ CrossOriginAttributeValue GetCrossOriginAttributeValue(const String& value);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CROSS_ORIGIN_ATTRIBUTE_H_

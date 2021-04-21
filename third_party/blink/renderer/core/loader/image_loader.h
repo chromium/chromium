@@ -306,4 +306,4 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_IMAGE_LOADER_H_

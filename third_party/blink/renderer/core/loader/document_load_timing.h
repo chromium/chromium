@@ -147,4 +147,4 @@ class CORE_EXPORT DocumentLoadTiming final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_DOCUMENT_LOAD_TIMING_H_

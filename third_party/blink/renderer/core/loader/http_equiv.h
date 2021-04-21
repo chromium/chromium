@@ -52,4 +52,4 @@ class HttpEquiv {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_HTTP_EQUIV_H_

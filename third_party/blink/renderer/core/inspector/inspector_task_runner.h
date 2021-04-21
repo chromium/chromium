@@ -77,4 +77,4 @@ class CORE_EXPORT InspectorTaskRunner final
 
 }  // namespace blink
 
-#endif  // !defined(InspectorTaskRunner_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_TASK_RUNNER_H_

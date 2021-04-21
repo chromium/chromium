@@ -183,4 +183,4 @@ class PLATFORM_EXPORT FontPlatformData {
 
 }  // namespace blink
 
-#endif  // ifdef FontPlatformData_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_PLATFORM_DATA_H_

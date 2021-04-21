@@ -97,4 +97,4 @@ class LayoutSVGModelObject : public LayoutObject {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_MODEL_OBJECT_H_

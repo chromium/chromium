@@ -57,4 +57,4 @@ class CORE_EXPORT CSSStyleVariableReferenceValue final
 
 }  // namespace blink
 
-#endif  // CSSStyleVariableReference_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_STYLE_VARIABLE_REFERENCE_VALUE_H_

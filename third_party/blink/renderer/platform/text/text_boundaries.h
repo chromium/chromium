@@ -57,4 +57,4 @@ PLATFORM_EXPORT int FindNextWordForward(const UChar*, int len, int position);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_BOUNDARIES_H_

@@ -222,4 +222,4 @@ class PLATFORM_EXPORT Character {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_CHARACTER_H_

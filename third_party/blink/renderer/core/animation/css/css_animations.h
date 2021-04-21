@@ -309,4 +309,4 @@ struct DowncastTraits<CSSAnimations::TransitionEventDelegate> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_ANIMATIONS_H_

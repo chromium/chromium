@@ -83,4 +83,4 @@ struct WebPrintParams {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PRINT_PARAMS_H_

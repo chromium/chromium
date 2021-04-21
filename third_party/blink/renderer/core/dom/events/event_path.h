@@ -133,4 +133,4 @@ class CORE_EXPORT EventPath final : public GarbageCollected<EventPath> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_PATH_H_

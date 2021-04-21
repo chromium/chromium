@@ -107,4 +107,4 @@ struct DowncastTraits<TransitionInterpolation> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TRANSITION_INTERPOLATION_H_

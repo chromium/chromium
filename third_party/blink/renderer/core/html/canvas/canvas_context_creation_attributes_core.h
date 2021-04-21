@@ -40,4 +40,4 @@ class CORE_EXPORT CanvasContextCreationAttributesCore {
 
 }  // namespace blink
 
-#endif  // CanvasContextCreationAttributes_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_CONTEXT_CREATION_ATTRIBUTES_CORE_H_

@@ -72,4 +72,4 @@ class WebDOMMediaStreamTrack {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOM_MEDIA_STREAM_TRACK_H_

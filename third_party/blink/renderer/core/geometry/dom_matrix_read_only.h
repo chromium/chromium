@@ -147,4 +147,4 @@ class CORE_EXPORT DOMMatrixReadOnly : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_MATRIX_READ_ONLY_H_

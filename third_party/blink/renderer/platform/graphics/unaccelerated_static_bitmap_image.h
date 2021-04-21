@@ -58,4 +58,4 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_UNACCELERATED_STATIC_BITMAP_IMAGE_H_

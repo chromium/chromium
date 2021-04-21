@@ -29,4 +29,4 @@ class CORE_EXPORT DOMPoint : public DOMPointReadOnly {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_POINT_H_

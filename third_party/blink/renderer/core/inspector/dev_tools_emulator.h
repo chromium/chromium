@@ -152,4 +152,4 @@ class CORE_EXPORT DevToolsEmulator final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEV_TOOLS_EMULATOR_H_

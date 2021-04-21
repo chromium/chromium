@@ -91,4 +91,4 @@ class LayoutSelection final : public GarbageCollected<LayoutSelection> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_LAYOUT_SELECTION_H_

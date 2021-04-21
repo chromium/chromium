@@ -42,4 +42,4 @@ class CORE_EXPORT IncrementLoadEventDelayCount {
 };
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_INCREMENT_LOAD_EVENT_DELAY_COUNT_H_

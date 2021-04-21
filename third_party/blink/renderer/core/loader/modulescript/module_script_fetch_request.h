@@ -70,4 +70,4 @@ class ModuleScriptFetchRequest final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_MODULESCRIPT_MODULE_SCRIPT_FETCH_REQUEST_H_

@@ -143,4 +143,4 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_TEST_SUITE_H_

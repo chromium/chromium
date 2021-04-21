@@ -52,4 +52,4 @@ BLINK_COMMON_EXPORT extern const char kUserAgentClientHintDisable[];
 }  // namespace switches
 }  // namespace blink
 
-#endif  // CONTENT_PUBLIC_COMMON_CONTENT_SWITCHES_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_SWITCHES_H_

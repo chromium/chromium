@@ -55,4 +55,4 @@ class HTMLTableRowsCollection final : public HTMLCollection {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_TABLE_ROWS_COLLECTION_H_

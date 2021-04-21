@@ -83,4 +83,4 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_AURA_H_

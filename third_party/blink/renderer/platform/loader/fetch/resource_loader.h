@@ -281,4 +281,4 @@ class PLATFORM_EXPORT ResourceLoader final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_LOADER_H_

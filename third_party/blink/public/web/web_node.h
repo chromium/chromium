@@ -171,4 +171,4 @@ inline bool operator<(const WebNode& a, const WebNode& b) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NODE_H_

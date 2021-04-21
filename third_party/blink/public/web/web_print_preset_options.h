@@ -47,4 +47,4 @@ struct WebPrintPresetOptions {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PRINT_PRESET_OPTIONS_H_

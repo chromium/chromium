@@ -116,4 +116,4 @@ inline void PagePopupClient::AddString(const String& str, SharedBuffer* data) {
 }
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PAGE_POPUP_CLIENT_H_

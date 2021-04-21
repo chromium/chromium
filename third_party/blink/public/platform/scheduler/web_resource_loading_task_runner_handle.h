@@ -38,4 +38,4 @@ class BLINK_PLATFORM_EXPORT WebResourceLoadingTaskRunnerHandle {
 }  // namespace scheduler
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_WEB_RESOURCE_LOADING_TASK_RUNNER_HANDLE_H_

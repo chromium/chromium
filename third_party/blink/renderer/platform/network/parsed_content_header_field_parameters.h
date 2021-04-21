@@ -69,4 +69,4 @@ class PLATFORM_EXPORT ParsedContentHeaderFieldParameters final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_PARSED_CONTENT_HEADER_FIELD_PARAMETERS_H_

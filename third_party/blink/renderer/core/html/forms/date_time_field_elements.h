@@ -276,4 +276,4 @@ class DateTimeYearFieldElement final : public DateTimeNumericFieldElement {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_FIELD_ELEMENTS_H_

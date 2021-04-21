@@ -38,4 +38,4 @@ String ConvertHTMLTextToInterchangeFormat(const String&, const Text&);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SERIALIZERS_HTML_INTERCHANGE_H_

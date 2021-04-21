@@ -70,4 +70,4 @@ class CORE_EXPORT CanvasFontCache final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_FONT_CACHE_H_

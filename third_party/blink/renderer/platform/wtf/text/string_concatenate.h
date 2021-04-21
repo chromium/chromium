@@ -222,4 +222,4 @@ class StringTypeAdapter<AtomicString> : public StringTypeAdapter<StringView> {
 }  // namespace WTF
 
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_CONCATENATE_H_

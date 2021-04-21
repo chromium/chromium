@@ -55,4 +55,4 @@ inline bool IsUnambiguousHanScript(UScriptCode script) {
 }
 }
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_LOCALE_TO_SCRIPT_MAPPING_H_

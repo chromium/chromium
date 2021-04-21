@@ -59,4 +59,4 @@ class CORE_EXPORT CSSSkewX final : public CSSTransformComponent {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_SKEW_X_H_

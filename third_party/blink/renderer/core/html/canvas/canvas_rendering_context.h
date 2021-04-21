@@ -239,4 +239,4 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_H_

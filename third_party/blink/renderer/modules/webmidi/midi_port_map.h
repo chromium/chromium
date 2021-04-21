@@ -95,4 +95,4 @@ class MIDIPortMap : public ScriptWrappable, public Maplike<String, T*> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBMIDI_MIDI_PORT_MAP_H_

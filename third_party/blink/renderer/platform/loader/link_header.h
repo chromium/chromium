@@ -100,4 +100,4 @@ class PLATFORM_EXPORT LinkHeaderSet {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_LINK_HEADER_H_

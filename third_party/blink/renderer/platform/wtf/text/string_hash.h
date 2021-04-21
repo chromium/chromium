@@ -172,4 +172,4 @@ using WTF::AlreadyHashed;
 using WTF::CaseFoldingHash;
 using WTF::StringHash;
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_HASH_H_

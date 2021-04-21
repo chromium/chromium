@@ -116,4 +116,4 @@ class SliderContainerElement final : public HTMLDivElement {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_SLIDER_THUMB_ELEMENT_H_

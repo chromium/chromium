@@ -47,4 +47,4 @@ PLATFORM_EXPORT NSFont* MatchUniqueFont(const AtomicString& unique_font_name,
 int ToAppKitFontWeight(FontSelectionValue);
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_MAC_FONT_FAMILY_MATCHER_MAC_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_MAC_FONT_MATCHER_MAC_H_

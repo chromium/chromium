@@ -496,4 +496,4 @@ defaultMaximumForClamp<blink::FontSelectionValue>() {
   return blink::FontSelectionValue::MaximumValue();
 }
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_SELECTION_TYPES_H_

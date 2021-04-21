@@ -59,4 +59,4 @@ class MediaControlTimelineElement : public MediaControlSliderElement {
 
 }  // namespace blink
 
-#endif  // MediaControlTimelineElement
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_ELEMENTS_MEDIA_CONTROL_TIMELINE_ELEMENT_H_

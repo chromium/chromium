@@ -272,4 +272,4 @@ PLATFORM_EXPORT WTF::TextStream& operator<<(WTF::TextStream&, const FloatRect&);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_RECT_H_

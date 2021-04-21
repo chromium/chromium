@@ -244,4 +244,4 @@ inline void VTTScanner::Advance(unsigned amount) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_SCANNER_H_

@@ -149,4 +149,4 @@ class CORE_EXPORT ScopedPrintContext {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PRINT_CONTEXT_H_

@@ -45,4 +45,4 @@ class PLATFORM_EXPORT ResourceLoadingTaskRunnerHandleImpl
 }  // namespace scheduler
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_RESOURCE_LOADING_TASK_RUNNER_HANDLE_IMPL_H_

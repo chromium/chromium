@@ -189,4 +189,4 @@ struct DowncastTraits<HTMLFormControlElement> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_FORM_CONTROL_ELEMENT_H_

@@ -15,4 +15,4 @@ enum class NGOutlineType {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_OUTLINE_TYPE_H_

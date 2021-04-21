@@ -37,4 +37,4 @@ class MODULES_EXPORT HTMLCanvasElementModule {
 };
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_HTMLCANVAS_HTML_CANVAS_ELEMENT_MODULE_H_

@@ -121,4 +121,4 @@ class CORE_EXPORT MediaQueryExp {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_EXP_H_

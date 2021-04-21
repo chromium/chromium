@@ -47,4 +47,4 @@ struct WebPopupMenuInfo {
 };
 }
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_POPUP_MENU_INFO_H_

@@ -106,4 +106,4 @@ class CORE_EXPORT TextResourceDecoder {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_TEXT_RESOURCE_DECODER_H_

@@ -143,4 +143,4 @@ class CORE_EXPORT FormController final
 CORE_EXPORT String FormSignature(const HTMLFormElement& form);
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_FORM_CONTROLLER_H_

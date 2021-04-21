@@ -273,4 +273,4 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_SETTINGS_IMPL_H_

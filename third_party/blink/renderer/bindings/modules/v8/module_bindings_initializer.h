@@ -18,4 +18,4 @@ class ModuleBindingsInitializer {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_MODULES_V8_MODULE_BINDINGS_INITIALIZER_H_

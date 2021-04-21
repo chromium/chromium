@@ -119,4 +119,4 @@ class SimSubresourceRequest final : public SimRequestBase {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_REQUEST_H_

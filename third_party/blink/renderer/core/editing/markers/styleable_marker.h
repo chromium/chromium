@@ -54,4 +54,4 @@ struct DowncastTraits<StyleableMarker> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_STYLEABLE_MARKER_H_

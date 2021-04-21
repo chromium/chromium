@@ -35,4 +35,4 @@ class ImagePixelLocker final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SKIA_IMAGE_PIXEL_LOCKER_H_

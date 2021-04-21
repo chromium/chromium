@@ -45,4 +45,4 @@ class CORE_EXPORT InlineStylePropertyMap final : public StylePropertyMap {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_INLINE_STYLE_PROPERTY_MAP_H_

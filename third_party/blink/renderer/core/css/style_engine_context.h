@@ -24,4 +24,4 @@ class CORE_EXPORT StyleEngineContext {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_ENGINE_CONTEXT_H_

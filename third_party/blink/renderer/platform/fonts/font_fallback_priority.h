@@ -26,4 +26,4 @@ bool IsNonTextFallbackPriority(FontFallbackPriority);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_PRIORITY_H_

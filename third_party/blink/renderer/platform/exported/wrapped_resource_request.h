@@ -56,4 +56,4 @@ class WrappedResourceRequest : public WebURLRequest {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_EXPORTED_WRAPPED_RESOURCE_REQUEST_H_

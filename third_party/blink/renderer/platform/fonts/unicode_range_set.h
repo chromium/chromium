@@ -76,4 +76,4 @@ class PLATFORM_EXPORT UnicodeRangeSet : public RefCounted<UnicodeRangeSet> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_UNICODE_RANGE_SET_H_

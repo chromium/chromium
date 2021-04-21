@@ -75,4 +75,4 @@ inline TreeScopeAdopter::TreeScopeAdopter(Node& to_adopt, TreeScope& new_scope)
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TREE_SCOPE_ADOPTER_H_

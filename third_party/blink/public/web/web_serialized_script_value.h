@@ -91,4 +91,4 @@ class WebSerializedScriptValue {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SERIALIZED_SCRIPT_VALUE_H_

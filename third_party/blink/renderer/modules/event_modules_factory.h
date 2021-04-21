@@ -26,4 +26,4 @@ class EventModulesFactory final : public EventFactoryBase {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_EVENT_MODULES_FACTORY_H_

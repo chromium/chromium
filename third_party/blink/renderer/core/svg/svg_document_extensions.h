@@ -85,4 +85,4 @@ class CORE_EXPORT SVGDocumentExtensions final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_DOCUMENT_EXTENSIONS_H_

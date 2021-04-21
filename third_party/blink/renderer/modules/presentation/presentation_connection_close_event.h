@@ -56,4 +56,4 @@ class PresentationConnectionCloseEvent final : public Event {
 
 }  // namespace blink
 
-#endif  // PresentationConnectionAvailableEvent_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_CONNECTION_CLOSE_EVENT_H_

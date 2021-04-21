@@ -88,4 +88,4 @@ class CORE_EXPORT InspectorHistory final
 
 }  // namespace blink
 
-#endif  // !defined(InspectorHistory_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_HISTORY_H_

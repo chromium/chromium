@@ -60,4 +60,4 @@ class WebScrollbarTheme {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MAC_WEB_SCROLLBAR_THEME_H_

@@ -96,4 +96,4 @@ class DOMPatchSupport final {
 
 }  // namespace blink
 
-#endif  // !defined(DOMPatchSupport_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DOM_PATCH_SUPPORT_H_

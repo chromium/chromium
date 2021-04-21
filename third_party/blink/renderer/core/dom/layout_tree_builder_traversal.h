@@ -81,4 +81,4 @@ class CORE_EXPORT LayoutTreeBuilderTraversal {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_LAYOUT_TREE_BUILDER_TRAVERSAL_H_

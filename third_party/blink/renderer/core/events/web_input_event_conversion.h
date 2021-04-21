@@ -98,4 +98,4 @@ Vector<WebPointerEvent> CORE_EXPORT TransformWebPointerEventVector(
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_WEB_INPUT_EVENT_CONVERSION_H_

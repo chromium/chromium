@@ -22,4 +22,4 @@ void RecordIdentifiabilityMetric(const IdentifiableSurface& surface,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_IDENTIFIABILITY_METRICS_H_

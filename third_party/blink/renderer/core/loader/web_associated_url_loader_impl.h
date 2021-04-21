@@ -71,4 +71,4 @@ class CORE_EXPORT WebAssociatedURLLoaderImpl final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_WEB_ASSOCIATED_URL_LOADER_IMPL_H_

@@ -103,4 +103,4 @@ inline scoped_refptr<SharedFontFamily> FontFamily::ReleaseNext() {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FAMILY_H_

@@ -26,4 +26,4 @@ inline bool IsCanvasRotationOblque(CanvasRotationInVertical r) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_CANVAS_ROTATION_IN_VERTICAL_H_

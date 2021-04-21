@@ -112,4 +112,4 @@ class PLATFORM_EXPORT TextResourceDecoderOptions final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_TEXT_RESOURCE_DECODER_OPTIONS_H_

@@ -110,4 +110,4 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_JPEG_JPEG_IMAGE_DECODER_H_

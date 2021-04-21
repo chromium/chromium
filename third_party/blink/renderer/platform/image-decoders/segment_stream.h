@@ -48,4 +48,4 @@ class PLATFORM_EXPORT SegmentStream : public SkStream {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_SEGMENT_STREAM_H_

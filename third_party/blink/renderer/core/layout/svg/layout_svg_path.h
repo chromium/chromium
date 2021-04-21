@@ -59,4 +59,4 @@ class LayoutSVGPath final : public LayoutSVGShape {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_PATH_H_

@@ -238,4 +238,4 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_TIMING_H_

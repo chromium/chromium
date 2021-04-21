@@ -67,4 +67,4 @@ class PLATFORM_EXPORT GradientGeneratedImage final : public GeneratedImage {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRADIENT_GENERATED_IMAGE_H_

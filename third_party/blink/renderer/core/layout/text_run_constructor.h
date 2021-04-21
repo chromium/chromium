@@ -92,4 +92,4 @@ TextRun ConstructTextRun(const Font&,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TEXT_RUN_CONSTRUCTOR_H_

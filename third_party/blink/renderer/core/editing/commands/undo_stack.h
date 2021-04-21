@@ -97,4 +97,4 @@ class CORE_EXPORT UndoStack final : public GarbageCollected<UndoStack>,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_UNDO_STACK_H_

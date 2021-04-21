@@ -134,4 +134,4 @@ class BackgroundHTMLParser {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_BACKGROUND_HTML_PARSER_H_

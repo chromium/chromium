@@ -243,4 +243,4 @@ inline Node* NodeTraversal::ChildAtTemplate(NodeType& parent, unsigned index) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_TRAVERSAL_H_

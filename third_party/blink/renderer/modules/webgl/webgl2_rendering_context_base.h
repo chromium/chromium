@@ -1208,4 +1208,4 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL2_RENDERING_CONTEXT_BASE_H_

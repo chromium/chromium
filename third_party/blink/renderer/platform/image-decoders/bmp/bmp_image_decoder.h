@@ -92,4 +92,4 @@ class PLATFORM_EXPORT BMPImageDecoder final : public ImageDecoder {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_BMP_BMP_IMAGE_DECODER_H_

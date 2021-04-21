@@ -351,4 +351,4 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_

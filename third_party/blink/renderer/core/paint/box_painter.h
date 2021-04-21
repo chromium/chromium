@@ -93,4 +93,4 @@ class BoxDrawingRecorder : public DrawingRecorder {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BOX_PAINTER_H_

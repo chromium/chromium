@@ -130,4 +130,4 @@ bool BloomFilter<keyBits>::IsClear() const {
 
 using WTF::BloomFilter;
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_BLOOM_FILTER_H_

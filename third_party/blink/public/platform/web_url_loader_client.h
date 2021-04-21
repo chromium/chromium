@@ -135,4 +135,4 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderClient {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_CLIENT_H_

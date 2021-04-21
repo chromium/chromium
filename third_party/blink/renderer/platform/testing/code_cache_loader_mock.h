@@ -37,4 +37,4 @@ class CodeCacheLoaderMock : public WebCodeCacheLoader {
 
 }  // namespace blink
 
-#endif  // CodeCacheLoaderMock_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_CODE_CACHE_LOADER_MOCK_H_

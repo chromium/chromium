@@ -155,4 +155,4 @@ class SQLiteDatabase {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQLITE_SQLITE_DATABASE_H_

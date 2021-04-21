@@ -228,4 +228,4 @@ class CORE_EXPORT PaintLayerClipper {
 
 }  // namespace blink
 
-#endif  // LayerClipper_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_CLIPPER_H_

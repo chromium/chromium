@@ -133,4 +133,4 @@ class CORE_EXPORT WebDevToolsAgentImpl final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_DEV_TOOLS_AGENT_IMPL_H_

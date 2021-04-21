@@ -93,4 +93,4 @@ class PLATFORM_EXPORT ImageEncoder {
 };
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_ENCODERS_IMAGE_ENCODER_H_

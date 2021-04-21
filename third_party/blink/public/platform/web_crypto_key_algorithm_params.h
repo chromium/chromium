@@ -183,4 +183,4 @@ class WebCryptoEcKeyAlgorithmParams : public WebCryptoKeyAlgorithmParams {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_KEY_ALGORITHM_PARAMS_H_

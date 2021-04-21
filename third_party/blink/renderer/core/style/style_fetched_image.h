@@ -104,4 +104,4 @@ struct DowncastTraits<StyleFetchedImage> {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_FETCHED_IMAGE_H_

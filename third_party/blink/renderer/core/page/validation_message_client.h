@@ -73,4 +73,4 @@ class ValidationMessageClient : public GarbageCollectedMixin {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_VALIDATION_MESSAGE_CLIENT_H_

@@ -89,4 +89,4 @@ class CORE_EXPORT IdlenessDetector
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_IDLENESS_DETECTOR_H_

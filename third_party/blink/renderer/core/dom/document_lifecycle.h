@@ -275,4 +275,4 @@ inline bool DocumentLifecycle::StateAllowsDetach() const {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_LIFECYCLE_H_

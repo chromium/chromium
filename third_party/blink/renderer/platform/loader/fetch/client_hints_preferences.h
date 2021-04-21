@@ -62,4 +62,4 @@ class PLATFORM_EXPORT ClientHintsPreferences {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_CLIENT_HINTS_PREFERENCES_H_

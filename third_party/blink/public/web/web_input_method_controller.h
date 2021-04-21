@@ -105,4 +105,4 @@ class WebInputMethodController {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_INPUT_METHOD_CONTROLLER_H_

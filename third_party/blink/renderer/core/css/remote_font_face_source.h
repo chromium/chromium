@@ -170,4 +170,4 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_REMOTE_FONT_FACE_SOURCE_H_

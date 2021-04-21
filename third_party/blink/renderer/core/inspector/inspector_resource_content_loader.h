@@ -58,4 +58,4 @@ class CORE_EXPORT InspectorResourceContentLoader final
 
 }  // namespace blink
 
-#endif  // !defined(InspectorResourceContentLoader_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_RESOURCE_CONTENT_LOADER_H_

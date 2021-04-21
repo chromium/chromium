@@ -358,4 +358,4 @@ using WTF::EqualIgnoringASCIICase;
 using WTF::DeprecatedEqualIgnoringCase;
 using WTF::IsAllSpecialCharacters;
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_VIEW_H_

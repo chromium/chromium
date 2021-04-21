@@ -142,4 +142,4 @@ class CORE_EXPORT NewScriptFunction final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_FUNCTION_H_

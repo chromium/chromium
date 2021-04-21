@@ -76,4 +76,4 @@ class PLATFORM_EXPORT UTF16TextIterator {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_UTF16_TEXT_ITERATOR_H_

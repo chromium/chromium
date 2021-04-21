@@ -39,4 +39,4 @@ class CaseMappingHarfBuzzBufferFiller {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_CASE_MAPPING_HARFBUZZ_BUFFER_FILLER_H_

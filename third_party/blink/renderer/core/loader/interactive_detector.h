@@ -251,4 +251,4 @@ class CORE_EXPORT InteractiveDetector
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_INTERACTIVE_DETECTOR_H_

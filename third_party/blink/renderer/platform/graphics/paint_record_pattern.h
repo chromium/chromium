@@ -33,4 +33,4 @@ class PLATFORM_EXPORT PaintRecordPattern final : public Pattern {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_RECORD_PATTERN_H_

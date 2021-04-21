@@ -92,4 +92,4 @@ class CORE_EXPORT ImageResourceObserver {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_OBSERVER_H_

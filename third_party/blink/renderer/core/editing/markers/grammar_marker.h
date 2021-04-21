@@ -28,4 +28,4 @@ class CORE_EXPORT GrammarMarker final : public SpellCheckMarker {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_GRAMMAR_MARKER_H_

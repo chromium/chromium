@@ -45,4 +45,4 @@ class InspectorFrontendClient : public GarbageCollectedMixin {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_FRONTEND_CLIENT_H_

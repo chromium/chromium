@@ -253,4 +253,4 @@ struct DowncastTraits<WebPluginContainerImpl> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_PLUGIN_CONTAINER_IMPL_H_

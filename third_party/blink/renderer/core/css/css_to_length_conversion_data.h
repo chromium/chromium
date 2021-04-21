@@ -132,4 +132,4 @@ class CORE_EXPORT CSSToLengthConversionData {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TO_LENGTH_CONVERSION_DATA_H_

@@ -48,4 +48,4 @@ class EventCounts final : public ScriptWrappable,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_KEYBOARD_KEYBOARD_event_count_map_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_EVENT_COUNTS_H_

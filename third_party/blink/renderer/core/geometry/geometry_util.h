@@ -35,4 +35,4 @@ inline double NanSafeMax(double a, double b) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_GEOMETRY_UTIL_H_

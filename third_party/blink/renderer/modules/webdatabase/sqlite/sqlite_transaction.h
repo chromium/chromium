@@ -58,4 +58,4 @@ class SQLiteTransaction {
 
 }  // namespace blink
 
-#endif  // SQLiteTransation_H
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQLITE_SQLITE_TRANSACTION_H_

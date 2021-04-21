@@ -86,4 +86,4 @@ class CORE_EXPORT ClassicScript final : public Script {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_CLASSIC_SCRIPT_H_

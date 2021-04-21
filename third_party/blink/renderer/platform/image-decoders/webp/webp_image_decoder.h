@@ -143,4 +143,4 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_WEBP_WEBP_IMAGE_DECODER_H_

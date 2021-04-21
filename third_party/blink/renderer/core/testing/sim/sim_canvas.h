@@ -82,4 +82,4 @@ class SimCanvas : public SkCanvas {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_CANVAS_H_

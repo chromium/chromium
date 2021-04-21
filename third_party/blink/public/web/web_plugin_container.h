@@ -167,4 +167,4 @@ class WebPluginContainer {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PLUGIN_CONTAINER_H_

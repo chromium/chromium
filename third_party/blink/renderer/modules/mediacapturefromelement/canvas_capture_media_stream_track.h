@@ -46,4 +46,4 @@ class CanvasCaptureMediaStreamTrack final : public MediaStreamTrack {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIACAPTUREFROMELEMENT_CANVAS_CAPTURE_MEDIA_STREAM_TRACK_H_

@@ -99,4 +99,4 @@ class CORE_EXPORT TopDocumentRootScrollerController
 
 }  // namespace blink
 
-#endif  // RootScrollerController_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_TOP_DOCUMENT_ROOT_SCROLLER_CONTROLLER_H_

@@ -58,4 +58,4 @@ struct TouchAdjustmentResult {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_TOUCH_ADJUSTMENT_H_

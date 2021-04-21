@@ -78,4 +78,4 @@ class PLATFORM_EXPORT WebEntities {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_WEB_ENTITIES_H_

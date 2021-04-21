@@ -1629,4 +1629,4 @@ inline ScrollbarGutter CSSIdentifierValue::ConvertTo() const {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_MAPPINGS_H_

@@ -157,4 +157,4 @@ CORE_EXPORT void AllAsyncTasksCanceled(ExecutionContext*);
 
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 
-#endif  // !defined(CoreProbes_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PROBE_CORE_PROBES_H_

@@ -54,4 +54,4 @@ struct DowncastTraits<RemoteDOMWindow> {
 
 }  // namespace blink
 
-#endif  // DOMWindow_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_REMOTE_DOM_WINDOW_H_

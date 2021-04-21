@@ -98,4 +98,4 @@ class FontDataCache {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_DATA_CACHE_H_

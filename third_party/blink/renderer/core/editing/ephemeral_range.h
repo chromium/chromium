@@ -158,4 +158,4 @@ ToEphemeralRangeInFlatTree(const EphemeralRange&);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_EPHEMERAL_RANGE_H_

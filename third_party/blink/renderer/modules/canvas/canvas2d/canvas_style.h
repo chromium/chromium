@@ -77,4 +77,4 @@ bool ParseColorOrCurrentColor(Color& parsed_color,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_STYLE_H_

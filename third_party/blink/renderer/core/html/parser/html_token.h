@@ -453,4 +453,4 @@ const char* ToString(HTMLToken::TokenType);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TOKEN_H_

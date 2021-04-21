@@ -60,4 +60,4 @@ class SVGAnimatedNumberList final : public ScriptWrappable,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ANIMATED_NUMBER_LIST_H_

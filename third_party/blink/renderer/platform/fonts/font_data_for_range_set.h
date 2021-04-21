@@ -81,4 +81,4 @@ class PLATFORM_EXPORT FontDataForRangeSetFromCache
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_DATA_FOR_RANGE_SET_H_

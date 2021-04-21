@@ -101,4 +101,4 @@ class LineReader {
 }  // namespace test
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_UNIT_TEST_HELPERS_H_

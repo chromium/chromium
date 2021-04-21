@@ -29,4 +29,4 @@ class CORE_EXPORT SubresourceIntegrityHelper final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_SUBRESOURCE_INTEGRITY_HELPER_H_

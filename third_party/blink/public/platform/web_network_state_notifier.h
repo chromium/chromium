@@ -59,4 +59,4 @@ class WebNetworkStateNotifier {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_NETWORK_STATE_NOTIFIER_H_

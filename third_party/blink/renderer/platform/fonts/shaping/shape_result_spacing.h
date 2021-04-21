@@ -102,4 +102,4 @@ template <>
 void ShapeResultSpacing<TextRun>::SetSpacingAndExpansion(const Font&);
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_SPACING_H_

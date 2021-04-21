@@ -96,4 +96,4 @@ enum WebTextInputFlags {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_TEXT_INPUT_TYPE_H_

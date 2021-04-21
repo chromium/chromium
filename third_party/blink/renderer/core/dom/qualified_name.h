@@ -260,4 +260,4 @@ struct HashTraits<blink::QualifiedName>
 
 }  // namespace WTF
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_QUALIFIED_NAME_H_

@@ -63,4 +63,4 @@ class SVGAnimatedTransformList final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ANIMATED_TRANSFORM_LIST_H_

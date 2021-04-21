@@ -33,4 +33,4 @@ class AutoCanvasDrawListener : public GarbageCollected<AutoCanvasDrawListener>,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIACAPTUREFROMELEMENT_AUTO_CANVAS_DRAW_LISTENER_H_

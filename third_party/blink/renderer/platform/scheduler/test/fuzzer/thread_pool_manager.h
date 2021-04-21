@@ -154,4 +154,4 @@ class PLATFORM_EXPORT ThreadPoolManager {
 }  // namespace sequence_manager
 }  // namespace base
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FUZZER_THREAD_POOL_MANAGER_H_

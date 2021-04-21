@@ -280,4 +280,4 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_INPUT_TYPE_H_

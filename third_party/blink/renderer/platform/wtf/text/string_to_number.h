@@ -164,4 +164,4 @@ using WTF::CharactersToUInt64;
 using WTF::CharactersToDouble;
 using WTF::CharactersToFloat;
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_TO_NUMBER_H_

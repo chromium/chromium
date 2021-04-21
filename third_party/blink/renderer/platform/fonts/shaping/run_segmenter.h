@@ -71,4 +71,4 @@ class PLATFORM_EXPORT RunSegmenter {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_RUN_SEGMENTER_H_

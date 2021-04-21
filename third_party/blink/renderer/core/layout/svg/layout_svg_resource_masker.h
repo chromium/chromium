@@ -71,4 +71,4 @@ struct DowncastTraits<LayoutSVGResourceMasker> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_RESOURCE_MASKER_H_

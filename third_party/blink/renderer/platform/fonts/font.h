@@ -284,4 +284,4 @@ inline float Font::TabWidth(const SimpleFontData* font_data,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_H_

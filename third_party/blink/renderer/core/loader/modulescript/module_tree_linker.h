@@ -140,4 +140,4 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&, const ModuleTreeLinker&);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_MODULESCRIPT_MODULE_TREE_LINKER_H_

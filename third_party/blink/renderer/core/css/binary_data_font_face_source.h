@@ -29,4 +29,4 @@ class BinaryDataFontFaceSource final : public CSSFontFaceSource {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_BINARY_DATA_FONT_FACE_SOURCE_H_

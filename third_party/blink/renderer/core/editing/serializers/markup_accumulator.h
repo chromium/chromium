@@ -133,4 +133,4 @@ extern template String MarkupAccumulator::SerializeNodes<EditingStrategy>(
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SERIALIZERS_MARKUP_ACCUMULATOR_H_

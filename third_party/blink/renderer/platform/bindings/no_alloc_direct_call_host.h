@@ -119,4 +119,4 @@ inline NoAllocDirectCallScope::~NoAllocDirectCallScope() {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_NO_ALLOC_DIRECT_CALL_HOST_H_

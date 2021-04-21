@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WebURLLoaderMockFactoryImpl_h
-#define WebURLLoaderMockFactoryImpl_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEBURL_LOADER_MOCK_FACTORY_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEBURL_LOADER_MOCK_FACTORY_IMPL_H_
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
@@ -130,4 +130,4 @@ class WebURLLoaderMockFactoryImpl : public WebURLLoaderMockFactory {
 
 }  // namespace blink
 
-#endif  // WebURLLoaderMockFactoryImpl_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEBURL_LOADER_MOCK_FACTORY_IMPL_H_

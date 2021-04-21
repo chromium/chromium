@@ -182,4 +182,4 @@ using WTF::ToASCIILower;
 using WTF::ToASCIIUpper;
 using WTF::UpperNibbleToASCIIHexDigit;
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ASCII_CTYPE_H_

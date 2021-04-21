@@ -40,4 +40,4 @@ class CORE_EXPORT PopupOpeningObserver : public GarbageCollectedMixin {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_POPUP_OPENING_OBSERVER_H_

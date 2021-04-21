@@ -50,4 +50,4 @@ class NestingLevelIncrementer {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_NESTING_LEVEL_INCREMENTER_H_

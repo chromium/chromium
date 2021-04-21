@@ -33,4 +33,4 @@ class FlatTreeTraversalForbiddenScope {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FLAT_TREE_TRAVERSAL_FORBIDDEN_SCOPE_H_

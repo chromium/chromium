@@ -364,4 +364,4 @@ class BLINK_COMMON_EXPORT WebInputEvent {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_INPUT_WEB_INPUT_EVENT_H_

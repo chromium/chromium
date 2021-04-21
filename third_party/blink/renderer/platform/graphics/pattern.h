@@ -82,4 +82,4 @@ class PLATFORM_EXPORT Pattern : public RefCounted<Pattern> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATTERN_H_

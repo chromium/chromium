@@ -43,4 +43,4 @@ bool MatchesTheSerializedCSPGrammar(const String& value);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_CONTENT_SECURITY_POLICY_PARSERS_H_

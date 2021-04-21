@@ -147,4 +147,4 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRADIENT_H_

@@ -91,4 +91,4 @@ struct DowncastTraits<PickerIndicatorElement> {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_PICKER_INDICATOR_ELEMENT_H_

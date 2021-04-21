@@ -84,4 +84,4 @@ class CORE_EXPORT CanvasImageSource {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_IMAGE_SOURCE_H_

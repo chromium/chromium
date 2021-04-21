@@ -329,4 +329,4 @@ class PLATFORM_EXPORT ImageFrame final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_FRAME_H_

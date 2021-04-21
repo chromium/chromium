@@ -54,4 +54,4 @@ class PropertySetCSSStyleDeclaration
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTY_SET_CSS_STYLE_DECLARATION_H_

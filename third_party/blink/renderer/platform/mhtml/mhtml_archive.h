@@ -129,4 +129,4 @@ class PLATFORM_EXPORT MHTMLArchive final
 };
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MHTML_MHTML_ARCHIVE_H_

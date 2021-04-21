@@ -38,4 +38,4 @@ class CSSOMTypes {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSSOM_TYPES_H_

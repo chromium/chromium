@@ -72,4 +72,4 @@ class MediaFragmentURIParser final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_MEDIA_FRAGMENT_URI_PARSER_H_

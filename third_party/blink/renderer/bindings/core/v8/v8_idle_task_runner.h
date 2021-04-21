@@ -65,4 +65,4 @@ class V8IdleTaskRunner : public gin::V8IdleTaskRunner {
 
 }  // namespace blink
 
-#endif  // V8Initializer_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_IDLE_TASK_RUNNER_H_

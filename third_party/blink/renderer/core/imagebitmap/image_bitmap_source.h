@@ -41,4 +41,4 @@ class CORE_EXPORT ImageBitmapSource {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_IMAGEBITMAP_IMAGE_BITMAP_SOURCE_H_

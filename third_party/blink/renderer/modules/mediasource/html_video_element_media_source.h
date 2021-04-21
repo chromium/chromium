@@ -48,4 +48,4 @@ class HTMLVideoElementMediaSource {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_HTML_VIDEO_ELEMENT_MEDIA_SOURCE_H_

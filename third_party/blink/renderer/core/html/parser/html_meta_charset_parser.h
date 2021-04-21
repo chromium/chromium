@@ -67,4 +67,4 @@ class HTMLMetaCharsetParser {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_META_CHARSET_PARSER_H_

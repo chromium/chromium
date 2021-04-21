@@ -300,4 +300,4 @@ struct DowncastTraits<BasicShapeInset> {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_BASIC_SHAPES_H_

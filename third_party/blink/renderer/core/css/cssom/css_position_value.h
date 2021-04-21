@@ -59,4 +59,4 @@ class CORE_EXPORT CSSPositionValue final : public CSSStyleValue {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_POSITION_VALUE_H_

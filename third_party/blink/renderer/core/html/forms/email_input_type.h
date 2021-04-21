@@ -63,4 +63,4 @@ class EmailInputType final : public BaseTextInputType {
 
 }  // namespace blink
 
-#endif  // ButtonInputType_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_EMAIL_INPUT_TYPE_H_

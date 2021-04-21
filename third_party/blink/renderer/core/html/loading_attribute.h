@@ -14,4 +14,4 @@ LoadingAttributeValue GetLoadingAttributeValue(const String& value);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_LOADING_ATTRIBUTE_H_

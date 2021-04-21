@@ -174,4 +174,4 @@ CORE_EXPORT CSSValuePool& CssValuePool();
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_POOL_H_

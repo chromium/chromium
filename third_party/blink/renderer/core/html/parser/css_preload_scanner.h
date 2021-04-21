@@ -102,4 +102,4 @@ class CSSPreloadScanner {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_CSS_PRELOAD_SCANNER_H_

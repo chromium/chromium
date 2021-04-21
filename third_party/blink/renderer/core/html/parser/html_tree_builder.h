@@ -268,4 +268,4 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TREE_BUILDER_H_

@@ -140,4 +140,4 @@ class GlobalEventHandlers {
 
 }  // namespace
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_GLOBAL_EVENT_HANDLERS_H_

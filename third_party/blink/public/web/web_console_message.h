@@ -77,4 +77,4 @@ struct WebConsoleMessage {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CONSOLE_MESSAGE_H_

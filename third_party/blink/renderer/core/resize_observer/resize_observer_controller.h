@@ -72,4 +72,4 @@ class CORE_EXPORT ResizeObserverController final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_RESIZE_OBSERVER_RESIZE_OBSERVER_CONTROLLER_H_

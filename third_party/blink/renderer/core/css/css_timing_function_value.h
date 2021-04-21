@@ -108,4 +108,4 @@ struct DowncastTraits<cssvalue::CSSStepsTimingFunctionValue> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TIMING_FUNCTION_VALUE_H_

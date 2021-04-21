@@ -74,4 +74,4 @@ class HitRegionManager final : public GarbageCollected<HitRegionManager> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_HIT_REGION_H_

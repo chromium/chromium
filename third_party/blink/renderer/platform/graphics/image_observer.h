@@ -56,4 +56,4 @@ class PLATFORM_EXPORT ImageObserver : public GarbageCollectedMixin {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_OBSERVER_H_

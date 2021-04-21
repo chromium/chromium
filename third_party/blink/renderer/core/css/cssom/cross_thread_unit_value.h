@@ -47,4 +47,4 @@ struct DowncastTraits<CrossThreadUnitValue> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CROSS_THREAD_UNIT_VALUE_H_

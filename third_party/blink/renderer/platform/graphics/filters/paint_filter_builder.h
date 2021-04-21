@@ -59,4 +59,4 @@ PLATFORM_EXPORT sk_sp<PaintFilter> BuildBoxReflectFilter(
 }  // namespace paint_filter_builder
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_PAINT_FILTER_BUILDER_H_

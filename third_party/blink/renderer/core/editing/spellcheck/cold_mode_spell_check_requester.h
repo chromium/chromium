@@ -65,4 +65,4 @@ class ColdModeSpellCheckRequester
 };
 }
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SPELLCHECK_COLD_MODE_SPELL_CHECK_REQUESTER_H_

@@ -87,4 +87,4 @@ class PasswordRevealButtonElement final : public HTMLDivElement {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_TEXT_CONTROL_INNER_ELEMENTS_H_

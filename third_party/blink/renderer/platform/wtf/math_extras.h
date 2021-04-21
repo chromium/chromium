@@ -328,4 +328,4 @@ constexpr size_t lowestCommonMultiple(size_t a, size_t b) {
   return a && b ? a / greatestCommonDivisor(a, b) * b : 0;
 }
 
-#endif  // #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_MATH_EXTRAS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_MATH_EXTRAS_H_

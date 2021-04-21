@@ -92,4 +92,4 @@ class CORE_EXPORT ScrollbarThemeOverlay : public ScrollbarTheme {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_OVERLAY_H_

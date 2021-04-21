@@ -55,4 +55,4 @@ class CORE_EXPORT StylePropertyMapReadOnlyMainThread
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_STYLE_PROPERTY_MAP_READ_ONLY_MAIN_THREAD_H_

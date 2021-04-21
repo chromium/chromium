@@ -163,4 +163,4 @@ class BLINK_EXPORT WebDocumentLoader {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOCUMENT_LOADER_H_

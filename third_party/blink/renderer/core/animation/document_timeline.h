@@ -155,4 +155,4 @@ struct DowncastTraits<DocumentTimeline> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_DOCUMENT_TIMELINE_H_

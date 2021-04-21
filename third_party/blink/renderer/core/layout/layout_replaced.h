@@ -193,4 +193,4 @@ struct DowncastTraits<LayoutReplaced> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_REPLACED_H_

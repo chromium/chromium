@@ -73,4 +73,4 @@ inline bool NodeChildRemovalTracker::IsBeingRemoved(const Node& node) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_CHILD_REMOVAL_TRACKER_H_

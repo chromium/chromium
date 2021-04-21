@@ -122,4 +122,4 @@ class PLATFORM_EXPORT ICUScriptData : public ScriptData {
 };
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SCRIPT_RUN_ITERATOR_H_

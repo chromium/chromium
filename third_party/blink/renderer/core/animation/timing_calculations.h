@@ -405,4 +405,4 @@ static inline base::Optional<AnimationTimeDelta> CalculateIterationTime(
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TIMING_CALCULATIONS_H_

@@ -28,4 +28,4 @@ class CORE_EXPORT HTMLMediaElementControlsList final : public DOMTokenList {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_HTML_MEDIA_ELEMENT_CONTROLS_LIST_H_

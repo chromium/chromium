@@ -197,4 +197,4 @@ class GridBaselineAlignment {
 
 }  // namespace blink
 
-#endif  // BaselineContext_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_BASELINE_ALIGNMENT_H_

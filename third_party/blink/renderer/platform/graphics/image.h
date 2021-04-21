@@ -297,4 +297,4 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_H_

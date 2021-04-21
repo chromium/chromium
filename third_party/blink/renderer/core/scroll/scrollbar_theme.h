@@ -261,4 +261,4 @@ class CORE_EXPORT ScrollbarTheme {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_H_

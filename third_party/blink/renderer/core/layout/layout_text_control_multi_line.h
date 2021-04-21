@@ -62,4 +62,4 @@ class LayoutTextControlMultiLine final : public LayoutTextControl {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_CONTROL_MULTI_LINE_H_

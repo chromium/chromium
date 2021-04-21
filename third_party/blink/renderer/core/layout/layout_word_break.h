@@ -49,4 +49,4 @@ class LayoutWordBreak final : public LayoutText {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_WORD_BREAK_H_

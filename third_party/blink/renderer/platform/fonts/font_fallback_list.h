@@ -140,4 +140,4 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_LIST_H_

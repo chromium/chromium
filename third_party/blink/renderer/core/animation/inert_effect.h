@@ -79,4 +79,4 @@ struct DowncastTraits<InertEffect> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INERT_EFFECT_H_

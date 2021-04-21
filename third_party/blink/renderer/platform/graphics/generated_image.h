@@ -76,4 +76,4 @@ class PLATFORM_EXPORT GeneratedImage : public Image {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GENERATED_IMAGE_H_

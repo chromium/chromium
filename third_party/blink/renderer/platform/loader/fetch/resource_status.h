@@ -17,4 +17,4 @@ enum class ResourceStatus : uint8_t {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_STATUS_H_

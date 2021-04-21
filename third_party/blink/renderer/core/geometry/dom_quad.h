@@ -72,4 +72,4 @@ class CORE_EXPORT DOMQuad : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_QUAD_H_

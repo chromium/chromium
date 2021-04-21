@@ -166,4 +166,4 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
 
 }  // namespace blink
 
-#endif  // HISTORYITEM_H
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_HISTORY_ITEM_H_

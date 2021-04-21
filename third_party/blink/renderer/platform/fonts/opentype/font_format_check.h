@@ -51,4 +51,4 @@ class PLATFORM_EXPORT FontFormatCheck {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_FONT_FORMAT_CHECK_H_

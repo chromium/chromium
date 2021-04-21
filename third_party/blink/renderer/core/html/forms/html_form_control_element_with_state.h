@@ -80,4 +80,4 @@ struct DowncastTraits<HTMLFormControlElementWithState> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_FORM_CONTROL_ELEMENT_WITH_STATE_H_

@@ -97,4 +97,4 @@ inline bool ShapeValue::operator==(const ShapeValue& other) const {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_SHAPE_VALUE_H_

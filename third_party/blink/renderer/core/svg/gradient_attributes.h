@@ -97,4 +97,4 @@ ASSERT_SIZE(GradientAttributes, SameSizeAsGradientAttributes);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRADIENT_ATTRIBUTES_H_

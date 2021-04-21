@@ -146,4 +146,4 @@ class PLATFORM_EXPORT ResourceTimingInfo
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_TIMING_INFO_H_

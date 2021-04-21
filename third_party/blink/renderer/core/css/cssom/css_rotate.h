@@ -78,4 +78,4 @@ class CORE_EXPORT CSSRotate final : public CSSTransformComponent {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_ROTATE_H_

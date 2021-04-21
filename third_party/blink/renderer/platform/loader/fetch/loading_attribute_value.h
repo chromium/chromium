@@ -15,4 +15,4 @@ enum class LoadingAttributeValue {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_LOADING_ATTRIBUTE_VALUE_H_

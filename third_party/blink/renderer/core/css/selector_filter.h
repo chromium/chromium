@@ -106,4 +106,4 @@ inline bool SelectorFilter::FastRejectSelector(
 
 WTF_ALLOW_INIT_WITH_MEM_FUNCTIONS(blink::SelectorFilter::ParentStackFrame)
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_FILTER_H_

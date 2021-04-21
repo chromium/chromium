@@ -122,4 +122,4 @@ class CORE_EXPORT NGHighlightPainter {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NG_NG_HIGHLIGHT_PAINTER_H_

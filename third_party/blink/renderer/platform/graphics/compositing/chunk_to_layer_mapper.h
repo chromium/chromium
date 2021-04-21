@@ -62,4 +62,4 @@ class PLATFORM_EXPORT ChunkToLayerMapper {
 
 }  // namespace blink
 
-#endif  // PaintArtifactCompositor_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_CHUNK_TO_LAYER_MAPPER_H_

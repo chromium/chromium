@@ -82,4 +82,4 @@ class CORE_EXPORT LinkRelAttribute {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_LINK_REL_ATTRIBUTE_H_

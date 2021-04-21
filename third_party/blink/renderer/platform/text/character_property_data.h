@@ -172,4 +172,4 @@ extern const uint8_t kSerializedCharacterData[];
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_CHARACTER_PROPERTY_DATA_H_

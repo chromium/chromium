@@ -99,4 +99,4 @@ class CORE_EXPORT EventListener : public GarbageCollected<EventListener>,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_LISTENER_H_

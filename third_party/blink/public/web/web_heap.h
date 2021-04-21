@@ -48,4 +48,4 @@ class WebHeap {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_HEAP_H_

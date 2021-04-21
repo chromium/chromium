@@ -91,4 +91,4 @@ class FontFallbackIterator {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_ITERATOR_H_

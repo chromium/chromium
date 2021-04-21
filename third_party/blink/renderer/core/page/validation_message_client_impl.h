@@ -96,4 +96,4 @@ class CORE_EXPORT ValidationMessageClientImpl final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_VALIDATION_MESSAGE_CLIENT_IMPL_H_

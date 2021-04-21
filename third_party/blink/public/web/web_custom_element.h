@@ -67,4 +67,4 @@ class WebCustomElement {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CUSTOM_ELEMENT_H_

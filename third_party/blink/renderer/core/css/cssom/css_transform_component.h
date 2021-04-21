@@ -61,4 +61,4 @@ class CORE_EXPORT CSSTransformComponent : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_TRANSFORM_COMPONENT_H_

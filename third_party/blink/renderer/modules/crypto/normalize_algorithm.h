@@ -66,4 +66,4 @@ MODULES_EXPORT WARN_UNUSED_RESULT bool NormalizeAlgorithm(
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_NORMALIZE_ALGORITHM_H_

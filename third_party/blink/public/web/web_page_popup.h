@@ -68,4 +68,4 @@ class WebPagePopup : public WebWidget {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PAGE_POPUP_H_

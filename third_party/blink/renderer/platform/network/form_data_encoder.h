@@ -74,4 +74,4 @@ class PLATFORM_EXPORT FormDataEncoder {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_FORM_DATA_ENCODER_H_

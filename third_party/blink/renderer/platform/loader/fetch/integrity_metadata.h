@@ -69,4 +69,4 @@ struct HashTraits<blink::IntegrityAlgorithm>
 
 }  // namespace WTF
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_INTEGRITY_METADATA_H_

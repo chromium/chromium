@@ -212,4 +212,4 @@ PLATFORM_EXPORT bool ParseTextBaseline(const String&, TextBaseline&);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_TYPES_H_

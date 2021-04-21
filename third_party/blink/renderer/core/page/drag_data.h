@@ -86,4 +86,4 @@ class CORE_EXPORT DragData {
 
 }  // namespace blink
 
-#endif  // !DragData_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_DRAG_DATA_H_

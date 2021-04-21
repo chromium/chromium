@@ -59,4 +59,4 @@ class IgnoreDestructiveWriteCountIncrementer {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_IGNORE_DESTRUCTIVE_WRITE_COUNT_INCREMENTER_H_

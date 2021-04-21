@@ -81,4 +81,4 @@ inline bool operator!=(const DeviceEmulationParams& a,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_DEVICE_EMULATION_PARAMS_H_

@@ -117,4 +117,4 @@ class ThemePainterDefault final : public ThemePainter {
 
 }  // namespace blink
 
-#endif  // ThemePainerDefault_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_THEME_PAINTER_DEFAULT_H_

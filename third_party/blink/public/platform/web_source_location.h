@@ -20,4 +20,4 @@ struct WebSourceLocation {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_SOURCE_LOCATION_H_

@@ -22,4 +22,4 @@ struct WebMemoryStatistics {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_MEMORY_STATISTICS_H_

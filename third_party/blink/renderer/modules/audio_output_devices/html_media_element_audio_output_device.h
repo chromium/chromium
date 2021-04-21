@@ -42,4 +42,4 @@ class MODULES_EXPORT HTMLMediaElementAudioOutputDevice final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AUDIO_OUTPUT_DEVICES_HTML_MEDIA_ELEMENT_AUDIO_OUTPUT_DEVICE_H_

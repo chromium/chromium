@@ -78,4 +78,4 @@ class MODULES_EXPORT HTMLMediaElementEncryptedMedia final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ENCRYPTEDMEDIA_HTML_MEDIA_ELEMENT_ENCRYPTED_MEDIA_H_

@@ -139,4 +139,4 @@ enum class WebAXObjectVectorAttribute {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AX_ENUMS_H_

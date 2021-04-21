@@ -59,4 +59,4 @@ class FontUniqueNameLookupAndroid : public FontUniqueNameLookup {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_ANDROID_FONT_UNIQUE_NAME_LOOKUP_ANDROID_H_

@@ -113,4 +113,4 @@ class DocumentParserTiming final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_PARSER_TIMING_H_

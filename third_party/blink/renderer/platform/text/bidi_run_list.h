@@ -227,4 +227,4 @@ void BidiRunList<Run>::ReverseRuns(unsigned start, unsigned end) {
 
 }  // namespace blink
 
-#endif  // BidiRunList
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_BIDI_RUN_LIST_H_

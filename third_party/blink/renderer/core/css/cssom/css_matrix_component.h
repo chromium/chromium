@@ -53,4 +53,4 @@ class CORE_EXPORT CSSMatrixComponent final : public CSSTransformComponent {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATRIX_COMPONENT_H_

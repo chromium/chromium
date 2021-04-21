@@ -432,4 +432,4 @@ struct BLINK_EXPORT WebNavigationParams {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NAVIGATION_PARAMS_H_

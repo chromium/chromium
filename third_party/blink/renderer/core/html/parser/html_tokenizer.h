@@ -282,4 +282,4 @@ class CORE_EXPORT HTMLTokenizer {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TOKENIZER_H_

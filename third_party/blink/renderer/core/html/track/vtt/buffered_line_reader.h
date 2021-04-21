@@ -87,4 +87,4 @@ class CORE_EXPORT BufferedLineReader {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_BUFFERED_LINE_READER_H_

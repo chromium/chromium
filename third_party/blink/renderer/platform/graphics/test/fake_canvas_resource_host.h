@@ -69,4 +69,4 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_TEST_FAKE_CANVAS_RESOURCE_HOST_H_

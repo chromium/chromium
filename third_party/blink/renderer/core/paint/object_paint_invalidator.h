@@ -84,4 +84,4 @@ class ObjectPaintInvalidatorWithContext : public ObjectPaintInvalidator {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_OBJECT_PAINT_INVALIDATOR_H_

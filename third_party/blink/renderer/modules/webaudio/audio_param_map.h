@@ -50,4 +50,4 @@ class AudioParamMap final : public ScriptWrappable,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_PARAM_MAP_H_

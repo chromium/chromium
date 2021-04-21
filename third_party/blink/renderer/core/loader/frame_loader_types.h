@@ -86,4 +86,4 @@ enum class CommitReason {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_LOADER_TYPES_H_

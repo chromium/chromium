@@ -33,4 +33,4 @@ class FetchTestingPlatformSupport
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_TESTING_FETCH_TESTING_PLATFORM_SUPPORT_H_

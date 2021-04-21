@@ -56,4 +56,4 @@ class CORE_EXPORT PostMessageHelper {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_POST_MESSAGE_HELPER_H_

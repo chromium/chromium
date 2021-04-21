@@ -44,4 +44,4 @@ struct ResourceLoadInfo : RefCounted<ResourceLoadInfo> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_LOAD_INFO_H_

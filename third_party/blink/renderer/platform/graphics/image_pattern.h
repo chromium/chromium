@@ -29,4 +29,4 @@ class PLATFORM_EXPORT ImagePattern final : public Pattern {
 
 }  // namespace blink
 
-#endif /* ImagePattern_h */
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_PATTERN_H_

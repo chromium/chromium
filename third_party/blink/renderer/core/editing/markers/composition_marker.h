@@ -33,4 +33,4 @@ class CORE_EXPORT CompositionMarker final : public StyleableMarker {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_COMPOSITION_MARKER_H_

@@ -248,4 +248,4 @@ class CORE_EXPORT ImageResourceContent final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_CONTENT_H_

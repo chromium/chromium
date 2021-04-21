@@ -121,4 +121,4 @@ class WebPointerProperties {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_INPUT_WEB_POINTER_PROPERTIES_H_

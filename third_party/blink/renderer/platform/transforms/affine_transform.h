@@ -200,4 +200,4 @@ PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const AffineTransform&);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_AFFINE_TRANSFORM_H_
