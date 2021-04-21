@@ -28,6 +28,15 @@ base::flat_set<std::string> GetEuiccPathsFromHermes() {
   return paths;
 }
 
+bool ContainsProfileWithoutIccid(
+    const std::vector<CellularESimProfile>& profiles) {
+  auto iter = std::find_if(profiles.begin(), profiles.end(),
+                           [](const CellularESimProfile& profile) {
+                             return profile.iccid().empty();
+                           });
+  return iter != profiles.end();
+}
+
 }  // namespace
 
 // static
@@ -186,6 +195,14 @@ void CellularESimProfileHandlerImpl::UpdateProfilesFromHermes() {
 
   std::vector<CellularESimProfile> profiles_from_hermes =
       GenerateProfilesFromHermes();
+
+  // Skip updating if there are profiles that haven't received ICCID updates
+  // yet. This is required because property updates to eSIM profile objects
+  // occur after the profile list has been updated. This state is temporary.
+  // This method will be triggered again when ICCID properties are updated.
+  if (ContainsProfileWithoutIccid(profiles_from_hermes)) {
+    return;
+  }
 
   // When the device starts up, Hermes is expected to return an empty list of
   // profiles if the profiles have not yet been requested. If this occurs,

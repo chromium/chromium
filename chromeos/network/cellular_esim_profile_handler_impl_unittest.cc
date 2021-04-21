@@ -461,21 +461,29 @@ TEST_F(CellularESimProfileHandlerImplTest, IgnoresESimProfilesWithNoIccid) {
   AddEuicc(/*euicc_num=*/1, /*also_add_to_prefs=*/false);
   Init();
   SetDevicePrefs();
-  dbus::ObjectPath profile_path = AddProfile(
+
+  // Verify that no profiles are added if there are some profiles that have
+  // not received iccid updates yet.
+  dbus::ObjectPath profile_path1 = AddProfile(
       /*euicc_num=*/1, hermes::profile::State::kInactive,
       /*activation_code=*/std::string(),
       hermes::profile::ProfileClass::kOperational,
       /*blank_iccid=*/true);
+  dbus::ObjectPath profile_path2 = AddProfile(
+      /*euicc_num=*/1, hermes::profile::State::kInactive,
+      /*activation_code=*/std::string(),
+      hermes::profile::ProfileClass::kOperational,
+      /*blank_iccid=*/false);
   EXPECT_TRUE(GetESimProfiles().empty());
 
   // Verify that profile object is created after iccid property is set.
-  HermesProfileClient::Properties* properties =
-      HermesProfileClient::Get()->GetProperties(profile_path);
-  properties->iccid().ReplaceValue(kTestIccid);
+  HermesProfileClient::Properties* properties1 =
+      HermesProfileClient::Get()->GetProperties(profile_path1);
+  properties1->iccid().ReplaceValue(kTestIccid);
   base::RunLoop().RunUntilIdle();
 
   std::vector<CellularESimProfile> esim_profiles = GetESimProfiles();
-  EXPECT_EQ(1u, esim_profiles.size());
+  EXPECT_EQ(2u, esim_profiles.size());
   EXPECT_EQ(kTestIccid, esim_profiles[0].iccid());
 }
 
