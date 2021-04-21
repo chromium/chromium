@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;Outils</translation>
 <translation id="1122242684574577509">Échec de l'authentification. Cliquez ici pour accéder à la page de connexion du réseau Wi-Fi que vous utilisez (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">Nom du favori</translation>
-<translation id="1123753900084781868">Sous-titres instantanés non disponibles pour l'instant</translation>
 <translation id="1124772482545689468">Utilisateur</translation>
 <translation id="1125550662859510761">La résolution est de <ph name="WIDTH" /> x <ph name="HEIGHT" /> (native)</translation>
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions et les sites Web dangereux. Le cas échéant, vous bénéficierez toujours de la protection offerte par la navigation sécurisée dans d'autres services Google, tels que Gmail et la recherche.</translation>
@@ -948,7 +947,6 @@
 <translation id="2010501376126504057">Appareils compatibles</translation>
 <translation id="2016574333161572915">Votre matériel Google Meet est prêt à être configuré</translation>
 <translation id="2017334798163366053">Désactiver la collecte de données relatives aux performances</translation>
-<translation id="2017836877785168846">Efface l'historique et les saisies semi-automatiques dans la barre d'adresse.</translation>
 <translation id="2018352199541442911">Désolé, votre périphérique de stockage externe n'est pas compatible pour le moment.</translation>
 <translation id="2019718679933488176">&amp;Ouvrir le fichier audio dans un nouvel onglet</translation>
 <translation id="2020183425253392403">Afficher les paramètres d'adresse réseau</translation>
@@ -2646,7 +2644,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3874164307099183178">Activer l'Assistant Google</translation>
 <translation id="3877075909000773256">Paramètres du Partage à proximité pour l'appareil de <ph name="USER_NAME" /> dans le compte <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
-<translation id="3881478300875776315">Afficher moins de lignes</translation>
 <translation id="3882165008614329320">Vidéo existante filmée avec la caméra ou lue à partir d'un fichier</translation>
 <translation id="3884152383786131369">Le contenu Web disponible dans plusieurs langues vous sera proposé dans la première langue disponible de cette liste. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Les mises à jour sont gérées par votre administrateur</translation>
@@ -2764,7 +2761,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3984159763196946143">Impossible de démarrer le mode démonstration</translation>
 <translation id="3984431586879874039">Autoriser ce site à lire les informations de votre clé de sécurité ?</translation>
 <translation id="398477389655464998">Copier le lien vers le texte en surbrillance</translation>
-<translation id="3986705137476756801">Désactiver les sous-titres instantanés pour le moment</translation>
 <translation id="3987544746655539083">Continuer à bloquer l'accès à votre position pour ce site</translation>
 <translation id="3987938432087324095">Pardon, je n'ai pas compris.</translation>
 <translation id="3988996860813292272">Sélectionner un fuseau horaire</translation>
@@ -3369,7 +3365,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4699172675775169585">Images et fichiers en cache</translation>
 <translation id="4699357559218762027">(lancée automatiquement)</translation>
 <translation id="4701025263201366865">Connexion d'un parent</translation>
-<translation id="4702656508969495934">Sous-titres instantanés visibles, utilisez le permuteur de fenêtres pour déplacer le curseur</translation>
 <translation id="4708794300267213770">Afficher l'écran de verrouillage en sortant du mode veille</translation>
 <translation id="4708849949179781599">Quitter <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurer les paramètres</translation>
@@ -3869,7 +3864,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5300287940468717207">Réinitialiser les autorisations des sites ?</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5300719150368506519">Envoyer à Google les URL des pages que vous consultez</translation>
-<translation id="5300814202279832142">Déplacer la fenêtre sur le bureau</translation>
 <translation id="5301751748813680278">Entrée en tant qu'invité.</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">Langue</translation>
@@ -5484,7 +5478,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="711840821796638741">Afficher les favoris gérés</translation>
 <translation id="711902386174337313">Accéder à la liste de vos appareils connectés</translation>
 <translation id="7120865473764644444">Impossible de se connecter au serveur de synchronisation. Nouvelle tentative…</translation>
-<translation id="7121362699166175603">Efface l'historique et les saisies semi-automatiques dans la barre d'adresse. Votre compte Google conserve peut-être d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Mode développeur</translation>
 <translation id="7121728544325372695">Tirets longs</translation>
 <translation id="7123030151043029868">Autorisé à télécharger automatiquement plusieurs fichiers</translation>
@@ -5657,7 +5650,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7334274148831027933">Activer la loupe ancrée</translation>
 <translation id="7335974957018254119">Utiliser le correcteur orthographique</translation>
 <translation id="7336799713063880535">Notif. bloquées.</translation>
-<translation id="7337248890521463931">Afficher plus de lignes</translation>
 <translation id="7338630283264858612">Le numéro de série de l'appareil n'est pas valide.</translation>
 <translation id="7339763383339757376">PKCS #7, certificat unique</translation>
 <translation id="7339785458027436441">Vérifier l'orthographe lors de la frappe</translation>
@@ -7361,7 +7353,6 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="9209563766569767417">Vérification de la configuration du conteneur Linux…</translation>
 <translation id="9209689095351280025">Les sites ne peuvent pas utiliser de cookies pour suivre votre activité sur le Web</translation>
 <translation id="9211177926627870898">Mise à jour requise</translation>
-<translation id="9211490828691860325">Tous les bureaux</translation>
 <translation id="9214510034298163263">Les sites peuvent demander à modifier les fichiers et les dossiers sur votre appareil (recommandé)</translation>
 <translation id="9214520840402538427">Petit problème… Le délai alloué à l'initialisation des attributs de temps d'installation a expiré. Veuillez contacter le service d'assistance.</translation>
 <translation id="9214695392875603905">Cupcake</translation>

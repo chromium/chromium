@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">Posúvač hľadania</translation>
 <translation id="1404323374378969387">Nórska klávesnica</translation>
 <translation id="1430915738399379752">Tlačiť</translation>
+<translation id="1433628812591023318">Ak chcete vložiť súbory do aplikácie Parallels Desktop, musíte ich presunúť do súborov pre Windows.</translation>
 <translation id="1435838927755162558">Zdieľanie priečinka aplikáciou Parallels Desktop</translation>
 <translation id="1467432559032391204">Doľava</translation>
 <translation id="1471718551822868769">Slovenská klávesnica</translation>
@@ -611,6 +612,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7417453074306512035">Etiópska klávesnica</translation>
 <translation id="7417705661718309329">Mapa Google</translation>
 <translation id="7460898608667578234">Ukrajinčina</translation>
+<translation id="7486315294984620427">Ak chcete vložiť súbory do aplikácie Parallels Desktop, musíte ich skopírovať do súborov pre Windows.</translation>
 <translation id="7489215562877293245">Počet nájdených: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Môžete začať zálohovať na <ph name="BEGIN_LINK" />Disk Google<ph name="END_LINK" /></translation>

@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Ако поставите отметка, Chrome ще съхранява копие на картата ви на това устройство с цел по-бързо попълване на формуляри.</translation>
 <translation id="1110994991967754504">Избиране на разрешението за <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Отмяна на пренареждането</translation>
+<translation id="1123753900084781868">Понастоящем функцията „Надписи на живо“ не е налице</translation>
 <translation id="1125573121925420732">Възможно е да виждате предупреждения често, докато уебсайтовете актуализират мерките си за сигурност. Това би трябвало скоро да се подобри.</translation>
 <translation id="112840717907525620">Кешът на правилото е в добро състояние</translation>
 <translation id="1130564665089811311">Бутон „Превод на страницата“. Натиснете Enter, за да преведете тази страница с Google Преводач</translation>
@@ -217,6 +218,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Сървърът не можа да докаже, че е <ph name="DOMAIN" />. Сертификатът му за сигурност е от утре. Това може да се дължи на неправилно конфигуриране или на прехващане на връзката ви от извършител на атака.}other{Сървърът не можа да докаже, че е <ph name="DOMAIN" />. Сертификатът му за сигурност е от # дни в бъдещето. Това може да се дължи на неправилно конфигуриране или на прехващане на връзката ви от извършител на атака.}}</translation>
 <translation id="1710259589646384581">ОС</translation>
+<translation id="1711234383449478798">Пренебрегнато, защото <ph name="POLICY_NAME" /> не е „<ph name="VALUE" />“.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> иска да съхранява за постоянно данни на локалния ви компютър</translation>
 <translation id="1713628304598226412">Тава 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -768,6 +770,7 @@
 <translation id="3841184659773414994">Манипулатори на файлове</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858027520442213535">Актуализиране на датата и часа</translation>
+<translation id="3881478300875776315">Показване на по-малко редове</translation>
 <translation id="3884278016824448484">Идентификационният номер на устройството е несъвместим</translation>
 <translation id="3885155851504623709">Енория</translation>
 <translation id="388632593194507180">Установено е наблюдение</translation>
@@ -793,6 +796,7 @@
 <translation id="397105322502079400">Изчислява се...</translation>
 <translation id="3973234410852337861">Хостът <ph name="HOST_NAME" /> е блокиран</translation>
 <translation id="3973357910713125165">Бутон за стартиране на проверка на безопасността в Chrome. Натиснете Enter, за да стартирате проверка от настройките на браузъра</translation>
+<translation id="3986705137476756801">Изключване на „Надписи на живо“ засега</translation>
 <translation id="3987405730340719549">Chrome установи, че този сайт може да е фалшив или измамнически.
 
     Ако смятате, че това е грешка, моля, посетете https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -922,6 +926,7 @@
 <translation id="4377125064752653719">Направихте опит да се свържете с/ъс <ph name="DOMAIN" />, но сървърът предoстави сертификат, анулиран от издателя си. Това означава, че в никакъв случай не трябва да се доверявате на представените от сървъра идентификационни данни за сигурност. Възможно е да сте се свързали с извършител на атака.</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4390472908992056574">Периферия</translation>
+<translation id="4406883609789734330">Надписи на живо</translation>
 <translation id="4406896451731180161">резултата от търсенето</translation>
 <translation id="4408413947728134509">„Бисквитки“ <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Току-що въведохте паролата си в измамнически сайт. Chrome препоръчва да посетите <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> и другите сайтове, за които я използвате, и да я промените в тях сега.</translation>
@@ -987,6 +992,7 @@
 <translation id="4691835149146451662">Architecture-A (плик)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Страна</translation>
+<translation id="4702656508969495934">Показват се надписи на живо. Използвайте превключвателя на прозорци, за да преместите фокуса</translation>
 <translation id="4708268264240856090">Връзката ви бе прекъсната</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Стартирайте мрежова диагностика в Windows<ph name="END_LINK" /></translation>
@@ -1657,6 +1663,7 @@
 <translation id="733354035281974745">Отменено от локалния профил на устройството</translation>
 <translation id="7333654844024768166">Току-що въведохте паролата си в измамнически сайт. Chromium препоръчва да посетите <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> и другите сайтове, за които я използвате, и да я промените в тях сега.</translation>
 <translation id="7334320624316649418">&amp;Възстановяване на пренареждането</translation>
+<translation id="7337248890521463931">Показване на повече редове</translation>
 <translation id="7337706099755338005">Не е налице за платформата ви.</translation>
 <translation id="733923710415886693">Сертификатът на сървъра не е разкрит чрез Прозрачност на сертификатите.</translation>
 <translation id="734600844861828519">11 x 15</translation>

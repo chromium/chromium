@@ -446,6 +446,7 @@
 <translation id="5782227691023083829">Виконується переклад сторінки...</translation>
 <translation id="5803566855766646066">Відхилити цю нову картку?</translation>
 <translation id="5816228676161003208">Ви зможете швидше шукати голосом.</translation>
+<translation id="581659025233126501">Увімкнути синхронізацію</translation>
 <translation id="5819208479324046259">Веб-переглядачем керує <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Пошукова система</translation>
 <translation id="5854790677617711513">Понад 30 днів тому</translation>
@@ -493,6 +494,7 @@
 <translation id="6196207969502475924">Голосовий пошук</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Закрити {COUNT} вкладку}one{Закрити {COUNT} вкладку}few{Закрити {COUNT} вкладки}many{Закрити {COUNT} вкладок}other{Закрити {COUNT} вкладки}}</translation>
 <translation id="6219688215832490856">Ніколи не перекладати</translation>
+<translation id="6223816392543092032">Отримайте доступ до своїх закладок, історії, паролів та інших налаштувань на всіх пристроях.</translation>
 <translation id="6254066287920239840">Відкривайте посилання в додатку, а не у веб-переглядачі.</translation>
 <translation id="6255097610484507482">Редагувати дані кредитної картки</translation>
 <translation id="6284652193729350524">Пропонувати переклад для такої мови: <ph name="LANGUAGE" /></translation>
@@ -525,6 +527,7 @@
 <translation id="6445981559479772097">Повідомлення надіслано.</translation>
 <translation id="6447842834002726250">Cookie-файли</translation>
 <translation id="6453018583485750254">Паролі ніколи не перевірялися.</translation>
+<translation id="6459307836338400162">Інші налаштування конфіденційності, безпеки й збору даних доступні в розділах <ph name="BEGIN_LINK" />Синхронізація<ph name="END_LINK" /> та <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Відкрити в анонімній вкладці</translation>
 <translation id="6464397691496239022">Сайти можуть використовувати файли cookie, щоб покращувати веб-перегляд, наприклад не виходити з облікового запису чи запам'ятовувати товари в кошику для покупок.
 
@@ -708,6 +711,7 @@
 <translation id="8281886186245836920">Пропустити</translation>
 <translation id="8283172974887967105">Так…</translation>
 <translation id="8299417921174340354">Щоб використовувати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
+<translation id="83100941411593607">Вхід вимкнено</translation>
 <translation id="8319076807703933069">Новий пошук</translation>
 <translation id="8323906514956095947">Натисніть і утримуйте, щоб відкрити більше параметрів вкладок</translation>
 <translation id="8328777765163860529">Закрити всі</translation>

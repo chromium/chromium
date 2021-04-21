@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Jika ditandai, Chrome akan menyimpan salinan kad anda pada peranti ini untuk pengisian borang yang lebih cepat.</translation>
 <translation id="1110994991967754504">Pilih kebenaran untuk <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Buat asal susun semula</translation>
+<translation id="1123753900084781868">Sari Kata Langsung tidak tersedia sekarang</translation>
 <translation id="1125573121925420732">Amaran mungkin biasa dipaparkan semasa tapak web mengemas kini keselamatannya. Ini akan diperbaik tidak lama lagi.</translation>
 <translation id="112840717907525620">Cache dasar OK</translation>
 <translation id="1130564665089811311">Butang terjemah halaman, tekan Enter untuk menterjemah halaman ini dengan Google Terjemah</translation>
@@ -217,6 +218,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1703835215927279855">Surat</translation>
 <translation id="1706954506755087368">{1,plural, =1{Pelayan ini tidak dapat membuktikan bahawa itu <ph name="DOMAIN" />;sijil keselamatannya sepatutnya bermula esok. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintas sambungan anda.}other{Pelayan ini tidak dapat membuktikan bahawa itu <ph name="DOMAIN" />; sijil keselamatannya sepatutnya bermula # hari lagi. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintas sambungan anda.}}</translation>
 <translation id="1710259589646384581">OS</translation>
+<translation id="1711234383449478798">Diabaikan kerana <ph name="POLICY_NAME" /> tidak ditetapkan kepada <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> mahu menyimpan data pada komputer setempat anda secara kekal</translation>
 <translation id="1713628304598226412">Dulang 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -773,6 +775,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3841184659773414994">Pengendali Fail</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3858027520442213535">Kemas kini tarikh dan masa</translation>
+<translation id="3881478300875776315">Tunjukkan kurang baris</translation>
 <translation id="3884278016824448484">Pengecam peranti bercanggah</translation>
 <translation id="3885155851504623709">Mukim</translation>
 <translation id="388632593194507180">Pemantauan Dikesan</translation>
@@ -798,6 +801,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="397105322502079400">Mengira...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> disekat</translation>
 <translation id="3973357910713125165">Butang Jalankan Semakan Keselamatan Chrome, tekan Enter untuk menjalankan Semakan Keselamatan dalam tetapan Chrome</translation>
+<translation id="3986705137476756801">Matikan Sari Kata Langsung buat masa ini</translation>
 <translation id="3987405730340719549">Chrome telah menentukan bahawa tapak ini mungkin palsu atau merupakan suatu penipuan.
 
     Jika anda percaya amaran ini tersilap ditunjukkan, sila lawati https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -927,6 +931,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4377125064752653719">Anda cuba untuk mencapai <ph name="DOMAIN" />, tetapi sijil yang diberi pelayan telah dibatalkan oleh pengeluarnya. Ini bermakna bahawa bukti kelayakan keselamatan yang diberi pelayan sememangnya tidak harus dipercayai. Anda mungkin berkomunikasi dengan penyerang.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4390472908992056574">Bertepi</translation>
+<translation id="4406883609789734330">Sari Kata Langsung</translation>
 <translation id="4406896451731180161">hasil carian</translation>
 <translation id="4408413947728134509">Kuki <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Anda baru sahaja memasukkan kata laluan pada tapak yang menipu. Chrome mengesyorkan supaya anda pergi ke <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> serta tapak lain yang anda gunakan kata laluan ini dan menukar kata laluan ini sekarang.</translation>
@@ -992,6 +997,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4691835149146451662">Seni Bina-A (Sampul Surat)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Sisi</translation>
+<translation id="4702656508969495934">Sari Kata Langsung dapat dilihat, gunakan penukar tetingkap untuk memfokus</translation>
 <translation id="4708268264240856090">Sambungan anda tergendala</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Jalankan Diagnostik Rangkaian Windows<ph name="END_LINK" /></translation>
@@ -1662,6 +1668,7 @@ Butiran tambahan:
 <translation id="733354035281974745">Pembatalan akaun setempat peranti</translation>
 <translation id="7333654844024768166">Anda baru sahaja memasukkan kata laluan pada tapak yang menipu. Chromium mengesyorkan supaya anda pergi ke <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> serta tapak lain yang anda gunakan kata laluan ini dan menukar kata laluan ini sekarang.</translation>
 <translation id="7334320624316649418">&amp;Buat semula susun semula</translation>
+<translation id="7337248890521463931">Tunjukkan lagi baris</translation>
 <translation id="7337706099755338005">Tidak tersedia pada platform anda.</translation>
 <translation id="733923710415886693">Sijil pelayan tidak didedahkan melalui Ketelusan Sijil.</translation>
 <translation id="734600844861828519">11x15</translation>

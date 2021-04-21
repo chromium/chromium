@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">工具(&amp;T)</translation>
 <translation id="1122242684574577509">身份验证失败。请点击此处访问当前所用 Wi-Fi 网络（“<ph name="NETWORK_ID" />”）的登录页面。</translation>
 <translation id="1122960773616686544">书签名称</translation>
-<translation id="1123753900084781868">暂时无法使用实时字幕功能</translation>
 <translation id="1124772482545689468">用户</translation>
 <translation id="1125550662859510761">有效分辨率：<ph name="WIDTH" /> x <ph name="HEIGHT" />（原生）</translation>
 <translation id="1126809382673880764">不会保护您免受危险网站、下载内容和扩展程序的侵害。在 Gmail 和 Google 搜索等其他 Google 服务中，若安全浏览保护可用，您仍将获得该保护。</translation>
@@ -735,7 +734,7 @@
 <translation id="1779468444204342338">最小值</translation>
 <translation id="1779652936965200207">请在“<ph name="DEVICE_NAME" />”上输入此匹配密钥：</translation>
 <translation id="177989070088644880">应用 (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
-<translation id="1780152987505130652">关闭群组</translation>
+<translation id="1780152987505130652">关闭组</translation>
 <translation id="1781291988450150470">当前 PIN 码</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" /> 要求您立即连接到 Wi-Fi 并下载更新。</translation>
 <translation id="1781502536226964113">打开新标签页</translation>
@@ -751,6 +750,7 @@
 <translation id="1794791083288629568">发送反馈，以协助我们解决此问题。</translation>
 <translation id="1795214765651529549">使用经典主题背景</translation>
 <translation id="1799071797295057738">扩展程序“<ph name="EXTENSION_NAME" />”已被自动停用。</translation>
+<translation id="1800973090344019061">扩展程序“<ph name="APP_NAME" />”想分享您屏幕上的内容。</translation>
 <translation id="1802624026913571222">合盖后休眠</translation>
 <translation id="1802687198411089702">该页面没有响应。您可以继续等待，也可以退出。</translation>
 <translation id="1803531841600994172">翻译目标语言</translation>
@@ -945,7 +945,6 @@
 <translation id="2010501376126504057">兼容的设备</translation>
 <translation id="2016574333161572915">现在可以设置您的 Google Meet 设备了</translation>
 <translation id="2017334798163366053">停用性能数据收集</translation>
-<translation id="2017836877785168846">清除历史记录和地址栏中的自动补全项。</translation>
 <translation id="2018352199541442911">抱歉，系统目前不支持您的外部存储设备。</translation>
 <translation id="2019718679933488176">在新标签页中打开音频(&amp;O)</translation>
 <translation id="2020183425253392403">显示网络地址设置</translation>
@@ -1350,6 +1349,7 @@
 <translation id="2464089476039395325">HTTP 代理</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" /> 要求您立即连接到 WLAN 并下载更新。您也可使用按流量计费的网络连接进行下载（可能需要支付相应费用）。</translation>
 <translation id="2467267713099745100">“<ph name="NETWORK_TYPE" />”类型的网络，已关闭</translation>
+<translation id="2467755475704469005">未检测到任何设备。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">触控板滚屏加速</translation>
 <translation id="2468205691404969808">使用 Cookie 记住您的偏好设置（即使您不访问这些网页）</translation>
 <translation id="2468402215065996499">拓麻歌子</translation>
@@ -1751,7 +1751,7 @@
 <translation id="2889064240420137087">链接打开方式...</translation>
 <translation id="2891922230654533301">使用您的设备登录 <ph name="APP_NAME" />？</translation>
 <translation id="2893168226686371498">默认浏览器</translation>
-<translation id="2894757982205307093">在群组内添加新标签页</translation>
+<translation id="2894757982205307093">在组内添加新标签页</translation>
 <translation id="289644616180464099">SIM 卡已被锁定</translation>
 <translation id="289695669188700754">密钥 ID：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">当您关闭所有无痕式窗口后，系统将会撤消这项自定义设置</translation>
@@ -2377,6 +2377,7 @@
 <translation id="3608576286259426129">用户图片预览</translation>
 <translation id="3610369246614755442">基座风扇需要维修</translation>
 <translation id="361106536627977100">闪存数据</translation>
+<translation id="3611655097742243705">如需查找更多应用，请前往 Play 商店</translation>
 <translation id="3612673635130633812">由&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;下载</translation>
 <translation id="3613134908380545408">显示“<ph name="FOLDER_NAME" />”</translation>
 <translation id="3613422051106148727">在新标签页中打开(&amp;O)</translation>
@@ -2641,7 +2642,6 @@
 <translation id="3874164307099183178">开启 Google 助理</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />的设备的“附近分享”设置，通过帐号 <ph name="USER_EMAIL" /> 进行分享。</translation>
 <translation id="3879748587602334249">下载管理器</translation>
-<translation id="3881478300875776315">隐藏部分行</translation>
 <translation id="3882165008614329320">来自摄像头或文件的现有视频</translation>
 <translation id="3884152383786131369">能以多种语言显示的网页内容将会使用此列表中第一项受支持的语言。这些偏好设置会与您的浏览器设置同步。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新是由您的管理员管理</translation>
@@ -2712,6 +2712,7 @@
 <translation id="3943494825379372497">恢复应用和网页？</translation>
 <translation id="3943582379552582368">返回(&amp;B)</translation>
 <translation id="3943857333388298514">粘贴</translation>
+<translation id="3945513714196326460">请尝试缩短名称</translation>
 <translation id="3948116654032448504">通过<ph name="SEARCH_ENGINE" />搜索图片(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可修改以下文件夹内的文件</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2758,7 +2759,6 @@
 <translation id="3984159763196946143">无法启动演示模式</translation>
 <translation id="3984431586879874039">允许此网站查看您的安全密钥？</translation>
 <translation id="398477389655464998">复制指向突出显示的内容的链接</translation>
-<translation id="3986705137476756801">暂时关闭“实时字幕”功能</translation>
 <translation id="3987544746655539083">继续禁止此网站使用您的位置信息</translation>
 <translation id="3987938432087324095">抱歉，没听清。</translation>
 <translation id="3988996860813292272">选择时区</translation>
@@ -3098,6 +3098,7 @@
 <translation id="4415245286584082850">找不到设备。请在新的标签页中打开帮助中心文章。</translation>
 <translation id="4415276339145661267">管理您的 Google 帐号</translation>
 <translation id="4415748029120993980">SECG 椭圆曲线 secp384r1（又称 NIST P-384）</translation>
+<translation id="4416450511678320850">这里没有可用来分享此内容的应用</translation>
 <translation id="4416582610654027550">请输入一个有效网址</translation>
 <translation id="4419409365248380979">总是允许 <ph name="HOST" /> 设置 Cookie</translation>
 <translation id="4421932782753506458">猫咪</translation>
@@ -3365,7 +3366,6 @@
 <translation id="4699172675775169585">缓存的图片和文件</translation>
 <translation id="4699357559218762027">（自动启动）</translation>
 <translation id="4701025263201366865">家长登录</translation>
-<translation id="4702656508969495934">能看到“实时字幕”气泡了，使用窗口切换器可切换焦点</translation>
 <translation id="4708794300267213770">从休眠状态唤醒时显示锁定屏幕</translation>
 <translation id="4708849949179781599">退出<ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">恢复设置</translation>
@@ -3391,6 +3391,7 @@
 <translation id="473936925429402449">已选择，第 <ph name="CURRENT_ELEMENT" /> 项附加内容，共 <ph name="TOTAL_ELEMENTS" /> 项</translation>
 <translation id="4739639199548674512">票据</translation>
 <translation id="4742334355511750246">不允许显示图片</translation>
+<translation id="4742970037960872810">撤消突出显示</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />了解如何更新应用<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{将这个网站取消静音}other{将这些网站取消静音}}</translation>
 <translation id="4746351372139058112">信息</translation>
@@ -3495,7 +3496,7 @@
 <translation id="4871322859485617074">PIN 码包含无效字符</translation>
 <translation id="4871370605780490696">添加书签</translation>
 <translation id="4871568871368204250">关闭同步功能</translation>
-<translation id="4871719318659334896">关闭群组</translation>
+<translation id="4871719318659334896">关闭组</translation>
 <translation id="4873312501243535625">媒体文件检查工具</translation>
 <translation id="4876273079589074638">帮助我们的工程师调查并解决此崩溃问题。请列出您的具体操作，越详细越好！</translation>
 <translation id="4876895919560854374">将屏幕锁定和解锁</translation>
@@ -3867,7 +3868,6 @@
 <translation id="5300287940468717207">要重置网站权限吗？</translation>
 <translation id="5300589172476337783">显示</translation>
 <translation id="5300719150368506519">将您所访问网页的网址发送给 Google</translation>
-<translation id="5300814202279832142">将窗口移至桌面</translation>
 <translation id="5301751748813680278">以访客身份登录。</translation>
 <translation id="5301954838959518834">知道了</translation>
 <translation id="5302048478445481009">语言</translation>
@@ -4349,7 +4349,7 @@
 <translation id="5855643921295613558">0.6 秒</translation>
 <translation id="5856721540245522153">启用调试功能</translation>
 <translation id="5857090052475505287">新文件夹</translation>
-<translation id="5857171483910641802">系统根据您经常访问的网站提供快捷方式建议</translation>
+<translation id="5857171483910641802">系统会根据您经常访问的网站推荐它们的快捷方式</translation>
 <translation id="5857675236236529683">准备就绪后，您可在此处找到自己的阅读清单</translation>
 <translation id="5858490737742085133">终端</translation>
 <translation id="5859603669299126575">画廊中的影集</translation>
@@ -4600,6 +4600,7 @@
 <translation id="6136114942382973861">关闭下载内容栏</translation>
 <translation id="6136287496450963112">您尚未设置 PIN 码来保护您的安全密钥。若要管理指纹，请先创建一个 PIN 码。</translation>
 <translation id="6138680304137685902">采用 SHA-384 算法的 X9.62 ECDSA 签名</translation>
+<translation id="6138774640412545950">扩展程序“<ph name="APP_NAME" />”想与 <ph name="TARGET_NAME" /> 分享您屏幕上的内容。</translation>
 <translation id="6138894911715675297">“<ph name="NETWORK_TYPE" />”类型，没有可连接的网络</translation>
 <translation id="6141988275892716286">确认下载</translation>
 <translation id="6143186082490678276">获取帮助</translation>
@@ -5389,6 +5390,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> 正在使用您的摄像头</translation>
 <translation id="701080569351381435">显示源代码</translation>
 <translation id="7014174261166285193">安装失败。</translation>
+<translation id="7014480873681694324">撤消突出显示</translation>
 <translation id="7017004637493394352">再说一遍“Ok Google”</translation>
 <translation id="7017219178341817193">添加新网页</translation>
 <translation id="7017354871202642555">无法在创建窗口后设置模式。</translation>
@@ -5482,7 +5484,6 @@
 <translation id="711840821796638741">显示托管书签</translation>
 <translation id="711902386174337313">读取您登录过的设备的列表</translation>
 <translation id="7120865473764644444">无法连接到同步服务器。正在重试…</translation>
-<translation id="7121362699166175603">清除历史记录和地址栏中的自动补全项。您的 Google 帐号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="7121438501124788993">开发者模式</translation>
 <translation id="7121728544325372695">智能破折号</translation>
 <translation id="7123030151043029868">允许自动下载多个文件</translation>
@@ -5655,7 +5656,6 @@
 <translation id="7334274148831027933">启用停靠的放大镜</translation>
 <translation id="7335974957018254119">支持拼写检查的语言</translation>
 <translation id="7336799713063880535">已屏蔽通知。</translation>
-<translation id="7337248890521463931">显示更多行</translation>
 <translation id="7338630283264858612">设备序列号无效。</translation>
 <translation id="7339763383339757376">PKCS #7，单一证书</translation>
 <translation id="7339785458027436441">键入内容时检查拼写</translation>
@@ -5926,7 +5926,7 @@
 <translation id="7642778300616172920">隐藏敏感内容</translation>
 <translation id="7643842463591647490">{0,plural, =1{# 个打开的窗口}other{# 个打开的窗口}}</translation>
 <translation id="7643932971554933646">允许网站查看文件？</translation>
-<translation id="7644543211198159466">颜色和主题背景</translation>
+<translation id="7644543211198159466">颜色和主题</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
 <translation id="7645300866575922143">添加移动网络</translation>
 <translation id="7645681574855902035">正在取消 Linux 备份</translation>
@@ -6960,7 +6960,7 @@
 <translation id="8780123805589053431">从 Google 获取图片说明</translation>
 <translation id="8780443667474968681">已关闭语音搜索功能。</translation>
 <translation id="878069093594050299">此证书已通过验证，具有以下用法：</translation>
-<translation id="8781834595282316166">在群组内添加新标签页</translation>
+<translation id="8781834595282316166">在组内添加新标签页</translation>
 <translation id="8782565991310229362">已取消启动自助服务终端应用。</translation>
 <translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;希望与您共享打印机&lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;。</translation>
 <translation id="8783834180813871000">输入蓝牙配对码，然后按回车键。</translation>
@@ -7357,7 +7357,6 @@
 <translation id="9209563766569767417">正在检查 Linux 容器设置</translation>
 <translation id="9209689095351280025">网站无法使用 Cookie 来跟踪您在网上的活动</translation>
 <translation id="9211177926627870898">需要更新</translation>
-<translation id="9211490828691860325">所有桌面</translation>
 <translation id="9214510034298163263">网站可以请求修改您设备上的文件和文件夹（推荐）</translation>
 <translation id="9214520840402538427">糟糕！安装时间属性的初始化已过期，请与您的支持代表联系。</translation>
 <translation id="9214695392875603905">纸杯蛋糕</translation>

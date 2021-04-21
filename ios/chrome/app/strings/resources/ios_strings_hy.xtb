@@ -446,6 +446,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5782227691023083829">Թարգմանվում է...</translation>
 <translation id="5803566855766646066">Հեռացնե՞լ նոր քարտը</translation>
 <translation id="5816228676161003208">Թույլ է տալիս արագ որոնել ձայնի միջոցով:</translation>
+<translation id="581659025233126501">Միացնել համաժամացումը</translation>
 <translation id="5819208479324046259">Կառավարվում է <ph name="MANAGER" />-ի կողմից։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Որոնման համակարգ</translation>
 <translation id="5854790677617711513">30 օր և ավելի</translation>
@@ -493,6 +494,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6196207969502475924">Ձայնային որոնում</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Փակել {COUNT} ներդիր}one{Փակել {COUNT} ներդիր}other{Փակել {COUNT} ներդիր}}</translation>
 <translation id="6219688215832490856">Երբեք չթարգմանել</translation>
+<translation id="6223816392543092032">Համաժամացնել էջանիշները, պատմությունը, գաղտնաբառերն ու այլ կարգավորումները ձեր բոլոր սարքերում</translation>
 <translation id="6254066287920239840">Հղումները դիտարկիչի փոխարեն բացել հավելվածում:</translation>
 <translation id="6255097610484507482">Փոխել վարկային քարտը</translation>
 <translation id="6284652193729350524">Առաջարկել թարգմանել <ph name="LANGUAGE" /></translation>
@@ -525,6 +527,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6445981559479772097">Հաղորդագրությունն ուղարկվեց:</translation>
 <translation id="6447842834002726250">Cookie ֆայլեր</translation>
 <translation id="6453018583485750254">Ստուգում երբեք չի կատարվել։</translation>
+<translation id="6459307836338400162">Գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներին կարող եք ծանոթանալ <ph name="BEGIN_LINK" />Համաժամացում<ph name="END_LINK" /> և <ph name="BEGIN_LINK" />Google-ի ծառայություններ<ph name="END_LINK" /> բաժիններում։</translation>
 <translation id="6464071786529933911">Բացել նոր ինկոգնիտո ներդիրում</translation>
 <translation id="6464397691496239022">Կայքերը կարող են օգտագործել քուքիներ՝ ձեր աշխատանքն ավելի հարմարավետ դարձնելու, օրինակ, ձեր մուտքը հաշիվ հիշելու կամ ձեր ընտրած ապրանքները զամբյուղում պահելու համար։
 
@@ -708,6 +711,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8281886186245836920">Բաց թողնել</translation>
 <translation id="8283172974887967105">Սահմանել…</translation>
 <translation id="8299417921174340354">Գաղտնաբառերն օգտագործելու համար նախ պետք է ձեր սարքում անցակոդ սահմանեք։</translation>
+<translation id="83100941411593607">Մուտքն անջատված է</translation>
 <translation id="8319076807703933069">Նոր որոնում</translation>
 <translation id="8323906514956095947">Հպեք և պահեք՝ ներդիրներին առնչվող այլ ընտրանքներ տեսնելու համար</translation>
 <translation id="8328777765163860529">Փակել բոլորը</translation>

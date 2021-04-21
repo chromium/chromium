@@ -446,6 +446,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5782227691023083829">Translating...</translation>
 <translation id="5803566855766646066">Are you sure that you want to discard this new card?</translation>
 <translation id="5816228676161003208">This lets you search faster using your voice.</translation>
+<translation id="581659025233126501">Turn on Sync</translation>
 <translation id="5819208479324046259">Managed by <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Search Engine</translation>
 <translation id="5854790677617711513">Older than 30 days</translation>
@@ -493,6 +494,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6196207969502475924">Voice Search</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Close {COUNT} tab}other{Close {COUNT} tabs}}</translation>
 <translation id="6219688215832490856">Never translate</translation>
+<translation id="6223816392543092032">Get your bookmarks, history, passwords and other settings on all your devices.</translation>
 <translation id="6254066287920239840">Open links in the app instead of the browser.</translation>
 <translation id="6255097610484507482">Edit credit card</translation>
 <translation id="6284652193729350524">Offer to translate <ph name="LANGUAGE" /></translation>
@@ -525,6 +527,7 @@ Your data was encrypted with your sync passphrase on <ph name="TIME" />. Enter i
 <translation id="6445981559479772097">Message sent.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">Check never run.</translation>
+<translation id="6459307836338400162">For more settings that relate to privacy, security and data collection, see both <ph name="BEGIN_LINK" />Sync<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Open in New Incognito Tab</translation>
 <translation id="6464397691496239022">Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping basket.
 
@@ -708,6 +711,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8281886186245836920">Skip</translation>
 <translation id="8283172974887967105">Set…</translation>
 <translation id="8299417921174340354">To use passwords, you must first set a passcode on your device.</translation>
+<translation id="83100941411593607">Sign-in is disabled</translation>
 <translation id="8319076807703933069">New search</translation>
 <translation id="8323906514956095947">Touch and hold for more tab options</translation>
 <translation id="8328777765163860529">Close All</translation>

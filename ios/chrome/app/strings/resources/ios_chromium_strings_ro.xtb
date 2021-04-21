@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">Permite ca Chromium să blocheze filele incognito.</translation>
 <translation id="1472013873724362412">Contul nu funcționează pe Chromium. Contactează administratorul domeniului sau folosește un Cont Google obișnuit pentru a te conecta.</translation>
 <translation id="1507010443238049608">Contribuie la îmbunătățirea funcțiilor și performanței Chromium</translation>
+<translation id="1531155317299575425">Afișează solicitări pentru conectarea la Chromium.</translation>
 <translation id="1617663976202781617">Date din sincronizarea Chromium</translation>
 <translation id="1736662517232558588">Datele Chromium au fost șterse</translation>
 <translation id="1838412507805038478">Chromium s-a asigurat că certificatul acestui site a fost emis de <ph name="ISSUER" />.</translation>
@@ -49,6 +50,7 @@
 <translation id="5396916991083608703">Setezi Chromium ca browser prestabilit?</translation>
 <translation id="5521125884468363740">Pentru a vedea toate filele tale deschise în Chromium, conectează-te și activează sincronizarea</translation>
 <translation id="5573014823074921752">Sfat pentru Chromium: pentru mai multe opțiuni de file, atinge lung butonul Afișează filele din bara de instrumente, care se află în partea de sus sau de jos a ecranului.</translation>
+<translation id="5651741435382092412">Conectează-te la acest site, la Contul Google și la Chromium. Poți activa sincronizarea mai târziu.</translation>
 <translation id="5700709190537129682">Chromium nu îți poate verifica parolele</translation>
 <translation id="5742135483959137648">Folosește Chromium pentru a deschide linkuri</translation>
 <translation id="5777187867430702742">Pagină Chromium</translation>
@@ -60,6 +62,7 @@
 2. atinge Aplicația browser prestabilită;
 3. selectează Chromium.</translation>
 <translation id="6268381023930128611">Te deconectezi de la Chromium?</translation>
+<translation id="632825460376924298">Permite conectarea la Chromium</translation>
 <translation id="6337530241089703714">Alege dacă ștergi datele Chromium de pe dispozitiv sau le păstrezi</translation>
 <translation id="6424492062988593837">Chromium a devenit și mai bun! Este disponibilă o nouă versiune.</translation>
 <translation id="6820823224820483452">Chromium nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>

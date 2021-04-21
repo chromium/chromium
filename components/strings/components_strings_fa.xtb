@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">‏اگر علامت زده شود، Chrome یک کپی از این کارت را در دستگاه نگهداری می‌کند تا برای پرکردن فرم‌ها از آن استفاده شود.</translation>
 <translation id="1110994991967754504">مجوز <ph name="PERMISSION_NAME" /> را انتخاب کنید</translation>
 <translation id="1113869188872983271">&amp;واگرد ترتیب‌بندی مجدد</translation>
+<translation id="1123753900084781868">درحال‌حاضر «زیرنویس ناشنوایان زنده» در دسترس نیست</translation>
 <translation id="1125573121925420732">در مدتی که وب‌سایت‌ها امنیتشان را به‌روزرسانی می‌کنند، ممکن است به‌طور معمول اخطارهایی دریافت کنید. این مورد به‌زودی اصلاح می‌شود.</translation>
 <translation id="112840717907525620">حافظه پنهان خط‌مشی مورد تأیید است</translation>
 <translation id="1130564665089811311">‏دکمه «ترجمه صفحه»، برای ترجمه کردن این صفحه بااستفاده از «ترجمه Google»، کلید Enter (ورود) را فشار دهید</translation>
@@ -217,6 +218,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{این سرور نتوانست ثابت کند این <ph name="DOMAIN" /> است؛ اعتبار گواهی امنیتی آن ظاهراً فردا شروع می‌شود. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی اتصالتان را قطع می‌کند.}one{این سرور نتوانست ثابت کند این <ph name="DOMAIN" /> است؛ اعتبار گواهی امنیتی آن ظاهراً # روز دیگر شروع می‌شود. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی اتصالتان را قطع می‌کند.}other{این سرور نتوانست ثابت کند این <ph name="DOMAIN" /> است؛ اعتبار گواهی امنیتی آن ظاهراً # روز دیگر شروع می‌شود. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی اتصالتان را قطع می‌کند.}}</translation>
 <translation id="1710259589646384581">OS</translation>
+<translation id="1711234383449478798">نادیده گرفته شده است زیرا <ph name="POLICY_NAME" /> روی <ph name="VALUE" /> تنظیم نشده است.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> می‌خواهد داده‌ها را برای همیشه در رایانه محلی‌تان ذخیره کند</translation>
 <translation id="1713628304598226412">سینی ۲</translation>
 <translation id="1715874602234207">F</translation>
@@ -770,6 +772,7 @@
 <translation id="3841184659773414994">کنترل‌کننده فایل</translation>
 <translation id="385051799172605136">بازگشت</translation>
 <translation id="3858027520442213535">به‌روزرسانی تاریخ و زمان</translation>
+<translation id="3881478300875776315">نمایش خطوط کمتر</translation>
 <translation id="3884278016824448484">شناسه دستگاه یکسان نیست</translation>
 <translation id="3885155851504623709">استان</translation>
 <translation id="388632593194507180">نظارت تشخیص داده شد</translation>
@@ -795,6 +798,7 @@
 <translation id="397105322502079400">در حال محاسبه…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> مسدود شده است</translation>
 <translation id="3973357910713125165">‏دکمه «راندن بررسی ایمنی در Chrome»، کلید «ورود» را فشار دهید تا «بررسی ایمنی» در تنظیمات Chrome اجرا شود</translation>
+<translation id="3986705137476756801">«زیرنویس ناشنوایان زنده» فعلاً خاموش شود</translation>
 <translation id="3987405730340719549">‏Chrome تشخیص داده است که این سایت ممکن است جعلی یا کلاهبردارانه باشد.
 
     اگر فکر می‌کنید این مورد به‌اشتباه نشان داده شده است، لطفاً از https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals دیدن کنید.</translation>
@@ -924,6 +928,7 @@
 <translation id="4377125064752653719">شما سعی در دسترسی به <ph name="DOMAIN" /> را داشتید، اما صادر کننده، گواهی ارائه شده از سوی سرور را باطل کرده است. یعنی اصلاً نباید به اطلاعات کاربری که این سرور ارائه می‌کند اطمینان کرد. ممکن است شما با مهاجمی در ارتباط باشید.</translation>
 <translation id="4378154925671717803">تلفن</translation>
 <translation id="4390472908992056574">لبه</translation>
+<translation id="4406883609789734330">زیرنویس زنده</translation>
 <translation id="4406896451731180161">نتایج جستجو</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> کوکی</translation>
 <translation id="4414290883293381923">‏اخیراً گذرواژه‌تان را در سایتی فریب‌کار وارد کرده‌اید. Chrome توصیه می‌کند همین حالا به <ph name="WEBSITE_1" />، <ph name="WEBSITE_2" />، <ph name="WEBSITE_3" />، و سایت‌های دیگری که در آن‌ها از این گذرواژه استفاده می‌کنید بروید و گذرواژه را تغییر دهید.</translation>
@@ -989,6 +994,7 @@
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">رو</translation>
+<translation id="4702656508969495934">«زیرنویس ناشنوایان زنده» نمایان است، برای کانونی کردن آن از تعویض‌کننده پنجره استفاده کنید</translation>
 <translation id="4708268264240856090">اتصال شما قطع شد</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131">‏<ph name="BEGIN_LINK" />اجرای Windows Network Diagnostics<ph name="END_LINK" /></translation>
@@ -1659,6 +1665,7 @@
 <translation id="733354035281974745">لغو حساب محلی دستگاه</translation>
 <translation id="7333654844024768166">‏اخیراً گذرواژه‌تان را در سایتی فریب‌کار وارد کرده‌اید. Chromium توصیه می‌کند همین حالا به <ph name="WEBSITE_1" />،‏ <ph name="WEBSITE_2" />، <ph name="WEBSITE_3" />، و سایت‌های دیگری که در آن‌ها از این گذرواژه استفاده می‌کنید بروید و گذرواژه را تغییر دهید.</translation>
 <translation id="7334320624316649418">&amp;انجام مجدد ترتیب‌بندی مجدد</translation>
+<translation id="7337248890521463931">نمایش خطوط بیشتر</translation>
 <translation id="7337706099755338005">در پلتفورم شما دردسترس نیست.</translation>
 <translation id="733923710415886693">گواهی سرور از طریق شفافیت گواهینامه نشان داده نشده بود.</translation>
 <translation id="734600844861828519">11x15</translation>

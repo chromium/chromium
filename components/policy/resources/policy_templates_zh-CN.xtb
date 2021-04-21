@@ -1674,6 +1674,13 @@
 <translation id="3177802893484440532">要求为本地信任锚执行在线 OCSP/CRL 检查</translation>
 <translation id="3184161739683646075">控制 DNS-over-HTTPS 模式</translation>
 <translation id="3185009703220253572">从版本 <ph name="SINCE_VERSION" /> 开始</translation>
+<translation id="3185895671618336039">为 <ph name="PRODUCT_NAME" /> 配置浏览数据生命周期设置。此政策让管理员能够（按数据类型）配置浏览器对数据的删除时间点。这对需要处理敏感客户数据的客户非常有用。仅当 <ph name="SYNC_DISABLED_POLICY_NAME" /> 设为 true 时，此政策才会生效。
+
+      可用的数据类型有 <ph name="DATA_TYPE_BROWSING_HISTORY" />、<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />、<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />、<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、<ph name="DATA_TYPE_PASSWORD" />、<ph name="DATA_TYPE_AUTOFILL" />、<ph name="DATA_TYPE_SITE_SETTINGS" /> 和 <ph name="DATA_TYPE_HOSTED_APP_DATA" />。
+
+      浏览器会自动移除留存时长已超过 <ph name="TIME_TO_LIVE_IN_HOURS" />的所选类型数据。可设置的最小值为 1 小时。
+
+      浏览器启动 15 秒后便会开始删除过期数据，运行期间会每小时删除一次。</translation>
 <translation id="3192902750888034827">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" /> 来指定用于提供新标签页的搜索引擎网址。
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" />，系统将不会提供任何新标签页。</translation>
@@ -4533,6 +4540,11 @@
       如果未设置此政策，工具栏将默认放置在屏幕底部，但用户可以更改工具栏的位置。</translation>
 <translation id="7040229947030068419">值示例：</translation>
 <translation id="7044883996351280650">控制 Android 备份和恢复服务</translation>
+<translation id="7060497964524144376">如果此政策已启用，“安全浏览”功能将会信任您指定的网域。该功能将不会检查此类网域是否含有危险资源（例如钓鱼式攻击、恶意软件或垃圾软件）。“安全浏览”功能的下载保护服务将不会检查托管在此类网域上的下载内容。该功能的密码保护服务将不会检查密码重用情况。
+
+      如果此政策未设置，系统便会将默认开启的“安全浏览”保护功能应用于所有资源。
+
+      在 <ph name="MS_WIN_NAME" /> 上，该功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，该功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="7063895219334505671">在这些网站上允许弹出式窗口</translation>
 <translation id="706669471845501145">允许网站显示桌面通知</translation>
 <translation id="7070525176564511548">每周（168 小时）必须输入一次密码</translation>
@@ -6128,6 +6140,7 @@
 <translation id="927444535723396977">如果此政策设为 1，系统会允许网站运行 JavaScript。如果此政策设为 2，系统会禁止网站运行 JavaScript。
 
       如果此政策未设置，系统会允许运行 JavaScript，但用户可以更改此设置。</translation>
+<translation id="928189505080808353">端口 554（2021/10/15 到期）</translation>
 <translation id="929549405492388749">如果设为 true，即使 AppCache 在 Chrome 中默认不可用，此政策仍会强制启用 AppCache。
 
       如果此政策设为 false 或未设置，AppCache 会遵从 Chrome 的默认设置。</translation>

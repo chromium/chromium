@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">Плъзгач за търсене</translation>
 <translation id="1404323374378969387">Норвежки</translation>
 <translation id="1430915738399379752">Печат</translation>
+<translation id="1433628812591023318">За да хванете и преместите файлове в Parallels Desktop, те трябва да бъдат преместени в папката с файлове на Windows.</translation>
 <translation id="1435838927755162558">Споделяне на папката с Parallels Desktop</translation>
 <translation id="1467432559032391204">Наляво</translation>
 <translation id="1471718551822868769">Словашки</translation>
@@ -611,6 +612,7 @@
 <translation id="7417453074306512035">Етиопска клавиатура</translation>
 <translation id="7417705661718309329">Карта на Google</translation>
 <translation id="7460898608667578234">украински</translation>
+<translation id="7486315294984620427">За да хванете и преместите файлове в Parallels Desktop, те трябва да бъдат копирани в папката с файлове на Windows.</translation>
 <translation id="7489215562877293245">Намерихме <ph name="FILE_COUNT" />
 <ph name="LINE_BREAK1" />
 Готови сме да създадем резервно копие в <ph name="BEGIN_LINK" />Google Диск<ph name="END_LINK" /></translation>

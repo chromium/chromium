@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">Arama kaydırma çubuğu</translation>
 <translation id="1404323374378969387">Norveççe</translation>
 <translation id="1430915738399379752">Yazdır</translation>
+<translation id="1433628812591023318">Dosyaları Parallels Desktop'a bırakabilmek için Windows dosyalarına taşımak gerekir.</translation>
 <translation id="1435838927755162558">Parallels Desktop ile klasör paylaşın</translation>
 <translation id="1467432559032391204">Sola</translation>
 <translation id="1471718551822868769">Slovakça</translation>
@@ -611,6 +612,7 @@
 <translation id="7417453074306512035">Etiyopya dili klavye</translation>
 <translation id="7417705661718309329">Google harita</translation>
 <translation id="7460898608667578234">Ukraynaca</translation>
+<translation id="7486315294984620427">Dosyaları Parallels Desktop'a bırakabilmek için Windows dosyalarına kopyalamak gerekir.</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> bulundu
     <ph name="LINE_BREAK1" />
     Dosyalar <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />'a yedeklenmeye hazır</translation>

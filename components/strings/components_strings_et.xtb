@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Kui see on märgitud, salvestab Chrome teie kaardi koopia sellesse seadmesse, et vormi kiiremini täita.</translation>
 <translation id="1110994991967754504">Valige luba üksuse <ph name="PERMISSION_NAME" /> jaoks</translation>
 <translation id="1113869188872983271">&amp;Võta korrastamine tagasi</translation>
+<translation id="1123753900084781868">Reaalajas subtiitrid ei ole praegu saadaval</translation>
 <translation id="1125573121925420732">Sel ajal kui veebisaidid värskendavad turvafunktsioone, võite sageli hoiatusi näha. See olukord peaks varsti lahenema.</translation>
 <translation id="112840717907525620">Reegli vahemälu töötab probleemideta</translation>
 <translation id="1130564665089811311">Nupp Tõlgi leht, selle lehe tõlkimiseks rakendusega Google'i tõlge vajutage sisestusklahvi</translation>
@@ -217,6 +218,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Server ei suutnud tõestada, et tegemist on domeeniga <ph name="DOMAIN" />, selle turvasertifikaat hakkab väidetavalt kehtima homme. Selle põhjuseks võib olla vale seadistus või teie ühendust segav ründaja.}other{Server ei suutnud tõestada, et tegemist on domeeniga <ph name="DOMAIN" />, selle turvasertifikaat hakkab väidetavalt kehtima # päeva pärast. Selle põhjuseks võib olla vale seadistus või teie ühendust segav ründaja.}}</translation>
 <translation id="1710259589646384581">OS</translation>
+<translation id="1711234383449478798">Eirati, kuna reegel <ph name="POLICY_NAME" /> pole seadistatud väärtusele <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> soovib andmed alaliselt teie kohalikku arvutisse salvestada</translation>
 <translation id="1713628304598226412">Salv 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -771,6 +773,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3841184659773414994">Failitöötlejad</translation>
 <translation id="385051799172605136">Tagasi</translation>
 <translation id="3858027520442213535">Värskenda kuupäeva ja kellaaega</translation>
+<translation id="3881478300875776315">Kuva vähem ridu</translation>
 <translation id="3884278016824448484">Seadme identifikaator on konfliktne</translation>
 <translation id="3885155851504623709">Vald</translation>
 <translation id="388632593194507180">Tuvastati jälgimine</translation>
@@ -796,6 +799,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="397105322502079400">Arvutamine ...</translation>
 <translation id="3973234410852337861">Host <ph name="HOST_NAME" /> on blokeeritud</translation>
 <translation id="3973357910713125165">Nupp Käita Chrome'i ohutuskontroll, vajutage sisestusklahvi, et Chrome'i seadetes ohutuskontroll käitada</translation>
+<translation id="3986705137476756801">Reaalajas subtiitrite praeguseks väljalülitamine</translation>
 <translation id="3987405730340719549">Chrome tuvastas, et see sait võib olla võlts või petturlik.
 
     Kui arvate, et tegemist on veaga, külastage saiti https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -925,6 +929,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4377125064752653719">Püüdsite jõuda saidile <ph name="DOMAIN" />, kuid sertifikaadi väljaandja on serveri esitatud sertifikaadi tagasi võtnud. See tähendab, et serveri esitatud turvamandaate ei tohiks mingil juhul usaldada. Võimalik, et suhtlete ründajaga.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4390472908992056574">Serv</translation>
+<translation id="4406883609789734330">Reaalajas subtiitrid</translation>
 <translation id="4406896451731180161">otsingutulemused</translation>
 <translation id="4408413947728134509">Küpsisefailid: <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Sisestasite äsja oma parooli kahtlasele saidile. Chrome soovitab teil minna veebisaitidele <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ja muudele saitidele, kus seda parooli kasutate, ning kohe oma parooli muuta.</translation>
@@ -990,6 +995,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4691835149146451662">Architecture-A (ümbrik)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Külg</translation>
+<translation id="4702656508969495934">Reaalajas subtiitrid on nähtavad, kasutage fokuseerimiseks aknalülitit</translation>
 <translation id="4708268264240856090">Teie ühendus katkes</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windowsi võrgudiagnostika käitamine<ph name="END_LINK" /></translation>
@@ -1660,6 +1666,7 @@ Lisateave:
 <translation id="733354035281974745">Seadme kohaliku konto alistamine</translation>
 <translation id="7333654844024768166">Sisestasite äsja oma parooli kahtlasele saidile. Chromium soovitab teil minna veebisaitidele <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ja muudele saitidele, kus seda parooli kasutate, ning kohe oma parooli muuta.</translation>
 <translation id="7334320624316649418">&amp;Korrasta uuesti</translation>
+<translation id="7337248890521463931">Kuva rohkem ridu</translation>
 <translation id="7337706099755338005">Pole teie platvormil saadaval.</translation>
 <translation id="733923710415886693">Serveri sertifikaati ei avalikustatud sertifikaadi läbipaistvuse reegli kaudu.</translation>
 <translation id="734600844861828519">11x15</translation>

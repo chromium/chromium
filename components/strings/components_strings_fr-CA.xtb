@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Chrome conservera une copie de votre carte sur cet appareil pour remplir plus rapidement vos formulaires, lorsque l’option est cochée.</translation>
 <translation id="1110994991967754504">Sélectionner une autorisation pour <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Annuler la réorganisation</translation>
+<translation id="1123753900084781868">La transcription instantanée n'est pas accessible pour le moment</translation>
 <translation id="1125573121925420732">Les avertissements peuvent être fréquents lorsque les sites Web mettent à jour leurs mesures de sécurité. Cette situation devrait bientôt s'améliorer.</translation>
 <translation id="112840717907525620">Cache de la règle valide</translation>
 <translation id="1130564665089811311">Bouton Traduire la page, appuyez sur la touche Entrée pour traduire cette page avec Google Traduction</translation>
@@ -217,6 +218,7 @@
 <translation id="1703835215927279855">Lettre</translation>
 <translation id="1706954506755087368">{1,plural, =1{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car la date d'émission de son certificat de sécurité semble dater de demain. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique.}one{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car la date d'émission de son certificat de sécurité est ultérieure de # jour à la date du jour. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique.}other{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car la date d'émission de son certificat de sécurité est ultérieure de # jours à la date du jour. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique.}}</translation>
 <translation id="1710259589646384581">Systèmes d'exploitation</translation>
+<translation id="1711234383449478798">Ignorée : <ph name="POLICY_NAME" /> n'est pas définie à <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520">L'URL <ph name="URL" /> veut stocker des données de façon permanente sur votre ordinateur local</translation>
 <translation id="1713628304598226412">Bac 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -766,6 +768,7 @@
 <translation id="3841184659773414994">Modules de traitement de fichiers</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="3858027520442213535">Mettre à jour la date et l'heure</translation>
+<translation id="3881478300875776315">Afficher moins de lignes</translation>
 <translation id="3884278016824448484">Identifiant de périphérique en conflit</translation>
 <translation id="3885155851504623709">Paroisse</translation>
 <translation id="388632593194507180">Surveillance détectée</translation>
@@ -791,6 +794,7 @@
 <translation id="397105322502079400">Calcul en cours...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> est bloquée</translation>
 <translation id="3973357910713125165">Bouton Effectuer une vérification de sécurité de Chrome : appuyez sur Entrée pour effectuer une vérification de sécurité dans les paramètres de Chrome</translation>
+<translation id="3986705137476756801">Désactiver la transcription instantanée pour le moment</translation>
 <translation id="3987405730340719549">Chrome a déterminé que ce site pourrait être faux ou frauduleux.
 
     Si vous pensez qu'il s'agit d'une erreur, veuillez visiter la page https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -915,6 +919,7 @@
 <translation id="4377125064752653719">Vous avez tenté d'accéder à <ph name="DOMAIN" />, mais le certificat présenté par le serveur a été révoqué par son émetteur, ce qui signifie qu'on ne peut plus faire confiance au certificat présenté par le serveur. Il est donc possible que vous communiquiez avec un pirate informatique.</translation>
 <translation id="4378154925671717803">Numéro de téléphone</translation>
 <translation id="4390472908992056574">Bord</translation>
+<translation id="4406883609789734330">Transcription instantanée</translation>
 <translation id="4406896451731180161">résultats de recherche</translation>
 <translation id="4408413947728134509">Témoins <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome vous recommande de visiter <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ainsi que tout autre site sur lequel vous avez utilisé ce mot de passe, puis de le changer maintenant.</translation>
@@ -980,6 +985,7 @@
 <translation id="4691835149146451662">Enveloppe Architecture A</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Côté</translation>
+<translation id="4702656508969495934">La transcription instantanée est visible, servez-vous du commutateur de fenêtre pour y accéder</translation>
 <translation id="4708268264240856090">Votre connexion a été interrompue</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />d'exécuter Windows Network Diagnostics<ph name="END_LINK" /></translation>
@@ -1650,6 +1656,7 @@ Détails supplémentaires :
 <translation id="733354035281974745">Ignorer le compte local de l'appareil</translation>
 <translation id="7333654844024768166">Vous venez d'entrer votre mot de passe sur un site trompeur. Chromium vous recommande de visiter <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ainsi que tout autre site sur lequel vous avez utilisé ce mot de passe, puis de le changer maintenant.</translation>
 <translation id="7334320624316649418">&amp;Rétablir la réorganisation</translation>
+<translation id="7337248890521463931">Afficher plus de lignes</translation>
 <translation id="7337706099755338005">Non disponible sur votre plateforme.</translation>
 <translation id="733923710415886693">Le certificat du serveur n'a pas été divulgué par l'intermédiaire de l'outil Certificate Transparency.</translation>
 <translation id="734600844861828519">11 po x 15 po</translation>

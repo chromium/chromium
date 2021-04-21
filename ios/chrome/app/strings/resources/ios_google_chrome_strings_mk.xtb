@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Ако му дозволите на Chrome да ја знае вашата локација, тој ќе ја испраќа до сајтовите што ќе ги дозволите. Сајтовите може да ја побараат вашата локација кога имаат да ви прикажат локални информации, како продавници во близина или вести.</translation>
 <translation id="6036420186814142909">Google Chrome има функции кои помагаат во управувањето со податоците од интернет и со брзината на вчитување веб-страници.
 <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Дозволете најавување на Chrome</translation>
 <translation id="6181930887571472871">Префрлете се на Chrome</translation>
 <translation id="6238746320622508509">Дозволете Chrome да ги заклучи вашите картички „Инкогнито“.</translation>
 <translation id="6573431926118603307">Картичките што сте ги отвориле во Chrome на другите уреди ќе се појават тука.</translation>
@@ -96,5 +97,6 @@
   3. Изберете Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Останете безбедни со Google Chrome</translation>
+<translation id="8772179140489533211">Прикажува prompt за најава на Chrome.</translation>
 <translation id="9112744793181547300">Да се постави Chrome како стандарден?</translation>
 </translationbundle>

@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;ابزارها</translation>
 <translation id="1122242684574577509">‏اصالت‌سنجی انجام نشد. کلیک کنید تا به صفحه ورود به سیستم شبکه Wi-Fi مورد استفاده‌تان بروید (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">نام نشانک</translation>
-<translation id="1123753900084781868">درحال‌حاضر «زیرنویس ناشنوایان زنده» در دسترس نیست</translation>
 <translation id="1124772482545689468">کاربر</translation>
 <translation id="1125550662859510761">‏‎<ph name="WIDTH" /> × <ph name="HEIGHT" />‎ به‌نظر می‌رسد (داخلی)</translation>
 <translation id="1126809382673880764">‏دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک از شما محافظت نمی‌کند. درصورت موجود بودن، همچنان ویژگی حفاظتی «مرور ایمن» را در سرویس‌های دیگر Google مثل Gmail و «جستجو» دریافت می‌کنید.</translation>
@@ -752,6 +751,7 @@
 <translation id="1794791083288629568">برای کمک به ما در رفع این مشکل بازخورد ارسال کنید.</translation>
 <translation id="1795214765651529549">استفاده از کلاسیک</translation>
 <translation id="1799071797295057738">افزونه «<ph name="EXTENSION_NAME" />» به‌طور خودکار غیرفعال شد.</translation>
+<translation id="1800973090344019061">افزونه «<ph name="APP_NAME" />» می‌خواهد محتوای صفحه‌نمایشتان را هم‌رسانی کند.</translation>
 <translation id="1802624026913571222">خواب، پس از اینکه درپوش بسته می‌شود</translation>
 <translation id="1802687198411089702">صفحه پاسخ نمی‌دهد. می‌توانید منتظر بمانید یا خارج شوید.</translation>
 <translation id="1803531841600994172">زبانی که می‌خواهید به آن ترجمه کنید</translation>
@@ -946,7 +946,6 @@
 <translation id="2010501376126504057">دستگاه‌های سازگار</translation>
 <translation id="2016574333161572915">‏سخت‌افزار Google Meet شما آماده راه‌اندازی است</translation>
 <translation id="2017334798163366053">غیرفعال کردن جمع‌آوری داده‌های عملکرد</translation>
-<translation id="2017836877785168846">سابقه و تکمیل خودکار را در نوار نشانی پاک می‌کند.</translation>
 <translation id="2018352199541442911">متأسفیم، دستگاه ذخیره‌سازی خارجی شما در حال حاضر پشتیبانی نمی‌شود.</translation>
 <translation id="2019718679933488176">&amp;باز کردن فایل صوتی در برگهٔ جدید</translation>
 <translation id="2020183425253392403">نمایش تنظیمات نشانی شبکه</translation>
@@ -1352,6 +1351,7 @@
 <translation id="2464089476039395325">‏پروکسی HTTP</translation>
 <translation id="2465237718053447668">‏<ph name="DOMAIN" /> از شما می‌خواهد اکنون به Wi-Fi متصل شوید و به‌روزرسانی را بارگیری کنید. یا، از اتصالی محدود بارگیری کنید (ممکن است هزینه‌هایی اعمال شود).</translation>
 <translation id="2467267713099745100">شبکه <ph name="NETWORK_TYPE" />، خاموش</translation>
+<translation id="2467755475704469005">دستگاهی شناسایی نشد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">شتاب پیمایش صفحه لمسی</translation>
 <translation id="2468205691404969808">از کوکی‌ها برای به خاطر سپردن اولویت‌های شما استفاده می‌کند؛ حتی اگر از آن صفحه‌ها بازدید نکنید</translation>
 <translation id="2468402215065996499">تاماگوچی</translation>
@@ -2380,6 +2380,7 @@
 <translation id="3608576286259426129">پیش‌نمایش تصویر کاربر</translation>
 <translation id="3610369246614755442">پنکه پایه اتصال نیاز به سرویس دارد</translation>
 <translation id="361106536627977100">داده‌های فلاش</translation>
+<translation id="3611655097742243705">‏برای پیدا کردن برنامه‌های بیشتر، از Play Store بازدید کنید</translation>
 <translation id="3612673635130633812">‏بارگیری‌شده توسط &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">نشان دادن <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">باز &amp;کردن در برگهٔ جدید</translation>
@@ -2644,7 +2645,6 @@
 <translation id="3874164307099183178">‏روشن کردن «دستیار Google»</translation>
 <translation id="3877075909000773256">تنظیمات «هم‌رسانی با اطراف» برای دستگاه <ph name="USER_NAME" />، بااستفاده از حساب «<ph name="USER_EMAIL" />» هم‌رسانی می‌کند.</translation>
 <translation id="3879748587602334249">مدیریت بارگیری</translation>
-<translation id="3881478300875776315">نمایش خطوط کمتر</translation>
 <translation id="3882165008614329320">ویدیوی موجود از دوربین یا فایل</translation>
 <translation id="3884152383786131369">محتوای وبی که به چند زبان دردسترس است از اولین زبان پشتیبانی‌شده در این فهرست استفاده خواهد کرد. این اولویت‌ها با تنظیمات مرورگرتان همگام‌سازی می‌شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">به‌روزرسانی‌ها را سرپرستتان مدیریت می‌کند</translation>
@@ -2716,6 +2716,7 @@
 <translation id="3943494825379372497">برنامه‌ها و صفحه‌ها بازیابی شوند؟</translation>
 <translation id="3943582379552582368">&amp;برگشت</translation>
 <translation id="3943857333388298514">جاگذاری</translation>
+<translation id="3945513714196326460">نام کوتاه‌تری را امتحان کنید</translation>
 <translation id="3948116654032448504">&amp;جستجوی <ph name="SEARCH_ENGINE" /> برای تصویر</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> می‌تواند فایل‌های این پوشه‌ها را ویرایش کند:</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2762,7 +2763,6 @@
 <translation id="3984159763196946143">حالت نمایشی شروع نشد</translation>
 <translation id="3984431586879874039">به این سایت اجازه می‌دهید کلید امنیتی‌تان را ببیند؟</translation>
 <translation id="398477389655464998">کپی کردن پیوند به مورد برجسته</translation>
-<translation id="3986705137476756801">«زیرنویس ناشنوایان زنده» فعلاً خاموش شود</translation>
 <translation id="3987544746655539083">دسترسی این سایت به مکان شما همچنان مسدود شود</translation>
 <translation id="3987938432087324095">متأسفم، متوجه نشدم.</translation>
 <translation id="3988996860813292272">انتخاب منطقه زمانی</translation>
@@ -3102,6 +3102,7 @@
 <translation id="4415245286584082850">دستگاهی پیدا نشد. در برگه جدیدی، یک مقاله مرکز راهنمایی باز کنید.</translation>
 <translation id="4415276339145661267">‏مدیریت «حساب Google»</translation>
 <translation id="4415748029120993980">‏منحنی بیضوی SECG مدل secp384r1 (به‌ نام NIST P-384)</translation>
+<translation id="4416450511678320850">هیچ برنامه‌ای برای این محتوا دردسترس نیست</translation>
 <translation id="4416582610654027550">نشانی وب معتبری تایپ کنید</translation>
 <translation id="4419409365248380979">همیشه به <ph name="HOST" /> اجازه دهید کوکی‌ها را تنظیم کند</translation>
 <translation id="4421932782753506458">پشمالو</translation>
@@ -3369,7 +3370,6 @@
 <translation id="4699172675775169585">تصاویر و فایل‌های قرار گرفته در حافظه پنهان</translation>
 <translation id="4699357559218762027">(اجرای خودکار)</translation>
 <translation id="4701025263201366865">ورود ولی به سیستم</translation>
-<translation id="4702656508969495934">«زیرنویس ناشنوایان زنده» نمایان است، برای کانونی کردن آن از تعویض‌کننده پنجره استفاده کنید</translation>
 <translation id="4708794300267213770">نمایش صفحه قفل هنگام بیدار شدن از حالت خواب</translation>
 <translation id="4708849949179781599">خروج از <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">بازیابی تنظیمات</translation>
@@ -3395,6 +3395,7 @@
 <translation id="473936925429402449">انتخاب‌شده، محتوای اضافی <ph name="CURRENT_ELEMENT" /> از <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">بلیت‌ها</translation>
 <translation id="4742334355511750246">اجازه ندارد تصاویر را نشان دهد</translation>
+<translation id="4742970037960872810">برداشتن برجسته‌سازی</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />با نحوه به‌روزرسانی برنامه‌ها آشنا شوید<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{باصدا کردن سایت}one{باصدا کردن سایت‌ها}other{باصدا کردن سایت‌ها}}</translation>
 <translation id="4746351372139058112">پیام‌ها</translation>
@@ -3871,7 +3872,6 @@
 <translation id="5300287940468717207">مجوزهای سایت بازنشانی شود؟</translation>
 <translation id="5300589172476337783">نمایش</translation>
 <translation id="5300719150368506519">‏ارسال نشانی وب صفحه‌هایی که بازدید می‌کنید به Google</translation>
-<translation id="5300814202279832142">انتقال پنجره به میزکار</translation>
 <translation id="5301751748813680278">ورود به‌عنوان مهمان.</translation>
 <translation id="5301954838959518834">بله، متوجه شدم</translation>
 <translation id="5302048478445481009">زبان</translation>
@@ -4604,6 +4604,7 @@
 <translation id="6136114942382973861">بستن نوار بارگیری</translation>
 <translation id="6136287496450963112">کلید امنیتی‌تان پین ندارد و محافظت‌شده نیست. برای مدیریت اثر انگشت، ابتدا پین ایجاد کنید.</translation>
 <translation id="6138680304137685902">‏امضای X9.62 ECDSA با SHA-384</translation>
+<translation id="6138774640412545950">افزونه «<ph name="APP_NAME" />» می‌خواهد محتوای صفحه‌نمایش شما را با <ph name="TARGET_NAME" /> هم‌رسانی کند.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />، بدون شبکه</translation>
 <translation id="6141988275892716286">تأیید بارگیری</translation>
 <translation id="6143186082490678276">دریافت راهنمایی</translation>
@@ -5393,6 +5394,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> درحال استفاده از دوربین است</translation>
 <translation id="701080569351381435">مشاهده منبع</translation>
 <translation id="7014174261166285193">نصب انجام نشد.</translation>
+<translation id="7014480873681694324">برداشتن برجسته‌سازی</translation>
 <translation id="7017004637493394352">‏دوباره بگویید «Ok Google»</translation>
 <translation id="7017219178341817193">افزودن صفحه جدید</translation>
 <translation id="7017354871202642555">بعد از تنظیم پنجره، تنظیم حالت امکان‌پذیر نیست.</translation>
@@ -5486,7 +5488,6 @@
 <translation id="711840821796638741">نمایش نشانک‌های مدیریت شده</translation>
 <translation id="711902386174337313">خواندن فهرست دستگاه‌هایتان که وارد سیستم هستند</translation>
 <translation id="7120865473764644444">اتصال به سرور همگام‌سازی امکان‌پذیر نیست. درحال امتحان مجدد…</translation>
-<translation id="7121362699166175603">‏سابقه و تکمیل‌های خودکار را در نوار نشانی پاک می‌کند. ممکن است حساب Google شما اشکال دیگری از سابقه مرور در <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> داشته باشد.</translation>
 <translation id="7121438501124788993">حالت تولیدکننده</translation>
 <translation id="7121728544325372695">خط تیره‌های هوشمند</translation>
 <translation id="7123030151043029868">اجازه دارد چند فایل را به‌طور خودکار بارگیری کند</translation>
@@ -5659,7 +5660,6 @@
 <translation id="7334274148831027933">فعال کردن ذره‌بین متصل</translation>
 <translation id="7335974957018254119">استفاده از غلط‌گیر املا برای</translation>
 <translation id="7336799713063880535">اعلان‌ها مسدود شدند.</translation>
-<translation id="7337248890521463931">نمایش خطوط بیشتر</translation>
 <translation id="7338630283264858612">شماره سریال دستگاه نامعتبر است.</translation>
 <translation id="7339763383339757376">‏PKCS #7، گواهی تکی</translation>
 <translation id="7339785458027436441">بررسی املا هنگام تایپ</translation>
@@ -7363,7 +7363,6 @@
 <translation id="9209563766569767417">‏درحال بررسی تنظیم محتوی Linux</translation>
 <translation id="9209689095351280025">سایت‌ها نمی‌توانند از کوکی‌هایی که شما را در وب ردیابی می‌کند استفاده کنند</translation>
 <translation id="9211177926627870898">به‌روزرسانی لازم است</translation>
-<translation id="9211490828691860325">همه میزکارها</translation>
 <translation id="9214510034298163263">سایت‌ها می‌توانند برای ویرایش فایل‌ها و پوشه‌های درون دستگاه درخواست دهند (توصیه می‌شود)</translation>
 <translation id="9214520840402538427">متأسفیم! مهلت مقداردهی اولیه از ویژگی‌های زمان نصب به پایان رسیده است. لطفاً با نماینده پشتیبانی خود تماس بگیرید.</translation>
 <translation id="9214695392875603905">کیک فنجانی</translation>

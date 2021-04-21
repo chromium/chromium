@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Jeśli zezwolisz na dostęp do swojej lokalizacji, Chrome będzie wysyłać ją do witryn, którym przyznasz dostęp. O dostęp do Twojej lokalizacji mogą prosić witryny pokazujące treści lokalne, np. wiadomości z regionu czy informacje o sklepach w pobliżu.</translation>
 <translation id="6036420186814142909">W Google Chrome są funkcje, które pomogą Ci zarządzać szybkością wczytywania stron internetowych oraz danymi przesyłanymi przez sieć.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Zezwalaj na logowanie się w Chrome</translation>
 <translation id="6181930887571472871">Przejdź na Chrome</translation>
 <translation id="6238746320622508509">Pozwól Chrome blokować karty incognito.</translation>
 <translation id="6573431926118603307">Tutaj wyświetlą się karty otwarte w Chrome na innych urządzeniach.</translation>
@@ -96,5 +97,6 @@
   3. Wybierz Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Dbaj o swoje bezpieczeństwo, używając Google Chrome</translation>
+<translation id="8772179140489533211">Pokazuj prośby o zalogowanie się w Chrome.</translation>
 <translation id="9112744793181547300">Ustawić Chrome jako domyślną przeglądarkę?</translation>
 </translationbundle>

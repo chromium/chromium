@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;Інструменты</translation>
 <translation id="1122242684574577509">Памылка аўтэнтыфікацыі. Націсніце тут, каб перайсці на старонку ўваходу для сеткі Wi-Fi, якой вы карыстаецеся (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">Назва закладкі</translation>
-<translation id="1123753900084781868">Імгненныя субцітры зараз недаступныя</translation>
 <translation id="1124772482545689468">Карыстальнік</translation>
 <translation id="1125550662859510761">Здаецца, гэта <ph name="WIDTH" /> × <ph name="HEIGHT" /> (уласная)</translation>
 <translation id="1126809382673880764">Не абараняе ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Вы застаняцеся пад абаронай Бяспечнага прагляду пры карыстанні іншымі сэрвісамі Google, у якіх ён даступны, такімі як Gmail і Пошук.</translation>
@@ -757,6 +756,7 @@
 <translation id="1794791083288629568">Адправіць водгук, каб дапамагчы нам вырашыць гэту праблему.</translation>
 <translation id="1795214765651529549">Выкарыстоўваць класічную тэму</translation>
 <translation id="1799071797295057738">Пашырэнне "<ph name="EXTENSION_NAME" />" было аўтаматычна выключана.</translation>
+<translation id="1800973090344019061">Пашырэнне "<ph name="APP_NAME" />" запытвае дазвол на абагульванне змесціва экрана.</translation>
 <translation id="1802624026913571222">Пры закрыцці вечка пераводзіць прыладу ў рэжым сну</translation>
 <translation id="1802687198411089702">Старонка не адказвае. Можна пачакаць або закрыць яе.</translation>
 <translation id="1803531841600994172">На якую мову перакласці</translation>
@@ -951,7 +951,6 @@
 <translation id="2010501376126504057">Сумяшчальныя прылады</translation>
 <translation id="2016574333161572915">Абсталяванне для Google Meet гатовае да наладжвання</translation>
 <translation id="2017334798163366053">Выключыць збор даных аб прадукцыйнасці</translation>
-<translation id="2017836877785168846">Ачышчае гісторыю і гісторыю аўтазапаўнення ў адрасным радку.</translation>
 <translation id="2018352199541442911">На жаль, знешнія сховішчы пакуль што не падтрымліваюцца.</translation>
 <translation id="2019718679933488176">&amp;Адкрыць аўдыя ў новай укладцы</translation>
 <translation id="2020183425253392403">Паказаць налады сеткавых адрасоў</translation>
@@ -1357,6 +1356,7 @@
 <translation id="2464089476039395325">Проксі-сервер HTTP</translation>
 <translation id="2465237718053447668">Выкарыстанне дамена "<ph name="DOMAIN" />" патрабуе падключэння да сеткі Wi-Fi і спампоўвання абнаўлення. Вы можаце таксама спампаваць яго праз падключэнне з улікам трафіка (можа спаганяцца плата).</translation>
 <translation id="2467267713099745100">Тып сеткі – <ph name="NETWORK_TYPE" />, выключана</translation>
+<translation id="2467755475704469005">Прылады не выяўлены. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Паскарэнне прагорткі сэнсарнай панэллю</translation>
 <translation id="2468205691404969808">Выкарыстоўвае файлы cookie для захоўвання параметраў, нават калі вы не наведваеце гэтыя старонкі</translation>
 <translation id="2468402215065996499">Тамагочы</translation>
@@ -2384,6 +2384,7 @@
 <translation id="3608576286259426129">Папярэдні прагляд відарыса карыстальніка</translation>
 <translation id="3610369246614755442">Вентылятару док-станцыі патрабуецца абслугоўванне</translation>
 <translation id="361106536627977100">Даныя Flash</translation>
+<translation id="3611655097742243705">Больш праграм можна знайсці ў Краме Play</translation>
 <translation id="3612673635130633812">Спампавана пашырэннем &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Паказаць папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="3613422051106148727">&amp;Адкрыць у новай укладцы</translation>
@@ -2648,7 +2649,6 @@
 <translation id="3874164307099183178">Уключыць Памочніка Google</translation>
 <translation id="3877075909000773256">Налады "Абагульвання паблізу" для прылады карыстальніка <ph name="USER_NAME" />; абагульванне ажыццяўляецца ад імені ўліковага запісу <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Менеджар спамповак</translation>
-<translation id="3881478300875776315">Паказваць менш радкоў</translation>
 <translation id="3882165008614329320">Існуючае відэа з камеры або файла</translation>
 <translation id="3884152383786131369">Вэб-змесціва, даступнае на некалькіх мовах, будзе адлюстроўвацца на першай мове з дадзенага спіса. Гэтыя параметры сінхранізуюцца з наладамі вашага браўзера. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Абнаўленнямі кіруе адміністратар</translation>
@@ -2720,6 +2720,7 @@
 <translation id="3943494825379372497">Аднавіць праграмы і старонкі?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Уставіць</translation>
+<translation id="3945513714196326460">Паспрабуйце ўвесці карацейшую назву</translation>
 <translation id="3948116654032448504">&amp;Пошук відарыса праз <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Сайт <ph name="ORIGIN" /> можа змяняць файлы ў наступных папках</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2766,7 +2767,6 @@
 <translation id="3984159763196946143">Не ўдалося запусціць дэманстрацыйны рэжым</translation>
 <translation id="3984431586879874039">Дазволіць гэтаму сайту бачыць ключ бяспекі?</translation>
 <translation id="398477389655464998">Скапіраваць спасылку на вылучаны тэкст</translation>
-<translation id="3986705137476756801">Выключыць Імгненныя субцітры</translation>
 <translation id="3987544746655539083">Працягваць блакіраваць гэтаму сайту доступ да даных пра ваша месцазнаходжанне</translation>
 <translation id="3987938432087324095">Вас не чуваць.</translation>
 <translation id="3988996860813292272">Выбар часавага пояса</translation>
@@ -3106,6 +3106,7 @@
 <translation id="4415245286584082850">Прылады не знойдзены. Адкрыць артыкул даведачнага цэнтра ў новай укладцы.</translation>
 <translation id="4415276339145661267">Кіраванне Уліковым запісам Google</translation>
 <translation id="4415748029120993980">SECG эліптычны secp384r1 (іншая назва – NIST P-384)</translation>
+<translation id="4416450511678320850">Для гэтага змесціва праграм няма</translation>
 <translation id="4416582610654027550">Увядзіце правільны URL-адрас</translation>
 <translation id="4419409365248380979">Заўсёды дазваляць сайту <ph name="HOST" /> захоўваць файлы cookie</translation>
 <translation id="4421932782753506458">Пушок</translation>
@@ -3373,7 +3374,6 @@
 <translation id="4699172675775169585">Відарысы і файлы ў кэшы</translation>
 <translation id="4699357559218762027">(аўтаматычны запуск)</translation>
 <translation id="4701025263201366865">Уваход для бацькоў</translation>
-<translation id="4702656508969495934">Паказваюцца імгненныя субцітры. Вы можаце перайсці да іх, выкарыстаўшы пераключальнік вокнаў</translation>
 <translation id="4708794300267213770">Паказваць экран блакіроўкі пры абуджэнні ад сну</translation>
 <translation id="4708849949179781599">Выйсці з браўзера <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Аднавіць налады</translation>
@@ -3399,6 +3399,7 @@
 <translation id="473936925429402449">Выбрана, дадатковае змесціва: <ph name="CURRENT_ELEMENT" /> з <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Білеты</translation>
 <translation id="4742334355511750246">Не дазволена паказваць відарысы</translation>
+<translation id="4742970037960872810">Выдаліць вылучэнне</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Даведайцеся, як абнаўляць праграмы<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Уключыць гук на сайце}one{Уключыць гук на сайтах}few{Уключыць гук на сайтах}many{Уключыць гук на сайтах}other{Уключыць гук на сайтах}}</translation>
 <translation id="4746351372139058112">Паведамленні</translation>
@@ -3875,7 +3876,6 @@
 <translation id="5300287940468717207">Скінуць дазволы сайта?</translation>
 <translation id="5300589172476337783">Паказаць</translation>
 <translation id="5300719150368506519">Адпраўка URL-адрасоў наведаных вамі старонак у Google</translation>
-<translation id="5300814202279832142">Перамясціць акно на працоўны стол</translation>
 <translation id="5301751748813680278">Выконваецца ўваход у гасцявым рэжыме.</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">Мова</translation>
@@ -4608,6 +4608,7 @@
 <translation id="6136114942382973861">Закрыць панэль спамповак</translation>
 <translation id="6136287496450963112">Ключ бяспекі не абаронены PIN-кодам. Каб кіраваць адбіткамі пальцаў, спачатку стварыце PIN-код.</translation>
 <translation id="6138680304137685902">Подпіс X9.62 ECDSA з SHA-384</translation>
+<translation id="6138774640412545950">Пашырэнне "<ph name="APP_NAME" />" запытвае дазвол на абагульванне змесціва экрана з <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, няма сеткі</translation>
 <translation id="6141988275892716286">Пацвярджэнне спампоўвання</translation>
 <translation id="6143186082490678276">Даведка</translation>
@@ -5397,6 +5398,7 @@
 <translation id="7009709314043432820">Праграма "<ph name="APP_NAME" />" выкарыстоўвае камеру</translation>
 <translation id="701080569351381435">Прагляд крыніцы</translation>
 <translation id="7014174261166285193">Памылка ўсталявання.</translation>
+<translation id="7014480873681694324">Выдаліць вылучэнне</translation>
 <translation id="7017004637493394352">Скажыце "Ok Google" яшчэ раз</translation>
 <translation id="7017219178341817193">Дадайце новую старонку</translation>
 <translation id="7017354871202642555">Немагчыма задаць рэжым, калі акно ўжо створана.</translation>
@@ -5490,7 +5492,6 @@
 <translation id="711840821796638741">Паказваць кіруемыя закладкі</translation>
 <translation id="711902386174337313">Доступ да спіса прылад, на якіх выкананы ўваход</translation>
 <translation id="7120865473764644444">Не ўдалося падключыцца да сервера сінхранізацыі. Паўторная спроба...</translation>
-<translation id="7121362699166175603">Ачышчае гісторыю і гісторыю аўтазапаўнення ў адрасным радку. На сайце <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> размешчаны іншыя формы запісу гісторыі прагляду сайтаў для вашага Уліковага запісу Google.</translation>
 <translation id="7121438501124788993">Рэжым распрацоўшчыка</translation>
 <translation id="7121728544325372695">Пераўтварэнне працяжнікаў</translation>
 <translation id="7123030151043029868">Дазволена аўтаматычна спампоўваць некалькі файлаў</translation>
@@ -5663,7 +5664,6 @@
 <translation id="7334274148831027933">Уключыць прыстыкаваную лупу</translation>
 <translation id="7335974957018254119">Для якіх моў выкарыстоўваць праверку правапісу</translation>
 <translation id="7336799713063880535">Апав-нні блакіруюцца</translation>
-<translation id="7337248890521463931">Паказваць больш радкоў</translation>
 <translation id="7338630283264858612">Серыйны нумар прылады – памылковы.</translation>
 <translation id="7339763383339757376">PKCS #7, адзін сертыфікат</translation>
 <translation id="7339785458027436441">Правяраць правапіс падчас набору тэксту</translation>
@@ -7368,7 +7368,6 @@
 <translation id="9209563766569767417">Ідзе праверка налад кантэйнера Linux</translation>
 <translation id="9209689095351280025">Сайты не могуць выкарыстоўваць файлы cookie для адсочвання вас у інтэрнэце</translation>
 <translation id="9211177926627870898">Патрабуецца абнаўленне</translation>
-<translation id="9211490828691860325">Усе працоўныя сталы</translation>
 <translation id="9214510034298163263">Сайты могуць запытваць дазвол на змяненне файлаў або папак на прыладзе (рэкамендуецца)</translation>
 <translation id="9214520840402538427">Памылка!  Была пратэрмінавана ініцыялізацыя атрыбутаў installation-time ("усталяванне-час").  Звярніцеся ў службу падтрымкі.</translation>
 <translation id="9214695392875603905">Кекс</translation>

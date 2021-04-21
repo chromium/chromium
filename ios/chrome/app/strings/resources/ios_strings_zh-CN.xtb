@@ -446,6 +446,7 @@
 <translation id="5782227691023083829">正在翻译...</translation>
 <translation id="5803566855766646066">确定要舍弃这张新信用卡吗？</translation>
 <translation id="5816228676161003208">这样，您就可以使用语音更快速地进行搜索。</translation>
+<translation id="581659025233126501">开启同步功能</translation>
 <translation id="5819208479324046259">由 <ph name="MANAGER" /> 管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">搜索引擎</translation>
 <translation id="5854790677617711513">30 天之前的</translation>
@@ -493,6 +494,7 @@
 <translation id="6196207969502475924">语音搜索</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{关闭 {COUNT} 个标签页}other{关闭 {COUNT} 个标签页}}</translation>
 <translation id="6219688215832490856">一律不翻译</translation>
+<translation id="6223816392543092032">获取您在自己的所有设备上保存的书签、历史记录、密码和其他设置。</translation>
 <translation id="6254066287920239840">在应用（而非浏览器）中打开链接。</translation>
 <translation id="6255097610484507482">修改信用卡</translation>
 <translation id="6284652193729350524">主动询问是否翻译<ph name="LANGUAGE" />内容</translation>
@@ -525,6 +527,7 @@
 <translation id="6445981559479772097">短信已发送。</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6453018583485750254">从未检查过。</translation>
+<translation id="6459307836338400162">如需了解更多与隐私、安全和数据收集相关的设置，请前往<ph name="BEGIN_LINK" />同步<ph name="END_LINK" />和 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />这两个部分。</translation>
 <translation id="6464071786529933911">在新的无痕式标签页中打开</translation>
 <translation id="6464397691496239022">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品。
 
@@ -708,6 +711,7 @@
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8283172974887967105">设置…</translation>
 <translation id="8299417921174340354">您必须先在设备上设置密码，才能使用密码。</translation>
+<translation id="83100941411593607">登录功能已被停用</translation>
 <translation id="8319076807703933069">新搜索</translation>
 <translation id="8323906514956095947">轻触并按住可查看更多的标签页选项</translation>
 <translation id="8328777765163860529">全部关闭</translation>

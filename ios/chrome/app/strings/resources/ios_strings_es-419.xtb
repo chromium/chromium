@@ -446,6 +446,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5782227691023083829">Traduciendo...</translation>
 <translation id="5803566855766646066">¿Confirmas que quieres descartar esta tarjeta nueva?</translation>
 <translation id="5816228676161003208">Te permite realizar búsquedas más rápidas con tu voz.</translation>
+<translation id="581659025233126501">Activar la sincronización</translation>
 <translation id="5819208479324046259">Administrado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Motor de búsqueda</translation>
 <translation id="5854790677617711513">Hace más de 30 días</translation>
@@ -493,6 +494,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6196207969502475924">Búsqueda por voz</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Cerrar {COUNT} pestaña}other{Cerrar {COUNT} pestañas}}</translation>
 <translation id="6219688215832490856">Nunca traducir</translation>
+<translation id="6223816392543092032">Accede a tus favoritos, historial, contraseñas y otras opciones de configuración en todos los dispositivos.</translation>
 <translation id="6254066287920239840">Abre vínculos en la app en lugar de hacerlo en el navegador.</translation>
 <translation id="6255097610484507482">Modificar información de la tarjeta de crédito</translation>
 <translation id="6284652193729350524">Ofrecer traducción al <ph name="LANGUAGE" /></translation>
@@ -525,6 +527,7 @@ Tus datos se encriptaron con tu frase de contraseña para sincronización el <ph
 <translation id="6445981559479772097">Mensaje enviado</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">No se ejecutó nunca la verificación.</translation>
+<translation id="6459307836338400162">Para ver más opciones de configuración relacionadas con la privacidad, seguridad y recopilación de datos, visita <ph name="BEGIN_LINK" />Sincronización<ph name="END_LINK" /> y <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Abrir en una pestaña de incógnito nueva</translation>
 <translation id="6464397691496239022">Los sitios pueden usar cookies para mejorar la experiencia de navegación, por ejemplo, para mantener el acceso a ellos o recordar artículos en el carrito de compras.
 
@@ -708,6 +711,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8281886186245836920">Omitir</translation>
 <translation id="8283172974887967105">Establecer…</translation>
 <translation id="8299417921174340354">Para usar contraseñas, primero debes establecer una en tu dispositivo.</translation>
+<translation id="83100941411593607">Se inhabilitó el acceso</translation>
 <translation id="8319076807703933069">Nueva búsqueda</translation>
 <translation id="8323906514956095947">Mantén presionado el botón para ver más opciones de pestañas</translation>
 <translation id="8328777765163860529">Cerrar todas</translation>

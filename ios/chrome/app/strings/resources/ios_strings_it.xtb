@@ -446,6 +446,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5782227691023083829">Traduzione in corso...</translation>
 <translation id="5803566855766646066">Vuoi eliminare questa nuova carta?</translation>
 <translation id="5816228676161003208">In questo modo puoi eseguire ricerche più veloci con la voce.</translation>
+<translation id="581659025233126501">Attiva la sincronizzazione</translation>
 <translation id="5819208479324046259">Gestito da <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Motore di ricerca</translation>
 <translation id="5854790677617711513">Oltre 30 giorni fa</translation>
@@ -493,6 +494,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6196207969502475924">Ricerca vocale</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Chiudi {COUNT} scheda}other{Chiudi {COUNT} schede}}</translation>
 <translation id="6219688215832490856">Non tradurre mai</translation>
+<translation id="6223816392543092032">Trova i tuoi preferiti, la cronologia, le password e altre impostazioni su tutti i tuoi dispositivi.</translation>
 <translation id="6254066287920239840">Apri i link all'interno dell'app invece che nel browser.</translation>
 <translation id="6255097610484507482">Modifica carta di credito</translation>
 <translation id="6284652193729350524">Proponi di tradurre dalla lingua <ph name="LANGUAGE" /></translation>
@@ -525,6 +527,7 @@ I tuoi dati sono stati criptati con la tua passphrase di sincronizzazione in dat
 <translation id="6445981559479772097">Messaggio inviato.</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6453018583485750254">Controllo mai eseguito.</translation>
+<translation id="6459307836338400162">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, apri le sezioni <ph name="BEGIN_LINK" />Sincronizzazione<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Apri in nuova scheda in incognito</translation>
 <translation id="6464397691496239022">I siti possono utilizzare i cookie per migliorare la tua esperienza di navigazione, ad esempio per mantenere l'accesso o memorizzare gli articoli aggiunti al carrello.
 
@@ -708,6 +711,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8281886186245836920">Salta</translation>
 <translation id="8283172974887967105">Imposta…</translation>
 <translation id="8299417921174340354">Per utilizzare le password, devi prima impostare un passcode sul dispositivo.</translation>
+<translation id="83100941411593607">Accesso disattivato</translation>
 <translation id="8319076807703933069">Nuova ricerca</translation>
 <translation id="8323906514956095947">Tocca e tieni premuto per vedere maggiori opzioni sulla scheda</translation>
 <translation id="8328777765163860529">Chiudi tutte</translation>

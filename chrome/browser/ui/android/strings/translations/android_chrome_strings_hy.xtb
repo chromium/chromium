@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">Հիմա</translation>
 <translation id="2172688499998841696">Պատկերների նկարագրություններն անջատված են</translation>
 <translation id="2175927920773552910">QR կոդ</translation>
-<translation id="2181298861158186289">Թաքցնել սեղմատախտակի բովանդակությունը</translation>
 <translation id="218608176142494674">Ընդհանուր օգտագործում</translation>
 <translation id="2195339740518523951">Ուժեղացրեք Chrome-ի անվտանգությունը</translation>
 <translation id="2200113223741723867">Կառավարել օգտագործման տվյալների տրամադրումը</translation>
@@ -248,6 +247,7 @@
 <translation id="2612676031748830579">Քարտի համարը</translation>
 <translation id="2625189173221582860">Գաղտնաբառը պատճենվեց</translation>
 <translation id="2631006050119455616">Խնայվեց</translation>
+<translation id="2645657967708199252">Ներբեռնումը <ph name="CONNECTION_TYPE" /> ցանցի միջոցով կարող է դանդաղ կատարվել</translation>
 <translation id="2647434099613338025">Ավելացնել լեզու</translation>
 <translation id="2650751991977523696">Նորի՞ց ներբեռնել ֆայլը</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# աուդիո ֆայլ}one{# աուդիո ֆայլ}other{# աուդիո ֆայլ}}</translation>
@@ -260,6 +260,7 @@
 <translation id="2718846868787000099">Ձեր նախընտրած լեզուներով բովանդակություն ցուցադրելու համար կայքերը, որոնք այցելում եք, կարող են տեսնել ձեր կարգավորումները</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Դասավորել ըստ կայքի</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Հպեք բառին՝ ակնթարթորեն որոնելու կամ առնչվող գործողությունները տեսնելու համար</translation>
 <translation id="2760989362628427051">Միացնել մուգ թեման, երբ սարքի մուգ թեման կամ մարտկոցի տնտեսման ռեժիմը միացված է</translation>
 <translation id="2762000892062317888">հենց նոր</translation>
@@ -436,6 +437,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="3943557322767080599">Ցուցադրել Chrome-ի մուտքի հաղորդագրություններ, երբ մտնում եք Google հաշիվ</translation>
 <translation id="395206256282351086">Որոնման և կայքերի առաջարկներն անջատված են</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{էջը կբեռնվի, երբ սարքը միացած լինի ցանցին}one{էջը կբեռնվի, երբ սարքը միացած լինի ցանցին}other{էջերը կբեռնվեն, երբ սարքը միացած լինի ցանցին}}</translation>
+<translation id="3962957115499249330">Դուք ծանուցում կտեսնեք, երբ այս ներբեռնումը սկսվի Wi-Fi ցանցի միջոցով։</translation>
 <translation id="3963007978381181125">Անցաբառով գաղտնագրումը չի կիրառվում վճարման եղանակների և Google Pay-ի հասցեների համար։ Միայն ձեր անցաբառն ունեցող օգտատերը կարող է կարդալ ձեր գաղտնագրված տվյալները: Անցաբառը չի ուղարկվում Google-ին և չի պահվում դրա կողմից: Անցաբառը մոռանալու դեպքում ձեզ անհրաժեշտ կլինի վերակայել համաժամացումը: <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome-ը չի կարող ստուգել ձեր գաղտնաբառերը</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> հավելվածը կբացվի Chrome-ում։ Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և Chrome OS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։ Գործում է նաև <ph name="BEGIN_LINK3" />Family Link-ի միջոցով կառավարվող Google հաշիվների գաղտնիության ծանուցագիրը<ph name="END_LINK3" />։</translation>
@@ -479,6 +481,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4256782883801055595">Բաց կոդով ծրագրերի արտոնագրեր</translation>
 <translation id="4263656433980196874">Օգնականի միջոցով ձայնային որոնման միջերեսը բացվում է ամբողջ բարձրությամբ</translation>
 <translation id="4269820728363426813">Պատճենել հղման հասցեն</translation>
+<translation id="4290281343757112331">Ներբեռնե՞լ ավելի ուշ</translation>
 <translation id="4298388696830689168">Կապված կայքեր</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Հիմնական</translation>
@@ -541,6 +544,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4698034686595694889">Դիտեք <ph name="APP_NAME" /> հավելվածի անցանց ռեժիմում</translation>
 <translation id="4699172675775169585">Քեշավորված պատկերներ և ֆայլեր</translation>
 <translation id="4714588616299687897">Խնայեք թրաֆիկի մինչև 60%-ը</translation>
+<translation id="4716066120200945007">ԲԱԺԱՆՈՐԴԱԳՐՈՒԹՅՈՒՆՆԵՐ</translation>
 <translation id="4719927025381752090">Առաջարկել թարգմանել</translation>
 <translation id="4720023427747327413">Բացել <ph name="PRODUCT_NAME" />-ում</translation>
 <translation id="4720982865791209136">Օգնեք ավելի լավը դարձնել Chrome-ը: <ph name="BEGIN_LINK" />Մասնակցեք հարցմանը<ph name="END_LINK" /></translation>
@@ -621,6 +625,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5191251636205085390">Իմացեք ավելին նոր տեխնոլոգիաների մասին, որոնք փոխարինելու են երրորդ կողմի քուքիներին։</translation>
 <translation id="5193988420012215838">Պատճենվեց սեղմատախտակին</translation>
 <translation id="5199929503336119739">Աշխատանքային պրոֆիլ</translation>
+<translation id="5201464744567315552">Դուք ծանուցում կտեսնեք, երբ այս ներբեռնումը սկսվի (<ph name="TIME" />)։</translation>
 <translation id="5204967432542742771">Մուտքագրեք գաղտնաբառը</translation>
 <translation id="5210286577605176222">Անցնել նախորդ ներդիր</translation>
 <translation id="5210365745912300556">Փակել ներդիրը</translation>
@@ -631,6 +636,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5230560987958996918">Թույլ տվեք <ph name="SITE" /> կայքին որոնել մոտակա Bluetooth սարքեր: Գտնվել են հետևյալ սարքերը՝</translation>
 <translation id="5233638681132016545">Նոր ներդիր</translation>
 <translation id="5250483651202458397">Սքրինշոթ։ Հպեք՝ փակելու համար։</translation>
+<translation id="5262378156578470238">Դուք ծանուցում կտեսնեք, երբ այս ներբեռնումը սկսվի (<ph name="DATE" />)։</translation>
 <translation id="526421993248218238">Չհաջողվեց բեռնել էջը</translation>
 <translation id="5271967389191913893">Սարքը չի կարող բացել ներբեռնվող բովանդակությունը:</translation>
 <translation id="5292796745632149097">Ուղարկել</translation>
@@ -842,7 +848,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="6539092367496845964">Սխալ առաջացավ: Փորձեք ավելի ուշ:</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Ստուգվել է 1 ժամ առաջ}one{Ստուգվել է # ժամ առաջ}other{Ստուգվել է # ժամ առաջ}}</translation>
 <translation id="6545017243486555795">Մաքրել բոլոր տվյալները</translation>
-<translation id="6549142516027084053">Ցուցադրել սեղմատախտակի բովանդակությունը</translation>
 <translation id="6560414384669816528">Որոնել Sogou որոնման համակարգով</translation>
 <translation id="656065428026159829">Տեսնել ավելին</translation>
 <translation id="6565959834589222080">Wi-Fi ցանցը օգտագործվում է հասանելի լինելու դեպքում</translation>
@@ -912,6 +917,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="6981982820502123353">Մատչելիությունը</translation>
 <translation id="6989267951144302301">Չհաջողվեց ներբեռնել</translation>
 <translation id="6995899638241819463">Զգուշացնել, եթե տվյալների արտահոսքի արդյունքում իմ գաղտնաբառերը հայտնի դառնան կողմնակի անձանց</translation>
+<translation id="7001056293070445572">Ֆայլը մեծ է (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">Համաժամացման սկզբնական կարգավորումը չի ավարտվել: Համաժամացումն անջատված է:</translation>
 <translation id="7022756207310403729">Բացել դիտարկիչով</translation>
 <translation id="702463548815491781">Խորհուրդ է տրվում, երբ TalkBack-ը կամ Switch Access-ը միացված են</translation>
@@ -936,7 +942,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="7187993566681480880">Ապահովում է ձեր անվտանգությունը Chrome-ում և Google հավելվածներում, երբ մտել եք ձեր հաշիվ։</translation>
 <translation id="718926126787620637">Էջանիշներով պանակների ցանկը բացված է ամբողջությամբ</translation>
-<translation id="7189372733857464326">Սպասում է Google Play ծառայությունների թարմացման ավարտին</translation>
 <translation id="7191430249889272776">Հետնաշերտում ներդիր է բացված:</translation>
 <translation id="7233236755231902816">Կայքերը ձեր լեզվով դիտելու համար տեղադրեք Chrome-ի վերջին տարբերակը</translation>
 <translation id="7248069434667874558">Համոզվեք, որ <ph name="TARGET_DEVICE_NAME" /> սարքի Chrome դիտարկիչում միացված է համաժամացումը:</translation>

@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Als deze optie is aangevinkt, bewaart Chrome een exemplaar van je pas op dit apparaat om formulieren sneller te kunnen invullen.</translation>
 <translation id="1110994991967754504">Rechten selecteren voor <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Volgorde wijzigen ongedaan maken</translation>
+<translation id="1123753900084781868">Live ondertiteling is momenteel niet beschikbaar</translation>
 <translation id="1125573121925420732">Wanneer de beveiliging van websites wordt geüpdatet, worden vaak waarschuwingen weergegeven. Dit wordt binnenkort verbeterd.</translation>
 <translation id="112840717907525620">Cachegeheugen van beleid is OK</translation>
 <translation id="1130564665089811311">Knop 'Pagina vertalen'. Druk op Enter om deze pagina te vertalen met Google Translate.</translation>
@@ -215,6 +216,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Deze server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het bijbehorende beveiligingscertificaat is zogenaamd van morgen. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.}other{Deze server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het bijbehorende beveiligingscertificaat is zogenaamd van # dagen in de toekomst. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.}}</translation>
 <translation id="1710259589646384581">Besturingssysteem</translation>
+<translation id="1711234383449478798">Genegeerd omdat <ph name="POLICY_NAME" /> niet is ingesteld op <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> vraagt toestemming om permanent gegevens op je lokale computer op te slaan</translation>
 <translation id="1713628304598226412">Lade 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -760,6 +762,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3841184659773414994">Bestandshandlers</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3858027520442213535">Datum en tijd updaten</translation>
+<translation id="3881478300875776315">Minder regels tonen</translation>
 <translation id="3884278016824448484">Conflicterende apparaat-ID's</translation>
 <translation id="3885155851504623709">Parochie</translation>
 <translation id="388632593194507180">Controle gedetecteerd</translation>
@@ -785,6 +788,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="397105322502079400">Berekenen...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> wordt geblokkeerd</translation>
 <translation id="3973357910713125165">Knop Chrome-veiligheidscheck uitvoeren, druk op Enter om de veiligheidscheck uit te voeren in de Chrome-instellingen</translation>
+<translation id="3986705137476756801">Live ondertiteling nu uitzetten</translation>
 <translation id="3987405730340719549">Chrome heeft vastgesteld dat deze site mogelijk nep of bedrieglijk is.
 
     Als je denkt dat deze waarschuwing onterecht is, ga je naar https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -914,6 +918,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4377125064752653719">Je probeert <ph name="DOMAIN" /> te bereiken, maar het certificaat dat de server heeft geretourneerd, is ingetrokken door de uitgever. Dat betekent dat de veiligheidsgaranties die de server heeft geretourneerd, absoluut niet kunnen worden vertrouwd. Het kan zijn dat je met een hacker aan het communiceren bent.</translation>
 <translation id="4378154925671717803">Telefoon</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4406883609789734330">Live ondertiteling</translation>
 <translation id="4406896451731180161">zoekresultaten</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> cookies</translation>
 <translation id="4414290883293381923">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chrome raadt je aan naar <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> en andere sites te gaan waarop je dit wachtwoord hebt gebruikt en je wachtwoord nu te wijzigen.</translation>
@@ -979,6 +984,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4691835149146451662">Architecture-A (envelop)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Team</translation>
+<translation id="4702656508969495934">Live ondertiteling zichtbaar. Gebruik de knop Vensters schakelen om hier de focus op te plaatsen.</translation>
 <translation id="4708268264240856090">Je verbinding is onderbroken</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows Netwerkcontrole uitvoeren<ph name="END_LINK" /></translation>
@@ -1646,6 +1652,7 @@ Aanvullende informatie:
 <translation id="733354035281974745">Lokaal account op apparaat overschrijven</translation>
 <translation id="7333654844024768166">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chromium raadt je aan naar <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> en andere sites te gaan waarop je dit wachtwoord hebt gebruikt en je wachtwoord nu te wijzigen.</translation>
 <translation id="7334320624316649418">&amp;Opnieuw volgorde wijzigen</translation>
+<translation id="7337248890521463931">Meer regels tonen</translation>
 <translation id="7337706099755338005">Niet beschikbaar op je platform.</translation>
 <translation id="733923710415886693">Het certificaat van de server is niet bekendgemaakt via Certificaattransparantie.</translation>
 <translation id="734600844861828519">11x15</translation>

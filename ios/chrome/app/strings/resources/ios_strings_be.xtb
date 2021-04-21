@@ -446,6 +446,7 @@
 <translation id="5782227691023083829">Ідзе пераклад...</translation>
 <translation id="5803566855766646066">Сапраўды адхіліць гэту новую картку?</translation>
 <translation id="5816228676161003208">Гэта дазваляе паскорыць пошук пры выкарыстанні голасу.</translation>
+<translation id="581659025233126501">Уключыць сінхранізацыю</translation>
 <translation id="5819208479324046259">Браўзерам кіруе <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Пошукавая сістэма</translation>
 <translation id="5854790677617711513">Даныя, старэйшыя за 30 дзён</translation>
@@ -493,6 +494,7 @@
 <translation id="6196207969502475924">Галасавы пошук</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Закрыць {COUNT} укладку}one{Закрыць {COUNT} укладку}few{Закрыць {COUNT} укладкі}many{Закрыць {COUNT} укладак}other{Закрыць {COUNT} укладкі}}</translation>
 <translation id="6219688215832490856">Ніколі не перакладаць з мовы</translation>
+<translation id="6223816392543092032">Закладкі, гісторыя, паролі і іншыя налады будуць даступнымі на ўсіх вашых прыладах.</translation>
 <translation id="6254066287920239840">Адкрываць спасылкі ў праграме замест браўзера.</translation>
 <translation id="6255097610484507482">Рэдагаванне крэдытнай карткі</translation>
 <translation id="6284652193729350524">Прапаноўваць перакласці з мовы: <ph name="LANGUAGE" /></translation>
@@ -525,6 +527,7 @@
 <translation id="6445981559479772097">Паведамленне адпраўлена.</translation>
 <translation id="6447842834002726250">Файлы cookie</translation>
 <translation id="6453018583485750254">Праверка ніколі не праводзілася.</translation>
+<translation id="6459307836338400162">Дадатковыя налады прыватнасці, бяспекі і збору даных глядзіце ў раздзелах <ph name="BEGIN_LINK" />Сінхранізацыя<ph name="END_LINK" /> і <ph name="BEGIN_LINK" />Сэрвісы Google<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Адкрыць у новай укладцы інкогніта</translation>
 <translation id="6464397691496239022">Сайты могуць выкарыстоўваць файлы cookie для паляпшэння сваёй функцыянальнасці: напрыклад, для захавання інфармацыі пра тое, што вы ўвайшлі ва ўліковы запіс, або каб запамінаць тавары ў кошыку.
 
@@ -708,6 +711,7 @@
 <translation id="8281886186245836920">Прапусціць</translation>
 <translation id="8283172974887967105">Так…</translation>
 <translation id="8299417921174340354">Каб выкарыстоўваць паролі, на прыладзе трэба спачатку наладзіць блакіроўку экрана.</translation>
+<translation id="83100941411593607">Уваход адключаны</translation>
 <translation id="8319076807703933069">Новы пошук</translation>
 <translation id="8323906514956095947">Каб адкрыць дадатковыя параметры ўкладкі, націсніце і ўтрымлівайце гэту кнопку</translation>
 <translation id="8328777765163860529">Закрыць усе</translation>

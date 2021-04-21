@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Сонгосон тохиолдолд Chrome нь илүү хурдан бөглөдөг болгох зорилгоор таны картын хуулбарыг энэ төхөөрөмж дээр хадгалах болно.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />-д зөвшөөрөл сонгох</translation>
 <translation id="1113869188872983271">&amp; Дахин эрэмбэлэх үйлдлийг буцаах</translation>
+<translation id="1123753900084781868">Шууд тайлбар яг одоо боломжгүй байна</translation>
 <translation id="1125573121925420732">Вебсайт аюулгүй байдлаа шинэчлэх үед анхааруулга гарч ирж болзошгүй. Үүнийг удахгүй сайжруулах болно.</translation>
 <translation id="112840717907525620">Тохиргооны кэш болж байна</translation>
 <translation id="1130564665089811311">Хуудас орчуулах товч, энэ хуудсыг Google Орчуулагчаар орчуулахын тулд Enter дарна уу</translation>
@@ -217,6 +218,7 @@
 <translation id="1703835215927279855">Захидал</translation>
 <translation id="1706954506755087368">{1,plural, =1{Энэ сервер нь <ph name="DOMAIN" /> гэдгээ баталгаажуулж чадсангүй; серверийн аюулгүй байдлын сертификат маргаашнаас эхэлнэ. Энэ нь буруу тохируулснаас, эсвэл халдагч этгээд таны холболтод саад учруулснаас болсон байж болзошгүй.}other{Энэ сервер нь <ph name="DOMAIN" /> гэдгээ баталгаажуулж чадсангүй; серверийн аюулгүй байдлын сертификат # хоногоос хүчинтэй болно. Энэ нь буруу тохируулснаас, эсвэл халдагч этгээд таны холболтод саад учруулснаас болсон байж болзошгүй.}}</translation>
 <translation id="1710259589646384581">Үйлдлийн систем</translation>
+<translation id="1711234383449478798"><ph name="POLICY_NAME" />-г <ph name="VALUE" /> гэж тохируулаагүй тул үл хэрэгссэн.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> таны дотоод компьютерт өгөгдлийг бүрмөсөн хадгалах хүсэлтэй байна</translation>
 <translation id="1713628304598226412">Гарах цаасны тавиур 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -773,6 +775,7 @@
 <translation id="3841184659773414994">Файл хариуцагчид</translation>
 <translation id="385051799172605136">Буцах</translation>
 <translation id="3858027520442213535">Огноо болон цагийг шинэчлэх</translation>
+<translation id="3881478300875776315">Арай цөөн мөр харуулах</translation>
 <translation id="3884278016824448484">Зөрчилдөөнтэй төхөөрөмж танигч</translation>
 <translation id="3885155851504623709">Тойрог</translation>
 <translation id="388632593194507180">Хяналтыг илрүүллээ</translation>
@@ -798,6 +801,7 @@
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />-г блоклосон байна</translation>
 <translation id="3973357910713125165">Chrome-н Аюулгүй байдлын шалгалтыг ажиллуулах товчлуур. Chrome-н тохиргоо хэсэгт Аюулгүй байдлын шалгалтыг ажиллуулахын тулд Enter дээр дарна уу</translation>
+<translation id="3986705137476756801">Одоохондоо Шууд тайлбарыг унтраах</translation>
 <translation id="3987405730340719549">Энэ сайт нь хуурамч эсвэл залилангийн шинжтэй байж болно гэж Chrome тодорхойлсон.
 
     Хэрэв та үүнийг харуулсан нь алдаа гэж үзэж байвал https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals-р зочлоорой.</translation>
@@ -927,6 +931,7 @@
 <translation id="4377125064752653719">Та <ph name="DOMAIN" />-тай холбогдох оролдлого хийсэн хэдий ч Серверээс өгсөн гэрчилгээг гаргагч этгээдээс цуцалсан байна. Энэ нь серверийн аюулгүй байдлын найдвартай эсэхэд огт итгэх хэрэггүй гэсэн үг юм. Та халдагчтай харилцаж байж болно.</translation>
 <translation id="4378154925671717803">Утас</translation>
 <translation id="4390472908992056574">Хүрээ</translation>
+<translation id="4406883609789734330">Шууд тайлбар</translation>
 <translation id="4406896451731180161">Хайлтын үр дүн</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> күүки</translation>
 <translation id="4414290883293381923">Та дөнгөж сая сэжигтэй сайтад нууц үгээ орууллаа. Таны энэ нууц үгийг ашигладаг <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> болон бусад сайт руу очиж, түүнийг одоо өөрчлөхийг Chrome зөвлөж байна.</translation>
@@ -992,6 +997,7 @@
 <translation id="4691835149146451662">Архитектур-A (Дугтуй)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Хажуугийн</translation>
+<translation id="4702656508969495934">Шууд тайлбар харагдаж байна. Сонгохын тулд цонх шилжүүлэгчийг ашиглана уу</translation>
 <translation id="4708268264240856090">Таны холболт тасарлаа</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows сүлжээний оношилгоог ажиллуулж байна<ph name="END_LINK" /></translation>
@@ -1661,6 +1667,7 @@
 <translation id="733354035281974745">Төхөөрөмжийн дотоод бүртгэлийг дарж бичих</translation>
 <translation id="7333654844024768166">Та дөнгөж сая сэжигтэй сайтад нууц үгээ орууллаа. Таны энэ нууц үгийг ашигладаг <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> болон бусад сайт руу очиж, түүнийг одоо өөрчлөхийг Chromium зөвлөж байна.</translation>
 <translation id="7334320624316649418">&amp; Дахин эрэмбэлэх үйлдлийг дахин хийх</translation>
+<translation id="7337248890521463931">Илүү олон мөр харуулах</translation>
 <translation id="7337706099755338005">Таны платформд боломжгүй.</translation>
 <translation id="733923710415886693">Серверийн сертификатыг Сертификатын ил тод байдлаар ил тод болгоогүй.</translation>
 <translation id="734600844861828519">11x15</translation>

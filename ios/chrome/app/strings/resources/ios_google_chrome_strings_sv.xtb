@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">När du ger Chrome åtkomst till din plats skickas den från Chrome till alla webbplatser som du ger behörighet. Webbplatser kan fråga efter din plats när det finns lokal information att visa, till exempel butiker i närheten eller nyheter.</translation>
 <translation id="6036420186814142909">I Google Chrome finns det funktioner som du kan använda för att hantera dina internetuppgifter och inläsningshastigheten för webbsidor.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Tillåt inloggning i Chrome</translation>
 <translation id="6181930887571472871">Byt till Chrome</translation>
 <translation id="6238746320622508509">Låt Chrome låsa inkognitoflikarna.</translation>
 <translation id="6573431926118603307">Här visas flikar som du har öppnat i Chrome på andra enheter.</translation>
@@ -96,5 +97,6 @@
   3. Välj Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Surfa säkert med Google Chrome</translation>
+<translation id="8772179140489533211">Visar meddelanden om att logga in i Chrome.</translation>
 <translation id="9112744793181547300">Vill du ställa in Chrome som standardwebbläsare?</translation>
 </translationbundle>

@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">หากเลือก Chrome จะจัดเก็บสำเนาของบัตรบนอุปกรณ์นี้เพื่อการกรอกข้อมูลแบบฟอร์มอย่างรวดเร็ว</translation>
 <translation id="1110994991967754504">เลือกสิทธิ์สำหรับ<ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;เลิกทำการจัดลำดับใหม่</translation>
+<translation id="1123753900084781868">ใช้คำบรรยายสดไม่ได้ในขณะนี้</translation>
 <translation id="1125573121925420732">คุณอาจเห็นคำเตือนอยู่บ่อยๆ ระหว่างที่เว็บไซต์อัปเดตความปลอดภัย เราจะปรับปรุงเร็วๆ นี้</translation>
 <translation id="112840717907525620">แคชนโยบายใช้ได้</translation>
 <translation id="1130564665089811311">ปุ่มแปลหน้าเว็บ กด Enter เพื่อแปลหน้านี้ด้วย Google แปลภาษา</translation>
@@ -217,6 +218,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{เซิร์ฟเวอร์นี้พิสูจน์ไม่ได้ว่าเป็น <ph name="DOMAIN" /> เพราะใบรับรองความปลอดภัยควรจะเริ่มใช้งานได้ตั้งแต่วันพรุ่งนี้ โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ}other{เซิร์ฟเวอร์นี้พิสูจน์ไม่ได้ว่าเป็น <ph name="DOMAIN" /> เพราะใบรับรองความปลอดภัยควรจะเริ่มใช้งานได้ในอีก # วันข้างหน้า โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ}}</translation>
 <translation id="1710259589646384581">ระบบปฏิบัติการ</translation>
+<translation id="1711234383449478798">ละเว้นเนื่องจาก <ph name="POLICY_NAME" /> ไม่ได้ตั้งค่าเป็น "<ph name="VALUE" />"</translation>
 <translation id="1712552549805331520"><ph name="URL" /> ต้องการจัดเก็บข้อมูลถาวรในเครื่องคอมพิวเตอร์ของคุณ</translation>
 <translation id="1713628304598226412">ถาด 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -765,6 +767,7 @@
 <translation id="3841184659773414994">เครื่องจัดการไฟล์</translation>
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3858027520442213535">อัปเดตวันที่และเวลา</translation>
+<translation id="3881478300875776315">แสดงบรรทัดน้อยลง</translation>
 <translation id="3884278016824448484">ตัวชี้อุปกรณ์ขัดแย้งกัน</translation>
 <translation id="3885155851504623709">Parish</translation>
 <translation id="388632593194507180">ตรวจพบการตรวจสอบ</translation>
@@ -790,6 +793,7 @@
 <translation id="397105322502079400">กำลังคำนวณ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ถูกบล็อก</translation>
 <translation id="3973357910713125165">ปุ่ม "เรียกใช้การตรวจสอบความปลอดภัยของ Chrome" กด Enter เพื่อเรียกใช้การตรวจสอบความปลอดภัยในการตั้งค่า Chrome</translation>
+<translation id="3986705137476756801">ปิดคำบรรยายสดไปก่อน</translation>
 <translation id="3987405730340719549">Chrome ระบุว่าเว็บไซต์นี้อาจเป็นเว็บไซต์ปลอมหรือฉ้อโกง
 
     หากคุณเชื่อว่าคำเตือนนี้เป็นข้อผิดพลาด โปรดไปที่ https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals</translation>
@@ -914,6 +918,7 @@
 <translation id="4377125064752653719">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่ใบรับรองที่เซิร์ฟเวอร์แจ้งมาถูกเพิกถอนโดยผู้ออกใบรับรอง ซึ่งหมายความว่าข้อมูลรับรองด้านความปลอดภัยที่เซิร์ฟเวอร์แจ้งมานั้นไม่สามารถเชื่อถือได้ คุณอาจกำลังติดต่อกับคนที่คิดจะโจมตีคุณ</translation>
 <translation id="4378154925671717803">โทรศัพท์</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4406883609789734330">คำบรรยายสด</translation>
 <translation id="4406896451731180161">ผลการค้นหา</translation>
 <translation id="4408413947728134509">คุกกี้ <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chrome ขอแนะนำให้ไปที่ <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> และเว็บไซต์อื่นๆ ที่คุณใช้รหัสผ่านนี้ และเปลี่ยนรหัสผ่านทันที</translation>
@@ -979,6 +984,7 @@
 <translation id="4691835149146451662">Architecture-A (ซองจดหมาย)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ด้านข้าง</translation>
+<translation id="4702656508969495934">มองเห็นคำบรรยายสดอยู่ ใช้ปุ่มสลับหน้าต่างเพื่อโฟกัส</translation>
 <translation id="4708268264240856090">การเชื่อมต่อของคุณขัดข้อง</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />เรียกใช้การวินิจฉัยเครือข่ายของ Windows<ph name="END_LINK" /></translation>
@@ -1649,6 +1655,7 @@
 <translation id="733354035281974745">ลบล้างบัญชีภายในอุปกรณ์</translation>
 <translation id="7333654844024768166">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chromium ขอแนะนำให้ไปที่ <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> และเว็บไซต์อื่นๆ ที่คุณใช้รหัสผ่านนี้ และเปลี่ยนรหัสผ่านทันที</translation>
 <translation id="7334320624316649418">&amp;ทำซ้ำการจัดลำดับใหม่</translation>
+<translation id="7337248890521463931">แสดงบรรทัดเพิ่มเติม</translation>
 <translation id="7337706099755338005">ยังไม่พร้อมให้ใช้งานในแพลตฟอร์มของคุณ</translation>
 <translation id="733923710415886693">ไม่มีการเปิดเผยใบรับรองของเซิร์ฟเวอร์ผ่านความโปร่งใสของใบรับรอง</translation>
 <translation id="734600844861828519">11x15</translation>

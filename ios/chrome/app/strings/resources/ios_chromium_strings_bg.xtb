@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">Позволете на Chromium да заключва разделите в режим „инкогнито“.</translation>
 <translation id="1472013873724362412">Профилът ви не е съвместим с Chromium. Моля, свържете се с администратора на домейна си или влезте с обикновен профил в Google.</translation>
 <translation id="1507010443238049608">Помощ за подобряването на функциите и ефективността на Chromium</translation>
+<translation id="1531155317299575425">Показва подкани за влизане в Chromium.</translation>
 <translation id="1617663976202781617">Данни от синхронизирането в Chromium</translation>
 <translation id="1736662517232558588">Данните в Chromium са изчистени</translation>
 <translation id="1838412507805038478">Chromium потвърди, че сертификатът на този уебсайт е издаден от <ph name="ISSUER" />.</translation>
@@ -49,6 +50,7 @@
 <translation id="5396916991083608703">Искате ли да зададете Chromium като браузъра по подразбиране?</translation>
 <translation id="5521125884468363740">Влезте в профила си и включете синхронизирането, за да виждате разделите си навсякъде, където използвате Chromium</translation>
 <translation id="5573014823074921752">Съвет за Chromium. За да видите още опции за разделите, докоснете и задръжте бутона „Показване на разделите“ в лентата с инструменти в долната или горната част на екрана.</translation>
+<translation id="5651741435382092412">Влезте в този сайт, профила си в Google и Chromium. Може да включите синхронизирането по-късно.</translation>
 <translation id="5700709190537129682">Chromium не може да провери паролите ви</translation>
 <translation id="5742135483959137648">Използване на Chromium за отваряне на връзки</translation>
 <translation id="5777187867430702742">Страница на Chromium</translation>
@@ -60,6 +62,7 @@
 2. Докоснете „Стандартно прилож. за браузър“.
 3. Изберете Chromium.</translation>
 <translation id="6268381023930128611">Искате ли да излезете от Chromium?</translation>
+<translation id="632825460376924298">Разрешаване на влизането в Chromium</translation>
 <translation id="6337530241089703714">Изберете дали данните ви в Chromium да бъдат изчистени от това устройство, или запазени</translation>
 <translation id="6424492062988593837">Chromium току-що се подобри! Налице е нова версия.</translation>
 <translation id="6820823224820483452">Chromium не успя да провери всички пароли. Опитайте отново утре.</translation>

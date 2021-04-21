@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Když Chromu povolíte přístup k poloze, bude ji odesílat webům, u kterých to povolíte. Weby o vaši polohu mohou žádat, pokud pro vás mají místní informace, například seznamy obchodů v okolí nebo místní zprávy.</translation>
 <translation id="6036420186814142909">Google Chrome obsahuje funkce, které pomáhají spravovat přenosy dat z internetu a umožňují zrychlit načítání webových stránek.
 <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Povolit přihlášení do Chromu</translation>
 <translation id="6181930887571472871">Přepnout na Chrome</translation>
 <translation id="6238746320622508509">Nechat Chrome zamykat anonymní karty.</translation>
 <translation id="6573431926118603307">Zde se objeví karty, které jste otevřeli v Chromu ve svých ostatních zařízeních.</translation>
@@ -96,5 +97,6 @@
   3. Vyberte Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">S prohlížečem Google Chrome budete v bezpečí</translation>
+<translation id="8772179140489533211">Zobrazuje výzvy k přihlášení do Chromu.</translation>
 <translation id="9112744793181547300">Nastavit Chrome jako výchozí prohlížeč?</translation>
 </translationbundle>

@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">यदि जाँच गरिएमा, छिटो फाराम भर्नको लागि Chrome ले यस यन्त्रमा तपाईँको कार्डको प्रतिलिपि भण्डारण गर्छ।</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> का अनुमतिहरू चयन गर्नुहोस्</translation>
 <translation id="1113869188872983271">क्रम परिवर्तन &amp;पूर्ववत गर्नुहोस्</translation>
+<translation id="1123753900084781868">यस बखत लाइभ क्याप्सन उपलब्ध छैन</translation>
 <translation id="1125573121925420732">वेबसाइटहरूले आफ्नो सुरक्षा व्यवस्था अद्यावधिक गर्दा चेतावनी दिनु सामान्य हुन सक्छ। यसलाई चाँडै सुधार गर्नु पर्छ।</translation>
 <translation id="112840717907525620">नीति क्यास ठिक छ</translation>
 <translation id="1130564665089811311">'पृष्ठ अनुवाद गर्नुहोस्' नामक बटन, Google अनुवादक प्रयोग गरी यो पृष्ठ अनुवाद गर्न Enter थिच्नुहोस्</translation>
@@ -769,6 +770,7 @@
 <translation id="3841184659773414994">फाइल ह्यान्ड्लरहरू</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="3858027520442213535">मिति र समय अपडेट गर्नुहोस्</translation>
+<translation id="3881478300875776315">कम हरफ देखाउनुहोस्</translation>
 <translation id="3884278016824448484">विभेदात्मक यन्त्र पहिचानकर्ता</translation>
 <translation id="3885155851504623709">प्यारिस</translation>
 <translation id="388632593194507180">निगरानी भइरहेको कुरा पत्ता लाग्यो</translation>
@@ -794,6 +796,7 @@
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> माथि रोक लगाइएको छ।</translation>
 <translation id="3973357910713125165">Chrome को सुरक्षा जाँच गर्नुहोस् नामक बटन, Chrome को सेटिङमा गई सुरक्षा जाँच गर्न Enter थिच्नुहोस्</translation>
+<translation id="3986705137476756801">अहिलेका लागि लाइभ क्याप्सन अफ गर्नुहोस्</translation>
 <translation id="3987405730340719549">Chrome ले यो साइट नक्कली वा छलपूर्ण हुन सक्छ भन्ने कुरा पत्ता लगाएको छ।
 
     तपाईंलाई यो त्रुटिवश देखाइएको हो जस्तो लाग्छ भने कृपया https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals मा जानुहोस्।</translation>
@@ -922,6 +925,7 @@
 <translation id="4377125064752653719">तपाइँले <ph name="DOMAIN" /> मा पुग्ने पर्यास गर्नुभयो, तर सर्भरले प्रस्तुत गरेको प्रमाणपत्र त्यसको जारीकर्ताद्वारा रिभोक गरिएको छ। यसको अर्थ सर्भरले प्रस्तुत गरेको सुरक्षा पत्यारपत्रहरू विश्वास गरिनुहुन्न। तपाइँ एक आक्रमणकर्ता सँग सञ्चार गरिरहनुभएको हुन सक्छ।</translation>
 <translation id="4378154925671717803">फोन</translation>
 <translation id="4390472908992056574">बिट</translation>
+<translation id="4406883609789734330">लाइभ क्याप्सन</translation>
 <translation id="4406896451731180161">खोजका परिणाम</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> कुकीहरू</translation>
 <translation id="4414290883293381923">तपाईंले भर्खरै कुनै भ्रामक साइटमा आफ्नो पासवर्ड प्रविष्टि गर्नुभएको छ। Chrome ले <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> <ph name="WEBSITE_3" />, र तपाईंले यो पासवर्ड प्रयोग गर्ने अन्य साइटहरूमा गई आफ्नो पासवर्ड अहिले नै बदल्न सिफारिस गर्छ।</translation>
@@ -987,6 +991,7 @@
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">सतह</translation>
+<translation id="4702656508969495934">लाइभ क्याप्सन देखिइरहेको छ, फोकस सारेर अर्को डायलगमा लैजान विन्डो स्विचर प्रयोग गर्नुहोस्</translation>
 <translation id="4708268264240856090">तपाईंको जडानमा अवरोध भयो</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows नेटवर्क सम्बन्धी निदान चलाएर हेर्नुहोस्<ph name="END_LINK" /></translation>
@@ -1305,7 +1310,7 @@
 <translation id="5866898949289125849">तपाईं विकासकर्ताका उपकरणसम्बन्धी पृष्ठ हेर्दै हुनुहुन्छ</translation>
 <translation id="5869405914158311789">यो साइटमा पहुँच गर्न सकिँदैन</translation>
 <translation id="5869522115854928033">बचत गरिएका पासवर्डहरू</translation>
-<translation id="5887400589839399685">कार्ड सुरक्षित गरियो</translation>
+<translation id="5887400589839399685">कार्ड सेभ गरियो</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
 <translation id="5895187275912066135">मा प्रकाशित</translation>
 <translation id="5901630391730855834">पहेँलो</translation>
@@ -1656,6 +1661,7 @@
 <translation id="733354035281974745">डिभाइसका स्थानीय खाताको ओभरराइड</translation>
 <translation id="7333654844024768166">तपाईंले भर्खरै कुनै भ्रामक साइटमा आफ्नो पासवर्ड प्रविष्टि गर्नुभएको छ। Chromium ले <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> र तपाईंले यो पासवर्ड प्रयोग गर्ने अन्य साइटहरूमा गई तपाईंको पासवर्ड अहिले नै बदल्न सिफारिस गर्छ।</translation>
 <translation id="7334320624316649418">क्रम परिवर्तन &amp;पुन: गर्नुहोस्</translation>
+<translation id="7337248890521463931">थप हरफ देखाउनुहोस्</translation>
 <translation id="7337706099755338005">तपाईंको प्लेटफर्ममा उपलब्ध छैन।</translation>
 <translation id="733923710415886693">प्रमाणपत्रको पारदर्शिता नीति मार्फत सर्भरको प्रमाणपत्रको खुलासा भएन।</translation>
 <translation id="734600844861828519">11x15</translation>

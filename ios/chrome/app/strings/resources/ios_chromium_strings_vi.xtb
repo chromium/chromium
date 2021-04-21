@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">Để Chromium khóa các thẻ Ẩn danh của bạn.</translation>
 <translation id="1472013873724362412">Tài khoản của bạn không hoạt động trên Chromium. Vui lòng liên hệ với quản trị viên miền của bạn hoặc sử dụng Tài khoản Google thông thường để đăng nhập.</translation>
 <translation id="1507010443238049608">Giúp cải thiện hiệu suất và các tính năng của Chromium</translation>
+<translation id="1531155317299575425">Hiển thị lời nhắc đăng nhập vào Chromium.</translation>
 <translation id="1617663976202781617">Dữ liệu từ tính năng đồng bộ hóa của Chromium</translation>
 <translation id="1736662517232558588">Đã xóa dữ liệu Chromium</translation>
 <translation id="1838412507805038478">Chromium xác minh rằng <ph name="ISSUER" /> đã cấp chứng chỉ của trang web này.</translation>
@@ -49,6 +50,7 @@
 <translation id="5396916991083608703">Đặt Chromium làm trình duyệt mặc định?</translation>
 <translation id="5521125884468363740">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập và bật tính năng đồng bộ hóa</translation>
 <translation id="5573014823074921752">Mẹo sử dụng Chromium. Để xem thêm các tùy chọn về thẻ, hãy chạm và giữ nút Hiển thị thẻ trên thanh công cụ ở đầu hoặc cuối màn hình.</translation>
+<translation id="5651741435382092412">Đăng nhập vào trang web này, Tài khoản Google của bạn và Chromium. Bạn có thể bật tính năng đồng bộ hóa vào lúc khác.</translation>
 <translation id="5700709190537129682">Chromium không thể kiểm tra mật khẩu của bạn</translation>
 <translation id="5742135483959137648">Dùng Chromium để mở các đường liên kết</translation>
 <translation id="5777187867430702742">Trang Chromium</translation>
@@ -60,6 +62,7 @@
 2. Nhấn vào Ứng dụng trình duyệt mặc định
 3. Chọn Chromium.</translation>
 <translation id="6268381023930128611">Đăng xuất khỏi Chromium?</translation>
+<translation id="632825460376924298">Cho phép đăng nhập vào Chromium</translation>
 <translation id="6337530241089703714">Chọn xem bạn muốn xóa dữ liệu của mình trên Chromium khỏi thiết bị này hay giữ lại dữ liệu đó</translation>
 <translation id="6424492062988593837">Chromium được cải tiến hơn! Đã có phiên bản mới.</translation>
 <translation id="6820823224820483452">Chromium không thể kiểm tra một số mật khẩu. Hãy thử lại vào ngày mai.</translation>

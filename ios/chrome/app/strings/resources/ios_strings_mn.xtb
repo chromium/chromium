@@ -445,6 +445,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5782227691023083829">Орчуулж байна...</translation>
 <translation id="5803566855766646066">Та энэ шинэ картыг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="5816228676161003208">Энэ нь танд дуу хоолойгоороо хурдан хайх боломжийг олгодог.</translation>
+<translation id="581659025233126501">Синк хийхийг асаах</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> удирддаг. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Хайлтын хэрэгсэл</translation>
 <translation id="5854790677617711513">30 өдрөөс илүү</translation>
@@ -492,6 +493,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6196207969502475924">Дуугаар хайх</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} табыг хаах}other{{COUNT} табыг хаах}}</translation>
 <translation id="6219688215832490856">Хэзээ ч бүү хөрвүүл</translation>
+<translation id="6223816392543092032">Хавчуурга, түүх, нууц үг болон бусад тохиргоогоо бүх төхөөрөмж дээрээ аваарай.</translation>
 <translation id="6254066287920239840">Апп-д хөтчийн оронд холбоосыг нээнэ үү.</translation>
 <translation id="6255097610484507482">Зээлийн картыг засварлах</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />-г орчуулахыг санал болгох</translation>
@@ -524,6 +526,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6445981559479772097">Мессеж илгээгдсэн.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">Огт шалгаж байгаагүй.</translation>
+<translation id="6459307836338400162">Нууцлал, аюулгүй байдал болон өгөгдөл цуглуулахтай холбоотой бусад тохиргооны хувьд <ph name="BEGIN_LINK" />Синк хийх<ph name="END_LINK" /> ба <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүд<ph name="END_LINK" />-ийн аль алиныг харна уу.</translation>
 <translation id="6464071786529933911">Нууцлалын шинэ табад нээх</translation>
 <translation id="6464397691496239022">Сайтууд нь, жишээлбэл таныг нэвтэрсэн хэвээр байлгах эсвэл таны худалдан авалтын сагсан дахь зүйлсийг санах зэргээр таны хөтчийн туршлагыг сайжруулахын тулд күүки ашиглах боломжтой.
 
@@ -707,6 +710,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8281886186245836920">Алгасах</translation>
 <translation id="8283172974887967105">Тохируулах…</translation>
 <translation id="8299417921174340354">Нууц үгсийг ашиглахын тулд та эхлээд төхөөрөмж дээрээ нууц код тохируулах ёстой.</translation>
+<translation id="83100941411593607">Нэвтрэхийг идэвхгүй болгосон байна</translation>
 <translation id="8319076807703933069">Шинэ хайлт</translation>
 <translation id="8323906514956095947">Табын бусад сонголтыг харахын тулд удаан дарна уу</translation>
 <translation id="8328777765163860529">Бүгдийг хаах</translation>

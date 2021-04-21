@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">たった今</translation>
 <translation id="2172688499998841696">画像の説明をオフにしました</translation>
 <translation id="2175927920773552910">QR コード</translation>
-<translation id="2181298861158186289">クリップボードの内容を非表示</translation>
 <translation id="218608176142494674">共有</translation>
 <translation id="2195339740518523951">Chrome の最高水準のセキュリティで保護する</translation>
 <translation id="2200113223741723867">使用状況データの共有の管理</translation>
@@ -248,6 +247,7 @@
 <translation id="2612676031748830579">カード番号</translation>
 <translation id="2625189173221582860">パスワードがコピーされました</translation>
 <translation id="2631006050119455616">削減量</translation>
+<translation id="2645657967708199252"><ph name="CONNECTION_TYPE" /> 接続ではダウンロードに時間がかかる可能性があります</translation>
 <translation id="2647434099613338025">言語の追加</translation>
 <translation id="2650751991977523696">ファイルをもう一度ダウンロードしますか？</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 件の音声ファイル}other{# 件の音声ファイル}}</translation>
@@ -260,6 +260,7 @@
 <translation id="2718846868787000099">ご希望の言語でコンテンツを表示するため、アクセス先のサイトには設定内容が伝えられます</translation>
 <translation id="2723001399770238859">音声</translation>
 <translation id="2728754400939377704">サイトで並べ替え</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">単語をタップすると、検索をすばやく実行したり、関連する操作メニューを確認したりできます</translation>
 <translation id="2760989362628427051">デバイスのダークテーマまたはバッテリー セーバーがオンのときにダークテーマをオンにする</translation>
 <translation id="2762000892062317888">たった今</translation>
@@ -436,6 +437,7 @@
 <translation id="3943557322767080599">Google アカウントへのログイン時に Chrome のログイン メッセージを表示する</translation>
 <translation id="395206256282351086">検索とサイトの候補の表示が無効</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{準備ができると Chrome でページが読み込まれます}other{準備ができると Chrome でページが読み込まれます}}</translation>
+<translation id="3962957115499249330">Wi-Fi 接続時にこのダウンロードが開始されると通知が表示されます。</translation>
 <translation id="3963007978381181125">パスフレーズ暗号化の対象に Google Pay のお支払い方法と住所は含まれません。パスフレーズを知っているユーザーだけが暗号化データを読み取ることができます。パスフレーズが Google に送信されたり Google で保存されたりすることはありません。パスフレーズを忘れた場合や、この設定を変更する場合は、同期をリセットする必要があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome でパスワードを確認できません</translation>
 <translation id="3974987681202239636">Chrome で <ph name="APP_NAME" /> を開きます。続行すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />に同意したことになります。また、<ph name="BEGIN_LINK3" />ファミリー リンクで管理する Google アカウントのプライバシーに関するお知らせ<ph name="END_LINK3" />も適用されます。</translation>
@@ -479,6 +481,7 @@
 <translation id="4256782883801055595">オープンソース ライセンス</translation>
 <translation id="4263656433980196874">アシスタントの音声検索の同意ダイアログが画面全体に表示されています</translation>
 <translation id="4269820728363426813">リンクアドレスをコピー</translation>
+<translation id="4290281343757112331">後でダウンロードしますか？</translation>
 <translation id="4298388696830689168">リンク済みのサイト</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">基本設定</translation>
@@ -541,6 +544,7 @@
 <translation id="4698034686595694889"><ph name="APP_NAME" /> でオフライン表示</translation>
 <translation id="4699172675775169585">キャッシュされた画像とファイル</translation>
 <translation id="4714588616299687897">データを最大 60% 削減できます</translation>
+<translation id="4716066120200945007">フォロー中</translation>
 <translation id="4719927025381752090">翻訳するか尋ねる</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> で開く</translation>
 <translation id="4720982865791209136">Chrome の品質向上にご協力ください。<ph name="BEGIN_LINK" />アンケートに回答する<ph name="END_LINK" /></translation>
@@ -621,6 +625,7 @@
 <translation id="5191251636205085390">サードパーティの Cookie に代わる新しい技術の詳細と管理方法について</translation>
 <translation id="5193988420012215838">クリップボードにコピーされました</translation>
 <translation id="5199929503336119739">仕事用プロファイル</translation>
+<translation id="5201464744567315552"><ph name="TIME" /> にこのダウンロードが開始されると通知が表示されます。</translation>
 <translation id="5204967432542742771">パスワードを入力</translation>
 <translation id="5210286577605176222">前のタブに移動する</translation>
 <translation id="5210365745912300556">タブを閉じる</translation>
@@ -631,6 +636,7 @@
 <translation id="5230560987958996918"><ph name="SITE" /> が近くの Bluetooth デバイスのスキャンを求めています。検出済みのデバイスは次のとおりです。</translation>
 <translation id="5233638681132016545">新しいタブ</translation>
 <translation id="5250483651202458397">スクリーンショット。タップすると閉じます。</translation>
+<translation id="5262378156578470238"><ph name="DATE" /> にこのダウンロードが開始されると通知が表示されます。</translation>
 <translation id="526421993248218238">ページを読み込めません</translation>
 <translation id="5271967389191913893">デバイスでダウンロード コンテンツを開くことができません。</translation>
 <translation id="5292796745632149097">送信先</translation>
@@ -842,7 +848,6 @@
 <translation id="6539092367496845964">エラーが発生しました。しばらくしてからもう一度お試しください。</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{前回の確認: 1 時間前}other{前回の確認: # 時間前}}</translation>
 <translation id="6545017243486555795">すべてのデータを削除</translation>
-<translation id="6549142516027084053">クリップボードの内容を表示</translation>
 <translation id="6560414384669816528">Sogou で検索します</translation>
 <translation id="656065428026159829">もっと見る</translation>
 <translation id="6565959834589222080">可能な場合は Wi-Fi を使用します</translation>
@@ -912,6 +917,7 @@
 <translation id="6981982820502123353">ユーザー補助機能</translation>
 <translation id="6989267951144302301">ダウンロードできませんでした</translation>
 <translation id="6995899638241819463">データ侵害によりパスワードが漏洩した場合に警告する</translation>
+<translation id="7001056293070445572">サイズの大きいファイルです（<ph name="FILE_SIZE" />）</translation>
 <translation id="7015203776128479407">最初の同期設定が終了していません。同期は無効です。</translation>
 <translation id="7022756207310403729">ブラウザで開く</translation>
 <translation id="702463548815491781">TalkBack またはスイッチ アクセスを有効にしている場合におすすめです</translation>
@@ -936,7 +942,6 @@
 <translation id="7180611975245234373">更新</translation>
 <translation id="7187993566681480880">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>
 <translation id="718926126787620637">ブックマーク フォルダのリストが画面全体に表示されています</translation>
-<translation id="7189372733857464326">Google Play 開発者サービスの更新完了を待機しています</translation>
 <translation id="7191430249889272776">バックグラウンドでタブを開きました。</translation>
 <translation id="7233236755231902816">お使いの言語でウェブを表示するには、Chrome の最新バージョンを入手してください</translation>
 <translation id="7248069434667874558">Chrome で <ph name="TARGET_DEVICE_NAME" /> の同期がオンになっていることを確認してください</translation>

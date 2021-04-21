@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">播放進度控制滑桿</translation>
 <translation id="1404323374378969387">挪威文</translation>
 <translation id="1430915738399379752">列印</translation>
+<translation id="1433628812591023318">如要將檔案拖曳至 Parallels Desktop，必須先將檔案移動至 Windows 檔案中。</translation>
 <translation id="1435838927755162558">與 Parallels Desktop 共用資料夾</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="1471718551822868769">斯洛伐克文</translation>
@@ -611,6 +612,7 @@
 <translation id="7417453074306512035">埃塞俄比亞文鍵盤</translation>
 <translation id="7417705661718309329">Google 地圖</translation>
 <translation id="7460898608667578234">烏克蘭文</translation>
+<translation id="7486315294984620427">如要將檔案拖曳至 Parallels Desktop，必須先將檔案複製到 Windows 檔案中。</translation>
 <translation id="7489215562877293245">已找到 <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     現在可以備份至「<ph name="BEGIN_LINK" />Google 雲端硬碟<ph name="END_LINK" />」</translation>

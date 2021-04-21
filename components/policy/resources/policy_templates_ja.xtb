@@ -1643,6 +1643,12 @@
 <translation id="3177802893484440532">ローカルの信頼済みアンカーでオンラインの OCSP/CRL チェックを必須にする</translation>
 <translation id="3184161739683646075">DNS-over-HTTPS モードを管理する</translation>
 <translation id="3185009703220253572">バージョン <ph name="SINCE_VERSION" /> 以降</translation>
+<translation id="3185895671618336039"><ph name="PRODUCT_NAME" /> の閲覧データの有効期間を設定します。このポリシーでは、ブラウザでデータを削除するタイミングをデータの種類ごとに設定できます。このポリシーは、機密性の高い顧客データを取り扱う場合に役立ちます。このポリシーは、<ph name="SYNC_DISABLED_POLICY_NAME" /> が true に設定されている場合にのみ適用されます。
+
+      対象となるデータの種類は <ph name="DATA_TYPE_BROWSING_HISTORY" />、<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />、<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />、<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、<ph name="DATA_TYPE_PASSWORD" />、<ph name="DATA_TYPE_AUTOFILL" />、<ph name="DATA_TYPE_SITE_SETTINGS" />、<ph name="DATA_TYPE_HOSTED_APP_DATA" /> です。
+      ブラウザでは、選択した種類のデータについて、保存期間が <ph name="TIME_TO_LIVE_IN_HOURS" /> を経過すると自動的に削除されます。設定できる最小値は 1 時間です。
+
+      有効期限が過ぎたデータは、ブラウザを起動してから 15 秒後に削除され、ブラウザの起動中は 1 時間ごとに削除されます。</translation>
 <translation id="3192902750888034827"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" /> では、新しいタブページを提供するために使用する検索エンジンの URL を指定できます。
 
       <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" /> を未設定のままにした場合、新しいタブページは提供されません。</translation>
@@ -4429,6 +4435,11 @@
       このポリシーを設定しない場合、シェルフはデフォルトで画面の下部に配置されますが、ユーザーはシェルフの位置を変更できます。</translation>
 <translation id="7040229947030068419">サンプル値:</translation>
 <translation id="7044883996351280650">Android のバックアップと復元サービスを制御する</translation>
+<translation id="7060497964524144376">このポリシーを有効に設定した場合、セーフ ブラウジングでは指定ドメインが信頼され、危険なリソース（フィッシング、不正なソフトウェア、迷惑ソフトウェアなど）の確認は行われません。セーフ ブラウジングのダウンロード保護サービスでは指定ドメインでホストされているダウンロードの確認は行われず、パスワード保護サービスでもパスワード再利用の確認は行われません。
+
+      このポリシーを未設定のままにした場合、デフォルトのセーフ ブラウジング保護がすべてのリソースに適用されます。
+
+      <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="7063895219334505671">これらのサイトのポップアップを許可する</translation>
 <translation id="706669471845501145">サイトに対してデスクトップ通知の表示を許可する</translation>
 <translation id="7070525176564511548">週 1 回（168 時間ごとに）パスワードの入力を求める</translation>
@@ -6004,6 +6015,7 @@
 <translation id="927444535723396977">このポリシーを 1 に設定した場合、ウェブサイトによる JavaScript の実行が許可されます。このポリシーを 2 に設定した場合、JavaScript は拒否されます。
 
       このポリシーを未設定のままにした場合、JavaScript は許可されますが、ユーザーはこの設定を変更できます。</translation>
+<translation id="928189505080808353">ポート 554（有効期限: 2021 年 10 月 15 日）</translation>
 <translation id="929549405492388749">このポリシーを true に設定した場合、Chrome の AppCache がデフォルトで無効になっていても、強制的に有効化します。
 
       このポリシーを未設定のままにするか、false に設定した場合、AppCache の設定は Chrome のデフォルト設定に準拠します。</translation>

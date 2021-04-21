@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">Pozwól Chromium blokować karty incognito.</translation>
 <translation id="1472013873724362412">Twoje konto nie działa w Chromium. Skontaktuj się z administratorem domeny lub zaloguj się przy użyciu zwykłego konta Google.</translation>
 <translation id="1507010443238049608">Pomóż w ulepszaniu funkcji i działania Chromium</translation>
+<translation id="1531155317299575425">Pokazuje prośby o zalogowanie się w Chromium.</translation>
 <translation id="1617663976202781617">Dane z synchronizacji Chromium</translation>
 <translation id="1736662517232558588">Wyczyszczono dane Chromium</translation>
 <translation id="1838412507805038478">Chromium sprawdził, że wydawcą certyfikatu tej witryny jest <ph name="ISSUER" />.</translation>
@@ -49,6 +50,7 @@
 <translation id="5396916991083608703">Ustawić Chromium jako domyślną przeglądarkę?</translation>
 <translation id="5521125884468363740">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chromium, zaloguj się i włącz synchronizację</translation>
 <translation id="5573014823074921752">Wskazówka dla użytkowników Chromium. Aby zobaczyć więcej opcji kart, naciśnij i przytrzymaj przycisk Pokaż karty na pasku narzędzi, który znajduje się na dole lub na górze ekranu.</translation>
+<translation id="5651741435382092412">Zaloguj się na tej stronie, na swoim koncie Google i w Chromium. Później możesz włączyć synchronizację.</translation>
 <translation id="5700709190537129682">Chromium nie może sprawdzić Twoich haseł</translation>
 <translation id="5742135483959137648">Otwieraj linki w Chromium</translation>
 <translation id="5777187867430702742">Strona Chromium</translation>
@@ -60,6 +62,7 @@
 2. Kliknij Domyślna przeglądarka.
 3. Wybierz Chromium.</translation>
 <translation id="6268381023930128611">Wylogować z Chromium?</translation>
+<translation id="632825460376924298">Zezwalaj na logowanie w Chromium</translation>
 <translation id="6337530241089703714">Zdecyduj, czy chcesz usunąć swoje dane z Chromium z tego urządzenia czy je na nim zachować</translation>
 <translation id="6424492062988593837">Chromium jest teraz jeszcze lepsze! Dostępna jest nowa wersja.</translation>
 <translation id="6820823224820483452">Przeglądarce Chromium nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie jutro.</translation>

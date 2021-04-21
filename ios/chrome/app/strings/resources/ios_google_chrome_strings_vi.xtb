@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Nếu bạn cho Chrome biết vị trí của bạn, thì Chrome sẽ gửi thông tin này đến mọi trang web mà bạn cho phép. Các trang web có thể yêu cầu thông tin vị trí khi có thông tin địa phương để hiển thị cho bạn, chẳng hạn như tin tức hoặc cửa hàng ở gần.</translation>
 <translation id="6036420186814142909">Google Chrome có tính năng giúp bạn quản lý dữ liệu Internet của mình và tốc độ mà bạn có thể tải trang web.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Cho phép đăng nhập vào Chrome</translation>
 <translation id="6181930887571472871">Chuyển sang Chrome</translation>
 <translation id="6238746320622508509">Để Chrome khóa các thẻ Ẩn danh của bạn.</translation>
 <translation id="6573431926118603307">Các thẻ bạn đã mở trong Chrome trên thiết bị khác sẽ xuất hiện tại đây.</translation>
@@ -96,5 +97,6 @@
   3. Chọn Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Luôn an toàn khi dùng Google Chrome</translation>
+<translation id="8772179140489533211">Hiển thị lời nhắc đăng nhập vào Chrome.</translation>
 <translation id="9112744793181547300">Đặt Chrome làm trình duyệt mặc định?</translation>
 </translationbundle>

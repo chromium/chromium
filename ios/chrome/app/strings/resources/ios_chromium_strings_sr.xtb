@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">Дозволите Chromium-у да закључа картице без архивирања.</translation>
 <translation id="1472013873724362412">Налог не функционише на Chromium-у. Контактирајте администратора домена или се пријавите помоћу обичног Google налога.</translation>
 <translation id="1507010443238049608">Помозите нам да побољшамо Chromium-ове функције и учинак</translation>
+<translation id="1531155317299575425">Приказује упите за пријављивање у Chromium.</translation>
 <translation id="1617663976202781617">Подаци из Chromium синхронизације</translation>
 <translation id="1736662517232558588">Chromium подаци су обрисани</translation>
 <translation id="1838412507805038478">Chromium је потврдио да је <ph name="ISSUER" /> издао сертификат овог веб-сајта.</translation>
@@ -49,6 +50,7 @@
 <translation id="5396916991083608703">Желите да подесите Chromium као подразумевани?</translation>
 <translation id="5521125884468363740">Да бисте видели картице на било којем уређају на ком користите Chromium, пријавите се и укључите синхронизацију</translation>
 <translation id="5573014823074921752">Савет за Chromium. Ако желите више опција за картице, додирните и задржите дугме Прикажи картице на траци с алаткама, која се налази у дну или врху екрана.</translation>
+<translation id="5651741435382092412">Пријавите се на овај сајт, Google налог и у Chromium. Синхронизацију можете да укључите касније.</translation>
 <translation id="5700709190537129682">Chromium не може да вам проверава лозинке</translation>
 <translation id="5742135483959137648">Користите Chromium да бисте отварали линкове</translation>
 <translation id="5777187867430702742">Chromium страница</translation>
@@ -60,6 +62,7 @@
 2. Додирните Подразумевана апликација за прегледање
 3. Изаберите Chromium.</translation>
 <translation id="6268381023930128611">Желите ли да се одјавите из Chromium-а?</translation>
+<translation id="632825460376924298">Дозволите пријављивање у Chromium</translation>
 <translation id="6337530241089703714">Одаберите да ли ћете обрисати Chromium податке са овог уређаја или их задржати</translation>
 <translation id="6424492062988593837">Chromium је управо постао бољи! Доступна је нова верзија.</translation>
 <translation id="6820823224820483452">Chromium није успео да провери све лозинке. Пробајте поново сутра.</translation>

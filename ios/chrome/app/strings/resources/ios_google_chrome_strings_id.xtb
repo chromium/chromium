@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Jika Anda mengizinkan Chrome mengetahui lokasi, Chrome akan mengirimkannya ke situs apa pun yang diizinkan. Situs mungkin meminta lokasi Anda saat mereka memiliki info lokal untuk ditampilkan, seperti toko terdekat atau berita.</translation>
 <translation id="6036420186814142909">Google Chrome memiliki fitur yang dapat membantu Anda mengelola data internet dan seberapa cepat Anda dapat memuat halaman web.
 <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Izinkan Login Chrome</translation>
 <translation id="6181930887571472871">Beralih ke Chrome</translation>
 <translation id="6238746320622508509">Izinkan Chrome mengunci tab Samaran Anda.</translation>
 <translation id="6573431926118603307">Tab yang telah dibuka di Chrome pada perangkat lainnya akan muncul di sini.</translation>
@@ -96,5 +97,6 @@
   3. Pilih Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Tetap Aman dengan Google Chrome</translation>
+<translation id="8772179140489533211">Menampilkan perintah untuk login ke Chrome.</translation>
 <translation id="9112744793181547300">Setel Chrome sebagai Default?</translation>
 </translationbundle>

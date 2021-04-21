@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">Kelaamisen liukusäädin</translation>
 <translation id="1404323374378969387">norja</translation>
 <translation id="1430915738399379752">Tulosta</translation>
+<translation id="1433628812591023318">Jotta voit pudottaa tiedostoja Parallels Desktopiin, tiedosto on siirrettävä Windows-tiedostoihin.</translation>
 <translation id="1435838927755162558">Jaa kansio Parallels Desktopille</translation>
 <translation id="1467432559032391204">Vasemmalla</translation>
 <translation id="1471718551822868769">slovakki</translation>
@@ -611,6 +612,7 @@
 <translation id="7417453074306512035">Etiopialainen näppäimistö</translation>
 <translation id="7417705661718309329">Google-kartta</translation>
 <translation id="7460898608667578234">ukraina</translation>
+<translation id="7486315294984620427">Jotta voit pudottaa tiedostoja Parallels Desktopiin, tiedosto on kopioitava Windows-tiedostoihin.</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> löytyi
     <ph name="LINE_BREAK1" />
     Valmis varmuuskopioimaan <ph name="BEGIN_LINK" />Google Driveen<ph name="END_LINK" /></translation>

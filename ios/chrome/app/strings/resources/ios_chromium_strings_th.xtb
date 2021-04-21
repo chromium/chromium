@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">ให้ Chromium ล็อกแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="1472013873724362412">บัญชีของคุณไม่ทำงานใน Chromium โปรดติดต่อผู้ดูแลระบบโดเมนหรือใช้บัญชี Google ปกติเพื่อลงชื่อเข้าใช้</translation>
 <translation id="1507010443238049608">ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chromium</translation>
+<translation id="1531155317299575425">แสดงข้อความแจ้งให้ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="1617663976202781617">ข้อมูลจากการซิงค์ Chromium</translation>
 <translation id="1736662517232558588">ล้างข้อมูล Chromium แล้ว</translation>
 <translation id="1838412507805038478">Chromium ยืนยันว่า <ph name="ISSUER" /> ได้ออกใบรับรองของเว็บไซต์นี้</translation>
@@ -49,6 +50,7 @@
 <translation id="5396916991083608703">ตั้งค่า Chromium เป็นค่าเริ่มต้นไหม</translation>
 <translation id="5521125884468363740">ลงชื่อเข้าใช้และเปิดการซิงค์เพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chromium</translation>
 <translation id="5573014823074921752">เคล็ดลับสำหรับ Chromium ถ้าต้องการดูตัวเลือกแท็บเพิ่มเติม ให้แตะปุ่ม "แสดงแท็บ" ค้างไว้ในแถบเครื่องมือ ซึ่งอยู่ที่ด้านล่างหรือด้านบนของหน้าจอ</translation>
+<translation id="5651741435382092412">ลงชื่อเข้าใช้เว็บไซต์นี้ บัญชี Google และ Chromium คุณเปิดการซิงค์ในภายหลังได้</translation>
 <translation id="5700709190537129682">Chromium ตรวจสอบรหัสผ่านของคุณไม่ได้</translation>
 <translation id="5742135483959137648">ใช้ Chromium เพื่อเปิดลิงก์</translation>
 <translation id="5777187867430702742">หน้า Chromium</translation>
@@ -60,6 +62,7 @@
 2. แตะแอปเบราว์เซอร์เริ่มต้น
 3. เลือก Chromium</translation>
 <translation id="6268381023930128611">ต้องการออกจาก Chromium ใช่ไหม</translation>
+<translation id="632825460376924298">อนุญาตให้ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="6337530241089703714">เลือกว่าจะล้างข้อมูล Chromium จากอุปกรณ์นี้หรือเก็บไว้</translation>
 <translation id="6424492062988593837">Chromium พัฒนาใหม่! มีรุ่นใหม่ให้ใช้งานแล้ว</translation>
 <translation id="6820823224820483452">Chromium ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้</translation>

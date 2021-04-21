@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Chrome に位置情報の利用を許可すると、許可を与えたサイトに位置情報が提供されます。また、サイトで付近の店舗やニュースなどの地域情報を表示できる場合に位置情報を要求されることがあります。</translation>
 <translation id="6036420186814142909">Google Chromeには、インターネットのデータやウェブページの読み込み速度を管理できる機能があります。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Chrome へのログインを許可する</translation>
 <translation id="6181930887571472871">Chrome に切り替え</translation>
 <translation id="6238746320622508509">Chrome でシークレット タブをロックできるようにします。</translation>
 <translation id="6573431926118603307">他のデバイスの Chrome で開いているタブがここに表示されます。</translation>
@@ -96,5 +97,6 @@
   3. [Chrome] を選択します。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chrome でいつでも安全にブラウジング</translation>
+<translation id="8772179140489533211">Chrome へのログインを促すメッセージが表示されます。</translation>
 <translation id="9112744793181547300">Chrome を既定に設定しますか？</translation>
 </translationbundle>

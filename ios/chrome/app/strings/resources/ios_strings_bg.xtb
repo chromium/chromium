@@ -446,6 +446,7 @@
 <translation id="5782227691023083829">Превежда се...</translation>
 <translation id="5803566855766646066">Наистина ли искате да отхвърлите тази нова карта?</translation>
 <translation id="5816228676161003208">Това ви позволява да търсите по-бързо посредством гласа си.</translation>
+<translation id="581659025233126501">Включване на синхронизирането</translation>
 <translation id="5819208479324046259">Управлява се от <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Търсеща машина</translation>
 <translation id="5854790677617711513">По-стари от 30 дни</translation>
@@ -493,6 +494,7 @@
 <translation id="6196207969502475924">Гласово търсене</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Затваряне на {COUNT} раздел}other{Затваряне на {COUNT} раздела}}</translation>
 <translation id="6219688215832490856">Никога да не се превежда</translation>
+<translation id="6223816392543092032">Получете отметките, историята, паролите и другите си настройки на всичките си устройства.</translation>
 <translation id="6254066287920239840">Отваряне на връзките в приложението вместо в браузъра.</translation>
 <translation id="6255097610484507482">Редактиране на кредитната карта</translation>
 <translation id="6284652193729350524">Предлагане на превод от <ph name="LANGUAGE" /></translation>
@@ -525,6 +527,7 @@
 <translation id="6445981559479772097">Съобщ. е изпратено.</translation>
 <translation id="6447842834002726250">„Бисквитки“</translation>
 <translation id="6453018583485750254">Проверката не се е изпълнявала.</translation>
+<translation id="6459307836338400162">За още настройки за поверителността, сигурността и събирането на данни вижте <ph name="BEGIN_LINK" />Синхронизиране<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Отв. в нов раздел „инкогнито“</translation>
 <translation id="6464397691496239022">Сайтовете могат да използват „бисквитки“ с цел по-добро сърфиране, например за да оставате в профила си или за да запомнят артикулите в пазарската ви кошница.
 
@@ -708,6 +711,7 @@
 <translation id="8281886186245836920">Пропускане</translation>
 <translation id="8283172974887967105">Задаване…</translation>
 <translation id="8299417921174340354">За да използвате паролите, трябва първо да зададете код за достъп на устройството си.</translation>
+<translation id="83100941411593607">Влизането е деактивирано</translation>
 <translation id="8319076807703933069">Ново търсене</translation>
 <translation id="8323906514956095947">Докоснете и задръжте, за да видите още опции за разделите</translation>
 <translation id="8328777765163860529">Затваряне на всички</translation>

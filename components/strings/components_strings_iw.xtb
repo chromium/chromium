@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">‏אם האפשרות הזו מסומנת, Chrome ישמור עותק של הכרטיס במכשיר הזה כדי למלא טפסים במהירות רבה יותר.</translation>
 <translation id="1110994991967754504">צריך לבחור את ההרשאה של <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;ביטול של שינוי סדר</translation>
+<translation id="1123753900084781868">הכתוביות המיידיות לא זמינות עכשיו.</translation>
 <translation id="1125573121925420732">לפעמים מופיעות אזהרות בזמן שאתרים מעדכנים את האבטחה שלהם. זה אמור להיפסק בקרוב.</translation>
 <translation id="112840717907525620">המטמון של המדיניות תקין</translation>
 <translation id="1130564665089811311">‏הלחצן 'תרגום הדף', יש ללחוץ על Enter כדי לתרגם את הדף הזה באמצעות Google Translate</translation>
@@ -217,6 +218,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק מחר. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}two{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק בעוד יומיים. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}many{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק בעוד # ימים. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}other{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק בעוד # ימים. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}}</translation>
 <translation id="1710259589646384581">מערכת הפעלה</translation>
+<translation id="1711234383449478798">אין התייחסות למדיניות כי לא הוגדר הערך <ph name="VALUE" /> ב-<ph name="POLICY_NAME" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> רוצה לאחסן נתונים במחשב המקומי שלך באופן קבוע</translation>
 <translation id="1713628304598226412">מגש 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -772,6 +774,7 @@
 <translation id="3841184659773414994">‏רכיבי handler של קבצים</translation>
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3858027520442213535">עדכון התאריך והשעה</translation>
+<translation id="3881478300875776315">אני רוצה לראות פחות שורות</translation>
 <translation id="3884278016824448484">מזהה מכשיר מתנגש</translation>
 <translation id="3885155851504623709">פאריש</translation>
 <translation id="388632593194507180">זוהה מעקב</translation>
@@ -797,6 +800,7 @@
 <translation id="397105322502079400">מתבצע חישוב...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> חסום</translation>
 <translation id="3973357910713125165">‏לחצן להרצת בדיקת אבטחה ב-Chrome, יש להקיש על Enter כדי להריץ בדיקת אבטחה בהגדרות Chrome</translation>
+<translation id="3986705137476756801">השבתת הכתוביות המיידיות נכון לעכשיו</translation>
 <translation id="3987405730340719549">‏לפי אמצעי האבטחה של Chrome, האתר הזה עשוי להיות מזויף או אתר שנועד להונאה.
 
     אם לדעתך זו טעות, יש לעבור אל https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -865,7 +869,7 @@
     &lt;li&gt;עוברים לאתר כלשהו שהכתובת שלו מתחילה ב-&lt;code&gt;http://&lt;/code&gt;, כמו &lt;a href="http://example.com" target="_blank"&gt;http://example.com&lt;/a&gt;.&lt;/li&gt;
     &lt;li&gt;בדף הכניסה שנפתח, מזינים את פרטי הכניסה כדי להשתמש באינטרנט.&lt;/li&gt;
     &lt;/ol&gt;
-    &lt;h4&gt;שלב שני: פתיחת הדף במצב גלישה בסתר (מחשבים בלבד)&lt;/h4&gt;
+    &lt;h4&gt;שלב שני: פתיחת הדף במצב אנונימי (מחשבים בלבד)&lt;/h4&gt;
     &lt;p&gt;פותחים את הדף שאליו רוצים להיכנס בחלון גלישה בסתר.&lt;/p&gt;
     &lt;p&gt;אם הדף נפתח, יש בעיה בתוסף של Chrome. כדי לפתור את השגיאה צריך להשבית את התוסף.&lt;/p&gt;
     &lt;h4&gt;שלב שלישי: עדכון מערכת ההפעלה&lt;/h4&gt;
@@ -924,6 +928,7 @@
 <translation id="4377125064752653719">ניסית להשיג את <ph name="DOMAIN" />, אך האישור שהשרת הציג בוטל על ידי המנפיק שלו. פירוש הדבר שאין כל אפשרות לתת אמון באישורי האבטחה שהשרת הציג. ייתכן שהתקשורת שלך היא עם תוקף.</translation>
 <translation id="4378154925671717803">טלפון</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4406883609789734330">כתוביות מיידיות</translation>
 <translation id="4406896451731180161">תוצאות חיפוש</translation>
 <translation id="4408413947728134509">‏קובצי Cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">‏הזנת כרגע את הסיסמה שלך באתר מטעה. ההמלצה של Chrome היא לעבור אל <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ואל אתרים אחרים שבהם הסיסמה הזו בשימוש ולשנות אותה עכשיו.</translation>
@@ -989,6 +994,7 @@
 <translation id="4691835149146451662">Architecture-A (Envelope)‎</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">צד</translation>
+<translation id="4702656508969495934">מוצגות כתוביות מיידיות, ניתן להשתמש במעבר בין החלונות כדי להתמקד</translation>
 <translation id="4708268264240856090">החיבור נקטע</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131">‏<ph name="BEGIN_LINK" />מפעיל את אבחון הרשת של Windows<ph name="END_LINK" /></translation>
@@ -1233,7 +1239,7 @@ Del</translation>
 <translation id="5542280138350899197">‏הלחצן 'ניהול הגדרות האבטחה', יש להקיש על Enter כדי לנהל את הגלישה הבטוחה ועוד בהגדרות Chrome</translation>
 <translation id="5545756402275714221">מאמרים שעשויים לעניין אותך</translation>
 <translation id="5552137475244467770">‏מערכת Chrome בודקת מדי פעם את הסיסמאות שלך ומשווה אותן לרשימות שהתפרסמו באינטרנט. כשהפעולה הזו מבוצעת, הסיסמאות ושמות המשתמש מוצפנים, כך שאיש לא יוכל לקרוא אותם, כולל Google.</translation>
-<translation id="5556459405103347317">ניסיון טעינה נוסף</translation>
+<translation id="5556459405103347317">טעינה מחדש</translation>
 <translation id="5560088892362098740">תאריך תפוגה</translation>
 <translation id="55635442646131152">ראשי הפרקים של המסמך</translation>
 <translation id="5565735124758917034">פעילה</translation>
@@ -1664,6 +1670,7 @@ Del</translation>
 <translation id="733354035281974745">ביטול עקב סשן חשבון מקומי במכשיר</translation>
 <translation id="7333654844024768166">‏הזנת כרגע את הסיסמה שלך באתר מטעה. ההמלצה של Chromium היא לעבור אל <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ואל אתרים אחרים שבהם הסיסמה הזו בשימוש ולשנות אותה עכשיו.</translation>
 <translation id="7334320624316649418">&amp;ביצוע מחדש של שינוי סדר</translation>
+<translation id="7337248890521463931">אני רוצה לראות יותר שורות</translation>
 <translation id="7337706099755338005">לא זמין בפלטפורמה שלך.</translation>
 <translation id="733923710415886693">אישור השרת לא נחשף דרך 'שקיפות אישורים'.</translation>
 <translation id="734600844861828519">11x15</translation>
@@ -1814,7 +1821,7 @@ Del</translation>
 <translation id="782886543891417279">‏ייתכן שרשת ה-Wi-Fi דורשת כניסה לדף ההתחברות שלה. (<ph name="WIFI_NAME" />).</translation>
 <translation id="7836231406687464395">Postfix (Envelope)‎</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ללא}=1{אפליקציה אחת (<ph name="EXAMPLE_APP_1" />)}=2{2 אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}many{# אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
-<translation id="785549533363645510">עם זאת, עדיין אפשר לראות אותך. המעבר למצב גלישה בסתר לא מסתיר את הגלישה שלך מהמעסיק, מספק האינטרנט או מהאתרים שאליהם נכנסת.</translation>
+<translation id="785549533363645510">עם זאת, עדיין אפשר לראות אותך. המעבר למצב אנונימי לא מסתיר את הגלישה שלך מהמעסיק, מספק האינטרנט או מהאתרים שאליהם נכנסת.</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7858035578849836010">לפתוח קבצים עם שיוכים לסוגי קבצים.</translation>
 <translation id="7862185352068345852">לצאת מהאתר?</translation>
@@ -2043,7 +2050,7 @@ Del</translation>
 <translation id="8719528812645237045">ניקובים מרובים בחלק העליון</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8726549941689275341">גודל דף:</translation>
-<translation id="8728672262656704056">עברת למצב גלישה בסתר</translation>
+<translation id="8728672262656704056">עברת למצב אנונימי</translation>
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="8731544501227493793">‏הלחצן 'ניהול סיסמאות', יש להקיש על Enter כדי להציג ולנהל את הסיסמאות בהגדרות Chrome</translation>
 <translation id="8734529307927223492">ה-<ph name="DEVICE_TYPE" /> מנוהל על-ידי <ph name="MANAGER" /></translation>

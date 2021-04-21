@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">Дозвольте Chromium блокувати анонімні вкладки.</translation>
 <translation id="1472013873724362412">Ваш обліковий запис не працює в Chromium. Зв’яжіться з адміністратором свого домену або ввійдіть у звичайний обліковий запис Google.</translation>
 <translation id="1507010443238049608">Сприяти покращенню функцій і підвищенню продуктивності Chromium</translation>
+<translation id="1531155317299575425">Показувати сповіщення для входу в Chromium.</translation>
 <translation id="1617663976202781617">Дані синхронізації Chromium</translation>
 <translation id="1736662517232558588">Дані Chromium стерто</translation>
 <translation id="1838412507805038478">Chromium підтвердив, що сертифікат цьому веб-сайту надала компанія <ph name="ISSUER" />.</translation>
@@ -49,6 +50,7 @@
 <translation id="5396916991083608703">Зробити Chromium веб-переглядачем за умовчанням?</translation>
 <translation id="5521125884468363740">Щоб переглядати свої вкладки Chromium на будь-якому пристрої, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>
 <translation id="5573014823074921752">Порада щодо Chromium. Щоб відкрити більше параметрів, натисніть і утримуйте кнопку "Показати вкладки" на панелі інструментів, розташованій унизу або вгорі екрана.</translation>
+<translation id="5651741435382092412">Увійдіть в облікові записи цього сайту, Google і Chromium. Синхронізацію можна ввімкнути пізніше.</translation>
 <translation id="5700709190537129682">Chromium не може перевірити паролі</translation>
 <translation id="5742135483959137648">Відкривайте посилання в Chromium</translation>
 <translation id="5777187867430702742">Сторінка Chromium</translation>
@@ -60,6 +62,7 @@
 2. Натисніть "Веб-переглядач за умовчанням"
 3. Виберіть Chromium.</translation>
 <translation id="6268381023930128611">Вийти з Chromium?</translation>
+<translation id="632825460376924298">Дозволити вхід у Chromium</translation>
 <translation id="6337530241089703714">Видалити дані Chromium із цього пристрою чи зберігати їх?</translation>
 <translation id="6424492062988593837">Chromium став ще кращим! Доступна нова версія.</translation>
 <translation id="6820823224820483452">Chromium не вдалося перевірити всі паролі. Повторіть спробу завтра.</translation>

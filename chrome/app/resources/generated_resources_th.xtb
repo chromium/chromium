@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;เครื่องมือ</translation>
 <translation id="1122242684574577509">การตรวจสอบสิทธิ์ล้มเหลว คลิกเพื่อไปที่หน้าการเข้าสู่ระบบสำหรับเครือข่าย Wi-Fi ที่คุณกำลังใช้อยู่ (<ph name="NETWORK_ID" />)</translation>
 <translation id="1122960773616686544">ชื่อบุ๊กมาร์ก</translation>
-<translation id="1123753900084781868">ใช้คำบรรยายสดไม่ได้ในขณะนี้</translation>
 <translation id="1124772482545689468">ผู้ใช้</translation>
 <translation id="1125550662859510761">ดูเหมือน <ph name="WIDTH" /> x <ph name="HEIGHT" /> (ค่าดั้งเดิม)</translation>
 <translation id="1126809382673880764">ไม่ปกป้องคุณจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย คุณจะยังคงได้รับการปกป้องจาก Google Safe Browsing ในบริการอื่นๆ ของ Google ที่มีฟีเจอร์นี้ เช่น Gmail และ Search</translation>
@@ -754,6 +753,7 @@
 <translation id="1794791083288629568">ส่งความคิดเห็นเพื่อช่วยเราแก้ไขปัญหานี้</translation>
 <translation id="1795214765651529549">ใช้แบบคลาสสิก</translation>
 <translation id="1799071797295057738">ระบบจะปิดใช้งานส่วนขยาย "<ph name="EXTENSION_NAME" />" โดยอัตโนมัติ</translation>
+<translation id="1800973090344019061">ส่วนขยาย "<ph name="APP_NAME" />" ต้องการแชร์เนื้อหาในหน้าจอของคุณ</translation>
 <translation id="1802624026913571222">สลีปเมื่อปิดเคส</translation>
 <translation id="1802687198411089702">หน้านี้ไม่ตอบสนอง คุณจะรอหรือออกก็ได้</translation>
 <translation id="1803531841600994172">ภาษาปลายทาง</translation>
@@ -948,7 +948,6 @@
 <translation id="2010501376126504057">อุปกรณ์ที่เข้ากันได้</translation>
 <translation id="2016574333161572915">ฮาร์ดแวร์ของ Google Meet พร้อมตั้งค่าแล้ว</translation>
 <translation id="2017334798163366053">ปิดใช้งานการเก็บรวบรวมข้อมูลผลการปฏิบัติงาน</translation>
-<translation id="2017836877785168846">ล้างประวัติการเข้าชมและการเติมข้อความอัตโนมัติในแถบที่อยู่เว็บ</translation>
 <translation id="2018352199541442911">ขออภัย อุปกรณ์จัดเก็บข้อมูลภายนอกของคุณไม่ได้รับการสนับสนุนในขณะนี้</translation>
 <translation id="2019718679933488176">เปิดเสี&amp;ยงในแท็บใหม่</translation>
 <translation id="2020183425253392403">แสดงการตั้งค่าที่อยู่เครือข่าย</translation>
@@ -1354,6 +1353,7 @@
 <translation id="2464089476039395325">พร็อกซี HTTP</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" /> ต้องการให้คุณเชื่อมต่อ Wi-Fi ตอนนี้และดาวน์โหลดอัปเดต หรือดาวน์โหลดจากการเชื่อมต่อที่มีการวัดปริมาณอินเทอร์เน็ต (อาจมีค่าบริการ)</translation>
 <translation id="2467267713099745100">เครือข่าย <ph name="NETWORK_TYPE" /> ปิดอยู่</translation>
+<translation id="2467755475704469005">ไม่พบอุปกรณ์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">การเร่งความเร็วในการเลื่อนทัชแพด</translation>
 <translation id="2468205691404969808">ใช้คุกกี้เพื่อให้จดจำค่ากำหนดของคุณ แม้ว่าคุณไม่ได้เข้าชมหน้าเว็บเหล่านั้น</translation>
 <translation id="2468402215065996499">ทามาก็อตจิ</translation>
@@ -2382,6 +2382,7 @@
 <translation id="3608576286259426129">ตัวอย่างภาพผู้ใช้</translation>
 <translation id="3610369246614755442">ต้องซ่อมพัดลมของแท่นชาร์จ</translation>
 <translation id="361106536627977100">ข้อมูล Flash</translation>
+<translation id="3611655097742243705">ไปที่ Play Store เพื่อดูแอปเพิ่มเติม</translation>
 <translation id="3612673635130633812">ดาวน์โหลดโดย &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">แสดง <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;เปิดในแท็บใหม่่</translation>
@@ -2646,7 +2647,6 @@
 <translation id="3874164307099183178">เปิด Google Assistant</translation>
 <translation id="3877075909000773256">การตั้งค่าการแชร์ใกล้เคียงสำหรับอุปกรณ์ของ <ph name="USER_NAME" /> ที่แชร์โดยใช้บัญชี <ph name="USER_EMAIL" /></translation>
 <translation id="3879748587602334249">Download Manager</translation>
-<translation id="3881478300875776315">แสดงบรรทัดน้อยลง</translation>
 <translation id="3882165008614329320">วิดีโอที่มีอยู่จากกล้องหรือไฟล์</translation>
 <translation id="3884152383786131369">เนื้อหาเว็บที่มีหลายภาษาจะใช้ภาษาแรกที่รองรับจากรายการนี้ ระบบจะซิงค์ค่ากำหนดเหล่านี้กับการตั้งค่าเบราว์เซอร์ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">ผู้ดูแลระบบของคุณเป็นผู้จัดการการอัปเดตต่างๆ</translation>
@@ -2718,6 +2718,7 @@
 <translation id="3943494825379372497">คืนค่าแอปและหน้าเว็บไหม</translation>
 <translation id="3943582379552582368">&amp;กลับ</translation>
 <translation id="3943857333388298514">วาง</translation>
+<translation id="3945513714196326460">ลองใช้ชื่อที่สั้นกว่านี้</translation>
 <translation id="3948116654032448504">ค้นหา&amp;รูปภาพด้วย <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> แก้ไขไฟล์ในโฟลเดอร์ต่อไปนี้ได้</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2764,7 +2765,6 @@
 <translation id="3984159763196946143">เริ่มโหมดสาธิตไม่ได้</translation>
 <translation id="3984431586879874039">อนุญาตให้เว็บไซต์นี้ดูคีย์ความปลอดภัยของคุณไหม</translation>
 <translation id="398477389655464998">คัดลอกลิงก์ไปยังไฮไลต์</translation>
-<translation id="3986705137476756801">ปิดคำบรรยายสดไปก่อน</translation>
 <translation id="3987544746655539083">บล็อกเว็บไซต์นี้ไม่ให้เข้าถึงตำแหน่งของคุณต่อไป</translation>
 <translation id="3987938432087324095">ขออภัย ฉันไม่ค่อยเข้าใจ</translation>
 <translation id="3988996860813292272">เลือกเขตเวลา</translation>
@@ -3104,6 +3104,7 @@
 <translation id="4415245286584082850">ไม่พบอุปกรณ์ โปรดเปิดบทความในศูนย์ช่วยเหลือในแท็บใหม่</translation>
 <translation id="4415276339145661267">จัดการบัญชี Google</translation>
 <translation id="4415748029120993980">SECG elliptic curve secp384r1 (เรียกอีกอย่างว่า NIST P-384)</translation>
+<translation id="4416450511678320850">ไม่มีแอปที่ใช้ได้กับเนื้อหานี้</translation>
 <translation id="4416582610654027550">พิมพ์ URL ที่ถูกต้อง</translation>
 <translation id="4419409365248380979">อนุญาตให้ <ph name="HOST" /> ตั้งค่าคุกกี้ได้ตลอดเวลา</translation>
 <translation id="4421932782753506458">ฟลัฟฟี</translation>
@@ -3371,7 +3372,6 @@
 <translation id="4699172675775169585">รูปภาพและไฟล์ในแคช</translation>
 <translation id="4699357559218762027">(เรียกใช้อัตโนมัติ)</translation>
 <translation id="4701025263201366865">การลงชื่อเข้าใช้ของผู้ปกครอง</translation>
-<translation id="4702656508969495934">มองเห็นคำบรรยายสดอยู่ ใช้ปุ่มสลับหน้าต่างเพื่อโฟกัส</translation>
 <translation id="4708794300267213770">แสดงหน้าจอล็อกเมื่อปลุกให้ทำงานจากโหมดสลีป</translation>
 <translation id="4708849949179781599">ออกจาก <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">กู้คืนการตั้งค่า</translation>
@@ -3397,6 +3397,7 @@
 <translation id="473936925429402449">เลือกเนื้อหาเพิ่มเติม <ph name="CURRENT_ELEMENT" /> จาก <ph name="TOTAL_ELEMENTS" /> รายการ</translation>
 <translation id="4739639199548674512">ตั๋ว</translation>
 <translation id="4742334355511750246">ไม่ได้รับอนุญาตให้แสดงรูปภาพ</translation>
+<translation id="4742970037960872810">นำไฮไลต์ออก</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ดูวิธีอัปเดตแอปพลิเคชัน<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{เลิกซ่อนเว็บไซต์}other{เลิกซ่อนเว็บไซต์}}</translation>
 <translation id="4746351372139058112">ข้อความ</translation>
@@ -3873,7 +3874,6 @@
 <translation id="5300287940468717207">รีเซ็ตสิทธิ์ของเว็บไซต์ไหม</translation>
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5300719150368506519">ส่ง URL ของหน้าที่คุณเข้าชมไปยัง Google</translation>
-<translation id="5300814202279832142">ย้ายหน้าต่างไปที่เดสก์</translation>
 <translation id="5301751748813680278">เข้าสู่ระบบในฐานะผู้มาเยือน</translation>
 <translation id="5301954838959518834">ตกลง เข้าใจแล้ว</translation>
 <translation id="5302048478445481009">ภาษา</translation>
@@ -4606,6 +4606,7 @@
 <translation id="6136114942382973861">ปิดแถบดาวน์โหลด</translation>
 <translation id="6136287496450963112">คีย์ความปลอดภัยไม่มีการป้องกันด้วย PIN โปรดสร้าง PIN ก่อนเพื่อจัดการลายนิ้วมือ</translation>
 <translation id="6138680304137685902">ลายเซ็น X9.62 ECDSA ที่มี SHA-384</translation>
+<translation id="6138774640412545950">ส่วนขยาย "<ph name="APP_NAME" />" ต้องการแชร์เนื้อหาในหน้าจอของคุณกับ <ph name="TARGET_NAME" /></translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" /> ไม่มีเครือข่าย</translation>
 <translation id="6141988275892716286">ยืนยันการดาวน์โหลด</translation>
 <translation id="6143186082490678276">รับความช่วยเหลือ</translation>
@@ -5395,6 +5396,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> กำลังใช้กล้อง</translation>
 <translation id="701080569351381435">ดูต้นฉบับ</translation>
 <translation id="7014174261166285193">การติดตั้งล้มเหลว</translation>
+<translation id="7014480873681694324">นำไฮไลต์ออก</translation>
 <translation id="7017004637493394352">พูดว่า "Ok Google" อีกครั้ง</translation>
 <translation id="7017219178341817193">เพิ่มหน้าใหม่</translation>
 <translation id="7017354871202642555">ไม่สามารถกำหนดโหมดได้หลังจากกำหนดหน้าต่างแล้ว</translation>
@@ -5488,7 +5490,6 @@
 <translation id="711840821796638741">แสดงบุ๊กมาร์กที่มีการจัดการ</translation>
 <translation id="711902386174337313">อ่านรายการอุปกรณ์ที่คุณลงชื่อเข้าใช้</translation>
 <translation id="7120865473764644444">ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์การซิงค์ได้ กำลังลองใหม่...</translation>
-<translation id="7121362699166175603">ล้างประวัติการเข้าชมและการเติมข้อความอัตโนมัติในแถบที่อยู่เว็บ บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="7121438501124788993">โหมดของนักพัฒนาซอฟต์แวร์</translation>
 <translation id="7121728544325372695">เครื่องหมายขีดกลางอัจฉริยะ</translation>
 <translation id="7123030151043029868">ได้รับอนุญาตให้ดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติ</translation>
@@ -5661,7 +5662,6 @@
 <translation id="7334274148831027933">เปิดใช้แว่นขยายหน้าจอบางส่วน</translation>
 <translation id="7335974957018254119">ใช้การตรวจตัวสะกดสำหรับ</translation>
 <translation id="7336799713063880535">บล็อกการแจ้งเตือนอยู่</translation>
-<translation id="7337248890521463931">แสดงบรรทัดเพิ่มเติม</translation>
 <translation id="7338630283264858612">หมายเลขซีเรียลของอุปกรณ์ไม่ถูกต้อง</translation>
 <translation id="7339763383339757376">PKCS #7, ใบรับรองแบบเดี่ยว</translation>
 <translation id="7339785458027436441">ตรวจสอบตัวสะกดขณะพิมพ์</translation>
@@ -7364,7 +7364,6 @@
 <translation id="9209563766569767417">กำลังตรวจสอบการตั้งค่าคอนเทนเนอร์ Linux</translation>
 <translation id="9209689095351280025">เว็บไซต์ต่างๆ จะใช้คุกกี้ที่ติดตามคุณในอินเทอร์เน็ตไม่ได้</translation>
 <translation id="9211177926627870898">ต้องอัปเดต</translation>
-<translation id="9211490828691860325">เดสก์ทั้งหมด</translation>
 <translation id="9214510034298163263">เว็บไซต์สามารถขอแก้ไขไฟล์และโฟลเดอร์ในอุปกรณ์ของคุณได้ (แนะนำ)</translation>
 <translation id="9214520840402538427">อ๊ะ! การเริ่มแอตทริบิวต์เวลาการติดตั้งได้หมดเวลาแล้ว โปรดติดต่อตัวแทนการสนับสนุึนของคุณ</translation>
 <translation id="9214695392875603905">คัปเค้ก</translation>

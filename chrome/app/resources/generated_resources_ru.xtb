@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;Инструменты</translation>
 <translation id="1122242684574577509">Ошибка аутентификации. Нажмите, чтобы перейти на страницу входа используемой сети Wi-Fi (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">Название закладки</translation>
-<translation id="1123753900084781868">Автоматические субтитры сейчас недоступны.</translation>
 <translation id="1124772482545689468">Пользователь</translation>
 <translation id="1125550662859510761">Выглядит как <ph name="WIDTH" /> x <ph name="HEIGHT" /> (аппаратное разрешение)</translation>
 <translation id="1126809382673880764">Не защищает вас от сайтов, расширений и скачанных файлов, которые могут представлять опасность. Безопасный просмотр по-прежнему будет работать в других сервисах Google, например в Gmail и Поиске.</translation>
@@ -756,6 +755,7 @@
 <translation id="1794791083288629568">Отправить отзыв, чтобы помочь устранить ошибку</translation>
 <translation id="1795214765651529549">Использовать классическую тему</translation>
 <translation id="1799071797295057738">Расширение "<ph name="EXTENSION_NAME" />" было автоматически отключено.</translation>
+<translation id="1800973090344019061">Расширение "<ph name="APP_NAME" />" запрашивает разрешение предоставить доступ к вашему экрану.</translation>
 <translation id="1802624026913571222">Перейти в спящий режим, когда обложка закрыта</translation>
 <translation id="1802687198411089702">Страница не отвечает. Вы можете закрыть ее или дождаться ответа сервера.</translation>
 <translation id="1803531841600994172">Язык перевода</translation>
@@ -950,7 +950,6 @@
 <translation id="2010501376126504057">Совместимые устройства</translation>
 <translation id="2016574333161572915">Оборудование Google Meet готово к настройке.</translation>
 <translation id="2017334798163366053">Запретить сбор данных о производительности</translation>
-<translation id="2017836877785168846">Будет удалена история и варианты автозаполнения в адресной строке.</translation>
 <translation id="2018352199541442911">Внешнее запоминающее устройство не поддерживается.</translation>
 <translation id="2019718679933488176">Открыть аудио в новой вкладке</translation>
 <translation id="2020183425253392403">Показать настройки сетевых адресов</translation>
@@ -1355,6 +1354,7 @@
 <translation id="2464089476039395325">HTTP-прокси</translation>
 <translation id="2465237718053447668">По правилам домена <ph name="DOMAIN" /> вам сейчас нужно скачать обновление по Wi-Fi. Если хотите, используйте подключение с тарификацией, но в этом случае может взиматься плата за передачу данных.</translation>
 <translation id="2467267713099745100">Сеть <ph name="NETWORK_TYPE" /> отключена</translation>
+<translation id="2467755475704469005">Нет устройств. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Ускорение прокрутки сенсорной панели</translation>
 <translation id="2468205691404969808">Использовать файлы cookie, чтобы запомнить ваши предпочтения, даже если вы не открываете эти страницы</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
@@ -2382,6 +2382,7 @@
 <translation id="3608576286259426129">Предварительный просмотр фото</translation>
 <translation id="3610369246614755442">Вентилятору док-станции необходимо техническое обслуживание</translation>
 <translation id="361106536627977100">Данные Flash</translation>
+<translation id="3611655097742243705">Найдите приложения в Google Play.</translation>
 <translation id="3612673635130633812">Скачано с помощью расширения &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Показать папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="3613422051106148727">&amp;Открыть в новой вкладке</translation>
@@ -2646,7 +2647,6 @@
 <translation id="3874164307099183178">Включить Google Ассистента</translation>
 <translation id="3877075909000773256">Настройки функции "Обмен с окружением" для устройства пользователя <ph name="USER_NAME" /> с аккаунтом <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Диспетчер загрузки</translation>
-<translation id="3881478300875776315">Показать меньше строк</translation>
 <translation id="3882165008614329320">Видео с камеры или из файла</translation>
 <translation id="3884152383786131369">Для веб-контента, доступного на нескольких языках, будет использоваться первый подходящий вариант из списка ниже. Эти настройки синхронизированы с настройками браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Обновлениями управляет администратор</translation>
@@ -2718,6 +2718,7 @@
 <translation id="3943494825379372497">Восстановить приложения и страницы?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Вставить</translation>
+<translation id="3945513714196326460">Сократите название.</translation>
 <translation id="3948116654032448504">&amp;Найти картинку (<ph name="SEARCH_ENGINE" />)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> может изменять файлы в указанных ниже папках.</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2764,7 +2765,6 @@
 <translation id="3984159763196946143">Не удалось запустить демонстрационный режим</translation>
 <translation id="3984431586879874039">Разрешить этому сайту просматривать данные вашего электронного ключа?</translation>
 <translation id="398477389655464998">Копировать ссылку на выделенный текст</translation>
-<translation id="3986705137476756801">Отключить автоматические субтитры</translation>
 <translation id="3987544746655539083">Не сообщать этому сайту, где я нахожусь</translation>
 <translation id="3987938432087324095">Извините, не слышно.</translation>
 <translation id="3988996860813292272">Выбор часового пояса</translation>
@@ -3104,6 +3104,7 @@
 <translation id="4415245286584082850">Устройства не найдены. Открыть статью Справочного центра в новой вкладке.</translation>
 <translation id="4415276339145661267">Перейти в настройки аккаунта Google</translation>
 <translation id="4415748029120993980">Эллиптическая кривая SECG secp384r1 (она же NIST P-384)</translation>
+<translation id="4416450511678320850">Нет подходящих приложений</translation>
 <translation id="4416582610654027550">Введите действительный URL.</translation>
 <translation id="4419409365248380979">Разрешить сайту <ph name="HOST" /> сохранять файлы cookie</translation>
 <translation id="4421932782753506458">Пушистик</translation>
@@ -3371,7 +3372,6 @@
 <translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
 <translation id="4699357559218762027">(автозапуск)</translation>
 <translation id="4701025263201366865">Вход для родителя</translation>
-<translation id="4702656508969495934">Отображаются автоматические субтитры. Чтобы открыть их, используйте переключатель окон.</translation>
 <translation id="4708794300267213770">Показывать заблокированный экран при выходе из спящего режима</translation>
 <translation id="4708849949179781599">Выйти из <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Восстановить исходные настройки</translation>
@@ -3397,6 +3397,7 @@
 <translation id="473936925429402449">Выбрано, показан дополнительный контент на карточке <ph name="CURRENT_ELEMENT" /> из <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Билеты</translation>
 <translation id="4742334355511750246">Запретить сайтам показывать изображения</translation>
+<translation id="4742970037960872810">Снять выделение</translation>
 <translation id="4743260470722568160">Подробнее о том, <ph name="BEGIN_LINK" />как обновлять приложения<ph name="END_LINK" />…</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Включить звук на сайте}one{Включить звук на сайтах}few{Включить звук на сайтах}many{Включить звук на сайтах}other{Включить звук на сайтах}}</translation>
 <translation id="4746351372139058112">Сообщения</translation>
@@ -3873,7 +3874,6 @@
 <translation id="5300287940468717207">Сбросить все разрешения сайтов?</translation>
 <translation id="5300589172476337783">Показать</translation>
 <translation id="5300719150368506519">Отправлять в Google URL страниц, которые вы посещаете</translation>
-<translation id="5300814202279832142">Переместить окно на рабочий стол</translation>
 <translation id="5301751748813680278">Вы входите как гость.</translation>
 <translation id="5301954838959518834">ОК</translation>
 <translation id="5302048478445481009">Язык</translation>
@@ -4606,6 +4606,7 @@
 <translation id="6136114942382973861">Закрыть панель загрузок</translation>
 <translation id="6136287496450963112">Ваш электронный ключ не защищен PIN-кодом. Чтобы управлять отпечатками пальцев, создайте PIN-код.</translation>
 <translation id="6138680304137685902">Подпись ECDSA X9.62 с SHA-384</translation>
+<translation id="6138774640412545950">Расширение "<ph name="APP_NAME" />" запрашивает разрешение предоставить сайту <ph name="TARGET_NAME" /> доступ к вашему экрану.</translation>
 <translation id="6138894911715675297">Сеть <ph name="NETWORK_TYPE" />, нет доступа</translation>
 <translation id="6141988275892716286">Подтвердите скачивание</translation>
 <translation id="6143186082490678276">Справка</translation>
@@ -5395,6 +5396,7 @@
 <translation id="7009709314043432820">Приложение "<ph name="APP_NAME" />" использует камеру</translation>
 <translation id="701080569351381435">Просмотр исходного кода</translation>
 <translation id="7014174261166285193">Установка не выполнена.</translation>
+<translation id="7014480873681694324">Снять выделение</translation>
 <translation id="7017004637493394352">Скажите "Окей, Google" ещё раз</translation>
 <translation id="7017219178341817193">Добавить страницу</translation>
 <translation id="7017354871202642555">Нельзя настроить режим после настройки окна.</translation>
@@ -5488,7 +5490,6 @@
 <translation id="711840821796638741">Показать управляемые закладки</translation>
 <translation id="711902386174337313">Доступ к списку устройств, на которых выполнен вход</translation>
 <translation id="7120865473764644444">Ошибка синхронизации: отсутствует подключение к серверу. Повторная попытка…</translation>
-<translation id="7121362699166175603">Удаление истории и вариантов автозаполнения в адресной строке. Информация о других ваших действиях в Интернете может также храниться на странице <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Режим разработчика</translation>
 <translation id="7121728544325372695">Умные переносы</translation>
 <translation id="7123030151043029868">Разрешить сайтам автоматически скачивать несколько файлов</translation>
@@ -5661,7 +5662,6 @@
 <translation id="7334274148831027933">Включить закрепленную лупу</translation>
 <translation id="7335974957018254119">Для каких языков применяется проверка правописания</translation>
 <translation id="7336799713063880535">Заблокировано.</translation>
-<translation id="7337248890521463931">Показать больше строк</translation>
 <translation id="7338630283264858612">Серийный номер устройства недействителен.</translation>
 <translation id="7339763383339757376">PKCS #7, единый сертификат</translation>
 <translation id="7339785458027436441">Проверять правописание при наборе текста</translation>
@@ -7366,7 +7366,6 @@
 <translation id="9209563766569767417">Проверка настроек контейнера Linux</translation>
 <translation id="9209689095351280025">Сайты не могут использовать файлы cookie, которые отслеживают ваши действия в Интернете.</translation>
 <translation id="9211177926627870898">Требуется обновление</translation>
-<translation id="9211490828691860325">Все рабочие столы</translation>
 <translation id="9214510034298163263">Разрешить сайтам отправлять запрос на редактирование файлов или папок на устройстве (рекомендуется)</translation>
 <translation id="9214520840402538427">К сожалению, срок инициализации для атрибутов времени установки истек. Обратитесь в службу поддержки.</translation>
 <translation id="9214695392875603905">Кекс</translation>

@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">Now</translation>
 <translation id="2172688499998841696">প্ৰতিচ্ছবিৰ বিৱৰণ অফ আছে</translation>
 <translation id="2175927920773552910">কিউআৰ ক’ড</translation>
-<translation id="2181298861158186289">ক্লিপব’ৰ্ডৰ সমল লুকুৱাওক</translation>
 <translation id="218608176142494674">শ্বেয়াৰ কৰি থকা হৈছে</translation>
 <translation id="2195339740518523951">Chromeৰ আটাইতকৈ শক্তিশালী সুৰক্ষা লাভ কৰক</translation>
 <translation id="2200113223741723867">ব্যৱহাৰৰ ডেটা শ্বেয়াৰ কৰাটো পৰিচালনা কৰক</translation>
@@ -841,7 +840,6 @@
 <translation id="6539092367496845964">কিবা ভুল হ’ল। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{১ ঘণ্টাৰ আগত পৰীক্ষা কৰা হৈছিল}one{# ঘণ্টাৰ আগত পৰীক্ষা কৰা হৈছিল}other{# ঘণ্টাৰ আগত পৰীক্ষা কৰা হৈছিল}}</translation>
 <translation id="6545017243486555795">সকলো ডেটা মচক</translation>
-<translation id="6549142516027084053">ক্লিপব’ৰ্ডৰ সমল প্ৰকাশ কৰক</translation>
 <translation id="6560414384669816528">Sogouৰ জৰিয়তে সন্ধান কৰক</translation>
 <translation id="656065428026159829">অধিক চাওক</translation>
 <translation id="6565959834589222080">উপলব্ধ হ’লে ৱাই-ফাই ব্যৱহাৰ কৰা হয়</translation>
@@ -934,7 +932,6 @@
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="7187993566681480880">আপোনাক Chromeত সুৰক্ষিত কৰি ৰাখে আৰু আপুনি ছাইন ইন হৈ থকা অৱস্থাত Googleৰ অন্য এপ্‌সমূহত আপোনাৰ সুৰক্ষা উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ’ব পাৰে।</translation>
 <translation id="718926126787620637">পূৰ্ণ উচ্চতাত খোলা বুকমাৰ্ক ফ'ল্ডাৰৰ সূচী</translation>
-<translation id="7189372733857464326">Google Play Services আপডে'ট সম্পূৰ্ণ হোৱালৈ অপেক্ষা কৰি থকা হৈছে</translation>
 <translation id="7191430249889272776">নেপথ্যত খোলা থকা টেব।</translation>
 <translation id="7233236755231902816">আপোনাৰ ভাষাত ৱেবটো চাবলৈ, Chromeৰ সকলোতকৈ শেহতীয়া সংস্কৰণটো ব্যৱহাৰ কৰক</translation>
 <translation id="7248069434667874558">নিশ্চিত হৈ লওক যে Chromeত <ph name="TARGET_DEVICE_NAME" />ৰ ছিংক অন কৰা আছে</translation>

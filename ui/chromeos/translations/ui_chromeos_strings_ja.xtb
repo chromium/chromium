@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">シーク スライダー</translation>
 <translation id="1404323374378969387">ノルウェー語</translation>
 <translation id="1430915738399379752">印刷</translation>
+<translation id="1433628812591023318">Parallels Desktop にファイルをドロップするには [Windows ファイル] にファイルを移動する必要があります。</translation>
 <translation id="1435838927755162558">Parallels Desktop とのフォルダ共有</translation>
 <translation id="1467432559032391204">左</translation>
 <translation id="1471718551822868769">スロバキア語</translation>
@@ -611,6 +612,7 @@
 <translation id="7417453074306512035">エチオピア語キーボード</translation>
 <translation id="7417705661718309329">Google マップ</translation>
 <translation id="7460898608667578234">ウクライナ語</translation>
+<translation id="7486315294984620427">Parallels Desktop にファイルをドロップするには、[Windows ファイル] にファイルをコピーする必要があります。</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" />が見つかりました
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google ドライブ<ph name="END_LINK" />にバックアップできます</translation>

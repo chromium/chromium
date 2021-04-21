@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">اکنون</translation>
 <translation id="2172688499998841696">توضیحات تصویر خاموش است</translation>
 <translation id="2175927920773552910">رمزینه پاسخ‌سریع</translation>
-<translation id="2181298861158186289">پنهان کردن محتوای بریده‌دان</translation>
 <translation id="218608176142494674">هم‌رسانی</translation>
 <translation id="2195339740518523951">‏بهره‌مندی از بالاترین سطح امنیت در Chrome</translation>
 <translation id="2200113223741723867">مدیریت هم‌رسانی داده‌های استفاده</translation>
@@ -248,6 +247,7 @@
 <translation id="2612676031748830579">شماره کارت</translation>
 <translation id="2625189173221582860">گذرواژه کپی شد</translation>
 <translation id="2631006050119455616">ذخیره شده</translation>
+<translation id="2645657967708199252">اتصال <ph name="CONNECTION_TYPE" /> ممکن است سرعت بارگیری شما را کاهش دهد</translation>
 <translation id="2647434099613338025">افزودن زبان</translation>
 <translation id="2650751991977523696">فایل دوباره بارگیری شود؟</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# فایل صوتی}one{# فایل صوتی}other{# فایل صوتی}}</translation>
@@ -260,6 +260,7 @@
 <translation id="2718846868787000099">برای نشان دادن محتوا به زبان‌های دلخواهتان، سایت‌هایی که بازدید می‌کنید می‌توانند اولویت‌هایتان را ببینند</translation>
 <translation id="2723001399770238859">صدا</translation>
 <translation id="2728754400939377704">به‌ترتیب سایت</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">برای جستجوی فوری، روی کلمه‌ای ضربه بزنید یا اقدام‌های مرتبط را ببینید</translation>
 <translation id="2760989362628427051">روشن شدن طرح زمینه تیره وقتی طرح زمینه تیره دستگاه یا «بهینه‌سازی باتری» روشن است</translation>
 <translation id="2762000892062317888">هم‌اکنون</translation>
@@ -436,6 +437,7 @@
 <translation id="3943557322767080599">‏درخواست‌های ورود به سیستم Chrome را وقتی به سیستم «حساب Google» خود وارد می‌شوید نمایش می‌دهد</translation>
 <translation id="395206256282351086">پیشنهادهای جستجو و سایت غیرفعال است</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{‏وقتی آماده شدید، Chrome صفحه را بار می‌کند}one{‏وقتی آماده شدید، Chrome صفحه‌ها را بار می‌کند}other{‏وقتی آماده شدید، Chrome صفحه‌ها را بار می‌کند}}</translation>
+<translation id="3962957115499249330">‏هنگام شروع این بارگیری ازطریق Wi-Fi، اعلانی خواهید دید.</translation>
 <translation id="3963007978381181125">‏رمزگذاری عبارت ورود شامل روش‌های پرداخت و نشانی‌های موجود در Google Pay نمی‌شود. فقط افرادی که عبارت عبورتان را داشته باشند می‌توانند داده‌های رمزگذاری‌شده‌تان را بخوانند. عبارت عبور به Google ارسال یا در سرورهای آن ذخیره نمی‌شود. اگر عبارت عبورتان را فراموش کنید یا بخواهید این تنظیم را تغییر دهید، باید همگام‌سازی را بازنشانی کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">‏Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند</translation>
 <translation id="3974987681202239636">‏<ph name="APP_NAME" /> در Chrome باز می‌شود. با ادامه دادن، با <ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Google Chrome و سیستم‌عامل Chrome<ph name="END_LINK2" /> موافقت می‌کنید. <ph name="BEGIN_LINK3" />اعلان حریم‌خصوصی برای «حساب‌های Google» مدیریت‌شده با Family Link<ph name="END_LINK3" /> نیز اعمال می‌شود.</translation>
@@ -479,6 +481,7 @@
 <translation id="4256782883801055595">مجوزهای متن‌باز</translation>
 <translation id="4263656433980196874">رابط کاربری رضایت برای جستجوی گفتاری «دستیار» به‌صورت کامل باز شد</translation>
 <translation id="4269820728363426813">کپی نشانی پیوند</translation>
+<translation id="4290281343757112331">بعداً بارگیری شود؟</translation>
 <translation id="4298388696830689168">سایت‌های مرتبط</translation>
 <translation id="4303044213806199882"><ph name="CURRENT_TIMESTAMP_MS" />chrome_screenshot_‎</translation>
 <translation id="4307992518367153382">موارد اصلی</translation>
@@ -541,6 +544,7 @@
 <translation id="4698034686595694889">مشاهده آفلاین در <ph name="APP_NAME" /></translation>
 <translation id="4699172675775169585">تصاویر و فایل‌های قرار گرفته در حافظه پنهان</translation>
 <translation id="4714588616299687897">صرفه‌جویی تا ۶۰ درصد داده‌ها</translation>
+<translation id="4716066120200945007">دنبال می‌کنید</translation>
 <translation id="4719927025381752090">پیشنهاد برای ترجمه</translation>
 <translation id="4720023427747327413">بازکردن در <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">‏به بهبود Chrome کمک کنید. <ph name="BEGIN_LINK" />در نظرسنجی شرکت کنید<ph name="END_LINK" /></translation>
@@ -621,6 +625,7 @@
 <translation id="5191251636205085390">با فناوری‌های جدیدی که قرار است جایگزین کوکی‌های شخص ثالث شود آشنا شوید و آن‌ها را کنترل کنید</translation>
 <translation id="5193988420012215838">در بریده‌دان کپی شد</translation>
 <translation id="5199929503336119739">نمایه کاری</translation>
+<translation id="5201464744567315552">هنگام شروع این بارگیری در <ph name="TIME" />، اعلانی خواهید دید.</translation>
 <translation id="5204967432542742771">گذرواژه را وارد کنید</translation>
 <translation id="5210286577605176222">رفتن به برگه قبلی</translation>
 <translation id="5210365745912300556">بستن برگه</translation>
@@ -631,6 +636,7 @@
 <translation id="5230560987958996918"><ph name="SITE" /> می‌خواهد دستگاه‌های «بلوتوث» اطراف را جستجو کند. دستگاه‌های زیر پیدا شدند:</translation>
 <translation id="5233638681132016545">برگه جدید</translation>
 <translation id="5250483651202458397">نماگرفت. برای بستن ضربه بزنید.</translation>
+<translation id="5262378156578470238">هنگام شروع این بارگیری در <ph name="DATE" />، اعلانی خواهید دید.</translation>
 <translation id="526421993248218238">این صفحه بار نشد</translation>
 <translation id="5271967389191913893">دستگاه نمی‌تواند محتوا را برای بارگیری باز کند.</translation>
 <translation id="5292796745632149097">ارسال به</translation>
@@ -842,7 +848,6 @@
 <translation id="6539092367496845964">مشکلی پیش آمد. بعداً دوباره امتحان کنید.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{آخرین بررسی: ۱ ساعت قبل}one{آخرین بررسی: # ساعت قبل}other{آخرین بررسی: # ساعت قبل}}</translation>
 <translation id="6545017243486555795">پاک کردن همه داده‌ها</translation>
-<translation id="6549142516027084053">نمایش محتوای بریده‌دان</translation>
 <translation id="6560414384669816528">‏جستجو با Sogou</translation>
 <translation id="656065428026159829">موارد بیشتر</translation>
 <translation id="6565959834589222080">‏استفاده از Wi-Fi هنگام دردسترس بودن</translation>
@@ -912,6 +917,7 @@
 <translation id="6981982820502123353">دسترس‌پذیری</translation>
 <translation id="6989267951144302301">بارگیری نشد</translation>
 <translation id="6995899638241819463">اگر گذرواژه‌ها دراثر سرقت اطلاعات شبکه لورفته باشند، به شما اطلاع داده شود</translation>
+<translation id="7001056293070445572">این فایل بزرگ است (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">راه‌اندازی اولیه همگام‌سازی کامل نشد. همگام‌سازی خاموش است.</translation>
 <translation id="7022756207310403729">بازکردن در مرورگر</translation>
 <translation id="702463548815491781">‏توصیه در زمانی‌که TalkBack یا «دسترسی کلیدی» روشن است</translation>
@@ -936,7 +942,6 @@
 <translation id="7180611975245234373">بازخوانی</translation>
 <translation id="7187993566681480880">‏وقتی به سیستم وارد شده باشید، امنیت شما را در Chrome حفظ می‌کند و ممکن است برای بهبود امنیت شما در برنامه‌های دیگر Google استفاده شود.</translation>
 <translation id="718926126787620637">فهرست پوشه‌های نشانک به‌صورت کامل باز شد</translation>
-<translation id="7189372733857464326">‏در انتظار «خدمات Google Play» برای اتمام به‌روزرسانی است</translation>
 <translation id="7191430249889272776">برگه در پس‌زمینه باز شد.</translation>
 <translation id="7233236755231902816">‏برای اینکه وب را به زبان خود ببینید، آخرین نسخه Chrome را دریافت کنید</translation>
 <translation id="7248069434667874558">‏مطمئن شوید همگام‌سازی <ph name="TARGET_DEVICE_NAME" /> در Chrome روشن باشد</translation>

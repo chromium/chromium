@@ -446,6 +446,7 @@
 <translation id="5782227691023083829">Перевод...</translation>
 <translation id="5803566855766646066">Удалить новую карту?</translation>
 <translation id="5816228676161003208">Это нужно, чтобы использовать голосовой поиск</translation>
+<translation id="581659025233126501">Включить синхронизацию</translation>
 <translation id="5819208479324046259">Устройством управляет <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Поисковая система</translation>
 <translation id="5854790677617711513">Сохраненные более 30 дней назад</translation>
@@ -493,6 +494,7 @@
 <translation id="6196207969502475924">Голосовой поиск</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Закрыть {COUNT} вкладку}one{Закрыть {COUNT} вкладку}few{Закрыть {COUNT} вкладки}many{Закрыть {COUNT} вкладок}other{Закрыть {COUNT} вкладки}}</translation>
 <translation id="6219688215832490856">Никогда не переводить</translation>
+<translation id="6223816392543092032">Синхронизировать закладки, историю, пароли и другие настройки на всех ваших устройствах</translation>
 <translation id="6254066287920239840">Открывать ссылки в приложении, а не в браузере.</translation>
 <translation id="6255097610484507482">Изменение данных кредитной карты</translation>
 <translation id="6284652193729350524">Предлагать перевести страницы на этом языке (<ph name="LANGUAGE" />)</translation>
@@ -525,6 +527,7 @@
 <translation id="6445981559479772097">Сообщение отправлено</translation>
 <translation id="6447842834002726250">Файлы сookie</translation>
 <translation id="6453018583485750254">Пароли не проверялись.</translation>
+<translation id="6459307836338400162">Другие настройки, связанные с конфиденциальностью, безопасностью и сбором данных, можно найти в разделах <ph name="BEGIN_LINK" />Синхронизация<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Сервисы Google<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Откр. в режиме инкогнито</translation>
 <translation id="6464397691496239022">Сайты могут использовать файлы cookie для вашего удобства, например сохранять информацию о товарах в корзине или о том, что вы вошли в аккаунт.
 
@@ -708,6 +711,7 @@
 <translation id="8281886186245836920">Пропустить</translation>
 <translation id="8283172974887967105">Да</translation>
 <translation id="8299417921174340354">Чтобы использовать пароли, установите на устройстве код доступа.</translation>
+<translation id="83100941411593607">Вход отключен</translation>
 <translation id="8319076807703933069">Новый поиск</translation>
 <translation id="8323906514956095947">Нажмите и удерживайте, чтобы открыть список дополнительных действий с вкладками</translation>
 <translation id="8328777765163860529">Закрыть все</translation>

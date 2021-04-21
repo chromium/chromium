@@ -62,7 +62,7 @@
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">सक्रियताको वस्तुस्थिति</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">नजिकैका यन्त्रहरू पत्ता लगाउन ब्लुटुथ सक्रिय गर्नुहोस्</translation>
+<translation id="2338501278241028356">नजिकैका यन्त्रहरू पत्ता लगाउन ब्लुटुथ अन गर्नुहोस्</translation>
 <translation id="2364498172489649528">सुरक्षा जाँचमा पास भयो</translation>
 <translation id="2391082728065870591">फिडब्याक रिपोर्ट पठाउनुहोस्</translation>
 <translation id="2418150275289244458">सेटिङमा गई खोल्नुहोस्</translation>
@@ -75,7 +75,7 @@
 <translation id="2585245331261708204">Chrome OS मा नयाँ के छ?</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2740531572673183784">ठिक छ</translation>
-<translation id="2751739896257479635">EAP चरण २ प्रमाणीकरण</translation>
+<translation id="2751739896257479635">EAP दोस्रो चरणको प्रमाणीकरण</translation>
 <translation id="2789486458103222910">ठिक छ</translation>
 <translation id="2805756323405976993">एप्स</translation>
 <translation id="2862104018715411648">स्क्यानरमा आफ्नो कागजात राख्नुहोस् र स्क्यान गर्न थाल्न स्क्यान गर्नुहोस् विकल्प चयन गर्नुहोस्</translation>
@@ -162,7 +162,7 @@
 <translation id="467715984478005772">फायरवालका कारणले हुन सक्छ</translation>
 <translation id="4691278870498629773">रोकियो - प्रिन्टरमा ट्रे छैन</translation>
 <translation id="469379815867856270">सिग्नलको क्षमता</translation>
-<translation id="4707579418881001319">L2TP/IPsec + प्रयोगकर्ता प्रमाणपत्र</translation>
+<translation id="4707579418881001319">L2TP/IPsec + प्रयोगकर्ता सर्टिफिकेट</translation>
 <translation id="4731797938093519117">अभिभावकको पहुँच</translation>
 <translation id="4773299976671772492">रोकियो</translation>
 <translation id="4794140124556169553">तपाईंले CPU को जाँच गर्नुभयो भने तपाईंको प्रणालीको कार्यसम्पादनमा असर पर्न सक्छ</translation>
@@ -200,6 +200,7 @@
 <translation id="5275828089655680674">निदानसम्बन्धी रुटिनहरू पुनः सञ्चालन गर्नुहोस्</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">संस्करण <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300814202279832142">विन्डो सारेर डेस्कमा लैजानुहोस्</translation>
 <translation id="5315873049536339193">पहिचान</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5318334351163689047">TCP सम्बन्धी अनुरोध गर्न सकिएन</translation>
@@ -383,6 +384,7 @@
 <translation id="9149391708638971077">मेमोरीसम्बन्धी परीक्षण गर्नुहोस्</translation>
 <translation id="9173638680043580060">एक मिनेटभन्दा कम समय बाँकी छ</translation>
 <translation id="9190063653747922532">L2TP/IPsec + पहिले नै साझा गरिएको कुञ्जी</translation>
+<translation id="9211490828691860325">सबै डेस्कहरू</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">सक्रिय छैन</translation>
 <translation id="960719561871045870">अपरेटरको कोड</translation>

@@ -1687,6 +1687,13 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3177802893484440532">Richiedi controlli OCSP/CRL online per i trust anchor</translation>
 <translation id="3184161739683646075">Controlla la modalità di DNS over HTTPS</translation>
 <translation id="3185009703220253572">a partire dalla versione <ph name="SINCE_VERSION" /></translation>
+<translation id="3185895671618336039">Consente di configurare le impostazioni del periodo di validità dei dati di navigazione per <ph name="PRODUCT_NAME" />. Questo criterio consente agli amministratori di configurare (per tipo di dati) quando il browser dovrà eliminare i dati. Questa funzionalità è utile per i clienti che gestiscono dati cliente sensibili. Il criterio ha effetto soltanto se il criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> è impostato su vero.
+
+      I tipi di dati disponibili sono i seguenti: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> e <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
+
+      Il browser rimuoverà automaticamente i dati dei tipi selezionati che sono antecedenti al periodo indicato (<ph name="TIME_TO_LIVE_IN_HOURS" />). Il valore minimo impostabile è 1 ora.
+
+      I dati scaduti vengono eliminati 15 secondi dopo l'avvio del browser, dopodiché ogni ora mentre il browser è in esecuzione.</translation>
 <translation id="3192902750888034827">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" /> specifica l'URL utilizzato dal motore di ricerca per fornire una pagina Nuova scheda.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" /> non viene configurato, non è fornita alcuna pagina Nuova scheda.</translation>
@@ -4566,6 +4573,11 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       Se il criterio non viene impostato, la shelf verrà posizionata per impostazione predefinita nella parte inferiore dello schermo, ma l'utente potrà cambiare la posizione.</translation>
 <translation id="7040229947030068419">Valore di esempio:</translation>
 <translation id="7044883996351280650">Controlla il servizio backup e ripristino di Android</translation>
+<translation id="7060497964524144376">Se il criterio viene impostato su Attivato, Navigazione sicura considera attendibili i domini indicati. Non esegue alcun controllo su questi domini per risorse pericolose come phishing, malware o software indesiderato. Il servizio di protezione dei download di Navigazione sicura non esegue alcun controllo sui download ospitati su questi domini. Il servizio di protezione tramite password di Navigazione sicura non esegue alcun controllo per il riutilizzo delle password.
+
+      Se il criterio non viene configurato, la protezione predefinita di Navigazione sicura viene applicata a tutte le risorse.
+
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="7063895219334505671">Consenti popup su questi siti</translation>
 <translation id="706669471845501145">Consenti la visualizzazione di notifiche desktop da parte dei siti</translation>
 <translation id="7070525176564511548">Richiedi l'inserimento della password ogni settimana (168 ore)</translation>
@@ -6165,6 +6177,7 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 <translation id="927444535723396977">Se il criterio è impostato su 1, i siti web possono eseguire JavaScript. Se il criterio è impostato su 2, JavaScript viene negato.
 
       Se non viene configurato, JavaScript è consentito, ma gli utenti possono cambiare l'impostazione.</translation>
+<translation id="928189505080808353">Porta 554 (scadenza: 15/10/2021)</translation>
 <translation id="929549405492388749">Se questo criterio viene impostato su true, viene forzata l'attivazione della funzionalità AppCache, anche se in Chrome non è disponibile per impostazione predefinita.
 
       Se non viene impostato o viene impostato su false, la funzionalità AppCache dipenderà dalle impostazioni predefinite di Chrome.</translation>

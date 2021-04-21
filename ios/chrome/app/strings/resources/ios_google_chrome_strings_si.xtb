@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">ඔබගේ ස්ථානය දැන ගැනීමට ඔබ Chrome හට ඉඩ දුනහොත්, Chrome එය ඔබ ඉඩ දෙන ඕනෑම අඩවියකට යවයි. ඔබට පෙන්වීමට අවට ඇති සාප්පු හෝ පුවත් වැනි ස්ථානීය තොරතුරු ඇති විට අඩවි ඔබගේ ස්ථානය ඉල්ලා සිටිය හැකිය.</translation>
 <translation id="6036420186814142909">Google Chrome සතුව ඔබේ අන්තර්ජාල දත්ත සහ ඔබට කොතරම් ඉක්මනින් වෙබ් පිටු පූරණය කළ හැකිද යන්න කළමනාකරණය කිරීමට උදවු වන විශේෂාංග ඇත.
 <ph name="BEGIN_LINK" />තව දැනගන්න<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Chrome පිරීමට ඉඩ දෙන්න</translation>
 <translation id="6181930887571472871">Chrome වෙත මාරු වන්න</translation>
 <translation id="6238746320622508509">Chrome හට ඔබගේ අප්‍රකට ටැබ අගුලු දැමීමට ඉඩ දෙන්න.</translation>
 <translation id="6573431926118603307">ඔබේ වෙනත් උපාංගවල ඔබ Chrome හි විවෘත කර ඇති ටැබ මෙහි දිස් වනු ඇත.</translation>
@@ -95,5 +96,6 @@
   3. Chrome තෝරන්න.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chrome සමඟ සුරක්ෂිතව සිටින්න</translation>
+<translation id="8772179140489533211">Chrome වෙත පිරීමට ප්‍රේරණ පෙන්වයි.</translation>
 <translation id="9112744793181547300">Chrome පෙරනිමිය ලෙස සකසන්නද?</translation>
 </translationbundle>

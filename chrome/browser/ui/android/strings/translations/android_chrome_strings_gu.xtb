@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">હમણાં</translation>
 <translation id="2172688499998841696">છબીના વર્ણનોની સુવિધા બંધ છે</translation>
 <translation id="2175927920773552910">QR કોડ</translation>
-<translation id="2181298861158186289">ક્લિપબોર્ડનું કન્ટેન્ટ છુપાવો</translation>
 <translation id="218608176142494674">શેરિંગ</translation>
 <translation id="2195339740518523951">Chromeની સૌથી વધુ મજબૂત સુરક્ષા મેળવો</translation>
 <translation id="2200113223741723867">વપરાશના ડેટાનું શેરિંગ મેનેજ કરો</translation>
@@ -455,7 +454,7 @@
 <translation id="4062305924942672200">કાનુની માહિતી</translation>
 <translation id="4084682180776658562">બુકમાર્ક</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> તરફથી - <ph name="BEGIN_DEEMPHASIZED" />Google દ્વારા વિતરિત <ph name="END_DEEMPHASIZED" /></translation>
-<translation id="4095146165863963773">ઍપ મેમરીન ડેટા ડિલીટ કરી દઈએ?</translation>
+<translation id="4095146165863963773">ઍપનો ડેટા ડિલીટ કરીએ?</translation>
 <translation id="4095189195365058471">પછી વાંચો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">ઉપયોગનાં આંકડા અને ક્રૅશ રિપોર્ટ Googleને મોકલીને Chromeને વધુ સારું બનાવવામાં મદદ કરો.</translation>
 <translation id="410351446219883937">ઑટોપ્લે</translation>
@@ -841,7 +840,6 @@
 <translation id="6539092367496845964">કંઈક ખોટું થયું હતું. થોડીવાર પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 કલાક પહેલાં ચેક કર્યું}one{# કલાક પહેલાં ચેક કર્યું}other{# કલાક પહેલાં ચેક કર્યું}}</translation>
 <translation id="6545017243486555795">બધો ડેટા સાફ કરો</translation>
-<translation id="6549142516027084053">ક્લિપબોર્ડનું કન્ટેન્ટ બતાવો</translation>
 <translation id="6560414384669816528">Sogou થી શોધો</translation>
 <translation id="656065428026159829">વધુ જુઓ</translation>
 <translation id="6565959834589222080">ઉપલબ્ધ હોય ત્યારે વાઇ-ફાઇનો ઉપયોગ કરવામાં આવે છે</translation>
@@ -935,7 +933,6 @@
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7187993566681480880">તમને Chrome પર સલામત રાખે છે અને જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે Googleની અન્ય ઍપમાં તમારી સુરક્ષા બહેતર બનાવવામાં ઉપયોગમાં લેવાઈ શકે છે.</translation>
 <translation id="718926126787620637">બુકમાર્ક ફોલ્ડરોની સૂચિ સંપૂર્ણ ઊંચાઈએ ખોલી</translation>
-<translation id="7189372733857464326">Google Play સેવાઓ દ્વારા અપડેટ થવાનું સમાપ્ત કરવાની રાહ જોવામાં આવી રહી છે</translation>
 <translation id="7191430249889272776">ટેબ પૃષ્ઠભૂમિમાં ખોલવામાં આવ્યું છે.</translation>
 <translation id="7233236755231902816">વેબ તમારી ભાષામાં જોવા માટે Chromeનું એકદમ નવું વર્ઝન મેળવો</translation>
 <translation id="7248069434667874558">ખાતરી કરો કે <ph name="TARGET_DEVICE_NAME" />માં Chromeમાં સિંક ચાલુ કરેલું છે</translation>

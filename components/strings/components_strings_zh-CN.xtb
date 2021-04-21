@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">选中后，Chrome 会将您的信用卡副本存储在此设备上，以加快表单填写速度。</translation>
 <translation id="1110994991967754504">选择对<ph name="PERMISSION_NAME" />的权限</translation>
 <translation id="1113869188872983271">撤消顺序调整(&amp;U)</translation>
+<translation id="1123753900084781868">暂时无法使用实时字幕功能</translation>
 <translation id="1125573121925420732">网站在更新其安全设置期间可能会经常显示警告。此问题应该很快就会得到改进。</translation>
 <translation id="112840717907525620">策略缓存良好</translation>
 <translation id="1130564665089811311">“翻译网页”按钮，按 Enter 键即可使用“Google 翻译”服务来翻译此页面</translation>
@@ -217,6 +218,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{此服务器无法证明它是 <ph name="DOMAIN" />；其安全证书明天才会生效。出现此问题的原因可能是配置有误，或有攻击者拦截了您的连接。}other{此服务器无法证明它是 <ph name="DOMAIN" />；其安全证书 # 天后才会生效。出现此问题的原因可能是配置有误，或有攻击者拦截了您的连接。}}</translation>
 <translation id="1710259589646384581">操作系统</translation>
+<translation id="1711234383449478798">被忽略了，因为 <ph name="POLICY_NAME" /> 未设为 <ph name="VALUE" />。</translation>
 <translation id="1712552549805331520"><ph name="URL" /> 想在您的本地计算机上永久存储数据</translation>
 <translation id="1713628304598226412">纸匣 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -762,6 +764,7 @@
 <translation id="3841184659773414994">文件处理程序</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3858027520442213535">更新日期和时间</translation>
+<translation id="3881478300875776315">隐藏部分行</translation>
 <translation id="3884278016824448484">设备标识符存在冲突</translation>
 <translation id="3885155851504623709">教区</translation>
 <translation id="388632593194507180">检测到正被监控</translation>
@@ -787,6 +790,7 @@
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 已被屏蔽</translation>
 <translation id="3973357910713125165">“运行 Chrome 安全检查”按钮，按 Enter 键即可从 Chrome 设置中运行安全检查</translation>
+<translation id="3986705137476756801">暂时关闭“实时字幕”功能</translation>
 <translation id="3987405730340719549">Chrome 已确定此网站可能是虚假网站或欺诈性网站。
 
     如果您认为系统不该向您显示这条提示，请访问 https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals。</translation>
@@ -911,6 +915,7 @@
 <translation id="4377125064752653719">您尝试访问的是 <ph name="DOMAIN" />，但服务器出示的证书已被其颁发者吊销。这表明绝对不应该信任此服务器出示的安全凭据。您可能正在与攻击者进行通信。</translation>
 <translation id="4378154925671717803">电话机</translation>
 <translation id="4390472908992056574">帽檐式</translation>
+<translation id="4406883609789734330">实时字幕</translation>
 <translation id="4406896451731180161">搜索结果</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" />Cookie</translation>
 <translation id="4414290883293381923">您刚刚在一个诈骗网站中输入了密码。Chrome 建议您立即前往 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> 以及使用此密码的其他网站更改密码。</translation>
@@ -976,6 +981,7 @@
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /><ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">侧边</translation>
+<translation id="4702656508969495934">能看到“实时字幕”气泡了，使用窗口切换器可切换焦点</translation>
 <translation id="4708268264240856090">您的连接已中断</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />运行 Windows 网络诊断<ph name="END_LINK" /></translation>
@@ -1645,6 +1651,7 @@
 <translation id="733354035281974745">设备本地帐号替换</translation>
 <translation id="7333654844024768166">您刚刚在一个诈骗网站中输入了密码。Chromium 建议您立即前往 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> 以及使用此密码的其他网站更改密码。</translation>
 <translation id="7334320624316649418">恢复顺序调整(&amp;R)</translation>
+<translation id="7337248890521463931">显示更多行</translation>
 <translation id="7337706099755338005">在您的平台上不可用。</translation>
 <translation id="733923710415886693">该服务器的证书未通过证书透明度政策进行披露。</translation>
 <translation id="734600844861828519">11x15</translation>

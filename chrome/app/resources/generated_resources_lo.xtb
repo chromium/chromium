@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">ເຄື່ອງ​ມື​:</translation>
 <translation id="1122242684574577509">ການ​ຮັບ​ຮອງ​ບໍ່​ສຳ​ເລັດ. ຄ​ລິກ​ເພື່ອ​ເຂົ້າ​ເບິ່ງ​ໜ້າ​ເຂົ້າລະບົບ​ສຳ​ລັບ​ເຄືອ​ຂ່າຍ Wi-Fi ທີ່​ທ່ານ​ກຳ​ລັງ​ໃຊ້ (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">ຊື່ບຸກມາກສ໌</translation>
-<translation id="1123753900084781868">ຄຳບັນຍາຍສົດບໍ່ສາມາດໃຊ້ໄດ້ໃນຕອນນີ້</translation>
 <translation id="1124772482545689468">ຜູ້​ໃຊ້</translation>
 <translation id="1125550662859510761">ຄວາມລະອຽດ <ph name="WIDTH" /> x <ph name="HEIGHT" /> (ເດີມ)</translation>
 <translation id="1126809382673880764">ບໍ່ປົກປ້ອງທ່ານຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ເປັນອັນຕະລາຍ. ທ່ານຈະຍັງໄດ້ຮັບການປົກປ້ອງຈາກ Safe Browsing ຢູ່ບ່ອນທີ່ໃຊ້ໄດ້, ຢູ່ໃນການບໍລິການອື່ນຂອງ Google ເຊັ່ນ: Gmail ແລະ ຊອກຫາ.</translation>
@@ -947,7 +946,6 @@
 <translation id="2010501376126504057">ອຸປະກອນທີ່ເຂົ້າກັນໄດ້</translation>
 <translation id="2016574333161572915">ພ້ອມຕັ້ງຄ່າຮາດແວ Google Meet ຂອງທ່ານແລ້ວ</translation>
 <translation id="2017334798163366053">ປິດ​ໃຊ້ງານການສະສົມຂໍ້​ມູນ​ການ​ປະ​ຕິ​ບັດ</translation>
-<translation id="2017836877785168846">ລຶບລ້າງປະຫວັດ ແລະ ການເຮັດສຳເລັດອັດຕະໂນມັດໃນແຖບທີ່ຢູ່.</translation>
 <translation id="2018352199541442911">ຂໍອະໄພ, ອຸປະກອນເກັບຂໍ້ມູນທາງນອກບໍ່ຮອງຮັບໃນເວລານີ້.</translation>
 <translation id="2019718679933488176">ແລະ​ເປີດ​ສຽງ​ໃນ​ແຖ​ບ​ໃໝ່</translation>
 <translation id="2020183425253392403">ສະແດງການຕັ້ງຄ່າທີ່ຢູ່ເຄືອຂ່າຍ</translation>
@@ -2647,7 +2645,6 @@
 <translation id="3874164307099183178">ເປີດຜູ້ຊ່ວຍ Google</translation>
 <translation id="3877075909000773256">ການຕັ້ງຄ່າການແບ່ງປັນໃກ້ຄຽງສຳລັບອຸປະກອນຂອງ <ph name="USER_NAME" />, ທີ່ແບ່ງປັນພາຍໃຕ້ບັນຊີ <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">ຕົວຈັດການການດາວໂຫລດ</translation>
-<translation id="3881478300875776315">ສະແດງແຖວໜ້ອຍລົງ</translation>
 <translation id="3882165008614329320">ວິດີໂອທີ່ມີຢູ່ແລ້ວຈາກກ້ອງຖ່າຍຮູບ ຫຼື ໄຟລ໌</translation>
 <translation id="3884152383786131369">ເນື້ອຫາເວັບທີ່ມີໃຫ້ເປັນຫຼາຍພາສາຈະໃຊ້ພາສາທີ່ຮອງຮັບທຳອິດຈາກລາຍຊື່ນີ້. ການຕັ້ງຄ່າເຫຼົ່ານີ້ຊິ້ງຂໍ້ມູນກັບການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">ການອັບເດດແມ່ນຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
@@ -2766,7 +2763,6 @@
 <translation id="3984159763196946143">ບໍ່ສາມາດເລີ່ມໂໝດສາທິດໄດ້</translation>
 <translation id="3984431586879874039">ອະນຸຍາດໃຫ້ເວັບໄຊນີ້ເຫັນກະແຈຄວາມປອດໄພຂອງທ່ານບໍ?</translation>
 <translation id="398477389655464998">ສຳເນົາລິ້ງໄປຍັງໄຮໄລ້</translation>
-<translation id="3986705137476756801">ປິດຄຳບັນຍາຍສົດສຳລັບຕອນນີ້</translation>
 <translation id="3987544746655539083">ສືບຕໍ່ບລັອກບໍ່ໃຫ້ເວັບໄຊນີ້ເຂົ້າເຖິງສະຖານທີ່ຂອງທ່ານ</translation>
 <translation id="3987938432087324095">ຂໍອະໄພ, ບໍ່ໄດ້ຍິນສິ່ງນັ້ນ.</translation>
 <translation id="3988996860813292272">ເລືອກເຂດເວລາ</translation>
@@ -3374,7 +3370,6 @@
 <translation id="4699172675775169585">ຮູບ ແລະໄຟລ໌ທີ່ແຄຊ໌ແລ້ວ</translation>
 <translation id="4699357559218762027">(ເປີດໃຊ້ອັດຕະໂນມັດ)</translation>
 <translation id="4701025263201366865">ການເຂົ້າສູ່ລະບົບຂອງພໍ່ແມ່</translation>
-<translation id="4702656508969495934">ສະແດງຄຳບັນຍາຍສົດແລ້ວ, ໃຊ້ປຸ່ມສະຫຼັບໜ້າຈໍເພື່ອໂຟກັສ</translation>
 <translation id="4708794300267213770">ສະແດງໜ້າຈໍລັອກໃນເວລາຕື່ນຈາກການພັກເຄື່ອງ</translation>
 <translation id="4708849949179781599">ອອກ <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">ຟື້ນ​ຄືນການຕັ້ງຄ່າ</translation>
@@ -3877,7 +3872,6 @@
 <translation id="5300287940468717207">ຣີເຊັດການອະນຸຍາດເວັບໄຊບໍ?</translation>
 <translation id="5300589172476337783">ສະ​ແດງ​</translation>
 <translation id="5300719150368506519">ສົ່ງ URL ຂອງໜ້າຕ່າງໆທີ່ທ່ານເຂົ້າເບິ່ງໃຫ້ Google</translation>
-<translation id="5300814202279832142">ຍ້າຍໜ້າຈໍໄປຍັງໂຕະ</translation>
 <translation id="5301751748813680278">ການເຂົ້າໄປເປັນແຂກ.</translation>
 <translation id="5301954838959518834">ຕົກລົງ, ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="5302048478445481009">ພາ​ສາ</translation>
@@ -5494,7 +5488,6 @@
 <translation id="711840821796638741">ສະ​ແດງ​ບຸກມາກສ໌ທີ່​ຄຸ້ມ​ຄອງແລ້ວ</translation>
 <translation id="711902386174337313">ອ່ານລາຍຊື່ຂອງອຸປະກອນທີ່ໄດ້ລົງຊື່ເຂົ້າໃຊ້ຂອງທ່ານ</translation>
 <translation id="7120865473764644444">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຊີບເວີການຊິ້ງຂໍ້ມູນໄດ້. ກຳລັງລອງໃໝ່...</translation>
-<translation id="7121362699166175603">ລຶບລ້າງປະຫວັດ ແລະ ການປະກອບຂໍ້ມູນອັດຕະໂນມັດໃນແຖບທີ່ຢູ່. ບັນຊີ Google ຂອງທ່ານອາດຈະມີຮູບແບບອື່ນຂອງປະຫວັດການທ່ອງເວັບຢູ່ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">ໂໝດຜູ້ພັດທະນາ</translation>
 <translation id="7121728544325372695">ເຄື່ອງໝາຍຂີດກາງອັດສະລິຍະ</translation>
 <translation id="7123030151043029868">ໄດ້ຮັບອະນຸຍາດໃຫ້ດາວໂຫຼດຫຼາຍໄຟລ໌ໂດຍອັດຕະໂນມັດ</translation>
@@ -5667,7 +5660,6 @@
 <translation id="7334274148831027933">ເປີດນຳໃຊ້ແວ່ນຂະຫຍາຍທີ່ຕັ້ງໄວ້ແລ້ວ</translation>
 <translation id="7335974957018254119">ໃຊ້ການກວດການສະກົດຄໍາສຳລັບ</translation>
 <translation id="7336799713063880535">ບລັອກການແຈ້ງເຕືອນແລ້ວ.</translation>
-<translation id="7337248890521463931">ສະແດງແຖວເພີ່ມເຕີມ</translation>
 <translation id="7338630283264858612">ໝາຍເລກປະຈຳເຄື່ອງອຸປະກອນບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="7339763383339757376"># PKCS 7​, ໃບ​ຢັ້ງ​ຢືນ​ດ່ຽວ</translation>
 <translation id="7339785458027436441">ກວດການສະກົດຄໍາໃນຂະນະທີ່ພິມ</translation>
@@ -7368,7 +7360,6 @@
 <translation id="9209563766569767417">ກຳລັງກວດການຕັ້ງຄ່າກ່ອງບັນຈຸ Linux</translation>
 <translation id="9209689095351280025">ເວັບໄຊບໍ່ສາມາດໃຊ້ຄຸກກີ້ທີ່ຕິດຕາມທ່ານໃນທົ່ວເວັບໄຊໄດ້</translation>
 <translation id="9211177926627870898">ຈຳເປັນຕ້ອງອັບເດດ</translation>
-<translation id="9211490828691860325">ໂຕະທັງໝົດ</translation>
 <translation id="9214510034298163263">ເວັບໄຊສາມາດຂໍແກ້ໄຂໄຟລ໌ ແລະ ໂຟນເດີໃນອຸປະກອນຂອງທ່ານໄດ້ (ແນະນຳ)</translation>
 <translation id="9214520840402538427">ອຸ້ຍ! ການລິເລີ່ມຄຸນລັກສະນະເວລາການຕິດຕັ້ງໝົດເວລາແລ້ວ. ກະລຸນາຕິດຕໍ່ຕົວແທນຊ່ວຍເຫຼືອຂອງທ່ານ.</translation>
 <translation id="9214695392875603905">Cupcake</translation>

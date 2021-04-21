@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;Алатки</translation>
 <translation id="1122242684574577509">Проверката на успеа. Кликнете за да ја посетите страницата за пријавување за Wi-Fi мрежата што ја користите (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">Име на обележувачот</translation>
-<translation id="1123753900084781868">„Автоматски титлови“ не е достапна во моментов</translation>
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1125550662859510761">Изгледа како <ph name="WIDTH" /> x <ph name="HEIGHT" /> (матична)</translation>
 <translation id="1126809382673880764">Не ве заштитува од опасни веб-сајтови, преземања и екстензии. Сѐ уште ќе имате заштита со „Безбедно прелистување“, каде што е достапно, во другите услуги на Google, како Gmail и „Пребарување“.</translation>
@@ -755,6 +754,7 @@
 <translation id="1794791083288629568">Испратете повратни информации за да ни помогнете да го решиме проблемов.</translation>
 <translation id="1795214765651529549">Користи „Класичен“</translation>
 <translation id="1799071797295057738">Екстензијата „<ph name="EXTENSION_NAME" />“ беше автоматски оневозможена.</translation>
+<translation id="1800973090344019061">Екстензијата „<ph name="APP_NAME" />“ сака да ги сподели содржините на вашиот екран.</translation>
 <translation id="1802624026913571222">Режим во мирување кога капакот е затворен</translation>
 <translation id="1802687198411089702">Страницава не реагира. Може да почекате или да излезете.</translation>
 <translation id="1803531841600994172">Јазик на кој треба да се преведе</translation>
@@ -949,7 +949,6 @@
 <translation id="2010501376126504057">Компатибилни уреди</translation>
 <translation id="2016574333161572915">Хардверот за Google Meet е спремен за поставување</translation>
 <translation id="2017334798163366053">Оневозможи собирање податоци за изведба</translation>
-<translation id="2017836877785168846">Ги брише историјата и автоматските довршувања во лентата за адреси.</translation>
 <translation id="2018352199541442911">За жал, во моментов не го поддржуваме надворешниот уред за складирање.</translation>
 <translation id="2019718679933488176">&amp;Отвори аудио во нова картичка</translation>
 <translation id="2020183425253392403">Прикажи ги поставките за адресата на мрежата</translation>
@@ -1355,6 +1354,7 @@
 <translation id="2464089476039395325">HTTP прокси</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" /> бара веднаш да се поврзете на Wi-Fi и да преземете ажурирање. Или преземете преку врска со ограничен интернет (може да ви се наплати).</translation>
 <translation id="2467267713099745100">Мрежа со <ph name="NETWORK_TYPE" />, исклучена</translation>
+<translation id="2467755475704469005">Не е откриен уред. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Забрзување на лизгањето на подлогата за допир</translation>
 <translation id="2468205691404969808">Користи колачиња за да ги запамети вашите поставки, дури и ако не ги посетувате тие страници</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
@@ -2383,6 +2383,7 @@
 <translation id="3608576286259426129">Преглед на слика на корисник</translation>
 <translation id="3610369246614755442">Вентилаторот на приклучокот треба да се сервисира</translation>
 <translation id="361106536627977100">Флеш податоци</translation>
+<translation id="3611655097742243705">Посетете ја Play Store за да најдете повеќе апликации</translation>
 <translation id="3612673635130633812">Преземено од &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Покажи <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Отвори во нова картичка</translation>
@@ -2647,7 +2648,6 @@
 <translation id="3874164307099183178">Вклучување на „Помошникот на Google“</translation>
 <translation id="3877075909000773256">Поставки за „Споделување во близина“ за уредот на <ph name="USER_NAME" /> што споделува под сметката <ph name="USER_EMAIL" /></translation>
 <translation id="3879748587602334249">Управник со преземања</translation>
-<translation id="3881478300875776315">Прикажи помалку редови</translation>
 <translation id="3882165008614329320">Постојно видео од камера или датотека</translation>
 <translation id="3884152383786131369">Содржините од интернет што се достапни на повеќе јазици ќе го користат првиот поддржан јазик од списоков. Поставкиве се синхронизираат со поставките за прелистувачот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Вашиот администратор управува со ажурирањата</translation>
@@ -2719,6 +2719,7 @@
 <translation id="3943494825379372497">Да се вратат апликациите и страниците?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Залепи</translation>
+<translation id="3945513714196326460">Обидете се со пократко име</translation>
 <translation id="3948116654032448504">&amp;Пребарувај слика на <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> може да изменува датотеки во следниве папки</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2765,7 +2766,6 @@
 <translation id="3984159763196946143">Не може да се стартува демо-режимот</translation>
 <translation id="3984431586879874039">Дали дозволувате сајтов да го види вашиот безбедносен клуч?</translation>
 <translation id="398477389655464998">Копирај го линкот до нагласената ставка</translation>
-<translation id="3986705137476756801">Исклучете ја „Автоматски титлови“ засега</translation>
 <translation id="3987544746655539083">Продолжи да го блокираш пристапот на сајтов до локацијата</translation>
 <translation id="3987938432087324095">Извинете, не го разбрав тоа.</translation>
 <translation id="3988996860813292272">Изберете временска зона…</translation>
@@ -3105,6 +3105,7 @@
 <translation id="4415245286584082850">Не се пронајдени уреди. Отворете статија од центарот за помош во нова картичка.</translation>
 <translation id="4415276339145661267">Управувајте со сметката на Google</translation>
 <translation id="4415748029120993980">SECG елиптична крива secp384r1 (наречена NIST P-384)</translation>
+<translation id="4416450511678320850">Нема достапни апликации за содржиниве</translation>
 <translation id="4416582610654027550">Внесете валидна URL</translation>
 <translation id="4419409365248380979">Секогаш дозволи <ph name="HOST" /> да поставува колачиња</translation>
 <translation id="4421932782753506458">Fluffy</translation>
@@ -3372,7 +3373,6 @@
 <translation id="4699172675775169585">Кеширани слики и датотеки</translation>
 <translation id="4699357559218762027">(автоматско стартување)</translation>
 <translation id="4701025263201366865">Најавување на родител</translation>
-<translation id="4702656508969495934">„Автоматски титлови“ е видлива, користете префрлач на прозорци за да фокусирате</translation>
 <translation id="4708794300267213770">Прикажи заклучен екран при будење од режим на мирување</translation>
 <translation id="4708849949179781599">Излези од <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Обнови поставки</translation>
@@ -3398,6 +3398,7 @@
 <translation id="473936925429402449">Избрано, дополнителни содржини под број <ph name="CURRENT_ELEMENT" /> од вкупно <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Билети</translation>
 <translation id="4742334355511750246">Не им е дозволено да прикажуваат слики</translation>
+<translation id="4742970037960872810">Отстрани нагласување</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Дознајте како да ги ажурирате апликациите<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Вклучи звук на сајтот}one{Вклучи звук на сајтовите}other{Вклучи звук на сајтовите}}</translation>
 <translation id="4746351372139058112">Пораки</translation>
@@ -3874,7 +3875,6 @@
 <translation id="5300287940468717207">Да се ресетираат дозволите за сајтот?</translation>
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5300719150368506519">Испраќајте URL-адреси од страниците што ги посетувате до Google</translation>
-<translation id="5300814202279832142">Премести прозорец на работна површина</translation>
 <translation id="5301751748813680278">Се влегува како гостин.</translation>
 <translation id="5301954838959518834">Добро, сфатив</translation>
 <translation id="5302048478445481009">Јазик</translation>
@@ -4607,6 +4607,7 @@
 <translation id="6136114942382973861">Затвори ја лентата за преземања</translation>
 <translation id="6136287496450963112">Вашиот безбедносен клуч не е заштитен со PIN. За да управувате со отпечатоците, прво создајте PIN.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA потпис со SHA-384</translation>
+<translation id="6138774640412545950">Екстензијата „<ph name="APP_NAME" />“ сака да ги сподели содржините на вашиот екран со <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, нема мрежа</translation>
 <translation id="6141988275892716286">Потврдете го преземањето</translation>
 <translation id="6143186082490678276">Побарајте помош</translation>
@@ -5396,6 +5397,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> ја користи камерата</translation>
 <translation id="701080569351381435">Прикажи извор</translation>
 <translation id="7014174261166285193">Инсталацијата не успеа.</translation>
+<translation id="7014480873681694324">Отстрани нагласување</translation>
 <translation id="7017004637493394352">Кажете „Ok Google" повторно</translation>
 <translation id="7017219178341817193">Додај нова страница</translation>
 <translation id="7017354871202642555">Не може да се постави режимот откако ќе се постави прозорецот.</translation>
@@ -5489,7 +5491,6 @@
 <translation id="711840821796638741">Покажи управувани обележувачи</translation>
 <translation id="711902386174337313">Пристапете до листата на најавени уреди</translation>
 <translation id="7120865473764644444">Не може да се поврзе на серверот за синхронизација. Се обидува повторно…</translation>
-<translation id="7121362699166175603">Ја чисти историјата и автоматските довршувања во лентата за адреси. Вашата сметка на Google можеби има други видови историја на прелистување на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Режим на програмер</translation>
 <translation id="7121728544325372695">Паметни цртички</translation>
 <translation id="7123030151043029868">Дозволено им е автоматски да преземаат повеќе датотеки</translation>
@@ -5662,7 +5663,6 @@
 <translation id="7334274148831027933">Овозможи закотвена лупа</translation>
 <translation id="7335974957018254119">Користете проверка на правопис за</translation>
 <translation id="7336799713063880535">Извес. се блокирани.</translation>
-<translation id="7337248890521463931">Прикажи повеќе редови</translation>
 <translation id="7338630283264858612">Серискиот број на уредот е неважечки.</translation>
 <translation id="7339763383339757376">PKCS #7, еден сертификат</translation>
 <translation id="7339785458027436441">Проверка на правопис додека пишувате</translation>
@@ -7368,7 +7368,6 @@
 <translation id="9209563766569767417">Се проверува поставувањето на контејнерот за Linux</translation>
 <translation id="9209689095351280025">Сајтовите не можe да користат колачиња што ве следат на интернет</translation>
 <translation id="9211177926627870898">Потребно е ажурирање</translation>
-<translation id="9211490828691860325">Сите работни површини</translation>
 <translation id="9214510034298163263">Сајтовите може да прашуваат за да ги изменуваат датотеките и папките на уредот (се препорачува)</translation>
 <translation id="9214520840402538427">Упс! Иницијализацијата на атрибутите за време на инсталација истече. Контактирајте со вашиот претставник за поддршка.</translation>
 <translation id="9214695392875603905">Тортичка</translation>

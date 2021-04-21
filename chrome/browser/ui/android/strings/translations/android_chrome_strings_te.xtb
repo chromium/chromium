@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">ఇప్పుడే</translation>
 <translation id="2172688499998841696">ఇమేజ్ వివరణలు ఆఫ్ చేయబడ్డాయి</translation>
 <translation id="2175927920773552910">QR కోడ్</translation>
-<translation id="2181298861158186289">క్లిప్ బోర్డ్ కంటెంట్‌లను దాచండి</translation>
 <translation id="218608176142494674">షేరింగ్</translation>
 <translation id="2195339740518523951">Chrome అత్యంత శక్తివంతమైన రక్షణను పొందండి</translation>
 <translation id="2200113223741723867">డేటా వినియోగ షేరింగ్‌ను మేనేజ్ చేయండి</translation>
@@ -841,7 +840,6 @@
 <translation id="6539092367496845964">ఏదో తప్పు జరిగింది. తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 గంట క్రితం తనిఖీ చేసింది}other{# గంటల క్రితం తనిఖీ చేసింది}}</translation>
 <translation id="6545017243486555795">మొత్తం డేటాను తీసివేయి</translation>
-<translation id="6549142516027084053">క్లిప్ బోర్డ్ కంటెంట్‌లను బహిర్గతం చేయండి</translation>
 <translation id="6560414384669816528">Sogouతో వెతకండి</translation>
 <translation id="656065428026159829">మరిన్ని చూడండి</translation>
 <translation id="6565959834589222080">అందుబాటులో ఉన్నప్పుడు Wi-Fi ఉపయోగించబడుతుంది</translation>
@@ -935,7 +933,6 @@
 <translation id="7180611975245234373">రిఫ్రెష్ చేయి</translation>
 <translation id="7187993566681480880">Chromeలో మిమ్మల్ని సురక్షితంగా ఉంచుతుంది, మీరు సైన్ ఇన్ చేసినప్పుడు ఇతర Google యాప్‌లలో మీ భద్రతను మెరుగుపరచడానికి ఉపయోగించబడవచ్చు.</translation>
 <translation id="718926126787620637">పూర్తి ఎత్తులో తెరవబడిన బుక్‌మార్క్ ఫోల్డర్‌ల లిస్ట్</translation>
-<translation id="7189372733857464326">Google Play సేవల నవీకరణ పూర్తి కావడానికి వేచి ఉంది</translation>
 <translation id="7191430249889272776">బ్యాక్‌గ్రౌండ్‌లో ట్యాబ్ తెరవబడింది.</translation>
 <translation id="7233236755231902816">మీ భాషలో వెబ్‌ను చూడడానికి, Chrome యొక్క తాజా వెర్షన్‌ను డౌన్‌లోడ్ చేసుకోండి</translation>
 <translation id="7248069434667874558">Chromeలో <ph name="TARGET_DEVICE_NAME" />కు సింక్ ఆన్ చేయబడి ఉందని నిర్ధారించుకోండి</translation>

@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">탐색 슬라이더</translation>
 <translation id="1404323374378969387">노르웨이어</translation>
 <translation id="1430915738399379752">인쇄</translation>
+<translation id="1433628812591023318">Parallels Desktop에 파일을 드롭하려면 파일을 Windows 파일 폴더로 이동해야 합니다.</translation>
 <translation id="1435838927755162558">Parallels Desktop과 폴더 공유</translation>
 <translation id="1467432559032391204">왼쪽</translation>
 <translation id="1471718551822868769">슬로바키아어</translation>
@@ -611,6 +612,7 @@
 <translation id="7417453074306512035">에티오피아어 키보드</translation>
 <translation id="7417705661718309329">Google 지도</translation>
 <translation id="7460898608667578234">우크라이나어</translation>
+<translation id="7486315294984620427">Parallels Desktop에 파일을 드롭하려면 파일을 Windows 파일 폴더로 복사해야 합니다.</translation>
 <translation id="7489215562877293245">파일 <ph name="FILE_COUNT" />개 있음
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> 백업 준비 완료</translation>

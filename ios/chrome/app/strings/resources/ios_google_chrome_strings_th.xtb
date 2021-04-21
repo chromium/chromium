@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">หากอนุญาตให้ Chrome ทราบตำแหน่งของคุณ Chrome จะส่งตำแหน่งไปยังเว็บไซต์ที่คุณให้สิทธิ์ เว็บไซต์อาจขอตำแหน่งเมื่อมีข้อมูลในพื้นที่ที่จะแสดง เช่น ร้านค้าใกล้เคียงหรือข่าวสาร</translation>
 <translation id="6036420186814142909">Google Chrome มีฟีเจอร์ที่ช่วยให้คุณสามารถจัดการข้อมูลอินเทอร์เน็ตและระดับความเร็วที่คุณสามารถใช้ในการโหลดหน้าเว็บ
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">อนุญาตให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="6181930887571472871">เปลี่ยนไปใช้ Chrome</translation>
 <translation id="6238746320622508509">ให้ Chrome ล็อกแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="6573431926118603307">แท็บที่คุณเปิดไว้ใน Chrome ในอุปกรณ์เครื่องอื่นๆ จะปรากฏที่นี่</translation>
@@ -96,5 +97,6 @@
   3. เลือก Chrome</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">ปลอดภัยเสมอด้วย Google Chrome</translation>
+<translation id="8772179140489533211">แสดงข้อความแจ้งให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="9112744793181547300">ตั้งค่า Chrome เป็นค่าเริ่มต้นไหม</translation>
 </translationbundle>

@@ -446,6 +446,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5782227691023083829">Itzultzen…</translation>
 <translation id="5803566855766646066">Ziur txartel berri hau baztertu nahi duzula?</translation>
 <translation id="5816228676161003208">Honi esker, bizkorrago bilatu ahal izango dituzu gauzak ahotsaren bidez.</translation>
+<translation id="581659025233126501">Aktibatu sinkronizazioa</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> da arakatzailearen kudeatzailea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Bilatzailea</translation>
 <translation id="5854790677617711513">Duela 30 egunetik gorakoak</translation>
@@ -493,6 +494,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6196207969502475924">Ahozko bilaketa</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Itxi {COUNT} fitxa}other{Itxi {COUNT} fitxa}}</translation>
 <translation id="6219688215832490856">Ez itzuli inoiz</translation>
+<translation id="6223816392543092032">Izan eskura laster-markak, historia, pasahitzak eta bestelakoak gailu guztietan.</translation>
 <translation id="6254066287920239840">Ireki estekak aplikazioan eta ez arakatzailean.</translation>
 <translation id="6255097610484507482">Editatu kreditu-txartela</translation>
 <translation id="6284652193729350524">Eskaini <ph name="LANGUAGE" /> itzultzea</translation>
@@ -525,6 +527,7 @@ Sinkronizatzeko pasaesaldiaren bidez enkriptatu dira datuak (<ph name="TIME" />)
 <translation id="6445981559479772097">Mezua bidali da.</translation>
 <translation id="6447842834002726250">Cookieak</translation>
 <translation id="6453018583485750254">Ez da inoiz gauzatu egiaztapena.</translation>
+<translation id="6459307836338400162">Pribatutasunarekin, segurtasunarekin eta datu-bilketarekin lotutako ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Sinkronizazioa<ph name="END_LINK" /> eta <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> ataletara.</translation>
 <translation id="6464071786529933911">Ireki ezkut. fitxa berrian</translation>
 <translation id="6464397691496239022">Webguneek cookieak erabil ditzakete arakatze-zerbitzua hobetzeko; adibidez, saioa hasita mantentzeko edo erosketa-saskiko produktuak gogoratzeko.
 
@@ -708,6 +711,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8281886186245836920">Saltatu</translation>
 <translation id="8283172974887967105">Ezarri…</translation>
 <translation id="8299417921174340354">Pasahitzak erabiltzeko, lehenik, pasakode bat ezarri behar duzu gailuan.</translation>
+<translation id="83100941411593607">Desgaituta dago saioa hasteko aukera</translation>
 <translation id="8319076807703933069">Bilaketa berria</translation>
 <translation id="8323906514956095947">Eduki sakatuta fitxetako aukera gehiago ikusteko</translation>
 <translation id="8328777765163860529">Itxi guztiak</translation>

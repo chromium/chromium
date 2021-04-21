@@ -180,7 +180,6 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2169830938017475061">Now</translation>
 <translation id="2172688499998841696">Image descriptions are off</translation>
 <translation id="2175927920773552910">QR code</translation>
-<translation id="2181298861158186289">Conceal Clipboard contents</translation>
 <translation id="218608176142494674">Sharing</translation>
 <translation id="2195339740518523951">Get Chrome’s strongest security</translation>
 <translation id="2200113223741723867">Manage usage data sharing</translation>
@@ -248,6 +247,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2612676031748830579">Card number</translation>
 <translation id="2625189173221582860">Password copied</translation>
 <translation id="2631006050119455616">Saved</translation>
+<translation id="2645657967708199252">Your <ph name="CONNECTION_TYPE" /> connection might slow down your download</translation>
 <translation id="2647434099613338025">Add language</translation>
 <translation id="2650751991977523696">Download file again?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Audio file}other{# Audio files}}</translation>
@@ -260,6 +260,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2718846868787000099">To show content in your preferred languages, the sites that you visit can see your preferences</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Sort by site</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Tap a word to search instantly or see related actions</translation>
 <translation id="2760989362628427051">Turn on dark theme when your device's dark theme or Battery Saver is on</translation>
 <translation id="2762000892062317888">just now</translation>
@@ -436,6 +437,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="3943557322767080599">Show Chrome sign-in prompts when you sign in to your Google Account</translation>
 <translation id="395206256282351086">Search and site suggestions disabled</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome will load your page when ready}other{Chrome will load your pages when ready}}</translation>
+<translation id="3962957115499249330">You’ll see a notification when this download starts on Wi-Fi.</translation>
 <translation id="3963007978381181125">Passphrase encryption doesn’t include payment methods and addresses from Google Pay. Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to reset sync. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome can’t check your passwords</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2" />. The <ph name="BEGIN_LINK3" />Privacy Notice for Google Accounts managed with Family Link<ph name="END_LINK3" /> also applies.</translation>
@@ -479,6 +481,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="4256782883801055595">Open-source licences</translation>
 <translation id="4263656433980196874">Assistant voice search consent UI opened at full height</translation>
 <translation id="4269820728363426813">Copy link address</translation>
+<translation id="4290281343757112331">Download later instead?</translation>
 <translation id="4298388696830689168">Linked sites</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Basics</translation>
@@ -541,6 +544,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4698034686595694889">View offline in <ph name="APP_NAME" /></translation>
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4714588616299687897">Save up to 60% of your data</translation>
+<translation id="4716066120200945007">FOLLOWING</translation>
 <translation id="4719927025381752090">Offer to translate</translation>
 <translation id="4720023427747327413">Open in <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Help improve Chrome. <ph name="BEGIN_LINK" />Take survey<ph name="END_LINK" /></translation>
@@ -621,6 +625,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5191251636205085390">Learn about and control new technologies that aim to replace third-party cookies</translation>
 <translation id="5193988420012215838">Copied to your clipboard</translation>
 <translation id="5199929503336119739">Work profile</translation>
+<translation id="5201464744567315552">You’ll see a notification when this download starts at <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Enter password</translation>
 <translation id="5210286577605176222">Jump to the previous tab</translation>
 <translation id="5210365745912300556">Close tab</translation>
@@ -631,6 +636,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5230560987958996918"><ph name="SITE" /> wants to scan for nearby Bluetooth devices. The following devices have been found:</translation>
 <translation id="5233638681132016545">New tab</translation>
 <translation id="5250483651202458397">Screenshot. Tap to close.</translation>
+<translation id="5262378156578470238">You’ll see a notification when this download starts on <ph name="DATE" />.</translation>
 <translation id="526421993248218238">Can't load this page</translation>
 <translation id="5271967389191913893">Device cannot open the content to be downloaded.</translation>
 <translation id="5292796745632149097">Send to</translation>
@@ -842,7 +848,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6539092367496845964">Something went wrong. Try again later.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Checked 1 hour ago}other{Checked # hours ago}}</translation>
 <translation id="6545017243486555795">Clear All Data</translation>
-<translation id="6549142516027084053">Reveal Clipboard contents</translation>
 <translation id="6560414384669816528">Search with Sogou</translation>
 <translation id="656065428026159829">See more</translation>
 <translation id="6565959834589222080">Wi-Fi is used when available</translation>
@@ -912,6 +917,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="6989267951144302301">Couldn’t download</translation>
 <translation id="6995899638241819463">Warn you if passwords are exposed in a data breach</translation>
+<translation id="7001056293070445572">This file is large (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">Initial sync setup was not finished. Sync is off.</translation>
 <translation id="7022756207310403729">Open in browser</translation>
 <translation id="702463548815491781">Recommended when TalkBack or Switch Access are on</translation>
@@ -936,7 +942,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7187993566681480880">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.</translation>
 <translation id="718926126787620637">List of bookmark folders opened at full height</translation>
-<translation id="7189372733857464326">Waiting for Google Play Services to finish updating</translation>
 <translation id="7191430249889272776">Tab opened in background.</translation>
 <translation id="7233236755231902816">To see the web in your language, get the latest version of Chrome</translation>
 <translation id="7248069434667874558">Make sure that <ph name="TARGET_DEVICE_NAME" /> has sync turned on in Chrome</translation>

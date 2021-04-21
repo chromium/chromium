@@ -201,6 +201,7 @@
 <translation id="5275828089655680674">루틴 다시 실행</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">버전 <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300814202279832142">창을 데스크로 이동</translation>
 <translation id="5315873049536339193">주소</translation>
 <translation id="5317780077021120954">저장</translation>
 <translation id="5318334351163689047">TCP 요청 실패</translation>
@@ -384,6 +385,7 @@
 <translation id="9149391708638971077">메모리 테스트 실행</translation>
 <translation id="9173638680043580060">1분 미만 남음</translation>
 <translation id="9190063653747922532">L2TP/IPSec + 사전 공유 키</translation>
+<translation id="9211490828691860325">모든 데스크</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">활성화되지 않음</translation>
 <translation id="960719561871045870">운영자 코드</translation>

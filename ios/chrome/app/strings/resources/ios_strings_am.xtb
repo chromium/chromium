@@ -446,6 +446,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5782227691023083829">በመተረጎም ላይ...</translation>
 <translation id="5803566855766646066">እርግጠኛ ነዎት ይህን አዲስ ካርድ ማስወገድ ይፈልጋሉ?</translation>
 <translation id="5816228676161003208">ይህ እርስዎ ድምፅዎን ተጠቅመው በበለጠ ፍጥነት እንዲፈልጉ ያስችልዎታል።</translation>
+<translation id="581659025233126501">አስምርን ያብሩ</translation>
 <translation id="5819208479324046259">በ<ph name="MANAGER" /> የሚተዳደር ነው። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">የፍለጋ ፕሮግራም</translation>
 <translation id="5854790677617711513">ከ30 ቀናት በላይ የቆየ</translation>
@@ -493,6 +494,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6196207969502475924">የድምጽ ፍለጋ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ትር ዝጋ}one{{COUNT} ትሮችን ዝጋ}other{{COUNT} ትሮችን ዝጋ}}</translation>
 <translation id="6219688215832490856">በጭራሽ አትተርጉም</translation>
+<translation id="6223816392543092032">የእርስዎን ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች በሁሉም መሣሪያዎችዎ ላይ ያግኙ።</translation>
 <translation id="6254066287920239840">አገናኞችን ከአሳሽ ይልቅ በመተግበሪያ ውስጥ ይክፈቱ።</translation>
 <translation id="6255097610484507482">ክሬዲት ካርድን አርትዕ</translation>
 <translation id="6284652193729350524">ወደ <ph name="LANGUAGE" /> ለመተርጎም ሐሳብ ያቅርቡ</translation>
@@ -525,6 +527,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6445981559479772097">መልዕክት ተልኳል።</translation>
 <translation id="6447842834002726250">ኩኪዎች</translation>
 <translation id="6453018583485750254">በጭራሽ አታሂድ ላይ ምልክት አድርግ።</translation>
+<translation id="6459307836338400162">ከግላዊነት፣ ደህንነት እና የውሂብ ስብስብ ጋር ለሚዛመዱ ሁለቱንም ተጨማሪ ቅንብሮች <ph name="BEGIN_LINK" />ስምረት<ph name="END_LINK" /> እና የ<ph name="BEGIN_LINK" />Google አገልግሎቶች<ph name="END_LINK" />ን ይመልከቱ</translation>
 <translation id="6464071786529933911">በአዲስ ማንነት የማያሳውቅ ትር ውስጥ ክፈት</translation>
 <translation id="6464397691496239022">ጣቢያዎች የአሰሳዎን ተሞክሮ ለማሻሻል፣ ለምሳሌ እርስዎ በመለያ እንደገቡ ለማቆየት ወይም በግዢ ጋሪዎ ውስጥ ንጥሎችን ለማስታወስ ኩኪዎችን መጠቀም ይችላሉ።
 
@@ -708,6 +711,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8281886186245836920">ዝለል</translation>
 <translation id="8283172974887967105">ያቀናብሩ…</translation>
 <translation id="8299417921174340354">የይለፍ ቃላትን ለመጠቀም መጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ማቀናበር አለብዎት።</translation>
+<translation id="83100941411593607">በመለያ መግባት ተሰናክሏል</translation>
 <translation id="8319076807703933069">አዲስ ፍለጋ</translation>
 <translation id="8323906514956095947">ተጨማሪ የትር አማራጮችን ለማግኘት ነክተው ይያዙ</translation>
 <translation id="8328777765163860529">ሁሉንም ዝጋ</translation>

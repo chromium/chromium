@@ -269,7 +269,7 @@
 <translation id="3691593122358196899">התווסף לסימניות ב-<ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">סימון כפריט שלא נקרא</translation>
 <translation id="3740397331642243698">‏פתיחת כתובות ה-URL שהוזנו ב-Google Chrome במצב אנונימי.</translation>
-<translation id="3771033907050503522">כרטיסיות גלישה בסתר</translation>
+<translation id="3771033907050503522">כרטיסיות אנונימיות</translation>
 <translation id="3775743491439407556">הסנכרון לא פועל</translation>
 <translation id="3779810277399252432">אין חיבור לאינטרנט.</translation>
 <translation id="3783017676699494206">שמירת תמונה</translation>
@@ -426,7 +426,7 @@
 
 יש להפעיל את Handoff גם בקטע 'כללי' ב'הגדרות', ועל המכשירים להשתמש באותו חשבון iCloud.</translation>
 <translation id="5551897871312988470">הצעה לתרגום</translation>
-<translation id="5556459405103347317">ניסיון טעינה נוסף</translation>
+<translation id="5556459405103347317">טעינה מחדש</translation>
 <translation id="5592679540098330836">הפעלת הסנכרון בשביל <ph name="NAME" /></translation>
 <translation id="5614553682702429503">לשמור את הסיסמה?</translation>
 <translation id="5626245204502895507">לא ניתן להוריד את הקובץ בשלב הזה.</translation>
@@ -446,6 +446,7 @@
 <translation id="5782227691023083829">מתבצע תרגום...</translation>
 <translation id="5803566855766646066">הכרטיס החדש יימחק. להמשיך?</translation>
 <translation id="5816228676161003208">אישור זה מאפשר לך לחפש מהר יותר בעזרת דיבור.</translation>
+<translation id="581659025233126501">הפעלת הסנכרון</translation>
 <translation id="5819208479324046259">מנוהל על ידי <ph name="MANAGER" />. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">מנוע חיפוש</translation>
 <translation id="5854790677617711513">לפני יותר מ-30 ימים</translation>
@@ -464,7 +465,7 @@
 <translation id="5955891643922670672">מוצגת גרסה לא מקוונת</translation>
 <translation id="5957613098218939406">אפשרויות נוספות</translation>
 <translation id="5963939892571022323">לא ניתן ליצור קישור לטקסט המודגש.</translation>
-<translation id="5964480694698977962">יצירת כרטיסייה חדשה של גלישה בסתר.</translation>
+<translation id="5964480694698977962">יצירת כרטיסייה אנונימית חדשה.</translation>
 <translation id="5965679971710331625">התחברת לחשבון</translation>
 <translation id="5979837087407522202">חיפוש בסיסמאות</translation>
 <translation id="5982717868370722439">הוספת נתונים קיימים אל <ph name="USER_EMAIL" />.</translation>
@@ -493,6 +494,7 @@
 <translation id="6196207969502475924">חיפוש קולי</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{סגירת כרטיסייה אחת ({COUNT})}two{סגירת {COUNT} כרטיסיות}many{סגירת {COUNT} כרטיסיות}other{סגירת {COUNT} כרטיסיות}}</translation>
 <translation id="6219688215832490856">לא לתרגם אף פעם</translation>
+<translation id="6223816392543092032">קבלת הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות בכל המכשירים.</translation>
 <translation id="6254066287920239840">פתיחת קישורים באפליקציה ולא בדפדפן.</translation>
 <translation id="6255097610484507482">עריכת כרטיס אשראי</translation>
 <translation id="6284652193729350524">הצגת הצעה לתרגום <ph name="LANGUAGE" /></translation>
@@ -506,7 +508,7 @@
 <translation id="6342069812937806050">זה עתה</translation>
 <translation id="6344783595350022745">טקסט נקי</translation>
 <translation id="6346549652287021269">להתחיל הורדה חדשה?</translation>
-<translation id="6362362396625799311">אין כרטיסיות של גלישה בסתר</translation>
+<translation id="6362362396625799311">אין כרטיסיות אנונימיות</translation>
 <translation id="6363526231572697780">אין שם משתמש</translation>
 <translation id="6374469231428023295">ניסיון נוסף</translation>
 <translation id="6377118281273296434">אבטחת האתר</translation>
@@ -525,6 +527,7 @@
 <translation id="6445981559479772097">ההודעה נשלחה.</translation>
 <translation id="6447842834002726250">‏קובצי Cookie</translation>
 <translation id="6453018583485750254">מעולם לא נעשתה בדיקה.</translation>
+<translation id="6459307836338400162">‏אפשר למצוא הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים בדפים <ph name="BEGIN_LINK" />סנכרון<ph name="END_LINK" /> ו<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">פתיחה בכרטיסייה אנונימית חדשה</translation>
 <translation id="6464397691496239022">‏אתרים יכולים להשתמש בקובצי cookie כדי לשפר את חוויית הגלישה – למשל כדי למנוע את ניתוקך מהחשבון או כדי לזכור את הפריטים שהוספת לעגלת הקניות.
 
@@ -708,6 +711,7 @@
 <translation id="8281886186245836920">דילוג</translation>
 <translation id="8283172974887967105">להגדרה…</translation>
 <translation id="8299417921174340354">כדי שניתן יהיה להשתמש בסיסמאות, יש להגדיר תחילה קוד גישה במכשיר.</translation>
+<translation id="83100941411593607">אפשרות הכניסה מושבתת</translation>
 <translation id="8319076807703933069">חיפוש חדש</translation>
 <translation id="8323906514956095947">לחיצה ארוכה תציג אפשרויות נוספות של כרטיסיות</translation>
 <translation id="8328777765163860529">סגירת הכול</translation>

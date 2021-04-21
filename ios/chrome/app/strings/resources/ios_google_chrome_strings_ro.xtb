@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Dacă permiți accesul Chrome la locație, Chrome trimite informații privind locația la site-urile cărora le acorzi această permisiune. Site-urile pot solicita informații despre locație atunci când au informații locale de afișat, de exemplu, magazine din apropiere sau știri.</translation>
 <translation id="6036420186814142909">Google Chrome are funcții care te ajută să gestionezi datele de internet și viteza cu care poți să încarci paginile web.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Permite conectarea la Chrome</translation>
 <translation id="6181930887571472871">Treci la Chrome</translation>
 <translation id="6238746320622508509">Permite ca Chrome să blocheze filele incognito.</translation>
 <translation id="6573431926118603307">Filele deschise în Chrome pe alte dispozitive vor apărea aici.</translation>
@@ -96,5 +97,6 @@
   3. selectează Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Protejează-te cu Google Chrome</translation>
+<translation id="8772179140489533211">Afișează solicitări pentru conectarea la Chrome.</translation>
 <translation id="9112744793181547300">Setezi Chrome ca browser prestabilit?</translation>
 </translationbundle>

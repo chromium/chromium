@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">‏نشان زد کیے جانے پر، زیادہ تیزی سے فارم بھرنے کیلئے Chrome آپ کے کارڈ کی ایک کاپی اس آلہ پر اسٹور کرے گا۔</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> کے لیے اجازت منتخب کریں</translation>
 <translation id="1113869188872983271">دوبارہ ترتیب &amp;کالعدم کریں</translation>
+<translation id="1123753900084781868">لائیو کیپشن ابھی دستیاب نہیں ہے</translation>
 <translation id="1125573121925420732">ویب سائٹس کی جانب سے اپنی سیکیورٹی کو اپ ڈیٹ کرنے کے دوران انتباہات عام ہو سکتی ہیں۔ اسے جلد ہی بہتر ہو جانا چاہئے۔</translation>
 <translation id="112840717907525620">پالیسی کیش ٹھیک ہے</translation>
 <translation id="1130564665089811311">‏'صفحے کا ترجمہ کریں' بٹن، Google ترجمے سے اس صفحے کا ترجمہ کرنے کے لیے اینٹر دبائیں</translation>
@@ -775,6 +776,7 @@
 <translation id="3841184659773414994">فائل ہینڈلرز</translation>
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3858027520442213535">تاریخ اور وقت اپ ڈیٹ کریں</translation>
+<translation id="3881478300875776315">قدرے کم لائنز دکھائیں</translation>
 <translation id="3884278016824448484">متنازع آلہ شناخت کنندہ</translation>
 <translation id="3885155851504623709">پیرش</translation>
 <translation id="388632593194507180">مانیٹر کرنے کا پتہ چلا</translation>
@@ -800,6 +802,7 @@
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> مسدود ہے</translation>
 <translation id="3973357910713125165">‏Chrome کا سیفٹی چیک بٹن چلائیں، Chrome کی ترتیبات میں موجود سیفٹی چیک چلانے کے لئے اینٹر دبائیں</translation>
+<translation id="3986705137476756801">ابھی کیلئے لائیو کیپشن آف کریں</translation>
 <translation id="3987405730340719549">‏Chrome اس نتیجے پر پہنچا ہے کہ یہ سائٹ جعلی یا پُر فریب ہو سکتی ہے۔
 
     اگر آپ کو لگتا ہے کہ یہ غلطی سے دکھایا جا رہا ہے تو https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals ملاحظہ کریں۔</translation>
@@ -929,6 +932,7 @@
 <translation id="4377125064752653719">آپ نے <ph name="DOMAIN" /> تک رسائی کی کوشش کی، لیکن سرور کے ذریعے پیش کردہ سرٹیفیکیٹ کو اس کے جاری کنندہ نے منسوخ کر دیا ہے۔ اس کا مطلب ہے کہ سرور کے ذریعے پیش کردہ سیکیورٹی اسنادات پر مطلق طور پر بھروسہ نہیں کیا جانا چاہیے۔ ممکن ہے کہ آپ کی مواصلت ایک حملہ آور کے ساتھ ہو رہی ہو۔</translation>
 <translation id="4378154925671717803">فون</translation>
 <translation id="4390472908992056574">کنارہ</translation>
+<translation id="4406883609789734330">لائیو کیپشن</translation>
 <translation id="4406896451731180161">تلاش کے نتائج</translation>
 <translation id="4408413947728134509">کوکیز <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">‏آپ نے ابھی ایک پُرفریب سائٹ پر اپنا پاس ورڈ درج کیا ہے۔ Chrome آپ کو <ph name="WEBSITE_1" />، <ph name="WEBSITE_2" />،<ph name="WEBSITE_3" /> اور دیگر ایسی سائٹس پر جانے اور ابھی اپنا پاس ورڈ بدلنے کی تجویز کرتا ہے جہاں آپ اس پاس ورڈ کو استعمال کرتے ہیں۔</translation>
@@ -994,6 +998,7 @@
 <translation id="4691835149146451662">Architecture-A ‎(Envelope‎)‎</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">سائیڈ</translation>
+<translation id="4702656508969495934">لائیو کیپشن دکھائی دے رہا ہے، فوکس کرنے کیلئے ونڈو سوئچر استعمال کریں</translation>
 <translation id="4708268264240856090">آپ کے کنکشن میں مداخلت ہوگئی</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131">‏<ph name="BEGIN_LINK" />Windows نیٹ ورک کی تشخیصات چلانے کی<ph name="END_LINK" /></translation>
@@ -1184,6 +1189,7 @@
 <translation id="5344579389779391559">یہ صفحہ آپ سے رقم چارج کرنے کی کوشش کر سکتا ہے</translation>
 <translation id="5355557959165512791">آپ ابھی <ph name="SITE" /> ملاحظہ نہیں کر سکتے کیونکہ اس کے سرٹیفکیٹ کو کالعدم قرار دے دیا گیا ہے۔ نیٹ ورک کی خرابیاں اور حملے عام طور پر عارضی ہوتے ہیں، لہذا یہ صفحہ شاید بعد میں کام کرے گا۔</translation>
 <translation id="536296301121032821">پالیسی کی ترتیبات کو اسٹور کرنے میں ناکام</translation>
+<translation id="5363309033720083897">آپ کے منتظم کی جانب سے اجازت یافتہ سیریل پورٹ</translation>
 <translation id="5371425731340848620">کارڈ اپ ڈیٹ کریں</translation>
 <translation id="5377026284221673050">‏"آپ کی گھڑی پیچھے ہے" یا "آپ کی گھڑی آگے ہے" یا "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5386426401304769735">‏اس سائٹ کیلئے سرٹیفکیٹ چین میں SHA-1 کا استعمال کر کے دستخط کردہ سرٹیفکیٹ شامل ہے۔</translation>
@@ -1664,6 +1670,7 @@
 <translation id="733354035281974745">آلہ کے مقامی اکاؤنٹ کا اوور رائیڈ</translation>
 <translation id="7333654844024768166">‏آپ نے ابھی ایک پُرفریب سائٹ پر اپنا پاس ورڈ درج کیا ہے۔ Chromium آپ کو <ph name="WEBSITE_1" />، <ph name="WEBSITE_2" />،<ph name="WEBSITE_3" /> اور دیگر ایسی سائٹس پر جانے اور ابھی اپنا پاس ورڈ بدلنے کی تجویز کرتا ہے جہاں آپ اس پاس ورڈ کو استعمال کرتے ہیں۔</translation>
 <translation id="7334320624316649418">دوبارہ ترتیب کو &amp;واپس لائیں</translation>
+<translation id="7337248890521463931">مزید لائنز دکھائیں</translation>
 <translation id="7337706099755338005">آپ کے پلیٹ فارم پر دستیاب نہیں ہے۔</translation>
 <translation id="733923710415886693">سرٹیفیکیٹ کی شفافیت کے ذریعے سرور کے سرٹیفیکیٹ کا انکشاف نہیں کیا گیا۔</translation>
 <translation id="734600844861828519">11x15</translation>

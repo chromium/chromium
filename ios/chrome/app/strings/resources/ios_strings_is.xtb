@@ -446,6 +446,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5782227691023083829">Þýðir...</translation>
 <translation id="5803566855766646066">Ertu viss um að þú viljir fleygja þessu nýja korti?</translation>
 <translation id="5816228676161003208">Með þessu móti geturðu notað röddina til að leita hraðar.</translation>
+<translation id="581659025233126501">Kveikja á samstillingu</translation>
 <translation id="5819208479324046259">Stjórnað af <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Leitarvél</translation>
 <translation id="5854790677617711513">Eldra en 30 dagar</translation>
@@ -493,6 +494,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6196207969502475924">Raddleit</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Loka {COUNT} flipa}one{Loka {COUNT} flipa}other{Loka {COUNT} flipum}}</translation>
 <translation id="6219688215832490856">Þýða aldrei</translation>
+<translation id="6223816392543092032">Fáðu bókamerkin, ferilinn, aðgangsorðin og aðrar stillingar í öll tækin þín.</translation>
 <translation id="6254066287920239840">Opna tengla í forritinu í stað vafrans.</translation>
 <translation id="6255097610484507482">Breyta kreditkorti</translation>
 <translation id="6284652193729350524">Bjóðast til að þýða <ph name="LANGUAGE" /></translation>
@@ -525,6 +527,7 @@ Gögnin þín voru dulkóðuð með aðgangsorði samstillingar <ph name="TIME" 
 <translation id="6445981559479772097">Skilaboð send.</translation>
 <translation id="6447842834002726250">Fótspor</translation>
 <translation id="6453018583485750254">Athugun aldrei keyrð.</translation>
+<translation id="6459307836338400162">Fleiri stillingar sem tengjast persónuvernd, öryggi og gagnasöfnun má bæði finna í <ph name="BEGIN_LINK" />samstillingu<ph name="END_LINK" /> og í <ph name="BEGIN_LINK" />Google þjónustum<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Opna í nýjum huliðsflipa</translation>
 <translation id="6464397691496239022">Vefsvæði geta notað fótspor til að bjóða þér upp á betri vefnotkun, til dæmis að vera áfram skráð(ur) inn eða muna hvað þú setur í innkaupakörfuna.
 
@@ -708,6 +711,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8281886186245836920">Sleppa</translation>
 <translation id="8283172974887967105">Stilla…</translation>
 <translation id="8299417921174340354">Til að nota aðgangsorð þarftu fyrst að stilla aðgangskóða í tækinu þínu.</translation>
+<translation id="83100941411593607">Innskráning er óvirk</translation>
 <translation id="8319076807703933069">Ný leit</translation>
 <translation id="8323906514956095947">Haltu inni til að sjá fleiri valkosti fyrir flipa</translation>
 <translation id="8328777765163860529">Loka öllu</translation>

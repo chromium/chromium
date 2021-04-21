@@ -180,7 +180,6 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 <translation id="2169830938017475061">Agora</translation>
 <translation id="2172688499998841696">As descricións das imaxes están desactivadas</translation>
 <translation id="2175927920773552910">Código QR</translation>
-<translation id="2181298861158186289">Ocultar contido do portapapeis</translation>
 <translation id="218608176142494674">Uso compartido</translation>
 <translation id="2195339740518523951">Goza da máxima seguranza de Chrome</translation>
 <translation id="2200113223741723867">Xestionar uso compartido dos datos de uso</translation>
@@ -248,6 +247,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2612676031748830579">Número da tarxeta</translation>
 <translation id="2625189173221582860">Copiouse o contrasinal</translation>
 <translation id="2631006050119455616">Gardados</translation>
+<translation id="2645657967708199252">A túa conexión (<ph name="CONNECTION_TYPE" />) podería reducir a velocidade da descarga</translation>
 <translation id="2647434099613338025">Engadir idioma</translation>
 <translation id="2650751991977523696">Queres volver descargar o ficheiro?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ficheiro de audio}other{# ficheiros de audio}}</translation>
@@ -260,6 +260,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2718846868787000099">Se queres que che apareza o contido nos teus idiomas preferidos, os sitios que visites poderán ver as túas preferencias</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Ordenar por sitio</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Toca unha palabra para realizar buscas de forma instantánea ou ver accións relacionadas</translation>
 <translation id="2760989362628427051">Activa o tema escuro cando o teu dispositivo teña activado o tema escuro ou a función Aforro de batería</translation>
 <translation id="2762000892062317888">agora</translation>
@@ -436,6 +437,7 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="3943557322767080599">Mostrar solicitudes de inicio de sesión en Chrome cando inicies sesión na túa Conta de Google</translation>
 <translation id="395206256282351086">Desactiváronse as suxestións de sitios e de busca</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome cargará a páxina cando o dispositivo estea listo}other{Chrome cargará as páxinas cando o dispositivo estea listo}}</translation>
+<translation id="3962957115499249330">Recibirás unha notificación cando se inicie esta descarga a través da conexión wifi.</translation>
 <translation id="3963007978381181125">A encriptación mediante frase de acceso non inclúe métodos de pago nin enderezos de Google Pay. Só alguén coa túa frase de acceso pode ler os teus datos encriptados. A frase de acceso non se envía nin se almacena en Google. Se a esqueces ou se queres cambiar esta opción de configuración, deberás restablecer a sincronización. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome non puido comprobar os teus contrasinais</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> abrirase en Chrome. Ao continuar, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" />, así como as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />. Tamén se aplica o <ph name="BEGIN_LINK3" />Aviso de privacidade das Contas de Google xestionadas a través de Family Link<ph name="END_LINK3" />.</translation>
@@ -479,6 +481,7 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="4256782883801055595">Licenzas de código aberto</translation>
 <translation id="4263656433980196874">A interface de consentimento para a busca por voz a través do Asistente está aberta a pantalla completa</translation>
 <translation id="4269820728363426813">Copiar enderezo da ligazón</translation>
+<translation id="4290281343757112331">Prefires realizar a descarga máis tarde?</translation>
 <translation id="4298388696830689168">Sitios vinculados</translation>
 <translation id="4303044213806199882">capturadepantalla_chrome_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Opcións básicas</translation>
@@ -541,6 +544,7 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="4698034686595694889">Ver contido sen conexión na aplicación <ph name="APP_NAME" /></translation>
 <translation id="4699172675775169585">Imaxes e ficheiros almacenados na memoria caché</translation>
 <translation id="4714588616299687897">Aforra ata un 60 % dos datos</translation>
+<translation id="4716066120200945007">SEGUINDO</translation>
 <translation id="4719927025381752090">Ofrecer a tradución</translation>
 <translation id="4720023427747327413">Abrir en <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Axuda a mellorar Chrome. <ph name="BEGIN_LINK" />Responder enquisa<ph name="END_LINK" /></translation>
@@ -621,6 +625,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5191251636205085390">Obtén información sobre novas tecnoloxías desenvolvidas co obxectivo de substituír as cookies de terceiros e aprende a manexalas</translation>
 <translation id="5193988420012215838">Copiouse no teu portapapeis</translation>
 <translation id="5199929503336119739">Perfil de traballo</translation>
+<translation id="5201464744567315552">Recibirás unha notificación cando se inicie esta descarga á seguinte hora: <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Introduce o contrasinal</translation>
 <translation id="5210286577605176222">Saltar á pestana anterior</translation>
 <translation id="5210365745912300556">Pechar pestana</translation>
@@ -631,6 +636,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5230560987958996918"><ph name="SITE" /> quere buscar dispositivos Bluetooth cerca. Atopáronse os seguintes dispositivos:</translation>
 <translation id="5233638681132016545">Nova pestana</translation>
 <translation id="5250483651202458397">Captura de pantalla. Toca para pechala.</translation>
+<translation id="5262378156578470238">Recibirás unha notificación cando se inicie esta descarga o <ph name="DATE" />.</translation>
 <translation id="526421993248218238">Non se puido cargar esta páxina</translation>
 <translation id="5271967389191913893">O dispositivo non pode abrir o contido que se debe descargar.</translation>
 <translation id="5292796745632149097">Enviar a</translation>
@@ -842,7 +848,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6539092367496845964">Produciuse un erro. Téntao de novo máis tarde.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{A comprobación realizouse hai 1 hora}other{A comprobación realizouse hai # horas}}</translation>
 <translation id="6545017243486555795">Borrar todos os datos</translation>
-<translation id="6549142516027084053">Mostrar contido do portapapeis</translation>
 <translation id="6560414384669816528">Buscar con Sogou</translation>
 <translation id="656065428026159829">Ver máis</translation>
 <translation id="6565959834589222080">Úsase a conexión wifi cando está dispoñible</translation>
@@ -912,6 +917,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="6981982820502123353">Accesibilidade</translation>
 <translation id="6989267951144302301">Non se puido descargar</translation>
 <translation id="6995899638241819463">Avisarte se os teus contrasinais están en risco debido a unha violación da seguranza dos datos</translation>
+<translation id="7001056293070445572">Este ficheiro é grande (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">A configuración da sincronización inicial non finalizou. A sincronización está desactivada.</translation>
 <translation id="7022756207310403729">Abrir no navegador</translation>
 <translation id="702463548815491781">Recoméndase cando están activadas as funcións TalkBack ou Acceso con interruptores</translation>
@@ -936,7 +942,6 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7187993566681480880">Protéxete en Chrome e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas a sesión iniciada.</translation>
 <translation id="718926126787620637">A lista de cartafoles de marcadores está aberta completamente</translation>
-<translation id="7189372733857464326">Esperando a que os servizos de Google Play rematen de actualizarse</translation>
 <translation id="7191430249889272776">Abriuse a pestana en segundo plano.</translation>
 <translation id="7233236755231902816">Para ver a Web no teu idioma, descarga a última versión de Chrome</translation>
 <translation id="7248069434667874558">Asegúrate de que a sincronización de Chrome do dispositivo <ph name="TARGET_DEVICE_NAME" /> estea activada</translation>
@@ -1193,7 +1198,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8856607253650333758">Obter descricións</translation>
 <translation id="8873817150012960745">Toca aquí para comezar</translation>
 <translation id="889338405075704026">Ir á configuración de Chrome</translation>
-<translation id="8898822736010347272">Envía os URL dalgunhas páxinas que visites, información limitada do sistema e certo contido das páxinas a Google para axudar a descubrir novas ameazas e protexer a todos os usuarios da Web.</translation>
+<translation id="8898822736010347272">Envía os URL dalgunhas páxinas que visites, información limitada do sistema e certo contido das páxinas a Google para axudar a descubrir novas ameazas e protexer todos os usuarios da Web.</translation>
 <translation id="8909135823018751308">Compartir...</translation>
 <translation id="8912362522468806198">Conta de Google</translation>
 <translation id="8920114477895755567">Agardando pola información dos pais.</translation>

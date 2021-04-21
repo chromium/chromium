@@ -446,6 +446,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5782227691023083829">S'està traduint...</translation>
 <translation id="5803566855766646066">Confirmes que vols descartar aquesta targeta nova?</translation>
 <translation id="5816228676161003208">Això et permet fer cerques més de pressa amb la veu.</translation>
+<translation id="581659025233126501">Activa la sincronització</translation>
 <translation id="5819208479324046259">Gestionat per <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Motor de cerca</translation>
 <translation id="5854790677617711513">Anterior a 30 dies</translation>
@@ -493,6 +494,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6196207969502475924">Cerca per veu</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Tanca {COUNT} pestanya}other{Tanca {COUNT} pestanyes}}</translation>
 <translation id="6219688215832490856">No tradueixis mai</translation>
+<translation id="6223816392543092032">Accedeix a les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració en tots els dispositius.</translation>
 <translation id="6254066287920239840">Obre els enllaços a l'aplicació en comptes del navegador.</translation>
 <translation id="6255097610484507482">Edita la targeta de crèdit</translation>
 <translation id="6284652193729350524">Proposa traduir el contingut en <ph name="LANGUAGE" /></translation>
@@ -525,6 +527,7 @@ Les teves dades es van encriptar el dia <ph name="TIME" /> amb la teva frase de 
 <translation id="6445981559479772097">Missatge enviat.</translation>
 <translation id="6447842834002726250">Galetes</translation>
 <translation id="6453018583485750254">No s'ha fet mai la comprovació.</translation>
+<translation id="6459307836338400162">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta <ph name="BEGIN_LINK" />Sincronització<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Obre en una pestanya d'incògnit</translation>
 <translation id="6464397691496239022">Els llocs web poden fer servir galetes per millorar la teva experiència de navegació, per exemple, per mantenir la teva sessió iniciada o per recordar els elements que tens al carretó de la compra.
 
@@ -708,6 +711,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8281886186245836920">Omet</translation>
 <translation id="8283172974887967105">Estableix…</translation>
 <translation id="8299417921174340354">Per utilitzar les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
+<translation id="83100941411593607">L'inici de sessió està desactivat</translation>
 <translation id="8319076807703933069">Cerca nova</translation>
 <translation id="8323906514956095947">Mantén premut el botó per veure més opcions de pestanyes</translation>
 <translation id="8328777765163860529">Tanca-ho tot</translation>

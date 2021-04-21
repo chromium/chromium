@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">แถบเลื่อนสำหรับกรอวิดีโอ</translation>
 <translation id="1404323374378969387">นอร์เวย์</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
+<translation id="1433628812591023318">ต้องย้ายไฟล์ดังกล่าวไปยังไฟล์ Windows เพื่อวางใน Parallels Desktop</translation>
 <translation id="1435838927755162558">แชร์โฟลเดอร์กับ Parallels Desktop</translation>
 <translation id="1467432559032391204">ซ้าย</translation>
 <translation id="1471718551822868769">สโลวัก</translation>
@@ -611,6 +612,7 @@
 <translation id="7417453074306512035">แป้นพิมพ์ภาษาเอธิโอเปีย</translation>
 <translation id="7417705661718309329">แผนที่ Google</translation>
 <translation id="7460898608667578234">ยูเครน</translation>
+<translation id="7486315294984620427">ต้องคัดลอกไฟล์ดังกล่าวไปยังไฟล์ Windows เพื่อวางใน Parallels Desktop</translation>
 <translation id="7489215562877293245">พบ <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     พร้อมสำรองไปยัง <ph name="BEGIN_LINK" />Google ไดรฟ์<ph name="END_LINK" /></translation>

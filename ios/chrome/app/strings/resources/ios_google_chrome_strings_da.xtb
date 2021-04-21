@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Hvis du giver Chrome tilladelse til at kende din placering, sender Chrome den til de websites, du giver tilladelse til. Websites kan anmode om adgang til din placering, når de vil vise dig lokale oplysninger, f.eks. butikker i nærheden eller nyheder.</translation>
 <translation id="6036420186814142909">Google Chrome har funktioner, der hjælper dig med at administrere internetdata og hastigheden, som websider indlæses med.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Tillad login via Chrome</translation>
 <translation id="6181930887571472871">Skift til Chrome</translation>
 <translation id="6238746320622508509">Lad Chrome låse dine inkognitofaner.</translation>
 <translation id="6573431926118603307">Faner, du har åbnet i Chrome på dine andre enheder, vises her.</translation>
@@ -96,5 +97,6 @@
   3. Vælg Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Sikkerhed i Google Chrome</translation>
+<translation id="8772179140489533211">Viser anmodninger om at logge ind i Chrome.</translation>
 <translation id="9112744793181547300">Vil du angive Chrome som standard?</translation>
 </translationbundle>

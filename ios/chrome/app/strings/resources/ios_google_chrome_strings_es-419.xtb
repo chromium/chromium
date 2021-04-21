@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Si permites que Chrome conozca tu ubicación, la enviará a los sitios que permitas. Es posible que los sitios soliciten tu ubicación cuando tienen información local para mostrarte, como noticias o tiendas cercanas.</translation>
 <translation id="6036420186814142909">Google Chrome tiene funciones que te ayudan a administrar tus datos de Internet y la rapidez con la que puedes cargar páginas web.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Permitir el acceso a Chrome</translation>
 <translation id="6181930887571472871">Cambia a Chrome</translation>
 <translation id="6238746320622508509">Permite que Chrome bloquee tus pestañas de incógnito.</translation>
 <translation id="6573431926118603307">Aquí aparecerán las pestañas que abriste en Chrome en tus otros dispositivos.</translation>
@@ -96,5 +97,6 @@
   3. Selecciona Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Aprovecha la seguridad de Google Chrome</translation>
+<translation id="8772179140489533211">Muestra mensajes para acceder a Chrome.</translation>
 <translation id="9112744793181547300">¿Deseas establecer Chrome como navegador predeterminado?</translation>
 </translationbundle>

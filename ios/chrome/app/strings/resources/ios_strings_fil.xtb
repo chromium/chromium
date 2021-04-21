@@ -446,6 +446,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5782227691023083829">Tina-translate...</translation>
 <translation id="5803566855766646066">Sigurado ka bang gusto mong i-discard ang bagong card na ito?</translation>
 <translation id="5816228676161003208">Binibigyang-daan ka nito upang mas mabilis na makapaghanap gamit ang iyong boses.</translation>
+<translation id="581659025233126501">I-on ang Pag-sync</translation>
 <translation id="5819208479324046259">Pinapamahalaan ng <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Search Engine</translation>
 <translation id="5854790677617711513">Mas matagal sa 30 araw</translation>
@@ -493,6 +494,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6196207969502475924">Paghahanap gamit ang boses</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Isara ang {COUNT} Tab}one{Isara ang {COUNT} Tab}other{Isara ang {COUNT} na Tab}}</translation>
 <translation id="6219688215832490856">Huwag Kailanman I-translate</translation>
+<translation id="6223816392543092032">Kunin ang iyong mga bookmark, history, password, at iba pang setting sa lahat ng device mo.</translation>
 <translation id="6254066287920239840">Buksan ang mga link sa app sa halip na sa browser.</translation>
 <translation id="6255097610484507482">I-edit ang Credit Card</translation>
 <translation id="6284652193729350524">Mag-alok na isalin ang <ph name="LANGUAGE" /></translation>
@@ -525,6 +527,7 @@ Na-encrypt ang iyong data gamit ang iyong passphrase sa pag-sync noong <ph name=
 <translation id="6445981559479772097">Napadala na ang mensahe.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">Hindi kailanman tumakbo ang pagsusuri.</translation>
+<translation id="6459307836338400162">Para sa higit pang setting na nauugnay sa privacy, seguridad, at pagkolekta ng data, tingnan ang <ph name="BEGIN_LINK" />Pag-sync<ph name="END_LINK" /> at <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Buksan sa Bagong Tab na Incognito</translation>
 <translation id="6464397691496239022">Puwedeng gumamit ng cookies ang mga site para pahusayin ang iyong karanasan sa pag-browse, halimbawa, para mapanatili kang naka-sign in o para maalala ang mga item sa shopping cart mo.
 
@@ -708,6 +711,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8281886186245836920">Laktawan</translation>
 <translation id="8283172974887967105">Itakda…</translation>
 <translation id="8299417921174340354">Para gumamit ng mga password, dapat ka munang magtakda ng passcode sa iyong device.</translation>
+<translation id="83100941411593607">Naka-disable ang Pag-sign In</translation>
 <translation id="8319076807703933069">Bagong Paghahanap</translation>
 <translation id="8323906514956095947">Pindutin nang matagal para sa higit pang opsyon sa tab</translation>
 <translation id="8328777765163860529">Isara Lahat</translation>

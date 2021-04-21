@@ -446,6 +446,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5782227691023083829">Traduction en cours…</translation>
 <translation id="5803566855766646066">Voulez-vous vraiment supprimer cette nouvelle carte?</translation>
 <translation id="5816228676161003208">Ceci vous permet d'effectuer des recherches plus rapides en utilisant votre voix.</translation>
+<translation id="581659025233126501">Activer la synchronisation</translation>
 <translation id="5819208479324046259">Géré par <ph name="MANAGER" />. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Moteur de recherche</translation>
 <translation id="5854790677617711513">Datant de plus de 30 jours</translation>
@@ -493,6 +494,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6196207969502475924">Recherche vocale</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Fermer {COUNT} onglet}one{Fermer {COUNT} onglet}other{Fermer {COUNT} onglets}}</translation>
 <translation id="6219688215832490856">Ne jamais traduire</translation>
+<translation id="6223816392543092032">Synchronisez vos favoris, votre historique, vos mots de passe et autres paramètres sur tous vos appareils.</translation>
 <translation id="6254066287920239840">Ouvrez les liens dans l'application plutôt que dans le navigateur.</translation>
 <translation id="6255097610484507482">Modif. carte crédit</translation>
 <translation id="6284652193729350524">Offrir de traduire du <ph name="LANGUAGE" /></translation>
@@ -525,6 +527,7 @@ Vos données ont été chiffrées avec votre phrase de passe le <ph name="TIME" 
 <translation id="6445981559479772097">Message envoyé</translation>
 <translation id="6447842834002726250">Témoins</translation>
 <translation id="6453018583485750254">La vérification n'a jamais été effectuée.</translation>
+<translation id="6459307836338400162">Pour voir plus de paramètres relatifs à la confidentialité, à la sécurité et à la collecte de données, reportez-vous aux rubriques <ph name="BEGIN_LINK" />Synchronisation<ph name="END_LINK" /> et <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Ouvrir ds nv ong nav priv</translation>
 <translation id="6464397691496239022">Les sites peuvent utiliser des témoins afin d'améliorer votre expérience de navigation, par exemple en vous permettant de rester connecté ou en mémorisant des articles de votre panier d'achats.
 
@@ -707,6 +710,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8281886186245836920">Passer</translation>
 <translation id="8283172974887967105">Définir…</translation>
 <translation id="8299417921174340354">Pour utiliser les mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
+<translation id="83100941411593607">Connexion désactivée</translation>
 <translation id="8319076807703933069">Nouvelle recherche</translation>
 <translation id="8323906514956095947">Maintenez le doigt sur le bouton pour afficher plus d'options d'onglets</translation>
 <translation id="8328777765163860529">Tout fermer</translation>

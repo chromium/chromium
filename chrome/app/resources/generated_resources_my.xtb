@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;ကိရိယာများ</translation>
 <translation id="1122242684574577509">အထောက်အထားစစ်ဆေးခြင်း မအောင်မြင်ပါ။ သင်အသုံးပြုနေသော ဝိုင်ဖိုင်ကွန်ယက်(<ph name="NETWORK_ID" />) အတွက် လက်မှတ်ထိုးဝင်ရန်စာမျက်နှာသို့ သွားရန် နှိပ်ပါ။</translation>
 <translation id="1122960773616686544">အမည်ကို စာညှပ်ထည့်ရန်</translation>
-<translation id="1123753900084781868">'တိုက်ရိုက်စာတန်း' ကို ယခုမရနိုင်ပါ</translation>
 <translation id="1124772482545689468">အသုံးပြုသူ</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (မူရင်း) ဟု ယူဆရပါသည်</translation>
 <translation id="1126809382673880764">အန္တရာယ်ရှိသော ဝဘ်ဆိုက်၊ ဒေါင်းလုဒ်နှင့် နောက်ဆက်တွဲများ၏ ရန်မှ ကာကွယ်မပေးပါ။ ရနိုင်သည့်အခါ Gmail နှင့် Search ကဲ့သို့ အခြား Google ဝန်ဆောင်မှုများတွင် 'ဘေးကင်းစွာ အင်တာနက်အသုံးပြုခြင်းစနစ်' ကာကွယ်မှုဆက်လက်ရရှိနေပါမည်။</translation>
@@ -755,6 +754,7 @@
 <translation id="1794791083288629568">ဤပြဿနာကို ဖြေရှင်းရာတွင် ကူညီပေးရန် အကြံပြုချက် ပေးပို့ပါ။</translation>
 <translation id="1795214765651529549">ဂန္ထဝင်ကို အသုံးပြုရန်</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" နောက်ဆက်တွဲကို အလိုအလျောက်ပိတ်ထားပါသည်။</translation>
+<translation id="1800973090344019061">“<ph name="APP_NAME" />” နောက်ဆက်တွဲသည် သင့်ဖန်သားပြင်၏ အကြောင်းအရာများကို မျှဝေလိုသည်။</translation>
 <translation id="1802624026913571222">အဖုံးကို ပိတ်လိုက်သည့်အခါ နားရန်</translation>
 <translation id="1802687198411089702">စာမျက်နှာသည် ရပ်တန့်နေပါသည်။ ၎င်းကို စောင့်နိုင်သည် သို့မဟုတ် ထွက်နိုင်သည်။</translation>
 <translation id="1803531841600994172">ပြန်ဆိုရမည့် ဘာသာစကား</translation>
@@ -949,7 +949,6 @@
 <translation id="2010501376126504057">တွဲသုံးနိုင်သည့် စက်များ</translation>
 <translation id="2016574333161572915">သင်၏ Google Meet ကွန်ပျူတာဆိုင်ရာ စက်ပစ္စည်းကို စနစ်ထည့်သွင်းရန် အသင့်ဖြစ်ပါပြီ</translation>
 <translation id="2017334798163366053">လုပ်ကိုင်ပုံ ဒေတာ စုစည်းမှု ပိတ်ထားရန်</translation>
-<translation id="2017836877785168846">လိပ်စာဘားရှိ မှတ်တမ်းနှင့် အလိုအလျောက်ဖြည့်ခြင်းများကို ရှင်းလင်းရန်</translation>
 <translation id="2018352199541442911">ဝမ်းနည်းပါသည်၊ သင့်ပြင်ပ သိုလှောင်မှု စက်ပစ္စည်း ယခုမထောက်ပံ့ပါ။</translation>
 <translation id="2019718679933488176">&amp;အသံကို တဘ် အသစ်ထဲမှာ ဖွင့်ရန်</translation>
 <translation id="2020183425253392403">ကွန်ရက်လိပ်စာ ဆက်တင်များကို ပြရန်</translation>
@@ -1355,6 +1354,7 @@
 <translation id="2464089476039395325">HTTP ပရောက်စီ</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" /> က Wi-Fi သို့ ယခုချိတ်ဆက်ပြီး အပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်စေလိုသည်။ သို့မဟုတ် အခမဲ့ မဟုတ်သော ချိတ်ဆက်မှုမှ ဒေါင်းလုဒ်လုပ်ပါ (ဒေတာသုံးစွဲခ ကျသင့်နိုင်သည်)။</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> ကွန်ရက်၊ ပိတ်ထားသည်</translation>
+<translation id="2467755475704469005">စက်မရှိပါ။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">တာ့ချ်ပက် ရွှေ့သည့် အရှိန်မြှင့်ရန်</translation>
 <translation id="2468205691404969808">အဆိုပါ စာမျက်နှာများကို သင်ဝင်ကြည့်မထားလျှင်ပင် သင့်ဦးစားပေးများကို မှတ်မိရန် ကွတ်ကီးများ အသုံးပြုသည်</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
@@ -2383,6 +2383,7 @@
 <translation id="3608576286259426129">အသုံးပြုသူ ပုံအစမ်းကြည့်</translation>
 <translation id="3610369246614755442">အထိုင်ပန်ကာကို စစ်ဆေးကြည့်ရှုရန် လိုပါသည်</translation>
 <translation id="361106536627977100">ဖလက်ရှ် ဒေတာ</translation>
+<translation id="3611655097742243705">နောက်ထပ်အက်ပ်များ ရှာရန် Play Store တွင် ဝင်ကြည့်ပါ</translation>
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;ဖြင့် ဒေါင်းလုဒ် လုပ်ခဲ့သည်</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" />ကို ပြရန်</translation>
 <translation id="3613422051106148727">&amp;တဘ် အသစ်ထဲမှာ ဖွင့်ရန်</translation>
@@ -2647,7 +2648,6 @@
 <translation id="3874164307099183178">Google Assistant ဖွင့်ရန်</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> ၏ စက်အတွက် 'အနီးတစ်ဝိုက် မျှဝေခြင်း' ဆက်တင်များ၊ <ph name="USER_EMAIL" /> အကောင့်အောက်တွင် မျှဝေထားသည်။</translation>
 <translation id="3879748587602334249">ဒေါင်းလုဒ်မန်နေဂျာ</translation>
-<translation id="3881478300875776315">စာကြောင်းလျှော့၍ပြရန်</translation>
 <translation id="3882165008614329320">ကင်မရာ သို့မဟုတ် ဖိုင်မှ လက်ရှိဗီဒီယို</translation>
 <translation id="3884152383786131369">ဘာသာစကားအမျိုးမျိုး အသုံးပြုနိုင်သော ဝဘ်အကြောင်းအရာများက ဤစာရင်းထဲမှ ပထမဆုံးပံ့ပိုးထားသော ဘာသာစကားကို အသုံးပြုပါမည်။ ဤသတ်မှတ်ချက်များကို သင့်ဘရောင်ဇာဆက်တင်များနှင့် စင့်ခ်လုပ်ထားသည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">အပ်ဒိတ်များကို သင့်စီမံခန့်ခွဲသူက စီမံပါသည်</translation>
@@ -2718,6 +2718,7 @@
 <translation id="3943494825379372497">အက်ပ်နှင့် စာမျက်နှာများ ပြန်ယူမလား။</translation>
 <translation id="3943582379552582368">&amp;နောက်သို့</translation>
 <translation id="3943857333388298514">ကူးဖြည့်ရန်</translation>
+<translation id="3945513714196326460">ပိုတိုသည့်အမည် စမ်းကြည့်ပါ</translation>
 <translation id="3948116654032448504">ပုံကို <ph name="SEARCH_ENGINE" />ဖြင့် ရှာရန်</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> က အောက်ပါဖိုင်တွဲများ အတွင်းရှိ ဖိုင်များကို တည်းဖြတ်နိုင်သည်</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2764,7 +2765,6 @@
 <translation id="3984159763196946143">သရုပ်ပြမုဒ်ကို စတင်၍မရပါ</translation>
 <translation id="3984431586879874039">ဤဝဘ်ဆိုက်ကို သင့်လုံခြုံရေးကီး ကြည့်ခွင့်ပြုလိုသလား။</translation>
 <translation id="398477389655464998">‘မြင်သာအောင်လုပ်ထားသော စာသား’ သို့ လင့်ခ်ကို မိတ္တူကူးခြင်း</translation>
-<translation id="3986705137476756801">'တိုက်ရိုက်စာတန်း' ကို ယခု ပိတ်ရန်</translation>
 <translation id="3987544746655539083">ဤဝဘ်ဆိုက်ကို သင့်တည်နေရာသုံးခွင့် ဆက်ပိတ်ထားရန်</translation>
 <translation id="3987938432087324095">မကြားလိုက်ပါ။</translation>
 <translation id="3988996860813292272">စံတော်ချိန်ကို ရွေးပါ</translation>
@@ -3104,6 +3104,7 @@
 <translation id="4415245286584082850">မည်သည့်စက်မျှ မရှိပါ။ တဘ်အသစ်တွင် ကူညီရေးဌာန ဆောင်းပါးကို ဖွင့်ပါ။</translation>
 <translation id="4415276339145661267">သင့် Google Account ကို စီမံခြင်း</translation>
 <translation id="4415748029120993980">SECG elliptic curve secp384r1 (aka NIST P-384)</translation>
+<translation id="4416450511678320850">ဤအကြောင်းအရာအတွက် အက်ပ်များ မရနိုင်ပါ</translation>
 <translation id="4416582610654027550">မှန်ကန်သည့် URL ကို ရိုက်ပါ</translation>
 <translation id="4419409365248380979">ကူကီးများ သတ်မှတ်ရန် <ph name="HOST" /> ကို အမြဲခွင့်ပြုပါ။</translation>
 <translation id="4421932782753506458">အမွေးနု</translation>
@@ -3371,7 +3372,6 @@
 <translation id="4699172675775169585">ကက်ရှ်လုပ်ထားသည့် ပုံများနှင့် ဖိုင်များ</translation>
 <translation id="4699357559218762027">(အလိုအလျောက်-စရန်)</translation>
 <translation id="4701025263201366865">မိဘ လက်မှတ်ထိုး ဝင်ရန်</translation>
-<translation id="4702656508969495934">'တိုက်ရိုက်စာတန်း' မြင်ရသည်၊ အထူးဖော်ပြရန် ဝင်းဒိုးပြောင်းခလုတ် သုံးပါ</translation>
 <translation id="4708794300267213770">မျက်နှာပြင်ကို ပိတ်ထားရာမှ ဖွင့်လိုက်သည့်အခါ လော့ခ်မျက်နှာပြင်ကို ပြပါ</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />ကို ရပ်ပစ်ရန်</translation>
 <translation id="4711638718396952945">ဆက်တင်များအား ပြန်လည်သိုလှောင်ရန်</translation>
@@ -3397,6 +3397,7 @@
 <translation id="473936925429402449">ရွေးထားသည်၊ <ph name="TOTAL_ELEMENTS" /> ခုအနက် အကြောင်းအရာအပို <ph name="CURRENT_ELEMENT" /></translation>
 <translation id="4739639199548674512">လက်မှတ်များ</translation>
 <translation id="4742334355511750246">ပုံများပြရန် ခွင့်ပြုမထားပါ</translation>
+<translation id="4742970037960872810">မြင်သာအောင်လုပ်ထားသည်ကို ဖယ်ရှားရန်</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />အပလီကေးရှင်းများ အပ်ဒိတ်လုပ်နည်းကို လေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ဝဘ်ဆိုက် ပြန်ဖွင့်ရန်}other{ဝဘ်ဆိုက်များ ပြန်ဖွင့်ရန်}}</translation>
 <translation id="4746351372139058112">စာတိုများ</translation>
@@ -3873,7 +3874,6 @@
 <translation id="5300287940468717207">ဝဘ်ဆိုက် ခွင့်ပြုချက်များကို ပြင်ဆင်သတ်မှတ်လိုသလား။</translation>
 <translation id="5300589172476337783">ပြရန်</translation>
 <translation id="5300719150368506519">သင်ဝင်ကြည့်သည့် စာမျက်နှာများ၏ URL များကို Google သို့ ပို့ရန်</translation>
-<translation id="5300814202279832142">ဝင်းဒိုးကို မျက်နှာပြင်နေရာသို့ ရွှေ့ရန်</translation>
 <translation id="5301751748813680278">ဧည့်သည် အဖြစ်ဝင်ရန်</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">ဘာသာစကား</translation>
@@ -4605,6 +4605,7 @@
 <translation id="6136114942382973861">ဒေါင်းလုဒ်ဘား ပိတ်ရန်</translation>
 <translation id="6136287496450963112">သင့်လုံခြုံရေးကီးကို ပင်နံပါတ်ဖြင့် ကာကွယ်မထားပါ။ လက်ဗွေများစီမံရန် ပင်နံပါတ်တစ်ခု ဦးစွာသတ်မှတ်ပါ။</translation>
 <translation id="6138680304137685902">SHA-384 ဖြင့် X9.62 ECDSA လက်မှတ်</translation>
+<translation id="6138774640412545950">“<ph name="APP_NAME" />” နောက်ဆက်တွဲသည် သင့်ဖန်သားပြင်၏ အကြောင်းအရာများကို <ph name="TARGET_NAME" /> အား မျှဝေလိုသည်။</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />၊ ကွန်ရက်မရှိပါ</translation>
 <translation id="6141988275892716286">ဒေါင်းလုဒ်လုပ်ရန် အတည်ပြုခြင်း</translation>
 <translation id="6143186082490678276">အကူအညီ ရယူရန်</translation>
@@ -5393,6 +5394,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> က သင့်ကင်မရာကို အသုံးပြုနေသည်</translation>
 <translation id="701080569351381435">ရင်းမြစ် ကြည့်ရှုရန်</translation>
 <translation id="7014174261166285193">ထည့်သွင်းခြင်း မအောင်မြင်ပါ။</translation>
+<translation id="7014480873681694324">မြင်သာအောင်လုပ်ထားသည်ကို ဖယ်ရှားရန်</translation>
 <translation id="7017004637493394352">"Ok Google" ဟု ထပ်ပြောပါ</translation>
 <translation id="7017219178341817193">စာမျက်နှာ အသစ် တစ်ခုကို ထည့်ရန်</translation>
 <translation id="7017354871202642555">ဝင်းဒိုးသတ်မှတ်ပြီးလျှင် မုဒ်သတ်မှတ်လို့မရပါ။</translation>
@@ -5486,7 +5488,6 @@
 <translation id="711840821796638741">စီမံကွပ်ကဲထားသည့် စာညှပ်များကို ပြရန်</translation>
 <translation id="711902386174337313">သင်၏ လက်မှတ်ထိုး ဝင်ထားသည့် ကိရိယာများ၏ စာရင်းကို ဖတ်ရန်</translation>
 <translation id="7120865473764644444">စင့်ခ်ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။ ပြန်စမ်းကြည့်နေသည်...</translation>
-<translation id="7121362699166175603">လိပ်စာဘားရှိ မှတ်တမ်းနှင့် အလိုအလျောက်ဖြည့်ပေးခြင်းများကို ဖျက်လိုက်ပါလိမ့်မည်။ သင့်  Google အကောင့်က ဖွင့်ကြည့်ထားသောမှတ်တမ်းသည် <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> တွင် အခြားပုံစံများဖြင့် ရှိနေနိုင်ပါသည်။</translation>
 <translation id="7121438501124788993">တီထွင်သူမုဒ်</translation>
 <translation id="7121728544325372695">အဆင့်မြင့် တုံးတိုများ</translation>
 <translation id="7123030151043029868">ဖိုင်အများအပြားကို အလိုအလျောက်ဒေါင်းလုဒ်လုပ်ရန် ခွင့်ပြုထားသည်</translation>
@@ -5659,7 +5660,6 @@
 <translation id="7334274148831027933">နေရာချထားသည့် မှန်ဘီလူးကို ဖွင့်ရန်</translation>
 <translation id="7335974957018254119">အောက်ပါအတွက် စာလုံးပေါင်းစစ်ဆေးခြင်း အသုံးပြုပါ−</translation>
 <translation id="7336799713063880535">အကြောင်းကြားချက် ပိတ်ထားသည်။</translation>
-<translation id="7337248890521463931">စာကြောင်းပိုပြရန်</translation>
 <translation id="7338630283264858612">စက်ပစ္စည်း၏ အမှတ်စဉ် မမှန်ကန်ပါ။</translation>
 <translation id="7339763383339757376">PKCS #7, လက်မှတ် တစ်ခုတည်း</translation>
 <translation id="7339785458027436441">စာရိုက်နေစဉ်တွင် စာလုံးပေါင်းစစ်ဆေးရန်</translation>
@@ -7361,7 +7361,6 @@
 <translation id="9209563766569767417">Linux ကွန်တိန်နာ စနစ်ထည့်သွင်းမှု စစ်ဆေးနေသည်</translation>
 <translation id="9209689095351280025">ဝဘ်တစ်လျှောက် သင့်အားခြေရာခံသည့် ကွတ်ကီးများကို ဝဘ်ဆိုက်များက အသုံးမပြုနိုင်ပါ</translation>
 <translation id="9211177926627870898">အပ်ဒိတ်လုပ်ရန် လိုပါသည်</translation>
-<translation id="9211490828691860325">မျက်နှာပြင်နေရာအားလုံး</translation>
 <translation id="9214510034298163263">သင့်စက်ပေါ်ရှိ ဖိုင်နှင့် ဖိုင်တွဲများ တည်းဖြတ်လိုပါက ဝဘ်ဆိုက်များက ခွင့်တောင်းနိုင်သည် (အကြံပြုထားသည်)</translation>
 <translation id="9214520840402538427">အူးပ်စ်!  တပ်ဆင်ရေး-အချိန် အချင်းလက္ခဏာများ အတွက် သတ်မှတ်ချိန် ကုန်သွားပါပြီ။ ကျေးဇူးပြုပြီး သင့်ကို ကူညီပေးသည့် ကိုယ်စားလှယ်ကို ဆက်သွယ်ပါ။</translation>
 <translation id="9214695392875603905">ကြက်ဥမုန့်</translation>

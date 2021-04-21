@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Als je Chrome toestaat je locatie te gebruiken, stuurt Chrome deze naar sites waarvoor je toestemming geeft. Sites kunnen om je locatie vragen als ze je lokale informatie willen laten zien, zoals winkels in de buurt of lokaal nieuws.</translation>
 <translation id="6036420186814142909">Google Chrome bevat functies die je helpen je internetgegevens te beheren en te bepalen hoe snel je webpagina's kunt laden.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Inloggen bij Chrome toestaan</translation>
 <translation id="6181930887571472871">Overschakelen naar Chrome</translation>
 <translation id="6238746320622508509">Laat Chrome je incognitotabbladen vergrendelen.</translation>
 <translation id="6573431926118603307">Hier zie je tabbladen die je op andere apparaten in Chrome hebt geopend.</translation>
@@ -96,5 +97,6 @@
 3. Selecteer Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Blijf veilig met Google Chrome</translation>
+<translation id="8772179140489533211">Toont prompts om in te loggen bij Chrome.</translation>
 <translation id="9112744793181547300">Chrome instellen als standaard?</translation>
 </translationbundle>

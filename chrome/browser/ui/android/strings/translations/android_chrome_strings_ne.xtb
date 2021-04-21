@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">अहिले</translation>
 <translation id="2172688499998841696">'फोटोको वर्णन' सुविधा अफ छ</translation>
 <translation id="2175927920773552910">QR कोड</translation>
-<translation id="2181298861158186289">क्लिपबोर्डमा रहेका सामग्री लुकाइयोस्</translation>
 <translation id="218608176142494674">आदान प्रदान गर्दै</translation>
 <translation id="2195339740518523951">Chrome को सबैभन्दा बलियो सुरक्षा विकल्प चयन गर्नुहोस्</translation>
 <translation id="2200113223741723867">प्रयोगसम्बन्धी डेटा सेयर गर्ने सेटिङ व्यवस्थापन गर्नुहोस्</translation>
@@ -840,7 +839,6 @@
 <translation id="6539092367496845964">केही चिज गडबड भयो। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{१ घन्टाअघि जाँच गरिएको}other{# घन्टाअघि जाँच गरिएको}}</translation>
 <translation id="6545017243486555795">सबै डेटा मेटाउनुहोस्</translation>
-<translation id="6549142516027084053">क्लिपबोर्डमा रहेका सामग्री देखाइयोस्</translation>
 <translation id="6560414384669816528">Sogou मार्फत खोजी गर्नुहोस्</translation>
 <translation id="656065428026159829">थप हेर्नुहोस्</translation>
 <translation id="6565959834589222080">Wi-Fi उपलब्ध हुँदा मोबाइल डेटा प्रयोग गरिँदैन</translation>
@@ -934,7 +932,6 @@
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7187993566681480880">यस सुविधाले तपाईं Chrome मा साइन इन भएका बेला तपाईंको जानकारी सुरक्षित राख्छ। Google का अन्य एपहरूको सुरक्षा स्तर सुधार गर्न पनि यसको प्रयोग गरिन सक्छ।</translation>
 <translation id="718926126787620637">पुस्तक चिन्ह लगाइएका फोल्डरहरूको सूची स्क्रिनको पूरा भागमा खोलियो</translation>
-<translation id="7189372733857464326">Google Play Services ले अद्यावधिक गर्ने कार्य सम्पन्न गरोस् भनी कुर्दै</translation>
 <translation id="7191430249889272776">पृष्ठभूमिमा ट्याब खुला छ।</translation>
 <translation id="7233236755231902816">आफ्नो भाषामा वेब हेर्न Chrome को नवीनतम संस्करण प्राप्त गर्नुहोस्</translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> को Chrome मा सिंक सुविधा सक्रिय गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>

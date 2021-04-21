@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Se questa opzione viene selezionata, Chrome memorizza una copia della carta sul dispositivo per velocizzare la compilazione dei moduli.</translation>
 <translation id="1110994991967754504">Seleziona l'autorizzazione per <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Annulla ridisposizione</translation>
+<translation id="1123753900084781868">La funzionalità Sottotitoli in tempo reale non è al momento disponibile</translation>
 <translation id="1125573121925420732">Gli avvisi potrebbero essere frequenti durante l'aggiornamento della sicurezza dei siti web. La situazione dovrebbe migliorare a breve.</translation>
 <translation id="112840717907525620">Cache dei criteri integra</translation>
 <translation id="1130564665089811311">Pulsante Traduci pagina, premi Invio per tradurre questa pagina con Google Traduttore</translation>
@@ -217,6 +218,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Questo server non è riuscito a verificare che si tratti di <ph name="DOMAIN" />; il relativo certificato di sicurezza potrebbe essere attivo da domani. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.}other{Questo server non è riuscito a verificare che si tratti di <ph name="DOMAIN" />; il relativo certificato di sicurezza potrebbe essere attivo tra # giorni. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.}}</translation>
 <translation id="1710259589646384581">Sistema operativo</translation>
+<translation id="1711234383449478798">Criterio ignorato perché il criterio <ph name="POLICY_NAME" /> non è impostato su <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> vuole memorizzare in modo definitivo i dati sul computer locale</translation>
 <translation id="1713628304598226412">Vassoio 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -769,6 +771,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3841184659773414994">Gestori dei file</translation>
 <translation id="385051799172605136">Indietro</translation>
 <translation id="3858027520442213535">Aggiorna data e ora</translation>
+<translation id="3881478300875776315">Mostra meno righe</translation>
 <translation id="3884278016824448484">Identificativo del dispositivo in conflitto</translation>
 <translation id="3885155851504623709">Comune</translation>
 <translation id="388632593194507180">Monitoraggio rilevato</translation>
@@ -794,6 +797,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="397105322502079400">Calcolo in corso...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> è bloccato</translation>
 <translation id="3973357910713125165">Pulsante Esegui il controllo di sicurezza di Chrome, premi Invio per eseguire il controllo di sicurezza nelle impostazioni di Chrome</translation>
+<translation id="3986705137476756801">Disattiva Sottotitoli in tempo reale per ora</translation>
 <translation id="3987405730340719549">Chrome ha stabilito che questo sito potrebbe essere falso o fraudolento.
 
     Se ritieni che questo avviso sia stato mostrato per sbaglio, visita la pagina https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -923,6 +927,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4377125064752653719">Hai tentato di accedere a <ph name="DOMAIN" /> ma il server ha presentato un certificato revocato dall'autorità di certificazione. Ciò significa che le credenziali di sicurezza presentate dal server non sono assolutamente attendibili. Potresti avere stabilito una comunicazione con un utente malintenzionato.</translation>
 <translation id="4378154925671717803">Telefono</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4406883609789734330">Sottotitoli in tempo reale</translation>
 <translation id="4406896451731180161">risultati di ricerca</translation>
 <translation id="4408413947728134509">Cookie: <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Hai appena inserito la tua password su un sito ingannevole. Chrome ti consiglia di visitare i siti <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> e altri siti in cui utilizzi questa password e di cambiarla subito.</translation>
@@ -988,6 +993,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lato</translation>
+<translation id="4702656508969495934">Sottotitoli in tempo reale visibili, utilizza il selettore di finestre per visualizzare la finestra</translation>
 <translation id="4708268264240856090">La connessione è stata interrotta</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Eseguire lo strumento Diagnostica di rete Windows<ph name="END_LINK" /></translation>
@@ -1657,6 +1663,7 @@ Ulteriori dettagli:
 <translation id="733354035281974745">Override account locale del dispositivo</translation>
 <translation id="7333654844024768166">Hai appena inserito la tua password su un sito ingannevole. Chromium ti consiglia di visitare i siti <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> e altri siti in cui utilizzi questa password e di cambiarla subito.</translation>
 <translation id="7334320624316649418">&amp;Ripeti ridisposizione</translation>
+<translation id="7337248890521463931">Mostra più righe</translation>
 <translation id="7337706099755338005">Non disponibile sulla piattaforma in uso.</translation>
 <translation id="733923710415886693">Il certificato del server non è stato reso pubblico tramite Certificate Transparency.</translation>
 <translation id="734600844861828519">11x15</translation>

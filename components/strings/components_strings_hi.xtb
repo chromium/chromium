@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">चेक किए होने पर, ज़्यादा तेज़ फ़ॉर्म भरने के लिए Chrome इस डिवाइस पर आपके कार्ड की कॉपी संग्रहित कर लेगा.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> के लिए अनुमति चुनें</translation>
 <translation id="1113869188872983271">&amp;पुन: क्रमित करना वापस लाएं</translation>
+<translation id="1123753900084781868">अभी लाइव कैप्शन की सुविधा उपलब्ध नहीं है</translation>
 <translation id="1125573121925420732">जब वेबसाइटें अपनी सुरक्षा अपडेट कर रही होती हैं, तब चेतावनियां आम हो सकती हैं. इसमें जल्द ही सुधार होगा.</translation>
 <translation id="112840717907525620">नीति कैश मेमोरी ठीक है</translation>
 <translation id="1130564665089811311">'पेज का अनुवाद करें' बटन, Google Translate की मदद से इस पेज का अनुवाद करने के लिए Enter दबाएं</translation>
@@ -217,6 +218,7 @@
 <translation id="1703835215927279855">लेटर</translation>
 <translation id="1706954506755087368">{1,plural, =1{यह सर्वर प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र कल से माना जाएगा. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन को बाधित करने के कारण हो सकता है.}one{यह सर्वर प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र # दिन बाद से माना जाएगा. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन को बाधित करने के कारण हो सकता है.}other{यह सर्वर प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र # दिन बाद से माना जाएगा. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन को बाधित करने के कारण हो सकता है.}}</translation>
 <translation id="1710259589646384581">OS</translation>
+<translation id="1711234383449478798"><ph name="POLICY_NAME" /> को नज़रअंदाज़ किया गया, क्योंकि यह <ph name="VALUE" /> के लिए सेट नहीं किया गया है.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> आपके स्थानीय कंप्यूटर पर हमेशा के लिए डेटा संग्रहित करना चाहता है</translation>
 <translation id="1713628304598226412">ट्रे 2</translation>
 <translation id="1715874602234207">एफ़</translation>
@@ -769,6 +771,7 @@
 <translation id="3841184659773414994">फ़ाइल हैंडलर</translation>
 <translation id="385051799172605136">वापस जाएं</translation>
 <translation id="3858027520442213535">तारीख और समय अपडेट करें</translation>
+<translation id="3881478300875776315">कम लाइनें दिखाएं</translation>
 <translation id="3884278016824448484">विरोधाभासी डिवाइस पहचानकर्ता</translation>
 <translation id="3885155851504623709">पैरिश</translation>
 <translation id="388632593194507180">यह पता चला है कि नज़र रखी जा रही है</translation>
@@ -794,6 +797,7 @@
 <translation id="397105322502079400">गणना की जा रही है...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> को ब्लॉक किया गया है</translation>
 <translation id="3973357910713125165">यह 'Chrome की सुरक्षा जांच करें' बटन है. Chrome की सेटिंग में, सुरक्षा जांच करने के लिए Enter दबाएं</translation>
+<translation id="3986705137476756801">अभी के लिए लाइव कैप्शन की सुविधा बंद करें</translation>
 <translation id="3987405730340719549">Chrome के हिसाब से यह साइट नकली या धोखाधड़ी करने वाली हो सकती है.
 
     अगर आपको लगता है कि ऐसा गलती से दिखाया गया है, तो कृपया https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals पर जाएं.</translation>
@@ -923,6 +927,7 @@
 <translation id="4377125064752653719">आपने <ph name="DOMAIN" /> तक पहुंचने की कोशिश की, लेकिन सर्वर से मिले प्रमाणपत्र को उसके जारीकर्ता ने रद्द कर दिया है. इसका मतलब है कि सर्वर से मिली सुरक्षा प्रमाणिकता पर पूरी तरह भरोसा नहीं करना चाहिए. हो सकता है कि आप किसी हमलावर से बातचीत कर रहे हों.</translation>
 <translation id="4378154925671717803">फ़ोन</translation>
 <translation id="4390472908992056574">ब्रिम</translation>
+<translation id="4406883609789734330">लाइव कैप्शन</translation>
 <translation id="4406896451731180161">खोज नतीजे</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> कुकी</translation>
 <translation id="4414290883293381923">आपने अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. Chrome, <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, और उन साइटों पर जाकर पासवर्ड बदलने का सुझाव देता है जिन पर आपने इसका इस्तेमाल किया था.</translation>
@@ -988,6 +993,7 @@
 <translation id="4691835149146451662">आर्किटेक्चर-ए (एन्वेलप)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">साइड</translation>
+<translation id="4702656508969495934">लाइव कैप्शन दिख रहा है, इस पर फ़ोकस ले जाने के लिए, विंडो बदलने का बटन इस्तेमाल करें</translation>
 <translation id="4708268264240856090">आपका कनेक्शन बाधित था</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows नेटवर्क निदान चलाकर देखें<ph name="END_LINK" /></translation>
@@ -1658,6 +1664,7 @@
 <translation id="733354035281974745">डिवाइस का स्थानीय खाता बदलें</translation>
 <translation id="7333654844024768166">आपने अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. क्रोमियम, <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, और उन साइटों पर जाकर पासवर्ड बदलने का सुझाव देता है जिन पर आपने इसका इस्तेमाल किया था.</translation>
 <translation id="7334320624316649418">&amp;पुन: क्रमित करना फिर से करें</translation>
+<translation id="7337248890521463931">और लाइनें दिखाएं</translation>
 <translation id="7337706099755338005">आपके प्लेटफ़ॉर्म पर उपलब्ध नहीं है.</translation>
 <translation id="733923710415886693">प्रमाणपत्र पारदर्शिता के माध्यम से सर्वर के प्रमाणपत्र को प्रकट नहीं किया गया.</translation>
 <translation id="734600844861828519">11x15</translation>

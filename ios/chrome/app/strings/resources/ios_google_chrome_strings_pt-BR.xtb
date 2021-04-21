@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Se você permitir que o Chrome saiba sua localização, ele a enviará para os sites autorizados. Os sites podem solicitar sua localização para enviar informações locais para você, como notícias ou lojas próximas.</translation>
 <translation id="6036420186814142909">O Google Chrome tem recursos que ajudam a gerenciar seus dados de Internet e a velocidade de carregamento de páginas da Web.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Permitir login no Chrome</translation>
 <translation id="6181930887571472871">Mudar para o Chrome</translation>
 <translation id="6238746320622508509">Permita que o Chrome bloqueie suas guias anônimas.</translation>
 <translation id="6573431926118603307">Aqui ficam as guias do Chrome que você abriu em outros dispositivos.</translation>
@@ -96,5 +97,6 @@
   3. Selecione o Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Proteja-se com o Google Chrome</translation>
+<translation id="8772179140489533211">Mostra solicitações para fazer login no Chrome.</translation>
 <translation id="9112744793181547300">Definir o Chrome como padrão?</translation>
 </translationbundle>

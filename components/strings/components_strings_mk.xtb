@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Доколку е избрано, Chrome ќе меморира копија од вашата картичка на уредов за побрзо пополнување на формуларот.</translation>
 <translation id="1110994991967754504">Изберете дозвола за <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Врати преуредување</translation>
+<translation id="1123753900084781868">„Автоматски титлови“ не е достапна во моментов</translation>
 <translation id="1125573121925420732">Предупредувањата се вообичаени додека веб-сајтовите ја ажурираат својата безбедност. Очекувајте тоа да се подобри наскоро.</translation>
 <translation id="112840717907525620">Кешот на политиката е во ред</translation>
 <translation id="1130564665089811311">Копче „Преведи ја страницата“, притиснете Enter за да ја преведете страницава со „Преведи на Google“</translation>
@@ -217,6 +218,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Серверот не може да докаже дека е <ph name="DOMAIN" />; неговиот безбедносен сертификат наводно е утрешен. Тоа можеби се должи на погрешна конфигурација или на напаѓач што ја пресретнува вашата врска.}one{Серверот не може да докаже дека е <ph name="DOMAIN" />; неговиот безбедносен сертификат наводно е после # ден во иднината. Тоа можеби се должи на погрешна конфигурација или на напаѓач што ја пресретнува вашата врска.}other{Серверот не може да докаже дека е <ph name="DOMAIN" />; неговиот безбедносен сертификат наводно е после # дена во иднината. Тоа можеби се должи на погрешна конфигурација или на напаѓач што ја пресретнува вашата врска.}}</translation>
 <translation id="1710259589646384581">ОС</translation>
+<translation id="1711234383449478798">Игнорирано бидејќи <ph name="POLICY_NAME" /> не е поставено на <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> сака трајно да складира податоци на вашиот локален компјутер</translation>
 <translation id="1713628304598226412">Фиока 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -772,6 +774,7 @@
 <translation id="3841184659773414994">Ракувачи со датотеки</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858027520442213535">Ажурирај датум и време</translation>
+<translation id="3881478300875776315">Прикажи помалку редови</translation>
 <translation id="3884278016824448484">Идентификувач на конфликтен уред</translation>
 <translation id="3885155851504623709">Парохија</translation>
 <translation id="388632593194507180">Откриен е надзор</translation>
@@ -797,6 +800,7 @@
 <translation id="397105322502079400">Се пресметува…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> е блокиран</translation>
 <translation id="3973357910713125165">Копче „Изврши безбедносна проверка во Chrome“, притиснете Enter за да извршите безбедносна проверка во поставките за Chrome</translation>
+<translation id="3986705137476756801">Исклучете ја „Автоматски титлови“ засега</translation>
 <translation id="3987405730340719549">Chrome утврди дека сајтов може да е лажен или измамнички.
 
     Ако сметате дека ова ви се прикажува по грешка, одете на https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -926,6 +930,7 @@
 <translation id="4377125064752653719">Се обидовте да го добиете <ph name="DOMAIN" />, но издавачот го повлекол сертификатот што го претставил серверот. Тоа значи дека воопшто не треба да верувате во акредитациите за безбедност кои ги претставил серверот. Можеби комуницирате со напаѓач.</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4390472908992056574">Раб</translation>
+<translation id="4406883609789734330">Автоматски титлови</translation>
 <translation id="4406896451731180161">резултати од пребарувањето</translation>
 <translation id="4408413947728134509">Колачиња <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Тукушто ја внесовте својата лозинка на измамнички сајт. Chrome препорачува да одите на <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> и на други сајтови каде што ја користите лозинкава и да ја промените веднаш.</translation>
@@ -991,6 +996,7 @@
 <translation id="4691835149146451662">Architecture-A (плик)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Странична</translation>
+<translation id="4702656508969495934">„Автоматски титлови“ е видлива, користете префрлач на прозорци за да фокусирате</translation>
 <translation id="4708268264240856090">Врската беше прекината</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />да извршите дијагностика на мрежата на Windows<ph name="END_LINK" /></translation>
@@ -1661,6 +1667,7 @@
 <translation id="733354035281974745">Отфрлање на локалната сметка на уредот</translation>
 <translation id="7333654844024768166">Тукушто ја внесовте својата лозинка на измамнички сајт. Chromium препорачува да одите на <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> и на други сајтови каде што ја користите лозинкава и да ја промените веднаш.</translation>
 <translation id="7334320624316649418">&amp;Повтори преуредување</translation>
+<translation id="7337248890521463931">Прикажи повеќе редови</translation>
 <translation id="7337706099755338005">Не е достапен на вашата платформа.</translation>
 <translation id="733923710415886693">Сертификатот на серверот не е откриен преку Транспарентност на сертификати.</translation>
 <translation id="734600844861828519">11x15</translation>

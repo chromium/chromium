@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">যদি চেক করা হয়, দ্রুত ফর্ম পূরণ করার জন্য এই ডিভাইসে থাকা আপনার কার্ডের একটি কপি Chrome স্টোর করবে৷</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> এর জন্য অনুমতি বেছে নিন</translation>
 <translation id="1113869188872983271">&amp;পুনর্বিন্যাসকে পূর্বাবস্থায় ফেরান</translation>
+<translation id="1123753900084781868">'লাইভ ক্যাপশন' ফিচারের সুবিধা এখনই পাওয়া যাবে না</translation>
 <translation id="1125573121925420732">ওয়েবসাইটগুলির নিরাপত্তা আপডেট করার সময় সতর্কতা দেখানো খুবই স্বভাবিক। এটি শীঘ্রই উন্নত করা উচিত।</translation>
 <translation id="112840717907525620">নীতি ক্যাশেটি ঠিক আছে</translation>
 <translation id="1130564665089811311">'পৃষ্ঠা অনুবাদ করুন' বোতাম, Google Translate ব্যবহার করে এই পৃষ্ঠা অনুবাদ করতে Enter প্রেস করুন।</translation>
@@ -773,6 +774,7 @@
 <translation id="3841184659773414994">ফাইল হ্যান্ডলার</translation>
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="3858027520442213535">তারিখ এবং সময় আপডেট করুন</translation>
+<translation id="3881478300875776315">কম লাইন দেখুন</translation>
 <translation id="3884278016824448484">পরস্পর বিরোধী ডিভাইস সনাক্তকারী</translation>
 <translation id="3885155851504623709">প্যারিশ</translation>
 <translation id="388632593194507180">মনিটর করা হচ্ছে, সেটি শনাক্ত করা গেছে</translation>
@@ -798,6 +800,7 @@
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> অবরুদ্ধ হয়ে রয়েছে</translation>
 <translation id="3973357910713125165">'Chrome নিরাপত্তা সংক্রান্ত পরীক্ষা চালান' বোতাম, Chrome সেটিংসে নিরাপত্তা সংক্রান্ত পরীক্ষা চালাতে Enter কী প্রেস করুন</translation>
+<translation id="3986705137476756801">এখনকার মতো লাইভ ক্যাপশন বন্ধ করে দিন</translation>
 <translation id="3987405730340719549">এই সাইট জাল বা প্রতারণামূলক হতে পারে বলে Chrome শনাক্ত করেছে।
 
     এটি ভুল করে দেখানো হচ্ছে বলে মনে হলে, https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals লিঙ্কটি দেখুন।</translation>
@@ -927,6 +930,7 @@
 <translation id="4377125064752653719">আপনি <ph name="DOMAIN" />-এ পৌঁছানোর প্রচেষ্টা করেছেন, তবে সার্ভারটি যে সার্টিফিকেটটি উপস্থাপন করেছে সেটির জারিকর্তা সেটিকে প্রত্যাহার করেছে৷ এর অর্থ হ'ল সার্ভারটি যে সুরক্ষা প্রমানপত্র উপস্থাপন করেছে তা কোনওমতেই বিশ্বাসযোগ্য নয়৷ হতে পারে আপনি একজন আক্রমণকারীর সাথে যোগাযোগ করছেন৷</translation>
 <translation id="4378154925671717803">ফোন</translation>
 <translation id="4390472908992056574">ব্রিম</translation>
+<translation id="4406883609789734330">লাইভ ক্যাপশন</translation>
 <translation id="4406896451731180161">সার্চের ফলাফলগুলি</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" />টি কুকিজ</translation>
 <translation id="4414290883293381923">আপনি এখনই প্রতারণামূলক একটি সাইটে নিজের পাসওয়ার্ড লিখেছেন। <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> এবং অন্যান্য সাইটে, যেখানে যেখানে আপনি এই পাসওয়ার্ডটি ব্যবহার করেন, সেইসব জায়গায় গিয়ে এখনই এটি পরিবর্তন করতে Chromium আপনাকে সাজেস্ট করেছে।</translation>
@@ -992,6 +996,7 @@
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">সাইড</translation>
+<translation id="4702656508969495934">লাইভ ক্যাপশন দেখা যাচ্ছে, ফোকাস করতে উইন্ডো পরিবর্তনকারী ব্যবহার করুন</translation>
 <translation id="4708268264240856090">আপনার সংযোগ বাধাপ্রাপ্ত হয়েছে</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows নেটওয়ার্ক ডায়গনিস্টিক্স চালান<ph name="END_LINK" /></translation>
@@ -1661,6 +1666,7 @@
 <translation id="733354035281974745">ডিভাইসের স্থানীয় অ্যাকাউন্ট ওভাররাইড করা</translation>
 <translation id="7333654844024768166">আপনি এখনই প্রতারণামূলক একটি সাইটে নিজের পাসওয়ার্ড লিখেছেন। Chromium আপনাকে সাজেস্ট করছে যে আপনি <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> এবং অন্যান্য সাইটে যান যেখানে যেখানে আপনি এই পাসওয়ার্ডটি ব্যবহার করেন এবং এখনই সেইসব জায়গায় এটি পরিবর্তন করুন।</translation>
 <translation id="7334320624316649418">&amp;পুনর্বিন্যাসকে আবার করুন</translation>
+<translation id="7337248890521463931">বেশি লাইন দেখুন</translation>
 <translation id="7337706099755338005">আপনার প্ল্যাটফর্মে উপলভ্য নেই।</translation>
 <translation id="733923710415886693">সার্ভারের সার্টিফিকেটটি সার্টিফিকেটের স্বচ্ছতার মাধ্যমে প্রকাশ করা হয়নি।</translation>
 <translation id="734600844861828519">11x15</translation>

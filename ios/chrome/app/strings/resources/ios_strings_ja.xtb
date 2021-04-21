@@ -446,6 +446,7 @@
 <translation id="5782227691023083829">翻訳しています...</translation>
 <translation id="5803566855766646066">この新しいカードを破棄してもよろしいですか？</translation>
 <translation id="5816228676161003208">音声を使ってより速く検索できます。</translation>
+<translation id="581659025233126501">同期をオンにする</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> によって管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">検索エンジン</translation>
 <translation id="5854790677617711513">30 日以上経過</translation>
@@ -493,6 +494,7 @@
 <translation id="6196207969502475924">音声検索</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} 個のタブを閉じる}other{{COUNT} 個のタブを閉じる}}</translation>
 <translation id="6219688215832490856">翻訳しない</translation>
+<translation id="6223816392543092032">ブックマーク、履歴、パスワードなどの設定をどのデバイスでも利用できるようにします。</translation>
 <translation id="6254066287920239840">ブラウザの代わりにアプリでリンクを開きます。</translation>
 <translation id="6255097610484507482">クレジットカードの編集</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />を翻訳するか尋ねる</translation>
@@ -525,6 +527,7 @@
 <translation id="6445981559479772097">メッセージ送信完了。</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6453018583485750254">一度も確認されていません。</translation>
+<translation id="6459307836338400162">プライバシー、セキュリティ、データ収集に関連するその他の設定については、<ph name="BEGIN_LINK" />同期<ph name="END_LINK" />と <ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="6464071786529933911">新しいシークレット タブで開く</translation>
 <translation id="6464397691496239022">サイトは、Cookie を使用してブラウジングの利便性を改善することができます。たとえばログイン状態の維持や、ショッピング カートの中身の保存が可能になります。
 
@@ -708,6 +711,7 @@
 <translation id="8281886186245836920">スキップ</translation>
 <translation id="8283172974887967105">設定…</translation>
 <translation id="8299417921174340354">パスワードを使用するには、まずデバイスにパスコードを設定する必要があります。</translation>
+<translation id="83100941411593607">ログインは無効になっています</translation>
 <translation id="8319076807703933069">新しく検索</translation>
 <translation id="8323906514956095947">長押しすると、タブのオプションがさらに表示されます</translation>
 <translation id="8328777765163860529">すべて閉じる</translation>

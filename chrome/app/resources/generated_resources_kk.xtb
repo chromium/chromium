@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;Құралдар</translation>
 <translation id="1122242684574577509">Аутентификация сәтсіз аяқталды. Пайдаланып жатқан Wi-Fi желісіне кіру бетіне өту үшін басыңыз (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">Бетбелгі атауы</translation>
-<translation id="1123753900084781868">Live Caption қазір қолжетімді емес.</translation>
 <translation id="1124772482545689468">Пайдаланушы</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (жергілікті) болып көрінеді</translation>
 <translation id="1126809382673880764">Қауіпті веб-сайттардан, жүктеп алынған файлдардан және кеңейтімдерден қорғамайды. Gmail және Search сияқты басқа Google қызметтерінде "Қауіпсіз шолу" функциясы қорғайтын болады.</translation>
@@ -945,7 +944,6 @@
 <translation id="2010501376126504057">Үйлесімді құрылғылар</translation>
 <translation id="2016574333161572915">Google Meet жабдығы реттеуге дайын.</translation>
 <translation id="2017334798163366053">Өнімділік деректерінің жинағын өшіру</translation>
-<translation id="2017836877785168846">Мекенжай жолағындағы тарихты және автотолтыруларды өшіреді.</translation>
 <translation id="2018352199541442911">Кешіріңіз, сыртқы жад құрылғысына қазір қолдау көрсетілмеген.</translation>
 <translation id="2019718679933488176">&amp;Аудионы жаңа қойындыда ашу</translation>
 <translation id="2020183425253392403">Желі мекенжайы параметрлерін көрсету</translation>
@@ -2642,7 +2640,6 @@
 <translation id="3874164307099183178">Google Assistant қолданбасын қосу</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> құрылғысына арналған Nearby Share параметрлері (<ph name="USER_EMAIL" /> есептік жазбасының атынан бөлісуде).</translation>
 <translation id="3879748587602334249">Жүктеп алу менеджері</translation>
-<translation id="3881478300875776315">Жолдарды азырақ көрсету</translation>
 <translation id="3882165008614329320">Камерадан немесе файлдан алынған бейне</translation>
 <translation id="3884152383786131369">Бірнеше тілдегі веб-мазмұн осы тізімдегі бірінші тілді пайдаланады. Бұл параметрлер браузер параметрлерімен синхрондалады. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Жаңартуларды әкімшіңіз басқарады.</translation>
@@ -2760,7 +2757,6 @@
 <translation id="3984159763196946143">Демо режимі іске қосылмады</translation>
 <translation id="3984431586879874039">Бұл сайтқа қауіпсіздік кілтін көруге рұқсат етілсін бе?</translation>
 <translation id="398477389655464998">Бөлектелген мәтіннің сілтемесін көшіру</translation>
-<translation id="3986705137476756801">Live Caption функциясын қазір өшіру</translation>
 <translation id="3987544746655539083">Бұл сайтқа геодерегіңізді пайдалануға тыйым салу</translation>
 <translation id="3987938432087324095">Кешіріңіз, түсініксіз айтылды.</translation>
 <translation id="3988996860813292272">Уақыт белдеуін таңдау</translation>
@@ -3367,7 +3363,6 @@
 <translation id="4699172675775169585">Кэштелген кескіндер мен файлдар</translation>
 <translation id="4699357559218762027">(автоматты іске қосу)</translation>
 <translation id="4701025263201366865">Ата-ананың жүйеге кіруі</translation>
-<translation id="4702656508969495934">Live Caption көрінеді, ерекшелеу үшін терезе ауыстырғышты пайдаланыңыз.</translation>
 <translation id="4708794300267213770">Ұйқы режимінен шығарғанда құлып экранын көрсету</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> жүйесінен шығу</translation>
 <translation id="4711638718396952945">Параметрлерді қалпына келтіру</translation>
@@ -3869,7 +3864,6 @@
 <translation id="5300287940468717207">Сайт рұқсаттары бастапқы қалпына қайтарылсын ба?</translation>
 <translation id="5300589172476337783">Көрсету</translation>
 <translation id="5300719150368506519">Кірген беттердің URL мекенжайларын Google-ға жіберу</translation>
-<translation id="5300814202279832142">Терезені жұмыс үстеліне жылжыту</translation>
 <translation id="5301751748813680278">Қонақ ретінде кіруде.</translation>
 <translation id="5301954838959518834">Жарайды, түсінікті</translation>
 <translation id="5302048478445481009">Тіл</translation>
@@ -5484,7 +5478,6 @@
 <translation id="711840821796638741">Басқарылатын бетбелгілерді көрсету</translation>
 <translation id="711902386174337313">Кірген құрылғыларыңыздың тізімін оқу</translation>
 <translation id="7120865473764644444">Синхрондау серверімен байланыс орнатылмады. Әрекет қайталануда…</translation>
-<translation id="7121362699166175603">Мекенжай жолағында тарих пен автотолтыруларды өшіреді. <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> сайтында Google есептік жазбасымен шолу тарихының басқа да үлгілері болуы мүмкін.</translation>
 <translation id="7121438501124788993">Әзірлеуші режимі</translation>
 <translation id="7121728544325372695">Смарт сызықшалар</translation>
 <translation id="7123030151043029868">Бірнеше файлды автоматты түрде жүктеп алуға рұқсаты барлар</translation>
@@ -5657,7 +5650,6 @@
 <translation id="7334274148831027933">Бекітілген ұлғайтқышты қосу</translation>
 <translation id="7335974957018254119">Емлені тексеруді пайдалану</translation>
 <translation id="7336799713063880535">Хабарландыру бөгелді.</translation>
-<translation id="7337248890521463931">Жолдарды көбірек көрсету</translation>
 <translation id="7338630283264858612">Құрылғының сериялық нөмірі жарамсыз.</translation>
 <translation id="7339763383339757376">PKCS #7, бір сертификат</translation>
 <translation id="7339785458027436441">Теру кезінде емлені тексеру</translation>
@@ -7359,7 +7351,6 @@
 <translation id="9209563766569767417">Linux контейнерінің реттелуі тексерілуде</translation>
 <translation id="9209689095351280025">Сайттар сізді интернетте қадағалайтын cookie файлдарын пайдалана алмайды.</translation>
 <translation id="9211177926627870898">Жаңарту қажет</translation>
-<translation id="9211490828691860325">Барлық жұмыс үстелдері</translation>
 <translation id="9214510034298163263">Сайттар құрылғыңыздағы файлдар мен қалталарды өзгертуге рұқсат сұрайды (ұсынылады).</translation>
 <translation id="9214520840402538427">Орнату уақыты атрибуттарын жұмысқа дайындау мерзімі бітті. Қолдау көрсету өкіліне хабарласыңыз.</translation>
 <translation id="9214695392875603905">Маффин</translation>

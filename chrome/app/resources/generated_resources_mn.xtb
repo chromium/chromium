@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp; Хэрэгслүүд</translation>
 <translation id="1122242684574577509">Таниулах үйлдэл амжилтгүй боллоо. Өөрийн ашиглаж байгаа Wi-Fi сүлжээний нэвтрэх хуудас руу орохоор дарна уу (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">Хадгалагдсан хуудасны нэр</translation>
-<translation id="1123753900084781868">Шууд тайлбар яг одоо боломжгүй байна</translation>
 <translation id="1124772482545689468">Хэрэглэгч</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> юм шиг харагдаж байна (Үндсэн)</translation>
 <translation id="1126809382673880764">Таныг аюултай вебсайт, таталт болон өргөтгөлөөс хамгаалахгүй. Гэхдээ та Аюулгүй үзэх хамгаалалтыг Gmail, Хайлт зэрэг Google-н боломжтой бусад үйлчилгээнд авсан хэвээр байна.</translation>
@@ -750,6 +749,7 @@
 <translation id="1794791083288629568">Энэ алдааг засахад бидэнд туслан, санал хүсэлтээ илгээнэ үү.</translation>
 <translation id="1795214765651529549">Сонгодог загварыг ашиглах</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" өргөтгөлийг автоматаар идэвхгүй болгосон.</translation>
+<translation id="1800973090344019061">"<ph name="APP_NAME" />" өргөтгөл таны дэлгэцийн контентыг хуваалцахыг хүсэж байна.</translation>
 <translation id="1802624026913571222">Хавтас хаалттай үед идэвхгүй болгох</translation>
 <translation id="1802687198411089702">Хуудас хариу өгөхгүй байна. Та хариу өгтөл нь хүлээх эсвэл гарах боломжтой.</translation>
 <translation id="1803531841600994172">Орчуулах хэл</translation>
@@ -944,7 +944,6 @@
 <translation id="2010501376126504057">Тохирох төхөөрөмжүүд</translation>
 <translation id="2016574333161572915">Таны Google Meet-н техник хангамжийг тохируулахад бэлэн боллоо</translation>
 <translation id="2017334798163366053">Гүйцэтгэлийн мэдээ цуглуулахыг зогсоо</translation>
-<translation id="2017836877785168846">Түүх, хаяг оруулах хэсгийн автомат гүйцээлтийг устгана.</translation>
 <translation id="2018352199541442911">Уучлаарай, таны гадаад хадгалалтын төхөөрөмж одоогоор дэмжигдэхгүй байна.</translation>
 <translation id="2019718679933488176">&amp; Шинэ цонхон дахь нээлттэй аудио</translation>
 <translation id="2020183425253392403">Сүлжээний хаягийн тохиргоог харуулах</translation>
@@ -1349,6 +1348,7 @@
 <translation id="2464089476039395325">HTTP прокси</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" /> таныг одоо Wi-Fi-д холбогдож, шинэчлэлт татахыг шаардаж байна. Эсвэл хязгаартай холболтоос татаж авна уу (төлбөр гарч болзошгүй).</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> сүлжээ, унтраалттай</translation>
+<translation id="2467755475704469005">Ямар ч төхөөрөмж илэрсэнгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Мэдрэгч самбарын гүйлгэлтийн хурдасгуур</translation>
 <translation id="2468205691404969808">Таны сонголтыг таныг тэдгээр хуудсанд зочлоогүй байсан ч санахын тулд күүки ашигладаг</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
@@ -2377,6 +2377,7 @@
 <translation id="3608576286259426129">Хэрэглэгчийн зургийг урьдчилан үзэх</translation>
 <translation id="3610369246614755442">Холбогчийн сэнсийг үйлчилгээнд хамруулах хэрэгтэй</translation>
 <translation id="361106536627977100">Флэш дата</translation>
+<translation id="3611655097742243705">Бусад аппыг олохын тулд Play Store-т зочилно уу</translation>
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; татсан</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" />-ыг харуулах</translation>
 <translation id="3613422051106148727">Шинэ цонхонд нээх</translation>
@@ -2641,7 +2642,6 @@
 <translation id="3874164307099183178">Google Туслахыг асаах</translation>
 <translation id="3877075909000773256"><ph name="USER_EMAIL" /> бүртгэлээр хуваалцаж байгаа <ph name="USER_NAME" />-н төхөөрөмжийн Ойролцоо хуваалцах тохиргоо.</translation>
 <translation id="3879748587602334249">Таталтын менежер</translation>
-<translation id="3881478300875776315">Арай цөөн мөр харуулах</translation>
 <translation id="3882165008614329320">Камер эсвэл файлд байгаа видео</translation>
 <translation id="3884152383786131369">Олон хэл дээр ашиглах боломжтой веб контент энэ жагсаалтын эхний дэмжигдсэн хэлийг ашиглана. Эдгээр сонголтыг таны хөтчийн тохиргоотой синк хийдэг. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Шинэчлэлтүүдийг танай администратор удирддаг</translation>
@@ -2712,6 +2712,7 @@
 <translation id="3943494825379372497">Аппууд болон хуудаснуудыг сэргээх үү?</translation>
 <translation id="3943582379552582368">&amp; Буцах</translation>
 <translation id="3943857333388298514">Хуулан буулгах</translation>
+<translation id="3945513714196326460">Илүү богино нэр оруулж үзнэ үү</translation>
 <translation id="3948116654032448504">&amp;Зураг харахын тулд <ph name="SEARCH_ENGINE" />-г хайна уу</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> нь дараах фолдерт байгаа файлыг засах боломжтой</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2758,7 +2759,6 @@
 <translation id="3984159763196946143">Туршилтын горимыг эхлүүлж чадсангүй</translation>
 <translation id="3984431586879874039">Энэ сайтад аюулгүй байдлын түлхүүрээ харуулахыг зөвшөөрөх үү?</translation>
 <translation id="398477389655464998">Тодруулсан текстийн холбоосыг хуулах</translation>
-<translation id="3986705137476756801">Одоохондоо Шууд тайлбарыг унтраах</translation>
 <translation id="3987544746655539083">Байршилд тань хандахыг энэ сайтад үргэлжлүүлэн хориглох</translation>
 <translation id="3987938432087324095">Уучлаарай, сонсож чадсангүй.</translation>
 <translation id="3988996860813292272">Цагийн бүс сонгох</translation>
@@ -3098,6 +3098,7 @@
 <translation id="4415245286584082850">Төхөөрөмж олдсонгүй. Тусламжийн төвийн нийтлэлийг шинэ табад нээнэ үү.</translation>
 <translation id="4415276339145661267">Google Бүртгэлээ удирдах</translation>
 <translation id="4415748029120993980">SECG зууван муруй secp384r1 (aka NIST P-384)</translation>
+<translation id="4416450511678320850">Энэ контентод боломжтой ямар ч апп байхгүй байна</translation>
 <translation id="4416582610654027550">Хүчинтэй URL оруулна уу</translation>
 <translation id="4419409365248380979"><ph name="HOST" />-д cookies-н тохиргоог тогтмол хийх эрхийг олгох</translation>
 <translation id="4421932782753506458">Найдваргүй</translation>
@@ -3365,7 +3366,6 @@
 <translation id="4699172675775169585">Кэшлсэн дүрс ба файл</translation>
 <translation id="4699357559218762027">(автоматаар эхлүүлсэн)</translation>
 <translation id="4701025263201366865">Эцэг эхийн нэвтрэлт</translation>
-<translation id="4702656508969495934">Шууд тайлбар харагдаж байна. Сонгохын тулд цонх шилжүүлэгчийг ашиглана уу</translation>
 <translation id="4708794300267213770">Унтаад сэрэх үед дэлгэцийн түгжээг харуулах</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />-аас гарах</translation>
 <translation id="4711638718396952945">Тохиргоог дахин сэргээх</translation>
@@ -3391,6 +3391,7 @@
 <translation id="473936925429402449"><ph name="TOTAL_ELEMENTS" />-с <ph name="CURRENT_ELEMENT" /> нэмэлт контентыг сонгосон</translation>
 <translation id="4739639199548674512">Тасалбар</translation>
 <translation id="4742334355511750246">Зураг харуулахыг зөвшөөрөөгүй</translation>
+<translation id="4742970037960872810">Тодруулгыг хасах</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Аппыг шинэчилж сурна уу<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Сайтын дууг нээх}other{Сайтуудын дууг нээх}}</translation>
 <translation id="4746351372139058112">Мессежүүд</translation>
@@ -3867,7 +3868,6 @@
 <translation id="5300287940468717207">Сайтын зөвшөөрлийг шинэчлэх үү?</translation>
 <translation id="5300589172476337783">Харуулах</translation>
 <translation id="5300719150368506519">Таны зочилсон хуудасны URL-г Google-д илгээх</translation>
-<translation id="5300814202279832142">Цонхыг дэлгэц рүү зөөх</translation>
 <translation id="5301751748813680278">Зочны хувиар нэвтрэх.</translation>
 <translation id="5301954838959518834">OK, ойлголоо</translation>
 <translation id="5302048478445481009">Хэл</translation>
@@ -4600,6 +4600,7 @@
 <translation id="6136114942382973861">Татаж авсан файл хадгалах эсвэл нээх хэсгийг хаах</translation>
 <translation id="6136287496450963112">Таны аюулгүй байдлын түлхүүрийг ПИН-р хамгаалаагүй байна. Хурууны хээг удирдахын тулд эхлээд ПИН үүсгэнэ үү.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA SHA-384-тэй гарын үсэг</translation>
+<translation id="6138774640412545950">"<ph name="APP_NAME" />" өргөтгөл таны дэлгэцийн контентыг <ph name="TARGET_NAME" />-тай хуваалцахыг хүсэж байна.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, сүлжээ алга байна</translation>
 <translation id="6141988275892716286">Таталтыг баталгаажуулах</translation>
 <translation id="6143186082490678276">Тусламж авах</translation>
@@ -5389,6 +5390,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> таны камерыг ашиглаж байна</translation>
 <translation id="701080569351381435">Эх үүсвэрийг харах</translation>
 <translation id="7014174261166285193">Суулгах ажиллагаа амжилтгүй боллоо.</translation>
+<translation id="7014480873681694324">Тодруулгыг хасах</translation>
 <translation id="7017004637493394352">Дахин "Oк Google" гэж хэлнэ үү</translation>
 <translation id="7017219178341817193">Шинэ хуудас нэмэх</translation>
 <translation id="7017354871202642555">Цонх суулгасны дараагаар горимыг тохируулж болохгүй.</translation>
@@ -5482,7 +5484,6 @@
 <translation id="711840821796638741">Удирдлагатай хадгалагдсан хуудсуудыг харуулах</translation>
 <translation id="711902386174337313">Өөрийнхөө нэвтэрч орсон төхөөрөмжүүдийн жагсаалтыг уншуул</translation>
 <translation id="7120865473764644444">Синк серверт холбогдож чадсангүй. Дахин оролдож байна...</translation>
-<translation id="7121362699166175603">Tүүх болон хаяг оруулах хэсгийн автомат гүйцээлтийг устгана. Таны Google бүртгэл <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байж болзошгүй.</translation>
 <translation id="7121438501124788993">Хөгжүүлэгч горим</translation>
 <translation id="7121728544325372695">Ухаалаг зураас</translation>
 <translation id="7123030151043029868">Автоматаар олон файл татахыг зөвшөөрсөн</translation>
@@ -5655,7 +5656,6 @@
 <translation id="7334274148831027933">Суурилуулсан томруулагчийг идэвхжүүлэх</translation>
 <translation id="7335974957018254119">Зөв бичгийн алдаа шалгах онцлогийг дараахад ашиглах</translation>
 <translation id="7336799713063880535">Мэдэгдлийг хориглов.</translation>
-<translation id="7337248890521463931">Илүү олон мөр харуулах</translation>
 <translation id="7338630283264858612">Төхөөрөмжийн серийн дугаар буруу байна.</translation>
 <translation id="7339763383339757376">PKCS # 7, дан гэрчилгээ</translation>
 <translation id="7339785458027436441">Бичиж байх үед зөв бичгийн дүрмийн алдааг шалгах</translation>
@@ -7352,7 +7352,6 @@
 <translation id="9209563766569767417">Linux контейнерын тохируулгыг шалгаж байна</translation>
 <translation id="9209689095351280025">Сайтууд нь таныг веб дээр хянадаг күүкиг ашиглах боломжгүй байна</translation>
 <translation id="9211177926627870898">Шинэчлэх шаардлагатай</translation>
-<translation id="9211490828691860325">Бүх дэлгэц</translation>
 <translation id="9214510034298163263">Сайтууд таны төхөөрөмж дээрх файлууд эсвэл фолдеруудыг засахыг хүсэх боломжтой (санал болгосон)</translation>
 <translation id="9214520840402538427">Програм суурьлуулах атрибут эхлэх цаг хэтэрхий удаан байна. Тусламжийн төлөөлөгчдөө хандана уу.</translation>
 <translation id="9214695392875603905">Жижиг кекс</translation>

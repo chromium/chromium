@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Ja šī izvēles rūtiņa ir atzīmēta, pārlūks Chrome saglabās jūsu kartes kopiju šajā ierīcē, lai nodrošinātu ātrāku veidlapu aizpildi.</translation>
 <translation id="1110994991967754504">Atlasiet atļauju: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Atsaukt pārkārtošanu</translation>
+<translation id="1123753900084781868">Subtitri reāllaikā pašlaik nav pieejami.</translation>
 <translation id="1125573121925420732">Tīmekļa vietņu drošības atjauninājumu laikā bieži var tikt rādīti brīdinājumi. Drīzumā tas tiks labots.</translation>
 <translation id="112840717907525620">Politikas kešatmiņa ir labā stāvoklī.</translation>
 <translation id="1130564665089811311">Poga “Tulkot lapu”. Lai pārtulkotu šo lapu, izmantojot Google tulkotāju, nospiediet ievadīšanas taustiņu.</translation>
@@ -217,6 +218,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Šis serveris nevarēja pierādīt, ka ir <ph name="DOMAIN" />; šķiet, ka tā drošības sertifikāts sāks darboties rīt. Šī problēma var rasties nepareizas konfigurācijas dēļ vai tādēļ, ka kāds uzbrucējs ir pārtvēris jūsu savienojumu.}zero{Šis serveris nevarēja pierādīt, ka ir <ph name="DOMAIN" />; šķiet, ka tā drošības sertifikāts sāks darboties pēc # dienām. Šī problēma var rasties nepareizas konfigurācijas dēļ vai tādēļ, ka kāds uzbrucējs ir pārtvēris jūsu savienojumu.}one{Šis serveris nevarēja pierādīt, ka ir <ph name="DOMAIN" />; šķiet, ka tā drošības sertifikāts sāks darboties pēc # dienas. Šī problēma var rasties nepareizas konfigurācijas dēļ vai tādēļ, ka kāds uzbrucējs ir pārtvēris jūsu savienojumu.}other{Šis serveris nevarēja pierādīt, ka ir <ph name="DOMAIN" />; šķiet, ka tā drošības sertifikāts sāks darboties pēc # dienām. Šī problēma var rasties nepareizas konfigurācijas dēļ vai tādēļ, ka kāds uzbrucējs ir pārtvēris jūsu savienojumu.}}</translation>
 <translation id="1710259589646384581">Operētājsistēma</translation>
+<translation id="1711234383449478798">Ignorēta, jo politikai “<ph name="POLICY_NAME" />” nav iestatīta vērtība “<ph name="VALUE" />”.</translation>
 <translation id="1712552549805331520">Vietnē <ph name="URL" /> tika pieprasīta atļauja pastāvīgi glabāt datus lokālajā datorā.</translation>
 <translation id="1713628304598226412">2. paplāte</translation>
 <translation id="1715874602234207">F</translation>
@@ -769,6 +771,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3841184659773414994">Failu apdarinātāji</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
 <translation id="3858027520442213535">Atjaunināt datumu un laiku</translation>
+<translation id="3881478300875776315">Rādīt mazāk rindu</translation>
 <translation id="3884278016824448484">Ierīces identifikators rada konfliktu.</translation>
 <translation id="3885155851504623709">Pagasts</translation>
 <translation id="388632593194507180">Konstatēta pārraudzība</translation>
@@ -794,6 +797,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="397105322502079400">Aprēķina...</translation>
 <translation id="3973234410852337861">Vietne <ph name="HOST_NAME" /> ir bloķēta</translation>
 <translation id="3973357910713125165">Poga “Veikt Chrome drošības pārbaudi”. Lai Chrome iestatījumos veiktu drošības pārbaudi, nospiediet ievadīšanas taustiņu.</translation>
+<translation id="3986705137476756801">Pagaidām izslēgt subtitrus reāllaikā</translation>
 <translation id="3987405730340719549">Pārlūks Chrome ir konstatējis, ka šī vietne varētu būt viltota vai krāpnieciska.
 
     Ja uzskatāt, ka tas tiek parādīts kļūdas dēļ, lūdzu, apmeklējiet vietni https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -923,6 +927,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4377125064752653719">Jūs mēģinājāt sasniegt <ph name="DOMAIN" />, bet izdevējs atsauca servera uzrādīto sertifikātu. Tas nozīmē, ka servera uzrādītie drošības akreditācijas dati itin nemaz nav uzticami. Iespējams, jūs sazināties ar uzbrucēju.</translation>
 <translation id="4378154925671717803">Tālrunis</translation>
 <translation id="4390472908992056574">Apmale</translation>
+<translation id="4406883609789734330">Subtitri reāllaikā</translation>
 <translation id="4406896451731180161">meklēšanas rezultāti</translation>
 <translation id="4408413947728134509">Sīkfaili <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chrome ieteikums: tūlīt apmeklējiet vietni <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> un <ph name="WEBSITE_3" />, kā arī citas vietnes, kurās izmantojat šo paroli, un nomainiet to.</translation>
@@ -988,6 +993,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4691835149146451662">Architecture-A (aploksne)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">sānu</translation>
+<translation id="4702656508969495934">Subtitri reāllaikā ir redzami. Lai izceltu, izmantojiet logu pārslēdzēju.</translation>
 <translation id="4708268264240856090">Savienojums tika pārtraukts</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Palaist Windows tīkla diagnostiku<ph name="END_LINK" /></translation>
@@ -1658,6 +1664,7 @@ Papildu informācija:
 <translation id="733354035281974745">Ierīces lokālā konta ignorēšana</translation>
 <translation id="7333654844024768166">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chromium ieteikums: tūlīt apmeklējiet vietni <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> un <ph name="WEBSITE_3" />, kā arī citas vietnes, kurās izmantojat šo paroli, un nomainiet to.</translation>
 <translation id="7334320624316649418">&amp;Atcelt pārkārtošanas atsaukšanu</translation>
+<translation id="7337248890521463931">Rādīt vairāk rindu</translation>
 <translation id="7337706099755338005">Nav pieejams jūsu platformā.</translation>
 <translation id="733923710415886693">Servera sertifikāts netika atklāts, izmantojot Certificate Transparency.</translation>
 <translation id="734600844861828519">11x15</translation>

@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Hvis dette felt er markeret, gemmer Chrome en kopi af dit kort på denne enhed, så formularer hurtigere kan udfyldes fremover.</translation>
 <translation id="1110994991967754504">Vælg tilladelse til <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Fortryd omarrangering</translation>
+<translation id="1123753900084781868">Livetekstning er ikke tilgængelig lige nu</translation>
 <translation id="1125573121925420732">Advarsler kan almindeligt forekomme, når websites opdaterer deres sikkerhed. Dette forbedres snart.</translation>
 <translation id="112840717907525620">Cache for politik er OK</translation>
 <translation id="1130564665089811311">Knappen Oversæt side – tryk på Enter for at oversætte denne side med Google Oversæt</translation>
@@ -217,6 +218,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da dens sikkerhedscertifikat tilsyneladende først gælder fra i morgen. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.}one{Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da dens sikkerhedscertifikat tilsyneladende først gælder fra om # dag. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.}other{Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da dens sikkerhedscertifikat tilsyneladende først gælder fra om # dage. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.}}</translation>
 <translation id="1710259589646384581">OS</translation>
+<translation id="1711234383449478798">Ignoreret, da <ph name="POLICY_NAME" /> ikke er angivet til <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> anmoder om at gemme data permanent på din lokale computer</translation>
 <translation id="1713628304598226412">Bakke 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -772,6 +774,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3841184659773414994">Filhandlers</translation>
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="3858027520442213535">Opdater dato og tid</translation>
+<translation id="3881478300875776315">Vis færre linjer</translation>
 <translation id="3884278016824448484">Modstridende enheds-id</translation>
 <translation id="3885155851504623709">Amt</translation>
 <translation id="388632593194507180">Overvågning blev registreret.</translation>
@@ -797,6 +800,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="397105322502079400">Beregner...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> er blokeret</translation>
 <translation id="3973357910713125165">Knappen Kør Chrome-sikkerhedstjek – tryk på Enter for at køre sikkerhedstjekket i Chrome-indstillingerne</translation>
+<translation id="3986705137476756801">Deaktiver Livetekstning indtil videre</translation>
 <translation id="3987405730340719549">Chrome har registreret, at dette website kan være falsk eller svigagtigt.
 
     Hvis du mener, at denne advarsel er en fejl, kan du besøge https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -926,6 +930,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4377125064752653719">Du har forsøgt at få fat på <ph name="DOMAIN" />, men serverens certifikat er blevet tilbagekaldt af udgiveren. Det betyder, at du bestemt ikke bør have tillid til serverens sikkerhedsoplysninger. Du kommunikerer muligvis med en hacker.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4390472908992056574">Kant</translation>
+<translation id="4406883609789734330">Livetekstning</translation>
 <translation id="4406896451731180161">søgeresultater</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Du har lige angivet din adgangskode på et vildledende website. Chrome anbefaler, at du straks går til <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> og eventuelle andre websites, hvor du bruger denne adgangskode, og ændrer den.</translation>
@@ -991,6 +996,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Side</translation>
+<translation id="4702656508969495934">Livetekstning er synlig, brug vindueskifteren for at fokusere</translation>
 <translation id="4708268264240856090">Din forbindelse blev afbrudt</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Køre Windows Netværksdiagnosticering<ph name="END_LINK" /></translation>
@@ -1661,6 +1667,7 @@ Yderligere oplysninger:
 <translation id="733354035281974745">Tilsidesættelse af enhedslokal konto</translation>
 <translation id="7333654844024768166">Du har lige angivet din adgangskode på et vildledende website. Chromium anbefaler, at du straks går til <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> og eventuelle andre websites, hvor du bruger denne adgangskode, og ændrer adgangskoden.</translation>
 <translation id="7334320624316649418">&amp;Annuller fortryd omarrangering</translation>
+<translation id="7337248890521463931">Vis flere linjer</translation>
 <translation id="7337706099755338005">Ikke tilgængelig på din platform.</translation>
 <translation id="733923710415886693">Servercertifikatet blev ikke fremvist via Certifikatsgennemsigtighed.</translation>
 <translation id="734600844861828519">11x15</translation>

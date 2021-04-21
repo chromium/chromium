@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Коли ви надаєте веб-переглядачу Chrome доступ до геоданих, він надсилає їх сайтам, яким ви дали дозвіл. Доступ до геоданих можуть просити сайти, що пропонують місцеву інформацію (наприклад, про магазини поблизу чи новини).</translation>
 <translation id="6036420186814142909">У Google Chrome є функції, які допомагають керувати інтернет-даними та швидкістю завантаження веб-сторінок.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Дозволити вхід у Chrome</translation>
 <translation id="6181930887571472871">Перейти в Chrome</translation>
 <translation id="6238746320622508509">Дозвольте Chrome блокувати анонімні вкладки.</translation>
 <translation id="6573431926118603307">Тут відображатимуться вкладки, відкриті в Chrome на інших ваших пристроях.</translation>
@@ -96,5 +97,6 @@
   3. Виберіть Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chrome дбає про безпеку ваших даних</translation>
+<translation id="8772179140489533211">Показувати сповіщення для входу в Chrome.</translation>
 <translation id="9112744793181547300">Зробити Chrome веб-переглядач за умовчанням?</translation>
 </translationbundle>

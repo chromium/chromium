@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;Instrumente</translation>
 <translation id="1122242684574577509">Autentificarea nu a reușit. Dă clic pentru a accesa pagina de conectare a rețelei Wi-Fi pe care o folosești (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">Nume marcaj</translation>
-<translation id="1123753900084781868">Funcția Subtitrări live nu este disponibilă în acest moment</translation>
 <translation id="1124772482545689468">Utilizator</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Nativ)</translation>
 <translation id="1126809382673880764">Nu te protejează împotriva site-urilor, descărcărilor și extensiilor periculoase. Te vei bucura în continuare de protecția oferită de Navigarea sigură, dacă este disponibilă, în alte servicii Google, cum ar fi Gmail și Căutarea.</translation>
@@ -755,6 +754,7 @@
 <translation id="1794791083288629568">Trimite feedback pentru a contribui la remedierea problemei.</translation>
 <translation id="1795214765651529549">Folosește tema clasică</translation>
 <translation id="1799071797295057738">Extensia „<ph name="EXTENSION_NAME" />” a fost dezactivată automat.</translation>
+<translation id="1800973090344019061">Extensia <ph name="APP_NAME" /> solicită permisiunea de a trimite conținut de pe ecran.</translation>
 <translation id="1802624026913571222">Când capacul este închis: modul inactiv</translation>
 <translation id="1802687198411089702">Pagina nu răspunde. Poți aștepta să răspundă sau o poți închide.</translation>
 <translation id="1803531841600994172">Limba în care se traduce</translation>
@@ -949,7 +949,6 @@
 <translation id="2010501376126504057">Dispozitive compatibile</translation>
 <translation id="2016574333161572915">Hardware-ul Google Meet este gata pentru configurare</translation>
 <translation id="2017334798163366053">Dezactivați culegerea datelor privind performanța</translation>
-<translation id="2017836877785168846">Șterge istoricul și completările automate din bara de adrese.</translation>
 <translation id="2018352199541442911">Ne pare rău, dispozitivul de stocare extern nu este acceptat momentan.</translation>
 <translation id="2019718679933488176">&amp;Deschide conținutul audio într-o filă nouă</translation>
 <translation id="2020183425253392403">Afișează setările adresei de rețea</translation>
@@ -1355,6 +1354,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2464089476039395325">Proxy HTTP</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" /> îți solicită să te conectezi acum la rețeaua Wi-Fi și să descarci o actualizare. Sau poți să descarci folosind o conexiune contorizată (se pot aplica taxe).</translation>
 <translation id="2467267713099745100">Rețea <ph name="NETWORK_TYPE" />, dezactivată</translation>
+<translation id="2467755475704469005">Nu s-a detectat niciun dispozitiv. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Accelerarea derulării pe touchpad</translation>
 <translation id="2468205691404969808">Folosește cookie-uri pentru a-ți reține preferințele, chiar dacă nu accesezi paginile respective</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
@@ -2383,6 +2383,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3608576286259426129">Previzualizare a imaginii utilizatorului</translation>
 <translation id="3610369246614755442">Ventilatorul dispozitivului de andocare necesită service</translation>
 <translation id="361106536627977100">Date Flash</translation>
+<translation id="3611655097742243705">Accesează Magazinul Play pentru a găsi mai multe aplicații</translation>
 <translation id="3612673635130633812">Descărcat de &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Vezi <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Deschideți într-o filă nouă</translation>
@@ -2647,7 +2648,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3874164307099183178">Activează Asistentul Google</translation>
 <translation id="3877075909000773256">Setările Trimiterii în apropiere pentru dispozitivul utilizatorului <ph name="USER_NAME" />, care permite accesul din contul <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Manager de descărcări</translation>
-<translation id="3881478300875776315">Afișează mai puține rânduri</translation>
 <translation id="3882165008614329320">Videoclip existent din camera foto sau din fișier</translation>
 <translation id="3884152383786131369">Conținutul web care este disponibil în mai multe limbi va folosi prima limbă acceptată din această listă. Aceste preferințe se sincronizează cu setările browserului. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Actualizările sunt gestionate de administrator</translation>
@@ -2719,6 +2719,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3943494825379372497">Restabilești aplicațiile și paginile?</translation>
 <translation id="3943582379552582368">&amp;Înapoi</translation>
 <translation id="3943857333388298514">Inserează</translation>
+<translation id="3945513714196326460">Încearcă un nume mai scurt</translation>
 <translation id="3948116654032448504">&amp;Caută imaginea cu <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> poate edita fișierele din următoarele dosare</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2765,7 +2766,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3984159763196946143">Modul demonstrativ nu a pornit</translation>
 <translation id="3984431586879874039">Permiți site-ului să vadă cheia de securitate?</translation>
 <translation id="398477389655464998">Copiază linkul spre evidențiere</translation>
-<translation id="3986705137476756801">Dezactivează Subtitrările live pentru moment</translation>
 <translation id="3987544746655539083">Blochează în continuare accesul acestui site la locație</translation>
 <translation id="3987938432087324095">Scuze, nu am înțeles.</translation>
 <translation id="3988996860813292272">Selectează fusul orar</translation>
@@ -3105,6 +3105,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4415245286584082850">Nu s-au găsit dispozitive. Deschide într-o nouă filă un articol din centrul de ajutor.</translation>
 <translation id="4415276339145661267">Gestionează-ți Contul Google</translation>
 <translation id="4415748029120993980">Curbură eliptică SECG secp384r1 (cunoscută și sub numele de NIST P-384)</translation>
+<translation id="4416450511678320850">Nu sunt disponibile aplicații pentru acest conținut</translation>
 <translation id="4416582610654027550">Introdu o adresă URL validă</translation>
 <translation id="4419409365248380979">Permite întotdeauna ca <ph name="HOST" /> să seteze cookie-uri</translation>
 <translation id="4421932782753506458">Pufoșel</translation>
@@ -3372,7 +3373,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4699172675775169585">Imaginile și fișierele memorate în cache</translation>
 <translation id="4699357559218762027">(lansată automat)</translation>
 <translation id="4701025263201366865">Conectarea unui părinte</translation>
-<translation id="4702656508969495934">Subtitrări live vizibile, folosește comutatorul de ferestre pentru a focaliza</translation>
 <translation id="4708794300267213770">Afișează blocarea ecranului când dispozitivul este activat</translation>
 <translation id="4708849949179781599">Închide <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restabiliți setările</translation>
@@ -3398,6 +3398,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="473936925429402449">Selectat, conținutul suplimentar <ph name="CURRENT_ELEMENT" /> din <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tichete</translation>
 <translation id="4742334355511750246">Nu au permisiunea de a afișa imagini</translation>
+<translation id="4742970037960872810">Elimină evidențierea</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Află cum să actualizezi aplicații<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Activează sunetul pentru site}few{Activează sunetul pentru site-uri}other{Activează sunetul pentru site-uri}}</translation>
 <translation id="4746351372139058112">Mesaje</translation>
@@ -3874,7 +3875,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5300287940468717207">Resetezi permisiunile la nivel de site?</translation>
 <translation id="5300589172476337783">Afișează</translation>
 <translation id="5300719150368506519">Trimite la Google adresele URL ale paginilor pe care le accesezi</translation>
-<translation id="5300814202279832142">Mută fereastra pe desktop</translation>
 <translation id="5301751748813680278">Se conectează ca invitat.</translation>
 <translation id="5301954838959518834">OK, am înțeles</translation>
 <translation id="5302048478445481009">Limbă</translation>
@@ -4607,6 +4607,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6136114942382973861">Închide bara de descărcări</translation>
 <translation id="6136287496450963112">Cheia de securitate nu este protejată printr-un cod PIN. Pentru a gestiona amprentele, creează mai întâi un cod PIN.</translation>
 <translation id="6138680304137685902">Semnătură X9.62 ECDSA cu SHA-384</translation>
+<translation id="6138774640412545950">Extensia <ph name="APP_NAME" /> solicită permisiunea de a trimite conținut de pe ecran la <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nicio rețea</translation>
 <translation id="6141988275892716286">Confirmă descărcarea</translation>
 <translation id="6143186082490678276">Primiți ajutor</translation>
@@ -5396,6 +5397,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> folosește camera foto</translation>
 <translation id="701080569351381435">Afișează sursa</translation>
 <translation id="7014174261166285193">Instalarea nu a reușit.</translation>
+<translation id="7014480873681694324">Elimină evidențierea</translation>
 <translation id="7017004637493394352">Rostește din nou „Ok Google”</translation>
 <translation id="7017219178341817193">Adaugă o pagină nouă</translation>
 <translation id="7017354871202642555">Modul nu poate fi setat după setarea ferestrei.</translation>
@@ -5489,7 +5491,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="711840821796638741">Vezi marcajele gestionate</translation>
 <translation id="711902386174337313">Citește lista dispozitivelor conectate</translation>
 <translation id="7120865473764644444">Nu s-a putut stabili conexiunea cu serverul de sincronizare. Se încearcă din nou…</translation>
-<translation id="7121362699166175603">Șterge istoricul și completările automate din bara de adrese. Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Modul pentru dezvoltatori</translation>
 <translation id="7121728544325372695">Cratime inteligente</translation>
 <translation id="7123030151043029868">Au permisiunea de a descărca automat mai multe fișiere</translation>
@@ -5662,7 +5663,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7334274148831027933">Activează lupa andocată</translation>
 <translation id="7335974957018254119">Folosește verificarea ortografiei pentru</translation>
 <translation id="7336799713063880535">Notificări blocate.</translation>
-<translation id="7337248890521463931">Afișează mai multe rânduri</translation>
 <translation id="7338630283264858612">Numărul de serie al dispozitivului nu este valid.</translation>
 <translation id="7339763383339757376">PKCS #7, certificat unic</translation>
 <translation id="7339785458027436441">Verifică ortografia pe măsură ce se introduce text</translation>
@@ -7366,7 +7366,6 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
 <translation id="9209563766569767417">Verificarea configurației containerului Linux este în curs</translation>
 <translation id="9209689095351280025">Site-urile nu pot folosi cookie-uri care te urmăresc pe web.</translation>
 <translation id="9211177926627870898">Actualizare necesară</translation>
-<translation id="9211490828691860325">Toate desktopurile</translation>
 <translation id="9214510034298163263">Site-urile pot solicita permisiunea de a modifica fișiere și dosare de pe dispozitiv (recomandat)</translation>
 <translation id="9214520840402538427">Hopa! Inițializarea atributelor necesare în momentul instalării a expirat. Contactați reprezentantul dvs. de asistență.</translation>
 <translation id="9214695392875603905">Brioșă</translation>

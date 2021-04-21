@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">പരിശോധിച്ചെങ്കിൽ, വേഗതേറിയ ഫോം പൂരിപ്പിക്കലിനായി ഈ ഉപകരണത്തിൽ നിങ്ങളുടെ കാർഡിന്റെ ഒരു പകർപ്പ് Chrome സംഭരിക്കും.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> എന്നതിന്‍റെ അനുമതി തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1113869188872983271">&amp;പുനഃക്രമീകരിക്കുന്നത് പഴയപടിയാക്കുക</translation>
+<translation id="1123753900084781868">തത്സമയ ക്യാപ്ഷൻ ഇപ്പോൾ ലഭ്യമല്ല</translation>
 <translation id="1125573121925420732">വെബ്‌സൈറ്റുകൾ അവയുടെ സുരക്ഷ അപ്‌ഡേറ്റ് ചെയ്യുന്ന സമയത്ത് പൊതുവെ മുന്നറിയിപ്പുകൾ കാണിച്ചേക്കാം. ഇത് താമസിയാതെ മെച്ചപ്പെടും.</translation>
 <translation id="112840717907525620">നയ കാഷെ ശരി</translation>
 <translation id="1130564665089811311">'പേജ് വിവർത്തനം ചെയ്യുക' ബട്ടൺ, Google Translate ഉപയോഗിച്ച് ഈ പേജ് വിവർത്തനം ചെയ്യാൻ 'Enter' അമർത്തുക</translation>
@@ -768,6 +769,7 @@
 <translation id="3841184659773414994">ഫയൽ കൈകാര്യം ചെയ്യുന്ന സംവിധാനം</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="3858027520442213535">തീയതിയും സമയവും അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
+<translation id="3881478300875776315">കുറച്ച് വരികൾ മാത്രം കാണിക്കുക</translation>
 <translation id="3884278016824448484">വിരുദ്ധ ഉപകരണ ഐഡന്റിഫയർ</translation>
 <translation id="3885155851504623709">പാരിഷ്</translation>
 <translation id="388632593194507180">നിരീക്ഷണം കണ്ടെത്തി</translation>
@@ -793,6 +795,7 @@
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ബ്ലോക്കുചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="3973357910713125165">Chrome സുരക്ഷാ പരിശോധന റൺ ചെയ്യുക ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ സുരക്ഷാ പരിശോധന റൺ ചെയ്യാൻ Enter അമർത്തുക</translation>
+<translation id="3986705137476756801">തൽസമയ ക്യാപ്ഷൻ ഇപ്പോഴത്തേക്ക് ഓഫാക്കുക</translation>
 <translation id="3987405730340719549">ഈ സൈറ്റ് വ്യാജമോ വഞ്ചനാപരമോ ആകാമെന്ന് Chrome നിർണ്ണയിച്ചു.
 
     ഇത് പിശകിനാൽ കാണിച്ചതാണെന്ന് നിങ്ങൾ വിശ്വസിക്കുന്നുവെങ്കിൽ, https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals സന്ദർശിക്കുക.</translation>
@@ -920,6 +923,7 @@
 <translation id="4377125064752653719">നിങ്ങള്‍‌ <ph name="DOMAIN" /> എന്നതില്‍‌ എത്താന്‍‌ ശ്രമിച്ചു, പക്ഷേ സെര്‍‌വര്‍‌ നൽകിയ സര്‍‌ട്ടിഫിക്കറ്റ് അത് നല്‍‌കിയ ആള്‍‌ അസാധുവാക്കി. സെര്‍‌വര്‍‌ നല്‍‌കിയ സുരക്ഷാ ക്രെഡന്‍‌ഷ്യലുകള്‍‌ തികച്ചും വിശ്വാ‍സയോഗ്യമല്ല എന്നാണ് ഇതിനര്‍‌ത്ഥം. നിങ്ങള്‍‌ ഒരു ആക്രമണകാരിയുമായിട്ടാകാം ആശയവിനിമയം നടത്തുന്നത്.</translation>
 <translation id="4378154925671717803">ഫോൺ</translation>
 <translation id="4390472908992056574">ബ്രിം</translation>
+<translation id="4406883609789734330">തത്സമയ ക്യാപ്ഷൻ</translation>
 <translation id="4406896451731180161">തിരയൽ ഫലങ്ങൾ</translation>
 <translation id="4408413947728134509">കുക്കികൾ <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">വഞ്ചനാപരമായ സൈറ്റിൽ നിങ്ങൾ ഇപ്പോൾ പാസ്‍വേഡ് നൽകി. നിങ്ങൾ ഈ പാസ്‌വേഡ് ഉപയോഗിക്കുന്ന <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> എന്നിവയിലേക്കും മറ്റ് സൈറ്റുകളിലേക്കും പോയി, ഇപ്പോൾ തന്നെ അത് മാറ്റാൻ Chrome ശുപാർശ ചെയ്യുന്നു.</translation>
@@ -985,6 +989,7 @@
 <translation id="4691835149146451662">ആര്‍ക്കിടെക്ച്ചര്‍-A (എൻവലപ്പ്)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">സൈഡ്</translation>
+<translation id="4702656508969495934">തത്സമയ ക്യാപ്ഷൻ ദൃശ്യമാണ്, ഫോക്കസ് ചെയ്യാൻ വിൻഡോ സ്വിച്ചർ ഉപയോഗിക്കുക</translation>
 <translation id="4708268264240856090">നിങ്ങളുടെ കണക്ഷൻ തടസ്സപ്പെട്ടു</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്യുന്നു<ph name="END_LINK" /></translation>
@@ -1654,6 +1659,7 @@
 <translation id="733354035281974745">ഉപകരണ ലോക്കൽ അക്കൗണ്ട് അസാധുവാക്കുക</translation>
 <translation id="7333654844024768166">വഞ്ചനാപരമായ സൈറ്റിൽ നിങ്ങൾ ഇപ്പോൾ പാസ്‍വേഡ് നൽകി. നിങ്ങൾ ഈ പാസ്‌വേഡ് ഉപയോഗിക്കുന്ന <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> എന്നിവയിലേക്കും മറ്റ് സൈറ്റുകളിലേക്കും പോയി, ഇപ്പോൾ തന്നെ അത് മാറ്റാൻ Chromium ശുപാർശ ചെയ്യുന്നു.</translation>
 <translation id="7334320624316649418">&amp;പുനഃക്രമീകരിക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
+<translation id="7337248890521463931">കൂടുതൽ വരികൾ കാണിക്കുക</translation>
 <translation id="7337706099755338005">നിങ്ങളുടെ പ്ലാറ്റ്‌ഫോമിൽ ലഭ്യമല്ല.</translation>
 <translation id="733923710415886693">സർട്ടിഫിക്കറ്റ് സുതാര്യതയിലൂടെ സെർവറുടെ സർട്ടിഫിക്കറ്റ് വെളിപ്പെടുത്തിയിട്ടില്ല.</translation>
 <translation id="734600844861828519">11x15</translation>

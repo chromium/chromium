@@ -446,6 +446,7 @@
 <translation id="5782227691023083829">正在翻譯...</translation>
 <translation id="5803566855766646066">確定要捨棄這張新的信用卡嗎？</translation>
 <translation id="5816228676161003208">可讓你使用語音搜尋功能，查詢資訊更方便。</translation>
+<translation id="581659025233126501">開啟同步功能</translation>
 <translation id="5819208479324046259">由「<ph name="MANAGER" />」管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">搜尋引擎</translation>
 <translation id="5854790677617711513">超過 30 天前</translation>
@@ -493,6 +494,7 @@
 <translation id="6196207969502475924">語音搜尋</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{關閉 {COUNT} 個分頁}other{關閉 {COUNT} 個分頁}}</translation>
 <translation id="6219688215832490856">一律不翻譯</translation>
+<translation id="6223816392543092032">你在任何裝置上都能取得自己的書籤、歷史記錄、密碼和其他設定。</translation>
 <translation id="6254066287920239840">使用應用程式開啟連結，而不要在瀏覽器中開啟。</translation>
 <translation id="6255097610484507482">編輯信用卡</translation>
 <translation id="6284652193729350524">針對<ph name="LANGUAGE" />提供翻譯選項</translation>
@@ -525,6 +527,7 @@
 <translation id="6445981559479772097">訊息已送出。</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6453018583485750254">未曾執行過檢查。</translation>
+<translation id="6459307836338400162">如需更多有關隱私權、安全性和資料收集的設定，請參閱 <ph name="BEGIN_LINK" />Google Sync<ph name="END_LINK" /> 和 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="6464071786529933911">在新無痕式分頁中開啟</translation>
 <translation id="6464397691496239022">網站可使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品。
 
@@ -708,6 +711,7 @@
 <translation id="8281886186245836920">略過</translation>
 <translation id="8283172974887967105">設定…</translation>
 <translation id="8299417921174340354">你必須先在裝置上設定螢幕解鎖密碼才能使用密碼。</translation>
+<translation id="83100941411593607">登入功能已停用</translation>
 <translation id="8319076807703933069">新搜尋</translation>
 <translation id="8323906514956095947">輕觸並按住即可查看更多分頁選項</translation>
 <translation id="8328777765163860529">關閉全部</translation>

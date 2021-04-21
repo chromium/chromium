@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">进度滑块</translation>
 <translation id="1404323374378969387">挪威语</translation>
 <translation id="1430915738399379752">打印</translation>
+<translation id="1433628812591023318">若要将某个文件拖放到 Parallels Desktop，必须先将此文件移至“Windows 文件”文件夹。</translation>
 <translation id="1435838927755162558">与 Parallels Desktop 共享文件夹</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="1471718551822868769">斯洛伐克语</translation>
@@ -606,6 +607,7 @@
 <translation id="7417453074306512035">埃塞俄比亚语键盘</translation>
 <translation id="7417705661718309329">Google 地图</translation>
 <translation id="7460898608667578234">乌克兰语</translation>
+<translation id="7486315294984620427">若要将某个文件拖放到 Parallels Desktop，必须先将此文件复制到“Windows 文件”文件夹。</translation>
 <translation id="7489215562877293245">找到了 <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     可以开始备份到 <ph name="BEGIN_LINK" />Google 云端硬盘<ph name="END_LINK" />了</translation>

@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;साधने</translation>
 <translation id="1122242684574577509">ऑथेंटिकेशन अयशस्वी. तुम्ही वापरत असलेल्या (<ph name="NETWORK_ID" />) वाय-फाय नेटवर्कसाठी लॉग इन पेजला भेट देण्यासाठी वर क्लिक करा.</translation>
 <translation id="1122960773616686544">बुकमार्क नाव</translation>
-<translation id="1123753900084781868">आता लाइव्ह कॅप्शन उपलब्ध नाही</translation>
 <translation id="1124772482545689468">वापरकर्ता</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (नेटिव्ह) सारखे दिसते</translation>
 <translation id="1126809382673880764">धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून तुमचे संरक्षण करत नाही. तुम्हाला तरीही Gmail आणि Search यांसारख्या इतर Google सेवांमध्ये, उपलब्ध असेल तेथे, सुरक्षित ब्राउझिंग संरक्षण मिळेल.</translation>
@@ -947,7 +946,6 @@
 <translation id="2010501376126504057">कंपॅटिबल डिव्हाइस</translation>
 <translation id="2016574333161572915">तुमचे Google Meet हार्डवेअर सेट करण्यासाठी तयार आहे</translation>
 <translation id="2017334798163366053">कार्यडिस्प्ले डेटा संकलन अक्षम करा</translation>
-<translation id="2017836877785168846">ॲड्रेस बारमधील इतिहास आणि आपोआप पूर्ण केलेले साफ करते.</translation>
 <translation id="2018352199541442911">सॉरी, तुमचे बाह्य स्टोरेज डीव्हाइस आत्ता सपोर्ट करत नाही.</translation>
 <translation id="2019718679933488176">नवीन टॅबमध्ये ऑडिओ &amp;उघडा</translation>
 <translation id="2020183425253392403">नेटवर्क पत्ता सेटिंग्ज दर्शवा</translation>
@@ -2645,7 +2643,6 @@
 <translation id="3874164307099183178">Google Assistant सुरू करा</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> च्या डिव्हाइससाठी Nearby सह शेअरिंग सेटिंग्ज. या शेअरिंगसाठी <ph name="USER_EMAIL" /> खाते वापरत आहे.</translation>
 <translation id="3879748587602334249">डाउनलोड व्यवस्थापक</translation>
-<translation id="3881478300875776315">कमी रेषा दाखवा</translation>
 <translation id="3882165008614329320">कॅमेरा किंवा फाइलवरून सद्य व्हिडिओ</translation>
 <translation id="3884152383786131369">एकाहून अधिक भाषांमध्ये उपलब्ध असणारा वेब आशय सूचीमधील सपोर्ट असलेली पहिली भाषा वापरेल. ही प्राधान्ये तुमच्या ब्राउझर सेटिंग्जसह सिंक केली आहेत. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">अपडेट तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्‍थापित केली जातात</translation>
@@ -2763,7 +2760,6 @@
 <translation id="3984159763196946143">डेमो मोड सुरू करता आला नाही</translation>
 <translation id="3984431586879874039">या साइटला तुमची सिक्युरिटी की पाहण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="398477389655464998">हायलाइट करण्यासाठी लिंक कॉपी करा</translation>
-<translation id="3986705137476756801">आतापुरते लाइव्ह कॅप्शन बंद करा</translation>
 <translation id="3987544746655539083">या साइटला तुमचे स्थान अ‍ॅक्सेस करण्यापासून ब्लॉक करणे पुढे सुरू ठेवा</translation>
 <translation id="3987938432087324095">क्षमस्व, ते समजले नाही.</translation>
 <translation id="3988996860813292272">टाइम झोन निवडा</translation>
@@ -3368,7 +3364,6 @@
 <translation id="4699172675775169585">कॅशे   इमेज आणि फाइल</translation>
 <translation id="4699357559218762027">(स्वयं-लाँच केलेले)</translation>
 <translation id="4701025263201366865">पालक साइन इन</translation>
-<translation id="4702656508969495934">लाइव्ह कॅप्शन दिसत आहे, फोकस करण्यासाठी विंडो स्विचर वापरा</translation>
 <translation id="4708794300267213770">निष्क्रियवरून सक्रिय होताना लॉक स्क्रीन दर्शवा</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> मधून बाहेर या</translation>
 <translation id="4711638718396952945">सेटिंग्ज पुनर्संचयित करा</translation>
@@ -3870,7 +3865,6 @@
 <translation id="5300287940468717207">साइट परवानग्या रीसेट करायच्या?</translation>
 <translation id="5300589172476337783">दर्शवा</translation>
 <translation id="5300719150368506519">Google ला तुम्ही भेट दिलेल्या पेजच्या URL पाठवते</translation>
-<translation id="5300814202279832142">विंडो या डेस्कवर हलवा</translation>
 <translation id="5301751748813680278">अतिथी म्हणून एंटर होत आहे.</translation>
 <translation id="5301954838959518834">ठीक आहे, समजले</translation>
 <translation id="5302048478445481009">भाषा</translation>
@@ -5486,7 +5480,6 @@
 <translation id="711840821796638741">व्यवस्थापित बुकमार्क दर्शवा</translation>
 <translation id="711902386174337313">आपल्या साइन इन केलेल्या डिव्हाइसेसची सूची वाचा</translation>
 <translation id="7120865473764644444">संंकालित सर्व्हरशी कनेक्ट करणे शक्य झाले नाही. पुन्हा प्रयत्न करीत आहे...</translation>
-<translation id="7121362699166175603">अ‍ॅड्रेस बारवरील इतिहास आणि आपोआप पूर्ण करण्याचे दाखले साफ करते. तुमच्या Google खात्यामध्ये <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> वर कदाचित ब्राउझिंगचे इतर फॉर्म असतील.</translation>
 <translation id="7121438501124788993">डेव्हलपर मोड</translation>
 <translation id="7121728544325372695">स्मार्ट डॅश</translation>
 <translation id="7123030151043029868">एकाहून अधिक फाइल आपोआप डाउनलोड करण्याची अनुमती आहे</translation>
@@ -5659,7 +5652,6 @@
 <translation id="7334274148831027933">डॉक केलेले भिंग सुरू करा</translation>
 <translation id="7335974957018254119">यासाठी स्पेल चेक वापरा</translation>
 <translation id="7336799713063880535">सूचना ब्लॉक केल्या.</translation>
-<translation id="7337248890521463931">आणखी रेषा दाखवा</translation>
 <translation id="7338630283264858612">डिव्हाइस सिरीअल नंबर चुकीचा आहे.</translation>
 <translation id="7339763383339757376">PKCS #7, एकल सर्टिफिकेट</translation>
 <translation id="7339785458027436441">टाइप करताना शब्दलेखन तपासा</translation>
@@ -7361,7 +7353,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9209563766569767417">Linux कंटेनर सेटअप तपासत आहे</translation>
 <translation id="9209689095351280025">साइट संपूर्ण वेबवर तुमचा माग ठेवणाऱ्या कुकी वापरू शकत नाहीत</translation>
 <translation id="9211177926627870898">अपडेट आवश्‍यक</translation>
-<translation id="9211490828691860325">सर्व डेस्क</translation>
 <translation id="9214510034298163263">साइट तुमच्या डिव्हाइसवरील फाइल आणि फोल्डर संपादित करण्यासाठी विचारू शकतात (शिफारस केलेले)</translation>
 <translation id="9214520840402538427">अरेरे! स्थापना-वेळ विशेषतांचे इंस्टॉलेशन कालबाह्य झाले. कृपया तुमच्या सपोर्ट प्रतिनिधीशी संपर्क साधा.</translation>
 <translation id="9214695392875603905">कपकेक</translation>

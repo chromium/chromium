@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">Laske Chromiumil oma inkognito vahelehed lukustada.</translation>
 <translation id="1472013873724362412">Teie konto ei tööta Chromiumis. Võtke ühendust domeeni administraatoriga või kasutage sisselogimiseks tavalist Google'i kontot.</translation>
 <translation id="1507010443238049608">Aidake täiustada Chromiumi funktsioone ja toimivust</translation>
+<translation id="1531155317299575425">Kuvatakse viibad Chromiumisse sisselogimiseks.</translation>
 <translation id="1617663976202781617">Chromiumi andmete sünkroonimine</translation>
 <translation id="1736662517232558588">Chromiumi andmed kustutati</translation>
 <translation id="1838412507805038478">Chromium kinnitas, et veebisaidi sertifikaadi väljastas <ph name="ISSUER" />.</translation>
@@ -49,6 +50,7 @@
 <translation id="5396916991083608703">Kas määrata Chromium vaikebrauseriks?</translation>
 <translation id="5521125884468363740">Selleks et näha vahelehti kõikjalt, kus Chromiumi kasutate, logige sisse ja lülitage sisse sünkroonimine</translation>
 <translation id="5573014823074921752">Chromiumi nõuanne. Vahelehtede lisavalikute nägemiseks puudutage ja hoidke all ekraanikuva üla- või alaosas tööriistaribal olevat nuppu Kuva vahelehed.</translation>
+<translation id="5651741435382092412">Logige sellele saidile, oma Google'i kontole ja Chromiumi sisse. Saate sünkroonimise hiljem sisse lülitada.</translation>
 <translation id="5700709190537129682">Chromiumil ei õnnestu teie paroole kontrollida</translation>
 <translation id="5742135483959137648">Avage lingid Chromiumiga</translation>
 <translation id="5777187867430702742">Chromiumi leht</translation>
@@ -60,6 +62,7 @@
 2. Puudutage valikut Vaikebrauserirakendus.
 3. Valige Chromium.</translation>
 <translation id="6268381023930128611">Kas logida Chromiumist välja?</translation>
+<translation id="632825460376924298">Luba Chromiumisse sisselogimine</translation>
 <translation id="6337530241089703714">Valige, kas soovite oma Chromiumi andmed sellest seadmest kustutada või need säilitada</translation>
 <translation id="6424492062988593837">Chromium muutus just veelgi paremaks! Saadaval on uus versioon.</translation>
 <translation id="6820823224820483452">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>

@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">위치 정보 사용을 허용하면 Chrome이 권한이 부여된 사이트에 위치 정보를 전송합니다. 근처 상점 또는 뉴스와 같이 표시할 지역 정보가 있는 경우 사이트에서 위치를 요청할 수 있습니다.</translation>
 <translation id="6036420186814142909">Chrome에는 사용자가 간편하게 인터넷 데이터 및 웹페이지 로드 시간을 관리할 수 있는 기능이 있습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Chrome 로그인 허용</translation>
 <translation id="6181930887571472871">Chrome으로 전환</translation>
 <translation id="6238746320622508509">Chrome에서 시크릿 탭을 잠그도록 허용합니다.</translation>
 <translation id="6573431926118603307">다른 기기의 Chrome에서 연 탭이 여기에 표시됩니다.</translation>
@@ -96,5 +97,6 @@
   3. Chrome을 선택합니다.</translation>
 <translation id="8540666473246803645">Chrome</translation>
 <translation id="8736550665979974340">Chrome으로 안전하게 보호하기</translation>
+<translation id="8772179140489533211">Chrome에 로그인하기 위한 메시지를 표시합니다.</translation>
 <translation id="9112744793181547300">Chrome을 기본 브라우저로 설정하시겠습니까?</translation>
 </translationbundle>

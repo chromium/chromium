@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Kung lalagyan ng check, mag-iimbak ang Chrome ng kopya ng iyong card sa device na ito para sa mas mabilis na pagsagot sa form.</translation>
 <translation id="1110994991967754504">Pumili ng pahintulot para sa <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;I-undo ang pagbabago sa ayos</translation>
+<translation id="1123753900084781868">Hindi available sa ngayon ang Instant Caption</translation>
 <translation id="1125573121925420732">Maaaring karaniwang may mga babala habang nag-a-update para sa seguridad ang mga website. Maaayos din ito sa lalong madaling panahon.</translation>
 <translation id="112840717907525620">OK ang cache ng patakaran</translation>
 <translation id="1130564665089811311">Button na Isalin ang page, pindutin ang Enter para isalin ang page na ito gamit ang Google Translate</translation>
@@ -217,6 +218,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Hindi mapatunayan ng server na ito na ito ang <ph name="DOMAIN" />; tinatayang mula sa susunod na araw ang certificate ng seguridad nito. Maaaring resulta ito ng maling configuration o kaya ng isang attacker na humahadlang sa iyong koneksyon.}one{Hindi mapatunayan ng server na ito na ito ang <ph name="DOMAIN" />; tinatayang mula sa # araw sa hinaharap ang certificate ng seguridad nito. Maaaring resulta ito ng maling configuration o kaya ng isang attacker na humahadlang sa iyong koneksyon.}other{Hindi mapatunayan ng server na ito na ito ang <ph name="DOMAIN" />; tinatayang mula sa # na araw sa hinaharap ang certificate ng seguridad nito. Maaaring resulta ito ng maling configuration o kaya ng isang attacker na humahadlang sa iyong koneksyon.}}</translation>
 <translation id="1710259589646384581">OS</translation>
+<translation id="1711234383449478798">Binalewala dahil hindi nakatakda ang <ph name="POLICY_NAME" /> sa <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520">Gusto ng <ph name="URL" /> na permanenteng mag-store ng data sa iyong lokal na computer</translation>
 <translation id="1713628304598226412">Tray 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -772,6 +774,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3841184659773414994">Mga Tagapangasiwa ng File</translation>
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="3858027520442213535">I-update ang petsa at oras</translation>
+<translation id="3881478300875776315">Magpakita ng mas kaunting linya</translation>
 <translation id="3884278016824448484">Sumasalungat na tagatukoy ng device</translation>
 <translation id="3885155851504623709">Parish</translation>
 <translation id="388632593194507180">May Na-detect na Pagsubaybay</translation>
@@ -797,6 +800,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="397105322502079400">Kinakalkula...</translation>
 <translation id="3973234410852337861">Naka-block ang <ph name="HOST_NAME" /></translation>
 <translation id="3973357910713125165">Pindutin ang button ng Pag-check sa Kaligtasan sa Chrome, pindutin ang Enter para magpatakbo ng Pag-check sa Kaligtasan sa Chrome sa mga setting ng Chrome</translation>
+<translation id="3986705137476756801">I-off muna sa ngayon ang Instant Caption</translation>
 <translation id="3987405730340719549">Natukoy ng Chrome na posibleng peke o mapanloko ang site na ito.
 
     Kung naniniwala kang mali ang pagpapakita nito, pakibisita ang https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -926,6 +930,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4377125064752653719">Tinangka mong maabot ang <ph name="DOMAIN" />, subalit ang certificate na ipinakita ng server ay binawi ng nagbigay nito. Nangangahulugan ito na ang mga kredensyal sa seguridad na ipinakita ng server ay talagang hindi dapat pagkatiwalaan. Maaaring nakikipag-ugnay ka sa isang nang-aatake.</translation>
 <translation id="4378154925671717803">Telepono</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4406883609789734330">Instant Caption</translation>
 <translation id="4406896451731180161">mga resulta ng paghahanap</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Kakalagay mo lang ng iyong password sa isang mapanlinang na site. Inirerekomenda ng Chrome na pumunta sa <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, at iba pang site kung saan mo ginagamit ang password na ito at baguhin ito ngayon.</translation>
@@ -991,6 +996,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Gilid</translation>
+<translation id="4702656508969495934">Nakikita ang Instant Caption, gamitin ang tagalipat ng window para tumuon</translation>
 <translation id="4708268264240856090">Naputol ang iyong koneksyon</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Magpatakbo ng Windows Network Diagnostics<ph name="END_LINK" /></translation>
@@ -1661,6 +1667,7 @@ Mga karagdagang detalye:
 <translation id="733354035281974745">Pag-override ng lokal na account ng device</translation>
 <translation id="7333654844024768166">Kakalagay mo lang ng iyong password sa isang mapanlinang na site. Inirerekomenda ng Chromium na pumunta sa <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, at iba pang site kung saan mo ginagamit ang password na ito at baguhin ito ngayon.</translation>
 <translation id="7334320624316649418">&amp;Gawing muli ang pagbabago sa ayos</translation>
+<translation id="7337248890521463931">Magpakita ng mas marami pang linya</translation>
 <translation id="7337706099755338005">Hindi available sa iyong platform.</translation>
 <translation id="733923710415886693">Ang certificate ng server ay hindi inihayag sa pamamagitan ng Transparency ng Certificate.</translation>
 <translation id="734600844861828519">11x15</translation>

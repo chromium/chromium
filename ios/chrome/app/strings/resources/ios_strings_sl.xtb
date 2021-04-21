@@ -446,6 +446,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5782227691023083829">Prevajanje ...</translation>
 <translation id="5803566855766646066">Ali ste prepričani, da želite zavreči to novo kartico?</translation>
 <translation id="5816228676161003208">S tem je mogoče hitreje iskati z glasom.</translation>
+<translation id="581659025233126501">Vklopi sinhronizacijo</translation>
 <translation id="5819208479324046259">Brskalnik upravlja podjetje <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Iskalnik</translation>
 <translation id="5854790677617711513">Starejše od 30 dni</translation>
@@ -493,6 +494,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6196207969502475924">Glasovno iskanje</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zapri {COUNT} zavihek}one{Zapri {COUNT} zavihek}two{Zapri {COUNT} zavihka}few{Zapri {COUNT} zavihke}other{Zapri {COUNT} zavihkov}}</translation>
 <translation id="6219688215832490856">Nikoli ne prevedi</translation>
+<translation id="6223816392543092032">Dostopajte do zaznamkov, zgodovine, gesel in drugih nastavitev v vseh napravah.</translation>
 <translation id="6254066287920239840">Povezave namesto v brskalniku odpri v aplikaciji.</translation>
 <translation id="6255097610484507482">Urejanje kreditne kartice</translation>
 <translation id="6284652193729350524">Ponudi prevajanje iz jezika <ph name="LANGUAGE" /></translation>
@@ -525,6 +527,7 @@ Podatki so bili šifrirani z vašim geslom za sinhronizacijo <ph name="TIME" />.
 <translation id="6445981559479772097">Sporočilo poslano.</translation>
 <translation id="6447842834002726250">Piškotki</translation>
 <translation id="6453018583485750254">Preverjanje še ni bilo izvedeno.</translation>
+<translation id="6459307836338400162">Če vas zanima več nastavitev, povezanih z zasebnostjo, varnostjo in zbiranjem podatkov, si oglejte razdelka <ph name="BEGIN_LINK" />Sinhronizacija<ph name="END_LINK" /> in <ph name="BEGIN_LINK" />Googlove storitve<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Open in New Incognito Tab</translation>
 <translation id="6464397691496239022">Spletna mesta lahko uporabljajo piškotke za izboljšanje izkušnje brskanja, na primer tako, da poskrbijo, da ostanete prijavljeni, ali si zapomnijo izdelke v nakupovalnem vozičku.
 
@@ -708,6 +711,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8283172974887967105">Nastavi …</translation>
 <translation id="8299417921174340354">Če želite uporabiti gesla, morate najprej nastaviti geslo v napravi.</translation>
+<translation id="83100941411593607">Prijava je onemogočena</translation>
 <translation id="8319076807703933069">Novo iskanje</translation>
 <translation id="8323906514956095947">Pridržite za več možnosti zavihkov</translation>
 <translation id="8328777765163860529">Zapri vse</translation>

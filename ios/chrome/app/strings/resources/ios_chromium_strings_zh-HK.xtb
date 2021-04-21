@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">讓 Chromium 鎖定您的無痕式分頁。</translation>
 <translation id="1472013873724362412">您的帳戶不適用於 Chromium。請聯絡網域管理員，或使用一般的 Google 帳戶登入。</translation>
 <translation id="1507010443238049608">協助改善 Chromium 的功能和效能</translation>
+<translation id="1531155317299575425">顯示登入 Chromium 的指示。</translation>
 <translation id="1617663976202781617">來自 Chromium Sync 的資料</translation>
 <translation id="1736662517232558588">已清除 Chromium 的資料</translation>
 <translation id="1838412507805038478">Chromium 驗證到由「<ph name="ISSUER" />」發出的網站憑證。</translation>
@@ -49,6 +50,7 @@
 <translation id="5396916991083608703">要將 Chromium 設定為預設瀏覽器嗎？</translation>
 <translation id="5521125884468363740">如要在任何使用 Chromium 的裝置上查看分頁，請登入並開啟同步功能</translation>
 <translation id="5573014823074921752">Chromium 提示。如果要多啲標籤選項，請㩒住螢幕底部或者頂部工具列入面中嘅 [顯示分頁] 掣。</translation>
+<translation id="5651741435382092412">登入此網站、您的 Google 帳戶及 Chromium。您可稍後再開啟同步功能。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查密碼</translation>
 <translation id="5742135483959137648">使用 Chromium 開啟連結</translation>
 <translation id="5777187867430702742">Chromium 頁面</translation>
@@ -60,6 +62,7 @@
 2. 輕按 [預設瀏覽器應用程式]
 3. 選取 [Chromium]。</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
+<translation id="632825460376924298">允許登入 Chromium</translation>
 <translation id="6337530241089703714">選擇要從此裝置上清除 Chromium 資料，還是要保留資料</translation>
 <translation id="6424492062988593837">Chromium 現在更進一步！歡迎您升級使用新版本。</translation>
 <translation id="6820823224820483452">Chromium 無法檢查所有密碼。請明天再試。</translation>

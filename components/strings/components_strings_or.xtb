@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">ଯଦି ଯାଞ୍ଚ କରାଯାଇଛି, ତେବେ ଦ୍ରୁତତର ଭାବେ ଫର୍ମ ପୂରଣ ପାଇଁ Chrome ଆପଣଙ୍କ କାର୍ଡର ଏକ କପି ଏହି ଡିଭାଇସ୍‌ରେ ଷ୍ଟୋର୍ କରିବ।</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />ପାଇଁ ଅନୁମତି ଚୟନ କରନ୍ତୁ</translation>
 <translation id="1113869188872983271">&amp;ପୁନଃକ୍ରମକୁ ପୂର୍ବବତ୍‌ କରନ୍ତୁ</translation>
+<translation id="1123753900084781868">ବର୍ତ୍ତମାନ ଲାଇଭ୍ କ୍ୟାପସନ୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="1125573121925420732">ଯେତେବେଳେ ୱେବ୍‍ସାଇଟ୍‍ଗୁଡ଼ିକ ସେମାନଙ୍କର ସୁରକ୍ଷା ଅପ୍‌ଡେଟ୍‍ କରନ୍ତି, ସେତେବେଳେ ସାଧାରଣତଃ ଚେତାବନୀ ଆସିପାରେ। ଏଥିରେ ଶୀଘ୍ର ଉନ୍ନତି ହେବା ଉଚିତ୍‍।</translation>
 <translation id="112840717907525620">ନୀତି କେଚ୍‍ ଠିକ୍ ଅଛି</translation>
 <translation id="1130564665089811311">"ପୃଷ୍ଠା ଅନୁବାଦ କରନ୍ତୁ" ବଟନ୍, Google Translate ବ୍ୟବହାର କରି ଏହି ପୃଷ୍ଠାକୁ ଅନୁବାଦ କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
@@ -763,6 +764,7 @@
 <translation id="3841184659773414994">ଫାଇଲ୍ ହ୍ୟାଣ୍ଡଲରଗୁଡ଼ିକ</translation>
 <translation id="385051799172605136">ପଛକୁ</translation>
 <translation id="3858027520442213535">ତାରିଖ ଓ ସମୟ ଅପ୍‌ଡେଟ୍‌ କରନ୍ତୁ</translation>
+<translation id="3881478300875776315">କମ୍ ଲାଇନ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="3884278016824448484">ପରସ୍ପର ବିରୋଧୀ ଡିଭାଇସ୍ ଚିହ୍ନଟକାରୀ</translation>
 <translation id="3885155851504623709">ପାରିସ୍</translation>
 <translation id="388632593194507180">ନିରୀକ୍ଷଣ କରାଯାଉଥିବା ଚିହ୍ନଟ କରାଯାଇଛି</translation>
@@ -788,6 +790,7 @@
 <translation id="397105322502079400">ଗଣନା କରାଯାଉଛି…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />କୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="3973357910713125165">"Chrome ସୁରକ୍ଷା ଯାଞ୍ଚ ଚଲାନ୍ତୁ" ବଟନ୍, Chrome ସେଟିଂସରେ ସୁରକ୍ଷା ଯାଞ୍ଚ ଚଲାଇବାକୁ Enter କୀ'କୁ ଦବାନ୍ତୁ</translation>
+<translation id="3986705137476756801">ବର୍ତ୍ତମାନ ପାଇଁ ଲାଇଭ୍ କ୍ୟାପ୍ସନ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="3987405730340719549">Chrome ନିର୍ଦ୍ଧାରିତ କରିଛି ଯେ ଏହି ସାଇଟ୍ ନକଲି କିମ୍ବା ପ୍ରତାରଣାମୂଳକ ହୋଇପାରେ।
 
     ଯଦି ଆପଣ ବିଶ୍ୱାସ କରୁଛନ୍ତି, ଏହା ତ୍ରୂଟିରେ ଦେଖାଯାଇଛି, ତେବେ ଦୟାକରି https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appealsକୁ ଯାଆନ୍ତୁ।</translation>
@@ -912,6 +915,7 @@
 <translation id="4377125064752653719">ଆପଣ <ph name="DOMAIN" />ରେ ପହଞ୍ଚିବାକୁ ଚେଷ୍ଟା କରିଥିଲେ, କିନ୍ତୁ ସର୍ଭର୍ ଉପସ୍ଥାପନା କରିଥିବା ସାର୍ଟିଫିକେଟ୍, ତାହାର ଜାରିକର୍ତ୍ତାଙ୍କ ଦ୍ୱାରା ପ୍ରତ୍ୟାଖ୍ୟାନ କରିଦିଆଯାଇଛି। ଏହାର ଅର୍ଥ ହେଉଛି, ସର୍ଭର୍ ଉପସ୍ଥାପନା କରୁଥିବା ସୁରକ୍ଷା କ୍ରେଡେନ୍‍ସିଆଲ୍ ଉପରେ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ବିଶ୍ଵାସ କରିବା ଉଚିତ ନୁହେଁ। ଆପଣ ଜଣେ ଆକ୍ରମଣକାରୀଙ୍କ ସହ କଥା କରୁଥାଇପାରନ୍ତି।</translation>
 <translation id="4378154925671717803">ଫୋନ୍</translation>
 <translation id="4390472908992056574">ବ୍ରିମ୍</translation>
+<translation id="4406883609789734330">ଲାଇଭ୍ କ୍ୟାପସନ୍</translation>
 <translation id="4406896451731180161">ସନ୍ଧାନ ପରିଣାମ</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" />ଟି କୁକୀ</translation>
 <translation id="4414290883293381923">ଆପଣ ଏବେ ଏକ ପ୍ରତାରଣାମୂଳକ ସାଇଟରେ ଆପଣଙ୍କର ପାସୱାର୍ଡ ଲେଖିଛନ୍ତି। <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ଏବଂ ଏହି ପାସୱାର୍ଡକୁ ଆପଣ ବ୍ୟବହାର କରୁଥିବା ଅନ୍ୟ ସାଇଟଗୁଡ଼ିକୁ ଯାଇ ଏହାକୁ ବର୍ତ୍ତମାନ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ Chrome ସୁପାରିଶ କରେ।</translation>
@@ -977,6 +981,7 @@
 <translation id="4691835149146451662">ଆର୍କିଟେକ୍‌ଚର୍-A (ଏନଭଲପ୍)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ସାଇଡ୍</translation>
+<translation id="4702656508969495934">ଲାଇଭ୍ କ୍ୟାପସନ୍ ଦୃଶ୍ୟମାନ ହେଉଛି, ଫୋକସ୍ କରିବା ପାଇଁ ୱିଣ୍ଡୋ ସ୍ୱିଚର୍ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4708268264240856090">ଆପଣଙ୍କର ସଂଯୋଗରେ ବ୍ୟାଘାତ ହୋ‍ଇଥିଲା</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />ଚାଲୁଥିବା ୱିଣ୍ଡୋ ନେଟ୍‌ୱର୍କ ଡାଇଗ୍ନୋଷ୍ଟିକ୍ସ<ph name="END_LINK" /></translation>
@@ -1646,6 +1651,7 @@
 <translation id="733354035281974745">ସ୍ଥାନୀୟ ଡିଭାଇସ୍ ଆକାଉଣ୍ଟ ଓଭର୍‌ରାଇଡ୍</translation>
 <translation id="7333654844024768166">ଆପଣ ଏବେ ଏକ ପ୍ରତାରଣାମୂଳକ ସାଇଟରେ ଆପଣଙ୍କର ପାସୱାର୍ଡ ଲେଖିଛନ୍ତି। <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ଏବଂ ଏହି ପାସୱାର୍ଡକୁ ଆପଣ ବ୍ୟବହାର କରୁଥିବା ଅନ୍ୟ ସାଇଟଗୁଡ଼ିକୁ ଯାଇ ଏହାକୁ ବର୍ତ୍ତମାନ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ Chromium ସୁପାରିଶ କରେ।</translation>
 <translation id="7334320624316649418">&amp;ରି-ଡୁକୁ ପୁନଃକ୍ରମରେ ରଖନ୍ତୁ</translation>
+<translation id="7337248890521463931">ଅଧିକ ଲାଇନ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="7337706099755338005">ଆପଣଙ୍କର ପ୍ଲାଟ୍‌ଫର୍ମରେ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="733923710415886693">ସର୍ଭର୍‍ର ସାର୍ଟିଫିକେଟ୍, ସାର୍ଟିଫିକେଟ୍ ସ୍ଵଚ୍ଛତା ମାଧ୍ୟମରେ ପ୍ରକାଶ କରାଯାଇନାହିଁ।</translation>
 <translation id="734600844861828519">11x15</translation>

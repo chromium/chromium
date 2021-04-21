@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">If you allow Chrome to know your location, Chrome sends it to any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.</translation>
 <translation id="6036420186814142909">Google Chrome has features that help you manage your internet data and how quickly you're able to load web pages.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Allow Chrome sign-in</translation>
 <translation id="6181930887571472871">Switch to Chrome</translation>
 <translation id="6238746320622508509">Let Chrome lock your incognito tabs.</translation>
 <translation id="6573431926118603307">Tabs that you've opened in Chrome on your other devices will appear here.</translation>
@@ -96,5 +97,6 @@
   3. Select Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Stay safe with Google Chrome</translation>
+<translation id="8772179140489533211">Shows prompts to sign in to Chrome.</translation>
 <translation id="9112744793181547300">Set Chrome as default?</translation>
 </translationbundle>

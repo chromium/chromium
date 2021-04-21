@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">Controlo de deslize da procura</translation>
 <translation id="1404323374378969387">Norueguês</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1433628812591023318">Para largar ficheiros no Parallels Desktop, o ficheiro tem de ser movido para os ficheiros do Windows.</translation>
 <translation id="1435838927755162558">Partilhe a pasta com o Parallels Desktop</translation>
 <translation id="1467432559032391204">Esquerda</translation>
 <translation id="1471718551822868769">Eslovaco</translation>
@@ -611,6 +612,7 @@
 <translation id="7417453074306512035">Teclado etíope</translation>
 <translation id="7417705661718309329">Mapa Google</translation>
 <translation id="7460898608667578234">Ucraniano</translation>
+<translation id="7486315294984620427">Para largar ficheiros no Parallels Desktop, o ficheiro tem de ser copiado para os ficheiros do Windows.</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> encontrada(s)
     <ph name="LINE_BREAK1" />
     Pronto para fazer uma cópia de segurança para o <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>

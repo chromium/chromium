@@ -446,6 +446,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5782227691023083829">Traduzindo...</translation>
 <translation id="5803566855766646066">Tem certeza de que você quer descartar este novo card?</translation>
 <translation id="5816228676161003208">Isso permite que você pesquise mais rapidamente usando sua voz.</translation>
+<translation id="581659025233126501">Ativar a sincronização</translation>
 <translation id="5819208479324046259">Gerenciado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Mecanismo de pesquisa</translation>
 <translation id="5854790677617711513">Com mais de 30 dias</translation>
@@ -493,6 +494,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6196207969502475924">Pesquisa por voz</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Fechar {COUNT} guia}one{Fechar {COUNT} guia}other{Fechar {COUNT} guias}}</translation>
 <translation id="6219688215832490856">Nunca traduzir</translation>
+<translation id="6223816392543092032">Tenha seus favoritos, seu histórico, suas senhas e outras configurações em todos os seus dispositivos.</translation>
 <translation id="6254066287920239840">Abrir links no app em vez de abrir no navegador.</translation>
 <translation id="6255097610484507482">Editar cartão de crédito</translation>
 <translation id="6284652193729350524">Oferecer a opção de traduzir o <ph name="LANGUAGE" /></translation>
@@ -525,6 +527,7 @@ Seus dados foram criptografados com sua senha longa de sincronização no dia <p
 <translation id="6445981559479772097">Mensagem enviada.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">Verificação nunca executada.</translation>
+<translation id="6459307836338400162">Para ver mais opções relacionadas à privacidade, segurança e coleta de dados, acesse as configurações de <ph name="BEGIN_LINK" />Sincronização<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Abrir em nova guia anônima</translation>
 <translation id="6464397691496239022">Os sites podem usar cookies para melhorar sua experiência de navegação, como manter sua conta conectada ou se lembrar dos itens em um carrinho de compras.
 
@@ -708,6 +711,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8281886186245836920">Pular</translation>
 <translation id="8283172974887967105">Definir…</translation>
 <translation id="8299417921174340354">Para usar senhas, defina uma no dispositivo primeiro.</translation>
+<translation id="83100941411593607">Login desativado</translation>
 <translation id="8319076807703933069">Nova pesquisa</translation>
 <translation id="8323906514956095947">Toque no botão e mantenha-o pressionado para ver mais opções da guia</translation>
 <translation id="8328777765163860529">Fechar todos</translation>

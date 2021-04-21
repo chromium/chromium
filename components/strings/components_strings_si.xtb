@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">පරීක්ෂා කළේනම්, වේගවත් ආකෘති පිරවීම සඳහා Chrome ඔබේ කාඩ්පතේ පිටපතක් මෙම උපාංගයෙහි ගබඩා කරනු ඇත.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> සඳහා අවසරය තෝරන්න</translation>
 <translation id="1113869188872983271">යළි ඇණවුම් කිරීම &amp;පසුගමනය කරන්න</translation>
+<translation id="1123753900084781868">මේ මොහොතේ සජීවී සිරස්තලය ලබා ගත නොහැක</translation>
 <translation id="1125573121925420732">වෙබ් අඩවි ඔවුන්ගේ ආරක්ෂාව යාවත්කාලීන කරන අතරතුර අනතුරු ඇඟවීම් පොදු දෙයක් විය හැක. මෙය ඉක්මනින් වැඩි දියුණු විය යුතුය.</translation>
 <translation id="112840717907525620">ප්‍රතිපත්ති තාවකාලික මතකය හරි</translation>
 <translation id="1130564665089811311">පිටුව පරිවර්තනය කරන්න බොත්තම, Google පරිවර්තනය සමඟ මෙම පිටුව පරිවර්තනය කිරීමට Enter ඔබන්න</translation>
@@ -217,6 +218,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කළ නොහැකි විය; එහි ආරක්ෂණ සහතිකය හෙට සිට විය හැකිය. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.}one{මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කළ නොහැකි විය; එහි ආරක්ෂණ සහතිකය අනාගතයේදී දින #ක් සිට විය හැකිය. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.}other{මෙම සේවාදායකයට එය <ph name="DOMAIN" />බව සනාථ කළ නොහැකි විය; එහි ආරක්ෂණ සහතිකය අනාගතයේදී දින #ක් සිට විය හැකිය. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.}}</translation>
 <translation id="1710259589646384581">OS</translation>
+<translation id="1711234383449478798"><ph name="POLICY_NAME" /> <ph name="VALUE" /> වෙත සකසා නැති නිසා නොසලකා හරින ලදි.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> හට ස්ථිරව දත්ත ඔබේ ස්ථානීය පරිගණකයේ ගබඩා කිරීමට අවශ්‍යයි.</translation>
 <translation id="1713628304598226412">බඳුන 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -770,6 +772,7 @@
 <translation id="3841184659773414994">ගොනු හසුරුවන්නන්</translation>
 <translation id="385051799172605136">ආපසු</translation>
 <translation id="3858027520442213535">දිනය සහ වේලාව යාවත්කාලීන කරන්න</translation>
+<translation id="3881478300875776315">පේළි අඩුවෙන් පෙන්වන්න</translation>
 <translation id="3884278016824448484">උපාංගය හඳුනා ගැනීම ප්‍රතිවිරුද්ධයි</translation>
 <translation id="3885155851504623709">කෝරලය</translation>
 <translation id="388632593194507180">අධීක්ෂණය අනාවරණය විය</translation>
@@ -795,6 +798,7 @@
 <translation id="397105322502079400">ගණනය කරමින්...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> අවහිර කර ඇත</translation>
 <translation id="3973357910713125165">Chrome ආරක්ෂක පරීක්ෂාව ධාවනය කරන්න බොත්තම, Chrome සැකසීම් තුළ ආරක්ෂක පරීක්ෂාව ධාවනය කිරීමට Enter ඔබන්න</translation>
+<translation id="3986705137476756801">දැනට සජීවී සිරස්තල ක්‍රියා විරහිත කරන්න</translation>
 <translation id="3987405730340719549">මෙම වෙබ් අඩවිය ව්‍යාජ හෝ වංචනික විය හැකි බව Chrome තීරණ කර ඇත.
 
     මෙය වැරදීමකින් පෙන්නුම් කෙරෙන බව ඔබ විශ්වාස කරන්නේ නම් https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals වෙත පැමිණෙන්න.</translation>
@@ -921,6 +925,7 @@
 <translation id="4377125064752653719">ඔබ <ph name="DOMAIN" /> වෙත ළඟාවීමට උත්සාහ දරන ලදි, නමුත් එම සර්වරය විසින් ඉදිරිපත් කළ සහතිකය එය නිකුත් කරන්නා විසින් අවලංගු කර ඇත. මෙයින් අදහස් වන්නේ සර්වරය ඉදිරිපත් කළ ආරක්ෂිත සාක්ෂි කිසිසේත් විශ්වාස නොකළ යුතු බවයි. ඔබ සම්බන්ධ වී සිටින්නේ වෙබ් ප්‍රහාරකයෙකු සමඟ වීමට ඉඩ ඇත.</translation>
 <translation id="4378154925671717803">දුරකථනය</translation>
 <translation id="4390472908992056574">ගැට්ට</translation>
+<translation id="4406883609789734330">සජීවී සිරස්තලය</translation>
 <translation id="4406896451731180161">සෙවීම් ප්‍රතිඵල</translation>
 <translation id="4408413947728134509">කුකීස් <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">ඔබ මේ දැන් වංචනික අඩවියක ඔබේ මුරපදය ඇතුළු කළා. Chrome <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, සහ ඔබ මෙම මුරපදය භාවිත කරන වෙනත් වෙබ් අඩවිවලට ගොස් එය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
@@ -986,6 +991,7 @@
 <translation id="4691835149146451662">Architecture-A (ලියුම් කවරය)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">පැත්ත</translation>
+<translation id="4702656508969495934">සජීවී සිරස්තල දෘශ්‍යමාන වේ, නාභිගත කිරීමට කවුළු මාරු කරන්නා භාවිත කරන්න</translation>
 <translation id="4708268264240856090">ඔබේ සබැඳුමට බාධා ඇති විය</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows ජාල දෝෂහරණ ධාවනය කරමින්<ph name="END_LINK" /></translation>
@@ -1656,6 +1662,7 @@
 <translation id="733354035281974745">උපාංග අභ්‍යන්තර ගිණුම් ප්‍රතික්‍ෂේපය</translation>
 <translation id="7333654844024768166">ඔබ මේ දැන් වංචනික අඩවියක ඔබේ මුරපදය ඇතුළු කළා. Chromium <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, සහ ඔබ මෙම මුරපදය භාවිත කරන වෙනත් වෙබ් අඩවිවලට ගොස් එය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="7334320624316649418">යළි ඇනවුම් කිරීම &amp;යළි කරන්න</translation>
+<translation id="7337248890521463931">තවත් පේළි පෙන්වන්න</translation>
 <translation id="7337706099755338005">ඔබේ වේදිකාව මත නොතිබේ.</translation>
 <translation id="733923710415886693">සහතික පාරදෘශ්‍යතාව හරහා සේවාදායකයේ සහතිකය අනාවරණය නොකෙරේ.</translation>
 <translation id="734600844861828519">11x15</translation>

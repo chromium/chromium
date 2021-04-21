@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Chrome አካባቢዎን እንዲያውቅ ከፈቀዱ Chrome እርስዎ ወደሚፈቅዷቸው ማናቸውም ጣቢያዎች ይልከዋል። ጣቢያዎች እንደ በአቅራቢያ ያሉ ሱቆች ወይም ዜናዎች ያሉ ለእርስዎ የሚያሳዩት የአከባቢ መረጃ ሲኖራቸው አካባቢዎን ሊጠይቁ ይችላሉ።</translation>
 <translation id="6036420186814142909">Google Chrome እርስዎ የበይነመረብ ውሂብዎን እና ድረ-ገጾችን በምን ያህል ፍጥነት መጫን እንደሚችሉ እንዲያቀናብሩ የሚያስችሉዎት ባህሪያት አሉት።
 <ph name="BEGIN_LINK" />ተጨማሪ ለመረዳት<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">የChrome በመለያ መግባትን ይፍቀዱ</translation>
 <translation id="6181930887571472871">ወደ Chrome ይቀይሩ</translation>
 <translation id="6238746320622508509">Chrome የእርስዎን ማንነት የማያሳውቁ ትሮች እንዲቆልፍ ይፍቀዱለት።</translation>
 <translation id="6573431926118603307">በሌሎች መሣሪያዎችዎ ላይ ባለ Chrome ላይ የከፈቷቸው ትሮች እዚህ ይመጣሉ።</translation>
@@ -96,5 +97,6 @@
   3. Chromeን ይምረጡ።</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">በGoogle Chrome አማካኝነት ደህንነትዎን ይጠብቁ</translation>
+<translation id="8772179140489533211">ወደ Chrome ለመግባት ጥያቄዎችን ያሳያል።</translation>
 <translation id="9112744793181547300">Chrome እንደ ነባሪ ይቀናበር?</translation>
 </translationbundle>

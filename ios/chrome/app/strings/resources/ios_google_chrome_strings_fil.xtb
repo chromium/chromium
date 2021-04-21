@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Kung papayagan mo ang Chrome na alamin ang iyong lokasyon, ipapadala ito ng Chrome sa anumang site na papayagan mo. Posibleng hingin ng mga site ang iyong lokasyon kapag may lokal na impormasyong ipapakita sa iyo ang mga ito, tulad ng mga shop sa malapit o balita.</translation>
 <translation id="6036420186814142909">Ang Google Chrome ay may mga feature na nakakatulong sa iyong pamahalaan ang iyong data sa internet at kung gaano ka kabilis nakakapag-load ng mga webpage.
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Payagan ang Pag-sign In sa Chrome</translation>
 <translation id="6181930887571472871">Lumipat sa Chrome</translation>
 <translation id="6238746320622508509">Payagan ang Chrome na i-lock ang iyong mga tab na Incognito.</translation>
 <translation id="6573431926118603307">Dito lalabas ang mga nabuksan mong tab sa Chrome sa iba mo pang mga device.</translation>
@@ -96,5 +97,6 @@
   3. Piliin ang Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Manatiling Ligtas sa Google Chrome</translation>
+<translation id="8772179140489533211">Nagpapakita ng mga prompt na mag-sign in sa Chrome.</translation>
 <translation id="9112744793181547300">Itakda ang Chrome bilang Default?</translation>
 </translationbundle>

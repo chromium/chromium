@@ -180,7 +180,6 @@ Tik op een woord om te zoeken. Je kunt je zoekopdracht verfijnen door te tikken 
 <translation id="2169830938017475061">Nu</translation>
 <translation id="2172688499998841696">Afbeeldingsbeschrijvingen staan uit</translation>
 <translation id="2175927920773552910">QR-code</translation>
-<translation id="2181298861158186289">Inhoud van klembord verbergen</translation>
 <translation id="218608176142494674">Delen</translation>
 <translation id="2195339740518523951">Gebruik het hoogste beveiligingsniveau van Chrome</translation>
 <translation id="2200113223741723867">Delen van gebruiksgegevens beheren</translation>
@@ -248,6 +247,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2612676031748830579">Kaartnummer</translation>
 <translation id="2625189173221582860">Wachtwoord gekopieerd</translation>
 <translation id="2631006050119455616">Bespaard</translation>
+<translation id="2645657967708199252">Je <ph name="CONNECTION_TYPE" />-verbinding kan je download vertragen</translation>
 <translation id="2647434099613338025">Taal toevoegen</translation>
 <translation id="2650751991977523696">Bestand opnieuw downloaden?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# audiobestand}other{# audiobestanden}}</translation>
@@ -260,6 +260,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2718846868787000099">Bezochte sites kunnen je voorkeuren bekijken, zodat ze content in je voorkeurstalen kunnen tonen</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Sorteren op site</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Tik op een woord om meteen te zoeken of gerelateerde acties te bekijken</translation>
 <translation id="2760989362628427051">Zet het donkere thema aan als het donkere thema of de batterijbesparing van je apparaat aanstaat</translation>
 <translation id="2762000892062317888">zojuist</translation>
@@ -436,6 +437,7 @@ Privacy Sandbox is nog actief in ontwikkeling en is beschikbaar in bepaalde regi
 <translation id="3943557322767080599">Chrome-inlogprompts tonen als je inlogt op je Google-account</translation>
 <translation id="395206256282351086">Zoek- en sitesuggesties staan uit</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome laadt de pagina wanneer deze klaar is}other{Chrome laadt de pagina's wanneer deze klaar zijn}}</translation>
+<translation id="3962957115499249330">Je ziet een melding als deze download start via wifi.</translation>
 <translation id="3963007978381181125">Wachtwoordzinversleuteling is niet van toepassing op betaalmethoden en adressen van Google Pay. Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet verzonden naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, moet je de synchronisatie resetten. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome kan je wachtwoorden niet checken</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> wordt geopend in Chrome. Als je doorgaat, ga je akkoord met de <ph name="BEGIN_LINK1" />servicevoorwaarden van Google<ph name="END_LINK1" /> en met de <ph name="BEGIN_LINK2" />aanvullende servicevoorwaarden van Google Chrome en Chrome OS<ph name="END_LINK2" />. Ook is de <ph name="BEGIN_LINK3" />privacyverklaring voor Google-accounts die worden beheerd met Family Link<ph name="END_LINK3" /> van toepassing.</translation>
@@ -479,6 +481,7 @@ Privacy Sandbox is nog actief in ontwikkeling en is beschikbaar in bepaalde regi
 <translation id="4256782883801055595">Open-sourcelicenties</translation>
 <translation id="4263656433980196874">UI om toestemming voor gesproken zoekopdrachten via de Assistent te geven is op volledige hoogte geopend</translation>
 <translation id="4269820728363426813">Linkadres kopiëren</translation>
+<translation id="4290281343757112331">Later downloaden?</translation>
 <translation id="4298388696830689168">Gekoppelde sites</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Basisinstellingen</translation>
@@ -541,6 +544,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4698034686595694889">Offline bekijken in <ph name="APP_NAME" /></translation>
 <translation id="4699172675775169585">Gecachte afbeeldingen en bestanden</translation>
 <translation id="4714588616299687897">Bespaar tot 60% van je gegevens</translation>
+<translation id="4716066120200945007">JE VOLGT</translation>
 <translation id="4719927025381752090">Aanbieden om te vertalen</translation>
 <translation id="4720023427747327413">Openen in <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Help bij het verbeteren van Chrome. <ph name="BEGIN_LINK" />Enquête invullen<ph name="END_LINK" /></translation>
@@ -621,6 +625,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5191251636205085390">Bekijk meer informatie over en beheer nieuwe technologieën die cookies van derden willen vervangen</translation>
 <translation id="5193988420012215838">Naar klembord gekopieerd</translation>
 <translation id="5199929503336119739">Werkprofiel</translation>
+<translation id="5201464744567315552">Je ziet een melding als deze download start om <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Wachtwoord invoeren</translation>
 <translation id="5210286577605176222">Naar het vorige tabblad gaan</translation>
 <translation id="5210365745912300556">Tabblad sluiten</translation>
@@ -631,6 +636,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5230560987958996918"><ph name="SITE" /> wil scannen naar Bluetooth-apparaten in de buurt. De volgende apparaten zijn gevonden:</translation>
 <translation id="5233638681132016545">Nieuw tabblad</translation>
 <translation id="5250483651202458397">Screenshot. Tik om te sluiten.</translation>
+<translation id="5262378156578470238">Je ziet een melding als deze download start op <ph name="DATE" />.</translation>
 <translation id="526421993248218238">Kan deze pagina niet laden</translation>
 <translation id="5271967389191913893">Het apparaat kan de content niet openen die moet worden gedownload.</translation>
 <translation id="5292796745632149097">Verzenden naar</translation>
@@ -842,7 +848,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="6539092367496845964">Er is iets misgegaan. Probeer het later opnieuw.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 uur geleden gecheckt}other{# uur geleden gecheckt}}</translation>
 <translation id="6545017243486555795">Alle gegevens wissen</translation>
-<translation id="6549142516027084053">Inhoud van klembord tonen</translation>
 <translation id="6560414384669816528">Zoeken met Sogou</translation>
 <translation id="656065428026159829">Meer tonen</translation>
 <translation id="6565959834589222080">Wifi wordt gebruikt als dat beschikbaar is</translation>
@@ -912,6 +917,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="6981982820502123353">Toegankelijkheid</translation>
 <translation id="6989267951144302301">Kan niet downloaden</translation>
 <translation id="6995899638241819463">Waarschuwen als je wachtwoorden zijn gelekt bij een gegevenslek</translation>
+<translation id="7001056293070445572">Dit bestand is groot (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">Aanvankelijke synchronisatie-instelling is niet voltooid. Synchronisatie staat uit.</translation>
 <translation id="7022756207310403729">Openen in browser</translation>
 <translation id="702463548815491781">Aanbevolen als TalkBack of Toegang via schakelaar aanstaat</translation>
@@ -936,7 +942,6 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="7180611975245234373">Vernieuwen</translation>
 <translation id="7187993566681480880">Beschermt je op Chrome en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd.</translation>
 <translation id="718926126787620637">Lijst met bookmarkmappen is op volledige hoogte geopend</translation>
-<translation id="7189372733857464326">Wachten tot Google Play-services is geüpdatet</translation>
 <translation id="7191430249889272776">Tabblad op de achtergrond geopend.</translation>
 <translation id="7233236755231902816">Als je webpagina's in je eigen taal wilt kunnen lezen, download je de nieuwste versie van Chrome</translation>
 <translation id="7248069434667874558">Zorg dat synchronisatie in Chrome is aangezet voor <ph name="TARGET_DEVICE_NAME" /></translation>

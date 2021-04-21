@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">现在</translation>
 <translation id="2172688499998841696">“图片说明”功能已关闭</translation>
 <translation id="2175927920773552910">二维码</translation>
-<translation id="2181298861158186289">隐藏剪贴板内容</translation>
 <translation id="218608176142494674">共享</translation>
 <translation id="2195339740518523951">获享 Chrome 的最强安全保护</translation>
 <translation id="2200113223741723867">对使用情况数据的共享进行管理</translation>
@@ -248,6 +247,7 @@
 <translation id="2612676031748830579">卡号</translation>
 <translation id="2625189173221582860">已复制密码</translation>
 <translation id="2631006050119455616">已节省</translation>
+<translation id="2645657967708199252">您的 <ph name="CONNECTION_TYPE" /> 连接可能会拖慢您的下载速度</translation>
 <translation id="2647434099613338025">添加语言</translation>
 <translation id="2650751991977523696">是否重新下载文件？</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 个音频文件}other{# 个音频文件}}</translation>
@@ -260,6 +260,7 @@
 <translation id="2718846868787000099">您访问的网站可查看您的偏好设置，以便能够以您的首选语言显示网页内容</translation>
 <translation id="2723001399770238859">音频</translation>
 <translation id="2728754400939377704">按网站排序</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">点按某个字词可立即开始搜索或查看相关操作</translation>
 <translation id="2760989362628427051">在设备开启深色主题背景或省电模式时启用深色主题背景</translation>
 <translation id="2762000892062317888">刚刚</translation>
@@ -436,6 +437,7 @@
 <translation id="3943557322767080599">当您登录 Google 帐号时，向您显示 Chrome 登录提示</translation>
 <translation id="395206256282351086">搜索和网站建议已停用</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{待准备就绪后，Chrome 即会加载您的网页}other{待准备就绪后，Chrome 即会加载您的网页}}</translation>
+<translation id="3962957115499249330">待系统能够通过可用的 Wi-Fi 开始执行这项下载操作时，您会收到通知。</translation>
 <translation id="3963007978381181125">密码加密不包括 Google Pay 中的付款方式和地址。只有知道您密码的人才能读取您的已加密数据。系统不会将该密码发送给 Google，Google 也不会存储该密码。如果您忘记了密码或想更改此设置，则需重置同步设置。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome 无法检查您的密码</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。<ph name="BEGIN_LINK3" />针对通过 Family Link 管理的 Google 帐号的隐私权声明<ph name="END_LINK3" />也适用。</translation>
@@ -479,6 +481,7 @@
 <translation id="4256782883801055595">开放源代码许可</translation>
 <translation id="4263656433980196874">针对 Google 助理语音搜索功能的用户意见征求界面已全屏打开</translation>
 <translation id="4269820728363426813">复制链接地址</translation>
+<translation id="4290281343757112331">改为在晚些时候下载？</translation>
 <translation id="4298388696830689168">已关联的网站</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">基本</translation>
@@ -541,6 +544,7 @@
 <translation id="4698034686595694889">在 <ph name="APP_NAME" /> 中离线查看</translation>
 <translation id="4699172675775169585">缓存的图片和文件</translation>
 <translation id="4714588616299687897">最多可为您节省 60% 的数据流量</translation>
+<translation id="4716066120200945007">已关注</translation>
 <translation id="4719927025381752090">提供翻译</translation>
 <translation id="4720023427747327413">在<ph name="PRODUCT_NAME" />中打开</translation>
 <translation id="4720982865791209136">欢迎帮助我们改进 Chrome。<ph name="BEGIN_LINK" />参与调查<ph name="END_LINK" /></translation>
@@ -621,6 +625,7 @@
 <translation id="5191251636205085390">了解和掌控旨在取代第三方 Cookie 的新技术</translation>
 <translation id="5193988420012215838">已复制到剪贴板</translation>
 <translation id="5199929503336119739">工作资料</translation>
+<translation id="5201464744567315552">待系统于<ph name="TIME" /> 开始执行这项下载操作时，您会收到通知。</translation>
 <translation id="5204967432542742771">输入密码</translation>
 <translation id="5210286577605176222">跳转到上一个标签页</translation>
 <translation id="5210365745912300556">关闭标签页</translation>
@@ -631,6 +636,7 @@
 <translation id="5230560987958996918"><ph name="SITE" /> 想搜索附近的蓝牙设备，并发现了以下设备：</translation>
 <translation id="5233638681132016545">打开新的标签页</translation>
 <translation id="5250483651202458397">屏幕截图。点按即可关闭。</translation>
+<translation id="5262378156578470238">待系统于 <ph name="DATE" />开始执行这项下载操作时，您会收到通知。</translation>
 <translation id="526421993248218238">无法加载此页面</translation>
 <translation id="5271967389191913893">设备无法打开要下载的内容。</translation>
 <translation id="5292796745632149097">发送到</translation>
@@ -842,7 +848,6 @@
 <translation id="6539092367496845964">出了点问题。请稍后重试。</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 小时前检查过}other{# 小时前检查过}}</translation>
 <translation id="6545017243486555795">清除所有数据</translation>
-<translation id="6549142516027084053">显示剪贴板内容</translation>
 <translation id="6560414384669816528">改用搜狗搜索</translation>
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6565959834589222080">当 Wi-Fi 可用时使用 Wi-Fi</translation>
@@ -912,6 +917,7 @@
 <translation id="6981982820502123353">无障碍</translation>
 <translation id="6989267951144302301">无法下载</translation>
 <translation id="6995899638241819463">当密码遭遇数据泄露时，发送警告</translation>
+<translation id="7001056293070445572">此文件很大 (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">初始同步设置未完成。同步功能处于关闭状态。</translation>
 <translation id="7022756207310403729">在浏览器中打开</translation>
 <translation id="702463548815491781">建议在开启 TalkBack 或“开关控制”时使用</translation>
@@ -936,7 +942,6 @@
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7187993566681480880">会保护您在 Chrome 中免受安全威胁；如果您是处于已登录状态，还可让您更安全地使用其他 Google 应用。</translation>
 <translation id="718926126787620637">书签文件夹列表已全屏打开</translation>
-<translation id="7189372733857464326">正在等待 Google Play 服务完成更新</translation>
 <translation id="7191430249889272776">标签页已在后台打开。</translation>
 <translation id="7233236755231902816">若要使用您的语言查看网页，请获取最新版本的 Chrome</translation>
 <translation id="7248069434667874558">请确保<ph name="TARGET_DEVICE_NAME" />已在 Chrome 中开启同步功能</translation>

@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;સાધનો</translation>
 <translation id="1122242684574577509">પ્રમાણીકરણ નિષ્ફળ થયું. તમે ઉપયોગ કરી રહ્યા છો તે વાઇ-ફાઇ નેટવર્ક (<ph name="NETWORK_ID" />) માટેના લોગિન પેજની મુલાકાત લેવા માટે ક્લિક કરો.</translation>
 <translation id="1122960773616686544">બુકમાર્ક નામ</translation>
-<translation id="1123753900084781868">આ સમયે લાઇવ કૅપ્શનની સુવિધા ઉપલબ્ધ નથી</translation>
 <translation id="1124772482545689468">વપરાશકર્તા</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> જેવું લાગે છે (મૂળ)</translation>
 <translation id="1126809382673880764">જોખમકારક વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેંશન સામે તમારું રક્ષણ કરતું નથી. Gmail અને Search જેવી Googleની અન્ય સેવાઓમાં, જ્યાં ઉપલબ્ધ હોય, ત્યાં તમને હજી પણ Safe Browsing સંરક્ષણ મળશે.</translation>
@@ -944,7 +943,6 @@
 <translation id="2010501376126504057">સુસંગત ડિવાઇસ</translation>
 <translation id="2016574333161572915">તમારું Google Meet હાર્ડવેર, સેટઅપ કરવા માટે તૈયાર છે</translation>
 <translation id="2017334798163366053">પ્રદર્શન ડેટા સંગ્રહ બંધ કરો</translation>
-<translation id="2017836877785168846">ઍડ્રેસ બારમાં ઇતિહાસ અને સ્વતઃપૂર્ણ કરવું સાફ કરો.</translation>
 <translation id="2018352199541442911">માફ કરશો, આ સમયે તમારા બાહ્ય ઉપકરણને સપોર્ટ નથી.</translation>
 <translation id="2019718679933488176">નવા ટૅબમાં ઑડિયો &amp;ખોલો</translation>
 <translation id="2020183425253392403">નેટવર્ક સરનામાની સેટિંગ્સ બતાવો</translation>
@@ -2526,7 +2524,7 @@
 <translation id="3764314093345384080">વિગતવાર બિલ્ડ માહિતી</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{એક USB ઉપકરણ સાથે સંચાર કરો}one{# USB ઉપકરણો સાથે સંચાર કરો}other{# USB ઉપકરણો સાથે સંચાર કરો}}</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> પર <ph name="ATTACHMENTS" /> મોકલી રહ્યાં છીએ}one{<ph name="DEVICE_NAME" /> પર <ph name="ATTACHMENTS" /> મોકલી રહ્યાં છીએ}other{<ph name="DEVICE_NAME" /> પર <ph name="ATTACHMENTS" /> મોકલી રહ્યાં છીએ}}</translation>
-<translation id="3765246971671567135">ઑફલાઇન ડેમો મોડ નીતિ વાંચી શકાઈ નથી.</translation>
+<translation id="3765246971671567135">ઑફલાઇન ડેમો મોડ પૉલિસી વાંચી શકાઈ નથી.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">આઇસ્ક્રીમ</translation>
 <translation id="3771290962915251154">માતાપિતા યોગ્ય નિયંત્રણો ચાલુ હોવાને કારણે આ સેટિંગ બંધ કરવામાં આવ્યું છે</translation>
@@ -2642,7 +2640,6 @@
 <translation id="3874164307099183178">Google Assistant ચાલુ કરો</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />ના ડિવાઇસ માટે નજીકના શેર સેટિંગ, <ph name="USER_EMAIL" /> એકાઉન્ટ હેઠળ શેર કરવામાં આવી રહ્યાં છે.</translation>
 <translation id="3879748587602334249">ડાઉનલોડ મેનેજર</translation>
-<translation id="3881478300875776315">ઓછી પંક્તિઓ બતાવો</translation>
 <translation id="3882165008614329320">કૅમેરા અથવા ફાઇલમાંથી અસ્તિત્વમાં છે તે વીડિયો</translation>
 <translation id="3884152383786131369">એકથી વધારે ભાષાઓમાં ઉપલબ્ધ વેબ કન્ટેન્ટ આ સૂચિમાંની પહેલી સપોર્ટેડ ભાષાનો ઉપયોગ કરશે. આ પસંદગીઓને તમારા બ્રાઉઝર સેટિંગ સાથે સિંક કરવામાં આવે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">અપડેટ તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
@@ -2760,7 +2757,6 @@
 <translation id="3984159763196946143">ડેમો મોડ શરૂ કરી શકાયો નથી</translation>
 <translation id="3984431586879874039">આ સાઇટને તમારો સુરક્ષા કોડ જોવાની મંજૂરી આપીએ?</translation>
 <translation id="398477389655464998">હાઇલાઇટ કરેલી ટેક્સ્ટની લિંક કૉપિ કરો</translation>
-<translation id="3986705137476756801">હાલ પૂરતું, લાઇવ કૅપ્શનની સુવિધા બંધ કરો</translation>
 <translation id="3987544746655539083">આ સાઇટને તમારા સ્થાનને ઍક્સેસ કરવાથી બ્લૉક કરવાનું ચાલુ રાખો</translation>
 <translation id="3987938432087324095">માફ કરશો, તે સમજાયું ન હતું.</translation>
 <translation id="3988996860813292272">સમયઝોન પસંદ કરો</translation>
@@ -3365,7 +3361,6 @@
 <translation id="4699172675775169585">કેશ કરેલ છબીઓ અને ફાઇલો</translation>
 <translation id="4699357559218762027">(સ્વતઃ-લોંચ કરેલું)</translation>
 <translation id="4701025263201366865">માતાપિતા સાઇન ઇન કરે</translation>
-<translation id="4702656508969495934">લાઇવ કૅપ્શન જોઈ શકાય છે, ફોકસ કરવા માટે વિન્ડો સ્વિચરનો ઉપયોગ કરો</translation>
 <translation id="4708794300267213770">નિષ્ક્રિયતામાંથી બહાર આવવા પર લૉક સ્ક્રીન બતાવો</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> છોડો</translation>
 <translation id="4711638718396952945">સેટિંગ્સ પુનઃસ્થાપિત કરો</translation>
@@ -3865,7 +3860,6 @@
 <translation id="5300287940468717207">સાઇટ પરવાનગીઓ રીસેટ કરીએ?</translation>
 <translation id="5300589172476337783">બતાવો</translation>
 <translation id="5300719150368506519">તમે મુલાકાત લો તે પેજના URLs Googleને મોકલો</translation>
-<translation id="5300814202279832142">વિન્ડોને 'ડેસ્ક' સબમેનૂ પર ખસેડો</translation>
 <translation id="5301751748813680278">અતિથિ તરીકે દાખલ થઈ રહ્યું છે.</translation>
 <translation id="5301954838959518834">બરાબર, સમજાઇ ગયું</translation>
 <translation id="5302048478445481009">ભાષા</translation>
@@ -5481,7 +5475,6 @@ USB ડિવાઇસ</translation>
 <translation id="711840821796638741">મેનેજ કરેલા બુકમાર્ક બતાવો</translation>
 <translation id="711902386174337313">તમારા સાઇન ઇન કરેલા ઉપકરણોની સૂચિને વાંચો</translation>
 <translation id="7120865473764644444">સમન્વયન સર્વર સાથે કનેક્ટ કરી શકાયું નથી. ફરી પ્રયાસ કરી રહ્યાં છે...</translation>
-<translation id="7121362699166175603">ઍડ્રેસ બારમાં ઇતિહાસ અને ઑટોમૅટિક રીતે પૂર્ણતા સાફ કરે છે. તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
 <translation id="7121438501124788993">ડેવલપર મોડ</translation>
 <translation id="7121728544325372695">સ્માર્ટ ડૅશ</translation>
 <translation id="7123030151043029868">એકથી વધારે ફાઇલો ઑટોમૅટિક રીતે ડાઉનલોડ કરવાની મંજૂરી છે</translation>
@@ -5654,7 +5647,6 @@ USB ડિવાઇસ</translation>
 <translation id="7334274148831027933">ડૉક કરેલા મેગ્નિફાયરને ચાલુ કરો</translation>
 <translation id="7335974957018254119">આ માટે જોડણીની તપાસનો ઉપયોગ કરો</translation>
 <translation id="7336799713063880535">નોટિફિકેશન બ્લૉક કર્યા.</translation>
-<translation id="7337248890521463931">વધુ પંક્તિઓ બતાવો</translation>
 <translation id="7338630283264858612">ડિવાઇસ અનુક્રમ નંબર અમાન્ય છે.</translation>
 <translation id="7339763383339757376">PKCS #7, સિંગલ પ્રમાણપત્ર</translation>
 <translation id="7339785458027436441">લખતી વખતે જોડણી તપાસો</translation>
@@ -6002,7 +5994,7 @@ USB ડિવાઇસ</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> તરફથી કુકીને મંજૂરી છે</translation>
 <translation id="7714464543167945231">પ્રમાણપત્ર</translation>
 <translation id="7716648931428307506">તમારો પાસવર્ડ ક્યાં સાચવવો તે પસંદ કરો</translation>
-<translation id="7716781361494605745">નેટસ્કેપ પ્રમાણન અધિકારી નીતિ URL</translation>
+<translation id="7716781361494605745">નેટસ્કેપ પ્રમાણન અધિકારી પૉલિસી URL</translation>
 <translation id="7717014941119698257">ડાઉનલોડ કરી રહ્યું છે: <ph name="STATUS" /></translation>
 <translation id="7717134585801378441">સાઇટ તમારું સ્થાન પૂછી શકે છે (ભલામણ કરવામાં આવે છે)</translation>
 <translation id="771721654176725387">આને કારણે તમારો બ્રાઉઝિંગ ડેટા આ ડિવાઇસમાંથી કાયમ માટે ડિલીટ થઈ જશે. આ ડેટા પાછો મેળવવા માટે, સિંક કરવાની સુવિધાને આ તરીકે ચાલુ કરો</translation>
@@ -7244,7 +7236,7 @@ USB ડિવાઇસ</translation>
 <translation id="9085256200913095638">પસંદ કરેલી ટૅબની ડુપ્લિકેટ બનાવો</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> પસંદ કરી નથી. પસંદ કરવા માટે 'શોધો' અને Space દબાવો.</translation>
 <translation id="9087949559523851360">પ્રતિબંધિત વપરાશકર્તા ઉમેરો</translation>
-<translation id="9088234649737575428"><ph name="PLUGIN_NAME" />, એન્ટરપ્રાઇઝ નીતિ દ્વારા અવરોધિત કરેલ છે</translation>
+<translation id="9088234649737575428"><ph name="PLUGIN_NAME" />, એન્ટરપ્રાઇઝ પૉલિસી દ્વારા અવરોધિત કરેલું છે</translation>
 <translation id="9088446193279799727">Linux ગોઠવી શકાતું નથી. ઇન્ટરનેટ સાથે કનેક્ટ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="9088917181875854783">કૃપા કરીને ખાતરી કરો કે "<ph name="DEVICE_NAME" />" પર આ પાસકી દેખાય છે:</translation>
 <translation id="9089416786594320554">ઇનપુટ પદ્ધતિઓ</translation>
@@ -7352,7 +7344,6 @@ USB ડિવાઇસ</translation>
 <translation id="9209563766569767417">Linux કન્ટેનરનું સેટઅપ ચેક કરી રહ્યાં છીએ</translation>
 <translation id="9209689095351280025">સાઇટ તમને વેબ પર બધે ટ્રૅક કરતી કુકીનો ઉપયોગ કરી શકશે નહીં</translation>
 <translation id="9211177926627870898">અપડેટ જરૂરી છે</translation>
-<translation id="9211490828691860325">તમામ ડેસ્ક</translation>
 <translation id="9214510034298163263">સાઇટ તમારા ડિવાઇસમાંની ફાઇલોમાં અને ફોલ્ડરોમાં ફેરફાર કરવાનું પૂછી શકે છે (સુઝાવ આપવામાં આવે છે)</translation>
 <translation id="9214520840402538427">અરે! ઇન્સ્ટૉલેશન-સમયનો ચાલુ એટ્રિબ્યૂટનો સમય સમાપ્ત થયો. કૃપા કરીને તમારા સપોર્ટ પ્રતિનિધિનો સંપર્ક કરો.</translation>
 <translation id="9214695392875603905">કપકૅક</translation>

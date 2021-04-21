@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">‏אם מאפשרים ל-Chrome לדעת את המיקום, Chrome יכול לשלוח את המידע הזה לאתרים שנתת להם הרשאה. אתרים עשויים לבקש את המיקום שלך כאשר יש להם מידע מקומי להציג לך, כמו חדשות או חנויות קרובות.</translation>
 <translation id="6036420186814142909">‏Google Chrome כולל תכונות שעוזרות לך לנהל את נתוני האינטרנט שלך ואת המהירות שבה אפשר לטעון דפים.
 <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">‏התרת כניסה אל Chrome</translation>
 <translation id="6181930887571472871">‏לעבור ל-Chrome?</translation>
 <translation id="6238746320622508509">‏כרטיסיות מצב אנונימי יינעלו באמצעות Chrome.</translation>
 <translation id="6573431926118603307">‏כרטיסיות שפתחת ב-Chrome במכשירים האחרים שלך יופיעו כאן.</translation>
@@ -96,5 +97,6 @@
   3. בוחרים את Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">‏פשוט לשמור על הבטיחות בעזרת Google Chrome</translation>
+<translation id="8772179140489533211">‏יוצגו הודעות לצורך כניסה אל Chrome.</translation>
 <translation id="9112744793181547300">‏להגדיר את Chrome כדפדפן ברירת המחדל?</translation>
 </translationbundle>

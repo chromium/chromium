@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Kui lubate Chrome'il teada teie asukohateavet, saadab Chrome selle saitidele, mille jaoks loa annate. Saidid võivad teilt küsida asukohateavet, kui neil on teile näidata kohalikku teavet, näiteks lähedalasuvaid poode või uudiseid.</translation>
 <translation id="6036420186814142909">Google Chrome'il on funktsioone, mis aitavad teil hallata oma Interneti-andmeid ja seda, kui kiiresti saate laadida veebilehti.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Luba Chrome'i sisselogimine</translation>
 <translation id="6181930887571472871">Lülituge Chrome'ile</translation>
 <translation id="6238746320622508509">Laske Chrome'il oma inkognito vahelehed lukustada.</translation>
 <translation id="6573431926118603307">Siin kuvatakse teie teistes seadmetes Chrome'is avatud vahelehed.</translation>
@@ -96,5 +97,6 @@
   3. Valige Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Turvalisus Google Chrome'iga</translation>
+<translation id="8772179140489533211">Kuvatakse viibad Chrome'i sisselogimiseks.</translation>
 <translation id="9112744793181547300">Kas määrata Chrome vaikebrauseriks?</translation>
 </translationbundle>

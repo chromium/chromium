@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Jos Chrome saa nähdä sijaintisi, sijainti lähetetään sivustoille, jotka sallit. Sivustot voivat kysyä sijaintiasi, jos niillä on sinulle paikallisia tietoja, esim. uutisia tai lähistöllä olevia kauppoja.</translation>
 <translation id="6036420186814142909">Google Chrome sisältää ominaisuuksia, joiden avulla voit hallita tiedonsiirtoasi ja verkkosivujen latausnopeutta.
 <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Salli Chrome-kirjautuminen</translation>
 <translation id="6181930887571472871">Vaihda Chromeen</translation>
 <translation id="6238746320622508509">Anna Chromen lukita incognito-välilehtesi.</translation>
 <translation id="6573431926118603307">Muilla laitteilla Chromessa avaamasi välilehdet näytetään täällä.</translation>
@@ -96,5 +97,6 @@
   3. Valitse Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Pysy turvassa Google Chromen avulla</translation>
+<translation id="8772179140489533211">Näytä kehotteet kirjautua Chromeen.</translation>
 <translation id="9112744793181547300">Valitaanko Chrome oletukseksi?</translation>
 </translationbundle>

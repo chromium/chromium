@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">Sökningsreglage</translation>
 <translation id="1404323374378969387">norska</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
+<translation id="1433628812591023318">För att kunna släppa en fil i Parallels Desktop behöver du först flytta den till Windows.</translation>
 <translation id="1435838927755162558">Dela mappen med Parallels Desktop</translation>
 <translation id="1467432559032391204">Vänster</translation>
 <translation id="1471718551822868769">slovakiska</translation>
@@ -611,6 +612,7 @@
 <translation id="7417453074306512035">Tangentbord för etiopiska</translation>
 <translation id="7417705661718309329">Google-karta</translation>
 <translation id="7460898608667578234">ukrainska</translation>
+<translation id="7486315294984620427">För att kunna släppa en fil i Parallels Desktop behöver du först kopiera den till Windows.</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> hittades
     <ph name="LINE_BREAK1" />
     Klar att säkerhetskopiera på <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>

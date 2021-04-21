@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">If ticked, Chrome will store a copy of your card on this device for faster form filling.</translation>
 <translation id="1110994991967754504">Select permission for <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Undo reorder</translation>
+<translation id="1123753900084781868">Live Caption is not available at the moment</translation>
 <translation id="1125573121925420732">Warnings may be common while websites update their security. This should improve soon.</translation>
 <translation id="112840717907525620">Policy cache OK</translation>
 <translation id="1130564665089811311">Translate page button; press enter to translate this page with Google Translate</translation>
@@ -217,6 +218,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{This server could not prove that it is <ph name="DOMAIN" />; its security certificate is supposedly from tomorrow. This may be caused by a misconfiguration or an attacker intercepting your connection.}other{This server could not prove that it is <ph name="DOMAIN" />; its security certificate is supposedly from # days in the future. This may be caused by a misconfiguration or an attacker intercepting your connection.}}</translation>
 <translation id="1710259589646384581">OS</translation>
+<translation id="1711234383449478798">Ignored because <ph name="POLICY_NAME" /> is not set to <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> wants to permanently store data on your local computer</translation>
 <translation id="1713628304598226412">Tray 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -771,6 +773,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3841184659773414994">File handlers</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="3858027520442213535">Update date and time</translation>
+<translation id="3881478300875776315">Show fewer lines</translation>
 <translation id="3884278016824448484">Conflicting device identifier</translation>
 <translation id="3885155851504623709">Parish</translation>
 <translation id="388632593194507180">Monitoring detected</translation>
@@ -796,6 +799,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="397105322502079400">Calculating...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> is blocked</translation>
 <translation id="3973357910713125165">Run Chrome safety check button; press Enter to run safety check in Chrome settings</translation>
+<translation id="3986705137476756801">Turn off Live Caption for now</translation>
 <translation id="3987405730340719549">Chrome has determined that this site could be fake or fraudulent.
 
     If you believe that this is shown in error please visit https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -925,6 +929,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4377125064752653719">You attempted to reach <ph name="DOMAIN" />, but the certificate that the server presented has been revoked by its issuer. This means that the security credentials the server presented absolutely should not be trusted. You may be communicating with an attacker.</translation>
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406896451731180161">search results</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">You just entered your password on a deceptive site. Chrome recommends going to <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> and other sites where you use this password and changing it now.</translation>
@@ -990,6 +995,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Side</translation>
+<translation id="4702656508969495934">Live Caption visible; use window switcher to focus</translation>
 <translation id="4708268264240856090">Your connection was interrupted</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Running Windows Network Diagnostics<ph name="END_LINK" /></translation>
@@ -1660,6 +1666,7 @@ Additional details:
 <translation id="733354035281974745">Device local account override</translation>
 <translation id="7333654844024768166">You just entered your password on a deceptive site. Chromium recommends going to <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> and other sites where you use this password and changing it now.</translation>
 <translation id="7334320624316649418">&amp;Redo reorder</translation>
+<translation id="7337248890521463931">Show more lines</translation>
 <translation id="7337706099755338005">Not available on your platform.</translation>
 <translation id="733923710415886693">The server's certificate was not disclosed via Certificate Transparency.</translation>
 <translation id="734600844861828519">11x15</translation>

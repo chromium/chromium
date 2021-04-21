@@ -446,6 +446,7 @@
 <translation id="5782227691023083829">번역 중...</translation>
 <translation id="5803566855766646066">새 카드를 삭제하시겠습니까?</translation>
 <translation id="5816228676161003208">액세스를 허용하면 음성으로 더 빨리 검색할 수 있습니다.</translation>
+<translation id="581659025233126501">동기화 사용 설정</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" />에서 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">검색엔진</translation>
 <translation id="5854790677617711513">30일 이상 전</translation>
@@ -493,6 +494,7 @@
 <translation id="6196207969502475924">음성 검색</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{탭 {COUNT}개 닫기}other{탭 {COUNT}개 닫기}}</translation>
 <translation id="6219688215832490856">번역 안함</translation>
+<translation id="6223816392543092032">모든 기기에서 북마크, 방문 기록, 비밀번호, 기타 설정을 동기화합니다</translation>
 <translation id="6254066287920239840">브라우저 대신 앱에서 링크 열기</translation>
 <translation id="6255097610484507482">신용카드 수정</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> 번역 옵션 제공</translation>
@@ -525,6 +527,7 @@
 <translation id="6445981559479772097">메시지가 전송되었습니다.</translation>
 <translation id="6447842834002726250">쿠키</translation>
 <translation id="6453018583485750254">확인한 적이 없음</translation>
+<translation id="6459307836338400162">개인 정보 보호, 보안, 데이터 수집에 관한 추가 설정을 보려면 <ph name="BEGIN_LINK" />동기화<ph name="END_LINK" /> 및 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 참고하세요.</translation>
 <translation id="6464071786529933911">새 시크릿 탭에서 열기</translation>
 <translation id="6464397691496239022">사이트에서 사용자의 로그인 상태를 유지하거나 장바구니에 담긴 상품을 기억하는 등 탐색 환경을 개선하는 데 쿠키를 사용할 수 있습니다.
 
@@ -708,6 +711,7 @@
 <translation id="8281886186245836920">건너뛰기</translation>
 <translation id="8283172974887967105">설정…</translation>
 <translation id="8299417921174340354">비밀번호를 사용하려면 기기에 비밀번호를 설정해야 합니다.</translation>
+<translation id="83100941411593607">로그인 사용 중지됨</translation>
 <translation id="8319076807703933069">새 검색</translation>
 <translation id="8323906514956095947">더 많은 탭 옵션을 보려면 길게 터치하세요.</translation>
 <translation id="8328777765163860529">모두 닫기</translation>

@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Se permites que Chrome saiba cal é a túa localización, este enviaralla aos sitios aos que lles concedas a autorización pertinente. Os sitios poderán preguntarche pola túa localización se teñen información local que mostrarche (por exemplo, noticias ou tendas próximas).</translation>
 <translation id="6036420186814142909">Google Chrome inclúe funcións que che axudan a xestionar os teus datos de Internet e a rapidez coa que podes cargar páxinas web.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Permitir inicio de sesión en Chrome</translation>
 <translation id="6181930887571472871">Pásate a Chrome</translation>
 <translation id="6238746320622508509">Permite que Chrome bloquee as pestanas do modo de incógnito.</translation>
 <translation id="6573431926118603307">Aquí aparecerán as pestanas que abrises en Chrome noutros dispositivos.</translation>
@@ -96,5 +97,6 @@
   3. Selecciona Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Protexe a túa seguranza con Google Chrome</translation>
+<translation id="8772179140489533211">Mostra solicitudes para iniciar sesión en Chrome.</translation>
 <translation id="9112744793181547300">Queres definir Chrome como navegador predeterminado?</translation>
 </translationbundle>

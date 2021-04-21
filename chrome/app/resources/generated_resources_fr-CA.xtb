@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">Ou&amp;tils</translation>
 <translation id="1122242684574577509">L’authentification a échoué. Cliquez pour accéder à la page de connexion au réseau Wi-Fi que vous utilisez (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">Nom du favori</translation>
-<translation id="1123753900084781868">La transcription instantanée n'est pas accessible pour le moment</translation>
 <translation id="1124772482545689468">Utilisateur</translation>
 <translation id="1125550662859510761">Semblable à <ph name="WIDTH" /> x <ph name="HEIGHT" /> (résolution native)</translation>
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions ni les sites Web dangereux. Vous profitez toujours de la protection de navigation sécurisée, lorsqu'elle est offerte, dans d'autres services Google, comme Gmail et la recherche.</translation>
@@ -754,6 +753,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1794791083288629568">Envoyer des commentaires pour nous aider à résoudre ce problème.</translation>
 <translation id="1795214765651529549">Utiliser le thème classique</translation>
 <translation id="1799071797295057738">L'extension « <ph name="EXTENSION_NAME" /> » a été désactivée automatiquement.</translation>
+<translation id="1800973090344019061">L'extension « <ph name="APP_NAME" /> » souhaite partager le contenu de votre écran.</translation>
 <translation id="1802624026913571222">Mettre en veille lorsque le couvercle est fermé</translation>
 <translation id="1802687198411089702">La page ne répond pas. Vous pouvez attendre qu'elle réponde ou la quitter.</translation>
 <translation id="1803531841600994172">Langue cible</translation>
@@ -948,7 +948,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="2010501376126504057">Appareils compatibles</translation>
 <translation id="2016574333161572915">Votre accessoire Google Meet est prêt à être configuré</translation>
 <translation id="2017334798163366053">Désactiver la collecte de données de performances</translation>
-<translation id="2017836877785168846">Efface l'historique et la saisie semi-automatique de la barre d'adresse.</translation>
 <translation id="2018352199541442911">Désolés, votre périphérique de stockage externe n'est pas compatible pour le moment.</translation>
 <translation id="2019718679933488176">&amp;Ouvrir le fichier audio dans un nouvel onglet</translation>
 <translation id="2020183425253392403">Afficher les paramètres d'adresses réseau</translation>
@@ -1354,6 +1353,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2464089476039395325">Mandataire HTTP</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" /> exige que vous vous connectiez au Wi-Fi maintenant et que vous téléchargiez une mise à jour. Ou encore, téléchargez-la à l'aide d'une connexion mesurée (des frais pourraient s'appliquer).</translation>
 <translation id="2467267713099745100">Réseau <ph name="NETWORK_TYPE" />; désactivé</translation>
+<translation id="2467755475704469005">Aucun appareil détecté. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Accélération du défilement sur le pavé tactile</translation>
 <translation id="2468205691404969808">Utilise des témoins pour mémoriser vos préférences, même si vous ne visitez pas ces pages</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
@@ -2383,6 +2383,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3608576286259426129">Aperçu de l'image de l'utilisateur</translation>
 <translation id="3610369246614755442">Le ventilateur de la station d'accueil doit être réparé</translation>
 <translation id="361106536627977100">Données de Flash</translation>
+<translation id="3611655097742243705">Rendez-vous dans la boutique Play Store pour afficher plus d'applications</translation>
 <translation id="3612673635130633812">Téléchargé par &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Afficher « <ph name="FOLDER_NAME" /> »</translation>
 <translation id="3613422051106148727">&amp;Ouvrir dans un nouvel onglet</translation>
@@ -2647,7 +2648,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3874164307099183178">Activer l'Assistant Google</translation>
 <translation id="3877075909000773256">Paramètres de partage à proximité pour l'appareil de <ph name="USER_NAME" />. Partage sous le compte <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
-<translation id="3881478300875776315">Afficher moins de lignes</translation>
 <translation id="3882165008614329320">Vidéo existante de la caméra ou du fichier</translation>
 <translation id="3884152383786131369">Le contenu Web offert en plusieurs langues utilisera la première langue prise en charge de cette liste. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">C'est votre administrateur qui gère les mises à jour</translation>
@@ -2719,6 +2719,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3943494825379372497">Restaurer les applications et les pages?</translation>
 <translation id="3943582379552582368">&amp;Retour</translation>
 <translation id="3943857333388298514">Coller</translation>
+<translation id="3945513714196326460">Essayez d'entrer un nom plus court</translation>
 <translation id="3948116654032448504">&amp;Rechercher une image avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> peut modifier les fichiers dans les dossiers suivants</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2765,7 +2766,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3984159763196946143">Impossible de démarrer le mode Démonstration</translation>
 <translation id="3984431586879874039">Autoriser ce site à voir votre clé de sécurité?</translation>
 <translation id="398477389655464998">Copier le lien vers l'élément en surbrillance</translation>
-<translation id="3986705137476756801">Désactiver la transcription instantanée pour le moment</translation>
 <translation id="3987544746655539083">Continuer à empêcher ce site d'accéder à votre position</translation>
 <translation id="3987938432087324095">Désolés, impossible de comprendre la requête.</translation>
 <translation id="3988996860813292272">Sélectionner un fuseau horaire</translation>
@@ -3105,6 +3105,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4415245286584082850">Aucun appareil trouvé. Ouvrez un article du Centre d'aide dans un nouvel onglet.</translation>
 <translation id="4415276339145661267">Gérer votre compte Google</translation>
 <translation id="4415748029120993980">Courbe elliptique SECG secp384r1 (aussi appelée NIST P-384)</translation>
+<translation id="4416450511678320850">Aucune application n'est offerte pour gérer ce contenu</translation>
 <translation id="4416582610654027550">Entrez une URL valide</translation>
 <translation id="4419409365248380979">Toujours autoriser <ph name="HOST" /> à enregistrer des témoins</translation>
 <translation id="4421932782753506458">Félix</translation>
@@ -3372,7 +3373,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4699172675775169585">Images et fichiers dans la mémoire cache</translation>
 <translation id="4699357559218762027">(lancement automatique)</translation>
 <translation id="4701025263201366865">Connexion d'un parent</translation>
-<translation id="4702656508969495934">La transcription instantanée est visible, servez-vous du commutateur de fenêtre pour y accéder</translation>
 <translation id="4708794300267213770">Afficher l'écran de verrouillage au réveil</translation>
 <translation id="4708849949179781599">Quitter <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurer les paramètres</translation>
@@ -3398,6 +3398,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="473936925429402449">Sélectionné, contenu supplémentaire <ph name="CURRENT_ELEMENT" /> sur <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tickets</translation>
 <translation id="4742334355511750246">Non autorisés à afficher des images</translation>
+<translation id="4742970037960872810">Retirer la surbrillance</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Découvrir comment mettre à jour des applications<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Réactiver le son sur le site}one{Réactiver le son sur le site}other{Réactiver le son sur les sites}}</translation>
 <translation id="4746351372139058112">Messages</translation>
@@ -3874,7 +3875,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5300287940468717207">Réinitialiser les autorisations de sites?</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5300719150368506519">Envoyer les URL des pages que vous consultez à Google</translation>
-<translation id="5300814202279832142">Déplacer la fenêtre vers le bureau</translation>
 <translation id="5301751748813680278">Connexion en tant qu'invité en cours…</translation>
 <translation id="5301954838959518834">J'ai compris.</translation>
 <translation id="5302048478445481009">Langue</translation>
@@ -4606,6 +4606,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6136114942382973861">Fermer la barre des téléchargements</translation>
 <translation id="6136287496450963112">Votre clé de sécurité n'est pas protégée par un NIP. Pour gérer les empreintes digitales, commencez par créer un NIP.</translation>
 <translation id="6138680304137685902">Signature X9.62 ECDSA avec SHA-384</translation>
+<translation id="6138774640412545950">L'extension « <ph name="APP_NAME" /> » souhaite partager le contenu de votre écran avec <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />; aucun réseau</translation>
 <translation id="6141988275892716286">Confirmer le téléchargement</translation>
 <translation id="6143186082490678276">Obtenir de l'aide</translation>
@@ -5395,6 +5396,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> utilise votre caméra</translation>
 <translation id="701080569351381435">Afficher le code source</translation>
 <translation id="7014174261166285193">Échec de l'installation.</translation>
+<translation id="7014480873681694324">Retirer la surbrillance</translation>
 <translation id="7017004637493394352">Dites « Ok Google » encore une fois</translation>
 <translation id="7017219178341817193">Ajouter une nouvelle page</translation>
 <translation id="7017354871202642555">Impossible de définir le mode une fois la fenêtre créée.</translation>
@@ -5488,7 +5490,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="711840821796638741">Afficher les favoris gérés</translation>
 <translation id="711902386174337313">Consulter la liste de vos appareils sur lesquels vous êtes connectés</translation>
 <translation id="7120865473764644444">Impossible de se connecter au serveur de synchronisation. Nouvelle tentative...</translation>
-<translation id="7121362699166175603">Efface l'historique et les saisies semi-automatiques dans la barre d'adresse. D'autres formes d'historique de navigation peuvent exister sur votre compte Google à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Mode Concepteur</translation>
 <translation id="7121728544325372695">Tirets intelligents</translation>
 <translation id="7123030151043029868">Autorisés à télécharger automatiquement plusieurs fichiers</translation>
@@ -5661,7 +5662,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7334274148831027933">Activer la loupe en mode ancré</translation>
 <translation id="7335974957018254119">Utiliser le correcteur orthographique pour</translation>
 <translation id="7336799713063880535">Notificat. bloquées.</translation>
-<translation id="7337248890521463931">Afficher plus de lignes</translation>
 <translation id="7338630283264858612">Le numéro de série de l'appareil n'est pas valide.</translation>
 <translation id="7339763383339757376">PKCS #7, certificat unique</translation>
 <translation id="7339785458027436441">Vérifier l'orthographe lors de la frappe</translation>
@@ -7363,7 +7363,6 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="9209563766569767417">Vérification de la configuration du conteneur Linux en cours…</translation>
 <translation id="9209689095351280025">Les sites ne peuvent pas utiliser de témoins qui font le suivi de votre activité sur le Web</translation>
 <translation id="9211177926627870898">Mise à jour requise</translation>
-<translation id="9211490828691860325">Tous les bureaux</translation>
 <translation id="9214510034298163263">Les sites peuvent demander à modifier les fichiers et les dossiers de votre appareil (recommandé)</translation>
 <translation id="9214520840402538427">Oups… Le délai alloué à l'initialisation des attributs de temps d'installation a expiré. Veuillez communiquer avec le service d'assistance.</translation>
 <translation id="9214695392875603905">Petit gâteau</translation>

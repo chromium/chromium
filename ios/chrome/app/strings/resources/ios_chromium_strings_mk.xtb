@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">Дозволете Chromium да ги заклучи вашите картички „Инкогнито“.</translation>
 <translation id="1472013873724362412">Сметката не работи на Chromium. Контактирајте го администраторот на доменот или употребете обична сметка на Google за да се најавите.</translation>
 <translation id="1507010443238049608">Помогнете да се подобрат функциите и изведбата на Chromium</translation>
+<translation id="1531155317299575425">Прикажува prompt за најава на Chromium.</translation>
 <translation id="1617663976202781617">Податоци од синхронизацијата на Chromium</translation>
 <translation id="1736662517232558588">Податоците на Chromium се избришани</translation>
 <translation id="1838412507805038478">Chromium потврди дека <ph name="ISSUER" /> го издал сертификатот за веб-сајтов.</translation>
@@ -49,6 +50,7 @@
 <translation id="5396916991083608703">Да се постави Chromium како стандарден?</translation>
 <translation id="5521125884468363740">За да ги гледате картичките секаде каде што користите Chromium, најавете се и вклучете синхронизација</translation>
 <translation id="5573014823074921752">Совет за Chromium: за повеќе опции за картичките, допрете го и задржете го копчето „Прикажи ги картичките“ во алатникот, што се наоѓа најдолу или најгоре на екранот.</translation>
+<translation id="5651741435382092412">Најавете се на сајтов, на вашата сметка на Google и на Chromium. Синхронизацијата може да ја вклучите подоцна.</translation>
 <translation id="5700709190537129682">Chromium не може да ги провери вашите лозинки</translation>
 <translation id="5742135483959137648">Користете Chromium за отворање линкови</translation>
 <translation id="5777187867430702742">Страница на Chromium</translation>
@@ -60,6 +62,7 @@
 2. Допрете „Стандардна апликација за прелистување“
 3. Изберете Chromium.</translation>
 <translation id="6268381023930128611">Ќе се одјавите од Chromium?</translation>
+<translation id="632825460376924298">Дозволете најавување на Chromium</translation>
 <translation id="6337530241089703714">Дали сакате да ги избришете податоците од Chromium од уредов или да ги задржите?</translation>
 <translation id="6424492062988593837">Chromium е подобрен! Достапна е нова верзија.</translation>
 <translation id="6820823224820483452">Chromium не може да ги провери сите лозинки. Обидете се повторно утре.</translation>

@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">Anna Chromiumin lukita incognito-välilehtesi.</translation>
 <translation id="1472013873724362412">Tilisi ei toimi Chromiumilla. Ota yhteyttä verkkotunnuksesi järjestelmänvalvojaan tai kirjaudu sisään tavallisella Google-tilillä.</translation>
 <translation id="1507010443238049608">Auta parantamaan Chromiumin ominaisuuksia ja suorituskykyä</translation>
+<translation id="1531155317299575425">Näytä kehotteet kirjautua Chromiumiin.</translation>
 <translation id="1617663976202781617">Chromiumin synkronointidata</translation>
 <translation id="1736662517232558588">Chromium-tiedot tyhjennettiin</translation>
 <translation id="1838412507805038478">Chromium vahvisti, että <ph name="ISSUER" /> on myöntänyt tämän sivuston varmenteen.</translation>
@@ -49,6 +50,7 @@
 <translation id="5396916991083608703">Valitaanko Chromium oletukseksi?</translation>
 <translation id="5521125884468363740">Kirjaudu sisään ja laita synkronointi päälle, jotta voit nähdä Chromium-välilehtesi missä tahansa</translation>
 <translation id="5573014823074921752">Chromium-vinkki: Voit avata välilehtien lisäasetukset painamalla pitkään ylä- tai alapalkissa olevaa Näytä välilehdet ‑painiketta.</translation>
+<translation id="5651741435382092412">Kirjaudu sisään tälle sivustolle, Google-tilillesi ja Chromiumiin. Voit laittaa synkronoinnin päälle myöhemmin.</translation>
 <translation id="5700709190537129682">Chromium ei voi tarkistaa salasanojasi</translation>
 <translation id="5742135483959137648">Käytä Chromiumia linkkien avaamiseen</translation>
 <translation id="5777187867430702742">Chromium-sivu</translation>
@@ -60,6 +62,7 @@
 2. Valitse Oletusselain
 3. Valitse Chromium.</translation>
 <translation id="6268381023930128611">Kirjaudutaanko ulos?</translation>
+<translation id="632825460376924298">Salli Chromium-kirjautuminen</translation>
 <translation id="6337530241089703714">Valitse, haluatko poistaa Chromium-datasi tältä laitteelta vai säilyttää sen</translation>
 <translation id="6424492062988593837">Chromiumista tuli juuri entistä parempi! Uusi versio on saatavilla.</translation>
 <translation id="6820823224820483452">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna.</translation>

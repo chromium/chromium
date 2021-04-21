@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Indien gemerk, sal Chrome 'n kopie van jou kaart op hierdie toestel berg om vorms vinniger in te vul.</translation>
 <translation id="1110994991967754504">Kies toestemming vir <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">Ontdoen herrangskikking</translation>
+<translation id="1123753900084781868">Intydse Onderskrifte is nie nou onmiddellik beskikbaar nie</translation>
 <translation id="1125573121925420732">Waarskuwings kan algemeen wees terwyl webwerwe hul sekuriteit opdateer. Dit behoort binnekort te verbeter.</translation>
 <translation id="112840717907525620">Beleidkas OK</translation>
 <translation id="1130564665089811311">Vertaal Bladsy-knoppie; druk Enter om hierdie bladsy met Google Vertaal te vertaal</translation>
@@ -217,6 +218,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Hierdie bediener kon nie bewys dat hy <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat geld kwansuis van môre af. Dit is dalk veroorsaak deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep het.}other{Hierdie bediener kon nie bewys dat hy <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat geld kwansuis van # dae in die toekoms af. Dit is dalk veroorsaak deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep het.}}</translation>
 <translation id="1710259589646384581">Bedryfstelsel</translation>
+<translation id="1711234383449478798">Geïgnoreer omdat <ph name="POLICY_NAME" /> nie op <ph name="VALUE" /> gestel is nie.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> wil data permanent op jou plaaslike rekenaar berg</translation>
 <translation id="1713628304598226412">Laai 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -772,6 +774,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3841184659773414994">Lêerhanteerders</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3858027520442213535">Dateer datum en tyd op</translation>
+<translation id="3881478300875776315">Wys minder reëls</translation>
 <translation id="3884278016824448484">Teenstrydige toestelidentifiseerder</translation>
 <translation id="3885155851504623709">Gemeente</translation>
 <translation id="388632593194507180">Monitering is bespeur</translation>
@@ -797,6 +800,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="397105322502079400">Bereken tans …</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> is geblokkeer</translation>
 <translation id="3973357910713125165">Doen Chrome-veiligheidskontrole-knoppie; druk Enter om veiligheidskontrole in Chrome-instellings te doen</translation>
+<translation id="3986705137476756801">Skakel Intydse Onderskrifte af vir nou</translation>
 <translation id="3987405730340719549">Chrome het bepaal dat hierdie werf dalk vals of bedrieglik is.
 
     Besoek https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals as jy meen dat dit verkeerdelik gewys word.</translation>
@@ -926,6 +930,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4377125064752653719">Jy het probeer om <ph name="DOMAIN" /> te bereik, maar die sertifikaat wat die bediener voorgehou het, is deur sy uitreiker herroep. Dit beteken dat die sekuriteitseiebewyse wat die bediener uitgereik het, onder geen omstandighede vertrou mag word nie. Jy kommunikeer dalk met 'n aanvaller.</translation>
 <translation id="4378154925671717803">Foon</translation>
 <translation id="4390472908992056574">Rand</translation>
+<translation id="4406883609789734330">Intydse Onderskrifte</translation>
 <translation id="4406896451731180161">soekresultate</translation>
 <translation id="4408413947728134509">Webkoekies <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Jy het sopas jou wagwoord op 'n misleidende werf ingevoer. Chrome beveel aan dat jy gaan na <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> en ander werwe waarop jy hierdie wagwoord gebruik en dit nou verander.</translation>
@@ -991,6 +996,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Kant</translation>
+<translation id="4702656508969495934">Intydse Onderskrif sigbaar; gebruik vensterwisselaar om te fokus</translation>
 <translation id="4708268264240856090">Jou verbinding is onderbreek</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Voer tans Windows Network Diagnostics uit<ph name="END_LINK" /></translation>
@@ -1661,6 +1667,7 @@ Bykomende besonderhede:
 <translation id="733354035281974745">Toestel se plaaslike rekening is geïgnoreer</translation>
 <translation id="7333654844024768166">Jy het sopas jou wagwoord op 'n misleidende werf ingevoer. Chromium beveel aan dat jy gaan na <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> en ander werwe waarop jy hierdie wagwoord gebruik en dit nou verander.</translation>
 <translation id="7334320624316649418">Herdoen herrangskikking</translation>
+<translation id="7337248890521463931">Wys meer reëls</translation>
 <translation id="7337706099755338005">Nie op jou platform beskikbaar nie.</translation>
 <translation id="733923710415886693">Hierdie bediener se sertifikaat is nie via sertifikaatdeursigtigheid openbaar gemaak nie.</translation>
 <translation id="734600844861828519">11x15</translation>

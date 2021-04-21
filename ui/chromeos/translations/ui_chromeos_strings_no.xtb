@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">Fremdriftsbryter</translation>
 <translation id="1404323374378969387">Norsk</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
+<translation id="1433628812591023318">For å slippe filer i Parallels Desktop må du flytte filen til Windows-filene.</translation>
 <translation id="1435838927755162558">Del mappen med Parallels Desktop</translation>
 <translation id="1467432559032391204">Venstre</translation>
 <translation id="1471718551822868769">Slovakisk</translation>
@@ -611,6 +612,7 @@
 <translation id="7417453074306512035">Etiopisk tastatur</translation>
 <translation id="7417705661718309329">Google Maps</translation>
 <translation id="7460898608667578234">Ukrainsk</translation>
+<translation id="7486315294984620427">For å slippe filer i Parallels Desktop må du kopiere filen til Windows-filene.</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> ble funnet
     <ph name="LINE_BREAK1" />
     Klar for å sikkerhetskopiere til <ph name="BEGIN_LINK" />Google Disk<ph name="END_LINK" /></translation>

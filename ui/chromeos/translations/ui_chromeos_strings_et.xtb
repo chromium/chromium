@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">Otsinguliugur</translation>
 <translation id="1404323374378969387">norra</translation>
 <translation id="1430915738399379752">Printimine</translation>
+<translation id="1433628812591023318">Failide pukseerimiseks Parallels Desktopile peab fail olema teisaldatud Windowsi failide hulka.</translation>
 <translation id="1435838927755162558">Kausta jagamine üksusega Parallels Desktop</translation>
 <translation id="1467432559032391204">Vasakule</translation>
 <translation id="1471718551822868769">slovaki</translation>
@@ -611,6 +612,7 @@
 <translation id="7417453074306512035">Etioopia klaviatuur</translation>
 <translation id="7417705661718309329">Google'i kaart</translation>
 <translation id="7460898608667578234">ukraina keel</translation>
+<translation id="7486315294984620427">Failide pukseerimiseks Parallels Desktopile peab fail olema kopeeritud Windowsi failide hulka.</translation>
 <translation id="7489215562877293245">Leiti <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Drive'i<ph name="END_LINK" /> varundamiseks valmis</translation>

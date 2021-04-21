@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;टूल</translation>
 <translation id="1122242684574577509">पुष्टि नहीं हो सकी. आप जिस वाई-फ़ाई नेटवर्क (<ph name="NETWORK_ID" />) का उपयोग कर रहे हैं उसके लॉगिन पेज पर जाएं.</translation>
 <translation id="1122960773616686544">बुकमार्क का नाम</translation>
-<translation id="1123753900084781868">अभी लाइव कैप्शन की सुविधा उपलब्ध नहीं है</translation>
 <translation id="1124772482545689468">उपयोगकर्ता</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> जैसा लगता है (मूल)</translation>
 <translation id="1126809382673880764">इस मोड में आपको नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से सुरक्षा नहीं मिलती. Gmail और Search जैसी दूसरी Google की सेवाओं में, आपको अब भी सुरक्षित ब्राउज़िंग की सुरक्षा मिल सकती है.</translation>
@@ -755,6 +754,7 @@
 <translation id="1794791083288629568">इस समस्या को ठीक करने में हमारी सहायता करने के लिए फ़ीडबैक भेजें.</translation>
 <translation id="1795214765651529549">क्लासिक का उपयोग करें</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" एक्सटेंशन अपने आप अक्षम हो गया था.</translation>
+<translation id="1800973090344019061">"<ph name="APP_NAME" />" एक्सटेंशन, आपकी स्क्रीन के कॉन्टेंट शेयर करना चाहता है.</translation>
 <translation id="1802624026913571222">कवर बंद होने पर, डिवाइस को नींद मोड में ले जाएं</translation>
 <translation id="1802687198411089702">पेज काम नहीं कर रहा है. आप इंतज़ार कर सकते हैं या बाहर निकल सकते हैं.</translation>
 <translation id="1803531841600994172">वह भाषा जिसमें अनुवाद करना है</translation>
@@ -949,7 +949,6 @@
 <translation id="2010501376126504057">इसके साथ काम करने वाले डिवाइस</translation>
 <translation id="2016574333161572915">आपका Google Meet हार्डवेयर, सेट अप किए जाने के लिए तैयार है</translation>
 <translation id="2017334798163366053">'परफ़ॉर्मेंस डेटा' इकट्ठा करना बंद करें</translation>
-<translation id="2017836877785168846">इतिहास साफ़ करता है और पता बार मेंअपने-आपपूर्णता को साफ़ करता है.</translation>
 <translation id="2018352199541442911">क्षमा करें, आपका बाह्य मेमोरी डिवाइस इस समय समर्थित नहीं है.</translation>
 <translation id="2019718679933488176">ऑडियो नए टैब में &amp;खोलें</translation>
 <translation id="2020183425253392403">नेटवर्क पता सेटिंग दिखाएं</translation>
@@ -1355,6 +1354,7 @@
 <translation id="2464089476039395325">HTTP प्रॉक्‍सी</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अभी वाई-फ़ाई से कनेक्ट करें और अपडेट डाउनलोड करें. इसके अलावा, आप सीमित डेटा वाले कनेक्शन से भी डाउनलोड कर सकते हैं. इसके लिए शुल्क लिया जा सकता है.</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> नेटवर्क, बंद है</translation>
+<translation id="2467755475704469005">किसी भी डिवाइस का पता नहीं चला <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">टचपैड से स्क्रोल करने की रफ़्तार</translation>
 <translation id="2468205691404969808">आपकी पसंद याद रखने के लिए कुकी का इस्तेमाल करती है, भले ही आप उन पेजों पर नहीं जाते</translation>
 <translation id="2468402215065996499">तमागोची</translation>
@@ -2382,6 +2382,7 @@
 <translation id="3608576286259426129">उपयोगकर्ता के इमेज की झलक</translation>
 <translation id="3610369246614755442">डॉक के पंखे को मरम्मत की ज़रूरत है</translation>
 <translation id="361106536627977100">फ़्लैश डेटा</translation>
+<translation id="3611655097742243705">ज़्यादा ऐप्लिकेशन पाने के लिए, 'Play स्टोर' पर जाएं</translation>
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; के द्वारा डाउनलोड किया गया</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" /> दिखाएं</translation>
 <translation id="3613422051106148727">नए टैब में &amp;खोलें</translation>
@@ -2646,7 +2647,6 @@
 <translation id="3874164307099183178">Google Assistant चालू करें</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> के डिवाइस के लिए आस-पास शेयर करने की सेटिंग. इसके लिए <ph name="USER_EMAIL" /> खाते का इस्तेमाल किया जा रहा है.</translation>
 <translation id="3879748587602334249">डाउनलोड मैनेजर</translation>
-<translation id="3881478300875776315">कम लाइनें दिखाएं</translation>
 <translation id="3882165008614329320">कैमरा या फ़ाइल से मौजूदा वीडियो</translation>
 <translation id="3884152383786131369">कई भाषाओं में उपलब्ध वेब कॉन्टेंट, इस सूची में दी गई पहली भाषा में दिखाया जाएगा. इन प्राथमिकताओं को आपके ब्राउज़र की सेटिंग के साथ सिंक किया जाता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">अपडेट को आपका एडमिन मैनेज करता है</translation>
@@ -2717,6 +2717,7 @@
 <translation id="3943494825379372497">क्या आप ऐप्लिकेशन और पेजों को वापस लाना चाहते हैं?</translation>
 <translation id="3943582379552582368">&amp;वापस</translation>
 <translation id="3943857333388298514">चिपकाएं</translation>
+<translation id="3945513714196326460">इससे छोटा नाम डालें</translation>
 <translation id="3948116654032448504">इमेज को <ph name="SEARCH_ENGINE" /> पर खोजें</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> नीचे दिए गए फ़ोल्डर में मौजूद फ़ाइलों में बदलाव कर सकती है</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2763,7 +2764,6 @@
 <translation id="3984159763196946143">डेमो मोड शुरू नहीं किया जा सका</translation>
 <translation id="3984431586879874039">इस साइट को अपनी सुरक्षा कुंजी देखने देना चाहते हैं?</translation>
 <translation id="398477389655464998">हाइलाइट किए गए टेक्स्ट का लिंक कॉपी करें</translation>
-<translation id="3986705137476756801">अभी के लिए लाइव कैप्शन की सुविधा बंद करें</translation>
 <translation id="3987544746655539083">इस साइट को जगह की जानकारी ऐक्सेस करने से रोकना जारी रखें</translation>
 <translation id="3987938432087324095">माफ़ करें, यह समझ में नहीं आया.</translation>
 <translation id="3988996860813292272">समय क्षेत्र चुनें</translation>
@@ -3103,6 +3103,7 @@
 <translation id="4415245286584082850">कोई डिवाइस नहीं मिला. नए टैब में सहायता केंद्र लेख खोलें.</translation>
 <translation id="4415276339145661267">अपना Google खाता प्रबंधित करें</translation>
 <translation id="4415748029120993980">SECG अंडाकार वक्र secp384r1 (अर्थात NIST P-384)</translation>
+<translation id="4416450511678320850">इस कॉन्टेंट के लिए कोई भी ऐप्लिकेशन उपलब्ध नहीं है</translation>
 <translation id="4416582610654027550">एक मान्य यूआरएल टाइप करें</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> को हमेशा कुकी सेट करने की अनुमति दें</translation>
 <translation id="4421932782753506458">फ्लफ़ी</translation>
@@ -3370,7 +3371,6 @@
 <translation id="4699172675775169585">कैश इमेज और फ़ाइलें</translation>
 <translation id="4699357559218762027">(अपने-आप-लॉन्च किया गया)</translation>
 <translation id="4701025263201366865">माता-पिता साइन इन करें</translation>
-<translation id="4702656508969495934">लाइव कैप्शन दिख रहा है, इस पर फ़ोकस ले जाने के लिए, विंडो बदलने का बटन इस्तेमाल करें</translation>
 <translation id="4708794300267213770">निष्क्रिय से बाहर आने पर लॉक स्क्रीन दिखाएं</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> छोड़ें</translation>
 <translation id="4711638718396952945">सेटिंग फिर से स्थापित करें</translation>
@@ -3396,6 +3396,7 @@
 <translation id="473936925429402449">ज़्यादा कॉन्टेंट वाले <ph name="TOTAL_ELEMENTS" /> पेजों में से<ph name="CURRENT_ELEMENT" /> पेज चुना गया</translation>
 <translation id="4739639199548674512">टिकट</translation>
 <translation id="4742334355511750246">इमेज दिखाने की अनुमति नहीं है</translation>
+<translation id="4742970037960872810">हाइलाइट हटाएं</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ऐप्लिकेशन अपडेट करने का तरीका जानें<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{साइट अनम्यूट करें}one{साइटें अनम्यूट करें}other{साइटें अनम्यूट करें}}</translation>
 <translation id="4746351372139058112">मैसेज</translation>
@@ -3872,7 +3873,6 @@
 <translation id="5300287940468717207">साइट अनुमतियां रीसेट करें?</translation>
 <translation id="5300589172476337783">दिखाएं</translation>
 <translation id="5300719150368506519">आप जिन पेजों पर जाते हैं उनके यूआरएल Google को भेजें</translation>
-<translation id="5300814202279832142">विंडो को डेस्क में ले जाएं</translation>
 <translation id="5301751748813680278">अतिथि के रूप में प्रवेश कर रहा है.</translation>
 <translation id="5301954838959518834">ठीक है, समझ लिया</translation>
 <translation id="5302048478445481009">भाषा</translation>
@@ -4605,6 +4605,7 @@
 <translation id="6136114942382973861">डाउनलोड बार बंद करें</translation>
 <translation id="6136287496450963112">आपकी सुरक्षा कुंजी को पिन से सुरक्षित नहीं किया गया है. फ़िंगरप्रिंट प्रबंधित करने के लिए, पहले एक पिन बनाएं.</translation>
 <translation id="6138680304137685902">SHA-384 के साथ X9.62 ECDSA हस्ताक्षर</translation>
+<translation id="6138774640412545950">"<ph name="APP_NAME" />" एक्सटेंशन, आपकी स्क्रीन के कॉन्टेंट <ph name="TARGET_NAME" /> के साथ शेयर करना चाहता है.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, नेटवर्क नहीं है</translation>
 <translation id="6141988275892716286">डाउनलोड की पुष्टि करें</translation>
 <translation id="6143186082490678276">सहायता पाएं</translation>
@@ -5394,6 +5395,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> आपका कैमरा इस्तेमाल कर रहा है</translation>
 <translation id="701080569351381435">स्रोत देखें</translation>
 <translation id="7014174261166285193">स्थापना विफल.</translation>
+<translation id="7014480873681694324">हाइलाइट हटाएं</translation>
 <translation id="7017004637493394352">फिर से "Ok Google" बोलें</translation>
 <translation id="7017219178341817193">कोई नया पेज जोड़ें</translation>
 <translation id="7017354871202642555">विंडो के सेट होने के बाद मोड सेट नहीं कर सकता है.</translation>
@@ -5487,7 +5489,6 @@
 <translation id="711840821796638741">प्रबंधित बुकमार्क दिखाएं</translation>
 <translation id="711902386174337313">अपने प्रवेश किए गए डिवाइस की सूची ऐक्‍सेस करें</translation>
 <translation id="7120865473764644444">सिंक सर्वर से कनेक्ट नहीं किया जा सका. पुनः प्रयास किया जा रहा है...</translation>
-<translation id="7121362699166175603">पता बार मेंअपने-आपपूर्णता और इतिहास को हटाता है. आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य प्रकार के ब्राउज़िंग इतिहास हो सकतेे हैं.</translation>
 <translation id="7121438501124788993">डेवलपर मोड</translation>
 <translation id="7121728544325372695">Smart Dashes</translation>
 <translation id="7123030151043029868">एक से ज़्यादा फ़ाइलों को अपने-आप डाउनलोड करने की अनुमति नहीं है</translation>
@@ -5660,7 +5661,6 @@
 <translation id="7334274148831027933">सामग्री को बड़ा दिखाने की डॉक की गई सुविधा चालू करें</translation>
 <translation id="7335974957018254119">इसके लिए वर्तनी जांचने वाली सुविधा का इस्तेमाल करें</translation>
 <translation id="7336799713063880535">सूचनाएं ब्लॉक हैं.</translation>
-<translation id="7337248890521463931">और लाइनें दिखाएं</translation>
 <translation id="7338630283264858612">डिवाइस क्रमांक गलत है.</translation>
 <translation id="7339763383339757376">PKCS #7, एकल प्रमाणपत्र</translation>
 <translation id="7339785458027436441">लिखते समय वर्तनी की जाँच करें</translation>
@@ -7363,7 +7363,6 @@
 <translation id="9209563766569767417">Linux कंटेनर सेट अप की जांच हो रही है</translation>
 <translation id="9209689095351280025">साइटें उन कुकी का इस्तेमाल नहीं कर सकतीं जो आपको वेब पर ट्रैक करती हैं</translation>
 <translation id="9211177926627870898">अपडेट ज़रूरी है</translation>
-<translation id="9211490828691860325">सभी डेस्क</translation>
 <translation id="9214510034298163263">साइटें आपके डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति मांग सकती हैं (हम इस सेटिंग को चालू रखने का सुझाव देते हैं)</translation>
 <translation id="9214520840402538427">ओह!  इंस्टॉलेशन-समय विशेषताएं शुरू करने की समय सीमा खत्म हो गई है. कृपया अपने सहायता प्रतिनिधि से संपर्क करें.</translation>
 <translation id="9214695392875603905">कपकेक</translation>

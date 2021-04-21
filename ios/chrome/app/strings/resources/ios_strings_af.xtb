@@ -446,6 +446,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5782227691023083829">Vertaal tans …</translation>
 <translation id="5803566855766646066">Is jy seker jy wil hierdie nuwe kaart weggooi?</translation>
 <translation id="5816228676161003208">Dit laat jou vinniger soek met jou stem.</translation>
+<translation id="581659025233126501">Skakel sinkronisering aan</translation>
 <translation id="5819208479324046259">Bestuur deur <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Soekenjin</translation>
 <translation id="5854790677617711513">Ouer as 30 dae</translation>
@@ -493,6 +494,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6196207969502475924">Stemsoektog</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Maak {COUNT} oortjie toe}other{Maak {COUNT} oortjies toe}}</translation>
 <translation id="6219688215832490856">Moet nooit vertaal nie</translation>
+<translation id="6223816392543092032">Kry jou boekmerke, geskiedenis, wagwoorde en ander instellings op al jou toestelle.</translation>
 <translation id="6254066287920239840">Maak skakels in die program oop, in plaas van die blaaier.</translation>
 <translation id="6255097610484507482">Wysig kredietkaart</translation>
 <translation id="6284652193729350524">Bied aan om <ph name="LANGUAGE" /> te vertaal</translation>
@@ -525,6 +527,7 @@ Jou data is op <ph name="TIME" /> met jou sinkroniseringwagfrase geënkripteer.<
 <translation id="6445981559479772097">Boodskap is gestuur.</translation>
 <translation id="6447842834002726250">Webkoekies</translation>
 <translation id="6453018583485750254">Kontrole is nooit uitgevoer nie.</translation>
+<translation id="6459307836338400162">Raadpleeg <ph name="BEGIN_LINK" />Sinkronisering<ph name="END_LINK" /> én <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer instellings wat met privaatheid, sekuriteit en data-insameling verband hou.</translation>
 <translation id="6464071786529933911">Maak in nuwe incognito-oortjie oop</translation>
 <translation id="6464397691496239022">Werwe kan webkoekies gebruik om jou blaai-ervaring beter te maak, byvoorbeeld, om jou aangemeld te hou of om items in jou inkopiemandjie te onthou.
 
@@ -708,6 +711,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8281886186245836920">Slaan oor</translation>
 <translation id="8283172974887967105">Stel …</translation>
 <translation id="8299417921174340354">Om wagwoorde te gebruik, moet jy eers 'n wagkode op jou toestel stel.</translation>
+<translation id="83100941411593607">Aanmelding is gedeaktiveer</translation>
 <translation id="8319076807703933069">Nuwe soektog</translation>
 <translation id="8323906514956095947">Raak en hou vir meer oortjieopsies</translation>
 <translation id="8328777765163860529">Maak almal toe</translation>

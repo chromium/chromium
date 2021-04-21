@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Si se selecciona, Chrome almacenará una copia de tu tarjeta en este dispositivo para completar formularios más rápidamente.</translation>
 <translation id="1110994991967754504">Seleccionar permiso de <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Deshacer reorganización</translation>
+<translation id="1123753900084781868">La función Subtítulos instantáneos no está disponible en estos momentos</translation>
 <translation id="1125573121925420732">Es probable que se muestren advertencias mientras se actualiza la seguridad de los sitios web, pero pronto se solucionará.</translation>
 <translation id="112840717907525620">Caché de política correcta</translation>
 <translation id="1130564665089811311">Botón Traducir página, pulsa Intro para traducir esta página con el Traductor de Google</translation>
@@ -217,6 +218,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Este servidor no ha podido demostrar que es <ph name="DOMAIN" />; supuestamente, su certificado de seguridad es válido a partir de mañana. Este problema puede deberse a una configuración incorrecta o a que un atacante ha interceptado la conexión.}other{Este servidor no ha podido demostrar que es <ph name="DOMAIN" />; supuestamente, su certificado de seguridad es válido dentro de # días. Este problema puede deberse a una configuración incorrecta o a que un atacante ha interceptado la conexión.}}</translation>
 <translation id="1710259589646384581">Sistema operativo</translation>
+<translation id="1711234383449478798">Ignorada porque no se le ha asignado el valor <ph name="VALUE" /> a <ph name="POLICY_NAME" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> quiere almacenar datos de forma permanente en tu ordenador local</translation>
 <translation id="1713628304598226412">Bandeja 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -772,6 +774,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3841184659773414994">Controladores de archivos</translation>
 <translation id="385051799172605136">Volver</translation>
 <translation id="3858027520442213535">Actualizar fecha y hora</translation>
+<translation id="3881478300875776315">Mostrar menos líneas</translation>
 <translation id="3884278016824448484">Identificador de dispositivo en conflicto</translation>
 <translation id="3885155851504623709">Municipio</translation>
 <translation id="388632593194507180">Vigilancia detectada</translation>
@@ -797,6 +800,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861">La página <ph name="HOST_NAME" /> está bloqueada</translation>
 <translation id="3973357910713125165">Botón Realizar comprobación de seguridad de Chrome, pulsa Intro para hacer una comprobación de seguridad en la configuración de Chrome</translation>
+<translation id="3986705137476756801">Desactivar Subtítulos automáticos por el momento</translation>
 <translation id="3987405730340719549">Chrome ha determinado que este sitio web podría ser falso o fraudulento.
 
     Si crees que puede tratarse de un error, ve a https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -926,6 +930,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4377125064752653719">Has intentado acceder a <ph name="DOMAIN" />, pero el emisor ha revocado el certificado mostrado por el servidor, lo que significa que las credenciales de seguridad presentadas por el servidor no son de confianza. Es posible que hayas accedido a la página de un atacante.</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4406883609789734330">Subtítulos automáticos</translation>
 <translation id="4406896451731180161">resultados de la búsqueda</translation>
 <translation id="4408413947728134509">Cookies: <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Acabas de introducir tu contraseña en un sitio web engañoso. Chrome te recomienda que accedas a <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> y otros sitios en los que uses esta contraseña y que la cambies ahora.</translation>
@@ -991,6 +996,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4691835149146451662">Architecture-A (sobre)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Cara</translation>
+<translation id="4702656508969495934">Subtítulos automáticos visibles; utiliza el botón de cambio de ventana para enfocarlos</translation>
 <translation id="4708268264240856090">Se ha interrumpido la conexión</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Ejecutar Diagnósticos de red de Windows<ph name="END_LINK" /></translation>
@@ -1661,6 +1667,7 @@ Más información:
 <translation id="733354035281974745">Anulación de la cuenta local del dispositivo</translation>
 <translation id="7333654844024768166">Acabas de introducir tu contraseña en un sitio web engañoso. Chromium te recomienda que accedas a <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> y otros sitios en los que uses esta contraseña y que la cambies ahora.</translation>
 <translation id="7334320624316649418">&amp;Rehacer reorganización</translation>
+<translation id="7337248890521463931">Mostrar más líneas</translation>
 <translation id="7337706099755338005">No está disponible en esta plataforma.</translation>
 <translation id="733923710415886693">El certificado del servidor no se ha revelado a través de la Transparencia en los Certificados.</translation>
 <translation id="734600844861828519">11x15</translation>

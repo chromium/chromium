@@ -180,7 +180,6 @@ Appuyez sur n'importe quel mot pour lancer une recherche. Pour affiner la recher
 <translation id="2169830938017475061">Maintenant</translation>
 <translation id="2172688499998841696">Les descriptions d'images sont désactivées</translation>
 <translation id="2175927920773552910">Code QR</translation>
-<translation id="2181298861158186289">Masquer le contenu du Presse-papiers</translation>
 <translation id="218608176142494674">Partage</translation>
 <translation id="2195339740518523951">Renforcer la sécurité de Chrome</translation>
 <translation id="2200113223741723867">Gérer le partage des données d'utilisation</translation>
@@ -841,7 +840,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6539092367496845964">Un problème est survenu. Réessayez plus tard.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Vérification effectuée il y a 1 heure}one{Vérification effectuée il y a # heure}other{Vérification effectuée il y a # heures}}</translation>
 <translation id="6545017243486555795">Supprimer toutes les données</translation>
-<translation id="6549142516027084053">Afficher le contenu du Presse-papiers</translation>
 <translation id="6560414384669816528">Rechercher avec Sogou</translation>
 <translation id="656065428026159829">Voir plus</translation>
 <translation id="6565959834589222080">Le réseau Wi-Fi est utilisé s'il est disponible</translation>
@@ -935,7 +933,6 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7187993566681480880">Ce mode vous protège dans Chrome et peut servir à renforcer votre sécurité dans d'autres applications Google lorsque vous êtes connecté.</translation>
 <translation id="718926126787620637">Liste des dossiers de favoris ouverte à hauteur maximale</translation>
-<translation id="7189372733857464326">En attente de la fin de la mise à jour des services Google Play</translation>
 <translation id="7191430249889272776">L'onglet a été ouvert en arrière-plan.</translation>
 <translation id="7233236755231902816">Pour afficher le Web dans votre langue, téléchargez la dernière version de Chrome</translation>
 <translation id="7248069434667874558">Assurez-vous que la synchronisation est activée sur votre <ph name="TARGET_DEVICE_NAME" /> dans Chrome</translation>

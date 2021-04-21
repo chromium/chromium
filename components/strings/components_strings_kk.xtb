@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Құсбелгі қойылса, Chrome нысанды жылдамырақ толтыру үшін картаңыздың көшірмесін осы құрылғыда сақтайды.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> үшін рұқсатты таңдаңыз</translation>
 <translation id="1113869188872983271">&amp;Қайта ретке келтіру әрекетін болдырмау</translation>
+<translation id="1123753900084781868">Live Caption қазір қолжетімді емес.</translation>
 <translation id="1125573121925420732">Веб-сайттар қауіпсіздік шарттарын өзгертіп жатқанда, ескертулер жиі шығуы мүмкін. Бұл көпке созылмайды.</translation>
 <translation id="112840717907525620">Саясат кэші жарамды</translation>
 <translation id="1130564665089811311">"Бетті аудару" түймесі. Осы бетті Google Translate арқылы аудару үшін Enter пернесін басыңыз.</translation>
@@ -771,6 +772,7 @@
 <translation id="3841184659773414994">Файл өңдегіштер</translation>
 <translation id="385051799172605136">Артқа</translation>
 <translation id="3858027520442213535">Күні мен уақытын жаңарту</translation>
+<translation id="3881478300875776315">Жолдарды азырақ көрсету</translation>
 <translation id="3884278016824448484">Мұндай құрылғы идентификаторы бұрыннан бар</translation>
 <translation id="3885155851504623709">Округ</translation>
 <translation id="388632593194507180">Бақыланып жатқаны анықталды</translation>
@@ -796,6 +798,7 @@
 <translation id="397105322502079400">Есептелуде…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> бөгелген</translation>
 <translation id="3973357910713125165">Chrome қауіпсіздік шарасы түймесін басыңыз. Chrome параметрлерінен қауіпсіздік шарасын іске қосу үшін Enter пернесін басыңыз.</translation>
+<translation id="3986705137476756801">Live Caption функциясын қазір өшіру</translation>
 <translation id="3987405730340719549">Chrome бұл сайттың жалған немесе алаяқтық болуы мүмкін екенін анықтады.
 
     Бұл хабар қателікпен көрсетілді деп ойласаңыз, мына бетке өтіңіз: https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -925,6 +928,7 @@
 <translation id="4377125064752653719"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер ұсынған сертификатты оны шығарған орган қайтарып алды. Бұл сервер ұсынған қауіпсіздік деректеріне сенуге болмайтынын білдіреді. Қаскүнеммен байланысып жатқан болуыңыз мүмкін.</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4390472908992056574">Жиек</translation>
+<translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406896451731180161">іздеу нәтижелері</translation>
 <translation id="4408413947728134509">Cookie файлдары: <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chrome осы құпия сөз енгізілген <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> және тағы басқа сайттарға кіріп, оны дереу өзгертуге кеңес береді.</translation>
@@ -990,6 +994,7 @@
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Бүйірлік</translation>
+<translation id="4702656508969495934">Live Caption көрінеді, ерекшелеу үшін терезе ауыстырғышты пайдаланыңыз.</translation>
 <translation id="4708268264240856090">Байланыс үзілді</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows Network Diagnostics құралын қосу<ph name="END_LINK" /></translation>
@@ -1660,6 +1665,7 @@
 <translation id="733354035281974745">Құрылғының жергілікті есептік жазбасын қайта анықтау</translation>
 <translation id="7333654844024768166">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chromium осы құпия сөз енгізілген <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> және басқа сайттарға кіріп, оны дереу өзгертуге кеңес береді.</translation>
 <translation id="7334320624316649418">&amp;Қайта ретке келтіруді қайталау</translation>
+<translation id="7337248890521463931">Жолдарды көбірек көрсету</translation>
 <translation id="7337706099755338005">Сіздің платформаңызда қолжетімді емес.</translation>
 <translation id="733923710415886693">Сервер сертификаты Сертификат айқындығы саясатымен ашылмады.</translation>
 <translation id="734600844861828519">11x15</translation>

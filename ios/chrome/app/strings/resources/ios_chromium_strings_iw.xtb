@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">‏הכרטיסיות במצב אנונימי יינעלו באמצעות Chromium.</translation>
 <translation id="1472013873724362412">‏החשבון שלך לא פועל ב-Chromium. יש לפנות אל מנהל הדומיין או להשתמש בחשבון Google רגיל כדי להיכנס לחשבון.</translation>
 <translation id="1507010443238049608">‏עזרה בשיפור התכונות והביצועים של Chromium</translation>
+<translation id="1531155317299575425">‏יוצגו הודעות לצורך כניסה אל Chromium.</translation>
 <translation id="1617663976202781617">‏נתונים מסנכרון Chromium</translation>
 <translation id="1736662517232558588">‏נתוני Chromium נמחקו</translation>
 <translation id="1838412507805038478">‏Chromium אימת ש-<ph name="ISSUER" /> הנפיק את האישור של האתר הזה.</translation>
@@ -49,6 +50,7 @@
 <translation id="5396916991083608703">‏להגדיר את Chromium כדפדפן ברירת המחדל?</translation>
 <translation id="5521125884468363740">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chromium יש להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="5573014823074921752">‏טיפ למשתמשי Chromium: כדי לקבל אפשרויות נוספות של כרטיסיות, יש ללחוץ לחיצה ארוכה על הלחצן 'הצגת כרטיסיות' בסרגל הכלים, שנמצא בחלק התחתון או העליון של המסך.</translation>
+<translation id="5651741435382092412">‏יש להיכנס לאתר זה, לחשבון Google ול-Chromium. אפשר להפעיל את הסנכרון מאוחר יותר.</translation>
 <translation id="5700709190537129682">‏Chromium לא יכול לבדוק את הסיסמאות שלך</translation>
 <translation id="5742135483959137648">‏שימוש ב-Chromium לפתיחת קישורים</translation>
 <translation id="5777187867430702742">‏דף Chromium</translation>
@@ -60,6 +62,7 @@
 2. מקישים על אפליקציית הדפדפן שמוגדרת כברירת מחדל
 3. בוחרים את Chromium.</translation>
 <translation id="6268381023930128611">‏האם לצאת מ-Chromium?</translation>
+<translation id="632825460376924298">‏התרת כניסה אל Chromium</translation>
 <translation id="6337530241089703714">‏האם למחוק את נתוני Chromium ממכשיר זה או לשמור אותם?</translation>
 <translation id="6424492062988593837">‏‫Chromium ממשיך להשתפר! קיימת גרסה חדשה.</translation>
 <translation id="6820823224820483452">‏Chromium לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר.</translation>

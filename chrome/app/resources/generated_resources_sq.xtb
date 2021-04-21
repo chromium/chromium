@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;Veglat</translation>
 <translation id="1122242684574577509">Vërtetimi dështoi. Kliko për të vizituar faqen e identifikimit për rrjetin Wi-Fi që po përdor (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">Emri i faqeshënuesit</translation>
-<translation id="1123753900084781868">"Titrat në çast" nuk ofrohen për momentin</translation>
 <translation id="1124772482545689468">Përdoruesi</translation>
 <translation id="1125550662859510761">Duket si <ph name="WIDTH" /> x <ph name="HEIGHT" /> (origjinale)</translation>
 <translation id="1126809382673880764">Nuk të mbron kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Do të vazhdosh të marrësh mbrojtje për "Shfletimin e sigurt", aty ku ofrohet, në shërbimet e tjera të Google, si Gmail dhe "Kërko".</translation>
@@ -945,7 +944,6 @@
 <translation id="2010501376126504057">Pajisjet e pajtueshme</translation>
 <translation id="2016574333161572915">Hardueri i Google Meet është gati për t'u konfiguruar</translation>
 <translation id="2017334798163366053">Çaktivizo mbledhjen e të dhënave të aktivitetit</translation>
-<translation id="2017836877785168846">Pastron historikun dhe plotësimet automatike në shiritin e adresës.</translation>
 <translation id="2018352199541442911">Na vjen keq, por hapësira e jashtme ruajtëse në pajisjen tënde nuk mbështetet në këtë moment.</translation>
 <translation id="2019718679933488176">&amp;Hape audion në një skedë të re</translation>
 <translation id="2020183425253392403">Shfaq cilësimet e adresës së rrjetit</translation>
@@ -2642,7 +2640,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3874164307099183178">Aktivizo "Asistentin e Google"</translation>
 <translation id="3877075909000773256">Cilësimet e "Ndarjes në afërsi" për pajisjen e <ph name="USER_NAME" />, e cila ndan nën llogarinë <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Menaxheri i shkarkimeve</translation>
-<translation id="3881478300875776315">Shfaq më pak rreshta</translation>
 <translation id="3882165008614329320">Video ekzistuese nga kamera ose skedari</translation>
 <translation id="3884152383786131369">Përmbajtja e uebit që ofrohet në shumë gjuhë do të përdorë gjuhën e parë të mbështetur nga kjo listë. Këto preferenca sinkronizohen me cilësimet e shfletuesit tënd. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Përditësimet menaxhohen nga administratori yt</translation>
@@ -2760,7 +2757,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3984159763196946143">Nuk mund të hapej modaliteti i demonstrimit</translation>
 <translation id="3984431586879874039">Dëshiron që ky sajt të shikojë çelësin tënd të sigurisë?</translation>
 <translation id="398477389655464998">Kopjo lidhjen për te teksti i theksuar</translation>
-<translation id="3986705137476756801">Çaktivizo "Titrat në çast" për momentin</translation>
 <translation id="3987544746655539083">Vazhdo ta bllokosh këtë sajt që të mos ketë qasje në vendndodhjen tënde</translation>
 <translation id="3987938432087324095">Më vjen keq, nuk e kuptova këtë.</translation>
 <translation id="3988996860813292272">Zgjidh zonën orare</translation>
@@ -3367,7 +3363,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4699172675775169585">Imazhet dhe skedarët në memorien specifike</translation>
 <translation id="4699357559218762027">(nisur automatikisht)</translation>
 <translation id="4701025263201366865">Identifikimi i prindit</translation>
-<translation id="4702656508969495934">"Titrat në çast" janë të dukshëm. Përdor shkëmbyesin e dritareve për t'i fokusuar</translation>
 <translation id="4708794300267213770">Shfaq ekranin e kyçjes kur zgjohet nga gjumi</translation>
 <translation id="4708849949179781599">Dil nga <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restauro cilësimet</translation>
@@ -3869,7 +3864,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5300287940468717207">Të rivendosen autorizimet e sajtit?</translation>
 <translation id="5300589172476337783">Shfaq</translation>
 <translation id="5300719150368506519">Dërgo te Google URL-të e faqeve që ti viziton</translation>
-<translation id="5300814202279832142">Zhvendose dritaren te tavolina e punës</translation>
 <translation id="5301751748813680278">Po hyn si vizitor.</translation>
 <translation id="5301954838959518834">Në rregull, kuptova.</translation>
 <translation id="5302048478445481009">Gjuha</translation>
@@ -5484,7 +5478,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="711840821796638741">Shfaq faqeshënuesit e menaxhuar</translation>
 <translation id="711902386174337313">Lexo listën e pajisjeve ku je identifikuar</translation>
 <translation id="7120865473764644444">Nuk mund të lidhej me serverin e sinkronizimit.</translation>
-<translation id="7121362699166175603">Pastron historikun dhe plotësimet automatike në shiritin e adresës. Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Modaliteti i zhvilluesit</translation>
 <translation id="7121728544325372695">Vizat inteligjente</translation>
 <translation id="7123030151043029868">Lejohen të shkarkojnë automatikisht shumë skedarë</translation>
@@ -5657,7 +5650,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7334274148831027933">Aktivizo zmadhuesin e stacionuar</translation>
 <translation id="7335974957018254119">Përdor kontrollin drejtshkrimor për</translation>
 <translation id="7336799713063880535">Njoftimet u bllokuan.</translation>
-<translation id="7337248890521463931">Shfaq më shumë radhë</translation>
 <translation id="7338630283264858612">Numri i serisë së pajisjes është i pavlefshëm.</translation>
 <translation id="7339763383339757376">PKCS #7, një certifikatë</translation>
 <translation id="7339785458027436441">Kontrollo drejtshkrimin gjatë shkrimit</translation>
@@ -7358,7 +7350,6 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="9209563766569767417">Po kontrollon konfigurimin e kontejnerit të Linux</translation>
 <translation id="9209689095351280025">Sajtet nuk mund të përdorin kuki që të monitorojnë nëpër ueb</translation>
 <translation id="9211177926627870898">Kërkohet përditësimi</translation>
-<translation id="9211490828691860325">Të gjitha tavolinat e punës</translation>
 <translation id="9214510034298163263">Sajtet mund të kërkojnë të modifikojnë skedarët ose dosjet në pajisjen tënde (rekomandohet)</translation>
 <translation id="9214520840402538427">Mos! Nisjes së atributeve të kohës së instalimit i ka përfunduar afati. Kontakto me përfaqësuesin e mbështetjes.</translation>
 <translation id="9214695392875603905">Kek në kupë</translation>

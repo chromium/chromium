@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Se consenti a Chrome di conoscere la tua posizione, Chrome la invia ai siti autorizzati. I siti possono chiederti la posizione in presenza di informazioni locali da mostrarti, ad esempio notizie o negozi nelle vicinanze.</translation>
 <translation id="6036420186814142909">Google Chrome offre funzioni che ti consentono di gestire i tuoi dati Internet e la velocità di caricamento delle pagine web.
 <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Consenti l'accesso a Chrome</translation>
 <translation id="6181930887571472871">Passa a Chrome</translation>
 <translation id="6238746320622508509">Consenti a Chrome di bloccare le schede di navigazione in incognito.</translation>
 <translation id="6573431926118603307">Le schede aperte in Chrome sugli altri dispositivi verranno visualizzate qui.</translation>
@@ -96,5 +97,6 @@
   3. Seleziona Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Resta al sicuro con Google Chrome</translation>
+<translation id="8772179140489533211">Vengono mostrate richieste di accesso a Chrome.</translation>
 <translation id="9112744793181547300">Impostare Chrome come browser predefinito?</translation>
 </translationbundle>

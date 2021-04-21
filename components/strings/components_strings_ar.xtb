@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">‏إذا تم وضع علامة على هذا الخيار، سيخزّن Chrome نسخة من هذه البطاقة على هذا الجهاز لتعبئة النماذج بشكل أسرع.</translation>
 <translation id="1110994991967754504">اختيار إذن لـ <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">تراجع عن إعادة الت&amp;رتيب</translation>
+<translation id="1123753900084781868">لا تتوفّر ميزة "النسخ النصي التلقائي" في الوقت الحالي.</translation>
 <translation id="1125573121925420732">قد يكثر ظهور التحذيرات أثناء إجراء المواقع الإلكترونية لتحديثات الأمان، لكنّ هذه المسألة ستتحسَّن قريبًا.</translation>
 <translation id="112840717907525620">ذاكرة التخزين المؤقت للسياسة بحالة جيدة</translation>
 <translation id="1130564665089811311">‏زر "ترجمة الصفحة"، اضغط على مفتاح Enter لترجمة هذه الصفحة باستخدام "ترجمة Google".</translation>
@@ -772,6 +773,7 @@
 <translation id="3841184659773414994">معالِجات الملفات</translation>
 <translation id="385051799172605136">رجوع</translation>
 <translation id="3858027520442213535">تحديث التاريخ والوقت</translation>
+<translation id="3881478300875776315">عرض أسطر أقل</translation>
 <translation id="3884278016824448484">معرف جهاز متضارب</translation>
 <translation id="3885155851504623709">الأبرشية</translation>
 <translation id="388632593194507180">تم رصد المراقبة</translation>
@@ -797,6 +799,7 @@
 <translation id="397105322502079400">جارٍ الحساب...</translation>
 <translation id="3973234410852337861">تم حظر <ph name="HOST_NAME" /></translation>
 <translation id="3973357910713125165">‏زر تشغيل ميزة "تأكيد السلامة" في Chrome، اضغط على مفتاح Enter لتشغيل هذه الميزة في إعدادات Chrome.</translation>
+<translation id="3986705137476756801">إيقاف ميزة "النسخ النصي التلقائي" مؤقتًا</translation>
 <translation id="3987405730340719549">‏تبيّن لمتصفح Chrome أن هذا الموقع الإلكتروني قد يكون مزيفًا أو احتياليًا.
 
     إذا كنت تعتقد أنّه تم عرض هذه الرسالة عن طريق الخطأ، يُرجى الانتقال إلى https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -926,6 +929,7 @@
 <translation id="4377125064752653719">لقد حاولت الوصول إلى <ph name="DOMAIN" />، ولكن جهة إصدار الشهادة التي قدمها الخادم قد أبطلت الشهادة. وهذا يعني أن بيانات اعتماد الأمان التي قدمها الخادم يجب عدم الوثوق بها مطلقًا. فقد تكون على اتصال بأحد المهاجمين.</translation>
 <translation id="4378154925671717803">هاتف</translation>
 <translation id="4390472908992056574">حافّة</translation>
+<translation id="4406883609789734330">النسخ النصي التلقائي</translation>
 <translation id="4406896451731180161">نتائج البحث</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> من ملفات تعريف الارتباط</translation>
 <translation id="4414290883293381923">‏لقد أدخلت للتو كلمة المرور في موقع إلكتروني مريب. وبالتالي، ينصح Chrome بالانتقال إلى <ph name="WEBSITE_1" /> و<ph name="WEBSITE_2" /> و<ph name="WEBSITE_3" /> ومواقع إلكترونية أخرى تستخدم فيها كلمة المرور هذه، وتغيير كلمة المرور الآن.</translation>
@@ -991,6 +995,7 @@
 <translation id="4691835149146451662">‏Architecture-A (مغلف)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" />‏ <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">الجانب</translation>
+<translation id="4702656508969495934">ميزة "النسخ النصي التلقائي" مرئية، يُرجى استخدام مبدِّل النوافذ للتركيز.</translation>
 <translation id="4708268264240856090">تم قطع اتصالك</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131">‏<ph name="BEGIN_LINK" />تشغيل بيانات تشخيص شبكة Windows<ph name="END_LINK" /></translation>
@@ -1422,7 +1427,7 @@
 <translation id="6328639280570009161">تجربة إيقاف التنبؤ بإجراءات الشبكة</translation>
 <translation id="6328784461820205019">‏"لا يتمتَّع اتصالك بالخصوصية" أو "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" أو "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" أو "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" أو "خطأ في شهادة طبقة المقابس الآمنة (SSL)"</translation>
 <translation id="6328786501058569169">هذا الموقع مخادع</translation>
-<translation id="6337133576188860026">سيتم توفير أقل من <ph name="SIZE" />. وقد يتم تحميل بعض المواقع الإلكترونية بشكل أبطأ عند زيارتها في المرة القادمة.</translation>
+<translation id="6337133576188860026">إخلاء أقل من <ph name="SIZE" />. وقد يتم تحميل بعض المواقع الإلكترونية بشكل أبطأ عند زيارتها في المرة القادمة.</translation>
 <translation id="6337534724793800597">تصفية السياسات بحسب الاسم</translation>
 <translation id="6349101878882523185">تثبيت <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ما من كلمات مرور}=1{كلمة مرور واحدة (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}=2{كلمتا مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}few{# كلمات مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}many{# كلمة مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}other{# كلمة مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}}</translation>
@@ -1661,6 +1666,7 @@
 <translation id="733354035281974745">إلغاء حساب الجهاز المحلي</translation>
 <translation id="7333654844024768166">‏لقد أدخلت للتو كلمة المرور في موقع إلكتروني مريب. وبالتالي، ينصح Chromium بالانتقال إلى <ph name="WEBSITE_1" /> و<ph name="WEBSITE_2" /> و<ph name="WEBSITE_3" /> ومواقع إلكترونية أخرى تستخدم فيها كلمة المرور هذه، وتغيير كلمة المرور الآن.</translation>
 <translation id="7334320624316649418">إعادة إ&amp;جراء الترتيب</translation>
+<translation id="7337248890521463931">عرض المزيد من الأسطر</translation>
 <translation id="7337706099755338005">غير متاحة على نظامك الأساسي.</translation>
 <translation id="733923710415886693">لم يتم الكشف عن شهادة الخادم عن طريق شهادة الشفافية.</translation>
 <translation id="734600844861828519">11x15</translation>

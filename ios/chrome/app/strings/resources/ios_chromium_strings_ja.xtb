@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">Chromium でシークレット タブをロックできるようにします。</translation>
 <translation id="1472013873724362412">このアカウントは Chromium では使用できません。ドメイン管理者に問い合わせるか、通常の Google アカウントでログインしてください。</translation>
 <translation id="1507010443238049608">Chromium の機能と動作の改善に協力する</translation>
+<translation id="1531155317299575425">Chromium へのログインを促すメッセージが表示されます。</translation>
 <translation id="1617663976202781617">Chromium 同期のデータ</translation>
 <translation id="1736662517232558588">Chromium データを削除しました</translation>
 <translation id="1838412507805038478">このウェブサイトの証明書が <ph name="ISSUER" /> 発行のものであることが Chromium で確認されました。</translation>
@@ -49,6 +50,7 @@
 <translation id="5396916991083608703">Chromium を既定に設定しますか？</translation>
 <translation id="5521125884468363740">どのデバイスからでも Chromium で自分のタブにアクセスするには、ログインして同期をオンにしてください</translation>
 <translation id="5573014823074921752">Chromium の使い方のヒント: タブのオプションをさらに表示するには、画面の下部または上部のツールバーにある [タブを表示] を長押しします。</translation>
+<translation id="5651741435382092412">このサイト、Google アカウント、Chromium にログインします。同期を後でオンにすることもできます。</translation>
 <translation id="5700709190537129682">Chromium でパスワードを確認できません</translation>
 <translation id="5742135483959137648">Chromium でリンクを開く</translation>
 <translation id="5777187867430702742">Chromium ページ</translation>
@@ -60,6 +62,7 @@
 2. [デフォルトのブラウザアプリ] をタップします。
 3. Chromium を選択します。</translation>
 <translation id="6268381023930128611">Chromium からログアウトしますか？</translation>
+<translation id="632825460376924298">Chromium へのログインを許可する</translation>
 <translation id="6337530241089703714">このデバイスから Chromium データを削除するかどうかを選択してください</translation>
 <translation id="6424492062988593837">Chromium のアップデートが見つかりました。新しいバージョンが利用可能です。</translation>
 <translation id="6820823224820483452">Chromium ですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>

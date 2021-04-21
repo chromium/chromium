@@ -446,6 +446,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5782227691023083829">Prevođenje je u toku...</translation>
 <translation id="5803566855766646066">Želite li stvarno da odbacite ovu novu karticu?</translation>
 <translation id="5816228676161003208">Ovo vam omogućava da brže pretražujte pomoću glasa.</translation>
+<translation id="581659025233126501">Uključi sinhronizaciju</translation>
 <translation id="5819208479324046259">Ovim upravlja <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Pretraživač</translation>
 <translation id="5854790677617711513">Starije od 30 dana</translation>
@@ -493,6 +494,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6196207969502475924">Glasovna pretraga</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zatvori {COUNT} karticu}one{Zatvori {COUNT} karticu}few{Zatvori {COUNT} kartice}other{Zatvori {COUNT} kartica}}</translation>
 <translation id="6219688215832490856">Nikad ne prevodi</translation>
+<translation id="6223816392543092032">Imaćete obeleživače, istoriju, lozinke i druga podešavanja na svim uređajima.</translation>
 <translation id="6254066287920239840">Otvarajte liknove u aplikaciji umesto u pregledaču.</translation>
 <translation id="6255097610484507482">Izmena kreditne kartice</translation>
 <translation id="6284652193729350524">Ponudi prevod za <ph name="LANGUAGE" /></translation>
@@ -525,6 +527,7 @@ Podaci su šifrovani pomoću pristupne fraze za sinhronizaciju <ph name="TIME" 
 <translation id="6445981559479772097">Poruka je poslata.</translation>
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6453018583485750254">Provera nikada nije rađena.</translation>
+<translation id="6459307836338400162">Više podešavanja u vezi sa privatnošću, bezbednošću i prikupljanjem podataka potražite u odeljcima <ph name="BEGIN_LINK" />Sinhronizacija<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />Google usluge<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Otvori na novoj kartici bez arhiviranja</translation>
 <translation id="6464397691496239022">Sajtovi mogu da koriste kolačiće za poboljšanje doživljaja pregledanja, na primer, da biste ostali prijavljeni ili da bi stavke u vašoj korpi za kupovinu ostale sačuvane.
 
@@ -708,6 +711,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8283172974887967105">Podesi…</translation>
 <translation id="8299417921174340354">Da biste koristili lozinke, prvo morate da podesite šifru na uređaju.</translation>
+<translation id="83100941411593607">Prijavljivanje je onemogućeno</translation>
 <translation id="8319076807703933069">Nova pretraga</translation>
 <translation id="8323906514956095947">Dodirnite i zadržite ako želite više opcija za kartice</translation>
 <translation id="8328777765163860529">Zatvori sve</translation>

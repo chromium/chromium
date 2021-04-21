@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Dacă este bifată opțiunea, Chrome va stoca o copie a cardului pe dispozitiv pentru a completa formularul mai rapid.</translation>
 <translation id="1110994991967754504">Selectează permisiunea pentru <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Anulați reordonarea</translation>
+<translation id="1123753900084781868">Funcția Subtitrări live nu este disponibilă în acest moment</translation>
 <translation id="1125573121925420732">Este posibil să apară frecvent avertismente pe durata actualizării setărilor de securitate ale site-urilor. Acest aspect va fi îmbunătățit în curând.</translation>
 <translation id="112840717907525620">Memoria cache pentru politică este OK</translation>
 <translation id="1130564665089811311">Butonul Tradu pagina, apasă pe Enter pentru a traduce această pagină cu Google Traducere</translation>
@@ -217,6 +218,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Acest server nu a putut dovedi că este <ph name="DOMAIN" />. Data de emitere a certificatului său de securitate este mâine. Cauza poate fi o eroare de configurare sau interceptarea conexiunii de către un atacator.}few{Acest server nu a putut dovedi că este <ph name="DOMAIN" />. Data de emitere a certificatului său de securitate este în viitor, peste # zile. Cauza poate fi o eroare de configurare sau interceptarea conexiunii de către un atacator.}other{Acest server nu a putut dovedi că este <ph name="DOMAIN" />. Data de emitere a certificatului său de securitate este în viitor, peste # de zile. Cauza poate fi o eroare de configurare sau interceptarea conexiunii de către un atacator.}}</translation>
 <translation id="1710259589646384581">Sistem de operare</translation>
+<translation id="1711234383449478798">Ignorată deoarece politica <ph name="POLICY_NAME" /> nu este setată la <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> dorește să stocheze permanent date pe computer</translation>
 <translation id="1713628304598226412">Tava 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -770,6 +772,7 @@
 <translation id="3841184659773414994">Handlere pentru fișiere</translation>
 <translation id="385051799172605136">Înapoi</translation>
 <translation id="3858027520442213535">Actualizează data și ora</translation>
+<translation id="3881478300875776315">Afișează mai puține rânduri</translation>
 <translation id="3884278016824448484">Identificator de gadget în conflict</translation>
 <translation id="3885155851504623709">Parohie</translation>
 <translation id="388632593194507180">S-a detectat monitorizarea</translation>
@@ -795,6 +798,7 @@
 <translation id="397105322502079400">Se calculează...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> este blocat</translation>
 <translation id="3973357910713125165">Butonul Rulează verificarea de siguranță pentru Chrome, apasă pe Enter pentru a rula verificarea de siguranță în setările Chrome</translation>
+<translation id="3986705137476756801">Dezactivează Subtitrările live pentru moment</translation>
 <translation id="3987405730340719549">Chrome a identificat acest site ca fiind potențial fals sau fraudulos.
 
     În cazul în care consideri că este o greșeală, accesează https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -924,6 +928,7 @@
 <translation id="4377125064752653719">Ați încercat să accesați <ph name="DOMAIN" />, dar certificatul furnizat de server a fost revocat de emitentul său. Aceasta înseamnă că acreditările de securitate furnizate de server nu sunt deloc de încredere. Este posibil să comunicați cu un atacator.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4390472908992056574">Bordură</translation>
+<translation id="4406883609789734330">Subtitrări live</translation>
 <translation id="4406896451731180161">rezultate ale căutării</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> cookie-uri</translation>
 <translation id="4414290883293381923">Ai introdus parola pe un site înșelător. Chrome recomandă să accesezi <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> și alte site-uri pe care folosești această parolă și să o schimbi acum.</translation>
@@ -989,6 +994,7 @@
 <translation id="4691835149146451662">Architecture-A (Plic)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lateral</translation>
+<translation id="4702656508969495934">Subtitrări live vizibile, folosește comutatorul de ferestre pentru a focaliza</translation>
 <translation id="4708268264240856090">Conexiunea a fost întreruptă</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />să rulezi Diagnostice rețea Windows<ph name="END_LINK" />;</translation>
@@ -1659,6 +1665,7 @@ Detalii suplimentare:
 <translation id="733354035281974745">Modificarea contului local al dispozitivului</translation>
 <translation id="7333654844024768166">Ai introdus parola pe un site înșelător. Chromium recomandă să accesezi <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> și alte site-uri pe care folosești această parolă și să o schimbi acum.</translation>
 <translation id="7334320624316649418">&amp;Repetați reordonarea</translation>
+<translation id="7337248890521463931">Afișează mai multe rânduri</translation>
 <translation id="7337706099755338005">Nu este disponibil pe platforma ta.</translation>
 <translation id="733923710415886693">Certificatul serverului nu a fost dezvăluit folosind Transparența certificatului.</translation>
 <translation id="734600844861828519">11x15</translation>

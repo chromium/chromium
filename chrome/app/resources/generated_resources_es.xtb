@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;Herramientas</translation>
 <translation id="1122242684574577509">Error de autenticación. Haz clic para acceder a la página de inicio de sesión de la red Wi-Fi que estés utilizando (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">Nombre de marcador</translation>
-<translation id="1123753900084781868">La función Subtítulos instantáneos no está disponible en estos momentos</translation>
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1125550662859510761">Resolución de <ph name="WIDTH" />x<ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1126809382673880764">No te protege frente a descargas, extensiones ni sitios web peligrosos. Seguirás disfrutando de protección con la función Navegación segura, si está disponible, en otros servicios de Google, como Gmail y la Búsqueda.</translation>
@@ -754,6 +753,7 @@
 <translation id="1794791083288629568">Envíanos un comentario para ayudarnos a solucionar el problema.</translation>
 <translation id="1795214765651529549">Utilizar tema clásico</translation>
 <translation id="1799071797295057738">La extensión <ph name="EXTENSION_NAME" /> se ha inhabilitado automáticamente.</translation>
+<translation id="1800973090344019061">La extensión "<ph name="APP_NAME" />" quiere compartir el contenido de tu pantalla.</translation>
 <translation id="1802624026913571222">Suspender cuando se cierre la tapa</translation>
 <translation id="1802687198411089702">La página no responde. Puedes esperar a que lo haga o cerrarla.</translation>
 <translation id="1803531841600994172">Idioma al que quieres traducir</translation>
@@ -948,7 +948,6 @@
 <translation id="2010501376126504057">Dispositivos compatibles</translation>
 <translation id="2016574333161572915">Ya puedes configurar tu hardware de Google Meet</translation>
 <translation id="2017334798163366053">Inhabilitar recolección de datos de rendimiento</translation>
-<translation id="2017836877785168846">Borra el historial y los autocompletados de la barra de direcciones.</translation>
 <translation id="2018352199541442911">Tu dispositivo de almacenamiento externo no se admite en este momento.</translation>
 <translation id="2019718679933488176">&amp;Abrir audio en una pestaña nueva</translation>
 <translation id="2020183425253392403">Mostrar ajustes de dirección de red</translation>
@@ -1354,6 +1353,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2464089476039395325">Proxy HTTP</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" /> necesita que te conectes a una red Wi‑Fi para descargar una actualización. También puedes descargarla con una conexión de uso medido (es posible que se apliquen cargos).</translation>
 <translation id="2467267713099745100">Red <ph name="NETWORK_TYPE" />, desactivada</translation>
+<translation id="2467755475704469005">Ningún dispositivo detectado. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Aceleración de desplazamiento del panel táctil</translation>
 <translation id="2468205691404969808">Usa cookies para recordar tus preferencias, incluso si no visitas esas páginas</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
@@ -2381,6 +2381,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3608576286259426129">Vista previa de imagen de usuario</translation>
 <translation id="3610369246614755442">El ventilador de la base necesita reparación</translation>
 <translation id="361106536627977100">Datos de Flash</translation>
+<translation id="3611655097742243705">Visita Play Store para buscar más aplicaciones.</translation>
 <translation id="3612673635130633812">Descargado a través de &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Mostrar <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Abrir en una pestaña nueva</translation>
@@ -2645,7 +2646,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3874164307099183178">Activar Asistente de Google</translation>
 <translation id="3877075909000773256">Configuración de Compartir con Nearby para el dispositivo de <ph name="USER_NAME" />, compartiendo desde la cuenta <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Administrador de descargas</translation>
-<translation id="3881478300875776315">Mostrar menos líneas</translation>
 <translation id="3882165008614329320">Vídeo de la cámara o un archivo</translation>
 <translation id="3884152383786131369">El contenido web que esté disponible en varios idiomas usará el primer idioma admitido de esta lista. Estas preferencias se sincronizan con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Las actualizaciones las gestiona tu administrador</translation>
@@ -2716,6 +2716,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3943494825379372497">¿Restaurar aplicaciones y páginas?</translation>
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
+<translation id="3945513714196326460">Prueba un nombre más corto</translation>
 <translation id="3948116654032448504">&amp;Buscar imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> puede editar archivos de las siguientes carpetas</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2762,7 +2763,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3984159763196946143">No se ha podido iniciar el modo de demostración</translation>
 <translation id="3984431586879874039">¿Quieres permitir que este sitio web vea tu llave de seguridad?</translation>
 <translation id="398477389655464998">Copiar enlace al texto destacado</translation>
-<translation id="3986705137476756801">Desactivar Subtítulos automáticos por el momento</translation>
 <translation id="3987544746655539083">Seguir impidiendo que este sitio web acceda a tu ubicación</translation>
 <translation id="3987938432087324095">No he entendido nada.</translation>
 <translation id="3988996860813292272">Seleccionar la zona horaria</translation>
@@ -3102,6 +3102,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4415245286584082850">No se ha encontrado ningún dispositivo. Abre un artículo del Centro de Ayuda en una pestaña nueva.</translation>
 <translation id="4415276339145661267">Gestionar tu cuenta de Google</translation>
 <translation id="4415748029120993980">Curva elíptica SECG secp384r1 (también denominada NIST P-384)</translation>
+<translation id="4416450511678320850">No hay aplicaciones disponibles para este contenido</translation>
 <translation id="4416582610654027550">Escribe una URL válida</translation>
 <translation id="4419409365248380979">Permitir siempre que <ph name="HOST" /> pueda establecer cookies.</translation>
 <translation id="4421932782753506458">Gatito</translation>
@@ -3369,7 +3370,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4699172675775169585">Archivos e imágenes almacenados en caché</translation>
 <translation id="4699357559218762027">(con inicio automático)</translation>
 <translation id="4701025263201366865">Inicio de sesión del padre o de la madre</translation>
-<translation id="4702656508969495934">Subtítulos automáticos visibles; utiliza el botón de cambio de ventana para enfocarlos</translation>
 <translation id="4708794300267213770">Mostrar la pantalla de bloqueo al activar el dispositivo</translation>
 <translation id="4708849949179781599">Salir de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurar configuración</translation>
@@ -3395,6 +3395,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="473936925429402449">Seleccionado contenido adicional <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tickets</translation>
 <translation id="4742334355511750246">No puede mostrar imágenes</translation>
+<translation id="4742970037960872810">Eliminar resaltado</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Cómo actualizar aplicaciones<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Activar sonido del sitio web}other{Activar sonido de los sitios}}</translation>
 <translation id="4746351372139058112">Mensajes</translation>
@@ -3871,7 +3872,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5300287940468717207">¿Quieres restablecer los permisos de los sitios?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5300719150368506519">Enviar las URL de las páginas que visitas a Google</translation>
-<translation id="5300814202279832142">Mover ventana al escritorio</translation>
 <translation id="5301751748813680278">Iniciando sesión de invitado</translation>
 <translation id="5301954838959518834">Entendido</translation>
 <translation id="5302048478445481009">Idioma</translation>
@@ -4604,6 +4604,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6136114942382973861">Cerrar barra de descargas</translation>
 <translation id="6136287496450963112">Tu llave de seguridad no está protegida mediante un PIN. Para gestionar huellas dactilares, primero debes crear un PIN.</translation>
 <translation id="6138680304137685902">Firma X9.62 ECDSA con SHA-384</translation>
+<translation id="6138774640412545950">La extensión "<ph name="APP_NAME" />" quiere compartir el contenido de tu pantalla con <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ninguna red</translation>
 <translation id="6141988275892716286">Confirmar descarga</translation>
 <translation id="6143186082490678276">Obtener ayuda</translation>
@@ -5393,6 +5394,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7009709314043432820"><ph name="APP_NAME" /> está usando tu cámara</translation>
 <translation id="701080569351381435">Ver código fuente</translation>
 <translation id="7014174261166285193">Error de instalación</translation>
+<translation id="7014480873681694324">Eliminar resaltado</translation>
 <translation id="7017004637493394352">Di otra vez "Hey Google"</translation>
 <translation id="7017219178341817193">Añadir una nueva página</translation>
 <translation id="7017354871202642555">No se puede establecer un modo después de crear una ventana.</translation>
@@ -5486,7 +5488,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="711840821796638741">Mostrar marcadores administrados</translation>
 <translation id="711902386174337313">Leer la lista de los dispositivos en los que has iniciado sesión</translation>
 <translation id="7120865473764644444">No se ha podido conectar con el servidor de sincronización. Reintentando...</translation>
-<translation id="7121362699166175603">Borra el historial y los autocompletados de la barra de direcciones. Es posible que tu cuenta de Google tenga otros tipos de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Modo desarrollador</translation>
 <translation id="7121728544325372695">Guiones inteligentes</translation>
 <translation id="7123030151043029868">Puede descargar varios archivos automáticamente</translation>
@@ -5659,7 +5660,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7334274148831027933">Habilitar lupa fijada</translation>
 <translation id="7335974957018254119">Utilizar la revisión ortográfica con los siguientes idiomas</translation>
 <translation id="7336799713063880535">Notificaciones bloq.</translation>
-<translation id="7337248890521463931">Mostrar más líneas</translation>
 <translation id="7338630283264858612">El número de serie del dispositivo no es válido.</translation>
 <translation id="7339763383339757376">Certificado único PKCS #7</translation>
 <translation id="7339785458027436441">Comprobar ortografía al escribir</translation>
@@ -7362,7 +7362,6 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="9209563766569767417">Comprobando la configuración del contenedor de Linux</translation>
 <translation id="9209689095351280025">Los sitios no pueden usar cookies para hacer un seguimiento de tu actividad en la Web.</translation>
 <translation id="9211177926627870898">Actualización necesaria</translation>
-<translation id="9211490828691860325">Todos los escritorios</translation>
 <translation id="9214510034298163263">Los sitios pueden solicitar permiso para editar archivos y carpetas del dispositivo (recomendado)</translation>
 <translation id="9214520840402538427">¡Vaya! Se ha agotado el tiempo de la inicialización de los atributos de tiempo de instalación. Ponte en contacto con el representante del servicio de asistencia.</translation>
 <translation id="9214695392875603905">Cupcake</translation>

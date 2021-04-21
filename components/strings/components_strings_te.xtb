@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">ఎంచుకున్నట్లయితే, Chrome వేగవంతమైన ఫారమ్ పూరింపు కోసం ఈ పరికరంలో మీ కార్డ్ కాపీని నిల్వ చేస్తుంది.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> కోసం అనుమతిని ఎంచుకోండి</translation>
 <translation id="1113869188872983271">&amp;మళ్లీ క్రమం చేయడాన్ని రద్దు చేయి</translation>
+<translation id="1123753900084781868">ప్రస్తుతానికి లైవ్ క్యాప్షన్ అందుబాటులో లేదు</translation>
 <translation id="1125573121925420732">వెబ్‌సైట్‌ల యొక్క భద్రతను అప్‌డేట్ చేస్తున్నప్పుడు హెచ్చరికలు కనిపించడం సాధారణమే. ఇది త్వరలోనే మెరుగుపరచబడుతుంది.</translation>
 <translation id="112840717907525620">విధాన కాష్ సరిపోయింది</translation>
 <translation id="1130564665089811311">'పేజీని అనువదించు' బటన్, ఈ పేజీని Google Translateతో అనువదించేందుకు 'Enter' నొక్కండి</translation>
@@ -772,6 +773,7 @@
 <translation id="3841184659773414994">ఫైల్ హ్యాండ్లర్‌లు</translation>
 <translation id="385051799172605136">వెనుకకు</translation>
 <translation id="3858027520442213535">తేదీని, సమయాన్ని అప్‌డేట్ చేయి</translation>
+<translation id="3881478300875776315">కొన్ని వరుసలను మాత్రమే చూపించు</translation>
 <translation id="3884278016824448484">వైరుధ్యమైన పరికరం ఐడెంటిఫైయర్</translation>
 <translation id="3885155851504623709">పారిష్</translation>
 <translation id="388632593194507180">పర్యవేక్షణ గుర్తించబడింది</translation>
@@ -797,6 +799,7 @@
 <translation id="397105322502079400">గణిస్తోంది...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> బ్లాక్ చేయబడింది</translation>
 <translation id="3973357910713125165">Chrome భద్రతా తనిఖీ రన్ చేసే బటన్, Chrome సెట్టింగ్‌లలో భద్రతా తనిఖీని రన్ చేయడానికి 'Enter'ను నొక్కండి</translation>
+<translation id="3986705137476756801">ప్రస్తుతానికి లైవ్ క్యాప్షన్‌ను ఆఫ్ చేయి</translation>
 <translation id="3987405730340719549">ఈ సైట్ నకిలీ లేదా మోసపూరితమైనది కావచ్చని Chrome గుర్తించింది.
 
     ఇది పొరపాటుగా చూపించబడింది అని మీరు అనుకుంటే, దయచేసి https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals లింక్‌ను సందర్శించండి.</translation>
@@ -926,6 +929,7 @@
 <translation id="4377125064752653719"><ph name="DOMAIN" />ను చేరుకోవడానికి మీరు ప్రయత్నించారు, కానీ సర్వర్ అందించిన ప్రమాణపత్రాన్ని దాన్ని జారీ చేసినవారు రద్దు చేసారు. సర్వర్ అందించిన భద్రత ఆధారాలు ఖచ్చితంగా విశ్వసించబడలేదని దీని అర్థం. మీరు దాడి చేసే వారితో కమ్యూనికేట్ చేస్తూ ఉండవచ్చు.</translation>
 <translation id="4378154925671717803">ఫోన్</translation>
 <translation id="4390472908992056574">బ్రిమ్</translation>
+<translation id="4406883609789734330">లైవ్ క్యాప్షన్</translation>
 <translation id="4406896451731180161">శోధన ఫలితాలు</translation>
 <translation id="4408413947728134509">కుక్కీలు <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">మీరు మోసపూరితమైన సైట్‌లో మీ పాస్‌వర్డ్‌ను ఎంటర్ చేశారు. మీరు ఈ పాస్‌వర్డ్‌ను ఉపయోగించిన<ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> మరియు ఇతర సైట్‌లకు ఇప్పుడే వెళ్లి, మీ పాస్‌వర్డ్‌ను మార్చాల్సిందిగా Chrome సిఫార్సు చేస్తోంది.</translation>
@@ -991,6 +995,7 @@
 <translation id="4691835149146451662">ఆర్కిటెక్చర్-A (ఎన్వలప్)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">పక్కన</translation>
+<translation id="4702656508969495934">లైవ్ క్యాప్షన్ కనిపిస్తోంది, ఫోకస్ చేయడానికి విండో మార్పిడిని ఉపయోగించండి</translation>
 <translation id="4708268264240856090">మీ కనెక్షన్‌కు అంతరాయం ఏర్పడింది</translation>
 <translation id="4712404868219726379">Windows Hell</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows నెట్‌వర్క్ సమస్య విశ్లేషణలను అమలు చేయడం<ph name="END_LINK" /></translation>
@@ -1660,6 +1665,7 @@
 <translation id="733354035281974745">పరికర స్థానిక ఖాతా భర్తీ</translation>
 <translation id="7333654844024768166">మీరు మోసపూరితమైన సైట్‌లో మీ పాస్‌వర్డ్‌ను ఎంటర్ చేశారు. మీరు ఈ పాస్‌వర్డ్‌ను ఉపయోగించిన <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ఇతర సైట్‌లకు ఇప్పుడే వెళ్లి, దాన్ని మార్చాల్సిందిగా Chromium సిఫార్సు చేస్తోంది.</translation>
 <translation id="7334320624316649418">&amp;మళ్లీ క్రమం చేయడాన్ని పునరావృతం చేయి</translation>
+<translation id="7337248890521463931">మరిన్ని వరుసలను చూపించు</translation>
 <translation id="7337706099755338005">మీ ప్లాట్‌ఫారమ్‌లో అందుబాటులో లేదు.</translation>
 <translation id="733923710415886693">సర్వర్ ప్రమాణపత్రాన్ని ప్రమాణపత్రం పారదర్శకత ద్వారా బహిరంగపరచలేదు.</translation>
 <translation id="734600844861828519">11x15</translation>

@@ -1676,6 +1676,13 @@ en 3 optionele leden:
 <translation id="3177802893484440532">Online OCSP/CRL-controles voor lokale vertrouwensinstanties vereisen</translation>
 <translation id="3184161739683646075">Hiermee wordt de modus voor DNS-over-HTTPS bepaald</translation>
 <translation id="3185009703220253572">sinds versie <ph name="SINCE_VERSION" /></translation>
+<translation id="3185895671618336039">Hiermee configureer je de instellingen voor de levensduur van browsergegevens voor <ph name="PRODUCT_NAME" />. Met dit beleid kunnen beheerders instellen (per gegevenstype) wanneer gegevens door de browser moeten worden verwijderd. Dit is handig voor klanten die met gevoelige klantgegevens werken. Het beleid wordt alleen van kracht als <ph name="SYNC_DISABLED_POLICY_NAME" /> is ingesteld op True.
+
+      De beschikbare gegevenstypen zijn <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> en <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
+
+      De browser verwijdert automatisch gegevens van de geselecteerde typen die ouder zijn dan <ph name="TIME_TO_LIVE_IN_HOURS" />. De minimumwaarde die kan worden ingesteld is 1 uur.
+
+      De verwijdering van verlopen gegevens vindt plaats 15 seconden nadat de browser is gestart en daarna elk uur terwijl de browser actief is.</translation>
 <translation id="3192902750888034827">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" /> instelt, wordt de URL gespecificeerd van de zoekmachine die wordt gebruikt om een pagina Nieuw tabblad te leveren.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" /> niet instelt, wordt er geen pagina Nieuw tabblad geopend.</translation>
@@ -4534,6 +4541,11 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
       Als het beleid niet wordt ingesteld, wordt de plank standaard onderaan het scherm geplaatst en kan de gebruiker de positie van de plank zelf wijzigen.</translation>
 <translation id="7040229947030068419">Voorbeeldwaarde:</translation>
 <translation id="7044883996351280650">De Android-service 'Back-up maken en terugzetten' beheren</translation>
+<translation id="7060497964524144376">Als je dit beleid toepast, vertrouwt Safe Browsing de domeinen die je aangeeft. De functie checkt deze niet op gevaarlijke bronnen zoals phishing, malware of ongewenste software. De service voor downloadbeveiliging van Safe Browsing checkt downloads die worden gehost op deze domeinen niet. De service voor wachtwoordbeveiliging checkt niet of wachtwoorden opnieuw worden gebruikt.
+
+      Als je het beleid niet toepast, wordt de standaardbescherming van Safe Browsing toegepast op alle resources.
+
+      In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="7063895219334505671">Pop-ups toestaan ​​op deze sites</translation>
 <translation id="706669471845501145">Sites toestaan bureaubladmeldingen te tonen</translation>
 <translation id="7070525176564511548">Het wachtwoord moet elke week (168 uur) worden opgegeven</translation>
@@ -6143,6 +6155,7 @@ Dit beleid wordt verwijderd in M75.</translation>
 <translation id="927444535723396977">Als je het beleid instelt op 1, mogen websites JavaScript uitvoeren. Als je het beleid instelt op 2, wordt JavaScript geblokkeerd.
 
       Als je het beleid niet instelt, is JavaScript toegestaan maar kunnen gebruikers deze instelling wijzigen.</translation>
+<translation id="928189505080808353">poort 554 (verloopt op 15-10-2021)</translation>
 <translation id="929549405492388749">Als dit wordt ingesteld op True, wordt AppCache verplicht aangezet, ook als AppCache in Chrome niet standaard beschikbaar is.
 
       Als dit niet is ingesteld of is ingesteld op False, volgt AppCache de standaardinstellingen van Chrome.</translation>

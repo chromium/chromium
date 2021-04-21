@@ -446,6 +446,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5782227691023083829">در حال ترجمه...</translation>
 <translation id="5803566855766646066">مطمئنید می‌خواهید از این کارت جدید صرف‌نظر کنید؟</translation>
 <translation id="5816228676161003208">این کار به شما اجازه می‌دهد با استفاده از صدایتان سریع‌تر جستجو کنید.</translation>
+<translation id="581659025233126501">روشن کردن همگام‌سازی</translation>
 <translation id="5819208479324046259">توسط <ph name="MANAGER" /> مدیریت می‌شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">موتور جستجو</translation>
 <translation id="5854790677617711513">قدیمی‌تر از ۳۰ روز</translation>
@@ -493,6 +494,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6196207969502475924">جستجوی گفتاری</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{بستن {COUNT} برگه}one{بستن {COUNT} برگه}other{بستن {COUNT} برگه}}</translation>
 <translation id="6219688215832490856">هرگز ترجمه نشود</translation>
+<translation id="6223816392543092032">نشانک‌ها، سابقه، گذرواژه‌ها، و دیگر تنظیماتتان را در همه دستگاه‌هایتان دریافت کنید.</translation>
 <translation id="6254066287920239840">پیوندها به‌جای مرورگر در برنامه باز شوند.</translation>
 <translation id="6255097610484507482">ویرایش کارت اعتباری</translation>
 <translation id="6284652193729350524">پیشنهاد ترجمه <ph name="LANGUAGE" /></translation>
@@ -525,6 +527,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6445981559479772097">پیام ارسال شد.</translation>
 <translation id="6447842834002726250">کوکی‌ها</translation>
 <translation id="6453018583485750254">بررسی هرگز انجام نشده است.</translation>
+<translation id="6459307836338400162">‏برای تنظیمات بیشتر مربوط به حریم‌خصوصی، امنیت، و جمع‌آوری داده، <ph name="BEGIN_LINK" />همگام‌سازی<ph name="END_LINK" /> و <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> را ببینید.</translation>
 <translation id="6464071786529933911">در برگه ناشناس جدید</translation>
 <translation id="6464397691496239022">سایت‌ها می‌توانند از کوکی‌ها برای بهبود تجربه مرورتان استفاده کنند، مثلاً برای اینکه شما را درحالت واردشده به سیستم نگه دارند یا موارد موجود در سبد خریدتان را به‌خاطر بسپارند.
 
@@ -708,6 +711,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8281886186245836920">رد شدن</translation>
 <translation id="8283172974887967105">تنظیم…</translation>
 <translation id="8299417921174340354">برای استفاده از گذرواژه‌ها، ابتدا باید گذرنویسه‌ای در دستگاه تنظیم کنید.</translation>
+<translation id="83100941411593607">ورود به سیستم غیرفعال است</translation>
 <translation id="8319076807703933069">جستجوی جدید</translation>
 <translation id="8323906514956095947">برای دیدن گزینه‌های بیشتر برگه، لمس کنید و نگه دارید</translation>
 <translation id="8328777765163860529">بستن همه</translation>

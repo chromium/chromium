@@ -180,7 +180,6 @@ Para buscar una palabra, presiónala. Si quieres definir mejor la búsqueda, man
 <translation id="2169830938017475061">Ahora</translation>
 <translation id="2172688499998841696">Las descripciones de imágenes están desactivadas.</translation>
 <translation id="2175927920773552910">Código QR</translation>
-<translation id="2181298861158186289">Ocultar el contenido del Portapapeles</translation>
 <translation id="218608176142494674">Uso compartido</translation>
 <translation id="2195339740518523951">Obtén la seguridad más sólida de Chrome</translation>
 <translation id="2200113223741723867">Administrar cómo se comparten los datos de uso</translation>
@@ -248,6 +247,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="2612676031748830579">Número de tarjeta</translation>
 <translation id="2625189173221582860">Se copió la contraseña</translation>
 <translation id="2631006050119455616">Ahorrados</translation>
+<translation id="2645657967708199252">Es posible que la descarga sea más lenta por tu conexión de <ph name="CONNECTION_TYPE" />.</translation>
 <translation id="2647434099613338025">Agregar idioma</translation>
 <translation id="2650751991977523696">¿Deseas volver a descargar el archivo?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# archivo de audio}other{# archivos de audio}}</translation>
@@ -260,6 +260,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="2718846868787000099">Para poder mostrar contenido en tus idiomas preferidos, los sitios que visitas deberán acceder a tus preferencias</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Ordenar por sitio</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Presiona una palabra para realizar una búsqueda instantánea o ver acciones relacionadas</translation>
 <translation id="2760989362628427051">Activa el tema oscuro cuando esté activado el Ahorro de batería o el tema oscuro de tu dispositivo</translation>
 <translation id="2762000892062317888">recién</translation>
@@ -436,6 +437,7 @@ Privacy Sandbox sigue en desarrollo y está disponible en ciertas regiones. Por
 <translation id="3943557322767080599">Muestra mensajes de acceso de Chrome cuando ingresas a tu Cuenta de Google</translation>
 <translation id="395206256282351086">Se inhabilitaron las sugerencias de sitios y búsqueda</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome cargará la página cuando esté lista}other{Chrome cargará las páginas cuando estén listas}}</translation>
+<translation id="3962957115499249330">Verás una notificación cuando esta descarga comience en la red Wi-Fi.</translation>
 <translation id="3963007978381181125">La encriptación de la frase de contraseña no incluye formas de pago ni direcciones de Google Pay. Solo las personas que tengan tu frase de contraseña pueden leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si la olvidas o quieres cambiar esta configuración, deberás restablecer la sincronización. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome no puede verificar tus contraseñas</translation>
 <translation id="3974987681202239636">Se abrirá <ph name="APP_NAME" /> en Chrome. Si continúas, aceptas las <ph name="BEGIN_LINK1" />Condiciones del Servicio de Google<ph name="END_LINK1" /> y las <ph name="BEGIN_LINK2" />Condiciones del Servicio Adicionales de Google Chrome y el Sistema operativo Chrome<ph name="END_LINK2" />. También se aplica el <ph name="BEGIN_LINK3" />Aviso de Privacidad para las Cuentas de Google administradas con Family Link<ph name="END_LINK3" />.</translation>
@@ -479,6 +481,7 @@ Privacy Sandbox sigue en desarrollo y está disponible en ciertas regiones. Por
 <translation id="4256782883801055595">Licencias de código abierto</translation>
 <translation id="4263656433980196874">La IU de consentimiento de la búsqueda por voz de Asistente está totalmente abierta</translation>
 <translation id="4269820728363426813">Copiar dirección del vínculo</translation>
+<translation id="4290281343757112331">¿Quieres descargarlo más tarde?</translation>
 <translation id="4298388696830689168">Sitios vinculados</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Configuración básica</translation>
@@ -541,6 +544,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4698034686595694889">Ver sin conexión en <ph name="APP_NAME" /></translation>
 <translation id="4699172675775169585">Imágenes y archivos almacenados en caché</translation>
 <translation id="4714588616299687897">Ahorra hasta un 60% de tus datos</translation>
+<translation id="4716066120200945007">SIGUIENDO</translation>
 <translation id="4719927025381752090">Ofrecer la traducción</translation>
 <translation id="4720023427747327413">Abrir en <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Ayuda a mejorar Chrome. <ph name="BEGIN_LINK" />Realiza la encuesta<ph name="END_LINK" /></translation>
@@ -621,6 +625,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5191251636205085390">Conoce y domina nuevas tecnologías diseñadas para reemplazar cookies de terceros.</translation>
 <translation id="5193988420012215838">Se copió en tu portapapeles</translation>
 <translation id="5199929503336119739">Perfil de trabajo</translation>
+<translation id="5201464744567315552">Verás una notificación cuando esta descarga comience a las <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Ingresar contraseña</translation>
 <translation id="5210286577605176222">Ir a la pestaña anterior</translation>
 <translation id="5210365745912300556">Cerrar pestaña</translation>
@@ -631,6 +636,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5230560987958996918"><ph name="SITE" /> quiere detectar dispositivos Bluetooth cercanos. Se encontraron los siguientes dispositivos:</translation>
 <translation id="5233638681132016545">Nueva pestaña</translation>
 <translation id="5250483651202458397">Captura de pantalla. Presionar para cerrar.</translation>
+<translation id="5262378156578470238">Verás una notificación cuando esta descarga comience el <ph name="DATE" />.</translation>
 <translation id="526421993248218238">No se puede cargar esta página</translation>
 <translation id="5271967389191913893">El dispositivo no puede abrir el contenido que se descargará.</translation>
 <translation id="5292796745632149097">Enviar a</translation>
@@ -842,7 +848,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6539092367496845964">Se produjo un error; vuelve a intentarlo más tarde.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Se verificó hace 1 hora}other{Se verificó hace # horas}}</translation>
 <translation id="6545017243486555795">Borrar todos los datos</translation>
-<translation id="6549142516027084053">Muestra el contenido del Portapapeles</translation>
 <translation id="6560414384669816528">Buscar con Sogou</translation>
 <translation id="656065428026159829">Ver más</translation>
 <translation id="6565959834589222080">Se utilizará Wi-Fi cuando esté disponible.</translation>
@@ -912,6 +917,7 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="6981982820502123353">Accesibilidad</translation>
 <translation id="6989267951144302301">No se pudo descargar</translation>
 <translation id="6995899638241819463">Advertirme si quedan expuestas las contraseñas ante una violación de la seguridad de los datos</translation>
+<translation id="7001056293070445572">Este archivo es grande (<ph name="FILE_SIZE" />).</translation>
 <translation id="7015203776128479407">No se completó la configuración de la sincronización inicial. La sincronización está desactivada.</translation>
 <translation id="7022756207310403729">Abrir en el navegador</translation>
 <translation id="702463548815491781">Se recomienda cuando TalkBack o Accesibilidad con interruptores están activadas</translation>
@@ -936,7 +942,6 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7187993566681480880">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras apps de Google cuando accedes a tu cuenta.</translation>
 <translation id="718926126787620637">La lista de carpetas de favoritos está totalmente abierta</translation>
-<translation id="7189372733857464326">Esperando que los servicios de Google Play terminen de actualizarse</translation>
 <translation id="7191430249889272776">Pestaña abierta en segundo plano</translation>
 <translation id="7233236755231902816">Para ver la Web en tu idioma, obtén la versión más reciente de Chrome</translation>
 <translation id="7248069434667874558">Comprueba que <ph name="TARGET_DEVICE_NAME" /> tenga activada la sincronización en Chrome</translation>

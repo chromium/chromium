@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Jei leidžiate „Chrome“ nustatyti jūsų vietovę, „Chrome“ siunčia ją bet kurioms svetainėms, kurioms suteikiate leidimą. Svetainės gali prašyti jūsų vietovės, kai jose yra jums rodytinos vietinės informacijos, pvz., netoliese esančių parduotuvių ar naujienų.</translation>
 <translation id="6036420186814142909">„Google Chrome“ yra funkcijų, kurias naudojant lengva tvarkyti internetinius duomenis ir tinklalapių įkėlimo spartą.
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Leisti „Chrome“ prisijungimą</translation>
 <translation id="6181930887571472871">Perjungimas į „Chrome“</translation>
 <translation id="6238746320622508509">Leiskite „Chrome“ užrakinti jūsų inkognito skirtukus.</translation>
 <translation id="6573431926118603307">Čia bus rodomi kituose įrenginiuose atidaryti „Chrome“ skirtukai.</translation>
@@ -96,5 +97,6 @@
   3. Pasirinkite „Chrome“.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Saugos užtikrinimas naudojant „Google Chrome“</translation>
+<translation id="8772179140489533211">Rodomi raginimai prisijungti prie „Chrome“.</translation>
 <translation id="9112744793181547300">Nustatyti „Chrome“ kaip numatytąją?</translation>
 </translationbundle>

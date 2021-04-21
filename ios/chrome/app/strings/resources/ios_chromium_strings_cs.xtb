@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">Nechat prohlížeč Chromium zamykat vaše anonymní karty.</translation>
 <translation id="1472013873724362412">Váš účet v prohlížeči Chromium nefunguje. Kontaktujte administrátora domény nebo se přihlaste pomocí běžného účtu Google.</translation>
 <translation id="1507010443238049608">Pomozte zlepšit funkce a výkon prohlížeče Chromium</translation>
+<translation id="1531155317299575425">Zobrazuje výzvy k přihlášení do Chromia.</translation>
 <translation id="1617663976202781617">Data ze synchronizace prohlížeče Chromium</translation>
 <translation id="1736662517232558588">Data prohlížeče Chromium byla vymazána</translation>
 <translation id="1838412507805038478">Prohlížeč Chromium ověřil, že certifikát tohoto webu byl vydán vydavatelem <ph name="ISSUER" />.</translation>
@@ -48,6 +49,7 @@
 <translation id="5396916991083608703">Nastavit Chromium jako výchozí prohlížeč?</translation>
 <translation id="5521125884468363740">Chcete-li mít své karty k dispozici všude, kde používáte Chromium, přihlaste se a zapněte synchronizaci</translation>
 <translation id="5573014823074921752">Tip pro Chromium. Další možnosti karet zobrazíte přidržením tlačítka Zobrazit karty, které najdete v dolní nebo horní části obrazovky.</translation>
+<translation id="5651741435382092412">Přihlaste se na tento web, k účtu Google a do Chromia. Synchronizaci můžete zapnout později.</translation>
 <translation id="5700709190537129682">Chromium nemůže zkontrolovat hesla</translation>
 <translation id="5742135483959137648">Otevírat odkazy pomocí Chromium</translation>
 <translation id="5777187867430702742">Stránka prohlížeče Chromium</translation>
@@ -59,6 +61,7 @@
 2. Klepněte na Výchozí prohlížeč.
 3. Vyberte Chromium.</translation>
 <translation id="6268381023930128611">Odhlásit se z prohlížeče Chromium?</translation>
+<translation id="632825460376924298">Povolit přihlášení do Chromia</translation>
 <translation id="6337530241089703714">Zvolte, zda z tohoto zařízení chcete vymazat data prohlížeče Chromium, nebo je ponechat</translation>
 <translation id="6424492062988593837">Chromium je opět o něco lepší. K dispozici je nová verze.</translation>
 <translation id="6820823224820483452">Chromiu se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra.</translation>

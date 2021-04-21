@@ -200,6 +200,7 @@
 <translation id="5275828089655680674">రొటీన్‌లను మళ్లీ అమలు చేయి</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">వెర్షన్ <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300814202279832142">విండోను డెస్క్‌కు తరలించు</translation>
 <translation id="5315873049536339193">గుర్తింపు</translation>
 <translation id="5317780077021120954">సేవ్ చేయి</translation>
 <translation id="5318334351163689047">TCP రిక్వెస్ట్ వైఫల్యాలు</translation>
@@ -233,7 +234,7 @@
 <translation id="5931523347251946569">ఫైల్ కనుగొనబడలేదు</translation>
 <translation id="6037291330010597344">స్కానర్ డాక్యుమెంట్ ఫీడర్ ఖాలీగా ఉంది. డాక్యుమెంట్‌లను జోడించి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6040143037577758943">మూసివేయి</translation>
-<translation id="6040852767465482106">అనామక గుర్తింపు</translation>
+<translation id="6040852767465482106">అనామక ఐడెంటిటీ</translation>
 <translation id="604124094241169006">స్వయంచాలకంగా</translation>
 <translation id="6048107060512778456">విఫలమైంది - కాగితం జామ్ అయింది</translation>
 <translation id="6050189528197190982">బూడిద రంగు ప్రమాణం</translation>
@@ -383,6 +384,7 @@
 <translation id="9149391708638971077">మెమరీ పరీక్షను రన్ చేయండి</translation>
 <translation id="9173638680043580060">నిమిషం కంటే తక్కువ సమయం మిగిలి ఉంది</translation>
 <translation id="9190063653747922532">L2TP/IPsec + ముందుగా భాగస్వామ్యం చేసిన కీ</translation>
+<translation id="9211490828691860325">అన్ని డెస్క్‌లు</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">సక్రియం చెయ్యబడలేదు</translation>
 <translation id="960719561871045870">ఆపరేటర్ కోడ్</translation>

@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;Інструменти</translation>
 <translation id="1122242684574577509">Помилка автентифікації. Натисніть, щоб перейти на сторінку входу вашої мережі Wi-Fi (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">Назва закладки</translation>
-<translation id="1123753900084781868">Живі субтитри зараз недоступні</translation>
 <translation id="1124772482545689468">Користувач</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" />x<ph name="HEIGHT" /> (оригінальна)</translation>
 <translation id="1126809382673880764">Не захищає від небезпечних веб-сайтів, завантажень і розширень. Безпечний перегляд усе ще працюватиме в інших сервісах Google (у яких він доступний), як-от Gmail і Пошук.</translation>
@@ -757,6 +756,7 @@
 <translation id="1794791083288629568">Надіслати відгук, щоб допомогти нам вирішити цю проблему.</translation>
 <translation id="1795214765651529549">Вибрати класичну тему</translation>
 <translation id="1799071797295057738">Розширення "<ph name="EXTENSION_NAME" />" автоматично вимкнено.</translation>
+<translation id="1800973090344019061">Розширення <ph name="APP_NAME" /> хоче показувати вміст вашого екрана.</translation>
 <translation id="1802624026913571222">Переходити в режим сну, коли кришка закрита</translation>
 <translation id="1802687198411089702">Сторінка не відповідає. Зачекайте або закрийте її.</translation>
 <translation id="1803531841600994172">Мова перекладу</translation>
@@ -951,7 +951,6 @@
 <translation id="2010501376126504057">Сумісні пристрої</translation>
 <translation id="2016574333161572915">Тепер можете налаштувати обладнання для Google Meet</translation>
 <translation id="2017334798163366053">Вимкнути збір даних про ефективність</translation>
-<translation id="2017836877785168846">Очищує історію й автозавершення в адресному рядку.</translation>
 <translation id="2018352199541442911">На жаль, зараз пристрій зовнішньої пам’яті не підтримується.</translation>
 <translation id="2019718679933488176">&amp;Відкрити аудіо в новій вкладці</translation>
 <translation id="2020183425253392403">Показати налаштування мережевої адреси</translation>
@@ -1357,6 +1356,7 @@
 <translation id="2464089476039395325">Проксі-сервер HTTP</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" />: підключіться до мережі Wi-Fi та завантажте оновлення. Також можна використовувати підключення з тарифікацією трафіку (може стягуватися плата).</translation>
 <translation id="2467267713099745100">Мережа <ph name="NETWORK_TYPE" />: вимкнено</translation>
+<translation id="2467755475704469005">Пристроїв не виявлено. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Прискорення прокрутки сенсорною панеллю</translation>
 <translation id="2468205691404969808">Використовує файли cookie, щоб запам’ятовувати налаштування, навіть якщо ви не відвідуєте ці сторінки</translation>
 <translation id="2468402215065996499">Тамагочі</translation>
@@ -2385,6 +2385,7 @@
 <translation id="3608576286259426129">Попередній перегляд зображення користувача</translation>
 <translation id="3610369246614755442">Вентилятор док-станції несправний</translation>
 <translation id="361106536627977100">Дані флеш</translation>
+<translation id="3611655097742243705">Щоб знайти додатки, перейдіть у Google Play</translation>
 <translation id="3612673635130633812">Завантажило розширення &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Показати "<ph name="FOLDER_NAME" />"</translation>
 <translation id="3613422051106148727">&amp;Відкрити в новій вкладці</translation>
@@ -2649,7 +2650,6 @@
 <translation id="3874164307099183178">Увімкнути Google Асистента</translation>
 <translation id="3877075909000773256">Налаштування функції "Передавання поблизу" для пристрою користувача <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />).</translation>
 <translation id="3879748587602334249">Менеджер завантажень</translation>
-<translation id="3881478300875776315">Показати менше рядків</translation>
 <translation id="3882165008614329320">Наявні відео з камери або файлу</translation>
 <translation id="3884152383786131369">Для веб-контенту, доступного багатьма мовами, використовуватиметься перший доступний варіант зі списку нижче. Ці параметри синхронізуються з налаштуваннями веб-переглядача. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Оновленнями керує адміністратор</translation>
@@ -2721,6 +2721,7 @@
 <translation id="3943494825379372497">Відновити додатки та сторінки?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Вставити</translation>
+<translation id="3945513714196326460">Введіть коротшу назву</translation>
 <translation id="3948116654032448504">Шукати зображення в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Сайт <ph name="ORIGIN" /> може змінювати файли в указаних нижче папках</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2767,7 +2768,6 @@
 <translation id="3984159763196946143">Не вдалося запустити демонстраційний режим</translation>
 <translation id="3984431586879874039">Показувати цьому сайту ваш ключ безпеки?</translation>
 <translation id="398477389655464998">Копіювати посилання на виділений текст</translation>
-<translation id="3986705137476756801">Наразі вимкнути живі субтитри</translation>
 <translation id="3987544746655539083">Надалі забороняти цьому сайту доступ до ваших геоданих</translation>
 <translation id="3987938432087324095">Незрозуміло.</translation>
 <translation id="3988996860813292272">Вибір часового поясу</translation>
@@ -3107,6 +3107,7 @@
 <translation id="4415245286584082850">Пристроїв не знайдено. Відкрийте довідкову статтю в новій вкладці.</translation>
 <translation id="4415276339145661267">Керувати обліковим записом Google</translation>
 <translation id="4415748029120993980">Еліптична крива SECG secp384r1 (також відома як NIST P-384)</translation>
+<translation id="4416450511678320850">Немає доступних додатків</translation>
 <translation id="4416582610654027550">Введіть дійсну URL-адресу</translation>
 <translation id="4419409365248380979">Завжди дозволяти хосту <ph name="HOST" /> створювати файли cookie</translation>
 <translation id="4421932782753506458">Киця</translation>
@@ -3374,7 +3375,6 @@
 <translation id="4699172675775169585">Кешовані зображення та файли</translation>
 <translation id="4699357559218762027">(автозапуск)</translation>
 <translation id="4701025263201366865">Вхід для батьків</translation>
-<translation id="4702656508969495934">Відображаються живі субтитри. Щоб сфокусуватися на них, скористайтеся перемикачем вікон.</translation>
 <translation id="4708794300267213770">Показувати заблокований екран, коли пристрій виходить із режиму сну</translation>
 <translation id="4708849949179781599">Вийти з <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Відновити налаштування</translation>
@@ -3400,6 +3400,7 @@
 <translation id="473936925429402449">Вибрано, додатковий контент <ph name="CURRENT_ELEMENT" /> з <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Квитки</translation>
 <translation id="4742334355511750246">Заборонено показувати зображення</translation>
+<translation id="4742970037960872810">Зняти виділення</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Дізнайтеся, як оновити додатки<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Увімкнути звук на сайті}one{Увімкнути звук на сайтах}few{Увімкнути звук на сайтах}many{Увімкнути звук на сайтах}other{Увімкнути звук на сайтах}}</translation>
 <translation id="4746351372139058112">Повідомлення</translation>
@@ -3876,7 +3877,6 @@
 <translation id="5300287940468717207">Скинути дозволи сайту?</translation>
 <translation id="5300589172476337783">Показати</translation>
 <translation id="5300719150368506519">Надсилати в Google URL-адреси відвіданих сторінок</translation>
-<translation id="5300814202279832142">Перемістити вікно на робочий стіл</translation>
 <translation id="5301751748813680278">Вхід у режимі гостя.</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">Мова</translation>
@@ -4609,6 +4609,7 @@
 <translation id="6136114942382973861">Закрити панель завантажень</translation>
 <translation id="6136287496450963112">Ваш ключ безпеки не захищено PIN-кодом. Щоб керувати відбитками пальців, спершу створіть новий PIN-код.</translation>
 <translation id="6138680304137685902">Алгоритм ECDSA X9.62 з підписом SHA-384</translation>
+<translation id="6138774640412545950">Розширення <ph name="APP_NAME" /> хоче показувати вміст вашого екрана на сайті <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, немає мережі</translation>
 <translation id="6141988275892716286">Підтвердити завантаження</translation>
 <translation id="6143186082490678276">Довідка</translation>
@@ -5398,6 +5399,7 @@
 <translation id="7009709314043432820">Додаток <ph name="APP_NAME" /> використовує вашу камеру</translation>
 <translation id="701080569351381435">Переглянути джерело</translation>
 <translation id="7014174261166285193">Помилка встановлення.</translation>
+<translation id="7014480873681694324">Зняти виділення</translation>
 <translation id="7017004637493394352">Ще раз скажіть "Ok Google"</translation>
 <translation id="7017219178341817193">Додати нову сторінку</translation>
 <translation id="7017354871202642555">Неможливо вибрати режим після налаштування вікна.</translation>
@@ -5491,7 +5493,6 @@
 <translation id="711840821796638741">Показати закладки, якими керує адміністратор</translation>
 <translation id="711902386174337313">Читати список пристроїв, на яких ви ввійшли</translation>
 <translation id="7120865473764644444">Не вдалося з’єднатись із сервером синхронізації. Повторна спроба…</translation>
-<translation id="7121362699166175603">Видалення історії й варіантів автозавершень в адресному рядку. Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Режим розробника</translation>
 <translation id="7121728544325372695">Розумні тире</translation>
 <translation id="7123030151043029868">Дозволено автоматично завантажувати кілька файлів</translation>
@@ -5664,7 +5665,6 @@
 <translation id="7334274148831027933">Увімкнути закріплену лупу</translation>
 <translation id="7335974957018254119">Використовувати перевірку орфографії для таких мов:</translation>
 <translation id="7336799713063880535">Сповіщення заблоковано.</translation>
-<translation id="7337248890521463931">Показати більше рядків</translation>
 <translation id="7338630283264858612">Недійсний серійний номер пристрою.</translation>
 <translation id="7339763383339757376">PKCS #7, єдиний сертифікат</translation>
 <translation id="7339785458027436441">Перевіряти правопис під час вводу</translation>
@@ -7370,7 +7370,6 @@
 <translation id="9209563766569767417">Перевірка налаштувань контейнера Linux</translation>
 <translation id="9209689095351280025">Сайти не можуть використовувати файли cookie, щоб відстежувати ваші дії в Інтернеті</translation>
 <translation id="9211177926627870898">Потрібне оновлення</translation>
-<translation id="9211490828691860325">Усі робочі столи</translation>
 <translation id="9214510034298163263">Сайти можуть запитувати дозвіл змінювати файли та папки на пристрої (рекомендовано)</translation>
 <translation id="9214520840402538427">На жаль, ініціалізація атрибутів часу встановлення минула. Зв’яжіться з представником служби підтримки.</translation>
 <translation id="9214695392875603905">Кекс</translation>

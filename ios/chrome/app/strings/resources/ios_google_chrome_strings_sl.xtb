@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Če Chromu omogočite dostop do podatkov o lokaciji, jih Chrome pošlje na spletna mesta, ki jim podelite dovoljenje. Spletna mesta morda zahtevajo podatke o lokaciji, ko želijo prikazati lokalne informacije, na primer trgovine v bližini ali novice.</translation>
 <translation id="6036420186814142909">Google Chrome ima funkcije, s katerimi lažje upravljate internetne podatke in hitrost nalaganja spletnih strani.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Omogočanje prijave v Chrome</translation>
 <translation id="6181930887571472871">Preklop na Chrome</translation>
 <translation id="6238746320622508509">Naj Chrome zaklene vaše anonimne zavihke.</translation>
 <translation id="6573431926118603307">Zavihki, ki ste jih odprli v Chromu v drugih napravah, bodo prikazani tukaj.</translation>
@@ -96,5 +97,6 @@
   3. Izberite Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Ostanite varni z Google Chromom</translation>
+<translation id="8772179140489533211">Pokaže pozive za prijavo v Chrome.</translation>
 <translation id="9112744793181547300">Želite nastaviti Chrome kot privzeto možnost?</translation>
 </translationbundle>

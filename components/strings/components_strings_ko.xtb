@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">선택하면 Chrome에서 양식을 더 빠르게 입력할 수 있도록 이 기기에 카드 사본을 저장합니다.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> 권한을 선택합니다</translation>
 <translation id="1113869188872983271">재정렬 실행 취소(&amp;U)</translation>
+<translation id="1123753900084781868">현재 실시간 자막을 사용할 수 없습니다.</translation>
 <translation id="1125573121925420732">웹사이트에서 보안을 업데이트하는 동안에는 경고가 자주 발생할 수 있습니다. 곧 개선될 것입니다.</translation>
 <translation id="112840717907525620">정책 캐시 확인</translation>
 <translation id="1130564665089811311">페이지 번역 버튼, Google 번역으로 이 페이지를 번역하려면 Enter 누르기</translation>
@@ -217,6 +218,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{서버의 보안 인증서가 내일 발효될 예정이며 이에 따라 <ph name="DOMAIN" />임을 입증할 수 없습니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.}other{서버의 보안 인증서가 #일 후 발효될 예정이며 이에 따라 <ph name="DOMAIN" />임을 입증할 수 없습니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.}}</translation>
 <translation id="1710259589646384581">OS</translation>
+<translation id="1711234383449478798"><ph name="POLICY_NAME" /> 정책이 <ph name="VALUE" /> 값으로 설정되어 있지 않아 무시되었습니다.</translation>
 <translation id="1712552549805331520"><ph name="URL" />에서 로컬 컴퓨터에 데이터를 영구 저장하려고 합니다</translation>
 <translation id="1713628304598226412">트레이 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -766,6 +768,7 @@
 <translation id="3841184659773414994">파일 핸들러</translation>
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3858027520442213535">시간과 날짜 업데이트</translation>
+<translation id="3881478300875776315">자막 접기</translation>
 <translation id="3884278016824448484">기기 식별자 충돌</translation>
 <translation id="3885155851504623709">교구</translation>
 <translation id="388632593194507180">모니터링 감지됨</translation>
@@ -791,6 +794,7 @@
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />이(가) 차단됨</translation>
 <translation id="3973357910713125165">Chrome 안전 확인 실행 버튼, Enter 키를 눌러 Chrome 설정에서 안전 확인 실행</translation>
+<translation id="3986705137476756801">지금 실시간 자막 사용 중지하기</translation>
 <translation id="3987405730340719549">Chrome에서 이 사이트가 허위 또는 사기성 사이트일 수 있다고 판단했습니다.
 
     이 메시지가 실수로 표시되었다고 생각된다면 다음 페이지를 방문해 주시기 바랍니다. https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -915,6 +919,7 @@
 <translation id="4377125064752653719"><ph name="DOMAIN" />에 접속하려 했으나 발행기관에서 서버가 전달한 인증서를 폐기했습니다. 이는 서버가 제시한 보안 자격증명 정보를 신뢰할 수 없음을 의미합니다. 사용자는 현재 공격자와 통신 중일 수도 있습니다.</translation>
 <translation id="4378154925671717803">전화기</translation>
 <translation id="4390472908992056574">브림</translation>
+<translation id="4406883609789734330">실시간 자막</translation>
 <translation id="4406896451731180161">검색결과</translation>
 <translation id="4408413947728134509">쿠키 <ph name="NUM_COOKIES" />개</translation>
 <translation id="4414290883293381923">사기성 사이트에 비밀번호를 입력했습니다. 지금 바로 <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> 등 동일한 비밀번호를 사용한 사이트로 이동하여 비밀번호를 변경하시기 바랍니다.</translation>
@@ -980,6 +985,7 @@
 <translation id="4691835149146451662">Architecture-A(봉투)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">사이드</translation>
+<translation id="4702656508969495934">실시간 자막 표시, 창 전환 도구를 사용하여 포커스 설정</translation>
 <translation id="4708268264240856090">연결이 끊김</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows 네트워크 진단 프로그램 실행<ph name="END_LINK" /></translation>
@@ -1650,6 +1656,7 @@
 <translation id="733354035281974745">기기 로컬 계정 재정의</translation>
 <translation id="7333654844024768166">사기성 사이트에 비밀번호를 입력했습니다. 지금 바로 <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> 등 동일한 비밀번호를 사용한 사이트로 이동하여 비밀번호를 변경하시기 바랍니다.</translation>
 <translation id="7334320624316649418">재정렬 다시 실행(&amp;R)</translation>
+<translation id="7337248890521463931">자막 펼치기</translation>
 <translation id="7337706099755338005">사용 중인 플랫폼에서는 제공되지 않습니다.</translation>
 <translation id="733923710415886693">서버 인증서가 인증서 투명성 정책을 사용하여 공개되지 않았습니다.</translation>
 <translation id="734600844861828519">11x15</translation>

@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;Tools</translation>
 <translation id="1122242684574577509">Fehler bei der Authentifizierung. Klicken Sie hier, um die Anmeldeseite für das verwendete WLAN aufzurufen (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">Name des Lesezeichens</translation>
-<translation id="1123753900084781868">Die Funktion „Automatische Untertitel“ ist derzeit nicht verfügbar</translation>
 <translation id="1124772482545689468">Nutzer</translation>
 <translation id="1125550662859510761">Auflösung <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativ)</translation>
 <translation id="1126809382673880764">Sie werden nicht vor schädlichen Websites, Downloads und Erweiterungen geschützt. Sofern verfügbar, sind Sie in anderen Google-Diensten, wie Gmail und der Google Suche, durch Safe Browsing geschützt.</translation>
@@ -944,7 +943,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2010501376126504057">Kompatible Geräte</translation>
 <translation id="2016574333161572915">Ihre Google Meet-Hardware kann eingerichtet werden</translation>
 <translation id="2017334798163366053">Erfassung von Leistungsdaten deaktivieren</translation>
-<translation id="2017836877785168846">Löscht den Verlauf sowie Autovervollständigungen in der Adressleiste.</translation>
 <translation id="2018352199541442911">Ihr externes Speichergerät wird derzeit nicht unterstützt.</translation>
 <translation id="2019718679933488176">&amp;Audio in neuem Tab öffnen</translation>
 <translation id="2020183425253392403">Einstellungen für Netzwerkadressen anzeigen</translation>
@@ -2641,7 +2639,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3874164307099183178">Google Assistant einschalten</translation>
 <translation id="3877075909000773256">Nearby Share-Einstellungen für das Gerät von <ph name="USER_NAME" />. Die Freigabe erfolgt unter dem Konto <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Download-Manager</translation>
-<translation id="3881478300875776315">Weniger Zeilen anzeigen</translation>
 <translation id="3882165008614329320">Vorhandenes Video von der Kamera oder als Datei</translation>
 <translation id="3884152383786131369">Für Webinhalte in mehreren Sprachen wird die erste unterstützte Sprache aus dieser Liste verwendet. Diese Einstellungen werden mit den Browsereinstellungen synchronisiert. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Updates werden von Ihrem Administrator verwaltet</translation>
@@ -2759,7 +2756,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3984159763196946143">Demomodus konnte nicht gestartet werden</translation>
 <translation id="3984431586879874039">Zulassen, dass diese Website Ihren Sicherheitsschlüssel ausliest?</translation>
 <translation id="398477389655464998">Link zum markierten Text kopieren</translation>
-<translation id="3986705137476756801">Automatische Untertitel vorerst deaktivieren</translation>
 <translation id="3987544746655539083">Weiterhin verhindern, dass diese Website Ihren Standort abrufen kann</translation>
 <translation id="3987938432087324095">Dies wurde nicht verstanden.</translation>
 <translation id="3988996860813292272">Zeitzone auswählen</translation>
@@ -3364,7 +3360,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4699172675775169585">Bilder und Dateien im Cache</translation>
 <translation id="4699357559218762027">(wird automatisch gestartet)</translation>
 <translation id="4701025263201366865">Elternanmeldung</translation>
-<translation id="4702656508969495934">Automatische Untertitel sind sichtbar, Fensterwechsel zum Fokussieren verwenden</translation>
 <translation id="4708794300267213770">Sperrbildschirm anzeigen, wenn der Ruhemodus beendet wird</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> beenden</translation>
 <translation id="4711638718396952945">Einstellungen wiederherstellen</translation>
@@ -3864,7 +3859,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5300287940468717207">Websiteberechtigungen zurücksetzen?</translation>
 <translation id="5300589172476337783">Anzeigen</translation>
 <translation id="5300719150368506519">URLs der von Ihnen besuchten Seiten an Google senden</translation>
-<translation id="5300814202279832142">Fenster in Desktop verschieben</translation>
 <translation id="5301751748813680278">Anmeldung als Gast</translation>
 <translation id="5301954838959518834">Ok</translation>
 <translation id="5302048478445481009">Sprache</translation>
@@ -5478,7 +5472,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="711840821796638741">Verwaltete Lesezeichen anzeigen</translation>
 <translation id="711902386174337313">Liste der angemeldeten Geräte lesen</translation>
 <translation id="7120865473764644444">Verbindung zum Synchronisierungsserver konnte nicht hergestellt werden. Neuer Versuch...</translation>
-<translation id="7121362699166175603">Löscht den Verlauf und Autovervollständigungen in der Adressleiste. Unter <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für Ihr Google-Konto gespeichert.</translation>
 <translation id="7121438501124788993">Entwicklermodus</translation>
 <translation id="7121728544325372695">Intelligente Gedankenstriche</translation>
 <translation id="7123030151043029868">Dürfen automatisch mehrere Dateien herunterladen</translation>
@@ -5651,7 +5644,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7334274148831027933">Angedockte Lupe aktivieren</translation>
 <translation id="7335974957018254119">Rechtschreibprüfung verwenden für</translation>
 <translation id="7336799713063880535">Benachr. blockiert.</translation>
-<translation id="7337248890521463931">Mehr Zeilen anzeigen</translation>
 <translation id="7338630283264858612">Die Seriennummer des Geräts ist ungültig.</translation>
 <translation id="7339763383339757376">PKCS #7, Einzelzertifikat</translation>
 <translation id="7339785458027436441">Rechtschreibung während der Eingabe prüfen</translation>
@@ -7353,7 +7345,6 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="9209563766569767417">Einrichtung des Linux-Containers wird geprüft</translation>
 <translation id="9209689095351280025">Websites können keine Cookies nutzen, die Sie durch das Web verfolgen</translation>
 <translation id="9211177926627870898">Aktualisierung erforderlich</translation>
-<translation id="9211490828691860325">Alle Desktops</translation>
 <translation id="9214510034298163263">Websites dürfen nachfragen, wenn sie Dateien oder Ordner auf meinem Gerät bearbeiten möchten (empfohlen)</translation>
 <translation id="9214520840402538427">Hoppla! Bei der Initialisierung der Installationszeit-Attribute ist eine Zeitüberschreitung aufgetreten. Bitte wenden Sie sich an Ihren Support-Mitarbeiter.</translation>
 <translation id="9214695392875603905">Cupcake</translation>

@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">Қазір</translation>
 <translation id="2172688499998841696">Кескін сипаттамалары өшірулі.</translation>
 <translation id="2175927920773552910">QR коды</translation>
-<translation id="2181298861158186289">Буфердің мазмұнын жасыру</translation>
 <translation id="218608176142494674">Бөлісу</translation>
 <translation id="2195339740518523951">Chrome-ның ең мықты қауіпсіздік жүйесін алыңыз</translation>
 <translation id="2200113223741723867">Трафик деректерін бөлісуді басқару</translation>
@@ -842,7 +841,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="6539092367496845964">Бірдеңе дұрыс болмады. Кейінірек қайталап көріңіз.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 сағат бұрын тексерілді.}other{# сағат бұрын тексерілді.}}</translation>
 <translation id="6545017243486555795">Барлық деректерді өшіру</translation>
-<translation id="6549142516027084053">Буфердегі мазмұнды көрсету</translation>
 <translation id="6560414384669816528">Sogou қызметімен іздеу</translation>
 <translation id="656065428026159829">Басқаларын көру</translation>
 <translation id="6565959834589222080">Бар болса, Wi-Fi желісі пайдаланылады.</translation>
@@ -936,7 +934,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="7180611975245234373">Жаңарту</translation>
 <translation id="7187993566681480880">Есептік жазбаға кірген болсаңыз, сізді Chrome браузерінде қорғайды және басқа Google қолданбаларында қауіпсіздігіңізді жақсартуға пайдаланылуы мүмкін.</translation>
 <translation id="718926126787620637">Бетбелгі қалталарының тізімі терезесі толық ашылған.</translation>
-<translation id="7189372733857464326">Google Play қызметтерінің жаңартылып бітуі күтілуде</translation>
 <translation id="7191430249889272776">Қойынды фонда ашылды.</translation>
 <translation id="7233236755231902816">Интернетті өз тіліңізде қолдану үшін Chrome браузерінің соңғы нұсқасын орнатыңыз.</translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> құрылғысындағы Chrome браузерінде синхронизация қосулы екеніне көз жеткізіңіз.</translation>

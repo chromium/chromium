@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Nëse zgjidhet, Chrome do të ruajë një kopje të kartës tënde në këtë pajisje për një plotësim më të shpejtë të formularit.</translation>
 <translation id="1110994991967754504">Përzgjidh autorizimin për <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Zhbëj rirenditjen</translation>
+<translation id="1123753900084781868">"Titrat në çast" nuk ofrohen për momentin</translation>
 <translation id="1125573121925420732">Paralajmërimet mund të jenë të zakonshme ndërkohë që sajtet e uebit përditësojnë sigurinë e tyre. Kjo duhet të përmirësohet së shpejti.</translation>
 <translation id="112840717907525620">Memoria specifike e politikës është në rregull</translation>
 <translation id="1130564665089811311">Butoni "Përkthe faqen", shtyp "Enter" për ta përkthyer këtë faqe me "Përkthe me Google"</translation>
@@ -769,6 +770,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3841184659773414994">Përpunuesit e skedarëve</translation>
 <translation id="385051799172605136">Prapa</translation>
 <translation id="3858027520442213535">Përditëso datën dhe kohën</translation>
+<translation id="3881478300875776315">Shfaq më pak rreshta</translation>
 <translation id="3884278016824448484">Identifikuesi i pajisjes bie në konflikt</translation>
 <translation id="3885155851504623709">Famullia</translation>
 <translation id="388632593194507180">U zbulua monitorim</translation>
@@ -794,6 +796,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="397105322502079400">Po llogarit...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> është bllokuar</translation>
 <translation id="3973357910713125165">Ekzekuto butonin e "Kontrollit të sigurisë" të Chrome, shtyp "Enter" për të ekzekutuar "Kontrollin e sigurisë" te cilësimet e Chrome</translation>
+<translation id="3986705137476756801">Çaktivizo "Titrat në çast" për momentin</translation>
 <translation id="3987405730340719549">Chrome ka përcaktuar se ky sajt mund të jetë i rremë ose mashtrues.
 
     Nëse beson se kjo është shfaqur gabimisht, vizito https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -921,6 +924,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4377125064752653719">U përpoqe të arrije domenin <ph name="DOMAIN" />, por certifikata që paraqiti serveri është revokuar nga lëshuesi i saj. Kjo do të thotë se kredencialet e sigurisë që paraqiti serveri nuk duhet të besohen në mënyrë absolute. Mund të jesh duke komunikuar me ndonjë sulmues.</translation>
 <translation id="4378154925671717803">Telefoni</translation>
 <translation id="4390472908992056574">Buza</translation>
+<translation id="4406883609789734330">Titra në çast</translation>
 <translation id="4406896451731180161">rezultatet e kërkimit</translation>
 <translation id="4408413947728134509">Kukit <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chrome rekomandon që të shkosh te <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> dhe sajte të tjera ku e përdor këtë fjalëkalim dhe ta ndryshosh atë tani.</translation>
@@ -986,6 +990,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4691835149146451662">Architecture-A (Zarf)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Ana</translation>
+<translation id="4702656508969495934">"Titrat në çast" janë të dukshëm. Përdor shkëmbyesin e dritareve për t'i fokusuar</translation>
 <translation id="4708268264240856090">Lidhja jote u ndërpre</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Po ekzekuton diagnostikimin e rrjetit të Windows<ph name="END_LINK" /></translation>
@@ -1655,6 +1660,7 @@ Detaje shtesë:
 <translation id="733354035281974745">Anulimi i llogarisë lokale të pajisjes</translation>
 <translation id="7333654844024768166">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chromium rekomandon që të shkosh te <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> dhe sajte të tjera ku e përdor këtë fjalëkalim dhe ta ndryshosh atë tani.</translation>
 <translation id="7334320624316649418">&amp;Ribëj renditjen</translation>
+<translation id="7337248890521463931">Shfaq më shumë radhë</translation>
 <translation id="7337706099755338005">Nuk ofrohet në këtë platformë.</translation>
 <translation id="733923710415886693">Certifikata e serverit nuk është zbuluar përmes "Transparencës së certifikatave".</translation>
 <translation id="734600844861828519">11x15</translation>

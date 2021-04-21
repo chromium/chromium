@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;Asboblar</translation>
 <translation id="1122242684574577509">Haqiqiylik tekshiruvida xatolik yuz berdi. Wi-Fi (<ph name="NETWORK_ID" />) tarmog‘ining kirish sahifasiga qaytish uchun bosing.</translation>
 <translation id="1122960773616686544">Xatcho‘p nomi</translation>
-<translation id="1123753900084781868">Jonli izoh hozirda mavjud emas</translation>
 <translation id="1124772482545689468">Foydalanuvchi</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> kabi (asli)</translation>
 <translation id="1126809382673880764">Zararli sayt, yuklanma va kengaytmalardan himoya qila olmaydi. Gmail va Qidiruv kabi Google xizmatlarida Saytlarni xavfsiz kezish himoyasi ostida boʻlasiz.</translation>
@@ -947,7 +946,6 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="2010501376126504057">Mos qurilmalar</translation>
 <translation id="2016574333161572915">Google Meet qurilmalaringiz sozlanishga tayyor</translation>
 <translation id="2017334798163366053">Unumdorlik ma’lumotlari yig‘ilishini taqiqlash</translation>
-<translation id="2017836877785168846">Manzil qatoridan tarix va avtoto‘ldirishlarni tozalaydi.</translation>
 <translation id="2018352199541442911">Tashqi xotira qurilmalari ayni vaqtda qo‘llab-quvvatlanmaydi.</translation>
 <translation id="2019718679933488176">Audio yozuvni yangi varaqda ochish</translation>
 <translation id="2020183425253392403">Tarmoq manzili sozlamalari ko‘rsatilsin</translation>
@@ -2647,7 +2645,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3874164307099183178">Google Assistentni yoqish</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> qurilmasi uchun Nearby Share sozlamalari <ph name="USER_EMAIL" /> hisobi ostida yuboriladi.</translation>
 <translation id="3879748587602334249">Yuklanmalar menejeri</translation>
-<translation id="3881478300875776315">Kamroq qatorlarni koʻrsatish</translation>
 <translation id="3882165008614329320">Kamera yoki galereyadan olingan video</translation>
 <translation id="3884152383786131369">Bir nechta tilda chiqadigan veb kontent shu roʻyxatdagi birinchi mos tilni ishlatadi. Bu parametrlar brauzeringiz sozlamalari bilan sinxronlanadi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Yangilanishlar administrator tomonidan boshqariladi</translation>
@@ -2766,7 +2763,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3984159763196946143">Demo rejimi ishga tushmadi</translation>
 <translation id="3984431586879874039">Bu sayt uchun elektron kalit axborotlariga ruxsat berilsinmi?</translation>
 <translation id="398477389655464998">Havolani tanlangan matnga nusxalash</translation>
-<translation id="3986705137476756801">Jonli izohni hozircha faolsizlantirish</translation>
 <translation id="3987544746655539083">Bu sayt uchun joylashuv axborotiga hali ham ruxsat berilmasin</translation>
 <translation id="3987938432087324095">Yaxshi eshitilmadi.</translation>
 <translation id="3988996860813292272">Vaqt mintaqasini tanlang</translation>
@@ -3374,7 +3370,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4699172675775169585">Keshda saqlangan tavsirlar va boshqa fayllar</translation>
 <translation id="4699357559218762027">(avtomatik-ishga tushirilgan)</translation>
 <translation id="4701025263201366865">Ota-onalar uchun kirish</translation>
-<translation id="4702656508969495934">Jonli izoh yoniq, fokuslash uchun oynani almashtiring</translation>
 <translation id="4708794300267213770">Qurilma uyqu rejimidan chiqarilishida ekran qulfi ko‘rsatilsin</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />’dan chiqish</translation>
 <translation id="4711638718396952945">Dastlabki sozlamalarni tiklash</translation>
@@ -3877,7 +3872,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5300287940468717207">Sayt huquqlari tiklansinmi?</translation>
 <translation id="5300589172476337783">Ko‘rsatish</translation>
 <translation id="5300719150368506519">Siz tashrif buyurgan URL manzillarni Google serverlariga yuborish</translation>
-<translation id="5300814202279832142">Oynani ish stoliga koʻchirish</translation>
 <translation id="5301751748813680278">Mehmon sifatida kirilmoqda.</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">Til</translation>
@@ -5494,7 +5488,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="711840821796638741">Boshqariladigan xatcho‘plarni ko‘rsatish</translation>
 <translation id="711902386174337313">Tizimga kirish amali bajarilgan qurilmalar ro‘yxati</translation>
 <translation id="7120865473764644444">Sinxronizatsiya serveriga ulana olmadi. Qayta urinilmoqda...</translation>
-<translation id="7121362699166175603">Manzil qatoridagi tarix va avto‘ldirishlarni tozalaydi. Google hisobingiz orqali bajargan internetdagi faoliyatingizni <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> orqali ko‘rishingiz mumkin.</translation>
 <translation id="7121438501124788993">Dasturchi rejimi</translation>
 <translation id="7121728544325372695">Smart tirelar</translation>
 <translation id="7123030151043029868">Bir nechta faylni avtomatik yuklashga ruxsat berilgan</translation>
@@ -5667,7 +5660,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7334274148831027933">Lupani ekranga mahkamlash</translation>
 <translation id="7335974957018254119">Imlo tekshiruvi quyidagilar uchun ishlatilsin:</translation>
 <translation id="7336799713063880535">Bildirishnomalar bloklandi.</translation>
-<translation id="7337248890521463931">Koʻproq qatorlarni koʻrsatish</translation>
 <translation id="7338630283264858612">Qurilma seriya raqami yaroqsiz.</translation>
 <translation id="7339763383339757376">PKCS #7, yagona sertifikat</translation>
 <translation id="7339785458027436441">Matn terish vaqtida imloni tekshirish</translation>
@@ -7368,7 +7360,6 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="9209563766569767417">Linux konteyneri sozlamalari tekshirilmoqda</translation>
 <translation id="9209689095351280025">Saytlar sizni internet boʻylab kuzatadigan cookie fayllardan foydalana olmaydi.</translation>
 <translation id="9211177926627870898">Yangilash zarur</translation>
-<translation id="9211490828691860325">Barcha ish stollari</translation>
 <translation id="9214510034298163263">Saytlar qurilmangizdagi fayl yoki jildlarni tahrirlash uchun ruxsat soʻray oladi (tavsiya etiladi)</translation>
 <translation id="9214520840402538427">Afsuski, vaqt sozlamalarini o‘rnatishga tayyorlash vaqti tugadi. Xizmat ko‘rsatish markazi bilan bog‘laning.</translation>
 <translation id="9214695392875603905">Keks</translation>

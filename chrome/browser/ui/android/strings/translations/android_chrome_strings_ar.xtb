@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">الآن</translation>
 <translation id="2172688499998841696">ميزة أوصاف الصور غير مفعَّلة.</translation>
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
-<translation id="2181298861158186289">إخفاء محتوى الحافظة</translation>
 <translation id="218608176142494674">المشاركة</translation>
 <translation id="2195339740518523951">‏الحصول على أعلى مستوى من الحماية في متصفِّح Chrome</translation>
 <translation id="2200113223741723867">إدارة مشاركة بيانات الاستخدام</translation>
@@ -842,7 +841,6 @@
 <translation id="6539092367496845964">حدث خطأ. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{تمّ إجراء عملية التحقُّق قبل ساعة واحدة.}zero{تمّ إجراء عملية التحقُّق قبل # ساعة.}two{تمّ إجراء عملية التحقُّق قبل ساعتَين.}few{تمّ إجراء عملية التحقُّق قبل # ساعات.}many{تمّ إجراء عملية التحقُّق قبل # ساعة.}other{تمّ إجراء عملية التحقُّق قبل # ساعة.}}</translation>
 <translation id="6545017243486555795">محو جميع البيانات</translation>
-<translation id="6549142516027084053">عرض محتوى الحافظة</translation>
 <translation id="6560414384669816528">‏البحث باستخدام Sogou</translation>
 <translation id="656065428026159829">عرض المزيد</translation>
 <translation id="6565959834589222080">‏يتم استخدام شبكة Wi-Fi في حال توفّرها.</translation>
@@ -936,7 +934,6 @@
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7187993566681480880">‏يوفِّر لك هذا الوضع حماية في Chrome، ويمكن استخدامه لتحسين مستوى أمانك في تطبيقات Google الأخرى عندما تكون مسجّلاً الدخول.</translation>
 <translation id="718926126787620637">تم فتح قائمة مجلدات الإشارات المرجعية بطول الشاشة.</translation>
-<translation id="7189372733857464326">‏انتظار انتهاء تحديث خدمات Google Play</translation>
 <translation id="7191430249889272776">تم فتح علامة التبويب في الخلفية.</translation>
 <translation id="7233236755231902816">‏للاطّلاع على الويب بلغتك، يمكنك الحصول على أحدث إصدار من Chrome.</translation>
 <translation id="7248069434667874558">‏يُرجى التأكّد من تفعيل مزامنة <ph name="TARGET_DEVICE_NAME" /> في Chrome.</translation>
@@ -1167,7 +1164,7 @@
 <translation id="8655129584991699539">‏يمكنك محو البيانات في إعدادات Chrome.</translation>
 <translation id="8656747343598256512">‏سيتم تسجيل الدخول إلى هذا الموقع الإلكتروني وإلى Chrome باستخدام حسابك على Google. يمكنك تفعيل المزامنة لاحقًا.</translation>
 <translation id="8659579665266920523">‏كيفية البحث باستخدام Chrome</translation>
-<translation id="8662811608048051533">يخرجك من معظم المواقع الإلكترونية.</translation>
+<translation id="8662811608048051533">الخروج من معظم المواقع الإلكترونية.</translation>
 <translation id="8664979001105139458">اسم الملف موجود</translation>
 <translation id="8683039184091909753">صورة</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{مستوى قوة الإشارة: شريط واحد (#)}zero{مستوى قوة الإشارة: # شريط}two{مستوى قوة الإشارة: شريطان (#)}few{مستوى قوة الإشارة: # أشرطة}many{مستوى قوة الإشارة: # شريطًا}other{مستوى قوة الإشارة: # شريط}}</translation>

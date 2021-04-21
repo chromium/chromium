@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;Ferramentas</translation>
 <translation id="1122242684574577509">Falha na autenticação. Clique para visitar a página de login da rede Wi-Fi que você está usando (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">Nome do favorito</translation>
-<translation id="1123753900084781868">A "Legenda instantânea" não está disponível no momento</translation>
 <translation id="1124772482545689468">Usuário</translation>
 <translation id="1125550662859510761">Resolução: <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1126809382673880764">Não protege você contra sites, downloads e extensões perigosos. Você ainda terá a proteção do "Navegação segura", sempre que possível, em outros Serviços do Google, como o Gmail e a Pesquisa.</translation>
@@ -755,6 +754,7 @@
 <translation id="1794791083288629568">Envie um feedback para nos ajudar a corrigir esse problema.</translation>
 <translation id="1795214765651529549">Usar "Clássico"</translation>
 <translation id="1799071797295057738">A extensão "<ph name="EXTENSION_NAME" />" foi desativada automaticamente.</translation>
+<translation id="1800973090344019061">A extensão <ph name="APP_NAME" /> quer compartilhar o conteúdo da sua tela.</translation>
 <translation id="1802624026913571222">Suspender quando a capa for fechada</translation>
 <translation id="1802687198411089702">A página não está respondendo. Você pode esperar até que ele volte a responder ou sair.</translation>
 <translation id="1803531841600994172">Idioma de destino</translation>
@@ -949,7 +949,6 @@
 <translation id="2010501376126504057">Dispositivos compatíveis</translation>
 <translation id="2016574333161572915">Seu hardware do Google Meet está pronto para ser configurado</translation>
 <translation id="2017334798163366053">Desativar coleta de dados de desempenho</translation>
-<translation id="2017836877785168846">Limpa o histórico e o preenchimento automático na barra de endereço.</translation>
 <translation id="2018352199541442911">Seu dispositivo de armazenamento externo não é suportado atualmente.</translation>
 <translation id="2019718679933488176">&amp;Abrir áudio em uma nova guia</translation>
 <translation id="2020183425253392403">Mostrar configurações de endereço de rede</translation>
@@ -1355,6 +1354,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2464089476039395325">Proxy HTTP</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" /> precisa que você se conecte ao Wi-Fi para fazer o download de uma atualização. Você também pode fazer o download em uma conexão limitada (sujeito a cobrança).</translation>
 <translation id="2467267713099745100">Rede <ph name="NETWORK_TYPE" />, desativada</translation>
+<translation id="2467755475704469005">Nenhum dispositivo detectado. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Aceleração de rolagem do touchpad</translation>
 <translation id="2468205691404969808">Utiliza cookies para lembrar suas preferências, mesmo se você não acessar essas páginas</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
@@ -2384,6 +2384,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3608576286259426129">Visualização da imagem do usuário</translation>
 <translation id="3610369246614755442">A ventilação da base precisa de reparos</translation>
 <translation id="361106536627977100">Dados do Flash</translation>
+<translation id="3611655097742243705">Acesse a Play Store para ver mais apps</translation>
 <translation id="3612673635130633812">Download feito por &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Mostrar <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Abrir em nova guia</translation>
@@ -2648,7 +2649,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3874164307099183178">Ativar o Google Assistente</translation>
 <translation id="3877075909000773256">Configurações do "Compartilhar por proximidade" para o dispositivo de <ph name="USER_NAME" />, compartilhando com a conta <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Gerenciador de downloads</translation>
-<translation id="3881478300875776315">Mostrar menos linhas</translation>
 <translation id="3882165008614329320">Vídeo existente de uma câmera ou de um arquivo</translation>
 <translation id="3884152383786131369">Conteúdos da Web disponíveis em vários idiomas usarão o primeiro idioma compatível desta lista. Estas preferências são sincronizadas com as configurações do navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">As atualizações são gerenciadas pelo administrador</translation>
@@ -2720,6 +2720,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3943494825379372497">Restaurar apps e páginas?</translation>
 <translation id="3943582379552582368">&amp;Voltar</translation>
 <translation id="3943857333388298514">Colar</translation>
+<translation id="3945513714196326460">Tente um nome menor</translation>
 <translation id="3948116654032448504">&amp;Procurar imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pode editar arquivos nas seguintes pastas</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2766,7 +2767,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3984159763196946143">Não foi possível iniciar o modo de demonstração</translation>
 <translation id="3984431586879874039">Permitir que este site veja sua chave de segurança?</translation>
 <translation id="398477389655464998">Copiar link para o conteúdo destacado</translation>
-<translation id="3986705137476756801">Desativar "Legenda instantânea" por enquanto</translation>
 <translation id="3987544746655539083">Continuar impedindo que este site acesse sua localização</translation>
 <translation id="3987938432087324095">Não entendi.</translation>
 <translation id="3988996860813292272">Selecionar fuso horário</translation>
@@ -3106,6 +3106,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4415245286584082850">Nenhum dispositivo encontrado. Abrir um artigo da Central de Ajuda em uma nova guia.</translation>
 <translation id="4415276339145661267">Gerenciar sua Conta do Google</translation>
 <translation id="4415748029120993980">Curva elíptica SECG secp384r1 (também conhecida como NIST P-384)</translation>
+<translation id="4416450511678320850">Nenhum app disponível para esse conteúdo</translation>
 <translation id="4416582610654027550">Digite um URL válido</translation>
 <translation id="4419409365248380979">Sempre permitir que <ph name="HOST" /> configure cookies</translation>
 <translation id="4421932782753506458">Pelúcia</translation>
@@ -3373,7 +3374,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4699172675775169585">Imagens e arquivos armazenados em cache</translation>
 <translation id="4699357559218762027">(aberto automaticamente)</translation>
 <translation id="4701025263201366865">Login do pai/mãe</translation>
-<translation id="4702656508969495934">Legenda instantânea visível. Use o seletor de janelas para definir o foco</translation>
 <translation id="4708794300267213770">Mostrar tela de bloqueio ao sair do modo de suspensão</translation>
 <translation id="4708849949179781599">Encerrar o <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurar configurações</translation>
@@ -3399,6 +3399,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="473936925429402449">Selecionado, conteúdo extra <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tíquetes</translation>
 <translation id="4742334355511750246">Bloquear a exibição de imagens</translation>
+<translation id="4742970037960872810">Remover destaque</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Saiba como atualizar aplicativos<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Ativar som do site}one{Ativar som do site}other{Ativar som dos sites}}</translation>
 <translation id="4746351372139058112">Mensagens</translation>
@@ -3875,7 +3876,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5300287940468717207">Redefinir permissões do site?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5300719150368506519">Enviar ao Google os URLs das páginas que você visita</translation>
-<translation id="5300814202279832142">Mover janela para o espaço de trabalho</translation>
 <translation id="5301751748813680278">Entrando como Visitante.</translation>
 <translation id="5301954838959518834">Ok, entendi</translation>
 <translation id="5302048478445481009">Idioma</translation>
@@ -4609,6 +4609,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6136114942382973861">Fechar barra de downloads</translation>
 <translation id="6136287496450963112">Sua chave de segurança não está protegida com um PIN. Crie um PIN para gerenciar impressões digitais.</translation>
 <translation id="6138680304137685902">Assinatura X9.62 ECDSA com SHA-384</translation>
+<translation id="6138774640412545950">A extensão <ph name="APP_NAME" /> quer compartilhar o conteúdo da sua tela com <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, sem rede</translation>
 <translation id="6141988275892716286">Confirmar download</translation>
 <translation id="6143186082490678276">Receber ajuda</translation>
@@ -5398,6 +5399,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> está usando a câmera</translation>
 <translation id="701080569351381435">Exibir o código fonte</translation>
 <translation id="7014174261166285193">Falha na instalação.</translation>
+<translation id="7014480873681694324">Remover destaque</translation>
 <translation id="7017004637493394352">Diga "Ok Google" novamente</translation>
 <translation id="7017219178341817193">Adicionar uma nova página</translation>
 <translation id="7017354871202642555">Não é possível definir o modo após a definição da janela.</translation>
@@ -5491,7 +5493,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="711840821796638741">Mostrar favoritos gerenciados</translation>
 <translation id="711902386174337313">Ler a lista dos dispositivos nos quais você fez login</translation>
 <translation id="7120865473764644444">Não foi possível se conectar ao servidor de sincronização. Tentando novamente…</translation>
-<translation id="7121362699166175603">Limpa o histórico e os preenchimentos automáticos na barra de endereço. Sua Conta do Google pode ter outras formas de histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Modo de desenvolvedor</translation>
 <translation id="7121728544325372695">Traços inteligentes</translation>
 <translation id="7123030151043029868">Permitir o download automático de vários arquivos</translation>
@@ -5664,7 +5665,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7334274148831027933">Ativar lupa em área fixa</translation>
 <translation id="7335974957018254119">Usar verificação ortográfica para</translation>
 <translation id="7336799713063880535">Notificações bloq.</translation>
-<translation id="7337248890521463931">Mostrar mais linhas</translation>
 <translation id="7338630283264858612">O número de série do dispositivo é inválido.</translation>
 <translation id="7339763383339757376">PKCS #7, certificado único</translation>
 <translation id="7339785458027436441">Verificar ortografia ao digitar</translation>
@@ -7368,7 +7368,6 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="9209563766569767417">Verificando a configuração do contêiner Linux</translation>
 <translation id="9209689095351280025">Os sites não podem usar cookies que rastreiem você pela Web</translation>
 <translation id="9211177926627870898">Atualização necessária</translation>
-<translation id="9211490828691860325">Todos os espaços de trabalho</translation>
 <translation id="9214510034298163263">Os sites podem pedir para editar arquivos e pastas no dispositivo (recomendado)</translation>
 <translation id="9214520840402538427">Ops! A inicialização dos atributos de tempo de instalação ultrapassou o tempo limite. Entre em contato com o representante de suporte.</translation>
 <translation id="9214695392875603905">Cupcake</translation>

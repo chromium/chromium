@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">Разрешите Chromium блокировать для посторонних доступ к вашим вкладкам инкогнито.</translation>
 <translation id="1472013873724362412">Ваш аккаунт не поддерживается в Chromium. Обратитесь к администратору домена или войдите с помощью обычного аккаунта Google.</translation>
 <translation id="1507010443238049608">Помочь улучшить производительность и функции Chromium</translation>
+<translation id="1531155317299575425">Показывать подсказки для входа в Chromium</translation>
 <translation id="1617663976202781617">Данные, сохраненные с помощью синхронизации Chromium</translation>
 <translation id="1736662517232558588">Данные Chromium удалены</translation>
 <translation id="1838412507805038478">Данные Chromium подтверждают, что сертификат сайта выпущен компанией <ph name="ISSUER" />.</translation>
@@ -49,6 +50,7 @@
 <translation id="5396916991083608703">Сделать Chromium браузером по умолчанию?</translation>
 <translation id="5521125884468363740">Чтобы ваши вкладки всегда были доступны вам при работе с Chromium, выполните вход и включите синхронизацию.</translation>
 <translation id="5573014823074921752">Совет для Chromium. Чтобы открыть список дополнительных действий с вкладками, нажмите и удерживайте кнопку "Показать вкладки" на панели инструментов в нижней или верхней части экрана.</translation>
+<translation id="5651741435382092412">Войдите на этот сайт, в аккаунт Google и в Chromium. Синхронизацию можно будет позже включить в настройках.</translation>
 <translation id="5700709190537129682">Не удается проверить пароли в Chromium.</translation>
 <translation id="5742135483959137648">Открывайте ссылки в Chromium</translation>
 <translation id="5777187867430702742">Страница Chromium</translation>
@@ -60,6 +62,7 @@
 2. Найдите раздел, где выбирается браузер по умолчанию.
 3. Выберите Chromium.</translation>
 <translation id="6268381023930128611">Выйти из Chromium?</translation>
+<translation id="632825460376924298">Разрешить вход в Chromium</translation>
 <translation id="6337530241089703714">Удалить данные Chromium с этого устройства?</translation>
 <translation id="6424492062988593837">Chromium становится лучше! Доступна новая версия.</translation>
 <translation id="6820823224820483452">Браузеру Chromium не удается проверить все пароли. Повторите попытку завтра.</translation>

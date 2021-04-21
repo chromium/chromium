@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">Now</translation>
 <translation id="2172688499998841696">इमेजची वर्णने बंद आहेत</translation>
 <translation id="2175927920773552910">QR कोड</translation>
-<translation id="2181298861158186289">क्लिपबोर्डवरील आशय लपवा</translation>
 <translation id="218608176142494674">शेअर करत आहे</translation>
 <translation id="2195339740518523951">Chrome ची सर्वोत्तम सुरक्षितता मिळवा</translation>
 <translation id="2200113223741723867">वापर डेटा शेअरिंग व्यवस्थापित करा</translation>
@@ -842,7 +841,6 @@
 <translation id="6539092367496845964">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{एका तासापूर्वी तपासले}other{# तासांपूर्वी तपासले}}</translation>
 <translation id="6545017243486555795">सर्व डेटा साफ करा</translation>
-<translation id="6549142516027084053">क्लिपबोर्डवरील आशय दाखवा</translation>
 <translation id="6560414384669816528">Sogou सह शोध करा</translation>
 <translation id="656065428026159829">आणखी पाहा</translation>
 <translation id="6565959834589222080">उपलब्ध असेल तेव्हा वाय-फाय वापरला जातो</translation>
@@ -936,7 +934,6 @@
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="7187993566681480880">तुम्हाला Chrome वर सुरक्षित ठेवते आणि तुम्ही साइन इन केलेले असताना इतर Google अ‍ॅप्समध्ये तुमच्या सुरक्षेत सुधारणा करण्यासाठी वापरले जाऊ शकते.</translation>
 <translation id="718926126787620637">पूर्ण उंचीवर उघडलेल्या बुकमार्क फोल्डरची सूची</translation>
-<translation id="7189372733857464326">Google Play सेवांंनी अपडेट करणे समाप्त करण्याची प्रतीक्षा करीत आहे</translation>
 <translation id="7191430249889272776">पार्श्वभूमीवर उघडा असलेला टॅब.</translation>
 <translation id="7233236755231902816">तुमच्या भाषेत वेब पाहण्यासाठी, Chrome ची नवीनतम आवृत्ती मिळवा</translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> ने Chrome मध्ये सिंक सुरू केले असल्याची खात्री करा</translation>

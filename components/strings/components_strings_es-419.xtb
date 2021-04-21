@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Si marcas esta opción, Chrome almacenará una copia de la tarjeta en el dispositivo para completar más rápidamente los formularios.</translation>
 <translation id="1110994991967754504">Selecciona el permiso para <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Deshacer Reorganizar</translation>
+<translation id="1123753900084781868">El Subtitulado instantáneo no está disponible en este momento</translation>
 <translation id="1125573121925420732">Las advertencias pueden ser habituales cuando las páginas web actualizan su seguridad. Esto debería mejorar pronto.</translation>
 <translation id="112840717907525620">Caché de política correcta</translation>
 <translation id="1130564665089811311">Botón Traducir página: presiona Intro para traducir esta página con Google Traductor</translation>
@@ -217,6 +218,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{El servidor no logró comprobar si el dominio es <ph name="DOMAIN" />; supuestamente, el certificado de seguridad entra en vigencia mañana. Es posible que esto se deba a una configuración incorrecta o a que un atacante haya interceptado la conexión.}other{El servidor no logró comprobar si el dominio es <ph name="DOMAIN" />; supuestamente, el certificado de seguridad entra en vigencia en # días. Es posible que esto se deba a una configuración incorrecta o a que un atacante haya interceptado la conexión.}}</translation>
 <translation id="1710259589646384581">SO</translation>
+<translation id="1711234383449478798">Se ignoró porque <ph name="POLICY_NAME" /> no se estableció como <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> desea almacenar de forma permanente los datos en tu computadora local</translation>
 <translation id="1713628304598226412">Bandeja 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -767,6 +769,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3841184659773414994">Controladores de archivos</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3858027520442213535">Actualizar fecha y hora</translation>
+<translation id="3881478300875776315">Mostrar menos líneas</translation>
 <translation id="3884278016824448484">Hay un identificador de dispositivo en conflicto.</translation>
 <translation id="3885155851504623709">Distrito</translation>
 <translation id="388632593194507180">Se detectó una supervisión</translation>
@@ -792,6 +795,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861">Se bloqueó <ph name="HOST_NAME" /></translation>
 <translation id="3973357910713125165">Botón Realizar Verificación de seguridad de Chrome: presiona Intro para realizar la Verificación de seguridad en la configuración de Chrome</translation>
+<translation id="3986705137476756801">Desactivar el Subtitulado instantáneo por el momento</translation>
 <translation id="3987405730340719549">Chrome determinó que este sitio podría ser falso o fraudulento.
 
     Si consideras que se trata de un error, visita https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -916,6 +920,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4377125064752653719">Intentaste acceder a <ph name="DOMAIN" />, pero el emisor anuló el certificado que presentó el servidor. Esto significa que no se debe confiar en absoluto en las credenciales de seguridad que presentó el servidor. Te puedes estar comunicando con un atacante.</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4390472908992056574">Borde</translation>
+<translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4406896451731180161">resultados de búsqueda</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Ingresaste tu contraseña en un sitio engañoso. Chrome te recomienda cambiar esta contraseña ahora en <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> y otros sitios donde la uses.</translation>
@@ -981,6 +986,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lado</translation>
+<translation id="4702656508969495934">El Subtitulado instantáneo está visible; utiliza el botón de cambio de ventana para enfocar</translation>
 <translation id="4708268264240856090">Se interrumpió la conexión</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Ejecución del Diagnóstico de red de Windows<ph name="END_LINK" /></translation>
@@ -1651,6 +1657,7 @@ Detalles adicionales:
 <translation id="733354035281974745">Se anuló la cuenta local del dispositivo</translation>
 <translation id="7333654844024768166">Ingresaste tu contraseña en un sitio engañoso. Chromium te recomienda cambiar esta contraseña ahora en <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> y otros sitios donde la uses.</translation>
 <translation id="7334320624316649418">&amp;Rehacer Reorganizar</translation>
+<translation id="7337248890521463931">Mostrar más líneas</translation>
 <translation id="7337706099755338005">No está disponible para tu plataforma.</translation>
 <translation id="733923710415886693">El certificado del servidor no se divulgó mediante el Certificado de transparencia.</translation>
 <translation id="734600844861828519">11x15</translation>

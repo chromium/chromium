@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Chrome-ისთვის თქვენი მდებარეობის დადგენის დაშვების შემთხვევაში Chrome მას გაუგზავნის საიტებს, რომლებისთვისაც შესაბამის ნებართვას გასცემთ. საიტებს მდებარეობის მოთხოვნა შეუძლია ისეთი ადგილობრივი ინფორმაციის საჩვენებლად, როგორიცაა, მაგალითად, ახლომდებარე მაღაზიები ან ახალი ამბები.</translation>
 <translation id="6036420186814142909">Google Chrome-ის ფუნქციების საშუალებით შეგიძლიათ მართოთ ინტერნეტ-მონაცემები და ვებგვერდების ჩატვირთვის სისწრაფე.
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Chrome-ში შესვლის დაშვება</translation>
 <translation id="6181930887571472871">გადაერთეთ Chrome-ზე</translation>
 <translation id="6238746320622508509">მიეცით საშუალება Chrome-ს, ჩაკეტოს თქვენი ინკოგნიტო ჩანართები.</translation>
 <translation id="6573431926118603307">სხვა მოწყობილობებზე თქვენ მიერ Chrome-ით გახსნილი ჩანართები აქ გამოჩნდება.</translation>
@@ -96,5 +97,6 @@
   3. აირჩიეთ Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">იყავით უსაფრთხოდ Google Chrome-თან ერთად</translation>
+<translation id="8772179140489533211">გამოაჩენს Chrome-ში შესვლის მოთხოვნებს.</translation>
 <translation id="9112744793181547300">გსურთ, ნაგულისხმევად დააყენოთ Chrome?</translation>
 </translationbundle>

@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Ako dozvolite da Chrome sazna lokaciju, Chrome je šalje svim sajtovima za koje dozvolite. Sajtovi mogu da zatraže lokaciju kada imaju da vam prikažu lokalne informacije, poput radnji ili vesti u blizini.</translation>
 <translation id="6036420186814142909">Google Chrome ima funkcije koje vam pomažu da upravljate internet podacima i brzinom učitavanja veb-stranica.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Dozvolite prijavljivanje u Chrome</translation>
 <translation id="6181930887571472871">Pređite na Chrome</translation>
 <translation id="6238746320622508509">Dozvolite Chrome-u da zaključa kartice bez arhiviranja.</translation>
 <translation id="6573431926118603307">Ovde će se prikazati kartice koje otvorite u Chrome-u na drugim uređajima.</translation>
@@ -96,5 +97,6 @@
   3. Izaberite Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Ostanite bezbedni uz Google Chrome</translation>
+<translation id="8772179140489533211">Prikazuje upite za prijavljivanje u Chrome.</translation>
 <translation id="9112744793181547300">Želite da podesite Chrome kao podrazumevani?</translation>
 </translationbundle>

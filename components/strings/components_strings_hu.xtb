@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Ha be van jelölve, a Chrome ezen az eszközön tárolja a kártya egy példányát az űrlapok gyorsabb kitöltéséhez.</translation>
 <translation id="1110994991967754504">Engedély kiválasztása a következőhöz: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Átrendezés visszavonása</translation>
+<translation id="1123753900084781868">Az élő feliratozás jelenleg nem áll rendelkezésre</translation>
 <translation id="1125573121925420732">Gyakran előfordulhatnak figyelmeztetések, amikor a webhelyek frissítik biztonsági megoldásaikat. Ez a helyzet hamarosan javulhat.</translation>
 <translation id="112840717907525620">Irányelv-gyorsítótár OK</translation>
 <translation id="1130564665089811311">Oldal lefordítása gomb, az Enter billentyű megnyomásával lefordíttathatja ezt az oldalt a Google Fordító segítségével</translation>
@@ -217,6 +218,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa elméletileg holnaptól érvényes. Ennek oka lehet konfigurációs hiba, de az is lehet, hogy egy támadó eltérítette az Ön kapcsolódását.}other{A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa elméletileg # nap múlva lép érvénybe. Ennek oka lehet konfigurációs hiba, de az is lehet, hogy egy támadó eltérítette az Ön kapcsolódását.}}</translation>
 <translation id="1710259589646384581">OS</translation>
+<translation id="1711234383449478798">Figyelmen kívül hagyva, mivel a(z) <ph name="POLICY_NAME" /> nincs erre az értékre állítva: <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520">A(z) <ph name="URL" /> webhely állandó jelleggel adatokat szeretne tárolni a helyi számítógépen</translation>
 <translation id="1713628304598226412">2. tálca</translation>
 <translation id="1715874602234207">F</translation>
@@ -768,6 +770,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3841184659773414994">Fájlkezelők</translation>
 <translation id="385051799172605136">Vissza</translation>
 <translation id="3858027520442213535">Dátum és idő frissítése</translation>
+<translation id="3881478300875776315">Kevesebb sor megjelenítése</translation>
 <translation id="3884278016824448484">Eszközazonosító-ütközés</translation>
 <translation id="3885155851504623709">Körzet</translation>
 <translation id="388632593194507180">Figyelés észlelve</translation>
@@ -793,6 +796,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="397105322502079400">Számítás…</translation>
 <translation id="3973234410852337861">A(z) <ph name="HOST_NAME" /> le van tiltva</translation>
 <translation id="3973357910713125165">A Chrome biztonsági ellenőrzését futtató gomb. Nyomja le az Entert a biztonsági ellenőrzés futtatásához a Chrome beállításaiban.</translation>
+<translation id="3986705137476756801">Élő feliratozás átmeneti kikapcsolása</translation>
 <translation id="3987405730340719549">A Chrome azt észlelte, hogy ez a webhely hamis vagy megtévesztő szándékú lehet.
 
     Ha úgy gondolja, hogy ez a figyelmeztetés téves, keresse fel a következő oldalt: https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -922,6 +926,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4377125064752653719">A(z) <ph name="DOMAIN" /> webhelyet próbálta megnyitni, de a kiállító visszavonta a szerver által bemutatott tanúsítványt. Ez azt jelenti, hogy a szerver biztonsági igazolásaiban egyáltalán nem lehet megbízni. Lehet, hogy egy támadóval áll kapcsolatban.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4390472908992056574">Perem</translation>
+<translation id="4406883609789734330">Élő feliratozás</translation>
 <translation id="4406896451731180161">keresési találat</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> cookie</translation>
 <translation id="4414290883293381923">Megtévesztő webhelyen adta meg jelszavát. A Chrome azt javasolja, hogy keresse fel azokat a webhelyeket (pl. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> és <ph name="WEBSITE_3" />), amelyeken ezt a jelszót használja, és módosítsa most a jelszót.</translation>
@@ -987,6 +992,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4691835149146451662">Architecture-A (boríték)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Oldal</translation>
+<translation id="4702656508969495934">Az Élő feliratozás látható, a fókuszáláshoz használja az ablakváltót</translation>
 <translation id="4708268264240856090">Kapcsolata megszakadt</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />A Windows Hálózati diagnosztika futtatása<ph name="END_LINK" /></translation>
@@ -1657,6 +1663,7 @@ További részletek:
 <translation id="733354035281974745">Eszköz helyi fiókja általi felülbírálás</translation>
 <translation id="7333654844024768166">Megtévesztő webhelyen adta meg jelszavát. A Chromium azt javasolja, hogy keresse fel azokat a webhelyeket (pl. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> és <ph name="WEBSITE_3" />), amelyeken ezt a jelszót használja, és módosítsa most a jelszót.</translation>
 <translation id="7334320624316649418">&amp;Átrendezés újra</translation>
+<translation id="7337248890521463931">Több sor megjelenítése</translation>
 <translation id="7337706099755338005">Nem áll rendelkezésre ezen a platformon.</translation>
 <translation id="733923710415886693">A szerver tanúsítványát nem A tanúsítványok átláthatósága keretrendszeren keresztül hozták nyilvánosságra.</translation>
 <translation id="734600844861828519">11x15</translation>

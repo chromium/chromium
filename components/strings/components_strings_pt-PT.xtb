@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Se marcada, o Chrome armazena uma cópia do seu cartão neste dispositivo para preencher formulários mais rapidamente.</translation>
 <translation id="1110994991967754504">Selecionar autorização para <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Anular reordenação</translation>
+<translation id="1123753900084781868">As Legendas instantâneas não estão disponíveis neste momento.</translation>
 <translation id="1125573121925420732">Pode ser frequente a apresentação de avisos enquanto os Websites atualizam a respetiva segurança. Esta situação deve melhorar brevemente.</translation>
 <translation id="112840717907525620">Cache da política OK</translation>
 <translation id="1130564665089811311">Botão Traduzir página; prima Enter para traduzir esta página com o Google Tradutor.</translation>
@@ -217,6 +218,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Este servidor não conseguiu provar que é <ph name="DOMAIN" />; o seu certificado de segurança é supostamente de amanhã. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.}other{Este servidor não conseguiu provar que é <ph name="DOMAIN" />; a data do seu certificado de segurança é supostamente daqui a # dias. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.}}</translation>
 <translation id="1710259589646384581">SO</translation>
+<translation id="1711234383449478798">Ignorada porque a política <ph name="POLICY_NAME" /> não está definida como <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> pretende armazenar permanentemente os dados no seu computador local.</translation>
 <translation id="1713628304598226412">Tabuleiro 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -772,6 +774,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3841184659773414994">Controladores de ficheiros</translation>
 <translation id="385051799172605136">Anterior</translation>
 <translation id="3858027520442213535">Atualizar a data e a hora</translation>
+<translation id="3881478300875776315">Mostrar menos linhas</translation>
 <translation id="3884278016824448484">Identificador do dispositivo em conflito</translation>
 <translation id="3885155851504623709">Freguesia</translation>
 <translation id="388632593194507180">Monitorização detetada</translation>
@@ -797,6 +800,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="397105322502079400">A calcular...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
 <translation id="3973357910713125165">Botão Executar verificação de segurança do Chrome, prima Enter para executar a verificação de segurança nas Definições do Chrome.</translation>
+<translation id="3986705137476756801">Desativar as Legendas instantâneas por agora</translation>
 <translation id="3987405730340719549">O Chrome determinou que este site pode ser falso ou fraudulento.
 
     Se acha que se trata de um erro, aceda a https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -926,6 +930,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4377125064752653719">Tentou aceder a <ph name="DOMAIN" />, mas o certificado que o servidor apresentou foi revogado pelo emissor. Isto significa que as credenciais de segurança apresentadas pelo servidor não deverão, em circunstância alguma, ser consideradas fidedignas. Pode estar a comunicar com um utilizador mal intencionado.</translation>
 <translation id="4378154925671717803">Telemóvel</translation>
 <translation id="4390472908992056574">Borda</translation>
+<translation id="4406883609789734330">Legendas instantâneas</translation>
 <translation id="4406896451731180161">resultados da pesquisa</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chrome recomenda que aceda a <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> e outros sites em que utilize esta palavra-passe e a altere agora.</translation>
@@ -991,6 +996,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lado</translation>
+<translation id="4702656508969495934">Legendas instantâneas visíveis, utilize o comutador de janelas para focar</translation>
 <translation id="4708268264240856090">A ligação foi interrompida</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Executar o Diagnóstico de rede do Windows<ph name="END_LINK" /></translation>
@@ -1661,6 +1667,7 @@ Detalhes adicionais:
 <translation id="733354035281974745">Substituição da conta local do dispositivo</translation>
 <translation id="7333654844024768166">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chromium recomenda que aceda a <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> e outros sites em que utilize esta palavra-passe e a altere agora.</translation>
 <translation id="7334320624316649418">&amp;Refazer reordenação</translation>
+<translation id="7337248890521463931">Mostrar mais linhas</translation>
 <translation id="7337706099755338005">Indisponível na sua plataforma.</translation>
 <translation id="733923710415886693">O certificado do servidor não foi divulgado através da Transparência de certificados.</translation>
 <translation id="734600844861828519">11x15</translation>

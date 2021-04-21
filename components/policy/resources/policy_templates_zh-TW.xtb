@@ -1676,6 +1676,13 @@
 <translation id="3177802893484440532">需要為本機信任錨點執行線上 OCSP/CRL 檢查</translation>
 <translation id="3184161739683646075">控管 DNS-over-HTTPS 的模式</translation>
 <translation id="3185009703220253572">自第 <ph name="SINCE_VERSION" /> 版起</translation>
+<translation id="3185895671618336039">設定 <ph name="PRODUCT_NAME" /> 的瀏覽資料生命週期。管理員可以透過這項政策設定瀏覽器刪除資料 (依資料類型) 的時間點。這很適合需要處理敏感客戶資料的客戶。這項政策只有在 <ph name="SYNC_DISABLED_POLICY_NAME" /> 設為 True 時才會生效。
+
+      可選擇的資料類型有 <ph name="DATA_TYPE_BROWSING_HISTORY" />、<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />、<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />、<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、<ph name="DATA_TYPE_PASSWORD" />、<ph name="DATA_TYPE_AUTOFILL" />、<ph name="DATA_TYPE_SITE_SETTINGS" /> 和 <ph name="DATA_TYPE_HOSTED_APP_DATA" />。
+
+      瀏覽器會根據所選資料類型，自動刪除存放時間超過 <ph name="TIME_TO_LIVE_IN_HOURS" />的資料。下限值是 1 小時。
+
+      系統會在瀏覽器啟動後 15 秒刪除超過保留期限的資料，並在瀏覽器執行期間每小時執行一次刪除作業。</translation>
 <translation id="3192902750888034827">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" /> 政策來指定用於提供新分頁的搜尋引擎網址。
 
       如果未設定 <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" /> 政策，搜尋引擎不會提供新分頁。</translation>
@@ -4519,6 +4526,11 @@
           如果不設定這項政策，檔案櫃預設會顯示在畫面底部，且使用者可以變更檔案櫃的位置。</translation>
 <translation id="7040229947030068419">範例值：</translation>
 <translation id="7044883996351280650">控制 Android 備份與還原服務</translation>
+<translation id="7060497964524144376">如果將這項政策設為啟用，安全瀏覽功能會信任你指定的網域。這表示該功能不會確認這些網域是否為網路詐騙、惡意軟體或垃圾軟體等危險資源。安全瀏覽功能的下載保護服務不會檢查這些網域代管的下載內容，其中的密碼保護服務也不會檢查密碼重複使用情形。
+
+      如果不設定這項政策，系統會將預設的安全瀏覽保護功能套用至所有資源。
+
+      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="7063895219334505671">允許這些網站的彈出式視窗</translation>
 <translation id="706669471845501145">允許網站顯示桌面通知</translation>
 <translation id="7070525176564511548">每週 (168 小時) 需輸入一次密碼</translation>
@@ -6108,6 +6120,7 @@
 <translation id="927444535723396977">如果將這項政策設為 1，網站即可執行 JavaScript。如果將這項政策設為 2，網站將無法執行 JavaScript。
 
       如果不設定，網站可執行 JavaScript，但使用者可以變更這項設定。</translation>
+<translation id="928189505080808353">通訊埠 554 (2021 年 10 月 15 日到期)</translation>
 <translation id="929549405492388749">如果設為 True，即使 Chrome 預設為不提供 AppCache，系統仍會強制啟用 AppCache。
 
       如果不設定或設為 False，系統會按照 Chrome 的預設值啟用或停用 AppCache。</translation>

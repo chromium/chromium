@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">ابھی</translation>
 <translation id="2172688499998841696">تصویر کی تفصیلات آف ہیں</translation>
 <translation id="2175927920773552910">‏QR کوڈ</translation>
-<translation id="2181298861158186289">کلپ بورڈ کے مواد کو چھپائیں</translation>
 <translation id="218608176142494674">اشتراک</translation>
 <translation id="2195339740518523951">‏Chrome کی مضبوط ترین سیکیورٹی حاصل کریں</translation>
 <translation id="2200113223741723867">استعمال کے ڈیٹا کے اشتراک کا نظم کریں</translation>
@@ -776,6 +775,7 @@
 <translation id="614940544461990577">آزمائیں:</translation>
 <translation id="6154478581116148741">اس آلہ سے اپنے پاس ورڈز برآمد کرنے کے لئے ترتیبات میں اسکرین لاک آن کریں</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> ڈیٹا کی سیونگز</translation>
+<translation id="6159729262978459665">مطابقت پذیر کردہ تمام آلات سے سرگزشت صاف ہو جاتی ہے۔</translation>
 <translation id="6186394685773237175">کوئی متاثرہ پاس ورڈ نہیں ملا</translation>
 <translation id="6192907950379606605">تصویری تفصیلات حاصل کریں</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> نہیں؟</translation>
@@ -841,7 +841,6 @@
 <translation id="6539092367496845964">کچھ غلط ہو گیا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 گھنٹہ پہلے چیک کیا گیا}other{# گھنٹے پہلے چیک کیا گیا}}</translation>
 <translation id="6545017243486555795">سبھی ڈیٹا صاف کریں</translation>
-<translation id="6549142516027084053">کلپ بورڈ مواد ظاہر کریں</translation>
 <translation id="6560414384669816528">‏Sogou کے ساتھ تلاش کریں</translation>
 <translation id="656065428026159829">مزید دیکھیں</translation>
 <translation id="6565959834589222080">‏دستیاب ہونے پر Wi-Fi کا استعمال کیا جاتا ہے</translation>
@@ -935,7 +934,6 @@
 <translation id="7180611975245234373">ریفریش کریں</translation>
 <translation id="7187993566681480880">‏آپ کے سائن ان ہونے پر آپ کو Chrome پر محفوظ رکھتا ہے اور دیگر Google ایپس میں آپ کی سیکیورٹی کو بہتر بنانے کے لیے استعمال کیا جا سکتا ہے۔</translation>
 <translation id="718926126787620637">ان بُک مارک فولڈرز کی فہرست جو مکمل اونچائی پر کھلی ہوئی ہے۔</translation>
-<translation id="7189372733857464326">‏Google Play سروسز کی جانب سے اپ ڈیٹ مکمل کرنے کا انتظار ہے</translation>
 <translation id="7191430249889272776">ٹیب پس منظر میں کھلا ہے۔</translation>
 <translation id="7233236755231902816">‏اپنی زبان میں ویب کو دیکھنے کے لیے، Chrome کا تازہ ترین ورژن حاصل کریں</translation>
 <translation id="7248069434667874558">‏یہ یقینی بنائیں کہ Chrome پر <ph name="TARGET_DEVICE_NAME" /> کی مطابقت پذیری آن ہے</translation>
@@ -987,6 +985,7 @@
 <translation id="7523960634226602883">‏Google لینز کا استعمال کرتے ہوئے اپنے کیمرے کی مدد سے تلاش کریں</translation>
 <translation id="753225086557513863">بعد کیلئے شیڈول کیا گیا</translation>
 <translation id="7559975015014302720">لائٹ موڈ آف ہے</translation>
+<translation id="7560448309733608642">‏مطابقت پذیر کردہ تمام آلات سے سرگزشت صاف ہو جاتی ہے۔ ممکن ہے کہ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔</translation>
 <translation id="7562080006725997899">براؤزنگ ڈیٹا صاف کرنا</translation>
 <translation id="756809126120519699">‏Chrome ڈیٹا صاف کر دیا گیا</translation>
 <translation id="7577900504646297215">دلچسپیوں کا نظم کریں</translation>

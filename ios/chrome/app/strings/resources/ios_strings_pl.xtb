@@ -444,6 +444,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5782227691023083829">Trwa tłumaczenie...</translation>
 <translation id="5803566855766646066">Czy na pewno chcesz zamknąć tę nową kartę?</translation>
 <translation id="5816228676161003208">Umożliwia szybsze wyszukiwanie głosowe.</translation>
+<translation id="581659025233126501">Włącz synchronizację</translation>
 <translation id="5819208479324046259">Przeglądarką zarządza <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Wyszukiwarka</translation>
 <translation id="5854790677617711513">Sprzed ponad 30 dni</translation>
@@ -491,6 +492,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6196207969502475924">Wyszukiwanie głosowe</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zamknij {COUNT} kartę}few{Zamknij {COUNT} karty}many{Zamknij {COUNT} kart}other{Zamknij {COUNT} karty}}</translation>
 <translation id="6219688215832490856">Nigdy nie tłumacz</translation>
+<translation id="6223816392543092032">Korzystaj z zakładek, historii, haseł i innych ustawień na wszystkich swoich urządzeniach.</translation>
 <translation id="6254066287920239840">Otwieraj linki w aplikacji, a nie w przeglądarce.</translation>
 <translation id="6255097610484507482">Edytuj kartę kredytową</translation>
 <translation id="6284652193729350524">Proponuj tłumaczenie z języka: <ph name="LANGUAGE" /></translation>
@@ -523,6 +525,7 @@ Twoje dane zostały zaszyfrowane z użyciem hasła synchronizacji w dniu <ph n
 <translation id="6445981559479772097">Wiadomość została wysłana.</translation>
 <translation id="6447842834002726250">Pliki cookie</translation>
 <translation id="6453018583485750254">Jeszcze nie sprawdzano.</translation>
+<translation id="6459307836338400162">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcjach <ph name="BEGIN_LINK" />Synchronizacja<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />Usługi Google<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Otwórz w karcie incognito</translation>
 <translation id="6464397691496239022">Witryny mogą używać plików cookie dla Twojej wygody – na przykład, by zapamiętać Twoje logowanie lub zawartość koszyka.
 
@@ -706,6 +709,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8281886186245836920">Pomiń</translation>
 <translation id="8283172974887967105">Ustaw…</translation>
 <translation id="8299417921174340354">Aby użyć haseł, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
+<translation id="83100941411593607">Logowanie jest wyłączone</translation>
 <translation id="8319076807703933069">Nowe wyszukiwanie</translation>
 <translation id="8323906514956095947">Naciśnij i przytrzymaj, by zobaczyć więcej opcji</translation>
 <translation id="8328777765163860529">Zamknij wszystkie</translation>

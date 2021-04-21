@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Ako je označeno, Chrome će sačuvati kopiju vaše kartice na ovaj uređaj zbog bržeg popunjavanja obrazaca.</translation>
 <translation id="1110994991967754504">Odaberite odobrenje za <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">Poništi pre&amp;uređenje</translation>
+<translation id="1123753900084781868">Automatski titlovi trenutno nisu dostupni</translation>
 <translation id="1125573121925420732">Upozorenja mogu biti uobičajena dok web-lokacije ažuriraju sigurnost. To bi se uskoro trebalo poboljšati.</translation>
 <translation id="112840717907525620">Keš memorija pravila UREDU</translation>
 <translation id="1130564665089811311">Dugme Prevedi stranicu, pritisnite Enter da prevedete ovu stranicu pomoću Google Prevodioca</translation>
@@ -217,6 +218,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Ovaj server nije uspio dokazati da predstavlja domenu <ph name="DOMAIN" />; njegova potvrda sigurnosti je navodno izdata sutra. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.}one{Ovaj server nije uspio dokazati da predstavlja domenu <ph name="DOMAIN" />; njegova potvrda sigurnosti je navodno izdata # dan u budućnosti. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.}few{Ovaj server nije uspio dokazati da predstavlja domenu <ph name="DOMAIN" />; njegova potvrda sigurnosti je navodno izdata # dana u budućnosti. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.}other{Ovaj server nije uspio dokazati da predstavlja domenu <ph name="DOMAIN" />; njegova potvrda sigurnosti je navodno izdata # dana u budućnosti. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.}}</translation>
 <translation id="1710259589646384581">OS</translation>
+<translation id="1711234383449478798">Zanemareno je jer pravilo <ph name="POLICY_NAME" /> nije postavljeno na <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520">URL <ph name="URL" /> želi trajno pohraniti podatke na vaš lokalni računar</translation>
 <translation id="1713628304598226412">Ladica 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -772,6 +774,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3841184659773414994">Obrađivači fajlova</translation>
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3858027520442213535">Ažuriraj datum i vrijeme</translation>
+<translation id="3881478300875776315">Prikaži manje redova</translation>
 <translation id="3884278016824448484">Identifikator uređaja koji je u konfliktu</translation>
 <translation id="3885155851504623709">Parohija</translation>
 <translation id="388632593194507180">Otkriveno je praćenje</translation>
@@ -797,6 +800,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="397105322502079400">Računanje…</translation>
 <translation id="3973234410852337861">Host <ph name="HOST_NAME" /> je blokiran</translation>
 <translation id="3973357910713125165">Dugme Pokrenite Sigurnosnu provjeru Chromea, pritisnite Enter da pokrenete Sigurnosnu provjeru u postavkama Chromea</translation>
+<translation id="3986705137476756801">Isključite Automatske titlove za sada</translation>
 <translation id="3987405730340719549">Chrome je utvrdio da bi ova web lokacija mogla biti lažna ili obmanjujućeg sadržaja.
 
     Ako smatrate da je ovo prikazano greškom, posjetite https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -926,6 +930,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4377125064752653719">Pokušali ste prići domeni <ph name="DOMAIN" />, ali je potvrdu koju je server prikazao odbio njen izdavač. Ovo znači da sigurnosnim akreditivima koje je server prikazao ne treba ni u kom slučaju vjerovati. Možda komunicirate baš sa napadačem.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4390472908992056574">Rub</translation>
+<translation id="4406883609789734330">Automatski titlovi</translation>
 <translation id="4406896451731180161">rezultati pretraživanja</translation>
 <translation id="4408413947728134509">Broj kolačića: <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Upravo ste unijeli lozinku na obmanjujućoj web lokaciji. Chrome preporučuje da odete na <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> i druge web lokacije na kojima koristite ovu lozinku i odmah je promijenite.</translation>
@@ -991,6 +996,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4691835149146451662">Architecture-A (omotnica)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Strana</translation>
+<translation id="4702656508969495934">Automatski titlovi su vidljivi, koristite prebacivač prozora da fokusirate</translation>
 <translation id="4708268264240856090">Vaša veza je prekinuta</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Pokrenuti Mrežnu dijagnostiku za Windows<ph name="END_LINK" /></translation>
@@ -1661,6 +1667,7 @@ Dodatni detalji:
 <translation id="733354035281974745">Zaobilaženje lokalnog računa uređaja</translation>
 <translation id="7333654844024768166">Upravo ste unijeli lozinku na obmanjujućoj web lokaciji. Chromium preporučuje da odete na <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> i druge web lokacije na kojima koristite ovu lozinku i odmah je promijenite.</translation>
 <translation id="7334320624316649418">&amp;Ponovi preuređivanje</translation>
+<translation id="7337248890521463931">Prikaži više redova</translation>
 <translation id="7337706099755338005">Nije dostupno na vašoj platformi.</translation>
 <translation id="733923710415886693">Potvrda servera nije otkrivena korištenjem pravila o transparentnosti potvrde.</translation>
 <translation id="734600844861828519">11 x 15</translation>

@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Калі вы дазволіце браўзеру Chrome атрымліваць інфармацыю пра ваша месцазнаходжанне, ён будзе адпраўляць яе адобраным вамі сайтам. Сайты могуць запытваць ваша месцазнаходжанне для паказу мясцовай інфармацыі (напрыклад, навін або звестак пра крамы паблізу).</translation>
 <translation id="6036420186814142909">У браўзеры Google Chrome ёсць функцыі, якія дапамагаюць сачыць за інтэрнэт-трафікам і хуткасцю загрузкі вэб-старонак.
 <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Дазволіць уваход у Chrome</translation>
 <translation id="6181930887571472871">Пераходзьце на Chrome</translation>
 <translation id="6238746320622508509">Дазвольце Chrome блакіраваць укладкі ў рэжыме інкогніта.</translation>
 <translation id="6573431926118603307">Тут з'явяцца ўкладкі, адкрытыя вамі ў браўзеры Chrome на іншых прыладах.</translation>
@@ -96,5 +97,6 @@
   3. Выберыце Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Падбайце аб бяспецы сваіх даных, выкарыстоўваючы Google Chrome</translation>
+<translation id="8772179140489533211">Будуць паказвацца запыты ўваходу ў Chrome.</translation>
 <translation id="9112744793181547300">Зрабіць Chrome стандартным браўзерам?</translation>
 </translationbundle>

@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Konumunuzu bilmesine izin verirseniz Chrome, bu bilgiyi, izin verdiğiniz tüm sitelere gönderir. Yakındaki mağazalar veya haberler gibi size gösterecek yerel bilgileri olduğunda siteler konum bilginize erişmek isteyebilir.</translation>
 <translation id="6036420186814142909">Google Chrome İnternet verilerinizi yönetmenize ve web sayfalarını hızlı yükleyebilmenize yardımcı olacak özelliklere sahiptir.
 <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Chrome'da oturum açmaya izin ver</translation>
 <translation id="6181930887571472871">Chrome'a Geçin</translation>
 <translation id="6238746320622508509">Chrome'un Gizli sekmeleri kilitlemesine izin verin.</translation>
 <translation id="6573431926118603307">Diğer cihazlarınızda Chrome ile açtığınız sekmeler burada görünür.</translation>
@@ -96,5 +97,6 @@
   3. Chrome'u seçin.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chrome ile Güvende Kalın</translation>
+<translation id="8772179140489533211">Chrome'da oturum açmak için istekleri gösterir.</translation>
 <translation id="9112744793181547300">Chrome Varsayılan olarak ayarlansın mı?</translation>
 </translationbundle>

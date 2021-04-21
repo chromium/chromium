@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Ja atļaujat pārlūkam Chrome piekļūt jūsu atrašanās vietas informācijai, pārlūkā Chrome šī informācija tiek nosūtīta uz visām vietnēm, kurām piešķirat atļauju. Vietnēs var tikt lūgta atļauja piekļūt atrašanās vietas informācijai, lai rādītu jums vietēju informāciju, piemēram, vietējās ziņas vai informāciju par tuvumā esošiem veikaliem.</translation>
 <translation id="6036420186814142909">Pārlūkā Google Chrome ir funkcijas, ko varat izmantot, lai pārvaldītu interneta datus un tīmekļa lapu ielādes ātrumu.
 <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
+<translation id="6063091872902370735">Atļaut pierakstīšanos pārlūkā Chrome</translation>
 <translation id="6181930887571472871">Pāriet uz Chrome</translation>
 <translation id="6238746320622508509">Atļaujiet pārlūkā Chrome bloķēt inkognito cilnes.</translation>
 <translation id="6573431926118603307">Šeit būs redzamas cilnes, kuras esat atvēris pārlūkā Chrome citās ierīcēs.</translation>
@@ -96,5 +97,6 @@
   3. Atlasiet Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Droša pārlūkošana, izmantojot pārlūku Google Chrome</translation>
+<translation id="8772179140489533211">Tiek rādīti aicinājumi pierakstīties pārlūkā Chrome.</translation>
 <translation id="9112744793181547300">Vai iestatīt Chrome kā noklusējuma pārlūku?</translation>
 </translationbundle>

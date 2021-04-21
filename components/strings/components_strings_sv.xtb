@@ -39,6 +39,7 @@
 <translation id="1107591249535594099">Om alternativet är markerat sparas en kopia av kortet på enheten så att det går snabbare att fylla i formulär.</translation>
 <translation id="1110994991967754504">Välj behörighet för <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Ångra Ändra ordning</translation>
+<translation id="1123753900084781868">Live Caption är inte tillgängligt just nu</translation>
 <translation id="1125573121925420732">Varningar kan förekomma medan en webbplats uppdaterar säkerheten. Detta förbättras inom kort.</translation>
 <translation id="112840717907525620">Cacheminnet för policyn är OK</translation>
 <translation id="1130564665089811311">Knappen Översätt sida, tryck på Retur om du vill översätta sidan med Google Översätt</translation>
@@ -217,6 +218,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Det gick inte att bevisa att serverns identitet är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat uppges börja gälla i morgon. Det kan bero på att servern är felkonfigurerad eller att anslutningen har blivit kapad.}other{Det gick inte att bevisa att serverns identitet är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat uppges börja gälla om # dagar. Det kan bero på att servern är felkonfigurerad eller att anslutningen har blivit kapad.}}</translation>
 <translation id="1710259589646384581">OS</translation>
+<translation id="1711234383449478798">Ignoreras eftersom <ph name="POLICY_NAME" /> inte har ställts in på <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> vill lagra data permanent på din lokala dator</translation>
 <translation id="1713628304598226412">Fack 2</translation>
 <translation id="1715874602234207">F</translation>
@@ -772,6 +774,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="3841184659773414994">Filhanterare</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="3858027520442213535">Uppdatera datum och tid</translation>
+<translation id="3881478300875776315">Visa färre rader</translation>
 <translation id="3884278016824448484">Motstridiga enhetsidentifierare</translation>
 <translation id="3885155851504623709">Församling</translation>
 <translation id="388632593194507180">Övervakning har upptäckts</translation>
@@ -797,6 +800,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="397105322502079400">Beräknar ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> har blockerats</translation>
 <translation id="3973357910713125165">Knappen Kör säkerhetskontroll i Chrome, tryck på Retur om du vill köra säkerhetskontrollen i inställningarna för Chrome</translation>
+<translation id="3986705137476756801">Inaktivera Live Caption tills vidare</translation>
 <translation id="3987405730340719549">Den här webbplatsen har fastställts som potentiellt falsk eller bedräglig av Chrome.
 
     Besök https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals om du anser att detta är felaktigt.</translation>
@@ -926,6 +930,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="4377125064752653719">Du försökte öppna <ph name="DOMAIN" />, men servern visade ett certifikat som har återkallats av utfärdaren. Det innebär att säkerhetsuppgifterna som servern visar inte är absolut tillförlitliga. Du kanske kommunicerar med en skadlig server.</translation>
 <translation id="4378154925671717803">Mobil</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406896451731180161">sökresultat</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4414290883293381923">Du angav just ditt lösenord på en bedräglig webbplats. Vi rekommenderar att du besöker <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> och andra webbplatser där du använder lösenordet och ändrar det nu.</translation>
@@ -991,6 +996,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="4691835149146451662">Architecture-A (kuvert)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Sida</translation>
+<translation id="4702656508969495934">Live Caption visas. Använd fönsterbyte för att ändra fokus</translation>
 <translation id="4708268264240856090">Anslutningen avbröts</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" /> köra nätverksdiagnostik för Windows<ph name="END_LINK" /></translation>
@@ -1661,6 +1667,7 @@ Mer information.
 <translation id="733354035281974745">Åsidosätt enhetens lokala konto</translation>
 <translation id="7333654844024768166">Du angav just ditt lösenord på en bedräglig webbplats. Vi rekommenderar att du besöker <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> och andra webbplatser där du använder lösenordet och ändrar det nu.</translation>
 <translation id="7334320624316649418">&amp;Gör om Ändra ordning</translation>
+<translation id="7337248890521463931">Visa fler rader</translation>
 <translation id="7337706099755338005">Ej tillgänglig för din plattform.</translation>
 <translation id="733923710415886693">Servercertifikatet har inte lämnats ut via Certifikattransparens.</translation>
 <translation id="734600844861828519">11x15</translation>

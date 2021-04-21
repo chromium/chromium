@@ -446,6 +446,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5782227691023083829">Traducindo…</translation>
 <translation id="5803566855766646066">Seguro que queres descartar esta tarxeta nova?</translation>
 <translation id="5816228676161003208">Permite que busques de forma máis rápida usando a voz.</translation>
+<translation id="581659025233126501">Activar sincronización</translation>
 <translation id="5819208479324046259">Xestionado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Motor de busca</translation>
 <translation id="5854790677617711513">Con máis de 30 días</translation>
@@ -493,6 +494,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6196207969502475924">Busca por voz</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Pechar {COUNT} pestana}other{Pechar {COUNT} pestanas}}</translation>
 <translation id="6219688215832490856">Non traducir nunca</translation>
+<translation id="6223816392543092032">Accede aos teus marcadores, historial, contrasinais e outras opcións de configuración en todos os teus dispositivos.</translation>
 <translation id="6254066287920239840">Abre as ligazóns na aplicación en vez de no navegador.</translation>
 <translation id="6255097610484507482">Editar tarxeta</translation>
 <translation id="6284652193729350524">Ofrecer traducir contido en <ph name="LANGUAGE" /></translation>
@@ -525,6 +527,7 @@ Os teus datos encriptáronse co teu contrasinal de sincronización o <ph name="T
 <translation id="6445981559479772097">Mensaxe enviada.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">Aínda non se realizou ningunha comprobación.</translation>
+<translation id="6459307836338400162">Para ver máis opcións de configuración relacionadas coa privacidade, a seguranza e a recompilación de datos, consulta <ph name="BEGIN_LINK" />Sincronización<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Abrir en pestana incógn.</translation>
 <translation id="6464397691496239022">Os sitios poden utilizar cookies para mellorar a túa experiencia de navegación a través de funcións como manter a sesión iniciada ou lembrar artigos da túa cesta da compra.
 
@@ -708,6 +711,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8281886186245836920">Omitir</translation>
 <translation id="8283172974887967105">Definir…</translation>
 <translation id="8299417921174340354">Para usar os contrasinais, en primeiro lugar debes definir un contrasinal no teu dispositivo.</translation>
+<translation id="83100941411593607">O inicio de sesión está desactivado</translation>
 <translation id="8319076807703933069">Nova busca</translation>
 <translation id="8323906514956095947">Mantén premido o botón para ver máis opcións da pestana</translation>
 <translation id="8328777765163860529">Pechar todo</translation>

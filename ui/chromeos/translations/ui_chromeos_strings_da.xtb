@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">Søgeskyder</translation>
 <translation id="1404323374378969387">Norsk</translation>
 <translation id="1430915738399379752">Udskriv</translation>
+<translation id="1433628812591023318">Filer skal først flyttes til mappen med Windows-filer, før du kan trække dem til Parallels Desktop.</translation>
 <translation id="1435838927755162558">Del mappe med Parallels Desktop</translation>
 <translation id="1467432559032391204">Venstre</translation>
 <translation id="1471718551822868769">Slovakisk</translation>
@@ -611,6 +612,7 @@
 <translation id="7417453074306512035">Etiopisk tastatur</translation>
 <translation id="7417705661718309329">Google-kort</translation>
 <translation id="7460898608667578234">ukrainsk</translation>
+<translation id="7486315294984620427">Filer skal først kopieres til mappen med Windows-filer, før du kan trække dem til Parallels Desktop.</translation>
 <translation id="7489215562877293245">Der blev fundet <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Klar til at sikkerhedskopiere til <ph name="BEGIN_LINK" />Google Drev<ph name="END_LINK" /></translation>

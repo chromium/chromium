@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">सीक स्‍लाइडर</translation>
 <translation id="1404323374378969387">नार्वेजियन</translation>
 <translation id="1430915738399379752">प्रिंट करें</translation>
+<translation id="1433628812591023318">फ़ाइलों को Parallels Desktop में डालने के लिए, Windows की फ़ाइलों में ट्रांसफ़र किया जाना ज़रूरी है.</translation>
 <translation id="1435838927755162558">Parallels Desktop के साथ फ़ोल्डर शेयर करें</translation>
 <translation id="1467432559032391204">बाएं</translation>
 <translation id="1471718551822868769">स्लोवाक</translation>
@@ -611,6 +612,7 @@
 <translation id="7417453074306512035">इथिओपियाई कीबोर्ड</translation>
 <translation id="7417705661718309329">Google मैप</translation>
 <translation id="7460898608667578234">उक्रेनियाई</translation>
+<translation id="7486315294984620427">फाइलों को Parallels Desktop में डालने के लिए, Windows की फ़ाइलों में कॉपी किया जाना ज़रूरी है.</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> मिलीं
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google डिस्क<ph name="END_LINK" /> में बैक अप लेने के लिए तैयार है</translation>

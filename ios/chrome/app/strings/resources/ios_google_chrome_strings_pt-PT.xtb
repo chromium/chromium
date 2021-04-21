@@ -57,6 +57,7 @@
 <translation id="5854621639439811139">Sugestão para o Chrome: alguns botões encontram-se agora na parte inferior do ecrã, como Voltar, Avançar e Pesquisar.</translation>
 <translation id="5876773482963502140">Se permitir que o Chrome conheça a sua localização, este envia-a para quaisquer sites que permitir. Os sites podem solicitar a sua localização quando têm informações locais para lhe mostrar, como notícias ou lojas próximas.</translation>
 <translation id="6036420186814142909">O Google Chrome inclui funcionalidades que o/a ajudam a gerir os seus dados de Internet e a velocidade com que as páginas Web são carregadas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Permitir o início de sessão no Chrome</translation>
 <translation id="6181930887571472871">Mude para o Chrome</translation>
 <translation id="6238746320622508509">Permita que o Chrome bloqueie os seus separadores de navegação anónima.</translation>
 <translation id="6573431926118603307">Os separadores que abriu no Chrome nos seus outros dispositivos são apresentados aqui.</translation>
@@ -95,5 +96,6 @@
   3. Selecione o Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Proteja-se com o Google Chrome</translation>
+<translation id="8772179140489533211">Mostra pedidos para iniciar sessão no Chrome.</translation>
 <translation id="9112744793181547300">Pretende definir o Chrome como a predefinição?</translation>
 </translationbundle>

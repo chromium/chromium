@@ -108,7 +108,6 @@
 <translation id="1122198203221319518">&amp;Alat</translation>
 <translation id="1122242684574577509">Pengesahan gagal. Klik untuk melawati halaman log masuk untuk rangkaian Wi-Fi yang anda gunakan (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">Nama penanda halaman</translation>
-<translation id="1123753900084781868">Sari Kata Langsung tidak tersedia sekarang</translation>
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1125550662859510761">Kelihatan seperti <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Asal)</translation>
 <translation id="1126809382673880764">Tidak melindungi anda daripada tapak web, muat turun dan sambungan yang berbahaya. Anda akan mendapat perlindungan Penyemakan Imbas Selamat, jika tersedia, dalam perkhidmatan Google yang lain, seperti Gmail dan Carian.</translation>
@@ -754,6 +753,7 @@
 <translation id="1794791083288629568">Hantar maklum balas untuk membantu kami menyelesaikan isu ini.</translation>
 <translation id="1795214765651529549">Gunakan Klasik</translation>
 <translation id="1799071797295057738">Sambungan "<ph name="EXTENSION_NAME" />" telah dilumpuhkan secara automatik.</translation>
+<translation id="1800973090344019061">Sambungan "<ph name="APP_NAME" />" mahu berkongsi kandungan skrin anda.</translation>
 <translation id="1802624026913571222">Tidur apabila penutup ditutup</translation>
 <translation id="1802687198411089702">Halaman tidak bertindak balas. Anda boleh menunggu atau keluar.</translation>
 <translation id="1803531841600994172">Bahasa sasaran terjemahan</translation>
@@ -948,7 +948,6 @@
 <translation id="2010501376126504057">Peranti yang serasi</translation>
 <translation id="2016574333161572915">Perkakasan Google Meet anda sedia untuk disediakan</translation>
 <translation id="2017334798163366053">Lumpuhkan pengumpulan data prestasi</translation>
-<translation id="2017836877785168846">Kosongkan sejarah dan pelengkapan automatik dalam bar alamat.</translation>
 <translation id="2018352199541442911">Maaf, peranti storan luaran anda tidak disokong pada masa ini.</translation>
 <translation id="2019718679933488176">&amp;Buka Audio dalam Tab Baharu</translation>
 <translation id="2020183425253392403">Tunjukkan tetapan alamat rangkaian</translation>
@@ -1354,6 +1353,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2464089476039395325">Proksi HTTP</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" /> menghendaki anda menyambung kepada Wi-Fi sekarang dan memuat turun kemas kini. Atau, muat turun daripada sambungan bermeter (caj mungkin dikenakan).</translation>
 <translation id="2467267713099745100">Rangkaian <ph name="NETWORK_TYPE" />, dimatikan</translation>
+<translation id="2467755475704469005">Tiada peranti dikesan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Pemecutan penatalan pad sentuh</translation>
 <translation id="2468205691404969808">Menggunakan kuki untuk mengingati pilihan anda, walaupun anda tidak melawati halaman tersebut</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
@@ -2382,6 +2382,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3608576286259426129">Pratonton imej pengguna</translation>
 <translation id="3610369246614755442">Kipas dok perlu diselenggara</translation>
 <translation id="361106536627977100">Data Flash</translation>
+<translation id="3611655097742243705">Lawati Gedung Play untuk mencari pelbagai lagi apl</translation>
 <translation id="3612673635130633812">Dimuat turun oleh &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Tunjukkan <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Buka dalam tab baharu</translation>
@@ -2646,7 +2647,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3874164307099183178">Hidupkan Google Assistant</translation>
 <translation id="3877075909000773256">Tetapan Kongsi Berdekatan untuk peranti <ph name="USER_NAME" />, berkongsi menggunakan akaun <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Pengurus muat turun</translation>
-<translation id="3881478300875776315">Tunjukkan kurang baris</translation>
 <translation id="3882165008614329320">Video sedia ada daripada kamera atau fail</translation>
 <translation id="3884152383786131369">Kandungan web yang tersedia dalam berbilang bahasa akan menggunakan bahasa pertama yang disokong daripada senarai ini. Pilihan ini disegerakkan dengan tetapan penyemak imbas anda. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Kemaskinian diurus oleh pentadbir anda</translation>
@@ -2718,6 +2718,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3943494825379372497">Pulihkan apl &amp; halaman?</translation>
 <translation id="3943582379552582368">&amp;Kembali</translation>
 <translation id="3943857333388298514">Tampal</translation>
+<translation id="3945513714196326460">Cuba nama yang lebih pendek</translation>
 <translation id="3948116654032448504">&amp;Cari Imej di <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> boleh mengedit fail dalam folder berikut</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2764,7 +2765,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3984159763196946143">Tidak dapat memulakan mod tunjuk cara</translation>
 <translation id="3984431586879874039">Benarkan tapak ini melihat kunci keselamatan anda?</translation>
 <translation id="398477389655464998">Salin Pautan kepada Serlahan</translation>
-<translation id="3986705137476756801">Matikan Sari Kata Langsung buat masa ini</translation>
 <translation id="3987544746655539083">Teruskan menyekat tapak ini daripada mengakses lokasi anda</translation>
 <translation id="3987938432087324095">Maaf, kurang jelas.</translation>
 <translation id="3988996860813292272">Pilih zon waktu</translation>
@@ -3104,6 +3104,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4415245286584082850">Tiada peranti ditemui. Buka artikel pusat bantuan dalam tab baharu.</translation>
 <translation id="4415276339145661267">Urus Akaun Google anda</translation>
 <translation id="4415748029120993980">Lengkung eliptik SECG secp384r1 (alias NIST P-384)</translation>
+<translation id="4416450511678320850">Tiada apl tersedia untuk kandungan ini`</translation>
 <translation id="4416582610654027550">Taip URL yang sah</translation>
 <translation id="4419409365248380979">Sentiasa benarkan <ph name="HOST" /> untuk menetapkan kuki</translation>
 <translation id="4421932782753506458">Gebu</translation>
@@ -3371,7 +3372,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4699172675775169585">Imej dan fail dicache</translation>
 <translation id="4699357559218762027">(dilancarkan secara automatik)</translation>
 <translation id="4701025263201366865">Log masuk ibu atau bapa</translation>
-<translation id="4702656508969495934">Sari Kata Langsung dapat dilihat, gunakan penukar tetingkap untuk memfokus</translation>
 <translation id="4708794300267213770">Tunjukkan kunci skrin apabila bangun tidur</translation>
 <translation id="4708849949179781599">Keluar dari <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Pulihkan tetapan</translation>
@@ -3397,6 +3397,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="473936925429402449">Dipilih, kandungan tambahan <ph name="CURRENT_ELEMENT" /> daripada <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tiket</translation>
 <translation id="4742334355511750246">Tidak dibenarkan untuk memaparkan imej</translation>
+<translation id="4742970037960872810">Alih keluar serlahan</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Ketahui cara mengemas kini aplikasi<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Nyahredam tapak}other{Nyahredam tapak}}</translation>
 <translation id="4746351372139058112">Mesej</translation>
@@ -3873,7 +3874,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5300287940468717207">Tetapkan semula kebenaran tapak?</translation>
 <translation id="5300589172476337783">Paparkan</translation>
 <translation id="5300719150368506519">Hantar URL halaman yang anda lawati kepada Google</translation>
-<translation id="5300814202279832142">Alihkan tetingkap ke meja</translation>
 <translation id="5301751748813680278">Masuk sebagai Tetamu</translation>
 <translation id="5301954838959518834">OK, faham</translation>
 <translation id="5302048478445481009">Bahasa</translation>
@@ -4606,6 +4606,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6136114942382973861">Tutup bar muat turun</translation>
 <translation id="6136287496450963112">Kunci keselamatan anda tidak dilindungi dengan PIN. Untuk mengurus cap jari, buat PIN dahulu.</translation>
 <translation id="6138680304137685902">Tandatangan X9.62 ECDSA dengan SHA-384</translation>
+<translation id="6138774640412545950">Sambungan "<ph name="APP_NAME" />" mahu berkongsi kandungan skrin anda dengan <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, tiada rangkaian</translation>
 <translation id="6141988275892716286">Sahkan muat turun</translation>
 <translation id="6143186082490678276">Dapatkan Bantuan</translation>
@@ -5395,6 +5396,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> sedang menggunakan kamera anda</translation>
 <translation id="701080569351381435">Lihat Sumber</translation>
 <translation id="7014174261166285193">Gagal pemasangan.</translation>
+<translation id="7014480873681694324">Alih Keluar Serlahan</translation>
 <translation id="7017004637493394352">Sebut "Ok Google" sekali lagi</translation>
 <translation id="7017219178341817193">Tambah halaman baharu</translation>
 <translation id="7017354871202642555">Tidak dapat menetapkan mod selepas tetingkap ditetapkan.</translation>
@@ -5488,7 +5490,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="711840821796638741">Tunjukkan Penanda Halaman Terurus</translation>
 <translation id="711902386174337313">Baca senarai peranti anda yang dilog masuk</translation>
 <translation id="7120865473764644444">Tidak dapat menyambung ke pelayan penyegerakan. Mencuba semula...</translation>
-<translation id="7121362699166175603">Mengosongkan sejarah dan autoselesai dalam bar alamat. Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain di <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Mod Pembangun</translation>
 <translation id="7121728544325372695">Sengkang Pintar</translation>
 <translation id="7123030151043029868">Dibenarkan untuk memuat turun berbilang fail secara automatik</translation>
@@ -5661,7 +5662,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7334274148831027933">Dayakan penggadang yang didok</translation>
 <translation id="7335974957018254119">Gunakan semak ejaan untuk</translation>
 <translation id="7336799713063880535">Pmberitahuan dsekat.</translation>
-<translation id="7337248890521463931">Tunjukkan lagi baris</translation>
 <translation id="7338630283264858612">Nombor siri peranti tidak sah.</translation>
 <translation id="7339763383339757376">PKCS #7, sijil tunggal</translation>
 <translation id="7339785458027436441">Semak Ejaan Semasa Menaip</translation>
@@ -7365,7 +7365,6 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="9209563766569767417">Menyemak persediaan bekas Linux</translation>
 <translation id="9209689095351280025">Tapak tidak dapat menggunakan kuki untuk menjejaki anda merentas web</translation>
 <translation id="9211177926627870898">Kemas kini diperlukan</translation>
-<translation id="9211490828691860325">Semua meja</translation>
 <translation id="9214510034298163263">Laman boleh meminta untuk mengedit fail dan folder pada peranti anda (disyorkan)</translation>
 <translation id="9214520840402538427">Alamak! Pemulaan sifat masa pemasangan telah tamat masa. Sila hubungi wakil sokongan anda.</translation>
 <translation id="9214695392875603905">Kek cawan</translation>
