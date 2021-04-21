@@ -53866,6 +53866,9 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],

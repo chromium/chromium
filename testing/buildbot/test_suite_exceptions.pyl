@@ -717,6 +717,10 @@
         ],
       },
       'mac-code-coverage': {
+        'args': [
+          # crbug.com/1196416
+          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
+        ],
         'swarming': {
           'shards': 15,
         },
