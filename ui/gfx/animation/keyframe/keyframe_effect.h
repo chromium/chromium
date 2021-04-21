@@ -40,7 +40,10 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeEffect {
   KeyframeEffect();
   ~KeyframeEffect();
 
+  KeyframeEffect(KeyframeEffect&&);
   KeyframeEffect(const KeyframeEffect&) = delete;
+
+  KeyframeEffect& operator=(KeyframeEffect&&) = default;
   KeyframeEffect& operator=(const KeyframeEffect&) = delete;
 
   virtual void AddKeyframeModel(std::unique_ptr<KeyframeModel> keyframe_model);

@@ -151,8 +151,9 @@ int KeyframeEffect::GetNextGroupId() {
   return s_next_group_id++;
 }
 
-KeyframeEffect::KeyframeEffect() {}
-KeyframeEffect::~KeyframeEffect() {}
+KeyframeEffect::KeyframeEffect() = default;
+KeyframeEffect::KeyframeEffect(KeyframeEffect&&) = default;
+KeyframeEffect::~KeyframeEffect() = default;
 
 void KeyframeEffect::AddKeyframeModel(
     std::unique_ptr<KeyframeModel> keyframe_model) {

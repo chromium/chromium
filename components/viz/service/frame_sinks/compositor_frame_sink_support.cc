@@ -772,9 +772,11 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
     UpdateNeedsBeginFramesInternal();
   }
 
-  // Notify surface animation manager if it needs a begin frame.
+  // Notify surface animation manager of the latest time and advance a frame if
+  // it needs a begin frame.
+  surface_animation_manager_.UpdateFrameTime(args.frame_time);
   if (surface_animation_manager_.NeedsBeginFrame()) {
-    surface_animation_manager_.NotifyFrameAdvanced(args.frame_time);
+    surface_animation_manager_.NotifyFrameAdvanced();
 
     // Interpolate the frame here, since it is a reliable spot during the
     // animation.

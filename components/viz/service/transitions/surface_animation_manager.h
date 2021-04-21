@@ -9,8 +9,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "components/viz/service/transitions/transferable_resource_tracker.h"
@@ -21,6 +24,7 @@
 namespace viz {
 
 class Surface;
+class CompositorFrame;
 class SurfaceSavedFrameStorage;
 struct ReturnedResource;
 struct TransferableResource;
@@ -30,15 +34,13 @@ struct TransferableResource;
 // TODO(vmpstr): This class should also be responsible for interpolating frames
 // and providing the result back to the surface, but that is currently not
 // implemented.
-class VIZ_SERVICE_EXPORT SurfaceAnimationManager
-    : public gfx::FloatAnimationCurve::Target,
-      public gfx::TransformAnimationCurve::Target {
+class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
  public:
   using TransitionDirectiveCompleteCallback =
       base::RepeatingCallback<void(uint32_t)>;
 
   SurfaceAnimationManager();
-  ~SurfaceAnimationManager() override;
+  ~SurfaceAnimationManager();
 
   void SetDirectiveFinishedCallback(
       TransitionDirectiveCompleteCallback sequence_id_finished_callback);
@@ -60,7 +62,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
   bool NeedsBeginFrame() const;
 
   // Notify when a begin frame happens and a frame is advanced.
-  void NotifyFrameAdvanced(base::TimeTicks new_time);
+  void NotifyFrameAdvanced();
 
   // Interpolates from the saved frame to the current active frame on the
   // surface, storing the result back on the surface.
@@ -70,29 +72,25 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
   void RefResources(const std::vector<TransferableResource>& resources);
   void UnrefResources(const std::vector<ReturnedResource>& resources);
 
-  void OnFloatAnimated(const float& value,
-                       int target_property_id,
-                       gfx::KeyframeModel* keyframe_model) override;
-
-  void OnTransformAnimated(const gfx::TransformOperations& operations,
-                           int target_property_id,
-                           gfx::KeyframeModel* keyframe_model) override;
-
- protected:
-  float src_opacity() const { return src_opacity_; }
-  float dst_opacity() const { return dst_opacity_; }
-  gfx::TransformOperations src_transform() const { return src_transform_; }
-  gfx::TransformOperations dst_transform() const { return dst_transform_; }
+  // Updates the current frame time, without doing anything else.
+  void UpdateFrameTime(base::TimeTicks now);
 
  private:
-  enum TargetProperty : int {
-    kSrcOpacity = 1,
-    kDstOpacity,
-    kSrcTransform,
-    kDstTransform,
+  friend class SurfaceAnimationManagerTest;
+
+  struct RenderPassDrawData {
+    RenderPassDrawData();
+    RenderPassDrawData(RenderPassDrawData&&);
+    ~RenderPassDrawData();
+
+    RenderPassDrawData& operator=(RenderPassDrawData&&) = default;
+
+    std::unique_ptr<CompositorRenderPass> render_pass;
+    base::Optional<CompositorRenderPassDrawQuad> draw_quad;
   };
 
-  void UpdateAnimationCurves(const gfx::Size& output_size);
+  void CreateRootAnimationCurves(const gfx::Size& output_size);
+  void CreateSharedElementCurves();
 
   // Helpers to process specific directives.
   bool ProcessSaveDirective(const CompositorFrameTransitionDirective& directive,
@@ -110,6 +108,28 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
   // valid if state is kLastFrame.
   void FinalizeAndDisposeOfState();
 
+  // A helper function to copy render passes, while interpolating shared
+  // elements.
+  void CopyAndInterpolateSharedElements(
+      const std::vector<std::unique_ptr<CompositorRenderPass>>& source_passes,
+      CompositorRenderPass* animation_pass,
+      CompositorFrame* interpolated_frame);
+
+  // Helper function to create an animation pass which interpolates needed
+  // components.
+  std::unique_ptr<CompositorRenderPass> CreateAnimationCompositorRenderPass(
+      const gfx::Rect& output_rect) const;
+
+  // Given a render pass, this makes a copy of it while filtering animated
+  // render pass draw quads.
+  std::unique_ptr<CompositorRenderPass> CopyPassWithoutSharedElementQuads(
+      const CompositorRenderPass& source_pass,
+      base::flat_map<CompositorRenderPassId, RenderPassDrawData>&
+          shared_draw_data);
+
+  // Tick both the root and shared animations.
+  void TickAnimations(base::TimeTicks new_time);
+
   enum class State { kIdle, kAnimating, kLastFrame };
 
   TransitionDirectiveCompleteCallback sequence_id_finished_callback_;
@@ -122,15 +142,79 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
   base::Optional<CompositorFrameTransitionDirective> save_directive_;
   base::Optional<CompositorFrameTransitionDirective> animate_directive_;
 
-  // TODO(vmpstr): if SurfaceAnimationManager ultimately manages multiple
-  // animations, then the following should be encapsulated in a per-animation
-  // class.
+  // State represents the total state of the animation for this manager. It is
+  // adjusted in step with the root animation. In other words, if the root
+  // animation ends then the total animation is considered (almost) ended as
+  // well. We keep track of a separate state, since we need to produce a
+  // kLastFrame value after the root animation ends which is responsible for
+  // produce a clean active frame without any interpolations.
   State state_ = State::kIdle;
-  gfx::KeyframeEffect animator_;
-  float src_opacity_ = 1.0f;
-  float dst_opacity_ = 1.0f;
-  gfx::TransformOperations src_transform_;
-  gfx::TransformOperations dst_transform_;
+
+  // This is an animation state of a particular atom of the animation (root or a
+  // single shared element).
+  class AnimationState : public gfx::FloatAnimationCurve::Target,
+                         public gfx::TransformAnimationCurve::Target,
+                         public gfx::RectAnimationCurve::Target {
+   public:
+    AnimationState();
+    AnimationState(AnimationState&&);
+    ~AnimationState() override;
+
+    enum TargetProperty : int {
+      kSrcOpacity = 1,
+      kDstOpacity,
+      kSrcTransform,
+      kDstTransform,
+      kRect
+    };
+
+    void OnFloatAnimated(const float& value,
+                         int target_property_id,
+                         gfx::KeyframeModel* keyframe_model) override;
+
+    void OnTransformAnimated(const gfx::TransformOperations& operations,
+                             int target_property_id,
+                             gfx::KeyframeModel* keyframe_model) override;
+
+    void OnRectAnimated(const gfx::Rect& value,
+                        int target_property_id,
+                        gfx::KeyframeModel* keyframe_model) override;
+
+    void Reset();
+
+    gfx::KeyframeEffect& driver() { return driver_; }
+    const gfx::KeyframeEffect& driver() const { return driver_; }
+
+    float src_opacity() const { return src_opacity_; }
+    float dst_opacity() const { return dst_opacity_; }
+    const gfx::TransformOperations& src_transform() const {
+      return src_transform_;
+    }
+    const gfx::TransformOperations& dst_transform() const {
+      return dst_transform_;
+    }
+
+    const gfx::Rect& rect() const { return rect_; }
+
+   private:
+    gfx::KeyframeEffect driver_;
+    float src_opacity_ = 1.0f;
+    float dst_opacity_ = 1.0f;
+    gfx::TransformOperations src_transform_;
+    gfx::TransformOperations dst_transform_;
+    gfx::Rect rect_;
+  };
+
+  // This is the root animation state.
+  AnimationState root_animation_;
+
+  // This is a vector of animation states for each of the shared elements. Note
+  // that the position in the vector matches both the position of the shared
+  // texture in the saved_textures_->shared vector and the corresponding
+  // position in the animate_directive->shared_render_pass_ids() vector.
+  std::vector<AnimationState> shared_animations_;
+
+  base::TimeTicks latest_time_;
 };
 
 }  // namespace viz

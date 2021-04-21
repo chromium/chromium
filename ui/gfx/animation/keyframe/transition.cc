@@ -14,6 +14,8 @@ Transition::Transition()
     : duration(
           base::TimeDelta::FromMilliseconds(kDefaultTransitionDurationMs)) {}
 
-Transition::~Transition() {}
+Transition::Transition(const Transition&) = default;
+Transition::Transition(Transition&&) = default;
+Transition::~Transition() = default;
 
 }  // namespace gfx

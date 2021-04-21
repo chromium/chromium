@@ -14,7 +14,12 @@ namespace gfx {
 
 struct GFX_KEYFRAME_ANIMATION_EXPORT Transition {
   Transition();
+  Transition(const Transition&);
+  Transition(Transition&&);
   ~Transition();
+
+  Transition& operator=(const Transition&) = default;
+  Transition& operator=(Transition&&) = default;
 
   base::TimeDelta duration;
   std::set<int> target_properties;
