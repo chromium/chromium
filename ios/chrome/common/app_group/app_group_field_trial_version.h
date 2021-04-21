@@ -17,4 +17,4 @@ extern NSString* const kFieldTrialValueKey;
 // The dictionary key for the trial version.
 extern NSString* const kFieldTrialVersionKey;
 
-#endif /* IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_FIELD_TRIAL_VERSION_H_ */
+#endif  // IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_FIELD_TRIAL_VERSION_H_

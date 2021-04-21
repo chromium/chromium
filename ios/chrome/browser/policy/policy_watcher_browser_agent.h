@@ -46,4 +46,4 @@ class PolicyWatcherBrowserAgent
   std::unique_ptr<PrefChangeRegistrar> prefs_change_observer_;
 };
 
-#endif  // IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_BROWSER_AGENT_H_
+#endif  // IOS_CHROME_BROWSER_POLICY_POLICY_WATCHER_BROWSER_AGENT_H_

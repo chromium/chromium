@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_LOCATION_BAR_URL_LOADER_H_
-#define IOS_CHROME_BROWSER_UI_OMNIBOX_LOCATION_BAR_URL_LOADER_H_
+#ifndef IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_URL_LOADER_H_
+#define IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_URL_LOADER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -21,4 +21,4 @@ class GURL;
                     disposition:(WindowOpenDisposition)disposition;
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_LOCATION_BAR_URL_LOADER_H_
+#endif  // IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_URL_LOADER_H_

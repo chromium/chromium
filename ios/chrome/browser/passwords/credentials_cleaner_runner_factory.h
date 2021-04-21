@@ -29,4 +29,4 @@ class CredentialsCleanerRunnerFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* browser_state) const override;
 };
 
-#endif  // IOS_CHROME_BROWSER_PASSWORDSCREDENTIALS_CLEANER_RUNNER_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_PASSWORDS_CREDENTIALS_CLEANER_RUNNER_FACTORY_H_

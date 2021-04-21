@@ -214,4 +214,4 @@ class IOSIOThread : public web::WebThreadDelegate {
 
 }  // namespace io_thread
 
-#endif  // IOS_COMPONENTS_IO_THREAD_IO_THREAD_H_
+#endif  // IOS_COMPONENTS_IO_THREAD_IOS_IO_THREAD_H_

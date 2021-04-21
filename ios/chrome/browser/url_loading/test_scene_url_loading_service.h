@@ -30,4 +30,4 @@ class TestSceneUrlLoadingService : public SceneUrlLoadingService {
   Browser* current_browser_;
 };
 
-#endif  // IOS_CHROME_BROWSER_URL_LOADING_APP_URL_LOADING_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_URL_LOADING_TEST_SCENE_URL_LOADING_SERVICE_H_

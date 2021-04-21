@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_SHOWCASE_TOOLBAR_SC_BUBBLE_COORDINATOR_H_
-#define IOS_SHOWCASE_TOOLBAR_SC_BUBBLE_COORDINATOR_H_
+#ifndef IOS_SHOWCASE_BUBBLE_SC_BUBBLE_COORDINATOR_H_
+#define IOS_SHOWCASE_BUBBLE_SC_BUBBLE_COORDINATOR_H_
 
 #import "ios/showcase/common/navigation_coordinator.h"
 
 @interface SCBubbleCoordinator : NSObject<NavigationCoordinator>
 @end
 
-#endif  // IOS_SHOWCASE_TOOLBAR_SC_BUBBLE_COORDINATOR_H_
+#endif  // IOS_SHOWCASE_BUBBLE_SC_BUBBLE_COORDINATOR_H_

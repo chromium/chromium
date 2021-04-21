@@ -78,4 +78,4 @@ class FakeWebClient : public web::WebClient {
 
 }  // namespace web
 
-#endif  // IOS_WEB_PUBLIC_TEST_FAKES_TEST_WEB_CLIENT_H_
+#endif  // IOS_WEB_PUBLIC_TEST_FAKES_FAKE_WEB_CLIENT_H_

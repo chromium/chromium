@@ -94,4 +94,4 @@ class WebFramesManagerImpl : public WebFramesManager {
 
 }  // namespace web
 
-#endif  // IOS_WEB_WEB_STATE_WEB_FRAMES_MANAGER_H_
+#endif  // IOS_WEB_JS_MESSAGING_WEB_FRAMES_MANAGER_IMPL_H_

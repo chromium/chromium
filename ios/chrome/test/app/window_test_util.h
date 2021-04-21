@@ -30,4 +30,4 @@ void OpenNewTabInWindowWithNumber(int windowNumber);
 
 }  // namespace chrome_test_util
 
-#endif
+#endif  // IOS_CHROME_TEST_APP_WINDOW_TEST_UTIL_H_

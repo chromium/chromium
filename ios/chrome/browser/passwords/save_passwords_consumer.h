@@ -37,4 +37,4 @@ class SavePasswordsConsumer : public password_manager::PasswordStoreConsumer {
 
 }  // namespace ios
 
-#endif  // IOS_CHROME_BROWSER_PASSWORDS_IOS_CHROME_PASSWORD_STORE_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_PASSWORDS_SAVE_PASSWORDS_CONSUMER_H_
