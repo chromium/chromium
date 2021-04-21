@@ -97,45 +97,44 @@ DeviceChooserContentView::DeviceChooserContentView(
     return container;
   };
 
-  {
-    auto no_options_help =
-        std::make_unique<views::Label>(chooser_controller_->GetNoOptionsText());
-    no_options_help->SetMultiLine(true);
-    no_options_view_ = add_centering_view(std::move(no_options_help));
+  // Label that explains that there are no devices to choose from.
+  auto no_options_help =
+      std::make_unique<views::Label>(chooser_controller_->GetNoOptionsText());
+  no_options_help->SetMultiLine(true);
+  no_options_view_ = add_centering_view(std::move(no_options_help));
 
-    std::u16string link_text = l10n_util::GetStringUTF16(
-        IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ON_BLUETOOTH_LINK_TEXT);
-    size_t offset = 0;
-    std::u16string text = l10n_util::GetStringFUTF16(
-        IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ADAPTER_OFF, link_text, &offset);
-    auto adapter_off_help = std::make_unique<views::StyledLabel>();
-    adapter_off_help->SetText(text);
-    adapter_off_help->AddStyleRange(
-        gfx::Range(offset, offset + link_text.size()),
-        views::StyledLabel::RangeStyleInfo::CreateForLink(
-            base::BindRepeating(&ChooserController::OpenAdapterOffHelpUrl,
-                                base::Unretained(chooser_controller_.get()))));
-    adapter_off_view_ = add_centering_view(std::move(adapter_off_help));
-  }
+  // Link that explains that Bluetooth must be turned on.
+  std::u16string link_text = l10n_util::GetStringUTF16(
+      IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ON_BLUETOOTH_LINK_TEXT);
+  size_t offset = 0;
+  std::u16string text = l10n_util::GetStringFUTF16(
+      IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ADAPTER_OFF, link_text, &offset);
+  auto adapter_off_help = std::make_unique<views::StyledLabel>();
+  adapter_off_help->SetText(text);
+  adapter_off_help->AddStyleRange(
+      gfx::Range(offset, offset + link_text.size()),
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          base::BindRepeating(&ChooserController::OpenAdapterOffHelpUrl,
+                              base::Unretained(chooser_controller_.get()))));
+  adapter_off_view_ = add_centering_view(std::move(adapter_off_help));
 
-  {
-    std::u16string link_text = l10n_util::GetStringUTF16(
-        IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK_TEXT);
-    std::u16string text = l10n_util::GetStringFUTF16(
-        IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH, link_text);
-    size_t text_end = text.size();
-    auto adapter_unauthorized_help = std::make_unique<views::StyledLabel>();
-    adapter_unauthorized_help->SetHorizontalAlignment(
-        gfx::HorizontalAlignment::ALIGN_CENTER);
-    adapter_unauthorized_help->SetText(text);
-    adapter_unauthorized_help->AddStyleRange(
-        gfx::Range(text_end - link_text.size(), text_end),
-        views::StyledLabel::RangeStyleInfo::CreateForLink(
-            base::BindRepeating(&ChooserController::OpenPermissionPreferences,
-                                base::Unretained(chooser_controller_.get()))));
-    adapter_unauthorized_view_ =
-        add_centering_view(std::move(adapter_unauthorized_help));
-  }
+  // Link that explains that OS Bluetooth permission must be granted.
+  link_text = l10n_util::GetStringUTF16(
+      IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK_TEXT);
+  text = l10n_util::GetStringFUTF16(
+      IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH, link_text);
+  size_t text_end = text.size();
+  auto adapter_unauthorized_help = std::make_unique<views::StyledLabel>();
+  adapter_unauthorized_help->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_CENTER);
+  adapter_unauthorized_help->SetText(text);
+  adapter_unauthorized_help->AddStyleRange(
+      gfx::Range(text_end - link_text.size(), text_end),
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          base::BindRepeating(&ChooserController::OpenPermissionPreferences,
+                              base::Unretained(chooser_controller_.get()))));
+  adapter_unauthorized_view_ =
+      add_centering_view(std::move(adapter_unauthorized_help));
 
   UpdateTableView();
 }
@@ -354,10 +353,6 @@ void DeviceChooserContentView::Close() {
 
 void DeviceChooserContentView::UpdateTableView() {
   bool has_options = adapter_enabled_ && adapter_authorized_ && RowCount() > 0;
-  if (!is_initialized_ && GetWidget() &&
-      GetWidget()->GetFocusManager()->GetFocusedView()) {
-    is_initialized_ = true;  // Can show no_options_view_ after initial focus.
-  }
 
   if (select_all_view_) {
     select_all_view_->SetVisible(
@@ -367,9 +362,16 @@ void DeviceChooserContentView::UpdateTableView() {
   table_parent_->SetVisible(has_options);
   table_view_->SetEnabled(has_options &&
                           !chooser_controller_->TableViewAlwaysDisabled());
-  // Do not set to visible until initialization is complete, in order to prevent
-  // message from briefly flashing and being read by screen reader.
-  no_options_view_->SetVisible(RowCount() == 0 && is_initialized_);
+
+  // The "No devices found" label should not show until enumeration has
+  // completed or this widget has received focus, in order to prevent a brief
+  // flash of incorrect text that could be read by a screen reader.
+  if (!is_initialized_ && GetWidget() &&
+      GetWidget()->GetFocusManager()->GetFocusedView()) {
+    is_initialized_ = true;
+  }
+  no_options_view_->SetVisible(RowCount() == 0 && is_initialized_ &&
+                               adapter_enabled_);
   adapter_off_view_->SetVisible(!adapter_enabled_);
   adapter_unauthorized_view_->SetVisible(!adapter_authorized_);
 }

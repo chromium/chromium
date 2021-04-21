@@ -227,6 +227,20 @@ TEST_F(DeviceChooserContentViewTest, SelectAndDeselectAnOption) {
   EXPECT_EQ(-1, table_view()->GetFirstSelectedRow());
 }
 
+TEST_F(DeviceChooserContentViewTest, BluetoothIsOff) {
+  controller()->SetBluetoothStatus(
+      FakeBluetoothChooserController::BluetoothStatus::UNAVAILABLE);
+
+  content_view()->OnOptionsInitialized();
+  EXPECT_FALSE(table_parent()->GetVisible());
+  EXPECT_FALSE(no_options_view()->GetVisible());
+  EXPECT_TRUE(adapter_off_view()->GetVisible());
+  EXPECT_FALSE(throbber()->GetVisible());
+  EXPECT_FALSE(throbber_label()->GetVisible());
+  EXPECT_TRUE(re_scan_button()->GetVisible());
+  EXPECT_FALSE(re_scan_button()->GetEnabled());
+}
+
 TEST_F(DeviceChooserContentViewTest, TurnBluetoothOffAndOn) {
   AddUnpairedDevice();
   controller()->SetBluetoothStatus(
