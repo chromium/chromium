@@ -6696,6 +6696,7 @@ if (!is_android) {
       "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/renderer",
+      "//components/enterprise:test_support",
       "//components/feature_engagement/test:test_support",
       "//components/keep_alive_registry",
       "//components/media_router/browser:test_support",

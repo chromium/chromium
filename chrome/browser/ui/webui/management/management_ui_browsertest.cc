@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/strings/grit/components_strings.h"
@@ -52,6 +53,7 @@ class ManagementUITest : public InProcessBrowserTest {
 
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+  policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
 
   DISALLOW_COPY_AND_ASSIGN(ManagementUITest);
 };

@@ -23,6 +23,8 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/device_api/managed_configuration_api.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
+#include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -324,6 +326,15 @@ const char* GetReportingTypeValue(ReportingType reportingType) {
     default:
       return kReportingTypeSecurity;
   }
+}
+
+void AddThreatProtectionPermission(const char* title,
+                                   const char* permission,
+                                   base::Value* info) {
+  base::Value value(base::Value::Type::DICTIONARY);
+  value.SetStringKey("title", title);
+  value.SetStringKey("permission", permission);
+  info->Append(std::move(value));
 }
 
 }  // namespace
@@ -744,59 +755,42 @@ base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
 base::Value ManagementUIHandler::GetThreatProtectionInfo(
     Profile* profile) const {
   base::Value info(base::Value::Type::LIST);
-  const policy::PolicyService* policy_service = GetPolicyService();
-  const auto& chrome_policies = policy_service->GetPolicies(
-      policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
 
-  auto* on_file_attached =
-      chrome_policies.GetValue(policy::key::kOnFileAttachedEnterpriseConnector);
-  if (on_file_attached && on_file_attached->is_list() &&
-      !on_file_attached->GetList().empty()) {
-    base::Value value(base::Value::Type::DICTIONARY);
-    value.SetStringKey("title", kManagementOnFileAttachedEvent);
-    value.SetStringKey("permission", kManagementOnFileAttachedVisibleData);
-    info.Append(std::move(value));
+  constexpr struct {
+    enterprise_connectors::AnalysisConnector connector;
+    const char* title;
+    const char* permission;
+  } analysis_connector_permissions[] = {
+      {enterprise_connectors::FILE_ATTACHED, kManagementOnFileAttachedEvent,
+       kManagementOnFileAttachedVisibleData},
+      {enterprise_connectors::FILE_DOWNLOADED, kManagementOnFileDownloadedEvent,
+       kManagementOnFileDownloadedVisibleData},
+      {enterprise_connectors::BULK_DATA_ENTRY, kManagementOnBulkDataEntryEvent,
+       kManagementOnBulkDataEntryVisibleData},
+  };
+  auto* connectors_service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+          profile);
+  for (auto& entry : analysis_connector_permissions) {
+    if (!connectors_service->GetAnalysisServiceProviderNames(entry.connector)
+             .empty()) {
+      AddThreatProtectionPermission(entry.title, entry.permission, &info);
+    }
   }
 
-  auto* on_file_downloaded = chrome_policies.GetValue(
-      policy::key::kOnFileDownloadedEnterpriseConnector);
-  if (on_file_downloaded && on_file_downloaded->is_list() &&
-      !on_file_downloaded->GetList().empty()) {
-    base::Value value(base::Value::Type::DICTIONARY);
-    value.SetStringKey("title", kManagementOnFileDownloadedEvent);
-    value.SetStringKey("permission", kManagementOnFileDownloadedVisibleData);
-    info.Append(std::move(value));
+  if (!connectors_service
+           ->GetReportingServiceProviderNames(
+               enterprise_connectors::ReportingConnector::SECURITY_EVENT)
+           .empty()) {
+    AddThreatProtectionPermission(kManagementEnterpriseReportingEvent,
+                                  kManagementEnterpriseReportingVisibleData,
+                                  &info);
   }
 
-  auto* on_bulk_data_entry = chrome_policies.GetValue(
-      policy::key::kOnBulkDataEntryEnterpriseConnector);
-  if (on_bulk_data_entry && on_bulk_data_entry->is_list() &&
-      !on_bulk_data_entry->GetList().empty()) {
-    base::Value value(base::Value::Type::DICTIONARY);
-    value.SetStringKey("title", kManagementOnBulkDataEntryEvent);
-    value.SetStringKey("permission", kManagementOnBulkDataEntryVisibleData);
-    info.Append(std::move(value));
-  }
-
-  auto* on_security_event = chrome_policies.GetValue(
-      policy::key::kOnSecurityEventEnterpriseConnector);
-  if (on_security_event && on_security_event->is_list() &&
-      !on_security_event->GetList().empty()) {
-    base::Value value(base::Value::Type::DICTIONARY);
-    value.SetStringKey("title", kManagementEnterpriseReportingEvent);
-    value.SetStringKey("permission", kManagementEnterpriseReportingVisibleData);
-    info.Append(std::move(value));
-  }
-
-  auto* on_page_visited_event =
-      chrome_policies.GetValue(policy::key::kEnterpriseRealTimeUrlCheckMode);
-  if (on_page_visited_event && on_page_visited_event->is_int() &&
-      on_page_visited_event->GetInt() !=
-          safe_browsing::REAL_TIME_CHECK_DISABLED) {
-    base::Value value(base::Value::Type::DICTIONARY);
-    value.SetStringKey("title", kManagementOnPageVisitedEvent);
-    value.SetStringKey("permission", kManagementOnPageVisitedVisibleData);
-    info.Append(std::move(value));
+  if (connectors_service->GetAppliedRealTimeUrlCheck() !=
+      safe_browsing::REAL_TIME_CHECK_DISABLED) {
+    AddThreatProtectionPermission(kManagementOnPageVisitedEvent,
+                                  kManagementOnPageVisitedVisibleData, &info);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

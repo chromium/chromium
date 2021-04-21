@@ -18,6 +18,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_registrar.h"
@@ -176,6 +177,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
 };
 
 // Verify that there's no Trusted Types violation in chrome://chrome-urls

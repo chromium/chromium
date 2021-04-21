@@ -12,17 +12,23 @@
 #include "base/strings/utf_string_conversions.h"
 
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
@@ -1218,10 +1224,6 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   TestingProfile::Builder builder_no_domain;
   auto profile_no_domain = builder_no_domain.Build();
 
-  TestingProfile::Builder builder_known_domain;
-  builder_known_domain.SetProfileName("managed@manager.com");
-  auto profile_known_domain = builder_known_domain.Build();
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   handler_.SetDeviceDomain("");
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1248,29 +1250,46 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
                           "[]", chrome_policies);
   SetConnectorPolicyValue(policy::key::kOnSecurityEventEnterpriseConnector,
                           "[]", chrome_policies);
+  profile_no_domain->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode, 0);
 
-  info = handler_.GetThreatProtectionInfo(profile_known_domain.get());
+  info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
   info.GetAsDictionary(&threat_protection_info);
   EXPECT_TRUE(threat_protection_info->FindListKey("info")->GetList().empty());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
       base::UTF8ToUTF16(*threat_protection_info->FindStringKey("description")));
 
-  // When policies are set to values that enable the feature, report it.
-  SetConnectorPolicyValue(policy::key::kOnFileAttachedEnterpriseConnector,
-                          "[{\"service_provider\":\"google\"}]",
-                          chrome_policies);
-  SetConnectorPolicyValue(policy::key::kOnFileDownloadedEnterpriseConnector,
-                          "[{\"service_provider\":\"google\"}]",
-                          chrome_policies);
-  SetConnectorPolicyValue(policy::key::kOnBulkDataEntryEnterpriseConnector,
-                          "[{\"service_provider\":\"google\"}]",
-                          chrome_policies);
-  SetConnectorPolicyValue(policy::key::kOnSecurityEventEnterpriseConnector,
-                          "[{\"service_provider\":\"google\"}]",
-                          chrome_policies);
-  SetConnectorPolicyValue(policy::key::kEnterpriseRealTimeUrlCheckMode, "1",
-                          chrome_policies);
+  // When policies are set to values that enable the feature without a usable DM
+  // token, nothing to report.
+  safe_browsing::SetAnalysisConnector(profile_no_domain->GetPrefs(),
+                                      enterprise_connectors::FILE_ATTACHED,
+                                      "[{\"service_provider\":\"google\"}]");
+  safe_browsing::SetAnalysisConnector(profile_no_domain->GetPrefs(),
+                                      enterprise_connectors::FILE_DOWNLOADED,
+                                      "[{\"service_provider\":\"google\"}]");
+  safe_browsing::SetAnalysisConnector(profile_no_domain->GetPrefs(),
+                                      enterprise_connectors::BULK_DATA_ENTRY,
+                                      "[{\"service_provider\":\"google\"}]");
+  safe_browsing::SetOnSecurityEventReporting(profile_no_domain->GetPrefs(),
+                                             true);
+  profile_no_domain->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode, 1);
+  profile_no_domain->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+      policy::POLICY_SCOPE_MACHINE);
+
+  info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
+  info.GetAsDictionary(&threat_protection_info);
+  EXPECT_TRUE(threat_protection_info->FindListKey("info")->GetList().empty());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
+      base::UTF8ToUTF16(*threat_protection_info->FindStringKey("description")));
+
+  // When policies are set to values that enable the feature with a usable DM
+  // token, report them.
+  policy::SetDMTokenForTesting(
+      policy::DMToken::CreateValidTokenForTesting("fake-token"));
 
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
   info.GetAsDictionary(&threat_protection_info);
