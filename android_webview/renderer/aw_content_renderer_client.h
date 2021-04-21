@@ -52,7 +52,6 @@ class AwContentRendererClient : public content::ContentRendererClient,
   std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
   CreateWebSocketHandshakeThrottleProvider() override;
   bool HandleNavigation(content::RenderFrame* render_frame,
-                        bool is_content_initiated,
                         bool render_view_was_created_by_renderer,
                         blink::WebFrame* frame,
                         const blink::WebURLRequest& request,

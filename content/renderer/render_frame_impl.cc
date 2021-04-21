@@ -4959,8 +4959,7 @@ void RenderFrameImpl::BeginNavigation(
   // crbug.com/325351 is resolved.
   if (!url.is_empty() && !use_archive && !IsURLHandledByNetworkStack(url) &&
       GetContentClient()->renderer()->HandleNavigation(
-          this, true /* is_content_initiated */,
-          render_view_was_created_by_renderer, frame_, info->url_request,
+          this, render_view_was_created_by_renderer, frame_, info->url_request,
           info->navigation_type, info->navigation_policy,
           false /* is_redirect */)) {
     return;

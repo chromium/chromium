@@ -106,7 +106,6 @@ ContentRendererClient::GetProtocolHandlerSecurityLevel() {
 #if defined(OS_ANDROID)
 bool ContentRendererClient::HandleNavigation(
     RenderFrame* render_frame,
-    bool is_content_initiated,
     bool render_view_was_created_by_renderer,
     blink::WebFrame* frame,
     const blink::WebURLRequest& request,

@@ -86,7 +86,6 @@ void AwContentRendererClient::ExposeInterfacesToBrowser(
 
 bool AwContentRendererClient::HandleNavigation(
     content::RenderFrame* render_frame,
-    bool is_content_initiated,
     bool render_view_was_created_by_renderer,
     blink::WebFrame* frame,
     const blink::WebURLRequest& request,
@@ -101,12 +100,7 @@ bool AwContentRendererClient::HandleNavigation(
   // initiated and hence will not yield a shouldOverrideUrlLoading() callback.
   // Webview classic does not consider reload application-initiated so we
   // continue the same behavior.
-  // TODO(sgurun) is_content_initiated is normally false for cross-origin
-  // navigations but since android_webview does not swap out renderers, this
-  // works fine. This will stop working if android_webview starts swapping out
-  // renderers on navigation.
-  bool application_initiated =
-      !is_content_initiated || type == blink::kWebNavigationTypeBackForward;
+  bool application_initiated = type == blink::kWebNavigationTypeBackForward;
 
   // Don't offer application-initiated navigations unless it's a redirect.
   if (application_initiated && !is_redirect)

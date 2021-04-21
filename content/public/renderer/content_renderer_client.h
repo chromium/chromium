@@ -198,7 +198,6 @@ class CONTENT_EXPORT ContentRendererClient {
   // Returns true if the navigation was handled by the embedder and should be
   // ignored by WebKit. This method is used by CEF and android_webview.
   virtual bool HandleNavigation(RenderFrame* render_frame,
-                                bool is_content_initiated,
                                 bool render_view_was_created_by_renderer,
                                 blink::WebFrame* frame,
                                 const blink::WebURLRequest& request,
