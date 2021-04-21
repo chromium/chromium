@@ -2036,6 +2036,12 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SelectOption) {
     select.options[select.selectedIndex].label;
   )";
 
+  // Selecting on a non-<select> element.
+  EXPECT_EQ(OPTION_VALUE_NOT_FOUND,
+            SelectOption(Selector({"#input1"}), std::string(),
+                         /* case_sensitive= */ false, SelectOptionProto::LABEL)
+                .proto_status());
+
   // Fails if no comparison attribute is set.
   EXPECT_EQ(INVALID_ACTION,
             SelectOption(selector, "one", /* case_sensitive= */ false,

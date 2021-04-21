@@ -86,6 +86,7 @@ const char* const kScrollIntoViewScript =
 // to trigger any listeners. Changing the index directly does not trigger this.
 const char* const kSelectOptionScript =
     R"(function(re2, valueSourceAttribute, caseSensitive) {
+      if (this.options == null) return false;
       const regexp = RegExp(re2, caseSensitive ? '' : 'i');
       let found = false;
       for (let i = 0; i < this.options.length; ++i) {

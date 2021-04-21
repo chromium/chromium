@@ -1356,7 +1356,11 @@ enum OptionalStep {
   REQUIRE_STEP_SUCCESS = 3;
 }
 
-// Contain all arguments to perform a select option action.
+// Contain all arguments to perform a select option action. This action also
+// fires a "change" event on the element. If the option is not found, an
+// |OPTION_VALUE_NOT_FOUND| error is returned. If the action is used on an
+// element that is not an HTML <select> element, an |OPTION_VALUE_NOT_FOUND|
+// error is returned.
 message SelectOptionProto {
   // The drop down element on which to select an option.
   optional SelectorProto element = 2;
