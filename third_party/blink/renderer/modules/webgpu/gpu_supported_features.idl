@@ -15,9 +15,5 @@ enum GPUFeatureName {
 [
     Exposed(Window WebGPU, Worker WebGPU)
 ] interface GPUSupportedFeatures {
-    // TODO(crbug.com/1197293): Should be a setlike of GPUFeatureName, but Blink
-    // doesn't appear to support that yet. Not a compatibility issue since this
-    // setlike is readonly and we can ensure that it only contains strings from
-    // the GPUFeatureName enum.
-    readonly setlike<DOMString>;
+    readonly setlike<GPUFeatureName>;
 };
