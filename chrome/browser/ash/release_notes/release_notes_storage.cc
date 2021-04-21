@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/release_notes/release_notes_storage.h"
+#include "chrome/browser/ash/release_notes/release_notes_storage.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"

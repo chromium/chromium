@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_RELEASE_NOTES_RELEASE_NOTES_NOTIFICATION_H_
-#define CHROME_BROWSER_CHROMEOS_RELEASE_NOTES_RELEASE_NOTES_NOTIFICATION_H_
+#ifndef CHROME_BROWSER_ASH_RELEASE_NOTES_RELEASE_NOTES_NOTIFICATION_H_
+#define CHROME_BROWSER_ASH_RELEASE_NOTES_RELEASE_NOTES_NOTIFICATION_H_
 
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/post_task.h"
-#include "chrome/browser/chromeos/release_notes/release_notes_storage.h"
+#include "chrome/browser/ash/release_notes/release_notes_storage.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
@@ -54,4 +54,4 @@ class ReleaseNotesNotification {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_RELEASE_NOTES_RELEASE_NOTES_NOTIFICATION_H_
+#endif  // CHROME_BROWSER_ASH_RELEASE_NOTES_RELEASE_NOTES_NOTIFICATION_H_
