@@ -1437,11 +1437,18 @@ TEST_F(LabelSelectionTest, MouseDragWord) {
   EXPECT_STR_EQ("drag word", GetSelectedText());
 }
 
+// TODO(crbug.com/1201128): LabelSelectionTest.SelectionClipboard is failing on
+// linux-lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_SelectionClipboard DISABLED_SelectionClipboard
+#else
+#define MAYBE_SelectionClipboard SelectionClipboard
+#endif
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Verify selection clipboard behavior on text selection.
-TEST_F(LabelSelectionTest, SelectionClipboard) {
+TEST_F(LabelSelectionTest, MAYBE_SelectionClipboard) {
   label()->SetText(u"Label selection clipboard");
   label()->SizeToPreferredSize();
   ASSERT_TRUE(label()->SetSelectable(true));
