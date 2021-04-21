@@ -126,6 +126,16 @@ void OverrideWithFinch(Config* config) {
           kWebFeed, "webfeed_accelerator_recent_visit_history_days",
           config->webfeed_accelerator_recent_visit_history_days);
 
+  config->recommended_feeds_staleness_threshold =
+      base::TimeDelta::FromDays(base::GetFieldTrialParamByFeatureAsInt(
+          kWebFeed, "recommended_feeds_staleness_threshold_days",
+          config->recommended_feeds_staleness_threshold.InDays()));
+
+  config->subscribed_feeds_staleness_threshold =
+      base::TimeDelta::FromDays(base::GetFieldTrialParamByFeatureAsInt(
+          kWebFeed, "subscribed_feeds_staleness_threshold_days",
+          config->subscribed_feeds_staleness_threshold.InDays()));
+
   // Erase any capabilities with "enable_CAPABILITY = false" set.
   base::EraseIf(config->experimental_capabilities, CapabilityDisabled);
 }

@@ -707,7 +707,7 @@ TEST_F(FeedApiSubscriptionsTest,
 }
 
 TEST_F(FeedApiSubscriptionsTest,
-       RecommendedWebFeedsAreNotFetchedAfterStartupWhenDataIsFresh) {
+       RecommendedWebFeedsAreFetchedAfterStartupOnlyWhenStale) {
   // 1. First, fetch recommended web feeds at startup, same as
   // RecommendedWebFeedsAreFetchedAfterStartup.
   {
@@ -848,8 +848,8 @@ TEST_F(FeedApiSubscriptionsTest,
 
 TEST_F(FeedApiSubscriptionsTest,
        SubscribedWebFeedsAreFetchedAfterStartupOnlyWhenStale) {
-  // 1. First, fetch recommended web feeds at startup, same as
-  // RecommendedWebFeedsAreFetchedAfterStartup.
+  // 1. First, fetch subscribed web feeds at startup, same as
+  // SubscribedWebFeedsAreFetchedAfterStartup.
   {
     SetUpWithDefaultConfig();
     InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
@@ -860,7 +860,7 @@ TEST_F(FeedApiSubscriptionsTest,
     ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
   }
 
-  // 2. Recreate FeedStream, and verify recommended web feeds are not fetched
+  // 2. Recreate FeedStream, and verify subscribed web feeds are not fetched
   // again.
   {
     CreateStream();
@@ -871,17 +871,16 @@ TEST_F(FeedApiSubscriptionsTest,
     ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
   }
 
-  // 3. Wait until the data is stale, and then verify the recommended web feeds
+  // 3. Wait until the data is stale, and then verify the subscribed web feeds
   // are fetched again.
   {
     task_environment_.FastForwardBy(
-        GetFeedConfig().recommended_feeds_staleness_threshold);
+        GetFeedConfig().subscribed_feeds_staleness_threshold);
     InjectListWebFeedsResponse({MakeWireWebFeed("catsv2")});
     CreateStream();
 
-    task_environment_.FastForwardBy(
-        GetFeedConfig().subscribed_feeds_staleness_threshold +
-        base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
+                                    base::TimeDelta::FromSeconds(1));
     WaitForIdleTaskQueue();
     ASSERT_EQ(2, network_.GetListFollowedWebFeedsRequestCount());
     EXPECT_EQ(
