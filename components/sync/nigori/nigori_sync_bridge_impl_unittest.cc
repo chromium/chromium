@@ -338,9 +338,6 @@ class MockNigoriStorage : public NigoriStorage {
 class NigoriSyncBridgeImplTest : public testing::Test {
  protected:
   NigoriSyncBridgeImplTest() {
-    override_features_.InitAndEnableFeature(
-        switches::kSyncSupportTrustedVaultPassphrase);
-
     auto processor =
         std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>();
     ON_CALL(*processor, IsTrackingMetadata()).WillByDefault(Return(true));
@@ -367,7 +364,6 @@ class NigoriSyncBridgeImplTest : public testing::Test {
   const std::vector<uint8_t> kTrustedVaultKey = {2, 3, 4, 5, 6};
 
  private:
-  base::test::ScopedFeatureList override_features_;
   const FakeEncryptor encryptor_;
   std::unique_ptr<NigoriSyncBridgeImpl> bridge_;
   // Ownership transferred to |bridge_|.
@@ -1641,10 +1637,6 @@ TEST_F(NigoriSyncBridgeImplTest,
 // custom passphrase. The bridge should report model error.
 TEST(NigoriSyncBridgeImplPersistenceTest,
      ShouldFailOnInvalidRemoteTransitionFromTrustedVaultAfterRestart) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncSupportTrustedVaultPassphrase);
-
   // Emulate storing on disc.
   auto storage1 = std::make_unique<testing::NiceMock<MockNigoriStorage>>();
   sync_pb::NigoriLocalData nigori_local_data;

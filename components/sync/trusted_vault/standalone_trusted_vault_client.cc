@@ -139,11 +139,6 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
     : backend_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(kBackendTaskTraits)),
       access_token_fetcher_frontend_(identity_manager) {
-  if (!base::FeatureList::IsEnabled(
-          switches::kSyncSupportTrustedVaultPassphrase)) {
-    return;
-  }
-
   std::unique_ptr<TrustedVaultConnection> connection;
   GURL trusted_vault_service_gurl =
       ExtractTrustedVaultServiceURLFromCommandLine();
@@ -171,13 +166,11 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
 }
 
 StandaloneTrustedVaultClient::~StandaloneTrustedVaultClient() {
-  if (backend_) {
-    // |backend_| needs to be destroyed inside backend sequence, not the current
-    // one. Destroy |primary_account_observer_| that owns pointer to |backend_|
-    // as well and release |backend_| in |backend_task_runner_|.
-    primary_account_observer_.reset();
-    backend_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
-  }
+  // |backend_| needs to be destroyed inside backend sequence, not the current
+  // one. Destroy |primary_account_observer_| that owns pointer to |backend_|
+  // as well and release |backend_| in |backend_task_runner_|.
+  primary_account_observer_.reset();
+  backend_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
 }
 
 void StandaloneTrustedVaultClient::AddObserver(Observer* observer) {

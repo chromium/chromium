@@ -547,10 +547,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #endif
 
 #if !defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          switches::kSyncSupportTrustedVaultPassphrase)) {
-    SyncEncryptionKeysExtension::Create(render_frame);
-  }
+  SyncEncryptionKeysExtension::Create(render_frame);
 #endif
 
   if (render_frame->IsMainFrame())

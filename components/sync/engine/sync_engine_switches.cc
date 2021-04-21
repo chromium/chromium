@@ -17,9 +17,6 @@ const base::Feature kSyncResetPollIntervalOnStart{
 const base::Feature kSyncUseScryptForNewCustomPassphrases{
     "SyncUseScryptForNewCustomPassphrases", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kSyncSupportTrustedVaultPassphrase{
-    "SyncSupportTrustedVaultPassphrase", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kSyncTriggerFullKeystoreMigration{
     "SyncTriggerFullKeystoreMigration", base::FEATURE_ENABLED_BY_DEFAULT};
 

@@ -166,8 +166,7 @@ bool IsValidNigoriSpecifics(const NigoriSpecifics& specifics) {
       }
       break;
     case NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE:
-      return base::FeatureList::IsEnabled(
-          switches::kSyncSupportTrustedVaultPassphrase);
+      return true;
   }
   return true;
 }
@@ -450,11 +449,7 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
   // verifications, taking into account sensitivity of this data.
   base::Optional<sync_pb::NigoriLocalData> deserialized_data =
       storage_->RestoreData();
-  if (!deserialized_data ||
-      (deserialized_data->nigori_model().passphrase_type() ==
-           NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE &&
-       !base::FeatureList::IsEnabled(
-           switches::kSyncSupportTrustedVaultPassphrase))) {
+  if (!deserialized_data) {
     // We either have no Nigori node stored locally or it was corrupted.
     processor_->ModelReadyToSync(this, NigoriMetadataBatch());
     // Keystore keys needs migration independently of having local Nigori node.
