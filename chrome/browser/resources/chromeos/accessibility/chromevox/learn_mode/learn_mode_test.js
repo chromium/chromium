@@ -188,7 +188,7 @@ TEST_F('ChromeVoxLearnModeTest', 'HardwareFunctionKeys', function() {
         .expectSpeechWithQueueMode('Search', QueueMode.FLUSH)
         .call(doKeyDown({keyCode: KeyCode.BRIGHTNESS_UP, metaKey: true}))
         .expectSpeechWithQueueMode('Brightness up', QueueMode.QUEUE)
-        .expectSpeechWithQueueMode('Toggle dark screen', QueueMode.QUEUE)
+        .expectSpeechWithQueueMode('Toggle screen on or off', QueueMode.QUEUE)
         .call(doKeyUp({keyCode: KeyCode.BRIGHTNESS_UP, metaKey: true}))
 
         // Search+Volume Down has no associated command.

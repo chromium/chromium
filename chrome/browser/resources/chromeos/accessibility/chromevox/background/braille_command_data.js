@@ -144,7 +144,7 @@ BrailleCommandData.init_ = function() {
   map([1, 4, 5, 6], 'toggleKeyboardHelp');
 
   // All cells.
-  map([1, 2, 3, 4, 5, 6], 'toggleDarkScreen');
+  map([1, 2, 3, 4, 5, 6], 'toggleScreen');
 
   // s.
   map([1, 2, 3, 4, 5], 'toggleSpeechOnOrOff');
