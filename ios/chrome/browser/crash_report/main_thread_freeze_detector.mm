@@ -197,68 +197,70 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
 
     [[BreakpadController sharedInstance]
         withBreakpadRef:^(BreakpadRef breakpadRef) {
-          if (!self.running) {
-            UMA_HISTOGRAM_ENUMERATION(
-                kUMAMainThreadFreezeDetectionNotRunningAfterReport,
-                IOSMainThreadFreezeDetectionNotRunningAfterReportBlock::
-                    kAfterBreakpadRef);
-            return;
-          }
-          if (!breakpadRef) {
-            return;
-          }
-          BreakpadAddUploadParameter(breakpadRef, kHangReportKey, @"yes");
-          NSDictionary* breakpadReportInfo =
-              BreakpadGenerateReport(breakpadRef, nil);
-          BreakpadRemoveUploadParameter(breakpadRef, kHangReportKey);
-          if (!breakpadReportInfo) {
-            return;
-          }
-          // The report is always generated in the BreakpadDirectory.
-          // As only one report can be uploaded per session, this report is
-          // moved out of the Breakpad directory and put in a |UTE| directory.
-          NSString* configFile =
-              [breakpadReportInfo objectForKey:@BREAKPAD_OUTPUT_CONFIG_FILE];
-          NSString* UTEConfigFile = [_UTEDirectory
-              stringByAppendingPathComponent:[configFile lastPathComponent]];
-          NSString* dumpFile =
-              [breakpadReportInfo objectForKey:@BREAKPAD_OUTPUT_DUMP_FILE];
-          NSString* UTEDumpFile = [_UTEDirectory
-              stringByAppendingPathComponent:[dumpFile lastPathComponent]];
-          NSFileManager* fileManager = [[NSFileManager alloc] init];
-
-          // Clear previous reports if they exist.
-          [fileManager createDirectoryAtPath:_UTEDirectory
-                 withIntermediateDirectories:NO
-                                  attributes:nil
-                                       error:nil];
-          [fileManager moveItemAtPath:configFile
-                               toPath:UTEConfigFile
-                                error:nil];
-          [fileManager moveItemAtPath:dumpFile toPath:UTEDumpFile error:nil];
-          if (!self.running) {
-            UMA_HISTOGRAM_ENUMERATION(
-                kUMAMainThreadFreezeDetectionNotRunningAfterReport,
-                IOSMainThreadFreezeDetectionNotRunningAfterReportBlock::
-                    kAfterFileManagerUTEMove);
-            return;
-          }
-          [[NSUserDefaults standardUserDefaults]
-              setObject:@{
-                @"dump" : [dumpFile lastPathComponent],
-                @"config" : [configFile lastPathComponent],
-                @"date" : [NSDate date]
-              }
-                 forKey:@(kNsUserDefaultKeyLastSessionInfo)];
-          self.reportGenerated = YES;
+          [self recordHangWithBreakpadRef:breakpadRef];
         }];
     return;
   }
+
   dispatch_after(
       dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)),
       _freezeDetectionQueue, ^{
         [self runInFreezeDetectionQueue];
       });
+}
+
+- (void)recordHangWithBreakpadRef:(BreakpadRef)breakpadRef {
+  if (!self.running) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kUMAMainThreadFreezeDetectionNotRunningAfterReport,
+        IOSMainThreadFreezeDetectionNotRunningAfterReportBlock::
+            kAfterBreakpadRef);
+    return;
+  }
+  if (!breakpadRef) {
+    return;
+  }
+  BreakpadAddUploadParameter(breakpadRef, kHangReportKey, @"yes");
+  NSDictionary* breakpadReportInfo = BreakpadGenerateReport(breakpadRef, nil);
+  BreakpadRemoveUploadParameter(breakpadRef, kHangReportKey);
+  if (!breakpadReportInfo) {
+    return;
+  }
+  // The report is always generated in the BreakpadDirectory.
+  // As only one report can be uploaded per session, this report is
+  // moved out of the Breakpad directory and put in a |UTE| directory.
+  NSString* configFile =
+      [breakpadReportInfo objectForKey:@BREAKPAD_OUTPUT_CONFIG_FILE];
+  NSString* UTEConfigFile = [_UTEDirectory
+      stringByAppendingPathComponent:[configFile lastPathComponent]];
+  NSString* dumpFile =
+      [breakpadReportInfo objectForKey:@BREAKPAD_OUTPUT_DUMP_FILE];
+  NSString* UTEDumpFile = [_UTEDirectory
+      stringByAppendingPathComponent:[dumpFile lastPathComponent]];
+  NSFileManager* fileManager = [[NSFileManager alloc] init];
+
+  // Clear previous reports if they exist.
+  [fileManager createDirectoryAtPath:_UTEDirectory
+         withIntermediateDirectories:NO
+                          attributes:nil
+                               error:nil];
+  [fileManager moveItemAtPath:configFile toPath:UTEConfigFile error:nil];
+  [fileManager moveItemAtPath:dumpFile toPath:UTEDumpFile error:nil];
+  if (!self.running) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kUMAMainThreadFreezeDetectionNotRunningAfterReport,
+        IOSMainThreadFreezeDetectionNotRunningAfterReportBlock::
+            kAfterFileManagerUTEMove);
+    return;
+  }
+  [[NSUserDefaults standardUserDefaults]
+      setObject:@{
+        @"dump" : [dumpFile lastPathComponent],
+        @"config" : [configFile lastPathComponent],
+        @"date" : [NSDate date]
+      }
+         forKey:@(kNsUserDefaultKeyLastSessionInfo)];
+  self.reportGenerated = YES;
 }
 
 - (void)prepareCrashReportsForUpload:(ProceduralBlock)completion {
@@ -340,10 +342,14 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
   // |prepareToUpload| which mean that main thread was responding recently.
   [fileManager removeItemAtPath:_UTEDirectory error:nil];
   dispatch_async(dispatch_get_main_queue(), ^{
-    _canUploadBreakpadCrashReports = YES;
-    DCHECK(_restorationCompletion);
-    _restorationCompletion();
+    [self handleSessionRestorationCompletion];
   });
+}
+
+- (void)handleSessionRestorationCompletion {
+  _canUploadBreakpadCrashReports = YES;
+  DCHECK(_restorationCompletion);
+  _restorationCompletion();
 }
 
 @end
