@@ -20,7 +20,7 @@ class AXVirtualView;
 // Wraps (and adapts) an AXVirtualView for use with AXTreeSourceViews.
 class AXVirtualViewWrapper : public AXAuraObjWrapper {
  public:
-  AXVirtualViewWrapper(AXVirtualView* virtual_view, AXAuraObjCache* cache);
+  AXVirtualViewWrapper(AXAuraObjCache* cache, AXVirtualView* virtual_view);
   AXVirtualViewWrapper(const AXVirtualViewWrapper&) = delete;
   AXVirtualViewWrapper& operator=(const AXVirtualViewWrapper&) = delete;
   ~AXVirtualViewWrapper() override;

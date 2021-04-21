@@ -16,6 +16,8 @@
 #include "ui/aura/window_observer.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 #include "ui/views/accessibility/ax_view_obj_wrapper.h"
+#include "ui/views/accessibility/ax_virtual_view.h"
+#include "ui/views/accessibility/ax_virtual_view_wrapper.h"
 #include "ui/views/accessibility/ax_widget_obj_wrapper.h"
 #include "ui/views/accessibility/ax_window_obj_wrapper.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -75,6 +77,14 @@ AXAuraObjWrapper* AXAuraObjCache::GetOrCreate(View* view) {
   return CreateInternal<AXViewObjWrapper>(view, &view_to_id_map_);
 }
 
+AXAuraObjWrapper* AXAuraObjCache::GetOrCreate(AXVirtualView* virtual_view) {
+  if (!virtual_view->GetOwnerView() ||
+      !virtual_view->GetOwnerView()->GetWidget())
+    return nullptr;
+  return CreateInternal<AXVirtualViewWrapper>(virtual_view,
+                                              &virtual_view_to_id_map_);
+}
+
 AXAuraObjWrapper* AXAuraObjCache::GetOrCreate(Widget* widget) {
   return CreateInternal<AXWidgetObjWrapper>(widget, &widget_to_id_map_);
 }
@@ -91,6 +101,10 @@ int32_t AXAuraObjCache::GetID(View* view) const {
   return GetIDInternal(view, view_to_id_map_);
 }
 
+int32_t AXAuraObjCache::GetID(AXVirtualView* virtual_view) const {
+  return GetIDInternal(virtual_view, virtual_view_to_id_map_);
+}
+
 int32_t AXAuraObjCache::GetID(Widget* widget) const {
   return GetIDInternal(widget, widget_to_id_map_);
 }
@@ -101,6 +115,10 @@ int32_t AXAuraObjCache::GetID(aura::Window* window) const {
 
 void AXAuraObjCache::Remove(View* view) {
   RemoveInternal(view, &view_to_id_map_);
+}
+
+void AXAuraObjCache::Remove(AXVirtualView* virtual_view) {
+  RemoveInternal(virtual_view, &virtual_view_to_id_map_);
 }
 
 void AXAuraObjCache::RemoveViewSubtree(View* view) {
@@ -175,6 +193,9 @@ AXAuraObjCache::AXAuraObjCache()
 AXAuraObjCache::~AXAuraObjCache() {
   if (!root_windows_.empty() && GetFocusClient(*root_windows_.begin()))
     GetFocusClient(*root_windows_.begin())->RemoveObserver(this);
+
+  for (auto& entry : virtual_view_to_id_map_)
+    entry.first->set_cache(nullptr);
 }
 
 View* AXAuraObjCache::GetFocusedView() {

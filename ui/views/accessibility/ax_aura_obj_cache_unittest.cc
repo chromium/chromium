@@ -21,6 +21,8 @@
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/ax_event_observer.h"
 #include "ui/views/accessibility/ax_tree_source_views.h"
+#include "ui/views/accessibility/ax_virtual_view.h"
+#include "ui/views/accessibility/ax_virtual_view_wrapper.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/widget_test.h"
@@ -265,6 +267,33 @@ TEST_F(AXAuraObjCacheTest, DoNotCreateWidgetWrapperOnDestroyed) {
   run_loop.Run();
 
   EXPECT_EQ(ui::kInvalidAXNodeID, cache.GetID(widget));
+}
+
+TEST_F(AXAuraObjCacheTest, VirtualViews) {
+  AXAuraObjCache cache;
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.bounds = gfx::Rect(0, 0, 200, 200);
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
+  widget->Init(std::move(params));
+  widget->Show();
+
+  View* parent = new View();
+  widget->GetRootView()->AddChildView(parent);
+  auto* virtual_label = new AXVirtualView;
+  virtual_label->GetCustomData().role = ax::mojom::Role::kStaticText;
+  virtual_label->GetCustomData().SetName("Label");
+  parent->GetViewAccessibility().AddVirtualChildView(
+      base::WrapUnique(virtual_label));
+
+  auto* wrapper = virtual_label->GetOrCreateWrapper(&cache);
+  ui::AXNodeID id = wrapper->GetUniqueId();
+  auto* wrapper2 = cache.Get(id);
+  EXPECT_EQ(wrapper, wrapper2);
+
+  parent->GetViewAccessibility().RemoveVirtualChildView(virtual_label);
+  EXPECT_EQ(nullptr, cache.Get(id));
 }
 
 }  // namespace

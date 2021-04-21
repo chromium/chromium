@@ -66,6 +66,11 @@ AXVirtualView::~AXVirtualView() {
     ax_platform_node_->Destroy();
     ax_platform_node_ = nullptr;
   }
+
+#if defined(USE_AURA)
+  if (ax_aura_obj_cache_)
+    ax_aura_obj_cache_->Remove(this);
+#endif
 }
 
 void AXVirtualView::AddChildView(std::unique_ptr<AXVirtualView> view) {
@@ -514,11 +519,10 @@ ViewAXPlatformNodeDelegate* AXVirtualView::GetDelegate() const {
 AXVirtualViewWrapper* AXVirtualView::GetOrCreateWrapper(
     views::AXAuraObjCache* cache) {
 #if defined(USE_AURA)
-  // cache might be recreated, and if cache is new, recreate the wrapper.
-  if (!wrapper_ || wrapper_->cache() != cache)
-    wrapper_ = std::make_unique<AXVirtualViewWrapper>(this, cache);
+  return static_cast<AXVirtualViewWrapper*>(cache->GetOrCreate(this));
+#else
+  return nullptr;
 #endif
-  return wrapper_.get();
 }
 
 }  // namespace views

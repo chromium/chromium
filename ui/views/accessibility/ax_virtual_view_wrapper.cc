@@ -13,9 +13,11 @@
 
 namespace views {
 
-AXVirtualViewWrapper::AXVirtualViewWrapper(AXVirtualView* virtual_view,
-                                           AXAuraObjCache* cache)
-    : AXAuraObjWrapper(cache), virtual_view_(virtual_view) {}
+AXVirtualViewWrapper::AXVirtualViewWrapper(AXAuraObjCache* cache,
+                                           AXVirtualView* virtual_view)
+    : AXAuraObjWrapper(cache), virtual_view_(virtual_view) {
+  virtual_view->set_cache(cache);
+}
 
 AXVirtualViewWrapper::~AXVirtualViewWrapper() = default;
 
