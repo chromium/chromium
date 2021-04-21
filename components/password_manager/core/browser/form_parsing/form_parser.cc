@@ -665,7 +665,7 @@ const FormFieldData* FindUsernameFieldBaseHeuristics(
       continue;
     if (!MatchesInteractability(*it, best_interactability))
       continue;
-    if (is_saving && IsProbablyNotUsername(it->field->value))
+    if (is_saving && IsProbablyNotUsername(GetFieldValue(*it->field)))
       continue;
     if (!is_fallback && IsNotPasswordField(*it))
       continue;

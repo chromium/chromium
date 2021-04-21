@@ -2540,6 +2540,28 @@ TEST(FormParserTest, TypedValues) {
                    .form_control_type = "password"},
               },
       },
+      {
+          .description_for_logging = "Form autocomplete with cleared by JavaScript values",
+          // Username autocomplete tests that typed values are taken as username, password and
+          // new password instead of values that are cleared by JavaScript.
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .value = u"",
+                   .user_input = u"typed_username",
+                   .form_control_type = "text"},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .autocomplete_attribute = "current-password",
+                   .value = u"",
+                   .user_input = u"typed_password",
+                   .form_control_type = "password"},
+                  {.role = ElementRole::NEW_PASSWORD,
+                   .autocomplete_attribute = "new-password",
+                   .value = u"",
+                   .user_input = u"typed_new_password",
+                   .form_control_type = "password"},
+              },
+      },
   });
 }
 
