@@ -1906,6 +1906,23 @@ PhysicalRect LayoutBox::ClippingRect(const PhysicalOffset& location) const {
   return result;
 }
 
+void LayoutBox::ApplyVisibleOverflowToClipRect(PhysicalRect& clip_rect) const {
+  const OverflowClipAxes overflow_clip = GetOverflowClipAxes();
+  if (overflow_clip == kOverflowClipBothAxis) {
+    clip_rect.Inflate(StyleRef().OverflowClipMargin());
+  } else {
+    const LayoutRect infinite_rect(LayoutRect::InfiniteIntRect());
+    if ((overflow_clip & kOverflowClipX) == kNoOverflowClip) {
+      clip_rect.offset.left = infinite_rect.X();
+      clip_rect.size.width = infinite_rect.Width();
+    }
+    if ((overflow_clip & kOverflowClipY) == kNoOverflowClip) {
+      clip_rect.offset.top = infinite_rect.Y();
+      clip_rect.size.height = infinite_rect.Height();
+    }
+  }
+}
+
 FloatPoint LayoutBox::PerspectiveOrigin(const PhysicalSize* size) const {
   if (!HasTransformRelatedProperty())
     return FloatPoint();
@@ -2895,22 +2912,8 @@ PhysicalRect LayoutBox::OverflowClipRect(
     clip_rect = PhysicalBorderBoxRect();
     clip_rect.Contract(BorderBoxOutsets());
     clip_rect.Move(location);
-    if (HasNonVisibleOverflow()) {
-      const auto overflow_clip = GetOverflowClipAxes();
-      if (overflow_clip == kOverflowClipBothAxis) {
-        clip_rect.Inflate(StyleRef().OverflowClipMargin());
-      } else {
-        auto infinite_rect = LayoutRect::InfiniteIntRect();
-        if ((overflow_clip & kOverflowClipX) == kNoOverflowClip) {
-          clip_rect.offset.left = LayoutUnit(infinite_rect.X());
-          clip_rect.size.width = LayoutUnit(infinite_rect.Width());
-        }
-        if ((overflow_clip & kOverflowClipY) == kNoOverflowClip) {
-          clip_rect.offset.top = LayoutUnit(infinite_rect.Y());
-          clip_rect.size.height = LayoutUnit(infinite_rect.Height());
-        }
-      }
-    }
+    if (HasNonVisibleOverflow())
+      ApplyVisibleOverflowToClipRect(clip_rect);
   }
 
   if (IsScrollContainer()) {

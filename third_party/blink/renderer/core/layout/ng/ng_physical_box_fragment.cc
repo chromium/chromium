@@ -697,6 +697,7 @@ PhysicalRect NGPhysicalBoxFragment::OverflowClipRect(
       Size().ConvertToLogical(writing_direction.GetWritingMode()));
   PhysicalRect physical_fragment_rect =
       converter.ToPhysical(logical_fragment_rect);
+  box->ApplyVisibleOverflowToClipRect(physical_fragment_rect);
   // Clip against the fragment's bounds.
   clip_rect.Intersect(physical_fragment_rect);
   // Make the clip rectangle relative to the fragment.

@@ -1611,6 +1611,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // for this object.
   PhysicalRect ClippingRect(const PhysicalOffset& location) const;
 
+  // Adjust the clip rectangle to encompass overflow-clip-margin, and remove
+  // clipping along any axis where we shouldn't clip.
+  void ApplyVisibleOverflowToClipRect(PhysicalRect& clip_rect) const;
+
   virtual void PaintBoxDecorationBackground(
       const PaintInfo&,
       const PhysicalOffset& paint_offset) const;
