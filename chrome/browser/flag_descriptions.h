@@ -607,6 +607,9 @@ extern const char kEnableNewDownloadBackendDescription[];
 extern const char kEnablePciguardUiName[];
 extern const char kEnablePciguardUiDescription[];
 
+extern const char kEnablePenetratingImageSelectionName[];
+extern const char kEnablePenetratingImageSelectionDescription[];
+
 extern const char kEnablePortalsName[];
 extern const char kEnablePortalsDescription[];
 

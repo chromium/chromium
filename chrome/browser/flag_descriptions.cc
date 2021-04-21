@@ -1073,6 +1073,12 @@ const char kEnablePciguardUiDescription[] =
     "Enable toggling Pciguard settings through the Settings App. By default, "
     "this flag is enabled.";
 
+const char kEnablePenetratingImageSelectionName[] =
+    "Penetrating Image Selection";
+const char kEnablePenetratingImageSelectionDescription[] =
+    "Enables image options to be surfaced in the context menu for nodes "
+    "covered by transparent overlays.";
+
 const char kEnablePixelCanvasRecordingName[] = "Enable pixel canvas recording";
 const char kEnablePixelCanvasRecordingDescription[] =
     "Pixel canvas recording allows the compositor to raster contents aligned "

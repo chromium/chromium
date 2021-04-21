@@ -2184,6 +2184,11 @@
     "owners": [ "jimmyxgong", "cros-peripherals@google.com" ],
     "expiry_milestone": 94
   },
+  {
+    "name": "enable-penetrating-image-selection",
+    "owners": [ "benwgold", "flackr" ],
+    "expiry_milestone": 95
+  },
   { "name": "enable-phone-hub",
     "owners": [ "better-together-dev@google.com", "tjohnsonkanu", "khorimoto" ],
     "expiry_milestone": 90

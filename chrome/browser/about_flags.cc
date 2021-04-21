@@ -7228,7 +7228,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(
          autofill::features::
-             kAutofillSuggestVirtualCardsOnlyOnFullFormDetection)}
+             kAutofillSuggestVirtualCardsOnlyOnFullFormDetection)},
+
+    {"enable-penetrating-image-selection",
+     flag_descriptions::kEnablePenetratingImageSelectionName,
+     flag_descriptions::kEnablePenetratingImageSelectionDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kEnablePenetratingImageSelection)}
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
