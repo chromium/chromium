@@ -820,13 +820,12 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
       DCHECK(space.AvailableSize().block_size != kIndefiniteSize);
       block_length_to_resolve = Length::FillAvailable();
     }
-    replaced_block = ResolveMainBlockLength(space, style, border_padding,
-                                            block_length_to_resolve,
-                                            space.AvailableSize().block_size);
 
-    if (*replaced_block == kIndefiniteSize) {
-      replaced_block.reset();
-    } else {
+    if (!BlockLengthUnresolvable(space, block_length_to_resolve)) {
+      replaced_block = ResolveMainBlockLength(
+          space, style, border_padding, block_length_to_resolve,
+          /* intrinsic_size */ kIndefiniteSize);
+      DCHECK_NE(*replaced_block, kIndefiniteSize);
       replaced_block =
           block_min_max_sizes.ClampSizeToMinAndMax(*replaced_block);
     }
@@ -897,12 +896,15 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
       DCHECK(space.AvailableSize().inline_size != kIndefiniteSize);
       inline_length_to_resolve = Length::FillAvailable();
     }
-    replaced_inline = ResolveMainInlineLength(
-        space, style, border_padding, MinMaxSizesFunc, inline_length_to_resolve,
-        available_inline_size_adjustment);
-    DCHECK(replaced_inline != kIndefiniteSize);
-    replaced_inline =
-        inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
+
+    if (!InlineLengthUnresolvable(space, inline_length_to_resolve)) {
+      replaced_inline = ResolveMainInlineLength(
+          space, style, border_padding, MinMaxSizesFunc,
+          inline_length_to_resolve, available_inline_size_adjustment);
+      DCHECK_NE(*replaced_inline, kIndefiniteSize);
+      replaced_inline =
+          inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
+    }
   }
 
   if (replaced_inline && replaced_block)
