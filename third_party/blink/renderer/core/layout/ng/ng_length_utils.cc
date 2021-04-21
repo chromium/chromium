@@ -799,12 +799,26 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
   const NGBoxStrut border_padding =
       ComputeBorders(space, node) + ComputePadding(space, style);
 
+  // Replaced elements in quirks-mode resolve their min/max block-sizes against
+  // a different size than the main size. See:
+  //  - https://www.w3.org/TR/CSS21/visudet.html#min-max-heights
+  //  - https://bugs.chromium.org/p/chromium/issues/detail?id=385877
+  // For the history on this behaviour. Fortunately if this is the case we can
+  // just use the given available size to resolve these sizes against.
+  LayoutUnit percentage_resolution_size = space.PercentageResolutionBlockSize();
+  if (node.GetDocument().InQuirksMode())
+    percentage_resolution_size = space.AvailableSize().block_size;
+
   const Length& block_length = style.LogicalHeight();
   const MinMaxSizes block_min_max_sizes = {
       ResolveMinBlockLength(space, style, border_padding,
-                            style.LogicalMinHeight()),
+                            style.LogicalMinHeight(),
+                            /* available_block_size_adjustment */ LayoutUnit(),
+                            &percentage_resolution_size),
       ResolveMaxBlockLength(space, style, border_padding,
-                            style.LogicalMaxHeight())};
+                            style.LogicalMaxHeight(),
+                            /* available_block_size_adjustment */ LayoutUnit(),
+                            &percentage_resolution_size)};
   base::Optional<LayoutUnit> replaced_block;
   if (space.IsFixedBlockSize()) {
     replaced_block = space.AvailableSize().block_size;
