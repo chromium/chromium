@@ -509,7 +509,7 @@ TEST_F('AccessibilityExtensionCursorsTest', 'InlineElementOffset', function() {
 TEST_F('AccessibilityExtensionCursorsTest', 'ContentEquality', function() {
   this.runWithLoadedTree(
       `
-    <div role="region">this is a test</button>
+    <div role="region" aria-label="test region">this is a test</button>
   `,
       function(root) {
         const region = root.firstChild;

@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<!-- Unnamed -> named -->
+<section id="section1">x</section>
+<div id="region1" role="region">x</div>
+
+<!-- Named -> unnamed -->
+<section id="section2" aria-label="some label">x</section>
+<div id="region2" role="region" aria-label="some label">x</div>
+
+<script>
+let section1 = document.getElementById('section1');
+let region1 = document.getElementById('region1');
+let section2 = document.getElementById('section2');
+let region2 = document.getElementById('region2');
+
+test(function(t) {
+    assert_not_equals(section1.computedRole, 'region');
+    assert_not_equals(region1.computedRole, 'region');
+}, "An unnamed section/region does not have a role of region");
+
+test(function(t) {
+    assert_equals(section2.computedRole, 'region');
+    assert_equals(region2.computedRole, 'region');
+}, "A named section/region has a role of region");
+
+async_test((t) => {
+    section1.ariaLabel = 'Some label';
+    region1.ariaLabel = 'Some label';
+    requestAnimationFrame(() => {
+        t.step(() => { assert_equals(section1.computedRole, 'region'); });
+        t.step(() => { assert_equals(region1.computedRole, 'region'); });
+        t.done();
+    });
+}, "A section/region with a name added must now have a role of region");
+
+async_test((t) => {
+    section2.ariaLabel = '';
+    region2.ariaLabel = '';
+    requestAnimationFrame(() => {
+        t.step(() => { assert_not_equals(section2.computedRole, 'region'); });
+        t.step(() => { assert_not_equals(region2.computedRole, 'region'); });
+        t.done();
+    });
+}, "A section/region with a name removed must not have a role of region");
+
+</script>
+

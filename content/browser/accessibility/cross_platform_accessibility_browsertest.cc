@@ -820,22 +820,24 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
         <main aria-label="main"></main>
         <nav aria-label="nav"></nav>
         <section></section>
-        <section aria-label="section"></section>
+        <section aria-label="a label"></section>
         <div role="banner" aria-label="banner"></div>
         <div role="complementary" aria-label="complementary"></div>
         <div role="contentinfo" aria-label="contentinfo"></div>
         <div role="form" aria-label="role_form"></div>
         <div role="main" aria-label="role_main"></div>
         <div role="navigation" aria-label="role_nav"></div>
-        <div role="region"></div>
+        <div role="region"></div> <!-- No name: will be ignored -->
         <div role="region" aria-label="region"></div>
+        <section></section>
+        <section aria-label="a label"></section>
         <div role="search" aria-label="search"></div>
       </body>
       </html>)HTML");
 
   BrowserAccessibility* root = GetManager()->GetRoot();
   ASSERT_NE(nullptr, root);
-  ASSERT_EQ(17u, root->PlatformChildCount());
+  ASSERT_EQ(18u, root->PlatformChildCount());
 
   auto TestLocalizedLandmarkType =
       [root](int child_index, ax::mojom::Role expected_role,
@@ -861,7 +863,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   TestLocalizedLandmarkType(4, ax::mojom::Role::kMain, "main");
   TestLocalizedLandmarkType(5, ax::mojom::Role::kNavigation, "nav");
   TestLocalizedLandmarkType(6, ax::mojom::Role::kSection, "");
-  TestLocalizedLandmarkType(7, ax::mojom::Role::kSection, "section", u"region");
+  TestLocalizedLandmarkType(7, ax::mojom::Role::kRegion, "a label", u"region");
 
   TestLocalizedLandmarkType(8, ax::mojom::Role::kBanner, "banner", u"banner");
   TestLocalizedLandmarkType(9, ax::mojom::Role::kComplementary, "complementary",
@@ -871,9 +873,10 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   TestLocalizedLandmarkType(11, ax::mojom::Role::kForm, "role_form");
   TestLocalizedLandmarkType(12, ax::mojom::Role::kMain, "role_main");
   TestLocalizedLandmarkType(13, ax::mojom::Role::kNavigation, "role_nav");
-  TestLocalizedLandmarkType(14, ax::mojom::Role::kRegion, "");
-  TestLocalizedLandmarkType(15, ax::mojom::Role::kRegion, "region", u"region");
-  TestLocalizedLandmarkType(16, ax::mojom::Role::kSearch, "search");
+  TestLocalizedLandmarkType(14, ax::mojom::Role::kRegion, "region", u"region");
+  TestLocalizedLandmarkType(15, ax::mojom::Role::kSection, "", u"");
+  TestLocalizedLandmarkType(16, ax::mojom::Role::kRegion, "a label", u"region");
+  TestLocalizedLandmarkType(17, ax::mojom::Role::kSearch, "search");
 }
 
 // TODO(https://crbug.com/1020456) re-enable when crashing on linux is resolved.
@@ -906,8 +909,6 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
         <mark></mark>
         <meter></meter>
         <output></output>
-        <section></section>
-        <section aria-label="section"></section>
         <time></time>
         <div role="contentinfo" aria-label="contentinfo"></div>
       </body>
@@ -915,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   BrowserAccessibility* root = GetManager()->GetRoot();
   ASSERT_NE(nullptr, root);
-  ASSERT_EQ(22u, root->PlatformChildCount());
+  ASSERT_EQ(20u, root->PlatformChildCount());
 
   auto TestLocalizedRoleDescription =
       [root](int child_index,
@@ -946,10 +947,8 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   TestLocalizedRoleDescription(15, u"highlight");
   TestLocalizedRoleDescription(16, u"meter");
   TestLocalizedRoleDescription(17, u"output");
-  TestLocalizedRoleDescription(18, u"");
-  TestLocalizedRoleDescription(19, u"section");
-  TestLocalizedRoleDescription(20, u"time");
-  TestLocalizedRoleDescription(21, u"content information");
+  TestLocalizedRoleDescription(18, u"time");
+  TestLocalizedRoleDescription(19, u"content information");
 }
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,

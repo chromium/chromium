@@ -358,8 +358,6 @@ const RoleEntry kAriaRoles[] = {
     {"progressbar", ax::mojom::blink::Role::kProgressIndicator},
     {"radio", ax::mojom::blink::Role::kRadioButton},
     {"radiogroup", ax::mojom::blink::Role::kRadioGroup},
-    // TODO(accessibility) region should only be mapped
-    // if name present. See http://crbug.com/840819.
     {"region", ax::mojom::blink::Role::kRegion},
     {"row", ax::mojom::blink::Role::kRow},
     {"rowgroup", ax::mojom::blink::Role::kRowGroup},
@@ -397,7 +395,6 @@ const RoleEntry kReverseRoles[] = {
     {"combobox", ax::mojom::blink::Role::kPopUpButton},
     {"contentinfo", ax::mojom::blink::Role::kFooter},
     {"menuitem", ax::mojom::blink::Role::kMenuListOption},
-    {"region", ax::mojom::blink::Role::kSection},
     {"combobox", ax::mojom::blink::Role::kComboBoxMenuButton},
     {"combobox", ax::mojom::blink::Role::kTextFieldWithComboBox}};
 
@@ -3023,6 +3020,31 @@ bool AXObject::AriaLabelledbyElementVector(
                                ids);
 }
 
+// static
+bool AXObject::IsNameFromAriaAttribute(Element* element) {
+  // TODO(accessibility) Make this work for virtual nodes.
+
+  if (!element)
+    return false;
+
+  HeapVector<Member<Element>> elements_from_attribute;
+  Vector<String> ids;
+  if (AriaLabelledbyElementVector(element, elements_from_attribute, ids))
+    return true;
+
+  const AtomicString& aria_label = AccessibleNode::GetPropertyOrARIAAttribute(
+      element, AOMStringProperty::kLabel);
+  if (!aria_label.IsEmpty())
+    return true;
+
+  return false;
+}
+
+bool AXObject::IsNameFromAuthorAttribute() const {
+  return IsNameFromAriaAttribute(GetElement()) ||
+         HasAttribute(html_names::kTitleAttr);
+}
+
 String AXObject::TextFromAriaLabelledby(AXObjectSet& visited,
                                         AXRelatedObjectVector* related_objects,
                                         Vector<String>& ids) const {
@@ -3347,13 +3369,28 @@ ax::mojom::blink::Role AXObject::AriaRoleAttribute() const {
   return ax::mojom::blink::Role::kUnknown;
 }
 
-ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
+ax::mojom::blink::Role AXObject::RawAriaRole() const {
   const AtomicString& aria_role =
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole);
   if (aria_role.IsNull() || aria_role.IsEmpty())
     return ax::mojom::blink::Role::kUnknown;
+  return AriaRoleStringToRoleEnum(aria_role);
+}
 
-  ax::mojom::blink::Role role = AriaRoleStringToRoleEnum(aria_role);
+ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
+  ax::mojom::blink::Role role = RawAriaRole();
+
+  if (role == ax::mojom::blink::Role::kRegion && !IsNameFromAuthorAttribute() &&
+      !HasAttribute(html_names::kAriaRoledescriptionAttr)) {
+    // Nameless ARIA regions fall back on the native element's role.
+    // We only check aria-label/aria-labelledby because those are the only
+    // allowed ways to name an ARIA region.
+    // TODO(accessibility) The aria-roledescription logic is required, otherwise
+    // ChromeVox will ignore the aria-roledescription. It only speaks the role
+    // description on certain roles, and ignores it on the generic role.
+    // See also https://github.com/w3c/aria/issues/1463.
+    return ax::mojom::blink::Role::kUnknown;
+  }
 
   // ARIA states if an item can get focus, it should not be presentational.
   // It also states user agents should ignore the presentational role if
@@ -5189,9 +5226,6 @@ const AtomicString& AXObject::GetEquivalentAriaRoleName(
     const ax::mojom::blink::Role role) {
   // TODO(accessibilty) Why are some roles listed here and not others?
   switch (role) {
-    case ax::mojom::blink::Role::kSection:
-      // A <section> element uses the 'region' ARIA role mapping.
-      return ARIARoleName(ax::mojom::blink::Role::kRegion);
     case ax::mojom::blink::Role::kArticle:
     case ax::mojom::blink::Role::kBanner:
     case ax::mojom::blink::Role::kButton:

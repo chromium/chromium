@@ -3,7 +3,7 @@
 ++++[section]
 ++++++[paragraph]
 ++++++++[static] name='footer inside article.'
-++[section] xml-roles:region
+++[section]
 ++++[section]
 ++++++[paragraph]
 ++++++++[static] name='footer inside section.'

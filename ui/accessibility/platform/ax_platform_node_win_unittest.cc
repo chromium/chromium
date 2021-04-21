@@ -5330,7 +5330,7 @@ TEST_F(AXPlatformNodeWinTest, UIALandmarkType) {
   TestLandmarkType(ax::mojom::Role::kForm, UIA_FormLandmarkTypeId, "name");
 
   // Only named regions should be exposed as landmarks.
-  TestLandmarkType(ax::mojom::Role::kRegion, {});
+  // Blink handles this, and will not pass a nameless region as a Role::kRegion.
   TestLandmarkType(ax::mojom::Role::kRegion, UIA_CustomLandmarkTypeId, "name");
 
   TestLandmarkType(ax::mojom::Role::kGroup, {});

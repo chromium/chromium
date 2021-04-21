@@ -2,7 +2,7 @@ android.webkit.WebView focusable focused scrollable
 ++android.view.View role_description='article'
 ++++android.view.View
 ++++++android.view.View name='Header inside article.'
-++android.view.View role_description='region'
+++android.view.View
 ++++android.view.View
 ++++++android.view.View name='Header inside section.'
 ++android.view.View role_description='main'

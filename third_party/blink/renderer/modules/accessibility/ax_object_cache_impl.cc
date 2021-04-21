@@ -2310,6 +2310,25 @@ void AXObjectCacheImpl::HandleActiveDescendantChangedWithCleanLayout(
     obj->HandleActiveDescendantChanged();
 }
 
+// A <section> or role=region uses the region role if and only if it has a name.
+void AXObjectCacheImpl::SectionOrRegionRoleMaybeChanged(Element* element) {
+  AXObject* ax_object = Get(element);
+  if (!ax_object)
+    return;
+
+  // Require <section> or role="region" markup.
+  if (!element->HasTagName(html_names::kSectionTag) &&
+      ax_object->RawAriaRole() != ax::mojom::blink::Role::kRegion) {
+    return;
+  }
+
+  // If role would stay the same, do nothing.
+  if (ax_object->RoleValue() == ax_object->DetermineAccessibilityRole())
+    return;
+
+  Invalidate(ax_object->AXObjectID());
+}
+
 // Be as safe as possible about changes that could alter the accessibility role,
 // as this may require a different subclass of AXObject.
 // Role changes are disallowed by the spec but we must handle it gracefully, see
@@ -2414,9 +2433,11 @@ void AXObjectCacheImpl::HandleAttributeChangedWithCleanLayout(
       if (!obj->IsTextField())
         HandleRoleChangeWithCleanLayout(element);
     }
-  } else if (attr_name == html_names::kAltAttr ||
-             attr_name == html_names::kTitleAttr) {
+  } else if (attr_name == html_names::kAltAttr) {
     TextChangedWithCleanLayout(element);
+  } else if (attr_name == html_names::kTitleAttr) {
+    TextChangedWithCleanLayout(element);
+    SectionOrRegionRoleMaybeChanged(element);
   } else if (attr_name == html_names::kForAttr &&
              IsA<HTMLLabelElement>(*element)) {
     LabelChangedWithCleanLayout(element);
@@ -2453,6 +2474,7 @@ void AXObjectCacheImpl::HandleAttributeChangedWithCleanLayout(
              attr_name == html_names::kAriaLabeledbyAttr ||
              attr_name == html_names::kAriaLabelledbyAttr) {
     TextChangedWithCleanLayout(element);
+    SectionOrRegionRoleMaybeChanged(element);
   } else if (attr_name == html_names::kAriaDescriptionAttr ||
              attr_name == html_names::kAriaDescribedbyAttr) {
     TextChangedWithCleanLayout(element);

@@ -38,7 +38,7 @@
 ++[landmark] xml-roles:navigation
 ++++[section]
 ++++++[static] name='This should NOT have banner role.'
-++[section] xml-roles:region
+++[section]
 ++++[section]
 ++++++[static] name='This should NOT have banner role.'
 ++[block quote]
@@ -68,7 +68,7 @@
 ++[landmark] xml-roles:navigation
 ++++[section]
 ++++++[static] name='This should NOT have banner role.'
-++[section] xml-roles:region
+++[section]
 ++++[section]
 ++++++[static] name='This should NOT have banner role.'
 ++[block quote]
@@ -97,7 +97,7 @@
 ++[landmark] xml-roles:navigation
 ++++[section]
 ++++++[static] name='This should NOT have footer role.'
-++[section] xml-roles:region
+++[section]
 ++++[section]
 ++++++[static] name='This should NOT have footer role.'
 ++[block quote]
@@ -126,7 +126,7 @@
 ++[landmark] xml-roles:navigation
 ++++[section]
 ++++++[static] name='This should NOT have footer role.'
-++[section] xml-roles:region
+++[section]
 ++++[section]
 ++++++[static] name='This should NOT have footer role.'
 ++[block quote]

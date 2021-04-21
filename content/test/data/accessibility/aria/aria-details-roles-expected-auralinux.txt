@@ -1,7 +1,7 @@
 [document web]
 ++[section] name='comment' details-roles:comment
 ++[section] name='comment-group' details-roles:comment
-++[section] name='comment-region' details-roles:comment
+++[section] name='comment-region' details-roles:*
 ++[section] name='comment-section' details-roles:*
 ++[section] name='definition' details-roles:definition
 ++[section] name='doc-endnote' details-roles:doc-endnote
@@ -15,7 +15,7 @@
 ++++[panel]
 ++++++[section]
 ++++++++[static] name='x'
-++[landmark]
+++[section]
 ++++[section]
 ++++++[static] name='x'
 ++[section]

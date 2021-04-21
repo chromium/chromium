@@ -155,8 +155,10 @@
 
       <div role="radiogroup">This is a radiogroup</div>
 
-      <div role="region">This is a region</div>
-      <section data-role="region">This is a region</section>
+      <div role="region" aria-label="Named region">This is a region</div>
+      <section data-role="region" id="section1" aria-label="A named section is a region">This is a region</section>
+      <section data-role="region" aria-labelledby="section1">This is a region</section>
+      <section data-role="region" title="A named section is a region">This is a region</section>
 
       <div role="scrollbar">This is a scrollbar</div>
 

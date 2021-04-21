@@ -2921,15 +2921,8 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       // Therefore, browser side needs to gracefully handle it if it actually
       // shows up in the tree.
       return kStaticRole;
-    case ax::mojom::Role::kSection: {
-      if (GetName().empty()) {
-        // Do not use ARIA mapping for nameless <section>.
-        return ATK_ROLE_SECTION;
-      } else {
-        // Use ARIA mapping.
-        return ATK_ROLE_LANDMARK;
-      }
-    }
+    case ax::mojom::Role::kSection:
+      return ATK_ROLE_SECTION;
     case ax::mojom::Role::kScrollBar:
       return ATK_ROLE_SCROLL_BAR;
     case ax::mojom::Role::kSearch:

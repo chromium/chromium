@@ -55,7 +55,7 @@ rootWebArea
 ++++++progressIndicator
 ++++++radioButton
 ++++++radioGroup
-++++++region
+++++++region name='Name required for region'
 ++++++scrollBar
 ++++++search
 ++++++searchBox

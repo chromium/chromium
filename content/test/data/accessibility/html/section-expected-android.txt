@@ -1,3 +1,6 @@
 android.webkit.WebView focusable focused scrollable
-++android.view.View role_description='region' name='This is a section element.'
-++android.view.View role_description='region' name='section'
+++android.view.View name='An unnamed section element gets the section role.'
+++android.view.View role_description='region' name='name'
+++android.view.View role_description='region' name='Named section element #2 gets the region role'
+++++android.view.View name='Named section element #2 gets the region role'
+++android.view.View role_description='region' name='name'

@@ -5486,14 +5486,8 @@ int AXPlatformNodeWin::MSAARole() {
       // shows up in the tree.
       return ROLE_SYSTEM_STATICTEXT;
 
-    case ax::mojom::Role::kSection: {
-      if (GetName().empty()) {
-        // Do not use ARIA mapping for nameless <section>.
-        return ROLE_SYSTEM_GROUPING;
-      }
-      // Use ARIA mapping.
-      return ROLE_SYSTEM_PANE;
-    }
+    case ax::mojom::Role::kSection:
+      return ROLE_SYSTEM_GROUPING;
 
     case ax::mojom::Role::kScrollBar:
       return ROLE_SYSTEM_SCROLLBAR;
@@ -5894,16 +5888,9 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
     case ax::mojom::Role::kSearch:
       ia2_role = IA2_ROLE_LANDMARK;
       break;
-    case ax::mojom::Role::kSection: {
-      if (GetName().empty()) {
-        // Do not use ARIA mapping for nameless <section>.
-        ia2_role = IA2_ROLE_SECTION;
-      } else {
-        // Use ARIA mapping.
-        ia2_role = IA2_ROLE_LANDMARK;
-      }
+    case ax::mojom::Role::kSection:
+      ia2_role = IA2_ROLE_SECTION;
       break;
-    }
     case ax::mojom::Role::kSwitch:
       ia2_role = IA2_ROLE_TOGGLE_BUTTON;
       break;
@@ -6327,14 +6314,8 @@ std::wstring AXPlatformNodeWin::UIAAriaRole() {
       // shows up in the tree.
       return L"description";
 
-    case ax::mojom::Role::kSection: {
-      if (GetName().empty()) {
-        // Do not use ARIA mapping for nameless <section>.
-        return L"group";
-      }
-      // Use ARIA mapping.
-      return L"region";
-    }
+    case ax::mojom::Role::kSection:
+      return L"group";
 
     case ax::mojom::Role::kScrollBar:
       return L"scrollbar";
@@ -7323,10 +7304,7 @@ base::Optional<LONG> AXPlatformNodeWin::ComputeUIALandmarkType() const {
       return UIA_SearchLandmarkTypeId;
 
     case ax::mojom::Role::kRegion:
-    case ax::mojom::Role::kSection:
-      if (data.HasStringAttribute(ax::mojom::StringAttribute::kName))
-        return UIA_CustomLandmarkTypeId;
-      FALLTHROUGH;
+      return UIA_CustomLandmarkTypeId;
 
     default:
       return {};

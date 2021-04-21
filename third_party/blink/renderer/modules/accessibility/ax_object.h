@@ -813,6 +813,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // ARIA attributes.
   virtual ax::mojom::blink::Role DetermineAccessibilityRole();
+  // Determine the ARIA role purely based on the role attribute, when no
+  // additional rules or limitations on role usage are applied.
+  ax::mojom::blink::Role RawAriaRole() const;
+  // Determine the ARIA role after post-processing on the raw ARIA role.
   ax::mojom::blink::Role DetermineAriaRoleAttribute() const;
   virtual ax::mojom::blink::Role AriaRoleAttribute() const;
   bool HasAriaAttribute(bool does_undo_role_presentation = false) const;
@@ -1333,6 +1337,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   static bool AriaLabelledbyElementVector(Element* from,
                                           HeapVector<Member<Element>>& elements,
                                           Vector<String>& ids);
+  // Return true if the ame is from @aria-label / @aria-labelledby.
+  static bool IsNameFromAriaAttribute(Element* element);
+  // Return true if the name is from @aria-label / @aria-labelledby / @title.
+  bool IsNameFromAuthorAttribute() const;
   String TextFromAriaLabelledby(AXObjectSet& visited,
                                 AXRelatedObjectVector* related_objects,
                                 Vector<String>& ids) const;

@@ -954,8 +954,11 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (GetNode()->HasTagName(html_names::kPreTag))
     return ax::mojom::blink::Role::kPre;
 
-  if (GetNode()->HasTagName(html_names::kSectionTag))
-    return ax::mojom::blink::Role::kSection;
+  if (GetNode()->HasTagName(html_names::kSectionTag)) {
+    // Treat a named <section> as role="region".
+    return IsNameFromAuthorAttribute() ? ax::mojom::blink::Role::kRegion
+                                       : ax::mojom::blink::Role::kSection;
+  }
 
   if (GetNode()->HasTagName(html_names::kAddressTag))
     return RoleFromLayoutObjectOrNode();
@@ -3127,18 +3130,8 @@ bool AXNodeObject::IsNameFromLabelElement(HTMLElement* control) {
   if (!control)
     return false;
 
-  // aria-labelledby takes precedence over <label>.
-  // Step 2B from: http://www.w3.org/TR/accname-aam-1.1
-  HeapVector<Member<Element>> elements_from_attribute;
-  Vector<String> ids;
-  if (AriaLabelledbyElementVector(control, elements_from_attribute, ids))
-    return false;
-
-  // aria-label takes precedence over <label> .
-  // Step 2C from: http://www.w3.org/TR/accname-aam-1.1
-  const AtomicString& aria_label = AccessibleNode::GetPropertyOrARIAAttribute(
-      control, AOMStringProperty::kLabel);
-  if (!aria_label.IsEmpty())
+  // aria-label and aria-labelledby take precedence over <label>.
+  if (IsNameFromAriaAttribute(control))
     return false;
 
   // <label> will be used. It contains the control or points via <label for>.
