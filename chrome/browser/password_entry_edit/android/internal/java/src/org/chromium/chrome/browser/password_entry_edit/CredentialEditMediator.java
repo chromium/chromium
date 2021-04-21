@@ -57,7 +57,7 @@ public class CredentialEditMediator implements UiActionHandler {
     static final String SAVED_PASSWORD_ACTION_HISTOGRAM =
             "PasswordManager.CredentialEntryActions.SavedPassword";
     static final String FEDERATED_CREDENTIAL_ACTION_HISTOGRAM =
-            "PasswordManager.CredentialEntryActions.FederateCredential";
+            "PasswordManager.CredentialEntryActions.FederatedCredential";
     static final String BLOCKED_CREDENTIAL_ACTION_HISTOGRAM =
             "PasswordManager.CredentialEntryActions.BlockedCredential";
     static final String EDIT_ERROR_HISTOGRAM = "PasswordManager.CredentialEditError";
