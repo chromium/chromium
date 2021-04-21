@@ -494,6 +494,8 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   params->device_mode = environment_provider->GetDeviceMode();
   params->interface_versions = GetInterfaceVersions();
   params->default_paths = environment_provider->GetDefaultPaths();
+  params->use_new_account_manager =
+      environment_provider->GetUseNewAccountManager();
 
   params->device_account_gaia_id =
       environment_provider->GetDeviceAccountGaiaId();

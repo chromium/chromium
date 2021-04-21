@@ -323,6 +323,15 @@ void TestingProfile::Init() {
   signin::SetUpMockAccountManagerFacade();
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // `LacrosChromeServiceImpl` has to be initialized before
+  // `EnsureBrowserContextKeyedServiceFactoriesBuilt` call.
+  if (!chromeos::LacrosChromeServiceImpl::Get()) {
+    lacros_service_test_helper_ =
+        std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Normally this would happen during browser startup, but for tests
   // we need to trigger creation of Profile-related services.
   ChromeBrowserMainExtraPartsProfiles::
@@ -384,13 +393,6 @@ void TestingProfile::Init() {
   if (launcher)
     launcher->MaybeSetProfile(this);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!chromeos::LacrosChromeServiceImpl::Get()) {
-    lacros_service_test_helper_ =
-        std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   autofill::PersonalDataManagerFactory::GetInstance()->SetTestingFactory(
       this, base::BindRepeating(&BuildPersonalDataManagerInstanceFor));

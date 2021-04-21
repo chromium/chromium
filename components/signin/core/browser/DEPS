@@ -11,5 +11,15 @@ specific_include_rules = {
   "account_reconcilor_unittest.cc": [
     "+chromeos/tpm/install_attributes.h",
     "+chromeos/tpm/stub_install_attributes.h"
+  ],
+  # TODO(crbug.com/1198528): remove Lacros deps after the rollout.
+  "chrome_connected_header_helper.cc": [
+    "+chromeos/lacros/lacros_chrome_service_impl.h",
+    "+chromeos/crosapi/mojom/crosapi.mojom.h"
+  ],
+  "signin_header_helper_unittest.cc": [
+    "+chromeos/lacros/lacros_chrome_service_delegate.h",
+    "+chromeos/lacros/lacros_chrome_service_impl.h",
+    "+chromeos/lacros/lacros_test_helper.h"
   ]
 }

@@ -49,6 +49,7 @@ class FakeEnvironmentProvider : public EnvironmentProvider {
                                     account_manager::AccountType::kGaia},
         kFakeEmail});
   }
+  bool GetUseNewAccountManager() override { return true; }
 };
 
 // TODO(crbug.com/1124494): Refactor the code to share with ARC.
