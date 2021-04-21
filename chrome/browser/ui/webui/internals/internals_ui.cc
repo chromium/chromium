@@ -30,7 +30,8 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
   source_->DisableTrustedTypesCSP();
 
   // chrome://internals/
-  source_->SetDefaultResource(IDR_INTERNALS_HTML);
+  // Redirects to: chrome://chrome-urls/#internals
+  source_->AddResourcePath("", IDR_INTERNALS_HTML);
   source_->AddResourcePath("internals.js", IDR_INTERNALS_JS);
 
   // Add your sub-URL internals WebUI here.
