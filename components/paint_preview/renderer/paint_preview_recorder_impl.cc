@@ -58,7 +58,7 @@ void BuildAndSendResponse(std::unique_ptr<PaintPreviewTracker> tracker,
                           FinishedRecording out,
                           CapturePaintPreviewCallback callback) {
   if (out.status == mojom::PaintPreviewStatus::kOk) {
-    BuildResponse(tracker.get(), out.response.get(), /*log=*/true);
+    BuildResponse(tracker.get(), out.response.get());
   }
   std::move(callback).Run(out.status, std::move(out.response));
 }

@@ -38,8 +38,7 @@ sk_sp<const SkPicture> PaintRecordToSkPicture(
 
 // NOTE: |tracker| is effectively const here despite being passed by pointer.
 void BuildResponse(PaintPreviewTracker* tracker,
-                   mojom::PaintPreviewCaptureResponse* response,
-                   bool log = false);
+                   mojom::PaintPreviewCaptureResponse* response);
 
 }  // namespace paint_preview
 

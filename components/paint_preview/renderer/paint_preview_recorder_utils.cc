@@ -161,17 +161,10 @@ sk_sp<const SkPicture> PaintRecordToSkPicture(
 }
 
 void BuildResponse(PaintPreviewTracker* tracker,
-                   mojom::PaintPreviewCaptureResponse* response,
-                   bool log) {
+                   mojom::PaintPreviewCaptureResponse* response) {
   // Ensure these always exist.
   DCHECK(tracker);
   DCHECK(response);
-
-  // paint_preview::BuildResponse has been showing in a large number of crashes
-  // under stack scans. In order to determine if these entries are "real" we
-  // should log the calls and check the log output.
-  if (log)
-    LOG(WARNING) << "paint_preview::BuildResponse() called";
 
   response->embedding_token = tracker->EmbeddingToken();
   tracker->MoveLinks(&response->links);
