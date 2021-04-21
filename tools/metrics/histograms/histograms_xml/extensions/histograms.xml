@@ -1663,7 +1663,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledManifestFetchFailedHttpErrorCode2"
-    enum="HttpResponseCode" expires_after="2021-05-30">
+    enum="HttpResponseCode" expires_after="2021-10-04">
 <!-- Name completed by histogram_suffixes name="ExtensionSource" -->
 
   <owner>burunduk@chromium.org</owner>
@@ -1753,7 +1753,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledStage2"
-    enum="ExtensionInstallationStage" expires_after="2021-05-30">
+    enum="ExtensionInstallationStage" expires_after="2021-10-04">
   <owner>burunduk@chromium.org</owner>
   <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
