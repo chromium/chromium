@@ -98,6 +98,16 @@ class SerializedRecording {
                            RecordingMapFromPaintPreviewProtoSingleFrame);
   FRIEND_TEST_ALL_PREFIXES(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
                            Roundtrip);
+  FRIEND_TEST_ALL_PREFIXES(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
+                           RoundtripWithImage);
+  FRIEND_TEST_ALL_PREFIXES(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
+                           RoundtripWithLazyImage);
+  FRIEND_TEST_ALL_PREFIXES(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
+                           RoundtripWithPaintWorklet);
+  FRIEND_TEST_ALL_PREFIXES(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
+                           RoundtripWithTexture);
+  FRIEND_TEST_ALL_PREFIXES(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
+                           RoundtripWithLazyTexture);
 
   // Deserialize into an |SkPicture|. The result will not include any embedded
   // subframes.

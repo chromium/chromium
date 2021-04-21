@@ -137,9 +137,9 @@ void FinishRecordingOnUIThread(sk_sp<const cc::PaintRecord> recording,
     return;
   }
 
-  TRACE_EVENT_BEGIN0("paint_preview", "ParseGlyphsAndLinks");
-  ParseGlyphsAndLinks(recording.get(), tracker.get());
-  TRACE_EVENT_END0("paint_preview", "ParseGlyphsAndLinks");
+  TRACE_EVENT_BEGIN0("paint_preview", "PreProcessPaintOpBuffer");
+  PreProcessPaintOpBuffer(recording.get(), tracker.get());
+  TRACE_EVENT_END0("paint_preview", "PreProcessPaintOpBuffer");
 
   // This cannot be done async if the recording contains a GPU accelerated
   // image.

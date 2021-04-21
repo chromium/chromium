@@ -21,10 +21,13 @@ namespace paint_preview {
 
 class PaintPreviewTracker;
 
-// Walks |buffer| to extract all the glyphs from its text blobs and links. The
-// extracted data is written to to |tracker|.
-void ParseGlyphsAndLinks(const cc::PaintOpBuffer* buffer,
-                         PaintPreviewTracker* tracker);
+// Pre processes the PaintOpBuffer prior to conversion to SkPicture.
+// 1. Walks |buffer| to extract all the glyphs from its text blobs and links.
+//    The extracted data is written to `tracker`.
+// 2. Tracks geometry changes for frames and saves them to `tracker`.
+// 3. Unaccelerates GPU accelerated PaintImages.
+void PreProcessPaintOpBuffer(const cc::PaintOpBuffer* buffer,
+                             PaintPreviewTracker* tracker);
 
 // Convert |recording| into an SkPicture, tracking embedded content. Will return
 // |nullptr| if the resulting picture failed or zero sized.
