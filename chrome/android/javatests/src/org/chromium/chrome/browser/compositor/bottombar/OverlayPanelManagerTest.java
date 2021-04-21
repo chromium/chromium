@@ -9,7 +9,7 @@ import android.support.test.InstrumentationRegistry;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -160,7 +160,7 @@ public class OverlayPanelManagerTest extends DummyUiActivityTestCase {
     // --------------------------------------------------------------------------------------------
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testPanelRequestingShow() {
@@ -177,7 +177,7 @@ public class OverlayPanelManagerTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testPanelClosed() {
@@ -195,7 +195,7 @@ public class OverlayPanelManagerTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testHighPrioritySuppressingLowPriority() {
@@ -216,7 +216,7 @@ public class OverlayPanelManagerTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testSuppressedPanelRestored() {
@@ -238,7 +238,7 @@ public class OverlayPanelManagerTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testUnsuppressiblePanelNotRestored() {
@@ -260,7 +260,7 @@ public class OverlayPanelManagerTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testSuppressedPanelClosedBeforeRestore() {
@@ -284,7 +284,7 @@ public class OverlayPanelManagerTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testSuppressedPanelPriority() {
@@ -330,7 +330,7 @@ public class OverlayPanelManagerTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testSuppressedPanelOrder() {
@@ -371,7 +371,7 @@ public class OverlayPanelManagerTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testLatePanelGetsNecessaryVars() {
@@ -396,7 +396,7 @@ public class OverlayPanelManagerTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testManagerObserver() throws TimeoutException {

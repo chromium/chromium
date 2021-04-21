@@ -9,7 +9,7 @@ import android.support.test.InstrumentationRegistry;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -151,7 +151,7 @@ public class OverlayPanelBaseTest extends DummyUiActivityTestCase {
      * to the correct state based on current position and swipe velocity.
      */
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanelBase"})
     @UiThreadTest
     public void testNonExpandingPanelMovesToCorrectState() {
@@ -187,7 +187,7 @@ public class OverlayPanelBaseTest extends DummyUiActivityTestCase {
      * velocity.
      */
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanelBase"})
     @UiThreadTest
     public void testExpandingPanelMovesToCorrectState() {
@@ -253,7 +253,7 @@ public class OverlayPanelBaseTest extends DummyUiActivityTestCase {
      * Tests that a panel will be closed if the desired height is negative.
      */
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanelBase"})
     @UiThreadTest
     public void testNegativeHeightClosesPanel() {
@@ -278,7 +278,7 @@ public class OverlayPanelBaseTest extends DummyUiActivityTestCase {
      * Tests that a panel is only maximized when desired height is far above the max.
      */
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanelBase"})
     @UiThreadTest
     public void testLargeDesiredHeightIsMaximized() {

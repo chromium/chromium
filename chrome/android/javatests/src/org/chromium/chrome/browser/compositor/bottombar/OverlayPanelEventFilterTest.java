@@ -11,7 +11,7 @@ import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -282,7 +282,7 @@ public class OverlayPanelEventFilterTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testTapContentView() {
@@ -300,7 +300,7 @@ public class OverlayPanelEventFilterTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testScrollingContentViewDragsPanel() {
@@ -319,7 +319,7 @@ public class OverlayPanelEventFilterTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testScrollUpContentView() {
@@ -338,7 +338,7 @@ public class OverlayPanelEventFilterTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testScrollDownContentView() {
@@ -361,7 +361,7 @@ public class OverlayPanelEventFilterTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testDragByOverscrollingContentView() {
@@ -384,7 +384,7 @@ public class OverlayPanelEventFilterTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testUnwantedScrollDoesNotHappenInContentView() {
@@ -420,7 +420,7 @@ public class OverlayPanelEventFilterTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testDragPanelThenContinuouslyScrollContentView() {
@@ -450,7 +450,7 @@ public class OverlayPanelEventFilterTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testTapPanel() {
@@ -468,7 +468,7 @@ public class OverlayPanelEventFilterTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testScrollPanel() {
