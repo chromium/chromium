@@ -122,14 +122,14 @@ const NGLayoutResult* NGGridLayoutAlgorithm::Layout() {
 
     // Store column baselines, as these contributions can influence column
     // sizing.
-    CalculateAlignmentBaselines(grid_items, grid_geometry, kForColumns);
+    CalculateAlignmentBaselines(grid_items, kForColumns, &grid_geometry);
 
     // Resolve inline size.
     bool needs_additional_pass = false;
     grid_geometry.column_geometry = ComputeUsedTrackSizes(
         SizingConstraint::kLayout, grid_geometry, &column_track_collection,
         &grid_items, &needs_additional_pass);
-    CalculateAlignmentBaselines(grid_items, grid_geometry, kForRows);
+    CalculateAlignmentBaselines(grid_items, kForRows, &grid_geometry);
 
     // Resolve block size.
     bool unused_needs_additional_pass = false;
@@ -137,7 +137,7 @@ const NGLayoutResult* NGGridLayoutAlgorithm::Layout() {
         SizingConstraint::kLayout, grid_geometry, &row_track_collection,
         &grid_items, &unused_needs_additional_pass);
     DCHECK(!unused_needs_additional_pass);
-    CalculateAlignmentBaselines(grid_items, grid_geometry, kForColumns);
+    CalculateAlignmentBaselines(grid_items, kForColumns, &grid_geometry);
 
     // If we had an orthogonal item which may have depended on the resolved row
     // tracks, re-run computing the grid geometry.
@@ -154,7 +154,7 @@ const NGLayoutResult* NGGridLayoutAlgorithm::Layout() {
           SizingConstraint::kLayout, grid_geometry, &column_track_collection,
           &grid_items, &unused_needs_additional_pass);
       DCHECK(!unused_needs_additional_pass);
-      CalculateAlignmentBaselines(grid_items, grid_geometry, kForRows);
+      CalculateAlignmentBaselines(grid_items, kForRows, &grid_geometry);
 
       // Now reset the row track-collection to its initial value, and re-run the
       // row sizing algorithm.
@@ -167,7 +167,7 @@ const NGLayoutResult* NGGridLayoutAlgorithm::Layout() {
           SizingConstraint::kLayout, grid_geometry, &row_track_collection,
           &grid_items, &unused_needs_additional_pass);
       DCHECK(!unused_needs_additional_pass);
-      CalculateAlignmentBaselines(grid_items, grid_geometry, kForColumns);
+      CalculateAlignmentBaselines(grid_items, kForColumns, &grid_geometry);
     }
   };
 
@@ -332,7 +332,7 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
       InitializeTrackSizes(&row_track_collection));
 
   // Store column baselines.
-  CalculateAlignmentBaselines(grid_items, grid_geometry, kForColumns);
+  CalculateAlignmentBaselines(grid_items, kForColumns, &grid_geometry);
 
   // Before the track sizing algorithm, create a copy of the column collection;
   // one will be used to compute the min size and the other for the max size.
@@ -766,9 +766,8 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
   // TODO(ikilpatrick): We'll need to record if any child used an indefinite
   // size for its contribution, such that we can then do the 2nd pass on the
   // track-sizing algorithm.
-  LogicalRect unused;
-  const auto space = CreateConstraintSpace(grid_geometry, grid_item,
-                                           NGCacheSlot::kMeasure, &unused);
+  const auto space = CreateConstraintSpaceForMeasure(grid_geometry, grid_item,
+                                                     track_direction);
   const auto margins =
       ComputeMarginsFor(space, node.Style(), ConstraintSpace());
 
@@ -788,10 +787,9 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     if (!is_parallel && space.AvailableSize().inline_size == kIndefiniteSize) {
       // If we are orthogonal grid-item, resolving against an indefinite size,
       // set our inline-size to our max content-contribution size.
-      const LayoutUnit fixed_size = MinMaxContentSizes().max_size;
-      const auto fallback_space =
-          CreateConstraintSpace(grid_geometry, grid_item, NGCacheSlot::kMeasure,
-                                &unused, &fixed_size);
+      const auto fallback_space = CreateConstraintSpaceForMeasure(
+          grid_geometry, grid_item, track_direction,
+          /* opt_fixed_block_size */ MinMaxContentSizes().max_size);
       result = node.Layout(fallback_space);
 
       // TODO(ikilpatrick): This check is potentially too broad. If we have a
@@ -1421,29 +1419,28 @@ void NGGridLayoutAlgorithm::CacheGridItemsTrackSpanProperties(
 }
 
 void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
-    GridItems& grid_items,
-    GridGeometry& grid_geometry,
-    GridTrackSizingDirection direction) const {
+    const GridItems& grid_items,
+    GridTrackSizingDirection track_direction,
+    GridGeometry* grid_geometry) const {
   // Reset existing baselines from geometry so they are clean with each call to
   // this method. Use 'WTF::Vector::Fill()' over 'WTF::Vector::clear()', as
   // 'clear' will reset the capacity to zero and require re-allocations.
-  if (direction == kForColumns) {
-    grid_geometry.major_inline_baselines.Fill(LayoutUnit::Min());
-    grid_geometry.minor_inline_baselines.Fill(LayoutUnit::Min());
+  if (track_direction == kForColumns) {
+    grid_geometry->major_inline_baselines.Fill(LayoutUnit::Min());
+    grid_geometry->minor_inline_baselines.Fill(LayoutUnit::Min());
   } else {
-    grid_geometry.major_block_baselines.Fill(LayoutUnit::Min());
-    grid_geometry.minor_block_baselines.Fill(LayoutUnit::Min());
+    grid_geometry->major_block_baselines.Fill(LayoutUnit::Min());
+    grid_geometry->minor_block_baselines.Fill(LayoutUnit::Min());
   }
 
   // TODO(kschmi): Skip this loop (or method) entirely if we don't have any
   // baseline-aligned grid-items.
   for (auto& grid_item : grid_items.item_data) {
-    if (!grid_item.IsBaselineAlignedForDirection(direction))
+    if (!grid_item.IsBaselineAlignedForDirection(track_direction))
       continue;
 
-    LogicalRect unused;
-    const NGConstraintSpace space = CreateConstraintSpace(
-        grid_geometry, grid_item, NGCacheSlot::kMeasure, &unused);
+    const NGConstraintSpace space = CreateConstraintSpaceForMeasure(
+        *grid_geometry, grid_item, track_direction);
     const NGLayoutResult* result = grid_item.node.Layout(space);
 
     NGBoxFragment fragment(
@@ -1452,14 +1449,14 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
 
     const auto margins =
         ComputeMarginsFor(space, grid_item.node.Style(), ConstraintSpace());
-    LayoutUnit margin =
-        (direction == kForColumns) ? margins.inline_start : margins.block_start;
+    LayoutUnit margin = (track_direction == kForColumns) ? margins.inline_start
+                                                         : margins.block_start;
     LayoutUnit baseline =
         margin + GetLogicalBaseline(
-                     direction, fragment,
+                     track_direction, fragment,
                      ConstraintSpace().GetWritingDirection().GetWritingMode());
 
-    grid_geometry.UpdateBaseline(grid_item, baseline, direction);
+    grid_geometry->UpdateBaseline(grid_item, baseline, track_direction);
   }
 }
 
@@ -2232,6 +2229,15 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
   }
 }
 
+namespace {
+
+void GrowSetsByItemIncurredIncrease(GridSetVector* sets_to_grow) {
+  for (auto* set : *sets_to_grow)
+    set->SetBaseSize(set->BaseSize() + set->ItemIncurredIncrease());
+}
+
+}  // namespace
+
 // https://drafts.csswg.org/css-grid-2/#algo-grow-tracks
 void NGGridLayoutAlgorithm::MaximizeTracks(
     SizingConstraint sizing_constraint,
@@ -2250,12 +2256,7 @@ void NGGridLayoutAlgorithm::MaximizeTracks(
 
   DistributeExtraSpaceToSetsEqually(
       free_space, GridItemContributionType::kForFreeSpace, &sets_to_grow);
-
-  for (auto set_iterator = track_collection->GetSetIterator();
-       !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
-    auto& set = set_iterator.CurrentSet();
-    set.SetBaseSize(set.BaseSize() + set.ItemIncurredIncrease());
-  }
+  GrowSetsByItemIncurredIncrease(&sets_to_grow);
 
   // TODO(ethavar): If this would cause the grid to be larger than the grid
   // container’s inner size as limited by its 'max-width/height', then redo this
@@ -2318,12 +2319,7 @@ void NGGridLayoutAlgorithm::StretchAutoTracks(
   DistributeExtraSpaceToSetsEqually(free_space,
                                     GridItemContributionType::kForFreeSpace,
                                     &sets_to_grow, &sets_to_grow);
-
-  for (auto set_iterator = track_collection->GetSetIterator();
-       !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
-    auto& set = set_iterator.CurrentSet();
-    set.SetBaseSize(set.BaseSize() + set.ItemIncurredIncrease());
-  }
+  GrowSetsByItemIncurredIncrease(&sets_to_grow);
 }
 
 // https://drafts.csswg.org/css-grid-2/#algo-flex-tracks
@@ -2767,37 +2763,71 @@ void AlignmentOffsetForOutOfFlow(
 }  // namespace
 
 const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
-    const GridGeometry& grid_geometry,
     const GridItemData& grid_item,
-    NGCacheSlot cache_slot,
-    LogicalRect* rect,
-    const LayoutUnit* opt_fixed_block_size) const {
-  DCHECK(rect);
-
-  ComputeOffsetAndSize(grid_item, grid_geometry.column_geometry, kForColumns,
-                       kIndefiniteSize, &rect->offset.inline_offset,
-                       &rect->size.inline_size);
-  ComputeOffsetAndSize(grid_item, grid_geometry.row_geometry, kForRows,
-                       kIndefiniteSize, &rect->offset.block_offset,
-                       &rect->size.block_size);
-
+    const LogicalSize& containing_grid_area_size,
+    base::Optional<LayoutUnit> opt_fixed_block_size,
+    NGCacheSlot cache_slot) const {
   NGConstraintSpaceBuilder builder(
       ConstraintSpace(), grid_item.node.Style().GetWritingDirection(),
       /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
+
   builder.SetCacheSlot(cache_slot);
   builder.SetIsPaintedAtomically(true);
   if (opt_fixed_block_size) {
-    builder.SetAvailableSize({rect->size.inline_size, *opt_fixed_block_size});
+    builder.SetAvailableSize(
+        {containing_grid_area_size.inline_size, *opt_fixed_block_size});
     builder.SetIsFixedBlockSize(true);
   } else {
-    builder.SetAvailableSize(rect->size);
+    builder.SetAvailableSize(containing_grid_area_size);
   }
-  builder.SetPercentageResolutionSize(rect->size);
+  builder.SetPercentageResolutionSize(containing_grid_area_size);
   builder.SetStretchInlineSizeIfAuto(grid_item.is_inline_axis_stretched &&
-                                     rect->size.inline_size != kIndefiniteSize);
+                                     containing_grid_area_size.inline_size !=
+                                         kIndefiniteSize);
   builder.SetStretchBlockSizeIfAuto(grid_item.is_block_axis_stretched &&
-                                    rect->size.block_size != kIndefiniteSize);
+                                    containing_grid_area_size.block_size !=
+                                        kIndefiniteSize);
   return builder.ToConstraintSpace();
+}
+
+const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForLayout(
+    const GridGeometry& grid_geometry,
+    const GridItemData& grid_item,
+    LogicalRect* containing_grid_area) const {
+  ComputeOffsetAndSize(grid_item, grid_geometry.column_geometry, kForColumns,
+                       /* block_size */ kIndefiniteSize,
+                       &containing_grid_area->offset.inline_offset,
+                       &containing_grid_area->size.inline_size);
+  ComputeOffsetAndSize(grid_item, grid_geometry.row_geometry, kForRows,
+                       /* block_size */ kIndefiniteSize,
+                       &containing_grid_area->offset.block_offset,
+                       &containing_grid_area->size.block_size);
+  return CreateConstraintSpace(grid_item, containing_grid_area->size,
+                               /* opt_fixed_block_size */ base::nullopt,
+                               NGCacheSlot::kLayout);
+}
+
+const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
+    const GridGeometry& grid_geometry,
+    const GridItemData& grid_item,
+    GridTrackSizingDirection track_direction,
+    base::Optional<LayoutUnit> opt_fixed_block_size) const {
+  LogicalOffset unused_offset;
+  LogicalSize containing_grid_area_size(kIndefiniteSize, kIndefiniteSize);
+
+  if (track_direction == kForColumns) {
+    ComputeOffsetAndSize(grid_item, grid_geometry.row_geometry, kForRows,
+                         /* block_size */ kIndefiniteSize,
+                         &unused_offset.block_offset,
+                         &containing_grid_area_size.block_size);
+  } else {
+    ComputeOffsetAndSize(grid_item, grid_geometry.column_geometry, kForColumns,
+                         /* block_size */ kIndefiniteSize,
+                         &unused_offset.inline_offset,
+                         &containing_grid_area_size.inline_size);
+  }
+  return CreateConstraintSpace(grid_item, containing_grid_area_size,
+                               opt_fixed_block_size, NGCacheSlot::kMeasure);
 }
 
 void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
@@ -2819,8 +2849,8 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
 
   for (const auto& grid_item : grid_items.item_data) {
     LogicalRect containing_grid_area;
-    const NGConstraintSpace space = CreateConstraintSpace(
-        grid_geometry, grid_item, NGCacheSlot::kLayout, &containing_grid_area);
+    const NGConstraintSpace space = CreateConstraintSpaceForLayout(
+        grid_geometry, grid_item, &containing_grid_area);
 
     const NGLayoutResult* result = grid_item.node.Layout(space);
     const auto& physical_fragment =

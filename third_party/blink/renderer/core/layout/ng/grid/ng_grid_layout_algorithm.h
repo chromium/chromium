@@ -300,9 +300,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Determines the major/minor alignment baselines for each row/column based on
   // each item in |grid_items|, and stores the results in |grid_geometry|.
-  void CalculateAlignmentBaselines(GridItems& grid_items,
-                                   GridGeometry& grid_geometry,
-                                   GridTrackSizingDirection direction) const;
+  void CalculateAlignmentBaselines(const GridItems& grid_items,
+                                   GridTrackSizingDirection track_direction,
+                                   GridGeometry* grid_geometry) const;
 
   // Initializes the given track collection, and returns the base set geometry.
   SetGeometry InitializeTrackSizes(
@@ -359,11 +359,21 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGGridLayoutAlgorithmTrackCollection& track_collection) const;
 
   const NGConstraintSpace CreateConstraintSpace(
+      const GridItemData& grid_item,
+      const LogicalSize& containing_grid_area_size,
+      base::Optional<LayoutUnit> opt_fixed_block_size,
+      NGCacheSlot cache_slot) const;
+
+  const NGConstraintSpace CreateConstraintSpaceForLayout(
       const GridGeometry& grid_geometry,
       const GridItemData& grid_item,
-      NGCacheSlot cache_slot,
-      LogicalRect* rect,
-      const LayoutUnit* opt_fixed_size = nullptr) const;
+      LogicalRect* containing_grid_area) const;
+
+  const NGConstraintSpace CreateConstraintSpaceForMeasure(
+      const GridGeometry& grid_geometry,
+      const GridItemData& grid_item,
+      GridTrackSizingDirection track_direction,
+      base::Optional<LayoutUnit> opt_fixed_block_size = base::nullopt) const;
 
   // Layout the |grid_items| based on the offsets provided.
   void PlaceGridItems(const GridItems& grid_items,
