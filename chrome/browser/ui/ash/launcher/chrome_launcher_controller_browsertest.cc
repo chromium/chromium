@@ -992,7 +992,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, SetIcon) {
   const ash::ShelfItem& app_custom_icon_item =
       shelf_model()->items()[base_shelf_item_count + 1];
 
-  // Icons for Apps are set by the AppWindowLauncherController, so
+  // Icons for Apps are set by the AppWindowShelfController, so
   // image_set_by_controller() should be set.
   const ash::ShelfItemDelegate* app_item_delegate =
       GetShelfItemDelegate(app_item.id);

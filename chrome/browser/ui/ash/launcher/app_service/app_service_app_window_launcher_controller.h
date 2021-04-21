@@ -14,7 +14,7 @@
 #include "base/scoped_observer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_instance_registry_helper.h"
-#include "chrome/browser/ui/ash/launcher/app_window_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/arc_app_window_delegate.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "ui/aura/env_observer.h"
@@ -36,7 +36,7 @@ class Profile;
 // handles adding and removing launcher items from ChromeLauncherController and
 // puts running apps on the Chrome OS shelf.
 class AppServiceAppWindowLauncherController
-    : public AppWindowLauncherController,
+    : public AppWindowShelfController,
       public aura::EnvObserver,
       public aura::WindowObserver,
       public apps::InstanceRegistry::Observer,
@@ -48,7 +48,7 @@ class AppServiceAppWindowLauncherController
       ChromeLauncherController* owner);
   ~AppServiceAppWindowLauncherController() override;
 
-  // AppWindowLauncherController:
+  // AppWindowShelfController:
   AppWindowShelfItemController* ControllerForWindow(
       aura::Window* window) override;
   void ActiveUserChanged(const std::string& user_email) override;
@@ -123,7 +123,7 @@ class AppServiceAppWindowLauncherController
   void AddAppWindowToShelf(AppWindowBase* app_window);
   void RemoveAppWindowFromShelf(AppWindowBase* app_window);
 
-  // AppWindowLauncherController:
+  // AppWindowShelfController:
   void OnItemDelegateDiscarded(ash::ShelfItemDelegate* delegate) override;
 
   // Returns the shelf id for |window|. |window| could be teleported from the

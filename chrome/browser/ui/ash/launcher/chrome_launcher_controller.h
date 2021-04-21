@@ -18,15 +18,15 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_icon_loader_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
-#include "chrome/browser/ui/ash/launcher/launcher_app_updater.h"
 #include "chrome/browser/ui/ash/launcher/settings_window_observer.h"
+#include "chrome/browser/ui/ash/launcher/shelf_app_updater.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 
 class AppIconLoader;
 class AppServiceAppWindowLauncherController;
-class AppWindowLauncherController;
+class AppWindowShelfController;
 class BrowserShortcutShelfItemController;
 class BrowserStatusMonitor;
 class ChromeLauncherControllerUserSwitchObserver;
@@ -57,7 +57,7 @@ class BaseWindow;
 // It helps synchronize shelf state with profile preferences and app content.
 // NOTE: Launcher is an old name for the shelf, this class should be renamed.
 class ChromeLauncherController
-    : public LauncherAppUpdater::Delegate,
+    : public ShelfAppUpdater::Delegate,
       public AppIconLoaderDelegate,
       private ash::ShelfModelObserver,
       private app_list::AppListSyncableService::Observer,
@@ -232,8 +232,8 @@ class ChromeLauncherController
     return browser_status_monitor_.get();
   }
 
-  // Access to the AppWindowLauncherController list for tests.
-  const std::vector<std::unique_ptr<AppWindowLauncherController>>&
+  // Access to the AppWindowShelfController list for tests.
+  const std::vector<std::unique_ptr<AppWindowShelfController>>&
   app_window_controllers_for_test() {
     return app_window_controllers_;
   }
@@ -270,7 +270,7 @@ class ChromeLauncherController
   // CanDoShowAppInfoFlow() returns true.
   void DoShowAppInfoFlow(Profile* profile, const std::string& app_id);
 
-  // LauncherAppUpdater::Delegate:
+  // ShelfAppUpdater::Delegate:
   void OnAppInstalled(content::BrowserContext* browser_context,
                       const std::string& app_id) override;
   void OnAppUpdated(content::BrowserContext* browser_context,
@@ -425,11 +425,11 @@ class ChromeLauncherController
   WebContentsToAppIDMap web_contents_to_app_id_;
 
   // Used to track app windows.
-  std::vector<std::unique_ptr<AppWindowLauncherController>>
+  std::vector<std::unique_ptr<AppWindowShelfController>>
       app_window_controllers_;
 
   // Used to handle app load/unload events.
-  std::map<Profile*, std::vector<std::unique_ptr<LauncherAppUpdater>>>
+  std::map<Profile*, std::vector<std::unique_ptr<ShelfAppUpdater>>>
       app_updaters_;
 
   PrefChangeRegistrar pref_change_registrar_;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_LAUNCHER_APP_UPDATER_H_
-#define CHROME_BROWSER_UI_ASH_LAUNCHER_LAUNCHER_APP_UPDATER_H_
+#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_SHELF_APP_UPDATER_H_
+#define CHROME_BROWSER_UI_ASH_LAUNCHER_SHELF_APP_UPDATER_H_
 
 #include <string>
 
@@ -14,7 +14,7 @@ class BrowserContext;
 }
 
 // Responsible for handling of Chrome app life-cycle events.
-class LauncherAppUpdater {
+class ShelfAppUpdater {
  public:
   class Delegate {
    public:
@@ -32,22 +32,21 @@ class LauncherAppUpdater {
     virtual ~Delegate() {}
   };
 
-  virtual ~LauncherAppUpdater();
+  virtual ~ShelfAppUpdater();
 
   Delegate* delegate() { return delegate_; }
 
   content::BrowserContext* browser_context() { return browser_context_; }
 
  protected:
-  LauncherAppUpdater(Delegate* delegate,
-                     content::BrowserContext* browser_context);
+  ShelfAppUpdater(Delegate* delegate, content::BrowserContext* browser_context);
 
  private:
   // Unowned pointers
   Delegate* delegate_;
   content::BrowserContext* browser_context_;
 
-  DISALLOW_COPY_AND_ASSIGN(LauncherAppUpdater);
+  DISALLOW_COPY_AND_ASSIGN(ShelfAppUpdater);
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_LAUNCHER_APP_UPDATER_H_
+#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_SHELF_APP_UPDATER_H_

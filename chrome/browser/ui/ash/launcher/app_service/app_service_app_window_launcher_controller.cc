@@ -69,7 +69,7 @@ std::string GetAppId(const std::string& id) {
 
 AppServiceAppWindowLauncherController::AppServiceAppWindowLauncherController(
     ChromeLauncherController* owner)
-    : AppWindowLauncherController(owner),
+    : AppWindowShelfController(owner),
       proxy_(apps::AppServiceProxyFactory::GetForProfile(owner->profile())),
       app_service_instance_helper_(
           std::make_unique<AppServiceInstanceRegistryHelper>(this)) {
@@ -310,8 +310,7 @@ void AppServiceAppWindowLauncherController::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* new_active,
     aura::Window* old_active) {
-  AppWindowLauncherController::OnWindowActivated(reason, new_active,
-                                                 old_active);
+  AppWindowShelfController::OnWindowActivated(reason, new_active, old_active);
 
   if (arc_tracker_)
     arc_tracker_->OnTaskSetActive(arc_tracker_->active_task_id());

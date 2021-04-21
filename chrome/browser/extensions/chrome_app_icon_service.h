@@ -43,7 +43,7 @@ class ChromeAppIconDelegate;
 // Usage: ChromeAppIconService::Get(context)->CreateIcon().
 class ChromeAppIconService : public KeyedService,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-                             public LauncherAppUpdater::Delegate,
+                             public ShelfAppUpdater::Delegate,
 #endif
                              public ExtensionRegistryObserver {
  public:
@@ -97,7 +97,7 @@ class ChromeAppIconService : public KeyedService,
                            UnloadedExtensionReason reason) override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // LauncherAppUpdater::Delegate:
+  // ShelfAppUpdater::Delegate:
   void OnAppUpdated(content::BrowserContext* browser_context,
                     const std::string& app_id) override;
 #endif

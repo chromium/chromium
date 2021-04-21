@@ -52,7 +52,7 @@
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_service/launcher_app_service_app_updater.h"
 #include "chrome/browser/ui/ash/launcher/app_shortcut_shelf_item_controller.h"
-#include "chrome/browser/ui/ash/launcher/app_window_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/browser_status_monitor.h"
@@ -891,7 +891,7 @@ void ChromeLauncherController::DoShowAppInfoFlow(Profile* profile,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// LauncherAppUpdater::Delegate:
+// ShelfAppUpdater::Delegate:
 
 void ChromeLauncherController::OnAppInstalled(
     content::BrowserContext* browser_context,
@@ -1370,7 +1370,7 @@ void ChromeLauncherController::AddAppUpdaterAndIconLoader(Profile* profile) {
   }
 
   if (!base::Contains(app_updaters_, profile)) {
-    std::unique_ptr<LauncherAppUpdater> app_service_app_updater(
+    std::unique_ptr<ShelfAppUpdater> app_service_app_updater(
         new LauncherAppServiceAppUpdater(this, profile));
     app_updaters_[profile].push_back(std::move(app_service_app_updater));
 

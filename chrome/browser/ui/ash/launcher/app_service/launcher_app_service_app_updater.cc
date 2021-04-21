@@ -13,7 +13,7 @@
 LauncherAppServiceAppUpdater::LauncherAppServiceAppUpdater(
     Delegate* delegate,
     content::BrowserContext* browser_context)
-    : LauncherAppUpdater(delegate, browser_context) {
+    : ShelfAppUpdater(delegate, browser_context) {
   apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));

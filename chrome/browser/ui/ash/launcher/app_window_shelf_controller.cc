@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/launcher/app_window_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_window_shelf_controller.h"
 
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/shell.h"
@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "ui/wm/public/activation_client.h"
 
-AppWindowLauncherController::AppWindowLauncherController(
+AppWindowShelfController::AppWindowShelfController(
     ChromeLauncherController* owner)
     : owner_(owner) {
   // TODO: this doesn't work in mash: https://crbug.com/826386 .
@@ -23,14 +23,14 @@ AppWindowLauncherController::AppWindowLauncherController(
   owner->shelf_model()->AddObserver(this);
 }
 
-AppWindowLauncherController::~AppWindowLauncherController() {
+AppWindowShelfController::~AppWindowShelfController() {
   owner()->shelf_model()->RemoveObserver(this);
 
   if (activation_client_)
     activation_client_->RemoveObserver(this);
 }
 
-void AppWindowLauncherController::OnWindowActivated(
+void AppWindowShelfController::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* new_active,
     aura::Window* old_active) {
@@ -40,14 +40,14 @@ void AppWindowLauncherController::OnWindowActivated(
   if (new_controller)
     new_controller->SetActiveWindow(new_active);
 
-  // Mark the old active window's launcher item as running (if different).
+  // Mark the old active window's shelf item as running (if different).
   AppWindowShelfItemController* old_controller =
       ControllerForWindow(old_active);
   if (old_controller && old_controller != new_controller)
     owner_->SetItemStatus(old_controller->shelf_id(), ash::STATUS_RUNNING);
 }
 
-void AppWindowLauncherController::ShelfItemDelegateChanged(
+void AppWindowShelfController::ShelfItemDelegateChanged(
     const ash::ShelfID& id,
     ash::ShelfItemDelegate* old_delegate,
     ash::ShelfItemDelegate* delegate) {

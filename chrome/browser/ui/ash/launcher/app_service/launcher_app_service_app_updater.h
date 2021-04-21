@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/ui/ash/launcher/launcher_app_updater.h"
+#include "chrome/browser/ui/ash/launcher/shelf_app_updater.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
 namespace apps {
@@ -17,7 +17,7 @@ class AppUpdate;
 }  // namespace apps
 
 // LauncherAppServiceAppUpdater handles life cycle events for AppService Apps.
-class LauncherAppServiceAppUpdater : public LauncherAppUpdater,
+class LauncherAppServiceAppUpdater : public ShelfAppUpdater,
                                      public apps::AppRegistryCache::Observer {
  public:
   LauncherAppServiceAppUpdater(Delegate* delegate,

@@ -7,13 +7,13 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ui/ash/launcher/launcher_app_updater.h"
+#include "chrome/browser/ui/ash/launcher/shelf_app_updater.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 // TODO(khmel): this is not Launcher class. Consider moving this to proper
 // place.
 class LauncherExtensionAppUpdater
-    : public LauncherAppUpdater,
+    : public ShelfAppUpdater,
       public extensions::ExtensionRegistryObserver,
       public ArcAppListPrefs::Observer {
  public:

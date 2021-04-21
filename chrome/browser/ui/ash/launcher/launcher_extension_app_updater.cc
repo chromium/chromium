@@ -14,7 +14,7 @@ LauncherExtensionAppUpdater::LauncherExtensionAppUpdater(
     Delegate* delegate,
     content::BrowserContext* browser_context,
     bool extensions_only)
-    : LauncherAppUpdater(delegate, browser_context),
+    : ShelfAppUpdater(delegate, browser_context),
       extensions_only_(extensions_only) {
   StartObservingExtensionRegistry();
 

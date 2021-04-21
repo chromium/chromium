@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_APP_WINDOW_LAUNCHER_CONTROLLER_H_
-#define CHROME_BROWSER_UI_ASH_LAUNCHER_APP_WINDOW_LAUNCHER_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_APP_WINDOW_SHELF_CONTROLLER_H_
+#define CHROME_BROWSER_UI_ASH_LAUNCHER_APP_WINDOW_SHELF_CONTROLLER_H_
 
 #include <string>
 
@@ -23,10 +23,10 @@ namespace wm {
 class ActivationClient;
 }
 
-class AppWindowLauncherController : public wm::ActivationChangeObserver,
-                                    public ash::ShelfModelObserver {
+class AppWindowShelfController : public wm::ActivationChangeObserver,
+                                 public ash::ShelfModelObserver {
  public:
-  ~AppWindowLauncherController() override;
+  ~AppWindowShelfController() override;
 
   // Called by ChromeLauncherController when the active user changed and the
   // items need to be updated.
@@ -44,7 +44,7 @@ class AppWindowLauncherController : public wm::ActivationChangeObserver,
   ChromeLauncherController* owner() { return owner_; }
 
  protected:
-  explicit AppWindowLauncherController(ChromeLauncherController* owner);
+  explicit AppWindowShelfController(ChromeLauncherController* owner);
 
   virtual AppWindowShelfItemController* ControllerForWindow(
       aura::Window* window) = 0;
@@ -63,7 +63,7 @@ class AppWindowLauncherController : public wm::ActivationChangeObserver,
                                 ash::ShelfItemDelegate* old_delegate,
                                 ash::ShelfItemDelegate* delegate) override;
 
-  DISALLOW_COPY_AND_ASSIGN(AppWindowLauncherController);
+  DISALLOW_COPY_AND_ASSIGN(AppWindowShelfController);
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_APP_WINDOW_LAUNCHER_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_APP_WINDOW_SHELF_CONTROLLER_H_
