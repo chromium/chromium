@@ -758,12 +758,11 @@ void BackgroundImageGeometry::CalculateFillTileSize(
           // an intrinsic ratio or size.
           tile_size_.width = positioning_area_size.width;
         } else if (image_intrinsic_size.height) {
-          float adjusted_width = image_intrinsic_size.width.ToFloat() /
-                                 image_intrinsic_size.height.ToFloat() *
-                                 tile_size_.height.ToFloat();
+          LayoutUnit adjusted_width = tile_size_.height.MulDiv(
+              image_intrinsic_size.width, image_intrinsic_size.height);
           if (image_intrinsic_size.width >= 1 && adjusted_width < 1)
-            adjusted_width = 1;
-          tile_size_.width = LayoutUnit(adjusted_width);
+            adjusted_width = LayoutUnit(1);
+          tile_size_.width = adjusted_width;
         }
       } else if (!layer_width.IsAuto() && layer_height.IsAuto()) {
         if (!image->HasIntrinsicSize()) {
@@ -771,12 +770,11 @@ void BackgroundImageGeometry::CalculateFillTileSize(
           // an intrinsic ratio or size.
           tile_size_.height = positioning_area_size.height;
         } else if (image_intrinsic_size.width) {
-          float adjusted_height = image_intrinsic_size.height.ToFloat() /
-                                  image_intrinsic_size.width.ToFloat() *
-                                  tile_size_.width.ToFloat();
+          LayoutUnit adjusted_height = tile_size_.width.MulDiv(
+              image_intrinsic_size.height, image_intrinsic_size.width);
           if (image_intrinsic_size.height >= 1 && adjusted_height < 1)
-            adjusted_height = 1;
-          tile_size_.height = LayoutUnit(adjusted_height);
+            adjusted_height = LayoutUnit(1);
+          tile_size_.height = adjusted_height;
         }
       } else if (layer_width.IsAuto() && layer_height.IsAuto()) {
         // If both width and height are auto, use the image's intrinsic size.
@@ -906,7 +904,8 @@ void BackgroundImageGeometry::Calculate(const LayoutBoxModelObject* container,
     // Maintain aspect ratio if background-size: auto is set
     if (fill_layer.SizeLength().Height().IsAuto() &&
         background_repeat_y != EFillRepeat::kRoundFill) {
-      tile_size_.height = tile_size_.height * rounded_width / tile_size_.width;
+      tile_size_.height =
+          rounded_width.MulDiv(tile_size_.height, tile_size_.width);
     }
     tile_size_.width = rounded_width;
 
@@ -928,7 +927,8 @@ void BackgroundImageGeometry::Calculate(const LayoutBoxModelObject* container,
     // Maintain aspect ratio if background-size: auto is set
     if (fill_layer.SizeLength().Width().IsAuto() &&
         background_repeat_x != EFillRepeat::kRoundFill) {
-      tile_size_.width = tile_size_.width * rounded_height / tile_size_.height;
+      tile_size_.width =
+          rounded_height.MulDiv(tile_size_.width, tile_size_.height);
     }
     tile_size_.height = rounded_height;
 
