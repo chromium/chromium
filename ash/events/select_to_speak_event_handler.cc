@@ -200,12 +200,7 @@ void SelectToSpeakEventHandler::OnTouchEvent(ui::TouchEvent* event) {
       return;
   }
   int flags = ui::EF_LEFT_MOUSE_BUTTON;
-
-  // Get screen coordinates if available.
-  gfx::Point root_location = event->target()
-                                 ? event->target()->GetScreenLocation(*event)
-                                 : event->root_location();
-  ui::MouseEvent event_to_send(type, event->location(), root_location,
+  ui::MouseEvent event_to_send(type, event->location(), event->root_location(),
                                event->time_stamp(), flags, flags);
 
   delegate_->DispatchMouseEvent(event_to_send);
