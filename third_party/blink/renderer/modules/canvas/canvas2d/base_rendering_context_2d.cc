@@ -944,7 +944,7 @@ void BaseRenderingContext2D::DrawPathInternal(
   if (!GetOrCreatePaintCanvas())
     return;
 
-  Draw([&sk_path](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
+  Draw([sk_path](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
        { c->drawPath(sk_path, *flags); },
        [](const SkIRect& rect)  // overdraw test lambda
        { return false; },
@@ -1019,7 +1019,7 @@ void BaseRenderingContext2D::fillRect(double x,
   }
 
   SkRect rect = SkRect::MakeXYWH(fx, fy, fwidth, fheight);
-  Draw([&rect](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
+  Draw([rect](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
        { c->drawRect(rect, *flags); },
        [&rect, this](const SkIRect& clip_bounds)  // overdraw test lambda
        { return RectContainsTransformedRect(rect, clip_bounds); },
@@ -1070,7 +1070,7 @@ void BaseRenderingContext2D::strokeRect(double x,
                              bounds.Height()))
     return;
 
-  Draw([&rect](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
+  Draw([rect](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
        { StrokeRectOnCanvas(rect, c, flags); },
        [](const SkIRect& clip_bounds)  // overdraw test lambda
        { return false; },
@@ -1497,7 +1497,7 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
     SetOriginTaintedByContent();
 
   Draw(
-      [this, &image_source, &image, &src_rect, dst_rect](
+      [this, image_source, image, src_rect, dst_rect](
           cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
       {
         SkSamplingOptions sampling(

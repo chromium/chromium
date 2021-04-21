@@ -1045,11 +1045,11 @@ void CanvasRenderingContext2D::DrawTextInternal(
   TextDirection direction =
       ToTextDirection(GetState().GetDirection(), canvas(), &computed_style);
   bool is_rtl = direction == TextDirection::kRtl;
-  bool override =
+  bool bidi_override =
       computed_style ? IsOverride(computed_style->GetUnicodeBidi()) : false;
 
   TextRun text_run(text, 0, 0, TextRun::kAllowTrailingExpansion, direction,
-                   override);
+                   bidi_override);
   text_run.SetNormalizeSpace(true);
   // Draw the item text at the correct point.
   FloatPoint location(clampTo<float>(x),
@@ -1076,7 +1076,6 @@ void CanvasRenderingContext2D::DrawTextInternal(
       break;
   }
 
-  TextRunPaintInfo text_run_paint_info(text_run);
   FloatRect bounds(
       location.X() - font_metrics.Height() / 2,
       location.Y() - font_metrics.Ascent() - font_metrics.LineGap(),
@@ -1097,12 +1096,16 @@ void CanvasRenderingContext2D::DrawTextInternal(
   }
 
   Draw(
-      [&font, &text_run_paint_info, &location](
+      [this, text = std::move(text), direction, bidi_override, location](
           cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
       {
-        font.DrawBidiText(c, text_run_paint_info, location,
-                          Font::kUseFallbackIfFontNotReady, kCDeviceScaleFactor,
-                          *flags);
+        TextRun text_run(text, 0, 0, TextRun::kAllowTrailingExpansion,
+                         direction, bidi_override);
+        text_run.SetNormalizeSpace(true);
+        TextRunPaintInfo text_run_paint_info(text_run);
+        this->AccessFont().DrawBidiText(c, text_run_paint_info, location,
+                                        Font::kUseFallbackIfFontNotReady,
+                                        kCDeviceScaleFactor, *flags);
       },
       [](const SkIRect& rect)  // overdraw test lambda
       { return false; },

@@ -102,6 +102,9 @@ class CanvasRenderingContext2DState final
   bool HasFilterForOffscreenCanvas(IntSize canvas_size,
                                    BaseRenderingContext2D*);
   bool HasFilter(Element*, IntSize canvas_size, CanvasRenderingContext2D*);
+  ALWAYS_INLINE bool IsFilterUnresolved() const {
+    return filter_state_ == FilterState::kUnresolved;
+  }
 
   void ClearResolvedFilter();
   void ValidateFilterState() const;
