@@ -13,7 +13,7 @@ def CommonChecks(input_api, output_api):
   results += input_api.canned_checks.RunPylint(
       input_api, output_api, pylintrc='pylintrc')
   tests = input_api.canned_checks.GetUnitTestsInDirectory(
-      input_api, output_api, '.', [r'^.+_test\.py$'])
+      input_api, output_api, '.', [r'^.+_test\.py$'], run_on_python3=True)
   results += input_api.RunTests(tests)
   return results
 
