@@ -2801,7 +2801,7 @@ crbug.com/626703 [ Mac10.12 ] external/wpt/websockets/Close-Reason-124Bytes.any.
 crbug.com/626703 [ Mac10.15 ] external/wpt/websockets/Close-Reason-124Bytes.any.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/Close-Reason-124Bytes.any.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/websockets/Create-extensions-empty.any.worker.html?wpt_flags=h2 [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/websockets/Create-extensions-empty.any.worker.html?wpt_flags=h2 [ Timeout ]
+crbug.com/626703 [ Mac ] external/wpt/websockets/Create-extensions-empty.any.worker.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/Create-extensions-empty.any.worker.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/websockets/Close-undefined.any.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/websockets/Close-undefined.any.html?wpt_flags=h2 [ Timeout ]
