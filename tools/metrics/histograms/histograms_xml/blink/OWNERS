@@ -5,3 +5,4 @@ per-file OWNERS=file://tools/metrics/histograms/histograms_xml/METRIC_REVIEWER_O
 schenney@chromium.org
 # For BlinkGC.* and related changes.
 mlippautz@chromium.org
+toyoshim@chromium.org
