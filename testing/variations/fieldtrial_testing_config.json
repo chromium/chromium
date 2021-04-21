@@ -3050,8 +3050,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "EnhancedProtectionPromoMaxImpressionsAndroid": "10",
-                        "SigninPromoMaxImpressionsAndroid": "10"
+                        "MaxEnhancedProtectionPromoImpressions": "5",
+                        "MaxSigninPromoImpressions": "5"
                     },
                     "enable_features": [
                         "EnhancedProtectionPromoCard"
