@@ -407,3 +407,6 @@ crbug.com/1069339 [ mojave amd-0x6821 ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWo
 
 # Failures on Mac FYI arm64 Release (Apple DTK)
 crbug.com/1175753 [ mac release apple-apple-m1 ] Pixel_Video_BackdropFilter [ Skip ]
+
+# Flakes on Mac AMD, Intel and nVidia
+crbug.com/1198890 [ mac ] Pixel_CSSFilterEffects_NoOverlays [ Failure ]
