@@ -80,10 +80,9 @@ PositionInFlatTree FirstWordBoundaryAfter(PositionInFlatTree position) {
 
   PositionInFlatTree end_pos(position.AnchorNode(), word_end);
   PositionIteratorInFlatTree itr(end_pos);
+  itr.Increment();
   if (itr.AtEnd())
     return end_pos;
-
-  itr.Increment();
   return itr.ComputePosition();
 }
 

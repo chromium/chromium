@@ -21,7 +21,6 @@ void RangeInFlatTree::SetStart(const PositionInFlatTree& start) {
 }
 
 void RangeInFlatTree::SetEnd(const PositionInFlatTree& end) {
-  LOG(ERROR) << "end " << end;
   end_->SetPosition(ToPositionInDOMTree(end));
 }
 
