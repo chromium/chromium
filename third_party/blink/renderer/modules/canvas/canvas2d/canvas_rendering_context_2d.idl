@@ -139,7 +139,7 @@ interface CanvasRenderingContext2D {
     // hit regions
     [RuntimeEnabled=CanvasHitRegion, RaisesException] void addHitRegion(optional HitRegionOptions options = {});
     [RuntimeEnabled=CanvasHitRegion] void removeHitRegion(DOMString id);
-    [RuntimeEnabled=CanvasHitRegion, NoAllocDirectCall] void clearHitRegions();
+    [RuntimeEnabled=CanvasHitRegion] void clearHitRegions();
 
     // pixel manipulation
     [RaisesException] ImageData createImageData(ImageData imagedata);

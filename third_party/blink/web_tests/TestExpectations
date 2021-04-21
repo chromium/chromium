@@ -7216,15 +7216,6 @@ crbug.com/1199803 [ Linux ] http/tests/devtools/layers/layers-3d-view-hit-testin
 # Sheriff 2021-04-20
 crbug.com/1200671 [ Mac11.0 ] virtual/gpu-rasterization/images/color-profile-animate-rotate.html [ Pass Failure ]
 
-# Crashes caused by forbidden allocation or JS calls inside the scope of
-# V8 Fast API call ([NoAllocDirectCall]), only when DCHECK_IS_ON
-crbug.com/1194226 virtual/no-alloc-direct-call/fast/canvas/canvas-hit-regions-clear-test.html [ Crash ]
-crbug.com/1194226 virtual/no-alloc-direct-call/fast/canvas/canvas-hit-regions-clip-test.html [ Crash ]
-crbug.com/1194226 virtual/no-alloc-direct-call/fast/canvas/canvas-hit-regions-event-test.html [ Crash ]
-crbug.com/1194226 virtual/no-alloc-direct-call/fast/canvas/canvas-hit-regions-fallback-element-test-1.html [ Crash ]
-crbug.com/1194226 virtual/no-alloc-direct-call/fast/canvas/canvas-hit-regions-fallback-element-test-2.html [ Crash ]
-crbug.com/1194226 virtual/no-alloc-direct-call/fast/canvas/canvas-hit-regions-fallback-element-test-3.html [ Crash ]
-
 crbug.com/1197444 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/nested-scroll-overlay-scrollbar.html [ Pass Crash Failure ]
 # Sheriff 2021-04-21
 crbug.com/1200671 [ Linux ] external/wpt/webrtc/protocol/rtp-payloadtypes.html [ Pass Crash ]

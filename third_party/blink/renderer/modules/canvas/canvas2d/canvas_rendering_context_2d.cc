@@ -425,12 +425,15 @@ void CanvasRenderingContext2D::clearRect(double x,
                                          double height) {
   BaseRenderingContext2D::clearRect(x, y, width, height);
 
-  if (hit_region_manager_ && std::isfinite(x) && std::isfinite(y) &&
-      std::isfinite(width) && std::isfinite(height)) {
+  if (UNLIKELY(hit_region_manager_) && LIKELY(std::isfinite(x)) &&
+      LIKELY(std::isfinite(y)) && LIKELY(std::isfinite(width)) &&
+      LIKELY(std::isfinite(height))) {
     FloatRect rect(clampTo<float>(x), clampTo<float>(y), clampTo<float>(width),
                    clampTo<float>(height));
-    hit_region_manager_->RemoveHitRegionsInRect(
-        rect, GetState().GetAffineTransform());
+    auto transform = GetState().GetAffineTransform();
+    PostDeferrableAction(WTF::Bind(&HitRegionManager::RemoveHitRegionsInRect,
+                                   WrapPersistent(hit_region_manager_.Get()),
+                                   rect, transform));
   }
 }
 
