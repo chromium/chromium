@@ -1409,6 +1409,7 @@ void NetworkStateHandler::UpdateNetworkServiceProperty(
   std::string prev_connection_state = network->connection_state();
   NetworkState::PortalState prev_portal_state = network->portal_state();
   std::string prev_profile_path = network->profile_path();
+  bool had_icccid_before_update = !network->iccid().empty();
   changed |= network->PropertyChanged(key, value);
   changed |= UpdateBlockedByPolicy(network);
   if (!changed)
@@ -1444,6 +1445,9 @@ void NetworkStateHandler::UpdateNetworkServiceProperty(
     notify_connection_state = true;
     network_list_sorted_ = false;
   }
+
+  if (network->Matches(NetworkTypePattern::Cellular()))
+    HandleCellularNetworkUpdateReceived(network, had_icccid_before_update);
 
   if (request_update) {
     RequestUpdateForNetwork(service_path);

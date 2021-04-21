@@ -5,6 +5,7 @@
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
 
 #include "chromeos/network/cellular_utils.h"
+#include "chromeos/network/network_state_handler.h"
 
 namespace chromeos {
 
@@ -25,8 +26,9 @@ void TestCellularESimProfileHandler::OnHermesPropertiesUpdated() {
       GenerateProfilesFromHermes();
   if (new_profile_states == esim_profile_states_)
     return;
-
   esim_profile_states_ = new_profile_states;
+
+  network_state_handler()->SyncStubCellularNetworks();
   NotifyESimProfileListUpdated();
 }
 
