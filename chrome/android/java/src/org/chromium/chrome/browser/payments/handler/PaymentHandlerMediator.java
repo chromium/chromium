@@ -253,7 +253,12 @@ import java.lang.annotation.RetentionPolicy;
     // Implement WebContentsObserver:
     @Override
     public void didFinishNavigation(NavigationHandle navigationHandle) {
-        if (navigationHandle.isSameDocument()) return;
+        // Checking uncommitted navigations (e.g., Network errors) is unnecessary because
+        // they have no chance to be loaded nor rendered.
+        if (navigationHandle.isSameDocument() || !navigationHandle.hasCommitted()
+                || !navigationHandle.isInMainFrame()) {
+            return;
+        }
         closeIfInsecure();
     }
 

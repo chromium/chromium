@@ -353,11 +353,13 @@ void PaymentHandlerWebFlowViewController::DidFinishNavigation(
   if (navigation_handle->IsSameDocument())
     return;
 
-  // The navigation must be committed because WebContents::GetLastCommittedURL()
-  // is assumed to be the URL loaded in the payment handler window.
-  DCHECK(navigation_handle->HasCommitted());
-
-  if (!SslValidityChecker::IsValidPageInPaymentHandlerWindow(
+  // Checking uncommitted navigations (e.g., Network errors) is unnecessary
+  // because the new pages have no chance to be loaded, rendered nor execute js.
+  // TODO(crbug.com/1198274): Only main frame is checked because unsafe iframes
+  // are blocked by the MixContentNavigationThrottle. But this design is
+  // fragile.
+  if (navigation_handle->HasCommitted() && navigation_handle->IsInMainFrame() &&
+      !SslValidityChecker::IsValidPageInPaymentHandlerWindow(
           navigation_handle->GetWebContents())) {
     AbortPayment();
     return;
