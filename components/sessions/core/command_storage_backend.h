@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "base/callback_forward.h"

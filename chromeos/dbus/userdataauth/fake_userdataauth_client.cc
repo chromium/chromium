@@ -8,6 +8,7 @@
 
 #include "base/location.h"
 #include "base/notreached.h"
+#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 

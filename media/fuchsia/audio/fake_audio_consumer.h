@@ -11,6 +11,7 @@
 #include <fuchsia/media/cpp/fidl_test_base.h>
 #include <lib/fidl/cpp/binding.h>
 
+#include <list>
 #include <vector>
 
 #include "base/fuchsia/scoped_service_binding.h"

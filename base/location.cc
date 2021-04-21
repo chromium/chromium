@@ -4,6 +4,13 @@
 
 #include "base/location.h"
 
+// location.h is a widely included header and its size can significantly impact
+// build time. Try not to raise this limit unless absolutely necessary. See
+// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
+#ifndef NACL_TC_REV
+#pragma clang max_tokens_here 240000
+#endif
+
 #if defined(COMPILER_MSVC)
 #include <intrin.h>
 #endif

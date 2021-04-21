@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/win/scoped_handle.h"
 
 namespace installer {
