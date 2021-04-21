@@ -215,6 +215,7 @@ js_library("tab_search_item") {
   deps = [
     ":tab_data",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements:mouse_hoverable_mixin",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/js:icon.m",
     "//ui/webui/resources/js:load_time_data.m",

@@ -9,15 +9,17 @@ import 'chrome://resources/cr_elements/mwb_shared_vars.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './strings.m.js';
 
+import {MouseHoverableElement} from 'chrome://resources/cr_elements/mouse_hoverable_mixin.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {highlight} from 'chrome://resources/js/search_highlight_utils.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ariaLabel, TabData, TabItemType} from './tab_data.js';
 import {Tab} from './tab_search.mojom-webui.js';
 
-export class TabSearchItem extends PolymerElement {
+/** @polymer */
+export class TabSearchItem extends MouseHoverableElement {
   static get is() {
     return 'tab-search-item';
   }

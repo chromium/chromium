@@ -51,6 +51,7 @@ preprocess_if_expr("preprocess_src") {
     "cr_search_field/cr_search_field_behavior.js",
     "cr_splitter/cr_splitter.js",
     "find_shortcut_behavior.js",
+    "mouse_hoverable_mixin.js",
   ]
 }
 
@@ -292,6 +293,12 @@ js_library("cr_scrollable_behavior") {
 
 js_library("cr_container_shadow_behavior") {
   deps = [ "//ui/webui/resources/js:assert" ]
+}
+
+js_library("mouse_hoverable_mixin") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
 
 # Targets for auto-generating Polymer 3 JS Modules.

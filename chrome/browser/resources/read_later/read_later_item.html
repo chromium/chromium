@@ -12,8 +12,7 @@
     width: 0;
   }
 
-  :host(:hover) .button-container,
-  :host(:focus-within) .button-container {
+  :host(:is(.hovered, :focus-within)) .button-container {
     overflow: visible;
     width: auto;
   }
@@ -57,14 +56,12 @@
     --cr-icon-button-margin-end: 0;
   }
 
-  :host(:hover) cr-icon-button,
-  :host(:focus-within) cr-icon-button {
+  :host(:is(.hovered, :focus-within) ) cr-icon-button {
     --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
   }
 
   @media (prefers-color-scheme: dark) {
-    :host(:hover) cr-icon-button,
-    :host(:focus-within) cr-icon-button {
+    :host(:is(.hovered, :focus-within) ) cr-icon-button {
       --cr-icon-button-ripple-opacity: 0.15;
     }
   }

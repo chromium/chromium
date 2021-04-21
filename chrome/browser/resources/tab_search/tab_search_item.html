@@ -3,8 +3,7 @@
     outline: none;
   }
 
-  :host(:hover) .button-container,
-  :host(.selected) .button-container {
+  :host(:is(.hovered, .selected)) .button-container {
     height: auto;
     width: auto;
   }
