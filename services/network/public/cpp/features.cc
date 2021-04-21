@@ -217,5 +217,8 @@ const base::Feature kWebSocketReassembleShortMessages{
 const base::Feature kAcceptCHFrame{"AcceptCHFrame",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSCTAuditingRetryAndPersistReports{
+    "SCTAuditingRetryAndPersistReports", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace network
