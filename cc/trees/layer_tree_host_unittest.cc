@@ -9344,7 +9344,8 @@ class LayerTreeHostTestIgnoreEventsMetricsForNoUpdate
   State state_ = State::kWaitingForFirstFrameActivation;
 };
 
-MULTI_THREAD_TEST_F(LayerTreeHostTestIgnoreEventsMetricsForNoUpdate);
+// TODO(crbug.com/1191878): Disabled because test is flaky on Linux and CrOS.
+// MULTI_THREAD_TEST_F(LayerTreeHostTestIgnoreEventsMetricsForNoUpdate);
 
 class LayerTreeHostUkmSmoothnessMetric : public LayerTreeTest {
  public:
