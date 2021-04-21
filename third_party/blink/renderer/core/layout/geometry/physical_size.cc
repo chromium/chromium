@@ -10,19 +10,16 @@ namespace blink {
 
 PhysicalSize PhysicalSize::FitToAspectRatio(const PhysicalSize& aspect_ratio,
                                             AspectRatioFit fit) const {
-  // Convert to float to avoid overflow of LayoutUnit in multiplication below
-  // and improve precision when calculating scale.
-  float height_float = height.ToFloat();
-  float width_float = width.ToFloat();
-  float height_scale = height_float / aspect_ratio.height.ToFloat();
-  float width_scale = width_float / aspect_ratio.width.ToFloat();
-  if ((width_scale > height_scale) != (fit == kAspectRatioFitGrow)) {
-    return {LayoutUnit::FromFloatRound(height_float * aspect_ratio.width /
-                                       aspect_ratio.height),
-            height};
+  DCHECK_GT(aspect_ratio.width, 0);
+  DCHECK_GT(aspect_ratio.height, 0);
+  const LayoutUnit constrained_height =
+      width.MulDiv(aspect_ratio.height, aspect_ratio.width);
+  if ((constrained_height > height) != (fit == kAspectRatioFitGrow)) {
+    const LayoutUnit constrained_width =
+        height.MulDiv(aspect_ratio.width, aspect_ratio.height);
+    return {constrained_width, height};
   }
-  return {width, LayoutUnit::FromFloatRound(width_float * aspect_ratio.height /
-                                            aspect_ratio.width)};
+  return {width, constrained_height};
 }
 
 String PhysicalSize::ToString() const {
