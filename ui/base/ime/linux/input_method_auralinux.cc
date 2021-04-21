@@ -7,6 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/environment.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/ime/constants.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/ime/text_input_client.h"
@@ -153,7 +154,17 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
   // consumed by IME and commit/preedit string update will happen
   // asynchronously. The remaining case is covered in OnCommit and
   // OnPreeditChanged/End.
-  if (filtered && !HasInputMethodResult() && !IsTextInputTypeNone()) {
+  // TODO(crbug.com/1199385): On Lacros CTRL+TAB events are sent twice if
+  // user types it on loading page, because the connected client is considered
+  // None type, and so the peek key event is not held here.
+  // To derisk the regression in other platform, and to prioritize the fix
+  // on Lacros, we conditionally do not check whether the connected client
+  // is None type for Lacros only. We should remove this soon.
+  if (filtered && !HasInputMethodResult()
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+      && !IsTextInputTypeNone()
+#endif
+  ) {
     ime_filtered_key_event_ = std::move(*event);
     return ui::EventDispatchDetails();
   }

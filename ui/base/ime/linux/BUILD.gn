@@ -36,4 +36,8 @@ component("linux") {
       "composition_text_util_pango.h",
     ]
   }
+
+  # TODO(crbug.com/1199385): Remove this on unifying lacros and linux desktop
+  # behavior again.
+  deps = [ "//build:chromeos_buildflags" ]
 }
