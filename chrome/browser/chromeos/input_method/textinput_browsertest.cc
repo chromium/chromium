@@ -40,21 +40,11 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  bool worker_finished = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      tab,
-      "window.domAutomationController.send(text01_focus());",
-      &worker_finished));
-  EXPECT_TRUE(worker_finished);
+  EXPECT_EQ(true, content::EvalJs(tab, "text01_focus();"));
   helper.WaitForTextInputStateChanged(ui::TEXT_INPUT_TYPE_TEXT);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, helper.GetTextInputType());
 
-  worker_finished = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      tab,
-      "window.domAutomationController.send(password01_focus());",
-      &worker_finished));
-  EXPECT_TRUE(worker_finished);
+  EXPECT_EQ(true, content::EvalJs(tab, "password01_focus();"));
   helper.WaitForTextInputStateChanged(ui::TEXT_INPUT_TYPE_PASSWORD);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD, helper.GetTextInputType());
 }
@@ -127,9 +117,8 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   std::string coordinate;
-  ASSERT_TRUE(content::ExecuteScript(
-          tab,
-          "document.getElementById('text_id').focus();"));
+  ASSERT_TRUE(
+      content::ExecJs(tab, "document.getElementById('text_id').focus();"));
 
   // Expects PASSWORD text input type because javascript will change the focus
   // to password field in #text_id's onfocus handler.
@@ -158,16 +147,14 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  ASSERT_TRUE(content::ExecuteScript(
-          tab,
-          "document.getElementById('text_id').focus();"));
+  ASSERT_TRUE(
+      content::ExecJs(tab, "document.getElementById('text_id').focus();"));
   helper.WaitForTextInputStateChanged(ui::TEXT_INPUT_TYPE_TEXT);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, helper.GetTextInputType());
 
   // Changing text input type to password.
-  ASSERT_TRUE(content::ExecuteScript(
-          tab,
-          "document.body.removeChild(document.getElementById('text_id'));"));
+  ASSERT_TRUE(content::ExecJs(
+      tab, "document.body.removeChild(document.getElementById('text_id'));"));
   helper.WaitForTextInputStateChanged(ui::TEXT_INPUT_TYPE_NONE);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 }
@@ -187,16 +174,14 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  ASSERT_TRUE(content::ExecuteScript(
-          tab,
-          "document.getElementById('text_id').focus();"));
+  ASSERT_TRUE(
+      content::ExecJs(tab, "document.getElementById('text_id').focus();"));
   helper.WaitForTextInputStateChanged(ui::TEXT_INPUT_TYPE_TEXT);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, helper.GetTextInputType());
 
   // Changing text input type to password.
-  ASSERT_TRUE(content::ExecuteScript(
-          tab,
-          "document.getElementById('text_id').type = 'password';"));
+  ASSERT_TRUE(content::ExecJs(
+      tab, "document.getElementById('text_id').type = 'password';"));
   helper.WaitForTextInputStateChanged(ui::TEXT_INPUT_TYPE_PASSWORD);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD, helper.GetTextInputType());
 }
@@ -219,16 +204,14 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
 
 
   // Disabling content editable, then expecting TEXT_INPUT_TYPE_NONE.
-  ASSERT_TRUE(content::ExecuteScript(
-          tab,
-          "document.getElementById('anchor_id').contentEditable = false;"));
+  ASSERT_TRUE(content::ExecJs(
+      tab, "document.getElementById('anchor_id').contentEditable = false;"));
   helper.WaitForTextInputStateChanged(ui::TEXT_INPUT_TYPE_NONE);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
   // Then re-enabling content editable, then expecting CONTENT_EDITABLE.
-  ASSERT_TRUE(content::ExecuteScript(
-          tab,
-          "document.getElementById('anchor_id').contentEditable = true;"));
+  ASSERT_TRUE(content::ExecJs(
+      tab, "document.getElementById('anchor_id').contentEditable = true;"));
   helper.WaitForTextInputStateChanged(ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE, helper.GetTextInputType());
 }

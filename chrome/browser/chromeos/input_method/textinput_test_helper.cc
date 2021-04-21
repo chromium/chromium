@@ -207,12 +207,12 @@ bool TextInputTestHelper::ConvertRectFromString(const std::string& str,
 // static
 bool TextInputTestHelper::ClickElement(const std::string& id,
                                        content::WebContents* tab) {
-  std::string coordinate;
-  if (!content::ExecuteScriptAndExtractString(
-      tab,
-      "textinput_helper.retrieveElementCoordinate('" + id + "')",
-      &coordinate))
-    return false;
+  std::string coordinate =
+      content::EvalJs(
+          tab, "textinput_helper.retrieveElementCoordinate('" + id + "')",
+          content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+          .ExtractString();
+
   gfx::Rect rect;
   if (!ConvertRectFromString(coordinate, &rect))
     return false;

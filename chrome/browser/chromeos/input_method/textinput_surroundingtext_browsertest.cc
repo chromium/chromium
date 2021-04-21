@@ -29,9 +29,8 @@ IN_PROC_BROWSER_TEST_F(TextInput_SurroundingTextChangedTest,
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  ASSERT_TRUE(content::ExecuteScript(
-      tab,
-      "document.getElementById('text_id').focus()"));
+  ASSERT_TRUE(
+      content::ExecJs(tab, "document.getElementById('text_id').focus()"));
   helper.WaitForTextInputStateChanged(ui::TEXT_INPUT_TYPE_TEXT_AREA);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT_AREA, helper.GetTextInputType());
 
@@ -70,9 +69,8 @@ IN_PROC_BROWSER_TEST_F(TextInput_SurroundingTextChangedTest,
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  ASSERT_TRUE(content::ExecuteScript(
-      tab,
-      "document.getElementById('text_id').focus()"));
+  ASSERT_TRUE(
+      content::ExecJs(tab, "document.getElementById('text_id').focus()"));
   helper.WaitForTextInputStateChanged(ui::TEXT_INPUT_TYPE_TEXT_AREA);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT_AREA, helper.GetTextInputType());
 

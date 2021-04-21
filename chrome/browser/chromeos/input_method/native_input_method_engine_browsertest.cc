@@ -201,8 +201,8 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
     content::WebContents* tab =
         browser()->tab_strip_model()->GetActiveWebContents();
 
-    ASSERT_TRUE(content::ExecuteScript(
-        tab, "document.getElementById('text_id').focus()"));
+    ASSERT_TRUE(
+        content::ExecJs(tab, "document.getElementById('text_id').focus()"));
     helper.WaitForTextInputStateChanged(ui::TEXT_INPUT_TYPE_TEXT_AREA);
 
     SetFocus(helper.GetTextInputClient());
@@ -756,7 +756,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, RevertsAutocorrect) {
   // Move cursor into the corrected word, sending VKEY_LEFT fails, so use JS.
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       tab, "document.getElementById('text_id').setSelectionRange(8,8)"));
 
   helper.WaitForSurroundingTextChanged(corrected_text, gfx::Range(8, 8));
@@ -796,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   // Move cursor into the corrected word, sending VKEY_LEFT fails, so use JS.
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       tab, "document.getElementById('text_id').setSelectionRange(2,2)"));
   helper.WaitForSurroundingTextChanged(corrected_text, gfx::Range(2, 2));
 
@@ -844,7 +844,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   // Move cursor into the corrected word, sending VKEY_LEFT fails, so use JS.
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       tab, "document.getElementById('text_id').setSelectionRange(2,2)"));
   helper.WaitForSurroundingTextChanged(corrected_text, gfx::Range(2, 2));
   histogram_tester.ExpectBucketCount("InputMethod.Assistive.Coverage",
@@ -931,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   // This incurs UI popup that allows user to reject the autocorrect trigger.
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       tab, "document.getElementById('text_id').setSelectionRange(2,2)"));
   helper.WaitForSurroundingTextChanged(corrected_text, gfx::Range(2, 2));
 
@@ -1028,7 +1028,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   // This incurs UI popup that allows user to reject the autocorrect trigger.
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       tab, "document.getElementById('text_id').setSelectionRange(2,2)"));
   helper.WaitForSurroundingTextChanged(corrected_text, gfx::Range(2, 2));
 
