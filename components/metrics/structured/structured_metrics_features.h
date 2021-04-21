@@ -10,7 +10,21 @@
 namespace metrics {
 namespace structured {
 
+// This can be used to disable structured metrics as a whole.
+extern const base::Feature kStructuredMetrics;
+
 extern const base::Feature kBluetoothSessionizedMetrics;
+
+// TODO(crbug.com/1148168): This is a temporary switch to revert structured
+// metrics upload to its old behaviour. Old behaviour:
+// - all metrics are uploaded in the main UMA upload
+//
+// New behaviour:
+// - Projects with id type 'uma' are uploaded in the main UMA uploaded
+// - Projects with id type 'project-id' or 'none' are uploaded independently.
+//
+// Once we are comfortable with this change, this parameter can be removed.
+bool IsIndependentMetricsUploadEnabled();
 
 }  // namespace structured
 }  // namespace metrics

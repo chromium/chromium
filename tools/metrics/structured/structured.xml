@@ -306,4 +306,23 @@
   </event>
 </project>
 
+<project name="TestProjectThree">
+  <owner>tby@chromium.org</owner>
+  <id>uma</id>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+
+  <event name="TestEventFour">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricFour" type="int">
+      <summary>
+        An unhashed value, recorded as-is.
+      </summary>
+    </metric>
+  </event>
+</project>
+
 </structured-metrics>

@@ -103,6 +103,7 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
                                  base::HistogramSnapshotManager*) override;
 
   void WriteNowForTest();
+  void SetExternalMetricsDirForTest(const base::FilePath& dir);
 
   // Beyond this number of logging events between successive calls to
   // ProvideCurrentSessionData, we stop recording events.
@@ -129,7 +130,9 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   InitState init_state_ = InitState::kUninitialized;
 
   // Tracks the recording state signalled to the metrics provider by
-  // OnRecordingEnabled and OnRecordingDisabled.
+  // OnRecordingEnabled and OnRecordingDisabled. This is false until
+  // OnRecordingEnabled is called, which sets it true if structured metrics'
+  // feature flag is enabled.
   bool recording_enabled_ = false;
 
   // Set by OnRecordingDisabled if |events_| hasn't been initialized yet to

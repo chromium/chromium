@@ -20,7 +20,7 @@ class EventBase {
   virtual ~EventBase();
 
   // Specifies the type of identifier attached to an event.
-  enum class IdentifierType {
+  enum class IdType {
     // Events are attached to a per-event (or per-project) id.
     kProjectId = 0,
     // Events are attached to the UMA client_id.
@@ -66,8 +66,12 @@ class EventBase {
 
   uint64_t project_name_hash() const { return project_name_hash_; }
 
+  IdType id_type() const { return id_type_; }
+
  protected:
-  explicit EventBase(uint64_t event_name_hash, uint64_t project_name_hash);
+  explicit EventBase(uint64_t event_name_hash,
+                     uint64_t project_name_hash,
+                     IdType id_type);
 
   void AddStringMetric(uint64_t name_hash, const std::string& value);
 
@@ -90,6 +94,8 @@ class EventBase {
   // |project_name_hash_| is the first 8 bytes of the MD5 hash of the project
   // name.
   uint64_t project_name_hash_;
+
+  IdType id_type_;
 
   std::vector<Metric> metrics_;
 };

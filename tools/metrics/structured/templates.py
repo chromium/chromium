@@ -45,7 +45,7 @@ class {event.name} final : public ::metrics::structured::EventBase {{
 
   static constexpr uint64_t kEventNameHash = UINT64_C({event.name_hash});
   static constexpr uint64_t kProjectNameHash = UINT64_C({project.name_hash});
-  static constexpr IdentifierType kIdType = IdentifierType::{project.id_type};
+  static constexpr IdType kIdType = IdType::{project.id_type};
 
 {metric_code}\
 }};
@@ -84,7 +84,8 @@ namespace {project.namespace} {{
 
 IMPL_EVENT_TEMPLATE = """\
 {event.name}::{event.name}() :
-  ::metrics::structured::EventBase(kEventNameHash, kProjectNameHash) {{}}
+  ::metrics::structured::EventBase(kEventNameHash, kProjectNameHash,
+    kIdType) {{}}
 {event.name}::~{event.name}() = default;
 {metric_code}\
 """
