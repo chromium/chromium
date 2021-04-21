@@ -636,6 +636,21 @@
             ]
         }
     ],
+    "AppListOmniboxRichEntities": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableOmniboxRichEntities"
+                    ]
+                }
+            ]
+        }
+    ],
     "AppListZeroStateMixedTypesRanker": [
         {
             "platforms": [
