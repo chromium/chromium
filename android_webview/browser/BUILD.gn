@@ -211,6 +211,7 @@ source_set("browser") {
     "//components/favicon_base:favicon_base",
     "//components/flags_ui",
     "//components/keyed_service/content",
+    "//components/profile_metrics",
 
     # Called via JNI in CrashpadMain
     "//components/crash/android:crashpad_main",
