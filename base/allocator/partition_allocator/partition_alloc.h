@@ -27,40 +27,11 @@
 // - Better checking for wild pointers in free().
 // - Better freelist masking function to guarantee fault on 32-bit.
 
-#include <limits.h>
-#include <string.h>
-
-#include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc-inl.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
-#include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_root.h"
-#include "base/allocator/partition_allocator/partition_stats.h"
-#include "base/allocator/partition_allocator/starscan/pcscan.h"
-#include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/base_export.h"
-#include "base/bits.h"
-#include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/gtest_prod_util.h"
-#include "base/notreached.h"
-#include "base/partition_alloc_buildflags.h"
-#include "base/stl_util.h"
-#include "base/sys_byteorder.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
-
-#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-#include <stdlib.h>
-#endif
-
-#if defined(ADDRESS_SANITIZER)
-#include <sanitizer/asan_interface.h>
-#endif  // defined(ADDRESS_SANITIZER)
 
 namespace base {
 
