@@ -810,12 +810,18 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
        !IncognitoModePrefs::ShouldLaunchIncognito(
            command_line, last_used_profile->GetPrefs()));
 
+  // |last_used_profile| is never off-the-record. If Incognito or Guest
+  // enforcement switch or policy are provided, use the appropriate private
+  // browsing profile instead.
+  Profile* privacy_safe_profile =
+      GetPrivateProfileIfRequested(command_line, last_used_profile);
+
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINT_PREVIEW)
   // If we are just displaying a print dialog we shouldn't open browser
   // windows.
   if (command_line.HasSwitch(switches::kCloudPrintFile) &&
       can_use_last_profile &&
-      print_dialog_cloud::CreatePrintDialogFromCommandLine(last_used_profile,
+      print_dialog_cloud::CreatePrintDialogFromCommandLine(privacy_safe_profile,
                                                            command_line)) {
     silent_launch = true;
   }
@@ -907,7 +913,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
             switches::kNativeMessagingConnectExtension),
         command_line.GetSwitchValueASCII(switches::kNativeMessagingConnectHost),
         command_line.GetSwitchValueASCII(switches::kNativeMessagingConnectId),
-        last_used_profile);
+        privacy_safe_profile);
 
     // Chrome's lifetime, if the specified extension and native messaging host
     // are both valid and a connection is established, is prolonged by
@@ -939,7 +945,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     std::string app_id =
         command_line.GetSwitchValueASCII(switches::kUninstallAppId);
 
-    web_app::WebAppUiManagerImpl::Get(last_used_profile)
+    web_app::WebAppUiManagerImpl::Get(privacy_safe_profile)
         ->UninstallWebAppFromStartupSwitch(app_id);
 
     // Return true to allow startup to continue and for the main event loop to
@@ -952,7 +958,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
 
   if (command_line.HasSwitch(extensions::switches::kLoadApps) &&
       can_use_last_profile) {
-    if (!ProcessLoadApps(command_line, cur_dir, last_used_profile))
+    if (!ProcessLoadApps(command_line, cur_dir, privacy_safe_profile))
       return false;
 
     // Return early here to avoid opening a browser window.
@@ -960,7 +966,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     // chrome to shut down.
     // TODO(jackhou): Do this properly once keep-alive is handled by the
     // background page of apps. Tracked at http://crbug.com/175381
-    if (chrome::GetBrowserCount(last_used_profile) != 0)
+    if (chrome::GetBrowserCount(privacy_safe_profile) != 0)
       return true;
   }
 
@@ -969,7 +975,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     base::CommandLine::StringType path =
         command_line.GetSwitchValueNative(apps::kLoadAndLaunchApp);
 
-    if (!apps::AppLoadService::Get(last_used_profile)
+    if (!apps::AppLoadService::Get(privacy_safe_profile)
              ->LoadAndLaunch(base::FilePath(path), command_line, cur_dir)) {
       return false;
     }
@@ -979,7 +985,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     // chrome to shut down.
     // TODO(jackhou): Do this properly once keep-alive is handled by the
     // background page of apps. Tracked at http://crbug.com/175381
-    if (chrome::GetBrowserCount(last_used_profile) != 0)
+    if (chrome::GetBrowserCount(privacy_safe_profile) != 0)
       return true;
   }
 
@@ -990,7 +996,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
         command_line.GetSwitchValueASCII(switches::kWinJumplistAction));
     // Use a non-NULL pointer to indicate JumpList has been used. We re-use
     // chrome::kJumpListIconDirname as the key to the data.
-    last_used_profile->SetUserData(
+    privacy_safe_profile->SetUserData(
         chrome::kJumpListIconDirname,
         base::WrapUnique(new base::SupportsUserData::Data()));
   }
@@ -1011,7 +1017,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   if (command_line.HasSwitch(credential_provider::kGcpwSigninSwitch)) {
     // Use incognito profile since this is a credential provider logon.
     Profile* profile =
-        last_used_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+        privacy_safe_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     DCHECK(profile->IsIncognitoProfile());
     // NOTE: All launch urls are ignored when running with --gcpw-signin since
     // this mode only loads Google's sign in page.
@@ -1031,14 +1037,14 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     // If |app_id| is a disabled or terminated platform app we handle it
     // specially here, otherwise it will be handled below.
     if (apps::OpenExtensionApplicationWithReenablePrompt(
-            last_used_profile, app_id, command_line, cur_dir)) {
+            privacy_safe_profile, app_id, command_line, cur_dir)) {
       return true;
     }
   }
 
   // Web app Protocol handling.
   if (MaybeLaunchProtocolHandlerWebApp(
-          command_line, cur_dir, last_used_profile,
+          command_line, cur_dir, privacy_safe_profile,
           std::make_unique<LaunchModeRecorder>())) {
     return true;
   }
@@ -1049,11 +1055,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   // the second case, the tab should either open in an existing Chrome window
   // for this profile, or spawn a new Chrome window without any NTP if no window
   // exists (see crbug.com/528385).
-  // TODO(https://crbug.com/1188873): Investigate switching to private mode
-  // sooner if request.
-  Profile* profile_to_launch =
-      GetPrivateProfileIfRequested(command_line, last_used_profile);
-  if (MaybeLaunchApplication(command_line, cur_dir, profile_to_launch,
+  if (MaybeLaunchApplication(command_line, cur_dir, privacy_safe_profile,
                              std::make_unique<LaunchModeRecorder>())) {
     // At this point we've opened the app. As a temporary fix for
     // https://crbug.com/1199203, if this startup is also from an unclean exit
@@ -1062,7 +1064,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     // To achieve that, stop this from returning here, and allow it to continue
     // to hit a standard crash reopen codepath and show an empty browser window
     // with the restore dialog.
-    if (!HasPendingUncleanExit(profile_to_launch))
+    if (!HasPendingUncleanExit(privacy_safe_profile))
       return true;
   }
 
