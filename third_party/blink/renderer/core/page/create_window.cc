@@ -289,8 +289,7 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
       AllocateSessionStorageNamespaceId();
 
   Page* old_page = opener_frame.GetPage();
-  if (!features.noopener ||
-      base::FeatureList::IsEnabled(features::kCloneSessionStorageForNoOpener)) {
+  if (!features.noopener) {
     CoreInitializer::GetInstance().CloneSessionStorage(old_page,
                                                        new_namespace_id);
   }

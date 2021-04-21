@@ -833,12 +833,6 @@ const base::Feature kTargetBlankImpliesNoOpener{
 const base::Feature kMediaStreamTrackUseConfigMaxFrameRate{
     "MediaStreamTrackUseConfigMaxFrameRate", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Kill switch for the new behavior whereby noopener windows no longer get their
-// sessionStorage cloned from their originator. TODO(crbug.com/1151381): Remove
-// in Chrome 92.
-const base::Feature kCloneSessionStorageForNoOpener{
-    "CloneSessionStorageForNoOpener", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // When enabled, WebRTC's worker thread will run on a thread context distinct
 // from the WebRTC signaling and network threads.
 const base::Feature kWebRtcDistinctWorkerThread{

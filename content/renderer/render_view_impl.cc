@@ -24,7 +24,6 @@
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_thread_impl.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/impression_conversions.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/url_conversion.h"
@@ -305,9 +304,7 @@ WebView* RenderViewImpl::CreateView(
   params->window_container_type = WindowFeaturesToContainerType(features);
 
   params->session_storage_namespace_id = session_storage_namespace_id;
-  if (!features.noopener ||
-      base::FeatureList::IsEnabled(
-          blink::features::kCloneSessionStorageForNoOpener)) {
+  if (!features.noopener) {
     params->clone_from_session_storage_namespace_id =
         GetWebView()->GetSessionStorageNamespaceId();
   }
