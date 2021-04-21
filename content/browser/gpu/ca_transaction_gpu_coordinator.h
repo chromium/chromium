@@ -36,9 +36,9 @@ class CATransactionGPUCoordinator
   void AddPostCommitObserverOnUIThread();
   void RemovePostCommitObserverOnUIThread();
 
-  void OnActivateForTransactionOnIO();
-  void OnEnterPostCommitOnIO();
-  void OnCommitCompletedOnIO();
+  void OnActivateForTransactionOnProcessThread();
+  void OnEnterPostCommitOnProcessThread();
+  void OnCommitCompletedOnProcessThread();
   void OnCommitCompletedOnUI();
 
   // The GpuProcessHost to use to initiate GPU-side CATransactions. This is only
