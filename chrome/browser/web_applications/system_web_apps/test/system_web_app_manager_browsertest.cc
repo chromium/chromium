@@ -1071,13 +1071,9 @@ class SystemWebAppManagerMigrationTest : public SystemWebAppBrowserTestBase {
 };
 
 // These tests use the App Service which is only enabled on Chrome OS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_PRE_ExtraDataIsMigrated PRE_ExtraDataIsMigrated
-#else
-#define MAYBE_PRE_ExtraDataIsMigrated DISABLED_PRE_ExtraDataIsMigrated
-#endif
+// TODO(crbug.com/1201318): Re-enable this test on Chrome OS.
 IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMigrationTest,
-                       MAYBE_PRE_ExtraDataIsMigrated) {
+                       DISABLED_PRE_ExtraDataIsMigrated) {
   WaitForTestSystemAppInstall();
   AppId app_id = GetManager().GetAppIdForSystemApp(GetMockAppType()).value();
 
