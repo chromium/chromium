@@ -845,10 +845,9 @@ std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
         break;
       }
       case base::Value::Type::INTEGER: {
-        int int_value = 0;
-        value->GetAsInteger(&int_value);
         WriteAttribute(false,
-                       base::StringPrintf("%s=%d", attribute_name, int_value),
+                       base::StringPrintf("%s=%d", attribute_name,
+                                          value->GetIfInt().value_or(0)),
                        &line);
         break;
       }
