@@ -166,8 +166,6 @@ void ExtensionWebContentsObserver::RenderFrameDeleted(
   ProcessManager::Get(browser_context_)
       ->UnregisterRenderFrameHost(render_frame_host);
   ExtensionApiFrameIdMap::Get()->OnRenderFrameDeleted(render_frame_host);
-  ContentScriptTracker::RenderFrameDeleted(
-      base::PassKey<ExtensionWebContentsObserver>(), render_frame_host);
 }
 
 void ExtensionWebContentsObserver::ReadyToCommitNavigation(

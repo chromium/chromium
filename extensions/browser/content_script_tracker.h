@@ -17,6 +17,7 @@ struct HostID;
 namespace content {
 class NavigationHandle;
 class RenderFrameHost;
+class RenderProcessHost;
 }  // namespace content
 
 namespace extensions {
@@ -27,8 +28,8 @@ class RequestContentScript;
 class ScriptExecutor;
 
 // Class for
-// 1) observing when a content script gets injected into a frame,
-// 2) checking if a content script was ever injected into a given frame.
+// 1) observing when a content script gets injected into a process,
+// 2) checking if a content script was ever injected into a given process.
 //
 // WARNING: False positives might happen.  This class is primarily meant to help
 // make security decisions.  This focus means that it is known and
@@ -48,10 +49,10 @@ class ContentScriptTracker {
   // Only static methods.
   ContentScriptTracker() = delete;
 
-  // Answers whether the `frame` has ever in the past run a content script from
-  // an extension with the given `extension_id`.
-  static bool DidFrameRunContentScriptFromExtension(
-      content::RenderFrameHost* frame,
+  // Answers whether the `process` has ever in the past run a content script
+  // from an extension with the given `extension_id`.
+  static bool DidProcessRunContentScriptFromExtension(
+      const content::RenderProcessHost& process,
       const ExtensionId& extension_id);
 
   // Called before a navigation commits.  This method will inspect all enabled
@@ -60,11 +61,6 @@ class ContentScriptTracker {
   static void ReadyToCommitNavigation(
       base::PassKey<ExtensionWebContentsObserver> pass_key,
       content::NavigationHandle* navigation);
-
-  // Called when a frame gets deleted.
-  static void RenderFrameDeleted(
-      base::PassKey<ExtensionWebContentsObserver> pass_key,
-      content::RenderFrameHost* frame);
 
   // Called before ExtensionMsg_ExecuteCode is sent to a renderer process
   // (typically when handling chrome.tabs.executeScript or a similar API call).

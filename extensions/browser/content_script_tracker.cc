@@ -26,46 +26,53 @@ namespace extensions {
 
 namespace {
 
-// Crrently we track content script injection per-RenderFrameHost (using
-// GlobalFrameRoutingId as the key of the map below).
-// RenderDocumentHostUserData is not used because of a race between content
-// script injection, ReadyToCommit and DidCommit (see the
-// ContentScriptTrackerBrowserTest.ProgrammaticInjectionRacingWithDidCommit test
-// for more details).
+// Helper for lazily attaching ExtensionIdSet to a RenderProcessHost.  Used to
+// track the set of extensions which have injected a JS content script into a
+// RenderProcessHost.
 //
-// TODO(lukasza): Once RenderDocumentHost project ships, we should switch to
-// per-document tracking.
-using FrameToExtensionIdSet =
-    std::map<content::GlobalFrameRoutingId, ExtensionIdSet>;
+// We track content script injection per-RenderProcessHost:
+// 1. This matches the real security boundary that Site Isolation uses (the
+//    boundary of OS processes) and follows the precedent of
+//    content::ChildProcessSecurityPolicy.
+// 2. This robustly handles initial empty documents (see the *InitialEmptyDoc*
+//    tests in //content_script_tracker_browsertest.cc) and isn't impacted
+//    by ReadyToCommit races associated with RenderDocumentHostUserData.
+// For more information see:
+// https://docs.google.com/document/d/1MFprp2ss2r9RNamJ7Jxva1bvRZvec3rzGceDGoJ6vW0/edit#
+class ContentScriptsSet : public base::SupportsUserData::Data {
+ public:
+  static const ExtensionIdSet* Get(const content::RenderProcessHost& process) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    auto* self =
+        static_cast<ContentScriptsSet*>(process.GetUserData(kUserDataKey));
+    return self ? &self->content_scripts_ : nullptr;
+  }
 
-FrameToExtensionIdSet& GetFrameToExtensionIdSet() {
-  static base::NoDestructor<FrameToExtensionIdSet> frame_to_extension_id_set;
-  return *frame_to_extension_id_set;
-}
+  static ExtensionIdSet& GetOrCreate(content::RenderProcessHost& process) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    auto* self =
+        static_cast<ContentScriptsSet*>(process.GetUserData(kUserDataKey));
 
-ExtensionIdSet& GetOrCreateExtensionIdSet(content::RenderFrameHost* frame) {
-  FrameToExtensionIdSet& frame_to_extension_id_set = GetFrameToExtensionIdSet();
-  return frame_to_extension_id_set[frame->GetGlobalFrameRoutingId()];
-}
+    if (!self) {
+      auto owned_self = base::WrapUnique(new ContentScriptsSet);
+      self = owned_self.get();
+      process.SetUserData(kUserDataKey, std::move(owned_self));
+    }
 
-// Returns whether the "match_about_blank" manifest entry would match `url`.
-// Despite the name, this matches not only "about:blank" but also "about:srcdoc"
-// (and also needs to match the initial empty URLs).
-bool MatchesAboutBlank(const GURL& url) {
-  // ContentScriptDeclarationInExtensionManifest_SubframeWithInitialEmptyDoc
-  // shows that the renderer process might see `location.href` set to
-  // "about:blank", but the browser process might see an empty, initial GURL in
-  // RenderFrameHost::GetLastCommittedURL.  Because of this, MatchesAboutBlank
-  // needs to return true for empty URLs.  (GetLastCommittedURL can be an empty
-  // GURL only for the initial empty document.)
-  if (url.is_empty())
-    return true;
+    return self->content_scripts_;
+  }
 
-  // Otherwise we replicate the scheme check from
-  // ScriptContext::GetEffectiveDocumentURLForInjection() from the renderer
-  // side.
-  return url.SchemeIs(url::kAboutScheme);
-}
+  // base::SupportsUserData::Data override:
+  ~ContentScriptsSet() override = default;
+
+ private:
+  ContentScriptsSet() = default;
+
+  static const char* kUserDataKey;
+  ExtensionIdSet content_scripts_;
+};
+
+const char* ContentScriptsSet::kUserDataKey = "ContentScriptTracker's data";
 
 // If `match_about_blank` is true, then traverses parent/opener chain until the
 // first non-about-scheme document and returns its url.  Otherwise, simply
@@ -84,7 +91,7 @@ GURL GetEffectiveDocumentURL(content::RenderFrameHost* frame,
   // Common scenario. If `match_about_blank` is false (as is the case in most
   // extensions), or if the frame is not an about:-page, just return
   // `document_url` (supposedly the URL of the frame).
-  if (!match_about_blank || !MatchesAboutBlank(document_url))
+  if (!match_about_blank || !document_url.SchemeIs(url::kAboutScheme))
     return document_url;
 
   // Non-sandboxed about:blank and about:srcdoc pages inherit their security
@@ -102,8 +109,9 @@ GURL GetEffectiveDocumentURL(content::RenderFrameHost* frame,
     // The loop should only execute (and consider the parent chain) if the
     // currently considered frame has about: scheme.
     DCHECK(match_about_blank);
-    DCHECK(((found_frame == frame) && MatchesAboutBlank(document_url)) ||
-           MatchesAboutBlank(found_frame->GetLastCommittedURL()));
+    DCHECK(
+        ((found_frame == frame) && document_url.SchemeIs(url::kAboutScheme)) ||
+        found_frame->GetLastCommittedURL().SchemeIs(url::kAboutScheme));
 
     // Attempt to find `next_candidate` - either a parent of opener of
     // `found_frame`.
@@ -118,7 +126,7 @@ GURL GetEffectiveDocumentURL(content::RenderFrameHost* frame,
     }
 
     found_frame = next_candidate;
-  } while (MatchesAboutBlank(found_frame->GetLastCommittedURL()));
+  } while (found_frame->GetLastCommittedURL().SchemeIs(url::kAboutScheme));
 
   if (found_frame == frame)
     return document_url;  // Not committed yet at ReadyToCommitNavigation time.
@@ -167,8 +175,9 @@ void HandleProgrammaticContentScriptInjection(
     const Extension& extension) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  ExtensionIdSet& content_scripts_for_frame = GetOrCreateExtensionIdSet(frame);
-  content_scripts_for_frame.insert(extension.id());
+  ExtensionIdSet& content_scripts_for_process =
+      ContentScriptsSet::GetOrCreate(*frame->GetProcess());
+  content_scripts_for_process.insert(extension.id());
 
   URLLoaderFactoryManager::WillProgrammaticallyInjectContentScript(
       pass_key, frame, extension);
@@ -216,40 +225,18 @@ std::vector<const Extension*> GetExtensionsInjectingContentScripts(
 }  // namespace
 
 // static
-bool ContentScriptTracker::DidFrameRunContentScriptFromExtension(
-    content::RenderFrameHost* frame,
+bool ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+    const content::RenderProcessHost& process,
     const ExtensionId& extension_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!frame)
-    return false;
-
-  // Check the last committed URL - this is needed for URLs (like "about:blank")
-  // that might not go through ReadyToCommit.  (Today "about:blank" should still
-  // go through DidCommit, but there are tentative ideas/plans to avoid this and
-  // therefore ContentScriptTracker looks at the last committed URL rather than
-  // monitoring DidCommit IPCs.)
-  const GURL& url = frame->GetLastCommittedURL();
-  if (MatchesAboutBlank(url)) {
-    const ExtensionRegistry* registry =
-        ExtensionRegistry::Get(frame->GetBrowserContext());
-    DCHECK(registry);  // This method shouldn't be called during shutdown.
-
-    const Extension* extension =
-        registry->enabled_extensions().GetByID(extension_id);
-    if (extension && DoContentScriptsMatch(*extension, frame, url))
-      return true;
-  }
-
   // Check if we've been notified about the content script injection via
   // ReadyToCommitNavigation or WillExecuteCode methods.
-  FrameToExtensionIdSet& frame_to_extension_id_set = GetFrameToExtensionIdSet();
-  auto it = frame_to_extension_id_set.find(frame->GetGlobalFrameRoutingId());
-  if (it == frame_to_extension_id_set.end())
+  const ExtensionIdSet* extension_id_set = ContentScriptsSet::Get(process);
+  if (!extension_id_set)
     return false;
 
-  const ExtensionIdSet& extension_id_set = it->second;
-  return base::Contains(extension_id_set, extension_id);
+  return base::Contains(*extension_id_set, extension_id);
 }
 
 // static
@@ -260,22 +247,14 @@ void ContentScriptTracker::ReadyToCommitNavigation(
 
   std::vector<const Extension*> extensions_injecting_content_scripts =
       GetExtensionsInjectingContentScripts(navigation);
-  ExtensionIdSet& content_scripts_for_frame =
-      GetOrCreateExtensionIdSet(navigation->GetRenderFrameHost());
+  ExtensionIdSet& content_scripts_for_process = ContentScriptsSet::GetOrCreate(
+      *navigation->GetRenderFrameHost()->GetProcess());
   for (const Extension* extension : extensions_injecting_content_scripts)
-    content_scripts_for_frame.insert(extension->id());
+    content_scripts_for_process.insert(extension->id());
 
   URLLoaderFactoryManager::WillInjectContentScriptsWhenNavigationCommits(
       base::PassKey<ContentScriptTracker>(), navigation,
       extensions_injecting_content_scripts);
-}
-
-// static
-void ContentScriptTracker::RenderFrameDeleted(
-    base::PassKey<ExtensionWebContentsObserver> pass_key,
-    content::RenderFrameHost* frame) {
-  FrameToExtensionIdSet& frame_to_extension_id_set = GetFrameToExtensionIdSet();
-  frame_to_extension_id_set.erase(frame->GetGlobalFrameRoutingId());
 }
 
 // static
