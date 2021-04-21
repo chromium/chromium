@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewTreeObserver.OnPreDrawListener;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
@@ -23,6 +24,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.datareduction.DataReductionPromoUtils;
@@ -51,7 +53,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     /**
      * Alerted about various events when FirstRunActivity performs them.
      * TODO(crbug.com/1114319): Rework and use a better testing setup.
-     * */
+     */
     public interface FirstRunActivityObserver {
         /** See {@link #onCreatePostNativeAndPoliciesPageSequence}. */
         void onCreatePostNativeAndPoliciesPageSequence(
@@ -71,6 +73,22 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
         /** See {@link #exitFirstRun()}. */
         void onExitFirstRun(FirstRunActivity caller);
+    }
+
+    // TODO(https://crbug.com/1196404): Replace with call into shared code once
+    // https://crrev.com/c/2815659 lands.
+    private static class ViewDrawBlocker {
+        public static void blockViewDrawUntilReady(View view, Supplier<Boolean> viewReadySupplier) {
+            view.getViewTreeObserver().addOnPreDrawListener(new OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    if (!viewReadySupplier.get()) return false;
+
+                    view.getViewTreeObserver().removeOnPreDrawListener(this);
+                    return true;
+                }
+            });
+        }
     }
 
     // UMA constants.
@@ -235,6 +253,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         setFinishOnTouchOutside(true);
 
         setContentView(createContentView());
+        ViewDrawBlocker.blockViewDrawUntilReady(
+                findViewById(android.R.id.content), () -> mPages.size() > 0);
 
         mFirstRunFlowSequencer = new FirstRunFlowSequencer(this) {
             @Override
