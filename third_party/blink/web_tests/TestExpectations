@@ -7257,3 +7257,6 @@ crbug.com/1194226 virtual/no-alloc-direct-call/fast/canvas/canvas-hit-regions-fa
 crbug.com/1194226 virtual/no-alloc-direct-call/fast/canvas/canvas-hit-regions-fallback-element-test-2.html [ Crash ]
 crbug.com/1194226 virtual/no-alloc-direct-call/fast/canvas/canvas-hit-regions-fallback-element-test-3.html [ Crash ]
 crbug.com/1194226 virtual/no-alloc-direct-call/external/wpt/html/canvas/element/manual/filters/canvas-filter-object-blur.html [ Crash ]
+
+# Sheriff 2021-04-21
+crbug.com/1200671 [ Linux ] external/wpt/webrtc/protocol/rtp-payloadtypes.html [ Pass Crash ]
