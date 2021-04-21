@@ -668,6 +668,66 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
+                       PermissionPromptDisposition) {
+  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
+                      WarningReason::kAbusiveContent);
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  permissions::MockPermissionRequest request_quiet(
+      "quiet", permissions::RequestType::kNotifications,
+      permissions::PermissionRequestGestureType::UNKNOWN);
+  GetPermissionRequestManager()->AddRequest(web_contents->GetMainFrame(),
+                                            &request_quiet);
+
+  bubble_factory()->WaitForPermissionBubble();
+  auto* manager = GetPermissionRequestManager();
+
+  base::Optional<permissions::PermissionPromptDisposition> disposition =
+      manager->current_request_prompt_disposition_for_testing();
+  auto disposition_from_prompt_bubble =
+      manager->view_for_testing()->GetPromptDisposition();
+
+  manager->Closing();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(disposition.has_value());
+  EXPECT_EQ(disposition.value(), disposition_from_prompt_bubble);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
+                       PermissionPromptDispositionHidden) {
+  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
+                      WarningReason::kAbusiveContent);
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  permissions::MockPermissionRequest request_quiet(
+      "quiet", permissions::RequestType::kNotifications,
+      permissions::PermissionRequestGestureType::UNKNOWN);
+  GetPermissionRequestManager()->AddRequest(web_contents->GetMainFrame(),
+                                            &request_quiet);
+
+  bubble_factory()->WaitForPermissionBubble();
+  auto* manager = GetPermissionRequestManager();
+  auto disposition_from_prompt_bubble =
+      manager->view_for_testing()->GetPromptDisposition();
+
+  // There will be no instance of PermissionPromptImpl after a tab marked as
+  // HIDDEN.
+  manager->OnVisibilityChanged(content::Visibility::HIDDEN);
+
+  base::Optional<permissions::PermissionPromptDisposition> disposition =
+      manager->current_request_prompt_disposition_for_testing();
+
+  EXPECT_TRUE(disposition.has_value());
+  EXPECT_EQ(disposition.value(), disposition_from_prompt_bubble);
+
+  //  DCHECK failure if Closing executed on HIDDEN PermissionRequestManager.
+  manager->OnVisibilityChanged(content::Visibility::VISIBLE);
+  manager->Closing();
+  base::RunLoop().RunUntilIdle();
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
                        ConsoleMessages) {
   const struct {
     base::Optional<QuietUiReason> simulated_quiet_ui_reason;

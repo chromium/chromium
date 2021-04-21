@@ -561,6 +561,8 @@ void PermissionRequestManager::ShowBubble() {
   if (!view_)
     return;
 
+  current_request_prompt_disposition_ = view_->GetPromptDisposition();
+
   if (!current_request_already_displayed_) {
     PermissionUmaUtil::PermissionPromptShown(requests_);
 
@@ -605,6 +607,7 @@ void PermissionRequestManager::ResetViewStateForCurrentRequest() {
 
   current_request_already_displayed_ = false;
   current_request_first_display_time_ = base::Time();
+  current_request_prompt_disposition_.reset();
   prediction_grant_likelihood_.reset();
   current_request_ui_to_use_.reset();
   selector_decisions_.clear();
@@ -851,8 +854,8 @@ void PermissionRequestManager::OnNotificationPermissionUiSelectorDone(
 
 PermissionPromptDisposition
 PermissionRequestManager::DetermineCurrentRequestUIDispositionForUMA() {
-  if (view_)
-    return view_->GetPromptDisposition();
+  if (current_request_prompt_disposition_.has_value())
+    return current_request_prompt_disposition_.value();
   return PermissionPromptDisposition::NONE_VISIBLE;
 }
 
