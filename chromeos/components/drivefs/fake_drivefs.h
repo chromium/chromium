@@ -62,6 +62,10 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
       drivefs::mojom::DialogReasonPtr reason,
       drivefs::mojom::DriveFsDelegate::DisplayConfirmDialogCallback callback);
 
+  mojo::Remote<drivefs::mojom::DriveFsDelegate>& delegate() {
+    return delegate_;
+  }
+
   const base::FilePath& mount_path() { return mount_path_; }
 
  private:

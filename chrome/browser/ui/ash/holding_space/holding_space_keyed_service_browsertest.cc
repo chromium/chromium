@@ -80,6 +80,20 @@ base::FilePath GetDownloadsPath(Profile* profile) {
   return result;
 }
 
+// Creates a DriveFs file change with the specified params. A `stable_id` of `0`
+// signifies absence of a known `stable_id` for backwards compatibility with
+// earlier versions of the `DriveFsHost`.
+drivefs::mojom::FileChangePtr CreateDriveFsChange(
+    drivefs::mojom::FileChange::Type type,
+    const base::FilePath& file_path,
+    int64_t stable_id = 0) {
+  auto change = drivefs::mojom::FileChange::New();
+  change->path = file_path;
+  change->stable_id = stable_id;
+  change->type = type;
+  return change;
+}
+
 // Creates a txt file at the path of the downloads mount point for `profile`.
 base::FilePath CreateTextFile(
     const base::FilePath& root_path,
@@ -313,7 +327,7 @@ class HoldingSpaceKeyedServiceBrowserTest
         create_drive_integration_service_ = base::BindRepeating(
             &HoldingSpaceKeyedServiceBrowserTest::CreateDriveIntegrationService,
             base::Unretained(this));
-        service_factory_for_test_ = std::make_unique<
+        drive_integration_service_factory_for_test_ = std::make_unique<
             drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
             &create_drive_integration_service_);
         break;
@@ -347,10 +361,10 @@ class HoldingSpaceKeyedServiceBrowserTest
 
     fake_drivefs_helper_ =
         std::make_unique<drive::FakeDriveFsHelper>(profile, test_mount_point_);
-    integration_service_ = new drive::DriveIntegrationService(
+    drive_integration_service_ = new drive::DriveIntegrationService(
         profile, "", test_cache_root_.GetPath(),
         fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
-    return integration_service_;
+    return drive_integration_service_;
   }
 
   void WaitForVolumeUnmountIfNeeded() {
@@ -382,8 +396,12 @@ class HoldingSpaceKeyedServiceBrowserTest
     waiter_loop.Run();
   }
 
-  drive::DriveIntegrationService* integration_service() {
-    return integration_service_;
+  drive::DriveIntegrationService* drive_integration_service() {
+    return drive_integration_service_;
+  }
+
+  mojo::Remote<drivefs::mojom::DriveFsDelegate>& drivefs_delegate() {
+    return fake_drivefs_helper_->fake_drivefs().delegate();
   }
 
  private:
@@ -401,11 +419,11 @@ class HoldingSpaceKeyedServiceBrowserTest
   // Used to set up drive fs for for drive tests.
   base::ScopedTempDir test_cache_root_;
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
-  drive::DriveIntegrationService* integration_service_ = nullptr;
+  drive::DriveIntegrationService* drive_integration_service_ = nullptr;
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;
   std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
-      service_factory_for_test_;
+      drive_integration_service_factory_for_test_;
 };
 
 INSTANTIATE_TEST_SUITE_P(FileSystem,
@@ -497,11 +515,176 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
       }));
 }
 
+// Verifies that holding space is updated in response to DriveFs file changes.
+IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
+                       UpdateItemsOnDriveFsFileChange) {
+  if (GetParam() != FileSystemType::kDriveFs)
+    return;
+
+  // Verify holding space service exists.
+  HoldingSpaceKeyedService* const holding_space_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
+          browser()->profile());
+  ASSERT_TRUE(holding_space_service);
+
+  // Verify holding space model exists.
+  const auto* holding_space_model = holding_space_service->model_for_testing();
+  ASSERT_TRUE(holding_space_model);
+
+  // Add an item to holding space.
+  base::FilePath src =
+      CreateTextFile(GetTestMountPoint(), /*relative_path=*/base::nullopt);
+  auto* item = AddHoldingSpaceItem(browser()->profile(), src);
+
+  // Verify the item exists in the model.
+  ASSERT_EQ(holding_space_model->items().size(), 1u);
+  EXPECT_EQ(holding_space_model->items()[0].get(), item);
+  EXPECT_EQ(item->file_path(), src);
+
+  base::FilePath dst =
+      CreateTextFile(GetTestMountPoint(), /*relative_path=*/base::nullopt);
+
+  // Prep a batch of `changes` to indicate that `src` has moved to `dst`. Note
+  // the consistent `stable_id` to link the `kDelete` with the `kCreate` change.
+  std::vector<drivefs::mojom::FileChangePtr> changes;
+  changes.push_back(CreateDriveFsChange(
+      drivefs::mojom::FileChange::Type::kDelete, src, /*stable_id=*/1));
+  changes.push_back(CreateDriveFsChange(
+      drivefs::mojom::FileChange::Type::kCreate, dst, /*stable_id=*/1));
+
+  // Simulate the `changes` being sent from the server.
+  drivefs_delegate()->OnFilesChanged(std::move(changes));
+  drivefs_delegate().FlushForTesting();
+
+  // Expect the holding space item to have been updated in place to reflect
+  // the new location of its backing file.
+  ASSERT_EQ(holding_space_model->items().size(), 1u);
+  EXPECT_EQ(holding_space_model->items()[0].get(), item);
+  EXPECT_EQ(item->file_path(), dst);
+
+  std::swap(src, dst);
+
+  // Prep a batch of `changes` to indicate that `src` has been deleted and that
+  // `dst` has been created. Note the different `stable_id` to indicate that the
+  // `kDelete` and `kCreate` changes refer to different documents.
+  changes.push_back(CreateDriveFsChange(
+      drivefs::mojom::FileChange::Type::kDelete, src, /*stable_id=*/1));
+  changes.push_back(CreateDriveFsChange(
+      drivefs::mojom::FileChange::Type::kCreate, dst, /*stable_id=*/2));
+
+  // Simulate the `changes` being sent from the server.
+  drivefs_delegate()->OnFilesChanged(std::move(changes));
+  drivefs_delegate().FlushForTesting();
+
+  // Because `src` was deleted, the holding space item should be removed.
+  WaitForItemRemoval(item->id());
+
+  // Add another holding space item, again pointing to `src`.
+  item = AddHoldingSpaceItem(browser()->profile(), src);
+
+  // Verify the item exists in the model.
+  ASSERT_EQ(holding_space_model->items().size(), 1u);
+  EXPECT_EQ(holding_space_model->items()[0].get(), item);
+  EXPECT_EQ(item->file_path(), src);
+
+  // Prep a batch of `changes` to indicate that `src` has been deleted and that
+  // `dst` has been created. Note the absence of `stable_id`. The `kDelete` and
+  // `kCreate` events may constitute a move of the same document, but because
+  // `stable_id` is absent, we can't assume that to be the case.
+  changes.push_back(
+      CreateDriveFsChange(drivefs::mojom::FileChange::Type::kDelete, src));
+  changes.push_back(
+      CreateDriveFsChange(drivefs::mojom::FileChange::Type::kCreate, dst));
+
+  // Simulate the `changes` being sent from the server.
+  drivefs_delegate()->OnFilesChanged(std::move(changes));
+  drivefs_delegate().FlushForTesting();
+
+  // Because `src` was deleted and cannot be determined to refer to the same
+  // document that was created at `dst`, the holding space item should be
+  // removed.
+  WaitForItemRemoval(item->id());
+
+  // Add another holding space item, again pointing to `src`.
+  item = AddHoldingSpaceItem(browser()->profile(), src);
+
+  // Verify the item exists in the model.
+  ASSERT_EQ(holding_space_model->items().size(), 1u);
+  EXPECT_EQ(holding_space_model->items()[0].get(), item);
+  EXPECT_EQ(item->file_path(), src);
+
+  // Prep a batch of `changes` to indicate that `src` has moved to `dst` and has
+  // then been deleted. Note the consistent `stable_id` to associate all changes
+  // with the same document.
+  changes.push_back(CreateDriveFsChange(
+      drivefs::mojom::FileChange::Type::kDelete, src, /*stable_id=*/1));
+  changes.push_back(CreateDriveFsChange(
+      drivefs::mojom::FileChange::Type::kCreate, dst, /*stable_id=*/1));
+  changes.push_back(CreateDriveFsChange(
+      drivefs::mojom::FileChange::Type::kDelete, dst, /*stable_id=*/1));
+
+  // Simulate the `changes` being sent from the server.
+  drivefs_delegate()->OnFilesChanged(std::move(changes));
+  drivefs_delegate().FlushForTesting();
+
+  // Because the document was ultimately deleted, the holding space item should
+  // be removed.
+  WaitForItemRemoval(item->id());
+
+  // Add another holding space item, pointing to `src` in `src_dir`.
+  base::FilePath src_dir = GetTestMountPoint().Append("src/");
+  src = CreateTextFile(src_dir, /*relative_path=*/base::nullopt);
+  item = AddHoldingSpaceItem(browser()->profile(), src);
+
+  // Verify the item exists in the model.
+  ASSERT_EQ(holding_space_model->items().size(), 1u);
+  EXPECT_EQ(holding_space_model->items()[0].get(), item);
+  EXPECT_EQ(item->file_path(), src);
+
+  base::FilePath dst_dir = GetTestMountPoint().Append("dst/");
+  dst = CreateTextFile(
+      dst_dir,
+      /*relative_path=*/base::UTF16ToUTF8(src.BaseName().LossyDisplayName()));
+
+  // Prep a batch of `changes` to indicate that `src_dir` has moved to
+  // `dst_dir`. Note the consistent `stable_id` to link the `kDelete` with the
+  // `kCreate` change.
+  changes.push_back(CreateDriveFsChange(
+      drivefs::mojom::FileChange::Type::kDelete, src_dir, /*stable_id=*/1));
+  changes.push_back(CreateDriveFsChange(
+      drivefs::mojom::FileChange::Type::kCreate, dst_dir, /*stable_id=*/1));
+
+  // Simulate the `changes` being sent from the server.
+  drivefs_delegate()->OnFilesChanged(std::move(changes));
+  drivefs_delegate().FlushForTesting();
+
+  // Expect the holding space item to have been updated in place to reflect
+  // the new location of its backing file.
+  ASSERT_EQ(holding_space_model->items().size(), 1u);
+  EXPECT_EQ(holding_space_model->items()[0].get(), item);
+  EXPECT_EQ(item->file_path(), dst);
+
+  std::swap(src_dir, dst_dir);
+  std::swap(src, dst);
+
+  // Prep a batch of `changes` to indicate that `src_dir` has been deleted.
+  changes.push_back(
+      CreateDriveFsChange(drivefs::mojom::FileChange::Type::kDelete, src_dir));
+
+  // Simulate the `changes` being sent from the server.
+  drivefs_delegate()->OnFilesChanged(std::move(changes));
+  drivefs_delegate().FlushForTesting();
+
+  // Because the parent directory in which the holding space item's backing file
+  // is contained has been deleted, the holding space item should be removed.
+  WaitForItemRemoval(item->id());
+}
+
 // Verifies that drive files pinned to holding space are pinned for offline use.
 IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
                        PinningDriveFilesOfflineAccess) {
   // Test only for drive file system type files.
-  if (GetParam() == FileSystemType::kDownloads)
+  if (GetParam() != FileSystemType::kDriveFs)
     return;
 
   const base::FilePath file_path =
@@ -521,11 +704,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
   holding_space_service->AddPinnedFiles({file_system_url});
 
   base::FilePath relative_path;
-  ASSERT_TRUE(integration_service()->GetRelativeDrivePath(
+  ASSERT_TRUE(drive_integration_service()->GetRelativeDrivePath(
       file_system_url.path(), &relative_path));
   base::RunLoop loop;
   bool is_pinned = false;
-  integration_service()->GetDriveFsInterface()->GetMetadata(
+  drive_integration_service()->GetDriveFsInterface()->GetMetadata(
       relative_path,
       base::BindOnce(
           [](base::RunLoop* loop, bool* is_pinned, ::drive::FileError error,

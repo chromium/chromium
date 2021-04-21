@@ -18,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -146,27 +147,101 @@ void HoldingSpaceFileSystemDelegate::OnConnectionReady() {
   }
 }
 
+void HoldingSpaceFileSystemDelegate::OnFilesChanged(
+    const std::vector<drivefs::mojom::FileChange>& changes) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // When a file is moved, a `kDelete` change will be followed by a `kCreate`
+  // change with the same `stable_id` in the same set of `changes`. In some
+  // versions of the `DriveFsHost`, `stable_id` is not supported and will always
+  // be `0` for backwards compatibility.
+  std::map<int64_t, base::FilePath> deleted_paths_by_stable_id;
+  std::set<base::FilePath> deleted_paths;
+
+  for (const auto& change : changes) {
+    switch (change.type) {
+      case drivefs::mojom::FileChange::Type::kCreate: {
+        if (change.stable_id) {
+          // If the `kCreate` change has an associated `stable_id`, it can
+          // potentially be paired with a preceding `kDelete` change. In such
+          // cases, the change sequence actually constitutes a move rather than
+          // a delete of the underlying file.
+          auto it = deleted_paths_by_stable_id.find(change.stable_id);
+          if (it != deleted_paths_by_stable_id.end()) {
+            OnFilePathMoved(/*src=*/it->second, /*dst=*/change.path);
+            deleted_paths_by_stable_id.erase(it);
+          }
+        }
+        break;
+      }
+      case drivefs::mojom::FileChange::Type::kDelete: {
+        // If the change has a `stable_id` it can potentially constitute part of
+        // a move rather than a delete of the underlying file. Whether the
+        // change is move or a delete will not be known until a `kCreate` change
+        // follows (or is confirmed *not* to follow). When `stable_id` is absent
+        // it is not possible to detect a move.
+        if (change.stable_id)
+          deleted_paths_by_stable_id[change.stable_id] = change.path;
+        else
+          deleted_paths.insert(change.path);
+        break;
+      }
+      case drivefs::mojom::FileChange::Type::kModify: {
+        OnFilePathModified(change.path);
+        break;
+      }
+    }
+  }
+
+  // At this point, all `kDelete` changes in `deleted_paths_by_stable_id` are
+  // confirmed to be deletions, having already stripped out all changes that
+  // were actually constituting moves.
+  for (const auto& deleted_path_by_stable_id : deleted_paths_by_stable_id)
+    deleted_paths.insert(deleted_path_by_stable_id.second);
+
+  // Remove any holding space items backed by deleted file paths.
+  model()->RemoveIf(base::BindRepeating(
+      [](const std::set<base::FilePath>& deleted_paths,
+         const HoldingSpaceItem* item) {
+        return std::any_of(deleted_paths.begin(), deleted_paths.end(),
+                           [&](const base::FilePath& deleted_path) {
+                             return item->file_path() == deleted_path ||
+                                    deleted_path.IsParent(item->file_path());
+                           });
+      },
+      std::cref(deleted_paths)));
+}
+
 void HoldingSpaceFileSystemDelegate::Init() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   file_system_watcher_ = std::make_unique<FileSystemWatcher>(
       base::BindRepeating(&HoldingSpaceFileSystemDelegate::OnFilePathChanged,
                           weak_factory_.GetWeakPtr()));
 
+  // Arc file system.
+  auto* const arc_file_system = GetArcFileSystem();
+  if (arc_file_system)
+    arc_file_system_observer_.Observe(arc_file_system);
+
+  // Drive file system.
+  auto* const drive_integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+  if (drive_integration_service)
+    drivefs_host_observer_.Observe(drive_integration_service->GetDriveFsHost());
+
+  // Local file system.
   file_change_service_observer_.Observe(
       chromeos::FileChangeServiceFactory::GetInstance()->GetService(profile()));
 
-  if (file_manager::VolumeManager::Get(profile())) {
-    volume_manager_observer_.Observe(
-        file_manager::VolumeManager::Get(profile()));
-  }
-
-  if (GetArcFileSystem())
-    arc_file_system_observer_.Observe(GetArcFileSystem());
+  // Volume manager.
+  auto* const volume_manager = file_manager::VolumeManager::Get(profile());
+  if (volume_manager)
+    volume_manager_observer_.Observe(volume_manager);
 
   // Schedule a task to clean up items that belong to volumes that haven't been
-  // mounted in a reasonable amount of time.
-  // The primary goal of handling the delayed volume mount is to support volumes
-  // that are mounted asynchronously during the startup.
+  // mounted in a reasonable amount of time. The primary goal of handling the
+  // delayed volume mount is to support volumes that are mounted asynchronously
+  // during the startup.
   clear_non_finalized_items_timer_.Start(
       FROM_HERE, base::TimeDelta::FromMinutes(1),
       base::BindOnce(&HoldingSpaceFileSystemDelegate::ClearNonFinalizedItems,
@@ -278,17 +353,47 @@ void HoldingSpaceFileSystemDelegate::OnVolumeUnmounted(
 void HoldingSpaceFileSystemDelegate::OnFileModified(
     const storage::FileSystemURL& url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  model()->InvalidateItemImageIf(base::BindRepeating(
-      [](const base::FilePath& path, const HoldingSpaceItem* item) {
-        return item->file_path() == path;
-      },
-      url.path()));
+  OnFilePathModified(url.path());
 }
 
 void HoldingSpaceFileSystemDelegate::OnFileMoved(
     const storage::FileSystemURL& src,
     const storage::FileSystemURL& dst) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  OnFilePathMoved(src.path(), dst.path());
+}
+
+void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
+    const base::FilePath& file_path,
+    bool error) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!error);
+
+  // The `file_path` that changed is a directory containing backing files for
+  // one or more holding space items. Changes to this directory may indicate
+  // that some, all, or none of these backing files have been removed. Verify
+  // the existence of these backing files to trigger removal of any holding
+  // space items that no longer exist.
+  for (const auto& item : model()->items()) {
+    if (file_path.IsParent(item->file_path()))
+      ScheduleFilePathValidityCheck({item->file_path(), /*requirements=*/{}});
+  }
+}
+
+void HoldingSpaceFileSystemDelegate::OnFilePathModified(
+    const base::FilePath& file_path) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  model()->InvalidateItemImageIf(base::BindRepeating(
+      [](const base::FilePath& file_path, const HoldingSpaceItem* item) {
+        return item->file_path() == file_path;
+      },
+      file_path));
+}
+
+void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
+    const base::FilePath& src,
+    const base::FilePath& dst) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Collect items that should be moved to a new path. This includes:
@@ -297,14 +402,14 @@ void HoldingSpaceFileSystemDelegate::OnFileMoved(
   // Maps item ID to the item's new file path.
   std::vector<std::pair<std::string, base::FilePath>> items_to_move;
   for (auto& item : model()->items()) {
-    if (src.path() == item->file_path()) {
-      items_to_move.push_back(std::make_pair(item->id(), dst.path()));
+    if (src == item->file_path()) {
+      items_to_move.push_back(std::make_pair(item->id(), dst));
       continue;
     }
 
-    if (src.path().IsParent(item->file_path())) {
-      base::FilePath target_path = dst.path();
-      if (!src.path().AppendRelativePath(item->file_path(), &target_path)) {
+    if (src.IsParent(item->file_path())) {
+      base::FilePath target_path(dst);
+      if (!src.AppendRelativePath(item->file_path(), &target_path)) {
         NOTREACHED();
         continue;
       }
@@ -325,15 +430,14 @@ void HoldingSpaceFileSystemDelegate::OnFileMoved(
   // *   Handle duplicate file path move notifications.
   // Instead, update the items as if the target path was modified.
   if (items_to_move.empty()) {
-    OnFileModified(dst);
+    OnFilePathModified(dst);
     return;
   }
 
   // Resolve conflicts with existing items that arise from the move.
   std::set<std::string> item_ids_to_remove;
   for (auto& item : model()->items()) {
-    if (dst.path() == item->file_path() ||
-        dst.path().IsParent(item->file_path())) {
+    if (dst == item->file_path() || dst.IsParent(item->file_path())) {
       item_ids_to_remove.insert(item->id());
     }
   }
@@ -352,24 +456,7 @@ void HoldingSpaceFileSystemDelegate::OnFileMoved(
   // If a backing file update occurred, it's possible that there are no longer
   // any holding space items associated with `src`. When that is the case, `src`
   // no longer needs to be watched.
-  MaybeRemoveWatch(src.path());
-}
-
-void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
-    const base::FilePath& file_path,
-    bool error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!error);
-
-  // The `file_path` that changed is a directory containing backing files for
-  // one or more holding space items. Changes to this directory may indicate
-  // that some, all, or none of these backing files have been removed. We need
-  // to verify the existence of these backing files and remove any holding space
-  // items that no longer exist.
-  for (const auto& item : model()->items()) {
-    if (file_path.IsParent(item->file_path()))
-      ScheduleFilePathValidityCheck({item->file_path(), /*requirements=*/{}});
-  }
+  MaybeRemoveWatch(src);
 }
 
 void HoldingSpaceFileSystemDelegate::ScheduleFilePathValidityCheck(
