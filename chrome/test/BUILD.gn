@@ -6836,11 +6836,8 @@ if (!is_android) {
           "//components/media_router/browser:test_support",
         ]
       }
-      if (use_aura) {
-        sources += [ "../browser/ui/views/tooltip/tooltip_browsertest.cc" ]
-        if (is_mac) {
-          deps += [ "//ui/touch_selection" ]
-        }
+      if (use_aura || is_mac) {
+        deps += [ "//ui/touch_selection" ]
       }
       if (is_mac) {
         deps += [ "//content/test:browsertest_support" ]
