@@ -26,9 +26,9 @@ import {record, UserAction} from '../metrics.js';
 import {ViewerAnnotationsModeDialogElement} from './viewer-annotations-mode-dialog.js';
 // </if>
 
-export class ViewerPdfToolbarNewElement extends PolymerElement {
+export class ViewerToolbarElement extends PolymerElement {
   static get is() {
-    return 'viewer-pdf-toolbar-new';
+    return 'viewer-toolbar';
   }
 
   static get template() {
@@ -426,5 +426,4 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
   // </if>
 }
 
-customElements.define(
-    ViewerPdfToolbarNewElement.is, ViewerPdfToolbarNewElement);
+customElements.define(ViewerToolbarElement.is, ViewerToolbarElement);

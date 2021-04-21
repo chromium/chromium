@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getFilenameFromURL, PDFViewerElement, shouldIgnoreKeyEvents, ViewerPdfToolbarNewElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {getFilenameFromURL, PDFViewerElement, shouldIgnoreKeyEvents, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 const tests = [
   /**
@@ -15,7 +15,7 @@ const tests = [
     const elementNames = [
       'viewer-error-screen',
       'viewer-pdf-sidenav',
-      'viewer-pdf-toolbar-new',
+      'viewer-toolbar',
     ];
 
     for (let i = 0; i < elementNames.length; i++) {
@@ -43,7 +43,7 @@ const tests = [
   function testShouldIgnoreKeyEvents() {
     const viewer = /** @type {!PDFViewerElement} */ (
         document.body.querySelector('pdf-viewer'));
-    const toolbar = /** @type {!ViewerPdfToolbarNewElement} */ (
+    const toolbar = /** @type {!ViewerToolbarElement} */ (
         viewer.shadowRoot.querySelector('#toolbar'));
 
     // Test case where an <input> field is focused.

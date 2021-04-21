@@ -10,10 +10,10 @@ export {ViewerDownloadControlsElement} from './elements/viewer-download-controls
 export {ViewerPageSelectorElement} from './elements/viewer-page-selector.js';
 export {ViewerPasswordDialogElement} from './elements/viewer-password-dialog.js';
 export {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
-export {ViewerPdfToolbarNewElement} from './elements/viewer-pdf-toolbar-new.js';
 export {ViewerPropertiesDialogElement} from './elements/viewer-properties-dialog.js';
 export {ViewerThumbnailBarElement} from './elements/viewer-thumbnail-bar.js';
 export {PAINTED_ATTRIBUTE, ViewerThumbnailElement} from './elements/viewer-thumbnail.js';
+export {ViewerToolbarElement} from './elements/viewer-toolbar.js';
 export {GestureDetector, PinchEventDetail} from './gesture_detector.js';
 export {record, recordFitTo, resetForTesting, UserAction} from './metrics.js';
 export {NavigatorDelegate, PdfNavigator, WindowOpenDisposition} from './navigator.js';

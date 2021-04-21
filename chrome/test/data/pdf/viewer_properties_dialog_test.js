@@ -11,7 +11,7 @@ const viewer = /** @type {!PDFViewerElement} */ (
 async function ensurePropertiesDialogOpen() {
   chrome.test.assertFalse(!!getPropertiesDialog());
   const whenOpen = eventToPromise('cr-dialog-open', viewer);
-  const toolbar = viewer.shadowRoot.querySelector('viewer-pdf-toolbar-new');
+  const toolbar = viewer.shadowRoot.querySelector('viewer-toolbar');
   toolbar.dispatchEvent(new CustomEvent('properties-click'));
   await whenOpen;
   chrome.test.assertTrue(!!getPropertiesDialog());

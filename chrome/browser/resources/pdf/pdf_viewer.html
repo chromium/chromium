@@ -8,18 +8,18 @@
   }
 
   viewer-pdf-sidenav,
-  viewer-pdf-toolbar-new {
+  viewer-toolbar {
     --pdf-toolbar-text-color: rgb(241, 241, 241);
   }
 
-  viewer-pdf-toolbar-new {
+  viewer-toolbar {
     --active-button-bg: rgba(255, 255, 255, 0.24);
     z-index: 1;
   }
 
   @media(max-width: 200px),
   (max-height: 250px) {
-    viewer-pdf-toolbar-new {
+    viewer-toolbar {
       display: none;
     }
   }
@@ -128,8 +128,7 @@
   }
 </style>
 
-<viewer-pdf-toolbar-new id="toolbar"
-    annotation-mode="[[annotationMode_]]"
+<viewer-toolbar id="toolbar" annotation-mode="[[annotationMode_]]"
     doc-title="[[title_]]" doc-length="[[docLength_]]" page-no="[[pageNo_]]"
     load-progress="[[loadProgress_]]" has-edits="[[hasEdits_]]"
     has-entered-annotation-mode="[[hasEnteredAnnotationMode_]]"
@@ -159,7 +158,7 @@
     on-annotation-mode-toggled="onAnnotationModeToggled_"
 </if>
     on-print="onPrint_" on-save="onToolbarSave_" hidden>
-</viewer-pdf-toolbar-new>
+</viewer-toolbar>
 
 <div id="container">
   <div id="sidenav-container" closed$="[[sidenavCollapsed_]]"

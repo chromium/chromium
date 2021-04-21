@@ -21,7 +21,7 @@ async function ensureFullscreen() {
     return;
   }
 
-  const toolbar = viewer.shadowRoot.querySelector('viewer-pdf-toolbar-new');
+  const toolbar = viewer.shadowRoot.querySelector('viewer-toolbar');
   toolbar.dispatchEvent(new CustomEvent('present-click'));
   await eventToPromise('fullscreenchange', scroller);
 }

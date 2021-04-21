@@ -3,20 +3,20 @@
 // found in the LICENSE file.
 
 import {eventToPromise, flushTasks} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
-import {FittingType, ViewerPdfToolbarNewElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {FittingType, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
-/** @return {!ViewerPdfToolbarNewElement} */
+/** @return {!ViewerToolbarElement} */
 function createToolbar() {
   document.body.innerHTML = '';
-  const toolbar = /** @type {!ViewerPdfToolbarNewElement} */ (
-      document.createElement('viewer-pdf-toolbar-new'));
+  const toolbar = /** @type {!ViewerToolbarElement} */ (
+      document.createElement('viewer-toolbar'));
   document.body.appendChild(toolbar);
   return toolbar;
 }
 
 /**
  * Returns the cr-icon-buttons in |toolbar|'s shadowRoot under |parentId|.
- * @param {!ViewerPdfToolbarNewElement} toolbar
+ * @param {!ViewerToolbarElement} toolbar
  * @param {string} parentId
  * @return {!NodeList<!CrIconButtonElement>}
  */
@@ -35,7 +35,7 @@ function assertCheckboxMenuButton(button, enabled) {
   chrome.test.assertEq(enabled, !button.querySelector('iron-icon').hidden);
 }
 
-// Unit tests for the viewer-pdf-toolbar-new element.
+// Unit tests for the viewer-toolbar element.
 const tests = [
   /**
    * Test that the toolbar toggles between showing the fit-to-page and

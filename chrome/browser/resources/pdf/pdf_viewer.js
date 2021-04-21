@@ -25,7 +25,7 @@ import {Attachment, DocumentMetadata, FittingType, Point, SaveRequestType} from 
 import {PluginController} from './controller.js';
 import {ViewerErrorScreenElement} from './elements/viewer-error-screen.js';
 import {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
-import {ViewerPdfToolbarNewElement} from './elements/viewer-pdf-toolbar-new.js';
+import {ViewerToolbarElement} from './elements/viewer-toolbar.js';
 // <if expr="chromeos">
 import {InkController, InkControllerEventType} from './ink_controller.js';
 //</if>
@@ -334,11 +334,11 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   }
 
   /**
-   * @return {!ViewerPdfToolbarNewElement}
+   * @return {!ViewerToolbarElement}
    * @private
    */
   getToolbar_() {
-    return /** @type {!ViewerPdfToolbarNewElement} */ (this.$$('#toolbar'));
+    return /** @type {!ViewerToolbarElement} */ (this.$$('#toolbar'));
   }
 
   /** @override */
