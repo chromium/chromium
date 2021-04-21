@@ -780,7 +780,7 @@ public class ExternalNavigationHandler {
         if (TextUtils.isEmpty(marketReferrer)) {
             marketReferrer = ContextUtils.getApplicationContext().getPackageName();
         }
-        return sendIntentToMarket(intent.getPackage(), marketReferrer, params, null);
+        return sendIntentToMarket(intent.getPackage(), marketReferrer, params, GURL.emptyGURL());
     }
 
     private boolean maybeSetSmsPackage(Intent targetIntent) {
