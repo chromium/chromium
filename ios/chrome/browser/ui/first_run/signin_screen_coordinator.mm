@@ -5,11 +5,15 @@
 #import "ios/chrome/browser/ui/first_run/signin_screen_coordinator.h"
 
 #include "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/first_run/signin_screen_consumer.h"
 #import "ios/chrome/browser/ui/first_run/signin_screen_mediator.h"
+#import "ios/chrome/browser/ui/first_run/signin_screen_mediator_delegate.h"
 #import "ios/chrome/browser/ui/first_run/signin_screen_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -17,6 +21,7 @@
 #endif
 
 @interface SigninScreenCoordinator () <IdentityChooserCoordinatorDelegate,
+                                       SigninScreenMediatorDelegate,
                                        SigninScreenViewControllerDelegate>
 
 // First run screen delegate.
@@ -60,6 +65,7 @@
   self.viewController.delegate = self;
   self.mediator = [[SigninScreenMediator alloc] init];
   self.mediator.consumer = self.viewController;
+  self.mediator.delegate = self;
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ self.viewController ]
                                            animated:animated];
@@ -89,8 +95,11 @@
 }
 
 - (void)didTapPrimaryActionButton {
-  // TODO(crbug.com/1189836): store the sync status
-  [self.delegate willFinishPresenting];
+  if (self.mediator.selectedIdentity) {
+    [self startSignIn];
+  } else {
+    // TODO(crbug.com/1189836): Open the screen to add a new account.
+  }
 }
 
 #pragma mark - IdentityChooserCoordinatorDelegate
@@ -131,6 +140,13 @@
   self.mediator.selectedIdentity = identity;
 }
 
+#pragma mark - SigninScreenMediatorDelegate
+
+- (void)signinScreenMediator:(SigninScreenMediator*)mediator
+    didFinishSigninWithResult:(SigninCoordinatorResult)result {
+  // TODO(crbug.com/1189836): Handle the result (and probably continue).
+}
+
 #pragma mark - Private
 
 // Callback handling the completion of the AddAccount action.
@@ -141,11 +157,28 @@
   self.addAccountSigninCoordinator = nil;
   if (signinResult == SigninCoordinatorResultSuccess) {
     self.mediator.selectedIdentity = signinCompletionInfo.identity;
+    self.mediator.addedAccount = YES;
   }
   if (signinCompletionInfo.signinCompletionAction ==
       SigninCompletionActionOpenCompletionURL) {
     // TODO(crbug.com/1189836): handle URL opening.
   }
+}
+
+// Starts the sign in process.
+- (void)startSignIn {
+  DCHECK(self.mediator.selectedIdentity);
+  AuthenticationFlow* authenticationFlow =
+      [[AuthenticationFlow alloc] initWithBrowser:self.browser
+                                         identity:self.mediator.selectedIdentity
+                                  shouldClearData:SHOULD_CLEAR_DATA_MERGE_DATA
+                                 postSignInAction:POST_SIGNIN_ACTION_NONE
+                         presentingViewController:self.viewController];
+  authenticationFlow.dispatcher = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
+  authenticationFlow.delegate = self.viewController;
+
+  [self.mediator startSignInWithAuthenticationFlow:authenticationFlow];
 }
 
 @end

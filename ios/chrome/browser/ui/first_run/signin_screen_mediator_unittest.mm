@@ -5,12 +5,18 @@
 #import "ios/chrome/browser/ui/first_run/signin_screen_mediator.h"
 
 #import "base/test/ios/wait_util.h"
+#import "base/test/task_environment.h"
+#import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/first_run/signin_screen_consumer.h"
+#import "ios/chrome/browser/ui/first_run/signin_screen_mediator_delegate.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/public/provider/chrome/browser/test_chrome_browser_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/ocmock/OCMock/OCMock.h"
+#include "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,6 +32,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 @property(nonatomic, copy) NSString* userName;
 @property(nonatomic, copy) NSString* email;
 @property(nonatomic, strong) UIImage* userImage;
+@property(nonatomic, assign) BOOL UIEnabled;
 
 @end
 
@@ -59,6 +66,7 @@ class SigninScreenMediatorTest : public PlatformTest {
                                                  name:@"Test Name"];
   }
 
+  base::test::TaskEnvironment task_enviroment_;
   SigninScreenMediator* mediator_;
   ios::TestChromeBrowserProvider* browser_provider_;
   ios::FakeChromeIdentityService* identity_service_;
@@ -189,4 +197,43 @@ TEST_F(SigninScreenMediatorTest, TestProfileUpdate) {
 
   EXPECT_NE(updated_email, consumer_.email);
   EXPECT_NE(updated_name, consumer_.userName);
+}
+
+// Tests the authentication flow for the mediator.
+TEST_F(SigninScreenMediatorTest, TestAuthenticationFlow) {
+  mediator_.consumer = consumer_;
+  consumer_.UIEnabled = YES;
+  TestBrowser browser;
+
+  id mock_delegate = OCMProtocolMock(@protocol(SigninScreenMediatorDelegate));
+  id mock_flow = OCMClassMock([AuthenticationFlow class]);
+
+  mediator_.delegate = mock_delegate;
+
+  __block signin_ui::CompletionCallback completion = nil;
+
+  OCMStub([mock_flow startSignInWithCompletion:[OCMArg any]])
+      .andDo(^(NSInvocation* invocation) {
+        __weak signin_ui::CompletionCallback block;
+        [invocation getArgument:&block atIndex:2];
+        completion = [block copy];
+      });
+
+  EXPECT_EQ(nil, completion);
+  EXPECT_TRUE(consumer_.UIEnabled);
+
+  [mediator_ startSignInWithAuthenticationFlow:mock_flow];
+
+  EXPECT_FALSE(consumer_.UIEnabled);
+  ASSERT_NE(nil, completion);
+
+  OCMExpect([mock_delegate
+           signinScreenMediator:mediator_
+      didFinishSigninWithResult:SigninCoordinatorResultSuccess]);
+
+  // Simulate the signin completion being successful.
+  completion(YES);
+
+  EXPECT_TRUE(consumer_.UIEnabled);
+  EXPECT_OCMOCK_VERIFY(mock_delegate);
 }
