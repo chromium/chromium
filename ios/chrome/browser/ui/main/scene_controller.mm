@@ -1515,13 +1515,23 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)showConsistencyPromoFromViewController:
-    (UIViewController*)baseViewController {
+            (UIViewController*)baseViewController
+                                           URL:(const GURL&)url {
   DCHECK(!self.signinCoordinator);
   self.signinCoordinator = [SigninCoordinator
       consistencyPromoSigninCoordinatorWithBaseViewController:baseViewController
                                                       browser:self.mainInterface
                                                                   .browser];
-  [self startSigninCoordinatorWithCompletion:nil];
+  __weak SceneController* weakSelf = self;
+  [self startSigninCoordinatorWithCompletion:^(BOOL success) {
+    // If the sign-in is not successful or the scene controller is shut down do
+    // not load the continuation URL.
+    if (!success || !weakSelf) {
+      return;
+    }
+    UrlLoadingBrowserAgent::FromBrowser(weakSelf.mainInterface.browser)
+        ->Load(UrlLoadParams::InCurrentTab(url));
+  }];
 }
 
 - (void)showSigninAccountNotificationFromViewController:

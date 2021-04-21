@@ -455,7 +455,7 @@ TEST_F(AccountConsistencyServiceTest,
        ChromeManageAccountsShowConsistencyPromo) {
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
-  [[delegate expect] onShowConsistencyPromo];
+  [[[delegate expect] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()];
 
   NSDictionary* headers = [NSDictionary
       dictionaryWithObject:@"action=ADDSESSION,show_consistency_promo=true"
@@ -479,7 +479,7 @@ TEST_F(AccountConsistencyServiceTest,
        ChromeManageAccountsNotShowConsistencyPromoOnPageLoadFailure) {
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
-  [[delegate reject] onShowConsistencyPromo];
+  [[[delegate reject] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()];
 
   NSDictionary* headers = [NSDictionary
       dictionaryWithObject:@"action=ADDSESSION,show_consistency_promo=true"
@@ -505,7 +505,7 @@ TEST_F(AccountConsistencyServiceTest,
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
   [[delegate expect] onAddAccount];
-  [[delegate reject] onShowConsistencyPromo];
+  [[[delegate reject] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()];
 
   EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
                                         signin::GAIA_SERVICE_TYPE_ADDSESSION))
@@ -542,7 +542,7 @@ TEST_F(AccountConsistencyServiceTest,
        ChromeManageAccountsNotShowConsistencyPromoOnNonGaiaURL) {
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
-  [[delegate reject] onShowConsistencyPromo];
+  [[[delegate reject] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()];
 
   NSDictionary* headers = [NSDictionary
       dictionaryWithObject:@"action=ADDSESSION,show_consistency_promo=true"
@@ -775,7 +775,7 @@ TEST_F(AccountConsistencyServiceTest,
   feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
-  [[delegate expect] onShowConsistencyPromo];
+  [[[delegate expect] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()];
 
   NSDictionary* headers = [NSDictionary
       dictionaryWithObject:@"action=ADDSESSION,show_consistency_promo=true"

@@ -306,7 +306,7 @@ void AccountConsistencyService::AccountConsistencyHandler::PageLoaded(
   }
 
   if (show_consistency_promo_ && gaia::IsGaiaSignonRealm(url.GetOrigin())) {
-    [delegate_ onShowConsistencyPromo];
+    [delegate_ onShowConsistencyPromo:url];
     show_consistency_promo_ = false;
 
     // Chrome uses the CHROME_CONNECTED cookie to determine whether the

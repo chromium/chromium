@@ -9,6 +9,7 @@
 
 #include "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
 
+class GURL;
 @class OpenNewTabCommand;
 @class ShowSigninCommand;
 @class StartVoiceSearchCommand;
@@ -156,8 +157,10 @@ enum class KeyRetrievalTriggerForUMA;
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the consistency promo UI that allows users to sign in to Chrome using
 // the default accounts on the device.
+// Redirects to |url| when the sign-in flow is complete.
 - (void)showConsistencyPromoFromViewController:
-    (UIViewController*)baseViewController;
+            (UIViewController*)baseViewController
+                                           URL:(const GURL&)url;
 
 // Shows a notification with the signed-in user account.
 - (void)showSigninAccountNotificationFromViewController:

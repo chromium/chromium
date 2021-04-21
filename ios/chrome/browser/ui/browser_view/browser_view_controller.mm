@@ -5217,11 +5217,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.dispatcher showAccountsSettingsFromViewController:self];
 }
 
-- (void)onShowConsistencyPromo {
+- (void)onShowConsistencyPromo:(const GURL&)url {
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
       ios::AccountReconcilorFactory::GetForBrowserState(self.browserState)
           ->GetState());
-  [self.dispatcher showConsistencyPromoFromViewController:self];
+  [self.dispatcher showConsistencyPromoFromViewController:self URL:url];
 }
 
 - (void)onAddAccount {

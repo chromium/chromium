@@ -596,7 +596,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   [self schedulePrerenderCancel];
 }
 
-- (void)onShowConsistencyPromo {
+- (void)onShowConsistencyPromo:(const GURL&)url {
   [self schedulePrerenderCancel];
 }
 
