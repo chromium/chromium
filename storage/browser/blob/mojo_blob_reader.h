@@ -135,4 +135,4 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MojoBlobReader {
 
 }  // namespace storage
 
-#endif
+#endif  // STORAGE_BROWSER_BLOB_MOJO_BLOB_READER_H_

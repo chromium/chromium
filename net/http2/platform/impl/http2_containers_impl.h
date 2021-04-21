@@ -14,4 +14,4 @@ using Http2DequeImpl = base::circular_deque<T>;
 
 }
 
-#endif /* NET_HTTP2_PLATFORM_IMPL_HTTP2_CONTAINERS_IMPL_H_ */
+#endif  // NET_HTTP2_PLATFORM_IMPL_HTTP2_CONTAINERS_IMPL_H_

@@ -13,5 +13,4 @@ using QuicStreamBufferAllocatorImpl = SimpleBufferAllocator;
 
 }  // namespace quic
 
-#endif /* NET_QUIC_PLATFORM_IMPL_QUIC_STREAM_BUFFER_ALLOCATOR_IMPL_H_ \
-        */
+#endif  // NET_QUIC_PLATFORM_IMPL_QUIC_STREAM_BUFFER_ALLOCATOR_IMPL_H_

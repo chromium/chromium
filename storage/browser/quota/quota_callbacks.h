@@ -118,4 +118,4 @@ class CallbackQueueMap {
 
 }  // namespace storage
 
-#endif  // STORAGE_QUOTA_QUOTA_TYPES_H_
+#endif  // STORAGE_BROWSER_QUOTA_QUOTA_CALLBACKS_H_

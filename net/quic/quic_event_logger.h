@@ -121,4 +121,4 @@ class NET_EXPORT_PRIVATE QuicEventLogger
 
 }  // namespace net
 
-#endif /* NET_QUIC_QUIC_EVENT_LOGGER_H_ */
+#endif  // NET_QUIC_QUIC_EVENT_LOGGER_H_

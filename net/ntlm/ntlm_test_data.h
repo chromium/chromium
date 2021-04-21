@@ -13,8 +13,8 @@
 // [2] https://blogs.msdn.microsoft.com/openspecification/2013/03/26/ntlm-and-
 //         channel-binding-hash-aka-extended-protection-for-authentication/
 
-#ifndef NET_BASE_NTLM_TEST_DATA_H_
-#define NET_BASE_NTLM_TEST_DATA_H_
+#ifndef NET_NTLM_NTLM_TEST_DATA_H_
+#define NET_NTLM_NTLM_TEST_DATA_H_
 
 #include "net/ntlm/ntlm_constants.h"
 
@@ -570,4 +570,4 @@ constexpr uint8_t kExpectedAuthenticateMsgEmptyChannelBindingsV2[] = {
 }  // namespace ntlm
 }  // namespace net
 
-#endif  // NET_BASE_NTLM_TEST_DATA_H_
+#endif  // NET_NTLM_NTLM_TEST_DATA_H_

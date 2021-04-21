@@ -11,8 +11,8 @@
 // [3]
 // https://blogs.msdn.microsoft.com/openspecification/2013/03/26/ntlm-and-channel-binding-hash-aka-extended-protection-for-authentication/
 
-#ifndef NET_BASE_NTLM_CLIENT_H_
-#define NET_BASE_NTLM_CLIENT_H_
+#ifndef NET_NTLM_NTLM_CLIENT_H_
+#define NET_NTLM_NTLM_CLIENT_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -157,4 +157,4 @@ class NET_EXPORT_PRIVATE NtlmClient {
 }  // namespace ntlm
 }  // namespace net
 
-#endif  // NET_BASE_NTLM_CLIENT_H_
+#endif  // NET_NTLM_NTLM_CLIENT_H_

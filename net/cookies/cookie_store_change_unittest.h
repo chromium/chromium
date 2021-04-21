@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_COOKIES_COOKIE_STORE_CHANGE_UNITTEST_H
-#define NET_COOKIES_COOKIE_STORE_CHANGE_UNITTEST_H
+#ifndef NET_COOKIES_COOKIE_STORE_CHANGE_UNITTEST_H_
+#define NET_COOKIES_COOKIE_STORE_CHANGE_UNITTEST_H_
 
 #include "base/bind.h"
 #include "net/cookies/canonical_cookie.h"
@@ -2927,4 +2927,4 @@ REGISTER_TYPED_TEST_SUITE_P(CookieStoreChangeNamedTest,
 
 }  // namespace net
 
-#endif  // NET_COOKIES_COOKIE_STORE_CHANGE_UNITTEST_H
+#endif  // NET_COOKIES_COOKIE_STORE_CHANGE_UNITTEST_H_

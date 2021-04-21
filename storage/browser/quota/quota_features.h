@@ -29,4 +29,4 @@ extern const base::FeatureParam<double> kShouldRemainAvailableRatio;
 
 }  // namespace storage
 
-#endif  // STORAGE_QUOTA_QUOTA_FEATURES_H_
+#endif  // STORAGE_BROWSER_QUOTA_QUOTA_FEATURES_H_

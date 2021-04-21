@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_BASE_NTLM_BUFFER_WRITER_H_
-#define NET_BASE_NTLM_BUFFER_WRITER_H_
+#ifndef NET_NTLM_NTLM_BUFFER_WRITER_H_
+#define NET_NTLM_NTLM_BUFFER_WRITER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -193,4 +193,4 @@ class NET_EXPORT_PRIVATE NtlmBufferWriter {
 }  // namespace ntlm
 }  // namespace net
 
-#endif  // NET_BASE_NTLM_BUFFER_WRITER_H_
+#endif  // NET_NTLM_NTLM_BUFFER_WRITER_H_

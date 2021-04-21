@@ -8,8 +8,8 @@
 // [1] https://msdn.microsoft.com/en-us/library/cc236621.aspx
 // [2] http://davenport.sourceforge.net/ntlm.html
 
-#ifndef NET_BASE_NTLM_H_
-#define NET_BASE_NTLM_H_
+#ifndef NET_NTLM_NTLM_H_
+#define NET_NTLM_NTLM_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -228,4 +228,4 @@ NET_EXPORT_PRIVATE std::vector<uint8_t> GenerateUpdatedTargetInfo(
 }  // namespace ntlm
 }  // namespace net
 
-#endif  // NET_BASE_NTLM_H_
+#endif  // NET_NTLM_NTLM_H_
