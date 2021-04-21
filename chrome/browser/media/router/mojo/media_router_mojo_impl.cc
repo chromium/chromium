@@ -729,8 +729,16 @@ void MediaRouterMojoImpl::UnregisterMediaRoutesObserver(
   // is not inside the ObserverList iteration.
   it->second->RemoveObserver(observer);
   if (!it->second->HasObservers()) {
-    for (const auto& provider : media_route_providers_)
+    for (const auto& provider : media_route_providers_) {
+      if (!provider.second) {
+        // The provider somehow not existing may be the cause of the crash at
+        // crbug.com/1200786.
+        NOTREACHED() << "Provider is null: "
+                     << ProviderIdToString(provider.first);
+        continue;
+      }
       provider.second->StopObservingMediaRoutes(source_id);
+    }
     routes_queries_.erase(source_id);
   }
 }
