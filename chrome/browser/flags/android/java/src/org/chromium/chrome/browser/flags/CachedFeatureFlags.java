@@ -87,6 +87,7 @@ public class CachedFeatureFlags {
             put(ChromeFeatureList.EXPERIMENTS_FOR_AGSA, true);
             put(ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION, false);
             put(ChromeFeatureList.CLIPBOARD_SUGGESTION_CONTENT_HIDDEN, false);
+            put(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false);
         }
     };
 

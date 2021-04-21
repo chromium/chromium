@@ -85,6 +85,8 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.INSTANT_START,
                 ChromeFeatureList.INTEREST_FEED_V2,
                 ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH,
+                ChromeFeatureList.OFFLINE_MEASUREMENTS_BACKGROUND_TASK,
+                ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS,
                 ChromeFeatureList.PAINT_PREVIEW_DEMO,
                 ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP,
                 ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS,
@@ -97,8 +99,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.TAB_TO_GTS_ANIMATION,
                 ChromeFeatureList.THEME_REFACTOR_ANDROID,
                 ChromeFeatureList.TOOLBAR_USE_HARDWARE_BITMAP_DRAW,
-                ChromeFeatureList.USE_CHIME_ANDROID_SDK,
-                ChromeFeatureList.OFFLINE_MEASUREMENTS_BACKGROUND_TASK);
+                ChromeFeatureList.USE_CHIME_ANDROID_SDK);
         // clang-format on
         CachedFeatureFlags.cacheNativeFlags(featuresToCache);
         CachedFeatureFlags.cacheAdditionalNativeFlags();

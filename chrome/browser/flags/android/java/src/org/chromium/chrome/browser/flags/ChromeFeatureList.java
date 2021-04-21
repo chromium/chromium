@@ -398,6 +398,8 @@ public abstract class ChromeFeatureList {
     public static final String OMNIBOX_MOST_VISITED_TILES = "OmniboxMostVisitedTiles";
     public static final String OMNIBOX_SEARCH_READY_INCOGNITO = "OmniboxSearchReadyIncognito";
     public static final String OMNIBOX_SPARE_RENDERER = "OmniboxSpareRenderer";
+    public static final String OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS =
+            "OptimizationGuidePushNotifications";
     public static final String OVERLAY_NEW_LAYOUT = "OverlayNewLayout";
     public static final String PAGE_ANNOTATIONS_SERVICE = "PageAnnotationsService";
     public static final String PAGE_INFO_PERFORMANCE_HINTS = "PageInfoPerformanceHints";

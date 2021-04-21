@@ -21,6 +21,7 @@ proto_library("optimization_guide_proto") {
     "page_topics_model_metadata.proto",
     "performance_hints_metadata.proto",
     "public_image_metadata.proto",
+    "push_notification.proto",
   ]
 }
 
@@ -37,6 +38,7 @@ if (is_android) {
       "models.proto",
       "performance_hints_metadata.proto",
       "public_image_metadata.proto",
+      "push_notification.proto",
     ]
   }
 }

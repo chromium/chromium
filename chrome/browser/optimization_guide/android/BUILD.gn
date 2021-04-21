@@ -12,10 +12,13 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuideBridge.java",
     "java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuideBridgeFactory.java",
+    "java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuidePushNotificationManager.java",
   ]
 
   deps = [
     "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//components/optimization_guide/proto:optimization_guide_proto_java",
     "//content/public/android:content_java",
@@ -56,16 +59,20 @@ android_library("javatests") {
   sources = [
     "javatests/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuideBridgeFactoryUnitTest.java",
     "javatests/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuideBridgeUnitTest.java",
+    "javatests/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuidePushNotificationManagerUnitTest.java",
   ]
 
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_test_util_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/optimization_guide/proto:optimization_guide_proto_java",
     "//content/public/android:content_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

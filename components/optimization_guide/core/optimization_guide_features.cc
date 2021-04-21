@@ -75,6 +75,10 @@ const base::Feature kOptimizationGuideModelDownloading {
 const base::Feature kPageContentAnnotations{"PageContentAnnotations",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables push notification of hints.
+const base::Feature kPushNotifications{"OptimizationGuidePushNotifications",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // This feature flag does not turn off any behavior, it is only used for
 // experiment parameters.
 const base::Feature kPageTextExtraction{

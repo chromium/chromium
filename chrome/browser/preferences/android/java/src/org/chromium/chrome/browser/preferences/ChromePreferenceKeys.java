@@ -622,6 +622,14 @@ public final class ChromePreferenceKeys {
     public static final String OFFLINE_MEASUREMENTS_IS_ROAMING_LIST =
             "Chrome.OfflineMeasurements.IsRoaming";
 
+    /**
+     * Prefix of the preferences to persist pushed notifications when native is not initialized.
+     * Each suffix pertains to a specific OptimizationType. All entries are cleared when native is
+     * initialized.
+     */
+    public static final KeyPrefix OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE =
+            new KeyPrefix("Chrome.OptimizationGuide.PushNotificationCache.*");
+
     /** The shared preference for the 'save card to device' checkbox status. */
     public static final String PAYMENTS_CHECK_SAVE_CARD_TO_DEVICE = "check_save_card_to_device";
 
@@ -1016,6 +1024,7 @@ public final class ChromePreferenceKeys {
                 OFFLINE_MEASUREMENTS_USER_AGENT_STRING,
                 OFFLINE_MEASUREMENTS_LAST_CHECK_MILLIS,
                 OFFLINE_MEASUREMENTS_TIME_BETWEEN_CHECKS_MILLIS_LIST,
+                OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE.pattern(),
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD,
                 PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT,
