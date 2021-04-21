@@ -23,8 +23,7 @@ InterestGroupServiceImpl::InterestGroupServiceImpl(
     mojo::PendingReceiver<blink::mojom::RestrictedInterestGroupStore> receiver)
     : FrameServiceBase(render_frame_host, std::move(receiver)),
       interest_group_manager_(*static_cast<StoragePartitionImpl*>(
-                                   BrowserContext::GetDefaultStoragePartition(
-                                       render_frame_host->GetBrowserContext()))
+                                   render_frame_host->GetStoragePartition())
                                    ->GetInterestGroupStorage()) {}
 
 // static
