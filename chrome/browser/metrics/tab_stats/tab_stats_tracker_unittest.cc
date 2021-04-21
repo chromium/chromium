@@ -10,12 +10,17 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test_base.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/tab_groups/tab_group_color.h"
+#include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
@@ -528,9 +533,13 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {
   size_t expected_tab_count =
       tab_stats_tracker_->AddTabs(12, this, tab_strip_model_);
   size_t expected_window_count = tab_stats_tracker_->AddWindows(5);
+  int collapsed_tab_count = 0;
 
   tab_stats_tracker_->OnHeartbeatEvent();
 
+  histogram_tester_.ExpectBucketCount(
+      UmaStatsReportingDelegate::kCollapsedTabHistogramName,
+      collapsed_tab_count, 1);
   histogram_tester_.ExpectBucketCount(
       UmaStatsReportingDelegate::kTabCountHistogramName, expected_tab_count, 1);
   histogram_tester_.ExpectBucketCount(
@@ -539,11 +548,24 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {
 
   expected_tab_count = tab_stats_tracker_->RemoveTabs(4, tab_strip_model_);
   expected_window_count = tab_stats_tracker_->RemoveWindows(3);
+  tab_groups::TabGroupId group_id1 = tab_strip_model_->AddToNewGroup({0, 1});
+  tab_groups::TabGroupId group_id2 = tab_strip_model_->AddToNewGroup({5});
+  const tab_groups::TabGroupVisualData visual_data(
+      u"Foo", tab_groups::TabGroupColorId::kCyan, /* is_collapsed = */ true);
+  TabGroup* group1 = tab_strip_model_->group_model()->GetTabGroup(group_id1);
+  TabGroup* group2 = tab_strip_model_->group_model()->GetTabGroup(group_id2);
+  group1->SetVisualData(visual_data);
+  group2->SetVisualData(visual_data);
+  ASSERT_TRUE(tab_strip_model_->IsGroupCollapsed(group_id1));
+  ASSERT_TRUE(tab_strip_model_->IsGroupCollapsed(group_id2));
+  collapsed_tab_count += group1->ListTabs().length();
+  collapsed_tab_count += group2->ListTabs().length();
 
   tab_stats_tracker_->OnHeartbeatEvent();
 
   histogram_tester_.ExpectBucketCount(
-      UmaStatsReportingDelegate::kTabCountHistogramName, expected_tab_count, 1);
+      UmaStatsReportingDelegate::kCollapsedTabHistogramName,
+      collapsed_tab_count, 1);
   histogram_tester_.ExpectBucketCount(
       UmaStatsReportingDelegate::kWindowCountHistogramName,
       expected_window_count, 1);

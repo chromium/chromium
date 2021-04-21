@@ -25,6 +25,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
@@ -124,10 +126,12 @@ const char
 const char
     TabStatsTracker::UmaStatsReportingDelegate::kWindowCountHistogramName[] =
         "Tabs.WindowCount";
-
 const char
     TabStatsTracker::UmaStatsReportingDelegate::kWindowWidthHistogramName[] =
         "Tabs.WindowWidth";
+const char
+    TabStatsTracker::UmaStatsReportingDelegate::kCollapsedTabHistogramName[] =
+        "TabGroups.CollapsedTabCount";
 
 const TabStatsDataStore::TabsStats& TabStatsTracker::tab_stats() const {
   return tab_stats_data_store_->tab_stats();
@@ -514,9 +518,20 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
                                                  tab_stats.total_tab_count);
   UmaHistogramCounts10000WithBatteryStateVariant(kWindowCountHistogramName,
                                                  tab_stats.window_count);
+  int collapsed_tab_count = 0;
 
   // Record the width of all open browser windows with tabs.
   for (Browser* browser : *BrowserList::GetInstance()) {
+    TabGroupModel* const tab_group_model =
+        browser->tab_strip_model()->group_model();
+    const std::vector<tab_groups::TabGroupId>& groups =
+        tab_group_model->ListTabGroups();
+    for (const tab_groups::TabGroupId& group_id : groups) {
+      const TabGroup* const tab_group = tab_group_model->GetTabGroup(group_id);
+      if (tab_group->visual_data()->is_collapsed())
+        collapsed_tab_count += tab_group->ListTabs().length();
+    }
+
     if (browser->type() != Browser::TYPE_NORMAL)
       continue;
 
@@ -541,6 +556,9 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
     UMA_HISTOGRAM_CUSTOM_COUNTS(kWindowWidthHistogramName, window_size.width(),
                                 100, 10000, 50);
   }
+
+  base::UmaHistogramCustomCounts(kCollapsedTabHistogramName,
+                                 collapsed_tab_count, 1, 200, 50);
 }
 
 void TabStatsTracker::UmaStatsReportingDelegate::ReportUsageDuringInterval(

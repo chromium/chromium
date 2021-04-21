@@ -607,6 +607,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.CollapsedTabCount" units="tabs"
+    expires_after="2021-09-12">
+  <owner>cyan@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The number of tabs in a collapsed tab group in all browsers, reported every
+    5 minutes. Desktop only.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.NonZeroUserGroupCountPerLoad" units="groups"
     expires_after="2021-09-12">
   <owner>cyan@chromium.org</owner>
@@ -631,6 +641,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="TabGroups.TimeSpentCollapsed" units="ms"
     expires_after="2021-09-12">
+  <obsolete>
+    Replaced 04/2021 by TimeSpentCollapsed2.
+  </obsolete>
+  <owner>cyan@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The time a tab group spends in the collapsed state before the group is
+    either expanded or closed.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.TimeSpentCollapsed2" units="seconds"
+    expires_after="2021-09-12">
   <owner>cyan@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -640,6 +663,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabGroups.TimeSpentExpanded" units="ms"
+    expires_after="2021-09-12">
+  <obsolete>
+    Replaced 04/2021 by TimeSpentExpanded2.
+  </obsolete>
+  <owner>cyan@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The time a tab group spends in the expanded state before the group is either
+    collapsed or closed.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.TimeSpentExpanded2" units="seconds"
     expires_after="2021-09-12">
   <owner>cyan@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

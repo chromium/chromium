@@ -259,8 +259,11 @@ class TabStatsTracker::UmaStatsReportingDelegate {
   // The name of the histogram that records each window's width, in DIPs.
   static const char kWindowWidthHistogramName[];
 
-  UmaStatsReportingDelegate() {}
-  virtual ~UmaStatsReportingDelegate() {}
+  // The name of the histogram that records the number of collapsed tabs.
+  static const char kCollapsedTabHistogramName[];
+
+  UmaStatsReportingDelegate() = default;
+  virtual ~UmaStatsReportingDelegate() = default;
 
   // Called at resume from sleep/hibernate.
   void ReportTabCountOnResume(size_t tab_count);
