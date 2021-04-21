@@ -330,7 +330,7 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice(
 
 void StandaloneTrustedVaultBackend::OnDeviceRegistered(
     const std::string& gaia_id,
-    TrustedVaultRequestStatus status) {
+    TrustedVaultRegistrationStatus status) {
   // If |primary_account_| was changed meanwhile, this callback must be
   // cancelled.
   DCHECK(primary_account_ && primary_account_->gaia == gaia_id);
@@ -345,15 +345,15 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
   DCHECK(per_user_vault);
 
   switch (status) {
-    case TrustedVaultRequestStatus::kSuccess:
+    case TrustedVaultRegistrationStatus::kSuccess:
       per_user_vault->mutable_local_device_registration_info()
           ->set_device_registered(true);
       WriteToDisk(data_, file_path_);
       return;
-    case TrustedVaultRequestStatus::kLocalDataObsolete:
+    case TrustedVaultRegistrationStatus::kLocalDataObsolete:
       per_user_vault->set_keys_are_stale(true);
       return;
-    case TrustedVaultRequestStatus::kOtherError:
+    case TrustedVaultRegistrationStatus::kOtherError:
       RecordFailedConnectionRequestForThrottling(gaia_id);
       return;
   }
@@ -361,7 +361,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
 
 void StandaloneTrustedVaultBackend::OnKeysDownloaded(
     const std::string& gaia_id,
-    TrustedVaultRequestStatus status,
+    TrustedVaultDownloadKeysStatus status,
     const std::vector<std::vector<uint8_t>>& vault_keys,
     int last_vault_key_version) {
   DCHECK(primary_account_ && primary_account_->gaia == gaia_id);
@@ -378,24 +378,26 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
   DCHECK(per_user_vault);
 
   switch (status) {
-    case TrustedVaultRequestStatus::kSuccess:
+    case TrustedVaultDownloadKeysStatus::kSuccess:
       // TODO(crbug.com/1102340): consider keeping old keys as well.
       StoreKeys(gaia_id, vault_keys, last_vault_key_version);
       break;
-    case TrustedVaultRequestStatus::kLocalDataObsolete: {
+    case TrustedVaultDownloadKeysStatus::kMemberNotFoundOrCorrupted:
+    case TrustedVaultDownloadKeysStatus::kNoNewKeys:
+    case TrustedVaultDownloadKeysStatus::kKeyProofsVerificationFailed: {
       sync_pb::LocalTrustedVaultPerUser* per_user_vault =
           FindUserVault(gaia_id);
-      // Either device isn't registered or vault keys are too outdated or
-      // corrupted. The only way to go out of this states is to receive new
-      // vault keys through external StoreKeys() call. It's safe to mark device
-      // as not registered regardless of the cause (device registration will be
-      // triggered once new vault keys are available).
+      // Unable to download new keys due to known protocol errors. The only way
+      // to go out of these states is to receive new vault keys through external
+      // StoreKeys() call. It's safe to mark device as not registered regardless
+      // of the cause (device registration will be triggered once new vault keys
+      // are available).
       per_user_vault->mutable_local_device_registration_info()
           ->set_device_registered(false);
       WriteToDisk(data_, file_path_);
       break;
     }
-    case TrustedVaultRequestStatus::kOtherError:
+    case TrustedVaultDownloadKeysStatus::kOtherError:
       RecordFailedConnectionRequestForThrottling(gaia_id);
       break;
   }

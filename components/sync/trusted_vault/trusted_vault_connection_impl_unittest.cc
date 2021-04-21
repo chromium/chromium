@@ -272,7 +272,7 @@ TEST_F(TrustedVaultConnectionImplTest,
           callback.Get());
   ASSERT_THAT(request, NotNull());
 
-  EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kSuccess)));
+  EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kSuccess)));
   EXPECT_TRUE(RespondToJoinSecurityDomainsRequest(net::HTTP_OK));
 }
 
@@ -293,7 +293,7 @@ TEST_F(TrustedVaultConnectionImplTest,
           callback.Get());
   ASSERT_THAT(request, NotNull());
 
-  EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kOtherError)));
+  EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kOtherError)));
   EXPECT_TRUE(
       RespondToJoinSecurityDomainsRequest(net::HTTP_INTERNAL_SERVER_ERROR));
 }
@@ -316,7 +316,8 @@ TEST_F(TrustedVaultConnectionImplTest,
   ASSERT_THAT(request, NotNull());
 
   // In particular, HTTP_NOT_FOUND indicates that security domain was removed.
-  EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kLocalDataObsolete)));
+  EXPECT_CALL(callback,
+              Run(Eq(TrustedVaultRegistrationStatus::kLocalDataObsolete)));
   EXPECT_TRUE(RespondToJoinSecurityDomainsRequest(net::HTTP_NOT_FOUND));
 }
 
@@ -341,7 +342,8 @@ TEST_F(
   // In particular, HTTP_PRECONDITION_FAILED indicates that
   // |last_trusted_vault_key_and_version| is not actually the last on the server
   // side.
-  EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kLocalDataObsolete)));
+  EXPECT_CALL(callback,
+              Run(Eq(TrustedVaultRegistrationStatus::kLocalDataObsolete)));
   EXPECT_TRUE(
       RespondToJoinSecurityDomainsRequest(net::HTTP_PRECONDITION_FAILED));
 }
@@ -362,7 +364,7 @@ TEST_F(
 
   // |callback| is called immediately after RegisterAuthenticationFactor(),
   // because there is no access token.
-  EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kOtherError)));
+  EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kOtherError)));
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection->RegisterAuthenticationFactor(
           /*account_info=*/CoreAccountInfo(),
@@ -423,7 +425,7 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldSendListSecurityDomainsRequest) {
 // (need to share some helper functions with
 // download_keys_response_handler_unittest.cc).
 TEST_F(TrustedVaultConnectionImplTest,
-       ShouldHandleFailedListSecurityDomainsRequest) {
+       ShouldHandleFailedGetSecurityDomainMemberRequest) {
   base::MockCallback<TrustedVaultConnection::DownloadNewKeysCallback> callback;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
@@ -434,7 +436,8 @@ TEST_F(TrustedVaultConnectionImplTest,
           /*device_key_pair=*/MakeTestKeyPair(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
-  EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kOtherError), _, _));
+  EXPECT_CALL(callback,
+              Run(Eq(TrustedVaultDownloadKeysStatus::kOtherError), _, _));
   EXPECT_TRUE(
       RespondToGetSecurityDomainMemberRequest(net::HTTP_INTERNAL_SERVER_ERROR));
 }
@@ -449,7 +452,8 @@ TEST_F(TrustedVaultConnectionImplTest,
 
   // |callback| is called immediately after DownloadNewKeys(), because there is
   // no access token.
-  EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kOtherError), _, _));
+  EXPECT_CALL(callback,
+              Run(Eq(TrustedVaultDownloadKeysStatus::kOtherError), _, _));
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection->DownloadNewKeys(
           /*account_info=*/CoreAccountInfo(),
@@ -463,7 +467,8 @@ TEST_F(TrustedVaultConnectionImplTest,
   EXPECT_THAT(GetPendingHTTPRequest(), IsNull());
 }
 
-TEST_F(TrustedVaultConnectionImplTest, ShouldCancelListSecurityDomainsRequest) {
+TEST_F(TrustedVaultConnectionImplTest,
+       ShouldCancelGetSecurityDomainMemberRequest) {
   base::MockCallback<TrustedVaultConnection::DownloadNewKeysCallback> callback;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =

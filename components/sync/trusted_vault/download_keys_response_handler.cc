@@ -70,18 +70,11 @@ std::vector<ExtractedSharedKey> ExtractAndSortSharedKeys(
 }
 
 // Validates |rotation_proof| starting from the key next to
-// last known trusted vault key, returns false if validation fails or |keys|
-// doesn't have a key next to last known trusted vault key.
+// last known trusted vault key.
 bool IsValidKeyChain(
     const std::vector<ExtractedSharedKey>& key_chain,
     const TrustedVaultKeyAndVersion& last_known_trusted_vault_key_and_version) {
   DCHECK(!key_chain.empty());
-  if (key_chain.back().version <=
-      last_known_trusted_vault_key_and_version.version) {
-    // |keys| doesn't contain any new key. Note: this may mean that key rotation
-    // happened, but state corresponding to the current member wasn't updated.
-    return false;
-  }
   int last_valid_key_version = last_known_trusted_vault_key_and_version.version;
   std::vector<uint8_t> last_valid_key =
       last_known_trusted_vault_key_and_version.key;
@@ -110,11 +103,11 @@ bool IsValidKeyChain(
 }  // namespace
 
 DownloadKeysResponseHandler::ProcessedResponse::ProcessedResponse(
-    TrustedVaultRequestStatus status)
+    TrustedVaultDownloadKeysStatus status)
     : status(status), last_key_version(0) {}
 
 DownloadKeysResponseHandler::ProcessedResponse::ProcessedResponse(
-    TrustedVaultRequestStatus status,
+    TrustedVaultDownloadKeysStatus status,
     std::vector<std::vector<uint8_t>> new_keys,
     int last_key_version)
     : status(status), new_keys(new_keys), last_key_version(last_key_version) {}
@@ -147,18 +140,19 @@ DownloadKeysResponseHandler::ProcessResponse(
     case TrustedVaultRequest::HttpStatus::kSuccess:
       break;
     case TrustedVaultRequest::HttpStatus::kNotFound:
-    case TrustedVaultRequest::HttpStatus::kFailedPrecondition:
-      // TODO(crbug.com/1113598): expose more detailed status.
       return ProcessedResponse(
-          /*status=*/TrustedVaultRequestStatus::kLocalDataObsolete);
+          /*status=*/TrustedVaultDownloadKeysStatus::
+              kMemberNotFoundOrCorrupted);
+    case TrustedVaultRequest::HttpStatus::kFailedPrecondition:
     case TrustedVaultRequest::HttpStatus::kOtherError:
       return ProcessedResponse(
-          /*status=*/TrustedVaultRequestStatus::kOtherError);
+          /*status=*/TrustedVaultDownloadKeysStatus::kOtherError);
   }
 
   sync_pb::SecurityDomainMember member;
   if (!member.ParseFromString(response_body)) {
-    return ProcessedResponse(/*status=*/TrustedVaultRequestStatus::kOtherError);
+    return ProcessedResponse(
+        /*status=*/TrustedVaultDownloadKeysStatus::kOtherError);
   }
 
   // TODO(crbug.com/1113598): consider validation of member public key.
@@ -167,7 +161,7 @@ DownloadKeysResponseHandler::ProcessResponse(
   if (!membership) {
     // Member is not in sync security domain.
     return ProcessedResponse(
-        /*status=*/TrustedVaultRequestStatus::kLocalDataObsolete);
+        /*status=*/TrustedVaultDownloadKeysStatus::kMemberNotFoundOrCorrupted);
   }
 
   std::vector<ExtractedSharedKey> extracted_keys =
@@ -176,15 +170,22 @@ DownloadKeysResponseHandler::ProcessResponse(
     // |current_member| doesn't have any keys, should be treated as not
     // registered member.
     return ProcessedResponse(
-        /*status=*/TrustedVaultRequestStatus::kLocalDataObsolete);
+        /*status=*/TrustedVaultDownloadKeysStatus::kMemberNotFoundOrCorrupted);
   }
 
+  if (last_trusted_vault_key_and_version_.has_value() &&
+      extracted_keys.back().version <=
+          last_trusted_vault_key_and_version_->version) {
+    return ProcessedResponse(
+        /*status=*/TrustedVaultDownloadKeysStatus::kNoNewKeys);
+  }
   if (last_trusted_vault_key_and_version_.has_value() &&
       !IsValidKeyChain(extracted_keys, *last_trusted_vault_key_and_version_)) {
     // Data corresponding to |current_member| is corrupted or
     // |last_trusted_vault_key_and_version_| is too old.
     return ProcessedResponse(
-        /*status=*/TrustedVaultRequestStatus::kLocalDataObsolete);
+        /*status=*/TrustedVaultDownloadKeysStatus::
+            kKeyProofsVerificationFailed);
   }
 
   std::vector<std::vector<uint8_t>> new_keys;
@@ -197,7 +198,7 @@ DownloadKeysResponseHandler::ProcessResponse(
       new_keys.push_back(key.trusted_vault_key);
     }
   }
-  return ProcessedResponse(/*status=*/TrustedVaultRequestStatus::kSuccess,
+  return ProcessedResponse(/*status=*/TrustedVaultDownloadKeysStatus::kSuccess,
                            new_keys,
                            /*last_key_version=*/extracted_keys.back().version);
 }

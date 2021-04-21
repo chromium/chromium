@@ -92,15 +92,16 @@ void ProcessRegisterAuthenticationFactorRequest(
     const std::string& response_body) {
   switch (http_status) {
     case TrustedVaultRequest::HttpStatus::kSuccess:
-      std::move(callback).Run(TrustedVaultRequestStatus::kSuccess);
+      std::move(callback).Run(TrustedVaultRegistrationStatus::kSuccess);
       return;
     case TrustedVaultRequest::HttpStatus::kOtherError:
-      std::move(callback).Run(TrustedVaultRequestStatus::kOtherError);
+      std::move(callback).Run(TrustedVaultRegistrationStatus::kOtherError);
       return;
     case TrustedVaultRequest::HttpStatus::kNotFound:
     case TrustedVaultRequest::HttpStatus::kFailedPrecondition:
       // Local trusted vault keys are outdated.
-      std::move(callback).Run(TrustedVaultRequestStatus::kLocalDataObsolete);
+      std::move(callback).Run(
+          TrustedVaultRegistrationStatus::kLocalDataObsolete);
       return;
   }
   NOTREACHED();

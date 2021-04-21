@@ -19,12 +19,27 @@ namespace syncer {
 class SecureBoxKeyPair;
 class SecureBoxPublicKey;
 
-enum class TrustedVaultRequestStatus {
+enum class TrustedVaultRegistrationStatus {
   kSuccess,
   // Used when trusted vault request can't be completed successfully due to
   // vault key being outdated or device key being not registered.
   kLocalDataObsolete,
   // Used for all network, http and protocol errors.
+  kOtherError
+};
+
+enum class TrustedVaultDownloadKeysStatus {
+  kSuccess,
+  // Member corresponding to the authentication factor doesn't exist, not
+  // registered in the security domain or corrupted.
+  kMemberNotFoundOrCorrupted,
+  // Keys were successfully downloaded and verified, but no new keys exist.
+  kNoNewKeys,
+  // At least one of the key proofs isn't valid or unable to verify them using
+  // latest local trusted vault key (e.g. it's too old).
+  kKeyProofsVerificationFailed,
+  // Used for all network, http and protocol errors, when no statuses above
+  // fits.
   kOtherError
 };
 
@@ -45,9 +60,9 @@ struct TrustedVaultKeyAndVersion {
 class TrustedVaultConnection {
  public:
   using RegisterAuthenticationFactorCallback =
-      base::OnceCallback<void(TrustedVaultRequestStatus)>;
+      base::OnceCallback<void(TrustedVaultRegistrationStatus)>;
   using DownloadNewKeysCallback =
-      base::OnceCallback<void(TrustedVaultRequestStatus,
+      base::OnceCallback<void(TrustedVaultDownloadKeysStatus,
                               const std::vector<std::vector<uint8_t>>& /*keys*/,
                               int /*last_key_version*/)>;
 

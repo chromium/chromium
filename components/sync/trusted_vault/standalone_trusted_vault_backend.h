@@ -123,10 +123,10 @@ class StandaloneTrustedVaultBackend
   // successfully or not). |data_| must contain LocalTrustedVaultPerUser for
   // given |gaia_id|.
   void OnDeviceRegistered(const std::string& gaia_id,
-                          TrustedVaultRequestStatus status);
+                          TrustedVaultRegistrationStatus status);
 
   void OnKeysDownloaded(const std::string& gaia_id,
-                        TrustedVaultRequestStatus status,
+                        TrustedVaultDownloadKeysStatus status,
                         const std::vector<std::vector<uint8_t>>& vault_keys,
                         int last_vault_key_version);
 

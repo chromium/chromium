@@ -159,7 +159,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
 
     // Pretend that the registration completed successfully.
     std::move(device_registration_callback)
-        .Run(TrustedVaultRequestStatus::kSuccess);
+        .Run(TrustedVaultRegistrationStatus::kSuccess);
 
     // Reset primary account.
     backend()->SetPrimaryAccount(base::nullopt);
@@ -349,7 +349,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
 
   // Pretend that the registration completed successfully.
   std::move(device_registration_callback)
-      .Run(TrustedVaultRequestStatus::kSuccess);
+      .Run(TrustedVaultRegistrationStatus::kSuccess);
 
   // Now the device should be registered.
   sync_pb::LocalDeviceRegistrationInfo registration_info =
@@ -396,7 +396,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Mimic transient failure.
   std::move(device_registration_callback)
-      .Run(TrustedVaultRequestStatus::kOtherError);
+      .Run(TrustedVaultRegistrationStatus::kOtherError);
 
   // Following request should be throttled.
   device_registration_callback =
@@ -453,7 +453,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Mimic transient failure.
   std::move(device_registration_callback)
-      .Run(TrustedVaultRequestStatus::kOtherError);
+      .Run(TrustedVaultRegistrationStatus::kOtherError);
 
   // Mimic system set to the past.
   clock()->Advance(base::TimeDelta::FromSeconds(-1));
@@ -539,7 +539,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadNewKeys) {
   // completed.
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/Eq(kNewVaultKeys)));
   std::move(download_keys_callback)
-      .Run(TrustedVaultRequestStatus::kSuccess, kNewVaultKeys,
+      .Run(TrustedVaultDownloadKeysStatus::kSuccess, kNewVaultKeys,
            kNewLastKeyVersion);
 }
 
@@ -578,7 +578,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Mimic transient failure.
   std::move(download_keys_callback)
-      .Run(TrustedVaultRequestStatus::kOtherError,
+      .Run(TrustedVaultDownloadKeysStatus::kOtherError,
            /*keys=*/std::vector<std::vector<uint8_t>>(),
            /*last_key_version=*/0);
 
@@ -627,7 +627,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Pretend that the registration completed successfully.
   std::move(device_registration_callback)
-      .Run(TrustedVaultRequestStatus::kSuccess);
+      .Run(TrustedVaultRegistrationStatus::kSuccess);
 
   // Now the device should be registered.
   sync_pb::LocalDeviceRegistrationInfo registration_info =
@@ -662,7 +662,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const std::vector<std::vector<uint8_t>> kNewVaultKeys = {{1, 2, 3}};
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/kNewVaultKeys));
   std::move(download_keys_callback)
-      .Run(TrustedVaultRequestStatus::kSuccess, kNewVaultKeys,
+      .Run(TrustedVaultDownloadKeysStatus::kSuccess, kNewVaultKeys,
            /*last_key_version=*/40);
 }
 

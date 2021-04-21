@@ -21,22 +21,15 @@ class SecureBoxKeyPair;
 class DownloadKeysResponseHandler {
  public:
   struct ProcessedResponse {
-    explicit ProcessedResponse(TrustedVaultRequestStatus status);
-    ProcessedResponse(TrustedVaultRequestStatus status,
+    explicit ProcessedResponse(TrustedVaultDownloadKeysStatus status);
+    ProcessedResponse(TrustedVaultDownloadKeysStatus status,
                       std::vector<std::vector<uint8_t>> new_keys,
                       int last_key_version);
     ProcessedResponse(const ProcessedResponse& other);
     ProcessedResponse& operator=(const ProcessedResponse& other);
     ~ProcessedResponse();
 
-    // kSuccess is reported if extraction was successful and there are new
-    // trusted vault keys.
-    // kLocalDataObsolete is reported if it's impossible to extract keys due to
-    // data corruption or absence of sync SecurityDomainMembership or if there
-    // is no new keys.
-    // kOtherError is reported in case of http/network errors or if the response
-    // isn't valid serialized SecurityDomainMember proto.
-    TrustedVaultRequestStatus status;
+    TrustedVaultDownloadKeysStatus status;
 
     // Contains new keys (e.g. keys are stored by the server, excluding last
     // known key and keys that predate it).
