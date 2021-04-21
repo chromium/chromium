@@ -2932,6 +2932,7 @@ static_library("browser") {
       "chrome_browser_field_trials_mobile.h",
       "chrome_browser_main_android.cc",
       "chrome_browser_main_android.h",
+      "commerce/merchant_viewer/web_contents_helper.cc",
       "crash_upload_list/crash_upload_list_android.cc",
       "crash_upload_list/crash_upload_list_android.h",
       "data_reduction_proxy/data_reduction_promo_infobar_delegate_android.cc",
