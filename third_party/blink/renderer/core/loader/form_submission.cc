@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/loader/form_submission.h"
 
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -226,7 +227,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
        mojom::blink::InsecureRequestPolicy::kUpgradeInsecureRequests) !=
           mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone &&
       action_url.ProtocolIs("http") &&
-      !SecurityOrigin::Create(action_url)->IsPotentiallyTrustworthy()) {
+      !network::IsUrlPotentiallyTrustworthy(action_url)) {
     UseCounter::Count(document,
                       WebFeature::kUpgradeInsecureRequestsUpgradedRequestForm);
     action_url.SetProtocol("https");

@@ -927,10 +927,8 @@ void MixedContentChecker::UpgradeInsecureRequest(
 
   KURL url = resource_request.Url();
 
-  if (!url.ProtocolIs("http") ||
-      SecurityOrigin::Create(url)->IsPotentiallyTrustworthy()) {
+  if (!url.ProtocolIs("http") || network::IsUrlPotentiallyTrustworthy(url))
     return;
-  }
 
   if (frame_type == mojom::RequestContextFrameType::kNone ||
       resource_request.GetRequestContext() ==
