@@ -817,7 +817,6 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kAutofillAssistantPrivate);
   skip.insert(APIPermissionID::kBookmarkManagerPrivate);
   skip.insert(APIPermissionID::kBrailleDisplayPrivate);
-  skip.insert(APIPermissionID::kCast);
   skip.insert(APIPermissionID::kCecPrivate);
   skip.insert(APIPermissionID::kChromeosInfoPrivate);
   skip.insert(APIPermissionID::kCommandLinePrivate);

@@ -27475,8 +27475,8 @@ Called by update_extension_permission.py.-->
   <int value="21" label="kBrailleDisplayPrivate"/>
   <int value="22" label="kBrowser"/>
   <int value="23" label="kBrowsingData"/>
-  <int value="24" label="kCast"/>
-  <int value="25" label="kCastStreaming"/>
+  <int value="24" label="kDeleted_Cast"/>
+  <int value="25" label="kDeleted_CastStreaming"/>
   <int value="26" label="kChromeosInfoPrivate"/>
   <int value="27" label="kClipboardRead"/>
   <int value="28" label="kClipboardWrite"/>
