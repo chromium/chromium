@@ -19,6 +19,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/ui_base_features.h"
 
 namespace content {
@@ -32,6 +33,7 @@ class FileSystemAccessClipboardBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(embedded_test_server()->Start());
     features_.InitWithFeatures({features::kClipboardFilenames}, {});
+    ui::TestClipboard::CreateForCurrentThread();
     ContentBrowserTest::SetUp();
   }
 
@@ -62,13 +64,7 @@ class FileSystemAccessClipboardBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList features_;
 };
 
-// Flaky on Linux. http://crbug.com/1198794
-#if defined(OS_LINUX)
-#define MAYBE_File DISABLED_File
-#else
-#define MAYBE_File File
-#endif
-IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardBrowserTest, MAYBE_File) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardBrowserTest, File) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
 

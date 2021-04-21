@@ -1584,7 +1584,10 @@ test("content_browsertests") {
       "../browser/storage_service_sandbox_browsertest.cc",
       "../browser/zoom_browsertest.cc",
     ]
-    deps += [ "//content/public/browser:proto" ]
+    deps += [
+      "//content/public/browser:proto",
+      "//ui/base/clipboard:clipboard_test_support",
+    ]
     data += [ "//content/test/data/clipboard" ]
   }
   if (is_posix) {

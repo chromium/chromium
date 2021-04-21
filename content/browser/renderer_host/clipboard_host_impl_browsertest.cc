@@ -19,6 +19,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/ui_base_features.h"
 
 namespace content {
@@ -35,6 +36,7 @@ class ClipboardHostImplBrowserTest : public ContentBrowserTest {
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->Start());
     features_.InitWithFeatures({features::kClipboardFilenames}, {});
+    ui::TestClipboard::CreateForCurrentThread();
     ContentBrowserTest::SetUp();
   }
 
@@ -108,13 +110,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHostImplBrowserTest, ImageFile) {
   CopyPasteFiles({File{"small.jpg", "image/jpeg"}});
 }
 
-// Flaky on linux-ozone-rel. crbug.com/1189398
-#if defined(USE_OZONE)
-#define MAYBE_Empty DISABLED_Empty
-#else
-#define MAYBE_Empty Empty
-#endif
-IN_PROC_BROWSER_TEST_F(ClipboardHostImplBrowserTest, MAYBE_Empty) {
+IN_PROC_BROWSER_TEST_F(ClipboardHostImplBrowserTest, Empty) {
   CopyPasteFiles({});
 }
 
