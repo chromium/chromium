@@ -1153,7 +1153,7 @@
             ]
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
+          "shards": 18
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       }

@@ -610,13 +610,19 @@ class BBJSONGenerator(object):
           tester_config['swarming']['dimension_sets'])
       self.dictionary_merge(generated_test['swarming'],
                             tester_config['swarming'])
-    # Apply any Android-specific Swarming dimensions after the generic ones.
+    # Apply any platform-specific Swarming dimensions after the generic ones.
     if 'android_swarming' in generated_test:
       if self.is_android(tester_config): # pragma: no cover
         self.dictionary_merge(
           generated_test['swarming'],
           generated_test['android_swarming']) # pragma: no cover
       del generated_test['android_swarming'] # pragma: no cover
+    if 'chromeos_swarming' in generated_test:
+      if self.is_chromeos(tester_config):  # pragma: no cover
+        self.dictionary_merge(
+            generated_test['swarming'],
+            generated_test['chromeos_swarming'])  # pragma: no cover
+      del generated_test['chromeos_swarming']  # pragma: no cover
 
   def clean_swarming_dictionary(self, swarming_dict):
     # Clean out redundant entries from a test's "swarming" dictionary.
