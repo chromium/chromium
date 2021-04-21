@@ -467,32 +467,58 @@ TEST_F(InputMethodAuraLinuxTest, IBusPinyinTest) {
 }
 
 // crbug.com/463491
-TEST_F(InputMethodAuraLinuxTest, DeadKeyTest) {
-  context_simple_->SetSyncMode(true);
-  context_simple_->SetEatKey(true);
+void DeadKeyTest(TextInputType text_input_type,
+                 InputMethodAuraLinux* input_method_auralinux,
+                 LinuxInputMethodContextForTesting* context,
+                 TestResult* test_result) {
+  context->SetSyncMode(true);
+  context->SetEatKey(true);
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_NONE));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client = std::make_unique<TextInputClientForTesting>(text_input_type);
+  input_method_auralinux->SetFocusedTextInputClient(client.get());
+  input_method_auralinux->OnTextInputTypeChanged(client.get());
 
-  KeyEvent dead_key(ET_KEY_PRESSED, VKEY_OEM_7, 0);
-  dead_key.set_character(L'\'');
-  input_method_auralinux_->DispatchKeyEvent(&dead_key);
+  {
+    KeyEvent dead_key(ET_KEY_PRESSED, VKEY_OEM_7, 0);
+    dead_key.set_character(L'\'');
+    input_method_auralinux->DispatchKeyEvent(&dead_key);
+  }
+
+  // Do not filter release key event.
+  context->SetEatKey(false);
+  {
+    KeyEvent dead_key(ET_KEY_RELEASED, VKEY_OEM_7, 0);
+    dead_key.set_character(L'\'');
+    input_method_auralinux->DispatchKeyEvent(&dead_key);
+  }
 
   // The single quote key is muted.
-  test_result_->ExpectAction("keydown:222");
-  test_result_->Verify();
+  test_result->ExpectAction("keydown:222");
+  test_result->ExpectAction("keyup:222");
+  test_result->Verify();
 
-  context_simple_->AddCommitAction("X");
+  // Reset to filter press key again.
+  context->SetEatKey(true);
+
+  context->AddCommitAction("X");
   KeyEvent key(ET_KEY_PRESSED, VKEY_A, 0);
   key.set_character(L'a');
-  input_method_auralinux_->DispatchKeyEvent(&key);
+  input_method_auralinux->DispatchKeyEvent(&key);
 
   // The following A key generates the accent key: á.
-  test_result_->ExpectAction("keydown:65");
-  test_result_->ExpectAction("keypress:88");
-  test_result_->Verify();
+  test_result->ExpectAction("keydown:65");
+  test_result->ExpectAction("keypress:88");
+  test_result->Verify();
+}
+
+TEST_F(InputMethodAuraLinuxTest, DeadKeyTest) {
+  DeadKeyTest(TEXT_INPUT_TYPE_TEXT, input_method_auralinux_, context_,
+              test_result_);
+}
+
+TEST_F(InputMethodAuraLinuxTest, DeadKeySimpleContextTest) {
+  DeadKeyTest(TEXT_INPUT_TYPE_NONE, input_method_auralinux_, context_simple_,
+              test_result_);
 }
 
 TEST_F(InputMethodAuraLinuxTest, MultiCommitsTest) {
