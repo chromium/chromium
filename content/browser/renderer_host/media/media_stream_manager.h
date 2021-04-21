@@ -180,12 +180,13 @@ class CONTENT_EXPORT MediaStreamManager
                                      const url::Origin& security_origin,
                                      MediaAccessRequestCallback callback);
 
-  // GenerateStream opens new media devices according to |components|.  It
-  // creates a new request which is identified by a unique string that's
-  // returned to the caller.  |render_process_id| and |render_frame_id| are used
-  // to determine where the infobar will appear to the user. |device_stopped_cb|
-  // is set to receive device stopped notifications. |device_change_cb| is set
-  // to receive device changed notifications.
+  // GenerateStream opens new media devices according to |controls|. It creates
+  // a new request which is identified by a unique string that's returned to the
+  // caller. |render_process_id| and |render_frame_id| are used to determine
+  // where the infobar will appear to the user. |device_stopped_cb| is set to
+  // receive device stopped notifications. |device_changed_cb| is set to receive
+  // device changed notifications. |device_request_state_change_cb| is used to
+  // notify clients about request state changes.
   void GenerateStream(
       int render_process_id,
       int render_frame_id,
