@@ -5188,11 +5188,6 @@
       }
     },
 
-    'weblayer_instrumentation_tests_with_chrome': {
-      'weblayer_instrumentation_test_with_chrome_apk': {
-      }
-    },
-
     'weblayer_instrumentation_version_tests': {
       'weblayer_instrumentation_test_versions_apk': {
         'swarming': {
@@ -6866,16 +6861,6 @@
     },
 
     'android_weblayer_x86_marshmallow_10_gtests': {
-      'weblayer_instrumentation_tests_with_chrome': {
-        'variants': [
-          {
-            'identifier': 'ToT_Tests',
-            'args': [
-              '--additional-apk=apks/ChromePublic.apk'
-            ],
-          }
-        ]
-      },
       'weblayer_instrumentation_version_tests_with_chrome': {
         'variants': [
           'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE',
