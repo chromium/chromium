@@ -221,7 +221,8 @@ class CC_EXPORT SnapContainerData {
   // Returns true if a snap position was found.
   bool FindSnapPosition(const SnapSelectionStrategy& strategy,
                         gfx::ScrollOffset* snap_position,
-                        TargetSnapAreaElementIds* target_element_ids) const;
+                        TargetSnapAreaElementIds* target_element_ids,
+                        const ElementId& active_element_id = ElementId()) const;
 
   const TargetSnapAreaElementIds& GetTargetSnapAreaElementIds() const;
   // Returns true if the target snap area element ids were changed.
@@ -264,6 +265,7 @@ class CC_EXPORT SnapContainerData {
       SearchAxis axis,
       const SnapSelectionStrategy& strategy,
       const SnapSearchResult& cross_axis_snap_result,
+      const ElementId& active_element_id,
       bool should_consider_covering = true) const;
 
   // A wrapper of FindClosestValidAreaInternal(). If
@@ -273,7 +275,8 @@ class CC_EXPORT SnapContainerData {
   base::Optional<SnapSearchResult> FindClosestValidArea(
       SearchAxis axis,
       const SnapSelectionStrategy& strategy,
-      const SnapSearchResult& cross_axis_snap_result) const;
+      const SnapSearchResult& cross_axis_snap_result,
+      const ElementId& active_element_id) const;
 
   bool FindSnapPositionForMutualSnap(const SnapSelectionStrategy& strategy,
                                      gfx::ScrollOffset* snap_position) const;
@@ -295,6 +298,9 @@ class CC_EXPORT SnapContainerData {
   bool IsSnapportCoveredOnAxis(SearchAxis axis,
                                float current_offset,
                                const gfx::RectF& area_rect) const;
+
+  void UpdateSnapAreaForTesting(ElementId element_id,
+                                SnapAreaData snap_area_data);
 
   // Specifies whether a scroll container is a scroll snap container, how
   // strictly it snaps, and which axes are considered.
@@ -321,6 +327,10 @@ class CC_EXPORT SnapContainerData {
   // ElementId(s) will be invalid (ElementId::kInvalidElementId) if the snap
   // container is not snapped to a position.
   TargetSnapAreaElementIds target_snap_area_element_ids_;
+
+  FRIEND_TEST_ALL_PREFIXES(ScrollSnapDataTest, SnapToFocusedElementHorizontal);
+  FRIEND_TEST_ALL_PREFIXES(ScrollSnapDataTest, SnapToFocusedElementVertical);
+  FRIEND_TEST_ALL_PREFIXES(ScrollSnapDataTest, SnapToFocusedElementBoth);
 };
 
 CC_EXPORT std::ostream& operator<<(std::ostream&, const SnapAreaData&);

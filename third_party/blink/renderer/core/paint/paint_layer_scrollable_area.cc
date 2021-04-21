@@ -1889,11 +1889,26 @@ PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
   if (!data.size())
     return base::nullopt;
 
+  // If the document has a focused element that is coincident with the snap
+  // target, update the snap target to point to the focused element. This
+  // ensures that we stay snapped to the focused element after a relayout.
+  // TODO(crbug.com/1199911): If the focused element is not a snap target but
+  // has an ancestor that is, perhaps the rule should be applied for the
+  // ancestor element.
+  CompositorElementId active_element_id = CompositorElementId();
+  if (auto* active_element = GetDocument()->ActiveElement()) {
+    active_element_id =
+        CompositorElementIdFromDOMNodeId(DOMNodeIds::IdForNode(active_element));
+  }
+
   cc::TargetSnapAreaElementIds snap_targets;
   gfx::ScrollOffset snap_position;
   base::Optional<FloatPoint> snap_point;
-  if (data.FindSnapPosition(strategy, &snap_position, &snap_targets))
+  if (data.FindSnapPosition(strategy, &snap_position, &snap_targets,
+                            active_element_id)) {
     snap_point = FloatPoint(snap_position.x(), snap_position.y());
+  }
+
   if (data.SetTargetSnapAreaElementIds(snap_targets))
     GetLayoutBox()->SetNeedsPaintPropertyUpdate();
 

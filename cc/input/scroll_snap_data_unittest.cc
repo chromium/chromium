@@ -612,4 +612,102 @@ TEST_F(ScrollSnapDataTest, SnapToTwoTargetElementsNotMutualVisible) {
             target_elements);
 }
 
+TEST_F(ScrollSnapDataTest, SnapToFocusedElementHorizontal) {
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kX, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 300, 300), gfx::ScrollOffset(600, 800));
+  SnapAreaData snapped_area(ScrollSnapAlign(SnapAlignment::kStart),
+                            gfx::RectF(0, 0, 100, 100), false, ElementId(10));
+  SnapAreaData focused_area(ScrollSnapAlign(SnapAlignment::kStart),
+                            gfx::RectF(0, 100, 100, 100), false, ElementId(20));
+  container.AddSnapAreaData(snapped_area);
+  container.AddSnapAreaData(focused_area);
+
+  // Initially both snap areas are horizontally aligned with the snap position.
+  gfx::ScrollOffset origin(0, 0);
+  std::unique_ptr<SnapSelectionStrategy> strategy =
+      SnapSelectionStrategy::CreateForTargetElement(origin);
+
+  gfx::ScrollOffset snap_position = gfx::ScrollOffset();
+  EXPECT_TRUE(container.FindSnapPosition(*strategy, &snap_position,
+                                         &target_elements, ElementId(20)));
+  EXPECT_EQ(0, snap_position.x());
+  EXPECT_TRUE(container.SetTargetSnapAreaElementIds(target_elements));
+
+  // Simulate layout change. The focused area is no longer aligned, but was
+  // previously aligned. It should take precedence over the targeted area.
+  focused_area.rect = gfx::RectF(100, 0, 100, 100);
+  container.UpdateSnapAreaForTesting(ElementId(20), focused_area);
+
+  EXPECT_TRUE(container.FindSnapPosition(*strategy, &snap_position,
+                                         &target_elements, ElementId(20)));
+  EXPECT_EQ(100, snap_position.x());
+}
+
+TEST_F(ScrollSnapDataTest, SnapToFocusedElementVertical) {
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 300, 300), gfx::ScrollOffset(600, 800));
+  SnapAreaData snapped_area(ScrollSnapAlign(SnapAlignment::kStart),
+                            gfx::RectF(0, 0, 100, 100), false, ElementId(10));
+  SnapAreaData focused_area(ScrollSnapAlign(SnapAlignment::kStart),
+                            gfx::RectF(100, 0, 100, 100), false, ElementId(20));
+  container.AddSnapAreaData(snapped_area);
+  container.AddSnapAreaData(focused_area);
+
+  // Initially both snap areas are vertically aligned with the snap position.
+  gfx::ScrollOffset origin(0, 0);
+  std::unique_ptr<SnapSelectionStrategy> strategy =
+      SnapSelectionStrategy::CreateForTargetElement(origin);
+
+  gfx::ScrollOffset snap_position = gfx::ScrollOffset();
+  EXPECT_TRUE(container.FindSnapPosition(*strategy, &snap_position,
+                                         &target_elements, ElementId(20)));
+  EXPECT_EQ(0, snap_position.y());
+  EXPECT_TRUE(container.SetTargetSnapAreaElementIds(target_elements));
+
+  // Simulate layout change. The focused area is no longer aligned, but was
+  // previously aligned. It should take precedence over the targeted area.
+  focused_area.rect = gfx::RectF(0, 100, 100, 100);
+  container.UpdateSnapAreaForTesting(ElementId(20), focused_area);
+
+  EXPECT_TRUE(container.FindSnapPosition(*strategy, &snap_position,
+                                         &target_elements, ElementId(20)));
+  EXPECT_EQ(100, snap_position.y());
+}
+
+TEST_F(ScrollSnapDataTest, SnapToFocusedElementBoth) {
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 300, 300), gfx::ScrollOffset(600, 800));
+  SnapAreaData snapped_area(ScrollSnapAlign(SnapAlignment::kStart),
+                            gfx::RectF(0, 0, 100, 100), false, ElementId(10));
+  SnapAreaData focused_area(ScrollSnapAlign(SnapAlignment::kStart),
+                            gfx::RectF(0, 0, 100, 100), false, ElementId(20));
+  container.AddSnapAreaData(snapped_area);
+  container.AddSnapAreaData(focused_area);
+
+  // Initially both snap areas are coincident with the snap position.
+  gfx::ScrollOffset origin(0, 0);
+  std::unique_ptr<SnapSelectionStrategy> strategy =
+      SnapSelectionStrategy::CreateForTargetElement(origin);
+
+  gfx::ScrollOffset snap_position = gfx::ScrollOffset();
+  EXPECT_TRUE(container.FindSnapPosition(*strategy, &snap_position,
+                                         &target_elements, ElementId(20)));
+  EXPECT_EQ(0, snap_position.x());
+  EXPECT_EQ(0, snap_position.y());
+  EXPECT_TRUE(container.SetTargetSnapAreaElementIds(target_elements));
+
+  // Simulate layout change. The focused area is no longer aligned, but was
+  // previously aligned. It should take precedence over the targeted area.
+  focused_area.rect = gfx::RectF(200, 100, 100, 100);
+  container.UpdateSnapAreaForTesting(ElementId(20), focused_area);
+
+  EXPECT_TRUE(container.FindSnapPosition(*strategy, &snap_position,
+                                         &target_elements, ElementId(20)));
+  EXPECT_EQ(200, snap_position.x());
+  EXPECT_EQ(100, snap_position.y());
+}
+
 }  // namespace cc

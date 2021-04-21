@@ -5,9 +5,9 @@
 #ifndef CC_INPUT_SNAP_SELECTION_STRATEGY_H_
 #define CC_INPUT_SNAP_SELECTION_STRATEGY_H_
 
-#include "scroll_snap_data.h"
-
 #include <memory>
+
+#include "cc/input/scroll_snap_data.h"
 
 namespace cc {
 
