@@ -33,8 +33,13 @@ class MockSaveAddressProfilePromptView : public SaveAddressProfilePromptView {
 class SaveAddressProfilePromptControllerTest : public testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        features::kAutofillAddressProfileSavePrompt);
+    // Enable both explicit save prompts and structured names.
+    feature_list_.InitWithFeatures(
+        {features::kAutofillAddressProfileSavePrompt,
+         features::kAutofillEnableSupportForMoreStructureInNames},
+        {});
+
+    profile_ = test::GetFullProfile();
 
     auto prompt_view = std::make_unique<MockSaveAddressProfilePromptView>();
     prompt_view_ = prompt_view.get();
@@ -62,7 +67,7 @@ class SaveAddressProfilePromptControllerTest : public testing::Test {
  protected:
   base::test::ScopedFeatureList feature_list_;
   MockSaveAddressProfilePromptView* prompt_view_;
-  AutofillProfile profile_ = test::GetFullProfile();
+  AutofillProfile profile_;
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       decision_callback_;
   base::MockCallback<base::OnceCallback<void()>> dismissal_callback_;

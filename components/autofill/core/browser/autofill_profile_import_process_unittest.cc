@@ -344,6 +344,11 @@ TEST(AutofillProfileImportProcess, MergeWithExistingProfile_Rejected) {
 // Tests the scenario in which the observed profile results in a silent update
 // of the only already existing profile.
 TEST(AutofillProfileImportProcess, SilentlyUpdateProfile) {
+  // Silent updates need structured names to be enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInNames);
+
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be updateable with the observed profile.
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
@@ -381,6 +386,11 @@ TEST(AutofillProfileImportProcess, SilentlyUpdateProfile) {
 // existing profile while another already existing profile can be silently
 // updated. In this test, the users accepts the merge.
 TEST(AutofillProfileImportProcess, BothMergeAndSilentUpdate_Accepted) {
+  // Silent updates need structured names to be enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInNames);
+
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be updateable with the observed profile.
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
@@ -422,6 +432,11 @@ TEST(AutofillProfileImportProcess, BothMergeAndSilentUpdate_Accepted) {
 // existing profile while another already existing profile can be silently
 // updated. In this test, the users declines the merge.
 TEST(AutofillProfileImportProcess, BothMergeAndSilentUpdate_Rejected) {
+  // Silent updates need structured names to be enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInNames);
+
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be updateable with the observed profile.
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
