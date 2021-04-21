@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/trusted_bidding_signals.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -246,7 +247,7 @@ class BidderWorkletTest : public testing::Test {
   std::string browser_signal_seller_;
   int browser_signal_join_count_;
   int browser_signal_bid_count_;
-  std::vector<BidderWorklet::PreviousWin> browser_signal_prev_wins_;
+  std::vector<mojo::StructPtr<mojom::PreviousWin>> browser_signal_prev_wins_;
   std::vector<std::string> trusted_bidding_signals_keys_;
   std::unique_ptr<TrustedBiddingSignals> trusted_bidding_signals_;
   std::string seller_signals_;
@@ -649,19 +650,19 @@ TEST_F(BidderWorkletTest, GenerateBidParametersOptionalString) {
 // Utility methods to create vectors of PreviousWin. Needed because StructPtr's
 // don't allow copying.
 
-std::vector<BidderWorklet::PreviousWin> CreateWinList(
-    const BidderWorklet::PreviousWin& win1) {
-  std::vector<BidderWorklet::PreviousWin> out;
-  out.emplace_back(win1);
+std::vector<mojo::StructPtr<mojom::PreviousWin>> CreateWinList(
+    const mojo::StructPtr<mojom::PreviousWin>& win1) {
+  std::vector<mojo::StructPtr<mojom::PreviousWin>> out;
+  out.emplace_back(win1.Clone());
   return out;
 }
 
-std::vector<BidderWorklet::PreviousWin> CreateWinList(
-    const BidderWorklet::PreviousWin& win1,
-    const BidderWorklet::PreviousWin& win2) {
-  std::vector<BidderWorklet::PreviousWin> out;
-  out.emplace_back(win1);
-  out.emplace_back(win2);
+std::vector<mojo::StructPtr<mojom::PreviousWin>> CreateWinList(
+    const mojo::StructPtr<mojom::PreviousWin>& win1,
+    const mojo::StructPtr<mojom::PreviousWin>& win2) {
+  std::vector<mojo::StructPtr<mojom::PreviousWin>> out;
+  out.emplace_back(win1.Clone());
+  out.emplace_back(win2.Clone());
   return out;
 }
 
@@ -671,10 +672,10 @@ TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
   base::Time time2;
   ASSERT_TRUE(base::Time::FromString("Mon, 15 Mar 2021 01:23:45 GMT", &time2));
 
-  auto win1 = BidderWorklet::PreviousWin{time1, R"("ad1")"};
-  auto win2 = BidderWorklet::PreviousWin{time2, R"(["ad2"])"};
+  auto win1 = mojom::PreviousWin::New(time1, R"("ad1")");
+  auto win2 = mojom::PreviousWin::New(time2, R"(["ad2"])");
   struct TestCase {
-    std::vector<BidderWorklet::PreviousWin> prev_wins;
+    std::vector<mojo::StructPtr<mojom::PreviousWin>> prev_wins;
     // Value to output as the ad data.
     const char* ad;
     // Expected output in the `ad` field of the result.

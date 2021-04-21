@@ -26,9 +26,9 @@ namespace auction_worklet {
 namespace {
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("hintsfetcher_gethintsrequest", R"(
+    net::DefineNetworkTrafficAnnotation("auction_downloader", R"(
         semantics {
-          sender: "BidderWorklet"
+          sender: "AuctionDownloader"
           description:
             "Requests FLEDGE script or JSON file for running an ad auction."
           trigger:
