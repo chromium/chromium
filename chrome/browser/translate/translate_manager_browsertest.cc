@@ -1085,7 +1085,14 @@ IN_PROC_BROWSER_TEST_F(OverrideSitePrefsForAutoHrefTranslateBrowserTest,
 }
 
 // Test if there was an error during translation.
-IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageTranslationError) {
+// Flaky on Linux: crbug.com/1200687
+#if defined(OS_LINUX)
+#define MAYBE_PageTranslationError DISABLED_PageTranslationError
+#else
+#define MAYBE_PageTranslationError PageTranslationError
+#endif
+IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
+                       MAYBE_PageTranslationError) {
   SetTranslateScript(kTestValidScript);
 
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
