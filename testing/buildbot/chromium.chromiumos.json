@@ -1282,6 +1282,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "lacros_smoke_tast_tests_amd64-generic",
         "resultdb": {
           "enable": true
         },
@@ -1297,8 +1298,8 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "lacros_smoke_tast_tests_amd64_generic",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_smoke_tast_tests_amd64_generic/"
+        "test": "lacros_smoke_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_smoke_tast_tests/"
       }
     ]
   },

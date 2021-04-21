@@ -590,4 +590,35 @@
     },
     'identifier': 'OCTOPUS_TOT-2',
   },
+  'LACROS_AMD64_GENERIC': {
+    'args': [
+      '--board=amd64-generic',
+      '--use-vm',
+    ],
+    'identifier': 'amd64-generic',
+    'swarming': {
+       'dimension_sets': [
+        {
+          'cpu': 'x86',
+          'kvm': '1',
+          'os': 'Ubuntu-16.04',
+        }
+      ],
+    },
+  },
+  'LACROS_EVE': {
+    'args': [
+      '--board=eve',
+      '--flash',
+    ],
+    'identifier': 'eve',
+    'swarming': {
+      'dimension_sets': [
+        {
+          'os': 'ChromeOS',
+          'device_type': 'eve',
+        }
+      ],
+    },
+  },
 }

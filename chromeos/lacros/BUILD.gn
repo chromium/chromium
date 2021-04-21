@@ -54,11 +54,9 @@ lacros_resource_sizes_test("resource_sizes_lacros_chrome") {
   data_deps = [ "//chrome:chrome" ]
 }
 
-# This template contains a list of tests that are known to work reliably.
-template("lacros_smoke_tast_tests") {
-  forward_variables_from(invoker, [ "override_board" ])
-  assert(defined(override_board), "override_board is required")
-  lacros_tast_test(target_name) {
+if (is_chromeos_device) {
+  lacros_tast_tests("lacros_smoke_tast_tests") {
+    # A list of tests that are known to work reliably.
     # TODO(crbug.com/1158590): use --attr-expr instead of hard-coding the tests.
     tast_tests = [
       "lacros.AudioPlay",
@@ -67,12 +65,8 @@ template("lacros_smoke_tast_tests") {
       "lacros.ShelfLaunch",
     ]
   }
-}
 
-template("lacros_all_tast_tests") {
-  forward_variables_from(invoker, [ "override_board" ])
-  assert(defined(override_board), "override_board is required")
-  lacros_tast_test(target_name) {
+  lacros_tast_tests("lacros_all_tast_tests") {
     # The following expression filters out all non-critical tests. See the link
     # below for more details:
     # https://chromium.googlesource.com/chromiumos/platform/tast/+/main/docs/test_attributes.md
@@ -83,37 +77,5 @@ template("lacros_all_tast_tests") {
       # test tests again the live Lacros on Omaha, so it's not applicable here.
       "lacros.ShelfLaunch.omaha",
     ]
-  }
-}
-
-# "cros_board" set in the GN args defines the board used to build lacros-chrome,
-# while the "override_board" here defines the board on which to test the built
-# binary, for more details, please refer to the "generate_runner_script"
-# template in //build/config/chromeos/rules.gni.
-if (is_chromeos_device) {
-  _boards = [ cros_board ] + string_split(cros_boards, ":") +
-            string_split(cros_boards_with_qemu_images, ":")
-
-  # On Chromium CI, only a very limited number of boards are supported:
-  # amd64-generic, eve, kevin etc, so just hard-coding them for simplicity.
-  foreach(b1,
-          [
-            "amd64-generic",
-            "eve",
-          ]) {
-    # To avoid duplicate definition of the targets.
-    matched = false
-    foreach(b2, _boards) {
-      if (!matched && b1 == b2) {
-        b1_underscore = string_replace(b1, "-", "_")
-        lacros_smoke_tast_tests("lacros_smoke_tast_tests_${b1_underscore}") {
-          override_board = b1
-        }
-        lacros_all_tast_tests("lacros_all_tast_tests_${b1_underscore}") {
-          override_board = b1
-        }
-        matched = true
-      }
-    }
   }
 }

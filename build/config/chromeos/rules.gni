@@ -420,10 +420,9 @@ template("tast_test") {
   }
 }
 
-template("lacros_tast_test") {
+template("lacros_tast_tests") {
   forward_variables_from(invoker,
                          [
-                           "override_board",
                            "tast_attr_expr",
                            "tast_disabled_tests",
                            "tast_tests",

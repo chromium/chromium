@@ -4128,21 +4128,10 @@
       }
     },
 
-    'lacros_all_tast_tests_amd64_generic': {
-      'lacros_all_tast_tests_amd64_generic': {
-        'args': [
-          '--board=amd64-generic',
-          '--use-vm',
-        ],
+    'lacros_all_tast_tests': {
+      'lacros_all_tast_tests': {
         'swarming': {
           'idempotent': False,  # https://crbug.com/923426#c27
-          'dimension_sets': [
-            {
-              'cpu': 'x86',
-              'kvm': '1',
-              'os': 'Ubuntu-16.04',
-            }
-          ],
         },
         'resultdb': {
           'enable': True,
@@ -4157,42 +4146,10 @@
       },
     },
 
-    'lacros_smoke_tast_tests_amd64_generic': {
-      'lacros_smoke_tast_tests_amd64_generic': {
-        'args': [
-          '--board=amd64-generic',
-          '--use-vm',
-        ],
+    'lacros_smoke_tast_tests': {
+      'lacros_smoke_tast_tests': {
         'swarming': {
           'idempotent': False,  # https://crbug.com/923426#c27
-          'dimension_sets': [
-            {
-              'cpu': 'x86',
-              'kvm': '1',
-              'os': 'Ubuntu-16.04',
-            }
-          ],
-        },
-        'resultdb': {
-          'enable': True,
-        },
-      },
-    },
-
-    'lacros_smoke_tast_tests_eve': {
-      'lacros_smoke_tast_tests_eve': {
-        'args': [
-          '--board=eve',
-          '--flash',
-        ],
-        'swarming': {
-          'idempotent': False,  # https://crbug.com/923426#c27
-          'dimension_sets': [
-            {
-              'os': 'ChromeOS',
-              'device_type': 'eve',
-            }
-          ],
         },
         'resultdb': {
           'enable': True,
@@ -7207,6 +7164,14 @@
       },
     },
 
+    'lacros_all_tast_tests_amd64_generic': {
+      'lacros_all_tast_tests': {
+        'variants': [
+          'LACROS_AMD64_GENERIC',
+        ]
+      },
+    },
+
     # Check go/lacros-on-skylab for details of Skylab configurations.
     'lacros_skylab_x86_64': {
       'lacros_skylab_poc': {
@@ -7219,6 +7184,22 @@
           'CROS_SNAPPY_TOT',
           'CROS_OCTOPUS_TOT-1',
           'CROS_OCTOPUS_TOT-2',
+        ]
+      },
+    },
+
+    'lacros_smoke_tast_tests_amd64_generic': {
+      'lacros_smoke_tast_tests': {
+        'variants': [
+          'LACROS_AMD64_GENERIC',
+        ]
+      },
+    },
+
+    'lacros_smoke_tast_tests_eve': {
+      'lacros_smoke_tast_tests': {
+        'variants': [
+          'LACROS_EVE',
         ]
       },
     },
