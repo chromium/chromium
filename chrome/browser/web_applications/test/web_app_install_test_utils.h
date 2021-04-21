@@ -26,8 +26,8 @@ AppId InstallDummyWebApp(Profile* profile,
                          const std::string& app_name,
                          const GURL& app_url);
 
-// Synchronous version of InstallManager::InstallWebAppFromInfo.
-// TODO (glenrob): Remove the duplicate of this in web_app_browsertest_util.h.
+// Synchronous version of InstallManager::InstallWebAppFromInfo. May be used in
+// unit tests and browser tests.
 AppId InstallWebApp(Profile* profile, std::unique_ptr<WebApplicationInfo>);
 
 }  // namespace test

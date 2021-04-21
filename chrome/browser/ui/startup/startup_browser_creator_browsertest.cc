@@ -105,10 +105,10 @@
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/url_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "third_party/blink/public/common/features.h"
 #endif
@@ -1434,7 +1434,7 @@ class StartupBrowserWebAppUrlHandlingTest : public InProcessBrowserTest {
     info->open_as_window = true;
     info->url_handlers = url_handlers;
     web_app::AppId app_id =
-        web_app::InstallWebApp(browser()->profile(), std::move(info));
+        web_app::test::InstallWebApp(browser()->profile(), std::move(info));
 
     auto& url_handler_manager =
         provider()->os_integration_manager().url_handler_manager_for_testing();
@@ -1575,7 +1575,7 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
     info->open_as_window = true;
     info->protocol_handlers = protocol_handlers;
     web_app::AppId app_id =
-        web_app::InstallWebApp(browser()->profile(), std::move(info));
+        web_app::test::InstallWebApp(browser()->profile(), std::move(info));
 
     auto& protocol_handler_manager =
         provider()

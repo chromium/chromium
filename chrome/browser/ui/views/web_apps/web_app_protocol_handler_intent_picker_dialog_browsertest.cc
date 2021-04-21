@@ -14,8 +14,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.h"
-#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -35,7 +35,7 @@ web_app::AppId InstallTestWebApp(Profile* profile) {
   protocol_handler.protocol = u"web+test";
   protocol_handler.url = GURL("http://example.org/?uri=%s");
   app_info->protocol_handlers.push_back(std::move(protocol_handler));
-  return web_app::InstallWebApp(profile, std::move(app_info));
+  return web_app::test::InstallWebApp(profile, std::move(app_info));
 }
 
 }  // namespace

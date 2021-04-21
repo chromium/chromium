@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/arc/arc_util.h"
@@ -172,8 +173,8 @@ class WebAppsUninstallDialogViewBrowserTest
     web_app_info->start_url = GetAppURL();
     web_app_info->scope = GetAppURL().GetWithoutFilename();
 
-    app_id_ =
-        web_app::InstallWebApp(browser()->profile(), std::move(web_app_info));
+    app_id_ = web_app::test::InstallWebApp(browser()->profile(),
+                                           std::move(web_app_info));
     content::TestNavigationObserver navigation_observer(GetAppURL());
     navigation_observer.StartWatchingNewWebContents();
     web_app::LaunchWebAppBrowser(browser()->profile(), app_id_);

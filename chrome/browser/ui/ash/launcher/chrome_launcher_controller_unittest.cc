@@ -1038,7 +1038,7 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
     }
 
     web_app::AppId installed_app_id =
-        web_app::InstallWebApp(profile(), std::move(web_app_info));
+        web_app::test::InstallWebApp(profile(), std::move(web_app_info));
     ASSERT_EQ(installed_app_id, web_app_id);
     app_service_test_.FlushMojoCalls();
   }
@@ -2867,7 +2867,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest,
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = GURL(kWebAppUrl);
   web_app::AppId installed_app_id =
-      web_app::InstallWebApp(profile(), std::move(web_app_info));
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   launcher_controller_->PinAppWithID(installed_app_id);
 
   std::unique_ptr<Browser> profile2_browser =

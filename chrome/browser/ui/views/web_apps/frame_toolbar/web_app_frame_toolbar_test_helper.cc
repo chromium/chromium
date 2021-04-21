@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
@@ -35,7 +36,7 @@ void WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
   web_app_info->open_as_window = true;
 
   web_app::AppId app_id =
-      web_app::InstallWebApp(browser->profile(), std::move(web_app_info));
+      web_app::test::InstallWebApp(browser->profile(), std::move(web_app_info));
   content::TestNavigationObserver navigation_observer(start_url);
   navigation_observer.StartWatchingNewWebContents();
   app_browser_ = web_app::LaunchWebAppBrowser(browser->profile(), app_id);

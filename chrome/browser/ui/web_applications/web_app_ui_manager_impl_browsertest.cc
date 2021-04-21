@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_uninstall_waiter.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -62,7 +63,7 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = start_url;
     web_app_info->open_as_window = true;
-    return web_app::InstallWebApp(profile(), std::move(web_app_info));
+    return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }
 
   void UninstallWebApp(const AppId& app_id, UninstallWebAppCallback callback) {

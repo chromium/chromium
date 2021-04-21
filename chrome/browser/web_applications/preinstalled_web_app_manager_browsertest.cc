@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #endif
 
 namespace web_app {
@@ -646,7 +647,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   auto web_application_info = std::make_unique<WebApplicationInfo>();
   web_application_info->start_url = user_app_start_url;
   web_application_info->title = u"Test user app";
-  AppId user_app_id = InstallWebApp(profile(), std::move(web_application_info));
+  AppId user_app_id =
+      test::InstallWebApp(profile(), std::move(web_application_info));
 
   // Ensure the UI receives these apps.
   proxy->FlushMojoCallsForTesting();

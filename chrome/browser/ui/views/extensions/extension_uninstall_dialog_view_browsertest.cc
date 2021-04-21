@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -150,8 +151,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url;
   web_app_info->open_as_window = true;
-  web_app::AppId app_id =
-      web_app::InstallWebApp(browser()->profile(), std::move(web_app_info));
+  web_app::AppId app_id = web_app::test::InstallWebApp(browser()->profile(),
+                                                       std::move(web_app_info));
   Browser* app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
 

@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
@@ -246,8 +247,8 @@ class AppLaunchHandlerBrowserTest : public extensions::PlatformAppBrowserTest {
   void CreateWebApp() {
     auto web_application_info = std::make_unique<WebApplicationInfo>();
     web_application_info->start_url = GURL("https://example.org");
-    web_app::AppId app_id =
-        web_app::InstallWebApp(profile(), std::move(web_application_info));
+    web_app::AppId app_id = web_app::test::InstallWebApp(
+        profile(), std::move(web_application_info));
 
     // Wait for app service to see the newly installed app.
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());

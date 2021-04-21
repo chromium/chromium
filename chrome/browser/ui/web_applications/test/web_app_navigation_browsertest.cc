@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -236,7 +237,7 @@ AppId WebAppNavigationBrowserTest::InstallTestWebApp(
   web_app_info->description = u"Test description";
   web_app_info->open_as_window = true;
 
-  return InstallWebApp(profile(), std::move(web_app_info));
+  return test::InstallWebApp(profile(), std::move(web_app_info));
 }
 
 Browser* WebAppNavigationBrowserTest::OpenTestWebApp() {

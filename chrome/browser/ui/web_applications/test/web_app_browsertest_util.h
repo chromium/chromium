@@ -5,23 +5,19 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_
 
-#include <memory>
-
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "url/gurl.h"
 
 class Browser;
 class Profile;
-struct WebApplicationInfo;
 
 namespace web_app {
 
 struct ExternalInstallOptions;
 enum class InstallResultCode;
 
-// Synchronous version of InstallManager::InstallWebAppFromInfo.
-AppId InstallWebApp(Profile* profile, std::unique_ptr<WebApplicationInfo>);
+// For InstallWebAppFromInfo see web_app_install_test_utils.h
 
 // Navigates to |app_url| and installs app without any installability checks.
 // Always selects to open app in its own window.
@@ -74,7 +70,6 @@ void WaitForBrowserToBeClosed(Browser* browser);
 
 bool IsBrowserOpen(const Browser* test_browser);
 
-// Launches the app for |app| in |profile|.
 void UninstallWebApp(Profile* profile, const AppId& app_id);
 
 using UninstallWebAppCallback = base::OnceCallback<void(bool uninstalled)>;

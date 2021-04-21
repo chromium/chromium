@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/api/crash_report_private/crash_report_private_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -302,7 +303,7 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = start_url;
   web_app::AppId app_id =
-      web_app::InstallWebApp(profile(), std::move(web_app_info));
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
 
   content::WebContents* web_content =

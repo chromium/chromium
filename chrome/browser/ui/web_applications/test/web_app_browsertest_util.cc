@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 
+#include <memory>
+#include <string>
+
 #include "base/callback_helpers.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
@@ -103,30 +106,6 @@ void AutoAcceptDialogCallback(
 }
 
 }  // namespace
-
-AppId InstallWebApp(Profile* profile,
-                    std::unique_ptr<WebApplicationInfo> web_app_info) {
-  if (web_app_info->title.empty())
-    web_app_info->title = u"WebApplicationInfo App Name";
-
-  AppId app_id;
-  base::RunLoop run_loop;
-  auto* provider = WebAppProvider::Get(profile);
-  DCHECK(provider);
-  WaitUntilReady(provider);
-  provider->install_manager().InstallWebAppFromInfo(
-      std::move(web_app_info), ForInstallableSite::kYes,
-      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-      base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
-            app_id = installed_app_id;
-            run_loop.Quit();
-          }));
-
-  run_loop.Run();
-  return app_id;
-}
 
 AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
   NavigateToURLAndWait(browser, app_url);

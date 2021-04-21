@@ -41,6 +41,7 @@
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/pref_names.h"
@@ -218,8 +219,8 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
         base::UTF8ToUTF16("Test description \xF0\x9F\x90\x90");
     web_app_info->open_as_window = open_as_window;
 
-    return web_app::InstallWebApp(browser()->profile(),
-                                  std::move(web_app_info));
+    return web_app::test::InstallWebApp(browser()->profile(),
+                                        std::move(web_app_info));
   }
 
   Browser* OpenTestWebApp(const AppId& app_id) {

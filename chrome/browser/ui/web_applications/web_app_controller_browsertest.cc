@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -38,12 +39,12 @@ AppId WebAppControllerBrowserTestBase::InstallPWA(const GURL& start_url) {
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->open_as_window = true;
   web_app_info->title = u"A Web App";
-  return web_app::InstallWebApp(profile(), std::move(web_app_info));
+  return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 }
 
 AppId WebAppControllerBrowserTestBase::InstallWebApp(
     std::unique_ptr<WebApplicationInfo> web_app_info) {
-  return web_app::InstallWebApp(profile(), std::move(web_app_info));
+  return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 }
 
 Browser* WebAppControllerBrowserTestBase::LaunchWebAppBrowser(

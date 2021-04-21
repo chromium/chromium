@@ -33,7 +33,7 @@ void WebAppFrameToolbarTestMixin::InstallAndLaunchWebApp(
   web_app_info->open_as_window = true;
 
   web_app::AppId app_id =
-      web_app::InstallWebApp(browser->profile(), std::move(web_app_info));
+      web_app::test::InstallWebApp(browser->profile(), std::move(web_app_info));
   content::TestNavigationObserver navigation_observer(start_url);
   navigation_observer.StartWatchingNewWebContents();
   app_browser_ = web_app::LaunchWebAppBrowser(browser->profile(), app_id);

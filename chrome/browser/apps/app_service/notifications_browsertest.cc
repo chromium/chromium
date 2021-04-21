@@ -31,6 +31,7 @@
 #include "chrome/browser/notifications/profile_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/arc/arc_service_manager.h"
@@ -284,8 +285,8 @@ class AppNotificationsWebNotificationTest
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = url;
     web_app_info->scope = scope;
-    std::string app_id =
-        web_app::InstallWebApp(browser()->profile(), std::move(web_app_info));
+    std::string app_id = web_app::test::InstallWebApp(browser()->profile(),
+                                                      std::move(web_app_info));
     content::TestNavigationObserver navigation_observer(url);
     navigation_observer.StartWatchingNewWebContents();
     web_app::LaunchWebAppBrowser(browser()->profile(), app_id);

@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -879,8 +880,8 @@ class WebAppNonClientFrameViewAshTest
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
     web_app_info->theme_color = GetThemeColor();
 
-    web_app::AppId app_id =
-        web_app::InstallWebApp(browser()->profile(), std::move(web_app_info));
+    web_app::AppId app_id = web_app::test::InstallWebApp(
+        browser()->profile(), std::move(web_app_info));
     content::TestNavigationObserver navigation_observer(GetAppURL());
     navigation_observer.StartWatchingNewWebContents();
     app_browser_ = web_app::LaunchWebAppBrowser(browser()->profile(), app_id);

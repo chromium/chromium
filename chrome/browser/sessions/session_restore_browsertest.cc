@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -2873,7 +2874,7 @@ class AppSessionRestoreTest : public SessionRestoreTest {
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->open_as_window = true;
     web_app_info->title = u"A Web App";
-    return web_app::InstallWebApp(profile, std::move(web_app_info));
+    return web_app::test::InstallWebApp(profile, std::move(web_app_info));
   }
 };
 

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -140,8 +141,8 @@ class SystemFeaturesPolicyTest : public PolicyTest {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = app_url;
     web_app_info->scope = app_url.GetWithoutFilename();
-    web_app::AppId installed_app_id =
-        web_app::InstallWebApp(browser()->profile(), std::move(web_app_info));
+    web_app::AppId installed_app_id = web_app::test::InstallWebApp(
+        browser()->profile(), std::move(web_app_info));
     EXPECT_EQ(app_id, installed_app_id);
     // Wait for app service to see the newly installed app.
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())

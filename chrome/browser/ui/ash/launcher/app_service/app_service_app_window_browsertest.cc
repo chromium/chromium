@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -474,8 +475,8 @@ class AppServiceAppWindowWebAppBrowserTest
     web_app_info->start_url = GetAppURL();
     web_app_info->scope = GetAppURL().GetWithoutFilename();
 
-    std::string app_id =
-        web_app::InstallWebApp(browser()->profile(), std::move(web_app_info));
+    std::string app_id = web_app::test::InstallWebApp(browser()->profile(),
+                                                      std::move(web_app_info));
     CreateWebAppWindow(app_id);
     return app_id;
   }

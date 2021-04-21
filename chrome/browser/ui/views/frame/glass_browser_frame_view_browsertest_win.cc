@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -51,8 +52,8 @@ class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
     if (theme_color_)
       web_app_info->theme_color = *theme_color_;
 
-    web_app::AppId app_id =
-        web_app::InstallWebApp(browser()->profile(), std::move(web_app_info));
+    web_app::AppId app_id = web_app::test::InstallWebApp(
+        browser()->profile(), std::move(web_app_info));
     content::TestNavigationObserver navigation_observer(GetStartURL());
     navigation_observer.StartWatchingNewWebContents();
     app_browser_ = web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
@@ -188,8 +189,8 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
     web_app_info->title = u"A Web App";
     web_app_info->display_override = display_overrides;
 
-    web_app::AppId app_id =
-        web_app::InstallWebApp(browser()->profile(), std::move(web_app_info));
+    web_app::AppId app_id = web_app::test::InstallWebApp(
+        browser()->profile(), std::move(web_app_info));
 
     content::TestNavigationObserver navigation_observer(start_url);
     base::RunLoop loop;
