@@ -8,6 +8,7 @@
 #include "base/pickle.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -291,6 +292,7 @@ void SetAutofillWalletSpecificsFromCreditCardCloudTokenData(
 void SetAutofillOfferSpecificsFromOfferData(
     const AutofillOfferData& offer_data,
     sync_pb::AutofillOfferSpecifics* offer_specifics) {
+  // General offer data:
   offer_specifics->set_id(offer_data.offer_id);
   offer_specifics->set_offer_details_url(offer_data.offer_details_url.spec());
   for (const GURL& domain : offer_data.merchant_domain) {
@@ -298,16 +300,42 @@ void SetAutofillOfferSpecificsFromOfferData(
   }
   offer_specifics->set_offer_expiry_date(
       (offer_data.expiry - base::Time::UnixEpoch()).InSeconds());
-  for (int64_t instrument_id : offer_data.eligible_instrument_id) {
-    offer_specifics->mutable_card_linked_offer_data()->add_instrument_id(
-        instrument_id);
-  }
-  if (offer_data.offer_reward_amount.find("%") != std::string::npos) {
-    offer_specifics->mutable_percentage_reward()->set_percentage(
-        offer_data.offer_reward_amount);
+  offer_specifics->mutable_display_strings()->set_value_prop_text(
+      offer_data.display_strings.value_prop_text);
+#if defined(OS_ANDROID) || defined(OS_IOS)
+  offer_specifics->mutable_display_strings()->set_see_details_text_mobile(
+      offer_data.display_strings.see_details_text);
+  offer_specifics->mutable_display_strings()
+      ->set_usage_instructions_text_mobile(
+          offer_data.display_strings.usage_instructions_text);
+#else
+  offer_specifics->mutable_display_strings()->set_see_details_text_desktop(
+      offer_data.display_strings.see_details_text);
+  offer_specifics->mutable_display_strings()
+      ->set_usage_instructions_text_desktop(
+          offer_data.display_strings.usage_instructions_text);
+#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+
+  // Because card_linked_offer_data and promo_code_offer_data are a oneof,
+  // setting one will clear the other. We should figure out which one we care
+  // about.
+  if (offer_data.promo_code == "") {
+    // Card-linked offer fields (promo code is empty):
+    for (int64_t instrument_id : offer_data.eligible_instrument_id) {
+      offer_specifics->mutable_card_linked_offer_data()->add_instrument_id(
+          instrument_id);
+    }
+    if (offer_data.offer_reward_amount.find("%") != std::string::npos) {
+      offer_specifics->mutable_percentage_reward()->set_percentage(
+          offer_data.offer_reward_amount);
+    } else {
+      offer_specifics->mutable_fixed_amount_reward()->set_amount(
+          offer_data.offer_reward_amount);
+    }
   } else {
-    offer_specifics->mutable_fixed_amount_reward()->set_amount(
-        offer_data.offer_reward_amount);
+    // Promo code offer fields:
+    offer_specifics->mutable_promo_code_offer_data()->set_promo_code(
+        offer_data.promo_code);
   }
 }
 
@@ -315,14 +343,9 @@ AutofillOfferData AutofillOfferDataFromOfferSpecifics(
     const sync_pb::AutofillOfferSpecifics& offer_specifics) {
   DCHECK(IsOfferSpecificsValid(offer_specifics));
   AutofillOfferData offer_data;
+
+  // General offer data:
   offer_data.offer_id = offer_specifics.id();
-  if (offer_specifics.has_percentage_reward()) {
-    offer_data.offer_reward_amount =
-        offer_specifics.percentage_reward().percentage();
-  } else {
-    offer_data.offer_reward_amount =
-        offer_specifics.fixed_amount_reward().amount();
-  }
   offer_data.expiry =
       base::Time::UnixEpoch() +
       base::TimeDelta::FromSeconds(offer_specifics.offer_expiry_date());
@@ -331,10 +354,33 @@ AutofillOfferData AutofillOfferDataFromOfferSpecifics(
     if (GURL(domain).is_valid())
       offer_data.merchant_domain.emplace_back(domain);
   }
+  offer_data.display_strings.value_prop_text =
+      offer_specifics.display_strings().value_prop_text();
+#if defined(OS_ANDROID) || defined(OS_IOS)
+  offer_data.display_strings.see_details_text =
+      offer_specifics.display_strings().see_details_text_mobile();
+  offer_data.display_strings.usage_instructions_text =
+      offer_specifics.display_strings().usage_instructions_text_mobile();
+#else
+  offer_data.display_strings.see_details_text =
+      offer_specifics.display_strings().see_details_text_desktop();
+  offer_data.display_strings.usage_instructions_text =
+      offer_specifics.display_strings().usage_instructions_text_desktop();
+#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+
+  // Card-linked offer fields:
+  offer_data.offer_reward_amount =
+      offer_specifics.has_percentage_reward()
+          ? offer_specifics.percentage_reward().percentage()
+          : offer_specifics.fixed_amount_reward().amount();
   for (int64_t instrument_id :
        offer_specifics.card_linked_offer_data().instrument_id()) {
     offer_data.eligible_instrument_id.push_back(instrument_id);
   }
+
+  // Promo code offer fields:
+  offer_data.promo_code = offer_specifics.promo_code_offer_data().promo_code();
+
   return offer_data;
 }
 
@@ -518,24 +564,24 @@ bool IsOfferSpecificsValid(const sync_pb::AutofillOfferSpecifics specifics) {
     return false;
   }
 
-  // A valid offer has at least one linked card instrument id.
-  if (!specifics.has_card_linked_offer_data() ||
-      specifics.card_linked_offer_data().instrument_id().size() == 0) {
-    return false;
-  }
+  // Card-linked offers must have at least one linked card instrument ID, and
+  // fixed_amount_reward or percentage_reward. Promo code offers must have a
+  // promo code.
+  bool has_instrument_id =
+      specifics.has_card_linked_offer_data() &&
+      specifics.card_linked_offer_data().instrument_id().size() != 0;
+  bool has_fixed_or_percentage_reward =
+      (specifics.has_fixed_amount_reward() &&
+       specifics.fixed_amount_reward().has_amount()) ||
+      (specifics.has_percentage_reward() &&
+       specifics.percentage_reward().has_percentage() &&
+       specifics.percentage_reward().percentage().find('%') !=
+           std::string::npos);
+  bool has_promo_code = specifics.has_promo_code_offer_data() &&
+                        specifics.promo_code_offer_data().promo_code() != "";
 
-  // A valid offer must have either a percentage reward or a fixed amount
-  // reward.
-  if (!specifics.has_percentage_reward() ||
-      !specifics.percentage_reward().has_percentage()) {
-    return specifics.has_fixed_amount_reward() &&
-           specifics.fixed_amount_reward().has_amount();
-  } else if (specifics.percentage_reward().percentage().find('%') ==
-             std::string::npos) {
-    return false;
-  }
-
-  return true;
+  return (has_instrument_id && has_fixed_or_percentage_reward) ||
+         has_promo_code;
 }
 
 }  // namespace autofill

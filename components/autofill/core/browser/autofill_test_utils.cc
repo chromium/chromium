@@ -631,11 +631,15 @@ CreditCardCloudTokenData GetCreditCardCloudTokenData2() {
 AutofillOfferData GetCardLinkedOfferData1() {
   AutofillOfferData data;
   data.offer_id = 111;
-  data.offer_reward_amount = "5%";
   // Sets the expiry to be 45 days later.
   data.expiry = AutofillClock::Now() + base::TimeDelta::FromDays(45);
   data.offer_details_url = GURL("http://www.example1.com");
   data.merchant_domain.emplace_back("http://www.example1.com");
+  data.display_strings.value_prop_text = "Get 5% off your purchase";
+  data.display_strings.see_details_text = "See details";
+  data.display_strings.usage_instructions_text =
+      "Check out with this card to activate";
+  data.offer_reward_amount = "5%";
   data.eligible_instrument_id.emplace_back(111111);
   return data;
 }
@@ -643,12 +647,31 @@ AutofillOfferData GetCardLinkedOfferData1() {
 AutofillOfferData GetCardLinkedOfferData2() {
   AutofillOfferData data;
   data.offer_id = 222;
-  data.offer_reward_amount = "$10";
   // Sets the expiry to be 40 days later.
   data.expiry = AutofillClock::Now() + base::TimeDelta::FromDays(40);
   data.offer_details_url = GURL("http://www.example2.com");
   data.merchant_domain.emplace_back("http://www.example2.com");
+  data.display_strings.value_prop_text = "Get $10 off your purchase";
+  data.display_strings.see_details_text = "See details";
+  data.display_strings.usage_instructions_text =
+      "Check out with this card to activate";
+  data.offer_reward_amount = "$10";
   data.eligible_instrument_id.emplace_back(222222);
+  return data;
+}
+
+AutofillOfferData GetPromoCodeOfferData() {
+  AutofillOfferData data;
+  data.offer_id = 333;
+  // Sets the expiry to be 35 days later.
+  data.expiry = AutofillClock::Now() + base::TimeDelta::FromDays(35);
+  data.offer_details_url = GURL("http://www.example.com");
+  data.merchant_domain.emplace_back("http://www.example.com");
+  data.display_strings.value_prop_text = "5% off on shoes. Up to $50.";
+  data.display_strings.see_details_text = "See details";
+  data.display_strings.usage_instructions_text =
+      "Click the promo code field at checkout to autofill it.";
+  data.promo_code = "5PCTOFFSHOES";
   return data;
 }
 
