@@ -428,9 +428,6 @@ public class CustomTabActivityTabController implements InflationObserver {
     private WebContents takeWebContents() {
         WebContents webContents = takeAsyncWebContents();
         if (webContents != null) {
-            // TODO(https://crbug.com/1033386): Remove assert before closing the bug.
-            assert !mIntentDataProvider.isIncognito()
-                : "UNEXPECTED. This path is not covered for incognito CCT.";
             recordWebContentsStateOnLaunch(WebContentsState.TRANSFERRED_WEBCONTENTS);
             webContents.resumeLoadingCreatedWebContents();
             return webContents;
@@ -439,9 +436,6 @@ public class CustomTabActivityTabController implements InflationObserver {
         webContents = mWarmupManager.takeSpareWebContents(mIntentDataProvider.isIncognito(),
                 false /*initiallyHidden*/, WarmupManager.FOR_CCT);
         if (webContents != null) {
-            // TODO(https://crbug.com/1033386): Remove assert before closing the bug.
-            assert !mIntentDataProvider.isIncognito()
-                : "UNEXPECTED. This path is not covered for incognito CCT.";
             recordWebContentsStateOnLaunch(WebContentsState.SPARE_WEBCONTENTS);
             return webContents;
         }
@@ -458,6 +452,8 @@ public class CustomTabActivityTabController implements InflationObserver {
 
     @Nullable
     private WebContents takeAsyncWebContents() {
+        // Async WebContents are not supported for Incognit CCT.
+        if (mIntentDataProvider.isIncognito()) return null;
         int assignedTabId = IntentHandler.getTabId(mIntent);
         AsyncTabParams asyncParams = mAsyncTabParamsManager.get().remove(assignedTabId);
         if (asyncParams == null) return null;
