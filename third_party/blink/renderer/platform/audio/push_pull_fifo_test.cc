@@ -364,6 +364,96 @@ INSTANTIATE_TEST_SUITE_P(PushPullFIFOFeatureTest,
                          PushPullFIFOFeatureTest,
                          testing::ValuesIn(g_feature_test_params));
 
+
+struct FIFOEarmarkTestParam {
+  FIFOTestSetup setup;
+  size_t callback_buffer_size;
+  size_t expected_earmark_frames;
+};
+
+class PushPullFIFOEarmarkFramesTest
+    : public testing::TestWithParam<FIFOEarmarkTestParam> {};
+
+TEST_P(PushPullFIFOEarmarkFramesTest, FeatureTests) {
+  const FIFOTestSetup setup = GetParam().setup;
+  const size_t callback_buffer_size = GetParam().callback_buffer_size;
+  const size_t expected_earmark_frames = GetParam().expected_earmark_frames;
+
+  // Create a FIFO with a specified configuration.
+  std::unique_ptr<PushPullFIFO> fifo = std::make_unique<PushPullFIFO>(
+      setup.number_of_channels, setup.fifo_length);
+  fifo->SetEarmarkFrames(callback_buffer_size);
+
+  scoped_refptr<AudioBus> output_bus;
+
+  // Iterate all the scheduled push/pull actions.
+  size_t frame_counter = 0;
+  for (const auto& action : setup.fifo_actions) {
+    if (strcmp(action.action, "PUSH") == 0) {
+      scoped_refptr<AudioBus> input_bus =
+          AudioBus::Create(setup.number_of_channels, action.number_of_frames);
+      frame_counter = FillBusWithLinearRamp(input_bus.get(), frame_counter);
+      fifo->Push(input_bus.get());
+      LOG(INFO) << "PUSH " << action.number_of_frames
+                << " frames (frameCounter=" << frame_counter << ")";
+    } else if (strcmp(action.action, "PULL_EARMARK") == 0) {
+      output_bus =
+          AudioBus::Create(setup.number_of_channels, action.number_of_frames);
+      fifo->PullAndUpdateEarmark(output_bus.get(), action.number_of_frames);
+      LOG(INFO) << "PULL_EARMARK " << action.number_of_frames << " frames";
+    } else {
+      NOTREACHED();
+    }
+  }
+
+  // Test the earmark frames.
+  const size_t actual_earmark_frames = fifo->GetEarmarkFramesForTest();
+  EXPECT_EQ(expected_earmark_frames, actual_earmark_frames);
+}
+
+FIFOEarmarkTestParam g_earmark_test_params[] = {
+  // When there's no underrun, the earmark is equal to the callback size.
+  {{8192, 2, {
+      {"PUSH", 128},
+      {"PUSH", 128},
+      {"PULL_EARMARK", 256},
+      {"PUSH", 128},
+      {"PUSH", 128},
+      {"PULL_EARMARK", 256}
+    }}, 256, 256},
+  // The first underrun increases the earmark by the callback size.
+  {{8192, 2, {
+      {"PUSH", 128},
+      {"PUSH", 128},
+      {"PULL_EARMARK", 384}, // udnerrun; updating earmark and skipping pull.
+      {"PUSH", 128},
+      {"PUSH", 128},
+      {"PUSH", 128},
+      {"PULL_EARMARK", 384}  // OK
+    }}, 384, 768},
+  // Simulating "bursty and irregular" callbacks.
+  {{8192, 2, {
+      {"PUSH", 128},
+      {"PUSH", 128},
+      {"PUSH", 128},
+      {"PUSH", 128},
+      {"PULL_EARMARK", 480}, // OK
+      {"PUSH", 128},
+      {"PUSH", 128},
+      {"PULL_EARMARK", 480}, // underrun; updating earmark and skipping pull.
+      {"PUSH", 128},
+      {"PUSH", 128},
+      {"PUSH", 128},
+      {"PULL_EARMARK", 480}, // OK
+      {"PUSH", 128},
+      {"PULL_EARMARK", 480}  // underrun; updating earmark and skipping pull.
+    }}, 480, 1440}
+};
+
+INSTANTIATE_TEST_SUITE_P(PushPullFIFOEarmarkFramesTest,
+                         PushPullFIFOEarmarkFramesTest,
+                         testing::ValuesIn(g_earmark_test_params));
+
 }  // namespace
 
 }  // namespace blink

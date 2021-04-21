@@ -212,10 +212,10 @@ void AudioDestination::Render(const WebVector<float*>& destination_data,
   for (unsigned i = 0; i < number_of_output_channels_; ++i)
     output_bus_->SetChannelMemory(i, destination_data[i], number_of_frames);
 
-  size_t frames_to_render = fifo_->Pull(output_bus_.get(), number_of_frames);
-
-  // Use the dual-thread rendering model if the AudioWorklet is activated.
   if (worklet_task_runner_) {
+    // Use the dual-thread rendering if the AudioWorklet is activated.
+    size_t frames_to_render =
+        fifo_->PullAndUpdateEarmark(output_bus_.get(), number_of_frames);
     PostCrossThreadTask(
         *worklet_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&AudioDestination::RequestRender,
@@ -223,7 +223,8 @@ void AudioDestination::Render(const WebVector<float*>& destination_data,
                             frames_to_render, delay, delay_timestamp,
                             prior_frames_skipped));
   } else {
-    // Otherwise use the single-thread rendering with AudioDeviceThread.
+    // Otherwise use the single-thread rendering.
+    size_t frames_to_render = fifo_->Pull(output_bus_.get(), number_of_frames);
     RequestRender(number_of_frames, frames_to_render, delay,
                   delay_timestamp, prior_frames_skipped);
   }
@@ -316,6 +317,11 @@ void AudioDestination::StartWithWorkletTaskRunner(
 
   if (device_state_ != DeviceState::kStopped)
     return;
+
+  // The dual-thread rendering kicks off, so updates the earmark frames
+  // accordingly.
+  fifo_->SetEarmarkFrames(callback_buffer_size_);
+
   worklet_task_runner_ = std::move(worklet_task_runner);
   web_audio_device_->Start();
   SetDeviceState(DeviceState::kRunning);
