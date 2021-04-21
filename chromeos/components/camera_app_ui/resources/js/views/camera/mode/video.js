@@ -45,6 +45,8 @@ import {RecordTime} from './record_time.js';
 const encoderPreference = new Map([
   ['strongbad', {profile: h264.Profile.HIGH, multiplier: 6}],
   ['trogdor', {profile: h264.Profile.HIGH, multiplier: 6}],
+  ['dedede', {profile: h264.Profile.HIGH, multiplier: 8}],
+  ['volteer', {profile: h264.Profile.HIGH, multiplier: 8}],
 ]);
 
 /**
