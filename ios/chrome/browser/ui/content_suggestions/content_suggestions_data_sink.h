@@ -36,6 +36,12 @@
 // ones.
 - (void)reloadAllData;
 
+// Informs the data sink to add |sectionInfo| to the model and call |completion|
+// if a section is added. If the section already exists, |completion| will not
+// be called.
+- (void)addSection:(ContentSuggestionsSectionInformation*)sectionInfo
+        completion:(void (^)(void))completion;
+
 // The section corresponding to |sectionInfo| has been invalidated and must be
 // cleared now. This is why this method is about the data source pushing
 // something to the data sink.

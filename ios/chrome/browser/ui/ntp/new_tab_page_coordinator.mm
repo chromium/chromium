@@ -442,6 +442,10 @@
   }
 }
 
+- (void)setContentOffsetToTop {
+  [self.ntpViewController setContentOffsetToTop];
+}
+
 #pragma mark - LogoAnimationControllerOwnerOwner
 
 - (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
