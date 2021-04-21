@@ -343,6 +343,10 @@ class PictureInPicturePixelComparisonBrowserTest
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitch(switches::kDisableGpu);
     command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1");
+
+    // TODO(https://crbug.com/1201311): Refactor these pixel tests to use Skia
+    // Gold and turn this feature back on.
+    feature_list_.InitAndDisableFeature(media::kMediaSessionWebRTC);
   }
 
   base::FilePath GetFilePath(base::FilePath::StringPieceType relative_path) {
@@ -458,6 +462,8 @@ class PictureInPicturePixelComparisonBrowserTest
 
  private:
   std::unique_ptr<SkBitmap> result_bitmap_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Plays a video in PiP. Grabs a screenshot of Picture-in-Picture window and
