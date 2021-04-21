@@ -55,10 +55,7 @@ source_set("constants") {
 }
 
 source_set("history_ui") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:disable_implicit_retain_self_warning",
-  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "history_consumer.h",
     "history_entries_status_item.h",

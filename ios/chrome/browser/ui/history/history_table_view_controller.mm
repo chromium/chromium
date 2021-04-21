@@ -285,7 +285,8 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   // If history sync is enabled and there hasn't been a response from synced
   // history, try fetching again.
   SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(_browser->GetBrowserState());
+      SyncSetupServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
   if (syncSetupService->IsSyncEnabled() &&
       syncSetupService->IsDataTypeActive(syncer::HISTORY_DELETE_DIRECTIVES) &&
       queryResultsInfo.sync_timed_out) {
@@ -1133,7 +1134,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
       base::SysUTF16ToNSString(url_formatter::FormatUrl(entry.URL));
   self.contextMenuCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.navigationController
-                         browser:_browser
+                         browser:self.browser
                            title:menuTitle
                          message:nil
                             rect:CGRectMake(touchLocation.x, touchLocation.y,
@@ -1193,7 +1194,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
       base::UserMetricsAction("MobileHistoryPage_EntryLinkOpenNewTab"));
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   [self.delegate dismissHistoryWithCompletion:^{
-    UrlLoadingBrowserAgent::FromBrowser(_browser)->Load(params);
+    UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
     [self.presentationDelegate showActiveRegularTabFromHistory];
   }];
 }
@@ -1215,7 +1216,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   params.in_incognito = YES;
   [self.delegate dismissHistoryWithCompletion:^{
-    UrlLoadingBrowserAgent::FromBrowser(_browser)->Load(params);
+    UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
     [self.presentationDelegate showActiveIncognitoTabFromHistory];
   }];
 }
@@ -1270,14 +1271,14 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 // Opens URL in the current tab and dismisses the history view.
 - (void)openURL:(const GURL&)URL {
   new_tab_page_uma::RecordAction(
-      _browser->GetBrowserState(),
-      _browser->GetWebStateList()->GetActiveWebState(),
+      self.browser->GetBrowserState(),
+      self.browser->GetWebStateList()->GetActiveWebState(),
       new_tab_page_uma::ACTION_OPENED_HISTORY_ENTRY);
   UrlLoadParams params = UrlLoadParams::InCurrentTab(URL);
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   params.load_strategy = self.loadStrategy;
   [self.delegate dismissHistoryWithCompletion:^{
-    UrlLoadingBrowserAgent::FromBrowser(_browser)->Load(params);
+    UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
     [self.presentationDelegate showActiveRegularTabFromHistory];
   }];
 }
