@@ -11,6 +11,7 @@ import "url/mojom/url.mojom";
 // An advertisement to display for an interest group.
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#12-interest-group-attributes
 struct InterestGroupAd {
+  // Must use https.
   url.mojom.Url render_url;
   // Opaque JSON data, persisted, then passed as object to auction worklet.
   string? metadata;
