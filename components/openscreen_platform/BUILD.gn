@@ -26,7 +26,6 @@ source_set("openscreen_platform") {
 # //net-based implementation of UdpSocket.
 # Incompatible with ":openscreen_platform_network_service".
 source_set("openscreen_platform_net") {
-  testonly = true
   sources = [
     "net_udp_socket.cc",
     "net_udp_socket.h",
