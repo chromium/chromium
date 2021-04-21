@@ -760,6 +760,11 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // layer.
   unsigned trilinear_filtering_request_;
 
+  // TODO(crbug.com/1172694): Remove once the root cause is identified.
+#if defined(ADDRESS_SANITIZER)
+  bool destroyed_ = false;
+#endif
+
   base::WeakPtrFactory<Layer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Layer);
