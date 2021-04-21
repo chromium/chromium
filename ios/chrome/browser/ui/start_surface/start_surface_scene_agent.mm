@@ -9,18 +9,35 @@
 #error "This file requires ARC support."
 #endif
 
+@interface StartSurfaceSceneAgent ()
+
+// Caches the previous activation level.
+@property(nonatomic, assign) SceneActivationLevel previousActivationLevel;
+
+@end
+
 @implementation StartSurfaceSceneAgent
+
+- (id)init {
+  self = [super init];
+  if (self) {
+    self.previousActivationLevel = SceneActivationLevelUnattached;
+  }
+  return self;
+}
 
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (level == SceneActivationLevelBackground) {
+  if (level != SceneActivationLevelForegroundActive &&
+      self.previousActivationLevel == SceneActivationLevelForegroundActive) {
     // TODO(crbug.com/1173160): Consider when to clear the session object since
-    // Chrome may be closed without transiting to background, e.g. device power
+    // Chrome may be closed without transiting to inactive, e.g. device power
     // off, then the previous session object is staled.
     SetStartSurfaceSessionObjectForSceneState(sceneState);
   }
+  self.previousActivationLevel = level;
 }
 
 @end
