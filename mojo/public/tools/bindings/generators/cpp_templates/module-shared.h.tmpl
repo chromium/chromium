@@ -42,6 +42,7 @@ namespace {{namespace}} {
 #include <type_traits>
 #include <utility>
 
+{%- if not contains_only_enums %}
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
@@ -51,7 +52,10 @@ namespace {{namespace}} {
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/map_data_view.h"
 #include "mojo/public/cpp/bindings/string_data_view.h"
+{%- endif %}
+
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+
 #include "{{module.path}}-shared-internal.h"
 {%- for import in imports %}
 #include "{{import.path}}-shared.h"

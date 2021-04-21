@@ -294,6 +294,15 @@ class Generator(generator.Generator):
     return any(map(mojom.ContainsHandlesOrInterfaces,
                    self.module.structs + self.module.unions))
 
+  def _ContainsOnlyEnums(self):
+    """Returns whether this module contains only enums.
+
+    When true, the generated headers can skip many includes.
+    """
+    m = self.module
+    return (len(m.enums) > 0 and len(m.structs) == 0 and len(m.interfaces) == 0
+            and len(m.unions) == 0 and len(m.constants) == 0)
+
   def _ReferencesAnyNativeType(self):
     """Returns whether this module uses native types directly or indirectly.
 
@@ -323,28 +332,29 @@ class Generator(generator.Generator):
       all_enums.extend(interface.enums)
 
     return {
-      "all_enums": all_enums,
-      "disallow_interfaces": self.disallow_interfaces,
-      "disallow_native_types": self.disallow_native_types,
-      "enable_kythe_annotations": self.enable_kythe_annotations,
-      "enums": self.module.enums,
-      "export_attribute": self.export_attribute,
-      "export_header": self.export_header,
-      "extra_public_headers": self._GetExtraPublicHeaders(),
-      "extra_traits_headers": self._GetExtraTraitsHeaders(),
-      "for_blink": self.for_blink,
-      "imports": self.module.imports,
-      "interfaces": self.module.interfaces,
-      "kinds": self.module.kinds,
-      "module": self.module,
-      "module_namespace": self.module.namespace,
-      "namespaces_as_array": NamespaceToArray(self.module.namespace),
-      "structs": self.module.structs,
-      "support_lazy_serialization": self.support_lazy_serialization,
-      "unions": self.module.unions,
-      "uses_interfaces": self._ReferencesAnyHandleOrInterfaceType(),
-      "uses_native_types": self._ReferencesAnyNativeType(),
-      "variant": self.variant,
+        "all_enums": all_enums,
+        "contains_only_enums": self._ContainsOnlyEnums(),
+        "disallow_interfaces": self.disallow_interfaces,
+        "disallow_native_types": self.disallow_native_types,
+        "enable_kythe_annotations": self.enable_kythe_annotations,
+        "enums": self.module.enums,
+        "export_attribute": self.export_attribute,
+        "export_header": self.export_header,
+        "extra_public_headers": self._GetExtraPublicHeaders(),
+        "extra_traits_headers": self._GetExtraTraitsHeaders(),
+        "for_blink": self.for_blink,
+        "imports": self.module.imports,
+        "interfaces": self.module.interfaces,
+        "kinds": self.module.kinds,
+        "module": self.module,
+        "module_namespace": self.module.namespace,
+        "namespaces_as_array": NamespaceToArray(self.module.namespace),
+        "structs": self.module.structs,
+        "support_lazy_serialization": self.support_lazy_serialization,
+        "unions": self.module.unions,
+        "uses_interfaces": self._ReferencesAnyHandleOrInterfaceType(),
+        "uses_native_types": self._ReferencesAnyNativeType(),
+        "variant": self.variant,
     }
 
   @staticmethod
