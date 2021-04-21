@@ -889,8 +889,9 @@ TEST_F(DesktopWidgetTestInteractive, CanActivateFlagIsHonored) {
 
 #if defined(USE_AURA)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(USE_OZONE)
 // TODO(crbug.com/916272): investigate fixing and enabling on Chrome OS.
+// TODO(crbug.com/1200034): investigate fixing and enabling on Ozone/Wayland.
 #define MAYBE_TouchSelectionQuickMenuIsNotActivated \
   DISABLED_TouchSelectionQuickMenuIsNotActivated
 #else
