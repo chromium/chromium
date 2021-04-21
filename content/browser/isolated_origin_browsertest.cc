@@ -575,6 +575,86 @@ IN_PROC_BROWSER_TEST_F(SameProcessOriginIsolationOptInHeaderTest,
               1)));
 }
 
+// Verify OAC is calculated using the base URL when using LoadDataWithBaseURL()
+// (analogous to Android WebView's loadDataWithBaseURL()) when the actual site
+// does not specify an Origin-Agent-Cluster value.
+IN_PROC_BROWSER_TEST_F(SameProcessOriginIsolationOptInHeaderTest,
+                       LoadDataWithBaseURLNoOAC) {
+  const GURL test_url = https_server()->GetURL("foo.com", "/title1.html");
+
+  TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
+  shell()->LoadDataWithBaseURL(
+      test_url, "<!DOCTYPE html><html><body></body></html>", test_url);
+  navigation_observer.Wait();
+
+  // Even though this internally navigates to a data: URL (which would imply
+  // `window.originAgentCluster === true`, the base URL should be used for the
+  // OAC calculation.
+  EXPECT_EQ(false, EvalJs(shell(), "window.originAgentCluster"));
+  EXPECT_TRUE(ExecJs(
+      shell(), "document.body.appendChild(document.createElement('iframe'))"));
+
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      ChildFrameAt(web_contents()->GetMainFrame(), 0), test_url));
+  EXPECT_EQ(false, EvalJs(ChildFrameAt(web_contents()->GetMainFrame(), 0),
+                          "window.originAgentCluster"));
+
+  // If OAC is incorrectly calculated for `LoadDataWithBaseURL()`, this will
+  // fail the access checks in Blink because the two browsing contexts will be
+  // treated as cross-origin.
+  EXPECT_EQ("This page has no title.\n\n",
+            EvalJs(shell(), "window[0].document.body.textContent"));
+}
+
+// Verify OAC is calculated using the base URL when using LoadDataWithBaseURL()
+// (analogous to Android WebView's loadDataWithBaseURL()). Unlike the previous
+// test, the actual site specifies an Origin-Agent-Cluster value, which should
+// be ignored.
+IN_PROC_BROWSER_TEST_F(SameProcessOriginIsolationOptInHeaderTest,
+                       LoadDataWithBaseURLWithOAC) {
+  const GURL test_url = https_server()->GetURL("foo.com", "/isolate_origin");
+  SetHeaderValue("?1");
+
+  // `tab2` and `shell()` will be in separate browsing instances. As an
+  // optimization, browsing instances only track OAC consistency if an origin
+  // has ever sent OAC headers. Once an origin has sent OAC headers, this is
+  // tracked globally.
+  //
+  // This navigation marks "foo.com" as having sent OAC headers. This is
+  // important to validate that `LoadDataWithBaseURL()` uses the origin
+  // calculated from the base URL to update the non-isolated origin list in
+  // `shell()`'s browsing instance. If this is not done correctly, then loading
+  // "foo.com/isolate_origin" in the subframe will incorrectly use OAC in the
+  // subframe, which will be inconsistent with the main frame loaded via
+  // `LoadDataWithBaseURL()`.
+  Shell* tab2 = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(tab2, test_url));
+
+  TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
+  shell()->LoadDataWithBaseURL(
+      test_url, "<!DOCTYPE html><html><body></body></html>", test_url);
+  navigation_observer.Wait();
+
+  // Even though this internally navigates to a data: URL (which would imply
+  // `window.originAgentCluster === true`, the base URL should be used for the
+  // OAC calculation.
+  EXPECT_EQ(false, EvalJs(shell(), "window.originAgentCluster"));
+  EXPECT_TRUE(ExecJs(
+      shell(), "document.body.appendChild(document.createElement('iframe'))"));
+
+  // Even though this navigation sets the OAC header value, it should be
+  // ignored, since the SiteInstance for foo.com is already site-keyed.
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      ChildFrameAt(web_contents()->GetMainFrame(), 0), test_url));
+  EXPECT_EQ(false, EvalJs(ChildFrameAt(web_contents()->GetMainFrame(), 0),
+                          "window.originAgentCluster"));
+
+  // The two frames should be same-origin to each other, since the OAC header
+  // value should be ignored.
+  EXPECT_EQ("isolate me!",
+            EvalJs(shell(), "window[0].document.body.textContent"));
+}
+
 // This test verifies that --disable-web-security overrides same-process
 // OriginAgentCluster (i.e. disables it).
 IN_PROC_BROWSER_TEST_F(SameProcessNoWebSecurityOriginIsolationOptInHeaderTest,
