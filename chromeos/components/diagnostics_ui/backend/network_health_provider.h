@@ -16,6 +16,9 @@
 namespace chromeos {
 namespace diagnostics {
 
+using DeviceMap = std::map<network_config::mojom::NetworkType,
+                           network_config::mojom::DeviceStatePropertiesPtr>;
+
 class NetworkHealthProvider
     : public network_config::mojom::CrosNetworkConfigObserver {
  public:
@@ -39,15 +42,25 @@ class NetworkHealthProvider
 
   std::vector<std::string> GetNetworkGuidListForTesting();
 
+  const DeviceMap& GetDeviceTypeMapForTesting();
+
  private:
   // Handler for receiving a list of active networks.
   void OnActiveNetworkStateListReceived(
       std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks);
 
+  // Handler for receiving a list of devices.
+  void OnDeviceStateListReceived(
+      std::vector<network_config::mojom::DeviceStatePropertiesPtr> devices);
+
   // Map of networks that are active and of a supported
   // type (Ethernet, WiFi, Cellular).
   std::map<std::string, network_config::mojom::NetworkStatePropertiesPtr>
       guid_to_network_map;
+
+  // Maps device type to device properties, used to find corresponding device
+  // for a network.
+  DeviceMap device_type_map_;
 
   // Remote for sending requests to the CrosNetworkConfig service.
   mojo::Remote<network_config::mojom::CrosNetworkConfig>

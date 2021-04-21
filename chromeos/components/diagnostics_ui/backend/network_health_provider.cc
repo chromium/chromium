@@ -41,7 +41,13 @@ NetworkHealthProvider::NetworkHealthProvider() {
 NetworkHealthProvider::~NetworkHealthProvider() = default;
 
 void NetworkHealthProvider::OnNetworkStateListChanged() {}
-void NetworkHealthProvider::OnDeviceStateListChanged() {}
+
+void NetworkHealthProvider::OnDeviceStateListChanged() {
+  remote_cros_network_config_->GetDeviceStateList(
+      base::BindOnce(&NetworkHealthProvider::OnDeviceStateListReceived,
+                     base::Unretained(this)));
+}
+
 void NetworkHealthProvider::OnActiveNetworksChanged(
     std::vector<network_config::mojom::NetworkStatePropertiesPtr>
         active_networks) {
@@ -64,12 +70,26 @@ void NetworkHealthProvider::OnActiveNetworkStateListReceived(
   // TODO(michaelcheco): Call Mojo API here.
 }
 
+void NetworkHealthProvider::OnDeviceStateListReceived(
+    std::vector<network_config::mojom::DeviceStatePropertiesPtr> devices) {
+  device_type_map_.clear();
+  for (auto& device : devices) {
+    if (IsSupportedNetworkType(device->type)) {
+      device_type_map_.emplace(device->type, std::move(device));
+    }
+  }
+}
+
 std::vector<std::string> NetworkHealthProvider::GetNetworkGuidListForTesting() {
   std::vector<std::string> network_guids;
   for (const auto& entry : guid_to_network_map) {
     network_guids.push_back(entry.first);
   }
   return network_guids;
+}
+
+const DeviceMap& NetworkHealthProvider::GetDeviceTypeMapForTesting() {
+  return device_type_map_;
 }
 
 }  // namespace diagnostics

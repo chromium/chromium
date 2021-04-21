@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -114,6 +115,47 @@ TEST_F(NetworkHealthProviderTest, UnsupportedNetworkTypeIgnored) {
   const std::vector<std::string>& network_guid_list =
       network_health_provider_.GetNetworkGuidListForTesting();
   ASSERT_TRUE(network_guid_list.empty());
+}
+
+TEST_F(NetworkHealthProviderTest, SingleSupportedDeviceStoredInDeviceTypeMap) {
+  ResetCrosNetworkConfigDevicesAndServices();
+  AddDevice(kWifiDevicePath, shill::kTypeWifi, kWifiName);
+
+  const DeviceMap& device_type_map =
+      network_health_provider_.GetDeviceTypeMapForTesting();
+
+  EXPECT_EQ(1U, device_type_map.size());
+  EXPECT_TRUE(base::Contains(device_type_map,
+                             network_config::mojom::NetworkType::kWiFi));
+}
+
+TEST_F(NetworkHealthProviderTest,
+       MultipleSupportedDevicesStoredInDeviceTypeMap) {
+  ResetCrosNetworkConfigDevicesAndServices();
+  AddDevice(kEthDevicePath, shill::kTypeEthernet, kEthName);
+  AddDevice(kWifiDevicePath, shill::kTypeWifi, kWifiName);
+
+  const DeviceMap& device_type_map =
+      network_health_provider_.GetDeviceTypeMapForTesting();
+
+  EXPECT_EQ(2U, device_type_map.size());
+  EXPECT_TRUE(base::Contains(device_type_map,
+                             network_config::mojom::NetworkType::kWiFi));
+  EXPECT_TRUE(base::Contains(device_type_map,
+                             network_config::mojom::NetworkType::kEthernet));
+}
+
+TEST_F(NetworkHealthProviderTest, DeviceTypeMapEmptyWithNoDevices) {
+  ResetCrosNetworkConfigDevicesAndServices();
+  // Remove the default WiFi device created by network_state_helper.
+  cros_network_config_test_helper_.network_state_helper()
+      .manager_test()
+      ->RemoveTechnology(shill::kTypeWifi);
+  task_environment_.RunUntilIdle();
+
+  const DeviceMap& device_type_map =
+      network_health_provider_.GetDeviceTypeMapForTesting();
+  EXPECT_EQ(0U, device_type_map.size());
 }
 
 }  // namespace diagnostics
