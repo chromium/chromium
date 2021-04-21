@@ -10025,14 +10025,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ReloadDoesntAffectCache) {
   // when the navigation 4)'s commit finishes and should not prevent putting the
   // page into the back-forward cache.
   //
-  // Note that SetBrowsingInstanceNotSwappedReason might not be called for every
+  // Note that SetBrowsingInstanceSwapResult might not be called for every
   // navigation because we might not get to this point for some navigations,
   // e.g. if the navigation uses a pre-existing RenderFrameHost and SiteInstance
   // for navigation.
   //
-  // TODO(crbug.com/1176061): Tie BrowsingInstanceNotSwappedReason to
-  // NavigationRequest instead and move the SetBrowsingInstanceNotSwappedReason
-  // call for navigations to happen at commit time instead.
+  // TODO(crbug.com/1176061): Tie BrowsingInstanceSwapResult to
+  // NavigationRequest instead and move the SetBrowsingInstanceSwapResult call
+  // for navigations to happen at commit time instead.
 
   // 5) Go forward to b.com and reload.
   web_contents()->GetController().GoForward();
