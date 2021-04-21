@@ -25,6 +25,10 @@ def EnsureServerStarted(port, build_dir):
   try:
     requests.post(server_url + '/session', json = {})
     response = requests.get(server_url + '/session/handles')
+    assert response.status_code == 200
+    # Use a page load timeout of 10 seconds.
+    response = requests.post(
+        server_url + '/session/timeouts', json = {'pageLoad': 10000})
     return response.status_code == 200
   except requests.exceptions.ConnectionError:
     cwt_chromedriver_path = os.path.join(os.path.dirname(__file__),
@@ -67,7 +71,7 @@ else:
   test_url = 'file://' + os.getcwd() + '/' + args.filename
 
 # Run the test and extract its output.
-request_body = {"url": test_url, "chrome_crashWaitTime": 5 }
+request_body = {"url": test_url, "chrome_crashWaitTime": 2 }
 request_url = 'http://localhost:' + args.port + '/session/chrome_crashtest'
 response = requests.post(request_url, json = request_body)
 assert response.status_code == 200
