@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "url/gurl.h"
 
 #if !defined(OS_ANDROID)
@@ -169,7 +170,7 @@ void ShowScanningApp(Profile* profile);
 void ShowDiagnosticsApp(Profile* profile);
 #endif
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Initiates signin in a new browser tab.
 void ShowBrowserSignin(Browser* browser,
                        signin_metrics::AccessPoint access_point,

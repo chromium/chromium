@@ -458,7 +458,8 @@ GURL GetOSSettingsUrl(const std::string& sub_page) {
 }
 #endif
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// SigninViewController::ShowSignin is only available with DICE
 void ShowBrowserSignin(Browser* browser,
                        signin_metrics::AccessPoint access_point,
                        signin::ConsentLevel consent_level) {
