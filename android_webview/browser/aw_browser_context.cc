@@ -48,6 +48,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/segregated_pref_store.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/user_prefs/user_prefs.h"
@@ -150,6 +151,9 @@ AwBrowserContext::AwBrowserContext()
   DCHECK(!g_browser_context);
 
   TRACE_EVENT0("startup", "AwBrowserContext::AwBrowserContext");
+
+  profile_metrics::SetBrowserProfileType(
+      this, profile_metrics::BrowserProfileType::kRegular);
 
   g_web_view_compat_crash_key.Set("0");
 
