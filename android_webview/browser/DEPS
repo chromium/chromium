@@ -34,7 +34,6 @@ include_rules = [
   "+components/pref_registry",
   "+components/printing/browser",
   "+components/printing/common",
-  "+components/profile_metrics",
   "+components/safe_browsing",
   "+components/security_interstitials",
   "+components/services/heap_profiling",
