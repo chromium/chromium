@@ -180,8 +180,7 @@ base::File OpenV8File(const char* file_name,
   }
 #endif  // defined(OS_ANDROID)
 
-  UMA_HISTOGRAM_ENUMERATION("V8.Initializer.OpenV8File.Result",
-                            result,
+  UMA_HISTOGRAM_ENUMERATION("V8.Initializer.OpenV8File.Result", result,
                             OpenV8FileResult::MAX_VALUE);
   return file;
 }
@@ -297,11 +296,14 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
   }
 
   if (base::FeatureList::IsEnabled(features::kV8ScriptAblation)) {
-    if (int delay = features::kV8ScriptRunDelayMs.Get()) {
-      SetV8FlagsFormatted("--script-run-delay=%i", delay);
+    if (int delay = features::kV8ScriptDelayMs.Get()) {
+      SetV8FlagsFormatted("--script-delay=%i", delay);
     }
-    if (int delay = features::kV8ScriptRunDelayOnceMs.Get()) {
-      SetV8FlagsFormatted("--script-run-delay-once=%i", delay);
+    if (int delay = features::kV8ScriptDelayOnceMs.Get()) {
+      SetV8FlagsFormatted("--script-delay-once=%i", delay);
+    }
+    if (double fraction = features::kV8ScriptDelayFraction.Get()) {
+      SetV8FlagsFormatted("--script-delay-fraction=%f", fraction);
     }
   }
 
