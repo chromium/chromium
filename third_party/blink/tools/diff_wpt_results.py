@@ -28,6 +28,17 @@ import json
 import os
 import sys
 
+from blinkpy.common.host import Host
+from blinkpy.web_tests.layout_package.bot_test_expectations import BotTestExpectationsFactory
+from blinkpy.web_tests.models.typ_types import ResultType
+from blinkpy.web_tests.port.android import (
+    PRODUCTS, PRODUCTS_TO_STEPNAMES)
+
+CSV_HEADING = ('Test name, Test Result, Baseline Result, '
+               'Result Comparison, Test Flaky Results, '
+               'Baseline Flaky Results, Unreliable Comparison\n')
+YES = 'Yes'
+NO = 'No'
 
 def map_tests_to_results(output_mp, input_mp, path=''):
     if 'actual' in input_mp:
@@ -37,41 +48,108 @@ def map_tests_to_results(output_mp, input_mp, path=''):
             map_tests_to_results(output_mp, v, path + '/' + k)
 
 
-def create_csv(actual_results_map, baseline_results_map, csv_output):
-    super_set = (set(actual_results_map.keys()) |
-                 set(baseline_results_map.keys()))
-    file_output = 'Test name, Test Result, Baseline Result, Result Comparison\n'
+class WPTResultsDiffer(object):
 
-    for test in sorted(super_set):
-        if ',' in test:
-            line = ['"%s"' % test]
-        else:
-            line = [test]
+    def __init__(self, args, actual_results_map,
+                 baseline_results_map, csv_output):
+        self._args = args
+        self._host = Host()
+        self._actual_results_map = actual_results_map
+        self._baseline_results_map = baseline_results_map
+        self._csv_output = csv_output
+        self._test_flaky_results = self._get_flaky_test_results(
+            args.product_to_compare)
+        self._baseline_flaky_results = self._get_flaky_test_results(
+            args.baseline_product)
 
-        for result_mp in [actual_results_map, baseline_results_map]:
-            line.append(result_mp.get(test, {'actual': 'MISSING'})
-                                 .get('actual').split()[-1])
+    def _get_flaky_test_results(self, product):
+        return self._get_bot_expectations(product).flakes_by_path(
+            False, ignore_bot_expected_results=True,
+            consider_only_flaky_runs=False)
 
-        if line[-1] == line[-2]:
-            line.append('SAME RESULTS')
-        elif 'MISSING' in (line[-1], line[-2]):
-            line.append('MISSING RESULTS')
-        else:
-            line.append('DIFFERENT RESULTS')
-        file_output += ','.join(line) + '\n'
+    def _get_bot_expectations(self, product):
+        specifiers = [product]
+        builders = self._host.builders.filter_builders(
+            include_specifiers=specifiers)
+        assert len(builders) == 1, (
+            'Multiple builders match the specifiers %s' % specifiers)
 
-    csv_output.write(file_output)
+        builder_name = builders[0]
+        bot_expectations_factory = BotTestExpectationsFactory(
+            self._host.builders, PRODUCTS_TO_STEPNAMES[product])
+
+        return bot_expectations_factory.expectations_for_builder(builder_name)
+
+    def flaky_results(self, test_name, flaky_dict):
+        return (flaky_dict.get(test_name, set()) or
+                flaky_dict.get(test_name.replace('external/wpt/', ''), set()))
+
+    def create_csv(self):
+        super_set = (set(self._actual_results_map.keys()) |
+                     set(self._baseline_results_map.keys()))
+        file_output = CSV_HEADING
+
+        for test in sorted(super_set):
+            if ',' in test:
+                line = ['"%s"' % test]
+            else:
+                line = [test]
+
+            for result_mp in [self._actual_results_map,
+                              self._baseline_results_map]:
+                line.append(result_mp.get(test, {'actual': 'MISSING'})
+                                     .get('actual').split()[-1])
+
+            if line[-1] == line[-2]:
+                line.append('SAME RESULTS')
+            elif 'MISSING' in (line[-1], line[-2]):
+                line.append('MISSING RESULTS')
+            else:
+                line.append('DIFFERENT RESULTS')
+
+            if line[-1] == 'DIFFERENT RESULTS':
+                test_flaky_results = self.flaky_results(
+                    test, self._test_flaky_results)
+
+                baseline_flaky_results = self.flaky_results(
+                    test, self._baseline_flaky_results)
+
+                test_flaky_results.update([line[1]])
+                baseline_flaky_results.update([line[2]])
+                line.extend(['"{%s}"' % ', '.join(test_flaky_results),
+                             '"{%s}"' % ', '.join(baseline_flaky_results)])
+
+                if (line[1] in baseline_flaky_results and
+                        line[2] in test_flaky_results):
+                    line.append(YES)
+                else:
+                    line.append(NO)
+            else:
+                line.extend(['{}', '{}', NO])
+
+            file_output += ','.join(line) + '\n'
+
+        self._csv_output.write(file_output)
 
 
 def main(args):
     parser = argparse.ArgumentParser(prog=os.path.basename(__file__))
     parser.add_argument('--baseline-test-results', required=True,
                         help='Path to baseline test results JSON file')
+    parser.add_argument('--baseline-product', required=True, action='store',
+                        choices=PRODUCTS,
+                        help='Name of the baseline WPT product')
     parser.add_argument('--test-results-to-compare', required=True,
                         help='Path to actual test results JSON file')
+    parser.add_argument('--product-to-compare', required=True, action='store',
+                        choices=PRODUCTS,
+                        help='Name of the WPT product being compared')
     parser.add_argument('--csv-output', required=True,
                         help='Path to CSV output file')
     args = parser.parse_args()
+
+    assert args.product_to_compare != args.baseline_product, (
+        'Product to compare and the baseline product cannot be the same')
 
     with open(args.test_results_to_compare, 'r') as actual_results_content, \
             open(args.baseline_test_results, 'r') as baseline_results_content, \
@@ -92,8 +170,8 @@ def main(args):
                              baseline_results_json['tests'])
 
         # Create a CSV file which compares tests results to baseline results
-        create_csv(tests_to_actual_results,
-                   tests_to_baseline_results, csv_output)
+        WPTResultsDiffer(args, tests_to_actual_results,
+                         tests_to_baseline_results, csv_output).create_csv()
 
     return 0
 

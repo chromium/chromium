@@ -32,7 +32,6 @@ corresponding to the give port.
 import json
 import logging
 import os.path
-import urllib
 
 from six.moves import urllib
 
@@ -141,18 +140,26 @@ class ResultsJSON(object):
 
 
 class BotTestExpectationsFactory(object):
-    # STEP_NAME is used to fetch results for ci builders and retry without
-    # patch for cq builders.
+    # DEFAULT_STEP_NAME is used to fetch results from ci builders and retry without
+    # patch for cq builders for the blink_web_tests test suite.
     # STEP_NAME_TRY is use to fetch patched cq results.
-    STEP_NAME = 'blink_web_tests'
-    STEP_NAME_TRY = 'blink_web_tests (with patch)'
+    DEFAULT_STEP_NAME = 'blink_web_tests'
+
+    # SUFFIX used to signify that test results are from the CQ and are for
+    # experimental changes that have not been merged to the main branch.
+    WITH_PATCH_SUFFIX = '(with patch)'
+
+    # Template for the URL to retrieve test results from the test-results
+    # server.
     RESULTS_URL_FORMAT = (
         'https://test-results.appspot.com/testfile?testtype=%s'
         '&name=results-small.json&master=%s&builder=%s'
     )
 
-    def __init__(self, builders):
+    def __init__(self, builders, step_name=None):
         self.builders = builders
+        self.step_name = step_name or self.DEFAULT_STEP_NAME
+        self.step_name_try = '%s %s' % (self.step_name, self.WITH_PATCH_SUFFIX)
 
     def _results_json_for_port(self, port_name, builder_category):
         builder = self.builders.builder_name_for_port_name(port_name)
@@ -161,7 +168,7 @@ class BotTestExpectationsFactory(object):
         return self._results_json_for_builder(builder)
 
     def _results_url_for_builder(self, builder, use_try_step=False):
-        test_type = (self.STEP_NAME_TRY if use_try_step else self.STEP_NAME)
+        test_type = (self.step_name_try if use_try_step else self.step_name)
         return self.RESULTS_URL_FORMAT % (
             urllib.parse.quote(test_type),
             urllib.parse.quote(self.builders.master_for_builder(builder)),
@@ -173,7 +180,7 @@ class BotTestExpectationsFactory(object):
         try:
             _log.debug('Fetching flakiness data from appengine: %s',
                        results_url)
-            return ResultsJSON(builder, json.load(urllib.urlopen(results_url)))
+            return ResultsJSON(builder, json.load(urllib.request.urlopen(results_url)))
         except urllib.error.URLError as error:
             _log.warning(
                 'Could not retrieve flakiness data from the bot.  url: %s',
@@ -186,7 +193,7 @@ class BotTestExpectationsFactory(object):
             _log.debug('Fetching flakiness data from appengine: %s',
                        results_url)
             return ResultsFilter(builder,
-                                 json.load(urllib.urlopen(results_url)))
+                                 json.load(urllib.request.urlopen(results_url)))
         except urllib.URLError as error:
             _log.warning(
                 'Could not retrieve flakiness data from the bot.  url: %s',
@@ -230,12 +237,15 @@ class BotTestExpectations(object):
             builders.specifiers_for_builder(results_json.builder_name))
         self.filter_results_bitmap = self._get_results_filter(results_filter)
 
-    def flakes_by_path(self, only_ignore_very_flaky):
+    def flakes_by_path(self, only_ignore_very_flaky,
+                       ignore_bot_expected_results=False, consider_only_flaky_runs=True):
         """Sets test expectations to bot results if there are at least two distinct results."""
         flakes_by_path = {}
         for test_path, entry in self.results_json.walk_results():
             flaky_types = self._flaky_types_in_results(entry,
-                                                       only_ignore_very_flaky)
+                                                       only_ignore_very_flaky,
+                                                       ignore_bot_expected_results,
+                                                       consider_only_flaky_runs)
             if len(flaky_types) <= 1:
                 continue
             flakes_by_path[test_path] = flaky_types
@@ -343,30 +353,49 @@ class BotTestExpectations(object):
             result_index += count
         return results
 
-    def _flaky_types_in_results(self, results_entry, only_ignore_very_flaky):
+    def _flaky_types_in_results(self, results_entry, only_ignore_very_flaky,
+                                ignore_bot_expected_results=False,
+                                consider_only_flaky_runs=True):
+        """Returns flaky results for a single test using its results entry
+        retrieved from the test results server
+
+        args:
+          results_entry: Test run results aggregated from the last N builds
+          only_ignore_very_flaky: Flag for considering only test runs
+              with more than one retry
+          ignore_bot_expected_results: Flag for ignoring expected results
+              retrieved from the test results server
+          consider_only_flaky_runs: Flag for only considering test runs with
+              more than one result"""
         flaky_results = set()
 
-        # Always include pass as an expected result. Passes will never turn the bot red.
-        # This fixes cases where the expectations have an implicit Pass, e.g. [ Slow ].
-        latest_expectations = [ResultType.Pass]
-        if self.results_json.EXPECTATIONS_KEY in results_entry:
-            expectations_list = results_entry[self.results_json.
-                                              EXPECTATIONS_KEY].split(' ')
-            latest_expectations.extend(expectations_list)
+        if ignore_bot_expected_results:
+            latest_expectations = []
+        else:
+            # Always include pass as an expected result. Passes will never
+            # turn the bot red. This fixes cases where the expectations have an
+            # implicit Pass, e.g. [ Slow ].
+            latest_expectations = [ResultType.Pass]
+
+            if self.results_json.EXPECTATIONS_KEY in results_entry:
+                expectations_list = results_entry[self.results_json.
+                                                  EXPECTATIONS_KEY].split(' ')
+                latest_expectations.extend(expectations_list)
 
         for result_item in results_entry[self.results_json.RESULTS_KEY]:
-            _, result_types_str = self.results_json.occurances_and_type_from_result_item(
-                result_item)
+            _, result_types_str = (
+                self.results_json.occurances_and_type_from_result_item(result_item))
 
             result_types = []
             for result_type in result_types_str:
                 # TODO(ojan): Remove this if-statement once crbug.com/514378 is fixed.
-                if result_type not in self.NON_RESULT_TYPES:
+                if (result_type not in self.NON_RESULT_TYPES and
+                        result_type not in self.RESULT_TYPES_TO_IGNORE):
                     result_types.append(
                         self.results_json.expectation_for_type(result_type))
 
             # It didn't flake if it didn't retry.
-            if len(result_types) <= 1:
+            if consider_only_flaky_runs and len(result_types) <= 1:
                 continue
 
             # If the test ran as expected after only one retry, it's not very flaky.

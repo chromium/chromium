@@ -27,9 +27,39 @@ import copy
 import io
 import unittest
 
-from diff_wpt_results import map_tests_to_results, create_csv
+from collections import namedtuple
+from diff_wpt_results import (
+    map_tests_to_results, WPTResultsDiffer, CSV_HEADING)
 
-CSV_HEADING = 'Test name, Test Result, Baseline Result, Result Comparison'
+MockArgs = namedtuple('MockArgs', ['product_to_compare', 'baseline_product'])
+TEST_PRODUCT = 'android_weblayer'
+TEST_BASELINE_PRODUCT = 'chrome_android'
+
+
+class MockWPTResultsDiffer(WPTResultsDiffer):
+
+    def __init__(self, actual_results_map, baseline_results_map, csv_output):
+        super(MockWPTResultsDiffer, self).__init__(
+            MockArgs(product_to_compare=TEST_PRODUCT,
+                     baseline_product=TEST_BASELINE_PRODUCT),
+            actual_results_map, baseline_results_map, csv_output)
+
+    def _get_bot_expectations(self, product):
+        assert product in (TEST_PRODUCT, TEST_BASELINE_PRODUCT)
+
+        class BotExpectations(object):
+            def flakes_by_path(self, *args, **kwargs):
+
+                class AlwaysGet(object):
+                    def get(*_):
+                        if product == TEST_PRODUCT:
+                            return {'FAIL', 'TIMEOUT'}
+                        else:
+                            return {'CRASH', }
+
+                return AlwaysGet()
+
+        return BotExpectations()
 
 
 class JsonResultsCompressTest(unittest.TestCase):
@@ -44,40 +74,53 @@ class CreateCsvTest(unittest.TestCase):
     def test_name_with_comma_escaped_in_csv(self):
         actual_mp = {'test, name.html': {'actual': 'PASS'}}
         with io.BytesIO() as csv_out:
-            create_csv(actual_mp, actual_mp, csv_out)
+            MockWPTResultsDiffer(actual_mp, actual_mp, csv_out).create_csv()
             csv_out.seek(0)
             content = csv_out.read()
-            self.assertEquals(content, CSV_HEADING + '\n' +
-                              '"test, name.html",PASS,PASS,SAME RESULTS\n')
+            self.assertEquals(content, CSV_HEADING +
+                              '"test, name.html",PASS,PASS,SAME RESULTS,{},{},No\n')
 
     def test_create_csv_with_same_result(self):
         actual_mp = {'test.html': {'actual': 'PASS'}}
         with io.BytesIO() as csv_out:
-            create_csv(actual_mp, actual_mp, csv_out)
+            MockWPTResultsDiffer(actual_mp, actual_mp, csv_out).create_csv()
             csv_out.seek(0)
             content = csv_out.read()
-            self.assertEquals(content, CSV_HEADING + '\n' +
-                              'test.html,PASS,PASS,SAME RESULTS\n')
+            self.assertEquals(content, CSV_HEADING +
+                              'test.html,PASS,PASS,SAME RESULTS,{},{},No\n')
 
-    def test_create_csv_with_different_result(self):
+    def test_create_csv_with_reliable_different_result(self):
         actual_mp = {'test.html': {'actual': 'PASS'}}
         baseline_mp = copy.deepcopy(actual_mp)
         baseline_mp['test.html']['actual'] = 'FAIL'
         with io.BytesIO() as csv_out:
-            create_csv(actual_mp, baseline_mp, csv_out)
+            MockWPTResultsDiffer(actual_mp, baseline_mp, csv_out).create_csv()
             csv_out.seek(0)
             content = csv_out.read()
-            self.assertEquals(content, CSV_HEADING + '\n' +
-                              'test.html,PASS,FAIL,DIFFERENT RESULTS\n')
+            self.assertEquals(content, CSV_HEADING +
+                              ('test.html,PASS,FAIL,DIFFERENT RESULTS,'
+                               '"{FAIL, TIMEOUT, PASS}","{FAIL, CRASH}",No\n'))
+
+    def test_create_csv_with_unreliable_different_result(self):
+        actual_mp = {'test.html': {'actual': 'CRASH'}}
+        baseline_mp = copy.deepcopy(actual_mp)
+        baseline_mp['test.html']['actual'] = 'FAIL'
+        with io.BytesIO() as csv_out:
+            MockWPTResultsDiffer(actual_mp, baseline_mp, csv_out).create_csv()
+            csv_out.seek(0)
+            content = csv_out.read()
+            self.assertEquals(content, CSV_HEADING +
+                              ('test.html,CRASH,FAIL,DIFFERENT RESULTS,'
+                               '"{FAIL, CRASH, TIMEOUT}","{FAIL, CRASH}",Yes\n'))
 
     def test_create_csv_with_missing_result(self):
         actual_mp = {'test.html': {'actual': 'PASS'}}
         with io.BytesIO() as csv_out:
-            create_csv(actual_mp, {}, csv_out)
+            MockWPTResultsDiffer(actual_mp, {}, csv_out).create_csv()
             csv_out.seek(0)
             content = csv_out.read()
-            self.assertEquals(content, CSV_HEADING + '\n' +
-                              'test.html,PASS,MISSING,MISSING RESULTS\n')
+            self.assertEquals(content, CSV_HEADING +
+                              'test.html,PASS,MISSING,MISSING RESULTS,{},{},No\n')
 
 
 if __name__ == '__main__':

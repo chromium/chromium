@@ -78,6 +78,29 @@ class BotTestExpectationsFactoryTest(unittest.TestCase):
             '&name=results-small.json&master=tryserver.dummy.master'
             '&builder=Dummy%20tryserver%20builder%20name')
 
+    def test_results_url_for_builder_with_custom_step_name(self):
+        factory = bot_test_expectations.BotTestExpectationsFactory(
+            self.fake_builder_list(), 'weblayer_shell_wpt')
+
+        self.assertEqual(
+            factory._results_url_for_builder('Dummy builder name'),
+            'https://test-results.appspot.com/testfile?testtype=weblayer_shell_wpt'
+            '&name=results-small.json&master=dummy.master&builder=Dummy%20builder%20name')
+
+        self.assertEqual(
+            factory._results_url_for_builder('Dummy tryserver builder name'),
+            'https://test-results.appspot.com/testfile?'
+            'testtype=weblayer_shell_wpt'
+            '&name=results-small.json&master=tryserver.dummy.master'
+            '&builder=Dummy%20tryserver%20builder%20name')
+
+        self.assertEqual(
+            factory._results_url_for_builder('Dummy tryserver builder name', True),
+            'https://test-results.appspot.com/testfile?'
+            'testtype=weblayer_shell_wpt%20%28with%20patch%29'
+            '&name=results-small.json&master=tryserver.dummy.master'
+            '&builder=Dummy%20tryserver%20builder%20name')
+
     def test_expectations_for_builder(self):
         factory = bot_test_expectations.BotTestExpectationsFactory(
             self.fake_builder_list())
@@ -197,12 +220,13 @@ class BotTestExpectationsTest(unittest.TestCase):
         return {'results': [[1, results_string]]}
 
     def _assert_expectations(self, test_data, expectations_string,
-                             only_ignore_very_flaky):
+                             only_ignore_very_flaky, **kwargs):
         results_json = self._results_json_from_test_data(test_data)
         expectations = bot_test_expectations.BotTestExpectations(
             results_json, BuilderList({}), set('test'))
+        print expectations.flakes_by_path(only_ignore_very_flaky, **kwargs)
         self.assertEqual(
-            expectations.flakes_by_path(only_ignore_very_flaky),
+            expectations.flakes_by_path(only_ignore_very_flaky, **kwargs),
             expectations_string)
 
     def _assert_unexpected_results(self, test_data, expectations_string):
@@ -294,9 +318,13 @@ class BotTestExpectationsTest(unittest.TestCase):
                         'results': [[2, 'FFFP']],
                         'expected': 'PASS FAIL'
                     },
+                    'flakywithoutretries.html': {
+                        'results': [[1, 'F'], [1, 'P']],
+                    },
                 }
             }
         }
+
         self._assert_expectations(
             test_data, {
                 'foo/veryflaky.html': {'FAIL', 'PASS'},
@@ -310,6 +338,22 @@ class BotTestExpectationsTest(unittest.TestCase):
                 'foo/maybeflaky.html': {'FAIL', 'PASS'},
             },
             only_ignore_very_flaky=False)
+
+        self._assert_expectations(
+            test_data, {
+                'foo/veryflaky.html': {'FAIL', 'PASS'},
+                'foo/notflakyexpected.html': {'FAIL', 'PASS'},
+            },
+            only_ignore_very_flaky=True, ignore_bot_expected_results=True)
+
+        self._assert_expectations(
+            test_data, {
+                'foo/veryflaky.html': {'FAIL', 'PASS'},
+                'foo/notflakyexpected.html': {'FAIL', 'PASS'},
+                'foo/flakywithoutretries.html': {'FAIL', 'PASS'},
+            },
+            only_ignore_very_flaky=True, ignore_bot_expected_results=True,
+            consider_only_flaky_runs=False)
 
     def test_unexpected_results_no_unexpected(self):
         test_data = {

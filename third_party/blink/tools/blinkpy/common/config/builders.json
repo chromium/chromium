@@ -160,6 +160,18 @@
             "chrome_android", "Release"],
         "is_try_builder": true
     },
+    "android-weblayer-pie-x86-wpt-fyi-rel": {
+        "port_name": "android-android-pie",
+        "master": "chromium.android.fyi",
+        "specifiers": [
+            "Android", "android_weblayer", "Release"]
+    },
+    "android-web-platform-pie-x86-fyi-rel": {
+        "port_name": "android-android-pie",
+        "master": "chromium.android.fyi",
+        "specifiers": [
+            "Android", "chrome_android", "Release"]
+    },
     "linux-blink-optional-highdpi-rel": {
         "master": "tryserver.blink",
         "port_name": "linux-trusty",
