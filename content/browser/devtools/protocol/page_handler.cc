@@ -355,6 +355,7 @@ Response PageHandler::Enable() {
 Response PageHandler::Disable() {
   enabled_ = false;
   screencast_enabled_ = false;
+  bypass_csp_ = false;
 
   if (video_consumer_)
     video_consumer_->StopCapture();
@@ -1272,6 +1273,11 @@ void PageHandler::GetManifestIcons(
   callback->sendSuccess(Maybe<Binary>());
 }
 
+Response PageHandler::SetBypassCSP(bool enabled) {
+  bypass_csp_ = enabled;
+  return Response::FallThrough();
+}
+
 void PageHandler::BackForwardCacheNotUsed(const NavigationRequest* navigation) {
   if (!enabled_)
     return;
@@ -1282,6 +1288,10 @@ void PageHandler::BackForwardCacheNotUsed(const NavigationRequest* navigation) {
   std::string frame_id = ftn->devtools_frame_token().ToString();
 
   frontend_->BackForwardCacheNotUsed(devtools_navigation_token, frame_id);
+}
+
+bool PageHandler::ShouldBypassCSP() {
+  return enabled_ && bypass_csp_;
 }
 
 }  // namespace protocol

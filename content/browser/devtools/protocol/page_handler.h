@@ -99,6 +99,7 @@ class PageHandler : public DevToolsDomainHandler,
   WebContentsImpl* GetWebContents();
 
   void BackForwardCacheNotUsed(const NavigationRequest* nav_request);
+  bool ShouldBypassCSP();
 
   Response Enable() override;
   Response Disable() override;
@@ -176,6 +177,8 @@ class PageHandler : public DevToolsDomainHandler,
   void GetManifestIcons(
       std::unique_ptr<GetManifestIconsCallback> callback) override;
 
+  Response SetBypassCSP(bool enabled) override;
+
  private:
   enum EncodingFormat { PNG, JPEG };
 
@@ -215,6 +218,7 @@ class PageHandler : public DevToolsDomainHandler,
   void OnDownloadDestroyed(download::DownloadItem* item) override;
 
   bool enabled_;
+  bool bypass_csp_ = false;
 
   bool screencast_enabled_;
   std::string screencast_format_;

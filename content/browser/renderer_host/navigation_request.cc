@@ -6074,7 +6074,7 @@ void NavigationRequest::ComputePoliciesToCommit() {
   policy_container_navigation_bundle_->SetIPAddressSpace(
       CalculateIPAddressSpace(common_params_->url, response_head_.get()));
 
-  if (response_head_) {
+  if (response_head_ && !devtools_instrumentation::ShouldBypassCSP(*this)) {
     policy_container_navigation_bundle_->AddContentSecurityPolicies(
         mojo::Clone(response_head_->parsed_headers->content_security_policy));
   }

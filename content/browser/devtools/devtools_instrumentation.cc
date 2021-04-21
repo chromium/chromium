@@ -267,6 +267,19 @@ void OnNavigationRequestFailed(
                    protocol::Network::ResourceTypeEnum::Document, status);
 }
 
+bool ShouldBypassCSP(const NavigationRequest& nav_request) {
+  DevToolsAgentHostImpl* agent_host =
+      RenderFrameDevToolsAgentHost::GetFor(nav_request.frame_tree_node());
+  if (!agent_host)
+    return false;
+
+  for (auto* page : protocol::PageHandler::ForAgentHost(agent_host)) {
+    if (page->ShouldBypassCSP())
+      return true;
+  }
+  return false;
+}
+
 void WillBeginDownload(download::DownloadCreateInfo* info,
                        download::DownloadItem* item) {
   if (!item)

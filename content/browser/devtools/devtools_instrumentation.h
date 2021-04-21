@@ -117,6 +117,7 @@ void OnNavigationResponseReceived(
 void OnNavigationRequestFailed(
     const NavigationRequest& nav_request,
     const network::URLLoaderCompletionStatus& status);
+bool ShouldBypassCSP(const NavigationRequest& nav_request);
 
 void WillBeginDownload(download::DownloadCreateInfo* info,
                        download::DownloadItem* item);
