@@ -295,7 +295,7 @@ class COMPONENT_EXPORT(URL) Origin {
       const base::android::JavaRef<jobject>& java_origin);
 #endif  // OS_ANDROID
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   friend class blink::SecurityOrigin;

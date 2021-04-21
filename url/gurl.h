@@ -437,7 +437,7 @@ class COMPONENT_EXPORT(URL) GURL {
   static bool IsAboutPath(base::StringPiece actual_path,
                           base::StringPiece allowed_path);
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   // Variant of the string parsing constructor that allows the caller to elect

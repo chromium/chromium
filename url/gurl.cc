@@ -509,7 +509,7 @@ bool GURL::IsAboutPath(base::StringPiece actual_path,
   return false;
 }
 
-void GURL::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void GURL::WriteIntoTrace(perfetto::TracedValue context) const {
   std::move(context).WriteString(possibly_invalid_spec());
 }
 

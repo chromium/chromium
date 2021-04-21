@@ -373,7 +373,7 @@ base::Optional<Origin> Origin::Deserialize(const std::string& value) {
   return origin;
 }
 
-void Origin::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void Origin::WriteIntoTrace(perfetto::TracedValue context) const {
   std::move(context).WriteString(GetDebugString());
 }
 
