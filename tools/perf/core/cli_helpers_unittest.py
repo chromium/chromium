@@ -49,11 +49,11 @@ class CLIHelpersTest(unittest.TestCase):
     ])
 
   @mock.patch('__builtin__.print')
-  @mock.patch('__builtin__.raw_input')
+  @mock.patch('core.cli_helpers.input')
   # https://crbug.com/938575.
   @decorators.Disabled('chromeos')
-  def testAskAgainOnInvalidAnswer(self, raw_input_mock, print_mock):
-    raw_input_mock.side_effect = ['foobar', 'y']
+  def testAskAgainOnInvalidAnswer(self, input_mock, print_mock):
+    input_mock.side_effect = ['foobar', 'y']
     self.assertTrue(cli_helpers.Ask('Ready?'))
     self.assertListEqual(print_mock.mock_calls, [
       mock.call('\033[96mReady? [no/YES] \033[0m', end=' '),
@@ -62,22 +62,22 @@ class CLIHelpersTest(unittest.TestCase):
     ])
 
   @mock.patch('__builtin__.print')
-  @mock.patch('__builtin__.raw_input')
+  @mock.patch('core.cli_helpers.input')
   # https://crbug.com/938575.
   @decorators.Disabled('chromeos')
-  def testAskWithCustomAnswersAndDefault(self, raw_input_mock, print_mock):
-    raw_input_mock.side_effect = ['']
+  def testAskWithCustomAnswersAndDefault(self, input_mock, print_mock):
+    input_mock.side_effect = ['']
     self.assertFalse(
         cli_helpers.Ask('Ready?', {'foo': True, 'bar': False}, default='bar'))
     print_mock.assert_called_once_with(
         '\033[96mReady? [BAR/foo] \033[0m', end=' ')
 
   @mock.patch('__builtin__.print')
-  @mock.patch('__builtin__.raw_input')
+  @mock.patch('core.cli_helpers.input')
   # https://crbug.com/938575.
   @decorators.Disabled('chromeos')
-  def testAskNoDefaultCustomAnswersAsList(self, raw_input_mock, print_mock):
-    raw_input_mock.side_effect = ['', 'FoO']
+  def testAskNoDefaultCustomAnswersAsList(self, input_mock, print_mock):
+    input_mock.side_effect = ['', 'FoO']
     self.assertEqual(cli_helpers.Ask('Ready?', ['foo', 'bar']), 'foo')
     self.assertListEqual(print_mock.mock_calls, [
       mock.call('\033[96mReady? [foo/bar] \033[0m', end=' '),
@@ -157,12 +157,12 @@ class CLIHelpersTest(unittest.TestCase):
       cli_helpers.Run('cmd with args')
 
   @mock.patch('__builtin__.print')
-  @mock.patch('__builtin__.raw_input')
-  def testPrompt(self, raw_input_mock, print_mock):
-    raw_input_mock.side_effect = ['', '42']
+  @mock.patch('core.cli_helpers.input')
+  def testPrompt(self, input_mock, print_mock):
+    input_mock.side_effect = ['', '42']
     self.assertEqual(cli_helpers.Prompt(
         'What is the ultimate meaning of life, universe and everything?'), '42')
-    self.assertEqual(raw_input_mock.call_count, 2)
+    self.assertEqual(input_mock.call_count, 2)
     self.assertEqual(print_mock.call_count, 3)
 
 

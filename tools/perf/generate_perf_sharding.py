@@ -15,6 +15,7 @@ import shutil
 import sys
 import tempfile
 import textwrap
+from six.moves import input  # pylint: disable=redefined-builtin
 
 import cross_device_test_config
 
@@ -167,7 +168,7 @@ def _PromptWarning():
              'false regressions in your CL '
              'description')
   print(textwrap.fill(message, 70), '\n')
-  answer = raw_input("Enter 'y' to continue: ")
+  answer = input("Enter 'y' to continue: ")
   if answer != 'y':
     print('Abort updating shard maps for benchmarks on perf waterfall')
     sys.exit(0)

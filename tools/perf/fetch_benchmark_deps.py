@@ -11,6 +11,7 @@ import optparse
 import os
 import sys
 import logging
+from six.moves import input  # pylint: disable=redefined-builtin
 
 from chrome_telemetry_build import chromium_config
 from core import benchmark_finders
@@ -121,9 +122,8 @@ def main(args):
     deps[benchmark.Name()] = _FetchDepsForBenchmark(benchmark)
   else:
     if not options.force:
-      raw_input(
-          'No benchmark name is specified. Fetching all benchmark deps. '
-          'Press enter to continue...')
+      input('No benchmark name is specified. Fetching all benchmark deps. '
+            'Press enter to continue...')
     for b in benchmark_finders.GetOfficialBenchmarks():
       supported_platforms = b.GetSupportedPlatformNames(b.SUPPORTED_PLATFORMS)
       if(not options.platform or

@@ -7,6 +7,7 @@ from __future__ import print_function
 import pipes
 import subprocess
 import sys
+from six.moves import input  # pylint: disable=redefined-builtin
 
 
 COLOR_ANSI_CODE_MAP = {
@@ -126,7 +127,7 @@ def Ask(question, answers=None, default=None):
 
   while True:
     print(Colored(question + prompt, 'cyan'), end=' ')
-    choice = raw_input().strip().lower()
+    choice = input().strip().lower()
     if default is not None and choice == '':
       return inputs[default]
     elif choice in inputs:
@@ -140,7 +141,7 @@ def Ask(question, answers=None, default=None):
 def Prompt(question, accept_empty=False):
   while True:
     print(Colored(question, color='cyan'))
-    answer = raw_input().strip()
+    answer = input().strip()
     if answer or accept_empty:
       return answer
     Error('Please enter non-empty answer')
