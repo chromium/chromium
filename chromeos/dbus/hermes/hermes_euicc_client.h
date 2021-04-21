@@ -29,6 +29,32 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
 
   class TestInterface {
    public:
+    enum class AddCarrierProfileBehavior {
+      // Adds a profile which can be immediately retrieved from a EUICC by
+      // examining its installed profiles. Also creates a Shill service
+      // representing the profile.
+      kAddProfileWithService,
+
+      // Adds a profile which is not yet present of the EUICC's properties but
+      // will be available after a subsequent call to
+      // RequestInstalledProfiles(). Also creates a Shill service representing
+      // the profile.
+      kAddDelayedProfileWithService,
+
+      // Adds a profile which can be immediately retrieved from a EUICC by
+      // examining its installed profiles. Does not create an accompanying Shill
+      // service representing the profile, which simulates a "stub" cellular
+      // service.
+      kAddProfileWithoutService,
+
+      // Adds a profile which is not yet present of the EUICC's properties but
+      // will be available after a subsequent call to
+      // RequestInstalledProfiles(). Does not create an accompanying Shill
+      // service representing the profile, which simulates a "stub" cellular
+      // service.
+      kAddDelayedProfileWithoutService,
+    };
+
     // Clears a given Euicc and associated profiles.
     virtual void ClearEuicc(const dbus::ObjectPath& euicc_path) = 0;
 
@@ -38,27 +64,29 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
 
     // Adds a new carrier profile under given euicc object using fake default
     // values for properties. If |state| is not pending then a corresponding
-    // fake cellular service is also created in shill. If |service_only| is true
-    // then the service will be created but the profile will not be listed in
-    // the euicc until a subsequent call to RequestInstalledProfiles. Returns
-    // the path to the newly added profile.
+    // fake cellular service is also created in shill. The
+    // |add_carrier_profile_behavior| parameter determines whether an associated
+    // Shill service is created as well as whether the profile is added to the
+    // EUICC immediately or only after RequestInstalledProfiles() is called.
+    // Returns the path to the newly added profile.
     virtual dbus::ObjectPath AddFakeCarrierProfile(
         const dbus::ObjectPath& euicc_path,
         hermes::profile::State state,
         const std::string& activation_code,
-        bool service_only) = 0;
+        AddCarrierProfileBehavior add_carrier_profile_behavior) = 0;
 
     // Adds a new carrier profile with given path and properties.
-    virtual void AddCarrierProfile(const dbus::ObjectPath& path,
-                                   const dbus::ObjectPath& euicc_path,
-                                   const std::string& iccid,
-                                   const std::string& name,
-                                   const std::string& service_provider,
-                                   const std::string& activation_code,
-                                   const std::string& network_service_path,
-                                   hermes::profile::State state,
-                                   hermes::profile::ProfileClass profile_class,
-                                   bool service_only) = 0;
+    virtual void AddCarrierProfile(
+        const dbus::ObjectPath& path,
+        const dbus::ObjectPath& euicc_path,
+        const std::string& iccid,
+        const std::string& name,
+        const std::string& service_provider,
+        const std::string& activation_code,
+        const std::string& network_service_path,
+        hermes::profile::State state,
+        hermes::profile::ProfileClass profile_class,
+        AddCarrierProfileBehavior add_carrier_profile_behavior) = 0;
 
     // Remove a carrier profile with path |carrier_profile_path| from EUICC with
     // given |euicc_path|. Return true if successful.

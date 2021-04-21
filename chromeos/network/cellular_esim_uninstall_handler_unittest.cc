@@ -30,6 +30,7 @@
 namespace chromeos {
 
 namespace {
+
 const char kDefaultCellularDevicePath[] = "test_cellular_device";
 const char kDefaultEuiccPath[] = "/org/chromium/Hermes/Euicc/0";
 const char kDefaultEid[] = "12345678901234567890123456789012";
@@ -152,13 +153,17 @@ class CellularESimUninstallHandlerTest : public testing::Test {
         dbus::ObjectPath(kDefaultEuiccPath), kTestCellularIccid,
         kTestProfileName, kTestServiceProvider, "", kTestNetworkServicePath,
         hermes::profile::State::kActive,
-        hermes::profile::ProfileClass::kOperational, /*service_only=*/false);
+        hermes::profile::ProfileClass::kOperational,
+        HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+            kAddProfileWithService);
     HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
         dbus::ObjectPath(kTestCarrierProfilePath2),
         dbus::ObjectPath(kDefaultEuiccPath), kTestCellularIccid2,
         kTestProfileName, kTestServiceProvider, "", kTestNetworkServicePath2,
         hermes::profile::State::kInactive,
-        hermes::profile::ProfileClass::kOperational, /*service_only=*/false);
+        hermes::profile::ProfileClass::kOperational,
+        HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+            kAddProfileWithService);
     base::RunLoop().RunUntilIdle();
 
     ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(

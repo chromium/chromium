@@ -43,7 +43,8 @@ TEST_F(ESimManagerTest, ListChangeNotification) {
       HermesEuiccClient::Get()->GetTestInterface();
   dbus::ObjectPath active_profile_path = euicc_test->AddFakeCarrierProfile(
       dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kActive, "",
-      /*service_only=*/false);
+      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+          kAddProfileWithService);
   // Wait for events to propagate.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, observer()->profile_list_change_calls().size());
@@ -52,7 +53,8 @@ TEST_F(ESimManagerTest, ListChangeNotification) {
   // observer.
   dbus::ObjectPath pending_profile_path = euicc_test->AddFakeCarrierProfile(
       dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kPending, "",
-      /*service_only=*/false);
+      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+          kAddProfileWithService);
   // Wait for events to propagate.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2u, observer()->profile_list_change_calls().size());
@@ -76,7 +78,8 @@ TEST_F(ESimManagerTest, ESimProfileChangeNotification) {
       HermesEuiccClient::Get()->GetTestInterface();
   dbus::ObjectPath profile_path = euicc_test->AddFakeCarrierProfile(
       dbus::ObjectPath(kTestEuiccPath), hermes::profile::kActive, "",
-      /*service_only=*/false);
+      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+          kAddProfileWithService);
   base::RunLoop().RunUntilIdle();
 
   HermesProfileClient::Properties* dbus_properties =

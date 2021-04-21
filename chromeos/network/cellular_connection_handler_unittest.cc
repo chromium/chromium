@@ -166,7 +166,9 @@ class CellularConnectionHandlerTest : public testing::Test {
         CreateTestIccid(profile_num), CreateTestName(profile_num),
         "service_provider", "activation_code",
         CreateTestServicePath(profile_num), hermes::profile::State::kInactive,
-        hermes::profile::ProfileClass::kOperational, /*service_only=*/false);
+        hermes::profile::ProfileClass::kOperational,
+        HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+            kAddProfileWithService);
     base::RunLoop().RunUntilIdle();
   }
 
