@@ -244,14 +244,12 @@ class SignState : public NSSOperationState {
   SignState(ServiceWeakPtr weak_ptr,
             const std::string& data,
             const std::string& public_key_spki_der,
-            bool raw_pkcs1,
             HashAlgorithm hash_algorithm,
             const KeyType key_type,
             SignCallback callback)
       : NSSOperationState(weak_ptr),
         data_(data),
         public_key_spki_der_(public_key_spki_der),
-        raw_pkcs1_(raw_pkcs1),
         hash_algorithm_(hash_algorithm),
         key_type_(key_type),
         callback_(std::move(callback)) {}
@@ -272,13 +270,7 @@ class SignState : public NSSOperationState {
   // Must be the DER encoding of a SubjectPublicKeyInfo.
   const std::string public_key_spki_der_;
 
-  // If true, |data_| will not be hashed before signing. Only PKCS#1 v1.5
-  // padding will be applied before signing.
-  // If false, |hash_algorithm_| is set to a value != NONE.
-  const bool raw_pkcs1_;
-
   // Determines the hash algorithm that is used to digest |data| before signing.
-  // Ignored if |raw_pkcs1_| is true.
   const HashAlgorithm hash_algorithm_;
 
   // Determines the type of the key that should be used for signing. This is
@@ -901,7 +893,7 @@ void SignRSAOnWorkerThread(std::unique_ptr<SignState> state) {
     return;
   }
 
-  if (state->raw_pkcs1_) {
+  if (state->hash_algorithm_ == HashAlgorithm::HASH_ALGORITHM_NONE) {
     SignRSAPKCS1RawOnWorkerThread(std::move(state), std::move(rsa_key));
     return;
   }
@@ -951,7 +943,7 @@ void SignECOnWorkerThread(std::unique_ptr<SignState> state) {
     return;
   }
 
-  DCHECK(!state->raw_pkcs1_);
+  DCHECK(state->hash_algorithm_ != HashAlgorithm::HASH_ALGORITHM_NONE);
 
   // Only SHA-256 algorithm is supported for ECDSA.
   if (state->hash_algorithm_ != HASH_ALGORITHM_SHA256) {
@@ -1541,8 +1533,7 @@ void PlatformKeysServiceImpl::SignRSAPKCS1Digest(
     SignCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto state = std::make_unique<SignState>(
-      weak_factory_.GetWeakPtr(), data, public_key_spki_der,
-      /*raw_pkcs1=*/false, hash_algorithm,
+      weak_factory_.GetWeakPtr(), data, public_key_spki_der, hash_algorithm,
       /*key_type=*/KeyType::kRsassaPkcs1V15, std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
@@ -1568,8 +1559,8 @@ void PlatformKeysServiceImpl::SignRSAPKCS1Raw(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto state = std::make_unique<SignState>(
       weak_factory_.GetWeakPtr(), data, public_key_spki_der,
-      /*raw_pkcs1=*/true, HASH_ALGORITHM_NONE,
-      /*key_type=*/KeyType::kRsassaPkcs1V15, std::move(callback));
+      HASH_ALGORITHM_NONE, /*key_type=*/KeyType::kRsassaPkcs1V15,
+      std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;
@@ -1594,8 +1585,7 @@ void PlatformKeysServiceImpl::SignECDSADigest(
     SignCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto state = std::make_unique<SignState>(
-      weak_factory_.GetWeakPtr(), data, public_key_spki_der,
-      /*raw_pkcs1=*/false, hash_algorithm,
+      weak_factory_.GetWeakPtr(), data, public_key_spki_der, hash_algorithm,
       /*key_type=*/KeyType::kEcdsa, std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
