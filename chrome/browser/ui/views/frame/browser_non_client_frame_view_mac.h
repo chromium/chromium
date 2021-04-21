@@ -18,11 +18,16 @@ class Label;
 
 @class FullscreenToolbarController;
 
+class CaptionButtonPlaceholderContainerMac;
+class WindowControlsOverlayInputRoutingMac;
+
 class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView {
  public:
   // Mac implementation of BrowserNonClientFrameView.
   BrowserNonClientFrameViewMac(BrowserFrame* frame, BrowserView* browser_view);
   ~BrowserNonClientFrameViewMac() override;
+
+  SkColor GetTitlebarColor() const;
 
   // BrowserNonClientFrameView:
   void OnFullscreenStateChanged() override;
@@ -48,6 +53,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView {
 
   // views::View:
   gfx::Size GetMinimumSize() const override;
+  void AddedToWidget() override;
 
  protected:
   // views::View:
@@ -71,11 +77,30 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView {
   // Calculate the y offset the top UI needs to shift down due to showing the
   // slide down menu bar at the very top in full screen.
   int TopUIFullscreenYOffset() const;
+  void LayoutTitleBarForWebApp();
+  void LayoutWindowControlsOverlay();
 
   // Used to keep track of the update of kShowFullscreenToolbar preference.
   BooleanPrefMember show_fullscreen_toolbar_;
 
   views::Label* window_title_ = nullptr;
+
+  // A placeholder container that lies on top of the traffic lights to indicate
+  // NonClientArea. Only for PWAs with window controls overlay display override.
+  CaptionButtonPlaceholderContainerMac* caption_button_placeholder_container_ =
+      nullptr;
+
+  // PWAs with window controls overlay display override covers the browser
+  // window with WebContentsViewCocoa natively even if the views::view 'looks'
+  // right and so events end up in the client area.
+  // WindowControlsOverlayInputRoutingMac overlays a NSView the non client
+  // area so events can be routed to the right view in the non client area. Two
+  // separate WindowControlsOverlayInputRoutingMac instances are needed
+  // since there are two dis jointed areas of non client area.
+  std::unique_ptr<WindowControlsOverlayInputRoutingMac>
+      caption_buttons_overlay_input_routing_view_;
+  std::unique_ptr<WindowControlsOverlayInputRoutingMac>
+      web_app_frame_toolbar_overlay_routing_view_;
 
   base::scoped_nsobject<FullscreenToolbarController>
       fullscreen_toolbar_controller_;

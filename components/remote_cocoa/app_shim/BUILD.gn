@@ -50,6 +50,8 @@ component("app_shim") {
     "views_nswindow_delegate.mm",
     "views_scrollbar_bridge.h",
     "views_scrollbar_bridge.mm",
+    "window_controls_overlay_nsview.h",
+    "window_controls_overlay_nsview.mm",
     "window_move_loop.h",
     "window_move_loop.mm",
     "window_touch_bar_delegate.h",

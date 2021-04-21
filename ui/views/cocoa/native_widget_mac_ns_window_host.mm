@@ -721,6 +721,17 @@ NSView* NativeWidgetMacNSWindowHost::GetGlobalCaptureView() {
       [remote_cocoa::CocoaMouseCapture::GetGlobalCaptureWindow() contentView];
 }
 
+void NativeWidgetMacNSWindowHost::AddRemoteWindowControlsOverlayView(
+    remote_cocoa::mojom::WindowControlsOverlayNSViewType overlay_type) {
+  GetNSWindowMojo()->CreateWindowControlsOverlayNSView(overlay_type);
+}
+
+void NativeWidgetMacNSWindowHost::UpdateRemoteWindowControlsOverlayView(
+    const gfx::Rect& bounds,
+    remote_cocoa::mojom::WindowControlsOverlayNSViewType overlay_type) {
+  GetNSWindowMojo()->UpdateWindowControlsOverlayNSView(bounds, overlay_type);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // NativeWidgetMacNSWindowHost, remote_cocoa::BridgedNativeWidgetHostHelper:
 

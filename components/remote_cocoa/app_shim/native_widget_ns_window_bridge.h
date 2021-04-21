@@ -30,6 +30,7 @@
 @class ModalShowAnimationWithLayer;
 @class NativeWidgetMacNSWindow;
 @class ViewsNSWindowDelegate;
+@class WindowControlsOverlayNSView;
 
 namespace views {
 namespace test {
@@ -248,6 +249,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void ReleaseCapture() override;
   void RedispatchKeyEvent(
       const std::vector<uint8_t>& native_event_data) override;
+  void CreateWindowControlsOverlayNSView(
+      const mojom::WindowControlsOverlayNSViewType overlay_type) override;
+  void UpdateWindowControlsOverlayNSView(
+      const gfx::Rect& bounds,
+      const mojom::WindowControlsOverlayNSViewType overlay_type) override;
 
   // Return true if [NSApp updateWindows] needs to be called after updating the
   // TextInputClient.
@@ -311,6 +317,14 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   std::unique_ptr<CocoaWindowMoveLoop> window_move_loop_;
   ui::ModalType modal_type_ = ui::MODAL_TYPE_NONE;
   bool is_translucent_window_ = false;
+
+  // Intended for PWAs with window controls overlay display override. These two
+  // NSViews are added on top of the non client area to route events to the
+  // BridgedContentView instead of the RenderWidgetHostView.
+  base::scoped_nsobject<WindowControlsOverlayNSView>
+      caption_buttons_overlay_nsview_;
+  base::scoped_nsobject<WindowControlsOverlayNSView>
+      web_app_frame_toolbar_overlay_nsview_;
 
   NativeWidgetNSWindowBridge* parent_ =
       nullptr;  // Weak. If non-null, owns this.

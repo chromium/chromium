@@ -20,7 +20,9 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
+#include "chrome/browser/ui/views/frame/caption_button_placeholder_container_mac.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/window_controls_overlay_input_routing_mac.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
@@ -30,9 +32,11 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/scoped_canvas.h"
 
 namespace {
 
@@ -73,6 +77,22 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
     if (browser_view->browser()->app_controller()) {
       set_web_app_frame_toolbar(AddChildView(
           std::make_unique<WebAppFrameToolbarView>(frame, browser_view)));
+
+      if (browser_view->IsWindowControlsOverlayEnabled()) {
+        caption_button_placeholder_container_ = AddChildView(
+            std::make_unique<CaptionButtonPlaceholderContainerMac>(this));
+        caption_buttons_overlay_input_routing_view_ =
+            std::make_unique<WindowControlsOverlayInputRoutingMac>(
+                this, caption_button_placeholder_container_,
+                remote_cocoa::mojom::WindowControlsOverlayNSViewType::
+                    kCaptionButtonContainer);
+
+        web_app_frame_toolbar_overlay_routing_view_ =
+            std::make_unique<WindowControlsOverlayInputRoutingMac>(
+                this, web_app_frame_toolbar(),
+                remote_cocoa::mojom::WindowControlsOverlayNSViewType::
+                    kWebAppFrameToolbar);
+      }
     }
 
     // The window title appears above the web app frame toolbar (if present),
@@ -91,6 +111,9 @@ BrowserNonClientFrameViewMac::~BrowserNonClientFrameViewMac() {
     [fullscreen_toolbar_controller_ exitFullscreenMode];
 }
 
+SkColor BrowserNonClientFrameViewMac::GetTitlebarColor() const {
+  return GetFrameColor();
+}
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewMac, BrowserNonClientFrameView implementation:
 
@@ -239,7 +262,11 @@ void BrowserNonClientFrameViewMac::UpdateThrobber(bool running) {
 // BrowserNonClientFrameViewMac, views::NonClientFrameView implementation:
 
 gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForClientView() const {
-  return bounds();
+  gfx::Rect client_view_bounds = bounds();
+  int top_inset =
+      browser_view()->IsWindowControlsOverlayEnabled() ? 0 : GetTopInset(false);
+  client_view_bounds.Inset(0, top_inset, 0, 0);
+  return client_view_bounds;
 }
 
 gfx::Rect BrowserNonClientFrameViewMac::GetWindowBoundsForClientBounds(
@@ -311,6 +338,13 @@ gfx::Size BrowserNonClientFrameViewMac::GetMinimumSize() const {
   return client_size;
 }
 
+void BrowserNonClientFrameViewMac::AddedToWidget() {
+  if (browser_view()->IsWindowControlsOverlayEnabled()) {
+    caption_buttons_overlay_input_routing_view_->Enable();
+    web_app_frame_toolbar_overlay_routing_view_->Enable();
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewMac, protected:
 
@@ -338,26 +372,11 @@ void BrowserNonClientFrameViewMac::OnPaint(gfx::Canvas* canvas) {
 }
 
 void BrowserNonClientFrameViewMac::Layout() {
+  if (browser_view()->IsWindowControlsOverlayEnabled())
+    LayoutWindowControlsOverlay();
+  else
+    LayoutTitleBarForWebApp();
   NonClientFrameView::Layout();
-
-  const int available_height = GetTopInset(true);
-  int leading_x = kFramePaddingLeft;
-  int trailing_x = width();
-
-  if (web_app_frame_toolbar()) {
-    std::pair<int, int> remaining_bounds =
-        web_app_frame_toolbar()->LayoutInContainer(leading_x, trailing_x, 0,
-                                                   available_height);
-    leading_x = remaining_bounds.first;
-    trailing_x = remaining_bounds.second;
-
-    const int title_padding = base::checked_cast<int>(
-        std::round(width() * kTitlePaddingWidthFraction));
-    window_title_->SetBoundsRect(GetCenteredTitleBounds(
-        width(), available_height, leading_x + title_padding,
-        trailing_x - title_padding,
-        window_title_->CalculatePreferredSize().width()));
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -419,4 +438,62 @@ int BrowserNonClientFrameViewMac::TopUIFullscreenYOffset() const {
     return menu_bar_height == 0 ? 0 : menu_bar_height + title_bar_height;
   return [[fullscreen_toolbar_controller_ menubarTracker] menubarFraction] *
          (menu_bar_height + title_bar_height);
+}
+
+void BrowserNonClientFrameViewMac::LayoutTitleBarForWebApp() {
+  if (!web_app_frame_toolbar())
+    return;
+
+  const int available_height = GetTopInset(true);
+  int leading_x = kFramePaddingLeft;
+  int trailing_x = width();
+
+  std::pair<int, int> remaining_bounds =
+      web_app_frame_toolbar()->LayoutInContainer(leading_x, trailing_x, 0,
+                                                 available_height);
+  leading_x = remaining_bounds.first;
+  trailing_x = remaining_bounds.second;
+
+  const int title_padding =
+      base::checked_cast<int>(std::round(width() * kTitlePaddingWidthFraction));
+  window_title_->SetBoundsRect(GetCenteredTitleBounds(
+      width(), available_height, leading_x + title_padding,
+      trailing_x - title_padding,
+      window_title_->CalculatePreferredSize().width()));
+}
+
+void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
+  // Add extra width to caption_button_placeholder_container_overlay_ so the
+  // maximize button does not look like it is touching the border of the overlay
+  // and there is padding between the two.
+  int caption_button_placeholder_container_overlay_width =
+      kFramePaddingLeft + 10;
+
+  // Layout CaptionButtonDummyContainerMac which would have the traffic lights.
+  auto caption_button_placeholder_container_overlay_bounds =
+      gfx::Rect(0, 0, caption_button_placeholder_container_overlay_width,
+                GetTopInset(false));
+  caption_button_placeholder_container_->LayoutForWindowControlsOverlay(
+      caption_button_placeholder_container_overlay_bounds);
+
+  // Layout WebAppFrameToolbarView.
+  const int web_app_toolbar_width =
+      web_app_frame_toolbar()->GetPreferredSize().width();
+  const int web_app_toolbar_x = width() - web_app_toolbar_width;
+  auto available_space = gfx::Rect(web_app_toolbar_x, 0, web_app_toolbar_width,
+                                   GetTopInset(false));
+
+  web_app_frame_toolbar()->LayoutForWindowControlsOverlay(available_space);
+
+  content::WebContents* web_contents = browser_view()->GetActiveWebContents();
+  // WebContents can be null when an app window is first launched.
+  if (web_contents) {
+    int overlay_width =
+        width() - (caption_button_placeholder_container_overlay_width +
+                   web_app_toolbar_width);
+    auto bounding_rect =
+        gfx::Rect(caption_button_placeholder_container_overlay_width, 0,
+                  overlay_width, GetTopInset(false));
+    web_contents->UpdateWindowControlsOverlay(bounding_rect);
+  }
 }

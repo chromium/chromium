@@ -79,6 +79,11 @@ struct NativeWidgetNSWindowInitParams {
   array<uint8> state_restoration_data;
 };
 
+enum WindowControlsOverlayNSViewType {
+  kCaptionButtonContainer,
+  kWebAppFrameToolbar,
+};
+
 // The interface through which a NativeWidgetMac may interact with an NSWindow
 // (possibly in a process separate from the browser process).
 interface NativeWidgetNSWindow {
@@ -220,4 +225,14 @@ interface NativeWidgetNSWindow {
 
   // Redispatch a keyboard event using the widget's window's CommandDispatcher.
   RedispatchKeyEvent(array<uint8> native_event_data);
+
+  // Add the overlay NSView for a PWA with window controls overlay
+  // display override given a |overlay_type|.
+  CreateWindowControlsOverlayNSView(
+      WindowControlsOverlayNSViewType overlay_type);
+
+  // Update the overlay NSView with |bounds| for a PWA with window controls
+  // overlay display override for a |overlay_type|.
+  UpdateWindowControlsOverlayNSView(
+    gfx.mojom.Rect bounds, WindowControlsOverlayNSViewType overlay_type);
 };
