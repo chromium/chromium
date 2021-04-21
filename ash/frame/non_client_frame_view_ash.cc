@@ -399,9 +399,12 @@ void NonClientFrameViewAsh::ShowContextMenuForViewImpl(
             /*add_title=*/true);
   }
 
+  // Recreate the `menu_runner_` so the checked label of
+  // `move_to_desks_menu_model_` will be updated.
   menu_runner_ = std::make_unique<views::MenuRunner>(
       move_to_desks_menu_model_.get(), views::MenuRunner::CONTEXT_MENU);
-  menu_runner_->RunMenuAt(widget, nullptr, gfx::Rect(point, gfx::Size()),
+  menu_runner_->RunMenuAt(widget, /*button_controller=*/nullptr,
+                          gfx::Rect(point, gfx::Size()),
                           views::MenuAnchorPosition::kTopLeft, source_type);
 }
 

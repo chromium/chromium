@@ -9,16 +9,22 @@
 
 namespace chromeos {
 
-// A menu model that builds the contents of the move to desks menu.
+// A menu model that builds the contents of the Move to Desks menu.
 class MoveToDesksMenuModel : public ui::SimpleMenuModel {
  public:
-  MoveToDesksMenuModel(std::unique_ptr<ui::SimpleMenuModel::Delegate> delegate,
-                       bool add_title = false);
+  // The command id for showing the Move to Desks menu. This is an arbitrary
+  // number that must not collide with other command ids. If this needs to be
+  // updated, choose an unused number.
+  static constexpr int kMenuCommandId = 40985;
+
+  // If `add_title` is true, a title will be added to the Move to Desks menu.
+  // Should be set to true if this is a standalone menu and not a submenu.
+  explicit MoveToDesksMenuModel(
+      std::unique_ptr<ui::SimpleMenuModel::Delegate> delegate,
+      bool add_title = false);
   MoveToDesksMenuModel(const MoveToDesksMenuModel&) = delete;
   MoveToDesksMenuModel& operator=(const MoveToDesksMenuModel&) = delete;
   ~MoveToDesksMenuModel() override;
-
-  static constexpr int kMenuCommandId = 40985;
 
   enum CommandId {
     MOVE_TO_DESK_1 = 1,
@@ -36,7 +42,8 @@ class MoveToDesksMenuModel : public ui::SimpleMenuModel {
   bool MayHaveMnemonicsAt(int index) const override;
 
  private:
-  // |this| owns its |delegate|.
+  // A menu delegate used to determine which labels are shown and enabled. Also
+  // handles how different command ids are handled.
   std::unique_ptr<ui::SimpleMenuModel::Delegate> delegate_;
 
   // This is the index of the assign to all desks item in the menu model.

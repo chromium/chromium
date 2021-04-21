@@ -27,14 +27,15 @@ bool IsAssignToAllDesksCommand(int command_id) {
 
 namespace ash {
 
+MoveToDesksMenuDelegate::MoveToDesksMenuDelegate(views::Widget* widget)
+    : widget_(widget), desks_helper_(DesksHelper::Get()) {}
+
 // static
 bool MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu() {
   auto* desks_helper = DesksHelper::Get();
-  return desks_helper && desks_helper->GetNumberOfDesks() > 1;
+  DCHECK(desks_helper);
+  return desks_helper->GetNumberOfDesks() > 1;
 }
-
-MoveToDesksMenuDelegate::MoveToDesksMenuDelegate(views::Widget* widget)
-    : widget_(widget), desks_helper_(DesksHelper::Get()) {}
 
 bool MoveToDesksMenuDelegate::IsCommandIdChecked(int command_id) const {
   const bool assigned_to_all_desks =
