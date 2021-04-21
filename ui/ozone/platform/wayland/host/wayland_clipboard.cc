@@ -110,8 +110,11 @@ class ClipboardImpl final : public Clipboard,
       offered_data_ = *data;
       source_ = manager_->CreateSource(this);
       source_->Offer(GetOfferedMimeTypes());
-      GetDevice()->SetSelectionSource(source_.get());
     }
+    GetDevice()->SetSelectionSource(source_.get());
+
+    if (!clipboard_changed_callback_.is_null())
+      clipboard_changed_callback_.Run(buffer_);
   }
 
   bool IsSelectionOwner() const final { return !!source_; }
@@ -159,6 +162,9 @@ class ClipboardImpl final : public Clipboard,
 
   // WaylandDataDeviceBase::SelectionDelegate:
   void OnSelectionOffer(ui::WaylandDataOfferBase* offer) final {
+    if (IsSelectionOwner())
+      return;
+
     if (!offer)
       SetData({}, {});
 

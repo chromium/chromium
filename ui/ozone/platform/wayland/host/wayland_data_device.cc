@@ -75,8 +75,8 @@ void WaylandDataDevice::RequestData(WaylandDataOffer* offer,
 }
 
 void WaylandDataDevice::SetSelectionSource(WaylandDataSource* source) {
-  DCHECK(source);
-  wl_data_device_set_selection(data_device_.get(), source->data_source(),
+  auto* data_source = source ? source->data_source() : nullptr;
+  wl_data_device_set_selection(data_device_.get(), data_source,
                                connection()->serial());
   connection()->ScheduleFlush();
 }

@@ -228,6 +228,29 @@ TEST_P(WaylandClipboardTest, OverlapReadingFromDifferentBuffers) {
   Sync();
 }
 
+// Ensures clipboard change callback is fired only once per read/write.
+TEST_P(WaylandClipboardTest, ClipboardChangeNotifications) {
+  base::MockCallback<PlatformClipboard::ClipboardDataChangedCallback>
+      clipboard_changed_callback;
+  clipboard_->SetClipboardDataChangedCallback(clipboard_changed_callback.Get());
+  const auto buffer = ClipboardBuffer::kCopyPaste;
+
+  // 1. For selection offered by an external application.
+  EXPECT_CALL(clipboard_changed_callback, Run(buffer)).Times(1);
+  auto* data_offer = data_device_manager_->data_device()->OnDataOffer();
+  data_offer->OnOffer(kMimeTypeTextUtf8,
+                      ToClipboardData(std::string(kSampleClipboardText)));
+  data_device_manager_->data_device()->OnSelection(data_offer);
+  Sync();
+  EXPECT_FALSE(clipboard_->IsSelectionOwner(ClipboardBuffer::kCopyPaste));
+
+  // 2. For selection offered by Chromium.
+  EXPECT_CALL(clipboard_changed_callback, Run(buffer)).Times(1);
+  OfferData(buffer, kSampleClipboardText, {kMimeTypeTextUtf8});
+  Sync();
+  EXPECT_TRUE(clipboard_->IsSelectionOwner(buffer));
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandClipboardTest,
                          ::testing::Values(kXdgShellStable));
