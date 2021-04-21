@@ -32,6 +32,15 @@ using i18n::phonenumbers::PhoneNumberUtil;
 namespace autofill {
 namespace {
 
+// The values corresponding to those types are visible in the settings.
+ServerFieldTypeSet GetUserVisibleTypes() {
+  static const ServerFieldTypeSet user_visibe_type = {
+      NAME_FULL,         NAME_HONORIFIC_PREFIX,  ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_CITY, ADDRESS_HOME_ZIP,       ADDRESS_HOME_COUNTRY,
+      EMAIL_ADDRESS,     PHONE_HOME_WHOLE_NUMBER};
+  return user_visibe_type;
+}
+
 constexpr char16_t kSpace[] = u" ";
 
 bool ContainsNewline(base::StringPiece16 text) {
@@ -225,6 +234,26 @@ AutofillProfileComparator::AutofillProfileComparator(
     : app_locale_(app_locale.data(), app_locale.size()) {}
 
 AutofillProfileComparator::~AutofillProfileComparator() = default;
+
+std::vector<ProfileValueDifference>
+AutofillProfileComparator::GetSettingsVisibleProfileDifference(
+    const AutofillProfile& first_profile,
+    const AutofillProfile& second_profile,
+    const std::string& app_locale) {
+  std::vector<ProfileValueDifference> difference;
+  difference.reserve(GetUserVisibleTypes().size());
+
+  for (auto type : GetUserVisibleTypes()) {
+    const std::u16string& first_value = first_profile.GetInfo(type, app_locale);
+    const std::u16string& second_value =
+        second_profile.GetInfo(type, app_locale);
+    if (first_value != second_value) {
+      difference.emplace_back(
+          ProfileValueDifference{type, first_value, second_value});
+    }
+  }
+  return difference;
+}
 
 bool AutofillProfileComparator::Compare(base::StringPiece16 text1,
                                         base::StringPiece16 text2,
@@ -916,15 +945,10 @@ bool AutofillProfileComparator::MergeAddresses(const AutofillProfile& p1,
 bool AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
     const AutofillProfile& p1,
     const AutofillProfile& p2) {
-  // The values corresponding to those types are visible in the settings.
-  static const ServerFieldTypeSet kUserVisibleTypes = {
-      NAME_FULL,         NAME_HONORIFIC_PREFIX,  ADDRESS_HOME_STREET_ADDRESS,
-      ADDRESS_HOME_CITY, ADDRESS_HOME_ZIP,       ADDRESS_HOME_COUNTRY,
-      EMAIL_ADDRESS,     PHONE_HOME_WHOLE_NUMBER};
 
   // Return true if at least one value corresponding to the settings visible
   // types is different between the two profiles.
-  return base::ranges::any_of(kUserVisibleTypes, [&](const auto type) {
+  return base::ranges::any_of(GetUserVisibleTypes(), [&](const auto type) {
     return p1.GetRawInfo(type) != p2.GetRawInfo(type);
   });
 }

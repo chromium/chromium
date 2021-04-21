@@ -58,6 +58,15 @@ using autofill::PhoneNumber;
 using autofill::ServerFieldType;
 using base::UTF8ToUTF16;
 
+namespace autofill {
+
+bool operator==(const ProfileValueDifference& left,
+                const ProfileValueDifference& right) {
+  return left.second_value == right.second_value &&
+         left.first_value == right.first_value && left.type == right.type;
+}
+
+}  // namespace autofill
 namespace {
 
 const char kLocale[] = "en-US";
@@ -1431,6 +1440,40 @@ TEST_P(AutofillProfileComparatorTest,
   EXPECT_FALSE(
       AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
           existing_profile, new_profile));
+}
+
+TEST_P(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifference) {
+  AutofillProfile existing_profile(base::GenerateGUID(),
+                                   "http://www.example.com/");
+  autofill::test::SetProfileInfo(
+      &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
+      "company", "line1", "line2", "city", "state", "zip", "US", "phone");
+
+  // Make a copy of the existing profile.
+  AutofillProfile second_existing_profile = existing_profile;
+
+  // There should be no difference in the profiles.
+  EXPECT_TRUE(AutofillProfileComparator::GetSettingsVisibleProfileDifference(
+                  existing_profile, second_existing_profile, kLocale)
+                  .empty());
+
+  // Change the zip code of the second profile and test the difference.
+  second_existing_profile.SetRawInfo(ADDRESS_HOME_ZIP, u"another_zip");
+  std::vector<autofill::ProfileValueDifference> expected_difference = {
+      {ADDRESS_HOME_ZIP, u"zip", u"another_zip"}};
+  EXPECT_EQ(AutofillProfileComparator::GetSettingsVisibleProfileDifference(
+                existing_profile, second_existing_profile, kLocale),
+            expected_difference);
+
+  // Change a second value and check the expectations.
+  second_existing_profile.SetRawInfo(autofill::ADDRESS_HOME_CITY,
+                                     u"another_city");
+  expected_difference.emplace(expected_difference.begin(),
+                              autofill::ProfileValueDifference{
+                                  ADDRESS_HOME_CITY, u"city", u"another_city"});
+  EXPECT_EQ(AutofillProfileComparator::GetSettingsVisibleProfileDifference(
+                existing_profile, second_existing_profile, kLocale),
+            expected_difference);
 }
 
 TEST_P(AutofillProfileComparatorTest, IsMergeCandidate) {

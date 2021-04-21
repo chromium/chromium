@@ -18,6 +18,15 @@
 
 namespace autofill {
 
+struct ProfileValueDifference {
+  // The type of the field that is different.
+  ServerFieldType type;
+  // The original value.
+  std::u16string first_value;
+  // The new value.
+  std::u16string second_value;
+};
+
 // A utility class to assist in the comparison of AutofillProfile data.
 class AutofillProfileComparator {
  public:
@@ -68,6 +77,13 @@ class AutofillProfileComparator {
   // Returns true if |text| is empty or contains only skippable characters. A
   // character is skippable if it is punctuation or white space.
   bool HasOnlySkippableCharacters(base::StringPiece16 text) const;
+
+  // Get the difference of two profiles for settings-visible values.
+  // The difference is determined with respect to the provided `app_locale`.
+  static std::vector<ProfileValueDifference>
+  GetSettingsVisibleProfileDifference(const AutofillProfile& first_profile,
+                                      const AutofillProfile& second_profile,
+                                      const std::string& app_locale);
 
   // Returns a copy of |text| with uppercase converted to lowercase and
   // diacritics removed.
