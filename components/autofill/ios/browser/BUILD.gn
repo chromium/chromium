@@ -122,6 +122,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:form_handler_feature",
     "//components/leveldb_proto:leveldb_proto",
     "//components/prefs",
     "//ios/web/public",

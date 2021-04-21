@@ -14,6 +14,7 @@
 #include "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
+#import "components/password_manager/ios/password_manager_java_script_feature.h"
 #include "components/ssl_errors/error_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/components/webui/web_ui_url_constants.h"
@@ -104,7 +105,8 @@ std::vector<web::JavaScriptFeature*> WebViewWebClient::GetJavaScriptFeatures(
     web::BrowserState* browser_state) const {
   return {autofill::AutofillJavaScriptFeature::GetInstance(),
           autofill::FormHandlersJavaScriptFeature::GetInstance(),
-          autofill::SuggestionControllerJavaScriptFeature::GetInstance()};
+          autofill::SuggestionControllerJavaScriptFeature::GetInstance(),
+          password_manager::PasswordManagerJavaScriptFeature::GetInstance()};
 }
 
 NSString* WebViewWebClient::GetDocumentStartScriptForMainFrame(

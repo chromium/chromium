@@ -173,10 +173,9 @@ bool JavaScriptFeature::CallJavaScriptFunction(
       JavaScriptFeatureManager::FromBrowserState(web_frame->GetBrowserState());
   DCHECK(feature_manager);
 
-  // A feature can still ExecuteJavaScript even if there are no initial scripts,
-  // so a nil content_world here will execute JS in the main page content world.
   JavaScriptContentWorld* content_world =
       feature_manager->GetContentWorldForFeature(this);
+  DCHECK(content_world);
 
   return web_frame->GetWebFrameInternal()->CallJavaScriptFunctionInContentWorld(
       function_name, parameters, content_world);
@@ -192,10 +191,9 @@ bool JavaScriptFeature::CallJavaScriptFunction(
       JavaScriptFeatureManager::FromBrowserState(web_frame->GetBrowserState());
   DCHECK(feature_manager);
 
-  // A feature can still ExecuteJavaScript even if there are no initial scripts,
-  // so a nil content_world here will execute JS in the main page content world.
   JavaScriptContentWorld* content_world =
       feature_manager->GetContentWorldForFeature(this);
+  DCHECK(content_world);
 
   return web_frame->GetWebFrameInternal()->CallJavaScriptFunctionInContentWorld(
       function_name, parameters, content_world, std::move(callback), timeout);

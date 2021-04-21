@@ -17,6 +17,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
+#import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/prefs/pref_service.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
@@ -70,7 +71,8 @@ class AutofillAgentTests : public web::WebTest {
     web::WebTest::SetUp();
 
     OverrideJavaScriptFeatures(
-        {autofill::AutofillJavaScriptFeature::GetInstance()});
+        {autofill::AutofillJavaScriptFeature::GetInstance(),
+         autofill::FormHandlersJavaScriptFeature::GetInstance()});
 
     fake_web_state_.SetBrowserState(GetBrowserState());
     fake_web_state_.SetContentIsHTML(true);
