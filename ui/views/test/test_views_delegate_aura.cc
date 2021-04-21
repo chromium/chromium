@@ -26,7 +26,7 @@ HICON TestViewsDelegate::GetSmallWindowIcon() const {
 void TestViewsDelegate::OnBeforeWidgetInit(
     Widget::InitParams* params,
     internal::NativeWidgetDelegate* delegate) {
-#if defined(OS_CHROMEOS)
+#if defined(OS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!params->parent && !params->context)
     params->context = context_;
 #endif

@@ -124,13 +124,17 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
     properties.parent_widget = params.parent->GetHost()->GetAcceleratedWidget();
 
 #if defined(USE_OZONE)
-  if (properties.type == ui::PlatformWindowType::kTooltip &&
-      features::IsUsingOzonePlatform() &&
+  if (features::IsUsingOzonePlatform() &&
       ui::OzonePlatform::GetInstance()
           ->GetPlatformProperties()
           .set_parent_for_non_top_level_windows) {
-    properties.parent_widget =
-        params.context->GetHost()->GetAcceleratedWidget();
+    // If the parent has not been provided, but there is context, use the
+    // context's widget as the parent of a new platform window.
+    if (params.context && params.context->GetHost() &&
+        !properties.parent_widget) {
+      properties.parent_widget =
+          params.context->GetHost()->GetAcceleratedWidget();
+    }
   }
 #endif
 
