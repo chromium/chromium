@@ -28,6 +28,7 @@
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 #define SET_STATE(state) SetState(state, __func__)
 #define VLOG_EVENT(event) \
@@ -467,8 +468,16 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploration(
     return SendEvent(continuation, &event);
   }
 
+  // |location| is in window DIP coordinates.
+  gfx::PointF location(event.location());
+
+  // APIs taking this point e.g.
+  // chrome.accessibilityPrivate.sendSyntheticMouseEvent,
+  // chrome.automation.AutomationNode.prototype.hitTest, all take screen
+  // coordinates.
+  ::wm::ConvertPointToScreen(root_window_, &location);
   delegate_->HandleAccessibilityGesture(ax::mojom::Gesture::kTouchExplore,
-                                        event.location_f());
+                                        location);
 
   last_touch_exploration_ = std::make_unique<ui::TouchEvent>(event);
   if (anchor_point_state_ != ANCHOR_POINT_EXPLICITLY_SET)

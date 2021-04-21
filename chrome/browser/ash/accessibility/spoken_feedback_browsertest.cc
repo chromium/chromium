@@ -15,6 +15,7 @@
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/screen_backlight.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_view.h"
@@ -58,6 +59,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/screen.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
@@ -994,6 +998,84 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
 
     ui::TouchEvent touch_move2(
         ui::ET_TOUCH_MOVED, gfx::Point(1280, 400), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move2);
+  });
+
+  // This should trigger reading of the button.
+  sm_.ExpectSpeech("hello");
+  sm_.ExpectSpeech("Button");
+
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreSecondaryDisplay) {
+  std::vector<RootWindowController*> root_controllers =
+      Shell::GetAllRootWindowControllers();
+  EXPECT_EQ(1U, root_controllers.size());
+
+  // Make two displays, each 800 by 800, side by side.
+  ash::ShellTestApi shell_test_api;
+  display::test::DisplayManagerTestApi(shell_test_api.display_manager())
+      .UpdateDisplay("800x800,801+0-800x800");
+  ASSERT_EQ(2u, shell_test_api.display_manager()->GetNumDisplays());
+  display::test::DisplayManagerTestApi display_manager_test_api(
+      shell_test_api.display_manager());
+
+  display::Screen* screen = display::Screen::GetScreen();
+  int64_t display2 = display_manager_test_api.GetSecondaryDisplay().id();
+  screen->SetDisplayForNewWindows(display2);
+
+  root_controllers = Shell::GetAllRootWindowControllers();
+  EXPECT_EQ(2U, root_controllers.size());
+
+  EnableChromeVox();
+
+  base::SimpleTestTickClock clock;
+  auto* clock_ptr = &clock;
+  ui::SetEventTickClockForTesting(clock_ptr);
+
+  // Generate events to the secondary window which is at (800, 0).
+  auto* root_window = root_controllers[1]->GetRootWindow();
+  ui::test::EventGenerator generator(root_window);
+  auto* generator_ptr = &generator;
+
+  // Build a simple window with a button and position it at the right edge of
+  // the screen.
+  views::Widget* widget = new views::Widget;
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  params.parent = root_window;
+
+  // This is the right edge of the screen.
+  params.bounds = {1550, 0, 50, 700};
+  widget->Init(std::move(params));
+
+  views::View* view = new views::View();
+  view->GetViewAccessibility().OverrideName("hello");
+  view->GetViewAccessibility().OverrideRole(ax::mojom::Role::kButton);
+  view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  widget->GetRootView()->AddChildView(view);
+
+  // Show the widget, then touch and slide on the right edge of the screen.
+  sm_.Call([widget, clock_ptr, generator_ptr]() {
+    widget->Show();
+
+    ui::TouchEvent touch_press(
+        ui::ET_TOUCH_PRESSED, gfx::Point(1580, 200), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_press);
+
+    clock_ptr->Advance(base::TimeDelta::FromSeconds(1));
+
+    ui::TouchEvent touch_move(
+        ui::ET_TOUCH_MOVED, gfx::Point(1580, 300), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move);
+
+    clock_ptr->Advance(base::TimeDelta::FromSeconds(1));
+
+    ui::TouchEvent touch_move2(
+        ui::ET_TOUCH_MOVED, gfx::Point(1580, 400), base::TimeTicks::Now(),
         ui::PointerDetails(ui::EventPointerType::kTouch, 0));
     generator_ptr->Dispatch(&touch_move2);
   });

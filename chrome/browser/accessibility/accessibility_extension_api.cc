@@ -53,6 +53,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #endif
 
 namespace {
@@ -386,17 +387,25 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
   if (mouse_data->touch_accessibility && *(mouse_data->touch_accessibility))
     flags |= ui::EF_TOUCH_ACCESSIBILITY;
 
-  // Locations are assumed to be display relative (and in DIPs).
-  // TODO(crbug/893752) Choose correct display
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
-  gfx::Point location(mouse_data->x, mouse_data->y);
-  std::unique_ptr<ui::MouseEvent> synthetic_mouse_event =
-      std::make_unique<ui::MouseEvent>(type, location, location,
-                                       ui::EventTimeForNow(), flags,
-                                       changed_button_flags);
-
+  // Locations are assumed to be in screen coordinates.
+  gfx::Point location_in_screen(mouse_data->x, mouse_data->y);
+  const display::Display& display =
+      display::Screen::GetScreen()->GetDisplayNearestPoint(location_in_screen);
   auto* host = ash::GetWindowTreeHostForDisplay(display.id());
-  DCHECK(host);
+  if (!host)
+    return RespondNow(NoArguments());
+
+  aura::Window* root_window = host->window();
+  if (!root_window)
+    return RespondNow(NoArguments());
+
+  ::wm::ConvertPointFromScreen(root_window, &location_in_screen);
+
+  std::unique_ptr<ui::MouseEvent> synthetic_mouse_event =
+      std::make_unique<ui::MouseEvent>(
+          type, location_in_screen, location_in_screen, ui::EventTimeForNow(),
+          flags, changed_button_flags);
+
   // Transforming the coordinate to the root will apply the screen scale factor
   // to the event's location and also the screen rotation degree.
   synthetic_mouse_event->UpdateForRootTransform(
