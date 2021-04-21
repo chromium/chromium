@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/launcher/browser_shortcut_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/browser_shortcut_shelf_item_controller.h"
 
 #include "ash/public/cpp/shelf_model.h"
 #include "base/callback_helpers.h"
@@ -17,12 +17,12 @@
 #include "content/public/test/browser_test.h"
 #include "ui/display/types/display_constants.h"
 
-using BrowserShortcutLauncherItemControllerTest = InProcessBrowserTest;
+using BrowserShortcutShelfItemControllerTest = InProcessBrowserTest;
 
 namespace {
 
 ash::ShelfItemDelegate::AppMenuItems GetAppMenuItems(
-    BrowserShortcutLauncherItemController* controller,
+    BrowserShortcutShelfItemController* controller,
     int event_flags) {
   return controller->GetAppMenuItems(event_flags, base::NullCallback());
 }
@@ -30,10 +30,10 @@ ash::ShelfItemDelegate::AppMenuItems GetAppMenuItems(
 }  // namespace
 
 // Test the browser application menu for some browser window and tab states.
-IN_PROC_BROWSER_TEST_F(BrowserShortcutLauncherItemControllerTest, AppMenu) {
-  BrowserShortcutLauncherItemController* controller =
+IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
+  BrowserShortcutShelfItemController* controller =
       ChromeLauncherController::instance()
-          ->GetBrowserShortcutLauncherItemControllerForTesting();
+          ->GetBrowserShortcutShelfItemControllerForTesting();
   ASSERT_TRUE(controller);
 
   // InProcessBrowserTest's default browser window is shown with a blank tab.

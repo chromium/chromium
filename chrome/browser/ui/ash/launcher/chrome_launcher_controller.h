@@ -27,7 +27,7 @@
 class AppIconLoader;
 class AppServiceAppWindowLauncherController;
 class AppWindowLauncherController;
-class BrowserShortcutLauncherItemController;
+class BrowserShortcutShelfItemController;
 class BrowserStatusMonitor;
 class ChromeLauncherControllerUserSwitchObserver;
 class GURL;
@@ -205,8 +205,8 @@ class ChromeLauncherController
   std::u16string GetAppMenuTitle(content::WebContents* web_contents) const;
 
   // Returns the ash::ShelfItemDelegate of BrowserShortcut.
-  BrowserShortcutLauncherItemController*
-  GetBrowserShortcutLauncherItemControllerForTesting();
+  BrowserShortcutShelfItemController*
+  GetBrowserShortcutShelfItemControllerForTesting();
 
   // Updates the browser shortcut item state.
   // This may create or delete the item, specifically if the browser icon

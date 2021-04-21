@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/launcher/browser_shortcut_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/browser_shortcut_shelf_item_controller.h"
 
 #include <limits>
 #include <utility>
@@ -74,19 +74,18 @@ bool ShouldRecordLaunchTime(Browser* browser, const ash::ShelfModel* model) {
 
 }  // namespace
 
-BrowserShortcutLauncherItemController::BrowserShortcutLauncherItemController(
+BrowserShortcutShelfItemController::BrowserShortcutShelfItemController(
     ash::ShelfModel* shelf_model)
     : ash::ShelfItemDelegate(ash::ShelfID(extension_misc::kChromeAppId)),
       shelf_model_(shelf_model) {
   BrowserList::AddObserver(this);
 }
 
-BrowserShortcutLauncherItemController::
-    ~BrowserShortcutLauncherItemController() {
+BrowserShortcutShelfItemController::~BrowserShortcutShelfItemController() {
   BrowserList::RemoveObserver(this);
 }
 
-void BrowserShortcutLauncherItemController::ItemSelected(
+void BrowserShortcutShelfItemController::ItemSelected(
     std::unique_ptr<ui::Event> event,
     int64_t display_id,
     ash::ShelfLaunchSource source,
@@ -143,7 +142,7 @@ void BrowserShortcutLauncherItemController::ItemSelected(
 }
 
 ash::ShelfItemDelegate::AppMenuItems
-BrowserShortcutLauncherItemController::GetAppMenuItems(
+BrowserShortcutShelfItemController::GetAppMenuItems(
     int event_flags,
     const ItemFilterPredicate& filter_predicate) {
   std::vector<std::pair<Browser*, size_t>> app_menu_items;
@@ -187,7 +186,7 @@ BrowserShortcutLauncherItemController::GetAppMenuItems(
   return items;
 }
 
-void BrowserShortcutLauncherItemController::GetContextMenu(
+void BrowserShortcutShelfItemController::GetContextMenu(
     int64_t display_id,
     GetContextMenuCallback callback) {
   ChromeLauncherController* controller = ChromeLauncherController::instance();
@@ -196,11 +195,10 @@ void BrowserShortcutLauncherItemController::GetContextMenu(
   context_menu_->GetMenuModel(std::move(callback));
 }
 
-void BrowserShortcutLauncherItemController::ExecuteCommand(
-    bool from_context_menu,
-    int64_t command_id,
-    int32_t event_flags,
-    int64_t display_id) {
+void BrowserShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
+                                                        int64_t command_id,
+                                                        int32_t event_flags,
+                                                        int64_t display_id) {
   if (from_context_menu && ExecuteContextMenuCommand(command_id, event_flags))
     return;
 
@@ -232,19 +230,19 @@ void BrowserShortcutLauncherItemController::ExecuteCommand(
   app_menu_items_.clear();
 }
 
-void BrowserShortcutLauncherItemController::Close() {
+void BrowserShortcutShelfItemController::Close() {
   for (auto* browser : GetListOfActiveBrowsers(shelf_model_))
     browser->window()->Close();
 }
 
 // static
-bool BrowserShortcutLauncherItemController::IsListOfActiveBrowserEmpty(
+bool BrowserShortcutShelfItemController::IsListOfActiveBrowserEmpty(
     const ash::ShelfModel* model) {
   return GetListOfActiveBrowsers(model).empty();
 }
 
 ash::ShelfAction
-BrowserShortcutLauncherItemController::ActivateOrAdvanceToNextBrowser() {
+BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
   // Create a list of all suitable running browsers.
   std::vector<Browser*> items;
   // We use the list in the order of how the browsers got created - not the LRU
@@ -291,7 +289,7 @@ BrowserShortcutLauncherItemController::ActivateOrAdvanceToNextBrowser() {
   return ash::SHELF_ACTION_WINDOW_ACTIVATED;
 }
 
-void BrowserShortcutLauncherItemController::OnBrowserAdded(Browser* browser) {
+void BrowserShortcutShelfItemController::OnBrowserAdded(Browser* browser) {
   if (!ShouldRecordLaunchTime(browser, shelf_model_))
     return;
 
@@ -308,7 +306,7 @@ void BrowserShortcutLauncherItemController::OnBrowserAdded(Browser* browser) {
       ->SetLastLaunchTime(shelf_id().app_id, base::Time::Now());
 }
 
-void BrowserShortcutLauncherItemController::OnBrowserClosing(Browser* browser) {
+void BrowserShortcutShelfItemController::OnBrowserClosing(Browser* browser) {
   DCHECK(browser);
   // Reset pointers to the closed browser, but leave menu indices intact.
   for (auto& it : app_menu_items_) {

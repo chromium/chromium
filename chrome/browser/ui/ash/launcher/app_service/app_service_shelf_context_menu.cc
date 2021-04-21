@@ -33,7 +33,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
 #include "chrome/browser/ui/ash/launcher/arc_app_shelf_id.h"
-#include "chrome/browser/ui/ash/launcher/browser_shortcut_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -423,7 +423,7 @@ void AppServiceShelfContextMenu::BuildCrostiniAppMenu(
 
 void AppServiceShelfContextMenu::BuildChromeAppMenu(
     ui::SimpleMenuModel* menu_model) {
-  if (!BrowserShortcutLauncherItemController::IsListOfActiveBrowserEmpty(
+  if (!BrowserShortcutShelfItemController::IsListOfActiveBrowserEmpty(
           controller()->shelf_model()) ||
       item().type == ash::TYPE_DIALOG || controller()->IsOpen(item().id)) {
     AddContextMenuOption(menu_model, ash::MENU_CLOSE,

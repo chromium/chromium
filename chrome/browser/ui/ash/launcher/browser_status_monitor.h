@@ -45,7 +45,7 @@ class BrowserStatusMonitor : public BrowserListObserver,
   // A shortcut to call the ChromeLauncherController's UpdateAppState().
   void UpdateAppItemState(content::WebContents* contents, bool remove);
 
-  // A shortcut to call the BrowserShortcutLauncherItemController's
+  // A shortcut to call the BrowserShortcutShelfItemController's
   // UpdateBrowserItemState().
   void UpdateBrowserItemState();
 

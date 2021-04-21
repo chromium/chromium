@@ -15,7 +15,7 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
-#include "chrome/browser/ui/ash/launcher/browser_shortcut_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -82,7 +82,7 @@ void ExtensionShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
       AddContextMenuOption(menu_model.get(), ash::MENU_NEW_INCOGNITO_WINDOW,
                            IDS_APP_LIST_NEW_INCOGNITO_WINDOW);
     }
-    if (!BrowserShortcutLauncherItemController::IsListOfActiveBrowserEmpty(
+    if (!BrowserShortcutShelfItemController::IsListOfActiveBrowserEmpty(
             controller()->shelf_model()) ||
         item().type == ash::TYPE_DIALOG || controller()->IsOpen(item().id)) {
       AddContextMenuOption(menu_model.get(), ash::MENU_CLOSE,

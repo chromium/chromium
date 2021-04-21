@@ -12,7 +12,7 @@
 #include "ui/aura/window_tracker.h"
 
 // Sets the window title and shelf item properties for settings windows.
-// Settings windows are not handled by BrowserShortcutLauncherItemController.
+// Settings windows are not handled by BrowserShortcutShelfItemController.
 class SettingsWindowObserver : public chrome::SettingsWindowManagerObserver {
  public:
   SettingsWindowObserver();

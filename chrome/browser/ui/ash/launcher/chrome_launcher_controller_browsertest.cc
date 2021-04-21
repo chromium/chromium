@@ -60,7 +60,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
-#include "chrome/browser/ui/ash/launcher/browser_shortcut_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_test_util.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
 #include "chrome/browser/ui/ash/launcher/shelf_context_menu.h"
@@ -276,7 +276,7 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
 
   size_t NumberOfDetectedLauncherBrowsers(bool show_all_tabs) {
     ash::ShelfItemDelegate* item_controller =
-        controller_->GetBrowserShortcutLauncherItemControllerForTesting();
+        controller_->GetBrowserShortcutShelfItemControllerForTesting();
     return item_controller
         ->GetAppMenuItems(show_all_tabs ? ui::EF_SHIFT_DOWN : 0,
                           base::NullCallback())
@@ -2126,9 +2126,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, ActivateAfterSessionRestore) {
 
 // Check browser shortcut item functionality.
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
-                       BrowserShortcutLauncherItemController) {
+                       BrowserShortcutShelfItemController) {
   ash::ShelfItemDelegate* item_controller =
-      controller_->GetBrowserShortcutLauncherItemControllerForTesting();
+      controller_->GetBrowserShortcutShelfItemControllerForTesting();
   ASSERT_TRUE(item_controller);
   const ash::ShelfID browser_id = item_controller->shelf_id();
   EXPECT_EQ(extension_misc::kChromeAppId, browser_id.app_id);
@@ -2176,7 +2176,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
 }
 
 // Check that browser launch time is recorded when the browser is started
-// by means other than BrowserShortcutLauncherItemController.
+// by means other than BrowserShortcutShelfItemController.
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
                        BrowserLaunchTimeRecorded) {
   extensions::ExtensionPrefs* prefs =

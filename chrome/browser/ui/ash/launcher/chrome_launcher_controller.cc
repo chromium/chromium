@@ -54,7 +54,7 @@
 #include "chrome/browser/ui/ash/launcher/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
-#include "chrome/browser/ui/ash/launcher/browser_shortcut_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/browser_status_monitor.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
 #include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
@@ -692,12 +692,12 @@ std::u16string ChromeLauncherController::GetAppMenuTitle(
   return l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE);
 }
 
-BrowserShortcutLauncherItemController*
-ChromeLauncherController::GetBrowserShortcutLauncherItemControllerForTesting() {
+BrowserShortcutShelfItemController*
+ChromeLauncherController::GetBrowserShortcutShelfItemControllerForTesting() {
   ash::ShelfID id(kChromeAppId);
   ash::ShelfItemDelegate* delegate = model_->GetShelfItemDelegate(id);
   DCHECK(delegate) << "There should be always be a browser shortcut item.";
-  return static_cast<BrowserShortcutLauncherItemController*>(delegate);
+  return static_cast<BrowserShortcutShelfItemController*>(delegate);
 }
 
 void ChromeLauncherController::UpdateBrowserItemState() {
@@ -1309,7 +1309,7 @@ void ChromeLauncherController::CreateBrowserShortcutLauncherItem(bool pinned) {
   // Set the delegate first to avoid constructing another one in ShelfItemAdded.
   model_->SetShelfItemDelegate(
       browser_shortcut.id,
-      std::make_unique<BrowserShortcutLauncherItemController>(model_));
+      std::make_unique<BrowserShortcutShelfItemController>(model_));
 
   // If pinned, add the item towards the start of the shelf, it will be ordered
   // by weight. Otherwise put at the end as usual.

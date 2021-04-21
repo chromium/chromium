@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_BROWSER_SHORTCUT_LAUNCHER_ITEM_CONTROLLER_H_
-#define CHROME_BROWSER_UI_ASH_LAUNCHER_BROWSER_SHORTCUT_LAUNCHER_ITEM_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_BROWSER_SHORTCUT_SHELF_ITEM_CONTROLLER_H_
+#define CHROME_BROWSER_UI_ASH_LAUNCHER_BROWSER_SHORTCUT_SHELF_ITEM_CONTROLLER_H_
 
 #include <memory>
 
@@ -19,12 +19,12 @@ class ShelfContextMenu;
 
 // Shelf item delegate for a browser shortcut; only one such item should exist.
 // This item shows an application menu that lists open browser windows or tabs.
-class BrowserShortcutLauncherItemController : public ash::ShelfItemDelegate,
-                                              public BrowserListObserver {
+class BrowserShortcutShelfItemController : public ash::ShelfItemDelegate,
+                                           public BrowserListObserver {
  public:
-  explicit BrowserShortcutLauncherItemController(ash::ShelfModel* shelf_model);
+  explicit BrowserShortcutShelfItemController(ash::ShelfModel* shelf_model);
 
-  ~BrowserShortcutLauncherItemController() override;
+  ~BrowserShortcutShelfItemController() override;
 
   // Check if there is any active browsers windows.
   static bool IsListOfActiveBrowserEmpty(const ash::ShelfModel* model);
@@ -63,7 +63,7 @@ class BrowserShortcutLauncherItemController : public ash::ShelfItemDelegate,
 
   std::unique_ptr<ShelfContextMenu> context_menu_;
 
-  DISALLOW_COPY_AND_ASSIGN(BrowserShortcutLauncherItemController);
+  DISALLOW_COPY_AND_ASSIGN(BrowserShortcutShelfItemController);
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_BROWSER_SHORTCUT_LAUNCHER_ITEM_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_BROWSER_SHORTCUT_SHELF_ITEM_CONTROLLER_H_
