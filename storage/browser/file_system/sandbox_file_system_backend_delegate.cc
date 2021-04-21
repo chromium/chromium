@@ -20,7 +20,6 @@
 #include "base/task_runner_util.h"
 #include "base/time/time.h"
 #include "storage/browser/file_system/async_file_util_adapter.h"
-#include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -30,6 +29,7 @@
 #include "storage/browser/file_system/quota/quota_backend_impl.h"
 #include "storage/browser/file_system/quota/quota_reservation.h"
 #include "storage/browser/file_system/quota/quota_reservation_manager.h"
+#include "storage/browser/file_system/sandbox_file_stream_reader.h"
 #include "storage/browser/file_system/sandbox_file_stream_writer.h"
 #include "storage/browser/file_system/sandbox_file_system_backend.h"
 #include "storage/browser/file_system/sandbox_quota_observer.h"
@@ -322,7 +322,7 @@ SandboxFileSystemBackendDelegate::CreateFileStreamReader(
     FileSystemContext* context) const {
   if (!IsAccessValid(url))
     return nullptr;
-  return FileStreamReader::CreateForFileSystemFile(context, url, offset,
+  return std::make_unique<SandboxFileStreamReader>(context, url, offset,
                                                    expected_modification_time);
 }
 

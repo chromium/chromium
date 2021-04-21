@@ -18,6 +18,10 @@
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_url.h"
 
+namespace storage {
+class FileSystemContext;
+}
+
 namespace chromeos {
 namespace file_system_provider {
 

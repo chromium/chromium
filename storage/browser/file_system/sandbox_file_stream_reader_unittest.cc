@@ -21,7 +21,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "storage/browser/file_system/external_mount_points.h"
-
 #include "storage/browser/file_system/file_stream_reader_test.h"
 #include "storage/browser/file_system/file_stream_test_utils.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -64,7 +63,7 @@ class SandboxFileStreamReaderTest : public FileStreamReaderTest {
       const std::string& file_name,
       int64_t initial_offset,
       const base::Time& expected_modification_time) override {
-    return FileStreamReader::CreateForFileSystemFile(
+    return std::make_unique<SandboxFileStreamReader>(
         file_system_context_.get(), GetFileSystemURL(file_name), initial_offset,
         expected_modification_time);
   }

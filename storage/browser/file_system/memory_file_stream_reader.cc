@@ -14,17 +14,6 @@
 
 namespace storage {
 
-std::unique_ptr<FileStreamReader> FileStreamReader::CreateForMemoryFile(
-    scoped_refptr<base::TaskRunner> task_runner,
-    base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util,
-    const base::FilePath& file_path,
-    int64_t initial_offset,
-    const base::Time& expected_modification_time) {
-  return base::WrapUnique(new MemoryFileStreamReader(
-      std::move(task_runner), std::move(memory_file_util), file_path,
-      initial_offset, expected_modification_time));
-}
-
 MemoryFileStreamReader::MemoryFileStreamReader(
     scoped_refptr<base::TaskRunner> task_runner,
     base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util,

@@ -34,6 +34,11 @@ class FileSystemContext;
 class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamReader
     : public FileStreamReader {
  public:
+  // Creates a new reader for a filesystem URL |url| from |initial_offset|.
+  // |expected_modification_time| specifies the expected last modification. if
+  // the value is non-null, the reader will check the underlying file's actual
+  // modification time to see if the file has been modified, and if it does any
+  // succeeding read operations should fail with ERR_UPLOAD_FILE_CHANGED error.
   SandboxFileStreamReader(FileSystemContext* file_system_context,
                           const FileSystemURL& url,
                           int64_t initial_offset,

@@ -20,7 +20,6 @@
 #include "base/test/task_environment.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
-#include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_stream_reader_test.h"
 #include "storage/browser/file_system/file_stream_test_utils.h"
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
@@ -47,7 +46,7 @@ class MemoryFileStreamReaderTest : public FileStreamReaderTest {
       const std::string& file_name,
       int64_t initial_offset,
       const base::Time& expected_modification_time) override {
-    return FileStreamReader::CreateForMemoryFile(
+    return std::make_unique<MemoryFileStreamReader>(
         base::ThreadTaskRunnerHandle::Get(), file_util_->GetWeakPtr(),
         test_dir().AppendASCII(file_name), initial_offset,
         expected_modification_time);

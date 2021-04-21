@@ -20,6 +20,21 @@ namespace storage {
 class COMPONENT_EXPORT(STORAGE_BROWSER) MemoryFileStreamReader
     : public FileStreamReader {
  public:
+  // Creates a new FileReader for a memory file |file_path|.
+  // |initial_offset| specifies the offset in the file where the first read
+  // should start.  If the given offset is out of the file range any
+  // read operation may error out with net::ERR_REQUEST_RANGE_NOT_SATISFIABLE.
+  // |expected_modification_time| specifies the expected last modification
+  // If the value is non-null, the reader will check the underlying file's
+  // actual modification time to see if the file has been modified, and if
+  // it does any succeeding read operations should fail with
+  // ERR_UPLOAD_FILE_CHANGED error.
+  MemoryFileStreamReader(
+      scoped_refptr<base::TaskRunner> task_runner,
+      base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util,
+      const base::FilePath& file_path,
+      int64_t initial_offset,
+      const base::Time& expected_modification_time);
   ~MemoryFileStreamReader() override;
 
   // FileStreamReader overrides.
@@ -29,15 +44,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MemoryFileStreamReader
   int64_t GetLength(net::Int64CompletionOnceCallback callback) override;
 
  private:
-  friend class FileStreamReader;
-
-  MemoryFileStreamReader(
-      scoped_refptr<base::TaskRunner> task_runner,
-      base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util,
-      const base::FilePath& file_path,
-      int64_t initial_offset,
-      const base::Time& expected_modification_time);
-
   void OnReadCompleted(net::CompletionOnceCallback callback, int result);
   void OnGetLengthCompleted(net::Int64CompletionOnceCallback callback,
                             int64_t result);

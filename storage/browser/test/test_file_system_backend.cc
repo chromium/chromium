@@ -18,13 +18,13 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 #include "storage/browser/file_system/file_observers.h"
-#include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/file_system_quota_util.h"
 #include "storage/browser/file_system/local_file_util.h"
 #include "storage/browser/file_system/native_file_util.h"
 #include "storage/browser/file_system/quota/quota_reservation.h"
+#include "storage/browser/file_system/sandbox_file_stream_reader.h"
 #include "storage/browser/file_system/sandbox_file_stream_writer.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -198,7 +198,7 @@ std::unique_ptr<FileStreamReader> TestFileSystemBackend::CreateFileStreamReader(
     int64_t max_bytes_to_read,
     const base::Time& expected_modification_time,
     FileSystemContext* context) const {
-  return FileStreamReader::CreateForFileSystemFile(context, url, offset,
+  return std::make_unique<SandboxFileStreamReader>(context, url, offset,
                                                    expected_modification_time);
 }
 

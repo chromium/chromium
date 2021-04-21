@@ -18,6 +18,11 @@ namespace storage {
 class COMPONENT_EXPORT(STORAGE_BROWSER) MemoryFileStreamWriter
     : public FileStreamWriter {
  public:
+  MemoryFileStreamWriter(
+      scoped_refptr<base::TaskRunner> task_runner,
+      base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util,
+      const base::FilePath& file_path,
+      int64_t initial_offset);
   ~MemoryFileStreamWriter() override;
 
   // FileStreamWriter overrides.
@@ -28,13 +33,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MemoryFileStreamWriter
   int Flush(net::CompletionOnceCallback callback) override;
 
  private:
-  friend class FileStreamWriter;
-  MemoryFileStreamWriter(
-      scoped_refptr<base::TaskRunner> task_runner,
-      base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util,
-      const base::FilePath& file_path,
-      int64_t initial_offset);
-
   void OnWriteCompleted(net::CompletionOnceCallback callback, int result);
 
   // Stops the in-flight operation and calls |cancel_callback_| if it has been

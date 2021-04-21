@@ -16,7 +16,6 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/file_system/file_stream_test_utils.h"
-#include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_stream_writer_test.h"
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
 
@@ -53,7 +52,7 @@ class MemoryFileStreamWriterTest : public FileStreamWriterTest {
 
   std::unique_ptr<FileStreamWriter> CreateWriter(const std::string& name,
                                                  int64_t offset) override {
-    return FileStreamWriter::CreateForMemoryFile(
+    return std::make_unique<MemoryFileStreamWriter>(
         base::ThreadTaskRunnerHandle::Get(), file_util_->GetWeakPtr(),
         Path(name), offset);
   }

@@ -14,16 +14,6 @@
 
 namespace storage {
 
-std::unique_ptr<FileStreamWriter> FileStreamWriter::CreateForMemoryFile(
-    scoped_refptr<base::TaskRunner> task_runner,
-    base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util,
-    const base::FilePath& file_path,
-    int64_t initial_offset) {
-  return base::WrapUnique(new MemoryFileStreamWriter(
-      std::move(task_runner), std::move(memory_file_util), file_path,
-      initial_offset));
-}
-
 MemoryFileStreamWriter::MemoryFileStreamWriter(
     scoped_refptr<base::TaskRunner> task_runner,
     base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util,

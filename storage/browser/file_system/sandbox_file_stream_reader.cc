@@ -16,21 +16,13 @@
 #include "net/base/net_errors.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/memory_file_stream_reader.h"
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
 #include "storage/browser/file_system/plugin_private_file_system_backend.h"
 
 // TODO(kinuko): Remove this temporary namespace hack after we move both
 // blob and fileapi into content namespace.
 namespace storage {
-
-std::unique_ptr<FileStreamReader> FileStreamReader::CreateForFileSystemFile(
-    FileSystemContext* file_system_context,
-    const FileSystemURL& url,
-    int64_t initial_offset,
-    const base::Time& expected_modification_time) {
-  return base::WrapUnique(new SandboxFileStreamReader(
-      file_system_context, url, initial_offset, expected_modification_time));
-}
 
 SandboxFileStreamReader::SandboxFileStreamReader(
     FileSystemContext* file_system_context,
@@ -111,7 +103,7 @@ void SandboxFileStreamReader::DidCreateSnapshot(
       memory_file_util_delegate =
           file_system_context_->sandbox_delegate()->memory_file_util_delegate();
     }
-    file_reader_ = FileStreamReader::CreateForMemoryFile(
+    file_reader_ = std::make_unique<MemoryFileStreamReader>(
         file_system_context_->default_file_task_runner(),
         memory_file_util_delegate, platform_path, initial_offset_,
         expected_modification_time_);
