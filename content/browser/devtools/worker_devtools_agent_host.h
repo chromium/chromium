@@ -66,4 +66,4 @@ class WorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_DEVTOOLS_DEDICATED_WORKER_DEVTOOLS_AGENT_HOST_H_
+#endif  // CONTENT_BROWSER_DEVTOOLS_WORKER_DEVTOOLS_AGENT_HOST_H_

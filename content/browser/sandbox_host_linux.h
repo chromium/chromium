@@ -62,4 +62,4 @@ class CONTENT_EXPORT SandboxHostLinux {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_RENDER_SANDBOX_HOST_LINUX_H_
+#endif  // CONTENT_BROWSER_SANDBOX_HOST_LINUX_H_

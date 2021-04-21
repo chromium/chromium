@@ -58,4 +58,4 @@ class ShellPermissionManager : public PermissionControllerDelegate {
 
 }  // namespace content
 
-#endif // CONTENT_SHELL_BROWSER_SHELL_PERMISSION_MANAGER_H
+#endif  // CONTENT_SHELL_BROWSER_SHELL_PERMISSION_MANAGER_H_

@@ -186,4 +186,4 @@ class CONTENT_EXPORT PolicyContainerHost
 
 }  // namespace content
 
-#endif
+#endif  // CONTENT_BROWSER_RENDERER_HOST_POLICY_CONTAINER_HOST_H_

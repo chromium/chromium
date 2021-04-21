@@ -57,4 +57,4 @@ struct CONTENT_EXPORT SecurityStyleExplanations {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_SECURITY_STYLE_EXPLANATION_H_
+#endif  // CONTENT_PUBLIC_BROWSER_SECURITY_STYLE_EXPLANATIONS_H_

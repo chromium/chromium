@@ -82,4 +82,4 @@ class LockManager : public blink::mojom::LockManager {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_LOCKS_LOCK_MANAGER_H
+#endif  // CONTENT_BROWSER_LOCKS_LOCK_MANAGER_H_

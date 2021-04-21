@@ -38,4 +38,4 @@ DragDataToDropData(const blink::mojom::DragData& drag_data);
 
 }  // namespace content
 
-#endif  // #define CONTENT_BROWSER_RENDERER_HOST_DATA_TRANSFER_UTIL_H_
+#endif  // CONTENT_BROWSER_RENDERER_HOST_DATA_TRANSFER_UTIL_H_

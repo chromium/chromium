@@ -36,4 +36,4 @@ class CONTENT_EXPORT RenderWidgetHostObserver : public base::CheckedObserver {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_RENDER_PROCESS_HOST_OBSERVER_H_
+#endif  // CONTENT_PUBLIC_BROWSER_RENDER_WIDGET_HOST_OBSERVER_H_

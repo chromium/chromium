@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_CHILD_CHILD_HISTOGRAM_FETCHER_IMPL_H
-#define CONTENT_CHILD_CHILD_HISTOGRAM_FETCHER_IMPL_H
+#ifndef CONTENT_CHILD_CHILD_HISTOGRAM_FETCHER_IMPL_H_
+#define CONTENT_CHILD_CHILD_HISTOGRAM_FETCHER_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -64,4 +64,4 @@ class ChildHistogramFetcherImpl : public content::mojom::ChildHistogramFetcher {
 
 }  // namespace content
 
-#endif  // CONTENT_CHILD_CHILD_HISTOGRAM_FETCHER_IMPL_H
+#endif  // CONTENT_CHILD_CHILD_HISTOGRAM_FETCHER_IMPL_H_

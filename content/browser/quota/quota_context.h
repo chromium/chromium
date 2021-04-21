@@ -103,4 +103,4 @@ class QuotaContext : public base::RefCountedDeleteOnSequence<QuotaContext> {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_QUOTA_QUOTA_MANAGER_HOST_H_
+#endif  // CONTENT_BROWSER_QUOTA_QUOTA_CONTEXT_H_

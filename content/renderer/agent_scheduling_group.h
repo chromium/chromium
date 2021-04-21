@@ -152,4 +152,4 @@ class CONTENT_EXPORT AgentSchedulingGroup
 
 }  // namespace content
 
-#endif
+#endif  // CONTENT_RENDERER_AGENT_SCHEDULING_GROUP_H_

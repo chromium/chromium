@@ -43,4 +43,4 @@ class MockAgentSchedulingGroup : public AgentSchedulingGroup {
 
 }  // namespace content
 
-#endif
+#endif  // CONTENT_RENDERER_MOCK_AGENT_SCHEDULING_GROUP_H_

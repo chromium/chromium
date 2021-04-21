@@ -49,4 +49,4 @@ class SandboxIPCHandler : public base::DelegateSimpleThread::Delegate {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_SANDBOX_IPC_LINUX_H_
+#endif  // CONTENT_BROWSER_SANDBOX_IPC_LINUX_H_

@@ -218,4 +218,4 @@ std::ostream& operator<<(std::ostream& os,
 
 }  // namespace content
 
-#endif
+#endif  // CONTENT_BROWSER_RENDERER_HOST_AGENT_SCHEDULING_GROUP_HOST_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ANDROID_LAUNCHER_THREAD_H
-#define CONTENT_BROWSER_ANDROID_LAUNCHER_THREAD_H
+#ifndef CONTENT_BROWSER_ANDROID_LAUNCHER_THREAD_H_
+#define CONTENT_BROWSER_ANDROID_LAUNCHER_THREAD_H_
 
 #include "base/android/java_handler_thread.h"
 
@@ -30,4 +30,4 @@ class LauncherThread {
 }  // namespace android
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ANDROID_LAUNCHER_THREAD_H
+#endif  // CONTENT_BROWSER_ANDROID_LAUNCHER_THREAD_H_

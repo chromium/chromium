@@ -270,4 +270,4 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
 
 }  // namespace content
 
-#endif  // CONTENT_TEST_MOCK_INPUT_ACK_HANDLER_H_
+#endif  // CONTENT_TEST_MOCK_WIDGET_INPUT_HANDLER_H_

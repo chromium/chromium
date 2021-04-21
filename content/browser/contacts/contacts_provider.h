@@ -34,4 +34,4 @@ class ContactsProvider {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_CONTACTS_CONTACTS_PROVIDER_ANDROID_H_
+#endif  // CONTENT_BROWSER_CONTACTS_CONTACTS_PROVIDER_H_

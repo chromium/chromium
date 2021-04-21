@@ -17,4 +17,4 @@ void StartBlobInternalsURLLoader(
     ChromeBlobStorageContext* blob_storage_context);
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_BLOB_STORAGE_VIEW_BLOB_INTERNALS_URL_LOADER_H_
+#endif  // CONTENT_BROWSER_BLOB_STORAGE_BLOB_INTERNALS_URL_LOADER_H_

@@ -22,4 +22,4 @@ void TerminateAllSharedWorkers(StoragePartition* storage_partition,
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_TEST_STORAGE_PARTITION_TEST_HELPERS_H_
+#endif  // CONTENT_TEST_STORAGE_PARTITION_TEST_HELPERS_H_

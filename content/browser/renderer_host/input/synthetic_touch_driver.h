@@ -75,4 +75,4 @@ class CONTENT_EXPORT SyntheticTouchDriver : public SyntheticPointerDriver {
 
 }  // namespace content
 
-#endif  // CONTENT_COMMON_INPUT_SYNTHETIC_TOUCH_DRIVER_H_
+#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_TOUCH_DRIVER_H_

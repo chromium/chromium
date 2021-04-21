@@ -137,4 +137,4 @@ class AccessibilityEventRecorderUia : public AccessibilityEventRecorder {
 
 }  // namespace content
 
-#endif
+#endif  // CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EVENT_RECORDER_UIA_WIN_H_

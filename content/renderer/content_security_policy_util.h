@@ -35,4 +35,4 @@ blink::WebVector<blink::WebContentSecurityPolicy> ToWebContentSecurityPolicies(
 
 }  // namespace content
 
-#endif /* CONTENT_RENDERER_CONTENT_SECURITY_POLICY_UTIL_H_ */
+#endif  // CONTENT_RENDERER_CONTENT_SECURITY_POLICY_UTIL_H_

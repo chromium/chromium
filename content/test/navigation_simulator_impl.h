@@ -368,4 +368,4 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_TEST_NAVIGATION_SIMULATOR_H_
+#endif  // CONTENT_TEST_NAVIGATION_SIMULATOR_IMPL_H_

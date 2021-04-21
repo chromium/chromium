@@ -33,4 +33,4 @@ class CONTENT_EXPORT MHTMLExtraParts : public base::SupportsUserData::Data {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_MHTML_EXTRA_DATA_H_
+#endif  // CONTENT_PUBLIC_BROWSER_MHTML_EXTRA_PARTS_H_

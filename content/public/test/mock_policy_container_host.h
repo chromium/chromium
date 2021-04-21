@@ -49,4 +49,4 @@ class MockPolicyContainerHost : public blink::mojom::PolicyContainerHost {
 
 }  // namespace content
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_FAKE_POLICY_CONTAINER_HOST_H_
+#endif  // CONTENT_PUBLIC_TEST_MOCK_POLICY_CONTAINER_HOST_H_

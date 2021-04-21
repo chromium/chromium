@@ -13,4 +13,4 @@ blink::mojom::PolicyContainerPtr CreateStubPolicyContainer();
 
 }  // namespace content
 
-#endif
+#endif  // CONTENT_PUBLIC_TEST_POLICY_CONTAINER_UTILS_H_

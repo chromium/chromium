@@ -32,4 +32,4 @@ void GetAllowedClientHintsFromSourceHelper(
 
 }  // namespace content
 
-#endif  // CONTENT_SHELL_TEST_CLIENT_HINTS_UTILS_H_
+#endif  // CONTENT_TEST_MOCK_CLIENT_HINTS_UTILS_H_

@@ -147,4 +147,4 @@ std::unordered_set<RenderFrameHost*> GetRenderFrameHostsWithPendingFindResults(
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_TEST_FIND_TEST_UTILS_H_a
+#endif  // CONTENT_PUBLIC_TEST_FIND_TEST_UTILS_H_

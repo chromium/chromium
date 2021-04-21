@@ -91,4 +91,4 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
 
 }  // namespace content
 
-#endif  // CONTENT_TEST_TEST_NAVIGATION_URL_LOADER_DELEGATE_H
+#endif  // CONTENT_TEST_TEST_NAVIGATION_URL_LOADER_DELEGATE_H_

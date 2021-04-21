@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ANDROID_JAVA_GIN_JAVA_JAVA_BRIDGE_THREAD_H_
-#define CONTENT_BROWSER_ANDROID_JAVA_GIN_JAVA_JAVA_BRIDGE_THREAD_H_
+#ifndef CONTENT_BROWSER_ANDROID_JAVA_JAVA_BRIDGE_THREAD_H_
+#define CONTENT_BROWSER_ANDROID_JAVA_JAVA_BRIDGE_THREAD_H_
 
 #include "base/android/java_handler_thread.h"
 #include "base/single_thread_task_runner.h"
@@ -25,4 +25,4 @@ class JavaBridgeThread : public base::android::JavaHandlerThread {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ANDROID_JAVA_GIN_JAVA_JAVA_BRIDGE_THREAD_H_
+#endif  // CONTENT_BROWSER_ANDROID_JAVA_JAVA_BRIDGE_THREAD_H_
