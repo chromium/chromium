@@ -5,8 +5,8 @@
 // A stand-in for stuff that expects a weak pointer to a BaseTask for
 // testing.
 
-#ifndef JINGLE_NOTIFIER_FAKE_XMPP_CLIENT_H_
-#define JINGLE_NOTIFIER_FAKE_XMPP_CLIENT_H_
+#ifndef JINGLE_NOTIFIER_BASE_FAKE_BASE_TASK_H_
+#define JINGLE_NOTIFIER_BASE_FAKE_BASE_TASK_H_
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -34,4 +34,4 @@ class FakeBaseTask {
 
 }  // namespace notifier
 
-#endif  // JINGLE_NOTIFIER_FAKE_XMPP_CLIENT_H_
+#endif  // JINGLE_NOTIFIER_BASE_FAKE_BASE_TASK_H_

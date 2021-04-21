@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_LAZY_INSTANCE_INTERNAL_H_
-#define BASE_LAZY_INSTANCE_INTERNAL_H_
+#ifndef BASE_LAZY_INSTANCE_HELPERS_H_
+#define BASE_LAZY_INSTANCE_HELPERS_H_
 
 #include "base/atomicops.h"
 #include "base/base_export.h"
@@ -98,4 +98,4 @@ Type* GetOrCreateLazyPointer(subtle::AtomicWord* state,
 
 }  // namespace base
 
-#endif  // BASE_LAZY_INSTANCE_INTERNAL_H_
+#endif  // BASE_LAZY_INSTANCE_HELPERS_H_

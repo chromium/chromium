@@ -5,9 +5,9 @@
 // This header is needed so that mojo typemap files can specify their dependence
 // on Windows.h. This can be removed once https://crbug.com/798763 is resolved.
 
-#ifndef BASE_WIN_WINDOWS_FULL_H
-#define BASE_WIN_WINDOWS_FULL_H
+#ifndef BASE_WIN_WINDOWS_FULL_H_
+#define BASE_WIN_WINDOWS_FULL_H_
 
 #include <windows.h>
 
-#endif  // BASE_WIN_WINDOWS_FULL_H
+#endif  // BASE_WIN_WINDOWS_FULL_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef JINGLE_NOTIFIER_LISTENER_NON_BLOCKING_PUSH_CLIENT_OBSERVER_H_
-#define JINGLE_NOTIFIER_LISTENER_NON_BLOCKING_PUSH_CLIENT_OBSERVER_H_
+#ifndef JINGLE_NOTIFIER_LISTENER_PUSH_CLIENT_OBSERVER_H_
+#define JINGLE_NOTIFIER_LISTENER_PUSH_CLIENT_OBSERVER_H_
 
 #include "jingle/notifier/listener/notification_defines.h"
 
@@ -47,4 +47,4 @@ class PushClientObserver {
 
 }  // namespace notifier
 
-#endif  // JINGLE_NOTIFIER_LISTENER_NON_BLOCKING_PUSH_CLIENT_OBSERVER_H_
+#endif  // JINGLE_NOTIFIER_LISTENER_PUSH_CLIENT_OBSERVER_H_

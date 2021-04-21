@@ -10,8 +10,8 @@
 // The task is deleted automatically by the jingle_xmpp::XmppClient. This occurs in the
 // destructor of TaskRunner, which is a superclass of jingle_xmpp::XmppClient.
 
-#ifndef JINGLE_NOTIFIER_PUSH_NOTIFICATIONS_LISTENER_LISTEN_TASK_H_
-#define JINGLE_NOTIFIER_PUSH_NOTIFICATIONS_LISTENER_LISTEN_TASK_H_
+#ifndef JINGLE_NOTIFIER_LISTENER_PUSH_NOTIFICATIONS_LISTEN_TASK_H_
+#define JINGLE_NOTIFIER_LISTENER_PUSH_NOTIFICATIONS_LISTEN_TASK_H_
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -57,4 +57,4 @@ typedef PushNotificationsListenTask::Delegate
 
 }  // namespace notifier
 
-#endif  // JINGLE_NOTIFIER_PUSH_NOTIFICATIONS_LISTENER_LISTEN_TASK_H_
+#endif  // JINGLE_NOTIFIER_LISTENER_PUSH_NOTIFICATIONS_LISTEN_TASK_H_

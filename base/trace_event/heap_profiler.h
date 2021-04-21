@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_TRACE_EVENT_HEAP_PROFILER_H
-#define BASE_TRACE_EVENT_HEAP_PROFILER_H
+#ifndef BASE_TRACE_EVENT_HEAP_PROFILER_H_
+#define BASE_TRACE_EVENT_HEAP_PROFILER_H_
 
 #include "base/compiler_specific.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"
@@ -131,4 +131,4 @@ class BASE_EXPORT HeapProfilerScopedIgnore {
 
 }  // namespace trace_event_internal
 
-#endif  // BASE_TRACE_EVENT_HEAP_PROFILER_H
+#endif  // BASE_TRACE_EVENT_HEAP_PROFILER_H_

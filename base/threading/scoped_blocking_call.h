@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_THREADING_SCOPED_BLOCKING_CALL_H
-#define BASE_THREADING_SCOPED_BLOCKING_CALL_H
+#ifndef BASE_THREADING_SCOPED_BLOCKING_CALL_H_
+#define BASE_THREADING_SCOPED_BLOCKING_CALL_H_
 
 #include "base/base_export.h"
 #include "base/callback_forward.h"
@@ -127,4 +127,4 @@ EnableIOJankMonitoringForProcess(IOJankReportingCallback reporting_callback);
 
 }  // namespace base
 
-#endif  // BASE_THREADING_SCOPED_BLOCKING_CALL_H
+#endif  // BASE_THREADING_SCOPED_BLOCKING_CALL_H_

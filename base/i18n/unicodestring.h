@@ -31,4 +31,4 @@ inline std::u16string UnicodeStringToString16(
 }  // namespace i18n
 }  // namespace base
 
-#endif  // BASE_UNICODESTRING_H_
+#endif  // BASE_I18N_UNICODESTRING_H_
