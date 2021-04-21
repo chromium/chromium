@@ -507,6 +507,10 @@ try_.chromium_android_builder(
 )
 
 try_.chromium_android_builder(
+    name = "android-webview-pie-x86-wpt-fyi-rel",
+)
+
+try_.chromium_android_builder(
     name = "android-webview-marshmallow-arm64-dbg",
 )
 
