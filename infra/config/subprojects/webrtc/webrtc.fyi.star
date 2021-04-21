@@ -27,7 +27,7 @@ luci.bucket(
 )
 
 luci.gitiles_poller(
-    name = "webrtc-gitiles-trigger",
+    name = "webrtc-gitiles-trigger-master",
     bucket = "webrtc",
     repo = "https://webrtc.googlesource.com/src/",
 )
@@ -43,7 +43,7 @@ defaults.os.set(os.LINUX_DEFAULT)
 defaults.pool.set("luci.chromium.webrtc.fyi")
 defaults.service_account.set("chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com")
 defaults.swarming_tags.set(["vpython:native-python-wrapper"])
-defaults.triggered_by.set(["webrtc-gitiles-trigger"])
+defaults.triggered_by.set(["webrtc-gitiles-trigger-master"])
 
 # Builders are defined in lexicographic order by name
 

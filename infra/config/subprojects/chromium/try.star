@@ -77,7 +77,7 @@ luci.cq_group(
         repo = "https://chromium.googlesource.com/chromium/src",
         refs = [branches.value(
             # The chromium project's CQ covers all of the refs under refs/heads,
-            # which includes refs/heads/main
+            # which includes refs/heads/master
             for_main = "refs/heads/.+",
             # For projects running out of a branch, the CQ only runs for that
             # ref
