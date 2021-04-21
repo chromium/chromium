@@ -2048,14 +2048,17 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     __weak CRWWebController* weakSelf = self;
     [session loadObjectsOfClass:[NSURL class]
                      completion:^(NSArray<NSURL*>* objects) {
-                       GURL URL = net::GURLWithNSURL([objects firstObject]);
-                       if (!_isBeingDestroyed && URL.is_valid()) {
-                         web::NavigationManager::WebLoadParams params(URL);
-                         params.transition_type = ui::PAGE_TRANSITION_TYPED;
-                         weakSelf.webStateImpl->GetNavigationManager()
-                             ->LoadURLWithParams(params);
-                       }
+                       [weakSelf loadUrlObjectsCompletion:objects];
                      }];
+  }
+}
+
+- (void)loadUrlObjectsCompletion:(NSArray<NSURL*>*)objects {
+  GURL URL = net::GURLWithNSURL([objects firstObject]);
+  if (!_isBeingDestroyed && URL.is_valid()) {
+    web::NavigationManager::WebLoadParams params(URL);
+    params.transition_type = ui::PAGE_TRANSITION_TYPED;
+    self.webStateImpl->GetNavigationManager()->LoadURLWithParams(params);
   }
 }
 

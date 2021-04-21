@@ -73,10 +73,7 @@ source_set("ui") {
     "crw_wk_ui_handler_delegate.h",
   ]
 
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:disable_implicit_retain_self_warning",
-  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("web_controller_header") {
