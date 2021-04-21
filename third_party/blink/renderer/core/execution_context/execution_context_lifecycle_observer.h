@@ -46,11 +46,11 @@ class LocalDOMWindow;
 // scope, this occurs when it shuts down.
 //
 // * If an object only needs to refer to a valid ExecutionContext but does not
-//   need to stop or suspend any activity, it should be a
+//   need to stop or suspend any activity, it should be an
 //   ExecutionContextClient.
 // * If an object associated with an ExecutionContext has shutdown logic to
 //   perform, such as halting activity or disconnecting from longer-lived
-//   objects, it should be a PausableObject.
+//   objects, it should be a ExecutionContextLifecycleObserver.
 // * If an object additionally must suspend its activity during pause (see
 //   execution_context_lifecycle_state_observer.h), it should be a
 //   ExecutionContextLifecycleStateObserver (and thus, transitively, also a
@@ -88,8 +88,9 @@ class CORE_EXPORT ExecutionContextClient : public GarbageCollectedMixin {
 // Execution context associated objects which have ongoing activity,
 // registration with objects which outlive the context, or resources which
 // should be promptly released, should consider deriving from
-// PausableObject. As a rule of thumb: if the destructor contains
-// non-trivial logic, that logic may belong in ContextDestroyed() instead.
+// ExecutionContextLifecycleObserver. As a rule of thumb: if the destructor
+// contains non-trivial logic, that logic may belong in ContextDestroyed()
+// instead.
 //
 // If there is ongoing activity associated with the object, consider whether it
 // needs to be paused when execution is suspended (see

@@ -708,11 +708,12 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   // WebMediaPlayer may also receive directives (play, pause) from the delegate
   // via the WebMediaPlayerDelegate::Observer interface after registration.
   //
-  // NOTE: HTMLMediaElement is a Blink::PausableObject, and will receive a
-  // call to contextDestroyed() when Blink::Document::shutdown() is called.
-  // Document::shutdown() is called before the frame detaches (and before the
-  // frame is destroyed). RenderFrameImpl owns |delegate_| and is guaranteed
-  // to outlive |this|; thus it is safe to store |delegate_| as a raw pointer.
+  // NOTE: HTMLMediaElement is a blink::ExecutionContextLifecycleObserver, and
+  // will receive a call to contextDestroyed() when blink::Document::shutdown()
+  // is called. Document::shutdown() is called before the frame detaches (and
+  // before the frame is destroyed). RenderFrameImpl owns |delegate_| and is
+  // guaranteed to outlive |this|; thus it is safe to store |delegate_| as a raw
+  // pointer.
   blink::WebMediaPlayerDelegate* delegate_;
   int delegate_id_ = 0;
 
