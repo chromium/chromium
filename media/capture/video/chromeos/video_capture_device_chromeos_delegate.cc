@@ -265,6 +265,8 @@ void VideoCaptureDeviceChromeOSDelegate::CloseDevice(
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
 
   if (!camera_device_delegate_) {
+    if (!unblock_suspend_token.is_empty())
+      power_manager_client_proxy_->UnblockSuspend(unblock_suspend_token);
     return;
   }
   // We do our best to allow the camera HAL cleanly shut down the device.  In
