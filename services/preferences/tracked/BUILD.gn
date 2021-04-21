@@ -18,8 +18,6 @@ source_set("tracked") {
     "pref_hash_store_impl.cc",
     "pref_hash_store_impl.h",
     "pref_hash_store_transaction.h",
-    "segregated_pref_store.cc",
-    "segregated_pref_store.h",
     "temp_scoped_dir_cleaner.h",
     "tracked_atomic_preference.cc",
     "tracked_atomic_preference.h",
@@ -74,7 +72,6 @@ source_set("unit_tests") {
     "pref_hash_calculator_unittest.cc",
     "pref_hash_filter_unittest.cc",
     "pref_hash_store_impl_unittest.cc",
-    "segregated_pref_store_unittest.cc",
     "tracked_preferences_migration_unittest.cc",
   ]
 

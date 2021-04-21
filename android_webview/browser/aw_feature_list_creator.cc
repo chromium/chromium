@@ -39,6 +39,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
+#include "components/prefs/segregated_pref_store.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/safe_seed_manager.h"
@@ -46,7 +47,6 @@
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
 #include "net/base/features.h"
 #include "net/nqe/pref_names.h"
-#include "services/preferences/tracked/segregated_pref_store.h"
 
 namespace android_webview {
 
@@ -142,8 +142,8 @@ std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
   // is unnnecessary. Thus validation_delegate is null.
   pref_service_factory.set_user_prefs(base::MakeRefCounted<SegregatedPrefStore>(
       base::MakeRefCounted<InMemoryPrefStore>(),
-      base::MakeRefCounted<JsonPrefStore>(GetPrefStorePath()), persistent_prefs,
-      mojo::Remote<::prefs::mojom::TrackedPreferenceValidationDelegate>()));
+      base::MakeRefCounted<JsonPrefStore>(GetPrefStorePath()),
+      std::move(persistent_prefs)));
 
   pref_service_factory.set_managed_prefs(
       base::MakeRefCounted<policy::ConfigurationPolicyPrefStore>(

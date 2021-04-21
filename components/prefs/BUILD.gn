@@ -42,6 +42,8 @@ component("prefs") {
     "prefs_export.h",
     "scoped_user_pref_update.cc",
     "scoped_user_pref_update.h",
+    "segregated_pref_store.cc",
+    "segregated_pref_store.h",
     "value_map_pref_store.cc",
     "value_map_pref_store.h",
     "writeable_pref_store.cc",
@@ -103,6 +105,7 @@ source_set("unit_tests") {
     "pref_value_map_unittest.cc",
     "pref_value_store_unittest.cc",
     "scoped_user_pref_update_unittest.cc",
+    "segregated_pref_store_unittest.cc",
   ]
 
   deps = [

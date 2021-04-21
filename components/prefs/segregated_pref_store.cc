@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/preferences/tracked/segregated_pref_store.h"
+#include "components/prefs/segregated_pref_store.h"
 
 #include <utility>
 
@@ -51,15 +51,12 @@ void SegregatedPrefStore::AggregatingObserver::OnInitializationCompleted(
 }
 
 SegregatedPrefStore::SegregatedPrefStore(
-    const scoped_refptr<PersistentPrefStore>& default_pref_store,
-    const scoped_refptr<PersistentPrefStore>& selected_pref_store,
-    const std::set<std::string>& selected_pref_names,
-    mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>
-        validation_delegate)
-    : validation_delegate_(std::move(validation_delegate)),
-      default_pref_store_(default_pref_store),
-      selected_pref_store_(selected_pref_store),
-      selected_preference_names_(selected_pref_names),
+    scoped_refptr<PersistentPrefStore> default_pref_store,
+    scoped_refptr<PersistentPrefStore> selected_pref_store,
+    std::set<std::string> selected_pref_names)
+    : default_pref_store_(std::move(default_pref_store)),
+      selected_pref_store_(std::move(selected_pref_store)),
+      selected_preference_names_(std::move(selected_pref_names)),
       aggregating_observer_(this) {
   default_pref_store_->AddObserver(&aggregating_observer_);
   selected_pref_store_->AddObserver(&aggregating_observer_);

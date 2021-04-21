@@ -57,7 +57,9 @@ PrefHashFilter::PrefHashFilter(
         tracked_preferences,
     mojo::PendingRemote<prefs::mojom::ResetOnLoadObserver>
         reset_on_load_observer,
-    prefs::mojom::TrackedPreferenceValidationDelegate* delegate,
+    scoped_refptr<base::RefCountedData<
+        mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>>>
+        delegate,
     size_t reporting_ids_count)
     : pref_hash_store_(std::move(pref_hash_store)),
       external_validation_hash_store_pair_(
@@ -65,7 +67,8 @@ PrefHashFilter::PrefHashFilter(
               ? base::make_optional(
                     std::move(external_validation_hash_store_pair))
               : base::nullopt),
-      reset_on_load_observer_(std::move(reset_on_load_observer)) {
+      reset_on_load_observer_(std::move(reset_on_load_observer)),
+      delegate_(std::move(delegate)) {
   DCHECK(pref_hash_store_);
   DCHECK_GE(reporting_ids_count, tracked_preferences.size());
   // Verify that, if |external_validation_hash_store_pair_| is present, both its
@@ -74,6 +77,8 @@ PrefHashFilter::PrefHashFilter(
          (external_validation_hash_store_pair_->first &&
           external_validation_hash_store_pair_->second));
 
+  prefs::mojom::TrackedPreferenceValidationDelegate* delegate_ptr =
+      (delegate_ ? delegate_->data.get() : nullptr);
   for (size_t i = 0; i < tracked_preferences.size(); ++i) {
     const prefs::mojom::TrackedPreferenceMetadata& metadata =
         *tracked_preferences[i];
@@ -83,12 +88,12 @@ PrefHashFilter::PrefHashFilter(
       case PrefTrackingStrategy::ATOMIC:
         tracked_preference = std::make_unique<TrackedAtomicPreference>(
             metadata.name, metadata.reporting_id, reporting_ids_count,
-            metadata.enforcement_level, metadata.value_type, delegate);
+            metadata.enforcement_level, metadata.value_type, delegate_ptr);
         break;
       case PrefTrackingStrategy::SPLIT:
         tracked_preference = std::make_unique<TrackedSplitPreference>(
             metadata.name, metadata.reporting_id, reporting_ids_count,
-            metadata.enforcement_level, metadata.value_type, delegate);
+            metadata.enforcement_level, metadata.value_type, delegate_ptr);
         break;
     }
     DCHECK(tracked_preference);

@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -60,14 +61,17 @@ class PrefHashFilter : public InterceptablePrefFilter {
   // than |tracked_preferences.size()|).
   // |external_validation_hash_store_pair_| will be used (if non-null) to
   // perform extra validations without triggering resets.
-  PrefHashFilter(std::unique_ptr<PrefHashStore> pref_hash_store,
-                 StoreContentsPair external_validation_hash_store_pair_,
-                 const std::vector<prefs::mojom::TrackedPreferenceMetadataPtr>&
-                     tracked_preferences,
-                 mojo::PendingRemote<prefs::mojom::ResetOnLoadObserver>
-                     reset_on_load_observer,
-                 prefs::mojom::TrackedPreferenceValidationDelegate* delegate,
-                 size_t reporting_ids_count);
+  PrefHashFilter(
+      std::unique_ptr<PrefHashStore> pref_hash_store,
+      StoreContentsPair external_validation_hash_store_pair_,
+      const std::vector<prefs::mojom::TrackedPreferenceMetadataPtr>&
+          tracked_preferences,
+      mojo::PendingRemote<prefs::mojom::ResetOnLoadObserver>
+          reset_on_load_observer,
+      scoped_refptr<base::RefCountedData<
+          mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>>>
+          delegate,
+      size_t reporting_ids_count);
 
   ~PrefHashFilter() override;
 
@@ -143,6 +147,9 @@ class PrefHashFilter : public InterceptablePrefFilter {
 
   // Notified if a reset occurs in a call to FilterOnLoad.
   mojo::Remote<prefs::mojom::ResetOnLoadObserver> reset_on_load_observer_;
+  scoped_refptr<base::RefCountedData<
+      mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>>>
+      delegate_;
 
   TrackedPreferencesMap tracked_paths_;
 

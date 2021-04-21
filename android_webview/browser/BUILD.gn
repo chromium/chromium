@@ -266,7 +266,6 @@ source_set("browser") {
     "//printing",
     "//services/cert_verifier/public/mojom",
     "//services/network/public/mojom",
-    "//services/preferences/tracked",
     "//services/proxy_resolver:lib",
     "//third_party/blink/public/common",
     "//third_party/blink/public/mojom/frame",

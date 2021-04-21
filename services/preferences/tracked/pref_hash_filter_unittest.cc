@@ -23,6 +23,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/prefs/testing_pref_store.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/preferences/public/cpp/tracked/configuration.h"
 #include "services/preferences/public/cpp/tracked/mock_validation_delegate.h"
@@ -545,6 +546,7 @@ class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,
         pref_store_contents_(new base::DictionaryValue),
         mock_validation_delegate_record_(new MockValidationDelegateRecord),
         mock_validation_delegate_(mock_validation_delegate_record_),
+        validation_delegate_receiver_(&mock_validation_delegate_),
         reset_recorded_(false) {}
 
   void SetUp() override {
@@ -579,13 +581,21 @@ class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,
         reset_on_load_observer;
     reset_on_load_observer_receivers_.Add(
         this, reset_on_load_observer.InitWithNewPipeAndPassReceiver());
+    mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>
+        validation_delegate_remote(
+            validation_delegate_receiver_.BindNewPipeAndPassRemote());
+    auto validation_delegate_remote_ref =
+        base::MakeRefCounted<base::RefCountedData<
+            mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>>>(
+            std::move(validation_delegate_remote));
     pref_hash_filter_ = std::make_unique<PrefHashFilter>(
         std::move(temp_mock_pref_hash_store),
         PrefHashFilter::StoreContentsPair(
             std::move(temp_mock_external_validation_pref_hash_store),
             std::move(temp_mock_external_validation_hash_store_contents)),
         std::move(configuration), std::move(reset_on_load_observer),
-        &mock_validation_delegate_, base::size(kTestTrackedPrefs));
+        std::move(validation_delegate_remote_ref),
+        base::size(kTestTrackedPrefs));
   }
 
   // Verifies whether a reset was reported by the PrefHashFiler. Also verifies
@@ -635,6 +645,8 @@ class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   MockValidationDelegate mock_validation_delegate_;
+  mojo::Receiver<prefs::mojom::TrackedPreferenceValidationDelegate>
+      validation_delegate_receiver_;
   mojo::ReceiverSet<prefs::mojom::ResetOnLoadObserver>
       reset_on_load_observer_receivers_;
   bool reset_recorded_;

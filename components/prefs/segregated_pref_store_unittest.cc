@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/preferences/tracked/segregated_pref_store.h"
+#include "components/prefs/segregated_pref_store.h"
 
 #include <memory>
 #include <set>
@@ -83,9 +83,8 @@ class SegregatedPrefStoreTest
     selected_pref_names.insert(kSelectedPref);
     selected_pref_names.insert(kSharedPref);
 
-    segregated_store_ = new SegregatedPrefStore(
-        default_store_, selected_store_, selected_pref_names,
-        mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>());
+    segregated_store_ = new SegregatedPrefStore(default_store_, selected_store_,
+                                                selected_pref_names);
 
     segregated_store_->AddObserver(&observer_);
   }
