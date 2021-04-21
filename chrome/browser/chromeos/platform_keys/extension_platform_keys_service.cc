@@ -284,7 +284,6 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   SignTask(base::Optional<platform_keys::TokenId> token_id,
            const std::string& data,
            const std::string& public_key_spki_der,
-           bool raw_pkcs1,
            platform_keys::KeyType key_type,
            platform_keys::HashAlgorithm hash_algorithm,
            const std::string& extension_id,
@@ -293,7 +292,6 @@ class ExtensionPlatformKeysService::SignTask : public Task {
       : token_id_(token_id),
         data_(data),
         public_key_spki_der_(public_key_spki_der),
-        raw_pkcs1_(raw_pkcs1),
         key_type_(key_type),
         hash_algorithm_(hash_algorithm),
         extension_id_(extension_id),
@@ -406,14 +404,14 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   void Sign() {
     switch (key_type_) {
       case platform_keys::KeyType::kRsassaPkcs1V15: {
-        if (raw_pkcs1_) {
+        if (hash_algorithm_ ==
+            platform_keys::HashAlgorithm::HASH_ALGORITHM_NONE) {
           service_->platform_keys_service_->SignRSAPKCS1Raw(
               token_id_, data_, public_key_spki_der_,
               base::BindOnce(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
         } else {
           service_->platform_keys_service_->SignRSAPKCS1Digest(
               token_id_, data_, public_key_spki_der_, hash_algorithm_,
-
               base::BindOnce(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
         }
         break;
@@ -438,10 +436,6 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   const std::string data_;
   const std::string public_key_spki_der_;
 
-  // If true, |data_| will not be hashed before signing. Only PKCS#1 v1.5
-  // padding will be applied before signing.
-  // If false, |hash_algorithm_| is set to a value != NONE.
-  bool raw_pkcs1_;
   const platform_keys::KeyType key_type_;
   const platform_keys::HashAlgorithm hash_algorithm_;
   const std::string extension_id_;
@@ -815,10 +809,9 @@ void ExtensionPlatformKeysService::SignDigest(
     const std::string& extension_id,
     SignCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  StartOrQueueTask(
-      std::make_unique<SignTask>(token_id, data, public_key_spki_der,
-                                 /*raw_pkcs1=*/false, key_type, hash_algorithm,
-                                 extension_id, std::move(callback), this));
+  StartOrQueueTask(std::make_unique<SignTask>(
+      token_id, data, public_key_spki_der, key_type, hash_algorithm,
+      extension_id, std::move(callback), this));
 }
 
 void ExtensionPlatformKeysService::SignRSAPKCS1Raw(
@@ -830,7 +823,7 @@ void ExtensionPlatformKeysService::SignRSAPKCS1Raw(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   StartOrQueueTask(std::make_unique<SignTask>(
       token_id, data, public_key_spki_der,
-      /*raw_pkcs1=*/true, /*key_type=*/platform_keys::KeyType::kRsassaPkcs1V15,
+      /*key_type=*/platform_keys::KeyType::kRsassaPkcs1V15,
       platform_keys::HASH_ALGORITHM_NONE, extension_id, std::move(callback),
       this));
 }
