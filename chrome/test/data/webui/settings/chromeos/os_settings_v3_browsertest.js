@@ -380,6 +380,7 @@ TEST_F(
  ['OsSettingsSearchBox', 'os_settings_search_box_test.m.js'],
  ['OSSettingsMenu', 'os_settings_menu_test.m.js'],
  ['OsSettingsPage', 'os_settings_page_test.m.js'],
+ ['NearbyShareConfirmPage', 'nearby_share_confirm_page_test.m.js'],
  ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.m.js'],
  ['ParentalControlsPage', 'parental_controls_page_test.m.js'],
  ['PeoplePageChangePicture', 'people_page_change_picture_test.m.js'],

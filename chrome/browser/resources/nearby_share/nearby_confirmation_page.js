@@ -225,6 +225,19 @@ Polymer({
       case nearbyShare.mojom.TransferStatus.kNotEnoughSpace:
       case nearbyShare.mojom.TransferStatus.kFailed:
       case nearbyShare.mojom.TransferStatus.kAwaitingRemoteAcceptanceFailed:
+      case nearbyShare.mojom.TransferStatus.kDecodeAdvertisementFailed:
+      case nearbyShare.mojom.TransferStatus.kMissingTransferUpdateCallback:
+      case nearbyShare.mojom.TransferStatus.kMissingShareTarget:
+      case nearbyShare.mojom.TransferStatus.kMissingEndpointId:
+      case nearbyShare.mojom.TransferStatus.kMissingPayloads:
+      case nearbyShare.mojom.TransferStatus.kPairedKeyVerificationFailed:
+      case nearbyShare.mojom.TransferStatus.kInvalidIntroductionFrame:
+      case nearbyShare.mojom.TransferStatus.kIncompletePayloads:
+      case nearbyShare.mojom.TransferStatus.kFailedToCreateShareTarget:
+      case nearbyShare.mojom.TransferStatus.kFailedToInitiateOutgoingConnection:
+      case nearbyShare.mojom.TransferStatus
+          .kFailedToReadOutgoingConnectionResponse:
+      case nearbyShare.mojom.TransferStatus.kUnexpectedDisconnection:
         this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
         this.errorDescription_ = this.i18n('nearbyShareErrorSomethingWrong');
         break;
