@@ -29,7 +29,7 @@ namespace {
 GdkEventKey* GdkEventToKey(GdkEvent* event) {
   DCHECK(!GtkCheckVersion(4));
   auto* key = reinterpret_cast<GdkEventKey*>(event);
-  DCHECK(key->type == GDK_KEY_PRESS || key->type == GDK_KEY_RELEASE);
+  DCHECK(key->type == GdkKeyPress() || key->type == GdkKeyRelease());
   return key;
 }
 

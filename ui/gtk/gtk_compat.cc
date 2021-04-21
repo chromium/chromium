@@ -400,4 +400,12 @@ guint32 GdkEventGetTime(GdkEvent* event) {
   return DlCast<guint32(GdkEvent*)>(get)(event);
 }
 
+GdkEventType GdkKeyPress() {
+  return static_cast<GdkEventType>(GtkCheckVersion(4) ? 4 : 8);
+}
+
+GdkEventType GdkKeyRelease() {
+  return static_cast<GdkEventType>(GtkCheckVersion(4) ? 5 : 9);
+}
+
 }  // namespace gtk

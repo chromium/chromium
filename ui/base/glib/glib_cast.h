@@ -11,6 +11,9 @@
 
 template <typename T, typename U>
 T* GlibCast(U* instance, GType g_type) {
+  // Ensure |g_type| is used so the compiler doesn't optimize it away
+  // in release builds.
+  g_type_class_unref(g_type_class_ref(g_type));
   DCHECK(G_TYPE_CHECK_INSTANCE_TYPE(instance, g_type));
   return reinterpret_cast<T*>(instance);
 }

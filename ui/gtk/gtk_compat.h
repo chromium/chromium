@@ -28,6 +28,10 @@ extern "C" {
 #include "ui/gtk/gtk.sigs"
 }
 
+#define GDK_KEY_PRESS Do_not_use_GDK_KEY_PRESS_because_it_is_not_ABI_compatible
+#define GDK_KEY_RELEASE \
+  Do_not_use_GDK_KEY_RELEASE_because_it_is_not_ABI_compatible
+
 using SkColor = uint32_t;
 
 namespace gtk {
@@ -130,6 +134,12 @@ GtkTreeStore* GtkTreeStoreNew(GType type);
 GdkEventType GdkEventGetEventType(GdkEvent* event);
 
 guint32 GdkEventGetTime(GdkEvent* event);
+
+// Some enum values have changed between versions.
+
+GdkEventType GdkKeyPress();
+
+GdkEventType GdkKeyRelease();
 
 }  // namespace gtk
 

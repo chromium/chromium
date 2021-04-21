@@ -276,8 +276,10 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
     } else {
       cairo_pattern_t* cr_pattern = nullptr;
       cairo_surface_t* cr_surface = nullptr;
-      GtkStyleContextGet(button_context, GTK_STYLE_PROPERTY_BACKGROUND_IMAGE,
-                         &cr_pattern, nullptr);
+      GtkStyleContextGet(
+          button_context,
+          "background-image" /* GTK_STYLE_PROPERTY_BACKGROUND_IMAGE */,
+          &cr_pattern, nullptr);
       if (cr_pattern) {
         cairo_pattern_get_surface(cr_pattern, &cr_surface);
         if (cr_surface &&

@@ -97,8 +97,6 @@ constexpr int GTK_ICON_LOOKUP_USE_BUILTIN = 1 << 2;
 constexpr int GTK_ICON_LOOKUP_GENERIC_FALLBACK = 1 << 3;
 constexpr int GTK_ICON_LOOKUP_FORCE_SIZE = 1 << 4;
 
-constexpr const char GTK_STYLE_PROPERTY_BACKGROUND_IMAGE[] = "background-image";
-
 constexpr auto GTK_WINDOW_TOPLEVEL = static_cast<GtkWindowType>(0);
 #else
 #error "Unsupported GTK version"

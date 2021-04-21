@@ -50,7 +50,7 @@ bool GtkKeyBindingsHandler::MatchEvent(
   // will be emitted.
 
   auto* key = reinterpret_cast<GdkEventKey*>(gdk_event);
-  DCHECK(key->type == GDK_KEY_PRESS || key->type == GDK_KEY_RELEASE);
+  DCHECK(key->type == GdkKeyPress() || key->type == GdkKeyRelease());
   gtk_bindings_activate_event(G_OBJECT(handler_), key);
   gdk_event_free(gdk_event);
 
@@ -88,18 +88,16 @@ void GtkKeyBindingsHandler::HandlerInit(Handler* self) {
 }
 
 void GtkKeyBindingsHandler::HandlerClassInit(HandlerClass* klass) {
-  GtkTextViewClass* text_view_class = GTK_TEXT_VIEW_CLASS(klass);
-
   // Overrides all virtual methods related to editor key bindings.
-  text_view_class->backspace = BackSpace;
-  text_view_class->copy_clipboard = CopyClipboard;
-  text_view_class->cut_clipboard = CutClipboard;
-  text_view_class->delete_from_cursor = DeleteFromCursor;
-  text_view_class->insert_at_cursor = InsertAtCursor;
-  text_view_class->move_cursor = MoveCursor;
-  text_view_class->paste_clipboard = PasteClipboard;
-  text_view_class->set_anchor = SetAnchor;
-  text_view_class->toggle_overwrite = ToggleOverwrite;
+  klass->backspace = BackSpace;
+  klass->copy_clipboard = CopyClipboard;
+  klass->cut_clipboard = CutClipboard;
+  klass->delete_from_cursor = DeleteFromCursor;
+  klass->insert_at_cursor = InsertAtCursor;
+  klass->move_cursor = MoveCursor;
+  klass->paste_clipboard = PasteClipboard;
+  klass->set_anchor = SetAnchor;
+  klass->toggle_overwrite = ToggleOverwrite;
 
   // "move-focus", "move-viewport", "select-all" and "toggle-cursor-visible"
   // have no corresponding virtual methods. Since glib 2.18 (gtk 2.14),
