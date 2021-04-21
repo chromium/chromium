@@ -147,8 +147,8 @@ CFPropertyListRef ValueToProperty(const base::Value& value) {
 
 std::ostream& operator<<(std::ostream& os, const policy::PolicyBundle& bundle) {
   os << "{" << std::endl;
-  for (auto iter = bundle.begin(); iter != bundle.end(); ++iter)
-    os << "  \"" << iter->first << "\": " << *iter->second << "," << std::endl;
+  for (const auto& entry : bundle)
+    os << "  \"" << entry.first << "\": " << entry.second << "," << std::endl;
   os << "}";
   return os;
 }

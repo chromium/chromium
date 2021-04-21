@@ -135,7 +135,7 @@ bool BrowserPolicyConnector::ProviderHasPolicies(
   if (!provider)
     return false;
   for (const auto& pair : provider->policies()) {
-    if (!pair.second->empty())
+    if (!pair.second.empty())
       return true;
   }
   return false;

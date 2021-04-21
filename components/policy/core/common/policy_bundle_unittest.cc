@@ -87,8 +87,7 @@ TEST(PolicyBundleTest, Get) {
   ASSERT_TRUE(it != bundle.end());
   EXPECT_EQ(POLICY_DOMAIN_CHROME, it->first.domain);
   EXPECT_EQ("", it->first.component_id);
-  ASSERT_TRUE(it->second);
-  EXPECT_TRUE(it->second->Equals(policy));
+  EXPECT_TRUE(it->second.Equals(policy));
   ++it;
   EXPECT_TRUE(it == bundle.end());
   EXPECT_TRUE(bundle.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS,

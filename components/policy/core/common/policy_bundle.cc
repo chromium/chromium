@@ -17,16 +17,13 @@ PolicyBundle::~PolicyBundle() {
 
 PolicyMap& PolicyBundle::Get(const PolicyNamespace& ns) {
   DCHECK(ns.domain != POLICY_DOMAIN_CHROME || ns.component_id.empty());
-  std::unique_ptr<PolicyMap>& policy = policy_bundle_[ns];
-  if (!policy)
-    policy = std::make_unique<PolicyMap>();
-  return *policy;
+  return policy_bundle_[ns];
 }
 
 const PolicyMap& PolicyBundle::Get(const PolicyNamespace& ns) const {
   DCHECK(ns.domain != POLICY_DOMAIN_CHROME || ns.component_id.empty());
-  auto it = policy_bundle_.find(ns);
-  return it == end() ? kEmpty_ : *it->second;
+  const auto it = policy_bundle_.find(ns);
+  return it == end() ? kEmpty_ : it->second;
 }
 
 void PolicyBundle::Swap(PolicyBundle* other) {
@@ -37,8 +34,8 @@ void PolicyBundle::CopyFrom(const PolicyBundle& other) {
   DCHECK_NE(this, &other);
 
   Clear();
-  for (auto it = other.begin(); it != other.end(); ++it) {
-    policy_bundle_[it->first] = it->second->DeepCopy();
+  for (const auto& entry_other : other) {
+    policy_bundle_[entry_other.first].CopyFrom(entry_other.second);
   }
 }
 
@@ -55,7 +52,7 @@ void PolicyBundle::MergeFrom(const PolicyBundle& other) {
   while (it_this != end_this && it_other != end_other) {
     if (it_this->first == it_other->first) {
       // Same namespace: merge existing PolicyMaps.
-      it_this->second->MergeFrom(*it_other->second);
+      it_this->second.MergeFrom(it_other->second);
       ++it_this;
       ++it_other;
     } else if (it_this->first < it_other->first) {
@@ -63,7 +60,7 @@ void PolicyBundle::MergeFrom(const PolicyBundle& other) {
       ++it_this;
     } else if (it_other->first < it_this->first) {
       // |other| has a PolicyMap that |this| doesn't; copy it.
-      policy_bundle_[it_other->first] = it_other->second->DeepCopy();
+      policy_bundle_[it_other->first].CopyFrom(it_other->second);
       ++it_other;
     } else {
       NOTREACHED();
@@ -72,7 +69,7 @@ void PolicyBundle::MergeFrom(const PolicyBundle& other) {
 
   // Add extra PolicyMaps at the end.
   while (it_other != end_other) {
-    policy_bundle_[it_other->first] = it_other->second->DeepCopy();
+    policy_bundle_[it_other->first].CopyFrom(it_other->second);
     ++it_other;
   }
 }
@@ -86,14 +83,14 @@ bool PolicyBundle::Equals(const PolicyBundle& other) const {
 
   while (true) {
     // Skip empty PolicyMaps.
-    while (it_this != end() && it_this->second->empty())
+    while (it_this != end() && it_this->second.empty())
       ++it_this;
-    while (it_other != other.end() && it_other->second->empty())
+    while (it_other != other.end() && it_other->second.empty())
       ++it_other;
     if (it_this == end() || it_other == other.end())
       break;
     if (it_this->first != it_other->first ||
-        !it_this->second->Equals(*it_other->second)) {
+        !it_this->second.Equals(it_other->second)) {
       return false;
     }
     ++it_this;
