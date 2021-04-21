@@ -35,6 +35,7 @@ class WebrtcFrameSchedulerSimple : public WebrtcFrameScheduler {
   // VideoChannelStateObserver implementation.
   void OnKeyFrameRequested() override;
   void OnTargetBitrateChanged(int bitrate_kbps) override;
+  void OnRttUpdate(base::TimeDelta rtt) override;
 
   // WebrtcFrameScheduler implementation.
   void Start(const base::RepeatingClosure& capture_callback) override;

@@ -52,6 +52,7 @@ class WebrtcDummyVideoEncoder : public webrtc::VideoEncoder {
       const std::vector<webrtc::VideoFrameType>* frame_types) override;
   void SetRates(const RateControlParameters& parameters) override;
   webrtc::VideoEncoder::EncoderInfo GetEncoderInfo() const override;
+  void OnRttUpdate(int64_t rtt_ms) override;
 
   webrtc::EncodedImageCallback::Result SendEncodedFrame(
       const WebrtcVideoEncoder::EncodedFrame& frame);

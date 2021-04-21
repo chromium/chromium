@@ -61,6 +61,7 @@ class WebrtcVideoStream : public VideoStream,
   // VideoChannelStateObserver interface.
   void OnKeyFrameRequested() override;
   void OnTargetBitrateChanged(int bitrate_kbps) override;
+  void OnRttUpdate(base::TimeDelta rtt) override;
 
  private:
   struct FrameStats;

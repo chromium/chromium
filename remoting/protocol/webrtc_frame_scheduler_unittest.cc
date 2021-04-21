@@ -10,6 +10,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "remoting/base/session_options.h"
+#include "remoting/protocol/frame_stats.h"
 #include "remoting/protocol/webrtc_dummy_video_encoder.h"
 #include "remoting/protocol/webrtc_frame_scheduler_simple.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,7 +51,7 @@ class WebrtcFrameSchedulerTest : public ::testing::Test {
       WebrtcVideoEncoder::EncodedFrame encoded;
       encoded.key_frame = out_params.key_frame;
       encoded.data = 'X';
-      scheduler_->OnFrameEncoded(&encoded, nullptr);
+      scheduler_->OnFrameEncoded(&encoded, &frame_stats_);
     }
   }
 
@@ -63,6 +64,7 @@ class WebrtcFrameSchedulerTest : public ::testing::Test {
   int capture_callback_count_ = 0;
   bool simulate_capture_ = false;
   BasicDesktopFrame frame_;
+  HostFrameStats frame_stats_;
 };
 
 TEST_F(WebrtcFrameSchedulerTest, UpdateBitrateWhenPending) {
@@ -135,6 +137,19 @@ TEST_F(WebrtcFrameSchedulerTest, Capturer_RunsAt30Fps) {
   // There should be approximately 30 captures in 1 second.
   EXPECT_LE(29, capture_callback_count_);
   EXPECT_LE(capture_callback_count_, 31);
+}
+
+TEST_F(WebrtcFrameSchedulerTest, RttReportedInFrameStats) {
+  simulate_capture_ = true;
+  scheduler_->OnKeyFrameRequested();
+  scheduler_->OnTargetBitrateChanged(100);
+  frame_.mutable_updated_region()->SetRect(DesktopRect::MakeWH(1, 1));
+  auto rtt = base::TimeDelta::FromMilliseconds(123);
+  scheduler_->OnRttUpdate(rtt);
+
+  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  EXPECT_EQ(rtt, frame_stats_.rtt_estimate);
 }
 
 }  // namespace protocol

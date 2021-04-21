@@ -190,6 +190,11 @@ void WebrtcVideoStream::OnTargetBitrateChanged(int bitrate_kbps) {
   scheduler_->OnTargetBitrateChanged(bitrate_kbps);
 }
 
+void WebrtcVideoStream::OnRttUpdate(base::TimeDelta rtt) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  scheduler_->OnRttUpdate(rtt);
+}
+
 void WebrtcVideoStream::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {

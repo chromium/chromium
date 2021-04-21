@@ -100,6 +100,11 @@ void WebrtcFrameSchedulerSimple::OnTargetBitrateChanged(int bandwidth_kbps) {
   ScheduleNextFrame();
 }
 
+void WebrtcFrameSchedulerSimple::OnRttUpdate(base::TimeDelta rtt) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  rtt_estimate_ = rtt;
+}
+
 void WebrtcFrameSchedulerSimple::Start(
     const base::RepeatingClosure& capture_callback) {
   DCHECK(thread_checker_.CalledOnValidThread());

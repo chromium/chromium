@@ -18,9 +18,6 @@ class BandwidthEstimator {
   BandwidthEstimator() = default;
   virtual ~BandwidthEstimator() = default;
 
-  // Called at any time to update the latest round-trip delay.
-  virtual void UpdateRtt(base::TimeDelta rtt) {}
-
   // Called before sending a |frame|.
   virtual void OnSendingFrame(const WebrtcVideoEncoder::EncodedFrame& frame) {}
 

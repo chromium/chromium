@@ -14,6 +14,7 @@ class VideoChannelStateObserver {
  public:
   virtual void OnKeyFrameRequested() = 0;
   virtual void OnTargetBitrateChanged(int bitrate_kbps) = 0;
+  virtual void OnRttUpdate(base::TimeDelta rtt) = 0;
 
  protected:
   virtual ~VideoChannelStateObserver() = default;
