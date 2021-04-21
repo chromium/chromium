@@ -1083,6 +1083,21 @@
             ]
         }
     ],
+    "BackgroundThreadPool": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BackgroundThreadPool"
+                    ]
+                }
+            ]
+        }
+    ],
     "BlinkSchedulerPerAgentSchedulingStudy": [
         {
             "platforms": [
