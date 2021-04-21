@@ -79,4 +79,4 @@ bool GetDefaultMacAcceleratorForCommandId(int command_id,
 // For testing purposes.
 const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu();
 
-#endif  // #ifndef CHROME_BROWSER_GLOBAL_KEYBOARD_SHORTCUTS_MAC_H_
+#endif  // CHROME_BROWSER_GLOBAL_KEYBOARD_SHORTCUTS_MAC_H_

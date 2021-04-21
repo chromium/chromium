@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_COCOA_APPLESCRIPT_BOOKMARK_APPLESCRIPT_UTILS_BROWSERTEST_H_
-#define CHROME_BROWSER_UI_COCOA_APPLESCRIPT_BOOKMARK_APPLESCRIPT_UTILS_BROWSERTEST_H_
+#ifndef CHROME_BROWSER_UI_COCOA_APPLESCRIPT_BOOKMARK_APPLESCRIPT_UTILS_TEST_H_
+#define CHROME_BROWSER_UI_COCOA_APPLESCRIPT_BOOKMARK_APPLESCRIPT_UTILS_TEST_H_
 
 #import <Cocoa/Cocoa.h>
 #import <objc/objc-runtime.h>
@@ -33,4 +33,4 @@ class BookmarkAppleScriptTest : public InProcessBrowserTest {
   base::scoped_nsobject<BookmarkFolderAppleScript> bookmarkBar_;
 };
 
-#endif  // CHROME_BROWSER_UI_COCOA_APPLESCRIPT_BOOKMARK_APPLESCRIPT_UTILS_BROWSERTEST_H_
+#endif  // CHROME_BROWSER_UI_COCOA_APPLESCRIPT_BOOKMARK_APPLESCRIPT_UTILS_TEST_H_

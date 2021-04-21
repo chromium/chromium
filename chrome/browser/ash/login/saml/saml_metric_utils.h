@@ -15,4 +15,4 @@ void RecordSAMLProvider(const std::string& provider);
 }  // namespace metrics
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_SAML_SAML_METRIC_UTILS_H
+#endif  // CHROME_BROWSER_ASH_LOGIN_SAML_SAML_METRIC_UTILS_H_

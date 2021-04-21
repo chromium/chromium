@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_RENDERER_NATIVE_EXTENSION_BINDINGS_SYSTEM_UNITTEST_H_
-#define EXTENSIONS_RENDERER_NATIVE_EXTENSION_BINDINGS_SYSTEM_UNITTEST_H_
+#ifndef EXTENSIONS_RENDERER_NATIVE_EXTENSION_BINDINGS_SYSTEM_TEST_BASE_H_
+#define EXTENSIONS_RENDERER_NATIVE_EXTENSION_BINDINGS_SYSTEM_TEST_BASE_H_
 
 #include <memory>
 #include <string>
@@ -157,4 +157,4 @@ class NativeExtensionBindingsSystemUnittest : public APIBindingTest {
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_RENDERER_NATIVE_EXTENSION_BINDINGS_SYSTEM_UNITTEST_H_
+#endif  // EXTENSIONS_RENDERER_NATIVE_EXTENSION_BINDINGS_SYSTEM_TEST_BASE_H_

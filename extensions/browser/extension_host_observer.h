@@ -52,4 +52,4 @@ class ExtensionHostObserver {
 
 }  // namespace extensions
 
-#endif /* EXTENSIONS_BROWSER_EXTENSION_HOST_OBSERVER_H_ */
+#endif  // EXTENSIONS_BROWSER_EXTENSION_HOST_OBSERVER_H_

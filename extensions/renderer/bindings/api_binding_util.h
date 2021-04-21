@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_RENDERER_BINDING_API_BINDING_UTIL_H_
-#define EXTENSIONS_RENDERER_BINDING_API_BINDING_UTIL_H_
+#ifndef EXTENSIONS_RENDERER_BINDINGS_API_BINDING_UTIL_H_
+#define EXTENSIONS_RENDERER_BINDINGS_API_BINDING_UTIL_H_
 
 #include <memory>
 #include <string>
@@ -69,4 +69,4 @@ std::unique_ptr<base::AutoReset<bool>> SetResponseValidationEnabledForTesting(
 }  // namespace binding
 }  // namespace extensions
 
-#endif  // EXTENSIONS_RENDERER_BINDING_API_BINDING_UTIL_H_
+#endif  // EXTENSIONS_RENDERER_BINDINGS_API_BINDING_UTIL_H_

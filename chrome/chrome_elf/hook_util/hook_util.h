@@ -63,4 +63,4 @@ class IATHook {
 
 }  // namespace elf_hook
 
-#endif  // CHROME_ELF_HOOK_UTIL_HOOK_UTIL_H_
+#endif  // CHROME_CHROME_ELF_HOOK_UTIL_HOOK_UTIL_H_

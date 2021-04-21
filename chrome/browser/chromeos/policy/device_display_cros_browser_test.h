@@ -63,4 +63,4 @@ class DeviceDisplayPolicyCrosBrowserTest
 
 }  // namespace policy
 
-#endif
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DEVICE_DISPLAY_CROS_BROWSER_TEST_H_

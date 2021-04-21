@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_FILE_UTIL_SANDBOXED_DMG_ANALYZER_MAC_H_
-#define CHROME_SERVICES_FILE_UTIL_SANDBOXED_DMG_ANALYZER_MAC_H_
+#ifndef CHROME_SERVICES_FILE_UTIL_PUBLIC_CPP_SANDBOXED_DMG_ANALYZER_MAC_H_
+#define CHROME_SERVICES_FILE_UTIL_PUBLIC_CPP_SANDBOXED_DMG_ANALYZER_MAC_H_
 
 #include "base/callback.h"
 #include "base/files/file.h"
@@ -70,4 +70,4 @@ class SandboxedDMGAnalyzer
   DISALLOW_COPY_AND_ASSIGN(SandboxedDMGAnalyzer);
 };
 
-#endif  // CHROME_SERVICES_FILE_UTIL_SANDBOXED_DMG_ANALYZER_MAC_H_
+#endif  // CHROME_SERVICES_FILE_UTIL_PUBLIC_CPP_SANDBOXED_DMG_ANALYZER_MAC_H_

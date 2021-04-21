@@ -40,4 +40,4 @@ class DiskImageTypeSnifferMac
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_COMMON_SAFE_BROWSING_DISK_IMAGE_TYPE_SNIFFE_MAC_H_
+#endif  // CHROME_COMMON_SAFE_BROWSING_DISK_IMAGE_TYPE_SNIFFER_MAC_H_
