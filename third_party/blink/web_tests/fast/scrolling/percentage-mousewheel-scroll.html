@@ -31,17 +31,19 @@ async function test_scroller(t, scrollElement, x, y) {
     outerScroller.scrollTop = 0;
   });
 
+  await mouseMoveTo(x, y);
   await scrollAt(x, y);
 
   function isCorrectOffset() {
     return Math.abs(scrollElement.scrollTop -
         scrollElement.clientHeight * SCROLL_PERCENTAGE) <= 0.5;
   }
-  await waitForScrollEnd(scrollElement, isCorrectOffset, true,
-                         "Scrolling by 10% must scroll the correct amount.");
+  await waitForScrollEnd(
+            scrollElement, isCorrectOffset, true,
+            "Scrolling by percentage must scroll the correct amount.");
   await conditionHolds(
             isCorrectOffset,
-            "Scrolling 10% must not scroll past the correct ammount");
+            "Scrolling must not scroll past the correct amount");
 
   // The delay in the conditionHolds check is multiple frames, which is
   // sufficient to ensure that any wheel events accompanying the scroll are
