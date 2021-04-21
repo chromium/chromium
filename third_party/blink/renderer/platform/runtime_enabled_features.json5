@@ -1038,6 +1038,9 @@
     {
       name: "HandwritingRecognition",
       status: "experimental",
+      // Trial also requires kHandwritingRecognitionWebPlatformApi enabled.
+      origin_trial_feature_name: "HandwritingRecognition",
+      origin_trial_os: ["chromeos"]
     },
     {
       name: "HighlightAPI",
