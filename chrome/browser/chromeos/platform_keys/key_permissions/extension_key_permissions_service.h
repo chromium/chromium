@@ -195,7 +195,8 @@ class ExtensionKeyPermissionsService {
 
   void CanUseKeyForSigningWithFlags(CanUseKeyForSigningCallback callback,
                                     bool sign_unlimited_allowed,
-                                    bool is_corporate_key);
+                                    base::Optional<bool> is_corporate_key,
+                                    Status is_corporate_key_status);
 
   void SetUserGrantedPermissionWithFlag(
       const std::string& public_key_spki_der,

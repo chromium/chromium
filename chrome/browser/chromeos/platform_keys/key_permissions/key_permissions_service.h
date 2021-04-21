@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/optional.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -19,7 +20,9 @@ namespace platform_keys {
 using CanUserGrantPermissionForKeyCallback =
     base::OnceCallback<void(bool allowed)>;
 
-using IsCorporateKeyCallback = base::OnceCallback<void(bool corporate)>;
+// If an error occurs, |corporate| will be a nullopt.
+using IsCorporateKeyCallback =
+    base::OnceCallback<void(base::Optional<bool> corporate, Status status)>;
 
 using SetCorporateKeyCallback = base::OnceCallback<void(Status status)>;
 

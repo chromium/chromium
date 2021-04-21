@@ -13,7 +13,9 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/logging.h"
+#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
@@ -76,11 +78,11 @@ void KeyPermissionsServiceImpl::CanUserGrantPermissionForKeyWithLocations(
     return;
   }
 
-  auto bound_callback = base::BindOnce(
-      &KeyPermissionsServiceImpl::
-          CanUserGrantPermissionForKeyWithLocationsAndFlag,
-      weak_factory_.GetWeakPtr(), public_key_spki_der, std::move(callback),
-      key_locations, key_locations_retrieval_status);
+  auto bound_callback =
+      base::BindOnce(&KeyPermissionsServiceImpl::
+                         CanUserGrantPermissionForKeyWithLocationsAndFlag,
+                     weak_factory_.GetWeakPtr(), public_key_spki_der,
+                     std::move(callback), key_locations);
   IsCorporateKeyWithLocations(public_key_spki_der, std::move(bound_callback),
                               key_locations, key_locations_retrieval_status);
 }
@@ -90,8 +92,8 @@ void KeyPermissionsServiceImpl::
         const std::string& public_key_spki_der,
         CanUserGrantPermissionForKeyCallback callback,
         const std::vector<TokenId>& key_locations,
-        Status status,
-        bool corporate_key) {
+        base::Optional<bool> corporate_key,
+        Status status) {
   if (status != Status::kSuccess) {
     std::move(callback).Run(/*allowed=*/false);
     return;
@@ -106,7 +108,7 @@ void KeyPermissionsServiceImpl::
 
   // If this profile is not managed but we find a corporate key, don't allow
   // the user to grant permissions.
-  std::move(callback).Run(/*allowed=*/!corporate_key);
+  std::move(callback).Run(/*allowed=*/!corporate_key.value());
 }
 
 void KeyPermissionsServiceImpl::IsCorporateKey(
@@ -126,7 +128,7 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
     Status status) {
   if (status != Status::kSuccess) {
     LOG(ERROR) << "Key locations retrieval failed: " << StatusToString(status);
-    std::move(callback).Run(/*corporate=*/false);
+    std::move(callback).Run(/*corporate=*/base::nullopt, status);
     return;
   }
 
@@ -157,7 +159,7 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
     return;
   }
 
-  std::move(callback).Run(/*corporate=*/false);
+  std::move(callback).Run(/*corporate=*/false, Status::kSuccess);
 }
 
 void KeyPermissionsServiceImpl::IsCorporateKeyWithKpmResponse(
@@ -165,13 +167,13 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithKpmResponse(
     base::Optional<bool> allowed,
     Status status) {
   if (allowed.has_value()) {
-    std::move(callback).Run(allowed.value());
+    std::move(callback).Run(allowed.value(), Status::kSuccess);
     return;
   }
 
   LOG(ERROR) << "Checking corporate flag via KeyPermissionsManager failed: "
              << StatusToString(status);
-  std::move(callback).Run(/*corporate=*/false);
+  std::move(callback).Run(/*corporate=*/base::nullopt, status);
 }
 
 void KeyPermissionsServiceImpl::SetCorporateKey(

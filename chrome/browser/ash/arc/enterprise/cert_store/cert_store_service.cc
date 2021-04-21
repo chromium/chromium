@@ -79,6 +79,20 @@ class CertStoreServiceFactory : public BrowserContextKeyedServiceFactory {
 
 using IsCertificateAllowedCallback = base::OnceCallback<void(bool allowed)>;
 
+void CheckCorporateFlag(
+    IsCertificateAllowedCallback callback,
+    base::Optional<bool> corporate_key,
+    chromeos::platform_keys::Status is_corporate_key_status) {
+  if (is_corporate_key_status != chromeos::platform_keys::Status::kSuccess) {
+    LOG(ERROR) << "Error checking whether key is corporate. Will not install "
+                  "key in ARC";
+    std::move(callback).Run(/* allowed */ false);
+    return;
+  }
+  DCHECK(corporate_key.has_value());
+  std::move(callback).Run(/* allowed */ corporate_key.value());
+}
+
 void CheckKeyLocationAndCorporateFlag(
     IsCertificateAllowedCallback callback,
     const std::string& public_key_spki_der,
@@ -103,7 +117,9 @@ void CheckKeyLocationAndCorporateFlag(
   // Check if the key is marked for corporate usage.
   chromeos::platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(
       context)
-      ->IsCorporateKey(public_key_spki_der, std::move(callback));
+      ->IsCorporateKey(
+          public_key_spki_der,
+          base::BindOnce(&CheckCorporateFlag, std::move(callback)));
 }
 
 // Returns true if the certificate is allowed to be used by ARC. The certificate

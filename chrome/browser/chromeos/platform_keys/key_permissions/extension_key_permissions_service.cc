@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_impl.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
@@ -158,10 +159,19 @@ void ExtensionKeyPermissionsService::CanUseKeyForSigning(
 void ExtensionKeyPermissionsService::CanUseKeyForSigningWithFlags(
     CanUseKeyForSigningCallback callback,
     bool sign_unlimited_allowed,
-    bool is_corporate_key) {
+    base::Optional<bool> is_corporate_key,
+    Status is_corporate_key_status) {
+  if (is_corporate_key_status != Status::kSuccess) {
+    LOG(ERROR) << "Failed to check if the key is corporate: "
+               << StatusToString(is_corporate_key_status);
+    std::move(callback).Run(/*allowed=*/false);
+    return;
+  }
+  DCHECK(is_corporate_key.has_value());
+
   // Usage of corporate keys is solely determined by policy. The user must not
   // circumvent this decision.
-  if (is_corporate_key) {
+  if (is_corporate_key.value()) {
     std::move(callback).Run(/*allowed=*/PolicyAllowsCorporateKeyUsage());
     return;
   }
