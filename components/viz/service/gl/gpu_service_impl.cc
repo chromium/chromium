@@ -431,7 +431,9 @@ GpuServiceImpl::~GpuServiceImpl() {
   is_exiting_.Set();
 
   bind_task_tracker_.TryCancelAll();
-  GetLogMessageManager()->ShutdownLogging();
+
+  if (!in_host_process())
+    GetLogMessageManager()->ShutdownLogging();
 
   // Destroy the receiver on the IO thread.
   {
