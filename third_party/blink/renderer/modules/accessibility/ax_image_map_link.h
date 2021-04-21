@@ -63,7 +63,8 @@ class AXImageMapLink final : public AXNodeObject {
   Element* ActionElement() const override;
   KURL Url() const override;
   bool IsLinked() const override { return true; }
-  AXObject* ComputeParentImpl() const override;
+  // For an <area>, return an <img> that should be used as its parent, or null.
+  static AXObject* GetAXObjectForImageMap(AXObjectCacheImpl& cache, Node* area);
   void GetRelativeBounds(AXObject** out_container,
                          FloatRect& out_bounds_in_container,
                          SkMatrix44& out_container_transform,

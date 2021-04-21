@@ -43,45 +43,31 @@ Element* AXMenuListOption::ActionElement() const {
   return GetElement();
 }
 
-AXObject* AXMenuListOption::ComputeParentImpl() const {
-  Node* node = GetNode();
-  if (!node) {
-    NOTREACHED();
+// Return a parent if this is an <option> for an AXMenuList, otherwise null.
+// static
+AXObject* AXMenuListOption::ComputeParentAXMenuPopupFor(
+    AXObjectCacheImpl& cache,
+    HTMLOptionElement* option) {
+  // Note: In a <select> size=1, AXObjects are not created for <optgroup>'s.
+  DCHECK(option);
+
+  HTMLSelectElement* select = option->OwnerSelectElement();
+  if (!select || !select->UsesMenuList()) {
+    // If it's an <option> that is not inside of a menulist, we want it to
+    // return to the caller and use the default logic.
     return nullptr;
   }
 
-  auto* select = To<HTMLOptionElement>(node)->OwnerSelectElement();
-  if (!select) {
-    NOTREACHED();
-    return nullptr;
+  // If there is a <select> ancestor, return the popup for it, if rendered.
+  if (AXObject* select_ax_object = cache.GetOrCreate(select)) {
+    if (auto* menu_list = DynamicTo<AXMenuList>(select_ax_object))
+      return menu_list->GetOrCreateMockPopupChild();
   }
 
-  AXObject* select_ax_object = AXObjectCache().GetOrCreate(select);
-  if (!select_ax_object) {
-    NOTREACHED();
-    return nullptr;
-  }
-
-  // This happens if the <select> is not rendered. Return it and move on.
-  auto* menu_list = DynamicTo<AXMenuList>(select_ax_object);
-  if (!menu_list)
-    return select_ax_object;
-
-  // In order to return the popup, which is a mock object, we need to grab
-  // the AXMenuList itself, and get its only child.
-  if (menu_list->NeedsToUpdateChildren())
-    menu_list->UpdateChildrenIfNecessary();
-
-  const auto& child_objects = menu_list->ChildrenIncludingIgnored();
-  if (child_objects.IsEmpty())
-    return nullptr;
-  DCHECK_EQ(child_objects.size(), 1UL)
-      << "A menulist must have a single popup child";
-  DCHECK(IsA<AXMenuListPopup>(child_objects[0].Get()));
-  To<AXMenuListPopup>(child_objects[0].Get())->UpdateChildrenIfNecessary();
-
-  // Return the popup child, which is the parent of this AXMenuListOption.
-  return child_objects[0];
+  // Otherwise, just return an AXObject for the parent node.
+  // This could be the <select> if it was not rendered.
+  // Or, any parent node if the <option> was not inside an AXMenuList.
+  return cache.GetOrCreate(select);
 }
 
 bool AXMenuListOption::IsVisible() const {
@@ -218,16 +204,6 @@ String AXMenuListOption::TextAlternative(bool recursive,
   }
 
   return text_alternative;
-}
-
-HTMLSelectElement* AXMenuListOption::ParentSelectNode() const {
-  if (!GetNode())
-    return nullptr;
-
-  if (auto* option = DynamicTo<HTMLOptionElement>(GetNode()))
-    return option->OwnerSelectElement();
-
-  return nullptr;
 }
 
 }  // namespace blink

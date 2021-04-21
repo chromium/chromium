@@ -39,11 +39,15 @@ class AXMenuListOption final : public AXNodeObject {
   AXMenuListOption(HTMLOptionElement*, AXObjectCacheImpl&);
   ~AXMenuListOption() override = default;
 
+  // For an <option>/<optgroup>, return an AXObject* for its popup, if any,
+  // otherwise return null.
+  static AXObject* ComputeParentAXMenuPopupFor(AXObjectCacheImpl& cache,
+                                               HTMLOptionElement* option);
+
  private:
   bool IsMenuListOption() const override { return true; }
 
   bool CanHaveChildren() const override { return false; }
-  AXObject* ComputeParentImpl() const override;
 
   Element* ActionElement() const override;
   bool IsVisible() const override;
@@ -63,7 +67,6 @@ class AXMenuListOption final : public AXNodeObject {
                          AXRelatedObjectVector*,
                          NameSources*) const override;
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
-  HTMLSelectElement* ParentSelectNode() const;
 
   DISALLOW_COPY_AND_ASSIGN(AXMenuListOption);
 };

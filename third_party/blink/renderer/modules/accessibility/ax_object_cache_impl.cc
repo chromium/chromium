@@ -326,6 +326,12 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
   if (IsA<HTMLAreaElement>(node))
     return false;
 
+  // <optgroup> is irrelevant inside of a <select> menulist.
+  if (auto* opt_group = DynamicTo<HTMLOptGroupElement>(node)) {
+    if (auto* select = opt_group->OwnerSelectElement())
+      return !select->UsesMenuList();
+  }
+
   return true;
 }
 
@@ -399,6 +405,12 @@ bool IsNodeRelevantForAccessibility(const Node* node,
 
   if (IsA<HTMLMapElement>(node))
     return false;  // Contains children for an img, but is not its own object.
+
+  // <optgroup> is irrelevant inside of a <select> menulist.
+  if (auto* opt_group = DynamicTo<HTMLOptGroupElement>(node)) {
+    if (auto* select = opt_group->OwnerSelectElement())
+      return !select->UsesMenuList();
+  }
 
   // When there is a layout object, the element is known to be visible, so
   // consider it relevant and return early. Checking the layout object is only
@@ -843,11 +855,13 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AccessibleNode* accessible_node,
       << "A virtual object must have a parent, and cannot exist without one. "
          "The parent is set when the object is constructed.";
 
+  if (!parent->CanHaveChildren())
+    return nullptr;
+
   AXObject* new_obj =
       MakeGarbageCollected<AXVirtualObject>(*this, accessible_node);
   const AXID ax_id = AssociateAXID(new_obj);
   accessible_node_mapping_.Set(accessible_node, ax_id);
-
   new_obj->Init(parent);
   return new_obj;
 }
@@ -880,6 +894,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
                                            AXObject* parent_if_known,
                                            AXID use_axid) {
   DCHECK(node);
+  DCHECK(!parent_if_known || parent_if_known->CanHaveChildren());
 
   // If the node has a layout object, prefer using that as the primary key for
   // the AXObject, with the exception of the HTMLAreaElement and nodes within
@@ -901,6 +916,8 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   DCHECK(document->Lifecycle().GetState() >=
          DocumentLifecycle::kAfterPerformLayout)
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
+  DCHECK_NE(node, document_)
+      << "The document's AXObject is backed by its layout object.";
 #endif  // DCHECK_IS_ON()
 
   // Return null if inside a shadow tree of something that can't have children,
@@ -913,6 +930,21 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
       return nullptr;
   }
 
+  AXObject* parent = parent_if_known
+                         ? parent_if_known
+                         : AXObject::ComputeNonARIAParent(*this, node);
+  // An AXObject backed only by a DOM node must have a parent, because it's
+  // never the root, which will always have a layout object.
+  if (!parent)
+    return nullptr;
+
+  DCHECK(parent->CanHaveChildren());
+
+  // One of the above calls could have already created the planned object via a
+  // recursive call to GetOrCreate(). If so, just return that object.
+  if (node_object_mapping_.at(node))
+    return Get(node);
+
   AXObject* new_obj = CreateFromNode(node);
 
   // Will crash later if we have two objects for the same node.
@@ -922,7 +954,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   const AXID ax_id = AssociateAXID(new_obj, use_axid);
   DCHECK(!HashTraits<AXID>::IsDeletedValue(ax_id));
   node_object_mapping_.Set(node, ax_id);
-  new_obj->Init(parent_if_known);
+  new_obj->Init(parent);
   MaybeNewRelationTarget(*node, new_obj);
 
   return new_obj;
@@ -953,8 +985,8 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
   DCHECK(document->Lifecycle().GetState() >=
          DocumentLifecycle::kAfterPerformLayout)
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
+  DCHECK(!parent_if_known || parent_if_known->CanHaveChildren());
 #endif  // DCHECK_IS_ON()
-
   if (!IsLayoutObjectRelevantForAccessibility(*layout_object))
     return nullptr;
 
@@ -995,6 +1027,24 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
     return CreateAndInit(node, parent_if_known, use_axid);
   }
 
+  AXObject* parent = parent_if_known ? parent_if_known
+                                     : AXObject::ComputeNonARIAParent(
+                                           *this, node, layout_object);
+  if (node == document_)
+    DCHECK(!parent);
+  else if (!parent)
+    return nullptr;
+  else
+    DCHECK(parent->CanHaveChildren());
+
+  // One of the above calls could have already created the planned object via a
+  // recursive call to GetOrCreate(). If so, just return that object.
+  // Example: parent calls Init() => ComputeAccessibilityIsIgnored() =>
+  // CanSetFocusAttribute() => CanBeActiveDescendant() =>
+  // IsARIAControlledByTextboxWithActiveDescendant() => GetOrCreate().
+  if (layout_object_mapping_.at(layout_object))
+    return Get(layout_object);
+
   AXObject* new_obj = CreateFromRenderer(layout_object);
 
   // Will crash later if we have two objects for the same layoutObject.
@@ -1003,7 +1053,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
 
   const AXID axid = AssociateAXID(new_obj, use_axid);
   layout_object_mapping_.Set(layout_object, axid);
-  new_obj->Init(parent_if_known);
+  new_obj->Init(parent);
   if (node)  // There may not be a node, e.g. for an anonymous block.
     MaybeNewRelationTarget(*node, new_obj);
 
@@ -1060,6 +1110,7 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
 AXObject* AXObjectCacheImpl::CreateAndInit(ax::mojom::blink::Role role,
                                            AXObject* parent) {
   DCHECK(parent);
+  DCHECK(parent->CanHaveChildren());
   AXObject* obj = nullptr;
 
   switch (role) {
@@ -1866,17 +1917,23 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
           // refreshing and initializing the new object can occur (a parent is
           // required).
           candidate_parent = parent->ComputeParent();
-          parent->SetParent(candidate_parent);
+          if (candidate_parent)
+            parent->SetParent(candidate_parent);
         }
 
-        if (!candidate_parent)
+        parent = candidate_parent;
+        if (!parent)
           break;  // No higher candidate parent found, will invalidate |parent|.
 
-        parent = candidate_parent;
         // Queue up a ChildrenChanged() call for this parent.
         pending_children_changed_ids.insert(parent->AXObjectID());
         if (parent->LastKnownIsIncludedInTreeValue())
           break;  // Stop here (otherwise continue to higher ancestor).
+      }
+
+      if (!parent) {
+        Remove(object);
+        continue;
       }
 
       AXObject* new_object = refresh(object);

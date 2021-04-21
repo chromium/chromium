@@ -360,6 +360,8 @@ void AXInlineTextBox::Init(AXObject* parent) {
   DCHECK(parent);
   DCHECK(ui::CanHaveInlineTextBoxChildren(parent->RoleValue()))
       << "Unexpected parent of inline text box: " << parent->RoleValue();
+  DCHECK(parent->CanHaveChildren())
+      << "Parent cannot have children: " << parent->ToString(true, true);
   SetParent(parent);
   UpdateCachedAttributeValuesIfNeeded(false);
 }

@@ -84,7 +84,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Overridden from AXObject.
   //
 
-  void Init(AXObject* parent_if_known) override;
+  void Init(AXObject* parent) override;
   void Detach() override;
   bool IsAXNodeObject() const final;
 
@@ -303,6 +303,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void AddNodeChildren();
   void AddLayoutChildren();
   bool CanAddLayoutChild(LayoutObject& child);
+  // Add inline textbox children, if either force == true or
+  // AXObjectCache().InlineTextBoxAccessibilityEnabled().
   void AddInlineTextBoxChildren(bool force = false);
   void AddImageMapChildren();
   void AddPopupChildren();
