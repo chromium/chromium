@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_DISPLAY_MOUSE_CURSOR_EVENT_FILTER_H
-#define ASH_DISPLAY_MOUSE_CURSOR_EVENT_FILTER_H
+#ifndef ASH_DISPLAY_MOUSE_CURSOR_EVENT_FILTER_H_
+#define ASH_DISPLAY_MOUSE_CURSOR_EVENT_FILTER_H_
 
 #include <memory>
 
@@ -71,4 +71,4 @@ class ASH_EXPORT MouseCursorEventFilter
 
 }  // namespace ash
 
-#endif  // ASH_DISPLAY_MOUSE_CURSOR_EVENT_FILTER_H
+#endif  // ASH_DISPLAY_MOUSE_CURSOR_EVENT_FILTER_H_

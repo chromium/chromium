@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_DISPLAY_TOUCH_CALIBRATOR_TOUCH_CALIBRATOR_CONTROLLER_H_
-#define ASH_DISPLAY_TOUCH_CALIBRATOR_TOUCH_CALIBRATOR_CONTROLLER_H_
+#ifndef ASH_DISPLAY_TOUCH_CALIBRATOR_CONTROLLER_H_
+#define ASH_DISPLAY_TOUCH_CALIBRATOR_CONTROLLER_H_
 
 #include <map>
 
@@ -135,4 +135,4 @@ class ASH_EXPORT TouchCalibratorController
 };
 
 }  // namespace ash
-#endif  // ASH_DISPLAY_TOUCH_CALIBRATOR_TOUCH_CALIBRATOR_CONTROLLER_H_
+#endif  // ASH_DISPLAY_TOUCH_CALIBRATOR_CONTROLLER_H_

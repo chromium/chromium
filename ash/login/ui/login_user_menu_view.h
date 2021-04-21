@@ -87,4 +87,4 @@ class ASH_EXPORT LoginUserMenuView : public LoginBaseBubbleView,
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_LOGIN_UI_LOGIN_USER_MENU_VIEW_H_

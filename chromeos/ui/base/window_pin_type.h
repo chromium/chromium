@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_WINDOW_PIN_TYPE_H_
-#define ASH_PUBLIC_CPP_WINDOW_PIN_TYPE_H_
+#ifndef CHROMEOS_UI_BASE_WINDOW_PIN_TYPE_H_
+#define CHROMEOS_UI_BASE_WINDOW_PIN_TYPE_H_
 
 #include <ostream>
 
@@ -28,4 +28,4 @@ std::ostream& operator<<(std::ostream& stream, WindowPinType pin_type);
 
 }  // namespace chromeos
 
-#endif  // ASH_PUBLIC_CPP_WINDOW_PIN_TYPE_H_
+#endif  // CHROMEOS_UI_BASE_WINDOW_PIN_TYPE_H_

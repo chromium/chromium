@@ -70,4 +70,4 @@ class UserChooserView : public views::View, public MediaCaptureObserver {
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_UNIFIED_UNIFIED_SYSTEM_TRAY_VIEW_H_
+#endif  // ASH_SYSTEM_UNIFIED_USER_CHOOSER_VIEW_H_

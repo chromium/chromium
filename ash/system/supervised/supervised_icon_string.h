@@ -20,4 +20,4 @@ std::u16string GetSupervisedUserMessage();
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_UNIFIED_UNIFIED_SYSTEM_INFO_VIEW_H_
+#endif  // ASH_SYSTEM_SUPERVISED_SUPERVISED_ICON_STRING_H_

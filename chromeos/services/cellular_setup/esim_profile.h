@@ -129,4 +129,4 @@ class ESimProfile : public mojom::ESimProfile {
 }  // namespace cellular_setup
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_CELLULAR_SETUP_ESIM_MANAGER_H_
+#endif  // CHROMEOS_SERVICES_CELLULAR_SETUP_ESIM_PROFILE_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_METRICS_TASK_SWITCH_METRIC_RECORDER_H_
-#define ASH_METRICS_TASK_SWITCH_METRIC_RECORDER_H_
+#ifndef ASH_METRICS_TASK_SWITCH_METRICS_RECORDER_H_
+#define ASH_METRICS_TASK_SWITCH_METRICS_RECORDER_H_
 
 #include <memory>
 #include <string>
@@ -70,4 +70,4 @@ class ASH_EXPORT TaskSwitchMetricsRecorder {
 
 }  // namespace ash
 
-#endif  // ASH_METRICS_TASK_SWITCH_METRIC_RECORDER_H_
+#endif  // ASH_METRICS_TASK_SWITCH_METRICS_RECORDER_H_

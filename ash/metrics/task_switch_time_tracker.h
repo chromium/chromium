@@ -73,4 +73,4 @@ class ASH_EXPORT TaskSwitchTimeTracker {
 
 }  // namespace ash
 
-#endif  // ASH_METRICS_TASK_SWITCH_TIME_TRACKE_H_
+#endif  // ASH_METRICS_TASK_SWITCH_TIME_TRACKER_H_

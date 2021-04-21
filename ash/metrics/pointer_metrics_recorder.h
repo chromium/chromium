@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_ASH_METRICS_POINTER_METRICS_RECORDER_H_
-#define UI_ASH_METRICS_POINTER_METRICS_RECORDER_H_
+#ifndef ASH_METRICS_POINTER_METRICS_RECORDER_H_
+#define ASH_METRICS_POINTER_METRICS_RECORDER_H_
 
 #include "ash/ash_export.h"
 #include "base/macros.h"
@@ -128,4 +128,4 @@ class ASH_EXPORT PointerMetricsRecorder : public ui::EventHandler {
 
 }  // namespace ash
 
-#endif  // UI_ASH_METRICS_POINTER_METRICS_RECORDER_H_
+#endif  // ASH_METRICS_POINTER_METRICS_RECORDER_H_

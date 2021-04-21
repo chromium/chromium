@@ -53,4 +53,4 @@ class ASH_EXPORT DisplayHighlightController
 };
 }  // namespace ash
 
-#endif  // ASH_CORNER_SHORTCUTS_CORNER_SHORTCUTS_CONTROLLER_H_
+#endif  // ASH_DISPLAY_DISPLAY_HIGHLIGHT_CONTROLLER_H_

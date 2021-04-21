@@ -84,4 +84,4 @@ class ASH_EXPORT QuickActionItem : public views::View {
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_PHONEHUB_QUICK_ACTION_VIEW_H_
+#endif  // ASH_SYSTEM_PHONEHUB_QUICK_ACTION_ITEM_H_

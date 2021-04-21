@@ -51,4 +51,4 @@ class HelpAppManager : public KeyedService {
 }  // namespace help_app
 }  // namespace chromeos
 
-#endif
+#endif  // CHROMEOS_COMPONENTS_HELP_APP_UI_HELP_APP_MANAGER_H_

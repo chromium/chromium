@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WINDOW_ROTATION_H_
-#define ASH_WINDOW_ROTATION_H_
+#ifndef ASH_ROTATOR_WINDOW_ROTATION_H_
+#define ASH_ROTATOR_WINDOW_ROTATION_H_
 
 #include <memory>
 
@@ -54,4 +54,4 @@ class ASH_EXPORT WindowRotation : public ui::LayerAnimationElement {
 
 }  // namespace ash
 
-#endif  // ASH_WINDOW_ROTATION_H_
+#endif  // ASH_ROTATOR_WINDOW_ROTATION_H_

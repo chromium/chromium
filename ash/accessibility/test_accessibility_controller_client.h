@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_ACCESSIBILITY_TEST_ACCESSIBILITY_CONTROLLER_CLEINT_H_
-#define ASH_ACCESSIBILITY_TEST_ACCESSIBILITY_CONTROLLER_CLEINT_H_
+#ifndef ASH_ACCESSIBILITY_TEST_ACCESSIBILITY_CONTROLLER_CLIENT_H_
+#define ASH_ACCESSIBILITY_TEST_ACCESSIBILITY_CONTROLLER_CLIENT_H_
 
 #include "ash/components/audio/sounds.h"
 #include "ash/public/cpp/accessibility_controller_client.h"
@@ -81,4 +81,4 @@ class TestAccessibilityControllerClient : public AccessibilityControllerClient {
 
 }  // namespace ash
 
-#endif  // ASH_ACCESSIBILITY_TEST_ACCESSIBILITY_CONTROLLER_CLEINT_H_
+#endif  // ASH_ACCESSIBILITY_TEST_ACCESSIBILITY_CONTROLLER_CLIENT_H_

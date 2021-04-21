@@ -45,4 +45,4 @@ class ASH_EXPORT AppListTestApi {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_TEST_APP_LIST_MODEL_API_H_
+#endif  // ASH_PUBLIC_CPP_TEST_APP_LIST_TEST_API_H_

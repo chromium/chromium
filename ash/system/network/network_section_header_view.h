@@ -167,4 +167,4 @@ class WifiSectionHeaderView : public NetworkSectionHeaderView {
 }  // namespace tray
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_NETWORK_NETWORK_SECTION_HEADER__VIEW_H_
+#endif  // ASH_SYSTEM_NETWORK_NETWORK_SECTION_HEADER_VIEW_H_

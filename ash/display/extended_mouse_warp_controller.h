@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_DISPLAY_EXTENDED_MOUSE_WARP_CONTROLLER_H
-#define ASH_DISPLAY_EXTENDED_MOUSE_WARP_CONTROLLER_H
+#ifndef ASH_DISPLAY_EXTENDED_MOUSE_WARP_CONTROLLER_H_
+#define ASH_DISPLAY_EXTENDED_MOUSE_WARP_CONTROLLER_H_
 
 #include "ash/display/mouse_warp_controller.h"
 
@@ -129,4 +129,4 @@ class ASH_EXPORT ExtendedMouseWarpController : public MouseWarpController {
 
 }  // namespace ash
 
-#endif  // ASH_DISPLAY_EXTENDED_MOUSE_WARP_CONTROLLER_H
+#endif  // ASH_DISPLAY_EXTENDED_MOUSE_WARP_CONTROLLER_H_

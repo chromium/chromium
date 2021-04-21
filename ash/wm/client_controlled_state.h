@@ -115,4 +115,4 @@ class ASH_EXPORT ClientControlledState : public BaseState {
 
 }  // namespace ash
 
-#endif  // ASH_WM_DEFAULT_STATE_H_
+#endif  // ASH_WM_CLIENT_CONTROLLED_STATE_H_

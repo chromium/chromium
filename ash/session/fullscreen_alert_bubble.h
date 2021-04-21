@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_FULLSCREEN_ALERT_BUBBLE_H_
-#define ASH_FULLSCREEN_ALERT_BUBBLE_H_
+#ifndef ASH_SESSION_FULLSCREEN_ALERT_BUBBLE_H_
+#define ASH_SESSION_FULLSCREEN_ALERT_BUBBLE_H_
 
 #include <memory>
 
@@ -60,4 +60,4 @@ class ASH_EXPORT FullscreenAlertBubble {
 
 }  // namespace ash
 
-#endif  // ASH_FULLSCREEN_ALERT_BUBBLE_H_
+#endif  // ASH_SESSION_FULLSCREEN_ALERT_BUBBLE_H_

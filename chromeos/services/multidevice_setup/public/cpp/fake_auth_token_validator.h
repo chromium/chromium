@@ -38,4 +38,4 @@ class FakeAuthTokenValidator : public AuthTokenValidator {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_AUTH_TOKEN_VALIDATOR_H_
+#endif  // CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_FAKE_AUTH_TOKEN_VALIDATOR_H_

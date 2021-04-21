@@ -190,4 +190,4 @@ class ASH_EXPORT ImeControllerImpl : public ImeController,
 
 }  // namespace ash
 
-#endif  // ASH_IME_IME_CONTROLLER_H_
+#endif  // ASH_IME_IME_CONTROLLER_IMPL_H_
