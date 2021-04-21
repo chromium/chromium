@@ -31,6 +31,8 @@ constexpr CGFloat kActionsBottomMargin = 10;
 constexpr CGFloat kTallBannerMultiplier = 0.35;
 constexpr CGFloat kDefaultBannerMultiplier = 0.25;
 constexpr CGFloat kSubtitleBottomMarginViewHeight = 0.05;
+constexpr CGFloat kContentWidthMultiplier = 0.65;
+constexpr CGFloat kContentMaxWidth = 327;
 
 }  // namespace
 
@@ -89,6 +91,11 @@ constexpr CGFloat kSubtitleBottomMarginViewHeight = 0.05;
   }
   [self.view addSubview:actionStackView];
 
+  // Create a layout guide to constrain the width of the content, while still
+  // allowing the scroll view to take the full screen width.
+  UILayoutGuide* widthLayoutGuide = [[UILayoutGuide alloc] init];
+  [self.view addLayoutGuide:widthLayoutGuide];
+
   CGFloat actionStackViewTopMargin = 0.0;
   if (!self.tertiaryActionString) {
     actionStackViewTopMargin = -kDefaultMargin;
@@ -103,6 +110,22 @@ constexpr CGFloat kSubtitleBottomMarginViewHeight = 0.05;
           : kActionsBottomMargin;
 
   [NSLayoutConstraint activateConstraints:@[
+    // Content width layout guide constraints. Constrain the width to both at
+    // least 65% of the view width, and to the full view width with margins.
+    // This is to accomodate the iPad layout, which cannot be isolated out using
+    // the traitCollection because of the FormSheet presentation style
+    // (iPad FormSheet is considered compact).
+    [widthLayoutGuide.centerXAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor],
+    [widthLayoutGuide.widthAnchor
+        constraintGreaterThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
+                                                 .widthAnchor
+                                  multiplier:kContentWidthMultiplier],
+    [widthLayoutGuide.widthAnchor
+        constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
+                                              .widthAnchor
+                                 constant:-2 * kDefaultMargin],
+
     // Scroll view constraints.
     [self.scrollView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
     [self.scrollView.leadingAnchor
@@ -113,18 +136,15 @@ constexpr CGFloat kSubtitleBottomMarginViewHeight = 0.05;
         constraintEqualToAnchor:actionStackView.topAnchor
                        constant:actionStackViewTopMargin],
 
-    // Scroll content view constraints. Constrain its edges to the scroll view
-    // edges with some margins on the sides, but also constrain its height to at
-    // least the scroll view height, so that derived VCs can pin UI elements
-    // just above the buttons.
+    // Scroll content view constraints. Constrain its height to at least the
+    // scroll view height, so that derived VCs can pin UI elements just above
+    // the buttons.
     [self.scrollContentView.topAnchor
         constraintEqualToAnchor:self.scrollView.topAnchor],
     [self.scrollContentView.leadingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
-                       constant:kDefaultMargin],
+        constraintEqualToAnchor:widthLayoutGuide.leadingAnchor],
     [self.scrollContentView.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
-                       constant:-kDefaultMargin],
+        constraintEqualToAnchor:widthLayoutGuide.trailingAnchor],
     [self.scrollContentView.bottomAnchor
         constraintEqualToAnchor:self.scrollView.bottomAnchor],
     [self.scrollContentView.heightAnchor
@@ -177,11 +197,9 @@ constexpr CGFloat kSubtitleBottomMarginViewHeight = 0.05;
     // view to both the bottom of the screen and the bottom of the safe area, to
     // give a nice result whether the device has a physical home button or not.
     [actionStackView.leadingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
-                       constant:kDefaultMargin],
+        constraintEqualToAnchor:widthLayoutGuide.leadingAnchor],
     [actionStackView.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
-                       constant:-kDefaultMargin],
+        constraintEqualToAnchor:widthLayoutGuide.trailingAnchor],
     [actionStackView.bottomAnchor
         constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
                                  constant:-kActionsBottomMargin -
@@ -189,8 +207,15 @@ constexpr CGFloat kSubtitleBottomMarginViewHeight = 0.05;
     [actionStackView.bottomAnchor
         constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
                                               .bottomAnchor
-                                 constant:-extraBottomMargin]
+                                 constant:-extraBottomMargin],
   ]];
+
+  // Also constrain the width layout guide to a maximum constant, but at a lower
+  // priority so that it only applies in compact screens.
+  NSLayoutConstraint* contentLayoutGuideWidthConstraint =
+      [widthLayoutGuide.widthAnchor constraintEqualToConstant:kContentMaxWidth];
+  contentLayoutGuideWidthConstraint.priority = UILayoutPriorityRequired - 1;
+  contentLayoutGuideWidthConstraint.active = YES;
 
   // Also constrain the bottom of the action stack view to the bottom of the
   // safe area, but with a lower priority, so that the action stack view is put
