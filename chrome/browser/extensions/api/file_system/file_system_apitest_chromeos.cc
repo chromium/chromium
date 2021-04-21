@@ -520,8 +520,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
   ScopedSkipRequestFileSystemDialog dialog_skipper(ui::DIALOG_BUTTON_CANCEL);
   ASSERT_TRUE(RunExtensionTest(
       {.name = "api_test/file_system/request_file_system_whitelisted_component",
-       .load_as_component = true,
-       .launch_as_platform_app = true}))
+       .launch_as_platform_app = true},
+      {.load_as_component = true}))
       << message_;
 }
 
@@ -531,8 +531,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
   ASSERT_TRUE(RunExtensionTest(
       {.name =
            "api_test/file_system/request_file_system_not_whitelisted_component",
-       .load_as_component = true,
-       .launch_as_platform_app = true}))
+       .launch_as_platform_app = true},
+      {.load_as_component = true}))
       << message_;
 }
 

@@ -128,8 +128,8 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest, EchoTest) {
-  EXPECT_TRUE(RunExtensionTest(
-      {.name = "echo/component_extension", .load_as_component = true}))
+  EXPECT_TRUE(RunExtensionTest({.name = "echo/component_extension"},
+                               {.load_as_component = true}))
       << message_;
 }
 

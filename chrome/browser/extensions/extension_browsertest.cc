@@ -304,27 +304,35 @@ const Extension* ExtensionBrowserTest::LoadExtension(
 const Extension* ExtensionBrowserTest::LoadExtension(
     const base::FilePath& path,
     const LoadOptions& options) {
-  ChromeTestExtensionLoader loader(profile());
-  loader.set_allow_incognito_access(options.allow_in_incognito);
-  loader.set_allow_file_access(options.allow_file_access);
-  loader.set_ignore_manifest_warnings(options.ignore_manifest_warnings);
-  loader.set_require_modern_manifest_version(
-      options.require_modern_manifest_version);
-  if (options.load_for_login_screen) {
-    loader.add_creation_flag(Extension::FOR_LOGIN_SCREEN);
-    loader.set_location(ManifestLocation::kExternalPolicy);
-  }
-  loader.set_wait_for_renderers(options.wait_for_renderers);
-
-  if (options.install_param != nullptr) {
-    loader.set_install_param(options.install_param);
-  }
   // Attempt to convert the extension to run as a Service Worker-based
   // extension if requested.
   base::FilePath extension_path = path;
   if (options.load_as_service_worker) {
     if (!CreateServiceWorkerBasedExtension(path, &extension_path))
       return nullptr;
+  }
+  if (options.load_as_component) {
+    // TODO(https://crbug.com/1171429): Decide if other load options
+    // can/should be supported when load_as_component is true.
+    DCHECK(!options.allow_in_incognito);
+    DCHECK(!options.allow_file_access);
+    DCHECK(!options.ignore_manifest_warnings);
+    DCHECK(options.require_modern_manifest_version);
+    DCHECK(options.wait_for_renderers);
+    DCHECK(options.install_param == nullptr);
+    DCHECK(!options.wait_for_registration_stored);
+    return LoadExtensionAsComponent(extension_path);
+  }
+  ChromeTestExtensionLoader loader(profile());
+  loader.set_allow_incognito_access(options.allow_in_incognito);
+  loader.set_allow_file_access(options.allow_file_access);
+  loader.set_ignore_manifest_warnings(options.ignore_manifest_warnings);
+  loader.set_require_modern_manifest_version(
+      options.require_modern_manifest_version);
+  loader.set_wait_for_renderers(options.wait_for_renderers);
+
+  if (options.install_param != nullptr) {
+    loader.set_install_param(options.install_param);
   }
 
   std::unique_ptr<TestRegistrationObserver> registration_observer;

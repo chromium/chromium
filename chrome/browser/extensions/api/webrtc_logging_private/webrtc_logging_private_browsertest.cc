@@ -59,8 +59,8 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
                        TestNoGetLogsDirectoryPermissionsFromHangoutsExtension) {
   ASSERT_TRUE(RunExtensionTest(
       {.name =
-           "api_test/webrtc_logging_private/no_get_logs_directory_permissions",
-       .load_as_component = true}))
+           "api_test/webrtc_logging_private/no_get_logs_directory_permissions"},
+      {.load_as_component = true}))
       << message_;
 }
 

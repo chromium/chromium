@@ -411,8 +411,8 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
                           _))
       .Times(1);
 
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "file_browser/mount_test", .load_as_component = true}))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_browser/mount_test"},
+                               {.load_as_component = true}))
       << message_;
 }
 
@@ -443,8 +443,8 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, FormatVolume) {
                   FormatFileSystemType::kNtfs, "NEWLABEL3"))
       .Times(1);
 
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "file_browser/format_test", .load_as_component = true}));
+  ASSERT_TRUE(RunExtensionTest({.name = "file_browser/format_test"},
+                               {.load_as_component = true}));
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Permissions) {
@@ -460,8 +460,8 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Permissions) {
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, ContentChecksum) {
   AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
 
-  ASSERT_TRUE(RunExtensionTest({.name = "file_browser/content_checksum_test",
-                                .load_as_component = true}));
+  ASSERT_TRUE(RunExtensionTest({.name = "file_browser/content_checksum_test"},
+                               {.load_as_component = true}));
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Recent) {
@@ -484,8 +484,8 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Recent) {
     ASSERT_TRUE(video_file.IsValid());
   }
 
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "file_browser/recent_test", .load_as_component = true}));
+  ASSERT_TRUE(RunExtensionTest({.name = "file_browser/recent_test"},
+                               {.load_as_component = true}));
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, MediaMetadata) {
@@ -540,8 +540,8 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, MediaMetadata) {
     ASSERT_TRUE(base::CopyFile(image, test_dir.Append(image.BaseName())));
   }
 
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "file_browser/media_metadata", .load_as_component = true}));
+  ASSERT_TRUE(RunExtensionTest({.name = "file_browser/media_metadata"},
+                               {.load_as_component = true}));
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Crostini) {
@@ -584,8 +584,8 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Crostini) {
   guest_os_share_path->RegisterPersistedPath(crostini::kCrostiniDefaultVmName,
                                              shared2);
 
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "file_browser/crostini_test", .load_as_component = true}));
+  ASSERT_TRUE(RunExtensionTest({.name = "file_browser/crostini_test"},
+                               {.load_as_component = true}));
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, CrostiniIncognito) {
@@ -636,17 +636,18 @@ IN_PROC_BROWSER_TEST_P(FileManagerPrivateHoldingSpaceApiTest, HoldingSpace) {
   }
 
   if (GetParam()) {
-    EXPECT_TRUE(RunExtensionTest(
-        {.name = "file_browser/holding_space", .load_as_component = true}));
+    EXPECT_TRUE(RunExtensionTest({.name = "file_browser/holding_space"},
+                                 {.load_as_component = true}));
   } else {
-    EXPECT_TRUE(RunExtensionTest({.name = "file_browser/holding_space_disabled",
-                                  .load_as_component = true}));
+    EXPECT_TRUE(
+        RunExtensionTest({.name = "file_browser/holding_space_disabled"},
+                         {.load_as_component = true}));
   }
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, GetVolumeRoot) {
   AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
 
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "file_browser/get_volume_root", .load_as_component = true}));
+  ASSERT_TRUE(RunExtensionTest({.name = "file_browser/get_volume_root"},
+                               {.load_as_component = true}));
 }

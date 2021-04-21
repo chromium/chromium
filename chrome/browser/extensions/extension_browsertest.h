@@ -73,11 +73,6 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
     // versions won't load if this is true.
     bool require_modern_manifest_version = true;
 
-    // Passes the FOR_LOGIN_SCREEN flag and sets the location to EXTERNAL_POLICY
-    // when loading the extension. This flag is usually provided for
-    // force-installed extension on the login screen.
-    bool load_for_login_screen = false;
-
     // Loads the provided extension as Service Worker based extension.
     bool load_as_service_worker = false;
 
@@ -90,6 +85,9 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
     // If this is a Service Worker-based extension, wait for the
     // Service Worker's registration to be stored before returning.
     bool wait_for_registration_stored = false;
+
+    // Loads the extension with location COMPONENT.
+    bool load_as_component = false;
   };
 
   ExtensionBrowserTest();

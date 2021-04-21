@@ -50,11 +50,6 @@ class ExtensionApiTest : public ExtensionBrowserTest {
     // Launch the test page in an incognito window.
     bool open_in_incognito = false;
 
-    // TODO(https://crbug.com/1171429): Move to load options and
-    // refactor implementation into ExtensionBrowserTest.
-    // Loads the extension with location COMPONENT.
-    bool load_as_component = false;
-
     // Launch the extension as a platform app.
     bool launch_as_platform_app = false;
 

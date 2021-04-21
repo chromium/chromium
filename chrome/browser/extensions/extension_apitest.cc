@@ -120,15 +120,7 @@ bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options,
                                           ? shared_test_data_dir_
                                           : test_data_dir_;
     base::FilePath extension_path = root_path.AppendASCII(run_options.name);
-    // TODO(https://crbug.com/1171429): Move load_as_component into LoadOptions
-    // and unify LoadExtension and LoadExtensionAsComponent.
-    // As it stands today, all LoadOptions will be ignored when loading the
-    // extension as a component extension.
-    if (run_options.load_as_component) {
-      extension = LoadExtensionAsComponent(extension_path);
-    } else {
-      extension = LoadExtension(extension_path, load_options);
-    }
+    extension = LoadExtension(extension_path, load_options);
     if (!extension) {
       message_ = "Failed to load extension.";
       return false;

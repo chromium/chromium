@@ -224,8 +224,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get) {
 IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, PRE_Get_ComponentApp) {
   EXPECT_FALSE(RunExtensionTest({.name = GetTestExtensionPath(),
                                  .custom_arg = "{}",
-                                 .load_as_component = true,
-                                 .launch_as_platform_app = true}))
+                                 .launch_as_platform_app = true},
+                                {.load_as_component = true}))
       << message_;
 }
 
@@ -264,8 +264,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get_ComponentApp) {
                               &test_arg));
   EXPECT_TRUE(RunExtensionTest({.name = GetTestExtensionPath(),
                                 .custom_arg = test_arg.c_str(),
-                                .load_as_component = true,
-                                .launch_as_platform_app = true}))
+                                .launch_as_platform_app = true},
+                               {.load_as_component = true}))
       << message_;
 }
 
