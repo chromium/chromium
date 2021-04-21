@@ -87,12 +87,41 @@ void TaskManagerControllerLacros::GetTaskManagerTasks(
     GetTaskManagerTasksCallback callback) {
   DCHECK(observed_task_manager());
 
-  std::vector<crosapi::mojom::TaskPtr> task_results;
-  std::vector<crosapi::mojom::TaskGroupPtr> task_group_results;
-  for (auto& item : id_to_tasks_)
-    task_results.push_back(item.second.Clone());
+  std::set<TaskId> task_ids_to_remove;
+  for (const auto& item : id_to_tasks_)
+    task_ids_to_remove.insert(item.first);
 
-  // TODO(crbug.com/1148572): Implement getting |task_group_results|.
+  // Get the sorted list of the task IDs from Lacros task manager.
+  // Place Lacros tasks in the same order when sending to ash.
+  std::vector<crosapi::mojom::TaskPtr> task_results;
+  for (const auto& task_id : observed_task_manager()->GetTaskIdsList()) {
+    if (task_ids_to_remove.erase(task_id) == 0) {
+      // New task.
+      id_to_tasks_[task_id] = ToMojoTask(task_id);
+    } else {
+      // Update existing task.
+      crosapi::mojom::TaskPtr& mojo_task = id_to_tasks_[task_id];
+      UpdateTask(task_id, mojo_task);
+    }
+    task_results.push_back(id_to_tasks_[task_id].Clone());
+  }
+
+  // Remove stale tasks.
+  for (const auto& task_id : task_ids_to_remove)
+    id_to_tasks_.erase(task_id);
+
+  // Retrieve and return the task groups.
+  std::set<base::ProcessId> pids;
+  std::vector<crosapi::mojom::TaskGroupPtr> task_group_results;
+  for (const auto& item : id_to_tasks_) {
+    const TaskId task_id = item.first;
+    const base::ProcessId pid = observed_task_manager()->GetProcessId(task_id);
+    auto result = pids.insert(pid);
+    if (result.second) {
+      // New task group.
+      task_group_results.push_back(ToMojoTaskGroup(pid, task_id));
+    }
+  }
 
   std::move(callback).Run(std::move(task_results),
                           std::move(task_group_results));
@@ -105,23 +134,6 @@ void TaskManagerControllerLacros::OnTaskManagerClosed() {
 
   if (observed_task_manager())
     observed_task_manager()->RemoveObserver(this);
-}
-
-void TaskManagerControllerLacros::OnTaskAdded(TaskId id) {
-  id_to_tasks_[id] = ToMojoTask(id);
-}
-
-void TaskManagerControllerLacros::OnTaskToBeRemoved(TaskId id) {
-  id_to_tasks_.erase(id);
-}
-
-void TaskManagerControllerLacros::OnTasksRefreshed(const TaskIdList& task_ids) {
-  // Update tasks.
-  for (auto& item : id_to_tasks_) {
-    TaskId id = item.first;
-    crosapi::mojom::TaskPtr& mojo_task = item.second;
-    UpdateTask(id, mojo_task);
-  }
 }
 
 crosapi::mojom::TaskPtr TaskManagerControllerLacros::ToMojoTask(TaskId id) {
@@ -161,6 +173,38 @@ void TaskManagerControllerLacros::UpdateTask(
   mojo_task->network_usage_rate = observed_task_manager()->GetNetworkUsage(id);
   mojo_task->cumulative_network_usage =
       observed_task_manager()->GetCumulativeNetworkUsage(id);
+}
+
+crosapi::mojom::TaskGroupPtr TaskManagerControllerLacros::ToMojoTaskGroup(
+    base::ProcessId pid,
+    TaskId task_id) {
+  auto mojo_task_group = crosapi::mojom::TaskGroup::New();
+  mojo_task_group->process_id = pid;
+  UpdateTaskGroup(pid, task_id, mojo_task_group);
+  return mojo_task_group;
+}
+
+void TaskManagerControllerLacros::UpdateTaskGroup(
+    base::ProcessId pid,
+    TaskId task_id,
+    crosapi::mojom::TaskGroupPtr& mojo_task_group) {
+  mojo_task_group->platform_independent_cpu_usage =
+      observed_task_manager()->GetPlatformIndependentCPUUsage(task_id);
+  mojo_task_group->memory_footprint_bytes =
+      observed_task_manager()->GetMemoryFootprintUsage(task_id);
+  mojo_task_group->swapped_mem_bytes =
+      observed_task_manager()->GetSwappedMemoryUsage(task_id);
+  mojo_task_group->gpu_memory_bytes =
+      observed_task_manager()->GetGpuMemoryUsage(
+          task_id, &mojo_task_group->gpu_memory_has_duplicates);
+  mojo_task_group->is_backgrounded =
+      observed_task_manager()->IsTaskOnBackgroundedProcess(task_id);
+  mojo_task_group->nacl_debug_stub_port =
+      observed_task_manager()->GetNaClDebugStubPort(task_id);
+  mojo_task_group->open_fd_count =
+      observed_task_manager()->GetOpenFdCount(task_id);
+  mojo_task_group->idle_wakeups_per_second =
+      observed_task_manager()->GetIdleWakeupsPerSecond(task_id);
 }
 
 }  // namespace task_manager

@@ -10,11 +10,13 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/crosapi/task_manager_ash.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
+#include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 
 namespace task_manager {
 
 class CrosapiTask;
+class TaskGroup;
 
 // This provides the tasks which are retrieved from lacros via crosapi.
 class CrosapiTaskProviderAsh : public TaskProvider,
@@ -28,9 +30,20 @@ class CrosapiTaskProviderAsh : public TaskProvider,
   // task_manager::TaskProvider:
   Task* GetTaskOfUrlRequest(int child_id, int route_id) override;
 
+  // Refreshes |task_group| with the most recent data received from crosapi.
+  void RefreshTaskGroup(TaskGroup* task_group);
+
+  // Gets the list of task IDs currently tracked and sorted by Lacros
+  // task manager, which should be the order Lacros tasks displayed in
+  // ash task manager UI, if no sorting order is specified by user.
+  // The sorting logic is documented by TaskManagerInterface::GetSortedTaskIds.
+  const TaskIdList& GetSortedTaskIds();
+
  private:
   using UuidTaskMap =
       std::unordered_map<std::string, std::unique_ptr<CrosapiTask>>;
+  using PidToTaksGroupMap =
+      std::unordered_map<base::ProcessId, crosapi::mojom::TaskGroupPtr>;
 
   // task_manager::TaskProvider:
   void StartUpdating() override;
@@ -52,6 +65,12 @@ class CrosapiTaskProviderAsh : public TaskProvider,
   base::RepeatingTimer refresh_timer_;
 
   UuidTaskMap uuid_to_task_;
+
+  // A cached sorted list of the task IDs.
+  std::vector<TaskId> sorted_task_ids_;
+
+  // Cached task group data received from crosapi.
+  PidToTaksGroupMap pid_to_task_groups_;
 
   base::WeakPtrFactory<CrosapiTaskProviderAsh> weak_ptr_factory_{this};
 };

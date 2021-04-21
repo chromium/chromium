@@ -32,6 +32,7 @@
 
 namespace task_manager {
 
+class CrosapiTaskProviderAsh;
 class SharedSampler;
 
 // Defines a concrete implementation of the TaskManagerInterface.
@@ -98,6 +99,9 @@ class TaskManagerImpl : public TaskManagerInterface,
   void TaskAdded(Task* task) override;
   void TaskRemoved(Task* task) override;
   void TaskUnresponsive(Task* task) override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void TaskIdsListToBeInvalidated() override;
+#endif
 
   void UpdateAccumulatedStatsNetworkForRoute(int process_id,
                                              int route_id,
@@ -144,6 +148,10 @@ class TaskManagerImpl : public TaskManagerInterface,
   // PIDs.
   PidToTaskGroupMap arc_vm_task_groups_by_proc_id_;
 
+  // Map Lacros TaskGroups received from crosapi by the IDs of the processes
+  // they represent.
+  PidToTaskGroupMap crosapi_task_groups_by_proc_id_;
+
   // Map each task by its ID to the TaskGroup on which it resides.
   // Keys are unique but values will have duplicates (i.e. multiple tasks
   // running on the same process represented by a single TaskGroup).
@@ -172,6 +180,11 @@ class TaskManagerImpl : public TaskManagerInterface,
   // A sampler shared with all instances of TaskGroup that hold ARC tasks and
   // calculates memory footprint for all processes at once.
   std::unique_ptr<ArcSharedSampler> arc_shared_sampler_;
+
+  // Task provider handling crosapi task data.
+  // Once CrosapiTaskProvider is created and added to the task_providers_, it
+  // should never be removed from task_providers_ unless in the destructor.
+  CrosapiTaskProviderAsh* crosapi_task_provider_ = nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // This will be set to true while there are observers and the task manager is

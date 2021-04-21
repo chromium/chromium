@@ -28,6 +28,16 @@ class TaskProviderObserver {
   // is only for tasks representing renderer processes.
   virtual void TaskUnresponsive(Task* task) {}
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // This notifies of the event that the TaskIdsList maintained by
+  // GetTaskIdsList() should be invalidated.
+  // Note: Lacros tasks are sorted by lacros task manager and sent to ash in
+  // the sorted order each time lacros task data is pulled to ash. Ash task
+  // manager needs to be notified to invalidate its sorted task id list if
+  // lacros tasks changes the sorting order.
+  virtual void TaskIdsListToBeInvalidated() {}
+#endif
+
  private:
   DISALLOW_COPY_AND_ASSIGN(TaskProviderObserver);
 };

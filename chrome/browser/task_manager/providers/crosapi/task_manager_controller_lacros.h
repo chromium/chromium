@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/process/process_handle.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 
@@ -39,13 +40,22 @@ class TaskManagerControllerLacros : public TaskManagerObserver {
  private:
   using IdTaskMap = std::unordered_map<TaskId, crosapi::mojom::TaskPtr>;
 
-  // task_manager::TaskManagerObserver:
-  void OnTaskAdded(TaskId id) override;
-  void OnTaskToBeRemoved(TaskId id) override;
-  void OnTasksRefreshed(const TaskIdList& task_ids) override;
-
   crosapi::mojom::TaskPtr ToMojoTask(TaskId id);
   void UpdateTask(TaskId id, crosapi::mojom::TaskPtr& mojo_task);
+
+  // Creates a mojo object for the task group with the specific |pid| by
+  // querying the task group data from the observed task manager.
+  // |task_id|: id of a task that belongs to the task group.
+  // Note: Task group data is accessed by |task_id| from TaskManagerInterface.
+  crosapi::mojom::TaskGroupPtr ToMojoTaskGroup(base::ProcessId pid,
+                                               TaskId task_id);
+  // Updates |mojo_task_group| with the specific |pid| by querying the task
+  // group data from the observed task manager.
+  // |task_id|: id of a task that belongs to the task group.
+  // Note: Task group data is accessed by |task_id| from TaskManagerInterface.
+  void UpdateTaskGroup(base::ProcessId pid,
+                       TaskId task_id,
+                       crosapi::mojom::TaskGroupPtr& mojo_task_group);
 
   // Cache the latest task data to be sent across crosapi when requested.
   IdTaskMap id_to_tasks_;

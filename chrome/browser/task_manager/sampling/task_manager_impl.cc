@@ -91,8 +91,12 @@ TaskManagerImpl::TaskManagerImpl()
   task_providers_.push_back(std::make_unique<VmProcessTaskProvider>());
   arc_shared_sampler_ = std::make_unique<ArcSharedSampler>();
 
-  if (crosapi::browser_util::IsLacrosEnabled())
-    task_providers_.push_back(std::make_unique<CrosapiTaskProviderAsh>());
+  if (crosapi::browser_util::IsLacrosEnabled()) {
+    std::unique_ptr<CrosapiTaskProviderAsh> task_provider =
+        std::make_unique<CrosapiTaskProviderAsh>();
+    crosapi_task_provider_ = task_provider.get();
+    task_providers_.push_back(std::move(task_provider));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -151,7 +155,7 @@ int64_t TaskManagerImpl::GetMemoryFootprintUsage(TaskId task_id) const {
 }
 
 int64_t TaskManagerImpl::GetSwappedMemoryUsage(TaskId task_id) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   return GetTaskGroupByTaskId(task_id)->swapped_bytes();
 #else
   return -1;
@@ -417,6 +421,20 @@ const TaskIdList& TaskManagerImpl::GetTaskIdsList() const {
         }
       }
     }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (crosapi_task_provider_) {
+      // Lacros tasks have been pre-sorted in lacros. Place them at the
+      // end of |sorted_task_ids| in the same order they are returned from
+      // crosapi.
+      for (const auto& task_id : crosapi_task_provider_->GetSortedTaskIds()) {
+        Task* task = GetTaskByTaskId(task_id);
+        if (task)
+          sorted_task_ids_.push_back(task_id);
+      }
+    }
+#endif  //  BUILDFLAG(IS_CHROMEOS_ASH)
+
     DCHECK_EQ(num_tasks, sorted_task_ids_.size());
   }
 
@@ -463,16 +481,20 @@ void TaskManagerImpl::TaskAdded(Task* task) {
   const base::ProcessId proc_id = task->process_id();
   const TaskId task_id = task->task_id();
   const bool is_running_in_vm = task->IsRunningInVM();
-
+  const bool is_running_in_lacros = task->GetType() == Task::LACROS;
   TaskManagerImpl::PidToTaskGroupMap& task_group_map =
       is_running_in_vm ? arc_vm_task_groups_by_proc_id_
-                       : task_groups_by_proc_id_;
+                       : is_running_in_lacros ? crosapi_task_groups_by_proc_id_
+                                              : task_groups_by_proc_id_;
 
   std::unique_ptr<TaskGroup>& task_group = task_group_map[proc_id];
   if (!task_group) {
     task_group = std::make_unique<TaskGroup>(
         task->process_handle(), proc_id, is_running_in_vm,
         on_background_data_ready_callback_, shared_sampler_,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        is_running_in_lacros ? crosapi_task_provider_ : nullptr,
+#endif
         blocking_pool_runner_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (task->GetType() == Task::ARC)
@@ -496,10 +518,12 @@ void TaskManagerImpl::TaskRemoved(Task* task) {
   const base::ProcessId proc_id = task->process_id();
   const TaskId task_id = task->task_id();
   const bool is_running_in_vm = task->IsRunningInVM();
+  const bool is_running_in_lacros = task->GetType() == Task::LACROS;
 
   TaskManagerImpl::PidToTaskGroupMap& task_group_map =
       is_running_in_vm ? arc_vm_task_groups_by_proc_id_
-                       : task_groups_by_proc_id_;
+                       : is_running_in_lacros ? crosapi_task_groups_by_proc_id_
+                                              : task_groups_by_proc_id_;
 
   DCHECK(task_group_map.count(proc_id));
 
@@ -520,6 +544,13 @@ void TaskManagerImpl::TaskUnresponsive(Task* task) {
   DCHECK(task);
   NotifyObserversOnTaskUnresponsive(task->task_id());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void TaskManagerImpl::TaskIdsListToBeInvalidated() {
+  sorted_task_ids_.clear();
+  NotifyObserversOnRefresh(GetTaskIdsList());
+}
+#endif  //  BUILDFLAG(IS_CHROMEOS_ASH)
 
 void TaskManagerImpl::UpdateAccumulatedStatsNetworkForRoute(
     int process_id,
@@ -595,6 +626,11 @@ void TaskManagerImpl::Refresh() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  for (auto& groups_itr : crosapi_task_groups_by_proc_id_) {
+    groups_itr.second->Refresh(gpu_memory_stats_, GetCurrentRefreshTime(),
+                               enabled_resources_flags());
+  }
+
   if (TaskManagerObserver::IsResourceRefreshEnabled(
           REFRESH_TYPE_MEMORY_FOOTPRINT, enabled_resources_flags())) {
     arc_shared_sampler_->Refresh();
@@ -629,6 +665,7 @@ void TaskManagerImpl::StopUpdating() {
 
   task_groups_by_proc_id_.clear();
   arc_vm_task_groups_by_proc_id_.clear();
+  crosapi_task_groups_by_proc_id_.clear();
   task_groups_by_task_id_.clear();
   sorted_task_ids_.clear();
 }

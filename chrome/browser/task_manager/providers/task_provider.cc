@@ -54,4 +54,11 @@ void TaskProvider::UpdateTaskProcessInfoAndNotifyObserver(
                                    observer_);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void TaskProvider::NotifyObserverTaskIdsListToBeInvalidated() const {
+  DCHECK(observer_);
+  observer_->TaskIdsListToBeInvalidated();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace task_manager

@@ -123,13 +123,13 @@ blink::WebCacheResourceTypeStats CrosapiTask::GetWebCacheStats() const {
 void CrosapiTask::Refresh(const base::TimeDelta& update_interval,
                           int64_t refresh_flags) {}
 
-void CrosapiTask::Update(const crosapi::mojom::TaskPtr& mojo_task) {
-  DCHECK_EQ(mojo_task_->task_uuid, mojo_task->task_uuid);
-  DCHECK_EQ(mojo_task_->type, mojo_task_->type);
+void CrosapiTask::Update(const crosapi::mojom::TaskPtr& task) {
+  DCHECK_EQ(mojo_task_->task_uuid, task->task_uuid);
+  DCHECK_EQ(mojo_task_->type, task->type);
 
-  set_title(GetCrosapiTaskTitle(mojo_task->title));
-  set_icon(mojo_task->icon);
-  mojo_task_ = mojo_task.Clone();
+  set_title(GetCrosapiTaskTitle(task->title));
+  set_icon(task->icon);
+  mojo_task_ = task.Clone();
 }
 
 }  // namespace task_manager
