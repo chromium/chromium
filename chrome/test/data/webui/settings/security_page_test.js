@@ -108,10 +108,14 @@ suite('CrSettingsSecurityPageTest', function() {
     assertEquals(defaultSubLabel, toggle.subLabel);
 
     page.set('prefs.profile.password_manager_leak_detection.value', true);
+    page.set(
+        'prefs.generated.password_leak_detection.userControlDisabled', true);
     flush();
     assertEquals(activeWhenSignedInSubLabel, toggle.subLabel);
 
     page.set('prefs.generated.password_leak_detection.value', true);
+    page.set(
+        'prefs.generated.password_leak_detection.userControlDisabled', false);
     flush();
     assertEquals(defaultSubLabel, toggle.subLabel);
 
