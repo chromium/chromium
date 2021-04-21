@@ -287,7 +287,15 @@ void ActiveNetworkIcon::SetCellularUninitializedMsg() {
     return;
   }
 
-  if (cellular && cellular->scanning) {
+  // If cellular is scanning, we want to show a 'connecting' image. However,
+  // there may be some cases where cellular's scanning property is true while
+  // the device is disabling. In this instance, we don't want to show
+  // 'connecting'. Only set cellular_uninitialized_msg_ to scanning if the
+  // device is scanning and enabled or enabling.
+  if (cellular &&
+      (cellular->device_state == DeviceStateType::kEnabled ||
+       cellular->device_state == DeviceStateType::kEnabling) &&
+      cellular->scanning) {
     cellular_uninitialized_msg_ = IDS_ASH_STATUS_TRAY_MOBILE_SCANNING;
     uninitialized_state_time_ = base::Time::Now();
     return;

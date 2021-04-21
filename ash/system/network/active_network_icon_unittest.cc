@@ -151,6 +151,9 @@ class ActiveNetworkIconTest : public AshTestBase {
   ActiveNetworkIcon* active_network_icon() {
     return active_network_icon_.get();
   }
+  TrayNetworkStateModel* network_state_model() {
+    return network_state_model_.get();
+  }
 
   const std::string& eth_path() const { return eth_path_; }
   const std::string& wifi_path() const { return wifi_path_; }
@@ -268,6 +271,37 @@ TEST_F(ActiveNetworkIconTest, CellularScanning) {
       AreImagesEqual(image, ImageForNetwork(NetworkType::kCellular,
                                             ConnectionStateType::kConnecting)));
   EXPECT_TRUE(animating);
+}
+
+TEST_F(ActiveNetworkIconTest, CellularDisable) {
+  SetupCellular(shill::kStateOnline);
+  bool animating;
+  gfx::ImageSkia image = active_network_icon()->GetImage(
+      ActiveNetworkIcon::Type::kSingle, icon_type(), &animating);
+  EXPECT_TRUE(AreImagesEqual(
+      image,
+      ImageForNetwork(NetworkType::kCellular, ConnectionStateType::kOnline)));
+  EXPECT_FALSE(animating);
+
+  // The cellular device's scanning property may be true while it's being
+  // disabled, mock this.
+  network_state_helper().device_test()->SetDeviceProperty(
+      kShillManagerClientStubCellularDevice, shill::kScanningProperty,
+      base::Value(true), true /* notify_changed */);
+
+  // Disable the device.
+  network_state_model()->SetNetworkTypeEnabledState(NetworkType::kCellular,
+                                                    false);
+  // Disabling the device doesn't actually remove the services in the fakes,
+  // remove them explicitly.
+  network_state_helper().ClearServices();
+  base::RunLoop().RunUntilIdle();
+
+  image = active_network_icon()->GetImage(ActiveNetworkIcon::Type::kSingle,
+                                          icon_type(), &animating);
+  EXPECT_TRUE(AreImagesEqual(
+      image, network_icon::GetImageForWiFiNoConnections(icon_type())));
+  EXPECT_FALSE(animating);
 }
 
 // TODO(stevenjb): Test GetDualImagePrimary, GetDualImageCellular.
