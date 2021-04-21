@@ -282,10 +282,35 @@ DOMArrayBuffer* GPUBuffer::CreateArrayBufferForMappedData(void* data,
   DCHECK(data);
   DCHECK_LE(static_cast<uint64_t>(data_length), v8::TypedArray::kMaxLength);
 
-  ArrayBufferContents contents(data, data_length,
-                               v8::BackingStore::EmptyDeleter);
+  // GPUBuffer::GetMappedRange returns ArrayBuffers that point to memory owned
+  // by handle_, which is a dawn_wire::client::Buffer. It is possible that the
+  // GPUBuffer gets garbage collected before the ArrayBuffer. When that happens
+  // the dawn_wire::client::Buffer must be kept alive, otherwise the ArrayBuffer
+  // will point to freed memory.
+  //
+  // To prevent this issue we make the ArrayBuffer keep a reference to the
+  // WGPUBuffer, by referencing the buffer and then have a custom deleter for
+  // the v8 backing store that releases that reference.
+  struct ArrayBufferStrongRefs {
+    scoped_refptr<DawnControlClientHolder> dawn_control_client;
+    WGPUBuffer dawn_buffer;
+  };
 
+  GetProcs().bufferReference(GetHandle());
+  ArrayBufferStrongRefs* refs =
+      new ArrayBufferStrongRefs{GetDawnControlClient(), GetHandle()};
+
+  v8::BackingStore::DeleterCallback deleter = [](void*, size_t,
+                                                 void* userdata) {
+    ArrayBufferStrongRefs* refs = static_cast<ArrayBufferStrongRefs*>(userdata);
+    refs->dawn_control_client->GetProcs().bufferRelease(refs->dawn_buffer);
+    delete refs;
+  };
+
+  ArrayBufferContents contents(
+      v8::ArrayBuffer::NewBackingStore(data, data_length, deleter, refs));
   DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(contents);
+
   mapped_array_buffers_.push_back(array_buffer);
   return array_buffer;
 }
