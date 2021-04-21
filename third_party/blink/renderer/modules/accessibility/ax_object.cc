@@ -2311,40 +2311,9 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     return true;
   }
 
-  // Include all pseudo element content. Any anonymous subtree is included
-  // from above, in the condition where there is no node.
-  if (node->IsPseudoElement())
-    return true;
-
   // <slot>s and their children are included in the tree.
-  // TODO(accessibility) Consider including all shadow content; however, this
-  // can actually be a lot of nodes inside of a web component, e.g. svg.
-  if (IsA<HTMLSlotElement>(node))
-    return true;
   if (CachedParentObject() &&
       IsA<HTMLSlotElement>(CachedParentObject()->GetNode()))
-    return true;
-
-  if (GetElement() && GetElement()->IsCustomElement())
-    return true;
-
-  // Use a flag to control whether or not the <html> element is included
-  // in the accessibility tree. Either way it's always marked as "ignored",
-  // but eventually we want to always include it in the tree to simplify
-  // some logic.
-  if (IsA<HTMLHtmlElement>(node))
-    return RuntimeEnabledFeatures::AccessibilityExposeHTMLElementEnabled();
-
-  // Keep the internal accessibility tree consistent for videos which lack
-  // a player and also inner text.
-  if (RoleValue() == ax::mojom::blink::Role::kVideo ||
-      RoleValue() == ax::mojom::blink::Role::kAudio) {
-    return true;
-  }
-
-  // Always pass through Line Breaking objects, this is necessary to
-  // detect paragraph edges, which are defined as hard-line breaks.
-  if (IsLineBreakingObject())
     return true;
 
   // Allow the browser side ax tree to access "visibility: [hidden|collapse]"
@@ -2370,15 +2339,52 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   if (GetLayoutObject() && IsAriaHidden())
     return true;
 
+  Element* element = GetElement();
+  if (!element)
+    return false;
+
+  // <slot>s and their children are included in the tree.
+  // TODO(accessibility) Consider including all shadow content; however, this
+  // can actually be a lot of nodes inside of a web component, e.g. svg.
+  if (IsA<HTMLSlotElement>(element))
+    return true;
+
+  if (element->IsCustomElement())
+    return true;
+
+  // Include all pseudo element content. Any anonymous subtree is included
+  // from above, in the condition where there is no node.
+  if (element->IsPseudoElement())
+    return true;
+
+  // Use a flag to control whether or not the <html> element is included
+  // in the accessibility tree. Either way it's always marked as "ignored",
+  // but eventually we want to always include it in the tree to simplify
+  // some logic.
+  if (IsA<HTMLHtmlElement>(element))
+    return RuntimeEnabledFeatures::AccessibilityExposeHTMLElementEnabled();
+
+  // Keep the internal accessibility tree consistent for videos which lack
+  // a player and also inner text.
+  if (RoleValue() == ax::mojom::blink::Role::kVideo ||
+      RoleValue() == ax::mojom::blink::Role::kAudio) {
+    return true;
+  }
+
+  // Always pass through Line Breaking objects, this is necessary to
+  // detect paragraph edges, which are defined as hard-line breaks.
+  if (IsLineBreakingObject())
+    return true;
+
   // Preserve SVG grouping elements.
-  if (IsA<SVGGElement>(node))
+  if (IsA<SVGGElement>(element))
     return true;
 
   // Keep table-related elements in the tree, because it's too easy for them
   // to in and out of being ignored based on their ancestry, as their role
   // can depend on several levels up in the hierarchy.
-  if (IsA<HTMLTableElement>(node) || IsA<HTMLTableSectionElement>(node) ||
-      IsA<HTMLTableRowElement>(node) || IsA<HTMLTableCellElement>(node)) {
+  if (IsA<HTMLTableElement>(element) || IsA<HTMLTableSectionElement>(element) ||
+      IsA<HTMLTableRowElement>(element) || IsA<HTMLTableCellElement>(element)) {
     return true;
   }
 
