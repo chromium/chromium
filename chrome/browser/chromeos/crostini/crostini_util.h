@@ -55,6 +55,21 @@ extern const char kCrostiniDlcName[];
 
 extern const base::FilePath::CharType kHomeDirectory[];
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CrostiniAppLaunchAppType {
+  // An app which isn't in the CrostiniAppRegistry. This shouldn't happen.
+  kUnknownApp = 0,
+
+  // The main terminal app.
+  kTerminal = 1,
+
+  // An app for which there is something in the CrostiniAppRegistry.
+  kRegisteredApp = 2,
+
+  kMaxValue = kRegisteredApp,
+};
+
 struct LinuxPackageInfo;
 
 // A unique identifier for our containers.
@@ -210,6 +225,10 @@ void UpdateContainerPref(Profile* profile,
 const ContainerId& DefaultContainerId();
 
 bool IsCrostiniWindow(const aura::Window* window);
+
+void RecordAppLaunchHistogram(CrostiniAppLaunchAppType app_type);
+void RecordAppLaunchResultHistogram(CrostiniAppLaunchAppType type,
+                                    crostini::CrostiniResult reason);
 
 }  // namespace crostini
 

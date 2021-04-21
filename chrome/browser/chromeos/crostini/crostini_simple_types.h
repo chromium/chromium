@@ -90,7 +90,9 @@ enum class CrostiniResult {
   MOUNT_CONTAINER_TIMED_OUT = 60,
   UNKNOWN_STATE_TIMED_OUT = 61,
   NEED_UPDATE = 62,
-  kMaxValue = NEED_UPDATE,
+  SHARE_PATHS_FAILED = 63,
+  UNREGISTERED_APPLICATION = 64,
+  kMaxValue = UNREGISTERED_APPLICATION,
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };

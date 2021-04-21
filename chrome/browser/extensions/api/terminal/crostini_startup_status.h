@@ -49,8 +49,6 @@ class CrostiniStartupStatus
   int spinner_index_ = 0;
   int stage_index_ = 0;
   int end_of_line_index_ = 0;
-  crostini::mojom::InstallerState stage_ =
-      crostini::mojom::InstallerState::kStart;
 
   base::WeakPtrFactory<CrostiniStartupStatus> weak_factory_{this};
 };
