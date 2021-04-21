@@ -26,7 +26,7 @@ bool StructTraits<
   blink::mojom::FilterListResult latest_filter_list_result;
   if (!data.ReadLatestFilterListResult(&latest_filter_list_result))
     return false;
-  if (most_restrictive_filter_list_result ==
+  if (most_restrictive_filter_list_result !=
       blink::MoreRestrictiveFilterListEvidence(
           latest_filter_list_result, most_restrictive_filter_list_result)) {
     return false;
