@@ -4,6 +4,7 @@
 
 package org.chromium.weblayer_private.test;
 
+import android.content.Context;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.view.View;
@@ -16,6 +17,8 @@ import androidx.fragment.app.FragmentManager;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.components.autofill.AutofillManagerWrapper;
+import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.autofill.AutofillProviderTestHelper;
 import org.chromium.components.infobars.InfoBarAnimationListener;
 import org.chromium.components.infobars.InfoBarUiItem;
@@ -295,11 +298,14 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AutofillProviderTestHelper.disableDownloadServerForTesting();
-            BrowserImpl browserImpl = (BrowserImpl) browser;
-            TabImpl tab = browserImpl.getActiveTab();
-            tab.getAutofillProviderForTesting().setAutofillManagerWrapperForTesting(
-                    new TestAutofillManagerWrapper(browserImpl.getContext(), unwrappedOnNewEvents,
-                            unwrappedEventsObserved));
+            AutofillProvider.setAutofillManagerWrapperFactoryForTesting(
+                    new AutofillProvider.AutofillManagerWrapperFactoryForTesting() {
+                        @Override
+                        public AutofillManagerWrapper create(Context context) {
+                            return new TestAutofillManagerWrapper(
+                                    context, unwrappedOnNewEvents, unwrappedEventsObserved);
+                        }
+                    });
         });
     }
 

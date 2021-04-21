@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
 import android.provider.Settings;
-import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.PacProcessor;
@@ -56,7 +55,6 @@ import org.chromium.base.annotations.VerifiesOnP;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.build.NativeLibraries;
-import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
 import org.chromium.components.embedder_support.application.FirebaseConfig;
 import org.chromium.content_public.browser.LGEmailActionModeWorkaround;
@@ -644,11 +642,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                      "WebViewChromiumFactoryProvider.insideCreateWebViewContentsClientAdapter")) {
             return new WebViewContentsClientAdapter(webView, context, mWebViewDelegate);
         }
-    }
-
-    AutofillProvider createAutofillProvider(Context context, ViewGroup containerView) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return null;
-        return new AutofillProvider(context, containerView, "Android WebView");
     }
 
     void startYourEngines(boolean onMainThread) {

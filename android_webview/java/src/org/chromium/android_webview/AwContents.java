@@ -347,10 +347,6 @@ public class AwContents implements SmartClipProvider {
                 AwScrollOffsetManager.Delegate delegate) {
             return new AwScrollOffsetManager(delegate);
         }
-
-        public AutofillProvider createAutofillProvider(Context context, ViewGroup containerView) {
-            return null;
-        }
     }
 
     /**
@@ -980,7 +976,7 @@ public class AwContents implements SmartClipProvider {
             mContainerView.setWillNotDraw(false);
 
             mContext = context;
-            mAutofillProvider = dependencyFactory.createAutofillProvider(context, mContainerView);
+            initializeAutofillProviderIfNecessary(mContext);
             mAppTargetSdkVersion = mContext.getApplicationInfo().targetSdkVersion;
             mInternalAccessAdapter = internalAccessAdapter;
             mNativeDrawFunctorFactory = nativeDrawFunctorFactory;
@@ -1054,6 +1050,12 @@ public class AwContents implements SmartClipProvider {
                 }
             }
         });
+    }
+
+    private void initializeAutofillProviderIfNecessary(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mAutofillProvider = new AutofillProvider(context, mContainerView, "Android WebView");
+        }
     }
 
     private boolean isSamsungMailApp() {
@@ -1619,6 +1621,11 @@ public class AwContents implements SmartClipProvider {
     @VisibleForTesting
     public NavigationController getNavigationController() {
         return mNavigationController;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public AutofillProvider getAutofillProviderForTesting() {
+        return mAutofillProvider;
     }
 
     // Can be called from any thread.

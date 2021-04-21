@@ -46,8 +46,15 @@ public class AutofillTest {
     private TestWebServer mWebServer;
     private InstrumentationActivity mActivity;
 
+    private ArrayList<Integer> mEventsObserved;
+    private CallbackHelper mHelper;
+
     @Before
     public void setUp() throws Exception {
+        mEventsObserved = new ArrayList<>();
+        mHelper = new CallbackHelper();
+        getTestWebLayer().notifyOfAutofillEvents(
+                null, () -> mHelper.notifyCalled(), mEventsObserved);
         mWebServer = TestWebServer.start();
     }
 
@@ -84,15 +91,9 @@ public class AutofillTest {
                 + "</form></body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, data, null);
 
-        ArrayList<Integer> eventsObserved = new ArrayList<>();
-        CallbackHelper helper = new CallbackHelper();
-
         // Initialize the test shell, Browser and Tab objects should be created because they are
         // needed by the TestWebLayer#notifyOfAutofillEvents() method.
         mActivity = mActivityTestRule.launchShellWithUrl("about:blank");
-        TestWebLayer testWebLayer = getTestWebLayer();
-        testWebLayer.notifyOfAutofillEvents(
-                mActivity.getBrowser(), () -> helper.notifyCalled(), eventsObserved);
 
         // Load the test page.
         mActivityTestRule.navigateAndWait(url);
@@ -110,11 +111,11 @@ public class AutofillTest {
         }
 
         // Wait for Autofill events.
-        helper.waitForCallback(
+        mHelper.waitForCallback(
                 /* currentCallCount */ 0, /* numberOfCallsToWaitFor */ expected.size(),
                 CallbackHelper.WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
-        Assert.assertEquals(expected, eventsObserved);
+        Assert.assertEquals(expected, mEventsObserved);
     }
 
     private void dispatchDownAndUpKeyEvents(final int code) throws Throwable {

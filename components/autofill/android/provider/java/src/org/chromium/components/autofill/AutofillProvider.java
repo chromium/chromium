@@ -296,6 +296,16 @@ public class AutofillProvider {
         }
     }
 
+    /**
+     * Factory interface for testing. AutofillManagerWrapper must be created in AutofillProvider
+     * constructor.
+     */
+    public static interface AutofillManagerWrapperFactoryForTesting {
+        AutofillManagerWrapper create(Context context);
+    }
+
+    private static AutofillManagerWrapperFactoryForTesting sAutofillManagerForTestingFactory;
+
     private final String mProviderName;
     private AutofillManagerWrapper mAutofillManager;
     private ViewGroup mContainerView;
@@ -313,18 +323,17 @@ public class AutofillProvider {
     private View mAnchorView;
 
     public AutofillProvider(Context context, ViewGroup containerView, String providerName) {
-        this(containerView, new AutofillManagerWrapper(context), context, providerName);
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public AutofillProvider(ViewGroup containerView, AutofillManagerWrapper manager,
-            Context context, String providerName) {
         mProviderName = providerName;
         try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped("AutofillProvider.constructor")) {
             assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-            mAutofillManager = manager;
+            if (sAutofillManagerForTestingFactory != null) {
+                mAutofillManager = sAutofillManagerForTestingFactory.create(context);
+            } else {
+                mAutofillManager = new AutofillManagerWrapper(context);
+            }
             mContainerView = containerView;
-            mAutofillUMA = new AutofillProviderUMA(context, manager.isAwGCurrentAutofillService());
+            mAutofillUMA = new AutofillProviderUMA(
+                    context, mAutofillManager.isAwGCurrentAutofillService());
             mInputUIObserver = new AutofillManagerWrapper.InputUIObserver() {
                 @Override
                 public void onInputUIShown() {
@@ -416,9 +425,9 @@ public class AutofillProvider {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    public void setAutofillManagerWrapperForTesting(AutofillManagerWrapper manager) {
-        mAutofillManager = manager;
-        mAutofillManager.addInputUIObserver(mInputUIObserver);
+    public static void setAutofillManagerWrapperFactoryForTesting(
+            AutofillManagerWrapperFactoryForTesting factory) {
+        sAutofillManagerForTestingFactory = factory;
     }
 
     /**

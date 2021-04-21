@@ -26,7 +26,6 @@ import android.util.Pair;
 import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewStructure;
 import android.view.WindowManager;
 import android.view.autofill.AutofillId;
@@ -884,23 +883,23 @@ public class AwAutofillTest {
     @Before
     public void setUp() throws Exception {
         mWebServer = TestWebServer.start();
+        AutofillProvider.setAutofillManagerWrapperFactoryForTesting(
+                new AutofillProvider.AutofillManagerWrapperFactoryForTesting() {
+                    @Override
+                    public AutofillManagerWrapper create(Context context) {
+                        mTestAutofillManagerWrapper = new TestAutofillManagerWrapper(context);
+                        return mTestAutofillManagerWrapper;
+                    }
+                });
         mUMATestHelper = new AwAutofillSessionUMATestHelper(this, mWebServer);
         mContentsClient = new AwAutofillTestClient();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> AutofillProviderTestHelper.disableDownloadServerForTesting());
         mTestContainerView = mRule.createAwTestContainerViewOnMainSync(
-                mContentsClient, false, new TestDependencyFactory() {
-                    @Override
-                    public AutofillProvider createAutofillProvider(
-                            Context context, ViewGroup containerView) {
-                        mTestAutofillManagerWrapper = new TestAutofillManagerWrapper(context);
-                        mAutofillProvider = new AutofillProvider(containerView,
-                                mTestAutofillManagerWrapper, context, "AwAutofillTest");
-                        return mAutofillProvider;
-                    }
-                });
+                mContentsClient, false, new TestDependencyFactory());
         mAwContents = mTestContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+        mAutofillProvider = mAwContents.getAutofillProviderForTesting();
     }
 
     public void setUpAwGNotCurrent() throws Exception {
@@ -1002,7 +1001,7 @@ public class AwAutofillTest {
         // WebView shouldn't set class name.
         assertNull(viewStructure.getClassName());
         Bundle extras = viewStructure.getExtras();
-        assertEquals("AwAutofillTest", extras.getCharSequence("VIRTUAL_STRUCTURE_PROVIDER_NAME"));
+        assertEquals("Android WebView", extras.getCharSequence("VIRTUAL_STRUCTURE_PROVIDER_NAME"));
         assertTrue(0 < extras.getCharSequence("VIRTUAL_STRUCTURE_PROVIDER_VERSION").length());
         TestViewStructure.AwHtmlInfo htmlInfoForm = viewStructure.getHtmlInfo();
         assertEquals("form", htmlInfoForm.getTag());

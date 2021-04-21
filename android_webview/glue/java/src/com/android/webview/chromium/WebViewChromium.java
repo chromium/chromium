@@ -67,7 +67,6 @@ import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
-import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.content_capture.ContentCaptureFeatures;
 import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
@@ -414,13 +413,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             mAwContents = new AwContents(mFactory.getBrowserContextOnUiThread(), mWebView, mContext,
                     new InternalAccessAdapter(), new WebViewNativeDrawFunctorFactory(),
                     mContentsClientAdapter, mWebSettings.getAwSettings(),
-                    new AwContents.DependencyFactory() {
-                        @Override
-                        public AutofillProvider createAutofillProvider(
-                                Context context, ViewGroup containerView) {
-                            return mFactory.createAutofillProvider(context, mWebView);
-                        }
-                    });
+                    new AwContents.DependencyFactory());
             if (mAppTargetSdkVersion >= Build.VERSION_CODES.KITKAT) {
                 // On KK and above, favicons are automatically downloaded as the method
                 // old apps use to enable that behavior is deprecated.
