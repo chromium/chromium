@@ -260,6 +260,9 @@ class PrefetchProxyTabHelper
     // The start time of the current navigation.
     const base::TimeTicks navigation_start_;
 
+    // Number of requests started that are decoy requests.
+    size_t decoy_requests_attempted_ = 0;
+
     // The metrics pertaining to prefetching actions on a Google SRP page.
     scoped_refptr<PrefetchMetrics> srp_metrics_;
 

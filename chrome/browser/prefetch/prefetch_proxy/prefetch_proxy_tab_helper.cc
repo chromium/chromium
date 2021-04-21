@@ -707,7 +707,8 @@ void PrefetchProxyTabHelper::Prefetch() {
   while (
       // Checks that the total number of prefetches has not been met.
       !(PrefetchProxyMaximumNumberOfPrefetches().has_value() &&
-        page_->srp_metrics_->prefetch_attempted_count_ >=
+        page_->decoy_requests_attempted_ +
+                page_->srp_metrics_->prefetch_attempted_count_ >=
             PrefetchProxyMaximumNumberOfPrefetches().value()) &&
 
       // Checks that there are still urls to prefetch.
@@ -723,7 +724,8 @@ void PrefetchProxyTabHelper::Prefetch() {
 void PrefetchProxyTabHelper::StartSinglePrefetch() {
   DCHECK(!page_->urls_to_prefetch_.empty());
   DCHECK(!(PrefetchProxyMaximumNumberOfPrefetches().has_value() &&
-           page_->srp_metrics_->prefetch_attempted_count_ >=
+           page_->decoy_requests_attempted_ +
+                   page_->srp_metrics_->prefetch_attempted_count_ >=
                PrefetchProxyMaximumNumberOfPrefetches().value()));
   DCHECK(page_->url_loaders_.size() <
          PrefetchProxyMaximumNumberOfConcurrentPrefetches());
@@ -738,6 +740,7 @@ void PrefetchProxyTabHelper::StartSinglePrefetch() {
     OnPrefetchStatusUpdate(
         url, PrefetchProxyPrefetchStatus::kPrefetchNotFinishedInTime);
   } else {
+    page_->decoy_requests_attempted_++;
     OnPrefetchStatusUpdate(
         url, PrefetchProxyPrefetchStatus::kPrefetchIsPrivacyDecoy);
   }
