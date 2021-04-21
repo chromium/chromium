@@ -32,6 +32,9 @@ class NGSVGTextLayoutAttributesBuilder final {
   void Build(const String& ifc_text_content,
              const HeapVector<NGInlineItem>& items);
 
+  // This function can be called just once after Build().
+  Vector<std::pair<unsigned, NGSVGCharacterData>> CharacterDataList();
+
  private:
   LayoutBlockFlow* block_flow_;
 

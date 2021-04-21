@@ -154,4 +154,18 @@ FloatRect LayoutNGSVGText::VisualRectInLocalSVGCoordinates() const {
   return SVGLayoutSupport::ComputeVisualRectForText(*this, box);
 }
 
+void LayoutNGSVGText::SetNeedsPositioningValuesUpdate() {
+  NOT_DESTROYED();
+  // We resolve text layout attributes in CollectInlines().
+  // Do not use SetNeedsCollectInlines() without arguments.
+  SetNeedsCollectInlines(true);
+}
+
+void LayoutNGSVGText::SetNeedsTextMetricsUpdate() {
+  NOT_DESTROYED();
+  needs_text_metrics_update_ = true;
+  // We need to re-shape text.
+  SetNeedsCollectInlines(true);
+}
+
 }  // namespace blink

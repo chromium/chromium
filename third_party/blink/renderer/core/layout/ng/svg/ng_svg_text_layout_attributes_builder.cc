@@ -289,4 +289,9 @@ void NGSVGTextLayoutAttributesBuilder::Build(
   attr_stack.Pop();
 }
 
+Vector<std::pair<unsigned, NGSVGCharacterData>>
+NGSVGTextLayoutAttributesBuilder::CharacterDataList() {
+  return std::move(resolved_);
+}
+
 }  // namespace blink

@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_character_data.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -58,6 +59,8 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
   // text_content and ShapeResult if 'text-transform' is applied or fonts are
   // different.
   Member<NGInlineItemsData> first_line_items_;
+
+  Vector<std::pair<unsigned, NGSVGCharacterData>> svg_character_data_list_;
 
   unsigned is_bidi_enabled_ : 1;
   unsigned base_direction_ : 1;  // TextDirection

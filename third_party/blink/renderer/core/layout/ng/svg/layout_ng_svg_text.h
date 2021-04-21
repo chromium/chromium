@@ -15,10 +15,10 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
   explicit LayoutNGSVGText(Element* element);
 
   void SubtreeStructureChanged(LayoutInvalidationReasonForTracing);
-  void SetNeedsTextMetricsUpdate() {
-    NOT_DESTROYED();
-    needs_text_metrics_update_ = true;
-  }
+  // This is called whenever a text layout attribute on the <text> or a
+  // descendant <tspan> is changed.
+  void SetNeedsPositioningValuesUpdate();
+  void SetNeedsTextMetricsUpdate();
 
   bool IsObjectBoundingBoxValid() const;
 

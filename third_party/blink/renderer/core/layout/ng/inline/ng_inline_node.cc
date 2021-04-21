@@ -1003,7 +1003,8 @@ void NGInlineNode::CollectInlines(NGInlineNodeData* data,
     NGSVGTextLayoutAttributesBuilder svg_attr_builder(*this);
     svg_attr_builder.Build(items_builder.ToString(), items);
 
-    // TODO(tkent): Store the result of Build() somewhere.
+    data->svg_character_data_list_ = svg_attr_builder.CharacterDataList();
+
     // TODO(tkent): Pass "text chunk" information to NGInlineItemsBuilder.
   }
 
@@ -1847,6 +1848,12 @@ bool NGInlineNode::ShouldReportLetterSpacingUseCounterForTesting(
     const LayoutBlockFlow* block_flow) {
   return ShouldReportLetterSpacingUseCounter(layout_object, first_line,
                                              block_flow);
+}
+
+const Vector<std::pair<unsigned, NGSVGCharacterData>>&
+NGInlineNode::SVGCharacterDataList() const {
+  DCHECK(IsSVGText());
+  return Data().svg_character_data_list_;
 }
 
 bool NGInlineNode::NeedsShapingForTesting(const NGInlineItem& item) {
