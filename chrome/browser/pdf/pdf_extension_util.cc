@@ -144,10 +144,6 @@ void AddPdfViewerStrings(base::Value* dict) {
     {"annotationSize12", IDS_PDF_ANNOTATION_SIZE12},
     {"annotationSize16", IDS_PDF_ANNOTATION_SIZE16},
     {"annotationSize20", IDS_PDF_ANNOTATION_SIZE20},
-    {"annotationFormWarningTitle", IDS_PDF_DISCARD_FORM_CHANGES},
-    {"annotationFormWarningDetail", IDS_PDF_DISCARD_FORM_CHANGES_DETAIL},
-    {"annotationFormWarningKeepEditing", IDS_PDF_KEEP_EDITING},
-    {"annotationFormWarningDiscard", IDS_PDF_DISCARD},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
   for (const auto& resource : kPdfResources)

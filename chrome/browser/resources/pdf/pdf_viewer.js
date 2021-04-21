@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="chromeos">
+import './elements/viewer-ink-host.js';
+// </if>
 import './elements/viewer-password-dialog.js';
 import './elements/viewer-properties-dialog.js';
 import './elements/shared-vars.js';
-// <if expr="chromeos">
-import './elements/viewer-ink-host.js';
-import './elements/viewer-form-warning.js';
-// </if>
 import './pdf_viewer_shared_style.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';

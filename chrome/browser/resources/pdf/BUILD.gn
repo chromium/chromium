@@ -72,7 +72,6 @@ preprocess_if_expr("preprocess_generated") {
     in_files += [
       "elements/viewer-annotations-bar.js",
       "elements/viewer-annotations-mode-dialog.js",
-      "elements/viewer-form-warning.js",
       "elements/viewer-ink-host.js",
       "elements/viewer-pen-options.js",
       "elements/viewer-toolbar-dropdown.js",
