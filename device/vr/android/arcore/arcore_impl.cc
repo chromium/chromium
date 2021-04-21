@@ -1841,6 +1841,10 @@ mojom::XRDepthDataPtr ArCoreImpl::GetDepthData() {
     UMA_HISTOGRAM_CUSTOM_COUNTS("XR.ARCore.DepthBufferSizeInPixels",
                                 buffer_size / 2, 5000, 55000, 50);
 
+    TRACE_COUNTER2(TRACE_DISABLED_BY_DEFAULT("xr.debug"),
+                   "Depth buffer resolution (in pixels)", "width", width,
+                   "height", height);
+
     if (buffer_size / 2 > 240 * 180) {
       // ARCore should report depth data buffers w/ resolution in the ballpark
       // of 160x120. If the number of data entries is higher than 240 * 180
