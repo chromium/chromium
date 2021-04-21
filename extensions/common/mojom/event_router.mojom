@@ -1,0 +1,23 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+import "url/mojom/url.mojom";
+
+union EventListenerParam {
+  string extension_id;
+  url.mojom.Url listener_url;
+};
+
+// Implemented in the browser, this interface defines methods for handling
+// event router messages from render thread or service worker.
+interface EventRouter {
+  // Notifies the browser that the given |extension_id| or |listener_url| added
+  // a listener to an event. If it has |extension_id| in |param|, the listener
+  // is added for the extension. Otherwise, it has a |listener_url| in |param|
+  // and the listener is added for the URL.
+  AddListenerForRenderer(EventListenerParam param,
+                         string event_name);
+};

@@ -29,6 +29,16 @@ namespace url {
 class Origin;
 }
 
+namespace blink {
+class AssociatedInterfaceRegistry;
+}
+
+namespace service_manager {
+template <typename...>
+class BinderRegistryWithArgs;
+using BinderRegistry = BinderRegistryWithArgs<>;
+}  // namespace service_manager
+
 namespace extensions {
 
 // Implements the extensions portion of ChromeContentBrowserClient.
@@ -115,6 +125,10 @@ class ChromeContentBrowserClientExtensionsPart
       base::CommandLine* command_line,
       content::RenderProcessHost* process,
       Profile* profile) override;
+  void ExposeInterfacesToRenderer(
+      service_manager::BinderRegistry* registry,
+      blink::AssociatedInterfaceRegistry* associated_registry,
+      content::RenderProcessHost* render_process_host) override;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeContentBrowserClientExtensionsPart);
 };

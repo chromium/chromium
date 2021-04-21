@@ -29,7 +29,10 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/event_filtering_info.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/event_router.mojom.h"
 #include "ipc/ipc_sender.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -52,7 +55,8 @@ struct EventListenerInfo;
 class EventRouter : public KeyedService,
                     public ExtensionRegistryObserver,
                     public EventListenerMap::Delegate,
-                    public content::RenderProcessHostObserver {
+                    public content::RenderProcessHostObserver,
+                    public mojom::EventRouter {
  public:
   // These constants convey the state of our knowledge of whether we're in
   // a user-caused gesture as part of DispatchEvent.
@@ -123,11 +127,19 @@ class EventRouter : public KeyedService,
                                                const Extension* extension,
                                                const Event& event);
 
+  static void BindForRenderer(
+      int process_id,
+      mojo::PendingAssociatedReceiver<mojom::EventRouter> receiver);
+
   // An EventRouter is shared between |browser_context| and its associated
   // incognito context. |extension_prefs| may be NULL in tests.
   EventRouter(content::BrowserContext* browser_context,
               ExtensionPrefs* extension_prefs);
   ~EventRouter() override;
+
+  // mojom::EventRouter:
+  void AddListenerForRenderer(mojom::EventListenerParamPtr param,
+                              const std::string& name) override;
 
   // Add or remove an extension as an event listener for |event_name|.
   //
@@ -398,6 +410,11 @@ class EventRouter : public KeyedService,
   LazyEventDispatchUtil lazy_event_dispatch_util_;
 
   EventAckData event_ack_data_;
+
+  // All the Mojo receivers for the EventRouter. Keeps track of the render
+  // process id.
+  mojo::AssociatedReceiverSet<mojom::EventRouter, int /*render_process_id*/>
+      receivers_;
 
   base::WeakPtrFactory<EventRouter> weak_factory_{this};
 

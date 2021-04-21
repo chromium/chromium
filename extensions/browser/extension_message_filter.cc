@@ -176,11 +176,11 @@ void ExtensionMessageFilter::OnExtensionAddListener(
           event_name, process, extension_id, listener_or_worker_scope_url,
           service_worker_version_id, worker_thread_id);
     } else {
-      event_router->AddEventListener(event_name, process, extension_id);
+      // Since ExtensionHostMsg_AddListener for the render thread has been
+      // converted to Mojo, this path should work only for service
+      NOTREACHED() << "Adding an event listener for the render thread should "
+                      "work with Mojo.";
     }
-  } else if (listener_or_worker_scope_url.is_valid()) {
-    event_router->AddEventListenerForURL(event_name, process,
-                                         listener_or_worker_scope_url);
   } else {
     NOTREACHED() << "Tried to add an event listener without a valid "
                  << "extension ID nor listener URL";

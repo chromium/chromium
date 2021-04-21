@@ -44,6 +44,13 @@
 #include "chromecast/browser/memory_pressure_controller_impl.h"
 #endif  // !defined(OS_ANDROID)
 
+#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "extensions/browser/event_router.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#endif
+
 namespace chromecast {
 namespace shell {
 
@@ -98,6 +105,11 @@ void CastContentBrowserClient::ExposeInterfacesToRenderer(
                           base::Unretained(memory_pressure_controller_.get())),
       base::ThreadTaskRunnerHandle::Get());
 #endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+
+#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
+  associated_registry->AddInterface(base::BindRepeating(
+      &extensions::EventRouter::BindForRenderer, render_process_host->GetID()));
+#endif
 }
 
 void CastContentBrowserClient::BindMediaServiceReceiver(

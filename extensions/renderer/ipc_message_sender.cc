@@ -17,6 +17,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/extension_frame_helper.h"
@@ -25,6 +26,8 @@
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/worker_thread_dispatcher.h"
+#include "ipc/ipc_sync_channel.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace extensions {
@@ -57,9 +60,15 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    render_thread_->Send(new ExtensionHostMsg_AddListener(
-        context->GetExtensionID(), context->url(), event_name,
-        blink::mojom::kInvalidServiceWorkerVersionId, kMainThreadId));
+    if (!context->GetExtensionID().empty()) {
+      GetEventRouter()->AddListenerForRenderer(
+          mojom::EventListenerParam::NewExtensionId(context->GetExtensionID()),
+          event_name);
+    } else {
+      GetEventRouter()->AddListenerForRenderer(
+          mojom::EventListenerParam::NewListenerUrl(context->url()),
+          event_name);
+    }
   }
 
   void SendRemoveUnfilteredEventListenerIPC(
@@ -191,7 +200,16 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
                          base::Value::AsListValue(response), error);
   }
 
+  mojom::EventRouter* GetEventRouter() {
+    if (!event_router_remote_.is_bound()) {
+      render_thread_->GetChannel()->GetRemoteAssociatedInterface(
+          &event_router_remote_);
+    }
+    return event_router_remote_.get();
+  }
+
   content::RenderThread* const render_thread_;
+  mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
 
   base::WeakPtrFactory<MainThreadIPCMessageSender> weak_ptr_factory_{this};
 
