@@ -2095,7 +2095,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3758249152301468420">Désactiver les outils de développement</translation>
 <translation id="3760148113224469113">Toujours demander aux utilisateurs de confirmer les invites de protocoles externes</translation>
 <translation id="3760231600118073732">Verrouiller la session en cours.</translation>
-<translation id="3761222804122755011">WebRTC utilisera uniquement l'interface connectée à l'Internet public, mais pourra se connecter à l'aide d'adresses IP privées.</translation>
+<translation id="3761222804122755011">WebRTC utilisera uniquement l'interface pour se connecter à l'Internet public, mais pourra se connecter à l'aide d'adresses IP privées.</translation>
 <translation id="3762520180381586267">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> déclenche un redémarrage lorsque l'utilisateur éteint l'appareil. <ph name="PRODUCT_OS_NAME" /> remplace tous les boutons d'arrêt de l'interface utilisateur par des boutons de redémarrage. Si l'utilisateur utilise le bouton Marche/Arrêt pour éteindre l'appareil, celui-ci ne redémarre pas automatiquement, même si cette règle est activée.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> laisse l'utilisateur éteindre l'appareil.</translation>
@@ -5338,7 +5338,7 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
 <translation id="8056237304861875584">Autorisez la tâche Phone Hub à se poursuivre.</translation>
 <translation id="8056273037819805106">Les identifiants de connexion <ph name="PRODUCT_OS_NAME" /> seront utilisés pour l'authentification réseau sur un proxy géré.</translation>
 <translation id="8059164285174960932">URL où les clients d'accès à distance doivent obtenir leur jeton d'authentification</translation>
-<translation id="8062375903420954294">Cette règle permet de limiter les adresses IP et interfaces utilisées par WebRTC pour tenter d'identifier la meilleure connexion disponible. Consultez le document RFC 8828, section 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2). Lorsqu'elle n'est pas définie, elle utilise toutes les interfaces disponibles par défaut.</translation>
+<translation id="8062375903420954294">Cette règle permet de limiter les adresses IP et interfaces utilisées par WebRTC pour tenter d'identifier la meilleure connexion disponible. Consultez le document RFC 8828, section 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2). Lorsqu'elle n'est pas définie, toutes les interfaces disponibles sont utilisées par défaut.</translation>
 <translation id="8062485064082966327">Utiliser un service Google anonyme pour qu'une description soit ajoutée automatiquement aux images sans libellé</translation>
 <translation id="8071371098891664137">Si <ph name="PRINTERS_BLOCKLIST" /> est choisi pour <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, le fait de définir <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> indique les imprimantes indisponibles pour les utilisateurs. Toutes les imprimantes sont proposées aux utilisateurs, sauf celles dont les ID sont répertoriés dans cette règle. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="8076521374016204899">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs qui s'authentifient avec un mot de passe peuvent verrouiller l'écran.
@@ -5551,7 +5551,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8337114537412769126">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> vous permet de définir les paramètres d'une recherche suggérée à l'aide de la méthode POST. Il s'agit de paires de noms et de valeurs séparées par une virgule. Si une valeur correspond à un paramètre modèle, comme <ph name="SEARCH_TERM_MARKER" />, elle est remplacée par des termes de recherches réels.
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> n'est pas configurée, les requêtes de recherche suggérée sont envoyées à l'aide de la méthode GET.</translation>
-<translation id="8339089771335211509">WebRTC utilisera uniquement l'interface connectée à l'Internet public et ne se connectera pas à l'aide d'adresses IP privées.</translation>
+<translation id="8339089771335211509">WebRTC utilisera uniquement l'interface pour se connecter à l'Internet public, et ne se connectera pas à l'aide d'adresses IP privées.</translation>
 <translation id="8339420913453596618">Deuxième facteur désactivé</translation>
 <translation id="8344454543174932833">Importer les favoris du navigateur par défaut à la première exécution</translation>
 <translation id="8347993687936322631">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.)
@@ -5627,7 +5627,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8465065632133292531">Paramètres pour l'URL instantanée utilisant POST</translation>
 <translation id="847472800012384958">Interdire à tous les sites d'afficher des fenêtres pop-up</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
-<translation id="8479032202539686055">WebRTC utilisera toutes les interfaces disponibles lors de la recherche du meilleur chemin.</translation>
+<translation id="8479032202539686055">WebRTC utilisera toutes les interfaces disponibles pour rechercher le meilleur chemin.</translation>
 <translation id="8483004350080020634">Cette règle supprime les parties sensibles (informations confidentielles et de sécurité) des URL "https://" avant de les transmettre aux scripts PAC (Proxy Auto Config) utilisés par <ph name="PRODUCT_NAME" /> lors de la résolution du proxy.
 
       Lorsque la règle est définie sur "True", la fonctionnalité de sécurité est activée et les informations sensibles sont retirées des URL https:// avant leur envoi à un script PAC. De cette manière, le script PAC ne peut pas afficher des données qui sont normalement protégées par un canal chiffré (comme le chemin d'accès et la requête de l'URL).

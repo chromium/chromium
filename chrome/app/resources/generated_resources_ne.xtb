@@ -1369,7 +1369,7 @@
 <translation id="2482878487686419369">सूचनाहरू</translation>
 <translation id="2482895651873876648">यो ट्याब <ph name="GROUP_NAME" /> समूहमा सारियो - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2484959914739448251">तपाईंका सिंक गरिएका सबै यन्त्र र Google खाताबाट ब्राउजिङ डेटा खाली गर्न <ph name="BEGIN_LINK" />आफ्नो पासफ्रेज प्रविष्टि गर्नुहोस्<ph name="END_LINK" />।</translation>
-<translation id="2485005079599453134">यो डिभाइसमा पासवर्ड सुरक्षित गरियो</translation>
+<translation id="2485005079599453134">यो डिभाइसमा पासवर्ड सेभ गरियो</translation>
 <translation id="2485394160472549611">तपाईंका लागि छनौट गरिएका उत्कृष्ट विकल्पहरू</translation>
 <translation id="2485422356828889247">विस्थापन गर्नुहोस्</translation>
 <translation id="2487067538648443797">नयाँ पुस्तक चिन्ह थप्नुहोस्</translation>
@@ -2015,7 +2015,7 @@
 <translation id="3188257591659621405">मेरा फाइलहरू</translation>
 <translation id="3188465121994729530">औसत चलायमान</translation>
 <translation id="3189187154924005138">ठुलो कर्सर</translation>
-<translation id="3190558889382726167">पासवर्ड सुरक्षित गरियो</translation>
+<translation id="3190558889382726167">पासवर्ड सेभ गरियो</translation>
 <translation id="3192947282887913208">अडियो फाइलहरू</translation>
 <translation id="3199127022143353223">सर्भरहरू</translation>
 <translation id="3201422919974259695">उपलब्ध USB यन्त्रहरू यहाँ देखिने छन्।</translation>
@@ -2838,7 +2838,7 @@
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">यो साइटलाई MIDI यन्त्रहरू पूर्ण रूपमा नियन्त्रण गर्न दिइएन</translation>
 <translation id="4088095054444612037">समूहको लागि स्वीकार गर्नुहोस्</translation>
-<translation id="4089235344645910861">सेटिङहरू सुरक्षित गरियो। सिंक सुरु भयो।</translation>
+<translation id="4089235344645910861">सेटिङहरू सेभ गरियो। सिंक सुरु भयो।</translation>
 <translation id="4090103403438682346">रुजू गरिएको पहुँच सक्षम बनाउनुहोस्</translation>
 <translation id="4090811767089219951">तपाईंको Google सहायक यहाँ पनि चल्छ</translation>
 <translation id="4090947011087001172"><ph name="SITE" /> का साइटसम्बन्धी अनुमतिहरू रिसेट गर्ने हो?</translation>
@@ -3854,7 +3854,7 @@
 <translation id="529175790091471945">यस यन्त्रलाई फर्म्याट गर्नुहोस्</translation>
 <translation id="5293170712604732402">सेटिङहरूलाई तिनीहरूकै डिफल्ट मूल सेटिङमा पुनर्स्थापना गर्नुहोस्</translation>
 <translation id="5294097441441645251">अनिवार्य रूपमा लोअरकेस वर्ण वा underscore बाट सुरु हुनु पर्छ</translation>
-<translation id="5297082477358294722">पासवर्ड सुरक्षित गरियो। सुरक्षित गरिएका पासवर्डहरू हेर्न र व्यवस्थापन गर्न आफ्नो <ph name="SAVED_PASSWORDS_STORE" />.मा जानुहोस्।</translation>
+<translation id="5297082477358294722">पासवर्ड सेभ गरियो। सुरक्षित गरिएका पासवर्डहरू हेर्न र व्यवस्थापन गर्न आफ्नो <ph name="SAVED_PASSWORDS_STORE" />.मा जानुहोस्।</translation>
 <translation id="5298219193514155779">द्वार प्रकरण सिर्जना गरिएको</translation>
 <translation id="5299109548848736476">ट्रयाक नगर्नुहोस्</translation>
 <translation id="5299558715747014286">आफ्ना ट्याब समूहहरू हेर्नुहोस् र व्यवस्थापन गर्नुहोस्</translation>
@@ -6170,7 +6170,7 @@
 <translation id="7887864092952184874">ब्लुटुथ माउस जोडा मिलाइएको</translation>
 <translation id="7890147169288018054">आफ्नो IP वा MAC एड्रेस जस्ता नेटवर्कसम्बन्धी जानकारी हेर्नुहोस्</translation>
 <translation id="7893008570150657497">तपाइँको कम्प्युटरबाट तस्बिरहरू, सङ्गीत, र हन्य मिडिया पहुँच गर्नुहोस्</translation>
-<translation id="7893153962594818789">यस <ph name="DEVICE_TYPE" /> मा ब्लुटुथ निष्क्रिय छ। आफ्नो पासवर्ड प्रविष्टि गर्नुहोस् र ब्लुटुथ सक्रिय गर्नुहोस्।</translation>
+<translation id="7893153962594818789">यस <ph name="DEVICE_TYPE" /> मा ब्लुटुथ निष्क्रिय छ। आफ्नो पासवर्ड प्रविष्टि गर्नुहोस् र ब्लुटुथ अन गर्नुहोस्।</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (डिफल्ट)</translation>
 <translation id="789722939441020330">साइटहरूलाई एकभन्दा बढी फाइल स्वतः डाउनलोड गर्ने अनुमति नदिइयोस्</translation>
 <translation id="7897900149154324287">भविष्यमा, तपाईंको हटाउन सकिने यन्त्रलाई अनप्लग गर्नुभन्दा अगाडि यसलाई फाइलहरू एपमा निश्चित रूपमा निकाल्नुहोस्।</translation>
@@ -7376,7 +7376,7 @@
 <translation id="936646668635477464">क्यामेरा र माइक्रोफोन</translation>
 <translation id="936801553271523408">प्रणाली विकर्ण लगत</translation>
 <translation id="93766956588638423">विस्तार मर्मत गर्नुहोस्</translation>
-<translation id="938470336146445890">कृपया एउटा प्रयोगकर्ता प्रमाणपत्र स्थापना गर्नुहोस्।</translation>
+<translation id="938470336146445890">कृपया एउटा प्रयोगकर्ता सर्टिफिकेट स्थापना गर्नुहोस्।</translation>
 <translation id="939252827960237676">स्क्रिनसट बचत गर्न अ</translation>
 <translation id="939598580284253335">पासफ्रेज प्रविष्टि गर्नुहोस्</translation>
 <translation id="939736085109172342">नयाँ फोल्डर</translation>

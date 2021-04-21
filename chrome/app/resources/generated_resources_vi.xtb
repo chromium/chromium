@@ -1324,7 +1324,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2434449159125086437">Không thể thiết lập máy in. Vui lòng kiểm tra cấu hình rồi thử lại.</translation>
 <translation id="2434758125294431199">Chọn người có thể chia sẻ với bạn</translation>
 <translation id="2435248616906486374">Mạng đã bị ngắt kết nối</translation>
-<translation id="2435457462613246316">Hiển thị mật khẩu</translation>
+<translation id="2435457462613246316">Hiện mật khẩu</translation>
 <translation id="2435579801172349831">Mở tất cả (<ph name="URL_COUNT" />) trong cửa sổ ẩn danh</translation>
 <translation id="2436186046335138073">Cho phép <ph name="HANDLER_HOSTNAME" /> mở tất cả liên kết <ph name="PROTOCOL" />?</translation>
 <translation id="2440366609912234507">{COUNT,plural, =1{ứng dụng}other{# ứng dụng}}</translation>
@@ -6101,7 +6101,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="782057141565633384">S&amp;ao chép địa chỉ video</translation>
 <translation id="7822187537422052256">Bạn có chắc chắn muốn xóa địa chỉ này không?</translation>
 <translation id="7824864914877854148">Không thể hoàn tất quá trình sao lưu do lỗi</translation>
-<translation id="782590969421016895">Sử dụng trang hiện tại</translation>
+<translation id="782590969421016895">Sử dụng các trang hiện tại</translation>
 <translation id="7826249772873145665">Đã tắt tùy chọn gỡ lỗi ADB</translation>
 <translation id="7826254698725248775">Xung đột mã nhận dạng thiết bị.</translation>
 <translation id="7826346148677309647">Bạn có thể tìm thêm ứng dụng cho thiết bị của mình trong Cửa hàng Play.</translation>

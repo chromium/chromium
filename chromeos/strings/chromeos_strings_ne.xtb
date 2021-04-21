@@ -62,7 +62,7 @@
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">सक्रियताको वस्तुस्थिति</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">नजिकैका यन्त्रहरू पत्ता लगाउन ब्लुटुथ सक्रिय गर्नुहोस्</translation>
+<translation id="2338501278241028356">नजिकैका यन्त्रहरू पत्ता लगाउन ब्लुटुथ अन गर्नुहोस्</translation>
 <translation id="2364498172489649528">सुरक्षा जाँचमा पास भयो</translation>
 <translation id="2391082728065870591">फिडब्याक रिपोर्ट पठाउनुहोस्</translation>
 <translation id="2418150275289244458">सेटिङमा गई खोल्नुहोस्</translation>
@@ -75,7 +75,7 @@
 <translation id="2585245331261708204">Chrome OS मा नयाँ के छ?</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2740531572673183784">ठिक छ</translation>
-<translation id="2751739896257479635">EAP चरण २ प्रमाणीकरण</translation>
+<translation id="2751739896257479635">EAP दोस्रो चरणको प्रमाणीकरण</translation>
 <translation id="2789486458103222910">ठिक छ</translation>
 <translation id="2805756323405976993">एप्स</translation>
 <translation id="2862104018715411648">स्क्यानरमा आफ्नो कागजात राख्नुहोस् र स्क्यान गर्न थाल्न स्क्यान गर्नुहोस् विकल्प चयन गर्नुहोस्</translation>
@@ -162,7 +162,7 @@
 <translation id="467715984478005772">फायरवालका कारणले हुन सक्छ</translation>
 <translation id="4691278870498629773">रोकियो - प्रिन्टरमा ट्रे छैन</translation>
 <translation id="469379815867856270">सिग्नलको क्षमता</translation>
-<translation id="4707579418881001319">L2TP/IPsec + प्रयोगकर्ता प्रमाणपत्र</translation>
+<translation id="4707579418881001319">L2TP/IPsec + प्रयोगकर्ता सर्टिफिकेट</translation>
 <translation id="4731797938093519117">अभिभावकको पहुँच</translation>
 <translation id="4773299976671772492">रोकियो</translation>
 <translation id="4794140124556169553">तपाईंले CPU को जाँच गर्नुभयो भने तपाईंको प्रणालीको कार्यसम्पादनमा असर पर्न सक्छ</translation>

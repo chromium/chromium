@@ -201,7 +201,7 @@
 <translation id="1203942045716040624">عامل مشترَك: <ph name="SCRIPT_URL" /></translation>
 <translation id="1209796539517632982">خوادم الأسماء التلقائية</translation>
 <translation id="1211364473545090084">استخدِم الويب بدون حفظ سجلّ التصفُّح باستخدام نافذة تصفُّح متخفٍ</translation>
-<translation id="1211769675100312947">الاختصارات التي نظمتها</translation>
+<translation id="1211769675100312947">لك حرية تنظيم الاختصارات</translation>
 <translation id="1213254615020057352">‏يمكنك إرسال بيانات الاستخدام والتشخيص. يمكنك المساعدة في تحسين تجربة نظام التشغيل Android على حسابك الفرعي من خلال إرسال بيانات التطبيق والجهاز والتشخيص تلقائيًا إلى Google. ولن يتم استخدام هذه البيانات للتعرّف على حسابك الفرعي، بل ستُستخدَم لتعزيز استقرار النظام والتطبيقات وإجراء المزيد من التحسينات. وسيستفيد أيضًا مطوّرو التطبيقات والشركاء في Google، مثل مطوّري البرامج المتوافقة مع Android، من بعض البيانات المجمّعة. ويفرض المالك هذا الإعداد. قد يختار المالك إرسال بيانات الاستخدام والتشخيص لهذا الجهاز إلى Google. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات" لحسابك الفرعي، قد يتم حفظ هذه البيانات في حسابك على Google.</translation>
 <translation id="121384500095351701">لا يمكن تنزيل هذا الملف بشكل آمن.</translation>
 <translation id="1215411991991485844">تمت إضافة تطبيق جديد في الخلفية</translation>
@@ -1028,7 +1028,7 @@
 <translation id="2105809836724866556">تم إخفاء <ph name="MODULE_TITLE" />.</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{رقم هاتف واحد}zero{# رقم هاتف}two{رقما هاتف}few{# أرقام هاتف}many{# رقم هاتف}other{# رقم هاتف}}</translation>
 <translation id="211144231511833662">محو الأنواع</translation>
-<translation id="2111670510994270194">وضع علامة جديدة يمينًا</translation>
+<translation id="2111670510994270194">إضافة علامة تبويب جديدة يمينًا</translation>
 <translation id="2111810003053064883">يمكن للمعلنين تحديد مدى فعالية الإعلانات بدون الحاجة إلى تتبّعك في المواقع الإلكترونية.</translation>
 <translation id="2112554630428445878">مرحبًا، <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">تثبيت علامة التبويب</translation>
@@ -3136,7 +3136,7 @@
 <translation id="4451757071857432900">تم حظر الإعلانات على المواقع الإلكترونية التي تعرض إعلانات مضلِّلة أو غير مرغوب فيها (مُستحسَن)</translation>
 <translation id="4453946976636652378">‏البحث في <ph name="SEARCH_ENGINE_NAME" /> أو كتابة عنوان URL</translation>
 <translation id="4459169140545916303">نشط قبل <ph name="DEVICE_LAST_ACTIVATED_TIME" /> يوم</translation>
-<translation id="4460014764210899310">تفكيك</translation>
+<translation id="4460014764210899310">إلغاء التجميع</translation>
 <translation id="4462159676511157176">خوادم أسماء مخصصة</translation>
 <translation id="4465236939126352372">تم ضبط الحد الأقصى المسموح به لاستخدام تطبيق <ph name="APP_NAME" /> على <ph name="TIME" />.</translation>
 <translation id="4465725236958772856">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، يديرها المشرف، الاتصال</translation>
@@ -4376,7 +4376,7 @@
 <translation id="5870086504539785141">إغلاق قائمة إمكانية الوصول</translation>
 <translation id="5870155679953074650">الأخطاء الجسيمة</translation>
 <translation id="5876576639916258720">يتم الآن التنفيذ...</translation>
-<translation id="5876851302954717356">وضع علامة جديدة يمينًا</translation>
+<translation id="5876851302954717356">إضافة علامة تبويب جديدة يمينًا</translation>
 <translation id="5877064549588274448">تم تغيير القناة. يمكنك إعادة تشغيل الجهاز لتدخل التغييرات حيز التنفيذ.</translation>
 <translation id="5877584842898320529">الطابعة المُختارة غير متاحة أو لم يتم تثبيتها بشكلٍ صحيح. <ph name="BR" /> يُرجى التحقُّق من الطابعة أو تجربة اختيار طابعة أخرى.</translation>
 <translation id="5882919346125742463">الشبكات المعروفة</translation>
@@ -6845,7 +6845,7 @@
 <translation id="8661290697478713397">ف&amp;تح رابط في نافذة التصفح المتخفي</translation>
 <translation id="8662671328352114214">الانضمام إلى شبكة <ph name="TYPE" /></translation>
 <translation id="8662795692588422978">الأشخاص</translation>
-<translation id="8662811608048051533">يخرجك من معظم المواقع الإلكترونية.</translation>
+<translation id="8662811608048051533">الخروج من معظم المواقع الإلكترونية.</translation>
 <translation id="8662911384982557515">تغيير الصفحة الرئيسية إلى: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">‏يتعذر على Chrome تعيين هذه الخلفية.</translation>
 <translation id="8663099077749055505">حظر عمليات التنزيل المتعددة تلقائيًا بشكل دائم على <ph name="HOST" /></translation>

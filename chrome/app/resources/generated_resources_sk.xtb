@@ -4351,7 +4351,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5855643921295613558">0,6 sekundy</translation>
 <translation id="5856721540245522153">Aktivácia funkcií ladenia</translation>
 <translation id="5857090052475505287">Nový priečinok</translation>
-<translation id="5857171483910641802">Návrhy skratiek sú založené na weboch, ktoré navštevujete často</translation>
+<translation id="5857171483910641802">Skratky sú navrhované na základe webov, ktoré často navštevujete</translation>
 <translation id="5857675236236529683">Keď bude všetko pripravené, vyhľadajte tu svoj čitateľský zoznam</translation>
 <translation id="5858490737742085133">Terminál</translation>
 <translation id="5859603669299126575">Album umeleckej galérie</translation>
@@ -5081,7 +5081,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6683948477137300040">Zobraziť vyskakovacie okno s číslom EID zariadenia a QR kódom</translation>
 <translation id="6684827949542560880">Sťahuje sa najnovšia aktualizácia</translation>
 <translation id="668599234725812620">Otvoriť Google Play</translation>
-<translation id="6686490380836145850">Zatvoriť karty vpravo</translation>
+<translation id="6686490380836145850">Zavrieť karty vpravo</translation>
 <translation id="6686665106869989887">Karta bola presunutá doprava</translation>
 <translation id="6686817083349815241">Uloženie hesla</translation>
 <translation id="6687079240787935001">Skryť <ph name="MODULE_TITLE" /></translation>
@@ -5236,7 +5236,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6851497530878285708">Aplikácia je povolená</translation>
 <translation id="6853142139292753691">Chcete predvolene obnoviť aplikácie a stránky?</translation>
 <translation id="6853388645642883916">Služba Updater je v režime spánku</translation>
-<translation id="68541483639528434">Zatvoriť ostatné karty</translation>
+<translation id="68541483639528434">Zavrieť ostatné karty</translation>
 <translation id="6855892664589459354">Zálohovanie a obnova v systéme Crostini</translation>
 <translation id="6856348640027512653">Nie je povolené používanie zariadení ani údajov virtuálnej reality</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intenzita signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
@@ -6461,7 +6461,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8202160505685531999">Zadajte znova svoje heslo a aktualizujte tak profil zariadenia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8203152941016626022">Názov zariadenia pri Zdieľaní nablízku</translation>
 <translation id="8203732864715032075">Odosiela upozornenia a predvolene si zapamätá tento počítač pre Správy. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
-<translation id="820568752112382238">Najviac navštevované stránky</translation>
+<translation id="820568752112382238">Najnavštevovanejšie weby</translation>
 <translation id="8206745257863499010">Bluesový</translation>
 <translation id="8206859287963243715">Mobilné</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nové upozornenie}few{# nové upozornenia}many{# new notifications}other{# nových upozornení}}</translation>

@@ -736,7 +736,7 @@
 <translation id="1779468444204342338">最小值</translation>
 <translation id="1779652936965200207">请在“<ph name="DEVICE_NAME" />”上输入此匹配密钥：</translation>
 <translation id="177989070088644880">应用 (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
-<translation id="1780152987505130652">关闭群组</translation>
+<translation id="1780152987505130652">关闭组</translation>
 <translation id="1781291988450150470">当前 PIN 码</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" /> 要求您立即连接到 Wi-Fi 并下载更新。</translation>
 <translation id="1781502536226964113">打开新标签页</translation>
@@ -1750,7 +1750,7 @@
 <translation id="2889064240420137087">链接打开方式...</translation>
 <translation id="2891922230654533301">使用您的设备登录 <ph name="APP_NAME" />？</translation>
 <translation id="2893168226686371498">默认浏览器</translation>
-<translation id="2894757982205307093">在群组内添加新标签页</translation>
+<translation id="2894757982205307093">在组内添加新标签页</translation>
 <translation id="289644616180464099">SIM 卡已被锁定</translation>
 <translation id="289695669188700754">密钥 ID：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">当您关闭所有无痕式窗口后，系统将会撤消这项自定义设置</translation>
@@ -3488,7 +3488,7 @@
 <translation id="4871322859485617074">PIN 码包含无效字符</translation>
 <translation id="4871370605780490696">添加书签</translation>
 <translation id="4871568871368204250">关闭同步功能</translation>
-<translation id="4871719318659334896">关闭群组</translation>
+<translation id="4871719318659334896">关闭组</translation>
 <translation id="4873312501243535625">媒体文件检查工具</translation>
 <translation id="4876273079589074638">帮助我们的工程师调查并解决此崩溃问题。请列出您的具体操作，越详细越好！</translation>
 <translation id="4876895919560854374">将屏幕锁定和解锁</translation>
@@ -4344,7 +4344,7 @@
 <translation id="5855643921295613558">0.6 秒</translation>
 <translation id="5856721540245522153">启用调试功能</translation>
 <translation id="5857090052475505287">新文件夹</translation>
-<translation id="5857171483910641802">系统根据您经常访问的网站提供快捷方式建议</translation>
+<translation id="5857171483910641802">系统会根据您经常访问的网站推荐它们的快捷方式</translation>
 <translation id="5857675236236529683">准备就绪后，您可在此处找到自己的阅读清单</translation>
 <translation id="5858490737742085133">终端</translation>
 <translation id="5859603669299126575">画廊中的影集</translation>
@@ -5922,7 +5922,7 @@
 <translation id="7642778300616172920">隐藏敏感内容</translation>
 <translation id="7643842463591647490">{0,plural, =1{# 个打开的窗口}other{# 个打开的窗口}}</translation>
 <translation id="7643932971554933646">允许网站查看文件？</translation>
-<translation id="7644543211198159466">颜色和主题背景</translation>
+<translation id="7644543211198159466">颜色和主题</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
 <translation id="7645300866575922143">添加移动网络</translation>
 <translation id="7645681574855902035">正在取消 Linux 备份</translation>
@@ -6951,7 +6951,7 @@
 <translation id="8780123805589053431">从 Google 获取图片说明</translation>
 <translation id="8780443667474968681">已关闭语音搜索功能。</translation>
 <translation id="878069093594050299">此证书已通过验证，具有以下用法：</translation>
-<translation id="8781834595282316166">在群组内添加新标签页</translation>
+<translation id="8781834595282316166">在组内添加新标签页</translation>
 <translation id="8782565991310229362">已取消启动自助服务终端应用。</translation>
 <translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;希望与您共享打印机&lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;。</translation>
 <translation id="8783834180813871000">输入蓝牙配对码，然后按回车键。</translation>

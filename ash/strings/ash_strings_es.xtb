@@ -678,7 +678,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6692996468359469499">Obtener información sobre tu selección</translation>
 <translation id="6696025732084565524">Tu teclado independiente necesita una actualización crítica</translation>
 <translation id="6700713906295497288">Botón de menú de IME</translation>
-<translation id="6713285437468012787">Se ha vinculado el dispositivo Bluetooth "<ph name="DEVICE_NAME" />" y ya está disponible para todos los usuarios. Para eliminar esta vinculación, accede a Configuración.</translation>
+<translation id="6713285437468012787">Se ha emparejado el dispositivo Bluetooth "<ph name="DEVICE_NAME" />" y ya está disponible para todos los usuarios. Para eliminar este emparejamiento, accede a Configuración.</translation>
 <translation id="6715542151869432661">No se han encontrado dispositivos móviles.</translation>
 <translation id="6723839937902243910">Batería</translation>
 <translation id="6727969043791803658">Conectado, <ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
