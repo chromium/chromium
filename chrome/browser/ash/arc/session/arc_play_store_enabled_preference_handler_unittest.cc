@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/arc_data_removed_waiter.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/login/ui/fake_login_display_host.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
@@ -127,6 +128,12 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
         .account_id;
   }
 
+ protected:
+  void CreateLoginDisplayHost() {
+    fake_login_display_host_ =
+        std::make_unique<chromeos::FakeLoginDisplayHost>();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   user_manager::ScopedUserManager user_manager_enabler_;
@@ -135,6 +142,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
       identity_test_env_profile_adaptor_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
+  std::unique_ptr<chromeos::FakeLoginDisplayHost> fake_login_display_host_;
   std::unique_ptr<ArcPlayStoreEnabledPreferenceHandler> preference_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreEnabledPreferenceHandlerTest);
@@ -215,6 +223,92 @@ TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, PrefChangeRevokesConsent) {
             arc_session_manager()->state());
 
   SetArcPlayStoreEnabledForProfile(profile(), false);
+}
+
+TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, MiniStateUnmanaged) {
+  // Ensure the mini-instance starts.
+  SetArcAvailableCommandLineForTesting(base::CommandLine::ForCurrentProcess());
+  chromeos::SessionManagerClient::Get()->EmitLoginPromptVisible();
+  ASSERT_TRUE(arc_session_manager()
+                  ->GetArcSessionRunnerForTesting()
+                  ->GetArcSessionForTesting());
+  ASSERT_EQ(ArcSessionManager::State::NOT_INITIALIZED,
+            arc_session_manager()->state());
+
+  // Take new user through OOBE.
+  GetFakeUserManager()->set_current_user_new(true);
+  CreateLoginDisplayHost();
+  ASSERT_TRUE(IsArcOobeOptInActive());
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+  preference_handler()->Start();
+
+  // Ensure that we are still in mini instance.
+  EXPECT_TRUE(arc_session_manager()
+                  ->GetArcSessionRunnerForTesting()
+                  ->GetArcSessionForTesting());
+  EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
+}
+
+TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, MiniStateManagedDisabled) {
+  // Ensure the mini-instance starts.
+  SetArcAvailableCommandLineForTesting(base::CommandLine::ForCurrentProcess());
+  chromeos::SessionManagerClient::Get()->EmitLoginPromptVisible();
+  ASSERT_TRUE(arc_session_manager()
+                  ->GetArcSessionRunnerForTesting()
+                  ->GetArcSessionForTesting());
+  ASSERT_EQ(ArcSessionManager::State::NOT_INITIALIZED,
+            arc_session_manager()->state());
+
+  // Take new user through OOBE.
+  GetFakeUserManager()->set_current_user_new(true);
+  CreateLoginDisplayHost();
+  ASSERT_TRUE(IsArcOobeOptInActive());
+
+  // Set ARC to be managed and disabled.
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kArcEnabled, std::make_unique<base::Value>(false));
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+  preference_handler()->Start();
+
+  // Ensure that we stop the mini instance.
+  EXPECT_FALSE(arc_session_manager()
+                   ->GetArcSessionRunnerForTesting()
+                   ->GetArcSessionForTesting());
+}
+
+TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, MiniStateManagedEnabled) {
+  // Ensure the mini-instance starts.
+  SetArcAvailableCommandLineForTesting(base::CommandLine::ForCurrentProcess());
+  chromeos::SessionManagerClient::Get()->EmitLoginPromptVisible();
+  ASSERT_TRUE(arc_session_manager()
+                  ->GetArcSessionRunnerForTesting()
+                  ->GetArcSessionForTesting());
+  ASSERT_EQ(ArcSessionManager::State::NOT_INITIALIZED,
+            arc_session_manager()->state());
+
+  // Take new user through OOBE.
+  GetFakeUserManager()->set_current_user_new(true);
+  CreateLoginDisplayHost();
+  ASSERT_TRUE(IsArcOobeOptInActive());
+
+  // Set ARC to be managed and enabled.
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kArcEnabled, std::make_unique<base::Value>(true));
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+  preference_handler()->Start();
+
+  // Ensure do do not stop the mini instance.
+  EXPECT_TRUE(arc_session_manager()
+                  ->GetArcSessionRunnerForTesting()
+                  ->GetArcSessionForTesting());
+  EXPECT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+            arc_session_manager()->state());
 }
 
 }  // namespace

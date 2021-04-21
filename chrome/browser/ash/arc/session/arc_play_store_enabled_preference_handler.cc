@@ -55,8 +55,11 @@ void ArcPlayStoreEnabledPreferenceHandler::Start() {
           weak_ptr_factory_.GetWeakPtr()));
 
   const bool is_play_store_enabled = IsArcPlayStoreEnabledForProfile(profile_);
+  const bool is_play_store_managed =
+      IsArcPlayStoreEnabledPreferenceManagedForProfile(profile_);
   VLOG(1) << "Start observing Google Play Store enabled preference. "
-          << "Initial value: " << is_play_store_enabled;
+          << "Initial values are: Enabled=" << is_play_store_enabled << " "
+          << "Managed=" << is_play_store_managed;
 
   // Force data clean if needed.
   if (IsArcDataCleanupOnStartRequested()) {
@@ -64,19 +67,19 @@ void ArcPlayStoreEnabledPreferenceHandler::Start() {
     arc_session_manager_->RequestArcDataRemoval();
   }
 
-  // If the OOBE is shown, don't kill the mini-container. We'll do it if and
-  // when the user declines the TOS. We need to check |is_play_store_enabled| to
-  // handle the case where |kArcEnabled| is managed but some of the preferences
-  // still need to be set by the user.
-  // TODO(cmtm): This feature isn't covered by unittests. Add a unittest for it.
-  if (!IsArcOobeOptInActive() || is_play_store_enabled)
+  // For unmanaged users, if the OOBE is shown we don't kill the
+  // mini-container since we want to upgrade it later. If Play Store
+  // setting is managed update the state immediately even if the user is
+  // in OOBE since we won't get further updates to the setting via OOBE.
+  if (!IsArcOobeOptInActive() || is_play_store_managed || is_play_store_enabled)
     UpdateArcSessionManager();
+
   if (is_play_store_enabled)
     return;
 
   // Google Play Store is initially disabled, here.
 
-  if (IsArcPlayStoreEnabledPreferenceManagedForProfile(profile_)) {
+  if (is_play_store_managed) {
     // All users that can disable Google Play Store by themselves will have
     // the |kARcDataRemoveRequested| pref set, so we don't need to eagerly
     // remove the data for that case.
