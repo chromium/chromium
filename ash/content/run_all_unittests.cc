@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/content/ash_content_test_suite.h"
 #include "base/bind.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
@@ -13,8 +14,8 @@
 #endif
 
 int main(int argc, char** argv) {
-  base::TestSuite test_suite(argc, argv);
+  AshContentTestSuite test_suite(argc, argv);
   return base::LaunchUnitTests(
       argc, argv,
-      base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
+      base::BindOnce(&AshContentTestSuite::Run, base::Unretained(&test_suite)));
 }

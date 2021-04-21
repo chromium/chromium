@@ -220,6 +220,10 @@
     "label": "//extensions/shell:app_shell_unittests",
     "type": "windowed_test_launcher",
   },
+  "ash_content_unittests": {
+    "label": "//ash/content:ash_content_unittests",
+    "type": "console_test_launcher",
+  },
   "ash_unittests": {
     "label": "//ash:ash_unittests",
     "type": "windowed_test_launcher",

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
@@ -9,13 +10,23 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 # To add a unit test to this target, make a "unit_test" source_set in your
 # component and add a reference here.
 test("ash_content_unittests") {
-  sources = [ "run_all_unittests.cc" ]
+  sources = [
+    "ash_content_test_suite.cc",
+    "ash_content_test_suite.h",
+    "run_all_unittests.cc",
+  ]
 
   deps = [
     "//ash/content/scanning:unit_tests",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//ui/base:base",
+  ]
+
+  data_deps = [
+    "//chromeos/strings:chromeos_test_strings",
+    "//ui/resources:ui_test_pak_data",
   ]
 }
 
