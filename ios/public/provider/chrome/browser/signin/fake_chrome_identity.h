@@ -18,6 +18,13 @@
                                   gaiaID:(NSString*)gaiaID
                                     name:(NSString*)name;
 
+// Redeclared as readwrite.
+@property(strong, nonatomic, readwrite) NSString* userEmail;
+@property(strong, nonatomic, readwrite) NSString* gaiaID;
+@property(strong, nonatomic, readwrite) NSString* userFullName;
+@property(strong, nonatomic, readwrite) NSString* userGivenName;
+@property(strong, nonatomic, readwrite) NSString* hashedGaiaID;
+
 @end
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_FAKE_CHROME_IDENTITY_H_

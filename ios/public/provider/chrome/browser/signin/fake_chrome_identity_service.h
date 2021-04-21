@@ -89,6 +89,9 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   // Returns true on successful completion.
   bool WaitForServiceCallbacksToComplete();
 
+  // Triggers an update notification for |identity|.
+  void TriggerIdentityUpdateNotification(ChromeIdentity* identity);
+
  private:
   NSMutableArray* identities_;
 

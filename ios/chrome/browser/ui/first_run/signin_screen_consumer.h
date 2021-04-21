@@ -5,13 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SCREEN_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SCREEN_CONSUMER_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 // Handles sign-in screen UI updates.
 @protocol SigninScreenConsumer <NSObject>
 
-// Sets user image when there is a known account.
+// Sets user image when there is a known account. Pass nil to reset to the
+// default image.
 - (void)setUserImage:(UIImage*)userImage;
+
+// Sets the |userName| and its |email| of the selected identity.
+- (void)setSelectedIdentityUserName:(NSString*)userName email:(NSString*)email;
+
+// Hides the identity control.
+- (void)hideIdentityButtonControl;
 
 @end
 

@@ -18,13 +18,13 @@ NSString* const kCoderUserGivenNameKey = @"UserGivenName";
 NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
 }  // namespace
 
-@implementation FakeChromeIdentity {
-  NSString* _userEmail;
-  NSString* _gaiaID;
-  NSString* _userFullName;
-  NSString* _userGivenName;
-  NSString* _hashedGaiaID;
-}
+@implementation FakeChromeIdentity
+
+@synthesize userEmail = _userEmail;
+@synthesize gaiaID = _gaiaID;
+@synthesize userFullName = _userFullName;
+@synthesize userGivenName = _userGivenName;
+@synthesize hashedGaiaID = _hashedGaiaID;
 
 + (FakeChromeIdentity*)identityWithEmail:(NSString*)email
                                   gaiaID:(NSString*)gaiaID

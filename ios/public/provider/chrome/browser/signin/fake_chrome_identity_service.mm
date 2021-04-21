@@ -338,4 +338,9 @@ bool FakeChromeIdentityService::WaitForServiceCallbacksToComplete() {
   return WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition);
 }
 
+void FakeChromeIdentityService::TriggerIdentityUpdateNotification(
+    ChromeIdentity* identity) {
+  FireProfileDidUpdate(identity);
+}
+
 }  // namespace ios

@@ -92,6 +92,7 @@ source_set("first_run") {
     "//ios/chrome/browser/ui/authentication/signin",
     "//ios/chrome/browser/ui/authentication/signin/add_account_signin",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
+    "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/fancy_ui",
@@ -129,10 +130,14 @@ source_set("constants") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "welcome_to_chrome_view_controller_unittest.mm" ]
+  sources = [
+    "signin_screen_mediator_unittest.mm",
+    "welcome_to_chrome_view_controller_unittest.mm",
+  ]
   deps = [
     ":first_run",
     "//base",
+    "//base/test:test_support",
     "//components/metrics",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -141,6 +146,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/fancy_ui",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser:test_support",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
+    "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

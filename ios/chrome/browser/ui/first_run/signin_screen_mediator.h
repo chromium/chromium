@@ -13,6 +13,8 @@
 // Mediator that handles the sign-in operation.
 @interface SigninScreenMediator : NSObject
 
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
 // Consumer for this mediator.
 @property(nonatomic, weak) id<SigninScreenConsumer> consumer;
 
