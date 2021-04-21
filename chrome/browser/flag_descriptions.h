@@ -157,8 +157,14 @@ extern const char kAutofillAlwaysReturnCloudTokenizedCardDescription[];
 extern const char kAutofillAssistantChromeEntryName[];
 extern const char kAutofillAssistantChromeEntryDescription[];
 
+extern const char kAutofillAutoTriggerManualFallbackForCardsName[];
+extern const char kAutofillAutoTriggerManualFallbackForCardsDescription[];
+
 extern const char kAutofillEnableGoogleIssuedCardName[];
 extern const char kAutofillEnableGoogleIssuedCardDescription[];
+
+extern const char kAutofillEnableMerchantBoundVirtualCardsName[];
+extern const char kAutofillEnableMerchantBoundVirtualCardsDescription[];
 
 extern const char kAutofillEnableOfferNotificationName[];
 extern const char kAutofillEnableOfferNotificationDescription[];
@@ -171,6 +177,9 @@ extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 
 extern const char kAutofillEnableOffersInDownstreamName[];
 extern const char kAutofillEnableOffersInDownstreamDescription[];
+
+extern const char kAutofillEnableStickyManualFallbackForCardsName[];
+extern const char kAutofillEnableStickyManualFallbackForCardsDescription[];
 
 extern const char kAutofillEnableToolbarStatusChipName[];
 extern const char kAutofillEnableToolbarStatusChipDescription[];
@@ -195,6 +204,10 @@ extern const char kAutofillPruneSuggestionsDescription[];
 
 extern const char kAutofillSaveAndFillVPAName[];
 extern const char kAutofillSaveAndFillVPADescription[];
+
+extern const char kAutofillSuggestVirtualCardsOnlyOnFullFormDetectionName[];
+extern const char
+    kAutofillSuggestVirtualCardsOnlyOnFullFormDetectionDescription[];
 
 extern const char kAutofillUseImprovedLabelDisambiguationName[];
 extern const char kAutofillUseImprovedLabelDisambiguationDescription[];

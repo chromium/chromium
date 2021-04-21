@@ -243,11 +243,23 @@ const char kAutofillAssistantChromeEntryName[] = "AutofillAssistantChromeEntry";
 const char kAutofillAssistantChromeEntryDescription[] =
     "Initiate autofill assistant from within Chrome.";
 
+const char kAutofillAutoTriggerManualFallbackForCardsName[] =
+    "Auto trigger manual fallback for credit card form-filling failure cases";
+const char kAutofillAutoTriggerManualFallbackForCardsDescription[] =
+    "When enabled, manual fallback will be auto-triggered on form interaction "
+    "in the case where autofill failed to fill a credit card form accurately.";
+
 const char kAutofillEnableGoogleIssuedCardName[] =
     "Enable Autofill Google-issued card";
 const char kAutofillEnableGoogleIssuedCardDescription[] =
     "When enabled, Google-issued cards will be available in the autofill "
     "suggestions.";
+
+const char kAutofillEnableMerchantBoundVirtualCardsName[] =
+    "Offer merchant bound virtual cards in Autofill";
+const char kAutofillEnableMerchantBoundVirtualCardsDescription[] =
+    "When enabled, Autofill will offer to use merchant bound virtual cards in "
+    "payment forms.";
 
 const char kAutofillEnableOfferNotificationName[] =
     "Enable Autofill offers and rewards notification";
@@ -272,6 +284,12 @@ const char kAutofillEnableOffersInDownstreamName[] =
 const char kAutofillEnableOffersInDownstreamDescription[] =
     "When enabled, offer data will be retrieved during downstream and shown in "
     "the dropdown list.";
+
+const char kAutofillEnableStickyManualFallbackForCardsName[] =
+    "Make manual fallback sticky for credit cards";
+const char kAutofillEnableStickyManualFallbackForCardsDescription[] =
+    "When enabled, if the user interacts with the manual fallback bottom "
+    "sheet, it'll remain sticky until the user dismisses it.";
 
 const char kAutofillEnableToolbarStatusChipName[] =
     "Move Autofill omnibox icons next to the profile avatar icon";
@@ -317,6 +335,13 @@ const char kAutofillSaveAndFillVPADescription[] =
     "If enabled, when autofill recognizes a UPI/VPA value in a payment form, "
     "it will offer to save it. If saved, it will be offered for filling in "
     "fields which expect a VPA.";
+
+const char kAutofillSuggestVirtualCardsOnlyOnFullFormDetectionName[] =
+    "Autofill suggests virtual cards only on full form detection";
+const char kAutofillSuggestVirtualCardsOnlyOnFullFormDetectionDescription[] =
+    "When enabled, merchant bound virtual cards will be suggested only if all "
+    "of the card number, exp date and CVC fields are detected in a payment "
+    "form.";
 
 const char kAutofillUseImprovedLabelDisambiguationName[] =
     "Autofill Uses Improved Label Disambiguation";

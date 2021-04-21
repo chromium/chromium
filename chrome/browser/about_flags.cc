@@ -7200,6 +7200,36 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kMutingCompromisedCredentials)},
 
+    {"autofill-enable-merchant-bound-virtual-cards",
+     flag_descriptions::kAutofillEnableMerchantBoundVirtualCardsName,
+     flag_descriptions::kAutofillEnableMerchantBoundVirtualCardsDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableMerchantBoundVirtualCards)},
+
+    {"autofill-enable-sticky-manual-fallback-for-cards",
+     flag_descriptions::kAutofillEnableStickyManualFallbackForCardsName,
+     flag_descriptions::kAutofillEnableStickyManualFallbackForCardsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableStickyManualFallbackForCards)},
+
+    {"autofill-auto-trigger-manual-fallback-for-cards",
+     flag_descriptions::kAutofillAutoTriggerManualFallbackForCardsName,
+     flag_descriptions::kAutofillAutoTriggerManualFallbackForCardsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillAutoTriggerManualFallbackForCards)},
+
+    {"autofill-suggest-virtual-cards-only-on-full-form-detection",
+     flag_descriptions::kAutofillSuggestVirtualCardsOnlyOnFullFormDetectionName,
+     flag_descriptions::
+         kAutofillSuggestVirtualCardsOnlyOnFullFormDetectionDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillSuggestVirtualCardsOnlyOnFullFormDetection)}
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
