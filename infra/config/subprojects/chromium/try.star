@@ -1205,6 +1205,16 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux-rel-dual-coverage",
+    builderless = not settings.is_main,
+    goma_jobs = goma.jobs.J150,
+    main_list_view = "try",
+    tryjob = try_.job(experiment_percentage = 3),
+    coverage_test_types = ["unit", "overall"],
+    use_clang_coverage = True,
+)
+
+try_.chromium_linux_builder(
     name = "linux-rel-orchestrator",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = True,
