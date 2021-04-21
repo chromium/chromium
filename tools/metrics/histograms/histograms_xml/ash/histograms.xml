@@ -59,8 +59,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Accelerators.Rotation.Usage"
-    enum="ScreenRotationAcceleratorAction" expires_after="2021-03-15">
-  <owner>baileyberro@chromium.org</owner>
+    enum="ScreenRotationAcceleratorAction" expires_after="2022-03-15">
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
   <summary>
     Captures the result of a user using the rotation accelerator -
     Ctrl+Shift+Refresh. This histogram shows how frequently users accidentally
@@ -1771,7 +1772,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Ash.PersistentWindow.NumOfWindowsRestored" units="units"
     expires_after="M82">
   <owner>zentaro@chromium.org</owner>
-  <owner>baileyberro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
   <summary>
     The number of windows restored in multi-display scenario, such as due to
     disconnecting and reconnecting display, enabling and disabling mirror mode,
@@ -1947,7 +1948,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Ash.PowerButtonScreenshot.DelayBetweenAccelKeyPressed"
     units="ms" expires_after="2020-11-15">
   <owner>zentaro@chromium.org</owner>
-  <owner>baileyberro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
   <summary>
     Record the delay when power button and volume down key are both pressed,
     which indicates user might want to use accelerator to take screenshot. This

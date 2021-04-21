@@ -4,7 +4,6 @@ jimmyxgong@chromium.org
 khorimoto@chromium.org
 
 # Secondary Owners
-baileyberro@chromium.org
 zentaro@chromium.org
 
 per-file *.mojom=set noparent

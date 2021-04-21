@@ -388,7 +388,8 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.DiagnosticsUi.MemoryRoutineDuration" units="s"
     expires_after="2021-09-19">
-  <owner>baileyberro@chromium.org</owner>
+  <owner>gavindodd@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the duration that the Memory Routine took to complete. Emitted when
@@ -398,7 +399,8 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.DiagnosticsUi.OpenDuration" units="ms"
     expires_after="2021-09-19">
-  <owner>baileyberro@chromium.org</owner>
+  <owner>gavindodd@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the duration that the Diagnostics App is open. emitted when the app
@@ -408,7 +410,8 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.DiagnosticsUi.RoutineCount" units="routines"
     expires_after="2021-09-19">
-  <owner>baileyberro@chromium.org</owner>
+  <owner>gavindodd@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the number of routines run while the Chrome OS Diagnostics App was
@@ -419,7 +422,8 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.DiagnosticsUi.{RoutineType}Result"
     enum="CrosDiagnosticsRoutineResult" expires_after="2021-07-15">
-  <owner>baileyberro@chromium.org</owner>
+  <owner>gavindodd@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>Records the result of the {RoutineType} Routine.</summary>
   <token key="RoutineType">

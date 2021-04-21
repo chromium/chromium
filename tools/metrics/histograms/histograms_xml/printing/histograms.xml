@@ -358,7 +358,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Printing.CUPS.UsbSetupSource" enum="UsbPrinterSetupSource"
     expires_after="2021-09-19">
-  <owner>baileyberro@chromium.org</owner>
+  <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the source from which a USB printer was configured in Chrome OS.
