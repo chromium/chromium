@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
@@ -63,6 +65,14 @@ public class TosDialogBehaviorSharedPrefInvalidator {
         Log.d(TAG, "Task finished. Duration: [%d], result: [%s]", duration, shouldSkipTosDialog);
         if (!shouldSkipTosDialog) FirstRunStatus.setFirstRunSkippedByPolicy(false);
 
+        // Run cleanup in a separate task, otherwise the CallbackController inside
+        // SkipTosDialogPolicyListener will deadlock. It currently holds a read lock because it is
+        // what invoked us. Calling destroy requires a write lock, so the post allows the read lock
+        // to be released first. See https://crbug.com/1201279 for more details.
+        new Handler(Looper.getMainLooper()).post(this::destroy);
+    }
+
+    private void destroy() {
         mAppRestrictionInfo.destroy();
         mPolicyListener.destroy();
     }
