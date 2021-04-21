@@ -4928,7 +4928,8 @@ error::Error GLES2DecoderPassthroughImpl::DoScheduleCALayerCHROMIUM(
                  contents_rect[3]),
       gfx::ToEnclosingRect(gfx::RectF(bounds_rect[0], bounds_rect[1],
                                       bounds_rect[2], bounds_rect[3])),
-      background_color, edge_aa_mask, ca_layer_shared_state_->opacity, filter);
+      background_color, edge_aa_mask, ca_layer_shared_state_->opacity, filter,
+      gfx::ProtectedVideoType::kClear);
   if (!surface_->ScheduleCALayer(params)) {
     InsertError(GL_INVALID_OPERATION, "failed to schedule CALayer");
     return error::kNoError;

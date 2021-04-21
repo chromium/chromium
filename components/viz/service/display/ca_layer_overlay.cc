@@ -341,13 +341,17 @@ void CALayerOverlayProcessor::PutForcedOverlayContentIntoOverlays(
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
     const DrawQuad* quad = *it;
     bool force_quad_to_overlay = false;
+    gfx::ProtectedVideoType protected_video_type =
+        gfx::ProtectedVideoType::kClear;
 
     // Put hardware protected video into an overlay
     if (quad->material == ContentDrawQuadBase::Material::kYuvVideoContent) {
       const YUVVideoDrawQuad* video_quad = YUVVideoDrawQuad::MaterialCast(quad);
       if (video_quad->protected_video_type ==
-          gfx::ProtectedVideoType::kHardwareProtected)
+          gfx::ProtectedVideoType::kHardwareProtected) {
         force_quad_to_overlay = true;
+        protected_video_type = gfx::ProtectedVideoType::kHardwareProtected;
+      }
     }
 
     if (quad->material == ContentDrawQuadBase::Material::kTextureContent) {
@@ -368,7 +372,7 @@ void CALayerOverlayProcessor::PutForcedOverlayContentIntoOverlays(
       if (!PutQuadInSeparateOverlay(it, resource_provider, render_pass,
                                     display_rect, quad, render_pass_filters,
                                     render_pass_backdrop_filters,
-                                    ca_layer_overlays)) {
+                                    protected_video_type, ca_layer_overlays)) {
         failed = true;
         break;
       }
@@ -454,6 +458,7 @@ bool CALayerOverlayProcessor::PutQuadInSeparateOverlay(
         render_pass_filters,
     const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
         render_pass_backdrop_filters,
+    gfx::ProtectedVideoType protected_video_type,
     CALayerOverlayList* ca_layer_overlays) const {
   CALayerOverlayProcessorInternal processor;
   CALayerOverlay ca_layer;
@@ -471,6 +476,7 @@ bool CALayerOverlayProcessor::PutQuadInSeparateOverlay(
   if (!AreClipSettingsValid(ca_layer, ca_layer_overlays))
     return true;
 
+  ca_layer.protected_video_type = protected_video_type;
   render_pass->ReplaceExistingQuadWithSolidColor(at, SK_ColorTRANSPARENT,
                                                  SkBlendMode::kSrcOver);
   ca_layer_overlays->push_back(ca_layer);

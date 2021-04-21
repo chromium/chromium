@@ -20,6 +20,7 @@
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gfx/rrect_f.h"
 #include "ui/gfx/transform.h"
+#include "ui/gfx/video_types.h"
 
 @class AVSampleBufferDisplayLayer;
 
@@ -177,7 +178,8 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
                  const gfx::ColorSpace& color_space,
                  unsigned edge_aa_mask,
                  float opacity,
-                 unsigned filter);
+                 unsigned filter,
+                 gfx::ProtectedVideoType protected_video_type);
     ContentLayer(ContentLayer&& layer);
 
     // See the behavior of RootLayer for the effects of these functions on the
@@ -211,6 +213,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // HDR video (that cannot be displayed by a regular CALayer) or for
     // protected content (see https://crbug.com/1026703).
     bool video_type_can_downgrade_ = true;
+
+    gfx::ProtectedVideoType protected_video_type_ =
+        gfx::ProtectedVideoType::kClear;
 
     base::scoped_nsobject<CALayer> ca_layer_;
 

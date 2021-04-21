@@ -13,6 +13,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/rrect_f.h"
 #include "ui/gfx/transform.h"
+#include "ui/gfx/video_types.h"
 #include "ui/gl/gl_export.h"
 
 namespace gl {
@@ -33,7 +34,8 @@ struct GL_EXPORT CARendererLayerParams {
                         unsigned background_color,
                         unsigned edge_aa_mask,
                         float opacity,
-                        unsigned filter);
+                        unsigned filter,
+                        gfx::ProtectedVideoType protected_video_type);
   CARendererLayerParams(const CARendererLayerParams& other);
   ~CARendererLayerParams();
 
@@ -49,6 +51,7 @@ struct GL_EXPORT CARendererLayerParams {
   unsigned edge_aa_mask;
   float opacity;
   unsigned filter;
+  gfx::ProtectedVideoType protected_video_type;
 
   // This is a subset of cc::FilterOperation::FilterType.
   enum class FilterEffectType : uint32_t {

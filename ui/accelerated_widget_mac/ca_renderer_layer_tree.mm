@@ -430,7 +430,8 @@ CARendererLayerTree::ContentLayer::ContentLayer(
     const gfx::ColorSpace& io_surface_color_space,
     unsigned edge_aa_mask,
     float opacity,
-    unsigned filter)
+    unsigned filter,
+    gfx::ProtectedVideoType protected_video_type)
     : io_surface_(io_surface),
       cv_pixel_buffer_(cv_pixel_buffer),
       contents_rect_(contents_rect),
@@ -439,7 +440,8 @@ CARendererLayerTree::ContentLayer::ContentLayer(
       io_surface_color_space_(io_surface_color_space),
       ca_edge_aa_mask_(0),
       opacity_(opacity),
-      ca_filter_(filter == GL_LINEAR ? kCAFilterLinear : kCAFilterNearest) {
+      ca_filter_(filter == GL_LINEAR ? kCAFilterLinear : kCAFilterNearest),
+      protected_video_type_(protected_video_type) {
   DCHECK(filter == GL_LINEAR || filter == GL_NEAREST);
 
   // On Mac OS Sierra, solid color layers are not color converted to the output
@@ -485,21 +487,30 @@ CARendererLayerTree::ContentLayer::ContentLayer(
   if (metal::ShouldUseHDRCopier(io_surface, io_surface_color_space)) {
     type_ = CALayerType::kHDRCopier;
   } else if (io_surface) {
-    // Only allow 4:2:0 frames which fill the layer's contents to be
-    // promoted to AV layers.
-    if (tree->allow_av_sample_buffer_display_layer_ &&
-        contents_rect == gfx::RectF(0, 0, 1, 1)) {
-      switch (IOSurfaceGetPixelFormat(io_surface)) {
-        case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
-          type_ = CALayerType::kVideo;
-          video_type_can_downgrade_ = !io_surface_color_space.IsHDR();
-          break;
-        case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
+    // Only allow 4:2:0 frames which fill the layer's contents or protected
+    // video to be promoted to AV layers.
+    if (tree->allow_av_sample_buffer_display_layer_) {
+      if (contents_rect == gfx::RectF(0, 0, 1, 1)) {
+        switch (IOSurfaceGetPixelFormat(io_surface)) {
+          case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+            type_ = CALayerType::kVideo;
+            video_type_can_downgrade_ = !io_surface_color_space.IsHDR();
+            break;
+          case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
+            type_ = CALayerType::kVideo;
+            video_type_can_downgrade_ = false;
+            break;
+          default:
+            break;
+        }
+      }
+
+      if (protected_video_type_ ==
+          gfx::ProtectedVideoType::kHardwareProtected) {
+        if (@available(macOS 10.15, *)) {
           type_ = CALayerType::kVideo;
           video_type_can_downgrade_ = false;
-          break;
-        default:
-          break;
+        }
       }
     }
   }
@@ -546,6 +557,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(ContentLayer&& layer)
       ca_filter_(layer.ca_filter_),
       type_(layer.type_),
       video_type_can_downgrade_(layer.video_type_can_downgrade_),
+      protected_video_type_(layer.protected_video_type_),
       ca_layer_(std::move(layer.ca_layer_)),
       av_layer_(std::move(layer.av_layer_)) {
   DCHECK(!layer.ca_layer_);
@@ -634,10 +646,10 @@ void CARendererLayerTree::TransformLayer::AddContentLayer(
     // cv_pixel_buffer = io_surface_image->cv_pixel_buffer();
     io_surface_color_space = params.image->color_space();
   }
-  content_layers_.push_back(
-      ContentLayer(tree, io_surface, cv_pixel_buffer, params.contents_rect,
-                   params.rect, params.background_color, io_surface_color_space,
-                   params.edge_aa_mask, params.opacity, params.filter));
+  content_layers_.push_back(ContentLayer(
+      tree, io_surface, cv_pixel_buffer, params.contents_rect, params.rect,
+      params.background_color, io_surface_color_space, params.edge_aa_mask,
+      params.opacity, params.filter, params.protected_video_type));
 }
 
 void CARendererLayerTree::RootLayer::CommitToCA(CALayer* superlayer,
@@ -848,6 +860,12 @@ void CARendererLayerTree::ContentLayer::CommitToCA(CALayer* superlayer,
         av_layer_.reset([[AVSampleBufferDisplayLayer alloc] init]);
         ca_layer_.reset([av_layer_ retain]);
         [av_layer_ setVideoGravity:AVLayerVideoGravityResize];
+        if (protected_video_type_ ==
+            gfx::ProtectedVideoType::kHardwareProtected) {
+          if (@available(macOS 10.15, *)) {
+            [av_layer_ setPreventsCapture:true];
+          }
+        }
         break;
       case CALayerType::kDefault:
         ca_layer_.reset([[CALayer alloc] init]);
