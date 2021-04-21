@@ -28,15 +28,15 @@ const char kFileSystemBoxFindFolderResponseBody[] = R"({
     ]
   })";
 
-const char kFileSystemBoxFindFolderResponseFolderId[] = "12345";
 // Should match id in kFileSystemBoxFindFolderResponseBody, as it's used to
 // verify extracted folder_id from body above.
+const char kFileSystemBoxFindFolderResponseFolderId[] = "12345";
 
-const char kFileSystemBoxSavedInPrefFolderId[] = "1337";
 // This is the folder_id stored for the kFileSystemUploadFolderIdPref key in
 // PrefService for FileSystemDownloadControllerWithSavedFolderPrefTest. It is
 // intentionally distinct from kFileSystemBoxFindFolderResponseFolderId above
 // to identify where the test flow gets the folder_id from.
+const char kFileSystemBoxFolderIdInPref[] = "1337";
 
 const char kFileSystemBoxFindFolderResponseEmptyEntriesList[] = R"({
     "entries": [
@@ -78,9 +78,9 @@ const char kFileSystemBoxCreateFolderResponseBody[] = R"({
     }
   })";
 
-const char kFileSystemBoxCreateFolderResponseFolderId[] = "67890";
 // Should match id in kFileSystemBoxCreateFolderResponseBody, as it's used to
 // verify extracted folder_id from body above.
+const char kFileSystemBoxCreateFolderResponseFolderId[] = "67890";
 
 const char kFileSystemBoxChunkedUploadCreateSessionUrl[] =
     "https://upload.box.com/api/2.0/files/upload_sessions";
@@ -90,8 +90,8 @@ const char kFileSystemBoxChunkedUploadSessionUrl[] =
 const char kFileSystemBoxChunkedUploadCommitUrl[] =
     "https://upload.box.com/api/2.0/files/upload_sessions/"
     "F971964745A5CD0C001BBE4E58196BFD/commit";
-const char kFileSystemBoxChunkedUploadSha[] =
-    "sha=fpRyg5eVQletdZqEKaFlqwBXJzM=";
+const char kFileSystemBoxChunkedUploadSha[] = "fpRyg5eVQletdZqEKaFlqwBXJzM";
+
 // Endpoints should match the corresponding const char url's above.
 const char kFileSystemBoxChunkedUploadCreateSessionResponseBody[] = R"({
   "id": "F971964745A5CD0C001BBE4E58196BFD",
@@ -110,9 +110,9 @@ const char kFileSystemBoxChunkedUploadCreateSessionResponseBody[] = R"({
   "total_parts": 1000
 })";
 
-const size_t kFileSystemBoxChunkedUploadCreateSessionResponsePartSize = 7340032;
 // Assumes 7MB per part. Should match part_size in
 // kFileSystemBoxChunkedUploadCreateSessionResponseBody, as it's used to verify
 // extracted part_size from body above.
+const size_t kFileSystemBoxChunkedUploadCreateSessionResponsePartSize = 7340032;
 
 }  // namespace enterprise_connectors

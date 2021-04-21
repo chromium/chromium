@@ -32,7 +32,7 @@ extern const char kFileSystemBoxCreateFolderResponseBody[];
 extern const char kFileSystemBoxCreateFolderResponseFolderId[];
 
 // Saved folder id extracted from the kFileSystemUploadFolderIdPref pref.
-extern const char kFileSystemBoxSavedInPrefFolderId[];
+extern const char kFileSystemBoxFolderIdInPref[];
 
 // Expected url's for each of the Box mini classes for chunked file upload.
 extern const char kFileSystemBoxChunkedUploadCreateSessionUrl[];

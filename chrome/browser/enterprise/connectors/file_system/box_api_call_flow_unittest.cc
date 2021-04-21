@@ -311,9 +311,7 @@ class BoxPreflightCheckApiCallFlowTest
     : public BoxApiCallFlowTest<BoxPreflightCheckApiCallFlowForTest> {
  protected:
   void SetUp() override {
-    if (!temp_dir_.CreateUniqueTempDir()) {
-      FAIL() << "Failed to create temporary directory for testing";
-    }
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_path_ = temp_dir_.GetPath().Append(file_name_);
 
     flow_ = std::make_unique<BoxPreflightCheckApiCallFlowForTest>(
@@ -372,9 +370,7 @@ class BoxWholeFileUploadApiCallFlowTest
     : public BoxApiCallFlowTest<BoxWholeFileUploadApiCallFlowForTest> {
  protected:
   void SetUp() override {
-    if (!temp_dir_.CreateUniqueTempDir()) {
-      FAIL() << "Failed to create temporary directory for testing";
-    }
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_path_ = temp_dir_.GetPath().Append(file_name_);
 
     flow_ = std::make_unique<BoxWholeFileUploadApiCallFlowForTest>(
@@ -449,11 +445,9 @@ TEST_F(BoxWholeFileUploadApiCallFlowTest, IsExpectedSuccessCode) {
 
 TEST_F(BoxWholeFileUploadApiCallFlowTest, ProcessApiCallSuccess) {
   // Create a temporary file to be deleted in ProcessApiCallSuccess().
-  if (!base::WriteFile(file_path_, "BoxWholeFileUploadApiCallFlowTest")) {
-    FAIL() << "Failed to create file " << file_path_;
-  }
+  ASSERT_TRUE(base::WriteFile(file_path_, "BoxWholeFileUploadApiCallFlowTest"))
+      << file_path_;
 
-  std::string body;  // Placeholder body since we don't read from body for now.
   auto http_head = network::CreateURLResponseHead(net::HTTP_CREATED);
 
   // Because we post tasks to base::ThreadPool, cannot use
@@ -462,17 +456,21 @@ TEST_F(BoxWholeFileUploadApiCallFlowTest, ProcessApiCallSuccess) {
   quit_closure_ = run_loop.QuitClosure();
 
   flow_->ProcessApiCallSuccess(http_head.get(),
-                               std::make_unique<std::string>(body));
+                               std::make_unique<std::string>());
+  // Empty placeholder body since we don't read from body for now.
   run_loop.Run();
 
   ASSERT_EQ(response_code_, net::HTTP_CREATED);
   ASSERT_TRUE(processed_success_) << "Failed with file " << file_path_;
-  ASSERT_FALSE(base::PathExists(file_path_));  // Make sure file is deleted.
+  ASSERT_TRUE(base::PathExists(file_path_))
+      << "File " << file_path_
+      << " must still exist / not have been deleted by another thread so that "
+         "BoxUploader can delete it.";
 }
 
 TEST_F(BoxWholeFileUploadApiCallFlowTest,
        ProcessApiCallSuccess_NoFileToDelete) {
-  std::string body;  // Placeholder body since we don't read from body for now.
+  std::string body;  // Empty placeholder since we don't read from body for now.
   auto http_head = network::CreateURLResponseHead(net::HTTP_CREATED);
   ASSERT_FALSE(base::PathExists(file_path_));  // Make sure file doesn't exist.
 
@@ -486,11 +484,13 @@ TEST_F(BoxWholeFileUploadApiCallFlowTest,
   run_loop.Run();
 
   ASSERT_EQ(response_code_, net::HTTP_CREATED);
-  ASSERT_FALSE(processed_success_);  // Should fail file deletion.
+  ASSERT_TRUE(processed_success_) << "API call flow success should not depend "
+                                     "on whether file exists to be deleted.";
+  ASSERT_FALSE(base::PathExists(file_path_));  // Make sure no file was created.
 }
 
 TEST_F(BoxWholeFileUploadApiCallFlowTest, ProcessApiCallFailure) {
-  std::string body;  // Placeholder body since we don't read from body here.
+  std::string body;  // Empty placeholder since we don't read from body here.
   auto http_head = network::CreateURLResponseHead(net::HTTP_CONFLICT);
 
   base::RunLoop run_loop;
@@ -517,14 +517,13 @@ class BoxWholeFileUploadApiCallFlowFileReadTest
 };
 
 TEST_F(BoxWholeFileUploadApiCallFlowFileReadTest, GoodUpload) {
-  if (!base::WriteFile(file_path_,
-                       "BoxWholeFileUploadApiCallFlowFileReadTest")) {
-    FAIL() << "Failed to create temporary file " << file_path_;
-  }
+  ASSERT_TRUE(
+      base::WriteFile(file_path_, "BoxWholeFileUploadApiCallFlowFileReadTest"))
+      << file_path_;
 
   test_url_loader_factory_.AddResponse(
       kFileSystemBoxWholeFileUploadUrl,
-      std::string(),  // Placeholder body since we are not reading from body.
+      std::string(),  // Empty placeholder since we are not reading from body.
       net::HTTP_CREATED);
 
   base::RunLoop run_loop;
@@ -534,7 +533,10 @@ TEST_F(BoxWholeFileUploadApiCallFlowFileReadTest, GoodUpload) {
 
   ASSERT_EQ(response_code_, net::HTTP_CREATED);
   ASSERT_TRUE(processed_success_) << "Failed with file " << file_path_;
-  ASSERT_FALSE(base::PathExists(file_path_));
+  ASSERT_TRUE(base::PathExists(file_path_))
+      << "File " << file_path_
+      << " must still exist / not have been deleted by another thread so that "
+         "BoxUploader can delete it.";
 }
 
 TEST_F(BoxWholeFileUploadApiCallFlowFileReadTest, NoFile) {
@@ -998,7 +1000,8 @@ TEST_F(BoxCommitUploadSessionApiCallFlowTest, CreateApiCallHeaders) {
   net::HttpRequestHeaders headers = flow_->CreateApiCallHeaders();
   std::string digest;
   headers.GetHeader("digest", &digest);
-  ASSERT_EQ(digest, kFileSystemBoxChunkedUploadSha);
+  ASSERT_EQ(digest,
+            BoxApiCallFlow::FormatSHA1Digest(kFileSystemBoxChunkedUploadSha));
 }
 
 TEST_F(BoxCommitUploadSessionApiCallFlowTest, CreateApiCallBody) {

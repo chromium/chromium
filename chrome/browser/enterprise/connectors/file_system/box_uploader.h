@@ -1,7 +1,7 @@
-
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_UPLOADER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_UPLOADER_H_
 
@@ -32,6 +32,7 @@ class BoxUploader {
   void Init(base::RepeatingCallback<void(void)> authen_retry_callback,
             base::OnceCallback<void(bool)> download_callback,
             PrefService* prefs);
+
   // Kick off the workflow from the step stored in current_api_call_. Will
   // re-attempt the last step from where it left off if it called callback with
   // an API call failure earlier.
@@ -40,20 +41,28 @@ class BoxUploader {
       const std::string& access_token);
 
   // Helper methods for unit tests.
-  const std::string& GetFolderIdForTesting() const;
+  std::string GetFolderIdForTesting() const;
   void NotifyAuthenFailureForTesting();
   void NotifyResultForTesting(bool success);
 
- private:
+ protected:
   void TryCurrentApiCall();
   bool EnsureSuccessResponse(bool success, int response_code);
+  void OnApiCallFlowDone(bool upload_success);
 
-  // Box API call steps:
+  // Can be overridden to handle failure differently from simply calling
+  // OnApiCallFlowDone(false).
+  virtual void OnApiCallFlowFailure();
+
+  // To be overridden to test API calls flow and file delete separately.
+  virtual void StartCurrentApiCall();
+  virtual std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall();
+
+ private:
+  // Box API call pre-upload steps:
   std::unique_ptr<OAuth2ApiCallFlow> MakeFindUpstreamFolderApiCall();
   std::unique_ptr<OAuth2ApiCallFlow> MakeCreateUpstreamFolderApiCall();
   std::unique_ptr<OAuth2ApiCallFlow> MakePreflightCheckApiCall();
-  // To be overridden to test API calls flow and file delete separately.
-  virtual std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall();
 
   // Callbacks from Box*ApiCallFlows:
   void OnFindUpstreamFolderResponse(bool success,
@@ -65,9 +74,17 @@ class BoxUploader {
   void OnPreflightCheckResponse(bool success, int response_code);
   void OnWholeFileUploadResponse(bool success, int response_code);
 
-  // The followings memebers are not neccessarily specific to Box:
-  const base::FilePath local_file_path_;
-  const base::FilePath target_file_name_;
+  // The followings are not necessarily specific to Box:
+  // Post a task to ThreadPool to delete the local file, after the entire file
+  // has been uploaded, with callback OnFileDeleted(). Arg of |delete_cb|
+  // indicates whether deletion succeeded.
+  void PostDeleteFileTask(base::OnceCallback<void(bool)> delete_cb);
+  // Callback attached in PostDeleteFileTask(). Report success back to original
+  // thread via download_callback_.
+  void OnFileDeleted(bool upload_success, bool delete_success);
+  // File details.
+  const base::FilePath local_file_path_;   // Path of the local temporary file.
+  const base::FilePath target_file_name_;  // File name to be used finally.
   // Callback when API call gives Authenetication Error.
   base::RepeatingCallback<void(void)> authentication_retry_callback_;
   // Callback when the entire flow is completed to notify the download thread.

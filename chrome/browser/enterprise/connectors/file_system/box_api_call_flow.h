@@ -31,6 +31,8 @@ class BoxApiCallFlow : public OAuth2ApiCallFlow {
   net::PartialNetworkTrafficAnnotationTag GetNetworkTrafficAnnotationTag()
       override;
 
+  static std::string FormatSHA1Digest(const std::string& sha_digest);
+
   // Used by BoxApiCallFlow inherited classes and BoxUploader
   // to determine whether to use WholeFileUpload or ChunkedFileUpload
   static const size_t kChunkFileUploadMinSize;
@@ -150,23 +152,12 @@ class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
                              std::unique_ptr<std::string> body) override;
 
  private:
-  // Try to delete a local file and return true if and only if the file existed
-  // and was successfully deleted
-  // TODO(https://crbugs.com/1190891): Move to shared FSConnector code when we
-  // support other partners
-  static bool DeleteIfExists(base::FilePath file_path);
-
   // Post a task to ThreadPool to read the local file, forward the
   // parameters from Start() into OnFileRead(), which is the callback that then
   // kicks off OAuth2CallFlow::Start() after file content is read.
   void PostReadFileTask(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& access_token);
-
-  // Post a task to ThreadPool to delete the local file, after calls to
-  // Box's whole file upload API, with callback OnFileDeleted(), which reports
-  // success back to original thread via callback_.
-  void PostDeleteFileTask();
 
   // Helper functions to read and delete the local file.
   // Task posted to ThreadPool to read the local file. Return type is
@@ -179,9 +170,6 @@ class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& access_token,
       base::Optional<std::string> content);
-  // Callback attached in PostDeleteFileTask(). Report success back to original
-  // thread via callback_.
-  void OnFileDeleted(bool result);
 
   const std::string folder_id_;
   const base::FilePath target_file_name_;
@@ -283,7 +271,6 @@ class BoxPartFileUploadApiCallFlow : public BoxChunkedUploadBaseApiCallFlow {
   TaskCallback callback_;
   const std::string& part_content_;
   const std::string content_range_;
-  const std::string sha_digest_;
   base::WeakPtrFactory<BoxPartFileUploadApiCallFlow> weak_factory_{this};
 };
 

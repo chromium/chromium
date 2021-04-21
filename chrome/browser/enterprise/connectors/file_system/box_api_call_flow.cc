@@ -53,8 +53,7 @@ std::string GetMimeType(base::FilePath file_path) {
   if (ext.front() == '.') {
     ext.erase(ext.begin());
   }
-
-  DCHECK(file_path.FinalExtension() != FILE_PATH_LITERAL("crdownload"));
+  DCHECK_NE(ext, FILE_PATH_LITERAL("crdownload"));
 
   std::string file_type;
   bool result = net::GetMimeTypeFromExtension(ext, &file_type);
@@ -139,6 +138,11 @@ BoxApiCallFlow::GetNetworkTrafficAnnotationTag() {
       })");
   // TODO(https://crbug.com/1157959): Add the policy that will turn on/off the
   // connector here?
+}
+
+// static
+std::string BoxApiCallFlow::FormatSHA1Digest(const std::string& sha_digest) {
+  return base::StringPrintf("sha=%s=", sha_digest.c_str());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -337,20 +341,6 @@ void BoxPreflightCheckApiCallFlow::ProcessApiCallFailure(
 // API reference:
 // https://developer.box.com/reference/post-files-content/
 
-// static
-bool BoxWholeFileUploadApiCallFlow::DeleteIfExists(base::FilePath file_path) {
-  if (!base::PathExists(file_path)) {
-    // If the file is deleted by some other thread, how can we be sure what we
-    // read and uploaded was correct?! So report as error. Otherwise, it is
-    // considered successful to
-    // attempt to delete a file that does not exist by base::DeleteFile().
-    DLOG(ERROR) << "[FileSystemRenameHandler] temporary local file "
-                << file_path << " no longer exists!";
-    return false;
-  }
-  return base::DeleteFile(file_path);
-}
-
 BoxWholeFileUploadApiCallFlow::BoxWholeFileUploadApiCallFlow(
     TaskCallback callback,
     const std::string& folder_id,
@@ -459,30 +449,11 @@ std::string BoxWholeFileUploadApiCallFlow::CreateApiCallBodyContentType() {
 bool BoxWholeFileUploadApiCallFlow::IsExpectedSuccessCode(int code) const {
   return code == net::HTTP_CREATED;
 }
-
 void BoxWholeFileUploadApiCallFlow::ProcessApiCallSuccess(
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
-  PostDeleteFileTask();
-}
-
-void BoxWholeFileUploadApiCallFlow::PostDeleteFileTask() {
-  auto delete_file_task = base::BindOnce(&DeleteIfExists, local_file_path_);
-  auto delete_file_reply =
-      base::BindOnce(&BoxWholeFileUploadApiCallFlow::OnFileDeleted,
-                     weak_factory_.GetWeakPtr());
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      std::move(delete_file_task), std::move(delete_file_reply));
-}
-
-void BoxWholeFileUploadApiCallFlow::OnFileDeleted(bool success) {
-  if (!success) {
-    DLOG(ERROR) << "[BoxApiCallFlow] WholeFileUpload failed to delete "
-                   "temporary local file "
-                << local_file_path_;
-  }
-  std::move(callback_).Run(success, net::HTTP_CREATED);
+  auto response_code = head->headers->response_code();
+  std::move(callback_).Run(true, response_code);
 }
 
 void BoxWholeFileUploadApiCallFlow::ProcessApiCallFailure(
@@ -495,8 +466,6 @@ void BoxWholeFileUploadApiCallFlow::ProcessApiCallFailure(
   if (!body->empty()) {
     DLOG(ERROR) << "Body: " << *body;
   }
-  // TODO(https://crbug.com/1165972): decide whether to queue up the file to
-  // retry later, or also delete like in ProcessApiCallSuccess()
   std::move(callback_).Run(false, response_code);
 }
 
@@ -625,27 +594,23 @@ BoxPartFileUploadApiCallFlow::BoxPartFileUploadApiCallFlow(
       content_range_(base::StringPrintf("bytes %zu-%zu/%zu",
                                         byte_from,
                                         byte_to,
-                                        byte_total)),
-      sha_digest_(CreateFileDigest(file_part_content)) {}
+                                        byte_total)) {}
 
 BoxPartFileUploadApiCallFlow::~BoxPartFileUploadApiCallFlow() = default;
 
+// static
 std::string BoxPartFileUploadApiCallFlow::CreateFileDigest(
     const std::string& content) {
   // Box API requires the digest to be SHA1 and Base64 encoded.
   std::string sha_encoded;
   base::Base64Encode(base::SHA1HashString(content), &sha_encoded);
-
-  std::string sha_digest("sha=");
-  sha_digest.append(sha_encoded);
-  sha_digest.append("=");
-  return sha_digest;
+  return FormatSHA1Digest(sha_encoded);
 }
 
 net::HttpRequestHeaders BoxPartFileUploadApiCallFlow::CreateApiCallHeaders() {
   net::HttpRequestHeaders headers;
   headers.SetHeader("content-range", content_range_);
-  headers.SetHeader("digest", sha_digest_);
+  headers.SetHeader("digest", CreateFileDigest(part_content_));
   return headers;
 }
 
@@ -764,8 +729,7 @@ BoxCommitUploadSessionApiCallFlow::~BoxCommitUploadSessionApiCallFlow() =
 net::HttpRequestHeaders
 BoxCommitUploadSessionApiCallFlow::CreateApiCallHeaders() {
   net::HttpRequestHeaders headers;
-  headers.SetHeader("digest",
-                    base::StringPrintf(sha_digest_.c_str(), "sha=%="));
+  headers.SetHeader("digest", FormatSHA1Digest(sha_digest_));
   return headers;
 }
 

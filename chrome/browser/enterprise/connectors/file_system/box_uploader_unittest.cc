@@ -6,269 +6,202 @@
 
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
 
-#include "base/bind.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/run_loop.h"
-#include "base/test/task_environment.h"
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_test_helper.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/fake_download_item.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_url_loader_factory.h"
-#include "services/network/test/test_utils.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "chrome/browser/enterprise/connectors/file_system/box_uploader_test_helper.h"
 
 namespace enterprise_connectors {
 
-class DownloadItemForTest : public content::FakeDownloadItem {
- public:
-  explicit DownloadItemForTest(base::FilePath::StringPieceType file_name) {
-    if (temp_dir_.CreateUniqueTempDir()) {
-      base::FilePath file_path = temp_dir_.GetPath().Append(file_name);
-      SetTemporaryFilePath(file_path);
-      SetTargetFilePath(file_path.RemoveFinalExtension());
-    }
-  }
-  void SetTemporaryFilePath(const base::FilePath& file_path) {
-    file_path_ = file_path;
-  }
+////////////////////////////////////////////////////////////////////////////////
+// BoxUploader: Pre-Upload Test
+////////////////////////////////////////////////////////////////////////////////
 
-  // GetFullPath() is expected to be merged with GetTemporaryPath(). Using
-  // GetFullPath() in BoxUploader but using GetTemporaryPath() in test code here
-  // for clarity.
-  base::FilePath GetTemporaryFilePath() const override { return file_path_; }
-  const base::FilePath& GetFullPath() const override { return file_path_; }
+class BoxUploaderForPreUploadTest : public BoxUploader {
+ public:
+  explicit BoxUploaderForPreUploadTest(
+      download::DownloadItem* download_item,
+      base::OnceCallback<void(void)> preupload_cb)
+      : BoxUploader(download_item), preupload_cb_(std::move(preupload_cb)) {}
 
  protected:
-  base::ScopedTempDir temp_dir_;
-
-  base::FilePath file_path_;
-};
-
-class BoxUploaderTest : public testing::Test {
- public:
-  BoxUploaderTest()
-      : test_item_(FILE_PATH_LITERAL("box_uploader_test.txt.crdownload")),
-        uploader_(&test_item_),
-        profile_manager_(TestingBrowserProcess::GetGlobal()),
-        url_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {
-    EXPECT_TRUE(profile_manager_.SetUp());
-    prefs = profile_manager_.CreateTestingProfile("test-user")->GetPrefs();
+  // These 2 methods are overridden to intercept the upload API call to test the
+  // pre-upload steps specifically.
+  std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall() override {
+    upload_call_created_ = true;
+    return BoxUploader::MakeFileUploadApiCall();
   }
 
+  void StartCurrentApiCall() override {
+    if (upload_call_created_)
+      std::move(preupload_cb_).Run();
+    else
+      BoxUploader::StartCurrentApiCall();
+  }
+
+ private:
+  bool upload_call_created_ = false;
+  base::OnceCallback<void(void)> preupload_cb_;
+};
+
+class BoxUploader_PreUploadTest : public BoxUploaderTestBase {
+ public:
+  BoxUploader_PreUploadTest()
+      : BoxUploaderTestBase(
+            FILE_PATH_LITERAL("box_uploader_pre_upload_test.txt.crdownload")),
+        uploader_(std::make_unique<BoxUploaderForPreUploadTest>(
+            &test_item_,
+            base::BindOnce(&BoxUploader_PreUploadTest::InterceptedPreUpload,
+                           base::Unretained(this)))) {}
+
+ protected:
   void SetUp() override {
-    testing::Test::SetUp();
-    if (test_item_.GetTemporaryFilePath().empty() ||
-        !base::WriteFile(test_item_.GetTemporaryFilePath(),
-                         "BoxUploaderTest")) {
-      FAIL() << "Failed to create temporary file "
-             << test_item_.GetTemporaryFilePath();
-    }
-    uploader_.Init(base::BindRepeating(&BoxUploaderTest::AuthenRetry,
-                                       weak_factory_.GetWeakPtr()),
-                   base::BindOnce(&BoxUploaderTest::DownloadComplete,
-                                  weak_factory_.GetWeakPtr()),
-                   prefs);
+    BoxUploaderTestBase::SetUp();
+    CreateTemporaryFile();
+    InitUploader(uploader_.get());
   }
 
-  void AddFetchResult(const std::string& url,
-                      net::HttpStatusCode response_code,
-                      const std::string& body) {
-    test_url_loader_factory_.AddResponse(url, body, response_code);
+  void TearDown() override {
+    EXPECT_FALSE(upload_success_);
+    // If upload was not initiated due to some error, file should've been
+    // deleted as part of error handling. Otherwise, upload API call flow got
+    // InterceptedPreUpload(), so file was not deleted.
+    EXPECT_EQ(upload_initiated_, base::PathExists(GetFilePath()));
   }
 
-  void AuthenRetry() {
-    ++authentication_retry_;
-    std::move(quit_closure_).Run();
+  void InterceptedPreUpload() {
+    upload_initiated_ = true;
+    Quit();
   }
 
-  void DownloadComplete(bool success) {
-    download_callback_called_ = true;
-    upload_success_ = success;
-    std::move(quit_closure_).Run();
-  }
-
-  void RunWithQuitClosure() {
-    base::RunLoop run_loop;
-    quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
- protected:
-  DownloadItemForTest test_item_;
-  BoxUploader uploader_;
-
-  int authentication_retry_{0};
-  bool download_callback_called_{false};
-  bool upload_success_{false};
-
-  content::BrowserTaskEnvironment task_environment_;
-  // Decoder and TestingProfileManager can only be declared after
-  // TaskEnvironment.
-  data_decoder::test::InProcessDataDecoder decoder_;
-  TestingProfileManager profile_manager_;
-
-  PrefService* prefs;
-  base::OnceClosure quit_closure_;
-
-  // For uploader.TryTask().
-  network::TestURLLoaderFactory test_url_loader_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_factory_;
-  base::WeakPtrFactory<BoxUploaderTest> weak_factory_{this};
+  bool upload_initiated_ = false;
+  std::unique_ptr<BoxUploaderForPreUploadTest> uploader_;
 };
 
-TEST_F(BoxUploaderTest, HasExistingFolder) {
+TEST_F(BoxUploader_PreUploadTest, HasExistingFolderOnBox) {
   AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
                  kFileSystemBoxFindFolderResponseBody);
-  AddFetchResult(
-      kFileSystemBoxPreflightCheckUrl, net::HTTP_OK,
-      std::string());  // Dummy body since we are not reading from body.
-  AddFetchResult(
-      kFileSystemBoxWholeFileUploadUrl, net::HTTP_CREATED,
-      std::string());  // Dummy body since we are not reading from body.
+  AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
 
-  uploader_.TryTask(url_factory_, "test_token");
+  uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
   ASSERT_EQ(authentication_retry_, 0);
-  EXPECT_EQ(uploader_.GetFolderIdForTesting(),
+  EXPECT_EQ(uploader_->GetFolderIdForTesting(),
             kFileSystemBoxFindFolderResponseFolderId);
-  EXPECT_TRUE(download_callback_called_);
-  EXPECT_TRUE(upload_success_);
+  ASSERT_TRUE(upload_initiated_);
+  EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
 
-TEST_F(BoxUploaderTest, NoExistingFolder) {
+TEST_F(BoxUploader_PreUploadTest, NoExistingFolderOnBox_CreatFolder) {
   AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
                  kFileSystemBoxFindFolderResponseEmptyEntriesList);
   AddFetchResult(kFileSystemBoxCreateFolderUrl, net::HTTP_CREATED,
                  kFileSystemBoxCreateFolderResponseBody);
-  AddFetchResult(
-      kFileSystemBoxPreflightCheckUrl, net::HTTP_OK,
-      std::string());  // Dummy body since we are not reading from body.
-  AddFetchResult(
-      kFileSystemBoxWholeFileUploadUrl, net::HTTP_CREATED,
-      std::string());  // Dummy body since we are not reading from body.
+  AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
 
-  uploader_.TryTask(url_factory_, "test_token");
+  uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
   EXPECT_EQ(authentication_retry_, 0);
-  EXPECT_EQ(uploader_.GetFolderIdForTesting(),
+  EXPECT_EQ(uploader_->GetFolderIdForTesting(),
             kFileSystemBoxCreateFolderResponseFolderId);
-  EXPECT_TRUE(download_callback_called_);
-  EXPECT_TRUE(upload_success_);
+  ASSERT_TRUE(upload_initiated_);
+  EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
+  EXPECT_FALSE(upload_success_);
 }
 
-TEST_F(BoxUploaderTest, AuthenticationFailureInTryTask) {
-  // Check that authentication retry callback is called upon
-  // net::HTTP_UNAUTHORIZED.
-  AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_UNAUTHORIZED,
-                 std::string());
-  uploader_.TryTask(url_factory_, "test_token");
+TEST_F(BoxUploader_PreUploadTest, AuthenticationRetry) {
+  // Check that authentication was refreshed upon net::HTTP_UNAUTHORIZED.
+  AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_UNAUTHORIZED);
+
+  uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
-  ASSERT_EQ(authentication_retry_, 1);
 
   // Should be retrying authentication, no report via callback yet.
-  EXPECT_FALSE(download_callback_called_);
-  EXPECT_FALSE(upload_success_);
-  EXPECT_EQ(uploader_.GetFolderIdForTesting(), "");
+  ASSERT_EQ(authentication_retry_, 1);
+  EXPECT_FALSE(upload_initiated_);
+  EXPECT_FALSE(download_thread_cb_called_);
+  EXPECT_EQ(uploader_->GetFolderIdForTesting(), "");
 
   // Check that it's able to continue after authentication has been refreshed.
-  AddFetchResult(
-      kFileSystemBoxPreflightCheckUrl, net::HTTP_OK,
-      std::string());  // Dummy body since we are not reading from body.
   AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
                  kFileSystemBoxFindFolderResponseBody);
-  AddFetchResult(
-      kFileSystemBoxWholeFileUploadUrl, net::HTTP_CREATED,
-      std::string());  // Dummy body since we are not reading from body.
-  uploader_.TryTask(url_factory_, "test_token");
+  AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
+
+  uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
+
   ASSERT_EQ(authentication_retry_, 1);
-  EXPECT_EQ(uploader_.GetFolderIdForTesting(),
+  EXPECT_EQ(uploader_->GetFolderIdForTesting(),
             kFileSystemBoxFindFolderResponseFolderId);
-  EXPECT_TRUE(download_callback_called_);
-  EXPECT_TRUE(upload_success_);
+  ASSERT_TRUE(upload_initiated_);
+  EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
 
-TEST_F(BoxUploaderTest, UnexpectedFailureInTryTask) {
-  // Check that authentication retry callback is NOT called upon
-  // any other failure code other than net::HTTP_UNAUTHORIZED.
+TEST_F(BoxUploader_PreUploadTest, CreateFolder_UnexpectedFailure) {
+  // Check that the API calls flow is terminated upon any other failure code
+  // other than net::HTTP_UNAUTHORIZED.
   AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
                  kFileSystemBoxFindFolderResponseEmptyEntriesList);
-  AddFetchResult(kFileSystemBoxCreateFolderUrl, net::HTTP_NOT_FOUND,
-                 std::string());
-  uploader_.TryTask(url_factory_, "test_token");
+  AddFetchResult(kFileSystemBoxCreateFolderUrl, net::HTTP_NOT_FOUND);
+
+  uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
-  ASSERT_EQ(authentication_retry_, 0);
 
   // Should just report failure via callback.
-  EXPECT_TRUE(download_callback_called_);
-  EXPECT_FALSE(upload_success_);
-  EXPECT_EQ(uploader_.GetFolderIdForTesting(), "");
+  ASSERT_EQ(authentication_retry_, 0);
+  EXPECT_FALSE(upload_initiated_);
+  EXPECT_TRUE(download_thread_cb_called_);
+  EXPECT_EQ(uploader_->GetFolderIdForTesting(), "");
 }
 
-class BoxUploaderWithSavedFolderPrefTest : public BoxUploaderTest {
+////////////////////////////////////////////////////////////////////////////////
+// BoxUploader: Preflight Check Test
+////////////////////////////////////////////////////////////////////////////////
+
+class BoxUploader_PreflightCheckTest : public BoxUploader_PreUploadTest {
  public:
   void SetUp() override {
-    prefs->SetString(kFileSystemUploadFolderIdPref,
-                     kFileSystemBoxSavedInPrefFolderId);
-    BoxUploaderTest::SetUp();
+    // Assume there is already a folder_id stored in prefs; will skip directly
+    // to preflight check.
+    InitFolderIdInPrefs(kFileSystemBoxFolderIdInPref);
+    BoxUploader_PreUploadTest::SetUp();
   }
 };
 
-TEST_F(BoxUploaderWithSavedFolderPrefTest, IfPreflightCheckPasses) {
-  AddFetchResult(
-      kFileSystemBoxPreflightCheckUrl, net::HTTP_OK,
-      std::string());  // Dummy body since we are not reading from body.
-  AddFetchResult(
-      kFileSystemBoxWholeFileUploadUrl, net::HTTP_CREATED,
-      std::string());  // Dummy body since we are not reading from body.
+TEST_F(BoxUploader_PreflightCheckTest, Success) {
+  // Preflight check passes (dummy body since not reading from it):
+  AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
 
-  uploader_.TryTask(url_factory_, "test_token");
+  uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
   ASSERT_EQ(authentication_retry_, 0);
-  EXPECT_EQ(uploader_.GetFolderIdForTesting(),
-            kFileSystemBoxSavedInPrefFolderId);
-  EXPECT_TRUE(download_callback_called_);
-  EXPECT_TRUE(upload_success_);
+  EXPECT_EQ(uploader_->GetFolderIdForTesting(), kFileSystemBoxFolderIdInPref);
+  ASSERT_TRUE(upload_initiated_);
+  EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
 
-TEST_F(BoxUploaderWithSavedFolderPrefTest, IfPreflightCheckConflict) {
-  // TODO(https://crbug.com/1198617): This implies a conflict and currently we
-  // abandon the upload.
-  AddFetchResult(
-      kFileSystemBoxPreflightCheckUrl, net::HTTP_CONFLICT,
-      std::string());  // Dummy body since we are not reading from body.
+TEST_F(BoxUploader_PreflightCheckTest, Conflict) {
+  // Preflight check implies a conflict (dummy body since not reading from it):
+  AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_CONFLICT);
 
-  uploader_.TryTask(url_factory_, "test_token");
+  uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
   ASSERT_EQ(authentication_retry_, 0);
-  EXPECT_EQ(uploader_.GetFolderIdForTesting(),
-            kFileSystemBoxSavedInPrefFolderId);
-  EXPECT_TRUE(download_callback_called_);
-  EXPECT_FALSE(upload_success_);
+  EXPECT_EQ(uploader_->GetFolderIdForTesting(), kFileSystemBoxFolderIdInPref);
+  ASSERT_FALSE(upload_initiated_);
+  EXPECT_TRUE(download_thread_cb_called_) << "Conflict should terminate flow.";
+  // Currently the upload is abandoned.
+  // TODO(https://crbug.com/1198617): Update once the conflict is handled.
 }
 
-TEST_F(BoxUploaderWithSavedFolderPrefTest,
-       IfPreflightCheck404ButBoxFolderExists) {
+TEST_F(BoxUploader_PreflightCheckTest, CachedFolder404_ButFound) {
   // The cached folder_id returns a 404, so we try to find or create the folder
-  // again
-  AddFetchResult(
-      kFileSystemBoxPreflightCheckUrl, net::HTTP_NOT_FOUND,
-      std::string());  // Dummy body since we are not reading from body.
+  // again (dummy body since not reading from it):
+  AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_NOT_FOUND);
 
-  uploader_.TryTask(url_factory_, "test_token");
+  uploader_->TryTask(url_factory_, "test_token");
 
   // TODO(https://crbug.com/1199194): Re-enable this check without modifying
   // non-Test code much.
@@ -278,33 +211,26 @@ TEST_F(BoxUploaderWithSavedFolderPrefTest,
   //  kFileSystemBoxFindFolderUrl));
   //  EXPECT_EQ(prefs->GetString(kFileSystemUploadFolderIdPref), std::string());
 
-  // We find the folder.
+  // Found the folder:
   AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
                  kFileSystemBoxFindFolderResponseBody);
-  AddFetchResult(
-      kFileSystemBoxPreflightCheckUrl, net::HTTP_OK,
-      std::string());  // Dummy body since we are not reading from body.
-  AddFetchResult(
-      kFileSystemBoxWholeFileUploadUrl, net::HTTP_CREATED,
-      std::string());  // Dummy body since we are not reading from body.
+  // Preflight check passes (dummy body since not reading from it):
+  AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
   RunWithQuitClosure();
 
   ASSERT_EQ(authentication_retry_, 0);
-  EXPECT_EQ(uploader_.GetFolderIdForTesting(),
+  EXPECT_EQ(uploader_->GetFolderIdForTesting(),
             kFileSystemBoxFindFolderResponseFolderId);
-  EXPECT_TRUE(download_callback_called_);
-  EXPECT_TRUE(upload_success_);
+  ASSERT_TRUE(upload_initiated_);
+  EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
 
-TEST_F(BoxUploaderWithSavedFolderPrefTest,
-       IfPreflightCheck404AndFolderDoesNotExist) {
+TEST_F(BoxUploader_PreflightCheckTest, CachedFolder404) {
   // The cached folder_id returns a 404, so we try to find or create the folder
-  // again
-  AddFetchResult(
-      kFileSystemBoxPreflightCheckUrl, net::HTTP_NOT_FOUND,
-      std::string());  // Dummy body since we are not reading from body.
+  // again (dummy body since not reading from it):
+  AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_NOT_FOUND);
 
-  uploader_.TryTask(url_factory_, "test_token");
+  uploader_->TryTask(url_factory_, "test_token");
 
   // TODO(https://crbug.com/1199194): Re-enable this check without modifying
   // non-Test code much.
@@ -319,52 +245,164 @@ TEST_F(BoxUploaderWithSavedFolderPrefTest,
                  kFileSystemBoxFindFolderResponseEmptyEntriesList);
   AddFetchResult(kFileSystemBoxCreateFolderUrl, net::HTTP_CREATED,
                  kFileSystemBoxCreateFolderResponseBody);
-  AddFetchResult(
-      kFileSystemBoxPreflightCheckUrl, net::HTTP_OK,
-      std::string());  // Dummy body since we are not reading from body.
-  AddFetchResult(
-      kFileSystemBoxWholeFileUploadUrl, net::HTTP_CREATED,
-      std::string());  // Dummy body since we are not reading from body.
+  // Preflight check passes (dummy body since not reading from it):
+  AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
+
   RunWithQuitClosure();
 
   EXPECT_EQ(authentication_retry_, 0);
-  EXPECT_EQ(uploader_.GetFolderIdForTesting(),
+  EXPECT_EQ(uploader_->GetFolderIdForTesting(),
             kFileSystemBoxCreateFolderResponseFolderId);
-  EXPECT_TRUE(download_callback_called_);
+  ASSERT_TRUE(upload_initiated_);
+  EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
+}
+
+TEST_F(BoxUploader_PreflightCheckTest, AuthenticationRetry) {
+  // Check that authentication retry callback is called upon
+  // net::HTTP_UNAUTHORIZED (dummy body since not reading from it):
+  AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_UNAUTHORIZED);
+
+  uploader_->TryTask(url_factory_, "test_token");
+  RunWithQuitClosure();
+
+  // Need to retry authentication, so no report via callback yet.
+  ASSERT_EQ(authentication_retry_, 1);
+  EXPECT_FALSE(download_thread_cb_called_);
+  EXPECT_FALSE(upload_success_);
+  EXPECT_EQ(uploader_->GetFolderIdForTesting(), kFileSystemBoxFolderIdInPref);
+
+  // Refresh OAuth2 tokens, then preflight check passes (dummy body since not
+  // reading from it):
+  AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
+
+  uploader_->TryTask(url_factory_, "test_token");
+  RunWithQuitClosure();
+
+  ASSERT_EQ(authentication_retry_, 1);
+  EXPECT_EQ(uploader_->GetFolderIdForTesting(), kFileSystemBoxFolderIdInPref);
+  ASSERT_TRUE(upload_initiated_);
+  EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// BoxUploader: File Delete Test
+////////////////////////////////////////////////////////////////////////////////
+
+class BoxUploaderForFileDeleteTest : public BoxUploader {
+ public:
+  using BoxUploader::BoxUploader;
+  using BoxUploader::OnApiCallFlowDone;
+  // Overriding to skip API calls flow for this set of tests.
+  void StartCurrentApiCall() override { OnApiCallFlowDone(true); }
+};
+
+class BoxUploader_FileDeleteTest : public BoxUploaderTestBase {
+ public:
+  BoxUploader_FileDeleteTest()
+      : BoxUploaderTestBase(
+            FILE_PATH_LITERAL("box_uploader_file_delete_test.txt.crdownload")),
+        uploader_(std::make_unique<BoxUploaderForFileDeleteTest>(&test_item_)) {
+  }
+
+ protected:
+  void SetUp() override {
+    BoxUploaderTestBase::SetUp();
+    InitUploader(uploader_.get());
+  }
+
+  void TearDown() override {
+    EXPECT_EQ(authentication_retry_, 0);
+    EXPECT_TRUE(download_thread_cb_called_);
+  }
+
+  std::unique_ptr<BoxUploaderForFileDeleteTest> uploader_;
+};
+
+TEST_F(BoxUploader_FileDeleteTest, TryTask_DeleteOnApiSuccess) {
+  CreateTemporaryFile();
+
+  uploader_->TryTask(url_factory_, "test_token");
+  RunWithQuitClosure();
+
+  EXPECT_FALSE(base::PathExists(GetFilePath()));  // Make sure file is deleted.
+  ASSERT_TRUE(upload_success_);
+}
+
+TEST_F(BoxUploader_FileDeleteTest, NoFileToDelete) {
+  // Make sure file doesn't exist.
+  ASSERT_FALSE(base::PathExists(GetFilePath()));
+
+  uploader_->OnApiCallFlowDone(true);
+  RunWithQuitClosure();
+
+  EXPECT_FALSE(base::PathExists(GetFilePath())) << "No file should be created.";
+  ASSERT_FALSE(upload_success_);
+}
+
+TEST_F(BoxUploader_FileDeleteTest, OnApiCallFlowFailure) {
+  CreateTemporaryFile();
+
+  uploader_->OnApiCallFlowDone(false);
+  RunWithQuitClosure();
+
+  EXPECT_FALSE(base::PathExists(GetFilePath()));  // Make sure file is deleted.
+  ASSERT_FALSE(upload_success_);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// BoxUploader: Whole File Upload Test
+////////////////////////////////////////////////////////////////////////////////
+
+class BoxUploader_WholeFileTest : public BoxUploaderTestBase {
+ public:
+  BoxUploader_WholeFileTest()
+      : BoxUploaderTestBase(
+            FILE_PATH_LITERAL("box_uploader_whole_file_test.txt.crdownload")),
+        uploader_(std::make_unique<BoxUploader>(&test_item_)) {}
+
+  void SetUp() override {
+    BoxUploaderTestBase::SetUp();
+
+    // Assume there is already a folder_id stored in prefs and preflight check
+    // passes; will skip directly to upload.
+    InitFolderIdInPrefs(kFileSystemBoxFolderIdInPref);
+    AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
+
+    CreateTemporaryFile();
+    InitUploader(uploader_.get());
+    ASSERT_EQ(uploader_->GetFolderIdForTesting(), kFileSystemBoxFolderIdInPref);
+  }
+
+  void TearDown() override {
+    EXPECT_FALSE(base::PathExists(GetFilePath()));  // Ensure file is deleted.
+  }
+
+  std::unique_ptr<BoxUploader> uploader_;
+};
+
+TEST_F(BoxUploader_WholeFileTest, SuccessfulUpload) {
+  AddFetchResult(kFileSystemBoxWholeFileUploadUrl, net::HTTP_CREATED);
+
+  uploader_->TryTask(url_factory_, "test_token");
+  RunWithQuitClosure();
+
+  ASSERT_EQ(authentication_retry_, 0);
+  EXPECT_TRUE(download_thread_cb_called_);
   EXPECT_TRUE(upload_success_);
 }
 
-TEST_F(BoxUploaderWithSavedFolderPrefTest,
-       AuthenticationFailureInPreflightCheck) {
-  // Check that authentication retry callback is called upon
-  // net::HTTP_UNAUTHORIZED.
-  AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_UNAUTHORIZED,
-                 std::string());
-  uploader_.TryTask(url_factory_, "test_token");
-  RunWithQuitClosure();
-  ASSERT_EQ(authentication_retry_, 1);
+TEST_F(BoxUploader_WholeFileTest, UnexpectedFailure) {
+  // Check that the API calls flow is terminated upon any other failure code
+  // other than net::HTTP_UNAUTHORIZED.
+  AddFetchResult(kFileSystemBoxWholeFileUploadUrl, net::HTTP_NOT_FOUND);
 
-  // Should be retrying authentication, no report via callback yet.
-  EXPECT_FALSE(download_callback_called_);
+  uploader_->TryTask(url_factory_, "test_token");
+  RunWithQuitClosure();
+
+  // Should just report failure via callback.
+  ASSERT_EQ(authentication_retry_, 0);
+  EXPECT_TRUE(download_thread_cb_called_);
   EXPECT_FALSE(upload_success_);
-  EXPECT_EQ(uploader_.GetFolderIdForTesting(),
-            kFileSystemBoxSavedInPrefFolderId);
-
-  AddFetchResult(
-      kFileSystemBoxPreflightCheckUrl, net::HTTP_OK,
-      std::string());  // Dummy body since we are not reading from body.
-  AddFetchResult(
-      kFileSystemBoxWholeFileUploadUrl, net::HTTP_CREATED,
-      std::string());  // Dummy body since we are not reading from body.
-
-  uploader_.TryTask(url_factory_, "test_token");
-  RunWithQuitClosure();
-
-  ASSERT_EQ(authentication_retry_, 1);
-  EXPECT_EQ(uploader_.GetFolderIdForTesting(),
-            kFileSystemBoxSavedInPrefFolderId);
-  EXPECT_TRUE(download_callback_called_);
-  EXPECT_TRUE(upload_success_);
 }
 
 }  // namespace enterprise_connectors
