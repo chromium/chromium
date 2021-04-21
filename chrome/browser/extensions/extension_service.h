@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/forced_extensions/force_installed_metrics.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/extensions/install_gate.h"
+#include "chrome/browser/extensions/omaha_attributes_handler.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/safe_browsing_verdict_handler.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -77,24 +78,6 @@ class ExternalInstallManager;
 class SharedModuleService;
 class UpdateObserver;
 enum class UnloadedExtensionReason;
-
-// These values are logged to UMA. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// "ExtensionUpdateCheckDataKey" in src/tools/metrics/histograms/enums.xml.
-enum class ExtensionUpdateCheckDataKey {
-  // No update check data keys were found so no action was taken.
-  kNoKey = 0,
-  // The update check data keys had a "_malware" key resulting in the extension
-  // being disabled.
-  kMalware = 1,
-  // The update check data keys had a "_potentially_uws" key resulting in the
-  // extension being disabled.
-  kPotentiallyUWS = 2,
-  // The update check data keys had a "_policy_violation" key resulting in the
-  // extension being disabled.
-  kPolicyViolation = 3,
-  kMaxValue = kPolicyViolation
-};
 
 // This is an interface class to encapsulate the dependencies that
 // various classes have on ExtensionService. This allows easy mocking.
@@ -643,6 +626,8 @@ class ExtensionService : public ExtensionServiceInterface,
   ExtensionAllowlist allowlist_;
 
   SafeBrowsingVerdictHandler safe_browsing_verdict_handler_;
+
+  OmahaAttributesHandler omaha_attributes_handler_;
 
   // Sets of enabled/disabled/terminated/blocklisted extensions. Not owned.
   ExtensionRegistry* registry_ = nullptr;

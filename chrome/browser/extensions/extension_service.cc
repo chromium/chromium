@@ -151,43 +151,6 @@ const char* const kObsoleteComponentExtensionIds[] = {
     "nlkncpkkdoccmpiclbokaimcnedabhhm"  // Gallery
 };
 
-void ReportExtensionDisabledRemotely(bool should_be_remotely_disabled,
-                                     ExtensionUpdateCheckDataKey reason) {
-  // Report that the extension is newly disabled due to Omaha attributes.
-  if (should_be_remotely_disabled)
-    base::UmaHistogramEnumeration("Extensions.ExtensionDisabledRemotely",
-                                  reason);
-
-  // Report that the extension has added a new disable reason.
-  base::UmaHistogramEnumeration("Extensions.ExtensionAddDisabledRemotelyReason",
-                                reason);
-}
-
-void ReportPolicyViolationUWSOmahaAttributes(const std::string& extension_id,
-                                             const base::Value& attributes) {
-  const base::Value* uws_value = attributes.FindKey("_potentially_uws");
-  if (uws_value != nullptr && uws_value->GetBool()) {
-    ReportExtensionDisabledRemotely(
-        /*should_be_remotely_disabled=*/false,
-        ExtensionUpdateCheckDataKey::kPotentiallyUWS);
-  }
-  const base::Value* pv_value = attributes.FindKey("_policy_violation");
-  if (pv_value != nullptr && pv_value->GetBool()) {
-    ReportExtensionDisabledRemotely(
-        /*should_be_remotely_disabled=*/false,
-        ExtensionUpdateCheckDataKey::kPolicyViolation);
-  }
-}
-
-void ReportNoUpdateCheckKeys() {
-  base::UmaHistogramEnumeration("Extensions.ExtensionDisabledRemotely",
-                                ExtensionUpdateCheckDataKey::kNoKey);
-}
-
-void ReportReenableExtensionFromMalware() {
-  base::UmaHistogramCounts100("Extensions.ExtensionReenabledRemotely", 1);
-}
-
 }  // namespace
 
 // ExtensionService.
@@ -879,7 +842,7 @@ void ExtensionService::PerformActionBasedOnOmahaAttributes(
     const base::Value& attributes) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   HandleMalwareOmahaAttribute(extension_id, attributes);
-  ReportPolicyViolationUWSOmahaAttributes(extension_id, attributes);
+  omaha_attributes_handler_.PerformActionBasedOnOmahaAttributes(attributes);
   allowlist_.PerformActionBasedOnOmahaAttributes(extension_id, attributes);
 }
 
@@ -890,7 +853,7 @@ void ExtensionService::HandleMalwareOmahaAttribute(
   if (!base::FeatureList::IsEnabled(
           extensions_features::kDisableMalwareExtensionsRemotely) ||
       malware_value == nullptr || !malware_value->GetBool()) {
-    ReportNoUpdateCheckKeys();
+    OmahaAttributesHandler::ReportNoUpdateCheckKeys();
     // Omaha attributes may have previously have the "_malware" key.
     MaybeEnableRemotelyDisabledExtension(extension_id);
     return;
@@ -902,7 +865,7 @@ void ExtensionService::HandleMalwareOmahaAttribute(
     return;
   }
 
-  ReportExtensionDisabledRemotely(
+  OmahaAttributesHandler::ReportExtensionDisabledRemotely(
       extension_registrar_.IsExtensionEnabled(extension_id),
       ExtensionUpdateCheckDataKey::kMalware);
 
@@ -930,7 +893,7 @@ void ExtensionService::MaybeEnableRemotelyDisabledExtension(
   unchanged.erase(extension_id);
   // Remove the extension from the blocklist.
   UpdateBlocklistedExtensions({}, unchanged);
-  ReportReenableExtensionFromMalware();
+  OmahaAttributesHandler::ReportReenableExtensionFromMalware();
 }
 
 void ExtensionService::ClearGreylistedAcknowledgedStateAndMaybeReenable(

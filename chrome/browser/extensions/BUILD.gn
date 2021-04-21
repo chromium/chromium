@@ -654,6 +654,8 @@ static_library("extensions") {
     "menu_manager_factory.h",
     "navigation_observer.cc",
     "navigation_observer.h",
+    "omaha_attributes_handler.cc",
+    "omaha_attributes_handler.h",
     "pack_extension_job.cc",
     "pack_extension_job.h",
     "pending_extension_info.cc",
