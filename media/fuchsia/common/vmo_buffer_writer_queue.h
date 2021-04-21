@@ -1,9 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FUCHSIA_COMMON_SYSMEM_BUFFER_WRITER_QUEUE_H_
-#define MEDIA_FUCHSIA_COMMON_SYSMEM_BUFFER_WRITER_QUEUE_H_
+#ifndef MEDIA_FUCHSIA_COMMON_VMO_BUFFER_WRITER_QUEUE_H_
+#define MEDIA_FUCHSIA_COMMON_VMO_BUFFER_WRITER_QUEUE_H_
 
 #include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/sysmem/cpp/fidl.h>
@@ -15,15 +15,15 @@
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "media/fuchsia/common/stream_processor_helper.h"
-#include "media/fuchsia/common/sysmem_buffer_writer.h"
+#include "media/fuchsia/common/vmo_buffer.h"
 
 namespace media {
 
 class DecoderBuffer;
 
-// A SysmemBufferWriter wrapper that keeps a queue of pending DecodeBuffers,
-// writes them to sysmem buffers and generates StreamProcessor packets.
-class SysmemBufferWriterQueue {
+// A helper that keeps a queue of pending DecodeBuffers, writes them to a set of
+// VmoBuffers and generates StreamProcessor packets.
+class VmoBufferWriterQueue {
  public:
   // Callback passed to StartSender(). |buffer| corresponds to the original
   // buffer from which the |packet| was generated.
@@ -34,16 +34,19 @@ class SysmemBufferWriterQueue {
   // Called when processing DecoderBuffer that's marked as end-of-stream.
   using EndOfStreamCB = base::RepeatingClosure;
 
-  SysmemBufferWriterQueue();
-  ~SysmemBufferWriterQueue();
+  VmoBufferWriterQueue();
+  ~VmoBufferWriterQueue();
+
+  VmoBufferWriterQueue(VmoBufferWriterQueue&) = delete;
+  VmoBufferWriterQueue& operator=(VmoBufferWriterQueue&) = delete;
 
   // Enqueues buffer to the queue.
   void EnqueueBuffer(scoped_refptr<DecoderBuffer> buffer);
 
-  // Sets the buffer writer to use and starts sending outgoing packets using
+  // Sets the buffers to use and starts sending outgoing packets using
   // |send_packet_cb|. |end_of_stream_cb| will be called when processing each
   // end-of-stream buffer.
-  void Start(std::unique_ptr<SysmemBufferWriter> writer,
+  void Start(std::vector<VmoBuffer> buffers,
              SendPacketCB send_packet_cb,
              EndOfStreamCB end_of_stream_cb);
 
@@ -95,8 +98,11 @@ class SysmemBufferWriterQueue {
   // Unpause() is called.
   bool is_paused_ = false;
 
-  // Buffers for sysmem buffer collection. Not set until Start() is called.
-  std::unique_ptr<SysmemBufferWriter> writer_;
+  // Buffers for sysmem buffer collection. Empty until Start() is called.
+  std::vector<VmoBuffer> buffers_;
+
+  // Usd to store indices of the buffers that are not being used currently.
+  std::vector<size_t> unused_buffers_;
 
   SendPacketCB send_packet_cb_;
   EndOfStreamCB end_of_stream_cb_;
@@ -104,11 +110,9 @@ class SysmemBufferWriterQueue {
   // FIDL interfaces are thread-affine (see crbug.com/1012875).
   THREAD_CHECKER(thread_checker_);
 
-  base::WeakPtrFactory<SysmemBufferWriterQueue> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SysmemBufferWriterQueue);
+  base::WeakPtrFactory<VmoBufferWriterQueue> weak_factory_{this};
 };
 
 }  // namespace media
 
-#endif  // MEDIA_FUCHSIA_COMMON_SYSMEM_BUFFER_WRITER_QUEUE_H_
+#endif  // MEDIA_FUCHSIA_COMMON_VMO_BUFFER_WRITER_QUEUE_H_

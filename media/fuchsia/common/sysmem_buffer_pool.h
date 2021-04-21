@@ -19,18 +19,18 @@
 
 namespace media {
 
-class SysmemBufferReader;
-class SysmemBufferWriter;
+class VmoBuffer;
 
 // Pool of buffers allocated by sysmem. It owns BufferCollection. It doesn't
 // provide any function read/write the buffers. Call should use
 // ReadableBufferPool/WritableBufferPool for read/write.
 class SysmemBufferPool {
  public:
-  using CreateReaderCB =
-      base::OnceCallback<void(std::unique_ptr<SysmemBufferReader>)>;
-  using CreateWriterCB =
-      base::OnceCallback<void(std::unique_ptr<SysmemBufferWriter>)>;
+  // Callback for AcquireBuffers(). Called with an empty |buffers| if buffers
+  // allocation failed.
+  using AcquireBuffersCB = base::OnceCallback<void(
+      std::vector<VmoBuffer> buffers,
+      const fuchsia::sysmem::SingleBufferSettings& settings)>;
 
   // Creates SysmemBufferPool asynchronously. It also owns the channel to
   // fuchsia services.
@@ -63,15 +63,14 @@ class SysmemBufferPool {
 
   SysmemBufferPool(
       fuchsia::sysmem::BufferCollectionPtr collection,
-      std::vector<fuchsia::sysmem::BufferCollectionTokenPtr> shared_tokens);
+      std::vector<fuchsia::sysmem::BufferCollectionTokenPtr> shared_tokens,
+      bool writable);
   ~SysmemBufferPool();
 
   fuchsia::sysmem::BufferCollectionTokenPtr TakeToken();
 
-  // Create Reader/Writer to access raw memory. The returned Reader/Writer is
-  // owned by SysmemBufferPool and lives as long as SysmemBufferPool.
-  void CreateReader(CreateReaderCB create_cb);
-  void CreateWriter(CreateWriterCB create_cb);
+  // Create VmoBuffers to access raw memory.
+  void AcquireBuffers(AcquireBuffersCB cb);
 
   // Returns if this object is still usable. Caller must check this before
   // calling SysmemBufferReader/Writer APIs.
@@ -87,9 +86,9 @@ class SysmemBufferPool {
 
   fuchsia::sysmem::BufferCollectionPtr collection_;
   std::vector<fuchsia::sysmem::BufferCollectionTokenPtr> shared_tokens_;
+  const bool writable_;
 
-  CreateReaderCB create_reader_cb_;
-  CreateWriterCB create_writer_cb_;
+  AcquireBuffersCB acquire_buffers_cb_;
 
   // FIDL interfaces are thread-affine (see crbug.com/1012875).
   THREAD_CHECKER(thread_checker_);

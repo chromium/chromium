@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/fuchsia/common/sysmem_buffer_writer_queue.h"
+#include "media/fuchsia/common/vmo_buffer_writer_queue.h"
 
 #include <zircon/rights.h>
 #include <algorithm>
@@ -14,7 +14,7 @@
 
 namespace media {
 
-struct SysmemBufferWriterQueue::PendingBuffer {
+struct VmoBufferWriterQueue::PendingBuffer {
   PendingBuffer(scoped_refptr<DecoderBuffer> buffer) : buffer(buffer) {
     DCHECK(buffer);
   }
@@ -42,34 +42,40 @@ struct SysmemBufferWriterQueue::PendingBuffer {
   base::Optional<size_t> tail_sysmem_buffer_index;
 };
 
-SysmemBufferWriterQueue::SysmemBufferWriterQueue() = default;
-SysmemBufferWriterQueue::~SysmemBufferWriterQueue() = default;
+VmoBufferWriterQueue::VmoBufferWriterQueue() = default;
+VmoBufferWriterQueue::~VmoBufferWriterQueue() = default;
 
-void SysmemBufferWriterQueue::EnqueueBuffer(
-    scoped_refptr<DecoderBuffer> buffer) {
+void VmoBufferWriterQueue::EnqueueBuffer(scoped_refptr<DecoderBuffer> buffer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   pending_buffers_.push_back(PendingBuffer(buffer));
   PumpPackets();
 }
 
-void SysmemBufferWriterQueue::Start(std::unique_ptr<SysmemBufferWriter> writer,
-                                    SendPacketCB send_packet_cb,
-                                    EndOfStreamCB end_of_stream_cb) {
+void VmoBufferWriterQueue::Start(std::vector<VmoBuffer> buffers,
+                                 SendPacketCB send_packet_cb,
+                                 EndOfStreamCB end_of_stream_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!writer_);
+  DCHECK(buffers_.empty());
+  DCHECK(!buffers.empty());
 
-  writer_ = std::move(writer);
+  buffers_ = std::move(buffers);
   send_packet_cb_ = std::move(send_packet_cb);
   end_of_stream_cb_ = std::move(end_of_stream_cb);
+
+  // Initialize |unused_buffers_|.
+  unused_buffers_.reserve(buffers_.size());
+  for (size_t i = 0; i < buffers_.size(); ++i) {
+    unused_buffers_.push_back(i);
+  }
 
   PumpPackets();
 }
 
-void SysmemBufferWriterQueue::PumpPackets() {
+void VmoBufferWriterQueue::PumpPackets() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto weak_this = weak_factory_.GetWeakPtr();
 
-  while (writer_ && !is_paused_ &&
+  while (!buffers_.empty() && !is_paused_ &&
          input_queue_position_ < pending_buffers_.size()) {
     PendingBuffer* current_buffer = &pending_buffers_[input_queue_position_];
 
@@ -81,30 +87,28 @@ void SysmemBufferWriterQueue::PumpPackets() {
       continue;
     }
 
-    base::Optional<size_t> index_opt = writer_->Acquire();
-
-    if (!index_opt.has_value()) {
+    if (unused_buffers_.empty()) {
       // No input buffer available.
       return;
     }
 
-    size_t sysmem_buffer_index = index_opt.value();
+    size_t buffer_index = unused_buffers_.back();
+    unused_buffers_.pop_back();
 
-    size_t bytes_filled = writer_->Write(
-        sysmem_buffer_index,
+    size_t bytes_filled = buffers_[buffer_index].Write(
         base::make_span(current_buffer->data(), current_buffer->bytes_left()));
     current_buffer->AdvanceCurrentPos(bytes_filled);
 
     bool buffer_end = current_buffer->bytes_left() == 0;
 
     auto packet = StreamProcessorHelper::IoPacket::CreateInput(
-        sysmem_buffer_index, bytes_filled, current_buffer->buffer->timestamp(),
+        buffer_index, bytes_filled, current_buffer->buffer->timestamp(),
         buffer_end,
-        base::BindOnce(&SysmemBufferWriterQueue::ReleaseBuffer,
-                       weak_factory_.GetWeakPtr(), sysmem_buffer_index));
+        base::BindOnce(&VmoBufferWriterQueue::ReleaseBuffer,
+                       weak_factory_.GetWeakPtr(), buffer_index));
 
     if (buffer_end) {
-      current_buffer->tail_sysmem_buffer_index = sysmem_buffer_index;
+      current_buffer->tail_sysmem_buffer_index = buffer_index;
       input_queue_position_ += 1;
     }
 
@@ -114,16 +118,16 @@ void SysmemBufferWriterQueue::PumpPackets() {
   }
 }
 
-void SysmemBufferWriterQueue::ResetQueue() {
+void VmoBufferWriterQueue::ResetQueue() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   pending_buffers_.clear();
   input_queue_position_ = 0;
   is_paused_ = false;
 }
 
-void SysmemBufferWriterQueue::ResetBuffers() {
+void VmoBufferWriterQueue::ResetBuffers() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  writer_.reset();
+  buffers_.clear();
   send_packet_cb_ = SendPacketCB();
   end_of_stream_cb_ = EndOfStreamCB();
 
@@ -132,7 +136,7 @@ void SysmemBufferWriterQueue::ResetBuffers() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void SysmemBufferWriterQueue::ResetPositionAndPause() {
+void VmoBufferWriterQueue::ResetPositionAndPause() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   for (auto& buffer : pending_buffers_) {
     buffer.buffer_pos = 0;
@@ -147,16 +151,16 @@ void SysmemBufferWriterQueue::ResetPositionAndPause() {
   is_paused_ = true;
 }
 
-void SysmemBufferWriterQueue::Unpause() {
+void VmoBufferWriterQueue::Unpause() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(is_paused_);
   is_paused_ = false;
   PumpPackets();
 }
 
-void SysmemBufferWriterQueue::ReleaseBuffer(size_t buffer_index) {
+void VmoBufferWriterQueue::ReleaseBuffer(size_t buffer_index) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(writer_);
+  DCHECK(!buffers_.empty());
 
   // Mark the input buffer as complete.
   for (size_t i = 0; i < input_queue_position_; ++i) {
@@ -176,13 +180,13 @@ void SysmemBufferWriterQueue::ReleaseBuffer(size_t buffer_index) {
     input_queue_position_--;
   }
 
-  writer_->Release(buffer_index);
+  unused_buffers_.push_back(buffer_index);
   PumpPackets();
 }
 
-size_t SysmemBufferWriterQueue::num_buffers() const {
+size_t VmoBufferWriterQueue::num_buffers() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return writer_ ? writer_->num_buffers() : 0;
+  return buffers_.size();
 }
 
 }  // namespace media
