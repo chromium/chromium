@@ -177,17 +177,23 @@ void CullRect::ApplyTransforms(const TransformPaintPropertyNode& source,
   }
 }
 
-void CullRect::ApplyPaintPropertiesWithoutExpansion(
+bool CullRect::ApplyPaintPropertiesWithoutExpansion(
     const PropertyTreeState& source,
     const PropertyTreeState& destination) {
   FloatClipRect clip_rect =
       GeometryMapper::LocalToAncestorClipRect(destination, source);
-  if (!clip_rect.IsInfinite())
+  if (!clip_rect.IsInfinite()) {
     rect_.Intersect(EnclosingIntRect(clip_rect.Rect()));
+    if (rect_.IsEmpty())
+      return false;
+  }
   if (!IsInfinite()) {
     GeometryMapper::SourceToDestinationRect(source.Transform(),
                                             destination.Transform(), rect_);
   }
+  // Return true even if the transformed rect is empty (e.g. by rotateX(90deg))
+  // because later transforms may make the content visible again.
+  return true;
 }
 
 void CullRect::ApplyPaintProperties(
@@ -248,14 +254,17 @@ void CullRect::ApplyPaintProperties(
     if (scroll_translation_it == scroll_translations.rend())
       break;
 
-    const auto* scroll_translation = *scroll_translation_it++;
+    const auto* scroll_translation = *scroll_translation_it;
     if (&clip->LocalTransformSpace() != scroll_translation->Parent())
       continue;
+    ++scroll_translation_it;
 
-    ApplyPaintPropertiesWithoutExpansion(
-        PropertyTreeState(*last_transform, *last_clip, effect_root),
-        PropertyTreeState(*scroll_translation->UnaliasedParent(), *clip,
-                          effect_root));
+    if (!ApplyPaintPropertiesWithoutExpansion(
+            PropertyTreeState(*last_transform, *last_clip, effect_root),
+            PropertyTreeState(*scroll_translation->UnaliasedParent(), *clip,
+                              effect_root)))
+      return;
+
     last_scroll_translation_result =
         ApplyScrollTranslation(root.Transform(), *scroll_translation);
 
@@ -263,8 +272,10 @@ void CullRect::ApplyPaintProperties(
     last_clip = clip;
   }
 
-  ApplyPaintPropertiesWithoutExpansion(
-      PropertyTreeState(*last_transform, *last_clip, effect_root), destination);
+  if (!ApplyPaintPropertiesWithoutExpansion(
+          PropertyTreeState(*last_transform, *last_clip, effect_root),
+          destination))
+    return;
 
   // Since the cull rect mapping above can produce extremely large numbers in
   // cases of perspective, try our best to "normalize" the result by ensuring

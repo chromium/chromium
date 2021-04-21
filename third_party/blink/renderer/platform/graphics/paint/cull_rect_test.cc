@@ -612,6 +612,10 @@ TEST_F(CullRectTest, NonCompositedTransformUnderClip) {
   CullRect cull_rect3 = CullRect::Infinite();
   cull_rect3.ApplyPaintProperties(root, root, state1, base::nullopt);
   EXPECT_EQ(IntRect(90, 180, 300, 400), cull_rect3.Rect());
+
+  CullRect cull_rect4;
+  cull_rect4.ApplyPaintProperties(root, root, state1, base::nullopt);
+  EXPECT_EQ(IntRect(), cull_rect4.Rect());
 }
 
 TEST_F(CullRectTest, CompositedTranslationUnderClip) {
@@ -646,6 +650,52 @@ TEST_F(CullRectTest, CompositedTranslationUnderClip) {
   CullRect cull_rect4 = CullRect::Infinite();
   cull_rect4.ApplyPaintProperties(root, root, state1, base::nullopt);
   EXPECT_EQ(IntRect(-1955, -1940, 4150, 4134), cull_rect4.Rect());
+
+  CullRect cull_rect5;
+  cull_rect4.ApplyPaintProperties(root, root, state1, base::nullopt);
+  EXPECT_EQ(IntRect(), cull_rect5.Rect());
+}
+
+TEST_F(CullRectTest, ClipAndCompositedScrollAndClip) {
+  ScopedCullRectUpdateForTest cull_rect_update(true);
+
+  auto root = PropertyTreeState::Root();
+  auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(0, 10000, 100, 100));
+  auto t1 = Create2DTranslation(t0(), 0, 10000);
+  auto scroll_clip = CreateClip(*c1, *t1, FloatRoundedRect(0, 0, 120, 120));
+  auto scroll_translation = CreateCompositedScrollTranslation(
+      *t1, 0, 0, IntRect(0, 0, 120, 120), IntSize(10000, 10000));
+  auto c2a = CreateClip(*scroll_clip, *scroll_translation,
+                        FloatRoundedRect(0, 300, 100, 100));
+  auto c2b = CreateClip(*scroll_clip, *scroll_translation,
+                        FloatRoundedRect(0, 8000, 100, 100));
+  auto t2 =
+      CreateTransform(*scroll_translation, TransformationMatrix(),
+                      FloatPoint3D(), CompositingReason::kWillChangeTransform);
+
+  // c2a is out of view, but in the expansion area of the composited scroll.
+  CullRect cull_rect = CullRect::Infinite();
+  cull_rect.ApplyPaintProperties(
+      root, root, PropertyTreeState(*scroll_translation, *c2a, e0()),
+      base::nullopt);
+  EXPECT_EQ(IntRect(0, 300, 100, 100), cull_rect.Rect());
+  // Composited case. The cull rect should be expanded.
+  cull_rect = CullRect::Infinite();
+  cull_rect.ApplyPaintProperties(root, root, PropertyTreeState(*t2, *c2a, e0()),
+                                 base::nullopt);
+  EXPECT_EQ(IntRect(-4000, -3700, 8100, 8100), cull_rect.Rect());
+
+  // c2b is out of the expansion are of the composited scroll.
+  cull_rect = CullRect::Infinite();
+  cull_rect.ApplyPaintProperties(
+      root, root, PropertyTreeState(*scroll_translation, *c2b, e0()),
+      base::nullopt);
+  EXPECT_EQ(IntRect(), cull_rect.Rect());
+  // Composited case. The cull rect should be still empty.
+  cull_rect = CullRect::Infinite();
+  cull_rect.ApplyPaintProperties(root, root, PropertyTreeState(*t2, *c2b, e0()),
+                                 base::nullopt);
+  EXPECT_EQ(IntRect(), cull_rect.Rect());
 }
 
 TEST_F(CullRectTest, IntersectsVerticalRange) {
