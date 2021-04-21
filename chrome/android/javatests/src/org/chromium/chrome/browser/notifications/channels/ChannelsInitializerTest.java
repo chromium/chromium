@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
@@ -222,6 +223,7 @@ public class ChannelsInitializerTest {
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @TargetApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
+    @DisabledTest(message = "https://crbug.com/1201250")
     public void testEnsureInitialized_sitesChannel() {
         mChannelsInitializer.ensureInitialized(ChromeChannelDefinitions.ChannelId.SITES);
 
