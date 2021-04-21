@@ -91,7 +91,7 @@ constexpr HidBlocklist::Entry kStaticEntries[] = {
 
     // Block Jabra access to certain proprietary functionality.
     {true, /*vendorId=*/0x0b0e, false, 0, true, /*usagePage=*/0xff00, false, 0,
-     false, 0, HidBlocklist::ReportType::kReportTypeOutput},
+     true, /*reportId=*/0x05, HidBlocklist::ReportType::kReportTypeOutput},
 };
 
 bool IsValidBlocklistEntry(const HidBlocklist::Entry& entry) {

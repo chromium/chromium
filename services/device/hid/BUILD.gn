@@ -74,7 +74,7 @@ source_set("hid") {
   }
 }
 
-source_set("mocks") {
+source_set("test_support") {
   testonly = true
 
   sources = [
@@ -82,6 +82,8 @@ source_set("mocks") {
     "mock_hid_connection.h",
     "mock_hid_service.cc",
     "mock_hid_service.h",
+    "test_report_descriptors.cc",
+    "test_report_descriptors.h",
   ]
 
   public_deps = [

@@ -391,7 +391,7 @@ test("device_unittests") {
     deps += [
       "//services/device:test_support",
       "//services/device/hid",
-      "//services/device/hid:mocks",
+      "//services/device/hid:test_support",
     ]
   }
 
