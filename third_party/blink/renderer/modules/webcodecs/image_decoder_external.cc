@@ -365,7 +365,17 @@ void ImageDecoderExternal::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-void ImageDecoderExternal::ContextDestroyed() {}
+void ImageDecoderExternal::ContextDestroyed() {
+  // WeakPtrs need special consideration when used with a garbage collected
+  // type; they must be invalidated ahead of finalization.
+  //
+  // We also need to ensure that no further WeakPtrs are created, so close() the
+  // decoder at this point to prevent further operation.
+  close();
+
+  DCHECK(!weak_factory_.HasWeakPtrs());
+  DCHECK(!decode_weak_factory_.HasWeakPtrs());
+}
 
 bool ImageDecoderExternal::HasPendingActivity() const {
   return !pending_metadata_decodes_.IsEmpty() || !pending_decodes_.IsEmpty();
@@ -374,7 +384,7 @@ bool ImageDecoderExternal::HasPendingActivity() const {
 void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
   DCHECK(!closed_);
   DCHECK(decoder_);
-  DCHECK(tracks_->IsEmpty() || tracks_->selectedTrack());
+  DCHECK(failed_ || tracks_->IsEmpty() || tracks_->selectedTrack());
 
   for (auto& request : pending_decodes_) {
     if (failed_) {
