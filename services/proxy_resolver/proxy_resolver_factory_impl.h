@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_PROXY_RESOLVER_PUBLIC_CPP_PROXY_RESOLVER_FACTORY_IMPL_H_
-#define SERVICES_PROXY_RESOLVER_PUBLIC_CPP_PROXY_RESOLVER_FACTORY_IMPL_H_
+#ifndef SERVICES_PROXY_RESOLVER_PROXY_RESOLVER_FACTORY_IMPL_H_
+#define SERVICES_PROXY_RESOLVER_PROXY_RESOLVER_FACTORY_IMPL_H_
 
 #include <map>
 #include <memory>
@@ -63,4 +63,4 @@ class ProxyResolverFactoryImpl : public mojom::ProxyResolverFactory {
 
 }  // namespace proxy_resolver
 
-#endif  // SERVICES_PROXY_RESOLVER_PUBLIC_CPP_PROXY_RESOLVER_FACTORY_IMPL_H_
+#endif  // SERVICES_PROXY_RESOLVER_PROXY_RESOLVER_FACTORY_IMPL_H_

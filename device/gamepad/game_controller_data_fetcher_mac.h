@@ -39,4 +39,4 @@ class GameControllerDataFetcherMac : public GamepadDataFetcher {
 
 }  // namespace device
 
-#endif  // DEVICE_GAMEPAD_GAMEPAD_PLATFORM_DATA_FETCHER_MAC_H_
+#endif  // DEVICE_GAMEPAD_GAME_CONTROLLER_DATA_FETCHER_MAC_H_

@@ -58,4 +58,4 @@ class CoreLocationProvider : public LocationProvider,
 
 }  // namespace device
 
-#endif  // SERVICES_DEVICE_GEOLOCATION_LOCATION_PROVIDER_MAC_H_
+#endif  // SERVICES_DEVICE_GEOLOCATION_CORE_LOCATION_PROVIDER_H_

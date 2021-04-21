@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_GAMEPAD_ABSTRACT_HAPTIC_GAMEPAD_
-#define DEVICE_GAMEPAD_ABSTRACT_HAPTIC_GAMEPAD_
+#ifndef DEVICE_GAMEPAD_ABSTRACT_HAPTIC_GAMEPAD_H_
+#define DEVICE_GAMEPAD_ABSTRACT_HAPTIC_GAMEPAD_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -94,4 +94,4 @@ class DEVICE_GAMEPAD_EXPORT AbstractHapticGamepad {
 
 }  // namespace device
 
-#endif  // DEVICE_GAMEPAD_ABSTRACT_HAPTIC_GAMEPAD_
+#endif  // DEVICE_GAMEPAD_ABSTRACT_HAPTIC_GAMEPAD_H_

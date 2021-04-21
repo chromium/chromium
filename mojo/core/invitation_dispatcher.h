@@ -46,4 +46,4 @@ class MOJO_SYSTEM_IMPL_EXPORT InvitationDispatcher : public Dispatcher {
 }  // namespace core
 }  // namespace mojo
 
-#endif  // MOJO_CORE_INVITATION_DISPATCHER_H
+#endif  // MOJO_CORE_INVITATION_DISPATCHER_H_

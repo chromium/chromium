@@ -94,4 +94,4 @@ class MOJO_SYSTEM_IMPL_EXPORT ChannelLinux : public ChannelPosix {
 }  // namespace core
 }  // namespace mojo
 
-#endif
+#endif  // MOJO_CORE_CHANNEL_LINUX_H_

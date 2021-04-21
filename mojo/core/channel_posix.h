@@ -128,4 +128,4 @@ class ChannelPosix : public Channel,
 }  // namespace core
 }  // namespace mojo
 
-#endif
+#endif  // MOJO_CORE_CHANNEL_POSIX_H_

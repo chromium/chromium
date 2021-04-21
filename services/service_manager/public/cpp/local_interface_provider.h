@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_SERVICE_MANAGER_PUBLIC_CPP_INTERFACE_PROVIDER_BASE_H_
-#define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_INTERFACE_PROVIDER_BASE_H_
+#ifndef SERVICES_SERVICE_MANAGER_PUBLIC_CPP_LOCAL_INTERFACE_PROVIDER_H_
+#define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_LOCAL_INTERFACE_PROVIDER_H_
 
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -26,4 +26,4 @@ class LocalInterfaceProvider {
 
 }  // namespace service_manager
 
-#endif  // SERVICES_SERVICE_MANAGER_PUBLIC_CPP_INTERFACE_PROVIDER_BASE_H_
+#endif  // SERVICES_SERVICE_MANAGER_PUBLIC_CPP_LOCAL_INTERFACE_PROVIDER_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_BLUETOOTH_BLUETOOTH_TYPES_H_
-#define DEVICE_BLUETOOTH_BLUETOOTH_TYPES_H_
+#ifndef DEVICE_BLUETOOTH_BLUETOOTH_COMMON_H_
+#define DEVICE_BLUETOOTH_BLUETOOTH_COMMON_H_
 
 #include "device/bluetooth/bluetooth_export.h"
 
@@ -46,4 +46,4 @@ enum class BluetoothDeviceType {
 
 }  // namespace device
 
-#endif  // DEVICE_BLUETOOTH_BLUETOOTH_TYPES_H_
+#endif  // DEVICE_BLUETOOTH_BLUETOOTH_COMMON_H_

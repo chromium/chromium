@@ -41,4 +41,4 @@ class DiscoverySession : public mojom::DiscoverySession {
 
 }  // namespace bluetooth
 
-#endif
+#endif  // DEVICE_BLUETOOTH_DISCOVERY_SESSION_H_

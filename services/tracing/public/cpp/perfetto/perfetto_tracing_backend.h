@@ -64,4 +64,4 @@ class PerfettoTracingBackend : public perfetto::TracingBackend {
 
 }  // namespace tracing
 
-#endif  // SERVICES_TRACING_PERFETTO_PUBLIC_CPP_PERFETTO_TRACING_BACKEND_H_
+#endif  // SERVICES_TRACING_PUBLIC_CPP_PERFETTO_PERFETTO_TRACING_BACKEND_H_

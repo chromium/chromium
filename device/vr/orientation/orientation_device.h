@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_ORIENTATION_DEVICE_H
-#define DEVICE_VR_ORIENTATION_DEVICE_H
+#ifndef DEVICE_VR_ORIENTATION_ORIENTATION_DEVICE_H_
+#define DEVICE_VR_ORIENTATION_ORIENTATION_DEVICE_H_
 
 #include <memory>
 
@@ -88,4 +88,4 @@ class COMPONENT_EXPORT(VR_ORIENTATION) VROrientationDevice
 
 }  // namespace device
 
-#endif  // DEVICE_VR_ORIENTATION_DEVICE_H
+#endif  // DEVICE_VR_ORIENTATION_ORIENTATION_DEVICE_H_

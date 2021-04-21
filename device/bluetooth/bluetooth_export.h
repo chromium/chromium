@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_BLUETOOTH_DEVICE_BLUETOOTH_EXPORT_H_
-#define DEVICE_BLUETOOTH_DEVICE_BLUETOOTH_EXPORT_H_
+#ifndef DEVICE_BLUETOOTH_BLUETOOTH_EXPORT_H_
+#define DEVICE_BLUETOOTH_BLUETOOTH_EXPORT_H_
 
 #if defined(COMPONENT_BUILD) && defined(WIN32)
 
@@ -25,4 +25,4 @@
 #define DEVICE_BLUETOOTH_EXPORT
 #endif
 
-#endif  // DEVICE_BLUETOOTH_DEVICE_BLUETOOTH_EXPORT_H_
+#endif  // DEVICE_BLUETOOTH_BLUETOOTH_EXPORT_H_

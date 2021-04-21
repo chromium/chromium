@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_WINDOWS_D3D11_TEXTURE_HELPER_H
-#define DEVICE_VR_WINDOWS_D3D11_TEXTURE_HELPER_H
+#ifndef DEVICE_VR_WINDOWS_D3D11_TEXTURE_HELPER_H_
+#define DEVICE_VR_WINDOWS_D3D11_TEXTURE_HELPER_H_
 
 #include <D3D11_1.h>
 #include <DXGI1_4.h>
@@ -117,4 +117,4 @@ class D3D11TextureHelper {
 };
 }  // namespace device
 
-#endif  // DEVICE_VR_WINDOWS_D3D11_TEXTURE_HELPER_H
+#endif  // DEVICE_VR_WINDOWS_D3D11_TEXTURE_HELPER_H_

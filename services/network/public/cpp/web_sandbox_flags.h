@@ -67,4 +67,4 @@ WebSandboxFlagsParsingResult ParseWebSandboxPolicy(
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_SANDBOX_FLAGS_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_WEB_SANDBOX_FLAGS_H_

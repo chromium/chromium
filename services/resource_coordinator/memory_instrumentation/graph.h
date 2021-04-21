@@ -291,4 +291,4 @@ class GlobalDumpGraph {
 };
 
 }  // namespace memory_instrumentation
-#endif
+#endif  // SERVICES_RESOURCE_COORDINATOR_MEMORY_INSTRUMENTATION_GRAPH_H_

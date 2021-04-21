@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_GAMEPAD_HID_DLL_FUNCTIONS_WIN_
-#define DEVICE_GAMEPAD_HID_DLL_FUNCTIONS_WIN_
+#ifndef DEVICE_GAMEPAD_HID_DLL_FUNCTIONS_WIN_H_
+#define DEVICE_GAMEPAD_HID_DLL_FUNCTIONS_WIN_H_
 
 #include <Unknwn.h>
 #include <WinDef.h>
@@ -100,4 +100,4 @@ class HidDllFunctionsWin {
 
 }  // namespace device
 
-#endif  // DEVICE_GAMEPAD_HID_DLL_FUNCTIONS_WIN_
+#endif  // DEVICE_GAMEPAD_HID_DLL_FUNCTIONS_WIN_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_GAMEPAD_DEVICE_GAMEPAD_EXPORT_H_
-#define DEVICE_GAMEPAD_DEVICE_GAMEPAD_EXPORT_H_
+#ifndef DEVICE_GAMEPAD_GAMEPAD_EXPORT_H_
+#define DEVICE_GAMEPAD_GAMEPAD_EXPORT_H_
 
 #if defined(COMPONENT_BUILD) && defined(WIN32)
 
@@ -25,4 +25,4 @@
 #define DEVICE_GAMEPAD_EXPORT
 #endif
 
-#endif  // DEVICE_GAMEPAD_DEVICE_GAMEPAD_EXPORT_H_
+#endif  // DEVICE_GAMEPAD_GAMEPAD_EXPORT_H_

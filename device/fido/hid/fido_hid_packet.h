@@ -111,4 +111,4 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidContinuationPacket final
 
 }  // namespace device
 
-#endif  // DEVICE_FIDO_FIDO_HID_PACKET_H_
+#endif  // DEVICE_FIDO_HID_FIDO_HID_PACKET_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_ANDROID_GVR_DELEGATE_H
-#define DEVICE_VR_ANDROID_GVR_DELEGATE_H
+#ifndef DEVICE_VR_ANDROID_GVR_GVR_DELEGATE_H_
+#define DEVICE_VR_ANDROID_GVR_GVR_DELEGATE_H_
 
 #include <stdint.h>
 
@@ -41,4 +41,4 @@ class DEVICE_VR_EXPORT GvrDelegate {
 
 }  // namespace device
 
-#endif  // DEVICE_VR_ANDROID_GVR_DELEGATE_H
+#endif  // DEVICE_VR_ANDROID_GVR_GVR_DELEGATE_H_

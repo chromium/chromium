@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_GAMEPAD_GAMEPAD_DEVICE_LINUX_
-#define DEVICE_GAMEPAD_GAMEPAD_DEVICE_LINUX_
+#ifndef DEVICE_GAMEPAD_GAMEPAD_DEVICE_LINUX_H_
+#define DEVICE_GAMEPAD_GAMEPAD_DEVICE_LINUX_H_
 
 #include <memory>
 #include <string>
@@ -201,4 +201,4 @@ class GamepadDeviceLinux final : public AbstractHapticGamepad {
 
 }  // namespace device
 
-#endif  // DEVICE_GAMEPAD_GAMEPAD_DEVICE_LINUX_
+#endif  // DEVICE_GAMEPAD_GAMEPAD_DEVICE_LINUX_H_

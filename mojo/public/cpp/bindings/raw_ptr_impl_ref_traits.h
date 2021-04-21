@@ -19,4 +19,4 @@ struct RawPtrImplRefTraits {
 
 }  // namespace mojo
 
-#endif  // MOJO_PUBLIC_CPP_BINDINGS_LIB_RAW_PTR_IMPL_REF_TRAITS_H_
+#endif  // MOJO_PUBLIC_CPP_BINDINGS_RAW_PTR_IMPL_REF_TRAITS_H_

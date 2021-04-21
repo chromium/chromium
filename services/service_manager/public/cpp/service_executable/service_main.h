@@ -13,4 +13,4 @@
 void ServiceMain(
     mojo::PendingReceiver<service_manager::mojom::Service> receiver);
 
-#endif  // SERVICES_SERVICE_MANAGER_PUBLIC_CPP_STANDALONE_SERVICE_SERVICE_MAIN_H_
+#endif  // SERVICES_SERVICE_MANAGER_PUBLIC_CPP_SERVICE_EXECUTABLE_SERVICE_MAIN_H_

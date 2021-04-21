@@ -94,4 +94,4 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TLSSocketFactory {
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_SOCKET_FACTORY_H_
+#endif  // SERVICES_NETWORK_TLS_SOCKET_FACTORY_H_

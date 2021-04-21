@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_ANDROID_GVR_DELEGATE_PROVIDER_FACTORY_H_
-#define DEVICE_VR_ANDROID_GVR_DELEGATE_PROVIDER_FACTORY_H_
+#ifndef DEVICE_VR_ANDROID_GVR_GVR_DELEGATE_PROVIDER_FACTORY_H_
+#define DEVICE_VR_ANDROID_GVR_GVR_DELEGATE_PROVIDER_FACTORY_H_
 
 #include <memory>
 
@@ -38,4 +38,4 @@ class DEVICE_VR_EXPORT GvrDelegateProviderFactory {
 
 }  // namespace device
 
-#endif  // DEVICE_VR_ANDROID_GVR_DELEGATE_PROVIDER_FACTORY_H_
+#endif  // DEVICE_VR_ANDROID_GVR_GVR_DELEGATE_PROVIDER_FACTORY_H_

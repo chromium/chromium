@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_VIDEO_CAPTURE_VIDEO_CAPTURE_SERVICE_EVENT_H_
-#define SERVICES_VIDEO_CAPTURE_VIDEO_CAPTURE_SERVICE_EVENT_H_
+#ifndef SERVICES_VIDEO_CAPTURE_PUBLIC_UMA_VIDEO_CAPTURE_SERVICE_EVENT_H_
+#define SERVICES_VIDEO_CAPTURE_PUBLIC_UMA_VIDEO_CAPTURE_SERVICE_EVENT_H_
 
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -68,4 +68,4 @@ void LogMacbookRetryGetDeviceInfosEvent(MacbookRetryGetDeviceInfosEvent event);
 }  // namespace uma
 }  // namespace video_capture
 
-#endif  // SERVICES_VIDEO_CAPTURE_VIDEO_CAPTURE_SERVICE_EVENT_H_
+#endif  // SERVICES_VIDEO_CAPTURE_PUBLIC_UMA_VIDEO_CAPTURE_SERVICE_EVENT_H_

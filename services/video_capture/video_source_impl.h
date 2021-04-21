@@ -86,4 +86,4 @@ class VideoSourceImpl : public mojom::VideoSource {
 
 }  // namespace video_capture
 
-#endif  // SERVICES_VIDEO_CAPTURE_VIDEO_SOURCE_PROVIDER_IMPL_H_
+#endif  // SERVICES_VIDEO_CAPTURE_VIDEO_SOURCE_IMPL_H_

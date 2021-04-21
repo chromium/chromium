@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MOJO_PUBLIC_CPP_BINDINGS_ARRAY_TRAITS_CARRAY_H_
-#define MOJO_PUBLIC_CPP_BINDINGS_ARRAY_TRAITS_CARRAY_H_
+#ifndef MOJO_PUBLIC_CPP_BINDINGS_ARRAY_TRAITS_SPAN_H_
+#define MOJO_PUBLIC_CPP_BINDINGS_ARRAY_TRAITS_SPAN_H_
 
 #include <cstddef>
 
@@ -40,4 +40,4 @@ struct ArrayTraits<base::span<T, Extent>> {
 
 }  // namespace mojo
 
-#endif  // MOJO_PUBLIC_CPP_BINDINGS_ARRAY_TRAITS_CARRAY_H_
+#endif  // MOJO_PUBLIC_CPP_BINDINGS_ARRAY_TRAITS_SPAN_H_
