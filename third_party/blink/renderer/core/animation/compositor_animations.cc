@@ -164,18 +164,25 @@ void DefaultToUnsupportedProperty(
   }
 }
 
-bool IsNoOpBackgroundColorAnimation(const PropertyHandle& property,
-                                    const LayoutObject* layout_object) {
-  if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled())
-    return false;
-  if (property.GetCSSProperty().PropertyID() != CSSPropertyID::kBackgroundColor)
-    return false;
+// True if it is either a no-op background-color animation, or a no-op custom
+// property animation.
+bool IsNoOpBGColorOrVariableAnimation(const PropertyHandle& property,
+                                      const LayoutObject* layout_object) {
   // If the background color paint worklet was painted, a unique id will be
   // generated. See BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams
   // for details.
-  if (layout_object->FirstFragment().HasUniqueId())
+  // Similar to that, if a CSS paint worklet was painted, a unique id will be
+  // generated. See CSSPaintValue::GetImage for details.
+  bool has_unique_id = layout_object->FirstFragment().HasUniqueId();
+  if (has_unique_id)
     return false;
-  return true;
+  // Now the |has_unique_id| == false.
+  bool is_no_op_bgcolor_anim =
+      RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
+      property.GetCSSProperty().PropertyID() == CSSPropertyID::kBackgroundColor;
+  bool is_no_op_variable_anim =
+      property.GetCSSProperty().PropertyID() == CSSPropertyID::kVariable;
+  return is_no_op_variable_anim || is_no_op_bgcolor_anim;
 }
 
 }  // namespace
@@ -866,8 +873,8 @@ void CompositorAnimations::GetAnimationOnCompositor(
 
     // By default, it is a kInvalidElementId.
     CompositorElementId id;
-    if (!IsNoOpBackgroundColorAnimation(property,
-                                        target_element.GetLayoutObject())) {
+    if (!IsNoOpBGColorOrVariableAnimation(property,
+                                          target_element.GetLayoutObject())) {
       id = CompositorElementIdFromUniqueObjectId(
           target_element.GetLayoutObject()->UniqueId(),
           CompositorElementNamespaceForProperty(
