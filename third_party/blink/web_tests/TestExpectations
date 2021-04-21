@@ -402,7 +402,7 @@ crbug.com/954591 external/wpt/css/css-transforms/composited-under-rotateY-180deg
 crbug.com/954591 external/wpt/css/css-transforms/composited-under-rotateY-180deg-clip.html [ Failure ]
 
 # Fixed in CompositeAfterPaint.
-crbug.com/918155 virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested-2.html [ Failure ]
+crbug.com/918155 virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested-2.html [ Failure Pass Crash ]
 crbug.com/918155 virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested.html [ Failure ]
 
 # WebGPU tests are only run on GPU bots, so they are skipped by default and run
@@ -5192,7 +5192,7 @@ crbug.com/874931 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth
 crbug.com/875003 [ Win ] editing/caret/caret-is-hidden-when-no-focus.html [ Pass Failure ]
 
 # Sheiff failures 2021-04-09
-crbug.com/1197444 [ Linux ] virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested-2.html [ Failure ]
+crbug.com/1197444 [ Linux ] virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested-2.html [ Failure Pass Crash ]
 crbug.com/1197444 [ Linux ] virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/animations/two-background-color-animation-diff-length3.html [ Failure ]
 
 crbug.com/715718 external/wpt/media-source/mediasource-remove.html [ Failure Pass ]
@@ -5645,6 +5645,8 @@ crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-nested-divs-forbidden
 # The next also fails due to crbug.com/891427, thus disabled on all platforms.
 crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-nested-divs.html [ Skip ]
 crbug.com/874162 [ Mac ] fast/events/selection-autoscroll-borderbelt.html [ Skip ]
+
+crbug.com/1198842 [ Linux ] virtual/scroll-unification/fast/events/selection-autoscroll-borderbelt.html [ Timeout Pass ]
 
 # Passes in threaded mode, fails without it. This is a real bug.
 crbug.com/1112183 fast/scrolling/autoscroll-iframe-no-scrolling.html [ Failure ]
@@ -6789,7 +6791,7 @@ crbug.com/1150700 [ Win ] virtual/plz-dedicated-worker/external/wpt/service-work
 crbug.com/1150700 [ Win ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/update-bytecheck-cors-import.https.html [ Pass Timeout ]
 
 # Disable flaky tests when scroll unification is enabled
-crbug.com/1130020 virtual/scroll-unification/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Pass Failure Timeout ]
+crbug.com/1130020 virtual/scroll-unification/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Pass Failure Timeout Crash ]
 crbug.com/1130020 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Pass Failure Timeout ]
 
 # WebBundle tests which fail
@@ -7263,5 +7265,6 @@ crbug.com/1194226 virtual/no-alloc-direct-call/fast/canvas/canvas-hit-regions-fa
 crbug.com/1194226 virtual/no-alloc-direct-call/fast/canvas/canvas-hit-regions-fallback-element-test-3.html [ Crash ]
 crbug.com/1194226 virtual/no-alloc-direct-call/external/wpt/html/canvas/element/manual/filters/canvas-filter-object-blur.html [ Crash ]
 
+crbug.com/1197444 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/nested-scroll-overlay-scrollbar.html [ Pass Crash Failure ]
 # Sheriff 2021-04-21
 crbug.com/1200671 [ Linux ] external/wpt/webrtc/protocol/rtp-payloadtypes.html [ Pass Crash ]
