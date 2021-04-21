@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_type.h"
+#import "ios/chrome/browser/ui/first_run/signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/welcome_screen_coordinator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -82,6 +83,10 @@
                                    browser:self.browser
                                   delegate:self];
     case kSignIn:
+      return [[SigninScreenCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:self.browser
+                                  delegate:self];
     case kSync:
     case kDefaultBrowserPromo:
       // TODO (crbug.com/1189807): Create screen coordinators for sign-in, sync

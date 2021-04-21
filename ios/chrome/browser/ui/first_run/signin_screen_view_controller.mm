@@ -9,6 +9,14 @@
 #endif
 
 @implementation SigninScreenViewController
+@dynamic delegate;
+
+- (void)viewDidLoad {
+  // TODO(crbug.com/1189836): set strings and images to the view.
+  self.titleText = @"Test Sign-in Screen";
+  self.primaryActionString = @"Test Continue Button";
+  [super viewDidLoad];
+}
 
 #pragma mark - SignInScreenConsumer
 

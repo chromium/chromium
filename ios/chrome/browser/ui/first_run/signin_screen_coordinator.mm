@@ -19,6 +19,8 @@
 @interface SigninScreenCoordinator () <IdentityChooserCoordinatorDelegate,
                                        SigninScreenViewControllerDelegate>
 
+// First run screen delegate.
+@property(nonatomic, weak) id<FirstRunScreenDelegate> delegate;
 // Sign-in screen view controller.
 @property(nonatomic, strong) SigninScreenViewController* viewController;
 // Sign-in screen mediator.
@@ -37,11 +39,14 @@
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
+                                         browser:(Browser*)browser
+                                        delegate:(id<FirstRunScreenDelegate>)
+                                                     delegate {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
+    _delegate = delegate;
   }
   return self;
 }
@@ -55,8 +60,9 @@
   self.viewController.delegate = self;
   self.mediator = [[SigninScreenMediator alloc] init];
   self.mediator.consumer = self.viewController;
-  [self.baseNavigationController pushViewController:self.viewController
-                                           animated:YES];
+  BOOL animated = self.baseNavigationController.topViewController != nil;
+  [self.baseNavigationController setViewControllers:@[ self.viewController ]
+                                           animated:animated];
 }
 
 - (void)stop {
@@ -80,6 +86,11 @@
   [self.identityChooserCoordinator start];
   self.identityChooserCoordinator.selectedIdentity =
       self.mediator.selectedIdentity;
+}
+
+- (void)didTapPrimaryActionButton {
+  // TODO(crbug.com/1189836): store the sync status
+  [self.delegate willFinishPresenting];
 }
 
 #pragma mark - IdentityChooserCoordinatorDelegate
