@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_storage_sql.h"
+#include "content/browser/conversions/sql_utils.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -14,6 +15,53 @@
 #include "sql/transaction.h"
 
 namespace content {
+
+namespace {
+
+// |ConversionStorageSql::GetImpressions()| cannot be used for migration logic
+// as it may use columns that are not present in older versions.
+std::vector<StorableImpression> GetImpressions(sql::Database* db,
+                                               int64_t start_impression_id,
+                                               int num_impressions) {
+  DCHECK_GE(num_impressions, 0);
+  const char kGetImpressionsSql[] =
+      "SELECT impression_data, impression_origin, conversion_origin, "
+      "reporting_origin, impression_time, expiry_time, impression_id "
+      "FROM impressions "
+      "WHERE impression_id >= ? "
+      "LIMIT ?";
+
+  sql::Statement statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kGetImpressionsSql));
+  statement.BindInt64(0, start_impression_id);
+  statement.BindInt(1, num_impressions);
+
+  std::vector<StorableImpression> impressions;
+  while (statement.Step()) {
+    std::string impression_data = statement.ColumnString(0);
+    url::Origin impression_origin =
+        DeserializeOrigin(statement.ColumnString(1));
+    url::Origin conversion_destination =
+        DeserializeOrigin(statement.ColumnString(2));
+    url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(3));
+    base::Time impression_time = DeserializeTime(statement.ColumnInt64(4));
+    base::Time expiry_time = DeserializeTime(statement.ColumnInt64(5));
+    int64_t impression_id = statement.ColumnInt64(6);
+
+    // All impressions prior to the addition of the |source_type| column are
+    // |kNavigation|.
+    StorableImpression impression(
+        impression_data, impression_origin, conversion_destination,
+        reporting_origin, impression_time, expiry_time,
+        StorableImpression::SourceType::kNavigation, impression_id);
+    impressions.push_back(std::move(impression));
+  }
+  if (!statement.Succeeded())
+    return {};
+  return impressions;
+}
+
+}  // namespace
 
 bool ConversionStorageSqlMigrations::UpgradeSchema(
     ConversionStorageSql* conversion_storage,
@@ -104,9 +152,7 @@ bool ConversionStorageSqlMigrations::MigrateToVersion2(
   int64_t start_impression_id = 0;
   const size_t kNumImpressionsPerUpdate = 100u;
   std::vector<StorableImpression> impressions =
-      conversion_storage->GetImpressionsForMigration(
-          ConversionStorageSql::ImpressionFilter::kAll, base::Time::Min(),
-          start_impression_id, kNumImpressionsPerUpdate);
+      GetImpressions(db, start_impression_id, kNumImpressionsPerUpdate);
 
   const char kUpdateDestinationSql[] =
       "UPDATE impressions SET conversion_destination = ? WHERE impression_id = "
@@ -134,9 +180,8 @@ bool ConversionStorageSqlMigrations::MigrateToVersion2(
 
     // Fetch the next batch of rows from the database.
     start_impression_id += 1;
-    impressions = conversion_storage->GetImpressionsForMigration(
-        ConversionStorageSql::ImpressionFilter::kAll, base::Time::Min(),
-        start_impression_id, kNumImpressionsPerUpdate);
+    impressions =
+        GetImpressions(db, start_impression_id, kNumImpressionsPerUpdate);
   }
 
   // Create the pre-existing impression table indices on the new table.

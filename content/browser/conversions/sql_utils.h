@@ -18,6 +18,8 @@ url::Origin DeserializeOrigin(const std::string& origin);
 
 int64_t SerializeTime(base::Time time);
 
+base::Time DeserializeTime(int64_t microseconds);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_CONVERSIONS_SQL_UTILS_H_
