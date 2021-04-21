@@ -61,25 +61,10 @@ struct ActivateResult {
 
 }  // namespace
 
-class PrerenderHost::PageHolderInterface {
+class PrerenderHost::PageHolder : public FrameTree::Delegate,
+                                  public NavigationControllerDelegate {
  public:
-  PageHolderInterface() = default;
-  virtual ~PageHolderInterface() = default;
-  virtual NavigationController& GetNavigationController() = 0;
-  virtual RenderFrameHostImpl* GetMainFrame() = 0;
-  virtual WebContents* GetWebContents() = 0;
-  virtual ActivateResult Activate(
-      RenderFrameHostImpl& current_render_frame_host,
-      NavigationRequest& navigation_request) = 0;
-  virtual void WaitForLoadCompletionForTesting() = 0;  // IN-TEST
-};
-
-class PrerenderHost::MPArchPageHolder
-    : public PrerenderHost::PageHolderInterface,
-      public FrameTree::Delegate,
-      public NavigationControllerDelegate {
- public:
-  explicit MPArchPageHolder(WebContentsImpl& web_contents)
+  explicit PageHolder(WebContentsImpl& web_contents)
       : web_contents_(web_contents),
         frame_tree_(
             std::make_unique<FrameTree>(web_contents.GetBrowserContext(),
@@ -90,8 +75,6 @@ class PrerenderHost::MPArchPageHolder
                                         &web_contents,
                                         &web_contents,
                                         &web_contents)) {
-    DCHECK(blink::features::IsPrerenderMPArchEnabled());
-
     frame_tree_->Init(
         SiteInstance::Create(web_contents.GetBrowserContext()).get(),
         /*renderer_initiated_creation=*/false,
@@ -104,7 +87,7 @@ class PrerenderHost::MPArchPageHolder
         /*is_main_frame=*/true);
   }
 
-  ~MPArchPageHolder() override {
+  ~PageHolder() override {
     if (frame_tree_)
       frame_tree_->Shutdown();
   }
@@ -144,17 +127,16 @@ class PrerenderHost::MPArchPageHolder
   WebContents* GetWebContents() override { return &web_contents_; }
   void UpdateOverridingUserAgent() override {}
 
-  // PageHolder
-  NavigationControllerImpl& GetNavigationController() override {
+  NavigationControllerImpl& GetNavigationController() {
     return frame_tree_->controller();
   }
 
-  RenderFrameHostImpl* GetMainFrame() override {
+  RenderFrameHostImpl* GetMainFrame() {
     return frame_tree_->root()->current_frame_host();
   }
 
   ActivateResult Activate(RenderFrameHostImpl& current_render_frame_host,
-                          NavigationRequest& navigation_request) override {
+                          NavigationRequest& navigation_request) {
     if (frame_tree_->root()->HasNavigation()) {
       // We do not yet support activation if there is an ongoing navigation in
       // the main frame as the code assumes that NavigationRequest is associated
@@ -221,7 +203,7 @@ class PrerenderHost::MPArchPageHolder
     return ActivateResult(FinalStatus::kActivated, std::move(page));
   }
 
-  void WaitForLoadCompletionForTesting() override {
+  void WaitForLoadCompletionForTesting() {
     if (!frame_tree_->IsLoading())
       return;
 
@@ -239,96 +221,6 @@ class PrerenderHost::MPArchPageHolder
   // tree, while |frame_tree_| will be deleted.
   std::unique_ptr<FrameTree> frame_tree_;
   base::OnceClosure on_stopped_loading_for_tests_;
-};
-
-class PrerenderHost::WebContentsPageHolder
-    : public PrerenderHost::PageHolderInterface {
- public:
-  explicit WebContentsPageHolder(BrowserContext* browser_context) {
-    DCHECK(blink::features::IsPrerenderWebContentsEnabled());
-
-    // Create a new WebContents for prerendering.
-    WebContents::CreateParams web_contents_params(browser_context);
-    web_contents_params.is_prerendering = true;
-    // TODO(https://crbug.com/1132746): Set up other fields of
-    // `web_contents_params` as well, and add tests for them.
-    web_contents_ = WebContents::Create(web_contents_params);
-    DCHECK(static_cast<WebContentsImpl*>(web_contents_.get())
-               ->GetFrameTree()
-               ->is_prerendering());
-  }
-
-  ~WebContentsPageHolder() override = default;
-
-  // PageHolder
-  NavigationController& GetNavigationController() override {
-    return web_contents_->GetController();
-  }
-
-  RenderFrameHostImpl* GetMainFrame() override {
-    return static_cast<RenderFrameHostImpl*>(web_contents_->GetMainFrame());
-  }
-
-  WebContents* GetWebContents() override { return web_contents_.get(); }
-
-  ActivateResult Activate(RenderFrameHostImpl& current_render_frame_host,
-                          NavigationRequest& navigation_request) override {
-    auto* current_web_contents =
-        WebContents::FromRenderFrameHost(&current_render_frame_host);
-    DCHECK(current_web_contents);
-
-    // Merge browsing history.
-    GetNavigationController().CopyStateFromAndPrune(
-        &current_web_contents->GetController(), /*replace_entry=*/false);
-
-    // Activate the prerendered contents.
-    WebContentsDelegate* delegate = current_web_contents->GetDelegate();
-    DCHECK(delegate);
-    DCHECK(GetMainFrame()->frame_tree()->is_prerendering());
-    GetMainFrame()->frame_tree()->ActivatePrerenderedFrameTree();
-
-    // Tentatively use Portal's activation function.
-    // TODO(https://crbug.com/1132746): Replace this with the MPArch.
-    std::unique_ptr<WebContents> predecessor_web_contents =
-        delegate->ActivatePortalWebContents(current_web_contents,
-                                            std::move(web_contents_));
-
-    // Stop loading on the predecessor WebContents.
-    predecessor_web_contents->Stop();
-
-    return ActivateResult(FinalStatus::kActivated, nullptr);
-  }
-
-  void WaitForLoadCompletionForTesting() override {
-    if (!web_contents_ || !static_cast<WebContentsImpl*>(web_contents_.get())
-                               ->GetFrameTree()
-                               ->IsLoading()) {
-      return;
-    }
-
-    base::RunLoop loop;
-    LoadStopObserver observer(web_contents_.get(), loop.QuitClosure());
-    loop.Run();
-  }
-
- private:
-  class LoadStopObserver : public WebContentsObserver {
-   public:
-    LoadStopObserver(WebContents* web_contents,
-                     base::OnceClosure on_stopped_loading)
-        : WebContentsObserver(web_contents),
-          on_stopped_loading_(std::move(on_stopped_loading)) {}
-
-    void DidStopLoading() override {
-      std::move(on_stopped_loading_).Run();
-      Observe(nullptr);
-    }
-
-   private:
-    base::OnceClosure on_stopped_loading_;
-  };
-
-  std::unique_ptr<WebContents> web_contents_;
 };
 
 PrerenderHost::PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
@@ -413,7 +305,6 @@ PrerenderHost::ActivatePrerenderedContents(
     observer.OnActivated();
 
   RecordFinalStatus(FinalStatus::kActivated);
-  // NOTE: for activation with multiple WebContents, `entry` is null.
   return std::move(result.entry);
 }
 
@@ -427,18 +318,7 @@ void PrerenderHost::RecordFinalStatus(base::PassKey<PrerenderHostRegistry>,
 }
 
 void PrerenderHost::CreatePageHolder(WebContentsImpl& web_contents) {
-  switch (blink::features::kPrerender2ImplementationParam.Get()) {
-    case blink::features::Prerender2Implementation::kWebContents: {
-      page_holder_ = std::make_unique<WebContentsPageHolder>(
-          web_contents.GetBrowserContext());
-      break;
-    }
-    case blink::features::Prerender2Implementation::kMPArch: {
-      page_holder_ = std::make_unique<MPArchPageHolder>(web_contents);
-      break;
-    }
-  }
-
+  page_holder_ = std::make_unique<PageHolder>(web_contents);
   frame_tree_node_id_ = page_holder_->GetMainFrame()->GetFrameTreeNodeId();
 }
 

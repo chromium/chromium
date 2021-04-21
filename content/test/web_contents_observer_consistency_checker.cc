@@ -164,7 +164,7 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
   bool host_exists = !current_hosts_.insert(routing_pair).second;
   // TODO(https://crbug.com/1179683): Figure out a better way to deal with
   // MPArch.
-  if (host_exists && !blink::features::IsPrerenderMPArchEnabled()) {
+  if (host_exists && !blink::features::IsPrerender2Enabled()) {
     CHECK(false)
         << "RenderFrameHostChanged called more than once for routing pair:"
         << Format(new_host);
@@ -177,8 +177,7 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
   // TODO(https://crbug.com/1179683): Figure out a better way to deal with
   // handling the new RenderFrameHost coming from a prerendered activation
   // rather than an ordinary activation.
-  if (!IsBackForwardCacheEnabled() &&
-      !blink::features::IsPrerenderMPArchEnabled()) {
+  if (!IsBackForwardCacheEnabled() && !blink::features::IsPrerender2Enabled()) {
     CHECK(!HasAnyChildren(new_host))
         << "A frame should not have children before it is committed.";
   }

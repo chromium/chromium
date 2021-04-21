@@ -19,20 +19,6 @@
 namespace content {
 namespace {
 
-enum PrerenderTestType {
-  kWebContents,
-  kMPArch,
-};
-
-std::string ToString(const testing::TestParamInfo<PrerenderTestType>& info) {
-  switch (info.param) {
-    case PrerenderTestType::kWebContents:
-      return "WebContents";
-    case PrerenderTestType::kMPArch:
-      return "MPArch";
-  }
-}
-
 // Finish a prerendering navigation that was already started with
 // CreateAndStartHost().
 void CommitPrerenderNavigation(PrerenderHost& host) {
@@ -54,22 +40,10 @@ class TestWebContentsDelegate : public WebContentsDelegate {
   ~TestWebContentsDelegate() override = default;
 };
 
-class PrerenderHostTest
-    : public RenderViewHostImplTestHarness,
-      public testing::WithParamInterface<PrerenderTestType> {
+class PrerenderHostTest : public RenderViewHostImplTestHarness {
  public:
   PrerenderHostTest() {
-    std::map<std::string, std::string> parameters;
-    switch (GetParam()) {
-      case kWebContents:
-        parameters["implementation"] = "webcontents";
-        break;
-      case kMPArch:
-        parameters["implementation"] = "mparch";
-        break;
-    }
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kPrerender2, parameters);
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
   }
 
   ~PrerenderHostTest() override = default;
@@ -87,15 +61,6 @@ class PrerenderHostTest
   void ExpectFinalStatus(PrerenderHost::FinalStatus status) {
     histogram_tester_.ExpectUniqueSample(
         "Prerender.Experimental.PrerenderHostFinalStatus", status, 1);
-  }
-
-  bool IsMPArchActive() const {
-    switch (GetParam()) {
-      case kWebContents:
-        return false;
-      case kMPArch:
-        return true;
-    }
   }
 
   std::unique_ptr<TestWebContents> CreateWebContents(const GURL& url) {
@@ -123,7 +88,7 @@ class PrerenderHostTest
   base::HistogramTester histogram_tester_;
 };
 
-TEST_P(PrerenderHostTest, Activate) {
+TEST_F(PrerenderHostTest, Activate) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
@@ -144,18 +109,11 @@ TEST_P(PrerenderHostTest, Activate) {
   auto sim_2 = NavigationSimulatorImpl::CreateBrowserInitiated(
       kPrerenderingUrl, web_contents.get());
   sim_2->Start();
-  if (IsMPArchActive()) {
-    sim_2->Commit();
-  } else {
-    // The multiple WebContents impl requires ActivatePrerenderedContents() to
-    // be called directly instead of just simulating navigation commit.
-    prerender_host->ActivatePrerenderedContents(*initiator_rfh,
-                                                *sim_2->GetNavigationHandle());
-  }
+  sim_2->Commit();
   ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
 }
 
-TEST_P(PrerenderHostTest, DontActivate) {
+TEST_F(PrerenderHostTest, DontActivate) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
@@ -176,11 +134,7 @@ TEST_P(PrerenderHostTest, DontActivate) {
 // start after the prerendered page has been reserved for activation.
 //
 // Regression test for https://crbug.com/1190262.
-TEST_P(PrerenderHostTest, MainFrameNavigationForReservedHost) {
-  // This test requires MPArch.
-  if (!IsMPArchActive())
-    return;
-
+TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
@@ -228,11 +182,7 @@ TEST_P(PrerenderHostTest, MainFrameNavigationForReservedHost) {
 // activation.
 //
 // Regression test for https://crbug.com/1190262.
-TEST_P(PrerenderHostTest, SubframeNavigationForReservedHost) {
-  // This test requires MPArch.
-  if (!IsMPArchActive())
-    return;
-
+TEST_F(PrerenderHostTest, SubframeNavigationForReservedHost) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
@@ -280,11 +230,6 @@ TEST_P(PrerenderHostTest, SubframeNavigationForReservedHost) {
   subframe_nav_sim->Wait();
   EXPECT_FALSE(subframe_nav_sim->IsDeferred());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PrerenderHostTest,
-                         testing::Values(kWebContents, kMPArch),
-                         ToString);
 
 }  // namespace
 }  // namespace content

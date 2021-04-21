@@ -572,13 +572,6 @@ void FrameTree::DidAccessInitialMainDocument() {
   controller().DidAccessInitialMainDocument();
 }
 
-void FrameTree::ActivatePrerenderedFrameTree() {
-  DCHECK(is_prerendering());
-  DCHECK(blink::features::IsPrerenderWebContentsEnabled());
-  type_ = FrameTree::Type::kPrimary;
-  GetMainFrame()->ActivateForPrerendering();
-}
-
 void FrameTree::DidStartLoadingNode(FrameTreeNode& node,
                                     bool to_different_document,
                                     bool was_previously_loading) {

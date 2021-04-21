@@ -3813,31 +3813,8 @@ void NavigationRequest::CommitNavigation() {
           origin);
   DCHECK(!isolation_info_for_subresources_.IsEmpty());
 
-  bool is_prerendering_activation_mparch =
-      IsPrerenderedPageActivation() &&
-      blink::features::IsPrerenderMPArchEnabled();
-  bool is_prerendering_activation_web_contents =
-      IsPrerenderedPageActivation() &&
-      blink::features::IsPrerenderWebContentsEnabled();
-
-  if (IsServedFromBackForwardCache() || is_prerendering_activation_mparch) {
+  if (IsServedFromBackForwardCache() || IsPrerenderedPageActivation()) {
     CommitPageActivation();
-    return;
-  }
-
-  if (is_prerendering_activation_web_contents) {
-    RenderFrameHostImpl* current_frame_host =
-        frame_tree_node_->current_frame_host();
-    DCHECK(!current_frame_host->GetParent());
-
-    auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-        current_frame_host->GetStoragePartition());
-    PrerenderHostRegistry* prerender_host_registry =
-        storage_partition_impl->GetPrerenderHostRegistry();
-    // Do not touch `this` after this point. Activating the reserved prerender
-    // host destroys `this`.
-    prerender_host_registry->ActivateReservedHost(prerender_frame_tree_node_id_,
-                                                  *current_frame_host, *this);
     return;
   }
 

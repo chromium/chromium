@@ -130,13 +130,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   bool is_ready_for_activation() const { return is_ready_for_activation_; }
 
  private:
-  // There are two implementations of this interface. One holds the page in a
-  // WebContents, and one holds it in a FrameTree (for MPArch).
-  // TODO(https://crbug.com/1170277): Remove once MPArch is the only
-  // implementation.
-  class PageHolderInterface;
-  class MPArchPageHolder;
-  class WebContentsPageHolder;
+  class PageHolder;
 
   void RecordFinalStatus(FinalStatus status);
 
@@ -160,7 +154,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
 
   base::Optional<FinalStatus> final_status_;
 
-  std::unique_ptr<PageHolderInterface> page_holder_;
+  std::unique_ptr<PageHolder> page_holder_;
 
   base::ObserverList<Observer> observers_;
 };

@@ -155,12 +155,6 @@ class CONTENT_EXPORT FrameTree {
 
   FrameTreeNode* root() const { return root_; }
 
-  // Sets |type_| to FrameTree::Type::kPrimary and activates the Prerendered
-  // page.
-  // TODO(https://crbug.com/1154501): Remove once MPArch is enabled, as this is
-  // only used in the multiple WebContents implementation of prerendering.
-  void ActivatePrerenderedFrameTree();
-
   bool is_prerendering() const { return type_ == FrameTree::Type::kPrerender; }
 
   Delegate* delegate() { return delegate_; }

@@ -8148,14 +8148,6 @@ void RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy(
 void RenderFrameHostImpl::ActivateForPrerendering() {
   DCHECK(blink::features::IsPrerender2Enabled());
 
-  // RenderFrameHostManager will swap the RenderFrameHostImpl and set the new
-  // one to kActive for the MPArch case.
-  if (blink::features::IsPrerenderWebContentsEnabled()) {
-    // Update the |lifecycle_state_| to kActive on activation.
-    DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kPrerendering);
-    SetLifecycleState(LifecycleStateImpl::kActive);
-  }
-
   // TODO(https://crbug.com/1186796): Loosen the policies of the mojo capability
   // control during dispatching the prerenderingchange event in the Blink.
 
@@ -9268,8 +9260,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // TODO(arthursonzogni): Updating this flag for same-document, bfcache, or
   // prerender navigation doesn't seem right. This should likely be executed in
   // DidCommitNewDocument().
-  if (IsBackForwardCacheEnabled() ||
-      blink::features::IsPrerenderMPArchEnabled()) {
+  if (IsBackForwardCacheEnabled() || blink::features::IsPrerender2Enabled()) {
     // Store the Commit params so they can be reused if the page is ever
     // restored from the BackForwardCache.
     last_commit_params_ = std::move(params);
