@@ -3409,6 +3409,22 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Panel"/>
 </enum>
 
+<enum name="AppType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Android app"/>
+  <int value="2" label="Built-in app"/>
+  <int value="3" label="Linux app"/>
+  <int value="4" label="Chrome app in a window"/>
+  <int value="5" label="Web app in a window"/>
+  <int value="6" label="Mac OS app"/>
+  <int value="7" label="Plugin VM"/>
+  <int value="8" label="Lacros browser"/>
+  <int value="9" label="Remote app"/>
+  <int value="10" label="Borealis app"/>
+  <int value="11" label="System web app"/>
+  <int value="12" label="Chrome browser (inc. web/Chrome apps in tabs)"/>
+</enum>
+
 <enum name="AppTypeToMenuEntry">
   <int value="0" label="WebApk install, menu item unknown (failure mode)"/>
   <int value="1"
@@ -42981,6 +42997,31 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="22" label="LM_UNKNOWN_WEBAPP">
     The requested web application was not installed
   </int>
+</enum>
+
+<enum name="LaunchSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Grid of apps, not the search box"/>
+  <int value="2" label="Grid of apps, Context menu"/>
+  <int value="3" label="Query-dependent results (larger icons)"/>
+  <int value="4" label="Query-dependent results; context menu"/>
+  <int value="5" label="Query-less recommendations (smaller icons)"/>
+  <int value="6" label="Parental Settings and Per App time notification"/>
+  <int value="7" label="Shelf"/>
+  <int value="8" label="FileManager"/>
+  <int value="9" label="Left-licking on links in the browser"/>
+  <int value="10" label="Enter URL in the Omnibox in the browser"/>
+  <int value="11" label="Chrome internal call"/>
+  <int value="12" label="Keyboard shortcut for opening app"/>
+  <int value="13" label="Clicking link in another app or webui"/>
+  <int value="14" label="Menu"/>
+  <int value="15" label="Installed notification"/>
+  <int value="16" label="Test"/>
+  <int value="17" label="Arc"/>
+  <int value="18" label="Sharesheet"/>
+  <int value="19" label="Release Notes Notification"/>
+  <int value="20" label="Full restore"/>
+  <int value="21" label="Smart text selection context menu"/>
 </enum>
 
 <enum name="LaunchType">

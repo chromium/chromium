@@ -201,7 +201,10 @@ struct IconValue {
 };
 
 // Enumeration of possible app launch sources.
-// This should be kept in sync with histogram_suffixes_list.xml.
+// This should be kept in sync with histogram_suffixes_list.xml, and
+// LaunchSource in enums.xml.
+// Note the enumeration is used in UMA histogram so entries should not be
+// re-ordered or removed. New entries should be added at the bottom.
 enum LaunchSource {
   kUnknown = 0,
   kFromAppListGrid = 1,               // Grid of apps, not the search box.

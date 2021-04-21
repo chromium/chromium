@@ -303,6 +303,11 @@ class AppServiceProxyBase : public KeyedService,
   apps::mojom::IntentFilterPtr FindBestMatchingFilter(
       const apps::mojom::IntentPtr& intent);
 
+  virtual void RecordAppPlatformMetrics(Profile* profile,
+                                        const apps::AppUpdate& update,
+                                        apps::mojom::LaunchSource launch_source,
+                                        apps::mojom::LaunchContainer container);
+
   // This proxy privately owns its instance of the App Service. This should not
   // be exposed except through the Mojo interface connected to |app_service_|.
   std::unique_ptr<apps::AppServiceImpl> app_service_impl_;

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/publishers/lacros_apps.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
@@ -429,6 +430,14 @@ void AppServiceProxyChromeOs::OnAppUpdate(const apps::AppUpdate& update) {
   }
 
   AppServiceProxyBase::OnAppUpdate(update);
+}
+
+void AppServiceProxyChromeOs::RecordAppPlatformMetrics(
+    Profile* profile,
+    const apps::AppUpdate& update,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::LaunchContainer container) {
+  RecordAppLaunchMetrics(profile, update, launch_source, container);
 }
 
 ScopedOmitBuiltInAppsForTesting::ScopedOmitBuiltInAppsForTesting()

@@ -142,6 +142,12 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
   // apps::AppRegistryCache::Observer overrides:
   void OnAppUpdate(const apps::AppUpdate& update) override;
 
+  void RecordAppPlatformMetrics(
+      Profile* profile,
+      const apps::AppUpdate& update,
+      apps::mojom::LaunchSource launch_source,
+      apps::mojom::LaunchContainer container) override;
+
   std::unique_ptr<BuiltInChromeOsApps> built_in_chrome_os_apps_;
   std::unique_ptr<CrostiniApps> crostini_apps_;
   std::unique_ptr<ExtensionAppsChromeOs> extension_apps_;
