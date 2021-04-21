@@ -19,7 +19,7 @@ namespace autofill {
 
 using structured_address::VerificationStatus;
 
-namespace import_data_unittest {
+namespace {
 
 // Test that two subsequently created `ProfileImportProcess`s have distinct ids.
 TEST(AutofillProfileImportProcess, DistinctIds) {
@@ -459,6 +459,6 @@ TEST(AutofillProfileImportProcess, BothMergeAndSilentUpdate_Rejected) {
   EXPECT_EQ(import_data.GetResultingProfiles(), expected_resulting_profiles);
 }
 
-}  // namespace import_data_unittest
+}  // namespace
 
 }  // namespace autofill

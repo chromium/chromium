@@ -17,42 +17,113 @@ AddressProfileSaveManager::AddressProfileSaveManager(
 
 AddressProfileSaveManager::~AddressProfileSaveManager() = default;
 
-void AddressProfileSaveManager::SaveProfile(const AutofillProfile& profile) {
+void AddressProfileSaveManager::ImportProfileFromForm(
+    const AutofillProfile& observed_profile,
+    const std::string& app_locale) {
+  // Without a personal data manager, profile storage is not possible.
   if (!personal_data_manager_)
     return;
 
-  if (base::FeatureList::IsEnabled(
+  // If the explicit save prompts are not enabled, revert back to the legacy
+  // behavior and directly import the observed profile without recording any
+  // additional metrics.
+  if (!base::FeatureList::IsEnabled(
           features::kAutofillAddressProfileSavePrompt)) {
-    client_->ConfirmSaveAddressProfile(
-        profile, /*original_profile=*/nullptr,
-        base::BindOnce(&AddressProfileSaveManager::SaveProfilePromptCallback,
-                       weak_ptr_factory_.GetWeakPtr()));
+    personal_data_manager_->SaveImportedProfile(observed_profile);
     return;
   }
-  SaveProfileInternal(profile);
+
+  // Otherwise, check if there is already an import process started.
+  if (pending_import_.has_value()) {
+    // If either the observed profile is the same or if the prompt has already
+    // been shown to the user, do nothing and return.
+    if (pending_import_->observed_profile() == observed_profile ||
+        pending_import_->prompt_shown()) {
+      return;
+    }
+  }
+
+  // Create a new pending import process. If there was already an import
+  // process, it is only overwritten if the UI request was not initialized yet.
+  pending_import_ = ProfileImportProcess(
+      observed_profile, personal_data_manager_->GetProfiles(), app_locale);
+
+  MaybeOfferSavePrompt();
 }
 
-void AddressProfileSaveManager::SaveProfileInternal(
-    const AutofillProfile& profile) {
-  personal_data_manager_->SaveImportedProfile(profile);
-}
+void AddressProfileSaveManager::MaybeOfferSavePrompt() {
+  DCHECK(pending_import_.has_value());
 
-void AddressProfileSaveManager::SaveProfilePromptCallback(
-    AutofillClient::SaveAddressProfileOfferUserDecision user_decision,
-    AutofillProfile profile) {
-  switch (user_decision) {
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted:
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kEdited:
-      personal_data_manager_->SaveImportedProfile(profile);
+  switch (pending_import_->import_type()) {
+    // If the import was duplicate or only results in silent updates, finish the
+    // process without initiating a user prompt.
+    case AutofillProfileImportType::kDuplicateImport:
+    case AutofillProfileImportType::kSilentUpdate:
+      pending_import_->AcceptWithoutPrompt();
+      FinalizeProfileImport();
       break;
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined:
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored:
+
+    // Both the import of a new profile, or a merge with an existing profile
+    // that changes a settings-visible value of an existing profile triggers a
+    // user prompt.
+    case AutofillProfileImportType::kNewProfile:
+    case AutofillProfileImportType::kConfirmableMerge:
+      OfferSavePrompt();
       break;
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kUndefined:
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kUserNotAsked:
+
+    case AutofillProfileImportType::kImportTypeUnspecified:
       NOTREACHED();
       break;
   }
+}
+
+void AddressProfileSaveManager::OfferSavePrompt() {
+  DCHECK(pending_import_.has_value());
+  // The prompt should not have been shown yet.
+  DCHECK(!pending_import_->prompt_shown());
+
+  // Initiate the prompt and mark it as shown.
+  pending_import_->set_prompt_was_shown();
+  client_->ConfirmSaveAddressProfile(
+      pending_import_->import_candidate().value(),
+      base::OptionalOrNullptr(pending_import_->merge_candidate()),
+      base::BindOnce(&AddressProfileSaveManager::OnUserDecision,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AddressProfileSaveManager::OnUserDecision(
+    AutofillClient::SaveAddressProfileOfferUserDecision decision,
+    AutofillProfile edited_profile) {
+  DCHECK(pending_import_.has_value());
+  DCHECK(pending_import_->prompt_shown());
+
+  pending_import_->SetUserDecision(decision, edited_profile);
+  FinalizeProfileImport();
+}
+
+void AddressProfileSaveManager::CollectMetrics() {
+  DCHECK(pending_import_);
+  // TODO(1188064): Add metrics.
+}
+
+void AddressProfileSaveManager::FinalizeProfileImport() {
+  DCHECK(pending_import_.has_value());
+  DCHECK(personal_data_manager_);
+
+  // If the profiles changed at all, reset the full list of AutofillProfiles in
+  // the personal data manager.
+  if (pending_import_->ProfilesChanged()) {
+    std::vector<AutofillProfile> resulting_profiles =
+        pending_import_->GetResultingProfiles();
+    personal_data_manager_->SetProfiles(&resulting_profiles);
+  }
+
+  CollectMetrics();
+  ClearPendingImport();
+}
+
+void AddressProfileSaveManager::ClearPendingImport() {
+  pending_import_.reset();
 }
 
 }  // namespace autofill

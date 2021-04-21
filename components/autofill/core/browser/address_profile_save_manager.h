@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_profile_import_process.h"
 
 namespace autofill {
 
@@ -25,22 +26,58 @@ class AddressProfileSaveManager {
   AddressProfileSaveManager(const AddressProfileSaveManager&) = delete;
   AddressProfileSaveManager& operator=(const AddressProfileSaveManager&) =
       delete;
+
   virtual ~AddressProfileSaveManager();
 
-  // Saves `profile` using the `personal_data_manager_`.
-  void SaveProfile(const AutofillProfile& profile);
+  // This method initiates the import process that is started when an importable
+  // `profile` is observed in a form submission. Depending on the scenario, the
+  // method will have no effect if `profile` resembles an already existing
+  // profile. If the import corresponds to a new profile, or to a change of an
+  // existing profile that must be confirmed by the user, a UI prompt will be
+  // initiated. At the end of the process, metrics will be recorded.
+  void ImportProfileFromForm(const AutofillProfile& profile,
+                             const std::string& app_locale);
+
+ protected:
+  // Initiates showing the prompt to the user.
+  // This function is virtual to be mocked in tests.
+  virtual void OfferSavePrompt();
+
+  // Clears the pending import. This method can be overloaded to store the
+  // history of import processes for testing purposes.
+  virtual void ClearPendingImport();
+
+  // Called after the user interaction with the UI is done.
+  void OnUserDecision(
+      AutofillClient::SaveAddressProfileOfferUserDecision decision,
+      AutofillProfile edited_profile);
+
+  ProfileImportProcess* pending_import() {
+    return base::OptionalOrNullptr(pending_import_);
+  }
 
  private:
-  void SaveProfilePromptCallback(
-      AutofillClient::SaveAddressProfileOfferUserDecision user_decision,
-      AutofillProfile profile);
-  void SaveProfileInternal(const AutofillProfile& profile);
+  // Called to initiate the actual storing of a profile.
+  // Verifies that the profile was actually imported.
+  void FinalizeProfileImport();
 
+  // Called to make the final decision if the UI should be shown, or if the
+  // import process should be continued silently.
+  void MaybeOfferSavePrompt();
+
+  // To collect metrics at the end of the import process.
+  void CollectMetrics();
+
+  // A pointer to the autofill client. It is assumed that the client outlives
+  // the instance of this class
   AutofillClient* const client_;
 
   // The personal data manager, used to save and load personal data to/from the
   // web database.
-  PersonalDataManager* const personal_data_manager_;
+  PersonalDataManager* const personal_data_manager_{nullptr};
+
+  // Data including the request id for the currently ongoing profile import.
+  base::Optional<ProfileImportProcess> pending_import_;
 
   base::WeakPtrFactory<AddressProfileSaveManager> weak_ptr_factory_{this};
 };

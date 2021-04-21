@@ -53,10 +53,13 @@ enum class AutofillProfileImportType {
 // metrics once an import process is finished.
 class ProfileImportProcess {
  public:
-  ProfileImportProcess(const ProfileImportProcess&) = delete;
   ProfileImportProcess(const AutofillProfile& observed_profile,
                        const std::vector<AutofillProfile*>& existing_profiles,
                        const std::string& app_locale);
+
+  ProfileImportProcess(const ProfileImportProcess&);
+  ProfileImportProcess& operator=(const ProfileImportProcess& other);
+
   ~ProfileImportProcess();
 
   // Returns true if showing the prompt was initiated for this import process.

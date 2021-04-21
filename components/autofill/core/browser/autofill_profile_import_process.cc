@@ -27,6 +27,12 @@ ProfileImportProcess::ProfileImportProcess(
   DetermineProfileImportType(existing_profiles, app_locale);
 }
 
+ProfileImportProcess::ProfileImportProcess(const ProfileImportProcess&) =
+    default;
+
+ProfileImportProcess& ProfileImportProcess::operator=(
+    const ProfileImportProcess& other) = default;
+
 ProfileImportProcess::~ProfileImportProcess() = default;
 
 bool ProfileImportProcess::prompt_shown() const {

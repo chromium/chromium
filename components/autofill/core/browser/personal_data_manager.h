@@ -438,6 +438,12 @@ class PersonalDataManager : public KeyedService,
   // Returns true if the PDM is in the off-the-record mode.
   bool IsOffTheRecord() { return is_off_the_record_; }
 
+  // Sets |web_profiles_| to the contents of |profiles| and updates the web
+  // database by adding, updating and removing profiles. |web_profiles_| need to
+  // be updated at the end of the function, since some tasks cannot tolerate
+  // database delays.
+  virtual void SetProfiles(std::vector<AutofillProfile>* profiles);
+
  protected:
   // Only PersonalDataManagerFactory and certain tests can create instances of
   // PersonalDataManager.
@@ -533,12 +539,6 @@ class PersonalDataManager : public KeyedService,
       std::vector<autofill::CreditCard>*);
   friend void SetTestProfiles(Profile* base_profile,
                               std::vector<AutofillProfile>* profiles);
-
-  // Sets |web_profiles_| to the contents of |profiles| and updates the web
-  // database by adding, updating and removing profiles. |web_profiles_| need to
-  // be updated at the end of the function, since some tasks cannot tolerate
-  // database delays.
-  virtual void SetProfiles(std::vector<AutofillProfile>* profiles);
 
   // Sets |credit_cards_| to the contents of |credit_cards| and updates the web
   // database by adding, updating and removing credit cards.
