@@ -190,6 +190,11 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
 
 ImageDecoderExternal::~ImageDecoderExternal() {
   DVLOG(1) << __func__;
+
+  // See OnContextDestroyed(); WeakPtrs must be invalidated ahead of GC.
+  DCHECK_EQ(pending_metadata_requests_, 0);
+  DCHECK(!weak_factory_.HasWeakPtrs());
+  DCHECK(!decode_weak_factory_.HasWeakPtrs());
 }
 
 ScriptPromise ImageDecoderExternal::decode(const ImageDecodeOptions* options) {
@@ -309,6 +314,7 @@ void ImageDecoderExternal::close() {
   if (consumer_)
     consumer_->Cancel();
   weak_factory_.InvalidateWeakPtrs();
+  pending_metadata_requests_ = 0;
   consumer_ = nullptr;
   decoder_.reset();
   tracks_->Disconnect();
@@ -378,7 +384,20 @@ void ImageDecoderExternal::ContextDestroyed() {
 }
 
 bool ImageDecoderExternal::HasPendingActivity() const {
-  return !pending_metadata_decodes_.IsEmpty() || !pending_decodes_.IsEmpty();
+  // WARNING: All pending WeakPtr bindings must be tracked here. I.e., all
+  // WTF::SequenceBound.Then() usage must be accounted for. Failure to do so
+  // will cause issues where WeakPtrs are valid between GC finalization and
+  // destruction.
+  const bool has_pending_activity = !pending_metadata_decodes_.IsEmpty() ||
+                                    !pending_decodes_.IsEmpty() ||
+                                    pending_metadata_requests_ > 0;
+
+  if (!has_pending_activity) {
+    DCHECK(!weak_factory_.HasWeakPtrs());
+    DCHECK(!decode_weak_factory_.HasWeakPtrs());
+  }
+
+  return has_pending_activity;
 }
 
 void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
@@ -505,6 +524,9 @@ void ImageDecoderExternal::DecodeMetadata() {
   DCHECK(decoder_);
   DCHECK(tracks_->IsEmpty() || tracks_->selectedTrack());
 
+  ++pending_metadata_requests_;
+  DCHECK_GE(pending_metadata_requests_, 1);
+
   decoder_->AsyncCall(&ImageDecoderCore::DecodeMetadata)
       .Then(CrossThreadBindOnce(&ImageDecoderExternal::OnMetadata,
                                 weak_factory_.GetWeakPtr()));
@@ -514,6 +536,9 @@ void ImageDecoderExternal::OnMetadata(
     ImageDecoderCore::ImageMetadata metadata) {
   DCHECK(decoder_);
   DCHECK(!closed_);
+
+  --pending_metadata_requests_;
+  DCHECK_GE(pending_metadata_requests_, 0);
 
   data_complete_ = metadata.data_complete;
   if (metadata.failed || failed_) {

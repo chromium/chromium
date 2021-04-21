@@ -121,6 +121,10 @@ class MODULES_EXPORT ImageDecoderExternal final
   // OnDecodeReady() or zeroed out by reset() or close().
   size_t num_submitted_decodes_ = 0u;
 
+  // Number of outstanding calls to DecodeMetadata(). Required to ensure the
+  // class isn't destructed while we have outstanding WeakPtrs.
+  int pending_metadata_requests_ = 0;
+
   // The workhorse which actually does the decoding. Bound to another sequence.
   std::unique_ptr<WTF::SequenceBound<ImageDecoderCore>> decoder_;
 

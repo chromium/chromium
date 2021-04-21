@@ -355,6 +355,24 @@ TEST_F(ImageDecoderTest, DecoderContextDestroyed) {
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
   EXPECT_EQ(decoder->type(), "image/gif");
 
+  // Decoder creation will queue metadata decoding which should be counted as
+  // pending activity.
+  EXPECT_TRUE(decoder->HasPendingActivity());
+  {
+    auto promise = decoder->decodeMetadata();
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+  }
+
+  // After metadata resolution completes, we should return to no activity.
+  EXPECT_FALSE(decoder->HasPendingActivity());
+
+  // Queue some activity.
+  decoder->decode();
+  EXPECT_TRUE(decoder->HasPendingActivity());
+
+  // Destroying the context should close() the decoder and stop all activity.
   v8_scope.GetExecutionContext()->NotifyContextDestroyed();
   EXPECT_FALSE(decoder->HasPendingActivity());
 
