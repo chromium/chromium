@@ -432,7 +432,7 @@ class TastTest(RemoteTest):
         # See the link below for the format of these errors:
         # https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Error
         for err in errors:
-          error_log += err['stack'].encode('utf-8') + '\n'
+          error_log += err['stack'] + '\n'
       error_log += (
           "\nIf you're unsure why this test failed, consult the steps "
           'outlined in\n%s\n' % TAST_DEBUG_DOC)
