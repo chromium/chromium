@@ -17,8 +17,6 @@
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/service_sandbox_type.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/media_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_process_host.h"
@@ -40,10 +38,10 @@
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/sequence_local_storage_slot.h"
 #include "base/time/time.h"
 #include "content/browser/media/cdm_registry_impl.h"
 #include "content/browser/media/cdm_storage_impl.h"
+#include "content/browser/media/service_factory.h"
 #include "media/base/key_system_names.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
@@ -73,43 +71,7 @@ namespace content {
 
 namespace {
 
-#if defined(OS_WIN)
-// TODO(xhwang): update to support per-site per-user CDM process (instead of
-// a global CDM service shared by all sites/users).
-
-// How long an instance of the MediaFoundationService is allowed to sit idle
-// before we disconnect and effectively kill it.
-constexpr base::TimeDelta kMediaFoundationServiceIdleTimeout =
-    base::TimeDelta::FromSeconds(5);
-
-// Gets an instance of the MediaFoundationService.
-// Instances are started lazily as needed.
-media::mojom::MediaFoundationService& GetMediaFoundationServiceInternal() {
-  // NOTE: We use sequence-local storage to limit the lifetime of this Remote to
-  // that of the UI-thread sequence. This ensures that the Remote is destroyed
-  // when the task environment is torn down and reinitialized, e.g. between unit
-  // tests.
-  static base::NoDestructor<base::SequenceLocalStorageSlot<
-      mojo::Remote<media::mojom::MediaFoundationService>>>
-      remote_slot;
-  auto& remote = remote_slot->GetOrCreateValue();
-  if (!remote) {
-    ServiceProcessHost::Launch(remote.BindNewPipeAndPassReceiver(),
-                               ServiceProcessHost::Options()
-                                   .WithDisplayName("Media Foundation Service")
-                                   .Pass());
-    remote.reset_on_disconnect();
-    remote.reset_on_idle_timeout(kMediaFoundationServiceIdleTimeout);
-  }
-
-  return *remote.get();
-}
-#endif  // defined(OS_WIN)
-
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-// How long an instance of the CDM service is allowed to sit idle before we
-// disconnect and effectively kill it.
-constexpr auto kCdmServiceIdleTimeout = base::TimeDelta::FromSeconds(5);
 
 // The CDM name will be displayed as the process name in the Task Manager.
 // Put a length limit and restrict to ASCII. Empty name is allowed, in which
@@ -119,88 +81,7 @@ bool IsValidCdmDisplayName(const std::string& cdm_name) {
   return cdm_name.size() <= kMaxCdmNameSize && base::IsStringASCII(cdm_name);
 }
 
-// CdmService is keyed on CDM type, user profile and site URL. Note that site
-// is not normal URL nor origin. See chrome/browser/site_isolation for details.
-using CdmServiceKey = std::tuple<base::Token, const BrowserContext*, GURL>;
-
-std::ostream& operator<<(std::ostream& os, const CdmServiceKey& key) {
-  return os << "{" << std::get<0>(key).ToString() << ", " << std::get<1>(key)
-            << ", " << std::get<2>(key) << "}";
-}
-
-// A map hosts all media::mojom::CdmService remotes, each of which corresponds
-// to one CDM process. There should be only one instance of this class stored in
-// base::SequenceLocalStorageSlot. See below.
-class CdmServiceMap {
- public:
-  CdmServiceMap() = default;
-  ~CdmServiceMap() = default;
-
-  // Gets or creates a media::mojom::CdmService remote. The returned remote
-  // might not be bound, e.g. if it's newly created.
-  auto& GetOrCreateRemote(const CdmServiceKey& key) { return remotes_[key]; }
-
-  void EraseRemote(const CdmServiceKey& key) {
-    DCHECK(remotes_.count(key));
-    remotes_.erase(key);
-  }
-
- private:
-  std::map<CdmServiceKey, mojo::Remote<media::mojom::CdmService>> remotes_;
-};
-
-CdmServiceMap& GetCdmServiceMap() {
-  // NOTE: Sequence-local storage is used to limit the lifetime of the Remote
-  // objects to that of the UI-thread sequence. This ensures the Remotes are
-  // destroyed when the task environment is torn down and reinitialized, e.g.,
-  // between unit tests.
-  static base::NoDestructor<base::SequenceLocalStorageSlot<CdmServiceMap>> slot;
-  return slot->GetOrCreateValue();
-}
-
-// Erases the CDM service instance for the CDM identified by |key|.
-void EraseCdmService(const CdmServiceKey& key) {
-  DVLOG(2) << __func__ << ": key=" << key;
-  GetCdmServiceMap().EraseRemote(key);
-}
-
-// Gets an instance of the CDM service for the CDM identified by |guid|.
-// Instances are started lazily as needed.
-media::mojom::CdmService& GetCdmService(const base::Token& guid,
-                                        BrowserContext* browser_context,
-                                        const GURL& site,
-                                        const CdmInfo& cdm_info) {
-  CdmServiceKey key;
-  std::string display_name = cdm_info.name;
-
-  if (base::FeatureList::IsEnabled(media::kCdmProcessSiteIsolation)) {
-    key = {guid, browser_context, site};
-    auto site_display_name =
-        GetContentClient()->browser()->GetSiteDisplayNameForCdmProcess(
-            browser_context, site);
-    display_name += " (" + site_display_name + ")";
-  } else {
-    key = {guid, nullptr, GURL()};
-  }
-  DVLOG(2) << __func__ << ": key=" << key;
-
-  auto& remote = GetCdmServiceMap().GetOrCreateRemote(key);
-  if (!remote) {
-    ServiceProcessHost::Options options;
-    options.WithDisplayName(display_name);
-    ServiceProcessHost::Launch(remote.BindNewPipeAndPassReceiver(),
-                               options.Pass());
-    remote.set_disconnect_handler(base::BindOnce(&EraseCdmService, key));
-    remote.set_idle_handler(kCdmServiceIdleTimeout,
-                            base::BindRepeating(EraseCdmService, key));
-  }
-
-  return *remote.get();
-}
-#endif  // ENABLE_LIBRARY_CDMS
-
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS) && defined(OS_MAC)
-
+#if defined(OS_MAC)
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 // TODO(xhwang): Move this to a common place.
 const base::FilePath::CharType kSignatureFileExtension[] =
@@ -254,10 +135,9 @@ class SeatbeltExtensionTokenProviderImpl
 
   DISALLOW_COPY_AND_ASSIGN(SeatbeltExtensionTokenProviderImpl);
 };
+#endif  // defined(OS_MAC)
 
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS) && defined(OS_MAC)
-
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kChromeOsCdmFileSystemId[] =
     "application_chromeos-cdm-factory-daemon";
 
@@ -272,7 +152,9 @@ enum class CrosCdmType {
 void ReportCdmTypeUMA(CrosCdmType cdm_type) {
   UMA_HISTOGRAM_ENUMERATION("Media.EME.CrosCdmType", cdm_type);
 }
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 // The amount of time to allow the secondary Media Service instance to idle
 // before tearing it down. Only used if the Content embedder defines how to
@@ -354,12 +236,6 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory {
 };
 
 }  // namespace
-
-#if defined(OS_WIN)
-media::mojom::MediaFoundationService& GetMediaFoundationService() {
-  return GetMediaFoundationServiceInternal();
-}
-#endif  // defined(OS_WIN)
 
 MediaInterfaceProxy::MediaInterfaceProxy(RenderFrameHost* render_frame_host)
     : render_frame_host_(render_frame_host) {
@@ -582,7 +458,9 @@ void MediaInterfaceProxy::ConnectToMediaFoundationService(
   DVLOG(1) << __func__ << ": this=" << this << ", cdm_path=" << cdm_path;
   DCHECK(!mf_interface_factory_remote_);
 
-  auto& mf_service = GetMediaFoundationService();
+  auto& mf_service = GetMediaFoundationService(
+      render_frame_host_->GetBrowserContext(),
+      render_frame_host_->GetSiteInstance()->GetSiteURL());
 
   // Must always call Initialize() after connecting to service.
   mf_service.Initialize(cdm_path);

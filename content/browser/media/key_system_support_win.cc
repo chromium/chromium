@@ -4,9 +4,10 @@
 
 #include "content/browser/media/key_system_support_win.h"
 
-#include "content/browser/media/media_interface_proxy.h"
+#include "content/browser/media/service_factory.h"
 #include "media/mojo/mojom/media_foundation_service.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -43,7 +44,8 @@ void GetMediaFoundationServiceHardwareSecureCdmCapability(
     const std::string& key_system,
     const base::FilePath& cdm_path,
     CdmCapabilityCB cdm_capability_cb) {
-  auto& mf_service = GetMediaFoundationService();
+  // CDM capability is global, use a generic BrowserContext and Site to query.
+  auto& mf_service = GetMediaFoundationService(nullptr, GURL());
   mf_service.Initialize(cdm_path);
   mf_service.IsKeySystemSupported(
       key_system,

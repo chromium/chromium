@@ -2506,6 +2506,13 @@ source_set("browser") {
     deps += [ "//ppapi/shared_impl" ]
   }
 
+  if (enable_library_cdms || is_win) {
+    sources += [
+      "media/service_factory.cc",
+      "media/service_factory.h",
+    ]
+  }
+
   if (use_atk) {
     sources += [
       "accessibility/accessibility_event_recorder_auralinux.cc",

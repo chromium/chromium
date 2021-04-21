@@ -41,10 +41,6 @@ namespace content {
 
 class RenderFrameHost;
 
-#if defined(OS_WIN)
-media::mojom::MediaFoundationService& GetMediaFoundationService();
-#endif
-
 // This implements the media::mojom::InterfaceFactory interface for a
 // RenderFrameHostImpl. Upon InterfaceFactory calls, it will
 // figure out where to forward to the interface requests. For example,
