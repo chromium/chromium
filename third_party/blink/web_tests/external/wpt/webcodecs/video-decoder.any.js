@@ -402,3 +402,26 @@ promise_test(async t => {
   await decoder.flush();
   assert_equals(numOutputs, 2, 'outputs');
 }, 'Test decoding after flush.');
+
+promise_test(async t => {
+  let buffer = await vp9.buffer();
+
+  let numOutputs = 0;
+  let decoder = new VideoDecoder({
+    output: t.step_func(frame => {
+      frame.close();
+      ++numOutputs;
+    }),
+    error: t.unreached_func()
+  });
+
+  decoder.configure({codec: vp9.codec});
+  decoder.decode(new EncodedVideoChunk(
+      {type: 'key', timestamp: 0, data: view(buffer, vp9.frames[0])}));
+
+  let p = decoder.flush();
+  decoder.reset();
+
+  // reset() will cause the flush promise to be rejected.
+  await p.catch(e => t.step_func());
+}, 'Test reset during flush.');

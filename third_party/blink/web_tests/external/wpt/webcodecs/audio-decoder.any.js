@@ -241,3 +241,31 @@ promise_test(async t => {
   await decoder.flush();
   assert_equals(numOutputs, 2, 'outputs');
 }, 'Test decoding after flush.');
+
+promise_test(async t => {
+  let buffer = await opus.buffer();
+  let numOutputs = 0;
+  let decoder = new AudioDecoder({
+    output: t.step_func(frame => {
+      frame.close();
+      ++numOutputs;
+    }),
+    error: t.unreached_func()
+  });
+
+  decoder.configure({
+    codec: opus.codec,
+    sampleRate: opus.sampleRate,
+    numberOfChannels: opus.numberOfChannels,
+    description: view(buffer, opus.description)
+  });
+
+  decoder.decode(new EncodedAudioChunk(
+      {type: 'key', timestamp: 0, data: view(buffer, opus.frames[0])}));
+
+  let p = decoder.flush();
+  decoder.reset();
+
+  // reset() will cause the flush promise to be rejected.
+  await p.catch(e => t.step_func());
+}, 'Test reset during flush.');
