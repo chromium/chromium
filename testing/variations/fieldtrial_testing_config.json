@@ -2981,66 +2981,6 @@
             ]
         }
     ],
-    "EnableContextMenuPerformanceHints": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "ContextMenuPerformanceInfoUiEnabled",
-                    "enable_features": [
-                        "ContextMenuPerformanceInfo",
-                        "OptimizationHintsFetchingAnonymousDataConsent",
-                        "PerformanceHintsObserver"
-                    ]
-                },
-                {
-                    "name": "EnabledWithoutControl",
-                    "enable_features": [
-                        "ContextMenuPerformanceInfo",
-                        "OptimizationHintsFetchingAnonymousDataConsent",
-                        "PerformanceHintsObserver"
-                    ]
-                },
-                {
-                    "name": "ContextMenuPerformanceInfoLinkPerformance",
-                    "params": {
-                        "use_link_performance_hints": "true"
-                    },
-                    "enable_features": [
-                        "ContextMenuPerformanceInfo",
-                        "OptimizationHintsFetchingAnonymousDataConsent",
-                        "PerformanceHintsObserver"
-                    ]
-                },
-                {
-                    "name": "ContextMenuPerformanceInfoLinkPerformanceUiDisabled",
-                    "params": {
-                        "use_link_performance_hints": "true"
-                    },
-                    "enable_features": [
-                        "OptimizationHintsFetchingAnonymousDataConsent",
-                        "PerformanceHintsObserver"
-                    ],
-                    "disable_features": [
-                        "ContextMenuPerformanceInfo"
-                    ]
-                },
-                {
-                    "name": "ContextMenuPerformanceInfoControl",
-                    "disable_features": [
-                        "ContextMenuPerformanceInfo",
-                        "OptimizationHintsFetchingAnonymousDataConsent",
-                        "PerformanceHintsObserver"
-                    ]
-                },
-                {
-                    "name": "Default"
-                }
-            ]
-        }
-    ],
     "EnableCsrssLockdown": [
         {
             "platforms": [
@@ -4899,6 +4839,21 @@
                     "disable_features": [
                         "OptimizationGuideModelDownloading",
                         "OptimizationHintsFetching"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OptimizationHintsMSBB": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210421",
+                    "enable_features": [
+                        "OptimizationHintsFetchingAnonymousDataConsent"
                     ]
                 }
             ]
