@@ -183,6 +183,8 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
         std::min<int>(info.GetAbsMaximum(ABS_MT_SLOT) + 1, kNumTouchEvdevSlots);
     major_max_ = info.GetAbsMaximum(ABS_MT_TOUCH_MAJOR);
     current_slot_ = info.GetAbsValue(ABS_MT_SLOT);
+    orientation_min_ = info.GetAbsMinimum(ABS_MT_ORIENTATION);
+    orientation_max_ = info.GetAbsMaximum(ABS_MT_ORIENTATION);
   } else {
     pressure_min_ = info.GetAbsMinimum(ABS_PRESSURE);
     pressure_max_ = info.GetAbsMaximum(ABS_PRESSURE);
@@ -197,13 +199,17 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
     tilt_x_range_ = info.GetAbsMaximum(ABS_TILT_X) - tilt_x_min_ + 1;
     tilt_y_range_ = info.GetAbsMaximum(ABS_TILT_Y) - tilt_y_min_ + 1;
 
+    // No orientation without mt.
+    orientation_min_ = orientation_max_ = 0;
     touch_points_ = 1;
     major_max_ = 0;
     current_slot_ = 0;
   }
 
-  touch_major_scale_ = GetFingerSizeScale(touch_major_res, x_res);
-  touch_minor_scale_ = GetFingerSizeScale(touch_minor_res, y_res);
+  x_scale_ = GetFingerSizeScale(touch_major_res, x_res) / 2.0f;
+  y_scale_ = GetFingerSizeScale(touch_minor_res, y_res) / 2.0f;
+  rotated_x_scale_ = GetFingerSizeScale(touch_minor_res, x_res) / 2.0f;
+  rotated_y_scale_ = GetFingerSizeScale(touch_major_res, y_res) / 2.0f;
 
   quirk_left_mouse_button_ =
       !has_mt_ && !info.HasKeyEvent(BTN_TOUCH) && info.HasKeyEvent(BTN_LEFT);
@@ -230,8 +236,8 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
           info.GetAbsMtSlotValueWithDefault(ABS_MT_TOUCH_MAJOR, i, 0);
       int touch_minor =
           info.GetAbsMtSlotValueWithDefault(ABS_MT_TOUCH_MINOR, i, 0);
-      events_[i].radius_x = touch_major * touch_major_scale_ / 2.0f;
-      events_[i].radius_y = touch_minor * touch_minor_scale_ / 2.0f;
+      events_[i].orientation =
+          info.GetAbsMtSlotValueWithDefault(ABS_MT_ORIENTATION, i, 0);
       events_[i].pressure = ScalePressure(
           info.GetAbsMtSlotValueWithDefault(ABS_MT_PRESSURE, i, 0));
       int tool_type = info.GetAbsMtSlotValueWithDefault(ABS_MT_TOOL_TYPE, i,
@@ -253,6 +259,7 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
     events_[0].slot = 0;
     events_[0].radius_x = 0;
     events_[0].radius_y = 0;
+    events_[0].orientation = 0;
     events_[0].pressure = 0;
     events_[0].tool_code = 0;
     events_[0].tilt_x = 0;
@@ -419,15 +426,13 @@ void TouchEventConverterEvdev::ProcessKey(const input_event& input) {
 void TouchEventConverterEvdev::ProcessAbs(const input_event& input) {
   switch (input.code) {
     case ABS_MT_TOUCH_MAJOR:
-      // TODO(spang): If we have all of major, minor, and orientation,
-      // we can scale the ellipse correctly. However on the Pixel we get
-      // neither minor nor orientation, so this is all we can do.
-      events_[current_slot_].radius_x = input.value * touch_major_scale_ / 2.0f;
       events_[current_slot_].major = input.value;
       break;
     case ABS_MT_TOUCH_MINOR:
-      events_[current_slot_].radius_y = input.value * touch_minor_scale_ / 2.0f;
       events_[current_slot_].minor = input.value;
+      break;
+    case ABS_MT_ORIENTATION:
+      events_[current_slot_].orientation = input.value;
       break;
     case ABS_MT_POSITION_X:
       events_[current_slot_].x = input.value;
@@ -649,8 +654,10 @@ void TouchEventConverterEvdev::ProcessTouchEvent(InProgressTouchEvdev* event,
   // The tool type is fixed with the touch pressed event and does not change.
   if (event_type == ET_TOUCH_PRESSED)
     event->reported_tool_type = GetEventPointerType(event->tool_code);
-  if (event_type != ET_UNKNOWN)
+  if (event_type != ET_UNKNOWN) {
+    UpdateRadiusFromTouchWithOrientation(event);
     ReportTouchEvent(*event, event_type, timestamp);
+  }
 }
 
 void TouchEventConverterEvdev::UpdateTrackingId(int slot, int tracking_id) {
@@ -686,6 +693,23 @@ float TouchEventConverterEvdev::ScalePressure(int32_t value) const {
   if (pressure > 1.0)
     pressure = 1.0;
   return pressure;
+}
+
+bool TouchEventConverterEvdev::SupportsOrientation() const {
+  // TODO(b/185318572): Support more complex orientation reports than the
+  // simplified 0/1.
+  return orientation_max_ == 1 && orientation_min_ == 0;
+}
+
+void TouchEventConverterEvdev::UpdateRadiusFromTouchWithOrientation(
+    InProgressTouchEvdev* event) const {
+  if (!SupportsOrientation() || event->orientation == 1) {
+    event->radius_x = event->major * x_scale_;
+    event->radius_y = event->minor * y_scale_;
+  } else {
+    event->radius_x = event->minor * rotated_x_scale_;
+    event->radius_y = event->major * rotated_y_scale_;
+  }
 }
 
 int TouchEventConverterEvdev::NextTrackingId() {

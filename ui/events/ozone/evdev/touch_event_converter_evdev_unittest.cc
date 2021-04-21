@@ -2211,6 +2211,52 @@ TEST_F(TouchEventConverterEvdevTest, HeldThenPalm) {
               testing::ElementsAre(base::Bucket(4, 1)));
 }
 
+TEST_F(TouchEventConverterEvdevTest, RotateRadius) {
+  EventDeviceInfo devinfo;
+  EXPECT_TRUE(CapabilitiesToDeviceInfo(kEveTouchScreen, &devinfo));
+  device()->Initialize(devinfo);
+  timeval time = {1507226211, 483601};
+  // Note the sneaky ordering of touch/orientation, since it's :
+  // 1. possible in reality.
+  // 2. Forces us to ensure that we handle this correctly.
+  struct input_event mock_kernel_queue[] = {
+      {time, EV_ABS, ABS_MT_TRACKING_ID, 461},
+      {time, EV_ABS, ABS_MT_POSITION_X, 1795},
+      {time, EV_ABS, ABS_MT_POSITION_Y, 5559},
+      {time, EV_ABS, ABS_MT_TOUCH_MAJOR, 20},
+      {time, EV_ABS, ABS_MT_ORIENTATION, 0},
+      {time, EV_ABS, ABS_MT_TOUCH_MINOR, 15},
+      {time, EV_ABS, ABS_MT_PRESSURE, 217},
+      {time, EV_KEY, BTN_TOUCH, 1},
+      {time, EV_ABS, ABS_X, 1795},
+      {time, EV_ABS, ABS_Y, 5559},
+      {time, EV_ABS, ABS_PRESSURE, 217},
+      {time, EV_MSC, MSC_TIMESTAMP, 0},
+      {time, EV_SYN, SYN_REPORT, 0},
+  };
+  device()->ConfigureReadMock(mock_kernel_queue, base::size(mock_kernel_queue),
+                              0);
+  device()->ReadNow();
+  // Update the items.
+  time.tv_usec += 8000;
+  UpdateTime(mock_kernel_queue, base::size(mock_kernel_queue), time);
+  mock_kernel_queue[3].value = 22;
+  mock_kernel_queue[4].value = 1;
+  mock_kernel_queue[5].value = 13;
+  device()->ConfigureReadMock(mock_kernel_queue, base::size(mock_kernel_queue),
+                              0);
+  device()->ReadNow();
+  ASSERT_EQ(2u, size());
+  // finger scale on an eve is 40. So radius is expected as touch * 40 / 2.
+  ui::TouchEventParams event = dispatched_touch_event(0);
+  EXPECT_FLOAT_EQ(300, event.pointer_details.radius_x);
+  EXPECT_FLOAT_EQ(400, event.pointer_details.radius_y);
+
+  event = dispatched_touch_event(1);
+  EXPECT_FLOAT_EQ(440, event.pointer_details.radius_x);
+  EXPECT_FLOAT_EQ(260, event.pointer_details.radius_y);
+}
+
 TEST_F(TouchEventConverterEvdevTest, ScalePressure) {
   EventDeviceInfo devinfo;
   EXPECT_TRUE(CapabilitiesToDeviceInfo(kEveTouchScreen, &devinfo));
@@ -2263,6 +2309,7 @@ TEST_F(TouchEventConverterEvdevTest, FingerSizeWithResolution) {
       {time, EV_ABS, ABS_MT_PRESSURE, 217},
       {time, EV_ABS, ABS_MT_TOUCH_MAJOR, 14},
       {time, EV_ABS, ABS_MT_TOUCH_MINOR, 11},
+      {time, EV_ABS, ABS_MT_ORIENTATION, 1},
       {time, EV_KEY, BTN_TOUCH, 1},
       {time, EV_ABS, ABS_X, 1795},
       {time, EV_ABS, ABS_Y, 5559},
