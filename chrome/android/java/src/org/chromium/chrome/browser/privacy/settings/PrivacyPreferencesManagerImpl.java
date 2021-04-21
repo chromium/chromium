@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.survey.SurveyController;
 import org.chromium.components.minidump_uploader.util.NetworkPermissionUtil;
 import org.chromium.content_public.browser.BrowserStartupController;
 
@@ -74,9 +73,6 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     public void setUsageAndCrashReporting(boolean enabled) {
         mPrefs.writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, enabled);
         syncUsageAndCrashReportingPrefs();
-        if (!enabled) {
-            SurveyController.getInstance().clearCache(ContextUtils.getApplicationContext());
-        }
     }
 
     @Override
