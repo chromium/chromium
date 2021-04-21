@@ -2,4 +2,5 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-chrome.contextMenus.create({ type: "normal", title: "untitled", contexts: ["all"] });
+chrome.contextMenus.create(
+    {id: 'foo', type: 'normal', title: 'untitled', contexts: ['all']});

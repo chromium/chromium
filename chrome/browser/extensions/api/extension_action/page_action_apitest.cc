@@ -31,7 +31,10 @@ using content::WebContents;
 namespace extensions {
 namespace {
 
-class PageActionApiTest : public ExtensionApiTest {
+using ContextType = ExtensionBrowserTest::ContextType;
+
+class PageActionApiTest : public ExtensionApiTest,
+                          public testing::WithParamInterface<ContextType> {
  protected:
   ExtensionAction* GetPageAction(const Extension& extension) {
     ExtensionAction* extension_action =
@@ -41,11 +44,24 @@ class PageActionApiTest : public ExtensionApiTest {
                ? extension_action
                : nullptr;
   }
+
+  bool RunTest(const char* name) {
+    return RunExtensionTest(
+        {.name = name},
+        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
+  }
 };
 
-IN_PROC_BROWSER_TEST_F(PageActionApiTest, Basic) {
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         PageActionApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         PageActionApiTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(PageActionApiTest, Basic) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(RunExtensionTest("page_action/basics")) << message_;
+  ASSERT_TRUE(RunTest("page_action/basics")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
   {
@@ -95,9 +111,9 @@ IN_PROC_BROWSER_TEST_F(PageActionApiTest, Basic) {
 }
 
 // Test that calling chrome.pageAction.setPopup() can enable a popup.
-IN_PROC_BROWSER_TEST_F(PageActionApiTest, AddPopup) {
+IN_PROC_BROWSER_TEST_P(PageActionApiTest, AddPopup) {
   // Load the extension, which has no default popup.
-  ASSERT_TRUE(RunExtensionTest("page_action/add_popup")) << message_;
+  ASSERT_TRUE(RunTest("page_action/add_popup")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
@@ -142,9 +158,9 @@ IN_PROC_BROWSER_TEST_F(PageActionApiTest, AddPopup) {
 }
 
 // Test that calling chrome.pageAction.setPopup() can remove a popup.
-IN_PROC_BROWSER_TEST_F(PageActionApiTest, RemovePopup) {
+IN_PROC_BROWSER_TEST_P(PageActionApiTest, RemovePopup) {
   // Load the extension, which has a page action with a default popup.
-  ASSERT_TRUE(RunExtensionTest("page_action/remove_popup")) << message_;
+  ASSERT_TRUE(RunTest("page_action/remove_popup")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
@@ -171,22 +187,26 @@ IN_PROC_BROWSER_TEST_F(PageActionApiTest, RemovePopup) {
       << "Page action popup should have been removed.";
 }
 
-
 // Test http://crbug.com/57333: that two page action extensions using the same
 // icon for the page action icon and the extension icon do not crash.
-IN_PROC_BROWSER_TEST_F(PageActionApiTest, TestCrash57333) {
+IN_PROC_BROWSER_TEST_P(PageActionApiTest, TestCrash57333) {
+  const bool load_as_service_worker = GetParam() == ContextType::kServiceWorker;
   // Load extension A.
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("page_action")
-                                          .AppendASCII("crash_57333")
-                                          .AppendASCII("Extension1")));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("page_action")
+                        .AppendASCII("crash_57333")
+                        .AppendASCII("Extension1"),
+                    {.load_as_service_worker = load_as_service_worker}));
   // Load extension B.
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("page_action")
-                                          .AppendASCII("crash_57333")
-                                          .AppendASCII("Extension2")));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("page_action")
+                        .AppendASCII("crash_57333")
+                        .AppendASCII("Extension2"),
+                    {.load_as_service_worker = load_as_service_worker}));
 }
 
-IN_PROC_BROWSER_TEST_F(PageActionApiTest, Getters) {
-  ASSERT_TRUE(RunExtensionTest("page_action/getters")) << message_;
+IN_PROC_BROWSER_TEST_P(PageActionApiTest, Getters) {
+  ASSERT_TRUE(RunTest("page_action/getters")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
@@ -197,10 +217,10 @@ IN_PROC_BROWSER_TEST_F(PageActionApiTest, Getters) {
 }
 
 // Verify triggering page action.
-IN_PROC_BROWSER_TEST_F(PageActionApiTest, TestTriggerPageAction) {
+IN_PROC_BROWSER_TEST_P(PageActionApiTest, TestTriggerPageAction) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ASSERT_TRUE(RunExtensionTest("trigger_actions/page_action")) << message_;
+  ASSERT_TRUE(RunTest("trigger_actions/page_action")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 

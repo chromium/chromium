@@ -652,8 +652,7 @@
   },
   "pageAction": {
     "dependencies": ["manifest:page_action"],
-    "contexts": ["blessed_extension"],
-    "disallow_for_service_workers": true
+    "contexts": ["blessed_extension"]
   },
   "pageCapture": {
     "dependencies": ["permission:pageCapture"],

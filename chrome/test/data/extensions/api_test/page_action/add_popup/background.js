@@ -7,8 +7,6 @@ chrome.tabs.getSelected(null, function(tab) {
 
   // When the page action icon is clicked for the first time, add a popup.
   chrome.pageAction.onClicked.addListener(function(tab) {
-    window.tabId = tab.id;
-
     chrome.pageAction.setPopup({
       tabId: tab.id,
       popup: 'a_popup.html'
