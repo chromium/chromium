@@ -605,6 +605,7 @@
         ],
         # crbug.com/1042757
         'swarming': {
+          'shards': 20,
           'dimension_sets': [
             {
               # These shards are liable to time out when running on macmini7,1.
