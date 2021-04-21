@@ -679,7 +679,7 @@ API_AVAILABLE(ios(13.0))
 
 #pragma mark - Public
 
-- (synced_sessions::DistantSession const*)sessionForSectionIdentifier:
+- (synced_sessions::DistantSession const*)sessionForTableSectionWithIdentifier:
     (NSInteger)sectionIdentifer {
   NSInteger section =
       [self.tableViewModel sectionForSectionIdentifier:sectionIdentifer];
@@ -687,10 +687,10 @@ API_AVAILABLE(ios(13.0))
   return _syncedSessions->GetSession(section - kNumberOfSectionsBeforeSessions);
 }
 
-- (void)removeSessionAtSessionSectionIdentifier:(NSInteger)sectionIdentifier {
+- (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {
   DCHECK([self isSessionSectionIdentifier:sectionIdentifier]);
   synced_sessions::DistantSession const* session =
-      [self sessionForSectionIdentifier:sectionIdentifier];
+      [self sessionForTableSectionWithIdentifier:sectionIdentifier];
   std::string sessionTagCopy = session->tag;
 
   NSInteger section =
@@ -1348,7 +1348,7 @@ API_AVAILABLE(ios(13.0))
   [self.contextMenuCoordinator
       addItemWithTitle:hideButtonLabel
                 action:^{
-                  [weakSelf removeSessionAtSessionSectionIdentifier:
+                  [weakSelf removeSessionAtTableSectionWithIdentifier:
                                 sectionIdentifier];
                 }
                  style:UIAlertActionStyleDefault];
@@ -1358,7 +1358,7 @@ API_AVAILABLE(ios(13.0))
 
 - (void)openTabsFromSessionSectionIdentifier:(NSInteger)sectionIdentifier {
   synced_sessions::DistantSession const* session =
-      [self sessionForSectionIdentifier:sectionIdentifier];
+      [self sessionForTableSectionWithIdentifier:sectionIdentifier];
   [self.presentationDelegate openAllTabsFromSession:session];
 }
 

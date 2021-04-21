@@ -59,11 +59,12 @@ class DistantSession;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 // Returns Sessions corresponding to the given |sectionIdentifier|.
-- (synced_sessions::DistantSession const*)sessionForSectionIdentifier:
+- (synced_sessions::DistantSession const*)sessionForTableSectionWithIdentifier:
     (NSInteger)sectionIdentifer;
 
-// Hides Sessions corresponding to the given |sectionIdentifier|.
-- (void)removeSessionAtSessionSectionIdentifier:(NSInteger)sectionIdentifier;
+// Hides Sessions corresponding to the given the table view's
+// |sectionIdentifier|.
+- (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier;
 
 @end
 

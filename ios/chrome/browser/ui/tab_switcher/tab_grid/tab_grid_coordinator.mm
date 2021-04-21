@@ -820,15 +820,15 @@
   [self.sharingCoordinator start];
 }
 
-- (void)removeSessionAtSessionSectionIdentifier:(NSInteger)sectionIdentifier {
+- (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {
   [self.baseViewController.remoteTabsViewController
-      removeSessionAtSessionSectionIdentifier:sectionIdentifier];
+      removeSessionAtTableSectionWithIdentifier:sectionIdentifier];
 }
 
-- (synced_sessions::DistantSession const*)sessionForSectionIdentifier:
+- (synced_sessions::DistantSession const*)sessionForTableSectionWithIdentifier:
     (NSInteger)sectionIdentifier {
   return [self.baseViewController.remoteTabsViewController
-      sessionForSectionIdentifier:sectionIdentifier];
+      sessionForTableSectionWithIdentifier:sectionIdentifier];
 }
 
 #pragma mark - SceneStateObserver

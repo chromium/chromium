@@ -218,15 +218,15 @@
   [self.sharingCoordinator start];
 }
 
-- (void)removeSessionAtSessionSectionIdentifier:(NSInteger)sectionIdentifier {
+- (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {
   [self.recentTabsTableViewController
-      removeSessionAtSessionSectionIdentifier:sectionIdentifier];
+      removeSessionAtTableSectionWithIdentifier:sectionIdentifier];
 }
 
-- (synced_sessions::DistantSession const*)sessionForSectionIdentifier:
+- (synced_sessions::DistantSession const*)sessionForTableSectionWithIdentifier:
     (NSInteger)sectionIdentifier {
   return [self.recentTabsTableViewController
-      sessionForSectionIdentifier:sectionIdentifier];
+      sessionForTableSectionWithIdentifier:sectionIdentifier];
 }
 
 @end

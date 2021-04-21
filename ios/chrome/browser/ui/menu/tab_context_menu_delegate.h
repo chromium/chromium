@@ -23,11 +23,11 @@ class DistantSession;
 
 // Tells the delegate to remove Sessions corresponding to the given the table
 // view's |sectionIdentifier|.
-- (void)removeSessionAtSessionSectionIdentifier:(NSInteger)sectionIdentifier;
+- (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier;
 
 // Asks the delegate for the Session corresponding to the given the table view's
 // |sectionIdentifier|.
-- (synced_sessions::DistantSession const*)sessionForSectionIdentifier:
+- (synced_sessions::DistantSession const*)sessionForTableSectionWithIdentifier:
     (NSInteger)sectionIdentifier;
 
 @end

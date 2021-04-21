@@ -134,7 +134,7 @@
 
         synced_sessions::DistantSession const* session =
             [weakSelf.contextMenuDelegate
-                sessionForSectionIdentifier:sectionIdentifier];
+                sessionForTableSectionWithIdentifier:sectionIdentifier];
 
         if (!session->tabs.empty()) {
           [menuElements addObject:[actionFactory actionToOpenAllTabsWithBlock:^{
@@ -146,7 +146,7 @@
         [menuElements
             addObject:[actionFactory actionToHideWithBlock:^{
               [strongSelf.contextMenuDelegate
-                  removeSessionAtSessionSectionIdentifier:sectionIdentifier];
+                  removeSessionAtTableSectionWithIdentifier:sectionIdentifier];
             }]];
 
         return [UIMenu menuWithTitle:@"" children:menuElements];
