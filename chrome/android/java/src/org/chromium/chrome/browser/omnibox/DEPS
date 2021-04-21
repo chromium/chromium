@@ -5,7 +5,6 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/omnibox",
 
   "+chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java",
-  "+chrome/android/java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersTabHelper.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/locale/LocaleManager.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPageUma.java",
 

@@ -5,7 +5,7 @@
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/android/chrome_jni_headers/HistoryClustersTabHelper_jni.h"
+#include "chrome/browser/history_clusters/jni_headers/HistoryClustersTabHelper_jni.h"
 #include "content/public/browser/web_contents.h"
 
 static void JNI_HistoryClustersTabHelper_OnCurrentTabUrlCopied(
