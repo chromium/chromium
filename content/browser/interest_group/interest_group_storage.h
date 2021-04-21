@@ -5,9 +5,12 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_STORAGE_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_STORAGE_H_
 
+#include <vector>
+
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "sql/database.h"
@@ -23,6 +26,11 @@ namespace content {
 // within the same sequence.
 class CONTENT_EXPORT InterestGroupStorage {
  public:
+  static constexpr base::TimeDelta kHistoryLength =
+      base::TimeDelta::FromDays(30);
+  static constexpr base::TimeDelta kMaintenanceInterval =
+      base::TimeDelta::FromHours(1);
+
   // Constructs an interest group storage based on a SQLite database in the
   // `path`/InterestGroups file. If the path passed in is empty, then the
   // database is instead stored in memory and not persisted to disk.
@@ -63,13 +71,21 @@ class CONTENT_EXPORT InterestGroupStorage {
   // then apply to all origins.
   void DeleteInterestGroupData(const url::Origin& owner);
 
+  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
+  GetAllInterestGroupsUnfilteredForTesting();
+
  private:
   bool EnsureDBInitialized();
   bool InitializeDB();
   bool InitializeSchema();
+  void PerformDBMaintenance();
   void DatabaseErrorCallback(int extended_error, sql::Statement* stmt);
 
+  base::OneShotTimer db_maintenance_timer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   std::unique_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::Time last_access_time_ GUARDED_BY_CONTEXT(sequence_checker_);
   const base::FilePath path_to_database_;
 
   SEQUENCE_CHECKER(sequence_checker_);

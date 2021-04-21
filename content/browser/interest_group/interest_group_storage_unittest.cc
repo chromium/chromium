@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "sql/database.h"
 #include "sql/test/scoped_error_expecter.h"
@@ -25,17 +26,8 @@
 
 namespace content {
 
-using ::auction_worklet::mojom::BiddingInterestGroupPtr;
-using ::blink::mojom::InterestGroupPtr;
-
-namespace {
-InterestGroupPtr NewInterestGroup(url::Origin owner, std::string name) {
-  InterestGroupPtr result = blink::mojom::InterestGroup::New();
-  result->owner = owner;
-  result->name = name;
-  return result;
-}
-}  // namespace
+using auction_worklet::mojom::BiddingInterestGroupPtr;
+using blink::mojom::InterestGroupPtr;
 
 class InterestGroupStorageTest : public testing::Test {
  public:
@@ -52,8 +44,22 @@ class InterestGroupStorageTest : public testing::Test {
         FILE_PATH_LITERAL("InterestGroups"));
   }
 
+  base::test::SingleThreadTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
+  InterestGroupPtr NewInterestGroup(::url::Origin owner, std::string name) {
+    InterestGroupPtr result = blink::mojom::InterestGroup::New();
+    result->owner = owner;
+    result->name = name;
+    result->expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
+    return result;
+  }
+
  private:
   base::ScopedTempDir temp_directory_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
@@ -68,8 +74,8 @@ TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
 
   {
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
-    ::url::Origin test_origin =
-        ::url::Origin::Create(GURL("https://owner.example.com"));
+    url::Origin test_origin =
+        url::Origin::Create(GURL("https://owner.example.com"));
     storage->LeaveInterestGroup(test_origin, "example");
   }
 
@@ -218,6 +224,8 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
   EXPECT_EQ(1, interest_groups[0]->signals->join_count);
   EXPECT_EQ(1, interest_groups[0]->signals->bid_count);
 
+  // Add the second win *after* the first so we can check ordering.
+  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(1));
   std::string ad2_json = "{url: '" + ad2_url.spec() + "'}";
   storage->RecordInterestGroupBid(test_origin, "example");
   storage->RecordInterestGroupWin(test_origin, "example", ad2_json);
@@ -248,6 +256,7 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
   InterestGroupPtr full = blink::mojom::InterestGroup::New();
   full->owner = full_origin;
   full->name = "full";
+  full->expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
   full->bidding_url = GURL("https://full.example.com/bid");
   full->update_url = GURL("https://full.example.com/update");
   full->trusted_bidding_signals_url = GURL("https://full.example.com/signals");
@@ -277,9 +286,9 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
 
 TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
   std::vector<::url::Origin> test_origins = {
-      ::url::Origin::Create(GURL("https://owner.example.com")),
-      ::url::Origin::Create(GURL("https://owner2.example.com")),
-      ::url::Origin::Create(GURL("https://owner3.example.com")),
+      url::Origin::Create(GURL("https://owner.example.com")),
+      url::Origin::Create(GURL("https://owner2.example.com")),
+      url::Origin::Create(GURL("https://owner3.example.com")),
   };
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
   for (const auto& origin : test_origins)
@@ -297,6 +306,71 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(0u, origins.size());
+}
+
+TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
+  url::Origin keep_origin =
+      url::Origin::Create(GURL("https://owner.example.com"));
+  std::vector<::url::Origin> test_origins = {
+      url::Origin::Create(GURL("https://owner.example.com")),
+      url::Origin::Create(GURL("https://owner2.example.com")),
+      url::Origin::Create(GURL("https://owner3.example.com")),
+  };
+
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  storage->JoinInterestGroup(NewInterestGroup(keep_origin, "keep"));
+  for (const auto& origin : test_origins)
+    storage->JoinInterestGroup(NewInterestGroup(origin, "discard"));
+
+  std::vector<url::Origin> origins = storage->GetAllInterestGroupOwners();
+  EXPECT_EQ(3u, origins.size());
+
+  std::vector<BiddingInterestGroupPtr> interest_groups =
+      storage->GetInterestGroupsForOwner(keep_origin);
+  EXPECT_EQ(2u, interest_groups.size());
+
+  task_environment().FastForwardBy(InterestGroupStorage::kHistoryLength -
+                                   base::TimeDelta::FromDays(1));
+  storage->JoinInterestGroup(NewInterestGroup(keep_origin, "keep"));
+
+  origins = storage->GetAllInterestGroupOwners();
+  EXPECT_EQ(3u, origins.size());
+
+  interest_groups = storage->GetInterestGroupsForOwner(keep_origin);
+  EXPECT_EQ(2u, interest_groups.size());
+
+  // Advance to expiration and check that even without DB maintenance the
+  // outdated entries are not reported.
+  task_environment().FastForwardBy(base::TimeDelta::FromDays(1) +
+                                   base::TimeDelta::FromSeconds(1));
+
+  origins = storage->GetAllInterestGroupOwners();
+  EXPECT_EQ(1u, origins.size());
+
+  interest_groups = storage->GetInterestGroupsForOwner(keep_origin);
+  EXPECT_EQ(1u, interest_groups.size());
+  EXPECT_EQ("keep", interest_groups[0]->group->name);
+  EXPECT_EQ(1, interest_groups[0]->signals->join_count);
+  EXPECT_EQ(0, interest_groups[0]->signals->bid_count);
+
+  // All the groups should still be in the database since they shouldn't have
+  // been cleaned up yet.
+  interest_groups = storage->GetAllInterestGroupsUnfilteredForTesting();
+  EXPECT_EQ(4u, interest_groups.size());
+
+  // Wait an hour to perform DB maintenance.
+  task_environment().FastForwardBy(InterestGroupStorage::kMaintenanceInterval);
+
+  // Verify that the database only contains unexpired entries.
+  origins = storage->GetAllInterestGroupOwners();
+  EXPECT_EQ(1u, origins.size());
+
+  interest_groups = storage->GetAllInterestGroupsUnfilteredForTesting();
+  EXPECT_EQ(1u, interest_groups.size());
+  EXPECT_EQ("keep", interest_groups[0]->group->name);
+  EXPECT_EQ(1, interest_groups[0]->signals->join_count);
+  EXPECT_EQ(0, interest_groups[0]->signals->bid_count);
 }
 
 }  // namespace content
