@@ -849,9 +849,15 @@ void MediaRouterMojoImpl::OnTerminateRouteResult(
 
 void MediaRouterMojoImpl::OnRouteAdded(MediaRouteProviderId provider_id,
                                        const MediaRoute& route) {
+  // |routes_queries_| might be added during the iteration. Making a
+  // copy here to avoid the iterator from being invalidated.
+  std::vector<MediaRoutesQuery*> queries;
   for (auto& routes_query : routes_queries_) {
     if (routes_query.second->AddRouteForProvider(provider_id, route))
-      routes_query.second->NotifyObservers();
+      queries.push_back(routes_query.second.get());
+  }
+  for (auto* query : queries) {
+    query->NotifyObservers();
   }
 }
 
