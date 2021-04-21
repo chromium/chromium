@@ -124,30 +124,34 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
 
     # By default, WPT will treat unexpected passes as errors, so we disable
     # that to be consistent with Chromium CI.
-    rest_args.extend(["--no-fail-on-unexpected-pass"])
+    rest_args.extend(['--no-fail-on-unexpected-pass'])
 
     # vpython has packages needed by wpt, so force it to skip the setup
-    rest_args.extend(["--venv=" + SRC_DIR, "--skip-venv-setup"])
+    rest_args.extend(['--venv=' + SRC_DIR, '--skip-venv-setup'])
 
-    rest_args.extend(["run",
-      "--tests=" + wpt_common.EXTERNAL_WPT_TESTS_DIR,
-      "--test-type=" + self.options.test_type,
-      "--device-serial", self._device.serial,
-      "--webdriver-binary",
+    rest_args.extend(['run',
+      '--tests=' + wpt_common.EXTERNAL_WPT_TESTS_DIR,
+      '--test-type=' + self.options.test_type,
+      '--device-serial', self._device.serial,
+      '--webdriver-binary',
       self.options.webdriver_binary,
-      "--symbols-path",
+      '--symbols-path',
       self.output_directory,
       '--stackwalk-binary',
       TOMBSTONE_PARSER,
-      "--headless",
-      "--no-pause-after-test",
-      "--no-capture-stdio",
-      "--no-manifest-download",
-      "--binary-arg=--enable-blink-features=MojoJS,MojoJSTest",
-      "--binary-arg=--enable-blink-test-features",
-      "--binary-arg=--disable-field-trial-config",
-      "--enable-mojojs",
-      "--mojojs-path=" + self.mojo_js_directory,
+      '--headless',
+      '--no-pause-after-test',
+      '--no-capture-stdio',
+      '--no-manifest-download',
+      '--binary-arg=--enable-blink-features=MojoJS,MojoJSTest',
+      '--binary-arg=--enable-blink-test-features',
+      '--binary-arg=--disable-field-trial-config',
+      '--enable-mojojs',
+      '--mojojs-path=' + self.mojo_js_directory,
+      '--binary-arg=--enable-features=DownloadService<DownloadServiceStudy',
+      '--binary-arg=--force-fieldtrials=DownloadServiceStudy/Enabled',
+      '--binary-arg=--force-fieldtrial-params=DownloadServiceStudy.Enabled:'
+      'start_up_delay_ms/0',
     ])
     # if metadata was created then add the metadata directory
     # to the list of wpt arguments
@@ -155,8 +159,8 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
       rest_args.extend(['--metadata', self._metadata_dir])
 
     if self.options.verbose >= 3:
-      rest_args.extend(["--log-mach=-", "--log-mach-level=debug",
-                        "--log-mach-verbose"])
+      rest_args.extend(['--log-mach=-', '--log-mach-level=debug',
+                        '--log-mach-verbose'])
 
     if self.options.verbose >= 4:
       rest_args.extend(['--webdriver-arg=--verbose',
