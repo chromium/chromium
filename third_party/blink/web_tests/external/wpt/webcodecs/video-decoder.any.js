@@ -419,9 +419,10 @@ promise_test(async t => {
   decoder.decode(new EncodedVideoChunk(
       {type: 'key', timestamp: 0, data: view(buffer, vp9.frames[0])}));
 
+  // Wait for the first frame to be decoded.
+  await t.step_wait(() => numOutputs > 0, 'Decoded first frame', 10000, 1);
+
   let p = decoder.flush();
   decoder.reset();
-
-  // reset() will cause the flush promise to be rejected.
-  await p.catch(e => t.step_func());
+  return p;
 }, 'Test reset during flush.');
