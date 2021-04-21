@@ -6,11 +6,15 @@
 
 #include <aura-shell-client-protocol.h>
 
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/shell_object_factory.h"
 #include "ui/ozone/platform/wayland/host/shell_popup_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_output.h"
+#include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 
 namespace ui {
@@ -27,12 +31,22 @@ WaylandPopup::~WaylandPopup() = default;
 bool WaylandPopup::CreateShellPopup() {
   DCHECK(parent_window() && !shell_popup_);
 
-  auto subsurface_bounds_dip =
+  // Set pending initial bounds and notify the delegate.
+  if (!pending_initial_bounds_px_.IsEmpty()) {
+    SetBounds(pending_initial_bounds_px_);
+    pending_initial_bounds_px_ = gfx::Rect();
+  } else if (buffer_scale() != parent_window()->buffer_scale()) {
+    // If scale changed while this was hidden (when WaylandPopup hides, parent
+    // window's child is reset), update buffer scale accordingly.
+    UpdateBufferScale(true);
+  }
+
+  const auto bounds_dip =
       wl::TranslateWindowBoundsToParentDIP(this, parent_window());
 
   ShellObjectFactory factory;
-  shell_popup_ = factory.CreateShellPopupWrapper(connection(), this,
-                                                 subsurface_bounds_dip);
+  shell_popup_ =
+      factory.CreateShellPopupWrapper(connection(), this, bounds_dip);
   if (!shell_popup_) {
     LOG(ERROR) << "Failed to create Wayland shell popup";
     return false;
@@ -70,7 +84,6 @@ void WaylandPopup::Show(bool inactive) {
     return;
   }
 
-  UpdateBufferScale(false);
   connection()->ScheduleFlush();
   WaylandWindow::Show(inactive);
 }
@@ -100,8 +113,6 @@ bool WaylandPopup::IsVisible() const {
 void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
   DCHECK(shell_popup());
   DCHECK(parent_window());
-
-  root_surface()->SetBufferScale(parent_window()->buffer_scale(), true);
 
   gfx::Rect new_bounds_dip = bounds_dip;
 
@@ -164,6 +175,41 @@ bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties) {
   root_surface()->SetBufferScale(parent_window()->buffer_scale(), false);
   set_ui_scale(parent_window()->ui_scale());
   shadow_type_ = properties.shadow_type;
+
+  // Fix initial bounds. The client initially doesn't know the display where the
+  // WaylandPopup will be located and uses a primary display to convert dip
+  // bounds to pixels. However, Ozone/Wayland does know where it is going to
+  // locate WaylandPopup as it is going to use parent's entered outputs. Thus,
+  // if the primary display's scale is different from parents' scale (and this'
+  // scale), fix bounds accordingly. Otherwise, popup is located using wrong
+  // bounds in DIP.
+  auto primary_display_scale_factor = connection()
+                                          ->wayland_output_manager()
+                                          ->GetPrimaryOutput()
+                                          ->scale_factor();
+
+  gfx::RectF float_rect = gfx::RectF(GetBounds());
+  gfx::Transform transform;
+  float scale = primary_display_scale_factor;
+  // The bounds are initially given in the scale of the primary display, so we
+  // have to upscale or downscale the rect to the scale of the target display,
+  // if that scale is different.
+  if (primary_display_scale_factor < buffer_scale()) {
+    scale = static_cast<float>(buffer_scale()) /
+            static_cast<float>(primary_display_scale_factor);
+    transform.Scale(scale, scale);
+    transform.TransformRect(&float_rect);
+  } else if (primary_display_scale_factor > buffer_scale()) {
+    scale = static_cast<float>(primary_display_scale_factor) /
+            static_cast<float>(buffer_scale());
+    transform.Scale(scale, scale);
+    transform.TransformRectReverse(&float_rect);
+  }
+
+  // delegate()->OnBoundsChanged cannot be called at this point. Thus, set
+  // pending internal bounds and call SetBounds later when CreateShellPopup is
+  // called.
+  pending_initial_bounds_px_ = gfx::ToEnclosingRect(float_rect);
   return true;
 }
 

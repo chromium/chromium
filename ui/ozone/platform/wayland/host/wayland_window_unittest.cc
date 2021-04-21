@@ -24,8 +24,10 @@
 #include "ui/base/hit_test.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_transform.h"
+#include "ui/gfx/transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
@@ -1687,6 +1689,81 @@ TEST_P(WaylandWindowTest, AuxiliaryWindowUpdateBufferScale) {
 
   auxiliary_window->Hide();
   window_->SetPointerFocus(false);
+}
+
+// Tests that WaylandPopup is able to translate provided bounds via
+// PlatformWindowProperties using buffer scale it's going to use that the client
+// is not able to determine before PlatformWindow is created. See
+// WaylandPopup::OnInitialize for more details.
+TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScale) {
+  VerifyAndClearExpectations();
+
+  // Creating an output with scale 1.
+  wl::TestOutput* main_output = server_.CreateAndInitializeOutput();
+  main_output->SetRect(gfx::Rect(0, 0, 1920, 1080));
+  main_output->SetScale(1);
+  Sync();
+
+  // Creating an output with scale 2.
+  wl::TestOutput* secondary_output = server_.CreateAndInitializeOutput();
+  secondary_output->SetRect(gfx::Rect(1921, 0, 1920, 1080));
+  secondary_output->SetScale(1);
+  Sync();
+
+  // Send the window to |output1|.
+  wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+  ASSERT_TRUE(surface);
+
+  std::vector<wl::TestOutput*> entered_outputs = {main_output,
+                                                  secondary_output};
+  for (auto* entered_output : entered_outputs) {
+    wl_surface_send_enter(surface->resource(), entered_output->resource());
+    Sync();
+    for (auto main_output_scale = 1; main_output_scale < 5;
+         main_output_scale++) {
+      for (auto secondary_output_scale = 1; secondary_output_scale < 5;
+           secondary_output_scale++) {
+        // Update scale factors first.
+        main_output->SetScale(main_output_scale);
+        secondary_output->SetScale(secondary_output_scale);
+
+        main_output->Flush();
+        secondary_output->Flush();
+        Sync();
+
+        gfx::Rect bounds_dip(15, 15, 10, 10);
+        // DesktopWindowTreeHostPlatform has always to use a primary display's
+        // scale to translate initial bounds to pixels. Thus, use primary's
+        // output's scale to make initial bounds.
+        // This code snippet is a copy of
+        // DesktopWindowTreeHostPlatform::ToPixelRect.
+        gfx::Transform transform;
+        transform.Scale(main_output_scale, main_output_scale);
+        gfx::RectF rect_in_pixels = gfx::RectF(bounds_dip);
+        transform.TransformRect(&rect_in_pixels);
+        gfx::Rect wayland_popup_bounds = gfx::ToEnclosingRect(rect_in_pixels);
+
+        std::unique_ptr<WaylandWindow> wayland_popup =
+            CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
+                                          window_->GetWidget(),
+                                          wayland_popup_bounds, &delegate_);
+        EXPECT_TRUE(wayland_popup);
+
+        wayland_popup->Show(false);
+
+        gfx::Rect expected_bounds = wayland_popup_bounds;
+        if (entered_output == secondary_output) {
+          expected_bounds =
+              gfx::ScaleToRoundedRect(bounds_dip, secondary_output_scale);
+        }
+
+        EXPECT_EQ(expected_bounds, wayland_popup->GetBounds());
+      }
+    }
+    wl_surface_send_leave(surface->resource(), entered_output->resource());
+    Sync();
+  }
 }
 
 // Tests that a WaylandWindow uses the entered output with largest scale

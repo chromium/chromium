@@ -578,8 +578,6 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   PlatformEventSource::GetInstance()->AddPlatformEventDispatcher(this);
   delegate_->OnAcceleratedWidgetAvailable(GetWidget());
 
-  // Will do nothing for menus because they have got their scale above.
-  UpdateBufferScale(false);
   root_surface_->SetOpaqueRegion(gfx::Rect(bounds_px_.size()));
 
   return true;

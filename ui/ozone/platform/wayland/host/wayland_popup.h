@@ -51,6 +51,8 @@ class WaylandPopup : public WaylandWindow {
 
   PlatformWindowShadowType shadow_type_ = PlatformWindowShadowType::kNone;
 
+  gfx::Rect pending_initial_bounds_px_;
+
   DISALLOW_COPY_AND_ASSIGN(WaylandPopup);
 };
 
