@@ -2831,6 +2831,7 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
   current_begin_frame_tracker_.Start(args);
   frame_trackers_.NotifyBeginImplFrame(args);
   total_frame_counter_.OnBeginFrame(args);
+  devtools_instrumentation::DidBeginFrame(id_, args.frame_time);
 
   UMA_HISTOGRAM_CUSTOM_COUNTS("GPU.AcceleratedSurfaceRefreshRate",
                               1 / args.interval.InSecondsF(), 0, 121, 122);
@@ -3900,7 +3901,6 @@ bool LayerTreeHostImpl::ScrollAnimationCreateInternal(
 
   return true;
 }
-
 
 void LayerTreeHostImpl::UpdateImageDecodingHints(
     base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
