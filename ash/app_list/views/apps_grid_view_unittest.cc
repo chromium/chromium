@@ -2190,8 +2190,7 @@ TEST_F(AppsGridViewTest, ControlShiftArrowFolderLastItemOnPage) {
   EXPECT_TRUE(folder_item->FindChildItem(second_item_id));
 }
 
-// Flaky. https://crbug.com/1156634
-TEST_P(AppsGridViewDragAndDropTest, DISABLED_MouseDragFlipToNextPage) {
+TEST_P(AppsGridViewDragAndDropTest, MouseDragFlipToNextPage) {
   // Create 3 full pages of apps.
   model_->PopulateApps(3 * GetTilesPerPage());
   EXPECT_EQ(3, GetPaginationModel()->total_pages());
