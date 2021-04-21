@@ -1203,11 +1203,12 @@
             <div class="content-settings-header secondary">
               $i18n{siteSettingsArDescription}
             </div>
+            <!-- TODO(crbug.com/1196900): Fix redesign string when available.-->
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.AR]]"
-                allow-option-label="$i18n{siteSettingsArAllowed}"
+                allow-option-label="$i18n{siteSettingsArAsk}"
                 allow-option-icon="settings:vr-headset"
-                block-option-label="$i18n{siteSettingsArBlocked}"
+                block-option-label="$i18n{siteSettingsArBlock}"
                 block-option-icon="settings:vr-headset-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
