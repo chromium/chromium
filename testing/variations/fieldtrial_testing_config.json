@@ -1287,6 +1287,21 @@
             ]
         }
     ],
+    "CWPCollectionOnHostAndGuest": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CWPCollectionOnHostAndGuest"
+                    ]
+                }
+            ]
+        }
+    ],
     "CalculateNativeWinOcclusionCheckVirtualDesktopUsed": [
         {
             "platforms": [
