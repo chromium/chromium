@@ -31,6 +31,11 @@ The Prerender2 is the new implementation of prerendering.
   cookies and other state related to validating cache entries. The current
   prerendering uses this mechanism, that is, it does not actually render pages,
   while the Prerender2 renders pages.
+- **[Activation-gated APIs](https://html.spec.whatwg.org/C/#user-activation-gated-apis)**:
+  Web platform APIs that are dependent on user activation. Prerendered pages
+  never have user activation, so the activation-gated APIs automatically fail or
+  no-op in the prerendered pages. The known activation-gated APIs are listed
+  [here](https://jeremyroman.github.io/alternate-loading-modes/#activation-gated).
 
 # References
 
