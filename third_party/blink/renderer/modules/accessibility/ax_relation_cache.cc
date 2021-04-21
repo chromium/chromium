@@ -133,9 +133,8 @@ bool AXRelationCache::IsValidOwner(AXObject* owner) {
   if (owner->RoleValue() == ax::mojom::blink::Role::kImage)
     return false;
 
-  // Many types of nodes cannot be used as parent in normal situations.
-  // These rules also apply to allowing aria-owns.
-  if (!AXObject::CanComputeAsParent(owner->GetNode()))
+  // Similarly, do not allow <area> to own another object.
+  if (owner->IsImageMapLink())
     return false;
 
   return true;
@@ -222,7 +221,7 @@ void AXRelationCache::UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
       validated_owned_children_result.push_back(child);
     } else if (child) {
       // Invalid owns relation: repair the parent that was set above.
-      child->SetParent(child->ComputeParent());
+      child->SetParent(child->ComputeParentImpl());
     }
   }
 
@@ -251,9 +250,6 @@ void AXRelationCache::GetAriaOwnedChildren(
 }
 
 void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner) {
-  DCHECK(owner);
-  if (!owner->CanHaveChildren())
-    return;
   Element* element = owner->GetElement();
   if (!element)
     return;
@@ -297,7 +293,7 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner) {
         owned_children.push_back(child);
       } else if (child) {
         // Invalid owns relation: repair the parent that was set above.
-        child->SetParent(child->ComputeParent());
+        child->SetParent(child->ComputeParentImpl());
       }
     }
   }
@@ -310,10 +306,6 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner) {
 void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
     AXObject* owner,
     HeapVector<Member<AXObject>>& validated_owned_children_result) {
-  DCHECK(owner);
-  if (!owner->CanHaveChildren())
-    return;
-
   Vector<AXID> validated_owned_child_axids;
   for (auto& child : validated_owned_children_result)
     validated_owned_child_axids.push_back(child->AXObjectID());

@@ -1,5 +1,0 @@
-#<skip -- flaky>
-AutomationFocusChanged on role=textbox, name=Search all issues
-StructureChanged/ChildAdded on role=group
-StructureChanged/ChildrenReordered on role=document
-Text_TextSelectionChanged on role=textbox, name=Search all issues

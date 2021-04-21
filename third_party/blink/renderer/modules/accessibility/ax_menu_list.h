@@ -46,8 +46,6 @@ class AXMenuList final : public AXLayoutObject {
   void DidShowPopup();
   void DidHidePopup();
 
-  AXObject* GetOrCreateMockPopupChild();
-
  private:
   friend class AXMenuListOption;
 

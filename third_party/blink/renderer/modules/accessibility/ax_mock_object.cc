@@ -43,6 +43,12 @@ Document* AXMockObject::GetDocument() const {
   return ParentObject() ? ParentObject()->GetDocument() : nullptr;
 }
 
+AXObject* AXMockObject::ComputeParentImpl() const {
+  NOTREACHED()
+      << "Mock objects are explicitly parented until their parent is detached";
+  return nullptr;
+}
+
 ax::mojom::blink::Role AXMockObject::NativeRoleIgnoringAria() const {
   NOTREACHED();
   return ax::mojom::blink::Role::kUnknown;

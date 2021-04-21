@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
-#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
@@ -51,17 +50,14 @@ HTMLMapElement* AXImageMapLink::MapElement() const {
   return Traversal<HTMLMapElement>::FirstAncestor(*area);
 }
 
-// static
-AXObject* AXImageMapLink::GetAXObjectForImageMap(AXObjectCacheImpl& cache,
-                                                 Node* area) {
-  DCHECK(area);
-  DCHECK(IsA<HTMLAreaElement>(area));
-
-  HTMLMapElement* map = Traversal<HTMLMapElement>::FirstAncestor(*area);
-  if (!map)
-    return nullptr;
-
-  return cache.GetOrCreate(static_cast<Node*>(map->ImageElement()));
+AXObject* AXImageMapLink::ComputeParentImpl() const {
+  if (MapElement()) {
+    AXObject* ax_parent =
+        AXObjectCache().GetOrCreate(MapElement()->GetLayoutObject());
+    if (ax_parent)
+      return ax_parent;
+  }
+  return AXNodeObject::ComputeParentImpl();
 }
 
 ax::mojom::blink::Role AXImageMapLink::NativeRoleIgnoringAria() const {

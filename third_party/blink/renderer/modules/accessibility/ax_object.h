@@ -353,12 +353,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   static unsigned NumberOfLiveAXObjects() { return number_of_live_ax_objects_; }
 
   // After constructing an AXObject, it must be given a
-  // unique ID, then added to AXObjectCacheImpl, and finally Init() must
+  // unique ID, then added to AXObjectCacheImpl, and finally init() must
   // be called last.
   void SetAXObjectID(AXID ax_object_id) { id_ = ax_object_id; }
-  // Initialize the object and set the |parent|, which can only be null for the
-  // root of the tree.
-  virtual void Init(AXObject* parent);
+  virtual void Init(AXObject* parent_if_known);
 
   // When the corresponding WebCore object that this AXObject
   // wraps is deleted, it must be detached.
@@ -554,6 +552,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   const AXObject* AriaHiddenRoot() const;
   bool ComputeIsInertOrAriaHidden(IgnoredReasons* = nullptr) const;
   bool IsBlockedByAriaModalDialog(IgnoredReasons* = nullptr) const;
+  bool IsDescendantOfLeafNode() const;
+  bool LastKnownIsDescendantOfLeafNode() const {
+    return cached_is_descendant_of_leaf_node_;
+  }
+  AXObject* LeafNodeAncestor() const;
   bool IsDescendantOfDisabledNode() const;
   bool ComputeAccessibilityIsIgnoredButIncludedInTree() const;
   const AXObject* GetNativeTextControlAncestor(
@@ -1081,16 +1084,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // an attached parent_ is already cached, and that it is possible to compute
   // the parent. It calls ComputeParentImpl() for the actual work.
   AXObject* ComputeParent() const;
-
-  // Can this node be used to compute the parent of an object?
-  static bool CanComputeAsParent(Node*);
-
-  // Compute the AXObject parent for the given node or layout_object.
-  // The layout object is only necessary if the node is null, which is the case
-  // only for pseudo elements. ** Does not take aria-owns into account. **
-  static AXObject* ComputeNonARIAParent(AXObjectCacheImpl& cache,
-                                        Node* node,
-                                        LayoutObject* layout_object = nullptr);
+  // Subclasses override ComputeParentImpl() to change parent computation.
+  virtual AXObject* ComputeParentImpl() const;
 
 #if DCHECK_IS_ON()
   // When the parent on children during AddChildren(), take the opportunity to
@@ -1387,6 +1382,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   mutable bool cached_is_ignored_but_included_in_tree_ : 1;
   mutable bool cached_is_inert_or_aria_hidden_ : 1;
   mutable bool cached_is_hidden_via_style : 1;
+  mutable bool cached_is_descendant_of_leaf_node_ : 1;
   mutable bool cached_is_descendant_of_disabled_node_ : 1;
   mutable bool cached_is_editable_root_ : 1;
   mutable Member<AXObject> cached_live_region_root_;

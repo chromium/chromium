@@ -108,15 +108,7 @@ void AXMenuList::AddChildren() {
   DCHECK(children_dirty_);
   children_dirty_ = false;
 
-  AXObject* ax_popup_child = GetOrCreateMockPopupChild();
-
-  // Update mock AXMenuListPopup children.
-  ax_popup_child->SetNeedsToUpdateChildren();
-  ax_popup_child->UpdateChildrenIfNecessary();
-}
-
-AXObject* AXMenuList::GetOrCreateMockPopupChild() {
-  // Ensure mock AXMenuListPopup exists as first and only child.
+  // Ensure mock AXMenuListPopup exists.
   if (children_.IsEmpty()) {
     AXObjectCacheImpl& cache = AXObjectCache();
     AXObject* popup =
@@ -126,8 +118,10 @@ AXObject* AXMenuList::GetOrCreateMockPopupChild() {
     DCHECK(popup->CachedParentObject());
     children_.push_back(popup);
   }
-  DCHECK_EQ(children_.size(), 1U);
-  return children_[0];
+
+  // Update mock AXMenuListPopup children.
+  children_[0]->SetNeedsToUpdateChildren();
+  children_[0]->UpdateChildrenIfNecessary();
 }
 
 bool AXMenuList::IsCollapsed() const {

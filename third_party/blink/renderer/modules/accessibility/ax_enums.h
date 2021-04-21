@@ -105,6 +105,7 @@ enum AXTextFromNativeHTML {
 enum AXIgnoredReason {
   kAXActiveModalDialog,
   kAXAriaModalDialog,
+  kAXAncestorIsLeafNode,
   kAXAriaHiddenElement,
   kAXAriaHiddenSubtree,
   kAXEmptyAlt,

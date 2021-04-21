@@ -74,7 +74,6 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_option.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
@@ -111,6 +110,8 @@ String IgnoredReasonName(AXIgnoredReason reason) {
       return "activeModalDialog";
     case kAXAriaModalDialog:
       return "activeAriaModalDialog";
+    case kAXAncestorIsLeafNode:
+      return "ancestorIsLeafNode";
     case kAXAriaHiddenElement:
       return "ariaHiddenElement";
     case kAXAriaHiddenSubtree:
@@ -471,6 +472,7 @@ AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
       cached_is_ignored_(false),
       cached_is_ignored_but_included_in_tree_(false),
       cached_is_inert_or_aria_hidden_(false),
+      cached_is_descendant_of_leaf_node_(false),
       cached_is_descendant_of_disabled_node_(false),
       cached_is_editable_root_(false),
       cached_live_region_root_(nullptr),
@@ -485,12 +487,9 @@ AXObject::~AXObject() {
   --number_of_live_ax_objects_;
 }
 
-void AXObject::Init(AXObject* parent) {
+void AXObject::Init(AXObject* parent_if_known) {
 #if DCHECK_IS_ON()
-  DCHECK(!parent_) << "Should not already have a cached parent:"
-                   << "\n* Child = " << GetNode() << " / " << GetLayoutObject()
-                   << "\n* Parent = " << parent_->ToString(true, true)
-                   << "\n* Equal to passed-in parent? " << (parent == parent_);
+  DCHECK(!parent_);
   DCHECK(!is_initializing_);
   base::AutoReset<bool> reentrancy_protector(&is_initializing_, true);
 #endif  // DCHECK_IS_ON()
@@ -507,15 +506,9 @@ void AXObject::Init(AXObject* parent) {
 
   // Determine the parent as soon as possible.
   // Every AXObject must have a parent unless it's the root.
-  SetParent(parent);
+  SetParent(parent_if_known ? parent_if_known : ComputeParent());
   DCHECK(parent_ || IsA<Document>(GetNode()))
       << "The following node should have a parent: " << GetNode();
-
-  // The parent cannot have children. This object must be destroyed.
-  DCHECK(!parent_ || parent_->CanHaveChildren())
-      << "Tried to set a parent that cannot have children:"
-      << "\n* Parent = " << parent_->ToString(true, true)
-      << "\n* Child = " << ToString(true, true);
 
   SetNeedsToUpdateChildren();  // Should be called after role_ is set.
   UpdateCachedAttributeValuesIfNeeded(false);
@@ -580,7 +573,7 @@ void AXObject::SetParent(AXObject* new_parent) {
 }
 
 // In many cases, ComputeParent() is not called, because the parent adding
-// the parent adding the child will pass itself into AXObjectCacheImpl.
+// the child will pass itself into AXObject::Init() via parent_if_known.
 // ComputeParent() is still necessary because some parts of the code,
 // especially web tests, result in AXObjects being created in the middle of
 // the tree before their parents are created.
@@ -589,82 +582,66 @@ void AXObject::SetParent(AXObject* new_parent) {
 AXObject* AXObject::ComputeParent() const {
   DCHECK(!IsDetached());
 
-  DCHECK(!IsVirtualObject())
-      << "A virtual object must have a parent, and cannot exist without one. "
-         "The parent is set when the object is constructed.";
+  DCHECK(!parent_ || parent_->IsDetached())
+      << "Should use cached parent unless it's detached, and should not "
+         "attempt to recompute it, occurred on "
+      << GetNode();
 
-  DCHECK(GetNode() || GetLayoutObject())
-      << "Can't compute parent on AXObjects without a backing Node "
-         "or LayoutObject. Objects without those must set the "
-         "parent in Init(), |this| = "
-      << RoleValue();
-
-  AXObject* ax_parent =
-      AXObjectCache().IsAriaOwned(this)
-          ? AXObjectCache().GetAriaOwnedParent(this)
-          : ComputeNonARIAParent(AXObjectCache(), GetNode(), GetLayoutObject());
-
-  CHECK(!ax_parent || !ax_parent->IsDetached())
-      << "Computed parent should never be detached:"
-      << "\n* Child: " << GetNode()
-      << "\n* Parent: " << ax_parent->ToString(true, true);
-
-  return ax_parent;
-}
-
-// static
-bool AXObject::CanComputeAsParent(Node* node) {
-  // A <select> menulist that will use AXMenuList is not allowed.
-  if (AXObjectCacheImpl::UseAXMenuList()) {
-    if (auto* select = DynamicTo<HTMLSelectElement>(node)) {
-      if (select->UsesMenuList())
-        return false;
-    }
-  }
-  // A <br> can only have an inline textbox child.
-  if (IsA<HTMLBRElement>(node))
-    return false;
-  // Parents of <area> are handled separately above.
-  if (IsA<HTMLMapElement>(node) || IsA<HTMLAreaElement>(node) ||
-      IsA<HTMLImageElement>(node)) {
-    return false;
+  if (!GetNode() && !GetLayoutObject()) {
+    NOTREACHED() << "Can't compute parent on AXObjects without a backing Node "
+                    "or LayoutObject. Objects without those must set the "
+                    "parent in Init(), |this| = "
+                 << RoleValue();
+    return nullptr;
   }
 
-  return true;
+  return ComputeParentImpl();
 }
 
-// static
-AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
-                                         Node* current_node,
-                                         LayoutObject* current_layout_obj) {
-  DCHECK(current_node || current_layout_obj)
-      << "Can't compute parent without a backing Node "
-         "or LayoutObject.";
+AXObject* AXObject::ComputeParentImpl() const {
+  DCHECK(!IsDetached());
+
+  if (AXObjectCache().IsAriaOwned(this))
+    return AXObjectCache().GetAriaOwnedParent(this);
+
+  Node* current_node = GetNode();
 
   // A WebArea's parent should be the page popup owner, if any, otherwise null.
   if (IsA<Document>(current_node)) {
-    LocalFrame* frame = current_layout_obj->GetFrame();
-    return cache.GetOrCreate(frame->PagePopupOwner());
+    LocalFrame* frame = GetLayoutObject()->GetFrame();
+    return AXObjectCache().GetOrCreate(frame->PagePopupOwner());
+  }
+
+  if (IsVirtualObject()) {
+    NOTREACHED()
+        << "A virtual object must have a parent, and cannot exist without one. "
+           "The parent is set when the object is constructed.";
+    return nullptr;
   }
 
   // If no node, or a pseudo element, use the layout parent.
   if (!current_node) {
+    LayoutObject* current_layout_obj = GetLayoutObject();
+    if (!current_layout_obj) {
+      NOTREACHED()
+          << "Can't compute parent on AXObjects without a backing Node "
+             "or LayoutObject. Objects without those must set the "
+             "parent in Init(), |this| = "
+          << RoleValue();
+      return nullptr;
+    }
     // If no DOM node and no parent, this must be an anonymous layout object.
     DCHECK(current_layout_obj->IsAnonymous());
     LayoutObject* parent_layout_obj = current_layout_obj->Parent();
     if (!parent_layout_obj)
       return nullptr;
-    Node* parent_node = parent_layout_obj->GetNode();
-    if (!CanComputeAsParent(parent_node))
-      return nullptr;
-    if (AXObject* ax_parent = cache.GetOrCreate(parent_layout_obj)) {
+    if (AXObject* ax_parent = AXObjectCache().GetOrCreate(parent_layout_obj)) {
       DCHECK(!ax_parent->IsDetached());
-      if (!ax_parent->ShouldUseLayoutObjectTraversalForChildren())
-        return nullptr;
-      return ax_parent->CanHaveChildren() ? ax_parent : nullptr;
+      return ax_parent;
     }
     // Switch to using DOM nodes. The only cases that should occur do not have
     // chains of multiple parents without DOM nodes.
+    Node* parent_node = parent_layout_obj->GetNode();
     DCHECK(parent_node) << "Computing an accessible parent from the layout "
                            "parent did not yield an accessible object nor a "
                            "DOM node to walk up from, current_layout_obj = "
@@ -677,49 +654,16 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
       << "Should not call ComputeParent() with disconnected node: "
       << current_node;
 
-  // For <option> in <select size=1>, return the popup.
-  if (AXObjectCacheImpl::UseAXMenuList()) {
-    if (auto* option = DynamicTo<HTMLOptionElement>(current_node)) {
-      if (AXObject* ax_select =
-              AXMenuListOption::ComputeParentAXMenuPopupFor(cache, option)) {
-        return ax_select;
-      }
-    }
-  }
-
-  // For <area>, return the image it is a child link of.
-  if (IsA<HTMLAreaElement>(current_node)) {
-    if (AXObject* ax_image =
-            AXImageMapLink::GetAXObjectForImageMap(cache, current_node)) {
-      return ax_image;
-    }
-  }
-
   while (true) {
     current_node = GetParentNodeForComputeParent(current_node);
     if (!current_node)
       break;
-    // When AXMenuList is being used, a menu list is only allowed to parent an
-    // AXMenuListPopup, which is added as a child on creation. No other
-    // children are allowed, and null is returned for anything else where the
-    // parent would be AXMenuList.
-    if (AXObjectCacheImpl::UseAXMenuList()) {
-      if (auto* select = DynamicTo<HTMLSelectElement>(current_node)) {
-        if (select->UsesMenuList())
-          return nullptr;
-      }
-    }
-    if (!CanComputeAsParent(current_node))
-      return nullptr;
-
-    AXObject* ax_parent = cache.GetOrCreate(current_node);
+    AXObject* ax_parent = AXObjectCache().GetOrCreate(current_node);
     if (ax_parent) {
       DCHECK(!ax_parent->IsDetached());
-      return ax_parent->CanHaveChildren() ? ax_parent : nullptr;
+      return ax_parent;
     }
   }
-
-  NOTREACHED() << "No parent found.";
 
   return nullptr;
 }
@@ -730,8 +674,6 @@ void AXObject::EnsureCorrectParentComputation() {
     return;
 
   DCHECK(!parent_->IsDetached());
-
-  DCHECK(parent_->CanHaveChildren());
 
   // Don't check the computed parent if the cached parent is a mock object.
   // It is expected that a computed parent could never be a mock object,
@@ -756,22 +698,18 @@ void AXObject::EnsureCorrectParentComputation() {
   if (GetNode() && GetNode()->IsPseudoElement())
     return;
 
-    // Verify that the algorithm in ComputeParent() provides same results as
-    // parents that init their children with themselves as the parent.
-    // Inconsistency indicates a problem could potentially exist where a child's
-    // parent does not include the child in its children.
-#if DCHECK_IS_ON()
-  AXObject* computed_parent = ComputeParent();
-
-  DCHECK(computed_parent) << "Computed parent was null for " << this
-                          << ", expected " << parent_;
-  DCHECK_EQ(computed_parent, parent_)
+  // Verify that the algorithm in ComputeParentImpl() provides same results as
+  // parents that init their children with themselves as the parent_if_known.
+  // Inconsistency indicates a problem could potentially exist where a child's
+  // parent does not include the child in its children.
+  DCHECK(ComputeParentImpl())
+      << "Computed parent was null for " << this << ", expected " << parent_;
+  DCHECK_EQ(ComputeParentImpl(), parent_)
       << "\n**** ComputeParent should have provided the same result as "
          "the known parent.\n**** Computed parent layout object was "
-      << computed_parent->GetLayoutObject()
+      << ComputeParentImpl()->GetLayoutObject()
       << "\n**** Actual parent's layout object was "
       << parent_->GetLayoutObject() << "\n**** Child was " << this;
-#endif
 }
 #endif
 
@@ -1936,6 +1874,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     SetNeedsToUpdateChildren();
     cached_is_inert_or_aria_hidden_ = is_inert_or_aria_hidden;
   }
+  cached_is_descendant_of_leaf_node_ = !!LeafNodeAncestor();
   cached_is_descendant_of_disabled_node_ = !!DisabledAncestor();
 
   bool is_ignored = ComputeAccessibilityIsIgnored();
@@ -2142,6 +2081,22 @@ bool AXObject::IsBlockedByAriaModalDialog(
 
 bool AXObject::IsVisible() const {
   return !IsInertOrAriaHidden() && !IsHiddenViaStyle();
+}
+
+bool AXObject::IsDescendantOfLeafNode() const {
+  UpdateCachedAttributeValuesIfNeeded();
+  return cached_is_descendant_of_leaf_node_;
+}
+
+AXObject* AXObject::LeafNodeAncestor() const {
+  if (AXObject* parent = ParentObject()) {
+    if (!parent->CanHaveChildren())
+      return parent;
+
+    return parent->LeafNodeAncestor();
+  }
+
+  return nullptr;
 }
 
 const AXObject* AXObject::AriaHiddenRoot() const {
@@ -3872,19 +3827,6 @@ AXObject* AXObject::ParentObject() const {
     parent_ = ComputeParent();
     DCHECK(parent_ || IsA<Document>(GetNode()))
         << "The following node should have a parent: " << GetNode();
-  } else {
-    if (parent_->IsDetached()) {
-      // TODO(accessibility) This should never happen, but it fails
-      // All/DumpAccessibilityTreeTest.IgnoredCrash/blink, meaning that when
-      // ClearChildren() was called, the parent did not find this as a child,
-      // and could not DetachFromParent() on the child.
-      // NOTREACHED()
-      //     << "Cached parent should never be detached:"
-      //     << "\n* Child: " << RoleValue() << " " << GetNode() << " "
-      //     << GetLayoutObject() << "\n* Parent: " << parent_->ToString(true,
-      //     true);
-      return nullptr;
-    }
   }
 
   return parent_;

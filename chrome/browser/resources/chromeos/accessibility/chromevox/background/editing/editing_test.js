@@ -1653,15 +1653,12 @@ TEST_F('ChromeVoxEditingTest', 'NestedInsertionDeletion', function() {
 });
 
 TEST_F('ChromeVoxEditingTest', 'Separator', function() {
-  // In the past, an ARIA leaf role would cause subtree content to be removed.
-  // However, the new decision is to not remove any content the user might
-  // interact with.
   const mockFeedback = this.createMockFeedback();
   const site = `
     <div contenteditable="true" role="textbox">
       <p>Start</p>
       <p><span>Hello</span></p>
-      <p><span role="separator">Separator content should be read</span></p>
+      <p><span role="separator">Separator content should not be read</span></p>
       <p><span>World</span></p>
     </div>
   `;
@@ -1671,11 +1668,13 @@ TEST_F('ChromeVoxEditingTest', 'Separator', function() {
       mockFeedback.call(this.press(KeyCode.DOWN))
           .expectSpeech('Hello')
           .call(this.press(KeyCode.DOWN))
-          .expectSpeech('Separator content should be read')
+          .expectNextSpeechUtteranceIsNot(
+              'Separator content should not be read')
+          .expectSpeech('Separator')
           .call(this.press(KeyCode.DOWN))
           .expectSpeech('World')
           .call(this.press(KeyCode.LEFT))
-          .expectSpeech('\n')
+          .expectSpeech('Separator')
           .replay();
     });
     input.focus();
