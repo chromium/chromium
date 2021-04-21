@@ -20,6 +20,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/pref_store.h"
+#include "components/prefs/segregated_pref_store.h"
 
 namespace chromecast {
 namespace shell {
@@ -36,6 +37,46 @@ base::FilePath GetConfigPath() {
   base::FilePath config_path;
   CHECK(base::PathService::Get(FILE_CAST_CONFIG, &config_path));
   return config_path;
+}
+
+base::FilePath GetLargeConfigPath() {
+  return GetConfigPath().AddExtension(".large");
+}
+
+scoped_refptr<PersistentPrefStore> MakePrefStore() {
+  auto default_pref_store =
+      base::MakeRefCounted<JsonPrefStore>(GetConfigPath());
+
+  std::set<std::string> selected_pref_names;
+  if (PrefServiceHelper::LargePrefNames) {
+    selected_pref_names = PrefServiceHelper::LargePrefNames();
+  }
+  if (selected_pref_names.empty()) {
+    return default_pref_store;
+  }
+
+  auto large_pref_store =
+      base::MakeRefCounted<JsonPrefStore>(GetLargeConfigPath());
+  // Move large prefs out of the default pref store, if necessary.
+  if (default_pref_store->ReadPrefs() ==
+      PersistentPrefStore::PREF_READ_ERROR_NONE) {
+    large_pref_store->ReadPrefs();
+    for (const std::string& pref_name : selected_pref_names) {
+      const base::Value* pref_value = nullptr;
+      if (!large_pref_store->GetValue(pref_name, &pref_value)) {
+        // Copy from default prefs, if possible.
+        if (default_pref_store->GetValue(pref_name, &pref_value)) {
+          large_pref_store->SetValue(
+              pref_name, std::make_unique<base::Value>(pref_value->Clone()), 0);
+        }
+      }
+      default_pref_store->RemoveValue(pref_name, 0);
+    }
+  }
+
+  return base::MakeRefCounted<SegregatedPrefStore>(
+      std::move(default_pref_store), std::move(large_pref_store),
+      selected_pref_names);
 }
 
 }  // namespace
@@ -64,8 +105,7 @@ std::unique_ptr<PrefService> PrefServiceHelper::CreatePrefService(
   RegisterPlatformPrefs(registry);
 
   PrefServiceFactory pref_service_factory;
-  pref_service_factory.set_user_prefs(
-      base::MakeRefCounted<JsonPrefStore>(config_path));
+  pref_service_factory.set_user_prefs(MakePrefStore());
   pref_service_factory.set_async(false);
 
   PersistentPrefStore::PrefReadError prefs_read_error =
