@@ -151,6 +151,8 @@ void APIRequestHandler::AsyncResultHandler::DeliverPromiseResult(
   DCHECK_LE(response_args.size(), 1u);
 
   v8::Isolate* isolate = context->GetIsolate();
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   v8::Local<v8::Promise::Resolver> resolver = promise_resolver_.Get(isolate);
   if (error.empty()) {

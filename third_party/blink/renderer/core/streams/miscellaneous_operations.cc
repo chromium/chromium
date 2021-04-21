@@ -34,7 +34,10 @@ v8::Local<v8::Promise> PromiseRejectInternal(ScriptState* script_state,
                                              v8::Local<v8::Value> value,
                                              int recursion_depth) {
   auto context = script_state->GetContext();
-  v8::TryCatch trycatch(script_state->GetIsolate());
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+  v8::TryCatch trycatch(isolate);
   // TODO(ricea): Can this fail for reasons other than memory exhaustion? Can we
   // recover if it does?
   auto resolver = v8::Promise::Resolver::New(context).ToLocalChecked();
@@ -529,7 +532,10 @@ CORE_EXPORT v8::Local<v8::Promise> PromiseResolve(ScriptState* script_state,
     return value.As<v8::Promise>();
   }
   auto context = script_state->GetContext();
-  v8::TryCatch trycatch(script_state->GetIsolate());
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+  v8::TryCatch trycatch(isolate);
   // TODO(ricea): Can this fail for reasons other than memory exhaustion? Can we
   // recover if it does?
   auto resolver = v8::Promise::Resolver::New(context).ToLocalChecked();

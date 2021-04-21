@@ -50,8 +50,11 @@ void StreamPromiseResolver::Resolve(ScriptState* script_state,
     return;
   }
   is_settled_ = true;
-  auto result = resolver_.NewLocal(script_state->GetIsolate())
-                    ->Resolve(script_state->GetContext(), value);
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+  auto result =
+      resolver_.NewLocal(isolate)->Resolve(script_state->GetContext(), value);
   if (result.IsNothing()) {
     DVLOG(3) << "Assuming JS shutdown and ignoring failed Resolve";
   }
@@ -70,8 +73,11 @@ void StreamPromiseResolver::Reject(ScriptState* script_state,
     return;
   }
   is_settled_ = true;
-  auto result = resolver_.NewLocal(script_state->GetIsolate())
-                    ->Reject(script_state->GetContext(), reason);
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+  auto result =
+      resolver_.NewLocal(isolate)->Reject(script_state->GetContext(), reason);
   if (result.IsNothing()) {
     DVLOG(3) << "Assuming JS shutdown and ignoring failed Reject";
   }

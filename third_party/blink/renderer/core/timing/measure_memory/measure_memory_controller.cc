@@ -293,6 +293,8 @@ void MeasureMemoryController::MeasurementComplete(
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context = context_.NewLocal(isolate_);
   v8::Context::Scope context_scope(context);
+  v8::MicrotasksScope microtasks_scope(
+      isolate_, v8::MicrotasksScope::kDoNotRunMicrotasks);
   auto* result = ConvertResult(measurement);
   v8::Local<v8::Promise::Resolver> promise_resolver =
       promise_resolver_.NewLocal(isolate_);
