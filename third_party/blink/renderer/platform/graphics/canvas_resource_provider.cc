@@ -1265,7 +1265,7 @@ void CanvasResourceProvider::OnFlushForImage(PaintImage::ContentId content_id) {
     MemoryManagedPaintCanvas* canvas =
         static_cast<MemoryManagedPaintCanvas*>(Canvas());
     if (canvas->IsCachingImage(content_id))
-      this->FlushCanvas();
+      FlushCanvas();
   }
 }
 

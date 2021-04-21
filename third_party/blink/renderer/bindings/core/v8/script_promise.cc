@@ -228,8 +228,8 @@ ScriptPromise::ScriptPromise(ScriptState* script_state,
 }
 
 ScriptPromise::ScriptPromise(const ScriptPromise& other) {
-  this->script_state_ = other.script_state_;
-  this->promise_ = other.promise_;
+  script_state_ = other.script_state_;
+  promise_ = other.promise_;
 }
 
 ScriptPromise ScriptPromise::Then(v8::Local<v8::Function> on_fulfilled,

@@ -200,7 +200,7 @@ DrawingBuffer::DrawingBuffer(
       webgl_version_(webgl_version),
       context_provider_(std::make_unique<WebGraphicsContext3DProviderWrapper>(
           std::move(context_provider))),
-      gl_(this->ContextProvider()->ContextGL()),
+      gl_(ContextProvider()->ContextGL()),
       extensions_util_(std::move(extensions_util)),
       discard_framebuffer_supported_(discard_framebuffer_supported),
       want_alpha_channel_(want_alpha_channel),

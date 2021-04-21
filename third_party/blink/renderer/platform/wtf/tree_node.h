@@ -147,7 +147,7 @@ class TreeNode {
     while (old_parent->HasChildren()) {
       NodeType* child = old_parent->FirstChild();
       old_parent->RemoveChild(child);
-      this->AppendChild(child);
+      AppendChild(child);
     }
   }
 

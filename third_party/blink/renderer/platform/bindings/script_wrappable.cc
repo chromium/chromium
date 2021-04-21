@@ -21,7 +21,7 @@ ASSERT_SIZE(ScriptWrappable, SameSizeAsScriptWrappable);
 v8::Local<v8::Value> ScriptWrappable::Wrap(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context) {
-  const WrapperTypeInfo* wrapper_type_info = this->GetWrapperTypeInfo();
+  const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
 
   DCHECK(!DOMDataStore::ContainsWrapper(this, isolate));
 
@@ -32,7 +32,7 @@ v8::Local<v8::Value> ScriptWrappable::Wrap(
 }
 
 v8::MaybeLocal<v8::Value> ScriptWrappable::WrapV2(ScriptState* script_state) {
-  const WrapperTypeInfo* wrapper_type_info = this->GetWrapperTypeInfo();
+  const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
 
   DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
 

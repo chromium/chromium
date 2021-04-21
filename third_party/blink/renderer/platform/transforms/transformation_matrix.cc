@@ -1287,7 +1287,7 @@ TransformationMatrix& TransformationMatrix::Multiply(
   double* left_matrix = &(matrix_[0][0]);
   const double* right_matrix = &(mat.matrix_[0][0]);
   asm volatile(
-      // Load this->matrix_ to v24 - v31.
+      // Load matrix_ to v24 - v31.
       // Load mat.matrix_ to v16 - v23.
       // Result: *this = *this * mat
       // | v0 v2 v4 v6 |   | v24 v26 v28 v30 |   | v16 v18 v20 v22 |

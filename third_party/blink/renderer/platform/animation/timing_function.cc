@@ -54,7 +54,7 @@ CubicBezierTimingFunction* CubicBezierTimingFunction::Preset(
 }
 
 String CubicBezierTimingFunction::ToString() const {
-  switch (this->GetEaseType()) {
+  switch (GetEaseType()) {
     case CubicBezierTimingFunction::EaseType::EASE:
       return "ease";
     case CubicBezierTimingFunction::EaseType::EASE_IN:
@@ -64,10 +64,10 @@ String CubicBezierTimingFunction::ToString() const {
     case CubicBezierTimingFunction::EaseType::EASE_IN_OUT:
       return "ease-in-out";
     case CubicBezierTimingFunction::EaseType::CUSTOM:
-      return "cubic-bezier(" + String::NumberToStringECMAScript(this->X1()) +
-             ", " + String::NumberToStringECMAScript(this->Y1()) + ", " +
-             String::NumberToStringECMAScript(this->X2()) + ", " +
-             String::NumberToStringECMAScript(this->Y2()) + ")";
+      return "cubic-bezier(" + String::NumberToStringECMAScript(X1()) + ", " +
+             String::NumberToStringECMAScript(Y1()) + ", " +
+             String::NumberToStringECMAScript(X2()) + ", " +
+             String::NumberToStringECMAScript(Y2()) + ")";
     default:
       NOTREACHED();
       return "";
@@ -130,7 +130,7 @@ String StepsTimingFunction::ToString() const {
 
   StringBuilder builder;
   builder.Append("steps(");
-  builder.Append(String::NumberToStringECMAScript(this->NumberOfSteps()));
+  builder.Append(String::NumberToStringECMAScript(NumberOfSteps()));
   if (position_string) {
     builder.Append(", ");
     builder.Append(position_string);

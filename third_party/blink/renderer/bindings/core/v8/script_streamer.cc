@@ -624,9 +624,8 @@ bool ScriptStreamer::TryStartStreamingTask() {
       TRACE_DISABLED_BY_DEFAULT("v8.compile"), "v8.streamingCompile.start",
       this, TRACE_EVENT_FLAG_FLOW_OUT, "data",
       [&](perfetto::TracedValue context) {
-        inspector_parse_script_event::Data(std::move(context),
-                                           this->ScriptResourceIdentifier(),
-                                           this->ScriptURLString());
+        inspector_parse_script_event::Data(
+            std::move(context), ScriptResourceIdentifier(), ScriptURLString());
       });
 
   stream_->TakeDataAndPipeOnMainThread(
@@ -795,9 +794,8 @@ void ScriptStreamer::StreamingComplete(LoadingState loading_state) {
       TRACE_DISABLED_BY_DEFAULT("v8.compile"), "v8.streamingCompile.complete",
       this, TRACE_EVENT_FLAG_FLOW_IN, "streaming_suppressed",
       IsStreamingSuppressed(), "data", [&](perfetto::TracedValue context) {
-        inspector_parse_script_event::Data(std::move(context),
-                                           this->ScriptResourceIdentifier(),
-                                           this->ScriptURLString());
+        inspector_parse_script_event::Data(
+            std::move(context), ScriptResourceIdentifier(), ScriptURLString());
       });
 
   // The background task is completed; do the necessary ramp-down in the main

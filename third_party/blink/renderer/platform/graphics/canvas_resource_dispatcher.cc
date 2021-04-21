@@ -130,7 +130,7 @@ void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
   // Determines whether the main thread may be blocked. If unblocked, post
   // |canvas_resource|. Otherwise, save it but do not post it.
   if (num_unreclaimed_frames_posted_ < kMaxUnreclaimedPlaceholderFrames) {
-    this->PostImageToPlaceholder(std::move(canvas_resource), resource_id);
+    PostImageToPlaceholder(std::move(canvas_resource), resource_id);
     num_unreclaimed_frames_posted_++;
   } else {
     DCHECK(num_unreclaimed_frames_posted_ == kMaxUnreclaimedPlaceholderFrames);
@@ -453,12 +453,12 @@ void CanvasResourceDispatcher::SetPlaceholderCanvasDispatcher(
   // the canvas resource dispatcher directly. So Offscreen Canvas can behave in
   // a more synchronous way when it's on the main thread.
   if (IsMainThread()) {
-    UpdatePlaceholderDispatcher(this->GetWeakPtr(), dispatcher_task_runner,
+    UpdatePlaceholderDispatcher(GetWeakPtr(), dispatcher_task_runner,
                                 placeholder_canvas_id);
   } else {
     PostCrossThreadTask(
         *Thread::MainThread()->Scheduler()->CompositorTaskRunner(), FROM_HERE,
-        CrossThreadBindOnce(UpdatePlaceholderDispatcher, this->GetWeakPtr(),
+        CrossThreadBindOnce(UpdatePlaceholderDispatcher, GetWeakPtr(),
                             std::move(dispatcher_task_runner),
                             placeholder_canvas_id));
   }

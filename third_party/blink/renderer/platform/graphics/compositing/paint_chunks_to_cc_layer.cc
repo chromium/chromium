@@ -242,7 +242,7 @@ class ConversionContext {
     // The transform space when the SaveLayer[Alpha]Op was emitted.
     const TransformPaintPropertyNode* transform;
     // Records the bounds of the effect which initiated the entry. Note that
-    // the effect is not |this->effect| (which is the previous effect), but the
+    // the effect is not |effect| (which is the previous effect), but the
     // |current_effect_| when this entry is the top of the stack.
     FloatRect bounds;
   };

@@ -129,8 +129,8 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
             [this](media::MediaLog* media_log,
                    media::VideoDecoderImplementation impl,
                    const media::RequestOverlayInfoCB& request_overlay_info_cb) {
-              DCHECK(this->owned_video_decoder_);
-              return std::move(this->owned_video_decoder_);
+              DCHECK(owned_video_decoder_);
+              return std::move(owned_video_decoder_);
             });
     EXPECT_CALL(gpu_factories_, CreateVideoDecoder(_, _, _)).Times(AtLeast(0));
   }

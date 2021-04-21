@@ -287,7 +287,7 @@ V8PerIsolateData::FindOrCreateEternalNameCache(
   auto it = eternal_name_cache_.find(lookup_key);
   const Vector<v8::Eternal<v8::Name>>* vector = nullptr;
   if (UNLIKELY(it == eternal_name_cache_.end())) {
-    v8::Isolate* isolate = this->GetIsolate();
+    v8::Isolate* isolate = GetIsolate();
     Vector<v8::Eternal<v8::Name>> new_vector(names.size());
     std::transform(names.begin(), names.end(), new_vector.begin(),
                    [isolate](const char* name) {

@@ -22,8 +22,7 @@ class Iterable {
  public:
   Iterator* keysForBinding(ScriptState* script_state,
                            ExceptionState& exception_state) {
-    IterationSource* source =
-        this->StartIteration(script_state, exception_state);
+    IterationSource* source = StartIteration(script_state, exception_state);
     if (!source)
       return nullptr;
     return MakeGarbageCollected<IterableIterator<KeySelector>>(source);
@@ -31,8 +30,7 @@ class Iterable {
 
   Iterator* valuesForBinding(ScriptState* script_state,
                              ExceptionState& exception_state) {
-    IterationSource* source =
-        this->StartIteration(script_state, exception_state);
+    IterationSource* source = StartIteration(script_state, exception_state);
     if (!source)
       return nullptr;
     return MakeGarbageCollected<IterableIterator<ValueSelector>>(source);
@@ -40,8 +38,7 @@ class Iterable {
 
   Iterator* entriesForBinding(ScriptState* script_state,
                               ExceptionState& exception_state) {
-    IterationSource* source =
-        this->StartIteration(script_state, exception_state);
+    IterationSource* source = StartIteration(script_state, exception_state);
     if (!source)
       return nullptr;
     return MakeGarbageCollected<IterableIterator<EntrySelector>>(source);
@@ -52,8 +49,7 @@ class Iterable {
                          V8ForEachIteratorCallback* callback,
                          const ScriptValue& this_arg,
                          ExceptionState& exception_state) {
-    IterationSource* source =
-        this->StartIteration(script_state, exception_state);
+    IterationSource* source = StartIteration(script_state, exception_state);
 
     v8::TryCatch try_catch(script_state->GetIsolate());
 

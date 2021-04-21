@@ -200,9 +200,9 @@ SkFontID FontPlatformData::UniqueID() const {
 }
 
 String FontPlatformData::FontFamilyName() const {
-  DCHECK(this->Typeface());
+  DCHECK(Typeface());
   SkTypeface::LocalizedStrings* font_family_iterator =
-      this->Typeface()->createFamilyNameIterator();
+      Typeface()->createFamilyNameIterator();
   SkTypeface::LocalizedString localized_string;
   while (font_family_iterator->next(&localized_string) &&
          !localized_string.fString.size()) {

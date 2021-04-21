@@ -749,7 +749,7 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
         static_cast<const WebGestureEvent&>(event->Event()).PositionInWidget();
 
     ElementAtPointCallback result_callback = base::BindOnce(
-        &WidgetInputHandlerManager::FindScrollTargetReply, this->AsWeakPtr(),
+        &WidgetInputHandlerManager::FindScrollTargetReply, AsWeakPtr(),
         std::move(event), std::move(metrics), std::move(callback));
 
     main_thread_task_runner_->PostTask(

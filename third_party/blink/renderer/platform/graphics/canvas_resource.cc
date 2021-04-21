@@ -249,7 +249,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedBitmap::Bitmap() {
       ColorParams().GetSkAlphaType(), ColorParams().GetSkColorSpace());
   SkPixmap pixmap(image_info, shared_mapping_.memory(),
                   image_info.minRowBytes());
-  this->AddRef();
+  AddRef();
   sk_sp<SkImage> sk_image = SkImage::MakeFromRaster(
       pixmap,
       [](const void*, SkImage::ReleaseContext resource_to_unref) {

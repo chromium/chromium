@@ -368,14 +368,14 @@ bool AffineTransform::Decompose(DecomposedType& decomp) const {
 }
 
 void AffineTransform::Recompose(const DecomposedType& decomp) {
-  this->SetA(decomp.remainder_a);
-  this->SetB(decomp.remainder_b);
-  this->SetC(decomp.remainder_c);
-  this->SetD(decomp.remainder_d);
-  this->SetE(decomp.translate_x);
-  this->SetF(decomp.translate_y);
-  this->RotateRadians(decomp.angle);
-  this->Scale(decomp.scale_x, decomp.scale_y);
+  SetA(decomp.remainder_a);
+  SetB(decomp.remainder_b);
+  SetC(decomp.remainder_c);
+  SetD(decomp.remainder_d);
+  SetE(decomp.translate_x);
+  SetF(decomp.translate_y);
+  RotateRadians(decomp.angle);
+  Scale(decomp.scale_x, decomp.scale_y);
 }
 
 String AffineTransform::ToString(bool as_matrix) const {

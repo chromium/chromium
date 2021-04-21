@@ -150,7 +150,7 @@ int AudioDelayDSPKernel::ProcessARateScalar(unsigned start,
   DCHECK_GE(write_index_, 0);
   DCHECK_LT(write_index_, buffer_length);
 
-  float sample_rate = this->SampleRate();
+  float sample_rate = SampleRate();
   const float* delay_times = delay_times_.Data();
 
   for (unsigned i = start; i < frames_to_process; ++i) {
@@ -231,7 +231,7 @@ void AudioDelayDSPKernel::ProcessKRate(const float* source,
   DCHECK_GE(write_index_, 0);
   DCHECK_LT(write_index_, buffer_length);
 
-  float sample_rate = this->SampleRate();
+  float sample_rate = SampleRate();
   double max_time = MaxDelayTime();
 
   // This is basically the same as above, but optimized for the case where the
@@ -244,7 +244,7 @@ void AudioDelayDSPKernel::ProcessKRate(const float* source,
   // |write_index_| to be different from |read_index1| or |read_index2| which
   // simplifies the loop a bit.
 
-  double delay_time = this->DelayTime(sample_rate);
+  double delay_time = DelayTime(sample_rate);
   // Make sure the delay time is in a valid range.
   delay_time = clampTo(delay_time, 0.0, max_time);
   double desired_delay_frames = delay_time * sample_rate;

@@ -101,29 +101,29 @@ class AudioArray {
 
   void Zero() {
     // This multiplication is made safe by the check in Allocate().
-    memset(this->Data(), 0, sizeof(T) * this->size());
+    memset(Data(), 0, sizeof(T) * size());
   }
 
   void ZeroRange(unsigned start, unsigned end) {
-    bool is_safe = (start <= end) && (end <= this->size());
+    bool is_safe = (start <= end) && (end <= size());
     DCHECK(is_safe);
     if (!is_safe)
       return;
 
     // This expression cannot overflow because end - start cannot be
     // greater than m_size, which is safe due to the check in Allocate().
-    memset(this->Data() + start, 0, sizeof(T) * (end - start));
+    memset(Data() + start, 0, sizeof(T) * (end - start));
   }
 
   void CopyToRange(const T* source_data, unsigned start, unsigned end) {
-    bool is_safe = (start <= end) && (end <= this->size());
+    bool is_safe = (start <= end) && (end <= size());
     DCHECK(is_safe);
     if (!is_safe)
       return;
 
     // This expression cannot overflow because end - start cannot be
     // greater than m_size, which is safe due to the check in Allocate().
-    memcpy(this->Data() + start, source_data, sizeof(T) * (end - start));
+    memcpy(Data() + start, source_data, sizeof(T) * (end - start));
   }
 
  private:

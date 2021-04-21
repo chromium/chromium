@@ -63,7 +63,7 @@ bool DrawingDisplayItem::Equals(const DisplayItem& other) const {
   if (!record || !other_record)
     return false;
 
-  auto bounds = this->VisualRect();
+  auto bounds = VisualRect();
   const auto& other_bounds = other.VisualRect();
   if (bounds != other_bounds)
     return false;

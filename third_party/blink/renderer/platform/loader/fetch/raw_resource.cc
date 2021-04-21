@@ -236,7 +236,7 @@ void RawResource::ResponseReceived(const ResourceResponse& response) {
 
   ResourceClientWalker<RawResourceClient> w(Clients());
   while (RawResourceClient* c = w.Next()) {
-    c->ResponseReceived(this, this->GetResponse());
+    c->ResponseReceived(this, GetResponse());
   }
 }
 

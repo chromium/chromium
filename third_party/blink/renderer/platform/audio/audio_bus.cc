@@ -219,7 +219,7 @@ scoped_refptr<AudioBus> AudioBus::CreateBufferFromRange(
 float AudioBus::MaxAbsValue() const {
   float max = 0.0f;
   for (unsigned i = 0; i < NumberOfChannels(); ++i) {
-    const AudioChannel* channel = this->Channel(i);
+    const AudioChannel* channel = Channel(i);
     max = std::max(max, channel->MaxAbsValue());
   }
 
@@ -495,7 +495,7 @@ void AudioBus::CopyWithGainFrom(const AudioBus& source_bus, float gain) {
     return;
   }
 
-  unsigned number_of_channels = this->NumberOfChannels();
+  unsigned number_of_channels = NumberOfChannels();
   DCHECK_LE(number_of_channels, kMaxBusChannels);
   if (number_of_channels > kMaxBusChannels)
     return;

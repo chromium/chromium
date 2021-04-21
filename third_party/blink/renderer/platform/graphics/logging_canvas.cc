@@ -398,7 +398,7 @@ void LoggingCanvas::onDrawPaint(const SkPaint& paint) {
   AutoLogger logger(this);
   logger.LogItemWithParams("drawPaint")
       ->SetObject("paint", ObjectForSkPaint(paint));
-  this->SkCanvas::onDrawPaint(paint);
+  SkCanvas::onDrawPaint(paint);
 }
 
 void LoggingCanvas::onDrawPoints(PointMode mode,
@@ -410,7 +410,7 @@ void LoggingCanvas::onDrawPoints(PointMode mode,
   params->SetString("pointMode", PointModeName(mode));
   params->SetArray("points", ArrayForSkPoints(count, pts));
   params->SetObject("paint", ObjectForSkPaint(paint));
-  this->SkCanvas::onDrawPoints(mode, count, pts, paint);
+  SkCanvas::onDrawPoints(mode, count, pts, paint);
 }
 
 void LoggingCanvas::onDrawRect(const SkRect& rect, const SkPaint& paint) {
@@ -418,7 +418,7 @@ void LoggingCanvas::onDrawRect(const SkRect& rect, const SkPaint& paint) {
   JSONObject* params = logger.LogItemWithParams("drawRect");
   params->SetObject("rect", ObjectForSkRect(rect));
   params->SetObject("paint", ObjectForSkPaint(paint));
-  this->SkCanvas::onDrawRect(rect, paint);
+  SkCanvas::onDrawRect(rect, paint);
 }
 
 void LoggingCanvas::onDrawOval(const SkRect& oval, const SkPaint& paint) {
@@ -426,7 +426,7 @@ void LoggingCanvas::onDrawOval(const SkRect& oval, const SkPaint& paint) {
   JSONObject* params = logger.LogItemWithParams("drawOval");
   params->SetObject("oval", ObjectForSkRect(oval));
   params->SetObject("paint", ObjectForSkPaint(paint));
-  this->SkCanvas::onDrawOval(oval, paint);
+  SkCanvas::onDrawOval(oval, paint);
 }
 
 void LoggingCanvas::onDrawRRect(const SkRRect& rrect, const SkPaint& paint) {
@@ -434,7 +434,7 @@ void LoggingCanvas::onDrawRRect(const SkRRect& rrect, const SkPaint& paint) {
   JSONObject* params = logger.LogItemWithParams("drawRRect");
   params->SetObject("rrect", ObjectForSkRRect(rrect));
   params->SetObject("paint", ObjectForSkPaint(paint));
-  this->SkCanvas::onDrawRRect(rrect, paint);
+  SkCanvas::onDrawRRect(rrect, paint);
 }
 
 void LoggingCanvas::onDrawPath(const SkPath& path, const SkPaint& paint) {
@@ -442,7 +442,7 @@ void LoggingCanvas::onDrawPath(const SkPath& path, const SkPaint& paint) {
   JSONObject* params = logger.LogItemWithParams("drawPath");
   params->SetObject("path", ObjectForSkPath(path));
   params->SetObject("paint", ObjectForSkPaint(paint));
-  this->SkCanvas::onDrawPath(path, paint);
+  SkCanvas::onDrawPath(path, paint);
 }
 
 void LoggingCanvas::onDrawImage2(const SkImage* image,
@@ -457,7 +457,7 @@ void LoggingCanvas::onDrawImage2(const SkImage* image,
   params->SetObject("image", ObjectForSkImage(image));
   if (paint)
     params->SetObject("paint", ObjectForSkPaint(*paint));
-  this->SkCanvas::onDrawImage2(image, left, top, sampling, paint);
+  SkCanvas::onDrawImage2(image, left, top, sampling, paint);
 }
 
 void LoggingCanvas::onDrawImageRect2(const SkImage* image,
@@ -473,8 +473,7 @@ void LoggingCanvas::onDrawImageRect2(const SkImage* image,
   params->SetObject("dst", ObjectForSkRect(dst));
   if (paint)
     params->SetObject("paint", ObjectForSkPaint(*paint));
-  this->SkCanvas::onDrawImageRect2(image, src, dst, sampling, paint,
-                                   constraint);
+  SkCanvas::onDrawImageRect2(image, src, dst, sampling, paint, constraint);
 }
 
 void LoggingCanvas::onDrawVerticesObject(const SkVertices* vertices,
@@ -483,7 +482,7 @@ void LoggingCanvas::onDrawVerticesObject(const SkVertices* vertices,
   AutoLogger logger(this);
   JSONObject* params = logger.LogItemWithParams("drawVertices");
   params->SetObject("paint", ObjectForSkPaint(paint));
-  this->SkCanvas::onDrawVerticesObject(vertices, bmode, paint);
+  SkCanvas::onDrawVerticesObject(vertices, bmode, paint);
 }
 
 void LoggingCanvas::onDrawDRRect(const SkRRect& outer,
@@ -494,7 +493,7 @@ void LoggingCanvas::onDrawDRRect(const SkRRect& outer,
   params->SetObject("outer", ObjectForSkRRect(outer));
   params->SetObject("inner", ObjectForSkRRect(inner));
   params->SetObject("paint", ObjectForSkPaint(paint));
-  this->SkCanvas::onDrawDRRect(outer, inner, paint);
+  SkCanvas::onDrawDRRect(outer, inner, paint);
 }
 
 void LoggingCanvas::onDrawTextBlob(const SkTextBlob* blob,
@@ -506,7 +505,7 @@ void LoggingCanvas::onDrawTextBlob(const SkTextBlob* blob,
   params->SetDouble("x", x);
   params->SetDouble("y", y);
   params->SetObject("paint", ObjectForSkPaint(paint));
-  this->SkCanvas::onDrawTextBlob(blob, x, y, paint);
+  SkCanvas::onDrawTextBlob(blob, x, y, paint);
 }
 
 void LoggingCanvas::onClipRect(const SkRect& rect,
@@ -517,7 +516,7 @@ void LoggingCanvas::onClipRect(const SkRect& rect,
   params->SetObject("rect", ObjectForSkRect(rect));
   params->SetString("SkRegion::Op", ClipOpName(op));
   params->SetBoolean("softClipEdgeStyle", kSoft_ClipEdgeStyle == style);
-  this->SkCanvas::onClipRect(rect, op, style);
+  SkCanvas::onClipRect(rect, op, style);
 }
 
 void LoggingCanvas::onClipRRect(const SkRRect& rrect,
@@ -528,7 +527,7 @@ void LoggingCanvas::onClipRRect(const SkRRect& rrect,
   params->SetObject("rrect", ObjectForSkRRect(rrect));
   params->SetString("SkRegion::Op", ClipOpName(op));
   params->SetBoolean("softClipEdgeStyle", kSoft_ClipEdgeStyle == style);
-  this->SkCanvas::onClipRRect(rrect, op, style);
+  SkCanvas::onClipRRect(rrect, op, style);
 }
 
 void LoggingCanvas::onClipPath(const SkPath& path,
@@ -539,20 +538,20 @@ void LoggingCanvas::onClipPath(const SkPath& path,
   params->SetObject("path", ObjectForSkPath(path));
   params->SetString("SkRegion::Op", ClipOpName(op));
   params->SetBoolean("softClipEdgeStyle", kSoft_ClipEdgeStyle == style);
-  this->SkCanvas::onClipPath(path, op, style);
+  SkCanvas::onClipPath(path, op, style);
 }
 
 void LoggingCanvas::onClipRegion(const SkRegion& region, SkClipOp op) {
   AutoLogger logger(this);
   JSONObject* params = logger.LogItemWithParams("clipRegion");
   params->SetString("op", ClipOpName(op));
-  this->SkCanvas::onClipRegion(region, op);
+  SkCanvas::onClipRegion(region, op);
 }
 
 void LoggingCanvas::onDrawPicture(const SkPicture* picture,
                                   const SkMatrix* matrix,
                                   const SkPaint* paint) {
-  this->UnrollDrawPicture(picture, matrix, paint, nullptr);
+  UnrollDrawPicture(picture, matrix, paint, nullptr);
 }
 
 void LoggingCanvas::didSetM44(const SkM44& matrix) {
@@ -588,7 +587,7 @@ void LoggingCanvas::didTranslate(SkScalar x, SkScalar y) {
 void LoggingCanvas::willSave() {
   AutoLogger logger(this);
   logger.LogItem("save");
-  this->SkCanvas::willSave();
+  SkCanvas::willSave();
 }
 
 SkCanvas::SaveLayerStrategy LoggingCanvas::getSaveLayerStrategy(
@@ -600,13 +599,13 @@ SkCanvas::SaveLayerStrategy LoggingCanvas::getSaveLayerStrategy(
   if (rec.fPaint)
     params->SetObject("paint", ObjectForSkPaint(*rec.fPaint));
   params->SetInteger("saveFlags", static_cast<int>(rec.fSaveLayerFlags));
-  return this->SkCanvas::getSaveLayerStrategy(rec);
+  return SkCanvas::getSaveLayerStrategy(rec);
 }
 
 void LoggingCanvas::willRestore() {
   AutoLogger logger(this);
   logger.LogItem("restore");
-  this->SkCanvas::willRestore();
+  SkCanvas::willRestore();
 }
 
 std::unique_ptr<JSONArray> LoggingCanvas::Log() {

@@ -174,14 +174,14 @@ static scoped_refptr<SecurityOrigin> GetIsolatedWorldSecurityOrigin(
 
 scoped_refptr<SecurityOrigin> DOMWrapperWorld::IsolatedWorldSecurityOrigin(
     const base::UnguessableToken& cluster_id) {
-  DCHECK(this->IsIsolatedWorld());
+  DCHECK(IsIsolatedWorld());
   return GetIsolatedWorldSecurityOrigin(GetWorldId(), cluster_id);
 }
 
 scoped_refptr<const SecurityOrigin>
 DOMWrapperWorld::IsolatedWorldSecurityOrigin(
     const base::UnguessableToken& cluster_id) const {
-  DCHECK(this->IsIsolatedWorld());
+  DCHECK(IsIsolatedWorld());
   return GetIsolatedWorldSecurityOrigin(GetWorldId(), cluster_id);
 }
 
@@ -205,7 +205,7 @@ static IsolatedWorldStableIdMap& IsolatedWorldStableIds() {
 }
 
 String DOMWrapperWorld::NonMainWorldStableId() const {
-  DCHECK(!this->IsMainWorld());
+  DCHECK(!IsMainWorld());
   return IsolatedWorldStableIds().at(GetWorldId());
 }
 
@@ -225,7 +225,7 @@ static IsolatedWorldHumanReadableNameMap& IsolatedWorldHumanReadableNames() {
 }
 
 String DOMWrapperWorld::NonMainWorldHumanReadableName() const {
-  DCHECK(!this->IsMainWorld());
+  DCHECK(!IsMainWorld());
   return IsolatedWorldHumanReadableNames().at(GetWorldId());
 }
 

@@ -53,7 +53,7 @@ FloatRect FEDropShadow::MapEffect(const FloatSize& std_deviation,
 }
 
 FloatRect FEDropShadow::MapEffect(const FloatRect& rect) const {
-  const Filter* filter = this->GetFilter();
+  const Filter* filter = GetFilter();
   DCHECK(filter);
   FloatPoint offset(filter->ApplyHorizontalScale(dx_),
                     filter->ApplyVerticalScale(dy_));

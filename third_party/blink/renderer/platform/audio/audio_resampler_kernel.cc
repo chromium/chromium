@@ -78,7 +78,7 @@ void AudioResamplerKernel::Process(float* destination,
 
   float* source = source_buffer_.Data();
 
-  double rate = this->Rate();
+  double rate = Rate();
   rate = clampTo(rate, 0.0, AudioResampler::kMaxRate);
 
   // Start out with the previous saved values (if any).
