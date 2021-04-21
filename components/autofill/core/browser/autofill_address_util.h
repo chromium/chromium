@@ -12,6 +12,7 @@
 
 namespace autofill {
 
+class AutofillProfile;
 class PersonalDataManager;
 
 ServerFieldType AddressFieldToServerFieldType(
@@ -22,13 +23,21 @@ ServerFieldType AddressFieldToServerFieldType(
 // to input an address for |country_code| when UI BCP 47 language code is
 // |ui_language_code|. If |components_language_code| is not NULL, then sets it
 // to the BCP 47 language code that should be used to format the address for
-// display.
+// display. If no components are available for |country_code|, it defaults back
+// to the US.
 void GetAddressComponents(
     const std::string& country_code,
     const std::string& ui_language_code,
     std::vector<std::vector<::i18n::addressinput::AddressUiComponent>>*
         address_components,
     std::string* components_language_code);
+
+// Returns the address stored in `profile` when UI BCP 47 language code is
+// `ui_language_code`. If the format of the country in `profile` isn't known,
+// the US address format is used instead. If `ui_language_code` is not valid,
+// the default format is returned.
+std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
+                                       const std::string& ui_language_code);
 
 }  // namespace autofill
 

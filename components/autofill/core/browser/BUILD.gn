@@ -641,6 +641,7 @@ source_set("unit_tests") {
     "address_rewriter_unittest.cc",
     "autocomplete_history_manager_unittest.cc",
     "autofill_address_policy_handler_unittest.cc",
+    "autofill_address_util_unittest.cc",
     "autofill_credit_card_policy_handler_unittest.cc",
     "autofill_data_util_unittest.cc",
     "autofill_download_manager_unittest.cc",
