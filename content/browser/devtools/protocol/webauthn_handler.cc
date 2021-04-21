@@ -213,24 +213,36 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
     return Response::InvalidParams(kRequiresCtap2_1);
   }
 
-  VirtualAuthenticator* authenticator = nullptr;
+  auto virt_auth_options =
+      blink::test::mojom::VirtualAuthenticatorOptions::New();
+  virt_auth_options->protocol = protocol;
+  virt_auth_options->transport = *transport;
+
   switch (protocol) {
     case device::ProtocolVersion::kU2f:
-      authenticator = authenticator_manager->CreateU2FAuthenticator(*transport);
+      virt_auth_options->attachment =
+          device::AuthenticatorAttachment::kCrossPlatform;
       break;
     case device::ProtocolVersion::kCtap2:
-      authenticator = authenticator_manager->CreateCTAP2Authenticator(
-          *ctap2_version, *transport,
+      virt_auth_options->ctap2_version = *ctap2_version;
+      virt_auth_options->attachment =
           transport == device::FidoTransportProtocol::kInternal
               ? device::AuthenticatorAttachment::kPlatform
-              : device::AuthenticatorAttachment::kCrossPlatform,
-          has_resident_key, options->GetHasUserVerification(/*default=*/false),
-          has_large_blob, has_cred_blob);
+              : device::AuthenticatorAttachment::kCrossPlatform;
+      virt_auth_options->has_resident_key = has_resident_key;
+      virt_auth_options->has_user_verification =
+          options->GetHasUserVerification(/*default=*/false);
+      virt_auth_options->has_large_blob = has_large_blob;
+      virt_auth_options->has_cred_blob = has_cred_blob;
       break;
     case device::ProtocolVersion::kUnknown:
       NOTREACHED();
       break;
   }
+
+  VirtualAuthenticator* const authenticator =
+      authenticator_manager->AddAuthenticatorAndReturnNonOwningPointer(
+          *virt_auth_options);
   if (!authenticator)
     return Response::ServerError(kErrorCreatingAuthenticator);
 

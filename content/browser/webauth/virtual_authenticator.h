@@ -32,14 +32,8 @@ namespace content {
 class CONTENT_EXPORT VirtualAuthenticator
     : public blink::test::mojom::VirtualAuthenticator {
  public:
-  VirtualAuthenticator(device::ProtocolVersion protocol,
-                       device::Ctap2Version ctap2_version,
-                       device::FidoTransportProtocol transport,
-                       device::AuthenticatorAttachment attachment,
-                       bool has_resident_key,
-                       bool has_user_verification,
-                       bool has_large_blob,
-                       bool has_cred_blob);
+  explicit VirtualAuthenticator(
+      const blink::test::mojom::VirtualAuthenticatorOptions& options);
   ~VirtualAuthenticator() override;
 
   void AddReceiver(

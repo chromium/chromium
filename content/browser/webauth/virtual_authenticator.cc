@@ -19,24 +19,17 @@
 namespace content {
 
 VirtualAuthenticator::VirtualAuthenticator(
-    device::ProtocolVersion protocol,
-    device::Ctap2Version ctap2_version,
-    device::FidoTransportProtocol transport,
-    device::AuthenticatorAttachment attachment,
-    bool has_resident_key,
-    bool has_user_verification,
-    bool has_large_blob,
-    bool has_cred_blob)
-    : protocol_(protocol),
-      ctap2_version_(ctap2_version),
-      attachment_(attachment),
-      has_resident_key_(has_resident_key),
-      has_user_verification_(has_user_verification),
-      has_large_blob_(has_large_blob),
-      has_cred_blob_(has_cred_blob),
+    const blink::test::mojom::VirtualAuthenticatorOptions& options)
+    : protocol_(options.protocol),
+      ctap2_version_(options.ctap2_version),
+      attachment_(options.attachment),
+      has_resident_key_(options.has_resident_key),
+      has_user_verification_(options.has_user_verification),
+      has_large_blob_(options.has_large_blob),
+      has_cred_blob_(options.has_cred_blob),
       unique_id_(base::GenerateGUID()),
       state_(base::MakeRefCounted<device::VirtualFidoDevice::State>()) {
-  state_->transport = transport;
+  state_->transport = options.transport;
   // If the authenticator has user verification, simulate having set it up
   // already.
   state_->fingerprints_enrolled = has_user_verification_;
