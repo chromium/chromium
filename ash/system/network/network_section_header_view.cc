@@ -206,12 +206,7 @@ int MobileSectionHeaderView::UpdateToggleAndGetStatusMessage(
 
     const DeviceStateProperties* cellular_device =
         model()->GetDevice(NetworkType::kCellular);
-    if (base::FeatureList::IsEnabled(
-            chromeos::features::kUpdatedCellularActivationUi) &&
-        cellular_device && cellular_device->sim_absent) {
-      SetToggleVisibility(true);
-      return 0;
-    }
+
     if (!base::FeatureList::IsEnabled(
             chromeos::features::kUpdatedCellularActivationUi) &&
         cellular_device && cellular_device->sim_absent) {
@@ -244,18 +239,16 @@ int MobileSectionHeaderView::UpdateToggleAndGetStatusMessage(
         !cellular_device->sim_lock_status->lock_type.empty()) {
       return IDS_ASH_STATUS_TRAY_SIM_CARD_LOCKED;
     }
-    if (cellular_device->scanning)
+    if (!chromeos::features::IsCellularActivationUiEnabled() &&
+        cellular_device->scanning)
       return IDS_ASH_STATUS_TRAY_MOBILE_SCANNING;
 
-    if (cellular_enabled && !mobile_has_networks) {
-      // If no connectable Mobile network is available, show 'turn on
-      // Bluetooth' if Tether is available but not initialized, otherwise
-      // show 'no networks'.
-      if (tether_state == DeviceStateType::kUninitialized)
-        return IDS_ENABLE_BLUETOOTH;
+    if (cellular_enabled) {
+      if (mobile_has_networks)
+        return 0;
       return IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS;
     }
-    return 0;
+    return IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLED;
   }
 
   // When Cellular is not available, always show the toggle.

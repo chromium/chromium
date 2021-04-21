@@ -255,24 +255,19 @@ void NetworkListView::OnGetNetworkStateList(
         cellular_device = model()->GetDevice(NetworkType::kCellular);
     switch (network->type) {
       case NetworkType::kCellular:
+        mobile_has_networks_ = true;
         activation_state =
             network->type_state->get_cellular()->activation_state;
         info->activation_state = activation_state;
         info->sim_locked = network->type_state->get_cellular()->sim_locked;
         if (cellular_device && IsInhibited(cellular_device))
           info->inhibited = true;
-
-        // If cellular is not enabled, skip cellular networks with no service,
-        // unless the device state is inhibited.
+        // If cellular is not enabled, skip cellular networks with no service.
         if (model()->GetDeviceState(NetworkType::kCellular) !=
                 DeviceStateType::kEnabled &&
-            !info->inhibited &&
             activation_state == ActivationStateType::kNoService) {
           continue;
         }
-        // Real (non 'default') Cellular networks are always connectable.
-        if (network->connectable)
-          mobile_has_networks_ = true;
         break;
       case NetworkType::kWiFi:
         wifi_has_networks_ = true;

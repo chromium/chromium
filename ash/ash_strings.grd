@@ -2125,7 +2125,7 @@ This file contains the strings for ash.
         No network information available
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS" desc="The message to display in the network list when no mobile networks are available.">
-        No mobile network available
+        No mobile networks set up
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NO_MOBILE_DEVICES_FOUND" desc="The message to display in the network list when no mobile devices which can provide a tether hotspot have been discovered nearby.">
         No mobile devices found.
@@ -2134,7 +2134,7 @@ This file contains the strings for ash.
         Enabling mobile data will enable Bluetooth.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLED" desc="The message to display in the network list when mobile data is turned off.">
-        Mobile data is turned off.
+        Mobile data is turned off
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLING" desc="The message to display in the network list when mobile data is turning off (disabling).">
         Mobile data is turning off...
@@ -2155,10 +2155,10 @@ This file contains the strings for ash.
         On
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_WIFI_ENABLED" desc="The label used in the tray popup to notify that Wi-Fi is turned on.">
-        Wi-Fi is turned on.
+        Wi-Fi is turned on
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_WIFI_DISABLED" desc="The label used in the tray popup to notify that Wi-Fi is turned off.">
-        Wi-Fi is turned off.
+        Wi-Fi is turned off
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_MOBILE" desc="The label used in the tray popup to separate mobile networks.">
         Mobile data
