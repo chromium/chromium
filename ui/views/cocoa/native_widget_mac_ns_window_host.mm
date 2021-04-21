@@ -333,6 +333,7 @@ void NativeWidgetMacNSWindowHost::CreateRemoteNSWindow(
     in_process_view_id_mapping_ =
         std::make_unique<remote_cocoa::ScopedNSViewIdMapping>(
             root_view_id_, [in_process_ns_window_ contentView]);
+    [in_process_ns_window_ enforceNeverMadeVisible];
   }
 
   // Initialize |remote_ns_window_remote_| to point to a bridge created by
