@@ -183,7 +183,7 @@ TEST(AXPlatformNodeBaseTest, InnerTextIgnoresInvisibleAndIgnored) {
     SetIsInvisible(&tree, 2, false);
     EXPECT_EQ(root->GetInnerText(), u"abde");
 
-    SetRole(&tree, 2, ax::mojom::Role::kIgnored);
+    SetRole(&tree, 2, ax::mojom::Role::kNone);
     EXPECT_EQ(root->GetInnerText(), u"bde");
 
     SetRole(&tree, 2, ax::mojom::Role::kStaticText);
@@ -196,7 +196,7 @@ TEST(AXPlatformNodeBaseTest, InnerTextIgnoresInvisibleAndIgnored) {
     SetIsInvisible(&tree, 4, true);
     EXPECT_EQ(root->GetInnerText(), u"abde");
 
-    SetRole(&tree, 4, ax::mojom::Role::kIgnored);
+    SetRole(&tree, 4, ax::mojom::Role::kNone);
     EXPECT_EQ(root->GetInnerText(), u"abde");
   }
 }

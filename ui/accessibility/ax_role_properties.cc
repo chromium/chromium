@@ -206,7 +206,6 @@ bool IsControlOnAndroid(const ax::mojom::Role role, bool isFocusable) {
     case ax::mojom::Role::kDialog:
     case ax::mojom::Role::kMenu:
     case ax::mojom::Role::kMenuBar:
-    case ax::mojom::Role::kNone:
     case ax::mojom::Role::kTree:
     case ax::mojom::Role::kUnknown:
       return false;
@@ -408,7 +407,6 @@ bool IsPlatformDocument(const ax::mojom::Role role) {
 bool IsPresentational(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kNone:
-    case ax::mojom::Role::kPresentational:
       return true;
     default:
       return false;
@@ -638,7 +636,6 @@ bool IsStructure(const ax::mojom::Role role) {
     case ax::mojom::Role::kApplication:
     case ax::mojom::Role::kArticle:  // Subclass of kDocument.
     case ax::mojom::Role::kDocument:
-    case ax::mojom::Role::kPresentational:
     case ax::mojom::Role::kRowGroup:
     case ax::mojom::Role::kSplitter:
     // Dpub roles.

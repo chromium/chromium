@@ -605,7 +605,7 @@ std::unique_ptr<AXNode> InspectorAccessibilityAgent::BuildObjectForIgnoredNode(
           .setNodeId(String::Number(ax_id))
           .setIgnored(true)
           .build();
-  ax::mojom::Role role = ax::mojom::Role::kIgnored;
+  ax::mojom::blink::Role role = ax::mojom::blink::Role::kNone;
   ignored_node_object->setRole(CreateRoleNameValue(role));
 
   if (ax_object && ax_object->IsAXLayoutObject()) {

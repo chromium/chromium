@@ -36,7 +36,7 @@ ax::mojom::Role GetInterestingTableRole(unsigned char byte) {
     case 10:
       return ax::mojom::Role::kGenericContainer;
     case 11:
-      return ax::mojom::Role::kIgnored;
+      return ax::mojom::Role::kNone;
     case 12:
       return ax::mojom::Role::kLayoutTable;
     case 13:

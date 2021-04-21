@@ -102,7 +102,7 @@ enum Event {
 //
 // Native: this attribute is only used in native UI.
 enum Role {
-  kNone,
+  kNone,  // Used for role="none"/"presentation" -- ignored in platform tree.
   kAbbr,
   kAlert,
   kAlertDialog,
@@ -212,7 +212,6 @@ enum Role {
   kHeading,
   kIframe,
   kIframePresentational,
-  kIgnored,
   kImage,
   kImeCandidate,
   kInlineTextBox,
@@ -257,7 +256,6 @@ enum Role {
   kPopUpButton,
   kPortal,
   kPre,
-  kPresentational,
   kProgressIndicator,
   kRadioButton,
   kRadioGroup,

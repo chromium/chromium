@@ -599,7 +599,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
 
     # GetComputedLabel for ignored node should return empty string.
     self.assertEquals(ignoredHeaderElement.GetComputedLabel(), '')
-    self.assertEquals(ignoredHeaderElement.GetComputedRole(), 'Ignored')
+    self.assertEquals(ignoredHeaderElement.GetComputedRole(), 'none')
 
   def testGetComputedAttributesForUnrenderedNode(self):
     self._driver.Load(
@@ -610,7 +610,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
 
     # GetComputedLabel for unrendered node should return empty string.
     self.assertEquals(unrenderedHeaderElement.GetComputedLabel(), '')
-    self.assertEquals(unrenderedHeaderElement.GetComputedRole(), 'Ignored')
+    self.assertEquals(unrenderedHeaderElement.GetComputedRole(), 'none')
 
   def testLoadUrl(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))

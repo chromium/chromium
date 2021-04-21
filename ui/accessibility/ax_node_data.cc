@@ -984,8 +984,7 @@ bool AXNodeData::IsSelectable() const {
 }
 
 bool AXNodeData::IsIgnored() const {
-  return HasState(ax::mojom::State::kIgnored) ||
-         role == ax::mojom::Role::kIgnored;
+  return HasState(ax::mojom::State::kIgnored) || role == ax::mojom::Role::kNone;
 }
 
 bool AXNodeData::IsInvisible() const {

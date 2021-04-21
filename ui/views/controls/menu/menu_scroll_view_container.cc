@@ -295,7 +295,7 @@ void MenuScrollViewContainer::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // number of items inside it, we ignore the MenuScrollViewContainer (which
   // holds the menu itself: the SubmenuView).
 #if defined(OS_MAC)
-  node_data->role = ax::mojom::Role::kIgnored;
+  node_data->role = ax::mojom::Role::kNone;
 #else
   node_data->role = ax::mojom::Role::kMenuBar;
 #endif

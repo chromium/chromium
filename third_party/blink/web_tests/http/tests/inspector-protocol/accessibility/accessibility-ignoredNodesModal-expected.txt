@@ -17,8 +17,8 @@ Tests accessibility values of ignored nodes in model dialog.
     ]
     nodeId : <string>
     role : {
-        type : internalRole
-        value : Ignored
+        type : role
+        value : none
     }
 }
 {

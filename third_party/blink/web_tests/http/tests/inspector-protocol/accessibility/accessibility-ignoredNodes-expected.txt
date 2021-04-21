@@ -1,7 +1,7 @@
 Tests accessibility values of ignored nodes.
 
 RootWebArea
-  *Ignored
+  *none
 {
     domNode : html
     ignored : true
@@ -9,14 +9,14 @@ RootWebArea
     ]
     nodeId : <string>
     role : {
-        type : internalRole
-        value : Ignored
+        type : role
+        value : none
     }
 }
 
 RootWebArea
   img
-    *Ignored
+    *none
 {
     domNode : svg
     ignored : true
@@ -35,13 +35,13 @@ RootWebArea
     ]
     nodeId : <string>
     role : {
-        type : internalRole
-        value : Ignored
+        type : role
+        value : none
     }
 }
 
 RootWebArea
-  *Ignored
+  *none
 {
     domNode : div
     ignored : true
@@ -56,13 +56,13 @@ RootWebArea
     ]
     nodeId : <string>
     role : {
-        type : internalRole
-        value : Ignored
+        type : role
+        value : none
     }
 }
 
 RootWebArea
-  *Ignored
+  *none
 {
     domNode : div
     ignored : true
@@ -81,13 +81,13 @@ RootWebArea
     ]
     nodeId : <string>
     role : {
-        type : internalRole
-        value : Ignored
+        type : role
+        value : none
     }
 }
 
 RootWebArea
-  *Ignored
+  *none
 {
     domNode : ol
     ignored : true
@@ -102,13 +102,13 @@ RootWebArea
     ]
     nodeId : <string>
     role : {
-        type : internalRole
-        value : Ignored
+        type : role
+        value : none
     }
 }
 
 RootWebArea
-  *Ignored
+  *none
 {
     domNode : li
     ignored : true
@@ -123,8 +123,8 @@ RootWebArea
     ]
     nodeId : <string>
     role : {
-        type : internalRole
-        value : Ignored
+        type : role
+        value : none
     }
 }
 
@@ -196,7 +196,7 @@ RootWebArea
 
 RootWebArea
   LabelText
-    *Ignored
+    *none
 {
     domNode : span
     ignored : true
@@ -211,13 +211,13 @@ RootWebArea
     ]
     nodeId : <string>
     role : {
-        type : internalRole
-        value : Ignored
+        type : role
+        value : none
     }
 }
 
 RootWebArea
-  *Ignored
+  *none
 {
     domNode : div
     ignored : true
@@ -232,13 +232,13 @@ RootWebArea
     ]
     nodeId : <string>
     role : {
-        type : internalRole
-        value : Ignored
+        type : role
+        value : none
     }
 }
 
 RootWebArea
-  *Ignored
+  *none
 {
     domNode : span
     ignored : true
@@ -253,13 +253,13 @@ RootWebArea
     ]
     nodeId : <string>
     role : {
-        type : internalRole
-        value : Ignored
+        type : role
+        value : none
     }
 }
 
 RootWebArea
-  *Ignored
+  *none
 {
     domNode : canvas
     ignored : true
@@ -274,13 +274,13 @@ RootWebArea
     ]
     nodeId : <string>
     role : {
-        type : internalRole
-        value : Ignored
+        type : role
+        value : none
     }
 }
 
 RootWebArea
-  *Ignored
+  *none
 {
     domNode : canvas
     ignored : true
@@ -295,8 +295,8 @@ RootWebArea
     ]
     nodeId : <string>
     role : {
-        type : internalRole
-        value : Ignored
+        type : role
+        value : none
     }
 }
 
@@ -417,7 +417,7 @@ RootWebArea
 }
 
 RootWebArea
-  *Ignored
+  *none
 {
     domNode : button
     ignored : true
@@ -432,13 +432,13 @@ RootWebArea
     ]
     nodeId : <string>
     role : {
-        type : internalRole
-        value : Ignored
+        type : role
+        value : none
     }
 }
 
 RootWebArea
-  *Ignored
+  *none
 {
     domNode : button
     ignored : true
@@ -458,8 +458,8 @@ RootWebArea
     ]
     nodeId : <string>
     role : {
-        type : internalRole
-        value : Ignored
+        type : role
+        value : none
     }
 }
 
@@ -506,7 +506,7 @@ RootWebArea
 }
 
 RootWebArea
-  *Ignored
+  *none
 {
     domNode : div
     ignored : true
@@ -521,8 +521,8 @@ RootWebArea
     ]
     nodeId : <string>
     role : {
-        type : internalRole
-        value : Ignored
+        type : role
+        value : none
     }
 }
 

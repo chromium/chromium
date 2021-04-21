@@ -149,7 +149,7 @@ void Link::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Label::GetAccessibleNodeData(node_data);
   // Prevent invisible links from being announced by screen reader.
   node_data->role =
-      GetText().empty() ? ax::mojom::Role::kIgnored : ax::mojom::Role::kLink;
+      GetText().empty() ? ax::mojom::Role::kNone : ax::mojom::Role::kLink;
 }
 
 void Link::OnFocus() {

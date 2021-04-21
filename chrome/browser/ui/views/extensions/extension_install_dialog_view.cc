@@ -108,7 +108,7 @@ class RatingStar : public views::ImageView {
 
   // views::ImageView:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kIgnored;
+    node_data->role = ax::mojom::Role::kNone;
   }
 };
 
@@ -128,7 +128,7 @@ class RatingLabel : public views::Label {
 
   // views::Label:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kIgnored;
+    node_data->role = ax::mojom::Role::kNone;
   }
 };
 

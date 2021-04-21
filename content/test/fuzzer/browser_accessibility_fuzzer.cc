@@ -25,7 +25,7 @@ ax::mojom::Role GetInterestingRole(FuzzedDataProvider& fdp) {
   switch (fdp.ConsumeIntegralInRange(0, 12)) {
     default:
     case 0:
-      return ax::mojom::Role::kIgnored;
+      return ax::mojom::Role::kNone;
     case 1:
       return ax::mojom::Role::kStaticText;
     case 2:

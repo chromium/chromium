@@ -606,7 +606,7 @@ void ExtensionInstallDialogRatingsSectionTest::TestRatingsSectionA11y(
   for (views::View* child : rating_view->children()) {
     ui::AXNodeData node_data;
     child->GetAccessibleNodeData(&node_data);
-    EXPECT_EQ(ax::mojom::Role::kIgnored, node_data.role);
+    EXPECT_EQ(ax::mojom::Role::kNone, node_data.role);
   }
 
   CloseAndWait(modal_dialog);

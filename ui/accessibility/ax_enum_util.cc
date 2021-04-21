@@ -338,8 +338,6 @@ const char* ToString(ax::mojom::Role role) {
       return "iframe";
     case ax::mojom::Role::kIframePresentational:
       return "iframePresentational";
-    case ax::mojom::Role::kIgnored:
-      return "ignored";
     case ax::mojom::Role::kImage:
       return "image";
     case ax::mojom::Role::kImeCandidate:
@@ -422,8 +420,6 @@ const char* ToString(ax::mojom::Role role) {
       return "portal";
     case ax::mojom::Role::kPre:
       return "pre";
-    case ax::mojom::Role::kPresentational:
-      return "presentational";
     case ax::mojom::Role::kProgressIndicator:
       return "progressIndicator";
     case ax::mojom::Role::kRadioButton:

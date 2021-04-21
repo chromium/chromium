@@ -53,7 +53,7 @@ AXRole: AXGenericContainer
     AXRole: AXGenericContainer
         AXRole: AXStaticText "These two tables have static text roles because they have presentation roles."
             AXRole: AXInlineTextBox "These two tables have static text roles because they have presentation roles."
-    AXRole: AXPresentational
+    AXRole: AXNone
         AXRole: AXGenericContainer
             AXRole: AXGenericContainer
                 AXRole: AXGenericContainer
@@ -64,7 +64,7 @@ AXRole: AXGenericContainer
                 AXRole: AXGenericContainer
                     AXRole: AXStaticText "Presentation th"
                         AXRole: AXInlineTextBox "Presentation th"
-    AXRole: AXPresentational
+    AXRole: AXNone
         AXRole: AXGenericContainer
             AXRole: AXGenericContainer
                 AXRole: AXGenericContainer
@@ -75,7 +75,7 @@ AXRole: AXGenericContainer
             AXRole: AXInlineTextBox "The "Presentation th" has a static text role because it has a presentation role."
     AXRole: AXTable
         AXRole: AXRowGroup
-            AXRole: AXPresentational
+            AXRole: AXNone
                 AXRole: AXGenericContainer
                     AXRole: AXStaticText "Presentation th"
                         AXRole: AXInlineTextBox "Presentation th"
@@ -86,7 +86,7 @@ AXRole: AXGenericContainer
     AXRole: AXGenericContainer
         AXRole: AXStaticText "The row for "Explicit th" has a row role even if table has a presentation role because it has an explicit role."
             AXRole: AXInlineTextBox "The row for "Explicit th" has a row role even if table has a presentation role because it has an explicit role."
-    AXRole: AXPresentational
+    AXRole: AXNone
         AXRole: AXGenericContainer
             AXRole: AXRow
                 AXRole: AXGenericContainer

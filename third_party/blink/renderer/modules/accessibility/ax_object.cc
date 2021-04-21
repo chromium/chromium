@@ -201,7 +201,6 @@ bool IsValidRole(ax::mojom::blink::Role role) {
     case ax::mojom::blink::Role::kColumn:
     case ax::mojom::blink::Role::kDesktop:
     case ax::mojom::blink::Role::kKeyboard:
-    case ax::mojom::blink::Role::kIgnored:
     case ax::mojom::blink::Role::kImeCandidate:
     case ax::mojom::blink::Role::kListGrid:
     case ax::mojom::blink::Role::kPane:
@@ -348,11 +347,14 @@ const RoleEntry kAriaRoles[] = {
     {"mark", ax::mojom::blink::Role::kMark},
     {"meter", ax::mojom::blink::Role::kMeter},
     {"navigation", ax::mojom::blink::Role::kNavigation},
+    // role="presentation" is the same as role="none".
+    {"presentation", ax::mojom::blink::Role::kNone},
+    // role="none" is listed after role="presentation", so that it is the
+    // canonical name in devtools and tests.
     {"none", ax::mojom::blink::Role::kNone},
     {"note", ax::mojom::blink::Role::kNote},
     {"option", ax::mojom::blink::Role::kListBoxOption},
     {"paragraph", ax::mojom::blink::Role::kParagraph},
-    {"presentation", ax::mojom::blink::Role::kPresentational},
     {"progressbar", ax::mojom::blink::Role::kProgressIndicator},
     {"radio", ax::mojom::blink::Role::kRadioButton},
     {"radiogroup", ax::mojom::blink::Role::kRadioGroup},
@@ -5060,7 +5062,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kNone:
     case ax::mojom::blink::Role::kParagraph:
     case ax::mojom::blink::Role::kPre:
-    case ax::mojom::blink::Role::kPresentational:
     case ax::mojom::blink::Role::kRegion:
     // Spec says we should always expose the name on rows,
     // but for performance reasons we only do it
@@ -5131,7 +5132,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kColumn:
     case ax::mojom::blink::Role::kDesktop:
     case ax::mojom::blink::Role::kKeyboard:
-    case ax::mojom::blink::Role::kIgnored:
     case ax::mojom::blink::Role::kImeCandidate:
     case ax::mojom::blink::Role::kListGrid:
     case ax::mojom::blink::Role::kPane:

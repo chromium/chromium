@@ -271,7 +271,7 @@ TEST_F(AXNativeWidgetMacTest, ChildrenAttribute) {
 
   // Check ignored children don't show up in the accessibility tree.
   widget()->GetContentsView()->AddChildView(
-      new FlexibleRoleTestView(ax::mojom::Role::kIgnored));
+      new FlexibleRoleTestView(ax::mojom::Role::kNone));
   EXPECT_EQ(kNumChildren, ax_node.accessibilityChildren.count);
 }
 
@@ -303,7 +303,7 @@ TEST_F(AXNativeWidgetMacTest, ParentAttribute) {
   EXPECT_NSEQ(NSAccessibilityGroupRole, ax_parent.accessibilityRole);
 
   // Test an ignored role parent is skipped in favor of the grandparent.
-  parent->set_role(ax::mojom::Role::kIgnored);
+  parent->set_role(ax::mojom::Role::kNone);
   ASSERT_NSNE(nil, AXParentOf(ax_child));
   EXPECT_NSEQ(NSAccessibilityGroupRole, AXParentOf(ax_child).accessibilityRole);
 }

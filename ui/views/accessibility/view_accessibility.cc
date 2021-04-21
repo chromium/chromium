@@ -35,7 +35,6 @@ bool IsValidRoleForViews(ax::mojom::Role role) {
     case ax::mojom::Role::kDocument:  // Used for ARIA role="document".
     case ax::mojom::Role::kIframe:
     case ax::mojom::Role::kIframePresentational:
-    case ax::mojom::Role::kNone:
     case ax::mojom::Role::kPdfRoot:
     case ax::mojom::Role::kPortal:
     case ax::mojom::Role::kRootWebArea:

@@ -585,7 +585,7 @@ TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {
             virtual_child_2->ChildAtIndex(1));
 
   // Try ignoring a node by changing its role, instead of its state.
-  virtual_child_2->GetCustomData().role = ax::mojom::Role::kIgnored;
+  virtual_child_2->GetCustomData().role = ax::mojom::Role::kNone;
 
   EXPECT_EQ(button_->GetNativeViewAccessible(), virtual_label_->GetParent());
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_1->GetParent());

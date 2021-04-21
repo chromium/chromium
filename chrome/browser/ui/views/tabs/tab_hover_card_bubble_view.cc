@@ -273,7 +273,7 @@ TabHoverCardBubbleView::~TabHoverCardBubbleView() = default;
 ax::mojom::Role TabHoverCardBubbleView::GetAccessibleWindowRole() {
   // Override the role so that hover cards are not read when they appear because
   // tabs handle accessibility text.
-  return ax::mojom::Role::kIgnored;
+  return ax::mojom::Role::kNone;
 }
 
 void TabHoverCardBubbleView::Layout() {

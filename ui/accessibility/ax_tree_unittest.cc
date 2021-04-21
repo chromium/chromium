@@ -3503,7 +3503,7 @@ TEST(AXTreeTest, SetSizePosInSetNestedContainer) {
   tree_update.nodes[3].id = 4;
   tree_update.nodes[3].role = ax::mojom::Role::kListItem;  // 2 of 4
   tree_update.nodes[4].id = 5;
-  tree_update.nodes[4].role = ax::mojom::Role::kIgnored;
+  tree_update.nodes[4].role = ax::mojom::Role::kNone;
   tree_update.nodes[4].child_ids = {6};
   tree_update.nodes[5].id = 6;
   tree_update.nodes[5].role = ax::mojom::Role::kListItem;  // 3 of 4

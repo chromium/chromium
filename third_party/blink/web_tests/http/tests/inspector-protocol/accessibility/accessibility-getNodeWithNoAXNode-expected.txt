@@ -13,8 +13,8 @@ Tests that node without AXNode reports accessibility values.
     ]
     nodeId : <string>
     role : {
-        type : internalRole
-        value : Ignored
+        type : role
+        value : none
     }
 }
 

@@ -28,7 +28,7 @@ test(function(t) {
   // contents.
   assert_equals(axRoot.childrenCount, 1);
   assert_equals(axRoot.childAtIndex(0).role, 'AXRole: AXGenericContainer');
-  assert_equals(axParent.childAtIndex(0).role, 'AXRole: AXPresentational');
+  assert_equals(axParent.childAtIndex(0).role, 'AXRole: AXNone');
 }, 'Aria-owns cannot be fooled by pointing it at a presentational node.');
 
 </script>

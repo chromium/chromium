@@ -180,7 +180,7 @@ void ImageView::OnPaint(gfx::Canvas* canvas) {
 void ImageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   const std::u16string& name = GetAccessibleName();
   if (name.empty()) {
-    node_data->role = ax::mojom::Role::kIgnored;
+    node_data->role = ax::mojom::Role::kNone;
     return;
   }
 

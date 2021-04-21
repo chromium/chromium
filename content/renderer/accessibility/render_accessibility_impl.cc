@@ -871,7 +871,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
       //
       // Consider the following tree :
       // ++(0) Role::kRootWebArea
-      // ++++<1> Role::kIgnored
+      // ++++<1> Role::kNone
       // ++++++[2] Role::kGenericContainer <body>
       // ++++++++[3] Role::kGenericContainer with 'visibility: hidden'
       //

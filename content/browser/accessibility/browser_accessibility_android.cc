@@ -1365,9 +1365,6 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kIframePresentational:
       // No role description.
       break;
-    case ax::mojom::Role::kIgnored:
-      // No role description.
-      break;
     case ax::mojom::Role::kImage:
       message_id = IDS_AX_ROLE_GRAPHIC;
       break;
@@ -1486,9 +1483,6 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
       message_id = IDS_AX_ROLE_BUTTON;
       break;
     case ax::mojom::Role::kPre:
-      // No role description.
-      break;
-    case ax::mojom::Role::kPresentational:
       // No role description.
       break;
     case ax::mojom::Role::kProgressIndicator:

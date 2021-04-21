@@ -2800,8 +2800,6 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
     case ax::mojom::Role::kIframe:
     case ax::mojom::Role::kIframePresentational:
       return ATK_ROLE_INTERNAL_FRAME;
-    case ax::mojom::Role::kIgnored:
-      return ATK_ROLE_REDUNDANT_OBJECT;
     case ax::mojom::Role::kImage:
       return IsImageWithMap() ? ATK_ROLE_IMAGE_MAP : ATK_ROLE_IMAGE;
     case ax::mojom::Role::kInlineTextBox:
@@ -3024,7 +3022,6 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
     case ax::mojom::Role::kImeCandidate:
     case ax::mojom::Role::kKeyboard:
     case ax::mojom::Role::kNone:
-    case ax::mojom::Role::kPresentational:
       return ATK_ROLE_REDUNDANT_OBJECT;
   }
 }
