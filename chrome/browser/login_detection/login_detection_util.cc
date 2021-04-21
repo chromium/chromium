@@ -6,14 +6,21 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
+#include "build/build_config.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/scheme_host_port.h"
 #include "url/url_canon.h"
 
 namespace login_detection {
 
-const base::Feature kLoginDetection{"LoginDetection",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kLoginDetection {
+  "LoginDetection",
+#if defined(OS_ANDROID)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 bool IsLoginDetectionFeatureEnabled() {
   return base::FeatureList::IsEnabled(kLoginDetection);
