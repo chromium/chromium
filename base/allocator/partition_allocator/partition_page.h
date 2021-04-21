@@ -20,7 +20,7 @@
 #include "base/check_op.h"
 #include "base/thread_annotations.h"
 
-#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #endif
 

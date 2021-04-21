@@ -2637,7 +2637,7 @@ TEST_F(PartitionAllocTest, Alignment) {
     // When BackupRefPtr is enabled, kInSlotRefCountBufferSize is added before
     // rounding up the allocation size, making the raw size not a power of two.
     // The returned pointer points after the ref-count (except when
-    // REF_COUNT_AT_END_OF_ALLOCATION is on, but even then the size increase
+    // PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, but even then the size increase
     // by kInSlotRefCountBufferSize will cause non-1st allocations to be
     // misaligned).
     expected_alignment =
@@ -2674,7 +2674,7 @@ TEST_F(PartitionAllocTest, FundamentalAlignment) {
     EXPECT_EQ(reinterpret_cast<uintptr_t>(ptr3) % fundamental_alignment,
               static_cast<uintptr_t>(0));
 
-#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
     // The capacity(C) is slot size - kExtraAllocSize.
     // Since slot size is multiples of base::kAlignment,
     // C % kAlignment == (slot_size - kExtraAllocSize) % kAlignment.
@@ -2731,9 +2731,9 @@ TEST_F(PartitionAllocTest, MAYBE_AlignedAllocations) {
 
       // AlignedAllocFlags() can't be called on regular allocator, if there are
       // extras before the allocation. Extras after the allocation are ok
-      // (REF_COUNT_AT_END_OF_ALLOCATION) and this is what's being tested here.
+      // (PUT_REF_COUNT_IN_PREVIOUS_SLOT) and this is what's being tested here.
 #if !DCHECK_IS_ON() && (!BUILDFLAG(USE_BACKUP_REF_PTR) || \
-                        BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION))
+                        BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT))
       VerifyAlignment(allocator.root(), alloc_size, alignment);
 #endif
     }

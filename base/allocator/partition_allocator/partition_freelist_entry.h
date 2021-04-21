@@ -37,7 +37,7 @@ static_assert(kSmallestBucket >= 2 * sizeof(void*),
               "Need enough space for two pointers in freelist entries");
 #endif
 
-#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 constexpr size_t kMinimalBucketSizeWithRefCount =
     (1 + sizeof(PartitionRefCount) + kSmallestBucket - 1) &
     ~(kSmallestBucket - 1);

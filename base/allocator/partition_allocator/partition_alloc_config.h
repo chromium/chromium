@@ -69,10 +69,10 @@ static_assert(sizeof(void*) != 8, "");
 // TODO(lizeb): Enable in as many configurations as possible.
 //
 // Disabled when putting refcount in the previous slot, which is what
-// REF_COUNT_AT_END_OF_ALLOCATION does. In this case the refcount overlaps with
+// PUT_REF_COUNT_IN_PREVIOUS_SLOT does. In this case the refcount overlaps with
 // the next pointer shadow for the smallest bucket.
 #if !(defined(OS_MAC) && defined(ARCH_CPU_ARM64)) && \
-    !BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+    !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 #define PA_HAS_FREELIST_HARDENING
 #endif
 

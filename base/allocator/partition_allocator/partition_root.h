@@ -430,7 +430,7 @@ struct BASE_EXPORT PartitionRoot {
     // Adjust the size to counteract it.
     //
     // Having any extras after the allocation nullifies the issue, so no need
-    // for this adjustment in the REF_COUNT_AT_END_OF_ALLOCATION case. Same for
+    // for this adjustment in the PUT_COUNT_IN_PREVIOUS_SLOT case. Same for
     // DCHECK_IS_ON(), but we prefer not to change codepaths between Release and
     // Debug.
     //
@@ -439,6 +439,15 @@ struct BASE_EXPORT PartitionRoot {
     // or IsPartitionAllocGigaCageEnabled() is false (because BackupRefPtr is
     // effectively disabled without GigaCage), but we prefer not to add more
     // checks, as this function may be called on hot paths.
+    //
+    // When putting refcount in the previous slot, the previous slot may be
+    // freed. In this case, the slot need to have a partition free list entry,
+    // and a refcount. Each slot size must be larger than or equal to
+    // sizeof(void*) + sizeof(PartitionRefCount). sizeof(PartitionRefCount) is 4
+    // or 8 bytes (enable BACKUP_REF_PTR slow checks or DCHECK is on). If
+    // sizeof(PartitionRefCount) is 8 and |requested_size| is 0, the smallest
+    // bucket will be used. If kSmallestBucket is 8, refcounts will be broken
+    // when freeing slots. To avoid this, need to adjust the size 0.
     if (UNLIKELY(size == 0))
       return 1;
 #else
@@ -724,11 +733,10 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
   // some cases appear to point outside the designated allocation slot.
   //
   // If ref-count is present before the allocation, then adjusting a valid
-  // pointer down will not cause us to go down to the previous slot. If
-  // ref-count is present after the allocation, then adjust no adjustment is
-  // needed (and likely wouldn't be correct as there is a risk of going down to
-  // the previous slot). Either way, kPartitionPastAllocationAdjustment takes
-  // care of that detail.
+  // pointer down will not cause us to go down to the previous slot, otherwise
+  // no adjustment is needed (and likely wouldn't be correct as there is
+  // a risk of going down to the previous slot). Either way,
+  // kPartitionPastAllocationAdjustment takes care of that detail.
   ptr = reinterpret_cast<char*>(ptr) - kPartitionPastAllocationAdjustment;
 
   internal::DCheckIfManagedByPartitionAllocBRPPool(ptr);
@@ -802,7 +810,7 @@ ALWAYS_INLINE void PartitionAllocFreeForRefCounting(void* slot_start) {
 #if EXPENSIVE_DCHECKS_ARE_ON()
   memset(slot_start, kFreedByte,
          slot_span->GetUtilizedSlotSize()
-#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
              - sizeof(internal::PartitionRefCount)
 #endif
   );
@@ -1006,7 +1014,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 #if EXPENSIVE_DCHECKS_ARE_ON()
   memset(slot_start, kFreedByte,
          utilized_slot_size
-#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
              - sizeof(internal::PartitionRefCount)
 #endif
   );
@@ -1017,7 +1025,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
       !slot_span->bucket->is_direct_mapped()) {
     internal::SecureMemset(slot_start, 0,
                            utilized_slot_size
-#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
                                - sizeof(internal::PartitionRefCount)
 #endif
     );
@@ -1339,7 +1347,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //   we have no other choice than putting the cookie at the very end of the
   //   slot, thus creating the "empty" space.
   //
-  // If BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) is true, Layout inside the
+  // If BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) is true, Layout inside the
   // slot of small buckets:
   //  |[cookie]|...data...|[empty]|[cookie]|[refcnt]|
   //           <---(a)---->
@@ -1364,7 +1372,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   // in single slot span case.
 
   // The value given to the application is just after the ref-count and cookie,
-  // or the cookie (BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) is true).
+  // or the cookie (BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) is true).
   void* ret = AdjustPointerForExtrasAdd(slot_start);
 
 #if DCHECK_IS_ON()

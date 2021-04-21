@@ -67,10 +67,11 @@ declare_args() {
 
   # Set to true to use BackupRefPtr as the implementation of CheckedPtr.
   # Optionally can be controlled (partially disabled) at run-time.
-  # Optionally can place ref count at the end of each allocation.
+  # Optionally can place ref count at the end of the previous slot (or in
+  # metadata if a slot starts at the page boundary).
   use_backup_ref_ptr = false
   enable_runtime_backup_ref_ptr_control = false
-  is_ref_count_at_end_of_allocation = false
+  put_ref_count_in_previous_slot = false
 
   # Enable additional safety checks for BackupRefPtr that are too expensive to
   # have on by default.
@@ -127,11 +128,11 @@ assert(
     use_brp_pool_blocklist || !never_remove_from_brp_pool_blocklist,
     "never_remove_from_brp_pool_blocklist requires the BRP pool block-list to be enabled")
 
-# is_ref_count_at_end_of_allocation can only be used if use_backup_ref_ptr
+# put_ref_count_in_previous_slot can only be used if use_backup_ref_ptr
 # is true.
 assert(
-    use_backup_ref_ptr || !is_ref_count_at_end_of_allocation,
-    "Can't place ref count at the end of each allocation if BackupRefPtr isn't enabled at all")
+    use_backup_ref_ptr || !put_ref_count_in_previous_slot,
+    "Can't put ref count in the previous slot if BackupRefPtr isn't enabled at all")
 
 # Determines whether libevent should be dep.
 dep_libevent =
@@ -2449,8 +2450,8 @@ should_enable_runtime_backup_ref_ptr_control =
     enable_runtime_backup_ref_ptr_control && should_use_backup_ref_ptr
 should_enable_backup_ref_ptr_slow_checks =
     enable_backup_ref_ptr_slow_checks && should_use_backup_ref_ptr
-should_place_ref_count_at_end_of_allocation =
-    is_ref_count_at_end_of_allocation && should_use_backup_ref_ptr
+should_put_ref_count_in_previous_slot =
+    put_ref_count_in_previous_slot && should_use_backup_ref_ptr
 should_use_brp_pool_blocklist =
     use_brp_pool_blocklist && should_use_backup_ref_ptr
 should_never_remove_from_brp_pool_from_blocklist =
@@ -2459,12 +2460,13 @@ should_never_remove_from_brp_pool_from_blocklist =
 # AlignedAlloc relies on natural alignment offered by the allocator (see the
 # comment inside PartitionRoot::AlignedAllocFlags). Any extras in front of the
 # allocation will mess up that alignment. Such extras are used when DCHECK is
-# on or when BackupRefPtr is on (but not when ref-count is after allocation). In
-# these cases, we have to create a separate, small partition, dedicated to
-# handle only aligned allocations, where those extras are disabled.
+# on or when BackupRefPtr is on (but not when ref-count is at the end of the
+# previous slot). In these cases, we have to create a separate, small
+# partition, dedicated to handle only aligned allocations, where those extras
+# are disabled.
 use_dedicated_partition_for_aligned_alloc =
     dcheck_always_on ||
-    (should_use_backup_ref_ptr && !should_place_ref_count_at_end_of_allocation)
+    (should_use_backup_ref_ptr && !should_put_ref_count_in_previous_slot)
 
 buildflag_header("partition_alloc_buildflags") {
   header = "partition_alloc_buildflags.h"
@@ -2475,7 +2477,7 @@ buildflag_header("partition_alloc_buildflags") {
     "USE_BACKUP_REF_PTR=$should_use_backup_ref_ptr",
     "ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL=$should_enable_runtime_backup_ref_ptr_control",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$should_enable_backup_ref_ptr_slow_checks",
-    "REF_COUNT_AT_END_OF_ALLOCATION=$should_place_ref_count_at_end_of_allocation",
+    "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$should_put_ref_count_in_previous_slot",
     "USE_BRP_POOL_BLOCKLIST=$should_use_brp_pool_blocklist",
     "NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST=$should_never_remove_from_brp_pool_from_blocklist",
     "MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE=$make_gigacage_granularity_partition_page_size",

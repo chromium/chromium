@@ -491,9 +491,9 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
 
     // Cookies and ref-count mess up alignment needed for AlignedAlloc, making
     // those options incompatible. However, ref-count is acceptable in the
-    // REF_COUNT_AT_END_OF_ALLOCATION case.
+    // PUT_REF_COUNT_IN_PREVIOUS_SLOT case.
     PA_DCHECK(!allow_aligned_alloc || !allow_cookies);
-#if !BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
     PA_DCHECK(!allow_aligned_alloc || !allow_ref_count);
 #endif
 
@@ -507,7 +507,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     }
 
     if (allow_ref_count) {
-      // TODO(tasak): In the REF_COUNT_AT_END_OF_ALLOCATION case, ref-count is
+      // TODO(tasak): In the PUT_REF_COUNT_IN_PREVIOUS_SLOT case, ref-count is
       // stored out-of-line for single-slot slot spans, so no need to
       // add/subtract its size in this case.
       extras_size += internal::kPartitionRefCountSizeAdjustment;
@@ -729,23 +729,23 @@ bool PartitionRoot<thread_safe>::TryReallocInPlace(void* ptr,
   // underlying memory as we're already using, so re-use the allocation
   // after updating statistics (and cookies, if present).
   if (slot_span->CanStoreRawSize()) {
-#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) && DCHECK_IS_ON()
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && DCHECK_IS_ON()
     void* slot_start = AdjustPointerForExtrasSubtract(ptr);
     internal::PartitionRefCount* old_ref_count;
     if (allow_ref_count) {
       PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
       old_ref_count = internal::PartitionRefCountPointer(slot_start);
     }
-#endif  // BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
     size_t new_raw_size = AdjustSizeForExtrasAdd(new_size);
     slot_span->SetRawSize(new_raw_size);
-#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) && DCHECK_IS_ON()
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && DCHECK_IS_ON()
     if (allow_ref_count) {
       internal::PartitionRefCount* new_ref_count =
           internal::PartitionRefCountPointer(slot_start);
       PA_DCHECK(new_ref_count == old_ref_count);
     }
-#endif  // BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) && DCHECK_IS_ON()
+#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && DCHECK_IS_ON()
 #if DCHECK_IS_ON()
     // Write a new trailing cookie only when it is possible to keep track
     // raw size (otherwise we wouldn't know where to look for it later).

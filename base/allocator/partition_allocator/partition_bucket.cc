@@ -346,7 +346,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   // guard page, except an "island" in the middle where we put page metadata and
   // also a tiny amount of extent metadata.
   RecommitSystemPages(super_page + SystemPageSize(),
-#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
                       // Allocate 2 SystemPages, one for SuperPage metadata and
                       // the other for RefCount bitmap.
                       SystemPageSize() * 2,

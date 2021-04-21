@@ -132,7 +132,7 @@ base::ThreadSafePartitionRoot* Allocator() {
         base::PartitionOptions::Cookies::kDisallowed,
 #endif
 #if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC) || \
-    BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+    BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
         base::PartitionOptions::RefCount::kAllowed,
 #else
         base::PartitionOptions::RefCount::kDisallowed,
@@ -158,7 +158,7 @@ base::ThreadSafePartitionRoot* AlignedAllocator() {
             base::PartitionOptions::ThreadCache::kDisabled,
             base::PartitionOptions::Quarantine::kAllowed,
             base::PartitionOptions::Cookies::kDisallowed,
-#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
             // Given the outer #if, this is possible only when DCHECK_IS_ON().
             base::PartitionOptions::RefCount::kAllowed,
 #else
