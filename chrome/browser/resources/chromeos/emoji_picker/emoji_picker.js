@@ -238,6 +238,7 @@ export class EmojiPicker extends PolymerElement {
   clearRecentEmoji() {
     this.set(['history', 'emoji'], makeRecentlyUsed([]));
     this.recentEmojiStore.clearRecents();
+    afterNextRender(this, () => this.updateActiveGroup());
   }
 
   /**
