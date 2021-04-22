@@ -12,8 +12,6 @@
     RuntimeEnabled=EditContext
 ] interface EditContext : EventTarget {
     [CallWith=ScriptState] constructor(optional EditContextInit options = {});
-    void focus();
-    void blur();
     [RaisesException] void updateSelection(unsigned long start, unsigned long end);
     void updateLayout(DOMRect controlBounds, DOMRect selectionBounds);
     [RaisesException] void updateText(unsigned long start, unsigned long end, DOMString newText);

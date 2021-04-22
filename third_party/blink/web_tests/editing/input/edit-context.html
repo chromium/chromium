@@ -5,7 +5,8 @@
 <script src="../../resources/testharnessreport.js"></script>
 </head>
 <body>
-<div id="test" tabindex="-1"></div>
+<div id="test"></div>
+<div id="test2"></div>
 <script>
 
 test(function() {
@@ -36,7 +37,8 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     test.innerHTML = e.updateText;
   });
-  editContext.focus();
+  test.editContext = editContext;
+  test.focus();
   eventSender.keyDown('a');
   assert_equals(test.innerHTML, "a");
 }, 'Testing EditContext English typing');
@@ -53,8 +55,10 @@ test(function() {
 test(function() {
   const editContext = new EditContext();
   assert_not_equals(editContext, null);
-  const test = document.getElementById('test');
-  assert_equals(test.editContext, null);
+
+  const new_div = document.createElement("DIV");
+  assert_equals(new_div.editContext, null);
+
   test.editContext = editContext;
   assert_equals(test.editContext, editContext);
   test.editContext = null;
@@ -66,19 +70,48 @@ test(function() {
   assert_not_equals(editContext, null);
   const test = document.getElementById('test');
   test.innerHTML = "";
+  test.editContext = editContext;
+  test.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.innerHTML, "");
+  eventSender.keyDown('a');
+  assert_equals(test.innerHTML, "");
+}, 'EditContext should disable DOM mutation');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
   // Add EditContext event listeners
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase() + buffer.substr(e.updateRangeEnd);
   });
-
   test.focus();
-  editContext.focus();
+  test.editContext = editContext;
   textInputController.setComposition("foo");
-  assert_equals(test.innerHTML, "foo");
+  assert_equals(test.innerHTML, "FOO");
+}, 'Testing attaching EditContext AFTER the element is focused.');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
+  // Add EditContext event listeners
+  editContext.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase() + buffer.substr(e.updateRangeEnd);
+  });
+  test.editContext = editContext;
+  test.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.innerHTML, "FOO");
   textInputController.setComposition("bar");
-  assert_equals(test.innerHTML, "bar");
+  assert_equals(test.innerHTML, "BAR");
 }, 'Testing EditContext TextUpdate');
 
 test(function() {
@@ -86,7 +119,6 @@ test(function() {
   assert_not_equals(editContext, null);
   const test = document.getElementById('test');
   test.focus();
-  editContext.focus();
   test.editContext = editContext;
   test.addEventListener("beforeinput", e => {
     if (e.inputType === "insertText") {
@@ -106,13 +138,13 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase() + buffer.substr(e.updateRangeEnd);
   });
 
+  test.editContext = editContext;
   test.focus();
-  editContext.focus();
   textInputController.setComposition("foo");
-  assert_equals(test.innerHTML, "foo");
+  assert_equals(test.innerHTML, "FOO");
   textInputController.setComposition("");
   assert_equals(test.innerHTML, "");
 }, 'Testing EditContext TextUpdate with empty strings');
@@ -134,7 +166,7 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
   editContext.addEventListener("textformatupdate", e => {
     //TODO: Currently Chromium only fires default styles
@@ -147,11 +179,10 @@ test(function() {
     compositionTextUnderlineStyle = e.underlineStyle;
     compositionTextUnderlineThickness = e.underlineThickness;
   });
-
+  test.editContext = editContext;
   test.focus();
-  editContext.focus();
   textInputController.setComposition("foo");
-  assert_equals(test.innerHTML, "foo");
+  assert_equals(test.innerHTML, "FOO");
   assert_equals(formatRangeStart, 0);
   assert_equals(formatRangeEnd, 3);
   assert_equals(underlineColor, "rgba(0, 0, 0, 0)");
@@ -173,25 +204,24 @@ test(function() {
   editContext1.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
   editContext2.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toLowerCase()  + buffer.substr(e.updateRangeEnd);
   });
-
+  test.editContext = editContext1;
   test.focus();
-  editContext1.focus();
   textInputController.setComposition("foo");
-  assert_equals(test.innerHTML, "foo");
+  assert_equals(test.innerHTML, "FOO");
   textInputController.setComposition("bar");
-  assert_equals(test.innerHTML, "bar");
+  assert_equals(test.innerHTML, "BAR");
   test.innerHTML = "";
-  editContext2.focus();
-  textInputController.setComposition("hello");
+  test.editContext = editContext2;
+  textInputController.setComposition("HELLO");
   assert_equals(test.innerHTML, "hello");
-  textInputController.setComposition("world");
+  textInputController.setComposition("WORLD");
   assert_equals(test.innerHTML, "world");
 }, 'Testing Multiple EditContext TextUpdates');
 
@@ -206,7 +236,7 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
   editContext.addEventListener("compositionstart", e => {
     // Update the text in the div
@@ -215,17 +245,16 @@ test(function() {
   editContext.addEventListener("compositionend", e => {
     compositionEndFired++;
   });
-
+  test.editContext = editContext;
   test.focus();
-  editContext.focus();
   textInputController.setComposition("foo");
-  assert_equals(test.innerHTML, "foo");
+  assert_equals(test.innerHTML, "FOO");
   assert_equals(compositionStartFired, 1);
   textInputController.setComposition("bar");
-  assert_equals(test.innerHTML, "bar");
+  assert_equals(test.innerHTML, "BAR");
   assert_equals(compositionStartFired, 1);
   textInputController.insertText("bar");
-  assert_equals(test.innerHTML, "bar");
+  assert_equals(test.innerHTML, "BAR");
   assert_equals(compositionEndFired, 1);
 }, 'Testing EditContext Composition Event');
 
@@ -238,17 +267,17 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
+  test.editContext = editContext;
   test.focus();
-  editContext.focus();
   textInputController.setComposition("f");
-  assert_equals(test.innerHTML, "f");
+  assert_equals(test.innerHTML, "F");
   textInputController.setComposition("foo");
-  assert_equals(test.innerHTML, "foo");
+  assert_equals(test.innerHTML, "FOO");
   textInputController.insertText("foobar");
-  assert_equals(test.innerHTML, "foobar");
+  assert_equals(test.innerHTML, "FOOBAR");
 }, 'Testing EditContext Text updates');
 
 test(function() {
@@ -260,17 +289,17 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
+  test.editContext = editContext;
   test.focus();
-  editContext.focus();
   textInputController.setComposition("f");
-  assert_equals(test.innerHTML, "f");
+  assert_equals(test.innerHTML, "F");
   textInputController.setComposition("");
   assert_equals(test.innerHTML, "");
   textInputController.insertText("foobar");
-  assert_equals(test.innerHTML, "foobar");
+  assert_equals(test.innerHTML, "FOOBAR");
 }, 'Testing EditContext Text updates with empty text');
 
 test(function() {
@@ -282,13 +311,13 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
+  test.editContext = editContext;
   test.focus();
-  editContext.focus();
   textInputController.setComposition("foo");
-  assert_equals(test.innerHTML, "foo");
+  assert_equals(test.innerHTML, "FOO");
   editContext.updateText(0, 1, "h");
   assert_equals(editContext.text, "hoo");
   editContext.updateText(0, 3, "bar");
@@ -304,13 +333,13 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
+  test.editContext = editContext;
   test.focus();
-  editContext.focus();
   textInputController.setComposition("foo");
-  assert_equals(test.innerHTML, "foo");
+  assert_equals(test.innerHTML, "FOO");
   textInputController.insertText("bar");
   assert_equals(editContext.text, "bar");
   assert_equals(editContext.selectionStart, 3);
@@ -334,13 +363,13 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
+  test.editContext = editContext;
   test.focus();
-  editContext.focus();
   textInputController.setComposition("foo");
-  assert_equals(test.innerHTML, "foo");
+  assert_equals(test.innerHTML, "FOO");
   editContext.updateText(0, 1, "h");
   assert_equals(editContext.text, "hoo");
   editContext.updateText(0, 3, "bar");
@@ -365,13 +394,13 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
+  test.editContext = editContext;
   test.focus();
-  editContext.focus();
   textInputController.setComposition("foo");
-  assert_equals(test.innerHTML, "foo");
+  assert_equals(test.innerHTML, "FOO");
   textInputController.insertText("foo");
   textInputController.setMarkedTextFromExistingText(0, 3);
   textInputController.insertText("bar");
@@ -390,13 +419,13 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
+  test.editContext = editContext;
   test.focus();
-  editContext.focus();
   textInputController.setComposition("foo");
-  assert_equals(test.innerHTML, "foo");
+  assert_equals(test.innerHTML, "FOO");
   textInputController.insertText("foo");
   assert_equals(editContext.selectionStart, 3);
   assert_equals(editContext.selectionEnd, 3);
@@ -424,13 +453,13 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
+  test.editContext = editContext;
   test.focus();
-  editContext.focus();
   textInputController.setComposition("foo");
-  assert_equals(test.innerHTML, "foo");
+  assert_equals(test.innerHTML, "FOO");
   textInputController.unmarkText();
   assert_equals(editContext.text, "foo");
   textInputController.setComposition("bar");
@@ -448,23 +477,29 @@ test(function() {
   editContext1.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
   editContext2.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toLowerCase()  + buffer.substr(e.updateRangeEnd);
   });
 
+  test.editContext = editContext1;
   test.focus();
-  editContext1.focus();
   textInputController.setComposition("foo");
-  assert_equals(test.innerHTML, "foo");
-  editContext1.blur();
-  editContext2.focus();
-  textInputController.setComposition("bar");
-  assert_equals(editContext2.text, "bar");
+  assert_equals(test.innerHTML, "FOO");
+  test.blur();
+  textInputController.setComposition("foo2");
+  assert_equals(test.innerHTML, "FOO");
+
+  const test2 = document.getElementById('test2');
+  test2.editContext = editContext2;
+  test2.focus();
+  textInputController.setComposition("BAR");
+  assert_equals(editContext2.text, "BAR");
+  assert_equals(test.innerHTML, "barFOO");
   assert_equals(editContext1.text, "foo");
 }, 'Testing EditContext blur');
 
@@ -556,8 +591,8 @@ test(function() {
   const textarea = childDocument.createElement('textarea');
   childDocument.body.appendChild(textarea);
   textarea.addEventListener("focusin", e => {
-    const childEditContext = new EditContext()
-    childEditContext.focus();
+    const childEditContext = new EditContext();
+    textarea.editContext = childEditContext;
     childEditContext.addEventListener("textupdate", e => {
       child.remove();
     });
@@ -573,7 +608,9 @@ test(function() {
   const editContext1 = new EditContext();
   editContext1.addEventListener("textupdate", e => {
   });
-  editContext1.focus();
+  const test = document.getElementById('test');
+  test.editContext = editContext1;
+  test.focus();
   gc()
   textInputController.setComposition("bar");
 

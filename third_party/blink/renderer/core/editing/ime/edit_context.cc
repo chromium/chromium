@@ -190,7 +190,7 @@ void EditContext::blur() {
     return;
   // Clean up the state of the |this| EditContext.
   FinishComposingText(ConfirmCompositionBehavior::kKeepSelection);
-  GetInputMethodController().SetActiveEditContext(this);
+  GetInputMethodController().SetActiveEditContext(nullptr);
 }
 
 void EditContext::updateSelection(uint32_t start,

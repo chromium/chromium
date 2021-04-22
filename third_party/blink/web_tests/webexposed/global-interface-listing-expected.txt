@@ -2093,9 +2093,7 @@ interface EditContext : EventTarget
     getter selectionEnd
     getter selectionStart
     getter text
-    method blur
     method constructor
-    method focus
     method updateLayout
     method updateSelection
     method updateText

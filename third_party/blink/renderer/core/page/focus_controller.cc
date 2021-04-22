@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"  // For firstPositionInOrBeforeNode
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -1317,6 +1318,18 @@ bool FocusController::SetFocusedElement(Element* element,
         new_document->SetFocusedElement(element, params);
     if (!successfully_focused)
       return false;
+
+    // EditContext's activation is synced with the associated element being
+    // focused or not. If an element loses focus, its associated EditContext
+    // is deactivated. If getting focus, the EditContext is activated.
+    if (old_focused_element) {
+      if (auto* old_editContext = old_focused_element->editContext())
+        old_editContext->blur();
+    }
+    if (element) {
+      if (auto* editContext = element->editContext())
+        editContext->focus();
+    }
   }
 
   return true;

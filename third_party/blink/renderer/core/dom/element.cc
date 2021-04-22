@@ -98,6 +98,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
@@ -3312,19 +3313,25 @@ EditContext* Element::editContext() const {
 }
 
 void Element::setEditContext(EditContext* edit_context) {
+  // If an element is in focus when being attached to a new EditContext,
+  // its old EditContext, if it has any, will get blurred,
+  // and the new EditContext will automatically get focused.
+  if (edit_context && IsFocusedElementInDocument()) {
+    if (auto* old_edit_context = editContext())
+      old_edit_context->blur();
+
+    edit_context->focus();
+  }
+
   EnsureElementRareData().SetEditContext(edit_context);
 
-  // An element is considered editable if there is an active EditContext
+  // An element is ready to receive text input if there is an EditContext
   // associated with the element.
-  if (auto* frame = GetDocument().GetFrame()) {
-    if (frame->GetInputMethodController().GetActiveEditContext()) {
-      MutableCSSPropertyValueSet& style = EnsureMutableInlineStyle();
-      AddPropertyToPresentationAttributeStyle(
-          &style, CSSPropertyID::kWebkitUserModify,
-          edit_context ? CSSValueID::kReadWrite : CSSValueID::kReadOnly);
-      InlineStyleChanged();
-    }
-  }
+  MutableCSSPropertyValueSet& style = EnsureMutableInlineStyle();
+  AddPropertyToPresentationAttributeStyle(
+      &style, CSSPropertyID::kWebkitUserModify,
+      edit_context ? CSSValueID::kReadWrite : CSSValueID::kReadOnly);
+  InlineStyleChanged();
 }
 
 void Element::PseudoStateChanged(CSSSelector::PseudoType pseudo) {
