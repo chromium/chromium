@@ -49,8 +49,22 @@ ChromeBrowserMainExtraPartsViewsLinux::
 void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
   ChromeBrowserMainExtraPartsViews::ToolkitInitialized();
 
-  auto linux_ui = BuildLinuxUI();
-  if (!linux_ui) {
+  if (auto linux_ui = BuildLinuxUI()) {
+    linux_ui->SetUseSystemThemeCallback(
+        base::BindRepeating([](aura::Window* window) {
+          if (!window)
+            return true;
+          return ThemeServiceAuraLinux::ShouldUseSystemThemeForProfile(
+              GetThemeProfileForWindow(window));
+        }));
+
+    linux_ui->Initialize();
+    views::LinuxUI::SetInstance(std::move(linux_ui));
+
+    // Cursor theme changes are tracked by LinuxUI (via a CursorThemeManager
+    // implementation). Start observing them once it's initialized.
+    ui::CursorFactory::GetInstance()->ObserveThemeChanges();
+  } else {
     // In case if GTK is not used, input method factory won't be set for X11 and
     // Ozone/X11. Set a fake one instead to avoid crashing browser later.
     DCHECK(!ui::LinuxInputMethodContextFactory::instance());
@@ -62,31 +76,12 @@ void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
           nullptr, gfx::kNullAcceleratedWidget);
     }
 #endif
-    // If factory is not set, set a fake instance.
-    if (!ui::LinuxInputMethodContextFactory::instance()) {
-      ui::LinuxInputMethodContextFactory::SetInstance(
-          new ui::FakeInputMethodContextFactory());
-    }
-    return;
   }
-
-  linux_ui->SetUseSystemThemeCallback(
-      base::BindRepeating([](aura::Window* window) {
-        if (!window)
-          return true;
-        return ThemeServiceAuraLinux::ShouldUseSystemThemeForProfile(
-            GetThemeProfileForWindow(window));
-      }));
-
-  linux_ui->Initialize();
-  views::LinuxUI::SetInstance(std::move(linux_ui));
-
-  // Cursor theme changes are tracked by LinuxUI (via a CursorThemeManager
-  // implementation). Start observing them once it's initialized.
-  ui::CursorFactory::GetInstance()->ObserveThemeChanges();
-
-  DCHECK(ui::LinuxInputMethodContextFactory::instance())
-      << "LinuxUI must set LinuxInputMethodContextFactory instance.";
+  // If factory is not set, set a fake instance.
+  if (!ui::LinuxInputMethodContextFactory::instance()) {
+    ui::LinuxInputMethodContextFactory::SetInstance(
+        new ui::FakeInputMethodContextFactory());
+  }
 }
 
 void ChromeBrowserMainExtraPartsViewsLinux::PreCreateThreads() {
