@@ -240,6 +240,9 @@ class FileMetricsProvider : public MetricsProvider,
     // The file had internal data corruption.
     ACCESS_RESULT_DATA_CORRUPTION,
 
+    // The file is not writable when it should be.
+    ACCESS_RESULT_NOT_WRITABLE,
+
     ACCESS_RESULT_MAX
   };
 

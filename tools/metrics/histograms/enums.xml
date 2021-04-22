@@ -33659,6 +33659,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="13" label="File was skipped because it belongs to this process."/>
   <int value="14" label="File did not have required embedded profile."/>
   <int value="15" label="File had internal data corruption."/>
+  <int value="16" label="File was not writable when it should be."/>
 </enum>
 
 <enum name="FileMetricsProviderEmbeddedProfileResult">

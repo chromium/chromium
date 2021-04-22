@@ -479,6 +479,41 @@ FileMetricsProvider::AccessResult FileMetricsProvider::CheckAndMapMetricSource(
   if (!file.IsValid())
     return ACCESS_RESULT_NO_OPEN;
 
+  // Check that file is writable if that is expected. If a write is attempted
+  // on an unwritable memory-mapped file, a SIGBUS will cause a crash.
+  const bool read_only = kSourceOptions[source->type].is_read_only;
+  if (!read_only) {
+    constexpr int kTestSize = 16;
+    char header[kTestSize];
+    int amount = file.Read(0, header, kTestSize);
+    if (amount != kTestSize)
+      return ACCESS_RESULT_INVALID_CONTENTS;
+
+    char zeros[kTestSize] = {0};
+    file.Write(0, zeros, kTestSize);
+    file.Flush();
+
+    // A crash here would be unfortunate as the file would be left invalid
+    // and skipped/deleted by later attempts. This is unlikely, however, and
+    // the benefit of avoiding crashes from mapping as read/write a file that
+    // can't be written more than justifies the risk.
+
+    char check[kTestSize];
+    amount = file.Read(0, check, kTestSize);
+    if (amount != kTestSize)
+      return ACCESS_RESULT_INVALID_CONTENTS;
+    if (memcmp(check, zeros, kTestSize) != 0)
+      return ACCESS_RESULT_NOT_WRITABLE;
+
+    file.Write(0, header, kTestSize);
+    file.Flush();
+    amount = file.Read(0, check, kTestSize);
+    if (amount != kTestSize)
+      return ACCESS_RESULT_INVALID_CONTENTS;
+    if (memcmp(check, header, kTestSize) != 0)
+      return ACCESS_RESULT_NOT_WRITABLE;
+  }
+
   std::unique_ptr<base::MemoryMappedFile> mapped(new base::MemoryMappedFile());
   if (!mapped->Initialize(std::move(file),
                           kSourceOptions[source->type].memory_mapped_access)) {
@@ -489,7 +524,6 @@ FileMetricsProvider::AccessResult FileMetricsProvider::CheckAndMapMetricSource(
   source->last_seen = info.last_modified;
 
   // Test the validity of the file contents.
-  const bool read_only = kSourceOptions[source->type].is_read_only;
   if (!base::FilePersistentMemoryAllocator::IsFileAcceptable(*mapped,
                                                              read_only)) {
     return ACCESS_RESULT_INVALID_CONTENTS;
