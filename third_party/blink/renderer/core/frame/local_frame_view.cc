@@ -4477,6 +4477,11 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
     // Ensure we'll recompute viewport intersection for the frame subtree during
     // the scheduled visual update.
     SetIntersectionObservationState(kRequired);
+    // When a frame is throttled, we typically delete its previous painted
+    // output, so it will need to be repainted, even if nothing else has
+    // changed.
+    if (LayoutView* layout_view = GetLayoutView())
+      layout_view->Layer()->SetNeedsRepaint();
   } else if (GetFrame().IsLocalRoot()) {
     // By this point, every frame in the local frame tree has become throttled,
     // so painting the tree should just clear the previous painted output.

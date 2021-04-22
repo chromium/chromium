@@ -1384,6 +1384,7 @@ TEST_P(FrameThrottlingTest, UpdatePaintPropertiesOnUnthrottling) {
   // The first update unthrottles the frame, the second actually update layout
   // and paint properties etc.
   CompositeFrame();
+  EXPECT_TRUE(frame_document->GetLayoutView()->Layer()->SelfNeedsRepaint());
   CompositeFrame();
   EXPECT_FALSE(frame_document->View()->CanThrottleRendering());
   EXPECT_EQ(FloatSize(0, 20), inner_div->GetLayoutObject()
