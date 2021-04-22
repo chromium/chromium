@@ -2309,6 +2309,14 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   if (element->IsPseudoElement())
     return true;
 
+  // Include all parents of ::before/::pseudo pseudo elements.
+  // It is unnecessary to include a rule for ::marker, because these only
+  // apply to display::list-item, which are always unignored.
+  if (element->GetPseudoElement(kPseudoIdBefore) ||
+      element->GetPseudoElement(kPseudoIdAfter)) {
+    return true;
+  }
+
   // Use a flag to control whether or not the <html> element is included
   // in the accessibility tree. Either way it's always marked as "ignored",
   // but eventually we want to always include it in the tree to simplify
