@@ -503,8 +503,10 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 
 // Test that loading a page with pushState() call that changes URL
 // updates the intent picker view.
+//
+// TODO(crbug.com/1201397): fix flakiness and reenable
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
-                       PushStateURLChangeTest) {
+                       DISABLED_PushStateURLChangeTest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL test_url =
       embedded_test_server()->GetURL("/intent_picker/push_state_test.html");
