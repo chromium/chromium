@@ -33,8 +33,7 @@ usage() {
 build_apt_package_list() {
   echo "Building apt package list." >&2
   apt-cache dumpavail | \
-    python -c '\
-      from __future__ import print_function; \
+    python3 -c '\
       import re,sys; \
       o = sys.stdin.read(); \
       p = {"i386": ":i386"}; \
