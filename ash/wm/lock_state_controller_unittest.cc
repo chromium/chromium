@@ -732,4 +732,37 @@ TEST_F(LockStateControllerTest, CancelShouldResetWallpaperBlur) {
   EXPECT_EQ(wallpaper_constants::kOverviewBlur, wallpaper_view->blur_sigma());
 }
 
+class LockStateControllerMockTimeTest : public PowerButtonTestBase {
+ public:
+  LockStateControllerMockTimeTest()
+      : PowerButtonTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  LockStateControllerMockTimeTest(const LockStateControllerMockTimeTest&) =
+      delete;
+  LockStateControllerMockTimeTest& operator=(
+      const LockStateControllerMockTimeTest&) = delete;
+  ~LockStateControllerMockTimeTest() override = default;
+
+  void Advance(const base::TimeDelta& delta) {
+    task_environment()->FastForwardBy(delta);
+  }
+
+  void SetUp() override {
+    PowerButtonTestBase::SetUp();
+    InitPowerButtonControllerMembers(
+        chromeos::PowerManagerClient::TabletMode::UNSUPPORTED);
+  }
+};
+
+TEST_F(LockStateControllerMockTimeTest, LockWithoutAnimation) {
+  Initialize(ButtonType::LEGACY, LoginStatus::USER);
+  EXPECT_FALSE(Shell::Get()->session_controller()->IsScreenLocked());
+
+  lock_state_controller_->LockWithoutAnimation();
+  EXPECT_TRUE(lock_state_controller_->animating_lock_for_test());
+  Advance(base::TimeDelta::FromSeconds(1));
+  EXPECT_FALSE(lock_state_controller_->animating_lock_for_test());
+  EXPECT_TRUE(Shell::Get()->session_controller()->IsScreenLocked());
+}
+
 }  // namespace ash

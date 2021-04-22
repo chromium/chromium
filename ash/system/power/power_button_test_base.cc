@@ -24,6 +24,9 @@
 namespace ash {
 
 PowerButtonTestBase::PowerButtonTestBase() = default;
+PowerButtonTestBase::PowerButtonTestBase(
+    base::test::TaskEnvironment::TimeSource time)
+    : AshTestBase(time) {}
 
 PowerButtonTestBase::~PowerButtonTestBase() = default;
 
