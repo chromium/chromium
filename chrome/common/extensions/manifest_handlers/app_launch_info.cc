@@ -96,8 +96,7 @@ const std::string& AppLaunchInfo::GetLaunchLocalPath(
 }
 
 // static
-const GURL& AppLaunchInfo::GetLaunchWebURL(
-    const Extension* extension) {
+const GURL& AppLaunchInfo::GetLaunchWebURL(const Extension* extension) {
   return GetAppLaunchInfo(extension).launch_web_url_;
 }
 
