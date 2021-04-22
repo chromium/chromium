@@ -73,6 +73,9 @@ void ShowExtensionInstallFrictionDialog(
 
 namespace {
 
+// NOTE: This should be a shared constant, but none exist at the moment.
+constexpr int kWarningIconSize = 24;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class ExtensionInstallFrictionDialogAction {
@@ -179,7 +182,7 @@ ExtensionInstallFrictionDialogView::~ExtensionInstallFrictionDialogView() {
 // override
 gfx::ImageSkia ExtensionInstallFrictionDialogView::GetWindowIcon() {
   return gfx::CreateVectorIcon(
-      vector_icons::kGppMaybeIcon, extension_misc::EXTENSION_ICON_SMALL,
+      vector_icons::kGppMaybeIcon, kWarningIconSize,
       GetNativeTheme()->GetSystemColor(
           ui::NativeTheme::kColorId_AlertSeverityMedium));
 }
