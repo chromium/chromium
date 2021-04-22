@@ -379,16 +379,21 @@ class ShadowBoundaryAdjuster final {
     const EphemeralRangeTemplate<Strategy> expanded_range =
         selection.ComputeRange();
 
-    const EphemeralRangeTemplate<Strategy> shadow_adjusted_range =
-        selection.IsBaseFirst()
-            ? EphemeralRangeTemplate<Strategy>(
-                  expanded_range.StartPosition(),
-                  AdjustSelectionEndToAvoidCrossingShadowBoundaries(
-                      expanded_range))
-            : EphemeralRangeTemplate<Strategy>(
-                  AdjustSelectionStartToAvoidCrossingShadowBoundaries(
-                      expanded_range),
-                  expanded_range.EndPosition());
+    if (selection.IsBaseFirst()) {
+      PositionTemplate<Strategy> adjusted_end =
+          AdjustSelectionEndToAvoidCrossingShadowBoundaries(expanded_range);
+      if (adjusted_end.IsNull())
+        adjusted_end = expanded_range.StartPosition();
+      const EphemeralRangeTemplate<Strategy> shadow_adjusted_range(
+          expanded_range.StartPosition(), adjusted_end);
+      return ComputeAdjustedSelection(selection, shadow_adjusted_range);
+    }
+    PositionTemplate<Strategy> adjusted_start =
+        AdjustSelectionStartToAvoidCrossingShadowBoundaries(expanded_range);
+    if (adjusted_start.IsNull())
+      adjusted_start = expanded_range.EndPosition();
+    const EphemeralRangeTemplate<Strategy> shadow_adjusted_range(
+        adjusted_start, expanded_range.EndPosition());
     return ComputeAdjustedSelection(selection, shadow_adjusted_range);
   }
 
