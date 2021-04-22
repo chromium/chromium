@@ -8,8 +8,8 @@
  * Error codes and data structures used to report errors when loading a nexe.
  */
 
-#ifndef COMPONENTS_NACL_RENDERER_PLUGIN_PLUGIN_ERROR_H
-#define COMPONENTS_NACL_RENDERER_PLUGIN_PLUGIN_ERROR_H
+#ifndef COMPONENTS_NACL_RENDERER_PLUGIN_PLUGIN_ERROR_H_
+#define COMPONENTS_NACL_RENDERER_PLUGIN_PLUGIN_ERROR_H_
 
 #include <string>
 
@@ -45,4 +45,4 @@ class ErrorInfo {
 
 }  // namespace plugin
 
-#endif  // COMPONENTS_NACL_RENDERER_PLUGIN_PLUGIN_ERROR_H
+#endif  // COMPONENTS_NACL_RENDERER_PLUGIN_PLUGIN_ERROR_H_

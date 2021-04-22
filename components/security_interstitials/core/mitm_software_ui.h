@@ -46,4 +46,4 @@ class MITMSoftwareUI {
 
 }  // namespace security_interstitials
 
-#endif  // COMPONENTS_SECURITY_INTERSTITIALS_CORE_MITM_SOFTWARE_UI_H
+#endif  // COMPONENTS_SECURITY_INTERSTITIALS_CORE_MITM_SOFTWARE_UI_H_

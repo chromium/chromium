@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_CORE_HISTORY_DATABASE_TEST_UTILS_H_
-#define COMPONENTS_HISTORY_CORE_HISTORY_DATABASE_TEST_UTILS_H_
+#ifndef COMPONENTS_HISTORY_CORE_TEST_DATABASE_TEST_UTILS_H_
+#define COMPONENTS_HISTORY_CORE_TEST_DATABASE_TEST_UTILS_H_
 
 #include "base/compiler_specific.h"
 
@@ -24,4 +24,4 @@ WARN_UNUSED_RESULT bool CreateDatabaseFromSQL(const base::FilePath& db_path,
 
 }  // namespace history
 
-#endif  // COMPONENTS_HISTORY_CORE_HISTORY_DATABASE_TEST_UTILS_H_
+#endif  // COMPONENTS_HISTORY_CORE_TEST_DATABASE_TEST_UTILS_H_

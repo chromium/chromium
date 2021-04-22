@@ -21,4 +21,4 @@ extern const base::Feature kRestrictGoogleWebVisibility;
 }  // namespace internal
 }  // namespace variations
 
-#endif  // COMPONENTS_VARIATIONS_VARIATIONS_ASSOCIATED_DATA_H_
+#endif  // COMPONENTS_VARIATIONS_VARIATIONS_FEATURES_H_

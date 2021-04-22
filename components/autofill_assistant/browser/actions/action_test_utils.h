@@ -46,4 +46,4 @@ ElementFinder::Result MockFindElement(MockWebController& web_controller,
 }  // namespace test_util
 }  // namespace autofill_assistant
 
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_ACTION_UNITTEST_HELPER_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_ACTION_TEST_UTILS_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VARIATIONS_FIELD_TRIAL_SYNCER_H_
-#define COMPONENTS_VARIATIONS_FIELD_TRIAL_SYNCER_H_
+#ifndef COMPONENTS_VARIATIONS_CHILD_PROCESS_FIELD_TRIAL_SYNCER_H_
+#define COMPONENTS_VARIATIONS_CHILD_PROCESS_FIELD_TRIAL_SYNCER_H_
 
 #include <string>
 
@@ -47,4 +47,4 @@ class ChildProcessFieldTrialSyncer {
 
 }  // namespace variations
 
-#endif  // COMPONENTS_VARIATIONS_FIELD_TRIAL_SYNCER_H_
+#endif  // COMPONENTS_VARIATIONS_CHILD_PROCESS_FIELD_TRIAL_SYNCER_H_

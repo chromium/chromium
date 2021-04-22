@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_METRICS_PERSISTENT_SYSTEM_PROFILE_H_
-#define BASE_METRICS_PERSISTENT_SYSTEM_PROFILE_H_
+#ifndef COMPONENTS_METRICS_PERSISTENT_SYSTEM_PROFILE_H_
+#define COMPONENTS_METRICS_PERSISTENT_SYSTEM_PROFILE_H_
 
 #include <vector>
 
@@ -157,4 +157,4 @@ class GlobalPersistentSystemProfile : public PersistentSystemProfile {
 
 }  // namespace metrics
 
-#endif  // BASE_METRICS_PERSISTENT_SYSTEM_PROFILE_H_
+#endif  // COMPONENTS_METRICS_PERSISTENT_SYSTEM_PROFILE_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DOWNLOAD_DOWNLOAD_CONTENT_H_
-#define COMPONENTS_DOWNLOAD_DOWNLOAD_CONTENT_H_
+#ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_CONTENT_H_
+#define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_CONTENT_H_
 
 // The type of download based on mimetype.
 // This is used by UMA and UKM metrics.
@@ -35,4 +35,4 @@ enum class DownloadContent {
 
 }  // namespace download
 
-#endif  // COMPONENTS_DOWNLOAD_DOWNLOAD_CONTENT_H_
+#endif  // COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_CONTENT_H_

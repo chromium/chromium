@@ -33,4 +33,4 @@ bool operator!=(const ScopeLockRange& x, const ScopeLockRange& y);
 
 }  // namespace content
 
-#endif /* COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_SCOPE_LOCK_RANGE_H_ */
+#endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_SCOPE_LOCK_RANGE_H_

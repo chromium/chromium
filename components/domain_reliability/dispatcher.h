@@ -67,4 +67,4 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityDispatcher {
 
 }  // namespace domain_reliability
 
-#endif
+#endif  // COMPONENTS_DOMAIN_RELIABILITY_DISPATCHER_H_

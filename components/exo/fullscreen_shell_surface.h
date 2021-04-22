@@ -102,4 +102,4 @@ class FullscreenShellSurface : public SurfaceTreeHost,
 
 }  // namespace exo
 
-#endif  // COMPONENTS_EXO_FULLSCREEN_SHELL_SURFACE_H
+#endif  // COMPONENTS_EXO_FULLSCREEN_SHELL_SURFACE_H_

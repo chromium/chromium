@@ -90,4 +90,4 @@ class DownloadDBImpl : public DownloadDB {
 
 }  // namespace download
 
-#endif  // COMPONENTS_DOWNLOAD_DATABASE_IN_PROGRESS_DOWNLOAD_DB_IMPL_H_
+#endif  // COMPONENTS_DOWNLOAD_DATABASE_DOWNLOAD_DB_IMPL_H_

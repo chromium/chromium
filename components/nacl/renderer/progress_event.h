@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NACL_RENDERER_NEXE_PROGRESS_EVENT_H_
-#define COMPONENTS_NACL_RENDERER_NEXE_PROGRESS_EVENT_H_
+#ifndef COMPONENTS_NACL_RENDERER_PROGRESS_EVENT_H_
+#define COMPONENTS_NACL_RENDERER_PROGRESS_EVENT_H_
 
 #include <stdint.h>
 
@@ -52,4 +52,4 @@ void DispatchProgressEvent(PP_Instance instance, const ProgressEvent& event);
 
 }  // namespace nacl
 
-#endif  // COMPONENTS_NACL_RENDERER_NEXE_PROGRESS_EVENT_H_
+#endif  // COMPONENTS_NACL_RENDERER_PROGRESS_EVENT_H_

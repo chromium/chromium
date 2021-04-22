@@ -58,4 +58,4 @@ GetPatternsFromResourceBundleSynchronously();
 
 }  // namespace autofill
 
-#endif
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PATTERN_PROVIDER_PATTERN_CONFIGURATION_PARSER_H_

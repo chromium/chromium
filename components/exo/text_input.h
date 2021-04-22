@@ -175,4 +175,4 @@ class TextInput : public ui::TextInputClient,
 
 }  // namespace exo
 
-#endif  // COMPONENTS_EXO_KEYBOARD_H_
+#endif  // COMPONENTS_EXO_TEXT_INPUT_H_

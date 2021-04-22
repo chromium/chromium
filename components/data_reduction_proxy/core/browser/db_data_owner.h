@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DATA_REDUCTION_PROXY_CORE_BROWSER_DB_SERVICE_H_
-#define COMPONENTS_DATA_REDUCTION_PROXY_CORE_BROWSER_DB_SERVICE_H_
+#ifndef COMPONENTS_DATA_REDUCTION_PROXY_CORE_BROWSER_DB_DATA_OWNER_H_
+#define COMPONENTS_DATA_REDUCTION_PROXY_CORE_BROWSER_DB_DATA_OWNER_H_
 
 #include <memory>
 #include <vector>
@@ -64,4 +64,4 @@ class DBDataOwner {
 };
 
 }  // namespace data_reduction_proxy
-#endif  // COMPONENTS_DATA_REDUCTION_PROXY_CORE_BROWSER_DB_SERVICE_H_
+#endif  // COMPONENTS_DATA_REDUCTION_PROXY_CORE_BROWSER_DB_DATA_OWNER_H_

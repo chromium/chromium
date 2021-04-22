@@ -45,4 +45,4 @@ class MockLogger : public media_router::mojom::Logger {
 };
 }  // namespace media_router
 
-#endif
+#endif  // COMPONENTS_MEDIA_ROUTER_COMMON_TEST_MOCK_LOGGER_H_

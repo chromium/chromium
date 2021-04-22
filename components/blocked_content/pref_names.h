@@ -13,4 +13,4 @@ extern const char kAbusiveExperienceInterventionEnforce[];
 }  // namespace prefs
 }  // namespace blocked_content
 
-#endif  // COMPONENTS_BLOCKED_CONTENT_PREF_NAMES_H
+#endif  // COMPONENTS_BLOCKED_CONTENT_PREF_NAMES_H_

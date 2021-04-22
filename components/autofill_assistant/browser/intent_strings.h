@@ -24,4 +24,4 @@ extern const char kShoppingAssistedCheckout[];
 extern const char kTeleport[];
 }  // namespace autofill_assistant
 
-#endif
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_INTENT_STRINGS_H_

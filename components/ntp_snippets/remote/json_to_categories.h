@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_HELPER_H_
-#define COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_HELPER_H_
+#ifndef COMPONENTS_NTP_SNIPPETS_REMOTE_JSON_TO_CATEGORIES_H_
+#define COMPONENTS_NTP_SNIPPETS_REMOTE_JSON_TO_CATEGORIES_H_
 
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -42,4 +42,4 @@ bool JsonToCategories(const base::Value& parsed,
 
 }  // namespace ntp_snippets
 
-#endif  // COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_HELPER_H_
+#endif  // COMPONENTS_NTP_SNIPPETS_REMOTE_JSON_TO_CATEGORIES_H_

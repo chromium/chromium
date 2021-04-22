@@ -22,4 +22,4 @@ POLICY_EXPORT bool PlistWrite(const base::Value& node, std::string* plist);
 
 }  // namespace policy
 
-#endif  // COMPONENTS_POLICY_CORE_COMMON_Plist_WRITER_H_
+#endif  // COMPONENTS_POLICY_CORE_COMMON_PLIST_WRITER_H_

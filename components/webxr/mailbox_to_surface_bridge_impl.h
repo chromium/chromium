@@ -121,4 +121,4 @@ class MailboxToSurfaceBridgeFactoryImpl
 
 }  // namespace webxr
 
-#endif  // COMPONENTS_WEBXR_MAILBOX_TO_SURFACE_BRIDGE_H_
+#endif  // COMPONENTS_WEBXR_MAILBOX_TO_SURFACE_BRIDGE_IMPL_H_

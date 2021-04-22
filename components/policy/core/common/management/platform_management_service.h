@@ -27,5 +27,4 @@ class POLICY_EXPORT PlatformManagementService : public ManagementService {
 
 }  // namespace policy
 
-#endif  // #define
-        // COMPONENTS_POLICY_CORE_COMMON_MANAGEMENT_PLATFOR_MANAGEMENT_SERVICE_H_
+#endif  // COMPONENTS_POLICY_CORE_COMMON_MANAGEMENT_PLATFORM_MANAGEMENT_SERVICE_H_

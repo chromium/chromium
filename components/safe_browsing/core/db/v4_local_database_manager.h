@@ -394,4 +394,4 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_DB_V4_LOCAL_DATABASE_MANAGER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_DB_V4_LOCAL_DATABASE_MANAGER_H_

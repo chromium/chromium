@@ -36,4 +36,4 @@ class VizElement : public UIElement {
 
 }  // namespace ui_devtools
 
-#endif  // COMPONENTS_UI_DEVTOOLS_VIZ_FRAME_SINK_ELEMENT_H_
+#endif  // COMPONENTS_UI_DEVTOOLS_VIZ_VIZ_ELEMENT_H_

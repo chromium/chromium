@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_CHANNEL_CAST_CHANNEL_SERVICE_H_
-#define COMPONENTS_CAST_CHANNEL_CAST_CHANNEL_SERVICE_H_
+#ifndef COMPONENTS_CAST_CHANNEL_CAST_SOCKET_SERVICE_H_
+#define COMPONENTS_CAST_CHANNEL_CAST_SOCKET_SERVICE_H_
 
 #include <map>
 #include <memory>
@@ -129,4 +129,4 @@ class CastSocketServiceImpl : public CastSocketService {
 
 }  // namespace cast_channel
 
-#endif  // COMPONENTS_CAST_CHANNEL_CAST_CHANNEL_SERVICE_H_
+#endif  // COMPONENTS_CAST_CHANNEL_CAST_SOCKET_SERVICE_H_

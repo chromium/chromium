@@ -20,4 +20,4 @@ extern const char kLocationSettingsNextShowDefault[];
 }  // namespace prefs
 }  // namespace permissions
 
-#endif  // COMPONENTS_PROXIMITY_AUTH_BLE_PREF_NAMES_H
+#endif  // COMPONENTS_PERMISSIONS_PREF_NAMES_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_BROWSING_DATA_CONTENT_CONTENT_LOCAL_STORAGE_HELPER_H_
-#define COMPONENTS_BROWSING_DATA_CONTENT_CONTENT_LOCAL_STORAGE_HELPER_H_
+#ifndef COMPONENTS_BROWSING_DATA_CONTENT_LOCAL_STORAGE_HELPER_H_
+#define COMPONENTS_BROWSING_DATA_CONTENT_LOCAL_STORAGE_HELPER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -94,4 +94,4 @@ class CannedLocalStorageHelper : public LocalStorageHelper {
 
 }  // namespace browsing_data
 
-#endif  // COMPONENTS_BROWSING_DATA_CONTENT_CONTENT_LOCAL_STORAGE_HELPER_H_
+#endif  // COMPONENTS_BROWSING_DATA_CONTENT_LOCAL_STORAGE_HELPER_H_

@@ -57,4 +57,4 @@ class GuestViewRequest {
 
 }  // namespace guest_view
 
-#endif  // COMPONENTS_GUEST_VIEW_RENDERER_GUEST_VIEW_CONTAINER_H_
+#endif  // COMPONENTS_GUEST_VIEW_RENDERER_GUEST_VIEW_REQUEST_H_

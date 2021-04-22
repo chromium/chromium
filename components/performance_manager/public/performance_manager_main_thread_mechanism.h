@@ -41,4 +41,4 @@ class PerformanceManagerMainThreadMechanism : public base::CheckedObserver {
 
 }  // namespace performance_manager
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_PERFORMANCE_MANAGER_MAIN_THREAD_OBSERVER_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_PERFORMANCE_MANAGER_MAIN_THREAD_MECHANISM_H_

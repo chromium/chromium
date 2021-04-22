@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CLOUD_DEVICESCLOUD_DEVICE_DESCRIPTION_CONSTS_H_
-#define COMPONENTS_CLOUD_DEVICESCLOUD_DEVICE_DESCRIPTION_CONSTS_H_
+#ifndef COMPONENTS_CLOUD_DEVICES_COMMON_CLOUD_DEVICE_DESCRIPTION_CONSTS_H_
+#define COMPONENTS_CLOUD_DEVICES_COMMON_CLOUD_DEVICE_DESCRIPTION_CONSTS_H_
 
 // Constants for common parts of JSON representation of CDD/CJT.
 
@@ -22,4 +22,4 @@ extern const char kKeyOption[];
 
 }  // namespace cloud_devices
 
-#endif  // COMPONENTS_CLOUD_DEVICESCLOUD_DEVICE_DESCRIPTION_CONSTS_H_
+#endif  // COMPONENTS_CLOUD_DEVICES_COMMON_CLOUD_DEVICE_DESCRIPTION_CONSTS_H_

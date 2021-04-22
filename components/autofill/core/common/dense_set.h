@@ -296,4 +296,4 @@ class DenseSet {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_COMMON_BITSET_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_COMMON_DENSE_SET_H_

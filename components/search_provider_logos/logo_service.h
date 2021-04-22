@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEARCH_PROVIDER_LOGOS_ANDROID_LOGO_SERVICE_H_
-#define COMPONENTS_SEARCH_PROVIDER_LOGOS_ANDROID_LOGO_SERVICE_H_
+#ifndef COMPONENTS_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_H_
+#define COMPONENTS_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_H_
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/search_provider_logos/logo_common.h"
@@ -54,4 +54,4 @@ class LogoService : public KeyedService {
 
 }  // namespace search_provider_logos
 
-#endif  // COMPONENTS_SEARCH_PROVIDER_LOGOS_ANDROID_LOGO_SERVICE_H_
+#endif  // COMPONENTS_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_H_

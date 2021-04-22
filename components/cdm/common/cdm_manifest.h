@@ -39,4 +39,4 @@ bool ParseCdmManifestFromPath(const base::FilePath& manifest_path,
                               base::Version* version,
                               content::CdmCapability* capability);
 
-#endif  // CHROME_COMMON_MEDIA_CDM_MANIFEST_H_
+#endif  // COMPONENTS_CDM_COMMON_CDM_MANIFEST_H_

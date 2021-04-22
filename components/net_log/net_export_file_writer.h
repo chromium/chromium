@@ -230,4 +230,4 @@ class NetExportFileWriter {
 
 }  // namespace net_log
 
-#endif  // COMPONENTS_NET_LOG_NET_LOG_FILE_WRITER_H_
+#endif  // COMPONENTS_NET_LOG_NET_EXPORT_FILE_WRITER_H_

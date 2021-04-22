@@ -103,4 +103,4 @@ class TileServiceSchedulerImpl : public TileServiceScheduler, public LogSource {
 
 }  // namespace query_tiles
 
-#endif  // COMPONENTS_QUERY_TILES_INTERNAL_TILE_SERVICE_SCHEDULER_H_
+#endif  // COMPONENTS_QUERY_TILES_INTERNAL_TILE_SERVICE_SCHEDULER_IMPL_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ZOOM_ZOOM_TEST_UTILS_H_
-#define COMPONENTS_ZOOM_ZOOM_TEST_UTILS_H_
+#ifndef COMPONENTS_ZOOM_TEST_ZOOM_TEST_UTILS_H_
+#define COMPONENTS_ZOOM_TEST_ZOOM_TEST_UTILS_H_
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
@@ -57,4 +57,4 @@ class ZoomChangedWatcher : public zoom::ZoomObserver {
 };
 
 }  // namespace zoom
-#endif  // COMPONENTS_ZOOM_ZOOM_TEST_UTILS_H_
+#endif  // COMPONENTS_ZOOM_TEST_ZOOM_TEST_UTILS_H_

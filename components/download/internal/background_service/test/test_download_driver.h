@@ -64,4 +64,4 @@ class TestDownloadDriver : public DownloadDriver {
 }  // namespace test
 }  // namespace download
 
-#endif  // COMPONENTS_DOWNLOAD_CONTENT_BACKGROUND_SERVICE_TEST_TEST_DOWNLOAD_DRIVER_H_
+#endif  // COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_TEST_TEST_DOWNLOAD_DRIVER_H_

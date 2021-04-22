@@ -1,8 +1,8 @@
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_AGENT_H
-#define COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_AGENT_H
+#ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_AGENT_H_
+#define COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_AGENT_H_
 
 #import <Foundation/Foundation.h>
 
@@ -34,4 +34,4 @@ class WebState;
 
 @end
 
-#endif  // COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_AGENT_H
+#endif  // COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_AGENT_H_

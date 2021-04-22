@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_GCM_DRIVER_GCM_DRIVER_ANDROID_H
-#define COMPONENTS_GCM_DRIVER_GCM_DRIVER_ANDROID_H
+#ifndef COMPONENTS_GCM_DRIVER_GCM_DRIVER_ANDROID_H_
+#define COMPONENTS_GCM_DRIVER_GCM_DRIVER_ANDROID_H_
 
 #include <jni.h>
 
@@ -111,4 +111,4 @@ class GCMDriverAndroid : public GCMDriver,
 
 }  // namespace gcm
 
-#endif  // COMPONENTS_GCM_DRIVER_GCM_DRIVER_ANDROID_H
+#endif  // COMPONENTS_GCM_DRIVER_GCM_DRIVER_ANDROID_H_

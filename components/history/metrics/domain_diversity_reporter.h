@@ -71,4 +71,4 @@ class DomainDiversityReporter : public KeyedService,
   DISALLOW_COPY_AND_ASSIGN(DomainDiversityReporter);
 };
 
-#endif  // COMPONENTS_HISTORY_MERICS_DOMAIN_DIVERSITY_REPORTER_H_
+#endif  // COMPONENTS_HISTORY_METRICS_DOMAIN_DIVERSITY_REPORTER_H_

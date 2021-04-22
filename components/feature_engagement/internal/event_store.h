@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_STORE_H_
-#define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_STORE_H_
+#ifndef COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_EVENT_STORE_H_
+#define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_EVENT_STORE_H_
 
 #include <string>
 
@@ -46,4 +46,4 @@ class EventStore {
 
 }  // namespace feature_engagement
 
-#endif  // COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_STORE_H_
+#endif  // COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_EVENT_STORE_H_

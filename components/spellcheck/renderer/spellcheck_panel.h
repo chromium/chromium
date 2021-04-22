@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_PANEL_H
-#define COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_PANEL_H
+#ifndef COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_PANEL_H_
+#define COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_PANEL_H_
 
 #include "base/macros.h"
 #include "components/spellcheck/common/spellcheck_panel.mojom.h"
@@ -63,4 +63,4 @@ class SpellCheckPanel : public content::RenderFrameObserver,
   DISALLOW_COPY_AND_ASSIGN(SpellCheckPanel);
 };
 
-#endif
+#endif  // COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_PANEL_H_

@@ -34,4 +34,4 @@ class ReleaseElementsAction : public Action {
 };
 
 }  // namespace autofill_assistant
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_RELEASE_ELEMEMENTS_ACTION_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_RELEASE_ELEMENTS_ACTION_H_

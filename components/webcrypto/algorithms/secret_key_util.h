@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_WEBCRYPTO_ALGORITHMS_SECRET_KEY_UTIL_
-#define COMPONENTS_WEBCRYPTO_ALGORITHMS_SECRET_KEY_UTIL_
+#ifndef COMPONENTS_WEBCRYPTO_ALGORITHMS_SECRET_KEY_UTIL_H_
+#define COMPONENTS_WEBCRYPTO_ALGORITHMS_SECRET_KEY_UTIL_H_
 
 #include <stdint.h>
 
@@ -67,4 +67,4 @@ Status ReadSecretKeyNoExpectedAlgJwk(
 
 }  // namespace webcrypto
 
-#endif  // COMPONENTS_WEBCRYPTO_ALGORITHMS_SECRET_KEY_UTIL_
+#endif  // COMPONENTS_WEBCRYPTO_ALGORITHMS_SECRET_KEY_UTIL_H_

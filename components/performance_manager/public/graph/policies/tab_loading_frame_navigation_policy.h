@@ -217,4 +217,4 @@ class TabLoadingFrameNavigationPolicy::MechanismDelegate {
 }  // namespace policies
 }  // namespace performance_manager
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_GRAPH_POLICIES_TAB_LOADING_FRAME_NAVIGATION_POLICY_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_POLICIES_TAB_LOADING_FRAME_NAVIGATION_POLICY_H_

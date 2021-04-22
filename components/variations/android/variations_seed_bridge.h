@@ -38,4 +38,4 @@ bool HasMarkedPrefsForTesting();
 }  // namespace android
 }  // namespace variations
 
-#endif  // COMPONENTS_VARIATIONS_ANDROID_FIRSTRUN_VARIATIONS_SEED_BRIDGE_H_
+#endif  // COMPONENTS_VARIATIONS_ANDROID_VARIATIONS_SEED_BRIDGE_H_

@@ -23,4 +23,4 @@ class MockRuntimeManager : public RuntimeManagerImpl {
 
 }  // namespace autofill_assistant
 
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_MOCK_CLIENT_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_MOCK_RUNTIME_MANAGER_H_

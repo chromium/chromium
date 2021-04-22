@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DOM_DISTILLER_CORE_DOM_DISTILLER_CONTENT_STORE_H_
-#define COMPONENTS_DOM_DISTILLER_CORE_DOM_DISTILLER_CONTENT_STORE_H_
+#ifndef COMPONENTS_DOM_DISTILLER_CORE_DISTILLED_CONTENT_STORE_H_
+#define COMPONENTS_DOM_DISTILLER_CORE_DISTILLED_CONTENT_STORE_H_
 
 #include <memory>
 #include <string>
@@ -87,4 +87,4 @@ class InMemoryContentStore : public DistilledContentStore {
 
 }  // namespace dom_distiller
 
-#endif  // COMPONENTS_DOM_DISTILLER_CORE_DOM_DISTILLER_CONTENT_CACHE_H_
+#endif  // COMPONENTS_DOM_DISTILLER_CORE_DISTILLED_CONTENT_STORE_H_

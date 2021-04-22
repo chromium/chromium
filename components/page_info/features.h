@@ -29,4 +29,4 @@ extern const base::Feature kPageInfoV2Desktop;
 
 }  // namespace page_info
 
-#endif  // COMPONENTS_PAGE_INFO_ANDROID_FEATURES_H_
+#endif  // COMPONENTS_PAGE_INFO_FEATURES_H_

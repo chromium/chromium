@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NACL_RENDERER_PLATFORM_INFO_H
-#define COMPONENTS_NACL_RENDERER_PLATFORM_INFO_H
+#ifndef COMPONENTS_NACL_RENDERER_PLATFORM_INFO_H_
+#define COMPONENTS_NACL_RENDERER_PLATFORM_INFO_H_
 
 namespace nacl {
 // Returns the kind of SFI sandbox implemented by NaCl on this
@@ -15,4 +15,4 @@ const char* GetSandboxArch();
 std::string GetCpuFeatures();
 }  // namespace nacl
 
-#endif  // COMPONENTS_NACL_RENDERER_PLATFORM_INFO_H
+#endif  // COMPONENTS_NACL_RENDERER_PLATFORM_INFO_H_

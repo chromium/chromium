@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ONC_PREF_NAMES_H_
-#define COMPONENTS_ONC_PREF_NAMES_H_
+#ifndef COMPONENTS_ONC_ONC_PREF_NAMES_H_
+#define COMPONENTS_ONC_ONC_PREF_NAMES_H_
 
 #include "components/onc/onc_export.h"
 
@@ -29,4 +29,4 @@ ONC_EXPORT void RegisterProfilePrefs(
 
 }  // namespace onc
 
-#endif  // COMPONENTS_ONC_PREF_NAMES_H_
+#endif  // COMPONENTS_ONC_ONC_PREF_NAMES_H_

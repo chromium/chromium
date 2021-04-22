@@ -94,4 +94,4 @@ bool IsOfflinePagesNetworkStateLikelyUnknown();
 
 }  // namespace offline_pages
 
-#endif  // COMPONENTS_OFFLINE_PAGES_OFFLINE_PAGE_FEATURE_H_
+#endif  // COMPONENTS_OFFLINE_PAGES_CORE_OFFLINE_PAGE_FEATURE_H_

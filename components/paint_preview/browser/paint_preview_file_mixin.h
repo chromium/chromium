@@ -76,4 +76,4 @@ class PaintPreviewFileMixin {
 
 }  // namespace paint_preview
 
-#endif  // COMPONENTS_PAINT_PREVIEW_BROWSER_PAINT_PREVIEW_FILE_HELPER_H_
+#endif  // COMPONENTS_PAINT_PREVIEW_BROWSER_PAINT_PREVIEW_FILE_MIXIN_H_

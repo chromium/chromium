@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TRANSLATE_CORE_BROWSER_PREF_NAMES_H_
-#define COMPONENTS_TRANSLATE_CORE_BROWSER_PREF_NAMES_H_
+#ifndef COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_PREF_NAMES_H_
+#define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_PREF_NAMES_H_
 
 namespace prefs {
 
@@ -13,4 +13,4 @@ extern const char kPrefTranslateRecentTarget[];
 
 }  // namespace prefs
 
-#endif  // COMPONENTS_TRANSLATE_CORE_BROWSER_PREF_NAMES_H_
+#endif  // COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_PREF_NAMES_H_

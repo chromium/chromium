@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_USER_MANAGER_USERS_EXPORT_H_
-#define COMPONENTS_USER_MANAGER_USERS_EXPORT_H_
+#ifndef COMPONENTS_USER_MANAGER_USER_MANAGER_EXPORT_H_
+#define COMPONENTS_USER_MANAGER_USER_MANAGER_EXPORT_H_
 
 #if defined(COMPONENT_BUILD)
 #if defined(WIN32)
@@ -26,4 +26,4 @@
 #define USER_MANAGER_EXPORT
 #endif
 
-#endif  // COMPONENTS_USER_MANAGER_USERS_EXPORT_H_
+#endif  // COMPONENTS_USER_MANAGER_USER_MANAGER_EXPORT_H_

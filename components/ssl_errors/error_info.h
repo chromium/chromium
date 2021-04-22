@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SSL_ERRORS_SSL_ERROR_INFO_H_
-#define COMPONENTS_SSL_ERRORS_SSL_ERROR_INFO_H_
+#ifndef COMPONENTS_SSL_ERRORS_ERROR_INFO_H_
+#define COMPONENTS_SSL_ERRORS_ERROR_INFO_H_
 
 #include <string>
 #include <vector>
@@ -80,4 +80,4 @@ class ErrorInfo {
 
 }  // namespace ssl_errors
 
-#endif  // COMPONENTS_SSL_ERRORS_SSL_ERROR_INFO_H_
+#endif  // COMPONENTS_SSL_ERRORS_ERROR_INFO_H_

@@ -90,4 +90,4 @@ class SendTabToSelfModel {
 
 }  // namespace send_tab_to_self
 
-#endif  // COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_MODEL_H
+#endif  // COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_MODEL_H_

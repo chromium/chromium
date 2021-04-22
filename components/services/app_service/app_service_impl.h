@@ -175,4 +175,4 @@ class AppServiceImpl : public apps::mojom::AppService {
 
 }  // namespace apps
 
-#endif  // CHROME_SERVICES_APP_SERVICE_APP_SERVICE_IMPL_H_
+#endif  // COMPONENTS_SERVICES_APP_SERVICE_APP_SERVICE_IMPL_H_

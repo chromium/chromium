@@ -7,8 +7,8 @@
 // https://gist.github.com/badboy/6267743
 // TODO(pkalinnikov): Consider moving the implementation into base/.
 
-#ifndef COMPONENTS_URL_PATTERN_INDEX_HASH_H_
-#define COMPONENTS_URL_PATTERN_INDEX_HASH_H_
+#ifndef COMPONENTS_URL_PATTERN_INDEX_UINT64_HASHER_H_
+#define COMPONENTS_URL_PATTERN_INDEX_UINT64_HASHER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -55,4 +55,4 @@ class Uint64ToUint32Hasher {
 
 }  // namespace url_pattern_index
 
-#endif  // COMPONENTS_URL_PATTERN_INDEX_HASH_H_
+#endif  // COMPONENTS_URL_PATTERN_INDEX_UINT64_HASHER_H_

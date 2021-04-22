@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef AUTOFILL_CORE_BROWSER_AUTOFILL_DRIVER_FACTORY_H_
-#define AUTOFILL_CORE_BROWSER_AUTOFILL_DRIVER_FACTORY_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_DRIVER_FACTORY_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_DRIVER_FACTORY_H_
 
 #include <memory>
 #include <unordered_map>
@@ -61,4 +61,4 @@ class AutofillDriverFactory {
 
 }  // namespace autofill
 
-#endif  // AUTOFILL_CORE_BROWSER_AUTOFILL_DRIVER_FACTORY_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_DRIVER_FACTORY_H_

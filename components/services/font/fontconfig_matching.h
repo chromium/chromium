@@ -30,4 +30,4 @@ class FontConfigLocalMatching {
 
 }  // namespace font_service
 
-#endif
+#endif  // COMPONENTS_SERVICES_FONT_FONTCONFIG_MATCHING_H_

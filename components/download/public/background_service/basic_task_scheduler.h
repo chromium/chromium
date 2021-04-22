@@ -51,4 +51,4 @@ class BasicTaskScheduler : public download::TaskScheduler {
 
 }  // namespace download
 
-#endif  // COMPONENTS_DOWNLOAD_PUBLIC_TASK_TASK_SCHEDULER_H_
+#endif  // COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_BASIC_TASK_SCHEDULER_H_

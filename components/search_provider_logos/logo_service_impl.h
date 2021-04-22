@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEARCH_PROVIDER_LOGOS_ANDROID_LOGO_SERVICE_IMPL_H_
-#define COMPONENTS_SEARCH_PROVIDER_LOGOS_ANDROID_LOGO_SERVICE_IMPL_H_
+#ifndef COMPONENTS_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_IMPL_H_
+#define COMPONENTS_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -235,4 +235,4 @@ class LogoServiceImpl : public LogoService,
 
 }  // namespace search_provider_logos
 
-#endif  // COMPONENTS_SEARCH_PROVIDER_LOGOS_ANDROID_LOGO_SERVICE_IMPL_H_
+#endif  // COMPONENTS_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_IMPL_H_

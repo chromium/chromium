@@ -278,4 +278,4 @@ class DEVICE_EVENT_LOG_EXPORT ScopedDeviceLogIfSlow {
 
 }  // namespace device_event_log
 
-#endif  // DEVICE_EVENT_LOG_DEVICE_EVENT_LOG_H_
+#endif  // COMPONENTS_DEVICE_EVENT_LOG_DEVICE_EVENT_LOG_H_
