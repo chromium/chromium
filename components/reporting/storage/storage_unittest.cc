@@ -750,7 +750,8 @@ TEST_P(StorageTest, WriteIntoNewStorageAndReopen) {
   CreateTestStorageOrDie(BuildTestStorageOptions());
 }
 
-TEST_P(StorageTest, WriteIntoNewStorageReopenAndWriteMore) {
+// TODO(crbug.com/1196570): Fix flakiness.
+TEST_P(StorageTest, DISABLED_WriteIntoNewStorageReopenAndWriteMore) {
   CreateTestStorageOrDie(BuildTestStorageOptions());
   EXPECT_CALL(set_mock_uploader_expectations_, Call(_, _, NotNull())).Times(0);
   WriteStringOrDie(FAST_BATCH, kData[0]);
@@ -910,7 +911,8 @@ TEST_P(StorageTest, WriteIntoNewStorageAndFlush) {
   EXPECT_OK(storage_->Flush(MANUAL_BATCH));
 }
 
-TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndFlush) {
+// TODO(crbug.com/1196852): Fix flakiness.
+TEST_P(StorageTest, DISABLED_WriteIntoNewStorageReopenWriteMoreAndFlush) {
   CreateTestStorageOrDie(BuildTestStorageOptions());
   WriteStringOrDie(MANUAL_BATCH, kData[0]);
   WriteStringOrDie(MANUAL_BATCH, kData[1]);
