@@ -103,9 +103,4 @@ public class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependenc
                 return AutoplayPreference.AUTOPLAY_ON_WIFI_ONLY;
         }
     }
-
-    @Override
-    public long getReliabilityLoggingId() {
-        return FeedServiceBridge.getReliabilityLoggingId();
-    }
 }

@@ -15,6 +15,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.base.SplitCompatUtils;
 import org.chromium.chrome.browser.feed.FeedImageFetchClient;
+import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -113,5 +114,10 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
 
     public static Context createFeedContext(Context context) {
         return SplitCompatUtils.createContextForInflation(context, FEED_SPLIT_NAME);
+    }
+
+    @Override
+    public long getReliabilityLoggingId() {
+        return FeedServiceBridge.getReliabilityLoggingId();
     }
 }

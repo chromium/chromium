@@ -57,11 +57,6 @@ public interface SurfaceScopeDependencyProvider {
         return "";
     }
 
-    /** Returns the reliability logging id. */
-    default long getReliabilityLoggingId() {
-        return 0L;
-    }
-
     /** User-set preference for when videos are eligible to autoplay. */
     public enum AutoplayPreference {
         /** Autoplay is disabled. */
