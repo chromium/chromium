@@ -8,11 +8,13 @@ import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityManager.AccessibilityStateChangeListener;
 import android.view.accessibility.AccessibilityManager.TouchExplorationStateChangeListener;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -114,6 +116,22 @@ public class AccessibilityUtil {
 
         TraceEvent.end("AccessibilityManager::isTouchExplorationEnabled");
         return mIsTouchExplorationEnabled;
+    }
+
+    /**
+     * Get the recommended timeout for changes to the UI needed by this user. The timeout value
+     * can be set by users on Q+.
+     *
+     * https://d.android.com/reference/android/view/accessibility/AccessibilityManager#getRecommendedTimeoutMillis(int,%20int)
+     * @param originalTimeout The timeout appropriate for users with no accessibility needs.
+     * @param uiContentFlags The combination of content flags to indicate contents of UI.
+     * @return The recommended UI timeout for the current user in milliseconds.
+     */
+    @RequiresApi(api = VERSION_CODES.Q)
+    public int getRecommendedTimeoutMillis(int originalTimeout, int uiContentFlags) {
+        AccessibilityManager manager = getAccessibilityManager();
+        assert manager != null : "AccessibilityManager is not available";
+        return manager.getRecommendedTimeoutMillis(originalTimeout, uiContentFlags);
     }
 
     /**

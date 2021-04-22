@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.ui;
 
+import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_CONTROLS;
+import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_ICONS;
+import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_TEXT;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
@@ -476,10 +480,17 @@ public class RootUiCoordinator
             long autodismissDurationMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                     ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
                     "autodismiss_duration_ms", 10 * (int) DateUtils.SECOND_IN_MILLIS);
+
             long autodismissDurationWithA11yMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                     ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
                     "autodismiss_duration_with_a11y_ms", 30 * (int) DateUtils.SECOND_IN_MILLIS);
+
             Supplier<Long> autodismissDurationSupplier = () -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    return (long) ChromeAccessibilityUtil.get().getRecommendedTimeoutMillis(
+                            (int) autodismissDurationMs,
+                            FLAG_CONTENT_ICONS | FLAG_CONTENT_CONTROLS | FLAG_CONTENT_TEXT);
+                }
                 return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                         ? autodismissDurationWithA11yMs
                         : autodismissDurationMs;
