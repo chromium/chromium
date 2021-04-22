@@ -300,6 +300,38 @@ suite('InternetSubpage', function() {
           });
         });
 
+    // Regression test for https://crbug.com/1197342.
+    test('pSIM section shows when cellularNetworks present', async () => {
+      initSubpage(true /* isUpdatedCellularUiEnabled */);
+
+      const mojom = chromeos.networkConfig.mojom;
+      const networks = [
+        OncMojo.getDefaultNetworkState(
+            mojom.NetworkType.kCellular, 'cellular1'),
+        OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
+        OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether2'),
+      ];
+
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kTether);
+      setNetworksForTest(mojom.NetworkType.kCellular, networks);
+      internetSubpage.tetherDeviceState = {
+        type: mojom.NetworkType.kTether,
+        deviceState: mojom.DeviceStateType.kEnabled
+      };
+      const deviceState =
+          mojoApi_.getDeviceStateForTest(mojom.NetworkType.kCellular);
+      // This siminfo represents a pSIM slot because this it has no EID.
+      deviceState.simInfos = [{
+        iccid: '11111111111',
+        isPrimary: true,
+      }];
+      internetSubpage.deviceState = deviceState;
+
+      await flushAsync();
+      const cellularNetworkList = internetSubpage.$$('#cellularNetworkList');
+      assertTrue(!!cellularNetworkList.$$('#psimNetworkList'));
+    });
+
     // Regression test for https://crbug.com/1182406.
     test(
         'Cellular subpage with no networks w/ updatedCellularActivationUi flag',
