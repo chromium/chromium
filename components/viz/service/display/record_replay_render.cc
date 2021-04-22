@@ -172,10 +172,11 @@ void RecordReplayPaintFinished(const SkPixmap& pixmap) {
     V8RecordReplaySetPaintCallback(PaintCallback);
   }
 
-  CHECK(gLastPaintBookmark);
-  gCurrentPixmap = &pixmap;
-  V8RecordReplayPaintFinished(gLastPaintBookmark);
-  gCurrentPixmap = nullptr;
+  if (gLastPaintBookmark) {
+    gCurrentPixmap = &pixmap;
+    V8RecordReplayPaintFinished(gLastPaintBookmark);
+    gCurrentPixmap = nullptr;
+  }
 }
 
 } // namespace viz
