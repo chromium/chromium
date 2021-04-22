@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/process/process_metrics.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -25,7 +26,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/memory/pressure/pressure.h"
 
 namespace chromeos {
 namespace memory {
@@ -72,8 +72,6 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
 
   // Setting up default margins in case the D-Bus method call failed.
   SetupDefaultMemoryMargins();
-
-  chromeos::memory::pressure::UpdateMemoryParameters();
 
   if (!for_testing) {
     chromeos::ResourcedClient* client = chromeos::ResourcedClient::Get();
