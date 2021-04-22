@@ -4,21 +4,23 @@
 
 package org.chromium.chrome.browser.tasks;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
@@ -36,7 +38,8 @@ class SingleTabSwitcherCoordinator implements TabSwitcher {
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final TabSwitcher.TabListDelegate mTabListDelegate;
 
-    SingleTabSwitcherCoordinator(ChromeActivity activity, ViewGroup container) {
+    SingleTabSwitcherCoordinator(@NonNull Activity activity, @NonNull ViewGroup container,
+            @NonNull TabModelSelector tabModelSelector) {
         PropertyModel propertyModel = new PropertyModel(SingleTabViewProperties.ALL_KEYS);
         SingleTabView singleTabView = (SingleTabView) LayoutInflater.from(activity).inflate(
                 R.layout.single_tab_view_layout, container, false);
@@ -45,9 +48,9 @@ class SingleTabSwitcherCoordinator implements TabSwitcher {
                 propertyModel, singleTabView, SingleTabViewBinder::bind);
         mTabListFaviconProvider = new TabListFaviconProvider(activity, false);
         mMediator = new SingleTabSwitcherMediator(
-                propertyModel, activity.getTabModelSelector(), mTabListFaviconProvider);
+                propertyModel, tabModelSelector, mTabListFaviconProvider);
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)) {
-            new TabAttributeCache(activity.getTabModelSelector());
+            new TabAttributeCache(tabModelSelector);
         }
 
         // Most of these interfaces should be unused. They are invalid implementations.

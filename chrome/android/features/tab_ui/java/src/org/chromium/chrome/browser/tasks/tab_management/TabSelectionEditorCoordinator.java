@@ -122,7 +122,7 @@ class TabSelectionEditorCoordinator {
 
     public TabSelectionEditorCoordinator(Context context, ViewGroup parentView,
             TabModelSelector tabModelSelector, TabContentManager tabContentManager,
-            @TabListMode int mode) {
+            @TabListMode int mode, ViewGroup rootView) {
         mContext = context;
         mParentView = parentView;
         mTabModelSelector = tabModelSelector;
@@ -137,7 +137,7 @@ class TabSelectionEditorCoordinator {
         mTabListCoordinator = new TabListCoordinator(mode, context, mTabModelSelector,
                 tabContentManager::getTabThumbnailWithCallback, null, false, null, null,
                 TabProperties.UiType.SELECTABLE, this::getSelectionDelegate, null,
-                mTabSelectionEditorLayout, false, COMPONENT_NAME);
+                mTabSelectionEditorLayout, false, COMPONENT_NAME, rootView);
 
         // Note: The TabSelectionEditorCoordinator is always created after native is initialized.
         assert LibraryLoader.getInstance().isInitialized();

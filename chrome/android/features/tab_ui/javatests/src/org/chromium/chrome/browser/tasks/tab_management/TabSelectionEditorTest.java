@@ -96,7 +96,8 @@ public class TabSelectionEditorTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(
                     mActivityTestRule.getActivity(), mParentView, mTabModelSelector,
-                    mActivityTestRule.getActivity().getTabContentManager(), getMode());
+                    mActivityTestRule.getActivity().getTabContentManager(), getMode(),
+                    mActivityTestRule.getActivity().getCompositorViewHolder());
 
             mTabSelectionEditorController = mTabSelectionEditorCoordinator.getController();
             mTabSelectionEditorLayout =

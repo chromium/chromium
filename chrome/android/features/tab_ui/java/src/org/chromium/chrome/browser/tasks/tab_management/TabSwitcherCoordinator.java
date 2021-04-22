@@ -113,6 +113,7 @@ public class TabSwitcherCoordinator
     private TabCreatorManager mTabCreatorManager;
     private boolean mIsInitialized;
     private PriceMessageService mPriceMessageService;
+    private final ViewGroup mCoordinatorView;
     private final ViewGroup mRootView;
 
     private final MenuOrKeyboardActionController
@@ -152,13 +153,15 @@ public class TabSwitcherCoordinator
             MenuOrKeyboardActionController menuOrKeyboardActionController, ViewGroup container,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            ScrimCoordinator scrimCoordinator, @TabListCoordinator.TabListMode int mode) {
+            ScrimCoordinator scrimCoordinator, @TabListCoordinator.TabListMode int mode,
+            ViewGroup rootView) {
         mMode = mode;
         mTabModelSelector = tabModelSelector;
         mContainer = container;
-        mRootView = ((ChromeTabbedActivity) context).findViewById(R.id.coordinator);
+        mCoordinatorView = ((ChromeTabbedActivity) context).findViewById(R.id.coordinator);
         mTabCreatorManager = tabCreatorManager;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
+        mRootView = rootView;
 
         PropertyModel containerViewModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
 
@@ -176,9 +179,10 @@ public class TabSwitcherCoordinator
                     R.plurals.bottom_tab_grid_title_placeholder, numRelatedTabs, numRelatedTabs);
         };
 
-        mTabListCoordinator = new TabListCoordinator(mode, context, tabModelSelector,
-                mMultiThumbnailCardProvider, titleProvider, true, mMediator, null,
-                TabProperties.UiType.CLOSABLE, null, this, container, true, COMPONENT_NAME);
+        mTabListCoordinator =
+                new TabListCoordinator(mode, context, tabModelSelector, mMultiThumbnailCardProvider,
+                        titleProvider, true, mMediator, null, TabProperties.UiType.CLOSABLE, null,
+                        this, container, true, COMPONENT_NAME, mRootView);
         mContainerViewChangeProcessor = PropertyModelChangeProcessor.create(containerViewModel,
                 mTabListCoordinator.getContainerView(), TabListContainerViewBinder::bind);
 
@@ -228,9 +232,9 @@ public class TabSwitcherCoordinator
 
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
             mTabGridDialogCoordinator = new TabGridDialogCoordinator(context, tabModelSelector,
-                    tabContentManager, tabCreatorManager, mRootView, this, mMediator,
+                    tabContentManager, tabCreatorManager, mCoordinatorView, this, mMediator,
                     this::getTabGridDialogAnimationSourceView, shareDelegateSupplier,
-                    scrimCoordinator);
+                    scrimCoordinator, rootView);
             mMediator.setTabGridDialogController(mTabGridDialogCoordinator.getDialogController());
         } else {
             mTabGridDialogCoordinator = null;
@@ -345,8 +349,9 @@ public class TabSwitcherCoordinator
         int selectionEditorMode = mMode == TabListCoordinator.TabListMode.CAROUSEL
                 ? TabListCoordinator.TabListMode.GRID
                 : mMode;
-        mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(
-                context, mRootView, mTabModelSelector, tabContentManager, selectionEditorMode);
+        mTabSelectionEditorCoordinator =
+                new TabSelectionEditorCoordinator(context, mCoordinatorView, mTabModelSelector,
+                        tabContentManager, selectionEditorMode, mRootView);
         mMediator.initWithNative(mTabSelectionEditorCoordinator.getController());
 
         mTabGroupManualSelectionMode = new TabGroupManualSelectionMode(

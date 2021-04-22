@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.tasks;
 
+import android.app.Activity;
 import android.view.ContextMenu;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
@@ -52,22 +52,25 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
 
     // There's a limit of 12 in {@link MostVisitedSitesBridge#setObserver}.
     private static final int MAX_RESULTS = 12;
-    private final ChromeActivity mActivity;
+    private final Activity mActivity;
     private final ViewGroup mParent;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
     private final Supplier<Tab> mParentTabSupplier;
+    private final SnackbarManager mSnackbarManager;
     private TileGroup mTileGroup;
     private TileRenderer mRenderer;
     private SuggestionsUiDelegate mSuggestionsUiDelegate;
     private boolean mInitializationComplete;
 
-    public MostVisitedListCoordinator(ChromeActivity activity, ViewGroup parent,
-            PropertyModel propertyModel, Supplier<Tab> parentTabSupplier) {
+    public MostVisitedListCoordinator(Activity activity, ViewGroup parent,
+            PropertyModel propertyModel, Supplier<Tab> parentTabSupplier,
+            SnackbarManager snackbarManager) {
         mActivity = activity;
         mParent = parent;
         mModelChangeProcessor = PropertyModelChangeProcessor.create(
                 propertyModel, mParent, MostVisitedListViewBinder::bind);
         mParentTabSupplier = parentTabSupplier;
+        mSnackbarManager = snackbarManager;
     }
 
     public void initialize() {
@@ -93,10 +96,10 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
 
     public void initWithNative() {
         Profile profile = Profile.getLastUsedRegularProfile();
-        SnackbarManager snackbarManager = mActivity.getSnackbarManager();
         if (!mInitializationComplete) {
             ImageFetcher imageFetcher = new ImageFetcher(profile);
-            mSuggestionsUiDelegate = new MostVisitedSuggestionsUiDelegate(profile, snackbarManager);
+            mSuggestionsUiDelegate =
+                    new MostVisitedSuggestionsUiDelegate(profile, mSnackbarManager);
             if (mRenderer == null) {
                 // This function is never called in incognito mode.
                 mRenderer = new TileRenderer(
@@ -109,7 +112,7 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
         OfflinePageBridge offlinePageBridge =
                 SuggestionsDependencyFactory.getInstance().getOfflinePageBridge(profile);
         TileGroupDelegateImpl tileGroupDelegate =
-                new TileGroupDelegateImpl(mActivity, profile, null, snackbarManager);
+                new TileGroupDelegateImpl(mActivity, profile, null, mSnackbarManager);
         mTileGroup = new TileGroup(mRenderer, mSuggestionsUiDelegate, null, tileGroupDelegate, this,
                 offlinePageBridge);
         mTileGroup.startObserving(MAX_RESULTS);

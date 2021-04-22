@@ -62,8 +62,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             mTabSwitcher = TabManagementModuleProvider.getDelegate().createGridTabSwitcher(
                     activity, mView.getBodyViewContainer(), scrimCoordinator);
         } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
-            mTabSwitcher = new SingleTabSwitcherCoordinator(
-                    activity, mView.getCarouselTabSwitcherContainer());
+            mTabSwitcher = new SingleTabSwitcherCoordinator(activity,
+                    mView.getCarouselTabSwitcherContainer(), activity.getTabModelSelector());
         } else if (tabSwitcherType == TabSwitcherType.NONE) {
             mTabSwitcher = null;
         } else {
@@ -85,8 +85,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
 
         if (hasMVTiles) {
             LinearLayout mvTilesLayout = mView.findViewById(R.id.mv_tiles_layout);
-            mMostVisitedList = new MostVisitedListCoordinator(
-                    activity, mvTilesLayout, mPropertyModel, parentTabSupplier);
+            mMostVisitedList = new MostVisitedListCoordinator(activity, mvTilesLayout,
+                    mPropertyModel, parentTabSupplier, activity.getSnackbarManager());
             mMostVisitedList.initialize();
         }
     }

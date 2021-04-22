@@ -67,7 +67,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()
                                 && SysUtils.isLowEndDevice()
                         ? TabListCoordinator.TabListMode.LIST
-                        : TabListCoordinator.TabListMode.GRID);
+                        : TabListCoordinator.TabListMode.GRID,
+                activity.getCompositorViewHolder());
     }
 
     @Override
@@ -78,7 +79,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 activity.getBrowserControlsManager(), activity,
                 activity.getMenuOrKeyboardActionController(), containerView,
                 activity.getShareDelegateSupplier(), activity.getMultiWindowModeStateDispatcher(),
-                scrimCoordinator, TabListCoordinator.TabListMode.CAROUSEL);
+                scrimCoordinator, TabListCoordinator.TabListMode.CAROUSEL,
+                activity.getCompositorViewHolder());
     }
 
     @Override

@@ -40,6 +40,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private final TabGridDialogMediator mMediator;
     private final PropertyModel mModel;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
+    private final ViewGroup mRootView;
     private TabSelectionEditorCoordinator mTabSelectionEditorCoordinator;
     private ViewGroup mContainerView;
     private TabGridDialogView mDialogView;
@@ -51,12 +52,13 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             TabGridDialogMediator.AnimationSourceViewProvider animationSourceViewProvider,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            ScrimCoordinator scrimCoordinator) {
+            ScrimCoordinator scrimCoordinator, ViewGroup rootView) {
         mComponentName = animationSourceViewProvider == null ? "TabGridDialogFromStrip"
                                                              : "TabGridDialogInSwitcher";
 
         mModel = new PropertyModel(TabGridPanelProperties.ALL_KEYS);
         mContainerView = containerView;
+        mRootView = rootView;
 
         mDialogView = containerView.findViewById(R.id.dialog_parent_view);
         if (mDialogView == null) {
@@ -75,14 +77,15 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
         // TODO(crbug.com/1031349) : Remove the inline mode logic here, make the constructor to take
         // in a mode parameter instead.
-        mTabListCoordinator = new TabListCoordinator(
-                TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()
-                                && SysUtils.isLowEndDevice()
-                        ? TabListCoordinator.TabListMode.LIST
-                        : TabListCoordinator.TabListMode.GRID,
-                context, tabModelSelector, tabContentManager::getTabThumbnailWithCallback, null,
-                false, gridCardOnClickListenerProvider, mMediator.getTabGridDialogHandler(),
-                TabProperties.UiType.CLOSABLE, null, null, containerView, false, mComponentName);
+        mTabListCoordinator =
+                new TabListCoordinator(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()
+                                        && SysUtils.isLowEndDevice()
+                                ? TabListCoordinator.TabListMode.LIST
+                                : TabListCoordinator.TabListMode.GRID,
+                        context, tabModelSelector, tabContentManager::getTabThumbnailWithCallback,
+                        null, false, gridCardOnClickListenerProvider,
+                        mMediator.getTabGridDialogHandler(), TabProperties.UiType.CLOSABLE, null,
+                        null, containerView, false, mComponentName, rootView);
         TabListRecyclerView recyclerView = mTabListCoordinator.getContainerView();
 
         TabGroupUiToolbarView toolbarView =
@@ -108,7 +111,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                                                  : TabListCoordinator.TabListMode.GRID;
             mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(context,
                     mDialogView.findViewById(R.id.dialog_container_view), tabModelSelector,
-                    tabContentManager, mode);
+                    tabContentManager, mode, mRootView);
 
             controller = mTabSelectionEditorCoordinator.getController();
         } else {

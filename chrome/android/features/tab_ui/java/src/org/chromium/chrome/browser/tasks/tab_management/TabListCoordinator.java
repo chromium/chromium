@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.MathUtils;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -79,6 +78,7 @@ public class TabListCoordinator
     private final TabListModel mModel;
     private final @UiType int mItemType;
     private final TabModelSelector mTabModelSelector;
+    private final ViewGroup mRootView;
 
     private boolean mIsInitialized;
     private ViewTreeObserver.OnGlobalLayoutListener mGlobalLayoutListener;
@@ -115,13 +115,15 @@ public class TabListCoordinator
             @Nullable TabListMediator.SelectionDelegateProvider selectionDelegateProvider,
             @Nullable TabSwitcherMediator
                     .PriceWelcomeMessageController priceWelcomeMessageController,
-            @NonNull ViewGroup parentView, boolean attachToParent, String componentName) {
+            @NonNull ViewGroup parentView, boolean attachToParent, String componentName,
+            @NonNull ViewGroup rootView) {
         mMode = mode;
         mItemType = itemType;
         mContext = context;
         mModel = new TabListModel();
         mAdapter = new SimpleRecyclerViewAdapter(mModel);
         mTabModelSelector = tabModelSelector;
+        mRootView = rootView;
         RecyclerView.RecyclerListener recyclerListener = null;
         if (mMode == TabListMode.GRID || mMode == TabListMode.CAROUSEL) {
             mAdapter.registerType(UiType.SELECTABLE, parent -> {
@@ -316,7 +318,7 @@ public class TabListCoordinator
         if (!StartSurfaceConfiguration.isStartSurfaceEnabled()) return 0;
         Rect tabListRect = getRecyclerViewLocation();
         Rect parentRect = new Rect();
-        ((ChromeActivity) mContext).getCompositorViewHolder().getGlobalVisibleRect(parentRect);
+        mRootView.getGlobalVisibleRect(parentRect);
         // Offset by CompositeViewHolder top offset and top toolbar height.
         tabListRect.offset(0,
                 -parentRect.top
