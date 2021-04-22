@@ -32,8 +32,14 @@ base::Optional<device::FidoTransportProtocol> SelectMostLikelyTransport(
       transport_availability.available_transports);
 
   // If there is only one transport available, select that instead of showing a
-  // transport selection screen with only a single item.
-  if (candidate_transports.size() == 1) {
+  // transport selection screen with only a single item. The exception is if
+  // the transport is caBLE and we have paired phones to list. In that case the
+  // user has to click one of the phones on the transport selection screen.
+  if (candidate_transports.size() == 1 &&
+      (!have_paired_phones ||
+       !base::Contains(
+           candidate_transports,
+           AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy))) {
     return *candidate_transports.begin();
   }
 
