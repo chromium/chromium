@@ -43,6 +43,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipIcon;
@@ -209,8 +210,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
-    @DisableIf.Build(message = "See https://crbug.com/1199849",
-            sdk_is_greater_than = VERSION_CODES.O_MR1)
+    @DisableIf.
+    Build(message = "See https://crbug.com/1199849", sdk_is_greater_than = VERSION_CODES.O_MR1)
+    @FlakyTest(message = "crbug.com/1199416")
     public void setReturningUserFlag() {
         TriggerScriptProto.Builder firstTimeTriggerScript =
                 TriggerScriptProto.newBuilder()
