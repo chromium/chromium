@@ -18,10 +18,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/views/sync/dice_bubble_sync_promo_view.h"
-#endif
-
 namespace autofill {
 
 SaveCardManageCardsBubbleViews::SaveCardManageCardsBubbleViews(
