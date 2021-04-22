@@ -4,6 +4,7 @@
 
 #include "components/security_interstitials/content/renderer/security_interstitial_page_controller.h"
 
+#include "components/security_interstitials/core/common/mojom/interstitial_commands.mojom.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/converter.h"

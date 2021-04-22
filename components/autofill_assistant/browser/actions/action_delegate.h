@@ -22,7 +22,6 @@
 #include "components/autofill_assistant/browser/viewport_mode.h"
 #include "components/autofill_assistant/browser/wait_for_dom_observer.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
-#include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/icu/source/common/unicode/umachine.h"
 
 class GURL;

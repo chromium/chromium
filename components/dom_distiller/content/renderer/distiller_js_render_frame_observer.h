@@ -6,7 +6,6 @@
 #define COMPONENTS_DOM_DISTILLER_CONTENT_RENDERER_DISTILLER_JS_RENDER_FRAME_OBSERVER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "components/dom_distiller/content/common/mojom/distiller_javascript_service.mojom.h"
 #include "components/dom_distiller/content/renderer/distiller_native_javascript.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -32,7 +31,6 @@ class DistillerJsRenderFrameObserver : public content::RenderFrameObserver {
                               int32_t world_id) override;
 
  private:
-
   // RenderFrameObserver implementation.
   void OnDestruct() override;
 

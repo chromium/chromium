@@ -14,7 +14,6 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/credit_card_fido_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 namespace autofill {
 

@@ -16,7 +16,6 @@
 #include "components/invalidation/public/ack_handler.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace invalidation {
 

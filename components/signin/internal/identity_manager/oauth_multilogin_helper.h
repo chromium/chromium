@@ -19,7 +19,6 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "net/cookies/cookie_access_result.h"
-#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 class GaiaAuthFetcher;
 class GoogleServiceAuthError;

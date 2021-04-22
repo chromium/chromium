@@ -19,7 +19,6 @@
 #include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/viewport_mode.h"
-#include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 
 namespace autofill_assistant {
 

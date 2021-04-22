@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 
+#include "url/gurl.h"
+
 namespace password_manager {
 
 StubPasswordManagerDriver::StubPasswordManagerDriver() = default;

@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_VIZ_SERVICE_HIT_TEST_HIT_TEST_MANAGER_H_
 #define COMPONENTS_VIZ_SERVICE_HIT_TEST_HIT_TEST_MANAGER_H_
 
+#include <map>
+#include <vector>
+
 #include "base/optional.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
@@ -12,7 +15,6 @@
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/viz_service_export.h"
-#include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom.h"
 
 namespace viz {
 

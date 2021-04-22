@@ -6,9 +6,12 @@
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_CONTROLS_PROGRESS_VIEW_H_
 
 #include "base/timer/timer.h"
-#include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+
+namespace media_session {
+struct MediaPosition;
+}  // namespace media_session
 
 namespace views {
 class ProgressBar;

@@ -13,6 +13,7 @@
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/media_router/common/route_request_result.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
