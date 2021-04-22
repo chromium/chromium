@@ -107,12 +107,30 @@ enum EndpointReason {
   ENDPOINT_END_OF_AUDIO,
 };
 
+
+// Detail about a part of a hypothesis in a result. Only makes sense
+// in context of an array of them for a hypothesis.
+[Stable]
+struct HypothesisPartInResult {
+  // Typically 1 item for a a word/piece of text. If formatting is
+  // enabled, the raw text is the second item.
+  array<string> text;
+
+  // Offset from the beginning of this part of the hypothesis from
+  // audio_start_time in TimingInfo.
+  mojo_base.mojom.TimeDelta alignment;
+};
+
 [Stable]
 struct FinalResult {
   // Sorted in decreasing order of probability.
   array<string> final_hypotheses;
   EndpointReason endpoint_reason;
   TimingInfo? timing_event;
+
+  // If populated, this array contains the hypothesis parts for the
+  // first final hypothesis in the array of final_hypotheses.
+  [MinVersion=1] array<HypothesisPartInResult>? hypothesis_part;
 };
 
 // Frequent event from recognizer, almost from every frame. Gives an indication of speechiness and audio level.
