@@ -447,7 +447,8 @@ def _OutputKeepRules(r8_path, input_paths, classpath, targets_re_string,
   build_utils.CheckOutput(cmd, print_stderr=False, fail_on_output=False)
 
 
-def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors):
+def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors,
+                            error_title):
   cmd = build_utils.JavaCmd(warnings_as_errors) + [
       '-cp', r8_path, 'com.android.tools.r8.tracereferences.TraceReferences',
       '--map-diagnostics:MissingDefinitionsDiagnostic', 'error', 'warning',
@@ -513,8 +514,7 @@ def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors):
         stderr, '|'.join(re.escape(x) for x in ignored_lines))
     if stderr:
       if '  ' in stderr:
-        stderr = """
-DEX contains references to non-existent symbols after R8 optimization.
+        stderr = error_title + """
 Tip: Build with:
         is_java_debug=false
         treat_warnings_as_errors=false
@@ -696,14 +696,17 @@ def main():
       all_dex_files.append(options.output_path)
     if options.dex_dests:
       all_dex_files.extend(options.dex_dests)
+    error_title = 'DEX contains references to non-existent symbols after R8.'
     _CheckForMissingSymbols(options.r8_path, all_dex_files, options.classpath,
-                            options.warnings_as_errors)
+                            options.warnings_as_errors, error_title)
     # Also ensure that base module doesn't have any references to child dex
     # symbols.
     # TODO(agrieve): Remove this check once r8 desugaring is fixed to not put
     #     synthesized classes in the base module.
+    error_title = 'Base module DEX contains references symbols within DFMs.'
     _CheckForMissingSymbols(options.r8_path, [base_context.final_output_path],
-                            options.classpath, options.warnings_as_errors)
+                            options.classpath, options.warnings_as_errors,
+                            error_title)
 
   for output in options.extra_mapping_output_paths:
     shutil.copy(options.mapping_output, output)
