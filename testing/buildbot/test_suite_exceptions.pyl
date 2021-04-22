@@ -2630,6 +2630,12 @@
         # TODO(crbug.com/1182948): Remove the experiment.
         'experiment_percentage': 100,
       },
+      'linux-bionic-rel': {
+        'args': [
+          '--xvfb',
+          '--jobs=1',
+        ],
+      },
       'linux-chromium-tests-staging-tests': {
         'args': [
           '--xvfb',

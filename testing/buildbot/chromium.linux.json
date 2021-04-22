@@ -18147,7 +18147,9 @@
       },
       {
         "args": [
-          "--extra-browser-args=--enable-crashpad"
+          "--extra-browser-args=--enable-crashpad",
+          "--xvfb",
+          "--jobs=1"
         ],
         "isolate_name": "telemetry_perf_unittests",
         "merge": {
