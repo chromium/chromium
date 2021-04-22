@@ -45,15 +45,17 @@
 @property(nonatomic, assign) AuthenticationService* authenticationService;
 // Manager for user's Google identities.
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
+// Callback used when the user's primary account is set or changes
+// its consent level.
+@property(nonatomic, copy)
+    signin_ui::CompletionCallback primaryAccountSetCompletion;
+
 @end
 
 @implementation ConsistencyPromoSigninCoordinator {
   // Observer for changes to the user's Google identities.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserverBridge;
-  // Callback used when the user's primary account is set or changes
-  // its consent level.
-  signin_ui::CompletionCallback _onPrimaryAccountSetCompletion;
 }
 
 #pragma mark - SigninCoordinator
@@ -61,7 +63,7 @@
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
                  completion:(ProceduralBlock)completion {
   __weak __typeof(self) weakSelf = self;
-  _onPrimaryAccountSetCompletion = nil;
+  self.primaryAccountSetCompletion = nil;
   [self.navigationController
       dismissViewControllerAnimated:YES
                          completion:^() {
@@ -104,7 +106,7 @@
 
 - (void)stop {
   [super stop];
-  DCHECK(!_onPrimaryAccountSetCompletion);
+  DCHECK(!self.primaryAccountSetCompletion);
 }
 
 #pragma mark - Private
@@ -200,7 +202,7 @@
   __weak __typeof(self) weakSelf = self;
   // |onPrimaryAccountChanged| notification is sent immediately after calling
   // SignIn. All callbacks should be set prior to this operation.
-  _onPrimaryAccountSetCompletion = ^(BOOL success) {
+  self.primaryAccountSetCompletion = ^(BOOL success) {
     [weakSelf.navigationController
         dismissViewControllerAnimated:YES
                            completion:^() {
@@ -216,7 +218,7 @@
 
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  if (_onPrimaryAccountSetCompletion == nil) {
+  if (self.primaryAccountSetCompletion == nil) {
     return;
   }
   // Since sign-in UI blocks all other Chrome screens until it is dismissed
@@ -224,8 +226,8 @@
   // TODO(crbug.com/1081764): Update if sign-in UI becomes non-blocking.
   DCHECK(event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
          signin::PrimaryAccountChangeEvent::Type::kSet);
-  _onPrimaryAccountSetCompletion(/*success=*/YES);
-  _onPrimaryAccountSetCompletion = nil;
+  self.primaryAccountSetCompletion(/*success=*/YES);
+  self.primaryAccountSetCompletion = nil;
 }
 
 #pragma mark - UINavigationControllerDelegate
