@@ -51,9 +51,14 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   // service after finalizing on the integration plan with recording mode.
   // Invoked when recording is started to start a screencast session.
   void OnRecordingStarted();
+  void OnRecordingEnded();
 
   // Saves the screencast including metadata.
   void SaveScreencast(const base::FilePath& saved_video_path);
+
+  // Invoked when record button is pressed.
+  void OnRecordButtonPressed();
+  void OnStopRecordButtonPressed();
 
   // Invoked when laser pointer button is pressed.
   void OnLaserPointerPressed();

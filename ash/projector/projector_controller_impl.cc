@@ -86,12 +86,35 @@ void ProjectorControllerImpl::MarkKeyIdea() {
 
 void ProjectorControllerImpl::OnRecordingStarted() {
   StartSpeechRecognition();
+  ui_controller_->OnRecordingStateChanged(true /* started */);
   metadata_controller_->OnRecordingStarted();
+}
+
+void ProjectorControllerImpl::OnRecordingEnded() {
+  StopSpeechRecognition();
+  ui_controller_->OnRecordingStateChanged(false /* started */);
+
+  // TODO(crbug.com/1165439): Call on to SaveScreencast when the metadata file
+  // saving format is finalized.
 }
 
 void ProjectorControllerImpl::SaveScreencast(
     const base::FilePath& saved_video_path) {
   metadata_controller_->SaveMetadata(saved_video_path);
+}
+
+void ProjectorControllerImpl::OnRecordButtonPressed() {
+  // TODO(crbug.com/1165435): Start the recording session and update the button
+  // visibility based on recording state after integrating with capture mode and
+  // recording service.
+  OnRecordingStarted();
+}
+
+void ProjectorControllerImpl::OnStopRecordButtonPressed() {
+  // TODO(crbug.com/1165435): Stop the recording session and update the button
+  // visibility based on recording state after integrating with capture mode and
+  // recording service.
+  OnRecordingEnded();
 }
 
 void ProjectorControllerImpl::OnLaserPointerPressed() {

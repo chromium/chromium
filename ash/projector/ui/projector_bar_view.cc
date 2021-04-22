@@ -73,6 +73,16 @@ views::UniqueWidgetPtr ProjectorBarView::Create(
   return widget;
 }
 
+void ProjectorBarView::OnRecordingStateChanged(bool started) {
+  record_button_->SetVisible(!started);
+  stop_button_->SetVisible(started);
+
+  if (started)
+    key_idea_button_->SetState(views::Button::ButtonState::STATE_NORMAL);
+  else
+    key_idea_button_->SetState(views::Button::ButtonState::STATE_DISABLED);
+}
+
 void ProjectorBarView::OnSelfieCamStateChanged(bool enabled) {
   selfie_cam_on_button_->SetVisible(!enabled);
   selfie_cam_off_button_->SetVisible(enabled);
@@ -95,6 +105,14 @@ void ProjectorBarView::OnMarkerStateChanged(bool enabled) {
 void ProjectorBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateVectorIcon();
+}
+
+bool ProjectorBarView::IsRecordButtonVisible() const {
+  return record_button_->GetVisible();
+}
+bool ProjectorBarView::IsKeyIdeaButtonEnabled() const {
+  return key_idea_button_->GetState() ==
+         views::Button::ButtonState::STATE_NORMAL;
 }
 
 void ProjectorBarView::InitLayout() {
@@ -132,6 +150,7 @@ void ProjectorBarView::InitLayout() {
       base::BindRepeating(&ProjectorBarView::OnKeyIdeaButtonPressed,
                           base::Unretained(this)),
       kProjectorKeyIdeaIcon));
+  key_idea_button_->SetState(views::Button::ButtonState::STATE_DISABLED);
 
   // Add laser pointer button.
   laser_pointer_button_ = AddChildView(std::make_unique<ProjectorImageButton>(
@@ -177,19 +196,11 @@ void ProjectorBarView::UpdateVectorIcon() {
 }
 
 void ProjectorBarView::OnRecordButtonPressed() {
-  // TODO(crbug.com/1165435): Start the recording session and update the button
-  // visibility based on recording state after integrating with capture mode and
-  // recording service.
-  record_button_->SetVisible(false);
-  stop_button_->SetVisible(true);
+  projector_controller_->OnRecordButtonPressed();
 }
 
 void ProjectorBarView::OnStopButtonPressed() {
-  // TODO(crbug.com/1165435): Stop the recording session and update the button
-  // visibility based on recording state after integrating with capture mode and
-  // recording service.
-  record_button_->SetVisible(true);
-  stop_button_->SetVisible(false);
+  projector_controller_->OnStopRecordButtonPressed();
 }
 
 void ProjectorBarView::OnKeyIdeaButtonPressed() {

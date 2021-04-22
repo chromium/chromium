@@ -130,6 +130,10 @@ void ProjectorUiController::OnSelfieCamPressed(bool enabled) {
   projector_bar_view_->OnSelfieCamStateChanged(enabled);
 }
 
+void ProjectorUiController::OnRecordingStateChanged(bool started) {
+  projector_bar_view_->OnRecordingStateChanged(started);
+}
+
 bool ProjectorUiController::IsToolbarVisible() const {
   return model_.bar_enabled();
 }

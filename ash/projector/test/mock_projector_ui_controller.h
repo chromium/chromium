@@ -33,6 +33,7 @@ class ASH_EXPORT MockProjectorUiController : public ProjectorUiController {
   MOCK_METHOD2(OnTranscription,
                void(const std::string& transcription, bool is_final));
   MOCK_METHOD1(OnSelfieCamPressed, void(bool enabled));
+  MOCK_METHOD1(OnRecordingStateChanged, void(bool started));
 };
 
 }  // namespace ash

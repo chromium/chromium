@@ -11,6 +11,7 @@
 #include "ash/marker/marker_controller.h"
 #include "ash/marker/marker_controller_test_api.h"
 #include "ash/projector/projector_controller_impl.h"
+#include "ash/projector/ui/projector_bar_view.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
@@ -154,6 +155,22 @@ TEST_F(ProjectorUiControllerTest, ClearAllMarkers) {
   controller_->OnMarkerPressed();
   EXPECT_FALSE(marker_controller_->is_enabled());
   EXPECT_FALSE(marker_controller_test_api_->IsShowingMarker());
+}
+
+// Verifies that the bar view buttons are
+TEST_F(ProjectorUiControllerTest, RecordingState) {
+  controller_->ShowToolbar();
+  ProjectorBarView* bar_view_ = controller_->projector_bar_view();
+  EXPECT_TRUE(bar_view_->IsRecordButtonVisible());
+  EXPECT_FALSE(bar_view_->IsKeyIdeaButtonEnabled());
+
+  controller_->OnRecordingStateChanged(/* started = */ true);
+  EXPECT_FALSE(bar_view_->IsRecordButtonVisible());
+  EXPECT_TRUE(bar_view_->IsKeyIdeaButtonEnabled());
+
+  controller_->OnRecordingStateChanged(/* started = */ false);
+  EXPECT_TRUE(bar_view_->IsRecordButtonVisible());
+  EXPECT_FALSE(bar_view_->IsKeyIdeaButtonEnabled());
 }
 
 }  // namespace ash

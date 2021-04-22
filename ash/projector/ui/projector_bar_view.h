@@ -19,7 +19,7 @@ namespace ash {
 
 class ProjectorControllerImpl;
 
-class ProjectorBarView : public views::View {
+class ASH_EXPORT ProjectorBarView : public views::View {
  public:
   METADATA_HEADER(ProjectorBarView);
 
@@ -31,6 +31,8 @@ class ProjectorBarView : public views::View {
   static views::UniqueWidgetPtr Create(
       ProjectorControllerImpl* projector_controller);
 
+  // Invoked when recording state changed.
+  void OnRecordingStateChanged(bool started);
   // Invoke when selfie cam activation state changed.
   void OnSelfieCamStateChanged(bool enabled);
   // Invoke when laser pointer activation state changed.
@@ -40,6 +42,9 @@ class ProjectorBarView : public views::View {
 
   // views::View:
   void OnThemeChanged() override;
+
+  bool IsRecordButtonVisible() const;
+  bool IsKeyIdeaButtonEnabled() const;
 
  private:
   void InitLayout();

@@ -47,10 +47,14 @@ class ASH_EXPORT ProjectorUiController : public LaserPointerObserver,
   virtual void OnTranscription(const std::string& transcription, bool is_final);
   // Invoked when the selfie cam button is pressed. Virtual for testing.
   virtual void OnSelfieCamPressed(bool enabled);
+  // Called when the recording started or stopped. Virtual for testing.
+  virtual void OnRecordingStateChanged(bool started);
 
   bool IsToolbarVisible() const;
 
   ProjectorUiModel* model() { return &model_; }
+
+  ProjectorBarView* projector_bar_view() { return projector_bar_view_; }
 
  private:
   // Reset tools, including resetting the state in model, closing the sub
