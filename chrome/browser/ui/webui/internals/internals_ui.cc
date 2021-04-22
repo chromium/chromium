@@ -31,8 +31,7 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
 
   // chrome://internals/
   // Redirects to: chrome://chrome-urls/#internals
-  source_->AddResourcePath("", IDR_INTERNALS_HTML);
-  source_->AddResourcePath("internals.js", IDR_INTERNALS_JS);
+  source_->AddResourcePath("", IDR_INTERNALS_INTERNALS_HTML);
 
   // Add your sub-URL internals WebUI here.
   // Keep this set of sub-URLs in sync with |kChromeInternalsPathURLs|.

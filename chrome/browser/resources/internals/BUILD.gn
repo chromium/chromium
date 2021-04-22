@@ -10,6 +10,12 @@ generate_grd("build_grd") {
   grd_prefix = "internals"
   out_grd = "$target_gen_dir/resources.grd"
 
+  input_files = [
+    "internals.html",
+    "internals.js",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
   if (!is_android) {
     deps = [
       "hello_ts:build_grdp",
