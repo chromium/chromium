@@ -772,19 +772,23 @@ TEST_P(ContextMenuControllerTest, ContextMenuImageHitTestStandardImageControl) {
             context_menu_data.media_type);
 
   // No histograms should be sent in the control group.
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundStandard, 0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundPenetrating,
-                               0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByOpaqueNode, 0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kFoundContextMenuListener,
-                               0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByCrossFrameNode,
-                               0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundStandard, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundPenetrating, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kFoundContextMenuListener,
+      0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByCrossFrameNode,
+      0);
 }
 
 // Test that a basic image hit test works and is no† impacted by
@@ -829,19 +833,23 @@ TEST_P(ContextMenuControllerTest,
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kImage,
             context_menu_data.media_type);
 
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundStandard, 1);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundPenetrating,
-                               0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByOpaqueNode, 0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kFoundContextMenuListener,
-                               0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByCrossFrameNode,
-                               0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundStandard, 1);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundPenetrating, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kFoundContextMenuListener,
+      0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByCrossFrameNode,
+      0);
 }
 
 // Test that image selection can penetrate through a fully transparent div
@@ -890,19 +898,23 @@ TEST_P(ContextMenuControllerTest, ContextMenuImageHitTestSucceededPenetrating) {
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kImage,
             context_menu_data.media_type);
 
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundStandard, 0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundPenetrating,
-                               1);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByOpaqueNode, 0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kFoundContextMenuListener,
-                               0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByCrossFrameNode,
-                               0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundStandard, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundPenetrating, 1);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kFoundContextMenuListener,
+      0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByCrossFrameNode,
+      0);
 }
 
 // Test that a basic image hit test works and is no† impacted by
@@ -940,19 +952,23 @@ TEST_P(ContextMenuControllerTest, ContextMenuImageHitTestStandardCanvas) {
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kCanvas,
             context_menu_data.media_type);
 
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundStandard, 1);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundPenetrating,
-                               0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByOpaqueNode, 0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kFoundContextMenuListener,
-                               0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByCrossFrameNode,
-                               0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundStandard, 1);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundPenetrating, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kFoundContextMenuListener,
+      0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByCrossFrameNode,
+      0);
 }
 
 // Test that  an image node will not be selected through an opaque div
@@ -1011,19 +1027,23 @@ TEST_P(ContextMenuControllerTest, ContextMenuImageHitTestOpaqueNodeBlocking) {
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kNone,
             context_menu_data.media_type);
 
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundStandard, 0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundPenetrating,
-                               1);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByOpaqueNode, 1);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kFoundContextMenuListener,
-                               0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByCrossFrameNode,
-                               0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundStandard, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundPenetrating, 1);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByOpaqueNode, 1);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kFoundContextMenuListener,
+      0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByCrossFrameNode,
+      0);
 }
 
 // Test that an image node will not be selected if a node with a context menu
@@ -1088,19 +1108,23 @@ TEST_P(ContextMenuControllerTest,
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kNone,
             context_menu_data.media_type);
 
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundStandard, 0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundPenetrating,
-                               1);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByOpaqueNode, 0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kFoundContextMenuListener,
-                               1);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByCrossFrameNode,
-                               0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundStandard, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundPenetrating, 1);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kFoundContextMenuListener,
+      1);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByCrossFrameNode,
+      0);
 }
 
 // Test that an image node will not be selected if the image node itself has a
@@ -1156,19 +1180,23 @@ TEST_P(ContextMenuControllerTest,
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kNone,
             context_menu_data.media_type);
 
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundStandard, 0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundPenetrating,
-                               1);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByOpaqueNode, 0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kFoundContextMenuListener,
-                               1);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByCrossFrameNode,
-                               0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundStandard, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundPenetrating, 1);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kFoundContextMenuListener,
+      1);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByCrossFrameNode,
+      0);
 }
 
 // Test that an image node will be selected if the image node itself has an
@@ -1222,19 +1250,23 @@ TEST_P(ContextMenuControllerTest,
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kImage,
             context_menu_data.media_type);
 
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundStandard, 0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundPenetrating,
-                               1);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByOpaqueNode, 0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kFoundContextMenuListener,
-                               0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByCrossFrameNode,
-                               0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundStandard, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundPenetrating, 1);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kFoundContextMenuListener,
+      0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByCrossFrameNode,
+      0);
 }
 
 // Test that an image node will still be selected if it is the topmost node
@@ -1291,19 +1323,23 @@ TEST_P(ContextMenuControllerTest,
   ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
   // EXPECT_TRUE(context_menu_data.has_image_contents);
 
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundStandard, 1);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundPenetrating,
-                               0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByOpaqueNode, 0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kFoundContextMenuListener,
-                               0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByCrossFrameNode,
-                               0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundStandard, 1);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundPenetrating, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kFoundContextMenuListener,
+      0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByCrossFrameNode,
+      0);
 }
 
 // Test that an image node will not be selected if a non image node with a
@@ -1369,19 +1405,265 @@ TEST_P(ContextMenuControllerTest,
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kNone,
             context_menu_data.media_type);
 
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundStandard, 0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kImageFoundPenetrating,
-                               1);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByOpaqueNode, 0);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kFoundContextMenuListener,
-                               1);
-  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
-                               ContextMenuController::kBlockedByCrossFrameNode,
-                               0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundStandard, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kImageFoundPenetrating, 1);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kFoundContextMenuListener,
+      1);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.Outcome",
+      ContextMenuController::ImageSelectionOutcome::kBlockedByCrossFrameNode,
+      0);
+}
+
+// Test that an image node is successfully cached and retrieved in the common
+// case.
+TEST_P(ContextMenuControllerTest, ContextMenuImageRetrievalCachedImageFound) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnablePenetratingImageSelection)) {
+    return;
+  }
+  RegisterMockedImageURLLoad("http://test.png");
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <style>
+        #target {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 1;
+        }
+        #occluder {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 2;
+        }
+      </style>
+      <img id=target src='http://test.png'>
+    </body>
+  )HTML");
+
+  base::HistogramTester histograms;
+
+  PhysicalOffset location(LayoutUnit(5), LayoutUnit(5));
+  EXPECT_TRUE(ShowContextMenu(location, kMenuSourceLongPress));
+
+  Node* image_node =
+      web_view_helper_.GetWebView()
+          ->GetPage()
+          ->GetContextMenuController()
+          .ContextMenuImageNodeForFrame(GetDocument()->GetFrame());
+  EXPECT_TRUE(image_node != nullptr);
+
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
+      ContextMenuController::ImageSelectionRetrievalOutcome::kImageFound, 1);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
+      ContextMenuController::ImageSelectionRetrievalOutcome::kImageNotFound, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
+      ContextMenuController::ImageSelectionRetrievalOutcome::
+          kCrossFrameRetrieval,
+      0);
+}
+
+// Test that an image node is not successfully retrieved if a hit test was never
+// conducted.
+TEST_P(ContextMenuControllerTest,
+       ContextMenuImageRetrievalCachedImageNotFound) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnablePenetratingImageSelection)) {
+    return;
+  }
+  RegisterMockedImageURLLoad("http://test.png");
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <style>
+        #target {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 1;
+        }
+        #occluder {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 2;
+        }
+      </style>
+      <img id=target src='http://test.png'>
+    </body>
+  )HTML");
+
+  base::HistogramTester histograms;
+
+  // Attempt to retrieve without an initial call to show the context menu.
+  Node* image_node =
+      web_view_helper_.GetWebView()
+          ->GetPage()
+          ->GetContextMenuController()
+          .ContextMenuImageNodeForFrame(GetDocument()->GetFrame());
+  EXPECT_TRUE(image_node == nullptr);
+
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
+      ContextMenuController::ImageSelectionRetrievalOutcome::kImageFound, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
+      ContextMenuController::ImageSelectionRetrievalOutcome::kImageNotFound, 1);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
+      ContextMenuController::ImageSelectionRetrievalOutcome::
+          kCrossFrameRetrieval,
+      0);
+}
+
+// Test that the retrieved image node is null if another hit test has been
+// conducted in the same controller before the retrieval occurred.
+TEST_P(ContextMenuControllerTest,
+       ContextMenuImageRetrievalAfterCachedImageReset) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnablePenetratingImageSelection)) {
+    return;
+  }
+  RegisterMockedImageURLLoad("http://test.png");
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <style>
+        #target {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 1;
+        }
+        #linktarget {
+          top: 100px;
+          left: 100px;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 1;
+        }
+      </style>
+      <img id=target src='http://test.png'>
+      <a id=linktarget href='about:blank'>Content</a>
+    </body>
+  )HTML");
+
+  base::HistogramTester histograms;
+
+  PhysicalOffset location_with_image(LayoutUnit(5), LayoutUnit(5));
+  EXPECT_TRUE(ShowContextMenu(location_with_image, kMenuSourceLongPress));
+
+  PhysicalOffset location_with_link(LayoutUnit(105), LayoutUnit(105));
+  ShowContextMenu(location_with_link, kMenuSourceLongPress);
+
+  Node* image_node =
+      web_view_helper_.GetWebView()
+          ->GetPage()
+          ->GetContextMenuController()
+          .ContextMenuImageNodeForFrame(GetDocument()->GetFrame());
+  EXPECT_TRUE(image_node == nullptr);
+
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
+      ContextMenuController::ImageSelectionRetrievalOutcome::kImageFound, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
+      ContextMenuController::ImageSelectionRetrievalOutcome::kImageNotFound, 1);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
+      ContextMenuController::ImageSelectionRetrievalOutcome::
+          kCrossFrameRetrieval,
+      0);
+}
+
+// Test that the retrieved image node is null if the retrieval frame is
+// different than the one used in the initial context menu image selection.
+TEST_P(ContextMenuControllerTest,
+       ContextMenuImageRetrievalCachedImageCrossFrame) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnablePenetratingImageSelection)) {
+    return;
+  }
+  RegisterMockedImageURLLoad("http://test.png");
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <style>
+        #target {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 1;
+        }
+        #occluder {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 2;
+        }
+      </style>
+      <img id=target src='http://test.png'>
+    </body>
+  )HTML");
+
+  base::HistogramTester histograms;
+
+  PhysicalOffset location_with_image(LayoutUnit(5), LayoutUnit(5));
+  EXPECT_TRUE(ShowContextMenu(location_with_image, kMenuSourceLongPress));
+
+  // Pass in nullptr for frame reference as a way of simulating a different
+  // frame being passed in.
+  Node* image_node = web_view_helper_.GetWebView()
+                         ->GetPage()
+                         ->GetContextMenuController()
+                         .ContextMenuImageNodeForFrame(nullptr);
+  EXPECT_TRUE(image_node == nullptr);
+
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
+      ContextMenuController::ImageSelectionRetrievalOutcome::kImageFound, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
+      ContextMenuController::ImageSelectionRetrievalOutcome::kImageNotFound, 0);
+  histograms.ExpectBucketCount(
+      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
+      ContextMenuController::ImageSelectionRetrievalOutcome::
+          kCrossFrameRetrieval,
+      1);
 }
 
 TEST_P(ContextMenuControllerTest, OpenedFromHighlight) {

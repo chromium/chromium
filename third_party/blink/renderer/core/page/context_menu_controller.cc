@@ -124,11 +124,15 @@ void MaybeRecordImageSelectionUkm(
 
   if (enable) {
     ukm::UkmEntryBuilder builder(source_id, "Blink.ContextMenu.ImageSelection");
-    builder.SetMetric("Outcome", outcome);
+    builder.SetMetric("Outcome", static_cast<int64_t>(outcome));
     builder.Record(ukm::UkmRecorder::Get());
   }
 }
 
+template <class enumType>
+uint32_t EnumToBitmask(enumType outcome) {
+  return 1 << static_cast<uint8_t>(outcome);
+}
 }  // namespace
 
 ContextMenuController::ContextMenuController(Page* page) : page_(page) {}
@@ -140,6 +144,7 @@ void ContextMenuController::Trace(Visitor* visitor) const {
   visitor->Trace(menu_provider_);
   visitor->Trace(hit_test_result_);
   visitor->Trace(context_menu_client_receiver_);
+  visitor->Trace(image_selection_cached_result_);
 }
 
 void ContextMenuController::ClearContextMenu() {
@@ -148,6 +153,7 @@ void ContextMenuController::ClearContextMenu() {
   menu_provider_ = nullptr;
   context_menu_client_receiver_.reset();
   hit_test_result_ = HitTestResult();
+  image_selection_cached_result_ = nullptr;
 }
 
 void ContextMenuController::DocumentDetached(Document* document) {
@@ -187,8 +193,7 @@ void ContextMenuController::CustomContextMenuItemSelected(unsigned action) {
   ClearContextMenu();
 }
 
-Node* ContextMenuController::GetContextMenuNodeWithImageContents(
-    const bool report_histograms) {
+Node* ContextMenuController::GetContextMenuNodeWithImageContents() {
   uint32_t outcome = 0;
   uint32_t hit_test_depth = 0;
   LocalFrame* top_hit_frame =
@@ -205,12 +210,13 @@ Node* ContextMenuController::GetContextMenuNodeWithImageContents(
     // breaking.
     if (UnvisitedNodeOrAncestorHasContextMenuListener(
             node, already_visited_nodes_for_context_menu_listener)) {
-      outcome |= EnumToBitmask(kFoundContextMenuListener);
+      outcome |=
+          EnumToBitmask(ImageSelectionOutcome::kFoundContextMenuListener);
       // Don't break because it allows us to log the failure reason only
       // if an image node was otherwise available lower in the hit test.
     }
     if (top_hit_frame != node->GetDocument().GetFrame()) {
-      outcome |= EnumToBitmask(kBlockedByCrossFrameNode);
+      outcome |= EnumToBitmask(ImageSelectionOutcome::kBlockedByCrossFrameNode);
       // Don't break because it allows us to log the failure reason only
       // if an image node was otherwise available lower in the hit test.
     }
@@ -220,12 +226,13 @@ Node* ContextMenuController::GetContextMenuNodeWithImageContents(
       found_image_node = node;
 
       if (hit_test_depth == 1) {
-        outcome |= EnumToBitmask(kImageFoundStandard);
+        outcome |= EnumToBitmask(ImageSelectionOutcome::kImageFoundStandard);
         // The context menu listener check is only necessary when penetrating,
         // so clear the bit so we don't want to log it if the image was on top.
-        outcome &= ~EnumToBitmask(kFoundContextMenuListener);
+        outcome &=
+            ~EnumToBitmask(ImageSelectionOutcome::kFoundContextMenuListener);
       } else {
-        outcome |= EnumToBitmask(kImageFoundPenetrating);
+        outcome |= EnumToBitmask(ImageSelectionOutcome::kImageFoundPenetrating);
       }
       break;
     }
@@ -235,17 +242,18 @@ Node* ContextMenuController::GetContextMenuNodeWithImageContents(
         node->GetLayoutBox()->BackgroundIsKnownToBeOpaqueInRect(
             HitTestLocation::RectForPoint(
                 hit_test_result_.PointInInnerNodeFrame()))) {
-      outcome |= EnumToBitmask(kBlockedByOpaqueNode);
+      outcome |= EnumToBitmask(ImageSelectionOutcome::kBlockedByOpaqueNode);
       // Don't break because it allows us to log the failure reason only
       // if an image node was otherwise available lower in the hit test.
     }
   }
 
   // Only log if we found an image node within the hit test.
-  if (report_histograms && (found_image_node != nullptr)) {
+  if (found_image_node != nullptr) {
     base::UmaHistogramCounts1000("Blink.ContextMenu.ImageSelection.Depth",
                                  hit_test_depth);
-    for (uint32_t i = 0; i < kMaxValue; i++) {
+    for (uint32_t i = 0;
+         i <= static_cast<uint8_t>(ImageSelectionOutcome::kMaxValue); i++) {
       unsigned val = 1 << i;
       if (outcome & val) {
         base::UmaHistogramEnumeration(
@@ -259,29 +267,41 @@ Node* ContextMenuController::GetContextMenuNodeWithImageContents(
   }
   // If there is anything preventing this image selection, return nullptr.
   uint32_t blocking_image_selection_mask =
-      ~(EnumToBitmask(kImageFoundStandard) |
-        EnumToBitmask(kImageFoundPenetrating));
+      ~(EnumToBitmask(ImageSelectionOutcome::kImageFoundStandard) |
+        EnumToBitmask(ImageSelectionOutcome::kImageFoundPenetrating));
   if (outcome & blocking_image_selection_mask) {
     return nullptr;
   }
+  image_selection_cached_result_ = found_image_node;
   return found_image_node;
 }
 
-// TODO(crbug.com/1184297) Cache image node when the context menu is shown and
-//    return that rather than refetching.
 Node* ContextMenuController::ContextMenuImageNodeForFrame(LocalFrame* frame) {
   if (base::FeatureList::IsEnabled(
           features::kEnablePenetratingImageSelection)) {
-    // Don't report histograms because they were already sent for this node when
-    // ContextMenuData was populated.
-    Node* potential_image_node = GetContextMenuNodeWithImageContents(
-        /*report_histograms=*/false);
-    return potential_image_node != nullptr &&
-                   potential_image_node->GetDocument().GetFrame() == frame
-               ? potential_image_node
-               : nullptr;
+    ImageSelectionRetrievalOutcome outcome;
+    // We currently will fail to retrieve an image if another hit test is made
+    // on
+    //  a non-image node is made before retrieval of the image.
+    if (!image_selection_cached_result_) {
+      outcome = ImageSelectionRetrievalOutcome::kImageNotFound;
+    } else if (image_selection_cached_result_->GetDocument().GetFrame() !=
+               frame) {
+      outcome = ImageSelectionRetrievalOutcome::kCrossFrameRetrieval;
+    } else {
+      outcome = ImageSelectionRetrievalOutcome::kImageFound;
+    }
+
+    base::UmaHistogramEnumeration(
+        "Blink.ContextMenu.ImageSelection.RetrievalOutcome", outcome);
+
+    if (outcome == ImageSelectionRetrievalOutcome::kImageFound) {
+      return image_selection_cached_result_;
+    }
+    return nullptr;
+  } else {
+    return ContextMenuNodeForFrame(frame);
   }
-  return ContextMenuNodeForFrame(frame);
 }
 
 // TODO(crbug.com/1184297) Cache image node when the context menu is shown and
@@ -415,6 +435,10 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     result = frame->GetEventHandler().HitTestResultAtLocation(location, type);
   if (!result.InnerNodeOrImageMapImage())
     return false;
+
+  // Clear any previously set cached results if we are resetting the hit test
+  // result.
+  image_selection_cached_result_ = nullptr;
 
   hit_test_result_ = result;
   result.SetToShadowHostIfInRestrictedShadowRoot();
@@ -572,10 +596,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
             features::kEnablePenetratingImageSelection)) {
       SCOPED_BLINK_UMA_HISTOGRAM_TIMER(
           "Blink.ContextMenu.ImageSelection.ElapsedTime");
-      potential_image_node =
-          GetContextMenuNodeWithImageContents(/*report_histograms=*/true);
+      potential_image_node = GetContextMenuNodeWithImageContents();
     }
-
     if (potential_image_node != nullptr &&
         IsA<HTMLCanvasElement>(potential_image_node)) {
       data.media_type = mojom::blink::ContextMenuDataMediaType::kCanvas;

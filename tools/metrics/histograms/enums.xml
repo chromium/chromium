@@ -39567,6 +39567,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="Blocking cross frame node was found"/>
 </enum>
 
+<enum name="ImageSelectionRetrievalOutcome">
+  <int value="0" label="Cached image node was successfully retrieved."/>
+  <int value="1" label="Cached image node was not found."/>
+  <int value="2"
+      label="Specified frame was different from the cached node so the image
+             was not retrieved."/>
+</enum>
+
 <enum name="ImageSmoothingQuality">
   <int value="0" label="Image smoothing quality sets to None"/>
   <int value="1" label="Image smoothing quality sets to Low"/>

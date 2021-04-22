@@ -75,7 +75,7 @@ class CORE_EXPORT ContextMenuController final
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.  Keep in sync with enum in
   // tools/metrics/histograms/enums.xml
-  enum ImageSelectionOutcome : uint32_t {
+  enum class ImageSelectionOutcome : uint8_t {
     // An image node was found to be the topmost node.
     kImageFoundStandard = 0,
 
@@ -97,10 +97,27 @@ class CORE_EXPORT ContextMenuController final
     kMaxValue = kBlockedByCrossFrameNode,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.  Keep in sync with enum in
+  // tools/metrics/histograms/enums.xml
+  enum class ImageSelectionRetrievalOutcome : uint8_t {
+    // The cached image was successfully retrieved.
+    kImageFound = 0,
+
+    // The cached image was not found, possibly because an initial image
+    // selection hit test was not made, a subsequent non-image hit test was
+    // made before retrieval, or the image has become unfetchable.
+    kImageNotFound = 1,
+
+    // The retrieval was made from a different frame than the origuinal hit
+    // test, which is unexpected.
+    kCrossFrameRetrieval = 2,
+
+    kMaxValue = kCrossFrameRetrieval,
+  };
+
  private:
   friend class ContextMenuControllerTest;
-
-  uint32_t EnumToBitmask(ImageSelectionOutcome outcome) { return 1 << outcome; }
 
   // Returns whether a Context Menu was actually shown.
   bool ShowContextMenu(LocalFrame*,
@@ -110,7 +127,7 @@ class CORE_EXPORT ContextMenuController final
 
   bool ShouldShowContextMenuFromTouch(const ContextMenuData&);
 
-  Node* GetContextMenuNodeWithImageContents(const bool report_histograms);
+  Node* GetContextMenuNodeWithImageContents();
 
   void UpdateTextFragmentHandler(LocalFrame*);
 
@@ -121,6 +138,7 @@ class CORE_EXPORT ContextMenuController final
   Member<Page> page_;
   Member<ContextMenuProvider> menu_provider_;
   HitTestResult hit_test_result_;
+  Member<Node> image_selection_cached_result_;
 
   DISALLOW_COPY_AND_ASSIGN(ContextMenuController);
 };
