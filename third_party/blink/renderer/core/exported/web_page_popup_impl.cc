@@ -607,7 +607,7 @@ AXObject* WebPagePopupImpl::RootAXObject() {
 }
 
 void WebPagePopupImpl::SetWindowRect(const IntRect& rect_in_screen) {
-  if (!closing_) {
+  if (ShouldCheckPopupPositionForTelemetry()) {
     IntRect owner_window_rect_in_screen = OwnerWindowRectInScreen();
     Document& document = popup_client_->OwnerElement().GetDocument();
     if (owner_window_rect_in_screen.Contains(rect_in_screen)) {
@@ -853,10 +853,16 @@ bool WebPagePopupImpl::IsViewportPointInWindow(int x, int y) {
   return gfx::Rect(window_rect.size()).Contains(point_in_dips);
 }
 
+bool WebPagePopupImpl::ShouldCheckPopupPositionForTelemetry() const {
+  // Avoid doing any telemetry work when the popup is closing or the
+  // owner element is not shown anymore.
+  return !closing_ && popup_client_->OwnerElement().GetDocument().View();
+}
+
 void WebPagePopupImpl::CheckScreenPointInOwnerWindowAndCount(
     const gfx::PointF& point_in_screen,
     WebFeature feature) const {
-  if (closing_)
+  if (!ShouldCheckPopupPositionForTelemetry())
     return;
 
   IntRect owner_window_rect = OwnerWindowRectInScreen();
@@ -866,6 +872,7 @@ void WebPagePopupImpl::CheckScreenPointInOwnerWindowAndCount(
 
 IntRect WebPagePopupImpl::OwnerWindowRectInScreen() const {
   LocalFrameView* view = popup_client_->OwnerElement().GetDocument().View();
+  DCHECK(view);
   IntRect frame_rect = view->FrameRect();
   return view->FrameToScreen(frame_rect);
 }

@@ -202,6 +202,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   Element* FocusedElement() const;
 
   bool IsViewportPointInWindow(int x, int y);
+  bool ShouldCheckPopupPositionForTelemetry() const;
   void CheckScreenPointInOwnerWindowAndCount(const gfx::PointF& point_in_screen,
                                              WebFeature feature) const;
   IntRect OwnerWindowRectInScreen() const;
