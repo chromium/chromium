@@ -5,6 +5,7 @@
 package org.chromium.weblayer.test;
 
 import android.os.Build;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.KeyEvent;
 
@@ -53,18 +54,15 @@ public class AutofillTest {
     public void setUp() throws Exception {
         mEventsObserved = new ArrayList<>();
         mHelper = new CallbackHelper();
-        getTestWebLayer().notifyOfAutofillEvents(
-                null, () -> mHelper.notifyCalled(), mEventsObserved);
+        mActivity = mActivityTestRule.launchShell(new Bundle());
+        TestWebLayer.getTestWebLayer(mActivity.getApplicationContext())
+                .notifyOfAutofillEvents(null, () -> mHelper.notifyCalled(), mEventsObserved);
         mWebServer = TestWebServer.start();
     }
 
     @After
     public void tearDown() throws Exception {
         mWebServer.shutdown();
-    }
-
-    private TestWebLayer getTestWebLayer() {
-        return TestWebLayer.getTestWebLayer(mActivity.getApplicationContext());
     }
 
     /**
@@ -90,10 +88,6 @@ public class AutofillTest {
                 + "<input type='image' id='image1'>"
                 + "</form></body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, data, null);
-
-        // Initialize the test shell, Browser and Tab objects should be created because they are
-        // needed by the TestWebLayer#notifyOfAutofillEvents() method.
-        mActivity = mActivityTestRule.launchShellWithUrl("about:blank");
 
         // Load the test page.
         mActivityTestRule.navigateAndWait(url);
