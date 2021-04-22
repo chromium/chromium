@@ -236,9 +236,13 @@ void ServiceProcessHost::Launch(mojo::GenericPendingReceiver receiver,
   auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
                          ? GetUIThreadTaskRunner({})
                          : GetIOThreadTaskRunner({});
-  task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&LaunchServiceProcess, std::move(receiver),
-                                std::move(options)));
+  if (task_runner->BelongsToCurrentThread()) {
+    LaunchServiceProcess(std::move(receiver), std::move(options));
+  } else {
+    task_runner->PostTask(
+        FROM_HERE, base::BindOnce(&LaunchServiceProcess, std::move(receiver),
+                                  std::move(options)));
+  }
 }
 
 void LaunchUtilityProcessServiceDeprecated(
