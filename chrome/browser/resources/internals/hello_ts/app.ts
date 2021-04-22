@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -22,6 +25,11 @@ export class TsAppElement extends PolymerElement {
         <div id="page0">Page0</div>
         <div id="page1">Page1</div>
       </iron-pages>
+      <cr-icon-button iron-icon="cr:clear"></cr-icon-button>
+      <cr-dialog show-on-attach>
+        <div slot="title">inner dialog title</div>
+        <div slot="body">body</div>
+      </cr-dialog>
     `;
   }
 
@@ -36,11 +44,6 @@ export class TsAppElement extends PolymerElement {
   constructor() {
     super();
 
-    // Try a third_party/polymer dependency. Ensure that TypeScript infers
-    // correctly the type from document.createElement() without explicitly
-    // declaring IronPagesElement as the type.
-    const ironPages = document.createElement('iron-pages');
-    ironPages.notifyResize();
 
     // Try helloWorld().
     this.message = helloWorld() + ' from TypeScript!';
@@ -74,6 +77,19 @@ export class TsAppElement extends PolymerElement {
 
   connectedCallback() {
     super.connectedCallback();
+
+    // Try a third_party/polymer dependency. Ensure that TypeScript infers
+    // correctly the type from createElement/querySelector without explicitly
+    // declaring IronPagesElement as the type.
+    const ironPages = this.shadowRoot!.querySelector('iron-pages');
+    console.log(ironPages!.selected);
+
+    // Try cr_elements/ Polymer dependencies, that use legacy Polymer syntax.
+    const iconButton = this.shadowRoot!.querySelector('cr-icon-button');
+    console.log(iconButton!.ironIcon);
+
+    const dialog = this.shadowRoot!.querySelector('cr-dialog');
+    console.log(dialog!.showOnAttach);
   }
 
   disconnectedCallback() {

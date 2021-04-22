@@ -135,6 +135,12 @@ ts_library("library") {
     "js/hello_world.ts",
   ]
   definitions = [
+    # Checked-in .d.ts files.
+    "cr_elements/cr_container_shadow_behavior.m.d.ts",
+    "cr_elements/cr_dialog/cr_dialog.m.d.ts",
+    "cr_elements/cr_icon_button/cr_icon_button.m.d.ts",
+
+    # Auto-generated .d.ts files.
     "$root_dir/js/assert.m.d.ts",
     "$root_dir/js/cr.m.d.ts",
     "$root_dir/js/promise_resolver.m.d.ts",

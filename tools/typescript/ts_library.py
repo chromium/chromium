@@ -59,7 +59,9 @@ def main(argv):
     path_mappings = {}
     for m in args.path_mappings:
       mapping = m.split('|')
-      path_mappings[mapping[0]] = [os.path.join('./', mapping[1])]
+      if not path_mappings.has_key(mapping[0]):
+        path_mappings[mapping[0]] = []
+      path_mappings[mapping[0]].append(os.path.join('./', mapping[1]))
     tsconfig['compilerOptions']['paths'] = path_mappings
 
   if args.deps is not None:
