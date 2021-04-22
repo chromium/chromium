@@ -15,10 +15,10 @@ const char kSearchPrefetchServiceCommandLineFlag[] =
     "enable-search-prefetch-service";
 
 const base::Feature kSearchPrefetchService{"SearchPrefetchService",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSearchPrefetchServicePrefetching{
-    "SearchPrefetchServicePrefetching", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SearchPrefetchServicePrefetching", base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool SearchPrefetchServiceIsEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -56,7 +56,7 @@ size_t SearchPrefetchMaxAttemptsPerCachingDuration() {
   }
   return base::GetFieldTrialParamByFeatureAsInt(
       kSearchPrefetchServicePrefetching, "max_attempts_per_caching_duration",
-      2);
+      3);
 }
 
 base::TimeDelta SearchPrefetchErrorBackoffDuration() {

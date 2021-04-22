@@ -1016,8 +1016,13 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
       SearchPrefetchEligibilityReason::kPrefetchStarted, 2);
-  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("prefetch_3")));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
+      SearchPrefetchEligibilityReason::kPrefetchStarted, 3);
+  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(
+      GetSearchServerQueryURL("prefetch_4")));
   histogram_tester.ExpectBucketCount(
       "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
       SearchPrefetchEligibilityReason::kMaxAttemptsReached, 1);
@@ -1034,6 +1039,11 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(u"prefetch_3");
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
+
+  prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(u"prefetch_4");
   EXPECT_FALSE(prefetch_status.has_value());
 }
 
@@ -2571,8 +2581,10 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceZeroCacheTimeBrowserTest,
       GetSearchServerQueryURL("prefetch_1")));
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("prefetch_2")));
-  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("prefetch_3")));
+  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(
+      GetSearchServerQueryURL("prefetch_4")));
 
   WaitUntilStatusChangesTo(u"prefetch_1", base::nullopt);
 
