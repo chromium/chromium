@@ -21,6 +21,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
@@ -118,18 +119,11 @@ void ChromeCameraAppUIDelegate::OpenFileInGallery(const std::string& name) {
     return;
   }
 
-  auto&& file_paths = std::vector<base::FilePath>({path});
-  apps::mojom::FilePathsPtr launch_files =
-      apps::mojom::FilePaths::New(file_paths);
-
-  apps::AppServiceProxyFactory::GetForProfile(Profile::FromWebUI(web_ui_))
-      ->LaunchAppWithFiles(
-          web_app::kMediaAppId,
-          apps::mojom::LaunchContainer::kLaunchContainerWindow,
-          apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerTab,
-                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                              /* preferred_container=*/false),
-          apps::mojom::LaunchSource::kFromOtherApp, std::move(launch_files));
+  web_app::SystemAppLaunchParams params;
+  params.launch_paths = {path};
+  params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
+  web_app::LaunchSystemWebAppAsync(Profile::FromWebUI(web_ui_),
+                                   web_app::SystemAppType::MEDIA, params);
 }
 
 void ChromeCameraAppUIDelegate::OpenFeedbackDialog(

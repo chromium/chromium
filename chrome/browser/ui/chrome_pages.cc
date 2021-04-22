@@ -97,9 +97,10 @@ void OpenBookmarkManagerForNode(Browser* browser, int64_t node_id) {
 void LaunchReleaseNotesImpl(Profile* profile,
                             apps::mojom::LaunchSource source) {
   base::RecordAction(UserMetricsAction("ReleaseNotes.ShowReleaseNotes"));
-  LaunchSystemWebAppAsync(
-      profile, web_app::SystemAppType::HELP,
-      {.url = GURL("chrome://help-app/updates"), .launch_source = source});
+  web_app::SystemAppLaunchParams params;
+  params.url = GURL("chrome://help-app/updates");
+  params.launch_source = source;
+  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::HELP, params);
 }
 #endif
 
@@ -126,8 +127,9 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
       NOTREACHED() << "Unhandled help source" << source;
   }
 
-  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::HELP,
-                          {.launch_source = app_launch_source});
+  web_app::SystemAppLaunchParams params;
+  params.launch_source = app_launch_source;
+  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::HELP, params);
 #else
   GURL url;
   switch (source) {

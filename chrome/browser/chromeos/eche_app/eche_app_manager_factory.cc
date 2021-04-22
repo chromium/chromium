@@ -35,7 +35,8 @@ namespace {
 void LaunchEcheApp(Profile* profile, int64_t notification_id) {
   std::string url = "chrome://eche-app/#notification_id=";
   url.append(base::NumberToString(notification_id));
-  struct web_app::SystemAppLaunchParams params = {.url = GURL(url)};
+  web_app::SystemAppLaunchParams params;
+  params.url = GURL(url);
   web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::ECHE,
                                    params);
 }

@@ -92,9 +92,10 @@ void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
 
   // TODO(crbug.com/1067073): Remove legacy Settings Window.
   if (!UseDeprecatedSettingsWindow(profile)) {
+    web_app::SystemAppLaunchParams params;
+    params.url = gurl;
     web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::SETTINGS,
-                                     {.url = gurl},
-                                     apps::MakeWindowInfo(display_id));
+                                     params, apps::MakeWindowInfo(display_id));
     // SWA OS Settings don't use SettingsWindowManager to manage windows, don't
     // notify SettingsWindowObservers.
     return;

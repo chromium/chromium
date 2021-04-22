@@ -44,6 +44,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller_factory.h"
@@ -166,9 +167,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, LaunchMetricsWork) {
       maybe_installation_->GetAppUrl());
   navigation_observer.StartWatchingNewWebContents();
 
-  LaunchSystemWebAppAsync(
-      browser()->profile(), GetMockAppType(),
-      {.launch_source = apps::mojom::LaunchSource::kFromAppListGrid});
+  SystemAppLaunchParams params;
+  params.launch_source = apps::mojom::LaunchSource::kFromAppListGrid;
+  LaunchSystemWebAppAsync(browser()->profile(), GetMockAppType(), params);
 
   navigation_observer.Wait();
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromAppListGrid", 1);

@@ -105,9 +105,7 @@ class AppLauncher : public ProfileObserver,
   AppLauncher& operator=(const AppLauncher&) = delete;
 
   void LaunchHelpApp() {
-    LaunchSystemWebAppAsync(
-        profile_, web_app::SystemAppType::HELP,
-        {.launch_source = apps::mojom::LaunchSource::kFromChromeInternal});
+    LaunchSystemWebAppAsync(profile_, web_app::SystemAppType::HELP);
     profile_->GetPrefs()->SetBoolean(prefs::kFirstRunTutorialShown, true);
     delete this;
   }
