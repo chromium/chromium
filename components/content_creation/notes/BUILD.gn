@@ -4,10 +4,27 @@
 
 static_library("notes") {
   sources = [
+    "note_service.cc",
     "note_service.h",
-    "note_service_impl.cc",
-    "note_service_impl.h",
     "notes_types.h",
   ]
-  deps = [ "//base" ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "note_service_unittest.cc" ]
+
+  deps = [
+    ":notes",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

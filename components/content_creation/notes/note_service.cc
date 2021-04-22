@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/content_creation/notes/note_service_impl.h"
+#include "components/content_creation/notes/note_service.h"
 
 #include <memory>
 
@@ -10,11 +10,13 @@
 
 namespace content_creation {
 
-NoteServiceImpl::NoteServiceImpl() {}
+NoteService::NoteService() = default;
 
-NoteServiceImpl::~NoteServiceImpl() = default;
+NoteService::~NoteService() = default;
 
-void NoteServiceImpl::GetTemplates(GetTemplatesCallback callback) {
+void NoteService::GetTemplates(GetTemplatesCallback callback) {
+  // TODO(crbug.com/1194168): Make sure to post the resolution of this callback
+  // to prevent rooting any bugs around timing.
   std::move(callback).Run(std::vector<NoteTemplate>());
 }
 
