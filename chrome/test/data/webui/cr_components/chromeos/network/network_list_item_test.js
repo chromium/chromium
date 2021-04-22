@@ -108,6 +108,8 @@ suite('NetworkListItemTest', function() {
   });
 
   test('Network provider name visibilty', async () => {
+    assertFalse(!!listItem.$$('#subtitle'));
+
     const properties = OncMojo.getDefaultManagedProperties(
         mojom.NetworkType.kEthernet, 'eth0');
     mojoApi_.setManagedPropertiesForTest(properties);
@@ -115,7 +117,7 @@ suite('NetworkListItemTest', function() {
     await flushAsync();
 
     let providerName = listItem.$$('#subtitle');
-    assertFalse(!!providerName.textContent.trim());
+    assertFalse(!!providerName);
 
     eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
     const networkState = initCellularNetwork(/*iccid=*/ '1', /*eid=*/ '1');
@@ -125,6 +127,21 @@ suite('NetworkListItemTest', function() {
     providerName = listItem.$$('#subtitle');
     assertTrue(!!providerName);
     assertEquals('provider1', providerName.textContent.trim());
+  });
+
+  test('Network title is escaped', async () => {
+    listItem.item = {
+      customItemType: NetworkList.CustomItemType.ESIM_PENDING_PROFILE,
+      customItemName: '<a>Bad Name</a>',
+      customItemSubtitle: '<a>Bad Subtitle</a>',
+      polymerIcon: 'network:cellular-0',
+      showBeforeNetworksList: false,
+      customData: {
+        iccid: 'iccid',
+      },
+    };
+    await flushAsync();
+    assertFalse(!!listItem.$$('a'));
   });
 
   test('Pending activation pSIM UI visibility', async () => {
@@ -333,6 +350,8 @@ suite('NetworkListItemTest', function() {
   test(
       'Pending eSIM profile name, provider, install button visibilty',
       async () => {
+        assertFalse(!!listItem.$$('#subtitle'));
+
         const itemName = 'Item Name';
         const itemSubtitle = 'Item Subtitle';
         listItem.item = {
@@ -370,6 +389,8 @@ suite('NetworkListItemTest', function() {
 
   test(
       'Installing eSIM profile name, provider, spinner visibilty', async () => {
+        assertFalse(!!listItem.$$('#subtitle'));
+
         const itemName = 'Item Name';
         const itemSubtitle = 'Item Subtitle';
         listItem.item = {

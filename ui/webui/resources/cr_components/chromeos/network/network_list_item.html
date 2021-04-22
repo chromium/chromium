@@ -60,6 +60,7 @@
 
       :host([is-e-sim-pending-profile_]) #divIcon {
         height: 20px;
+        padding-inline-end: 20px;
         width: 20px;
       }
 
@@ -75,6 +76,10 @@
         flex-direction: column;
         justify-content: center;
         margin-inline-start: 20px;
+      }
+
+      #subtitle {
+        color: var(--cr-secondary-text-color);
       }
 
       #networkStateText {
@@ -144,13 +149,9 @@
           <iron-icon id="divIcon" icon="[[item.polymerIcon]]"></iron-icon>
         </template>
         <div id="divText" class="layout horizontal flex">
-          <div id="networkName" aria-hidden="true">
-            [[getItemName_(item)]]
-          </div>
-          <div id="subtitle"
-              hidden$="[[!isSubtitleVisible_(subtitle_)]]"
+          <div id="itemNameContainer"
+              inner-h-t-m-l="[[itemNameContainerInnerHtml_]]"
               aria-hidden="true">
-            [[getSubtitle(subtitle_)]]
           </div>
           <div id="networkStateText"
               class$="[[getNetworkStateTextClass_(networkState.*,

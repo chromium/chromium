@@ -111,6 +111,15 @@ Polymer({
     managedProperties_: Object,
 
     /**
+     * HTML containing the item's name and subtitle.
+     * @private {string}
+     */
+    itemNameContainerInnerHtml_: {
+      type: String,
+      value: '',
+    },
+
+    /**
      * Subtitle for item.
      * @private {string}
      */
@@ -201,14 +210,17 @@ Polymer({
   },
 
   /** @private */
-  itemChanged_() {
+  async itemChanged_() {
     if (this.item && !this.item.hasOwnProperty('customItemType')) {
       this.networkState =
           /** @type {!OncMojo.NetworkStateProperties} */ (this.item);
     } else {
       this.networkState = undefined;
     }
-    this.setSubtitle_();
+    // The order each property is set here matters. We don't use observers to
+    // set each property or else the ordering is indeterminate.
+    await this.setSubtitle_();
+    this.setItemNameContainerInnerHtml_();
   },
 
   /** @private */
@@ -279,6 +291,32 @@ Polymer({
     }
     this.connectionState_ = connectionState;
     this.fire('network-connect-changed', this.networkState);
+  },
+
+  /** @private */
+  setItemNameContainerInnerHtml_() {
+    const itemName = this.escapeHtml_(this.getItemName_());
+    const subtitle = this.escapeHtml_(this.getSubtitle());
+    if (!subtitle) {
+      this.itemNameContainerInnerHtml_ = itemName;
+      return;
+    }
+    this.itemNameContainerInnerHtml_ = this.i18nAdvanced(
+        'networkListItemTitle',
+        {attrs: ['id'], substitutions: [itemName, subtitle]});
+  },
+
+  /**
+   * @param {string} string
+   * @return {string}
+   * @private
+   */
+  escapeHtml_(string) {
+    return string.replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
   },
 
   /**
@@ -567,14 +605,6 @@ Polymer({
    */
   getSubtitle() {
     return this.subtitle_ ? this.subtitle_ : '';
-  },
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isSubtitleVisible_() {
-    return !!this.subtitle_;
   },
 
   /**

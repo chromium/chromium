@@ -41,6 +41,7 @@ constexpr webui::LocalizedString kElementLocalizedStrings[] = {
     {"networkListItemConnecting", IDS_STATUSBAR_NETWORK_DEVICE_CONNECTING},
     {"networkListItemConnectingTo", IDS_NETWORK_LIST_CONNECTING_TO},
     {"networkListItemInitializing", IDS_NETWORK_LIST_INITIALIZING},
+    {"networkListItemTitle", IDS_NETWORK_LIST_ITEM_TITLE},
     {"networkListItemSubpageButtonLabel",
      IDS_NETWORK_LIST_ITEM_SUBPAGE_BUTTON_LABEL},
     {"networkListItemLabel", IDS_NETWORK_LIST_ITEM_LABEL},
