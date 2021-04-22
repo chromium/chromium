@@ -17,6 +17,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_popup.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
@@ -192,7 +193,9 @@ struct xdg_positioner* XDGPopupWrapperImpl::CreatePositioner(
   if (!positioner)
     return nullptr;
 
-  auto menu_type = GetPopupTypeForPositioner(connection, parent_window);
+  auto menu_type = GetPopupTypeForPositioner(
+      wayland_window_->type(),
+      connection->event_source()->last_pointer_button_pressed(), parent_window);
 
   // The parent we got must be the topmost in the stack of the same family
   // windows.

@@ -8,8 +8,8 @@
 #include "base/notreached.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
+#include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ui {
 
@@ -22,15 +22,15 @@ gfx::Rect GetAnchorRect(PopupType menu_type,
                         const gfx::Rect& parent_window_bounds) {
   gfx::Rect anchor_rect;
   switch (menu_type) {
-    case PopupType::TYPE_RIGHT_CLICK:
-      // Place anchor for right click menus normally.
+    case PopupType::TYPE_NORMAL:
+      // Place anchor for normal popups normally.
       anchor_rect = gfx::Rect(menu_bounds.x(), menu_bounds.y(),
                               kAnchorDefaultWidth, kAnchorDefaultHeight);
       break;
     case PopupType::TYPE_3DOT_PARENT_MENU:
-      // The anchor for parent menu windows is positioned slightly above the
-      // specified bounds to ensure flipped window along y-axis won't hide 3-dot
-      // menu button.
+      // The anchor for a parent 3-dot menu windows is positioned slightly above
+      // the specified bounds to ensure flipped window along y-axis won't hide
+      // 3-dot menu button.
       anchor_rect = gfx::Rect(menu_bounds.x() - kAnchorDefaultWidth,
                               menu_bounds.y() - kAnchorHeightParentMenu,
                               kAnchorDefaultWidth, kAnchorHeightParentMenu);
@@ -76,7 +76,7 @@ gfx::Rect GetAnchorRect(PopupType menu_type,
       }
       break;
     case PopupType::TYPE_UNKNOWN:
-      NOTREACHED() << "Unsupported menu type";
+      NOTREACHED() << "Unsupported popup type";
       break;
   }
 
@@ -86,7 +86,7 @@ gfx::Rect GetAnchorRect(PopupType menu_type,
 WlAnchor GetAnchor(PopupType menu_type, const gfx::Rect& bounds) {
   WlAnchor anchor = WlAnchor::None;
   switch (menu_type) {
-    case PopupType::TYPE_RIGHT_CLICK:
+    case PopupType::TYPE_NORMAL:
       anchor = WlAnchor::TopLeft;
       break;
     case PopupType::TYPE_3DOT_PARENT_MENU:
@@ -113,7 +113,7 @@ WlAnchor GetAnchor(PopupType menu_type, const gfx::Rect& bounds) {
 WlGravity GetGravity(PopupType menu_type, const gfx::Rect& bounds) {
   WlGravity gravity = WlGravity::None;
   switch (menu_type) {
-    case PopupType::TYPE_RIGHT_CLICK:
+    case PopupType::TYPE_NORMAL:
       gravity = WlGravity::BottomRight;
       break;
     case PopupType::TYPE_3DOT_PARENT_MENU:
@@ -141,7 +141,7 @@ WlConstraintAdjustment GetConstraintAdjustment(PopupType menu_type) {
   WlConstraintAdjustment constraint = WlConstraintAdjustment::None;
 
   switch (menu_type) {
-    case PopupType::TYPE_RIGHT_CLICK:
+    case PopupType::TYPE_NORMAL:
       constraint =
           WlConstraintAdjustment::SlideX | WlConstraintAdjustment::SlideY |
           WlConstraintAdjustment::FlipY | WlConstraintAdjustment::ResizeY;
@@ -165,16 +165,16 @@ WlConstraintAdjustment GetConstraintAdjustment(PopupType menu_type) {
 }
 
 PopupType ShellPopupWrapper::GetPopupTypeForPositioner(
-    WaylandConnection* connection,
+    PlatformWindowType type,
+    int last_pointer_button_pressed,
     WaylandWindow* parent_window) const {
   bool is_right_click_menu =
-      connection->event_source()->last_pointer_button_pressed() &
-      EF_RIGHT_MOUSE_BUTTON;
+      last_pointer_button_pressed & EF_RIGHT_MOUSE_BUTTON;
 
   // Different types of menu require different anchors, constraint adjustments,
   // gravity and etc.
-  if (is_right_click_menu)
-    return PopupType::TYPE_RIGHT_CLICK;
+  if (is_right_click_menu || type == PlatformWindowType::kTooltip)
+    return PopupType::TYPE_NORMAL;
   else if (!parent_window->AsWaylandPopup())
     return PopupType::TYPE_3DOT_PARENT_MENU;
   else

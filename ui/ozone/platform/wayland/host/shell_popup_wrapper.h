@@ -7,6 +7,7 @@
 
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ui {
 
@@ -14,7 +15,7 @@ class WaylandConnection;
 class WaylandWindow;
 
 enum class PopupType {
-  TYPE_RIGHT_CLICK,
+  TYPE_NORMAL,
   TYPE_3DOT_PARENT_MENU,
   TYPE_3DOT_CHILD_MENU,
   TYPE_UNKNOWN,
@@ -78,7 +79,9 @@ class ShellPopupWrapper {
   // Sends acknowledge configure event back to wayland.
   virtual void AckConfigure(uint32_t serial) = 0;
 
-  PopupType GetPopupTypeForPositioner(WaylandConnection* connection,
+  // Returns popup type for |type|.
+  PopupType GetPopupTypeForPositioner(PlatformWindowType type,
+                                      int last_pointer_button_pressed,
                                       WaylandWindow* parent_window) const;
   bool CanGrabPopup(WaylandConnection* connection) const;
 };
