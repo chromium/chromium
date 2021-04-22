@@ -898,8 +898,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("subtree-reparented-ignored-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsSubtreeReparentedViaAppendChild) {
+// TODO(crbug.com/1201313): Fix flakiness.
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityEventsTest,
+    DISABLED_AccessibilityEventsSubtreeReparentedViaAppendChild) {
   RunEventTest(FILE_PATH_LITERAL("subtree-reparented-via-append-child.html"));
 }
 
