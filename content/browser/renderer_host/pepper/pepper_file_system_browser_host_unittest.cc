@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_test.h"
+#include "content/public/test/browser_task_environment.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_resource.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,6 +38,8 @@ class PepperFileSystemBrowserHostTest : public testing::Test,
   }
 
  private:
+  // Needed because |host_| has checks for UI/IO threads.
+  BrowserTaskEnvironment task_environment_;
   std::unique_ptr<PepperFileSystemBrowserHost> host_;
 
   DISALLOW_COPY_AND_ASSIGN(PepperFileSystemBrowserHostTest);

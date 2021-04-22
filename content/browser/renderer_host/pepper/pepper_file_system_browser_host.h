@@ -13,9 +13,11 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/pepper/quota_reservation.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/browser_thread.h"
 #include "ppapi/c/pp_file_info.h"
 #include "ppapi/c/private/ppb_isolated_file_system_private.h"
 #include "ppapi/host/host_message_context.h"
@@ -55,18 +57,19 @@ class CONTENT_EXPORT PepperFileSystemBrowserHost
 
   // Supports FileRefs direct access on the host side.
   PP_FileSystemType GetType() const { return type_; }
-  bool IsOpened() const { return opened_; }
-  GURL GetRootUrl() const { return root_url_; }
-  scoped_refptr<storage::FileSystemContext> GetFileSystemContext() const {
-    return file_system_context_;
-  }
+  bool IsOpened() const;
+  GURL GetRootUrl() const;
 
-  // Supports FileIOs direct access on the host side.
+  // Can only call this if ProcessHostOnUI is disabled.
+  scoped_refptr<storage::FileSystemContext> GetFileSystemContext() const;
+
+  // Returns a callback which can be run on the IO thread to return a
+  // FileSystemOperationRunner  Supports FileIOs direct access on the host side.
   // Non-NULL only for PP_FILESYSTEMTYPE_LOCAL{PERSISTENT,TEMPORARY}.
-  storage::FileSystemOperationRunner* GetFileSystemOperationRunner() const {
-    return file_system_operation_runner_.get();
-  }
-  bool ChecksQuota() const { return quota_reservation_.get() != NULL; }
+  using GetOperationRunnerCallback =
+      base::RepeatingCallback<storage::FileSystemOperationRunner*()>;
+  GetOperationRunnerCallback GetFileSystemOperationRunner() const;
+  bool ChecksQuota() const { return !!quota_reservation_; }
   // Opens a file for writing with quota checks. Returns the file size in the
   // callback.
   using OpenQuotaFileCallback = base::OnceCallback<void(int64_t)>;
@@ -78,33 +81,121 @@ class CONTENT_EXPORT PepperFileSystemBrowserHost
   void CloseQuotaFile(PepperFileIOHost* file_io_host,
                       const ppapi::FileGrowth& file_growth);
 
- private:
-  friend class PepperFileSystemBrowserHostTest;
+  static scoped_refptr<storage::FileSystemContext>
+  GetFileSystemContextFromRenderId(int render_process_id);
 
-  void OpenExistingFileSystem(
-      base::OnceClosure callback,
-      scoped_refptr<storage::FileSystemContext> file_system_context);
-  void OpenFileSystem(
-      ppapi::host::ReplyMessageContext reply_context,
-      storage::FileSystemType file_system_type,
-      scoped_refptr<storage::FileSystemContext> file_system_context);
-  void OpenFileSystemComplete(ppapi::host::ReplyMessageContext reply_context,
-                              const GURL& root,
-                              const std::string& name,
-                              base::File::Error error);
-  void OpenIsolatedFileSystem(
-      ppapi::host::ReplyMessageContext reply_context,
-      const std::string& fsid,
-      PP_IsolatedFileSystemType_Private type,
-      scoped_refptr<storage::FileSystemContext> file_system_context);
-  void OpenPluginPrivateFileSystem(
-      ppapi::host::ReplyMessageContext reply_context,
-      const std::string& fsid,
-      scoped_refptr<storage::FileSystemContext> file_system_context);
-  void OpenPluginPrivateFileSystemComplete(
-      ppapi::host::ReplyMessageContext reply_context,
-      const std::string& fsid,
-      base::File::Error error);
+ private:
+  // All interactions with FileSystemContext must occur on the IO thread as
+  // it lives there.
+  class IOThreadState : public base::RefCountedThreadSafe<
+                            IOThreadState,
+                            content::BrowserThread::DeleteOnIOThread> {
+   public:
+    IOThreadState(PP_FileSystemType type,
+                  base::WeakPtr<PepperFileSystemBrowserHost> host);
+
+    // |callback| needs to run on |task_runner_|.
+    void OpenExistingFileSystem(
+        const GURL& root_url,
+        base::OnceClosure callback,
+        scoped_refptr<storage::FileSystemContext> file_system_context);
+    void OpenFileSystem(
+        const GURL& origin,
+        ppapi::host::ReplyMessageContext reply_context,
+        storage::FileSystemType file_system_type,
+        scoped_refptr<storage::FileSystemContext> file_system_context);
+    void OpenIsolatedFileSystem(
+        const GURL& origin,
+        const GURL& root_url,
+        const std::string& plugin_id,
+        ppapi::host::ReplyMessageContext reply_context,
+        const std::string& fsid,
+        PP_IsolatedFileSystemType_Private type,
+        scoped_refptr<storage::FileSystemContext> file_system_context);
+
+    bool opened() const { return opened_; }
+    GURL root_url() const { return root_url_; }
+
+    scoped_refptr<storage::FileSystemContext> file_system_context() const {
+      return file_system_context_;
+    }
+
+    // Supports FileIOs direct access on the host side.
+    // Non-NULL only for PP_FILESYSTEMTYPE_LOCAL{PERSISTENT,TEMPORARY}.
+    storage::FileSystemOperationRunner* GetFileSystemOperationRunner() const {
+      return file_system_operation_runner_.get();
+    }
+
+   private:
+    friend struct content::BrowserThread::DeleteOnThread<
+        content::BrowserThread::IO>;
+    friend class base::DeleteHelper<IOThreadState>;
+
+    ~IOThreadState();
+
+    void OpenFileSystemComplete(ppapi::host::ReplyMessageContext reply_context,
+                                const GURL& root,
+                                const std::string& name,
+                                base::File::Error error);
+    void OpenPluginPrivateFileSystem(
+        const GURL& origin,
+        const std::string& plugin_id,
+        ppapi::host::ReplyMessageContext reply_context,
+        const std::string& fsid,
+        scoped_refptr<storage::FileSystemContext> file_system_context);
+    void OpenPluginPrivateFileSystemComplete(
+        ppapi::host::ReplyMessageContext reply_context,
+        const std::string& fsid,
+        base::File::Error error);
+
+    // Runs on |task_runner_.
+    void RunCallbackIfHostAlive(base::OnceClosure callback);
+
+    void SendReplyForFileSystemIfHostAlive(
+        ppapi::host::ReplyMessageContext reply_context,
+        int32_t pp_error);
+
+    void SendReplyForIsolatedFileSystem(
+        ppapi::host::ReplyMessageContext reply_context,
+        const std::string& fsid,
+        int32_t error);
+
+    void SetFileSystemContext(
+        scoped_refptr<storage::FileSystemContext> file_system_context);
+
+    void ShouldCreateQuotaReservation(
+        base::OnceCallback<void(bool)> callback) const;
+    void CreateQuotaReservation(base::OnceClosure callback);
+    void GotQuotaReservation(base::OnceClosure callback,
+                             scoped_refptr<QuotaReservation> quota_reservation);
+
+    // Members below can be accessed on UI and IO threads. If accessed on the UI
+    // thread, this must be done if |host_->called_open_| is true.
+    bool opened_ = false;  // Whether open succeeded.
+    GURL root_url_;
+
+    // Members below should only be used on the IO thread.
+    PP_FileSystemType type_;
+    scoped_refptr<storage::FileSystemContext> file_system_context_;
+
+    std::unique_ptr<storage::FileSystemOperationRunner>
+        file_system_operation_runner_;
+
+    // Used only for file systems with quota.
+    // When a PepperFileIOHost calls OpenQuotaFile, we add the id and a
+    // non-owning pointer to this map. CloseQuotaFile must be called when before
+    // the host is destroyed.
+    typedef std::map<int32_t, PepperFileIOHost*> FileMap;
+    FileMap files_;
+
+    // Thread that this object is constructed on.
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+    // Only used on |task_runner_|.
+    base::WeakPtr<PepperFileSystemBrowserHost> host_;
+  };
+
+  friend class PepperFileSystemBrowserHostTest;
 
   int32_t OnHostMsgOpen(ppapi::host::HostMessageContext* context,
                         int64_t expected_size);
@@ -116,43 +207,26 @@ class CONTENT_EXPORT PepperFileSystemBrowserHost
                                 int64_t amount,
                                 const ppapi::FileGrowthMap& file_growths);
 
-  void SendReplyForFileSystem(ppapi::host::ReplyMessageContext reply_context,
-                              int32_t pp_error);
-  void SendReplyForIsolatedFileSystem(
-      ppapi::host::ReplyMessageContext reply_context,
-      const std::string& fsid,
-      int32_t error);
-
-  void SetFileSystemContext(
-      scoped_refptr<storage::FileSystemContext> file_system_context);
-
-  void ShouldCreateQuotaReservation(base::OnceCallback<void(bool)> callback) const;
-  void CreateQuotaReservation(base::OnceClosure callback);
   void GotQuotaReservation(base::OnceClosure callback,
                            scoped_refptr<QuotaReservation> quota_reservation);
 
   void GotReservedQuota(ppapi::host::ReplyMessageContext reply_context,
                         int64_t amount,
                         const ppapi::FileSizeMap& file_sizes);
-  void DidOpenQuotaFile(PP_Resource file_io_resource,
-                        const OpenQuotaFileCallback& callback,
-                        int64_t max_written_offset);
 
   std::string GetPluginMimeType() const;
 
   // Returns plugin ID generated from plugin's MIME type.
   std::string GeneratePluginId(const std::string& mime_type) const;
 
+  static storage::FileSystemOperationRunner*
+  GetFileSystemOperationRunnerInternal(
+      scoped_refptr<IOThreadState> io_thread_state);
+
   BrowserPpapiHost* browser_ppapi_host_;
 
   PP_FileSystemType type_;
   bool called_open_;  // whether open has been called.
-  bool opened_;       // whether open succeeded.
-  GURL root_url_;
-  scoped_refptr<storage::FileSystemContext> file_system_context_;
-
-  std::unique_ptr<storage::FileSystemOperationRunner>
-      file_system_operation_runner_;
 
   // Used only for file systems with quota.
   // When a PepperFileIOHost calls OpenQuotaFile, we add the id and a non-owning
@@ -162,10 +236,11 @@ class CONTENT_EXPORT PepperFileSystemBrowserHost
   FileMap files_;
   int64_t reserved_quota_;
   bool reserving_quota_;
-  // Access only on the FileSystemContext's default_file_task_runner().
   scoped_refptr<QuotaReservation> quota_reservation_;
 
   std::string fsid_;  // used only for isolated filesystems.
+
+  scoped_refptr<IOThreadState> io_thread_state_;
 
   base::WeakPtrFactory<PepperFileSystemBrowserHost> weak_factory_{this};
 

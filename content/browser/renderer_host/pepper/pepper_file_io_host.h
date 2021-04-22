@@ -143,8 +143,6 @@ class PepperFileIOHost : public ppapi::host::ResourceHost,
   PP_FileSystemType file_system_type_;
   base::WeakPtr<PepperFileSystemBrowserHost> file_system_host_;
 
-  // Valid only for PP_FILESYSTEMTYPE_LOCAL{PERSISTENT,TEMPORARY}.
-  scoped_refptr<storage::FileSystemContext> file_system_context_;
   storage::FileSystemURL file_system_url_;
   base::OnceClosure on_close_callback_;
   int64_t max_written_offset_;

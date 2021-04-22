@@ -60,6 +60,26 @@ class PepperInternalFileRefBackend : public PepperFileRefBackend {
                  const IPC::Message& msg,
                  base::File::Error error);
 
+  // Helper methods called on IO thread when the PpapiHost runs on the UI
+  // thread.
+  static void DidFinishOnIOThread(
+      base::WeakPtr<PepperInternalFileRefBackend> weak_ptr,
+      ppapi::host::ReplyMessageContext reply_context,
+      const IPC::Message& msg,
+      base::File::Error error);
+  static void ReadDirectoryCompleteOnIOThread(
+      base::WeakPtr<PepperInternalFileRefBackend> weak_ptr,
+      ppapi::host::ReplyMessageContext reply_context,
+      storage::FileSystemOperation::FileEntryList* accumulated_file_list,
+      base::File::Error error,
+      storage::FileSystemOperation::FileEntryList file_list,
+      bool has_more);
+  static void GetMetadataCompleteOnIOThread(
+      base::WeakPtr<PepperInternalFileRefBackend> weak_ptr,
+      ppapi::host::ReplyMessageContext reply_context,
+      base::File::Error result,
+      const base::File::Info& file_info);
+
   // Operation specific callbacks.
   void GetMetadataComplete(ppapi::host::ReplyMessageContext reply_context,
                            base::File::Error error,

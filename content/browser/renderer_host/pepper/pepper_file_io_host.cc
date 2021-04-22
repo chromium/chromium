@@ -21,6 +21,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ppapi/c/pp_errors.h"
@@ -101,6 +102,25 @@ void DidOpenFile(base::WeakPtr<PepperFileIOHost> file_host,
         FROM_HERE, base::BindOnce(&FileCloser, std::move(file)),
         base::BindOnce(&DidCloseFile, std::move(on_close_callback)));
   }
+}
+
+void OpenFileCallbackWrapperIO(
+    storage::FileSystemOperationRunner::OpenFileCallback callback,
+    base::File file,
+    base::OnceClosure on_close_callback) {
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(file),
+                                std::move(on_close_callback)));
+}
+
+void CallOpenFile(
+    PepperFileSystemBrowserHost::GetOperationRunnerCallback get_runner,
+    const storage::FileSystemURL& url,
+    int file_flags,
+    storage::FileSystemOperationRunner::OpenFileCallback callback) {
+  get_runner.Run()->OpenFile(
+      url, file_flags,
+      base::BindOnce(&OpenFileCallbackWrapperIO, std::move(callback)));
 }
 
 }  // namespace
@@ -205,14 +225,21 @@ int32_t PepperFileIOHost::OnHostMsgOpen(
     if (!CanOpenFileSystemURLWithPepperFlags(
             open_flags, render_process_id_, file_system_url_))
       return PP_ERROR_NOACCESS;
-    GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&GetUIThreadStuffForInternalFileSystems,
-                       render_process_id_),
-        base::BindOnce(
-            &PepperFileIOHost::GotUIThreadStuffForInternalFileSystems,
-            AsWeakPtr(), context->MakeReplyMessageContext(),
-            platform_file_flags));
+
+    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      GotUIThreadStuffForInternalFileSystems(
+          context->MakeReplyMessageContext(), platform_file_flags,
+          GetUIThreadStuffForInternalFileSystems(render_process_id_));
+    } else {
+      GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&GetUIThreadStuffForInternalFileSystems,
+                         render_process_id_),
+          base::BindOnce(
+              &PepperFileIOHost::GotUIThreadStuffForInternalFileSystems,
+              AsWeakPtr(), context->MakeReplyMessageContext(),
+              platform_file_flags));
+    }
   } else {
     base::FilePath path = file_ref_host->GetExternalFilePath();
     if (!CanOpenWithPepperFlags(open_flags, render_process_id_, path))
@@ -232,17 +259,19 @@ void PepperFileIOHost::GotUIThreadStuffForInternalFileSystems(
     ppapi::host::ReplyMessageContext reply_context,
     int platform_file_flags,
     UIThreadStuff ui_thread_stuff) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  file_system_context_ = ui_thread_stuff.file_system_context;
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? BrowserThread::UI
+                          : BrowserThread::IO);
   resolved_render_process_id_ = ui_thread_stuff.resolved_render_process_id;
   if (resolved_render_process_id_ == base::kNullProcessId ||
-      !file_system_context_.get()) {
+      !ui_thread_stuff.file_system_context.get()) {
     reply_context.params.set_result(PP_ERROR_FAILED);
     SendOpenErrorReply(reply_context);
     return;
   }
 
-  if (!file_system_context_->GetFileSystemBackend(file_system_url_.type())) {
+  if (!ui_thread_stuff.file_system_context->GetFileSystemBackend(
+          file_system_url_.type())) {
     reply_context.params.set_result(PP_ERROR_FAILED);
     SendOpenErrorReply(reply_context);
     return;
@@ -254,13 +283,22 @@ void PepperFileIOHost::GotUIThreadStuffForInternalFileSystems(
     return;
   }
 
-  DCHECK(file_system_host_->GetFileSystemOperationRunner());
-
-  file_system_host_->GetFileSystemOperationRunner()->OpenFile(
-      file_system_url_, platform_file_flags,
+  auto open_callback =
       base::BindOnce(&DidOpenFile, AsWeakPtr(), task_runner_,
                      base::BindOnce(&PepperFileIOHost::DidOpenInternalFile,
-                                    AsWeakPtr(), reply_context)));
+                                    AsWeakPtr(), reply_context));
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            CallOpenFile, file_system_host_->GetFileSystemOperationRunner(),
+            file_system_url_, platform_file_flags, std::move(open_callback)));
+  } else {
+    DCHECK(file_system_host_->GetFileSystemOperationRunner());
+
+    file_system_host_->GetFileSystemOperationRunner().Run()->OpenFile(
+        file_system_url_, platform_file_flags, std::move(open_callback));
+  }
 }
 
 void PepperFileIOHost::DidOpenInternalFile(
@@ -292,7 +330,9 @@ void PepperFileIOHost::GotResolvedRenderProcessId(
     base::FilePath path,
     int file_flags,
     base::ProcessId resolved_render_process_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? BrowserThread::UI
+                          : BrowserThread::IO);
   resolved_render_process_id_ = resolved_render_process_id;
   file_.CreateOrOpen(path, file_flags,
                      base::BindOnce(&PepperFileIOHost::OnLocalFileOpened,
@@ -413,7 +453,9 @@ int32_t PepperFileIOHost::OnHostMsgRequestOSFileHandle(
 void PepperFileIOHost::GotPluginAllowedToCallRequestOSFileHandle(
     ppapi::host::ReplyMessageContext reply_context,
     bool plugin_allowed) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? BrowserThread::UI
+                          : BrowserThread::IO);
   if (!browser_ppapi_host_->external_plugin() ||
       host()->permissions().HasPermission(ppapi::PERMISSION_PRIVATE) ||
       plugin_allowed) {
