@@ -634,7 +634,7 @@ void PDFiumEngine::Paint(const gfx::Rect& rect,
     // If two-up view is enabled, we don't need to recompute |leftover| since
     // subtracting |leftover| with a two-up view page won't result in a
     // rectangle.
-    if (!layout_.options().two_up_view_enabled()) {
+    if (layout_.options().page_spread() == DocumentLayout::PageSpread::kOneUp) {
       if (i == 0) {
         gfx::Rect blank_space_in_screen = dirty_in_screen;
         blank_space_in_screen.set_y(0);
@@ -2166,7 +2166,9 @@ void PDFiumEngine::SetReadOnly(bool enable) {
 }
 
 void PDFiumEngine::SetTwoUpView(bool enable) {
-  desired_layout_options_.set_two_up_view_enabled(enable);
+  desired_layout_options_.set_page_spread(
+      enable ? DocumentLayout::PageSpread::kTwoUpOdd
+             : DocumentLayout::PageSpread::kOneUp);
   ProposeNextDocumentLayout();
 }
 
@@ -2840,7 +2842,8 @@ void PDFiumEngine::UpdateDocumentLayout(DocumentLayout* layout) {
   if (page_sizes.empty())
     return;
 
-  if (layout->options().two_up_view_enabled()) {
+  if (layout->options().page_spread() ==
+      DocumentLayout::PageSpread::kTwoUpOdd) {
     layout->ComputeTwoUpViewLayout(page_sizes);
   } else {
     layout->ComputeSingleViewLayout(page_sizes);
@@ -3095,7 +3098,7 @@ draw_utils::PageInsetSizes PDFiumEngine::GetInsetSizes(
     size_t num_of_pages) const {
   DCHECK_LT(page_index, num_of_pages);
 
-  if (layout_options.two_up_view_enabled()) {
+  if (layout_options.page_spread() == DocumentLayout::PageSpread::kTwoUpOdd) {
     return draw_utils::GetPageInsetsForTwoUpView(
         page_index, num_of_pages, DocumentLayout::kSingleViewInsets,
         DocumentLayout::kHorizontalSeparator);
@@ -3132,8 +3135,9 @@ base::Optional<size_t> PDFiumEngine::GetAdjacentPageIndexForTwoUpView(
     size_t num_of_pages) const {
   DCHECK_LT(page_index, num_of_pages);
 
-  if (!layout_.options().two_up_view_enabled())
+  if (layout_.options().page_spread() == DocumentLayout::PageSpread::kOneUp) {
     return base::nullopt;
+  }
 
   int adjacent_page_offset = page_index % 2 ? -1 : 1;
   size_t adjacent_page_index = page_index + adjacent_page_offset;
@@ -3239,7 +3243,8 @@ void PDFiumEngine::FillPageSides(int progressive_index) {
       GetInsetSizes(layout_.options(), page_index, pages_.size());
 
   gfx::Rect page_rect = pages_[page_index]->rect();
-  const bool is_two_up_view = layout_.options().two_up_view_enabled();
+  const bool is_two_up_view =
+      layout_.options().page_spread() == DocumentLayout::PageSpread::kTwoUpOdd;
   if (page_rect.x() > 0 && (!is_two_up_view || page_index % 2 == 0)) {
     // If in two-up view, only need to draw the left empty space for left pages
     // since the gap between the left and right page will be drawn by the left

@@ -29,6 +29,12 @@ namespace chrome_pdf {
 // orientation of pages.
 class DocumentLayout final {
  public:
+  // TODO(crbug.com/1144505): Add `kTwoUpEven` page spread support.
+  enum class PageSpread {
+    kOneUp = 0,     // One page per spread.
+    kTwoUpOdd = 1,  // Two pages per spread, with odd pages first.
+  };
+
   // Options controlling layout behavior.
   class Options final {
    public:
@@ -40,7 +46,7 @@ class DocumentLayout final {
     ~Options();
 
     friend bool operator==(const Options& lhs, const Options& rhs) {
-      return lhs.two_up_view_enabled() == rhs.two_up_view_enabled() &&
+      return lhs.page_spread() == rhs.page_spread() &&
              lhs.default_page_orientation() == rhs.default_page_orientation();
     }
 
@@ -64,14 +70,14 @@ class DocumentLayout final {
     // Rotates default page orientation 90 degrees counterclockwise.
     void RotatePagesCounterclockwise();
 
-    bool two_up_view_enabled() const { return two_up_view_enabled_; }
+    PageSpread page_spread() const { return page_spread_; }
 
     // Changes two-up view status.
-    void set_two_up_view_enabled(bool enable) { two_up_view_enabled_ = enable; }
+    void set_page_spread(PageSpread spread) { page_spread_ = spread; }
 
    private:
     PageOrientation default_page_orientation_ = PageOrientation::kOriginal;
-    bool two_up_view_enabled_ = false;
+    PageSpread page_spread_ = PageSpread::kOneUp;
   };
 
   static const draw_utils::PageInsetSizes kSingleViewInsets;

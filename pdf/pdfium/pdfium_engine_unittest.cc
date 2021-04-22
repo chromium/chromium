@@ -159,7 +159,7 @@ TEST_F(PDFiumEngineTest, InitializeWithRectanglesMultiPagesPdfInTwoUpView) {
   ASSERT_TRUE(engine);
 
   DocumentLayout::Options options;
-  options.set_two_up_view_enabled(true);
+  options.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
   EXPECT_CALL(client, ProposeDocumentLayout(LayoutWithOptions(options)))
       .WillOnce(Return());
   engine->SetTwoUpView(true);

@@ -24,35 +24,35 @@ class DocumentLayoutTest : public testing::Test {
 
 TEST_F(DocumentLayoutOptionsTest, DefaultConstructor) {
   EXPECT_EQ(options_.default_page_orientation(), PageOrientation::kOriginal);
-  EXPECT_FALSE(options_.two_up_view_enabled());
+  EXPECT_EQ(options_.page_spread(), DocumentLayout::PageSpread::kOneUp);
 }
 
 TEST_F(DocumentLayoutOptionsTest, CopyConstructor) {
   options_.RotatePagesClockwise();
-  options_.set_two_up_view_enabled(true);
+  options_.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
 
   DocumentLayout::Options copy(options_);
   EXPECT_EQ(copy.default_page_orientation(), PageOrientation::kClockwise90);
-  EXPECT_TRUE(copy.two_up_view_enabled());
+  EXPECT_EQ(copy.page_spread(), DocumentLayout::PageSpread::kTwoUpOdd);
 
   options_.RotatePagesClockwise();
-  options_.set_two_up_view_enabled(false);
+  options_.set_page_spread(DocumentLayout::PageSpread::kOneUp);
   EXPECT_EQ(copy.default_page_orientation(), PageOrientation::kClockwise90);
-  EXPECT_TRUE(copy.two_up_view_enabled());
+  EXPECT_EQ(copy.page_spread(), DocumentLayout::PageSpread::kTwoUpOdd);
 }
 
 TEST_F(DocumentLayoutOptionsTest, CopyAssignment) {
   options_.RotatePagesClockwise();
-  options_.set_two_up_view_enabled(true);
+  options_.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
 
   DocumentLayout::Options copy = options_;
   EXPECT_EQ(copy.default_page_orientation(), PageOrientation::kClockwise90);
-  EXPECT_TRUE(copy.two_up_view_enabled());
+  EXPECT_EQ(copy.page_spread(), DocumentLayout::PageSpread::kTwoUpOdd);
 
   options_.RotatePagesClockwise();
-  options_.set_two_up_view_enabled(false);
+  options_.set_page_spread(DocumentLayout::PageSpread::kOneUp);
   EXPECT_EQ(copy.default_page_orientation(), PageOrientation::kClockwise90);
-  EXPECT_TRUE(copy.two_up_view_enabled());
+  EXPECT_EQ(copy.page_spread(), DocumentLayout::PageSpread::kTwoUpOdd);
 }
 
 TEST_F(DocumentLayoutOptionsTest, Equals) {
@@ -73,16 +73,16 @@ TEST_F(DocumentLayoutOptionsTest, Equals) {
   copy.RotatePagesCounterclockwise();
   EXPECT_TRUE(copy == options_);
 
-  options_.set_two_up_view_enabled(true);
+  options_.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
   EXPECT_FALSE(copy == options_);
 
-  copy.set_two_up_view_enabled(true);
+  copy.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
   EXPECT_TRUE(copy == options_);
 
-  options_.set_two_up_view_enabled(false);
+  options_.set_page_spread(DocumentLayout::PageSpread::kOneUp);
   EXPECT_FALSE(copy == options_);
 
-  copy.set_two_up_view_enabled(false);
+  copy.set_page_spread(DocumentLayout::PageSpread::kOneUp);
   EXPECT_TRUE(copy == options_);
 }
 
@@ -136,7 +136,8 @@ TEST_F(DocumentLayoutOptionsTest, RotatePagesCounterclockwise) {
 TEST_F(DocumentLayoutTest, DefaultConstructor) {
   EXPECT_EQ(layout_.options().default_page_orientation(),
             PageOrientation::kOriginal);
-  EXPECT_FALSE(layout_.options().two_up_view_enabled());
+  EXPECT_EQ(layout_.options().page_spread(),
+            DocumentLayout::PageSpread::kOneUp);
   EXPECT_FALSE(layout_.dirty());
   EXPECT_EQ(layout_.size(), gfx::Size(0, 0));
   EXPECT_EQ(layout_.page_count(), 0u);
@@ -165,20 +166,20 @@ TEST_F(DocumentLayoutTest, DirtySetOnOptionsChange) {
 
   layout_.clear_dirty();
 
-  options.set_two_up_view_enabled(true);
+  options.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
   layout_.SetOptions(options);
   EXPECT_TRUE(layout_.dirty());
 }
 
 TEST_F(DocumentLayoutTest, DirtyNotSetOnSameOptions) {
   DocumentLayout::Options options;
-  options.set_two_up_view_enabled(true);
+  options.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
   layout_.SetOptions(options);
   EXPECT_TRUE(layout_.dirty());
 
   layout_.clear_dirty();
 
-  options.set_two_up_view_enabled(true);
+  options.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
   layout_.SetOptions(options);
   EXPECT_FALSE(layout_.dirty());
 }

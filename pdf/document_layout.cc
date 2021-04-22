@@ -53,7 +53,8 @@ base::Value DocumentLayout::Options::ToValue() const {
   base::Value dictionary(base::Value::Type::DICTIONARY);
   dictionary.SetIntKey(kDefaultPageOrientation,
                        static_cast<int32_t>(default_page_orientation_));
-  dictionary.SetBoolKey(kTwoUpViewEnabled, two_up_view_enabled_);
+  dictionary.SetBoolKey(kTwoUpViewEnabled,
+                        page_spread_ == PageSpread::kTwoUpOdd);
   return dictionary;
 }
 
@@ -61,7 +62,7 @@ void DocumentLayout::Options::FromValue(const base::Value& value) {
   DCHECK(value.is_dict());
 
   int32_t default_page_orientation =
-      value.FindKey(kDefaultPageOrientation)->GetInt();
+      value.FindIntKey(kDefaultPageOrientation).value();
   DCHECK_GE(default_page_orientation,
             static_cast<int32_t>(PageOrientation::kOriginal));
   DCHECK_LE(default_page_orientation,
@@ -69,7 +70,9 @@ void DocumentLayout::Options::FromValue(const base::Value& value) {
   default_page_orientation_ =
       static_cast<PageOrientation>(default_page_orientation);
 
-  two_up_view_enabled_ = value.FindKey(kTwoUpViewEnabled)->GetBool();
+  page_spread_ = value.FindBoolKey(kTwoUpViewEnabled).value()
+                     ? PageSpread::kTwoUpOdd
+                     : PageSpread::kOneUp;
 }
 
 void DocumentLayout::Options::RotatePagesClockwise() {
