@@ -57,6 +57,10 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   ClientView* CreateClientView(Widget* widget) override;
   ax::mojom::Role GetAccessibleWindowRole() override;
 
+  // Create and initialize the bubble Widget with proper bounds.
+  static Widget* CreateBubble(
+      std::unique_ptr<BubbleDialogDelegate> bubble_delegate);
+
   //////////////////////////////////////////////////////////////////////////////
   // The anchor view and rectangle:
   //
@@ -247,9 +251,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
                                                   gfx::Rect screen_rect);
 
  protected:
-  // Create and initialize the bubble Widget with proper bounds.
-  static Widget* CreateBubble(BubbleDialogDelegate* bubble_delegate);
-
   // Override this method if you want to position the bubble regardless of its
   // anchor, while retaining the other anchor view logic.
   virtual gfx::Rect GetBubbleBounds();

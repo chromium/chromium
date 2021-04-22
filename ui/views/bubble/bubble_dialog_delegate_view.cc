@@ -102,6 +102,7 @@ bool CustomShadowsSupported() {
 
 // Create a widget to host the bubble.
 Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
+  DCHECK(bubble->owned_by_widget());
   Widget* bubble_widget = new BubbleWidget();
   Widget::InitParams bubble_params(Widget::InitParams::TYPE_BUBBLE);
   bubble_params.delegate = bubble;
@@ -308,6 +309,7 @@ BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
                                            BubbleBorder::Shadow shadow)
     : arrow_(arrow), shadow_(shadow) {
   SetAnchorView(anchor_view);
+  SetOwnedByWidget(true);
 }
 
 BubbleDialogDelegate::~BubbleDialogDelegate() {
@@ -316,7 +318,10 @@ BubbleDialogDelegate::~BubbleDialogDelegate() {
 
 // static
 Widget* BubbleDialogDelegate::CreateBubble(
-    BubbleDialogDelegate* bubble_delegate) {
+    std::unique_ptr<BubbleDialogDelegate> bubble_delegate_unique) {
+  BubbleDialogDelegate* const bubble_delegate = bubble_delegate_unique.get();
+  DCHECK(bubble_delegate->owned_by_widget());
+
   // On Mac, MODAL_TYPE_WINDOW is implemented using sheets, which can't be
   // anchored at a specific point - they are always placed near the top center
   // of the window. To avoid unpleasant surprises, disallow setting an anchor
@@ -329,7 +334,8 @@ Widget* BubbleDialogDelegate::CreateBubble(
   bubble_delegate->Init();
   // Get the latest anchor widget from the anchor view at bubble creation time.
   bubble_delegate->SetAnchorView(bubble_delegate->GetAnchorView());
-  Widget* bubble_widget = CreateBubbleWidget(bubble_delegate);
+  Widget* const bubble_widget =
+      CreateBubbleWidget(bubble_delegate_unique.release());
 
   bubble_delegate->set_adjust_if_offscreen(
       PlatformStyle::kAdjustBubbleIfOffscreen);
@@ -346,10 +352,12 @@ Widget* BubbleDialogDelegate::CreateBubble(
 
 Widget* BubbleDialogDelegateView::CreateBubble(
     std::unique_ptr<BubbleDialogDelegateView> delegate) {
-  return CreateBubble(delegate.release());
+  DCHECK(delegate->owned_by_client());
+  return BubbleDialogDelegate::CreateBubble(std::move(delegate));
 }
+
 Widget* BubbleDialogDelegateView::CreateBubble(BubbleDialogDelegateView* view) {
-  return BubbleDialogDelegate::CreateBubble(view);
+  return CreateBubble(base::WrapUnique(view));
 }
 
 BubbleDialogDelegateView::BubbleDialogDelegateView()
@@ -360,7 +368,6 @@ BubbleDialogDelegateView::BubbleDialogDelegateView(View* anchor_view,
                                                    BubbleBorder::Shadow shadow)
     : BubbleDialogDelegate(anchor_view, arrow, shadow) {
   set_owned_by_client();
-  SetOwnedByWidget(true);
   WidgetDelegate::SetShowCloseButton(false);
 
   SetArrow(arrow);
@@ -379,7 +386,12 @@ BubbleDialogDelegateView::~BubbleDialogDelegateView() {
   // managers, push this down to client destructors.
   SetLayoutManager(nullptr);
   // TODO(pbos): See if we can resolve this better. This currently prevents a
-  // crash that shows up in BubbleFrameViewTest.WidthSnaps.
+  // crash that shows up in BubbleFrameViewTest.WidthSnaps. This crash seems to
+  // happen at GetWidget()->IsVisible() inside SetAnchorView(nullptr) and seems
+  // to be as a result of WidgetDelegate's widget_ not getting updated during
+  // destruction when BubbleDialogDelegateView::DeleteDelegate() doesn't delete
+  // itself, as Widget drops a reference to widget_delegate_ and can't inform it
+  // of WidgetDeleting in ~Widget.
   SetAnchorView(nullptr);
 }
 
