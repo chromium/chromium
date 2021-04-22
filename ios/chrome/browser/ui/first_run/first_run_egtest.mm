@@ -67,7 +67,7 @@ id<GREYMatcher> SkipSigninButton() {
 
 // Navigates to the terms of service and back.
 - (void)testTermsAndConditions {
-  [FirstRunAppInterface showFirstRunUI];
+  [FirstRunAppInterface showLegacyFirstRunUI];
 
   id<GREYMatcher> termsOfServiceLink =
       grey_accessibilityLabel(@"Terms of Service");
@@ -100,7 +100,7 @@ id<GREYMatcher> SkipSigninButton() {
 
 // Toggle the UMA checkbox.
 - (void)testToggleMetricsOn {
-  [FirstRunAppInterface showFirstRunUI];
+  [FirstRunAppInterface showLegacyFirstRunUI];
 
   id<GREYMatcher> metrics =
       grey_accessibilityID(first_run::kUMAMetricsButtonAccessibilityIdentifier);
@@ -121,7 +121,7 @@ id<GREYMatcher> SkipSigninButton() {
 
 // Dismisses the first run screens.
 - (void)testDismissFirstRun {
-  [FirstRunAppInterface showFirstRunUI];
+  [FirstRunAppInterface showLegacyFirstRunUI];
 
   [[EarlGrey selectElementWithMatcher:FirstRunOptInAcceptButton()]
       performAction:grey_tap()];
@@ -143,7 +143,7 @@ id<GREYMatcher> SkipSigninButton() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Launch First Run and accept tems of services.
-  [FirstRunAppInterface showFirstRunUI];
+  [FirstRunAppInterface showLegacyFirstRunUI];
   [[EarlGrey selectElementWithMatcher:FirstRunOptInAcceptButton()]
       performAction:grey_tap()];
 
@@ -169,7 +169,7 @@ id<GREYMatcher> SkipSigninButton() {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
-  [FirstRunAppInterface showFirstRunUI];
+  [FirstRunAppInterface showLegacyFirstRunUI];
 
   [ChromeEarlGrey openNewWindow];
   [ChromeEarlGrey waitForForegroundWindowCount:2];

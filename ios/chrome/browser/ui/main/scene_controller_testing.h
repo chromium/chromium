@@ -16,7 +16,7 @@ struct UrlLoadParams;
 
 @property(nonatomic, strong) TabGridCoordinator* mainCoordinator;
 
-- (void)showFirstRunUI;
+- (void)showLegacyFirstRunUI;
 
 - (void)addANewTabAndPresentBrowser:(Browser*)browser
                   withURLLoadParams:(const UrlLoadParams&)urlLoadParams;

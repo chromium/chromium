@@ -22,8 +22,8 @@
 
 @implementation FirstRunAppInterface
 
-+ (void)showFirstRunUI {
-  [chrome_test_util::GetForegroundActiveSceneController() showFirstRunUI];
++ (void)showLegacyFirstRunUI {
+  [chrome_test_util::GetForegroundActiveSceneController() showLegacyFirstRunUI];
 }
 
 + (void)setUMACollectionEnabled:(BOOL)enabled {

@@ -27,10 +27,8 @@
     // Hardcoded default screen order for class initiation.
     // TODO(crbug.com/1195198): Add logic to generate a custimizeed screen
     // order.
-    _screens = @[
-      @(kWelcomeAndConsent), @(kSignIn), @(kSync), @(kDefaultBrowserPromo),
-      @(kFirstRunCompleted)
-    ];
+    _screens =
+        @[ @(kWelcomeAndConsent), @(kSignIn), @(kSync), @(kFirstRunCompleted) ];
     _index = -1;
   }
   return self;

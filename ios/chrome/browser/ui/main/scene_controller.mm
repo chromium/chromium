@@ -76,6 +76,8 @@
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/ui/first_run/first_run_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_commands.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_coordinator.h"
@@ -175,12 +177,13 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }  // namespace
 
 @interface SceneController () <AppStateObserver,
-                               UserFeedbackDataSource,
+                               FirstRunCoordinatorDelegate,
+                               LocationPermissionsCommands,
                                SettingsNavigationControllerDelegate,
                                SceneURLLoadingServiceDelegate,
                                TabGridCoordinatorDelegate,
-                               WebStateListObserving,
-                               LocationPermissionsCommands> {
+                               UserFeedbackDataSource,
+                               WebStateListObserving> {
   std::unique_ptr<WebStateListObserverBridge> _webStateListForwardingObserver;
 }
 
@@ -253,6 +256,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 @property(nonatomic, weak)
     WelcomeToChromeViewController* welcomeToChromeController;
+
+// Coordinator of the new first run UI.
+@property(nonatomic, strong) FirstRunCoordinator* firstRunCoordinator;
 
 @end
 
@@ -926,7 +932,11 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // If this isn't first run, check if the sign-in promo needs to display.
   if (firstRun && launchMode != ApplicationMode::INCOGNITO &&
       !self.sceneState.appState.startupInformation.isPresentingFirstRunUI) {
-    [self showFirstRunUI];
+    if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
+      [self showFirstRunUI];
+    } else {
+      [self showLegacyFirstRunUI];
+    }
     // Do not ever show the 'restore' infobar during first run.
     self.sceneState.appState.startupInformation.restoreHelper = nil;
   }
@@ -1123,7 +1133,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 #pragma mark - First Run
 
 // Initializes the first run UI and presents it to the user.
-- (void)showFirstRunUI {
+- (void)showLegacyFirstRunUI {
   DCHECK(!self.signinCoordinator);
   DCHECK(!_firstRunUIBlocker);
   _firstRunUIBlocker = std::make_unique<ScopedUIBlocker>(self.sceneState);
@@ -1162,6 +1172,22 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   [self.mainInterface.viewController presentViewController:navController
                                                   animated:NO
                                                 completion:nil];
+}
+
+// Shows the first run UI.
+- (void)showFirstRunUI {
+  DCHECK(!_firstRunUIBlocker);
+  _firstRunUIBlocker = std::make_unique<ScopedUIBlocker>(self.sceneState);
+
+  FirstRunScreenProvider* provider = [[FirstRunScreenProvider alloc] init];
+
+  self.firstRunCoordinator = [[FirstRunCoordinator alloc]
+      initWithBaseViewController:self.mainInterface.bvc
+                         browser:self.mainInterface.browser
+                  screenProvider:provider];
+  self.firstRunCoordinator.delegate = self;
+  self.sceneState.presentingFirstRunUI = YES;
+  [self.firstRunCoordinator start];
 }
 
 // Sets a LocalState pref marking the TOS EULA as accepted.
@@ -3028,4 +3054,11 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   self.mainCoordinator.incognitoThumbStripSupporting =
       self.incognitoInterface.bvc;
 }
+
+#pragma mark - FirstRunCoordinatorDelegate
+
+- (void)willFinishPresentingScreens {
+  [self.firstRunCoordinator stop];
+}
+
 @end
