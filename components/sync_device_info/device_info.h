@@ -15,11 +15,15 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/protocol/sync.pb.h"
 
 namespace base {
 class DictionaryValue;
 }
+
+namespace sync_pb {
+enum SharingSpecificFields_EnabledFeatures : int;
+enum SyncEnums_DeviceType : int;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -44,7 +48,7 @@ class DeviceInfo {
   struct SharingInfo {
     SharingInfo(SharingTargetInfo vapid_target_info,
                 SharingTargetInfo sharing_target_info,
-                std::set<sync_pb::SharingSpecificFields::EnabledFeatures>
+                std::set<sync_pb::SharingSpecificFields_EnabledFeatures>
                     enabled_features);
     SharingInfo(const SharingInfo& other);
     SharingInfo(SharingInfo&& other);
@@ -59,7 +63,7 @@ class DeviceInfo {
     SharingTargetInfo sender_id_target_info;
 
     // Set of Sharing features enabled on the device.
-    std::set<sync_pb::SharingSpecificFields::EnabledFeatures> enabled_features;
+    std::set<sync_pb::SharingSpecificFields_EnabledFeatures> enabled_features;
 
     bool operator==(const SharingInfo& other) const;
   };
@@ -93,7 +97,7 @@ class DeviceInfo {
              const std::string& client_name,
              const std::string& chrome_version,
              const std::string& sync_user_agent,
-             const sync_pb::SyncEnums::DeviceType device_type,
+             const sync_pb::SyncEnums_DeviceType device_type,
              const std::string& signin_scoped_device_id,
              const std::string& manufacturer_name,
              const std::string& model_name,
@@ -128,7 +132,7 @@ class DeviceInfo {
   const std::string& public_id() const;
 
   // Device Type.
-  sync_pb::SyncEnums::DeviceType device_type() const;
+  sync_pb::SyncEnums_DeviceType device_type() const;
 
   // Device_id that is stable until user signs out. This device_id is used for
   // annotating login scoped refresh token.
@@ -209,7 +213,7 @@ class DeviceInfo {
 
   const std::string sync_user_agent_;
 
-  const sync_pb::SyncEnums::DeviceType device_type_;
+  const sync_pb::SyncEnums_DeviceType device_type_;
 
   const std::string signin_scoped_device_id_;
 

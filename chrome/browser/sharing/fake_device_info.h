@@ -10,6 +10,7 @@
 
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 
 namespace syncer {

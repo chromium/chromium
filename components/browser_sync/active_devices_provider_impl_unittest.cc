@@ -14,6 +14,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "components/browser_sync/browser_sync_switches.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"

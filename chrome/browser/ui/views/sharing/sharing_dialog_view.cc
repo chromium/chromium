@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/hover_button.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"

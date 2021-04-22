@@ -10,6 +10,7 @@
 #include "base/guid.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -29,6 +29,10 @@ class LocalDeviceInfoProvider;
 class SyncService;
 }  // namespace syncer
 
+namespace sync_pb {
+class SharingMessageCommitError;
+}
+
 enum class SharingChannelType;
 enum class SendWebPushMessageResult;
 class SharingMessageBridge;

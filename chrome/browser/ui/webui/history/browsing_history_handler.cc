@@ -43,6 +43,7 @@
 #include "components/query_parser/snippet.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"

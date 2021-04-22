@@ -15,6 +15,7 @@
 #include "chrome/browser/sharing/sharing_metrics.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/sync/protocol/sync.pb.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 #include "components/sync_preferences/pref_service_syncable.h"
