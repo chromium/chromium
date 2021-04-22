@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/record_replay.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -166,11 +167,18 @@ void LayerTreeView::DidUpdateLayers() {
 }
 
 void LayerTreeView::BeginMainFrame(const viz::BeginFrameArgs& args) {
-  if (!delegate_)
+  recordreplay::Assert("LayerTreeView::BeginMainFrame Start");
+  if (!delegate_) {
+    recordreplay::Assert("LayerTreeView::BeginMainFrame #1");
     return;
-  if (web_main_thread_scheduler_)
+  }
+  if (web_main_thread_scheduler_) {
+    recordreplay::Assert("LayerTreeView::BeginMainFrame #2");
     web_main_thread_scheduler_->WillBeginFrame(args);
+    recordreplay::Assert("LayerTreeView::BeginMainFrame #3");
+  }
   delegate_->BeginMainFrame(args.frame_time);
+  recordreplay::Assert("LayerTreeView::BeginMainFrame Done");
 }
 
 void LayerTreeView::OnDeferMainFrameUpdatesChanged(bool status) {
