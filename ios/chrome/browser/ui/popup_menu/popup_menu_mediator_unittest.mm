@@ -404,8 +404,8 @@ TEST_F(PopupMenuMediatorTest, TestItemsStatusOnNTP) {
   EXPECT_TRUE(HasItem(consumer, kToolsMenuSiteInformation, /*enabled=*/YES));
 }
 
-// Tests that the "Read Later" button is disabled while overlay UI is displayed
-// in OverlayModality::kWebContentArea.
+// Tests that the "Add to Reading List" button is disabled while overlay UI is
+// displayed in OverlayModality::kWebContentArea.
 TEST_F(PopupMenuMediatorTest, TestReadLaterDisabled) {
   const GURL kUrl("https://chromium.test");
   web_state_->SetCurrentURL(kUrl);
@@ -431,7 +431,8 @@ TEST_F(PopupMenuMediatorTest, TestReadLaterDisabled) {
       /*default_text_field_value=*/nil));
   EXPECT_TRUE(HasItem(consumer, kToolsMenuReadLater, /*enabled=*/NO));
 
-  // Cancel the request and verify that the "Read Later" button is enabled.
+  // Cancel the request and verify that the "Add to Reading List" button is
+  // enabled.
   queue->CancelAllRequests();
   EXPECT_TRUE(HasItem(consumer, kToolsMenuReadLater, /*enabled=*/YES));
 }

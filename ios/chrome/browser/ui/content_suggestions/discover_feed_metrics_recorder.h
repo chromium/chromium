@@ -42,7 +42,7 @@
 // Records metrics for when a user opens an article in an incognito tab.
 - (void)recordOpenURLInIncognitoTab;
 
-// Records metrics for when a user adds an article to Read Later.
+// Records metrics for when a user adds an article to the Reading List.
 - (void)recordAddURLToReadLater;
 
 // Records metrics for when a user opens the Send Feedback form.

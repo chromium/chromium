@@ -47,8 +47,8 @@ class BrowserPolicyConnectorIOS;
 // WebState.
 @property(nonatomic, assign) WebStateList* webStateList;
 // The overlay presenter for OverlayModality::kWebContentArea.  This mediator
-// listens for overlay presentation events to determine whether the "Read Later"
-// button should be enabled.
+// listens for overlay presentation events to determine whether the "Add to
+// Reading List" button should be enabled.
 @property(nonatomic, assign) OverlayPresenter* webContentAreaOverlayPresenter;
 // The consumer to be configured with this mediator.
 @property(nonatomic, strong) id<PopupMenuConsumer> popupMenu;

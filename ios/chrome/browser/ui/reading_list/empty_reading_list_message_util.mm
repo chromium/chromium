@@ -23,7 +23,7 @@ NSString* const kToolsIcon = @"reading_list_tools_icon";
 
 // Tag in string.
 NSString* const kOpenShareMarker = @"SHARE_OPENING_ICON";
-NSString* const kReadLaterTextMarker = @"READ_LATER_TEXT";
+NSString* const kAddToReadingListTextMarker = @"ADD_TO_READING_LIST_TEXT";
 
 // Background view constants.
 const CGFloat kLineSpacing = 4;
@@ -61,12 +61,12 @@ NSMutableDictionary* GetInstructionAttributes() {
   return attributes;
 }
 
-// Returns the "Read Later" text to appear at the end of the string, with
-// correct styling.
+// Returns the "Add to Reading List" text to appear at the end of the string,
+// with correct styling.
 NSAttributedString* GetReadLaterString() {
-  NSString* read_later_text =
+  NSString* add_to_reading_list_text =
       l10n_util::GetNSString(IDS_IOS_SHARE_MENU_READING_LIST_ACTION);
-  return [[NSAttributedString alloc] initWithString:read_later_text
+  return [[NSAttributedString alloc] initWithString:add_to_reading_list_text
                                          attributes:GetInstructionAttributes()];
 }
 
@@ -145,14 +145,15 @@ NSAttributedString* GetReadingListEmptyMessage(bool use_icons) {
   NSAttributedString* read_later_string = GetReadLaterString();
   // Two replacements must be made in the text:
   // - kOpenShareMarker should be replaced with |instruction_icon_string|
-  // - kReadLaterTextMarker should be replaced with |read_later_text|
+  // - kAddToReadingListTextMarker should be replaced with
+  //   |add_to_reading_list_text|
   NSRange icon_range = [message.string rangeOfString:kOpenShareMarker];
   DCHECK(icon_range.location != NSNotFound);
   [message replaceCharactersInRange:icon_range
                withAttributedString:instruction_icon_string];
 
   NSRange read_later_range =
-      [message.string rangeOfString:kReadLaterTextMarker];
+      [message.string rangeOfString:kAddToReadingListTextMarker];
   DCHECK(read_later_range.location != NSNotFound);
   [message replaceCharactersInRange:read_later_range
                withAttributedString:read_later_string];

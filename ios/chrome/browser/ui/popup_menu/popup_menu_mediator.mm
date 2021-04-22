@@ -622,8 +622,8 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 // status.
 - (void)updatePopupMenu {
   [self updateReloadStopItem];
-  // The "Read Later" functionality requires JavaScript execution, which is
-  // paused while overlays are displayed over the web content area.
+  // The "Add to Reading List" functionality requires JavaScript execution,
+  // which is paused while overlays are displayed over the web content area.
   self.readLaterItem.enabled =
       !self.webContentAreaShowingOverlay && [self isCurrentURLWebURL];
   [self updateBookmarkItem];

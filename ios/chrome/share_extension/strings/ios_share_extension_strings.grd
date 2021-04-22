@@ -162,7 +162,7 @@ all other OS specific variables will be false.
   <release seq="1">
     <messages fallback_to_english="true">
       <message name="IDS_IOS_ADD_READING_LIST_SHARE_EXTENSION" desc="Share extension button to add to reading list [Length: 30em]" meaning="Button title [Length: 30em]">
-        Read Later
+        Add to Reading List
       </message>
       <message name="IDS_IOS_ADD_BOOKMARKS_SHARE_EXTENSION" desc="Share extension button to add to bookmarks [Length: 30em]" meaning="Button title [Length: 30em]">
         Add to Bookmarks 

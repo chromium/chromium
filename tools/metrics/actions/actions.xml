@@ -5206,7 +5206,7 @@ should be able to be added at any place in this file.
   <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
-    The user selected the 'Read Later' option for a Feed card.
+    The user selected the 'Add to Reading List' option for a Feed card.
   </description>
 </action>
 
@@ -6253,6 +6253,11 @@ should be able to be added at any place in this file.
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="DifferentAction">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of the metric.</description>
 </action>
 
 <action name="DisabledExtensionNotificationDismissed">
@@ -14300,7 +14305,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileMenuReadLater">
   <owner>gambard@chromium.org</owner>
-  <description>User pressed 'Read Later' in the app menu.</description>
+  <description>User pressed 'Add to Reading List' in the app menu.</description>
 </action>
 
 <action name="MobileMenuRecentTabs">
@@ -15221,7 +15226,7 @@ should be able to be added at any place in this file.
   <obsolete>Deprecated as of 9/2018</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>
-    The user pressed &quot;Read Later&quot; from the share action menu.
+    The user pressed &quot;Add to Reading List&quot; from the share action menu.
   </description>
 </action>
 
@@ -16110,7 +16115,7 @@ should be able to be added at any place in this file.
   <owner>gambard@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
-    Recorded when user taps Read Later in context menu. iOS only.
+    Recorded when user taps Add to Reading List in context menu. iOS only.
   </description>
 </action>
 
@@ -26726,6 +26731,11 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Test_Action">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of the metric.</description>
+</action>
+
+<action name="TestAction">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of the metric.</description>
 </action>

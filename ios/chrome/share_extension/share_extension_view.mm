@@ -297,7 +297,7 @@ const CGFloat kButtonFontSize = 17;
   return navigationBar;
 }
 
-// Called when "Read Later" button has been pressed.
+// Called when "Add to Reading List" button has been pressed.
 - (void)addToReadingListPressed:(UIButton*)sender {
   if (self.dismissed) {
     return;
