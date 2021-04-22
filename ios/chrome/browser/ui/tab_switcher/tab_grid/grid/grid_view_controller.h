@@ -20,6 +20,7 @@
 @class GridViewController;
 @protocol IncognitoReauthCommands;
 @protocol ThumbStripCommands;
+@protocol GridContextMenuProvider;
 
 // Protocol used to relay relevant user interactions from a grid UI.
 @protocol GridViewControllerDelegate
@@ -95,6 +96,9 @@
 // YES when the current contents are hidden from the user before a successful
 // biometric authentication.
 @property(nonatomic, assign) BOOL contentNeedsAuthentication;
+// Provider of context menu configurations for the tabs in the grid.
+@property(nonatomic, weak) id<GridContextMenuProvider> menuProvider
+    API_AVAILABLE(ios(13.0));
 
 // Returns the layout of the grid for use in an animated transition.
 - (GridTransitionLayout*)transitionLayout;

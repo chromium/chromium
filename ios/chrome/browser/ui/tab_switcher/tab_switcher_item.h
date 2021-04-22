@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+class GURL;
+
 // Model object representing an item in the tab switchers.
 @interface TabSwitcherItem : NSObject
 
@@ -18,6 +20,9 @@
 
 @property(nonatomic, readonly) NSString* identifier;
 @property(nonatomic, copy) NSString* title;
+// TODO(crbug.com/1201770): Move URL out of TabSwitcherItem and provide it from
+// the TabGridMediator & TabStripMediator.
+@property(nonatomic, assign) GURL URL;
 @property(nonatomic, assign) BOOL hidesTitle;
 @end
 

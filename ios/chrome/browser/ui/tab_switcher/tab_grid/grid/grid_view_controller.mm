@@ -17,8 +17,10 @@
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_context_menu_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
@@ -396,6 +398,18 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self tappedItemAtIndexPath:indexPath];
   // Tapping on the current selected cell should not deselect it.
   return NO;
+}
+
+- (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
+    contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
+                                         point:(CGPoint)point
+    API_AVAILABLE(ios(13.0)) {
+  if (!IsTabGridContextMenuEnabled()) {
+    return nil;
+  }
+  UIView* cell = [self.collectionView cellForItemAtIndexPath:indexPath];
+  TabSwitcherItem* item = self.items[indexPath.item];
+  return [self.menuProvider contextMenuConfigurationForItem:item fromView:cell];
 }
 
 #pragma mark - UIPointerInteractionDelegate

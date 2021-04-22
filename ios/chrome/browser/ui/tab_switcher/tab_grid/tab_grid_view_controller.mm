@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_context_menu_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
@@ -538,6 +539,24 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   _incognitoThumbStripHandler = handler;
   self.regularTabsViewController.thumbStripHandler =
       self.incognitoThumbStripHandler;
+}
+
+- (void)setRegularTabsContextMenuProvider:
+    (id<GridContextMenuProvider>)provider {
+  if (_regularTabsContextMenuProvider == provider)
+    return;
+  _regularTabsContextMenuProvider = provider;
+
+  self.regularTabsViewController.menuProvider = provider;
+}
+
+- (void)setIncognitoTabsContextMenuProvider:
+    (id<GridContextMenuProvider>)provider {
+  if (_incognitoTabsContextMenuProvider == provider)
+    return;
+  _incognitoTabsContextMenuProvider = provider;
+
+  self.incognitoTabsViewController.menuProvider = provider;
 }
 
 #pragma mark - TabGridPaging

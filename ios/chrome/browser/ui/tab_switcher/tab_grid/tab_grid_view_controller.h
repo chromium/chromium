@@ -27,6 +27,7 @@ class GURL;
 @class TabGridViewController;
 @protocol ThumbStripCommands;
 @protocol ViewControllerTraitCollectionObserver;
+@protocol GridContextMenuProvider;
 
 // Configurations for tab grid pages.
 enum class TabGridPageConfiguration {
@@ -124,6 +125,12 @@ enum class TabGridPageConfiguration {
 // model objects used in this view controller should be factored out.
 @property(nonatomic, strong)
     RecentTabsTableViewController* remoteTabsViewController;
+
+// Provides the context menu for the tabs on the grid.
+@property(nonatomic, weak) id<GridContextMenuProvider>
+    regularTabsContextMenuProvider API_AVAILABLE(ios(13.0));
+@property(nonatomic, weak) id<GridContextMenuProvider>
+    incognitoTabsContextMenuProvider API_AVAILABLE(ios(13.0));
 
 // Init with tab grid view configuration, which decides which sub view
 // controller should be added.

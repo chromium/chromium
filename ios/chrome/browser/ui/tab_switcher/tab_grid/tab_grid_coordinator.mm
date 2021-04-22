@@ -42,6 +42,7 @@
 #include "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_context_menu_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
@@ -111,9 +112,12 @@
 // The page configuration used when create the tab grid view controller;
 @property(nonatomic, assign) TabGridPageConfiguration pageConfiguration;
 
-// TODO(crbug.com/1196952) Add GridContextMenuHelper object and find a way
-// to set it into GridViewController preferably without exposing it from
-// TabGridViewController.
+// Helper objects to be provided to the TabGridViewController to create
+// the context menu configuration.
+@property(nonatomic, strong)
+    GridContextMenuHelper* regularTabsGridContextMenuHelper;
+@property(nonatomic, strong)
+    GridContextMenuHelper* incognitoTabsGridContextMenuHelper;
 
 @end
 
@@ -541,6 +545,19 @@
                                       tabContextMenuDelegate:self];
     self.baseViewController.remoteTabsViewController.menuProvider =
         self.recentTabsContextMenuHelper;
+  }
+
+  if (@available(iOS 13.0, *)) {
+    self.regularTabsGridContextMenuHelper =
+        [[GridContextMenuHelper alloc] initWithBrowser:self.regularBrowser
+                                tabContextMenuDelegate:self];
+    self.baseViewController.regularTabsContextMenuProvider =
+        self.regularTabsGridContextMenuHelper;
+    self.incognitoTabsGridContextMenuHelper =
+        [[GridContextMenuHelper alloc] initWithBrowser:self.incognitoBrowser
+                                tabContextMenuDelegate:self];
+    self.baseViewController.incognitoTabsContextMenuProvider =
+        self.incognitoTabsGridContextMenuHelper;
   }
 
   // TODO(crbug.com/845192) : Remove RecentTabsTableViewController dependency on

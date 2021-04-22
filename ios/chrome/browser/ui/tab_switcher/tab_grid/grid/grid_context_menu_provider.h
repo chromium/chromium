@@ -7,14 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
-@class GridCell;
+@class TabSwitcherItem;
 
 // Protocol for instances that will provide menus to the Grid view.
 @protocol GridContextMenuProvider
 
-// Returns a context menu configuration instance for the given |cell| and its
-// associated |view|.
-- (UIContextMenuConfiguration*)contextMenuConfigurationForCell:(GridCell*)cell
+// Returns a context menu configuration instance for the given |item|, which is
+// represented on the UI by |view|.
+- (UIContextMenuConfiguration*)contextMenuConfigurationForItem:
+                                   (TabSwitcherItem*)item
                                                       fromView:(UIView*)view
     API_AVAILABLE(ios(13.0));
 

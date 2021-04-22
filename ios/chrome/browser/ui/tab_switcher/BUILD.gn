@@ -14,5 +14,6 @@ source_set("tab_switcher") {
 
   deps = [
     "//base",
+    "//url",
   ]
 }
