@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/content_creation/notes",
+  "+components/keyed_service/core",
+]
