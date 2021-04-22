@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -250,9 +251,8 @@ bool HardwareDisplayControllerTest::ModesetWithPlanes(
   ui::CommitRequest request_for_update = commit_request;
   bool status = drm_->plane_manager()->Commit(std::move(commit_request),
                                               DRM_MODE_ATOMIC_ALLOW_MODESET);
-  controller_->UpdateState(
-      /*enable_requested=*/true,
-      ui::DrmOverlayPlane::GetPrimaryPlane(request_for_update[0].overlays()));
+  for (const ui::CrtcCommitRequest& crtc_request : commit_request)
+    controller_->UpdateState(crtc_request);
 
   return status;
 }
@@ -263,7 +263,8 @@ bool HardwareDisplayControllerTest::DisableController() {
   ui::CommitRequest request_for_update = commit_request;
   bool status = drm_->plane_manager()->Commit(std::move(commit_request),
                                               DRM_MODE_ATOMIC_ALLOW_MODESET);
-  controller_->UpdateState(/*enable_requested=*/false, nullptr);
+  for (const ui::CrtcCommitRequest& crtc_request : commit_request)
+    controller_->UpdateState(crtc_request);
 
   return status;
 }
@@ -951,19 +952,20 @@ TEST_F(HardwareDisplayControllerTest, PageflipAfterModeset) {
   planes.emplace_back(buffer, nullptr);
   EXPECT_TRUE(ModesetWithPlanes(planes));
 
-  EXPECT_EQ(drm_->plane_manager()
-                ->GetCrtcStateForCrtcId(kPrimaryCrtc)
-                .modeset_framebuffer,
-            buffer);
+  for (const auto& plane : planes) {
+    EXPECT_TRUE(base::Contains(drm_->plane_manager()
+                                   ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                   .modeset_framebuffers,
+                               plane.buffer));
+  }
 
   SchedulePageFlip(std::move(planes));
   drm_->RunCallbacks();
 
-  // modeset_framebuffer should be cleared after the pageflip is complete.
-  EXPECT_EQ(drm_->plane_manager()
-                ->GetCrtcStateForCrtcId(kPrimaryCrtc)
-                .modeset_framebuffer,
-            nullptr);
+  // modeset_framebuffers should be cleared after the pageflip is complete.
+  EXPECT_TRUE(drm_->plane_manager()
+                  ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                  .modeset_framebuffers.empty());
 }
 
 TEST_F(HardwareDisplayControllerTest, PageflipBeforeModeset) {
@@ -975,16 +977,40 @@ TEST_F(HardwareDisplayControllerTest, PageflipBeforeModeset) {
   SchedulePageFlip(ui::DrmOverlayPlane::Clone(planes));
 
   EXPECT_TRUE(ModesetWithPlanes(planes));
-  EXPECT_EQ(drm_->plane_manager()
-                ->GetCrtcStateForCrtcId(kPrimaryCrtc)
-                .modeset_framebuffer,
-            buffer);
+  for (const auto& plane : planes) {
+    EXPECT_TRUE(base::Contains(drm_->plane_manager()
+                                   ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                   .modeset_framebuffers,
+                               plane.buffer));
+  }
 
-  // modeset_framebuffer should not be cleared when a pageflip callback is run
+  // modeset_framebuffers should not be cleared when a pageflip callback is run
   // after a modeset
   drm_->RunCallbacks();
+  EXPECT_FALSE(drm_->plane_manager()
+                   ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                   .modeset_framebuffers.empty());
+  for (const auto& plane : planes) {
+    EXPECT_TRUE(base::Contains(drm_->plane_manager()
+                                   ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                   .modeset_framebuffers,
+                               plane.buffer));
+  }
+}
+
+TEST_F(HardwareDisplayControllerTest, MultiplePlanesModeset) {
+  ui::DrmOverlayPlaneList modeset_planes;
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  ASSERT_TRUE(ModesetWithPlanes(modeset_planes));
   EXPECT_EQ(drm_->plane_manager()
                 ->GetCrtcStateForCrtcId(kPrimaryCrtc)
-                .modeset_framebuffer,
-            buffer);
+                .modeset_framebuffers.size(),
+            2UL);
+  for (const auto& plane : modeset_planes) {
+    EXPECT_TRUE(base::Contains(drm_->plane_manager()
+                                   ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                   .modeset_framebuffers,
+                               plane.buffer));
+  }
 }

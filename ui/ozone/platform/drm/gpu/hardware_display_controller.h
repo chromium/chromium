@@ -107,7 +107,7 @@ class HardwareDisplayController {
   void GetDisableProps(CommitRequest* commit_request);
 
   // Updates state of the controller after modeset/enable/disable is performed.
-  void UpdateState(bool enable_requested, const DrmOverlayPlane* primary_plane);
+  void UpdateState(const CrtcCommitRequest& crtc_request);
 
   // Schedules the |overlays|' framebuffers to be displayed on the next vsync
   // event. The event will be posted on the graphics card file descriptor |fd_|
@@ -180,7 +180,7 @@ class HardwareDisplayController {
                                const DrmOverlayPlaneList& modeset_planes,
                                bool use_current_crtc_mode,
                                const drmModeModeInfo& mode);
-  void OnModesetComplete(const DrmOverlayPlane& primary);
+  void OnModesetComplete(const DrmOverlayPlaneList& modeset_planes);
   bool ScheduleOrTestPageFlip(const DrmOverlayPlaneList& plane_list,
                               scoped_refptr<PageFlipRequest> page_flip_request,
                               gfx::GpuFenceHandle* release_fence);

@@ -493,8 +493,7 @@ void ScreenManager::UpdateControllerStateAfterModeset(
     HardwareDisplayControllers::iterator it =
         FindDisplayController(drm, crtc_request.crtc_id());
     if (it != controllers_.end()) {
-      it->get()->UpdateState(was_enabled, DrmOverlayPlane::GetPrimaryPlane(
-                                              crtc_request.overlays()));
+      it->get()->UpdateState(crtc_request);
 
       // If the CRTC is mirrored, move it to the mirror controller.
       if (did_succeed && was_enabled)
