@@ -175,6 +175,8 @@ InterfaceEndpointClient::InterfaceEndpointClient(
 }
 
 InterfaceEndpointClient::~InterfaceEndpointClient() {
+  recordreplay::Assert("InterfaceEndpointClient::~InterfaceEndpointClient %lu",
+                       recordreplay::PointerId(this));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (controller_)
     handle_.group_controller()->DetachEndpointClient(handle_);
