@@ -32,6 +32,7 @@ class TooltipAuraTestApi;
 // Implementation of Tooltip that shows the tooltip using a Widget and Label.
 class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
  public:
+  static const char kWidgetName[];
   // FIXME: get cursor offset from actual cursor size.
   static constexpr int kCursorOffsetX = 10;
   static constexpr int kCursorOffsetY = 15;

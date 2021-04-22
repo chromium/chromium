@@ -158,6 +158,9 @@ END_METADATA
 namespace views {
 namespace corewm {
 
+// static
+const char TooltipAura::kWidgetName[] = "TooltipAura";
+
 TooltipAura::~TooltipAura() {
   DestroyWidget();
   CHECK(!IsInObserverList());
@@ -246,6 +249,7 @@ void TooltipAura::CreateTooltipWidget(const gfx::Rect& bounds) {
   // Use software compositing to avoid using unnecessary hardware resources
   // which just amount to overkill for this UI.
   params.force_software_compositing = true;
+  params.name = kWidgetName;
   widget_->Init(std::move(params));
 }
 
