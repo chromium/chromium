@@ -61,10 +61,10 @@ void NetworkHealthProvider::OnNetworkCertificatesChanged() {}
 
 void NetworkHealthProvider::OnActiveNetworkStateListReceived(
     std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks) {
-  guid_to_network_map.clear();
+  guid_to_network_map_.clear();
   for (auto& network : networks) {
     if (IsSupportedNetworkType(network->type)) {
-      guid_to_network_map[network->guid] = std::move(network);
+      guid_to_network_map_[network->guid] = std::move(network);
     }
   }
   // TODO(michaelcheco): Call Mojo API here.
@@ -82,7 +82,7 @@ void NetworkHealthProvider::OnDeviceStateListReceived(
 
 std::vector<std::string> NetworkHealthProvider::GetNetworkGuidListForTesting() {
   std::vector<std::string> network_guids;
-  for (const auto& entry : guid_to_network_map) {
+  for (const auto& entry : guid_to_network_map_) {
     network_guids.push_back(entry.first);
   }
   return network_guids;

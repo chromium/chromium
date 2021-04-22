@@ -56,7 +56,7 @@ class NetworkHealthProvider
   // Map of networks that are active and of a supported
   // type (Ethernet, WiFi, Cellular).
   std::map<std::string, network_config::mojom::NetworkStatePropertiesPtr>
-      guid_to_network_map;
+      guid_to_network_map_;
 
   // Maps device type to device properties, used to find corresponding device
   // for a network.
