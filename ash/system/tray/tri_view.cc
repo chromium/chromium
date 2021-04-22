@@ -165,6 +165,22 @@ const char* TriView::GetClassName() const {
   return "TriView";
 }
 
+gfx::Rect TriView::GetAnchorBoundsInScreen() const {
+  gfx::Rect bounds = View::GetAnchorBoundsInScreen();
+
+  // Inset bounds a bit so that bubbles overlap the nominal empty space at
+  // the bottom of the TriView slightly.
+  // This specific piece of code was added to accommodate a specific refactoring
+  // where anchor insets had to be removed from
+  // NetworkStateListDetailedView::InfoBubble. This bubble is the only one I
+  // could find that directly anchors directly to a TriView.
+  // If there are other instantiations of TriView where this overlap doesn't
+  // make sense, the below inset could be settable on TriView and called from
+  // NetworkStateListDetailedView.
+  bounds.Inset(gfx::Insets(0, 0, 8, 0));
+  return bounds;
+}
+
 views::View* TriView::GetContainer(Container container) {
   return children()[static_cast<size_t>(container)];
 }

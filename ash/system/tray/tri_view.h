@@ -129,6 +129,7 @@ class ASH_EXPORT TriView : public views::View {
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
   const char* GetClassName() const override;
+  gfx::Rect GetAnchorBoundsInScreen() const override;
 
  private:
   friend class TriViewTest;
