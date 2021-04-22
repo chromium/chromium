@@ -5583,7 +5583,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledNTPWithExploreAndTrending",
+                    "name": "EnabledExploreAndTrendingSegmentation1",
                     "params": {
                         "base_url": "https://chromeupboarding-pa.googleapis.com",
                         "experiment_tag": "{maxLevels : 1, enableTrending : true, maxTrendingQueries : 8}",
@@ -5592,17 +5592,17 @@
                         "max_trending_tile_impressions": "1",
                         "most_visited_max_rows_normal_screen": "1",
                         "most_visited_max_rows_small_screen": "1",
+                        "mv_tile_click_threshold": "0",
                         "small_screen_height_threshold_dp": "700"
                     },
-                    "enable_features": [
-                        "QueryTiles",
-                        "QueryTilesInNTP",
-                        "QueryTilesLocalOrdering",
-                        "QueryTilesRemoveTrendingAfterInactivity"
-                    ],
                     "disable_features": [
+                        "QueryTiles",
                         "QueryTilesEnableQueryEditing",
-                        "QueryTilesInOmnibox"
+                        "QueryTilesInNTP",
+                        "QueryTilesInOmnibox",
+                        "QueryTilesLocalOrdering",
+                        "QueryTilesRemoveTrendingAfterInactivity",
+                        "QueryTilesSegmentation"
                     ]
                 },
                 {
