@@ -4989,8 +4989,6 @@ crbug.com/1194557 http/tests/devtools/local-object-properties-section.js [ Failu
 crbug.com/1194557 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Timeout ]
 crbug.com/1194557 http/tests/devtools/sources/debugger-breakpoints/set-breakpoint-while-blocking-main-thread.js [ Failure Timeout ]
 crbug.com/1194557 http/tests/devtools/unit/object-properties-expand-recursively.js [ Failure Timeout ]
-crbug.com/1194557 http/tests/inspector-protocol/issues/sab-creation-issue.js [ Failure Timeout ]
-crbug.com/1194557 http/tests/inspector-protocol/issues/sab-postMessage-issue.js [ Failure Timeout ]
 crbug.com/1194557 http/tests/websocket/send-arraybufferview.html [ Failure Timeout ]
 crbug.com/1194557 storage/indexeddb/shared-array-buffer-throws.html [ Failure Timeout ]
 crbug.com/1194557 virtual/shared_array_buffer_on_desktop/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-subdomain-yes-2-subdomain2-no.sub.https.html [ Failure Timeout ]

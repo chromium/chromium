@@ -4,7 +4,9 @@
       `Verifies that creating a SAB in a non-COI context causes an issue.\n`);
 
   await dp.Audits.enable();
-  session.evaluate(`var x = new SharedArrayBuffer();`);
+  session.evaluate(
+      `var x = new (new WebAssembly.Memory(
+         { shared:true, initial:0, maximum:0 }).buffer.constructor)();`);
   const issue = await dp.Audits.onceIssueAdded();
 
   testRunner.log(issue.params, 'Inspector issue: ');

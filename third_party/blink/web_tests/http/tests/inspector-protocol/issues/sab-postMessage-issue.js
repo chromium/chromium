@@ -4,7 +4,8 @@
       `Verifies that post-messaging a SAB causes an issue.\n`);
 
   await dp.Audits.enable();
-  session.evaluate(`postMessage(new SharedArrayBuffer());`);
+  session.evaluate(`postMessage(new (new WebAssembly.Memory(
+         { shared:true, initial:0, maximum:0 }).buffer.constructor)());`);
   const issues = await Promise.all(
       [dp.Audits.onceIssueAdded(), dp.Audits.onceIssueAdded()]);
 
