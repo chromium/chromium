@@ -374,7 +374,8 @@ void OobeLocalizationTest::RunLocalizationTest() {
   EXPECT_EQ(expected_keyboard_select, DumpOptions(kKeyboardSelect));
 }
 
-IN_PROC_BROWSER_TEST_P(OobeLocalizationTest, LocalizationTest) {
+// TODO(crbug.com/1201546): Fix flakiness.
+IN_PROC_BROWSER_TEST_P(OobeLocalizationTest, DISABLED_LocalizationTest) {
   RunLocalizationTest();
 }
 
