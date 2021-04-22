@@ -340,8 +340,7 @@ bool ZeroSuggestProvider::UpdateResults(const std::string& json_data) {
 
   // When running the REMOTE_NO_URL variant, we want to store suggestion
   // responses if non-empty.
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxZeroSuggestCaching) &&
-      result_type_running_ == REMOTE_NO_URL && !json_data.empty()) {
+  if (result_type_running_ == REMOTE_NO_URL && !json_data.empty()) {
     client()->GetPrefs()->SetString(omnibox::kZeroSuggestCachedResults,
                                     json_data);
 
@@ -520,8 +519,7 @@ bool ZeroSuggestProvider::AllowZeroSuggestSuggestions(
 }
 
 void ZeroSuggestProvider::MaybeUseCachedSuggestions() {
-  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxZeroSuggestCaching) ||
-      result_type_running_ != REMOTE_NO_URL) {
+  if (result_type_running_ != REMOTE_NO_URL) {
     return;
   }
 
@@ -593,32 +591,14 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::TypeOfResultToRun(
     }
   }
 
-  // Reactive Zero-Prefix Suggestions (rZPS) on NTP cases.
+  // Default to REMOTE_NO_URL on the NTP, if allowed.
   bool check_authentication_state = !base::FeatureList::IsEnabled(
       omnibox::kOmniboxTrendingZeroPrefixSuggestionsOnNTP);
   bool remote_no_url_allowed = RemoteNoUrlSuggestionsAreAllowed(
       client, template_url_service, check_authentication_state);
-  if (remote_no_url_allowed) {
-    // NTP Omnibox.
-    if ((current_page_classification == OmniboxEventProto::NTP ||
-         current_page_classification ==
-             OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS) &&
-        base::FeatureList::IsEnabled(
-            omnibox::kReactiveZeroSuggestionsOnNTPOmnibox)) {
-      return REMOTE_NO_URL;
-    }
-    // NTP Realbox.
-    if (current_page_classification == OmniboxEventProto::NTP_REALBOX &&
-        base::FeatureList::IsEnabled(
-            omnibox::kReactiveZeroSuggestionsOnNTPRealbox)) {
-      return REMOTE_NO_URL;
-    }
-  }
-
-  // For Desktop, Android, and iOS, default to REMOTE_NO_URL on the NTP, if
-  // allowed.
-  if (IsNTPPage(current_page_classification) && remote_no_url_allowed)
+  if (IsNTPPage(current_page_classification) && remote_no_url_allowed) {
     return REMOTE_NO_URL;
+  }
 
   return NONE;
 }

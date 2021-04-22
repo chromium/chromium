@@ -156,24 +156,12 @@ const base::Feature kClobberTriggersContextualWebZeroSuggest{
 const base::Feature kOmniboxLocalZeroSuggestAgeThreshold{
     "OmniboxLocalZeroSuggestAgeThreshold", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, enables local zero-prefix suggestions for signed in users.
-// Local zero-prefix suggestions are enabled for signed in users by default. We
-// will be experimenting with DISABLING this behavior.
-const base::Feature kOmniboxLocalZeroSuggestForAuthenticatedUsers{
-    "OmniboxLocalZeroSuggestForAuthenticatedUsers",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Used to force enable/disable trending zero-prefix suggestions on the NTP
 // (Omnibox and NTP realbox). This feature triggers a server-side behavior only
 // and has no direct impact on the client behavior.
 const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP{
     "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
     base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Used to enable/disable caching for remote zero-prefix suggestions. Caching is
-// enabled by default. We will be experimenting with DISABLING this behavior.
-const base::Feature kOmniboxZeroSuggestCaching{
-    "OmniboxZeroSuggestCaching", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables on-focus suggestions on the Open Web, that are contextual to the
 // current URL. Will only work if user is signed-in and syncing, or is
@@ -187,17 +175,6 @@ const base::Feature kOnFocusSuggestionsContextualWeb{
     base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kOnFocusSuggestionsContextualWebOnContent{
     "OmniboxOnFocusSuggestionsContextualWebOnContent",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables Reactive Zero-Prefix Suggestions (rZPS) on the NTP, for the Omnibox
-// and Realbox respectively. Note: enabling this feature merely makes
-// ZeroSuggestProvider send the request. There are additional requirements,
-// like the user being signed-in, and the suggest server having rZPS enabled.
-const base::Feature kReactiveZeroSuggestionsOnNTPOmnibox{
-    "OmniboxReactiveZeroSuggestionsOnNTPOmnibox",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kReactiveZeroSuggestionsOnNTPRealbox{
-    "OmniboxReactiveZeroSuggestionsOnNTPRealbox",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Allows the LocalHistoryZeroSuggestProvider to use local search history.

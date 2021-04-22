@@ -4603,8 +4603,6 @@
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
                         "OmniboxOnFocusSuggestionsContextualWebOnContent",
-                        "OmniboxReactiveZeroSuggestionsOnNTPOmnibox",
-                        "OmniboxReactiveZeroSuggestionsOnNTPRealbox",
                         "OmniboxRemoveSuggestionsFromClipboard",
                         "OmniboxRichAutocompletion",
                         "OmniboxShortBookmarkSuggestionsByTotalInputLength",
@@ -4612,10 +4610,6 @@
                         "OmniboxUIExperimentMaxAutocompleteMatches",
                         "QueryInOmnibox",
                         "SearchSuggestChips"
-                    ],
-                    "disable_features": [
-                        "OmniboxLocalZeroSuggestForAuthenticatedUsers",
-                        "OmniboxZeroSuggestCaching"
                     ]
                 }
             ]
@@ -4643,10 +4637,6 @@
                         "OmniboxOnFocusSuggestionsContextualWebOnContent",
                         "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
                         "OmniboxUIExperimentMaxAutocompleteMatches"
-                    ],
-                    "disable_features": [
-                        "OmniboxLocalZeroSuggestForAuthenticatedUsers",
-                        "OmniboxZeroSuggestCaching"
                     ]
                 }
             ]
