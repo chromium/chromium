@@ -198,9 +198,7 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
 
   // Navigate to a URL.
   GURL url = embedded_test_server_.GetURL("/defaultresponse");
-  auto navigation_controller = CreateNavigationController();
-  ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller.get(), fuchsia::web::LoadUrlParams(), url.spec()));
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(url.spec()));
   navigation_listener()->RunUntilUrlEquals(url);
 
   base::Value devtools_list =
@@ -229,6 +227,7 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
   // Tear down the debuggable Frame. The remote debugging service should have
   // shut down.
   base::RunLoop controller_run_loop;
+  auto navigation_controller = CreateNavigationController();
   navigation_controller.set_error_handler(
       [&controller_run_loop](zx_status_t) { controller_run_loop.Quit(); });
   frame_.Unbind();
@@ -267,9 +266,7 @@ TEST_F(WebEngineIntegrationTest, ContentDirectoryProvider) {
 
   // Navigate to test1.html and verify that the resource was correctly
   // downloaded and interpreted by inspecting the document title.
-  auto navigation_controller = CreateNavigationController();
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller.get(), fuchsia::web::LoadUrlParams(), kUrl.spec()));
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(kUrl.spec()));
   navigation_listener()->RunUntilUrlAndTitleEquals(kUrl, kTitle);
 }
 
@@ -279,7 +276,9 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudio) {
   static uint16_t kTestMediaSessionId = 43;
   frame_->SetMediaSessionId(kTestMediaSessionId);
 
-  LoadUrlWithUserActivation("fuchsia-dir://testdata/play_audio.html");
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      "fuchsia-dir://testdata/play_audio.html",
+      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
 
   navigation_listener()->RunUntilTitleEquals("ended");
 
@@ -315,7 +314,9 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudio_NoFlag) {
           [&is_requested](auto request) { is_requested = true; }));
   ZX_CHECK(status == ZX_OK, status) << "AddPublicService";
 
-  LoadUrlWithUserActivation("fuchsia-dir://testdata/play_audio.html");
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      "fuchsia-dir://testdata/play_audio.html",
+      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
 
   navigation_listener()->RunUntilTitleEquals("error");
   EXPECT_FALSE(is_requested);
@@ -324,7 +325,9 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudio_NoFlag) {
 TEST_F(WebEngineIntegrationMediaTest, PlayVideo) {
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
-  LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html?autoplay");
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      "fuchsia-dir://testdata/play_video.html?autoplay",
+      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
 
   navigation_listener()->RunUntilTitleEquals("ended");
 }
@@ -337,9 +340,7 @@ void WebEngineIntegrationTest::RunPermissionTest(bool grant) {
                     "fuchsia-dir://testdata/");
   }
 
-  auto navigation_controller = CreateNavigationController();
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller.get(), fuchsia::web::LoadUrlParams(),
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
       "fuchsia-dir://testdata/check_mic_permission.html"));
 
   navigation_listener()->RunUntilTitleEquals(grant ? "granted" : "denied");
@@ -359,9 +360,7 @@ TEST_F(WebEngineIntegrationMediaTest, MicrophoneAccess_WithPermission) {
   GrantPermission(fuchsia::web::PermissionType::MICROPHONE,
                   embedded_test_server_.GetURL("/").GetOrigin().spec());
 
-  auto navigation_controller = CreateNavigationController();
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller.get(), fuchsia::web::LoadUrlParams(),
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
       embedded_test_server_.GetURL("/mic.html").spec()));
 
   navigation_listener()->RunUntilTitleEquals("ended");
@@ -370,9 +369,7 @@ TEST_F(WebEngineIntegrationMediaTest, MicrophoneAccess_WithPermission) {
 TEST_F(WebEngineIntegrationMediaTest, MicrophoneAccess_WithoutPermission) {
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
-  auto navigation_controller = CreateNavigationController();
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller.get(), fuchsia::web::LoadUrlParams(),
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
       embedded_test_server_.GetURL("/mic.html?NoPermission").spec()));
 
   navigation_listener()->RunUntilTitleEquals("ended-NotFoundError");
@@ -383,7 +380,9 @@ TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_Blocked) {
 
   frame_->SetBlockMediaLoading(true);
 
-  LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html?autoplay");
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      "fuchsia-dir://testdata/play_video.html?autoplay",
+      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
 
   // Check different indicators that media has not loaded and is not playing.
   navigation_listener()->RunUntilTitleEquals("stalled");
@@ -400,7 +399,9 @@ TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_AfterUnblock) {
 
   frame_->SetBlockMediaLoading(true);
 
-  LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html?autoplay");
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      "fuchsia-dir://testdata/play_video.html?autoplay",
+      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
 
   // Check that media loading has been blocked.
   navigation_listener()->RunUntilTitleEquals("stalled");
@@ -418,7 +419,9 @@ TEST_F(WebEngineIntegrationMediaTest,
        SetBlockMediaLoading_SetBlockedAfterLoading) {
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
-  LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html");
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      "fuchsia-dir://testdata/play_video.html",
+      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
 
   navigation_listener()->RunUntilTitleEquals("loaded");
   frame_->SetBlockMediaLoading(true);
@@ -429,9 +432,7 @@ TEST_F(WebEngineIntegrationMediaTest,
 TEST_F(WebEngineIntegrationTest, WebGLContextAbsentWithoutVulkanFeature) {
   CreateContextAndFrame(TestContextParams());
 
-  auto navigation_controller = CreateNavigationController();
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller.get(), fuchsia::web::LoadUrlParams(),
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
       embedded_test_server_.GetURL("/webgl_presence.html").spec()));
 
   navigation_listener()->RunUntilLoaded();
@@ -455,9 +456,7 @@ TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
   create_params.set_features(fuchsia::web::ContextFeatureFlags::VULKAN);
   CreateContextAndFrame(std::move(create_params));
 
-  auto navigation_controller = CreateNavigationController();
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller.get(), fuchsia::web::LoadUrlParams(),
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
       embedded_test_server_.GetURL("/webgl_presence.html").spec()));
 
   navigation_listener()->RunUntilLoaded();
@@ -489,10 +488,8 @@ void WebEngineIntegrationCameraTest::RunCameraTest(bool grant_permission) {
 
   const char* url =
       grant_permission ? "/camera.html" : "/camera.html?NoPermission";
-  auto navigation_controller = CreateNavigationController();
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller.get(), fuchsia::web::LoadUrlParams(),
-      embedded_test_server_.GetURL(url).spec()));
+  ASSERT_NO_FATAL_FAILURE(
+      LoadUrlAndExpectResponse(embedded_test_server_.GetURL(url).spec()));
 
   navigation_listener()->RunUntilTitleEquals("ended");
 }
@@ -535,7 +532,9 @@ TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
       fuchsia::web::ContextFeatureFlags::AUDIO);
   CreateContextAndFrame(std::move(create_params));
 
-  LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html?autoplay");
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      "fuchsia-dir://testdata/play_video.html?autoplay",
+      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
   navigation_listener()->RunUntilTitleEquals("ended");
 
   EXPECT_TRUE(is_requested);
@@ -556,7 +555,9 @@ TEST_F(WebEngineIntegrationMediaTest, HardwareVideoDecoderFlag_NotProvided) {
       ContextParamsWithAudioAndTestData();
   CreateContextAndFrame(std::move(create_params));
 
-  LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html?autoplay");
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      "fuchsia-dir://testdata/play_video.html?autoplay",
+      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
 
   navigation_listener()->RunUntilTitleEquals("ended");
 

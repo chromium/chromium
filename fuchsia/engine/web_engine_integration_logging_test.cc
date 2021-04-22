@@ -124,13 +124,8 @@ TEST_F(WebEngineIntegrationLoggingTest, SetJavaScriptLogLevel_DEBUG) {
   CreateFrameWithParams(std::move(frame_params));
   frame_->SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel::DEBUG);
 
-  // Creating the NavigationController after configuring the Frame ensures that
-  // Frame calls have completed before NavigationController calls are processed.
-  auto navigation_controller = CreateNavigationController();
-
   // Navigate to the test page, which will emit console logging.
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller.get(), fuchsia::web::LoadUrlParams(),
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
       embedded_test_server_.GetURL(std::string("/") + kLogTestPageFileName)
           .spec()));
   navigation_listener()->RunUntilTitleEquals("ended");

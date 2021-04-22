@@ -146,12 +146,17 @@ void WebEngineIntegrationTestBase::CreateContextAndFrameAndLoadUrl(
   navigation_listener_->RunUntilUrlEquals(url);
 }
 
-void WebEngineIntegrationTestBase::LoadUrlWithUserActivation(
-    base::StringPiece url) {
-  auto navigation_controller = CreateNavigationController();
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller.get(),
-      cr_fuchsia::CreateLoadUrlParamsWithUserActivation(), url));
+void WebEngineIntegrationTestBase::LoadUrlAndExpectResponse(
+    base::StringPiece url,
+    fuchsia::web::LoadUrlParams load_url_params) {
+  // Connect a new NavigationController to ensure that LoadUrl() is processed
+  // after all other messages previously sent to the frame.
+  fuchsia::web::NavigationControllerPtr navigation_controller;
+  frame_->GetNavigationController(navigation_controller.NewRequest());
+  navigation_controller.set_error_handler(
+      [](zx_status_t status) { ADD_FAILURE(); });
+  ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+      navigation_controller.get(), std::move(load_url_params), url));
 }
 
 void WebEngineIntegrationTestBase::GrantPermission(

@@ -92,7 +92,9 @@ class WebEngineIntegrationTestBase : public testing::Test {
   void CreateContextAndFrameAndLoadUrl(fuchsia::web::CreateContextParams params,
                                        const GURL& url);
 
-  void LoadUrlWithUserActivation(base::StringPiece url);
+  void LoadUrlAndExpectResponse(
+      base::StringPiece url,
+      fuchsia::web::LoadUrlParams load_url_params = {});
 
   void GrantPermission(fuchsia::web::PermissionType type,
                        const std::string& origin);
