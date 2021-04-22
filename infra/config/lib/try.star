@@ -151,13 +151,14 @@ def try_builder(
     if subproject_list_view:
         list_view.append(subproject_list_view)
 
+    # in CQ/try, disable ATS on windows. http://b/183895446
     goma_enable_ats = defaults.get_value_from_kwargs("goma_enable_ats", kwargs)
-    if goma_enable_ats == args.COMPUTE:
-        os = defaults.get_value_from_kwargs("os", kwargs)
-
-        # in CQ/try, disable ATS on windows.
-        if os and os.category == os_category.WINDOWS:
+    os = defaults.get_value_from_kwargs("os", kwargs)
+    if os and os.category == os_category.WINDOWS:
+        if goma_enable_ats == args.COMPUTE:
             kwargs["goma_enable_ats"] = False
+        if kwargs["goma_enable_ats"] != False:
+            fail("Try Windows builder {} must disable ATS".format(name))
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
