@@ -4,6 +4,16 @@
      found in the LICENSE file. -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Main menu item dimens. -->
     <dimen name="web_feed_icon_size">24dp</dimen>
     <dimen name="web_feed_monogram_text_size">14dp</dimen>
+
+    <!-- Dialog dimens. -->
+    <dimen name="web_feed_dialog_illustration_margin_top">24dp</dimen>
+    <dimen name="web_feed_dialog_illustration_margin_start">14.5dp</dimen>
+    <dimen name="web_feed_dialog_illustration_height">113dp</dimen>
+    <dimen name="web_feed_dialog_title_padding_top">24dp</dimen>
+    <dimen name="web_feed_dialog_details_padding_top">16dp</dimen>
+    <dimen name="web_feed_dialog_details_padding_bottom">8dp</dimen>
+    <dimen name="web_feed_dialog_text_horizontal_padding">16dp</dimen>
 </resources>

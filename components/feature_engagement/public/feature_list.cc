@@ -74,6 +74,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHFeedHeaderMenuFeature,
     &kIPHShareScreenshotFeature,
     &kIPHWebFeedFollowFeature,
+    &kIPHWebFeedPostFollowDialogFeature,
 #endif  // defined(OS_ANDROID)
 #if defined(OS_IOS)
     &kIPHBottomToolbarTipFeature,

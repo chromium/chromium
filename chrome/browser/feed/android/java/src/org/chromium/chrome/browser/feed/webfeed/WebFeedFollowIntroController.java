@@ -28,6 +28,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 
@@ -83,17 +84,18 @@ public class WebFeedFollowIntroController {
      * @param activity The current {@link Activity}.
      * @param tabSupplier The supplier for the currently active {@link Tab}.
      * @param menuButtonAnchorView The menu button {@link View} to serve as an anchor.
+     * @param dialogManager {@link ModalDialogManager} for managing the dialog.
      * @param snackbarManager The {@link SnackbarManager} to show snackbars.
      * @param webFeedBridge The {@link WebFeedBridge} to connect to the Web Feed backend.
      */
     public WebFeedFollowIntroController(Activity activity, ObservableSupplier<Tab> tabSupplier,
-            View menuButtonAnchorView, SnackbarManager snackbarManager,
-            WebFeedBridge webFeedBridge) {
+            View menuButtonAnchorView, ModalDialogManager dialogManager,
+            SnackbarManager snackbarManager, WebFeedBridge webFeedBridge) {
         mActivity = activity;
         mFeatureEngagementTracker =
                 TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
-        mWebFeedSnackbarController =
-                new WebFeedSnackbarController(activity, snackbarManager, webFeedBridge);
+        mWebFeedSnackbarController = new WebFeedSnackbarController(
+                activity, dialogManager, snackbarManager, webFeedBridge);
         mWebFeedFollowIntroView = new WebFeedFollowIntroView(mActivity, menuButtonAnchorView);
 
         mAppearanceThresholdMs = TimeUnit.MINUTES.toMillis(
@@ -211,7 +213,7 @@ public class WebFeedFollowIntroController {
                             mWebFeedFollowIntroView.showFollowingBubble();
                         }
                         byte[] followId = results.metadata != null ? results.metadata.id : null;
-                        mWebFeedSnackbarController.showSnackbarForFollow(
+                        mWebFeedSnackbarController.showPostFollowHelp(
                                 results, followId, mUrl, mTitle);
                     }
                 }));

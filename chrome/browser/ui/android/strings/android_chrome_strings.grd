@@ -3648,6 +3648,18 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_WEB_FEED_UNFOLLOW_SUCCESS_SNACKBAR_ACTION" desc="The snackbar action after a successful Web Feed unfollow.">
         Refollow
       </message>
+      <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_TITLE" desc="The snackbar action after a successful Web Feed unfollow.">
+        You’re following <ph name="SITE_NAME">%1$s<ex>Google</ex></ph>
+      </message>
+      <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_STORIES_READY_DESCRIPTION" desc="The snackbar action after a successful Web Feed unfollow.">
+        You’ll now see stories from <ph name="SITE_NAME">%1$s<ex>Google</ex></ph> when you open a new tab. You can control the sites you’re following in Manage Follows.
+      </message>
+      <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_STORIES_NOT_READY_DESCRIPTION" desc="The snackbar action after a successful Web Feed unfollow.">
+        Soon, you’ll see stories from <ph name="SITE_NAME">%1$s<ex>Google</ex></ph> when you open a new tab. You can control the sites you’re following in Manage Follows.
+      </message>
+      <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_OPEN_A_NEW_TAB" desc="The snackbar action after a successful Web Feed unfollow.">
+        Open a new tab
+      </message>
 
       <!-- Storage Preference UI strings for clearing storage. -->
       <message name="IDS_STORAGE_MANAGEMENT_ACTIVITY_LABEL" desc="Title for Chrome's Manage Space Activity.">

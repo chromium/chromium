@@ -97,6 +97,7 @@ extern const base::Feature kIPHChromeReengagementNotification3Feature;
 extern const base::Feature kIPHPwaInstallAvailableFeature;
 extern const base::Feature kIPHShareScreenshotFeature;
 extern const base::Feature kIPHWebFeedFollowFeature;
+extern const base::Feature kIPHWebFeedPostFollowDialogFeature;
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_IOS)

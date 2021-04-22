@@ -42,6 +42,7 @@ import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.ChipView;
 import org.chromium.url.GURL;
 
@@ -63,6 +64,7 @@ public final class WebFeedMainMenuItemTest {
 
     private Activity mActivity;
     private AppMenuHandler mAppMenuHandler;
+    private ModalDialogManager mDialogManager;
     private SnackbarManager mSnackBarManager;
     private WebFeedMainMenuItem mWebFeedMainMenuItem;
 
@@ -72,6 +74,7 @@ public final class WebFeedMainMenuItemTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
         mAppMenuHandler = mActivityTestRule.getAppMenuCoordinator().getAppMenuHandler();
+        mDialogManager = mActivityTestRule.getActivity().getModalDialogManager();
         mSnackBarManager = mActivityTestRule.getActivity().getSnackbarManager();
         doAnswer(invocation -> {
             invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(null);
@@ -115,7 +118,7 @@ public final class WebFeedMainMenuItemTest {
     @UiThreadTest
     public void initialize_emptyUrl_removesIcon() {
         mWebFeedMainMenuItem.initialize(GURL.emptyGURL(), mAppMenuHandler,
-                new MockLargeIconBridge(null), mSnackBarManager, mWebFeedBridge);
+                new MockLargeIconBridge(null), mDialogManager, mSnackBarManager, mWebFeedBridge);
 
         ImageView imageView = mWebFeedMainMenuItem.findViewById(R.id.icon);
         assertEquals("Icon should be gone.", View.GONE, imageView.getVisibility());
@@ -292,7 +295,7 @@ public final class WebFeedMainMenuItemTest {
      */
     private void initializeWebFeedMainMenuItem(Bitmap bitmap) {
         mWebFeedMainMenuItem.initialize(TEST_URL, mAppMenuHandler, new MockLargeIconBridge(bitmap),
-                mSnackBarManager, mWebFeedBridge);
+                mDialogManager, mSnackBarManager, mWebFeedBridge);
     }
 
     /**

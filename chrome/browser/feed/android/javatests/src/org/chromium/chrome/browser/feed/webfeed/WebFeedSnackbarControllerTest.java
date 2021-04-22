@@ -5,16 +5,21 @@
 package org.chromium.chrome.browser.feed.webfeed;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,12 +29,17 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.url.GURL;
 
 /**
@@ -43,6 +53,8 @@ public final class WebFeedSnackbarControllerTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Mock
+    private Tracker mTracker;
+    @Mock
     public WebFeedBridge mWebFeedBridge;
 
     private static final GURL sTestUrl = new GURL("http://www.example.com");
@@ -50,6 +62,7 @@ public final class WebFeedSnackbarControllerTest {
     private static final byte[] sFollowId = new byte[] {1, 2, 3};
 
     private Context mContext;
+    private ModalDialogManager mDialogManager;
     private SnackbarManager mSnackbarManager;
     private WebFeedSnackbarController mWebFeedSnackbarController;
 
@@ -58,10 +71,19 @@ public final class WebFeedSnackbarControllerTest {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mContext = mActivityTestRule.getActivity();
+        mDialogManager = mActivityTestRule.getActivity().getModalDialogManager();
         mSnackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
+        when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE))
+                .thenReturn(false);
+        TrackerFactory.setTrackerForTests(mTracker);
 
         mWebFeedSnackbarController = new WebFeedSnackbarController(
-                mActivityTestRule.getActivity(), mSnackbarManager, mWebFeedBridge);
+                mActivityTestRule.getActivity(), mDialogManager, mSnackbarManager, mWebFeedBridge);
+    }
+
+    @After
+    public void tearDown() {
+        TrackerFactory.setTrackerForTests(null);
     }
 
     @Test
@@ -72,7 +94,7 @@ public final class WebFeedSnackbarControllerTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> mWebFeedSnackbarController.showSnackbarForFollow(
+                        -> mWebFeedSnackbarController.showPostFollowHelp(
                                 followResults, sFollowId, sTestUrl, sTitle));
 
         Snackbar snackbar = mSnackbarManager.getCurrentSnackbarForTesting();
@@ -93,7 +115,7 @@ public final class WebFeedSnackbarControllerTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> mWebFeedSnackbarController.showSnackbarForFollow(
+                        -> mWebFeedSnackbarController.showPostFollowHelp(
                                 followResults, sFollowId, sTestUrl, sTitle));
 
         Snackbar snackbar = mSnackbarManager.getCurrentSnackbarForTesting();
@@ -107,13 +129,97 @@ public final class WebFeedSnackbarControllerTest {
 
     @Test
     @SmallTest
+    public void showPromoDialogForFollow_successful_active() {
+        when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE))
+                .thenReturn(true);
+        WebFeedBridge.FollowResults followResults =
+                new WebFeedBridge.FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS,
+                        new WebFeedBridge.WebFeedMetadata(sFollowId, sTitle, sTestUrl,
+                                WebFeedSubscriptionRequestStatus.SUCCESS, /*isActive=*/
+                                true, /*isRecommended=*/false));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mWebFeedSnackbarController.showPostFollowHelp(
+                                followResults, sFollowId, sTestUrl, sTitle));
+
+        View currentDialog =
+                mDialogManager.getCurrentDialogForTest().get(ModalDialogProperties.CUSTOM_VIEW);
+        assertFalse("Snackbar should not be showing.", mSnackbarManager.isShowing());
+        assertTrue("Dialog should be showing.", mDialogManager.isShowing());
+        assertEquals("Dialog title should be correct for active follow.",
+                mContext.getString(R.string.web_feed_post_follow_dialog_title, sTitle),
+                ((TextView) currentDialog.findViewById(R.id.web_feed_dialog_title)).getText());
+        assertEquals("Dialog details should be for active follow.",
+                mContext.getString(
+                        R.string.web_feed_post_follow_dialog_stories_ready_description, sTitle),
+                ((TextView) currentDialog.findViewById(R.id.web_feed_dialog_details)).getText());
+    }
+
+    @Test
+    @SmallTest
+    public void showPromoDialogForFollow_successful_notActive() {
+        when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE))
+                .thenReturn(true);
+        WebFeedBridge.FollowResults followResults =
+                new WebFeedBridge.FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS,
+                        new WebFeedBridge.WebFeedMetadata(sFollowId, sTitle, sTestUrl,
+                                WebFeedSubscriptionRequestStatus.SUCCESS, /*isActive=*/
+                                false, /*isRecommended=*/false));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mWebFeedSnackbarController.showPostFollowHelp(
+                                followResults, sFollowId, sTestUrl, sTitle));
+
+        View currentDialog =
+                mDialogManager.getCurrentDialogForTest().get(ModalDialogProperties.CUSTOM_VIEW);
+        assertFalse("Snackbar should not be showing.", mSnackbarManager.isShowing());
+        assertTrue("Dialog should be showing.", mDialogManager.isShowing());
+        assertEquals("Dialog title should be correct for inactive follow.",
+                mContext.getString(R.string.web_feed_post_follow_dialog_title, sTitle),
+                ((TextView) currentDialog.findViewById(R.id.web_feed_dialog_title)).getText());
+        assertEquals("Dialog details should be for inactive follow.",
+                mContext.getString(
+                        R.string.web_feed_post_follow_dialog_stories_not_ready_description, sTitle),
+                ((TextView) currentDialog.findViewById(R.id.web_feed_dialog_details)).getText());
+    }
+
+    @Test
+    @SmallTest
+    public void showPromoDialogForFollow_successful_noMetadata() {
+        when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE))
+                .thenReturn(true);
+        WebFeedBridge.FollowResults followResults = new WebFeedBridge.FollowResults(
+                WebFeedSubscriptionRequestStatus.SUCCESS, /*metadata=*/null);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mWebFeedSnackbarController.showPostFollowHelp(
+                                followResults, sFollowId, sTestUrl, sTitle));
+
+        View currentDialog =
+                mDialogManager.getCurrentDialogForTest().get(ModalDialogProperties.CUSTOM_VIEW);
+        assertFalse("Snackbar should not be showing.", mSnackbarManager.isShowing());
+        assertTrue("Dialog should be showing.", mDialogManager.isShowing());
+        assertEquals("Dialog title should be correct.",
+                mContext.getString(R.string.web_feed_post_follow_dialog_title, sTitle),
+                ((TextView) currentDialog.findViewById(R.id.web_feed_dialog_title)).getText());
+        assertEquals("Dialog details should be for active follow.",
+                mContext.getString(
+                        R.string.web_feed_post_follow_dialog_stories_not_ready_description, sTitle),
+                ((TextView) currentDialog.findViewById(R.id.web_feed_dialog_details)).getText());
+    }
+
+    @Test
+    @SmallTest
     public void showSnackbarForFollow_noId_unsuccessful() {
         WebFeedBridge.FollowResults followResults = new WebFeedBridge.FollowResults(/*success=*/
                 false);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> mWebFeedSnackbarController.showSnackbarForFollow(
+                        -> mWebFeedSnackbarController.showPostFollowHelp(
                                 followResults, "".getBytes(), sTestUrl, sTitle));
 
         Snackbar snackbar = mSnackbarManager.getCurrentSnackbarForTesting();
@@ -140,7 +246,7 @@ public final class WebFeedSnackbarControllerTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> mWebFeedSnackbarController.showSnackbarForFollow(
+                        -> mWebFeedSnackbarController.showPostFollowHelp(
                                 followResults, sFollowId, sTestUrl, sTitle));
 
         Snackbar snackbar = mSnackbarManager.getCurrentSnackbarForTesting();

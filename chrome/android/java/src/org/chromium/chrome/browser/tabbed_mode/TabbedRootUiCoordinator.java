@@ -433,9 +433,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivity.getWindowAndroid(), mAppBannerInProductHelpController);
 
         if (FeedFeatures.isWebFeedUIEnabled()) {
-            mWebFeedFollowIntroController = new WebFeedFollowIntroController(mActivity,
-                    mTabSupplier, mToolbarManager.getMenuButtonView(),
-                    mActivity.getSnackbarManager(), new WebFeedBridge());
+            mWebFeedFollowIntroController =
+                    new WebFeedFollowIntroController(mActivity, mTabSupplier,
+                            mToolbarManager.getMenuButtonView(), mActivity.getModalDialogManager(),
+                            mActivity.getSnackbarManager(), new WebFeedBridge());
         }
     }
 

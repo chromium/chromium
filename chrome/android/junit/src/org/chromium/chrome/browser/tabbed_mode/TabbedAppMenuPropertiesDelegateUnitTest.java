@@ -68,6 +68,7 @@ import org.chromium.content.browser.ContentFeatureListImplJni;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -122,6 +123,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock
     private ContentFeatureListImpl.Natives mContentFeatureListJniMock;
     @Mock
+    private ModalDialogManager mDialogManager;
+    @Mock
     private SnackbarManager mSnackbarManager;
     @Mock
     private WebFeedBridge mWebFeedBridge;
@@ -173,7 +176,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 new TabbedAppMenuPropertiesDelegate(ContextUtils.getApplicationContext(),
                         mActivityTabProvider, mMultiWindowModeStateDispatcher, mTabModelSelector,
                         mToolbarManager, mDecorView, mAppMenuDelegate, mOverviewModeSupplier,
-                        mBookmarkBridgeSupplier, mSnackbarManager, mWebFeedBridge));
+                        mBookmarkBridgeSupplier, mDialogManager, mSnackbarManager, mWebFeedBridge));
     }
 
     @Test

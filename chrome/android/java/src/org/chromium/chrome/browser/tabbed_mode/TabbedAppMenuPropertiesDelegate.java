@@ -33,12 +33,14 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * An {@link AppMenuPropertiesDelegateImpl} for ChromeTabbedActivity.
  */
 public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateImpl {
     AppMenuDelegate mAppMenuDelegate;
+    ModalDialogManager mModalDialogManager;
     SnackbarManager mSnackbarManager;
     WebFeedBridge mWebFeedBridge;
 
@@ -48,10 +50,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             AppMenuDelegate appMenuDelegate,
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
-            SnackbarManager snackbarManager, WebFeedBridge webFeedBridge) {
+            ModalDialogManager modalDialogManager, SnackbarManager snackbarManager,
+            WebFeedBridge webFeedBridge) {
         super(context, activityTabProvider, multiWindowModeStateDispatcher, tabModelSelector,
                 toolbarManager, decorView, overviewModeBehaviorSupplier, bookmarkBridgeSupplier);
         mAppMenuDelegate = appMenuDelegate;
+        mModalDialogManager = modalDialogManager;
         mSnackbarManager = snackbarManager;
         mWebFeedBridge = webFeedBridge;
     }
@@ -90,7 +94,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             ((WebFeedMainMenuItem) view)
                     .initialize(mActivityTabProvider.get().getOriginalUrl(), appMenuHandler,
                             new LargeIconBridge(Profile.getLastUsedRegularProfile()),
-                            mSnackbarManager, mWebFeedBridge);
+                            mModalDialogManager, mSnackbarManager, mWebFeedBridge);
         }
     }
 

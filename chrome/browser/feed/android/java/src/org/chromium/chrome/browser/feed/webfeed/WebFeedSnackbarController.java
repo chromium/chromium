@@ -6,9 +6,13 @@ package org.chromium.chrome.browser.feed.webfeed;
 
 import android.content.Context;
 
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 /**
@@ -17,32 +21,35 @@ import org.chromium.url.GURL;
 class WebFeedSnackbarController {
     private final Context mContext;
     private final SnackbarManager mSnackbarManager;
+    private final WebFeedDialogCoordinator mWebFeedDialogCoordinator;
     private final WebFeedBridge mWebFeedBridge;
 
     /**
      * Constructs an instance of {@link WebFeedSnackbarController}.
      *
      * @param context The {@link Context} to retrieve strings for the snackbars.
+     * @param dialogManager {@link ModalDialogManager} for managing the dialog.
      * @param snackbarManager {@link SnackbarManager} to manage the snackbars.
      * @param webFeedBridge {@link WebFeedBridge} to connect with the backend to follow/unfollow.
      */
-    WebFeedSnackbarController(
-            Context context, SnackbarManager snackbarManager, WebFeedBridge webFeedBridge) {
+    WebFeedSnackbarController(Context context, ModalDialogManager dialogManager,
+            SnackbarManager snackbarManager, WebFeedBridge webFeedBridge) {
         mContext = context;
         mSnackbarManager = snackbarManager;
+        mWebFeedDialogCoordinator = new WebFeedDialogCoordinator(dialogManager);
         mWebFeedBridge = webFeedBridge;
     }
 
     /**
-     * Show appropriate post-follow snackbar depending on success/failure.
+     * Show appropriate post-follow snackbar/dialog depending on success/failure.
      */
-    void showSnackbarForFollow(
+    void showPostFollowHelp(
             WebFeedBridge.FollowResults results, byte[] followId, GURL url, String fallbackTitle) {
         if (results.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS) {
             if (results.metadata != null) {
-                showFollowSuccessSnackbar(results.metadata.title);
+                showPostSuccessfulFollowHelp(results.metadata.title, results.metadata.isActive);
             } else {
-                showFollowSuccessSnackbar(fallbackTitle);
+                showPostSuccessfulFollowHelp(fallbackTitle, /*isActive=*/false);
             }
         } else {
             // TODO(crbug/1152592): Add snackbars for specific failures.
@@ -67,16 +74,24 @@ class WebFeedSnackbarController {
         }
     }
 
-    private void showFollowSuccessSnackbar(String title) {
-        SnackbarController snackbarController = new SnackbarController() {
-            @Override
-            public void onAction(Object actionData) {
-                // TODO(crbug/1152592): Implement go to feed.
-            }
-        };
-        showSnackbar(mContext.getString(R.string.web_feed_follow_success_snackbar_message, title),
-                snackbarController, Snackbar.UMA_WEB_FEED_FOLLOW_SUCCESS,
-                R.string.web_feed_follow_success_snackbar_action);
+    private void showPostSuccessfulFollowHelp(String title, boolean isActive) {
+        if (TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+                        .shouldTriggerHelpUI(
+                                FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE)) {
+            mWebFeedDialogCoordinator.initialize(mContext, title, isActive);
+            mWebFeedDialogCoordinator.showDialog();
+        } else {
+            SnackbarController snackbarController = new SnackbarController() {
+                @Override
+                public void onAction(Object actionData) {
+                    // TODO(crbug/1152592): Implement go to feed.
+                }
+            };
+            showSnackbar(
+                    mContext.getString(R.string.web_feed_follow_success_snackbar_message, title),
+                    snackbarController, Snackbar.UMA_WEB_FEED_FOLLOW_SUCCESS,
+                    R.string.web_feed_follow_success_snackbar_action);
+        }
     }
 
     private void showUnfollowSuccessSnackbar(byte[] followId, GURL url, String title) {
@@ -115,8 +130,8 @@ class WebFeedSnackbarController {
     }
 
     /**
-     * Returns {@link SnackbarController} for when the snackbar action is to follow. Prefers {@link
-     * WebFeedBridge#followFromId} if an ID is available.
+     * Returns {@link SnackbarController} for when the snackbar action is to follow. Prefers
+     * {@link WebFeedBridge#followFromId} if an ID is available.
      */
     private SnackbarController getFollowActionSnackbarController(
             byte[] followId, GURL url, String title) {
@@ -126,11 +141,11 @@ class WebFeedSnackbarController {
                 if (followId == null || followId.length == 0) {
                     mWebFeedBridge.followFromUrl(url, result -> {
                         byte[] followId = result.metadata != null ? result.metadata.id : null;
-                        showSnackbarForFollow(result, followId, url, title);
+                        showPostFollowHelp(result, followId, url, title);
                     });
                 } else {
-                    mWebFeedBridge.followFromId(followId,
-                            result -> showSnackbarForFollow(result, followId, url, title));
+                    mWebFeedBridge.followFromId(
+                            followId, result -> showPostFollowHelp(result, followId, url, title));
                 }
             }
         };

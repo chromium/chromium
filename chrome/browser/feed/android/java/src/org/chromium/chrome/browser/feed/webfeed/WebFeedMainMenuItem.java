@@ -25,6 +25,7 @@ import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.ChipView;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
@@ -66,17 +67,19 @@ public class WebFeedMainMenuItem extends FrameLayout {
      * @param url {@link GURL} of the page.
      * @param appMenuHandler {@link AppMenuHandler} to control hiding the app menu.
      * @param largeIconBridge {@link LargeIconBridge} to get the favicon of the page.
+     * @param dialogManager {@link ModalDialogManager} for managing the dialog.
      * @param snackbarManager {@link SnackbarManager} to display snackbars.
      * @param webFeedBridge {@link WebFeedBridge} to display the menu item and follow/unfollow.
      */
     public void initialize(GURL url, AppMenuHandler appMenuHandler, LargeIconBridge largeIconBridge,
-            SnackbarManager snackbarManager, WebFeedBridge webFeedBridge) {
+            ModalDialogManager dialogManager, SnackbarManager snackbarManager,
+            WebFeedBridge webFeedBridge) {
         mUrl = url;
         mAppMenuHandler = appMenuHandler;
         mLargeIconBridge = largeIconBridge;
         mWebFeedBridge = webFeedBridge;
-        mWebFeedSnackbarController =
-                new WebFeedSnackbarController(mContext, snackbarManager, webFeedBridge);
+        mWebFeedSnackbarController = new WebFeedSnackbarController(
+                mContext, dialogManager, snackbarManager, webFeedBridge);
 
         initializeFavicon();
         mWebFeedBridge.getWebFeedMetadataForPage(mUrl, result -> {
@@ -151,7 +154,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
                 mChipView, mContext.getText(R.string.menu_follow), R.drawable.ic_add, (view) -> {
                     mWebFeedBridge.followFromUrl(mUrl, result -> {
                         byte[] followId = result.metadata != null ? result.metadata.id : null;
-                        mWebFeedSnackbarController.showSnackbarForFollow(
+                        mWebFeedSnackbarController.showPostFollowHelp(
                                 result, followId, mUrl, mTitle);
                     });
                     mAppMenuHandler.hideAppMenu();

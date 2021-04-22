@@ -21,6 +21,7 @@ import android.util.Base64;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -94,11 +95,17 @@ public final class WebFeedFollowIntroControllerTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mWebFeedFollowIntroController = new WebFeedFollowIntroController(mActivity,
                     mTabSupplier, mActivity.getToolbarManager().getMenuButtonView(),
-                    mActivity.getSnackbarManager(), mWebFeedBridge);
+                    mActivity.getModalDialogManager(), mActivity.getSnackbarManager(),
+                    mWebFeedBridge);
         });
 
         mEmptyTabObserver = mWebFeedFollowIntroController.getEmptyTabObserverForTesting();
         mWebFeedFollowIntroController.setClockForTesting(mClock);
+    }
+
+    @After
+    public void tearDown() {
+        TrackerFactory.setTrackerForTests(null);
     }
 
     @Test
