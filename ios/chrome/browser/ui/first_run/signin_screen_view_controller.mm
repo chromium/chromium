@@ -4,21 +4,14 @@
 
 #import "ios/chrome/browser/ui/first_run/signin_screen_view_controller.h"
 
-#import <MaterialComponents/MaterialActivityIndicator.h>
 
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
-#import "ios/chrome/browser/ui/material_components/activity_indicator.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/browser/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-// Size of the activity indicator.
-const CGFloat kActivityIndicatorSize = 48;
-}  // namespace
 
 @interface SigninScreenViewController ()
 
@@ -26,9 +19,7 @@ const CGFloat kActivityIndicatorSize = 48;
 @property(nonatomic, strong) IdentityButtonControl* identityControl;
 
 // Scrim displayed above the view when the UI is disabled.
-@property(nonatomic, strong) UIView* scrimView;
-// Activity indicator for the scrim view.
-@property(nonatomic, strong) MDCActivityIndicator* activityIndicator;
+@property(nonatomic, strong) ActivityOverlayView* overlay;
 
 @end
 
@@ -57,21 +48,12 @@ const CGFloat kActivityIndicatorSize = 48;
 
 #pragma mark - Properties
 
-- (UIView*)scrimView {
-  if (!_scrimView) {
-    _scrimView = [[UIView alloc] initWithFrame:CGRectZero];
-    _scrimView.translatesAutoresizingMaskIntoConstraints = NO;
-    _scrimView.backgroundColor = [UIColor colorNamed:kScrimBackgroundColor];
-
-    self.activityIndicator = [[MDCActivityIndicator alloc]
-        initWithFrame:CGRectMake(0, 0, kActivityIndicatorSize,
-                                 kActivityIndicatorSize)];
-    self.activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:self.activityIndicator];
-    AddSameCenterConstraints(_scrimView, self.activityIndicator);
-    self.activityIndicator.cycleColors = ActivityIndicatorBrandedCycleColors();
+- (ActivityOverlayView*)overlay {
+  if (!_overlay) {
+    _overlay = [[ActivityOverlayView alloc] init];
+    _overlay.translatesAutoresizingMaskIntoConstraints = NO;
   }
-  return _scrimView;
+  return _overlay;
 }
 
 #pragma mark - SignInScreenConsumer
@@ -95,23 +77,22 @@ const CGFloat kActivityIndicatorSize = 48;
 
 - (void)setUIEnabled:(BOOL)UIEnabled {
   if (UIEnabled) {
-    [self.scrimView removeFromSuperview];
-    self.scrimView = nil;
+    [self.overlay removeFromSuperview];
   } else {
-    [self.view addSubview:self.scrimView];
-    AddSameConstraints(self.view, self.scrimView);
-    [self.activityIndicator startAnimating];
+    [self.view addSubview:self.overlay];
+    AddSameConstraints(self.view, self.overlay);
+    [self.overlay.indicator startAnimating];
   }
 }
 
 #pragma mark - AuthenticationFlowDelegate
 
 - (void)didPresentDialog {
-  [self.activityIndicator stopAnimating];
+  [self.overlay.indicator stopAnimating];
 }
 
 - (void)didDismissDialog {
-  [self.activityIndicator startAnimating];
+  [self.overlay.indicator startAnimating];
 }
 
 #pragma mark - Private

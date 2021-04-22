@@ -82,6 +82,8 @@ source_set("elements_internal") {
   sources = [
     "activity_overlay_coordinator.h",
     "activity_overlay_coordinator.mm",
+    "activity_overlay_view.h",
+    "activity_overlay_view.mm",
     "activity_overlay_view_controller.h",
     "activity_overlay_view_controller.mm",
     "chrome_activity_overlay_coordinator.h",
