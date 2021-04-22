@@ -1021,7 +1021,7 @@ void PolicyUIHandler::OnPolicyUpdated(const policy::PolicyNamespace& ns,
   SendPolicies();
 }
 
-base::Value PolicyUIHandler::GetPolicyNames() const {
+base::Value PolicyUIHandler::GetPolicyNames() {
   base::Value names(base::Value::Type::DICTIONARY);
   Profile* profile = Profile::FromWebUI(web_ui());
   policy::SchemaRegistry* registry = profile->GetOriginalProfile()
@@ -1064,7 +1064,7 @@ base::Value PolicyUIHandler::GetPolicyNames() const {
   return names;
 }
 
-base::Value PolicyUIHandler::GetPolicyValues() const {
+base::Value PolicyUIHandler::GetPolicyValues() {
   auto client = std::make_unique<policy::ChromePolicyConversionsClient>(
       web_ui()->GetWebContents()->GetBrowserContext());
 
@@ -1085,7 +1085,7 @@ base::Value PolicyUIHandler::GetPolicyValues() const {
 
 void PolicyUIHandler::AddExtensionPolicyNames(
     base::Value* names,
-    policy::PolicyDomain policy_domain) const {
+    policy::PolicyDomain policy_domain) {
   DCHECK(names->is_dict());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -1241,7 +1241,7 @@ void PolicyUIHandler::HandleCopyPoliciesJson(const base::ListValue* args) {
   scw.WriteText(base::UTF8ToUTF16(policies_json));
 }
 
-std::string PolicyUIHandler::GetPoliciesAsJson() const {
+std::string PolicyUIHandler::GetPoliciesAsJson() {
   auto client = std::make_unique<policy::ChromePolicyConversionsClient>(
       web_ui()->GetWebContents()->GetBrowserContext());
   base::Value dict =
@@ -1305,8 +1305,7 @@ void DoWritePoliciesToJSONFile(const base::FilePath& path,
   base::WriteFile(path, data.c_str(), data.size());
 }
 
-void PolicyUIHandler::WritePoliciesToJSONFile(
-    const base::FilePath& path) const {
+void PolicyUIHandler::WritePoliciesToJSONFile(const base::FilePath& path) {
   std::string json_policies = GetPoliciesAsJson();
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -1365,7 +1364,7 @@ void PolicyUIHandler::OnRefreshPoliciesDone() {
   SendStatus();
 }
 
-policy::PolicyService* PolicyUIHandler::GetPolicyService() const {
+policy::PolicyService* PolicyUIHandler::GetPolicyService() {
   Profile* profile = Profile::FromBrowserContext(
       web_ui()->GetWebContents()->GetBrowserContext());
   return profile->GetProfilePolicyConnector()->policy_service();

@@ -846,17 +846,17 @@ bool SigninScreenHandler::AllAllowlistedUsersPresent() {
   return true;
 }
 
-bool SigninScreenHandler::IsGaiaVisible() const {
+bool SigninScreenHandler::IsGaiaVisible() {
   return IsSigninScreen(GetCurrentScreen()) &&
       ui_state_ == UI_STATE_GAIA_SIGNIN;
 }
 
-bool SigninScreenHandler::IsGaiaHiddenByError() const {
+bool SigninScreenHandler::IsGaiaHiddenByError() {
   return IsSigninScreenHiddenByError() &&
       ui_state_ == UI_STATE_GAIA_SIGNIN;
 }
 
-bool SigninScreenHandler::IsSigninScreenHiddenByError() const {
+bool SigninScreenHandler::IsSigninScreenHiddenByError() {
   return (GetCurrentScreen() == ErrorScreenView::kScreenId) &&
          (IsSigninScreen(error_screen_->GetParentScreen()));
 }

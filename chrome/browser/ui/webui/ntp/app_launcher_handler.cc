@@ -1378,7 +1378,7 @@ void AppLauncherHandler::ExtensionRemoved(const Extension* extension,
       base::Value(!extension_id_prompting_.empty()));
 }
 
-bool AppLauncherHandler::ShouldShow(const Extension* extension) const {
+bool AppLauncherHandler::ShouldShow(const Extension* extension) {
   if (ignore_changes_ || !has_loaded_apps_ || !extension->is_app())
     return false;
 

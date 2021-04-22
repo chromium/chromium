@@ -81,11 +81,11 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void FileSelectionCanceled(void* params) override;
 
  private:
-  base::Value GetPolicyNames() const;
-  base::Value GetPolicyValues() const;
+  base::Value GetPolicyNames();
+  base::Value GetPolicyValues();
 
   void AddExtensionPolicyNames(base::Value* names,
-                               policy::PolicyDomain policy_domain) const;
+                               policy::PolicyDomain policy_domain);
 
   void HandleExportPoliciesJson(const base::ListValue* args);
   void HandleListenPoliciesUpdates(const base::ListValue* args);
@@ -113,13 +113,13 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void SendStatus();
 
   // Build a JSON string of all the policies.
-  std::string GetPoliciesAsJson() const;
+  std::string GetPoliciesAsJson();
 
-  void WritePoliciesToJSONFile(const base::FilePath& path) const;
+  void WritePoliciesToJSONFile(const base::FilePath& path);
 
   void OnRefreshPoliciesDone();
 
-  policy::PolicyService* GetPolicyService() const;
+  policy::PolicyService* GetPolicyService();
 
   std::string device_domain_;
 

@@ -406,7 +406,7 @@ void ChangePictureHandler::OnUserProfileImageUpdated(
   SendProfileImage(profile_image, false);
 }
 
-gfx::NativeWindow ChangePictureHandler::GetBrowserWindow() const {
+gfx::NativeWindow ChangePictureHandler::GetBrowserWindow() {
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   return browser->window()->GetNativeWindow();
@@ -421,7 +421,7 @@ void ChangePictureHandler::OnDecodeImageFailed() {
   NOTREACHED() << "Failed to decode PNG image from WebUI";
 }
 
-const user_manager::User* ChangePictureHandler::GetUser() const {
+const user_manager::User* ChangePictureHandler::GetUser() {
   Profile* profile = Profile::FromWebUI(web_ui());
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);

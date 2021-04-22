@@ -23,18 +23,17 @@ class CertificateHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool IsCACertificateManagementAllowedPolicy(CertificateSource source) const {
+  bool IsCACertificateManagementAllowedPolicy(CertificateSource source) {
     return cert_handler_.IsCACertificateManagementAllowedPolicy(source);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   bool CanDeleteCertificate(
-      const CertificateManagerModel::CertInfo* cert_info) const {
+      const CertificateManagerModel::CertInfo* cert_info) {
     return cert_handler_.CanDeleteCertificate(cert_info);
   }
 
-  bool CanEditCertificate(
-      const CertificateManagerModel::CertInfo* cert_info) const {
+  bool CanEditCertificate(const CertificateManagerModel::CertInfo* cert_info) {
     return cert_handler_.CanEditCertificate(cert_info);
   }
 

@@ -218,9 +218,7 @@ class TestManagementUIHandler : public ManagementUIHandler {
     return ManagementUIHandler::GetThreatProtectionInfo(profile);
   }
 
-  policy::PolicyService* GetPolicyService() const override {
-    return policy_service_;
-  }
+  policy::PolicyService* GetPolicyService() override { return policy_service_; }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD(policy::DeviceCloudPolicyManagerChromeOS*,

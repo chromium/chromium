@@ -57,7 +57,7 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
 
   // The dialog string is different when the device is managed. This function
   // returns whether the version for managed devices should be used.
-  bool ShouldShowManagedDeviceVersion() const;
+  bool ShouldShowManagedDeviceVersion();
 
   std::string GetHeaderText();
   std::string GetBodyTitle();

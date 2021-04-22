@@ -138,9 +138,9 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   void AddReportingInfo(base::Value* report_sources);
 
   base::Value GetContextualManagedData(Profile* profile);
-  base::Value GetThreatProtectionInfo(Profile* profile) const;
+  base::Value GetThreatProtectionInfo(Profile* profile);
   base::Value GetManagedWebsitesInfo(Profile* profile) const;
-  virtual policy::PolicyService* GetPolicyService() const;
+  virtual policy::PolicyService* GetPolicyService();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Protected for testing.

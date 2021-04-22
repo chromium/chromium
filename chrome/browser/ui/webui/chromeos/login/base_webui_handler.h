@@ -92,7 +92,7 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
   // If the JS container hasn't been initialized yet, it is safe to call JS
   // because the call will be postponed until we receive a message from the
   // renderer.
-  bool IsSafeToCallJavascript() const {
+  bool IsSafeToCallJavascript() {
     return (js_calls_container_ && !js_calls_container_->is_initialized()) ||
            IsJavascriptAllowed();
   }
@@ -131,10 +131,10 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
                           const base::DictionaryValue* data);
 
   // Returns the OobeUI instance.
-  OobeUI* GetOobeUI() const;
+  OobeUI* GetOobeUI();
 
   // Returns current visible OOBE screen.
-  OobeScreenId GetCurrentScreen() const;
+  OobeScreenId GetCurrentScreen();
 
   // Whether page is ready.
   bool page_is_ready() const { return page_is_ready_; }

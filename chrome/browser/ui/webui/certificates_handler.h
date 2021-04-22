@@ -193,7 +193,7 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   // has been fulfilled.
   void AssignWebUICallbackId(const base::ListValue* args);
 
-  gfx::NativeWindow GetParentWindow() const;
+  gfx::NativeWindow GetParentWindow();
 
   // If |args| is a list, parses the list element at |arg_index| as an id for
   // |cert_info_id_map_| and looks up the corresponding CertInfo. If there is
@@ -205,20 +205,18 @@ class CertificatesHandler : public content::WebUIMessageHandler,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns true if the user may manage certificates on |slot| according
   // to ClientCertificateManagementAllowed policy.
-  bool IsClientCertificateManagementAllowedPolicy(Slot slot) const;
+  bool IsClientCertificateManagementAllowedPolicy(Slot slot);
 
   // Returns true if the user may manage certificates according
   // to CACertificateManagementAllowed policy.
-  bool IsCACertificateManagementAllowedPolicy(CertificateSource source) const;
+  bool IsCACertificateManagementAllowedPolicy(CertificateSource source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Returns true if the certificate represented by |cert_info| can be deleted.
-  bool CanDeleteCertificate(
-      const CertificateManagerModel::CertInfo* cert_info) const;
+  bool CanDeleteCertificate(const CertificateManagerModel::CertInfo* cert_info);
 
   // Returns true if the certificate represented by |cert_info| can be edited.
-  bool CanEditCertificate(
-      const CertificateManagerModel::CertInfo* cert_info) const;
+  bool CanEditCertificate(const CertificateManagerModel::CertInfo* cert_info);
 
   // The Certificates Manager model
   bool requested_certificate_manager_model_;

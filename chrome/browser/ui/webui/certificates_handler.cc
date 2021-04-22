@@ -1137,7 +1137,7 @@ void CertificatesHandler::RejectCallbackWithImportError(
   RejectCallback(*error_info);
 }
 
-gfx::NativeWindow CertificatesHandler::GetParentWindow() const {
+gfx::NativeWindow CertificatesHandler::GetParentWindow() {
   return web_ui()->GetWebContents()->GetTopLevelNativeWindow();
 }
 
@@ -1161,7 +1161,7 @@ CertificatesHandler::GetCertInfoFromCallbackArgs(const base::Value& args,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool CertificatesHandler::IsClientCertificateManagementAllowedPolicy(
-    Slot slot) const {
+    Slot slot) {
   Profile* profile = Profile::FromWebUI(web_ui());
   PrefService* prefs = profile->GetPrefs();
   auto policy_value = static_cast<ClientCertificateManagementPermission>(
@@ -1174,7 +1174,7 @@ bool CertificatesHandler::IsClientCertificateManagementAllowedPolicy(
 }
 
 bool CertificatesHandler::IsCACertificateManagementAllowedPolicy(
-    CertificateSource source) const {
+    CertificateSource source) {
   Profile* profile = Profile::FromWebUI(web_ui());
   PrefService* prefs = profile->GetPrefs();
   auto policy_value = static_cast<CACertificateManagementPermission>(
@@ -1190,7 +1190,7 @@ bool CertificatesHandler::IsCACertificateManagementAllowedPolicy(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool CertificatesHandler::CanDeleteCertificate(
-    const CertificateManagerModel::CertInfo* cert_info) const {
+    const CertificateManagerModel::CertInfo* cert_info) {
   if (!cert_info->can_be_deleted() ||
       cert_info->source() ==
           CertificateManagerModel::CertInfo::Source::kPolicy) {
@@ -1213,7 +1213,7 @@ bool CertificatesHandler::CanDeleteCertificate(
 }
 
 bool CertificatesHandler::CanEditCertificate(
-    const CertificateManagerModel::CertInfo* cert_info) const {
+    const CertificateManagerModel::CertInfo* cert_info) {
   if ((cert_info->type() != net::CertType::CA_CERT) ||
       (cert_info->source() ==
        CertificateManagerModel::CertInfo::Source::kPolicy)) {

@@ -134,7 +134,7 @@ void ProfileInfoHandler::PushProfileInfo() {
 }
 
 std::unique_ptr<base::DictionaryValue>
-ProfileInfoHandler::GetAccountNameAndIcon() const {
+ProfileInfoHandler::GetAccountNameAndIcon() {
   std::string name;
   std::string icon_url;
 

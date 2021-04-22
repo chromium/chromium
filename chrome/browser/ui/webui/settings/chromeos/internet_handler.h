@@ -55,7 +55,7 @@ class InternetHandler
   // Sends the list of names.
   void SendGmsCoreNotificationsDisabledDeviceNames();
 
-  gfx::NativeWindow GetNativeWindow() const;
+  gfx::NativeWindow GetNativeWindow();
 
   void SetGmsCoreNotificationsStateTrackerForTesting(
       chromeos::tether::GmsCoreNotificationsStateTracker*

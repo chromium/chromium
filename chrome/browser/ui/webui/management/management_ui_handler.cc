@@ -752,8 +752,7 @@ base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
   return response;
 }
 
-base::Value ManagementUIHandler::GetThreatProtectionInfo(
-    Profile* profile) const {
+base::Value ManagementUIHandler::GetThreatProtectionInfo(Profile* profile) {
   base::Value info(base::Value::Type::LIST);
 
   constexpr struct {
@@ -824,7 +823,7 @@ base::Value ManagementUIHandler::GetManagedWebsitesInfo(
   return managed_websites;
 }
 
-policy::PolicyService* ManagementUIHandler::GetPolicyService() const {
+policy::PolicyService* ManagementUIHandler::GetPolicyService() {
   return Profile::FromWebUI(web_ui())
       ->GetProfilePolicyConnector()
       ->policy_service();

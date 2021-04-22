@@ -88,6 +88,6 @@ void ThemeHandler::InitializeCSSCaches() {
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 }
 
-Profile* ThemeHandler::GetProfile() const {
+Profile* ThemeHandler::GetProfile() {
   return Profile::FromWebUI(web_ui());
 }

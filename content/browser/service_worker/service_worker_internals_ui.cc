@@ -569,7 +569,7 @@ void ServiceWorkerInternalsHandler::FindContext(
 
 bool ServiceWorkerInternalsHandler::GetServiceWorkerContext(
     int partition_id,
-    scoped_refptr<ServiceWorkerContextWrapper>* context) const {
+    scoped_refptr<ServiceWorkerContextWrapper>* context) {
   BrowserContext* browser_context =
       web_ui()->GetWebContents()->GetBrowserContext();
   StoragePartition* result_partition(nullptr);

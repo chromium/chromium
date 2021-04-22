@@ -225,7 +225,7 @@ void InternetHandler::SendGmsCoreNotificationsDisabledDeviceNames() {
                     device_names_value);
 }
 
-gfx::NativeWindow InternetHandler::GetNativeWindow() const {
+gfx::NativeWindow InternetHandler::GetNativeWindow() {
   return web_ui()->GetWebContents()->GetTopLevelNativeWindow();
 }
 

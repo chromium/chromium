@@ -36,7 +36,7 @@ void WebUIMessageHandler::DisallowJavascript() {
   OnJavascriptDisallowed();
 }
 
-bool WebUIMessageHandler::IsJavascriptAllowed() const {
+bool WebUIMessageHandler::IsJavascriptAllowed() {
   return javascript_allowed_ && web_ui() && web_ui()->CanCallJavascript();
 }
 

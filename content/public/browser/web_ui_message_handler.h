@@ -44,7 +44,7 @@ class CONTENT_EXPORT WebUIMessageHandler {
   // is needed from production code, just publicize AllowJavascript() instead.
   void AllowJavascriptForTesting();
 
-  bool IsJavascriptAllowed() const;
+  bool IsJavascriptAllowed();
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(WebUIMessageHandlerTest, ExtractIntegerValue);
@@ -133,7 +133,7 @@ class CONTENT_EXPORT WebUIMessageHandler {
   }
 
   // Returns the attached WebUI for this handler.
-  WebUI* web_ui() const { return web_ui_; }
+  WebUI* web_ui() { return web_ui_; }
 
   // Sets the attached WebUI - exposed to subclasses for testing purposes.
   void set_web_ui(WebUI* web_ui) { web_ui_ = web_ui; }

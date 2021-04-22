@@ -194,7 +194,7 @@ base::Value DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
   return parameters;
 }
 
-bool DiceWebSigninInterceptHandler::ShouldShowManagedDeviceVersion() const {
+bool DiceWebSigninInterceptHandler::ShouldShowManagedDeviceVersion() {
   // This checks if the current profile is managed, which is a conservative
   // approximation of whether the new profile will be managed (this is because
   // the current profile may have policies coming from Sync, but the new profile

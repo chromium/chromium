@@ -40,7 +40,7 @@ class CONTENT_EXPORT WebRTCInternalsMessageHandler
  private:
   // Returns a pointer to the RFH iff it is currently hosting the
   // webrtc-internals page.
-  RenderFrameHost* GetWebRTCInternalsHost() const;
+  RenderFrameHost* GetWebRTCInternalsHost();
 
   // Javascript message handler.
   void OnGetStandardStats(const base::ListValue* list);

@@ -123,7 +123,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler,
   virtual void BadMessageReceived();
 
   // Gets the initiator for the print preview dialog.
-  virtual content::WebContents* GetInitiator() const;
+  virtual content::WebContents* GetInitiator();
 
   // Register/unregister from notifications of changes done to the GAIA
   // cookie. Protected so unit tests can override.
@@ -147,11 +147,11 @@ class PrintPreviewHandler : public content::WebUIMessageHandler,
   FRIEND_TEST_ALL_PREFIXES(PrintPreviewHandlerFailingTest,
                            GetPrinterCapabilities);
 
-  content::WebContents* preview_web_contents() const;
+  content::WebContents* preview_web_contents();
 
-  PrintPreviewUI* print_preview_ui() const;
+  PrintPreviewUI* print_preview_ui();
 
-  PrefService* GetPrefs() const;
+  PrefService* GetPrefs();
 
   // Checks policy preferences for a deny list of printer types and initializes
   // the set that stores them.

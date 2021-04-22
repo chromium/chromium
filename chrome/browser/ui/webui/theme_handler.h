@@ -47,7 +47,7 @@ class ThemeHandler : public content::WebUIMessageHandler,
   // Notify the page (if allowed) that the theme has changed.
   void SendThemeChanged();
 
-  Profile* GetProfile() const;
+  Profile* GetProfile();
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};

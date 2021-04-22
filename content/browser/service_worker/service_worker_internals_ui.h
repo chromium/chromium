@@ -80,7 +80,7 @@ class ServiceWorkerInternalsHandler : public WebUIMessageHandler {
 
   bool GetServiceWorkerContext(
       int partition_id,
-      scoped_refptr<ServiceWorkerContextWrapper>* context) const;
+      scoped_refptr<ServiceWorkerContextWrapper>* context);
   void FindContext(int partition_id,
                    StoragePartition** result_partition,
                    StoragePartition* storage_partition) const;

@@ -628,11 +628,11 @@ void EnrollmentScreenHandler::GetAdditionalParameters(
   parameters->SetKey("encryptionTypesList", GetEncryptionTypesList());
 }
 
-bool EnrollmentScreenHandler::IsOnEnrollmentScreen() const {
+bool EnrollmentScreenHandler::IsOnEnrollmentScreen() {
   return (GetCurrentScreen() == kScreenId);
 }
 
-bool EnrollmentScreenHandler::IsEnrollmentScreenHiddenByError() const {
+bool EnrollmentScreenHandler::IsEnrollmentScreenHiddenByError() {
   return (GetCurrentScreen() == ErrorScreenView::kScreenId &&
           error_screen_->GetParentScreen() == kScreenId);
 }

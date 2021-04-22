@@ -69,7 +69,7 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   void PushProfileStatsCount(profiles::ProfileCategoryStats stats);
 #endif
 
-  std::unique_ptr<base::DictionaryValue> GetAccountNameAndIcon() const;
+  std::unique_ptr<base::DictionaryValue> GetAccountNameAndIcon();
 
   // Weak pointer.
   Profile* profile_;

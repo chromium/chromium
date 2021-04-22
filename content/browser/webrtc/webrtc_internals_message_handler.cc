@@ -74,7 +74,7 @@ void WebRTCInternalsMessageHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-RenderFrameHost* WebRTCInternalsMessageHandler::GetWebRTCInternalsHost() const {
+RenderFrameHost* WebRTCInternalsMessageHandler::GetWebRTCInternalsHost() {
   RenderFrameHost* host = web_ui()->GetWebContents()->GetMainFrame();
   if (host) {
     // Make sure we only ever execute the script in the webrtc-internals page.

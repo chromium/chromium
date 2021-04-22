@@ -222,15 +222,15 @@ class SigninScreenHandler
   bool AllAllowlistedUsersPresent();
 
   // Returns true if current visible screen is the Gaia sign-in page.
-  bool IsGaiaVisible() const;
+  bool IsGaiaVisible();
 
   // Returns true if current visible screen is the error screen over
   // Gaia sign-in page.
-  bool IsGaiaHiddenByError() const;
+  bool IsGaiaHiddenByError();
 
   // Returns true if current screen is the error screen over signin
   // screen.
-  bool IsSigninScreenHiddenByError() const;
+  bool IsSigninScreenHiddenByError();
 
   net::Error FrameError() const;
 

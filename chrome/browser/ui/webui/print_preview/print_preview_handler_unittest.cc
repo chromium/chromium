@@ -302,7 +302,7 @@ class TestPrintPreviewHandler : public PrintPreviewHandler {
 
   void BadMessageReceived() override { bad_messages_++; }
 
-  content::WebContents* GetInitiator() const override { return initiator_; }
+  content::WebContents* GetInitiator() override { return initiator_; }
 
   bool CalledOnlyForType(PrinterType printer_type) {
     return (called_for_type_.size() == 1 &&
