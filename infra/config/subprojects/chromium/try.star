@@ -1677,7 +1677,6 @@ try_.chromium_updater_win_builder(
             ".+/[+]/chrome/updater/.+",
         ],
     ),
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 try_.chromium_win_builder(
@@ -1754,7 +1753,6 @@ try_.chromium_win_builder(
 try_.chromium_win_builder(
     name = "win10_chromium_x64_1909_fyi_rel_ng",
     builderless = False,
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
     os = os.WINDOWS_10_1909,
 )
 
@@ -1765,7 +1763,6 @@ try_.chromium_win_builder(
 
 try_.chromium_win_builder(
     name = "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng",
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
     os = os.WINDOWS_10,
 )
 
@@ -1784,7 +1781,6 @@ try_.chromium_win_builder(
 try_.chromium_win_builder(
     name = "win10_chromium_x64_rel_ng_exp",
     builderless = False,
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
     os = os.WINDOWS_ANY,
 )
 
@@ -1900,7 +1896,6 @@ try_.gpu_chromium_win_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = True,
     main_list_view = "try",
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
     os = os.WINDOWS_DEFAULT,
     tryjob = try_.job(
         location_regexp = [

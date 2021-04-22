@@ -66,31 +66,26 @@ try_.chromium_swangle_windows_builder(
     pool = "luci.chromium.swangle.chromium.win.x86.try",
     execution_timeout = 6 * time.hour,
     pinned = False,
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 try_.chromium_swangle_windows_builder(
     name = "win-swangle-try-tot-angle-x64",
     pool = "luci.chromium.swangle.win.x64.try",
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 try_.chromium_swangle_windows_builder(
     name = "win-swangle-try-tot-angle-x86",
     pool = "luci.chromium.swangle.angle.win.x86.try",
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 try_.chromium_swangle_windows_builder(
     name = "win-swangle-try-tot-swiftshader-x64",
     pool = "luci.chromium.swangle.win.x64.try",
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 try_.chromium_swangle_windows_builder(
     name = "win-swangle-try-tot-swiftshader-x86",
     pool = "luci.chromium.swangle.sws.win.x86.try",
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 try_.chromium_swangle_windows_builder(
