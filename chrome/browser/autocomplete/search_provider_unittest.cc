@@ -221,7 +221,18 @@ class BaseSearchProviderTest : public testing::Test,
   BaseSearchProviderTest(
       const base::Optional<bool> warm_up_on_focus = base::nullopt,
       const bool command_line_overrides = false)
-      : feature_test_component_(warm_up_on_focus, command_line_overrides) {}
+      : feature_test_component_(warm_up_on_focus, command_line_overrides) {
+    // We need both the history service and template url model loaded.
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory());
+    profile_builder.AddTestingFactory(
+        TemplateURLServiceFactory::GetInstance(),
+        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+    profile_ = profile_builder.Build();
+  }
+
   BaseSearchProviderTest(const BaseSearchProviderTest&) = delete;
   BaseSearchProviderTest& operator=(const BaseSearchProviderTest&) = delete;
 
@@ -315,7 +326,7 @@ class BaseSearchProviderTest : public testing::Test,
   content::BrowserTaskEnvironment task_environment_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestAutocompleteProviderClient> client_;
   scoped_refptr<SearchProviderForTest> provider_;
 
@@ -362,14 +373,8 @@ const BaseSearchProviderTest::ExpectedMatch
 void BaseSearchProviderTest::CustomizableSetUp(
     const std::string& search_url,
     const std::string& suggestions_url) {
-  // We need both the history service and template url model loaded.
-  ASSERT_TRUE(profile_.CreateHistoryService());
-  TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-      &profile_,
-      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
-
   TemplateURLService* turl_model =
-      TemplateURLServiceFactory::GetForProfile(&profile_);
+      TemplateURLServiceFactory::GetForProfile(profile_.get());
 
   turl_model->Load();
 
@@ -400,15 +405,15 @@ void BaseSearchProviderTest::CustomizableSetUp(
   // Keywords are updated by the InMemoryHistoryBackend only after the message
   // has been processed on the history thread. Block until history processes all
   // requests to ensure the InMemoryDatabase is the state we expect it.
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
 
   AutocompleteClassifierFactory::GetInstance()->SetTestingFactoryAndUse(
-      &profile_,
+      profile_.get(),
       base::BindRepeating(&AutocompleteClassifierFactory::BuildInstanceFor));
 
   client_ = std::make_unique<TestAutocompleteProviderClient>(
-      &profile_, &test_url_loader_factory_);
-  provider_ = new SearchProviderForTest(client_.get(), this, &profile_);
+      profile_.get(), &test_url_loader_factory_);
+  provider_ = new SearchProviderForTest(client_.get(), this, profile_.get());
   OmniboxFieldTrial::kDefaultMinimumTimeBetweenSuggestQueriesMs = 0;
 }
 
@@ -425,7 +430,7 @@ void BaseSearchProviderTest::RunTest(TestData* cases,
   ACMatches matches;
   for (int i = 0; i < num_cases; ++i) {
     AutocompleteInput input(cases[i].input, metrics::OmniboxEventProto::OTHER,
-                            ChromeAutocompleteSchemeClassifier(&profile_));
+                            ChromeAutocompleteSchemeClassifier(profile_.get()));
     input.set_prefer_keyword(prefer_keyword);
     provider_->Start(input, false);
     matches = provider_->matches();
@@ -466,7 +471,7 @@ void BaseSearchProviderTest::QueryForInput(const std::u16string& text,
                                            bool prefer_keyword) {
   // Start a query.
   AutocompleteInput input(text, metrics::OmniboxEventProto::OTHER,
-                          ChromeAutocompleteSchemeClassifier(&profile_));
+                          ChromeAutocompleteSchemeClassifier(profile_.get()));
   input.set_prevent_inline_autocomplete(prevent_inline_autocomplete);
   input.set_prefer_keyword(prefer_keyword);
   provider_->Start(input, false);
@@ -480,17 +485,17 @@ void BaseSearchProviderTest::QueryForInputAndSetWYTMatch(
     const std::u16string& text,
     AutocompleteMatch* wyt_match) {
   QueryForInput(text, false, false);
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
   ASSERT_NO_FATAL_FAILURE(FinishDefaultSuggestQuery(text));
   if (!wyt_match)
     return;
   ASSERT_GE(provider_->matches().size(), 1u);
   EXPECT_TRUE(FindMatchWithDestination(
       GURL(default_t_url_->url_ref().ReplaceSearchTerms(
-          TemplateURLRef::SearchTermsArgs(base::CollapseWhitespace(
-              text, false)),
-          TemplateURLServiceFactory::GetForProfile(
-              &profile_)->search_terms_data())),
+          TemplateURLRef::SearchTermsArgs(
+              base::CollapseWhitespace(text, false)),
+          TemplateURLServiceFactory::GetForProfile(profile_.get())
+              ->search_terms_data())),
       wyt_match));
 }
 
@@ -530,11 +535,11 @@ GURL BaseSearchProviderTest::AddSearchToHistory(TemplateURL* t_url,
                                                 std::u16string term,
                                                 int visit_count) {
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
-      &profile_, ServiceAccessType::EXPLICIT_ACCESS);
+      profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   GURL search(t_url->url_ref().ReplaceSearchTerms(
       TemplateURLRef::SearchTermsArgs(term),
-      TemplateURLServiceFactory::GetForProfile(
-          &profile_)->search_terms_data()));
+      TemplateURLServiceFactory::GetForProfile(profile_.get())
+          ->search_terms_data()));
   static base::Time last_added_time;
   last_added_time = std::max(base::Time::Now(),
       last_added_time + base::TimeDelta::FromMicroseconds(1));
@@ -636,7 +641,7 @@ TEST_F(SearchProviderTest, QueryDefaultProvider) {
   std::string expected_url(
       default_t_url_->suggestions_url_ref().ReplaceSearchTerms(
           TemplateURLRef::SearchTermsArgs(term),
-          TemplateURLServiceFactory::GetForProfile(&profile_)
+          TemplateURLServiceFactory::GetForProfile(profile_.get())
               ->search_terms_data()));
   EXPECT_TRUE(test_url_loader_factory_.IsPending(expected_url));
 
@@ -657,8 +662,8 @@ TEST_F(SearchProviderTest, QueryDefaultProvider) {
   EXPECT_TRUE(FindMatchWithDestination(
       GURL(default_t_url_->url_ref().ReplaceSearchTerms(
           TemplateURLRef::SearchTermsArgs(term),
-          TemplateURLServiceFactory::GetForProfile(
-              &profile_)->search_terms_data())),
+          TemplateURLServiceFactory::GetForProfile(profile_.get())
+              ->search_terms_data())),
       &wyt_match));
   EXPECT_TRUE(wyt_match.description.empty());
 
@@ -682,7 +687,7 @@ TEST_F(SearchProviderTest, HasQueryWhatYouTypedIfDefaultKeywordChanges) {
 
   // Look up the TemplateURL for the keyword and modify its keyword.
   TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(&profile_);
+      TemplateURLServiceFactory::GetForProfile(profile_.get());
   TemplateURL* template_url =
       template_url_service->GetTemplateURLForKeyword(default_t_url_->keyword());
   EXPECT_TRUE(template_url);
@@ -699,8 +704,8 @@ TEST_F(SearchProviderTest, HasQueryWhatYouTypedIfDefaultKeywordChanges) {
   EXPECT_TRUE(FindMatchWithDestination(
       GURL(default_t_url_->url_ref().ReplaceSearchTerms(
           TemplateURLRef::SearchTermsArgs(query),
-          TemplateURLServiceFactory::GetForProfile(
-              &profile_)->search_terms_data())),
+          TemplateURLServiceFactory::GetForProfile(profile_.get())
+              ->search_terms_data())),
       &wyt_match));
   EXPECT_TRUE(wyt_match.description.empty());
   EXPECT_TRUE(wyt_match.allowed_to_be_default_match);
@@ -734,7 +739,7 @@ TEST_F(SearchProviderTest, QueryKeywordProvider) {
   std::string expected_url(
       keyword_t_url_->suggestions_url_ref().ReplaceSearchTerms(
           TemplateURLRef::SearchTermsArgs(term),
-          TemplateURLServiceFactory::GetForProfile(&profile_)
+          TemplateURLServiceFactory::GetForProfile(profile_.get())
               ->search_terms_data()));
   EXPECT_TRUE(test_url_loader_factory_.IsPending(expected_url));
 
@@ -820,12 +825,12 @@ TEST_F(SearchProviderTest, DontAutocompleteURLLikeTerms) {
   GURL url = AddSearchToHistory(default_t_url_, u"docs.google.com", 1);
 
   // Add the term as a url.
-  HistoryServiceFactory::GetForProfile(&profile_,
+  HistoryServiceFactory::GetForProfile(profile_.get(),
                                        ServiceAccessType::EXPLICIT_ACCESS)
       ->AddPageWithDetails(GURL("http://docs.google.com"), std::u16string(), 1,
                            1, base::Time::Now(), false,
                            history::SOURCE_BROWSED);
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
 
   AutocompleteMatch wyt_match;
   ASSERT_NO_FATAL_FAILURE(QueryForInputAndSetWYTMatch(u"docs", &wyt_match));
@@ -845,7 +850,7 @@ TEST_F(SearchProviderTest, DontAutocompleteURLLikeTerms) {
 // words are typed.
 TEST_F(SearchProviderTest, DontAutocompleteUntilMultipleWordsTyped) {
   GURL term_url(AddSearchToHistory(default_t_url_, u"one search", 1));
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
 
   AutocompleteMatch wyt_match;
   ASSERT_NO_FATAL_FAILURE(QueryForInputAndSetWYTMatch(u"on", &wyt_match));
@@ -867,7 +872,7 @@ TEST_F(SearchProviderTest, DontAutocompleteUntilMultipleWordsTyped) {
 // A multiword search with more than one visit should autocomplete immediately.
 TEST_F(SearchProviderTest, AutocompleteMultipleVisitsImmediately) {
   GURL term_url(AddSearchToHistory(default_t_url_, u"two searches", 2));
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
 
   AutocompleteMatch wyt_match;
   ASSERT_NO_FATAL_FAILURE(QueryForInputAndSetWYTMatch(u"tw", &wyt_match));
@@ -885,9 +890,9 @@ TEST_F(SearchProviderTest, AutocompleteAfterSpace) {
   AddSearchToHistory(default_t_url_, u"two  searches ", 2);
   GURL suggested_url(default_t_url_->url_ref().ReplaceSearchTerms(
       TemplateURLRef::SearchTermsArgs(u"two searches"),
-      TemplateURLServiceFactory::GetForProfile(&profile_)
+      TemplateURLServiceFactory::GetForProfile(profile_.get())
           ->search_terms_data()));
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
 
   AutocompleteMatch wyt_match;
   ASSERT_NO_FATAL_FAILURE(QueryForInputAndSetWYTMatch(u"two ", &wyt_match));
@@ -905,7 +910,7 @@ TEST_F(SearchProviderTest, AutocompleteAfterSpace) {
 TEST_F(SearchProviderTest, ScoreNewerSearchesHigher) {
   GURL term_url_a(AddSearchToHistory(default_t_url_, u"three searches aaa", 1));
   GURL term_url_b(AddSearchToHistory(default_t_url_, u"three searches bbb", 1));
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
 
   AutocompleteMatch wyt_match;
   ASSERT_NO_FATAL_FAILURE(QueryForInputAndSetWYTMatch(u"three se", &wyt_match));
@@ -927,7 +932,7 @@ TEST_F(SearchProviderTest, ResetResultsBetweenRuns) {
   GURL term_url_a(AddSearchToHistory(default_t_url_, u"games", 1));
   GURL term_url_b(AddSearchToHistory(default_t_url_, u"gangnam style", 1));
   GURL term_url_c(AddSearchToHistory(default_t_url_, u"gundam", 1));
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
 
   AutocompleteMatch wyt_match;
   ASSERT_NO_FATAL_FAILURE(QueryForInputAndSetWYTMatch(u"f", &wyt_match));
@@ -953,7 +958,7 @@ TEST_F(SearchProviderTest, DontReplacePreviousAutocompletion) {
   GURL term_url_a(AddSearchToHistory(default_t_url_, u"four searches aaa", 3));
   GURL term_url_b(AddSearchToHistory(default_t_url_, u"four searches bbb", 1));
   GURL term_url_c(AddSearchToHistory(default_t_url_, u"four searches", 1));
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
 
   AutocompleteMatch wyt_match;
   ASSERT_NO_FATAL_FAILURE(QueryForInputAndSetWYTMatch(u"fo", &wyt_match));
@@ -1006,7 +1011,7 @@ TEST_F(SearchProviderTest, DontCrowdOutSingleWords) {
   AddSearchToHistory(default_t_url_, u"five searches ccc", 1);
   AddSearchToHistory(default_t_url_, u"five searches ddd", 1);
   AddSearchToHistory(default_t_url_, u"five searches eee", 1);
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
 
   AutocompleteMatch wyt_match;
   ASSERT_NO_FATAL_FAILURE(QueryForInputAndSetWYTMatch(u"fi", &wyt_match));
@@ -1021,7 +1026,7 @@ TEST_F(SearchProviderTest, DontCrowdOutSingleWords) {
 // Inline autocomplete matches regardless of case differences from the input.
 TEST_F(SearchProviderTest, InlineMixedCaseMatches) {
   GURL term_url(AddSearchToHistory(default_t_url_, u"FOO", 1));
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
 
   AutocompleteMatch wyt_match;
   ASSERT_NO_FATAL_FAILURE(QueryForInputAndSetWYTMatch(u"f", &wyt_match));
@@ -1049,14 +1054,14 @@ TEST_F(SearchProviderTest, InlineMixedCaseMatches) {
 TEST_F(SearchProviderTest, KeywordOrderingAndDescriptions) {
   // Add an entry that corresponds to a keyword search with 'term2'.
   AddSearchToHistory(keyword_t_url_, u"term2", 1);
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
 
   AutocompleteController controller(
       std::make_unique<TestAutocompleteProviderClient>(
-          &profile_, &test_url_loader_factory_),
+          profile_.get(), &test_url_loader_factory_),
       AutocompleteProvider::TYPE_SEARCH);
   AutocompleteInput input(u"k t", metrics::OmniboxEventProto::OTHER,
-                          ChromeAutocompleteSchemeClassifier(&profile_));
+                          ChromeAutocompleteSchemeClassifier(profile_.get()));
   controller.Start(input);
   const AutocompleteResult& result = controller.result();
 
@@ -2290,7 +2295,7 @@ TEST_F(SearchProviderTest, LocalAndRemoteRelevances) {
   std::u16string term = term1_.substr(0, term1_.length() - 1);
 
   AddSearchToHistory(default_t_url_, term + u"2", 2);
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
 
   struct {
     const std::u16string input;
@@ -2779,7 +2784,7 @@ TEST_F(SearchProviderTest, NavigationInline) {
     // First test regular mode.
     QueryForInput(ASCIIToUTF16(cases[i].input), false, false);
     SearchSuggestionParser::NavigationResult result(
-        ChromeAutocompleteSchemeClassifier(&profile_), GURL(cases[i].url),
+        ChromeAutocompleteSchemeClassifier(profile_.get()), GURL(cases[i].url),
         AutocompleteMatchType::NAVSUGGEST, {}, std::u16string(), std::string(),
         false, 0, false, ASCIIToUTF16(cases[i].input));
     result.set_received_after_last_keystroke(false);
@@ -2793,7 +2798,7 @@ TEST_F(SearchProviderTest, NavigationInline) {
     // Then test prevent-inline-autocomplete mode.
     QueryForInput(ASCIIToUTF16(cases[i].input), true, false);
     SearchSuggestionParser::NavigationResult result_prevent_inline(
-        ChromeAutocompleteSchemeClassifier(&profile_), GURL(cases[i].url),
+        ChromeAutocompleteSchemeClassifier(profile_.get()), GURL(cases[i].url),
         AutocompleteMatchType::NAVSUGGEST, {}, std::u16string(), std::string(),
         false, 0, false, ASCIIToUTF16(cases[i].input));
     result_prevent_inline.set_received_after_last_keystroke(false);
@@ -2813,7 +2818,7 @@ TEST_F(SearchProviderTest, NavigationInlineSchemeSubstring) {
   const std::u16string input(u"http:");
   const std::u16string url(u"http://a.com");
   SearchSuggestionParser::NavigationResult result(
-      ChromeAutocompleteSchemeClassifier(&profile_), GURL(url),
+      ChromeAutocompleteSchemeClassifier(profile_.get()), GURL(url),
       AutocompleteMatchType::NAVSUGGEST, {}, std::u16string(), std::string(),
       false, 0, false, input);
   result.set_received_after_last_keystroke(false);
@@ -2839,7 +2844,7 @@ TEST_F(SearchProviderTest, NavigationInlineSchemeSubstring) {
 TEST_F(SearchProviderTest, NavigationInlineDomainClassify) {
   QueryForInput(u"h", false, false);
   SearchSuggestionParser::NavigationResult result(
-      ChromeAutocompleteSchemeClassifier(&profile_),
+      ChromeAutocompleteSchemeClassifier(profile_.get()),
       GURL("http://www.http.com/http"), AutocompleteMatchType::NAVSUGGEST, {},
       std::u16string(), std::string(), false, 0, false, u"h");
   result.set_received_after_last_keystroke(false);
@@ -2865,7 +2870,7 @@ TEST_F(SearchProviderTest, NavigationInlineDomainClassify) {
 TEST_F(SearchProviderTest, NavigationPrefixClassify) {
   QueryForInput(u"moon", false, false);
   SearchSuggestionParser::NavigationResult result(
-      ChromeAutocompleteSchemeClassifier(&profile_),
+      ChromeAutocompleteSchemeClassifier(profile_.get()),
       GURL("http://moon.com/moon"), AutocompleteMatchType::NAVSUGGEST, {},
       std::u16string(), std::string(), false, 0, false, u"moon");
   result.set_received_after_last_keystroke(false);
@@ -2885,7 +2890,7 @@ TEST_F(SearchProviderTest, NavigationPrefixClassify) {
 TEST_F(SearchProviderTest, NavigationMidWordClassify) {
   QueryForInput(u"acebook", false, false);
   SearchSuggestionParser::NavigationResult result(
-      ChromeAutocompleteSchemeClassifier(&profile_),
+      ChromeAutocompleteSchemeClassifier(profile_.get()),
       GURL("http://www.facebook.com"), AutocompleteMatchType::NAVSUGGEST, {},
       std::u16string(), std::string(), false, 0, false, u"acebook");
   result.set_received_after_last_keystroke(false);
@@ -2902,7 +2907,7 @@ TEST_F(SearchProviderTest, NavigationMidWordClassify) {
 TEST_F(SearchProviderTest, NavigationWordBreakClassify) {
   QueryForInput(u"duck", false, false);
   SearchSuggestionParser::NavigationResult result(
-      ChromeAutocompleteSchemeClassifier(&profile_),
+      ChromeAutocompleteSchemeClassifier(profile_.get()),
       GURL("http://www.yellow-animals.com/duck"),
       AutocompleteMatchType::NAVSUGGEST, {}, std::u16string(), std::string(),
       false, 0, false, u"duck");
@@ -2924,7 +2929,7 @@ TEST_F(SearchProviderTest, DoTrimHttpScheme) {
   const std::u16string input(u"face book");
   const std::u16string url(u"http://www.facebook.com");
   SearchSuggestionParser::NavigationResult result(
-      ChromeAutocompleteSchemeClassifier(&profile_), GURL(url),
+      ChromeAutocompleteSchemeClassifier(profile_.get()), GURL(url),
       AutocompleteMatchType::NAVSUGGEST, {}, std::u16string(), std::string(),
       false, 0, false, input);
 
@@ -2939,7 +2944,7 @@ TEST_F(SearchProviderTest, DontTrimHttpSchemeIfInputHasScheme) {
   const std::u16string input(u"https://face book");
   const std::u16string url(u"http://www.facebook.com");
   SearchSuggestionParser::NavigationResult result(
-      ChromeAutocompleteSchemeClassifier(&profile_), GURL(url),
+      ChromeAutocompleteSchemeClassifier(profile_.get()), GURL(url),
       AutocompleteMatchType::NAVSUGGEST, {}, std::u16string(), std::string(),
       false, 0, false, input);
 
@@ -2954,7 +2959,7 @@ TEST_F(SearchProviderTest, DontTrimHttpsSchemeIfInputHasScheme) {
   const std::u16string input(u"http://face book");
   const std::u16string url(u"https://www.facebook.com");
   SearchSuggestionParser::NavigationResult result(
-      ChromeAutocompleteSchemeClassifier(&profile_), GURL(url),
+      ChromeAutocompleteSchemeClassifier(profile_.get()), GURL(url),
       AutocompleteMatchType::NAVSUGGEST, {}, std::u16string(), std::string(),
       false, 0, false, input);
 
@@ -2968,7 +2973,7 @@ TEST_F(SearchProviderTest, DoTrimHttpsScheme) {
   const std::u16string input(u"face book");
   const std::u16string url(u"https://www.facebook.com");
   SearchSuggestionParser::NavigationResult result(
-      ChromeAutocompleteSchemeClassifier(&profile_), GURL(url),
+      ChromeAutocompleteSchemeClassifier(profile_.get()), GURL(url),
       AutocompleteMatchType::NAVSUGGEST, {}, std::u16string(), std::string(),
       false, 0, false, input);
 
@@ -3452,17 +3457,17 @@ TEST_F(SearchProviderTest, CanSendURL) {
       true));
 
   // Suggest disabled.
-  profile_.GetPrefs()->SetBoolean(prefs::kSearchSuggestEnabled, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kSearchSuggestEnabled, false);
   EXPECT_FALSE(SearchProvider::CanSendURL(
       GURL("http://www.google.com/search"),
       GURL("https://www.google.com/complete/search"), &google_template_url,
       metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
       true));
-  profile_.GetPrefs()->SetBoolean(prefs::kSearchSuggestEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kSearchSuggestEnabled, true);
 
   // Incognito.
   ChromeAutocompleteProviderClient client_incognito(
-      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true));
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   EXPECT_FALSE(SearchProvider::CanSendURL(
       GURL("http://www.google.com/search"),
       GURL("https://www.google.com/complete/search"), &google_template_url,
@@ -3542,18 +3547,18 @@ TEST_F(SearchProviderTest, TestDeleteMatch) {
   test_url_loader_factory_.AddResponse(GURL(kDeleteUrl), std::move(head), "",
                                        network::URLLoaderCompletionStatus());
 
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
   EXPECT_TRUE(provider_->deletion_handlers_.empty());
   EXPECT_FALSE(provider_->is_success());
 }
 
 TEST_F(SearchProviderTest, TestDeleteHistoryQueryMatch) {
   GURL term_url(AddSearchToHistory(default_t_url_, u"flash games", 1));
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
 
   AutocompleteMatch games;
   QueryForInput(u"fla", false, false);
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
   ASSERT_NO_FATAL_FAILURE(FinishDefaultSuggestQuery(u"fla"));
   ASSERT_TRUE(FindMatchWithContents(u"flash games", &games));
 
@@ -3562,12 +3567,12 @@ TEST_F(SearchProviderTest, TestDeleteHistoryQueryMatch) {
   EXPECT_EQ(matches_before - 1, provider_->matches().size());
 
   // Process history deletions.
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
 
   // Check that the match is gone.
   test_url_loader_factory_.ClearResponses();
   QueryForInput(u"fla", false, false);
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
   ASSERT_NO_FATAL_FAILURE(FinishDefaultSuggestQuery(u"fla"));
   EXPECT_FALSE(FindMatchWithContents(u"flash games", &games));
 }
@@ -3578,7 +3583,7 @@ TEST_F(SearchProviderTest, CheckDuplicateMatchesSaved) {
   AddSearchToHistory(default_t_url_, u"alpha", 1);
   AddSearchToHistory(default_t_url_, u"avid", 1);
 
-  profile_.BlockUntilHistoryProcessesPendingRequests();
+  profile_->BlockUntilHistoryProcessesPendingRequests();
   QueryForInputAndWaitForFetcherResponses(
       u"a", false,
       "[\"a\",[\"a\", \"alpha\", \"avid\", \"apricot\"],[],[],"
@@ -3605,7 +3610,7 @@ TEST_F(SearchProviderTest, CheckDuplicateMatchesSaved) {
 
 TEST_F(SearchProviderTest, SuggestQueryUsesToken) {
   TemplateURLService* turl_model =
-      TemplateURLServiceFactory::GetForProfile(&profile_);
+      TemplateURLServiceFactory::GetForProfile(profile_.get());
 
   TemplateURLData data;
   data.SetShortName(u"default");
@@ -3703,7 +3708,7 @@ TEST_F(SearchProviderTest, RemoveExtraAnswers) {
 
 TEST_F(SearchProviderTest, DoesNotProvideOnFocus) {
   AutocompleteInput input(u"f", metrics::OmniboxEventProto::OTHER,
-                          ChromeAutocompleteSchemeClassifier(&profile_));
+                          ChromeAutocompleteSchemeClassifier(profile_.get()));
   input.set_prefer_keyword(true);
   input.set_focus_type(OmniboxFocusType::ON_FOCUS);
   provider_->Start(input, false);
@@ -3734,7 +3739,7 @@ class SearchProviderWarmUpTest : public SearchProviderTest,
 
 TEST_P(SearchProviderWarmUpTest, SendsWarmUpRequestOnFocus) {
   AutocompleteInput input(u"f", metrics::OmniboxEventProto::OTHER,
-                          ChromeAutocompleteSchemeClassifier(&profile_));
+                          ChromeAutocompleteSchemeClassifier(profile_.get()));
   input.set_prefer_keyword(true);
   input.set_focus_type(OmniboxFocusType::ON_FOCUS);
 
@@ -3786,7 +3791,7 @@ class SearchProviderCommandLineOverrideTest : public SearchProviderTest {
 
 TEST_F(SearchProviderCommandLineOverrideTest, CommandLineOverrides) {
   TemplateURLService* turl_model =
-      TemplateURLServiceFactory::GetForProfile(&profile_);
+      TemplateURLServiceFactory::GetForProfile(profile_.get());
 
   TemplateURLData data;
   data.SetShortName(u"default");
