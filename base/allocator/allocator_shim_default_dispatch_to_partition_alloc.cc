@@ -325,8 +325,7 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
                                 void* address,
                                 void* context) {
 #if defined(OS_MAC)
-  if (!(base::IsManagedByPartitionAllocNonBRPPool(address) ||
-        base::IsManagedByPartitionAllocBRPPool(address))) {
+  if (!base::IsManagedByPartitionAlloc(address)) {
     // The object pointed to by `address` is not allocated by the
     // PartitionAlloc.  The return value `0` means that the pointer does not
     // belong to this malloc zone.

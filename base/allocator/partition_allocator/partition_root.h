@@ -923,8 +923,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
 #if defined(OS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // GigaCage is always enabled on Android and is needed for PA_CHECK below.
   PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
-  PA_CHECK(IsManagedByPartitionAllocBRPPool(ptr) ||
-           IsManagedByPartitionAllocNonBRPPool(ptr));
+  PA_CHECK(IsManagedByPartitionAlloc(ptr));
 #endif
 
   // Call FromSlotInnerPtr instead of FromSlotStartPtr because the pointer

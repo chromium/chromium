@@ -171,12 +171,21 @@ ALWAYS_INLINE internal::pool_handle GetBRPPool() {
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 // Returns false for nullptr.
+ALWAYS_INLINE bool IsManagedByPartitionAlloc(const void* address) {
+  // Currently even when BUILDFLAG(USE_BACKUP_REF_PTR) is off, BRP pool is used
+  // for non-BRP allocations, so we have to check both pools regardless of
+  // BUILDFLAG(USE_BACKUP_REF_PTR).
+  return internal::PartitionAddressSpace::IsInNonBRPPool(address) ||
+         internal::PartitionAddressSpace::IsInBRPPool(address);
+}
+
+// Returns false for nullptr.
 ALWAYS_INLINE bool IsManagedByPartitionAllocNonBRPPool(const void* address) {
   return internal::PartitionAddressSpace::IsInNonBRPPool(address);
 }
 
 // Returns false for nullptr.
-ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(void* address) {
+ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(const void* address) {
   return internal::PartitionAddressSpace::IsInBRPPool(address);
 }
 #endif

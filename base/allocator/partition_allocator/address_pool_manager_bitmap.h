@@ -150,12 +150,21 @@ class BASE_EXPORT AddressPoolManagerBitmap {
 }  // namespace internal
 
 // Returns false for nullptr.
+ALWAYS_INLINE bool IsManagedByPartitionAlloc(const void* address) {
+  // Currently even when BUILDFLAG(USE_BACKUP_REF_PTR) is off, BRP pool is used
+  // for non-BRP allocations, so we have to check both pools regardless of
+  // BUILDFLAG(USE_BACKUP_REF_PTR).
+  return internal::AddressPoolManagerBitmap::IsManagedByNonBRPPool(address) ||
+         internal::AddressPoolManagerBitmap::IsManagedByBRPPool(address);
+}
+
+// Returns false for nullptr.
 ALWAYS_INLINE bool IsManagedByPartitionAllocNonBRPPool(const void* address) {
   return internal::AddressPoolManagerBitmap::IsManagedByNonBRPPool(address);
 }
 
 // Returns false for nullptr.
-ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(void* address) {
+ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(const void* address) {
   return internal::AddressPoolManagerBitmap::IsManagedByBRPPool(address);
 }
 
