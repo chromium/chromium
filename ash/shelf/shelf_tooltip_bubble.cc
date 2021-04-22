@@ -25,15 +25,6 @@ constexpr int kTooltipMaxWidth = 250;
 constexpr int kTooltipTopBottomMargin = 4;
 constexpr int kTooltipLeftRightMargin = 8;
 
-// The offset for the tooltip bubble - making sure that the bubble is spaced
-// with a fixed gap. The gap is accounted for by the transparent arrow in the
-// bubble and an additional 1px padding for the shelf item views.
-constexpr int kArrowTopBottomOffset = 1;
-constexpr int kArrowLeftRightOffset = 1;
-
-// Padding used to position the tooltip relative to the shelf.
-constexpr int kTooltipPaddingHorizontalBottom = 6;
-
 }  // namespace
 
 ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
@@ -59,13 +50,6 @@ ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
   label->SetEnabledColor(tooltip_text);
   label->SetBackgroundColor(tooltip_background);
   AddChildView(label);
-
-  gfx::Insets insets(kArrowTopBottomOffset, kArrowLeftRightOffset);
-  // Adjust the anchor location for asymmetrical borders of shelf item.
-  if (anchor->border())
-    insets += anchor->border()->GetInsets();
-  insets += gfx::Insets(-kTooltipPaddingHorizontalBottom);
-  set_anchor_view_insets(insets);
 
   CreateBubble();
   CollisionDetectionUtils::IgnoreWindowForCollisionDetection(

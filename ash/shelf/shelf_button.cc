@@ -42,6 +42,15 @@ const char* ShelfButton::GetClassName() const {
   return "ash/ShelfButton";
 }
 
+gfx::Rect ShelfButton::GetAnchorBoundsInScreen() const {
+  gfx::Rect bounds = Button::GetAnchorBoundsInScreen();
+  // Padding used to position bubbles offset from the shelf. Note that this
+  // includes Shelf tooltip.
+  constexpr int kAnchorOffset = 6;
+  bounds.Inset(gfx::Insets(-kAnchorOffset));
+  return bounds;
+}
+
 void ShelfButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
   shelf_button_delegate_->OnShelfButtonAboutToRequestFocusFromTabTraversal(
       this, reverse);
