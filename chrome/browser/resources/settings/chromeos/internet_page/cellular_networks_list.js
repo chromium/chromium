@@ -203,6 +203,13 @@ Polymer({
   },
 
   /**
+   * ESimManagerListenerBehavior override
+   */
+  onAvailableEuiccListChanged() {
+    this.fetchESimPendingProfileList_();
+  },
+
+  /**
    * @param {!chromeos.cellularSetup.mojom.ESimProfileRemote} profile
    * ESimManagerListenerBehavior override
    */

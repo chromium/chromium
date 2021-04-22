@@ -318,6 +318,7 @@ cr.define('cellular_setup', function() {
       const eid = this.euiccs_.length + 1 + '';
       const euicc = new FakeEuicc(eid, numProfiles, this);
       this.euiccs_.push(euicc);
+      this.notifyAvailableEuiccListChanged();
       return euicc;
     }
 
@@ -327,6 +328,12 @@ cr.define('cellular_setup', function() {
      */
     addObserver(observer) {
       this.observers_.push(observer);
+    }
+
+    notifyAvailableEuiccListChanged() {
+      for (const observer of this.observers_) {
+        observer.onAvailableEuiccListChanged();
+      }
     }
 
     /**
