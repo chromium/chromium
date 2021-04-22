@@ -24865,6 +24865,69 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       Note, that if this policy is set to true but BrowserAddPersonEnabled is set to false, the user cannot create secondary profiles. The same for BrowserGuestModeEnabled and guest mode.''',
     },
     {
+      'name': 'LacrosAvailability',
+      'owners': ['asumaneev@google.com'],
+      'type': 'string-enum',
+      'schema': {
+        'type': 'string',
+        'enum': [
+          'user_choice',
+          'lacros_disallowed',
+          'side_by_side',
+          'lacros_primary',
+          'lacros_only'
+        ],
+      },
+      'items': [
+        {
+          'name': 'user_choice',
+          'value': 'user_choice',
+          'caption': '''Allow users to enable <ph name="LACROS_NAME">Lacros</ph> and make it the primary browser''',
+        },
+        {
+          'name': 'lacros_disallowed',
+          'value': 'lacros_disallowed',
+          'caption': '''Prevent users from using <ph name="LACROS_NAME">Lacros</ph>''',
+        },
+        {
+          'name': 'side_by_side',
+          'value': 'side_by_side',
+          'caption': '''Enable <ph name="LACROS_NAME">Lacros</ph>''',
+        },
+        {
+          'name': 'lacros_primary',
+          'value': 'lacros_primary',
+          'caption': '''Enable <ph name="LACROS_NAME">Lacros</ph> and make it the primary browser''',
+        },
+        {
+          'name': 'lacros_only',
+          'value': 'lacros_only',
+          'caption': '''Make <ph name="LACROS_NAME">Lacros</ph> the only available browser (not implemented yet)''',
+        },
+      ],
+      'supported_on': ['chrome_os:92-'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'example_value': "lacros_primary",
+      'default': "user_choice",
+      'id': 855,
+      'caption': '''Make the <ph name="LACROS_NAME">Lacros</ph> browser available''',
+      'tags': [],
+      'desc': '''This setting provides several availability options for the <ph name="LACROS_NAME">Lacros</ph> browser.
+
+      If the policy is set to <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE">user_choice</ph> or unset, the user can enable <ph name="LACROS_NAME">Lacros</ph> and make it primary. <ph name="LACROS_NAME">Lacros</ph> can still be disallowed with <ph name="LACROS_ALLOWED_POLICY_NAME">LacrosAllowed</ph> policy.
+
+      If the policy is set to <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE">lacros_disallowed</ph>, the user cannot use <ph name="LACROS_NAME">Lacros</ph>. <ph name="LACROS_ALLOWED_POLICY_NAME">LacrosAllowed</ph> policy is ignored.
+
+      If the policy is set to <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE">side_by_side</ph>, <ph name="LACROS_NAME">Lacros</ph> is enabled but is not the primary browser. <ph name="LACROS_ALLOWED_POLICY_NAME">LacrosAllowed</ph> policy is ignored.
+
+      If the policy is set to <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE">lacros_primary</ph>, <ph name="LACROS_NAME">Lacros</ph> is enabled and is the primary browser. <ph name="LACROS_ALLOWED_POLICY_NAME">LacrosAllowed</ph> policy is ignored.
+
+      In the future it will be possible to make <ph name="LACROS_NAME">Lacros</ph> the only available browser in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> with <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE">lacros_only</ph> value.''',
+    },
+    {
       'name': 'IntegratedWebAuthenticationAllowed',
       'owners': ['acostinas@chromium.org', 'pmarko@chromium.org'],
       'type': 'main',
@@ -26617,6 +26680,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 854,
+  'highest_id_currently_used': 855,
   'highest_atomic_group_id_currently_used': 40
 }

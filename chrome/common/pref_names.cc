@@ -3172,8 +3172,8 @@ const char kShowCaretBrowsingDialog[] =
 // a policy, and the default value for managed users is false. Admins willing to
 // give rights to use Lacros can set the policy to true.
 const char kLacrosAllowed[] = "lacros_allowed";
-// Enum pref indicating how to launch the Lacros browser. It can have one of the
-// following values:
+// Enum pref indicating how to launch the Lacros browser. It is managed by
+// LacrosAvailability policy can have one of the following values:
 // 0: User choice (default value).
 // 1: Lacros is disallowed.
 // 2: Lacros is enabled but not the pimary browser.

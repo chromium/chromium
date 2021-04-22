@@ -24190,6 +24190,7 @@ Called by update_document_policy_enum.py.-->
   <int value="852" label="SharedArrayBufferUnrestrictedAccessAllowed"/>
   <int value="853" label="LensCameraAssistedSearchEnabled"/>
   <int value="854" label="RelaunchWindow"/>
+  <int value="855" label="LacrosAvailability"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

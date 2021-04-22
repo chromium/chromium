@@ -2665,6 +2665,8 @@ source_set("chromeos") {
     "policy/install_event_log_util.cc",
     "policy/install_event_log_util.h",
     "policy/install_event_logger_base.h",
+    "policy/lacros_availability_policy_handler.cc",
+    "policy/lacros_availability_policy_handler.h",
     "policy/lock_to_single_user_manager.cc",
     "policy/lock_to_single_user_manager.h",
     "policy/login_profile_policy_provider.cc",

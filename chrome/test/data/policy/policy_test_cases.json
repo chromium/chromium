@@ -8745,5 +8745,59 @@
         }
       }
     ]
+  },
+  "LacrosAvailability": {
+    "os": ["chromeos"],
+    "can_be_recommended": false,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": { "lacros_launch_switch": {
+          "location": "local_state",
+          "expect_default": true,
+          "value": 0
+        }}
+      },
+      {
+        "policies": { "LacrosAvailability": "user_choice" },
+        "prefs": { "lacros_launch_switch": {
+          "location": "local_state",
+          "expect_default": false,
+          "value": 0
+        }}
+      },
+      {
+        "policies": { "LacrosAvailability": "lacros_disallowed" },
+        "prefs": { "lacros_launch_switch": {
+          "location": "local_state",
+          "expect_default": false,
+          "value": 1
+        }}
+      },
+      {
+        "policies": { "LacrosAvailability": "side_by_side" },
+        "prefs": { "lacros_launch_switch": {
+          "location": "local_state",
+          "expect_default": false,
+          "value": 2
+        }}
+      },
+      {
+        "policies": { "LacrosAvailability": "lacros_primary" },
+        "prefs": { "lacros_launch_switch": {
+          "location": "local_state",
+          "expect_default": false,
+          "value": 3
+        }}
+      },
+      {
+        "policies": { "LacrosAvailability": "lacros_only" },
+        "prefs": { "lacros_launch_switch": {
+          "location": "local_state",
+          "expect_default": false,
+          "value": 4
+        }}
+      }
+    ]
   }
 }
