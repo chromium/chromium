@@ -32,16 +32,21 @@ namespace printing {
 
 namespace {
 
-void LogPrinterSetup(const std::string& printer_id,
-                     bool record_usb_setup_source,
+void LogPrinterSetup(const chromeos::Printer& printer,
                      chromeos::PrinterSetupResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  base::UmaHistogramEnumeration(
+      printer.IsZeroconf()
+          ? "Printing.CUPS.ZeroconfPrinterSetupResult.PrintPreview"
+          : "Printing.CUPS.PrinterSetupResult.PrintPreview",
+      result, chromeos::PrinterSetupResult::kMaxValue);
+
   switch (result) {
     case chromeos::PrinterSetupResult::kSuccess: {
-      VLOG(1) << "Printer setup successful for " << printer_id
+      VLOG(1) << "Printer setup successful for " << printer.id()
               << " fetching properties";
-      if (record_usb_setup_source) {
+      if (printer.IsUsbProtocol()) {
         // Record UMA for USB printer setup source.
         chromeos::PrinterConfigurer::RecordUsbPrinterSetupSource(
             chromeos::UsbPrinterSetupSource::kPrintPreview);
@@ -131,7 +136,7 @@ void OnPrinterInstalled(
     chromeos::PrinterSetupResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  LogPrinterSetup(printer.id(), printer.IsUsbProtocol(), result);
+  LogPrinterSetup(printer, result);
   if (result != chromeos::PrinterSetupResult::kSuccess) {
     std::move(cb).Run(base::nullopt);
     return;
@@ -158,8 +163,6 @@ void SetUpPrinter(
 
   if (printers_manager->IsPrinterInstalled(printer)) {
     // Skip setup if the printer does not need to be installed.
-    LogPrinterSetup(printer.id(), /*record_usb_setup_source=*/false,
-                    chromeos::kSuccess);
     // Fetch settings off of the UI thread and invoke callback.
     FetchCapabilities(printer.id(), std::move(cb));
     return;

@@ -18,6 +18,8 @@ namespace printing {
 // capabilities once printer setup is complete. The callback is run
 // regardless of whether or not the printer needed to be set up.
 // This function must be called from the UI thread.
+// This function is called when setting up a printer from Print Preview
+// and records a metric with the printer setup result code.
 void SetUpPrinter(
     chromeos::CupsPrintersManager* printers_manager,
     chromeos::PrinterConfigurer* printer_configurer,

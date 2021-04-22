@@ -272,6 +272,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The success or error code for the setup of a CUPS printer. Recorded when
     setup is attempted through the settings dialogs. Only recorded on Chrome OS.
+    Printer setup results go into either this histogram or the
+    Printing.CUPS.ZeroconfPrinterSetupResult histogram - not both.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.PrinterSetupResult.PrintPreview"
+    enum="PrinterSetupResult" expires_after="2022-04-21">
+  <owner>batrapranav@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
+  <summary>
+    The success or error code for the setup of a CUPS printer. Recorded when
+    setup is attempted from the print preview dialog. Only recorded on Chrome
+    OS. Printer setup results go into either this histogram or the
+    Printing.CUPS.ZeroconfPrinterSetupResult.PrintPreview histogram - not both.
   </summary>
 </histogram>
 
@@ -393,6 +407,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     setup is attempted through the settings dialogs. Only recorded on Chrome OS.
     Printer setup results go into either this histogram or the
     Printing.CUPS.PrinterSetupResult histogram - not both.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.ZeroconfPrinterSetupResult.PrintPreview"
+    enum="PrinterSetupResult" expires_after="2022-04-21">
+  <owner>batrapranav@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
+  <summary>
+    The success or error code for the setup of a Zeroconf printer. Recorded when
+    setup is attempted from the print preview dialog. Only recorded on Chrome
+    OS. Printer setup results go into either this histogram or the
+    Printing.CUPS.PrinterSetupResult.PrintPreview histogram - not both.
   </summary>
 </histogram>
 
