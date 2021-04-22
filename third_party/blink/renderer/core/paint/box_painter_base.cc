@@ -1039,8 +1039,7 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
       if (bg_layer.Clip() == EFillBox::kContent)
         clip_rect.Contract(AdjustOutsetsForEdgeInclusion(padding, info));
       background_clip_state_saver.Save();
-      // TODO(chrishtr): this should be pixel-snapped.
-      context.Clip(FloatRect(clip_rect));
+      context.Clip(PixelSnappedIntRect(clip_rect));
       break;
     }
     case EFillBox::kBorder:
