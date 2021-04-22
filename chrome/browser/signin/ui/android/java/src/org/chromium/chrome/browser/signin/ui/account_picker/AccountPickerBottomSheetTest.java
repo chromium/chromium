@@ -49,6 +49,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -521,6 +522,7 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1200703")
     public void testTryAgainButtonOnSignInGeneralErrorSheet() {
         CoreAccountInfo coreAccountInfo =
                 mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountEmail());
