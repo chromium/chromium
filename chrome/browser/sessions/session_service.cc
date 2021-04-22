@@ -48,6 +48,7 @@
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/ash_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #endif
 
@@ -86,11 +87,43 @@ SessionService::~SessionService() {
     LogExitEvent();
 }
 
-bool SessionService::ShouldNewWindowStartSession() {
+bool SessionService::ShouldNewWindowStartSession(Browser* browser) {
   // ChromeOS and OSX have different ideas of application lifetime than
   // the other platforms.
   // On ChromeOS opening a new window should never start a new session.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // If the full restore feature is enabled, Chrome browser is not launched
+  // automatically during the system startup phase. When Chrome browser is
+  // created or launched by users, sessions might be restored based on the on
+  // startup setting.
+  if (ash::features::IsFullRestoreEnabled()) {
+    // If there are other browser windows, or during the restoring process, or
+    // restore from crash, sessions should not be restored.
+    if (SessionRestore::IsRestoring(profile()) ||
+        has_open_trackable_browsers_ || HasPendingUncleanExit(profile())) {
+      return false;
+    }
+
+    // If the on startup setting is not restore, sessions should not be
+    // restored.
+    SessionStartupPref pref =
+        SessionStartupPref::GetStartupPref(profile()->GetPrefs());
+    if (pref.type != SessionStartupPref::Type::LAST)
+      return false;
+
+    if (!browser)
+      return true;
+
+    // App windows should not be restored.
+    auto window_type = WindowTypeForBrowserType(browser->type());
+    if (window_type == sessions::SessionWindow::TYPE_APP ||
+        window_type == sessions::SessionWindow::TYPE_APP_POPUP) {
+      return false;
+    }
+
+    return true;
+  }
+
   if (!force_browser_not_alive_with_no_windows_)
     return false;
 #endif
@@ -357,13 +390,6 @@ Browser::Type SessionService::GetDesiredBrowserTypeForWebContents() {
 
 bool SessionService::ShouldRestoreWindowOfType(
     sessions::SessionWindow::WindowType window_type) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Restore apps and app popups for ChromeOS alone.
-  if (window_type == sessions::SessionWindow::TYPE_APP ||
-      window_type == sessions::SessionWindow::TYPE_APP_POPUP)
-    return true;
-#endif
-
   // TYPE_APP and TYPE_APP_POPUP are handled by app_session_service.
   return (window_type == sessions::SessionWindow::TYPE_NORMAL) ||
          (window_type == sessions::SessionWindow::TYPE_POPUP);
@@ -372,7 +398,7 @@ bool SessionService::ShouldRestoreWindowOfType(
 bool SessionService::RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
                                         Browser* browser,
                                         bool restore_apps) {
-  if (ShouldNewWindowStartSession()) {
+  if (ShouldNewWindowStartSession(browser)) {
     // We're going from no tabbed browsers to a tabbed browser (and not in
     // process startup), restore the last session.
     if (move_on_new_browser_) {

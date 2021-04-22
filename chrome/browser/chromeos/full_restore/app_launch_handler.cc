@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/full_restore/arc_window_handler.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_save_handler.h"
@@ -163,6 +165,13 @@ void AppLaunchHandler::LaunchBrowser() {
   }
 
   restore_data_->RemoveApp(extension_misc::kChromeAppId);
+
+  // Modify the command line to restore browser sessions if not restore from
+  // crash.
+  if (profile_->GetLastSessionExitType() != Profile::EXIT_CRASHED) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kRestoreLastSession);
+  }
   UserSessionManager::GetInstance()->LaunchBrowser(profile_);
   UserSessionManager::GetInstance()->MaybeLaunchSettings(profile_);
 }

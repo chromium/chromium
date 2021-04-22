@@ -369,7 +369,13 @@ class SessionRestoreImpl : public BrowserListObserver {
     chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker(
         "SessionRestore-GotSession", false);
 #endif
-    read_error_ = read_error;
+
+    // This function could be called twice from both SessionService and
+    // AppSessionService. If one of them returns error, then |read_error_| is
+    // true. So check whether |read_error_| has been set as true to prevent the
+    // result is overwritten.
+    if (!read_error_)
+      read_error_ = read_error;
 
     // Copy windows into windows_ so that we can combine both app and browser
     // windows together before doing a one-pass restore.

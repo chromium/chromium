@@ -19,5 +19,5 @@ declare_args() {
   # across the board. Until then, this buildflag allows some platforms to use
   # app_session_service and some not.
   enable_app_session_service =
-      !(is_chromeos_ash || is_chromeos_lacros || is_chromecast || is_android)
+      !(is_chromeos_lacros || is_chromecast || is_android)
 }
