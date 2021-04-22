@@ -317,9 +317,9 @@ AutofillPrivateGetAddressComponentsFunction::Run() {
   std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> lines;
   std::string language_code;
 
-  autofill::GetAddressComponents(parameters->country_code,
-                                 g_browser_process->GetApplicationLocale(),
-                                 &lines, &language_code);
+  autofill::GetAddressComponents(
+      parameters->country_code, g_browser_process->GetApplicationLocale(),
+      /*include_literals=*/false, &lines, &language_code);
   // Convert std::vector<std::vector<::i18n::addressinput::AddressUiComponent>>
   // to AddressComponents
   base::Value address_components(base::Value::Type::DICTIONARY);

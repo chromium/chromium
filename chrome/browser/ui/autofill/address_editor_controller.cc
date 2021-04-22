@@ -56,7 +56,8 @@ void AddressEditorController::UpdateEditorFields() {
     chosen_country_code = countries_[chosen_country_index_].first;
 
   std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> components;
-  autofill::GetAddressComponents(chosen_country_code, locale_, &components,
+  autofill::GetAddressComponents(chosen_country_code, locale_,
+                                 /*include_literals=*/false, &components,
                                  &language_code_);
   profile_to_edit_.set_language_code(language_code_);
 

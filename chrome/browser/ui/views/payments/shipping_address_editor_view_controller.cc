@@ -432,9 +432,9 @@ void ShippingAddressEditorViewController::UpdateEditorFields() {
     chosen_country_code = countries_[chosen_country_index_].first;
 
   std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> components;
-  autofill::GetAddressComponents(chosen_country_code,
-                                 state()->GetApplicationLocale(), &components,
-                                 &language_code_);
+  autofill::GetAddressComponents(
+      chosen_country_code, state()->GetApplicationLocale(),
+      /*include_literals=*/false, &components, &language_code_);
 
   // Insert the Country combobox at the top.
   editor_fields_.emplace_back(

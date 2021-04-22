@@ -57,7 +57,8 @@ std::u16string SaveAddressProfilePromptController::GetAddress() {
 
   std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> components;
   autofill::GetAddressComponents(base::UTF16ToUTF8(country_code), locale,
-                                 &components, nullptr);
+                                 /*include_literals=*/false, &components,
+                                 nullptr);
 
   std::vector<std::u16string> address_lines;
   for (const std::vector<::i18n::addressinput::AddressUiComponent>& line :

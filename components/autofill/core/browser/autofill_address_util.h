@@ -24,10 +24,12 @@ ServerFieldType AddressFieldToServerFieldType(
 // |ui_language_code|. If |components_language_code| is not NULL, then sets it
 // to the BCP 47 language code that should be used to format the address for
 // display. If no components are available for |country_code|, it defaults back
-// to the US.
+// to the US. |include_literals| controls whether formatting literals such as
+// ", " and "-" should be returned.
 void GetAddressComponents(
     const std::string& country_code,
     const std::string& ui_language_code,
+    bool include_literals,
     std::vector<std::vector<::i18n::addressinput::AddressUiComponent>>*
         address_components,
     std::string* components_language_code);

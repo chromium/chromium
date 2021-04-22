@@ -117,7 +117,8 @@ std::unique_ptr<views::View> CreateStreetAddressView(
   // GetAddressComponents() is adjusted to return address separators (e.g.
   // commas).
   autofill::GetAddressComponents(base::UTF16ToUTF8(country_code), locale,
-                                 &components, nullptr);
+                                 /*include_literals=*/false, &components,
+                                 nullptr);
 
   for (const std::vector<::i18n::addressinput::AddressUiComponent>& line :
        components) {

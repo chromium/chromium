@@ -35,12 +35,10 @@ namespace {
 // Returns a vector of AddressUiComponent for `country_code` when using
 // `ui_language_code`. If no components are available for `country_code`, it
 // defaults back to the US. If `ui_language_code` is not valid,  the default
-// format is returned. `include_literals` controls whether literals are also
-// returned or not.
+// format is returned.
 std::vector<AddressUiComponent> GetAddressComponents(
     const std::string& country_code,
     const std::string& ui_language_code,
-    bool include_literals,
     std::string* components_language_code) {
   DCHECK(components_language_code);
 
@@ -49,12 +47,8 @@ std::vector<AddressUiComponent> GetAddressComponents(
   localization.SetGetter(l10n_util::GetStringUTF8);
   for (const auto& country : {country_code, std::string("US")}) {
     std::vector<AddressUiComponent> components =
-        include_literals ? ::i18n::addressinput::BuildComponentsWithLiterals(
-                               country, localization, ui_language_code,
-                               components_language_code)
-                         : ::i18n::addressinput::BuildComponents(
-                               country, localization, ui_language_code,
-                               components_language_code);
+        ::i18n::addressinput::BuildComponentsWithLiterals(
+            country, localization, ui_language_code, components_language_code);
     if (!components.empty())
       return components;
   }
@@ -90,21 +84,31 @@ ServerFieldType AddressFieldToServerFieldType(AddressField address_field) {
 void GetAddressComponents(
     const std::string& country_code,
     const std::string& ui_language_code,
+    bool include_literals,
     std::vector<std::vector<AddressUiComponent>>* address_components,
     std::string* components_language_code) {
   std::string not_used;
   std::vector<AddressUiComponent> components = GetAddressComponents(
-      country_code, ui_language_code, /*include_literals=*/false,
+      country_code, ui_language_code,
       components_language_code ? components_language_code : &not_used);
   std::vector<AddressUiComponent>* line_components = nullptr;
-  for (size_t i = 0; i < components.size(); ++i) {
-    if (i == 0 ||
-        components[i - 1].length_hint == AddressUiComponent::HINT_LONG ||
-        components[i].length_hint == AddressUiComponent::HINT_LONG) {
+  for (const AddressUiComponent& component : components) {
+    // Start a new line of this is the first line, or a new line literal exists.
+    if (!line_components || component.literal == "\n") {
       address_components->push_back(std::vector<AddressUiComponent>());
       line_components = &address_components->back();
     }
-    line_components->push_back(components[i]);
+
+    if (!component.literal.empty()) {
+      if (!include_literals)
+        continue;
+      // No need to return new line literals since components are split into
+      // different lines anyway (one line per vector).
+      if (component.literal == "\n")
+        continue;
+    }
+
+    line_components->push_back(component);
   }
 }
 
@@ -115,9 +119,8 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
       profile.GetInfo(kCountryCode, ui_language_code);
 
   std::string not_used;
-  std::vector<AddressUiComponent> components =
-      GetAddressComponents(base::UTF16ToUTF8(country_code), ui_language_code,
-                           /*include_literals=*/true, &not_used);
+  std::vector<AddressUiComponent> components = GetAddressComponents(
+      base::UTF16ToUTF8(country_code), ui_language_code, &not_used);
 
   DCHECK(!components.empty());
   std::u16string address;
