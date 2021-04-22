@@ -38,11 +38,13 @@ class FrameTextDumpResult {
   // Whether the class instance is completed yet.
   bool IsCompleted() const;
 
-  // The text dump contents. Set only for completed instances.
+  // The text dump contents. Set only for completed instances. Note that
+  // the string must be treated as untrusted data.
   const base::Optional<std::u16string>& contents() const { return contents_; }
 
   // The text dump contents, decoded to UTF-8 as a best effort. Set only for
-  // completed instances.
+  // completed instances. Note that the string must be treated as untrusted
+  // data.
   base::Optional<std::string> utf8_contents() const;
 
   // The event at which the text dump is taken. Set for both preliminary and
@@ -120,13 +122,15 @@ class PageTextDumpResult {
   void AddFrameTextDumpResult(const FrameTextDumpResult& frame_result);
 
   // Returns the concatenation of all AMP frames. nullopt if no AMP frames are
-  // present.
+  // present. Note that the string must be treated as untrusted data.
   base::Optional<std::string> GetAMPTextContent() const;
 
   // Returns the concatenation of the mainframe. nullopt if not present.
+  // Note that the string must be treated as untrusted data.
   base::Optional<std::string> GetMainFrameTextContent() const;
 
   // Returns the concatenation of all frames, AMP or main. nullopt if |empty()|.
+  // Note that the string must be treated as untrusted data.
   base::Optional<std::string> GetAllFramesTextContent() const;
 
   bool empty() const { return frame_results_.empty(); }

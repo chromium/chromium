@@ -34,6 +34,7 @@ struct PageTextDumpRequest {
 // instance.
 interface PageTextConsumer {
   // Called for each chunk of page text.
+  // Security note: |chunk| should be treated as untrusted data.
   OnTextDumpChunk(mojo_base.mojom.String16 chunk);
 
   // Called when no more chunks will be sent.
