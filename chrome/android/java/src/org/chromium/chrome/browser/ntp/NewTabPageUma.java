@@ -91,8 +91,11 @@ public class NewTabPageUma {
     /** (Obsolete) User clicked on the feed header menu button item in the feed header menu. */
     // public static final int ACTION_CLICKED_FEED_HEADER_MENU = 15;
 
+    /** User clicked to play the full video for a video snippet shown on the NTP. */
+    public static final int ACTION_OPENED_VIDEO = 16;
+
     /** The number of possible actions. */
-    private static final int NUM_ACTIONS = 16;
+    private static final int NUM_ACTIONS = 17;
 
     /** Regular NTP impression (usually when a new tab is opened). */
     public static final int NTP_IMPRESSION_REGULAR = 0;

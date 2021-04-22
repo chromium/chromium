@@ -32320,6 +32320,14 @@ Called by update_permissions_policy_enum.py.-->
       label="Failed attempt to use the feature. Recorded on each event."/>
 </enum>
 
+<enum name="FeedAutoplayEvent">
+  <int value="0" label="Auto-play is triggered, but not started yet."/>
+  <int value="1" label="The player starts to auto-play the video."/>
+  <int value="2" label="Auto-play stops before reaching the end."/>
+  <int value="3" label="Auto-play reaches the end."/>
+  <int value="4" label="User clicks on the auto-play video."/>
+</enum>
+
 <enum name="FeedbackSource">
   <int value="0" label="Arc App"/>
   <int value="1" label="Ash"/>
@@ -55780,6 +55788,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="Clicked on Learn More"/>
   <int value="10"
       label="Clicked on the Refresh button in the all dismissed state"/>
+  <int value="16" label="Opened a video snippet"/>
 </enum>
 
 <enum name="NewTabPageActionAndroid2">
