@@ -29,19 +29,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "components/arc/arc_prefs.h"
 #endif
 
 using apps::mojom::OptionalBool;
 
 namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kArcFrameworkPackage[] = "android";
-constexpr int kMinAndroidFrameworkVersion = 28;  // Android P
-#endif
 
 constexpr char const* kAppIdsWithHiddenMoreSettings[] = {
     extensions::kWebStoreAppId,
@@ -101,12 +94,6 @@ AppManagementPageHandler::AppManagementPageHandler(
 {
   Observe(&apps::AppServiceProxyFactory::GetForProfile(profile_)
                ->AppRegistryCache());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (arc::IsArcAllowedForProfile(profile_)) {
-    arc_app_list_prefs_observation_.Observe(ArcAppListPrefs::Get(profile_));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 AppManagementPageHandler::~AppManagementPageHandler() {}
@@ -252,32 +239,3 @@ void AppManagementPageHandler::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   Observe(nullptr);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// static
-bool AppManagementPageHandler::IsCurrentArcVersionSupported(Profile* profile) {
-  if (arc::IsArcAllowedForProfile(profile)) {
-    auto package =
-        ArcAppListPrefs::Get(profile)->GetPackage(kArcFrameworkPackage);
-    return package && (package->package_version >= kMinAndroidFrameworkVersion);
-  }
-  return false;
-}
-
-void AppManagementPageHandler::OnArcVersionChanged(int androidVersion) {
-  page_->OnArcSupportChanged(androidVersion >= kMinAndroidFrameworkVersion);
-}
-
-void AppManagementPageHandler::OnPackageInstalled(
-    const arc::mojom::ArcPackageInfo& package_info) {
-  OnPackageModified(package_info);
-}
-
-void AppManagementPageHandler::OnPackageModified(
-    const arc::mojom::ArcPackageInfo& package_info) {
-  if (package_info.package_name != kArcFrameworkPackage) {
-    return;
-  }
-  OnArcVersionChanged(package_info.package_version);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

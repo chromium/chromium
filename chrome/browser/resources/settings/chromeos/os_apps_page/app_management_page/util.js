@@ -22,7 +22,6 @@ cr.define('app_management.util', function() {
   /* #export */ function createEmptyState() {
     return {
       apps: {},
-      arcSupported: false,
       selectedAppId: null,
     };
   }
@@ -33,10 +32,6 @@ cr.define('app_management.util', function() {
    */
   /* #export */ function createInitialState(apps) {
     const initialState = createEmptyState();
-
-    initialState.arcSupported =
-        loadTimeData.valueExists('isSupportedArcVersion') &&
-        loadTimeData.getBoolean('isSupportedArcVersion');
 
     for (const app of apps) {
       initialState.apps[app.id] = app;

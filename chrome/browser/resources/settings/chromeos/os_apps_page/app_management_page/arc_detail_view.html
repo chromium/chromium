@@ -27,15 +27,12 @@
       <app-management-permission-item id="notifications-card"
         class="permission-card-row separated-row header-text"
         permission-label="$i18n{appManagementNotificationsLabel}"
-        permission-type="NOTIFICATIONS"
-        hidden$="[[!isArcSupported_]]">
+        permission-type="NOTIFICATIONS">
       </app-management-permission-item>
       <div id="permissions-card"
-        class="permission-card-row"
-        hidden$="[[!isArcSupported_]]">
+        class="permission-card-row">
         <div id="subpermission-expand-row"
-          class="permission-section-header"
-          hidden$="[[!isArcSupported_]]">
+          class="permission-section-header">
           <div class="header-text">$i18n{appManagementPermissionsLabel}</div>
         </div>
         <div id="subpermission-list"

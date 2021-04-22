@@ -154,7 +154,6 @@ os_settings_namespace_rewrites = settings_namespace_rewrites +
                                    "app_management.actions.addApp|addApp",
                                    "app_management.actions.changeApp|changeApp",
                                    "app_management.actions.removeApp|removeApp",
-                                   "app_management.actions.updateArcSupported|updateArcSupported",
                                    "app_management.actions.updateSelectedAppId|updateSelectedAppId",
                                    "app_management.AppManagementStoreClient|AppManagementStoreClient",
                                    "app_management.AppState|AppState",

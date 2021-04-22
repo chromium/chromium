@@ -5,7 +5,7 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {AppManagementStore, updateArcSupported, FakePageHandler, ArcPermissionType, updateSelectedAppId, getPermissionValueBool, PageType, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {AppManagementStore, FakePageHandler, ArcPermissionType, updateSelectedAppId, getPermissionValueBool, PageType, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf, isHidden, getPermissionItemByType, getPermissionCrToggleByType} from './test_util.m.js';
 // #import {flushTasks} from 'chrome://test/test_util.m.js';
 // clang-format on
@@ -20,9 +20,6 @@ suite('<app-management-app-detail-view>', () => {
   setup(async () => {
     fakeHandler = setupFakeHandler();
     replaceStore();
-
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateArcSupported(true));
 
     // Create an ARC app.
     const arcOptions = {type: apps.mojom.AppType.kArc};

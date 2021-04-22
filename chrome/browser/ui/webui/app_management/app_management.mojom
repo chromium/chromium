@@ -56,7 +56,6 @@ interface Page {
   OnAppAdded(App app);
   OnAppChanged(App update);
   OnAppRemoved(string app_id);
-  OnArcSupportChanged(bool supported);
 };
 
 // Permission Type Enums for each App Publisher. The App Publishers are

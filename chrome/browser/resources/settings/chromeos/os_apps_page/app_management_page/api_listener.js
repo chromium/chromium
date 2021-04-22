@@ -8,7 +8,7 @@
 // #import {BrowserProxy} from './browser_proxy.m.js';
 // #import {createInitialState} from './util.m.js';
 // #import {AppManagementStore} from './store.m.js';
-// #import {addApp, changeApp, removeApp, updateArcSupported} from './actions.m.js';
+// #import {addApp, changeApp, removeApp} from './actions.m.js';
 // clang-format on
 
 cr.define('app_management.apiListener', function() {
@@ -28,7 +28,6 @@ cr.define('app_management.apiListener', function() {
     callbackRouter.onAppAdded.addListener(onAppAdded);
     callbackRouter.onAppChanged.addListener(onAppChanged);
     callbackRouter.onAppRemoved.addListener(onAppRemoved);
-    callbackRouter.onArcSupportChanged.addListener(onArcSupportChanged);
 
     initialized = true;
   }
@@ -59,13 +58,6 @@ cr.define('app_management.apiListener', function() {
    */
   function onAppRemoved(appId) {
     dispatch(app_management.actions.removeApp(appId));
-  }
-
-  /**
-   * @param {boolean} isSupported
-   */
-  function onArcSupportChanged(isSupported) {
-    dispatch(app_management.actions.updateArcSupported(isSupported));
   }
 
   init();

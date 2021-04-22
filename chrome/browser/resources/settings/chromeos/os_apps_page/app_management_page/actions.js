@@ -52,24 +52,11 @@ cr.define('app_management.actions', function() {
     };
   }
 
-  /**
-   * @param {boolean} isSupported
-   * @return {!cr.ui.Action}
-   */
-  /* #export */ function updateArcSupported(isSupported) {
-    return {
-      name: 'update-arc-supported',
-      value: isSupported,
-    };
-  }
-
-
   // #cr_define_end
   return {
     addApp: addApp,
     changeApp: changeApp,
     removeApp: removeApp,
-    updateArcSupported: updateArcSupported,
     updateSelectedAppId: updateSelectedAppId,
   };
 });

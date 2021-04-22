@@ -113,7 +113,7 @@ export {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} fr
 export {TtsSubpageBrowserProxy, TtsSubpageBrowserProxyImpl} from './os_a11y_page/tts_subpage_browser_proxy.m.js';
 export {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl} from './os_about_page/device_name_browser_proxy.m.js';
 export {AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.m.js';
-export {addApp, changeApp, removeApp, updateArcSupported, updateSelectedAppId} from './os_apps_page/app_management_page/actions.m.js';
+export {addApp, changeApp, removeApp, updateSelectedAppId} from './os_apps_page/app_management_page/actions.m.js';
 export {BrowserProxy} from './os_apps_page/app_management_page/browser_proxy.m.js';
 export {ArcPermissionType, Bool, PageType, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState} from './os_apps_page/app_management_page/constants.m.js';
 export {FakePageHandler} from './os_apps_page/app_management_page/fake_page_handler.m.js';

@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/android_apps_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/guest_os_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/plugin_vm_handler.h"
@@ -224,9 +223,6 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("androidAppsVisible",
                           arc::IsArcAllowedForProfile(profile()));
   html_source->AddBoolean("havePlayStoreApp", arc::IsPlayStoreAvailable());
-  html_source->AddBoolean(
-      "isSupportedArcVersion",
-      AppManagementPageHandler::IsCurrentArcVersionSupported(profile()));
 
   AddAppManagementStrings(html_source);
   AddGuestOsStrings(html_source);

@@ -30,7 +30,6 @@ let AppMap;
 /**
  * @typedef {{
  *   apps: !AppMap,
- *   arcSupported: boolean,
  *   selectedAppId: ?string,
  * }}
  */

@@ -85,22 +85,6 @@ cr.define('app_management', function() {
     }
   };
 
-  const ArcSupported = {};
-
-  /**
-   * @param {boolean} arcSupported
-   * @param {Object} action
-   * @return {boolean}
-   */
-  ArcSupported.updateArcSupported = function(arcSupported, action) {
-    switch (action.name) {
-      case 'update-arc-supported':
-        return action.value;
-      default:
-        return arcSupported;
-    }
-  };
-
   const SelectedAppId = {};
 
   /**
@@ -132,7 +116,6 @@ cr.define('app_management', function() {
   /* #export */ function reduceAction(state, action) {
     return {
       apps: AppState.updateApps(state.apps, action),
-      arcSupported: ArcSupported.updateArcSupported(state.arcSupported, action),
       selectedAppId:
           SelectedAppId.updateSelectedAppId(state.selectedAppId, action),
     };
@@ -142,7 +125,6 @@ cr.define('app_management', function() {
   return {
     reduceAction: reduceAction,
     AppState: AppState,
-    ArcSupported: ArcSupported,
     SelectedAppId: SelectedAppId,
   };
 });

@@ -5,7 +5,7 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {AppManagementStore, updateArcSupported, FakePageHandler, ArcPermissionType, updateSelectedAppId, getPermissionValueBool} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {AppManagementStore, FakePageHandler, ArcPermissionType, updateSelectedAppId, getPermissionValueBool} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf, isHidden, getPermissionItemByType, getPermissionCrToggleByType} from './test_util.m.js';
 // #import {flushTasks} from 'chrome://test/test_util.m.js';
 // clang-format on
@@ -38,8 +38,6 @@ suite('<app-management-arc-detail-view>', () => {
   setup(async () => {
     fakeHandler = setupFakeHandler();
     replaceStore();
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateArcSupported(true));
 
     // Create an ARC app without microphone permissions.
     const arcOptions = {
@@ -132,24 +130,6 @@ suite('<app-management-arc-detail-view>', () => {
     await checkPermissionItemOnClick('NOTIFICATIONS');
     await checkPermissionItemOnClick('CONTACTS');
     await checkPermissionItemOnClick('STORAGE');
-  });
-
-  test('Unsupported Arc hides correctly', () => {
-    assertFalse(
-        isHidden(getPermissionItemByType(arcPermissionView, 'NOTIFICATIONS')));
-    assertFalse(
-        isHidden(arcPermissionView.root.getElementById('permissions-card')));
-
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateArcSupported(false));
-
-    assertTrue(
-        isHidden(getPermissionItemByType(arcPermissionView, 'NOTIFICATIONS')));
-    assertTrue(
-        isHidden(arcPermissionView.root.getElementById('permissions-card')));
-
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateArcSupported(true));
   });
 
   test('No permissions requested label', async () => {

@@ -5,7 +5,7 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {AppManagementStore, updateArcSupported, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {AppManagementStore, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {setupFakeHandler, replaceBody} from './test_util.m.js';
 // #import {flushTasks} from 'chrome://test/test_util.m.js';
 // clang-format on
@@ -26,9 +26,6 @@ suite('<app-management-pin-to-shelf-item>', () => {
 
   test('Toggle pin to shelf', async () => {
     const arcOptions = {type: apps.mojom.AppType.kArc, permissions: {}};
-
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateArcSupported(true));
 
     // Add an arc app, and make it the currently selected app.
     const app = await fakeHandler.addApp('app1', arcOptions);
