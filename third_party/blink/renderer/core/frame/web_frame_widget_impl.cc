@@ -1981,39 +1981,6 @@ void WebFrameWidgetImpl::Resize(const gfx::Size& new_size) {
 
   view->SetLayoutSize(IntSize(*size_));
   view->Resize(IntSize(*size_));
-
-  // FIXME: In WebViewImpl this layout was a precursor to setting the minimum
-  // scale limit.  It is not clear if this is necessary for frame-level widget
-  // resize.
-  if (view->NeedsLayout()) {
-    view->GetFrame().GetDocument()->UpdateStyleAndLayout(
-        DocumentUpdateReason::kSizeChange);
-  }
-
-  // FIXME: Investigate whether this is needed; comment from eseidel suggests
-  // that this function is flawed.
-  // TODO(kenrb): It would probably make more sense to check whether lifecycle
-  // updates are throttled in the root's LocalFrameView, but for OOPIFs that
-  // doesn't happen. Need to investigate if OOPIFs can be throttled during
-  // load.
-  if (LocalRootImpl()->GetFrame()->GetDocument()->IsLoadCompleted()) {
-    // FIXME: This is wrong. The LocalFrameView is responsible sending a
-    // resizeEvent as part of layout. Layout is also responsible for sending
-    // invalidations to the embedder. This method and all callers may be wrong.
-    // -- eseidel.
-    LocalRootImpl()->GetFrame()->GetDocument()->EnqueueResizeEvent();
-
-    // Pass the limits even though this is for subframes, as the limits will
-    // be needed in setting the raster scale. We set this value when setting
-    // up the compositor, but need to update it when the limits of the
-    // WebViewImpl have changed.
-    // TODO(wjmaclean): This is updating when the size of the *child frame*
-    // have changed which are completely independent of the WebView, and in an
-    // OOPIF where the main frame is remote, are these limits even useful?
-    SetPageScaleStateAndLimits(1.f, false /* is_pinch_gesture_active */,
-                               View()->MinimumPageScaleFactor(),
-                               View()->MaximumPageScaleFactor());
-  }
 }
 
 void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
