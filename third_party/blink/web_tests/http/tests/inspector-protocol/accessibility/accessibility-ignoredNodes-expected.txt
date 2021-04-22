@@ -14,24 +14,11 @@ RootWebArea
     }
 }
 
-RootWebArea
-  img
-    *none
+*none
 {
     domNode : svg
     ignored : true
     ignoredReasons : [
-        [0] : {
-            name : ancestorIsLeafNode
-            value : {
-                relatedNodes : [
-                    [0] : {
-                        nodeResult : div
-                    }
-                ]
-                type : idref
-            }
-        }
     ]
     nodeId : <string>
     role : {

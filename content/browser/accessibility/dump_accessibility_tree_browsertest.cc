@@ -885,6 +885,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-labelledby-updates.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaLeafInEditable) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-leaf-in-editable.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaLevel) {
   RunAriaTest(FILE_PATH_LITERAL("aria-level.html"));
 }

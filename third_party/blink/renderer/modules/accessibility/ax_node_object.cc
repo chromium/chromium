@@ -325,15 +325,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     IgnoredReasons* ignored_reasons) const {
   DCHECK(GetDocument());
 
-  // If this element is within a parent that cannot have children, it should not
-  // be exposed.
-  if (IsDescendantOfLeafNode()) {
-    if (ignored_reasons)
-      ignored_reasons->push_back(
-          IgnoredReason(kAXAncestorIsLeafNode, LeafNodeAncestor()));
-    return kIgnoreObject;
-  }
-
   if (IsPresentational()) {
     if (ignored_reasons)
       ignored_reasons->push_back(IgnoredReason(kAXPresentational));
@@ -1147,12 +1138,12 @@ Element* AXNodeObject::MouseButtonListener() const {
   return nullptr;
 }
 
-void AXNodeObject::Init(AXObject* parent_if_known) {
+void AXNodeObject::Init(AXObject* parent) {
 #if DCHECK_IS_ON()
   DCHECK(!initialized_);
   initialized_ = true;
 #endif
-  AXObject::Init(parent_if_known);
+  AXObject::Init(parent);
 
   DCHECK(role_ == native_role_ || role_ == aria_role_)
       << "Role must be either the cached native role or cached aria role: "
@@ -3031,8 +3022,8 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
 
 String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
                                          bool recursive) const {
-  if (!CanHaveChildren() && recursive)
-    return String();
+  if (!CanHaveChildren())
+    return recursive ? String() : GetElement()->innerText();
 
   StringBuilder accumulated_text;
   AXObject* previous = nullptr;
@@ -3528,11 +3519,12 @@ void AXNodeObject::AddImageMapChildren() {
     // parent that its children have changed.
     if (AXObject* ax_preexisting = AXObjectCache().Get(first_area)) {
       if (AXObject* ax_previous_parent = ax_preexisting->CachedParentObject()) {
-        DCHECK_NE(ax_previous_parent, this);
-        DCHECK(ax_previous_parent->GetNode());
-        AXObjectCache().ChildrenChangedWithCleanLayout(
-            ax_previous_parent->GetNode(), ax_previous_parent);
+        if (ax_previous_parent != this) {
+          DCHECK(ax_previous_parent->GetNode());
+          AXObjectCache().ChildrenChangedWithCleanLayout(
+              ax_previous_parent->GetNode(), ax_previous_parent);
           ax_previous_parent->ClearChildren();
+        }
       }
     }
 
@@ -3889,12 +3881,7 @@ void AXNodeObject::InsertChild(AXObject* child,
 }
 
 bool AXNodeObject::CanHaveChildren() const {
-  // If this is an AXLayoutObject, then it's okay if this object
-  // doesn't have a node - there are some layoutObjects that don't have
-  // associated nodes, like scroll areas and css-generated text.
-  if (!GetNode() && !IsAXLayoutObject())
-    return false;
-
+  DCHECK(!IsDetached());
   DCHECK(!IsA<HTMLMapElement>(GetNode()));
 
   // Placeholder gets exposed as an attribute on the input accessibility node,
@@ -3928,7 +3915,9 @@ bool AXNodeObject::CanHaveChildren() const {
       return true;
     case ax::mojom::blink::Role::kLineBreak:
     case ax::mojom::blink::Role::kStaticText:
-      return AXObjectCache().InlineTextBoxAccessibilityEnabled();
+      // AddInlineTextBoxChildren() must also check
+      // AXObjectCache().InlineTextBoxAccessibilityEnabled();
+      return true;
     case ax::mojom::blink::Role::kImage:
       // Can turn into an image map if gains children later.
       return GetNode() && GetNode()->IsLink();
@@ -3971,8 +3960,13 @@ bool AXNodeObject::CanHaveChildren() const {
       // otherwise the subtree is exposed. The ChildrenPresentational rule
       // is thus useful for authoring/verification tools but does not break
       // complex widget implementations.
+      // Similarly, when content is inside a contenteditable, it does not make
+      // sense to hide it, since the user can interact with it.
+      // TODO(accessibility) Does it make sense to hide any of this content even
+      // in non-editable content?
       Element* element = GetElement();
-      return element && !element->HasOneTextChild();
+      return element &&
+             (HasEditableStyle(*element) || !element->HasOneTextChild());
     }
     default:
       break;
@@ -4241,14 +4235,7 @@ void AXNodeObject::ChildrenChanged() {
       node_to_update->SetNeedsToUpdateChildren();
   }
 
-  // If this node's children are not part of the accessibility tree then
-  // skip notification and walking up the ancestors.
-  // Cases where this happens:
-  // - an ancestor has only presentational children, or
-  // - this or an ancestor is a leaf node
-  // Uses |cached_is_descendant_of_leaf_node_| to avoid updating cached
-  // attributes for eachc change via | UpdateCachedAttributeValuesIfNeeded()|.
-  if (!CanHaveChildren() || LastKnownIsDescendantOfLeafNode())
+  if (!CanHaveChildren())
     return;
 
   // TODO(aleventhal) Consider removing.

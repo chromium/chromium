@@ -1,0 +1,20 @@
+<!--
+@BLINK-DENY:value*
+-->
+<!-- Descendants of elements with ARIA childrenPresentational roles tused to be removed,
+  but is no longer removed when the content is interactive. In an editor,
+  any text cotent is interactive, because the user's caret can traverse it. -->
+<div contenteditable="true">
+  <div role="button">ARIA leaf content is not removed in editor</div>
+  <div role="checkbox">ARIA leaf content is not removed in editor</div>
+  <div role="menuitem">ARIA leaf content is not removed in editor</div>
+  <div role="menuitemradio">ARIA leaf content is not removed in editor</div>
+  <div role="menuitemcheckbox">ARIA leaf content is not removed in editor</div>
+  <div role="option">ARIA leaf content is not removed in editor</div>
+  <div role="progressbar">ARIA leaf content is not removed in editor</div>
+  <div role="radio">ARIA leaf content is not removed in editor</div>
+  <div role="separator">ARIA leaf content is not removed in editor</div>
+  <div role="slider">ARIA leaf content is not removed in editor</div>
+  <div role="switch">ARIA leaf content is not removed in editor</div>
+  <div role="tab">ARIA leaf content is not removed in editor</div>
+</div>
