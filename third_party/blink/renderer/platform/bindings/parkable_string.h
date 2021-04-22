@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/thread_annotations.h"
-#include "third_party/blink/renderer/platform/disk_data_allocator.h"
 #include "third_party/blink/renderer/platform/disk_data_metadata.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -33,6 +32,7 @@
 
 namespace blink {
 
+class DiskDataAllocator;
 class WebProcessMemoryDump;
 struct BackgroundTaskParams;
 
