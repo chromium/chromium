@@ -30,8 +30,9 @@ namespace exo {
 namespace test {
 
 ClientControlledShellSurfaceDelegate::ClientControlledShellSurfaceDelegate(
-    ClientControlledShellSurface* shell_surface)
-    : shell_surface_(shell_surface) {}
+    ClientControlledShellSurface* shell_surface,
+    bool delay_commit)
+    : shell_surface_(shell_surface), delay_commit_(delay_commit) {}
 ClientControlledShellSurfaceDelegate::~ClientControlledShellSurfaceDelegate() =
     default;
 
@@ -58,7 +59,7 @@ void ClientControlledShellSurfaceDelegate::OnStateChanged(
       NOTIMPLEMENTED();
       break;
   }
-  shell_surface_->OnSurfaceCommit();
+  Commit();
 }
 void ClientControlledShellSurfaceDelegate::OnBoundsChanged(
     chromeos::WindowStateType current_state,
@@ -102,7 +103,7 @@ void ClientControlledShellSurfaceDelegate::OnBoundsChanged(
       shell_surface_->SetSnappedToRight();
   }
 
-  shell_surface_->OnSurfaceCommit();
+  Commit();
 }
 void ClientControlledShellSurfaceDelegate::OnDragStarted(int component) {}
 void ClientControlledShellSurfaceDelegate::OnDragFinished(int x,
@@ -110,6 +111,11 @@ void ClientControlledShellSurfaceDelegate::OnDragFinished(int x,
                                                           bool canceled) {}
 void ClientControlledShellSurfaceDelegate::OnZoomLevelChanged(
     ZoomChange zoom_change) {}
+
+void ClientControlledShellSurfaceDelegate::Commit() {
+  if (!delay_commit_)
+    shell_surface_->OnSurfaceCommit();
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // ExoTestHelper, public:

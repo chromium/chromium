@@ -885,14 +885,12 @@ class WaylandRemoteOutput : public WaylandDisplayObserver {
 // Implements remote shell interface and monitors workspace state needed
 // for the remote shell interface.
 class WaylandRemoteShell : public ash::TabletModeObserver,
-                           public aura::client::FocusChangeObserver,
                            public display::DisplayObserver {
  public:
   WaylandRemoteShell(Display* display, wl_resource* remote_shell_resource)
       : display_(display), remote_shell_resource_(remote_shell_resource) {
     WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
     helper->AddTabletModeObserver(this);
-    helper->AddFocusObserver(this);
     display::Screen::GetScreen()->AddObserver(this);
     helper->AddFrameThrottlingObserver();
 
@@ -913,12 +911,13 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
     }
 
     SendDisplayMetrics();
-    SendFocused(helper->GetActiveWindow(), nullptr);
+    display->seat()->SetFocusChangedCallback(
+        base::BindRepeating(&WaylandRemoteShell::FocusedSurfaceChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
   ~WaylandRemoteShell() override {
     WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
     helper->RemoveTabletModeObserver(this);
-    helper->RemoveFocusObserver(this);
     display::Screen::GetScreen()->RemoveObserver(this);
     helper->RemoveFrameThrottlingObserver();
   }
@@ -1010,12 +1009,6 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
     ScheduleSendDisplayMetrics(kConfigureDelayAfterLayoutSwitchMs);
   }
   void OnTabletModeEnded() override {}
-
-  // Overridden from wm::ActivationChangeObserver:
-  void OnWindowFocused(aura::Window* gained_active,
-                       aura::Window* lost_active) override {
-    SendFocused(gained_active, lost_active);
-  }
 
  private:
   class WaylandRemoteSurfaceDelegate
@@ -1190,11 +1183,9 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
       wl_client_flush(client);
   }
 
-  void SendFocused(aura::Window* gained_active, aura::Window* lost_active) {
-    Surface* gained_active_surface =
-        GetTargetSurfaceForKeyboardFocus(gained_active);
-    Surface* lost_active_surface =
-        GetTargetSurfaceForKeyboardFocus(lost_active);
+  void FocusedSurfaceChanged(Surface* gained_active_surface,
+                             Surface* lost_active_surface,
+                             bool has_focused_client) {
     if (gained_active_surface == lost_active_surface)
       return;
 
@@ -1225,7 +1216,7 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
       uint32_t focus_state;
       if (gained_active_surface_resource) {
         focus_state = ZCR_REMOTE_SHELL_V1_DESKTOP_FOCUS_STATE_CLIENT_FOCUSED;
-      } else if (gained_active) {
+      } else if (has_focused_client) {
         focus_state =
             ZCR_REMOTE_SHELL_V1_DESKTOP_FOCUS_STATE_OTHER_CLIENT_FOCUSED;
       } else {

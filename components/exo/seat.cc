@@ -75,6 +75,11 @@ Seat::~Seat() {
   Shutdown();
 }
 
+void Seat::SetFocusChangedCallback(FocusChangedCallback callback) {
+  focus_changed_callback_ = std::move(callback);
+  OnWindowFocused(WMHelper::GetInstance()->GetActiveWindow(), nullptr);
+}
+
 void Seat::Shutdown() {
   if (shutdown_)
     return;
@@ -269,12 +274,20 @@ void Seat::OnAllReadsFinished(
 
 void Seat::OnWindowFocused(aura::Window* gained_focus,
                            aura::Window* lost_focus) {
-  Surface* const surface = GetTargetSurfaceForKeyboardFocus(gained_focus);
-  for (auto& observer : observers_) {
-    observer.OnSurfaceFocusing(surface);
+  Surface* const gaining_focus_surface =
+      GetTargetSurfaceForKeyboardFocus(gained_focus);
+  Surface* const lost_focus_surface =
+      GetTargetSurfaceForKeyboardFocus(lost_focus);
+
+  if (!focus_changed_callback_.is_null()) {
+    focus_changed_callback_.Run(gaining_focus_surface, lost_focus_surface,
+                                !!gained_focus);
   }
   for (auto& observer : observers_) {
-    observer.OnSurfaceFocused(surface);
+    observer.OnSurfaceFocusing(gaining_focus_surface);
+  }
+  for (auto& observer : observers_) {
+    observer.OnSurfaceFocused(gaining_focus_surface);
   }
 }
 

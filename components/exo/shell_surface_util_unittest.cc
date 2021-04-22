@@ -4,6 +4,8 @@
 
 #include "components/exo/shell_surface_util.h"
 
+#include "components/exo/buffer.h"
+#include "components/exo/display.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/test/exo_test_base.h"
@@ -74,6 +76,31 @@ TEST_F(ShellSurfaceUtilTest, TargetForKeyboardFocus) {
             GetTargetSurfaceForKeyboardFocus(shell_surface->host_window()));
   EXPECT_EQ(root_surface, GetTargetSurfaceForKeyboardFocus(
                               shell_surface->GetWidget()->GetNativeWindow()));
+}
+
+TEST_F(ShellSurfaceUtilTest, ClientControlledTargetForKeyboardFocus) {
+  Display display;
+
+  gfx::Size buffer_size(256, 256);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+
+  std::unique_ptr<Surface> surface(new Surface);
+  surface->Attach(buffer.get());
+  surface->Commit();
+
+  auto shell_surface(
+      exo_test_helper()->CreateClientControlledShellSurface(surface.get()));
+  shell_surface->set_delegate(
+      std::make_unique<test::ClientControlledShellSurfaceDelegate>(
+          shell_surface.get(), true));
+  shell_surface->SetMinimized();
+  surface->Commit();
+
+  shell_surface->GetWidget()->Hide();
+  shell_surface->OnSurfaceCommit();
+
+  shell_surface->GetWidget()->GetNativeWindow()->Focus();
 }
 
 }  // namespace

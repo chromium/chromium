@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_SEAT_H_
 #define COMPONENTS_EXO_SEAT_H_
 
+#include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
@@ -59,6 +60,11 @@ class Seat : public aura::client::FocusChangeObserver,
   Seat(const Seat&) = delete;
   Seat& operator=(const Seat&) = delete;
   ~Seat() override;
+
+  using FocusChangedCallback =
+      base::RepeatingCallback<void(Surface*, Surface*, bool)>;
+
+  void SetFocusChangedCallback(FocusChangedCallback callback);
 
   void Shutdown();
 
@@ -189,6 +195,8 @@ class Seat : public aura::client::FocusChangeObserver,
   bool changing_clipboard_data_to_selection_source_;
 
   gfx::PointF last_pointer_location_;
+
+  FocusChangedCallback focus_changed_callback_;
 
   bool shutdown_ = false;
 

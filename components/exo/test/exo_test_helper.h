@@ -33,7 +33,8 @@ class ClientControlledShellSurfaceDelegate
     : public ClientControlledShellSurface::Delegate {
  public:
   explicit ClientControlledShellSurfaceDelegate(
-      ClientControlledShellSurface* shell_surface);
+      ClientControlledShellSurface* shell_surface,
+      bool delay_commit = false);
   ~ClientControlledShellSurfaceDelegate() override;
   ClientControlledShellSurfaceDelegate(
       const ClientControlledShellSurfaceDelegate&) = delete;
@@ -54,8 +55,10 @@ class ClientControlledShellSurfaceDelegate
   void OnDragStarted(int component) override;
   void OnDragFinished(int x, int y, bool canceled) override;
   void OnZoomLevelChanged(ZoomChange zoom_change) override;
+  void Commit();
 
   ClientControlledShellSurface* shell_surface_;
+  bool delay_commit_;
 };
 
 // A helper class that does common initialization required for Exosphere.
