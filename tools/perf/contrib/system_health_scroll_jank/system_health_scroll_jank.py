@@ -16,6 +16,7 @@ _BENCHMARK_UMA = [
     'Event.Latency.ScrollUpdate.Touch.TimeToScrollUpdateSwapBegin4',
     'Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4',
     'Event.Latency.ScrollUpdate.Wheel.TimeToScrollUpdateSwapBegin4',
+    'Event.Latency.ScrollJank',
     'Graphics.Smoothness.Checkerboarding.TouchScroll',
     'Graphics.Smoothness.Checkerboarding.WheelScroll',
     'Graphics.Smoothness.Jank.Compositor.TouchScroll',
