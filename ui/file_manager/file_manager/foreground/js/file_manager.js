@@ -1357,8 +1357,9 @@
               str('UNABLE_TO_DROP_IN_PLUGIN_VM_EXTERNAL_DRIVE_MESSAGE');
           FileTasks.showPluginVmNotSharedDialog(
               this.selectionHandler.selection.entries, this.volumeManager_,
-              assert(this.ui_), moveMessage, copyMessage,
-              this.fileTransferController_, assert(this.directoryModel_));
+              assert(this.metadataModel_), assert(this.ui_), moveMessage,
+              copyMessage, this.fileTransferController_,
+              assert(this.directoryModel_));
         }
         break;
     }

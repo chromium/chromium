@@ -488,6 +488,7 @@
    *
    * @param {!Array<!Entry>} entries Selected entries to be moved or copied.
    * @param {!VolumeManager} volumeManager
+   * @param {!MetadataModel} metadataModel
    * @param {!FileManagerUI} ui FileManager UI to show dialog.
    * @param {string} moveMessage Message if files are local and can be moved.
    * @param {string} copyMessage Message if files should be copied.
@@ -495,7 +496,7 @@
    * @param {!DirectoryModel} directoryModel
    */
   static showPluginVmNotSharedDialog(
-      entries, volumeManager, ui, moveMessage, copyMessage,
+      entries, volumeManager, metadataModel, ui, moveMessage, copyMessage,
       fileTransferController, directoryModel) {
     assert(entries.length > 0);
     const isMyFiles = FileTasks.isMyFilesEntry(entries[0], volumeManager);
@@ -510,9 +511,10 @@
 
       const pvmDir = await FileTasks.getPvmSharedDir_(volumeManager);
 
+      assert(volumeManager.getLocationInfo(pvmDir));
+
       fileTransferController.executePaste(new FileTransferController.PastePlan(
-          entries.map(e => e.toURL()), [], pvmDir,
-          assert(volumeManager.getLocationInfo(pvmDir)),
+          entries.map(e => e.toURL()), [], pvmDir, metadataModel,
           /*isMove=*/ isMyFiles));
       directoryModel.changeDirectoryEntry(pvmDir);
     });
@@ -680,8 +682,9 @@
               'UNABLE_TO_OPEN_WITH_PLUGIN_VM_EXTERNAL_DRIVE_MESSAGE',
               task.title);
           FileTasks.showPluginVmNotSharedDialog(
-              this.entries_, this.volumeManager_, this.ui_, moveMessage,
-              copyMessage, this.fileTransferController_, this.directoryModel_);
+              this.entries_, this.volumeManager_, this.metadataModel_, this.ui_,
+              moveMessage, copyMessage, this.fileTransferController_,
+              this.directoryModel_);
           break;
       }
     };
