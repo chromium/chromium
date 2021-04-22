@@ -3707,6 +3707,14 @@ LayoutBox::NGPhysicalFragmentList::Iterator::operator*() const {
   return To<NGPhysicalBoxFragment>((*iterator_)->PhysicalFragment());
 }
 
+const NGPhysicalBoxFragment& LayoutBox::NGPhysicalFragmentList::front() const {
+  return To<NGPhysicalBoxFragment>(layout_results_.front()->PhysicalFragment());
+}
+
+const NGPhysicalBoxFragment& LayoutBox::NGPhysicalFragmentList::back() const {
+  return To<NGPhysicalBoxFragment>(layout_results_.back()->PhysicalFragment());
+}
+
 const FragmentData* LayoutBox::FragmentDataFromPhysicalFragment(
     const NGPhysicalBoxFragment& physical_fragment) const {
   NOT_DESTROYED();

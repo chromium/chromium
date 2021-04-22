@@ -1258,6 +1258,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     Iterator begin() const { return Iterator(layout_results_.begin()); }
     Iterator end() const { return Iterator(layout_results_.end()); }
 
+    const NGPhysicalBoxFragment& front() const;
+    const NGPhysicalBoxFragment& back() const;
+
    private:
     const NGLayoutResultList& layout_results_;
   };
