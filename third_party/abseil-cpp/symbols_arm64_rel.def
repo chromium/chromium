@@ -181,9 +181,6 @@ EXPORTS
     ??_0Duration@absl@@QEAAAEAV01@N@Z
     ??_0Duration@absl@@QEAAAEAV01@_J@Z
     ??_1Duration@absl@@QEAAAEAV01@V01@@Z
-    ??_GBadStatusOrAccess@absl@@UEAAPEAXI@Z
-    ??_GTimeZoneInfo@cctz@time_internal@absl@@UEAAPEAXI@Z
-    ??_GTimeZoneLibC@cctz@time_internal@absl@@UEAAPEAXI@Z
     ?AbortedError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?AbslParseFlag@absl@@YA_NVstring_view@1@PEAVDuration@1@PEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
     ?AbslParseFlag@absl@@YA_NVstring_view@1@PEAVTime@1@PEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z

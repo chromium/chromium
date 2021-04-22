@@ -1420,11 +1420,6 @@ EXPORTS
     ??_3uint128@absl@@QAEAAV01@H@Z
     ??_4uint128@absl@@QAEAAV01@V01@@Z
     ??_5uint128@absl@@QAEAAV01@V01@@Z
-    ??_GBadStatusOrAccess@absl@@UAEPAXI@Z
-    ??_GTimeZoneIf@cctz@time_internal@absl@@UAEPAXI@Z
-    ??_GTimeZoneInfo@cctz@time_internal@absl@@UAEPAXI@Z
-    ??_GTimeZoneLibC@cctz@time_internal@absl@@UAEPAXI@Z
-    ??_GZoneInfoSource@cctz@time_internal@absl@@UAEPAXI@Z
     ?AbortedError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?AbsDuration@absl@@YA?AVDuration@1@V21@@Z
     ?AbslFormatFlush@str_format_internal@absl@@YAXPAV?$basic_ostream@DU?$char_traits@D@__1@std@@@__1@std@@Vstring_view@2@@Z

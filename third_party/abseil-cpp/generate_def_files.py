@@ -132,6 +132,11 @@ def _GenerateDefFile(cpu, is_debug, extra_gn_args=[], suffix=None):
           # ?kHexChar@numbers_internal@absl@@3QBDB
           if symbol in dll_exports:
             continue
+          # Avoid to export deleting dtors since they trigger
+          # "lld-link: error: export of deleting dtor" linker errors, see
+          # crbug.com/1201277.
+          if symbol.startswith('??_G'):
+            continue
           absl_symbols.add(symbol)
 
     logging.info('[%s - %s] Found %d absl symbols.', cpu, flavor, len(absl_symbols))
