@@ -14,7 +14,7 @@
 namespace cc {
 
 bool CalculateClearForOpaqueRasterRects(const gfx::Vector2dF& translation,
-                                        const gfx::SizeF& scale,
+                                        const gfx::Vector2dF& scale,
                                         const gfx::Size& content_size,
                                         const gfx::Rect& canvas_bitmap_rect,
                                         const gfx::Rect& canvas_playback_rect,
@@ -30,8 +30,8 @@ bool CalculateClearForOpaqueRasterRects(const gfx::Vector2dF& translation,
   bool top_opaque = translation.y() == 0.0f;
   // If there is scale, the right and/or bottom texels are not guaranteed to be
   // fully opaque.
-  bool right_opaque = scale.width() == 1.0f;
-  bool bottom_opaque = scale.height() == 1.0f;
+  bool right_opaque = scale.x() == 1.0f;
+  bool bottom_opaque = scale.y() == 1.0f;
   if (left_opaque && top_opaque && right_opaque && bottom_opaque)
     return false;
 

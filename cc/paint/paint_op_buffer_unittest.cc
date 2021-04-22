@@ -2109,7 +2109,7 @@ TEST(PaintOpSerializationTest, Preamble) {
   preamble.full_raster_rect = gfx::Rect(10, 20, 8, 7);
   preamble.playback_rect = gfx::Rect(12, 25, 1, 2);
   preamble.post_translation = gfx::Vector2dF(4.3f, 7.f);
-  preamble.post_scale = gfx::SizeF(0.5f, 0.5f);
+  preamble.post_scale = gfx::Vector2dF(0.5f, 0.5f);
   preamble.requires_clear = true;
 
   PaintOpBuffer buffer;
@@ -2178,8 +2178,8 @@ TEST(PaintOpSerializationTest, Preamble) {
       ASSERT_EQ(op->GetType(), PaintOpType::Scale)
           << PaintOpTypeToString(op->GetType());
       const auto* scale_op = static_cast<const ScaleOp*>(op);
-      EXPECT_EQ(scale_op->sx, preamble.post_scale.width());
-      EXPECT_EQ(scale_op->sy, preamble.post_scale.height());
+      EXPECT_EQ(scale_op->sx, preamble.post_scale.x());
+      EXPECT_EQ(scale_op->sy, preamble.post_scale.y());
       continue;
     }
 

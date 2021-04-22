@@ -13,7 +13,7 @@ namespace cc {
 
 TEST(ClearForOpaqueRasterTest, NoTransform) {
   const gfx::Vector2dF translation;
-  const gfx::SizeF scale(1, 1);
+  const gfx::Vector2dF scale(1, 1);
   const gfx::Size content_size(100, 100);
   const gfx::Rect bitmap_rect(content_size);
   gfx::Rect inner_rect;
@@ -28,7 +28,7 @@ TEST(ClearForOpaqueRasterTest, NoTransform) {
 
 TEST(ClearForOpaqueRasterTest, WithTranslation) {
   const gfx::Vector2dF translation(0.3f, 0.7f);
-  const gfx::SizeF scale(1, 1);
+  const gfx::Vector2dF scale(1, 1);
   const gfx::Size content_size(100, 100);
   const gfx::Rect bitmap_rect(content_size);
   gfx::Rect inner_rect;
@@ -73,7 +73,7 @@ TEST(ClearForOpaqueRasterTest, WithTranslation) {
 
 TEST(ClearForOpaqueRasterTest, WithScale) {
   const gfx::Vector2dF translation;
-  const gfx::SizeF scale(1.5f, 1.5f);
+  const gfx::Vector2dF scale(1.5f, 1.5f);
   const gfx::Size content_size(100, 100);
   const gfx::Rect bitmap_rect(content_size);
   gfx::Rect inner_rect;
@@ -118,7 +118,7 @@ TEST(ClearForOpaqueRasterTest, WithScale) {
 
 TEST(ClearForOpaqueRasterTest, WithTranslationAndScale) {
   const gfx::Vector2dF translation(0.3f, 0.7f);
-  const gfx::SizeF scale(1.5f, 1.5f);
+  const gfx::Vector2dF scale(1.5f, 1.5f);
   const gfx::Size content_size(100, 100);
   const gfx::Rect bitmap_rect(content_size);
   gfx::Rect inner_rect;

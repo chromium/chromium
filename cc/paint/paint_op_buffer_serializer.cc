@@ -178,9 +178,8 @@ void PaintOpBufferSerializer::SerializePreamble(
     SerializeOp(&translate_op, nullptr, params);
   }
 
-  if (preamble.post_scale.width() != 1.f ||
-      preamble.post_scale.height() != 1.f) {
-    ScaleOp scale_op(preamble.post_scale.width(), preamble.post_scale.height());
+  if (preamble.post_scale.x() != 1.f || preamble.post_scale.y() != 1.f) {
+    ScaleOp scale_op(preamble.post_scale.x(), preamble.post_scale.y());
     SerializeOp(&scale_op, nullptr, params);
   }
 

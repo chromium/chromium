@@ -1214,7 +1214,7 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
   preamble.full_raster_rect = full_raster_rect;
   preamble.playback_rect = playback_rect;
   preamble.post_translation = post_translate;
-  preamble.post_scale = gfx::SizeF(post_scale.x(), post_scale.y());
+  preamble.post_scale = post_scale;
   preamble.requires_clear = requires_clear;
   preamble.background_color = raster_properties_->background_color;
 

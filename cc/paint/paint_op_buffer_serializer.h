@@ -5,6 +5,9 @@
 #ifndef CC_PAINT_PAINT_OP_BUFFER_SERIALIZER_H_
 #define CC_PAINT_PAINT_OP_BUFFER_SERIALIZER_H_
 
+#include <memory>
+#include <vector>
+
 #include "cc/paint/paint_op_buffer.h"
 
 #include "third_party/skia/src/core/SkRemoteGlyphCache.h"
@@ -36,7 +39,7 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
     gfx::Rect playback_rect;
     // The translation and scale to do after
     gfx::Vector2dF post_translation;
-    gfx::SizeF post_scale = gfx::SizeF(1.f, 1.f);
+    gfx::Vector2dF post_scale = gfx::Vector2dF(1.f, 1.f);
     // If requires_clear is true, then this will raster will be cleared to
     // transparent.  If false, it assumes that the content will raster
     // opaquely up to content_size inset by 1 (with the last pixel being
