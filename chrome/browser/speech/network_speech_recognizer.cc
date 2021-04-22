@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -25,12 +24,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
 #include "ui/accessibility/accessibility_switches.h"
-
-// Length of timeout to cancel recognition if there's no speech heard.
-static const int kNoSpeechTimeoutInSeconds = 5;
-
-// Length of timeout to cancel recognition if no different results are received.
-static const int kNoNewSpeechTimeoutInSeconds = 2;
 
 // Invalid speech session.
 static const int kInvalidSessionId = -1;
@@ -68,12 +61,6 @@ class NetworkSpeechRecognizer::EventListener
 
   void NotifyRecognitionStateChanged(SpeechRecognizerStatus new_state);
 
-  // Starts a timer for |timeout_seconds|. When the timer expires, will stop
-  // capturing audio and get a final utterance from the recognition manager.
-  void StartSpeechTimeout(int timeout_seconds);
-  void StopSpeechTimeout();
-  void SpeechTimeout();
-
   // Overridden from content::SpeechRecognitionEventListener:
   // These are always called on the IO thread.
   void OnRecognitionStart(int session_id) override;
@@ -104,7 +91,6 @@ class NetworkSpeechRecognizer::EventListener
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   const std::string accept_language_;
   std::string locale_;
-  base::OneShotTimer speech_timeout_;
   int session_;
   std::u16string last_result_str_;
 
@@ -132,7 +118,6 @@ NetworkSpeechRecognizer::EventListener::EventListener(
 NetworkSpeechRecognizer::EventListener::~EventListener() {
   // No more callbacks when we are deleting.
   delegate_.reset();
-  DCHECK(!speech_timeout_.IsRunning());
   if (session_ != kInvalidSessionId) {
     // Ensure the session is aborted.
     int session = session_;
@@ -188,7 +173,6 @@ void NetworkSpeechRecognizer::EventListener::StopOnIOThread() {
   // Prevent recursion.
   int session = session_;
   session_ = kInvalidSessionId;
-  StopSpeechTimeout();
   content::SpeechRecognitionManager::GetInstance()->StopAudioCaptureForSession(
       session);
   // Since we no longer have access to this session ID, end the session
@@ -203,26 +187,6 @@ void NetworkSpeechRecognizer::EventListener::NotifyRecognitionStateChanged(
       FROM_HERE,
       base::BindOnce(&SpeechRecognizerDelegate::OnSpeechRecognitionStateChanged,
                      delegate_, new_state));
-}
-
-void NetworkSpeechRecognizer::EventListener::StartSpeechTimeout(
-    int timeout_seconds) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  speech_timeout_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(timeout_seconds),
-      base::BindOnce(&NetworkSpeechRecognizer::EventListener::SpeechTimeout,
-                     this));
-}
-
-void NetworkSpeechRecognizer::EventListener::StopSpeechTimeout() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  speech_timeout_.Stop();
-}
-
-void NetworkSpeechRecognizer::EventListener::SpeechTimeout() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  StopOnIOThread();
-  NotifyRecognitionStateChanged(SPEECH_RECOGNIZER_READY);
 }
 
 void NetworkSpeechRecognizer::EventListener::OnRecognitionStart(
@@ -255,14 +219,6 @@ void NetworkSpeechRecognizer::EventListener::OnRecognitionResults(
                      result_str, final_count == results.size(),
                      base::nullopt /* word offsets */));
 
-  // Restart the timer when we have a final result. If we receive any new or
-  // changed text, restart the timer to give the user more time to speak. (The
-  // timer is recording the amount of time since the most recent utterance.)
-  if (final_count == results.size())
-    StartSpeechTimeout(kNoSpeechTimeoutInSeconds);
-  else if (result_str != last_result_str_)
-    StartSpeechTimeout(kNoNewSpeechTimeoutInSeconds);
-
   last_result_str_ = result_str;
 }
 
@@ -277,7 +233,6 @@ void NetworkSpeechRecognizer::EventListener::OnRecognitionError(
 }
 
 void NetworkSpeechRecognizer::EventListener::OnSoundStart(int session_id) {
-  StartSpeechTimeout(kNoSpeechTimeoutInSeconds);
   NotifyRecognitionStateChanged(SPEECH_RECOGNIZER_IN_SPEECH);
 }
 

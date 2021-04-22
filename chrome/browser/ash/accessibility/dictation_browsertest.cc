@@ -8,6 +8,7 @@
 
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/soda_installer_impl_chromeos.h"
@@ -30,6 +31,9 @@ namespace {
 const char kFirstSpeechResult[] = "help";
 const char kSecondSpeechResult[] = "help oh";
 const char kFinalSpeechResult[] = "hello world";
+const int kNoSpeechTimeoutInSeconds = 10;
+const int kShortNoSpeechTimeoutInSeconds = 5;
+const int kVeryShortNoSpeechTimeoutInSeconds = 2;
 
 }  // namespace
 
@@ -166,6 +170,24 @@ class DictationTest : public InProcessBrowserTest,
            GetManager()->dictation_->current_state_ == SPEECH_RECOGNIZER_OFF;
   }
 
+  base::OneShotTimer* GetTimer() {
+    if (!GetManager()->dictation_)
+      return nullptr;
+    return &(GetManager()->dictation_->speech_timeout_);
+  }
+
+  base::TimeDelta GetNoSpeechTimeout() {
+    return base::TimeDelta::FromSeconds(GetParam().second == kNetworkRecognition
+                                            ? kShortNoSpeechTimeoutInSeconds
+                                            : kNoSpeechTimeoutInSeconds);
+  }
+
+  base::TimeDelta GetNoNewSpeechTimeout() {
+    return base::TimeDelta::FromSeconds(GetParam().second == kNetworkRecognition
+                                            ? kVeryShortNoSpeechTimeoutInSeconds
+                                            : kShortNoSpeechTimeoutInSeconds);
+  }
+
   void ToggleDictation() {
     // We are trying to toggle on if Dictation is currently off.
     bool will_toggle_on = IsDictationOff();
@@ -231,6 +253,19 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEnds) {
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
   EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
             input_context_handler_->last_commit_text());
+
+  if (GetParam().first == kTestDefaultListening) {
+    EXPECT_TRUE(IsDictationOff());
+  } else {
+    EXPECT_FALSE(IsDictationOff());
+    base::OneShotTimer* timer = GetTimer();
+    ASSERT_TRUE(timer);
+    EXPECT_EQ(
+        timer->GetCurrentDelay(),
+        base::TimeDelta::FromSeconds(GetParam().second == kNetworkRecognition
+                                         ? kShortNoSpeechTimeoutInSeconds
+                                         : kNoSpeechTimeoutInSeconds));
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
@@ -250,6 +285,47 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
   SendSpeechResult(kFinalSpeechResult, true /* is_final */);
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
   EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
+            input_context_handler_->last_commit_text());
+
+  if (GetParam().first == kTestDefaultListening) {
+    EXPECT_TRUE(IsDictationOff());
+  } else {
+    EXPECT_FALSE(IsDictationOff());
+    base::OneShotTimer* timer = GetTimer();
+    ASSERT_TRUE(timer);
+    EXPECT_EQ(timer->GetCurrentDelay(), GetNoSpeechTimeout());
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithNoSpeech) {
+  ToggleDictation();
+  EXPECT_FALSE(IsDictationOff());
+  base::OneShotTimer* timer = GetTimer();
+  ASSERT_TRUE(timer);
+  EXPECT_EQ(timer->GetCurrentDelay(), GetNoSpeechTimeout());
+  // Firing the timer, which simluates waiting for some time with no events,
+  // should end dictation.
+  timer->FireNow();
+  EXPECT_TRUE(IsDictationOff());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithoutFinalizedSpeech) {
+  ToggleDictation();
+  EXPECT_FALSE(IsDictationOff());
+  SendSpeechResult(kFirstSpeechResult, false /* is_final */);
+  base::OneShotTimer* timer = GetTimer();
+  ASSERT_TRUE(timer);
+  // If this is the test with continuous listening, use the normal timeout,
+  // otherwise use the shorter timeout for no new speech.
+  EXPECT_EQ(timer->GetCurrentDelay(), GetParam().first == kTestDefaultListening
+                                          ? GetNoNewSpeechTimeout()
+                                          : GetNoSpeechTimeout());
+  // Firing the timer, which simluates waiting for some time without new speech,
+  // should end dictation.
+  timer->FireNow();
+  EXPECT_TRUE(IsDictationOff());
+  EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
+  EXPECT_EQ(base::ASCIIToUTF16(kFirstSpeechResult),
             input_context_handler_->last_commit_text());
 }
 

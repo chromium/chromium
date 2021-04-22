@@ -7,6 +7,7 @@
 #include "ash/components/audio/sounds.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/network_speech_recognizer.h"
@@ -26,6 +27,18 @@
 
 namespace ash {
 namespace {
+
+// Length of timeout to cancel recognition if there's no speech heard.
+static const base::TimeDelta kNetworkNoSpeechTimeout =
+    base::TimeDelta::FromSeconds(5);
+static const base::TimeDelta kDeviceNoSpeechTimeout =
+    base::TimeDelta::FromSeconds(10);
+
+// Length of timeout to cancel recognition if no different results are received.
+static const base::TimeDelta kNetworkNoNewSpeechTimeout =
+    base::TimeDelta::FromSeconds(2);
+static const base::TimeDelta kDeviceNoNewSpeechTimeout =
+    base::TimeDelta::FromSeconds(5);
 
 const char kDefaultProfileLanguage[] = "en-US";
 
@@ -63,7 +76,9 @@ ui::IMEInputContextHandlerInterface* GetInputContext() {
 Dictation::Dictation(Profile* profile)
     : current_state_(SPEECH_RECOGNIZER_OFF),
       composition_(std::make_unique<ui::CompositionText>()),
-      profile_(profile) {
+      profile_(profile),
+      no_speech_timeout_(kNetworkNoSpeechTimeout),
+      no_new_speech_timeout_(kNetworkNoNewSpeechTimeout) {
   if (GetInputContext() && GetInputContext()->GetInputMethod())
     GetInputContext()->GetInputMethod()->AddObserver(this);
 }
@@ -89,6 +104,8 @@ bool Dictation::OnToggleDictation() {
         /*recognition_mode_ime=*/true);
     base::UmaHistogramBoolean("Accessibility.CrosDictation.UsedOnDeviceSpeech",
                               true);
+    no_speech_timeout_ = kDeviceNoSpeechTimeout;
+    no_new_speech_timeout_ = kDeviceNoNewSpeechTimeout;
   } else {
     speech_recognizer_ = std::make_unique<NetworkSpeechRecognizer>(
         weak_ptr_factory_.GetWeakPtr(),
@@ -98,6 +115,8 @@ bool Dictation::OnToggleDictation() {
         language);
     base::UmaHistogramBoolean("Accessibility.CrosDictation.UsedOnDeviceSpeech",
                               false);
+    no_speech_timeout_ = kNetworkNoSpeechTimeout;
+    no_new_speech_timeout_ = kNetworkNoNewSpeechTimeout;
   }
   return true;
 }
@@ -120,7 +139,16 @@ void Dictation::OnSpeechResult(
     composition_->text = transcription;
   }
 
-  if (!is_final) {
+  // Restart the timer when we have a final result. If we receive any new or
+  // changed text, restart the timer to give the user more time to speak. (The
+  // timer is recording the amount of time since the most recent utterance.)
+  if (is_final) {
+    StartSpeechTimeout(no_speech_timeout_);
+  } else {
+    StartSpeechTimeout(
+        switches::IsExperimentalAccessibilityDictationListeningEnabled()
+            ? no_speech_timeout_
+            : no_new_speech_timeout_);
     // If ChromeVox is enabled, we don't want to show intermediate results
     if (AccessibilityManager::Get()->IsSpokenFeedbackEnabled())
       return;
@@ -146,6 +174,9 @@ void Dictation::OnSpeechRecognitionStateChanged(
   if (new_state == SPEECH_RECOGNIZER_RECOGNIZING) {
     // If we are starting to listen to audio, play a tone for the user.
     audio::SoundsManager::Get()->Play(static_cast<int>(Sound::kDictationStart));
+    // Start a timeout to ensure if no speech happens we will eventually turn
+    // ourselves off.
+    StartSpeechTimeout(no_speech_timeout_);
   } else if (new_state == SPEECH_RECOGNIZER_ERROR) {
     DictationOff();
     next_state = SPEECH_RECOGNIZER_OFF;
@@ -177,6 +208,7 @@ void Dictation::OnTextInputStateChanged(const ui::TextInputClient* client) {
 
 void Dictation::DictationOff() {
   current_state_ = SPEECH_RECOGNIZER_OFF;
+  StopSpeechTimeout();
   if (!speech_recognizer_)
     return;
 
@@ -207,6 +239,20 @@ void Dictation::CommitCurrentText() {
   }
 
   composition_->text = std::u16string();
+}
+
+void Dictation::StartSpeechTimeout(base::TimeDelta timeout_duration) {
+  speech_timeout_.Start(FROM_HERE, timeout_duration,
+                        base::BindOnce(&Dictation::OnSpeechTimeout,
+                                       weak_ptr_factory_.GetWeakPtr()));
+}
+
+void Dictation::StopSpeechTimeout() {
+  speech_timeout_.Stop();
+}
+
+void Dictation::OnSpeechTimeout() {
+  DictationOff();
 }
 
 }  // namespace ash

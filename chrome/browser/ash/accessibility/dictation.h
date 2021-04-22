@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
 #include "content/public/browser/speech_recognition_session_preamble.h"
 #include "ui/base/ime/input_method_observer.h"
@@ -54,6 +55,12 @@ class Dictation : public SpeechRecognizerDelegate,
   void OnFocus() override {}
   void OnBlur() override {}
 
+  // Starts a timer for |timeout_duration|. When the timer expires, will stop
+  // capturing audio and finalize any pending utterances.
+  void StartSpeechTimeout(base::TimeDelta timeout_duration);
+  void StopSpeechTimeout();
+  void OnSpeechTimeout();
+
   // Saves current dictation result and stops listening.
   void DictationOff();
 
@@ -67,6 +74,10 @@ class Dictation : public SpeechRecognizerDelegate,
   std::unique_ptr<ui::CompositionText> composition_;
 
   Profile* profile_;
+
+  base::OneShotTimer speech_timeout_;
+  base::TimeDelta no_speech_timeout_;
+  base::TimeDelta no_new_speech_timeout_;
 
   base::WeakPtrFactory<Dictation> weak_ptr_factory_{this};
 
