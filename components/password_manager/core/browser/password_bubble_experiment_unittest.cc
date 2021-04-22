@@ -46,8 +46,8 @@ class PasswordManagerPasswordBubbleExperimentTest : public testing::Test {
                                        CustomPassphraseState passphrase_state) {
     sync_service()->SetPreferredDataTypes({type});
     sync_service()->SetActiveDataTypes({type});
-    sync_service()->SetIsUsingSecondaryPassphrase(passphrase_state ==
-                                                  CustomPassphraseState::SET);
+    sync_service()->SetIsUsingExplicitPassphrase(passphrase_state ==
+                                                 CustomPassphraseState::SET);
   }
 
  private:

@@ -57,7 +57,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @interface SyncEncryptionTableViewController () <SyncObserverModelBridge,
                                                  SettingsControllerProtocol> {
   std::unique_ptr<SyncObserverBridge> _syncObserver;
-  BOOL _isUsingSecondaryPassphrase;
+  BOOL _isUsingExplicitPassphrase;
 }
 
 @property(nonatomic, assign, readonly) Browser* browser;
@@ -78,9 +78,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
     self.title = l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_TITLE);
     syncer::SyncService* syncService =
         ProfileSyncServiceFactory::GetForBrowserState(browserState);
-    _isUsingSecondaryPassphrase =
+    _isUsingExplicitPassphrase =
         syncService->IsEngineInitialized() &&
-        syncService->GetUserSettings()->IsUsingSecondaryPassphrase();
+        syncService->GetUserSettings()->IsUsingExplicitPassphrase();
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
   }
   return self;
@@ -105,7 +105,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:[self passphraseItem]
       toSectionWithIdentifier:SectionIdentifierEncryption];
 
-  if (_isUsingSecondaryPassphrase) {
+  if (_isUsingExplicitPassphrase) {
     [model setFooter:[self footerItem]
         forSectionWithIdentifier:SectionIdentifierEncryption];
   }
@@ -119,8 +119,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSString* text = l10n_util::GetNSString(IDS_SYNC_BASIC_ENCRYPTION_DATA);
   return [self itemWithType:ItemTypeAccount
                        text:text
-                    checked:!_isUsingSecondaryPassphrase
-                    enabled:!_isUsingSecondaryPassphrase];
+                    checked:!_isUsingExplicitPassphrase
+                    enabled:!_isUsingExplicitPassphrase];
 }
 
 // Returns a passphrase item.
@@ -129,8 +129,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSString* text = l10n_util::GetNSString(IDS_SYNC_FULL_ENCRYPTION_DATA);
   return [self itemWithType:ItemTypePassphrase
                        text:text
-                    checked:_isUsingSecondaryPassphrase
-                    enabled:!_isUsingSecondaryPassphrase];
+                    checked:_isUsingExplicitPassphrase
+                    enabled:!_isUsingExplicitPassphrase];
 }
 
 // Returns a footer item with a link.
@@ -177,7 +177,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       syncer::SyncService* service =
           ProfileSyncServiceFactory::GetForBrowserState(browserState);
       if (service->IsEngineInitialized() &&
-          !service->GetUserSettings()->IsUsingSecondaryPassphrase()) {
+          !service->GetUserSettings()->IsUsingExplicitPassphrase()) {
         SyncCreatePassphraseTableViewController* controller =
             [[SyncCreatePassphraseTableViewController alloc]
                 initWithBrowser:self.browser];
@@ -221,11 +221,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   syncer::SyncService* service =
       ProfileSyncServiceFactory::GetForBrowserState(browserState);
-  BOOL isNowUsingSecondaryPassphrase =
+  BOOL isNowUsingExplicitPassphrase =
       service->IsEngineInitialized() &&
-      service->GetUserSettings()->IsUsingSecondaryPassphrase();
-  if (_isUsingSecondaryPassphrase != isNowUsingSecondaryPassphrase) {
-    _isUsingSecondaryPassphrase = isNowUsingSecondaryPassphrase;
+      service->GetUserSettings()->IsUsingExplicitPassphrase();
+  if (_isUsingExplicitPassphrase != isNowUsingExplicitPassphrase) {
+    _isUsingExplicitPassphrase = isNowUsingExplicitPassphrase;
     [self reloadData];
   }
 }

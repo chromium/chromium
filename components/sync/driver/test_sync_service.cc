@@ -128,8 +128,8 @@ void TestSyncService::SetTrustedVaultRecoverabilityDegraded(bool degraded) {
   user_settings_.SetTrustedVaultRecoverabilityDegraded(degraded);
 }
 
-void TestSyncService::SetIsUsingSecondaryPassphrase(bool enabled) {
-  user_settings_.SetIsUsingSecondaryPassphrase(enabled);
+void TestSyncService::SetIsUsingExplicitPassphrase(bool enabled) {
+  user_settings_.SetIsUsingExplicitPassphrase(enabled);
 }
 
 void TestSyncService::FireStateChanged() {

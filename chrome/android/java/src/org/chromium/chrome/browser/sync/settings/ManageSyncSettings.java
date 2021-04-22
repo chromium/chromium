@@ -563,12 +563,12 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         }
 
         boolean isAllDataEncrypted = mProfileSyncService.isEncryptEverythingEnabled();
-        boolean isUsingSecondaryPassphrase = mProfileSyncService.isUsingSecondaryPassphrase();
+        boolean isUsingExplicitPassphrase = mProfileSyncService.isUsingExplicitPassphrase();
 
         // The passphrase type should only ever be selected if the account doesn't have
         // full encryption enabled. Otherwise both options should be disabled.
         assert !isAllDataEncrypted;
-        assert !isUsingSecondaryPassphrase;
+        assert !isUsingExplicitPassphrase;
         displayCustomPassphraseDialog();
     }
 

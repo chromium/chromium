@@ -5186,7 +5186,7 @@ others/histograms.xml -->
   <int value="3"
       label="Sync service missing AUTOFILL_PROFILE active data type"/>
   <int value="4" label="Account wallet storage upload disabled"/>
-  <int value="5" label="User has a secondary sync passphrase"/>
+  <int value="5" label="User has an explicit sync passphrase"/>
   <int value="6" label="Local sync is enabled"/>
   <int value="7" label="Payments integration user setting is disabled"/>
   <int value="8" label="User email is empty"/>

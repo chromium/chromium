@@ -74,7 +74,7 @@ password_manager::SyncState GetPasswordSyncState(
   }
 
   if (sync_service->IsSyncFeatureActive()) {
-    return sync_service->GetUserSettings()->IsUsingSecondaryPassphrase()
+    return sync_service->GetUserSettings()->IsUsingExplicitPassphrase()
                ? password_manager::SyncState::kSyncingWithCustomPassphrase
                : password_manager::SyncState::kSyncingNormalEncryption;
   }

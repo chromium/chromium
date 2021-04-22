@@ -59,7 +59,7 @@ public class PasswordManagerLauncher {
             return false;
         }
 
-        if (profileSyncService.isUsingSecondaryPassphrase()) return false;
+        if (profileSyncService.isUsingExplicitPassphrase()) return false;
 
         return true;
     }

@@ -546,7 +546,7 @@ void PeopleHandler::HandleSetEncryptionPassphrase(const base::ListValue* args) {
     successfully_set = false;
   } else if (!sync_user_settings->IsEncryptEverythingAllowed()) {
     successfully_set = false;
-  } else if (sync_user_settings->IsUsingSecondaryPassphrase()) {
+  } else if (sync_user_settings->IsUsingExplicitPassphrase()) {
     // In case a passphrase is already being used, changing to a new one isn't
     // currently supported (one must reset all the Sync data).
     successfully_set = false;

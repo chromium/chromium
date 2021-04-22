@@ -54,7 +54,7 @@ base::FilePath GetLoginDatabaseForAccountStoragePathForTesting(
 // It checks whether the user
 // 1) has password syncing across multiple devices enabled
 //    (first setup must be completed)
-// 2) does not have secondary passphrase set.
+// 2) does not have explicit passphrase set.
 // Failure to meet both of those requirements results in preventing Chrome from
 // sending requests to Google Affiliation Service API.
 bool ShouldAffiliationBasedMatchingBeActive(syncer::SyncService* sync_service);

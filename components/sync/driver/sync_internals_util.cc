@@ -549,7 +549,7 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   // Encryption.
   if (service->IsSyncFeatureActive()) {
     is_using_explicit_passphrase->Set(
-        service->GetUserSettings()->IsUsingSecondaryPassphrase());
+        service->GetUserSettings()->IsUsingExplicitPassphrase());
     is_passphrase_required->Set(
         service->GetUserSettings()->IsPassphraseRequired());
     passphrase_time->Set(

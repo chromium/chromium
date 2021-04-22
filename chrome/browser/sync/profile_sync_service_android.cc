@@ -300,11 +300,11 @@ ProfileSyncServiceAndroid::IsTrustedVaultKeyRequiredForPreferredDataTypes(
       ->IsTrustedVaultKeyRequiredForPreferredDataTypes();
 }
 
-jboolean ProfileSyncServiceAndroid::IsUsingSecondaryPassphrase(
+jboolean ProfileSyncServiceAndroid::IsUsingExplicitPassphrase(
     JNIEnv* env,
     const JavaParamRef<jobject>&) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return sync_service_->GetUserSettings()->IsUsingSecondaryPassphrase();
+  return sync_service_->GetUserSettings()->IsUsingExplicitPassphrase();
 }
 
 jint ProfileSyncServiceAndroid::GetPassphraseType(

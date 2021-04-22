@@ -419,7 +419,7 @@ void ArcAppPerformanceTracing::MaybeStartTracing() {
   const syncer::SyncUserSettings* sync_user_settings =
       ProfileSyncServiceFactory::GetForProfile(profile)->GetUserSettings();
 
-  if (sync_user_settings->IsUsingSecondaryPassphrase()) {
+  if (sync_user_settings->IsUsingExplicitPassphrase()) {
     VLOG(1) << "Cannot trace: User has a sync passphrase.";
     return;
   }

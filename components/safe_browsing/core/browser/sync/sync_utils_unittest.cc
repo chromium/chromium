@@ -61,7 +61,7 @@ TEST_F(SyncUtilsTest, AreSigninAndSyncSetUpForSafeBrowsingTokenFetches_Sync) {
   // Custom passphrase is enabled.
   sync_service.GetUserSettings()->SetSelectedTypes(
       false, {syncer::UserSelectableType::kHistory});
-  sync_service.SetIsUsingSecondaryPassphrase(true);
+  sync_service.SetIsUsingExplicitPassphrase(true);
   EXPECT_FALSE(SyncUtils::AreSigninAndSyncSetUpForSafeBrowsingTokenFetches(
       &sync_service, identity_manager,
       /* user_has_enabled_enhanced_protection=*/true));

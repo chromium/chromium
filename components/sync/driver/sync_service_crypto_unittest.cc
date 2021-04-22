@@ -321,7 +321,7 @@ TEST_F(SyncServiceCryptoTest, ShouldSetUpNewCustomPassphrase) {
 
   crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
   ASSERT_FALSE(crypto_.IsPassphraseRequired());
-  ASSERT_FALSE(crypto_.IsUsingSecondaryPassphrase());
+  ASSERT_FALSE(crypto_.IsUsingExplicitPassphrase());
   ASSERT_FALSE(crypto_.IsEncryptEverythingEnabled());
   ASSERT_THAT(crypto_.GetPassphraseType(),
               Ne(PassphraseType::kCustomPassphrase));
@@ -345,7 +345,7 @@ TEST_F(SyncServiceCryptoTest, ShouldSetUpNewCustomPassphrase) {
   EXPECT_TRUE(crypto_.IsEncryptEverythingEnabled());
   ASSERT_THAT(crypto_.GetPassphraseType(),
               Eq(PassphraseType::kCustomPassphrase));
-  EXPECT_TRUE(crypto_.IsUsingSecondaryPassphrase());
+  EXPECT_TRUE(crypto_.IsUsingExplicitPassphrase());
 }
 
 TEST_F(SyncServiceCryptoTest, ShouldExposePassphraseRequired) {

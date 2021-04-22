@@ -491,7 +491,7 @@ class AffiliationChangePasswordNavigationThrottleBrowserTest
     feature_list_.InitAndEnableFeature(
         password_manager::features::kChangePasswordAffiliationInfo);
     sync_service_.SetFirstSetupComplete(true);
-    sync_service_.SetIsUsingSecondaryPassphrase(false);
+    sync_service_.SetIsUsingExplicitPassphrase(false);
   }
 
   void SetUpOnMainThread() override;

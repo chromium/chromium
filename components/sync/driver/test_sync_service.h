@@ -49,7 +49,7 @@ class TestSyncService : public SyncService {
   void SetTrustedVaultKeyRequired(bool required);
   void SetTrustedVaultKeyRequiredForPreferredDataTypes(bool required);
   void SetTrustedVaultRecoverabilityDegraded(bool degraded);
-  void SetIsUsingSecondaryPassphrase(bool enabled);
+  void SetIsUsingExplicitPassphrase(bool enabled);
 
   void FireStateChanged();
   void FireSyncCycleCompleted();

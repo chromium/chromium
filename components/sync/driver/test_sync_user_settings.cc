@@ -136,7 +136,7 @@ bool TestSyncUserSettings::IsEncryptEverythingEnabled() const {
 }
 
 ModelTypeSet TestSyncUserSettings::GetEncryptedDataTypes() const {
-  if (!IsUsingSecondaryPassphrase()) {
+  if (!IsUsingExplicitPassphrase()) {
     // PASSWORDS and WIFI_CONFIGURATIONS are always encrypted.
     return ModelTypeSet(PASSWORDS, WIFI_CONFIGURATIONS);
   }
@@ -175,8 +175,8 @@ bool TestSyncUserSettings::IsTrustedVaultRecoverabilityDegraded() const {
   return trusted_vault_recoverability_degraded_;
 }
 
-bool TestSyncUserSettings::IsUsingSecondaryPassphrase() const {
-  return using_secondary_passphrase_;
+bool TestSyncUserSettings::IsUsingExplicitPassphrase() const {
+  return using_explicit_passphrase_;
 }
 
 base::Time TestSyncUserSettings::GetExplicitPassphraseTime() const {
@@ -184,8 +184,8 @@ base::Time TestSyncUserSettings::GetExplicitPassphraseTime() const {
 }
 
 PassphraseType TestSyncUserSettings::GetPassphraseType() const {
-  return IsUsingSecondaryPassphrase() ? PassphraseType::kCustomPassphrase
-                                      : PassphraseType::kImplicitPassphrase;
+  return IsUsingExplicitPassphrase() ? PassphraseType::kCustomPassphrase
+                                     : PassphraseType::kImplicitPassphrase;
 }
 
 void TestSyncUserSettings::SetEncryptionPassphrase(
@@ -227,8 +227,8 @@ void TestSyncUserSettings::SetTrustedVaultRecoverabilityDegraded(
   trusted_vault_recoverability_degraded_ = degraded;
 }
 
-void TestSyncUserSettings::SetIsUsingSecondaryPassphrase(bool enabled) {
-  using_secondary_passphrase_ = enabled;
+void TestSyncUserSettings::SetIsUsingExplicitPassphrase(bool enabled) {
+  using_explicit_passphrase_ = enabled;
 }
 
 }  // namespace syncer

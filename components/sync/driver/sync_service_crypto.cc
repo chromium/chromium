@@ -249,7 +249,7 @@ bool SyncServiceCrypto::IsPassphraseRequired() const {
   return false;
 }
 
-bool SyncServiceCrypto::IsUsingSecondaryPassphrase() const {
+bool SyncServiceCrypto::IsUsingExplicitPassphrase() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsExplicitPassphrase(state_.cached_passphrase_type);
 }

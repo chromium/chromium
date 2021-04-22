@@ -376,7 +376,7 @@ bool ProfileSyncServiceHarness::StartSyncService() {
   }
   DVLOG(1) << "Engine Initialized successfully.";
 
-  if (service()->GetUserSettings()->IsUsingSecondaryPassphrase()) {
+  if (service()->GetUserSettings()->IsUsingExplicitPassphrase()) {
     LOG(ERROR) << "A passphrase is required for decryption. Sync cannot proceed"
                   " until SetDecryptionPassphrase is called.";
     return false;

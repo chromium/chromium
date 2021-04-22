@@ -101,7 +101,7 @@ const CGFloat kSpinnerButtonPadding = 18;
     syncer::SyncService* service =
         ProfileSyncServiceFactory::GetForBrowserState(browserState);
     if (service->IsEngineInitialized() &&
-        service->GetUserSettings()->IsUsingSecondaryPassphrase()) {
+        service->GetUserSettings()->IsUsingExplicitPassphrase()) {
       base::Time passphrase_time =
           service->GetUserSettings()->GetExplicitPassphraseTime();
       if (!passphrase_time.is_null()) {
@@ -495,7 +495,7 @@ const CGFloat kSpinnerButtonPadding = 18;
 
   // Checking if the operation succeeded.
   if (!service->GetUserSettings()->IsPassphraseRequired() &&
-      (service->GetUserSettings()->IsUsingSecondaryPassphrase() ||
+      (service->GetUserSettings()->IsUsingExplicitPassphrase() ||
        [self forDecryption])) {
     _syncObserver.reset();
     SettingsNavigationController* settingsNavigationController =

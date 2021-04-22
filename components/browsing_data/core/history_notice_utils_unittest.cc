@@ -74,13 +74,13 @@ TEST_F(HistoryNoticeUtilsTest, SyncingWithWrongParameters) {
 
   // ...the response is false if there's custom passphrase...
   sync_service()->SetActiveDataTypes(syncer::ModelTypeSet::All());
-  sync_service()->SetIsUsingSecondaryPassphrase(true);
+  sync_service()->SetIsUsingExplicitPassphrase(true);
   ExpectShouldPopupDialogAboutOtherFormsOfBrowsingHistoryWithResult(false);
 
   // ...or even if there's no custom passphrase, but we're not syncing history.
   syncer::ModelTypeSet only_passwords(syncer::PASSWORDS);
   sync_service()->SetActiveDataTypes(only_passwords);
-  sync_service()->SetIsUsingSecondaryPassphrase(false);
+  sync_service()->SetIsUsingExplicitPassphrase(false);
   ExpectShouldPopupDialogAboutOtherFormsOfBrowsingHistoryWithResult(false);
 }
 

@@ -64,7 +64,7 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   bool IsTrustedVaultKeyRequired() const override;
   bool IsTrustedVaultKeyRequiredForPreferredDataTypes() const override;
   bool IsTrustedVaultRecoverabilityDegraded() const override;
-  bool IsUsingSecondaryPassphrase() const override;
+  bool IsUsingExplicitPassphrase() const override;
   base::Time GetExplicitPassphraseTime() const override;
   PassphraseType GetPassphraseType() const override;
 

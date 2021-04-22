@@ -107,7 +107,7 @@ bool AutofillWalletModelTypeController::ShouldRunInTransportOnlyMode() const {
           autofill::features::kAutofillEnableAccountWalletStorage)) {
     return false;
   }
-  if (sync_service_->GetUserSettings()->IsUsingSecondaryPassphrase() &&
+  if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase() &&
       !base::FeatureList::IsEnabled(
           switches::kSyncAllowWalletDataInTransportModeWithCustomPassphrase)) {
     return false;

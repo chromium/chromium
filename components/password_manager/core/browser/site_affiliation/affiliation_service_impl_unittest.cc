@@ -74,7 +74,7 @@ class AffiliationServiceImplTest : public testing::Test {
   // Sets TestSyncService flags.
   void SetSyncServiceStates(bool is_setup_completed, bool is_passphrase_set) {
     sync_service()->SetFirstSetupComplete(is_setup_completed);
-    sync_service()->SetIsUsingSecondaryPassphrase(is_passphrase_set);
+    sync_service()->SetIsUsingExplicitPassphrase(is_passphrase_set);
   }
 
  private:
@@ -268,7 +268,7 @@ TEST_F(AffiliationServiceImplTest,
 TEST_F(AffiliationServiceImplTest,
        FetchRequiresCompleteSetupAndPassphraseDisabled) {
   // The only scenario when the StartRequest() should be called.
-  // Setup is completed and secondary passphrase feature is disabled.
+  // Setup is completed and explicit passphrase feature is disabled.
   SetSyncServiceStates(/*is_setup_completed=*/true,
                        /*is_passphrase_set=*/false);
 
@@ -285,7 +285,7 @@ TEST_F(AffiliationServiceImplTest,
   service()->PrefetchChangePasswordURLs(origins, base::DoNothing());
 }
 
-TEST_F(AffiliationServiceImplTest, SecondaryPassphraseSetPreventsFetch) {
+TEST_F(AffiliationServiceImplTest, ExplicitPassphraseSetPreventsFetch) {
   SetSyncServiceStates(/*is_setup_completed=*/true, /*is_passphrase_set=*/true);
 
   EXPECT_CALL(mock_fetcher_factory(), CreateInstance).Times(0);

@@ -47,7 +47,7 @@ class SyncEncryptionTableViewControllerTest
     syncer::TestSyncService* test_sync_service =
         static_cast<syncer::TestSyncService*>(
             ProfileSyncServiceFactory::GetForBrowserState(browserState));
-    test_sync_service->SetIsUsingSecondaryPassphrase(true);
+    test_sync_service->SetIsUsingExplicitPassphrase(true);
 
     CreateController();
   }

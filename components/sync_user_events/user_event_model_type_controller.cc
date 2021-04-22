@@ -44,7 +44,7 @@ void UserEventModelTypeController::Stop(syncer::ShutdownReason shutdown_reason,
 
 DataTypeController::PreconditionState
 UserEventModelTypeController::GetPreconditionState() const {
-  return sync_service_->GetUserSettings()->IsUsingSecondaryPassphrase()
+  return sync_service_->GetUserSettings()->IsUsingExplicitPassphrase()
              ? PreconditionState::kMustStopAndClearData
              : PreconditionState::kPreconditionsMet;
 }

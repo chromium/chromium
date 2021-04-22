@@ -43,7 +43,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // See the SyncService header.
   base::Time GetExplicitPassphraseTime() const;
   bool IsPassphraseRequired() const;
-  bool IsUsingSecondaryPassphrase() const;
+  bool IsUsingExplicitPassphrase() const;
   bool IsTrustedVaultKeyRequired() const;
   bool IsTrustedVaultRecoverabilityDegraded() const;
   bool IsEncryptEverythingEnabled() const;

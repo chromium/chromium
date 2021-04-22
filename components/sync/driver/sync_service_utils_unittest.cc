@@ -184,7 +184,7 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfCustomPassphraseInUse) {
 
   // Once a custom passphrase is in use, upload should be considered disabled:
   // Even if we're technically still uploading, Google can't inspect the data.
-  service.SetIsUsingSecondaryPassphrase(true);
+  service.SetIsUsingExplicitPassphrase(true);
 
   EXPECT_EQ(UploadState::NOT_ACTIVE,
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));

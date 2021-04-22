@@ -28,7 +28,7 @@ class MockSyncService : public syncer::TestSyncService {
   void SetStatus(bool has_passphrase, bool history_enabled, bool active) {
     SetTransportState(active ? TransportState::ACTIVE
                              : TransportState::INITIALIZING);
-    SetIsUsingSecondaryPassphrase(has_passphrase);
+    SetIsUsingExplicitPassphrase(has_passphrase);
     SetPreferredDataTypes(
         history_enabled
             ? syncer::ModelTypeSet(syncer::HISTORY_DELETE_DIRECTIVES)

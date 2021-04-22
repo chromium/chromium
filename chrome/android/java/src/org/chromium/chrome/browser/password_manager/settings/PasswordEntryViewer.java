@@ -218,7 +218,7 @@ public class PasswordEntryViewer
     private boolean isPasswordSyncingUser() {
         ProfileSyncService syncService = ProfileSyncService.get();
         return syncService != null && syncService.isSyncRequested()
-                && syncService.isEngineInitialized() && !syncService.isUsingSecondaryPassphrase();
+                && syncService.isEngineInitialized() && !syncService.isUsingExplicitPassphrase();
     }
 
     @Override

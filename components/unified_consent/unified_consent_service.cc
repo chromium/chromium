@@ -175,7 +175,7 @@ void UnifiedConsentService::UpdateSettingsForMigration() {
       sync_service_->IsSyncFeatureEnabled() &&
       sync_service_->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kHistory) &&
-      !sync_service_->GetUserSettings()->IsUsingSecondaryPassphrase();
+      !sync_service_->GetUserSettings()->IsUsingExplicitPassphrase();
   SetUrlKeyedAnonymizedDataCollectionEnabled(url_keyed_metrics_enabled);
 }
 

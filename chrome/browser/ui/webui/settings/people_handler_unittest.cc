@@ -666,7 +666,7 @@ TEST_F(PeopleHandlerTest, EnterCorrectExistingPassphrase) {
           IsTrustedVaultKeyRequired())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsUsingSecondaryPassphrase())
+          IsUsingExplicitPassphrase())
       .WillByDefault(Return(true));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
           IsEncryptEverythingAllowed())
@@ -695,7 +695,7 @@ TEST_F(PeopleHandlerTest, SuccessfullyCreateCustomPassphrase) {
           IsTrustedVaultKeyRequired())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsUsingSecondaryPassphrase())
+          IsUsingExplicitPassphrase())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
           IsEncryptEverythingAllowed())
@@ -723,7 +723,7 @@ TEST_F(PeopleHandlerTest, EnterWrongExistingPassphrase) {
           IsTrustedVaultKeyRequired())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsUsingSecondaryPassphrase())
+          IsUsingExplicitPassphrase())
       .WillByDefault(Return(true));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
           IsEncryptEverythingAllowed())
@@ -752,7 +752,7 @@ TEST_F(PeopleHandlerTest, CannotCreateBlankPassphrase) {
           IsTrustedVaultKeyRequired())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsUsingSecondaryPassphrase())
+          IsUsingExplicitPassphrase())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
           IsEncryptEverythingAllowed())
@@ -851,7 +851,7 @@ TEST_F(PeopleHandlerTest, ShowSyncSetup) {
   ON_CALL(*mock_sync_service_->GetMockUserSettings(), IsPassphraseRequired())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsUsingSecondaryPassphrase())
+          IsUsingExplicitPassphrase())
       .WillByDefault(Return(false));
   SetupInitializedSyncService();
   // This should display the sync setup dialog (not login).
@@ -867,7 +867,7 @@ TEST_F(PeopleHandlerTest, ShowSetupSyncEverything) {
   ON_CALL(*mock_sync_service_->GetMockUserSettings(), IsPassphraseRequired())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsUsingSecondaryPassphrase())
+          IsUsingExplicitPassphrase())
       .WillByDefault(Return(false));
   SetupInitializedSyncService();
   SetDefaultExpectationsForConfigPage();
@@ -898,7 +898,7 @@ TEST_F(PeopleHandlerTest, ShowSetupManuallySyncAll) {
   ON_CALL(*mock_sync_service_->GetMockUserSettings(), IsPassphraseRequired())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsUsingSecondaryPassphrase())
+          IsUsingExplicitPassphrase())
       .WillByDefault(Return(false));
   SetupInitializedSyncService();
   SetDefaultExpectationsForConfigPage();
@@ -918,7 +918,7 @@ TEST_F(PeopleHandlerTest, ShowSetupSyncForAllTypesIndividually) {
     ON_CALL(*mock_sync_service_->GetMockUserSettings(), IsPassphraseRequired())
         .WillByDefault(Return(false));
     ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-            IsUsingSecondaryPassphrase())
+            IsUsingExplicitPassphrase())
         .WillByDefault(Return(false));
     SetupInitializedSyncService();
     SetDefaultExpectationsForConfigPage();
@@ -1006,7 +1006,7 @@ TEST_F(PeopleHandlerTest, ShowSetupEncryptAll) {
   ON_CALL(*mock_sync_service_->GetMockUserSettings(), IsPassphraseRequired())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsUsingSecondaryPassphrase())
+          IsUsingExplicitPassphrase())
       .WillByDefault(Return(false));
   SetupInitializedSyncService();
   SetDefaultExpectationsForConfigPage();
@@ -1027,7 +1027,7 @@ TEST_F(PeopleHandlerTest, ShowSetupEncryptAllDisallowed) {
   ON_CALL(*mock_sync_service_->GetMockUserSettings(), IsPassphraseRequired())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsUsingSecondaryPassphrase())
+          IsUsingExplicitPassphrase())
       .WillByDefault(Return(false));
   SetupInitializedSyncService();
   SetDefaultExpectationsForConfigPage();
@@ -1054,7 +1054,7 @@ TEST_F(PeopleHandlerTest, CannotCreatePassphraseIfEncryptEverythingDisallowed) {
           IsTrustedVaultKeyRequired())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsUsingSecondaryPassphrase())
+          IsUsingExplicitPassphrase())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
           IsEncryptEverythingAllowed())
@@ -1083,7 +1083,7 @@ TEST_F(PeopleHandlerTest, CannotOverwritePassphraseWithNewOne) {
           IsTrustedVaultKeyRequired())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsUsingSecondaryPassphrase())
+          IsUsingExplicitPassphrase())
       .WillByDefault(Return(true));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
           IsEncryptEverythingAllowed())

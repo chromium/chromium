@@ -73,7 +73,7 @@ public class PasswordViewingTypeTest {
     public void testUserRedirectSyncSettings() {
         when(mProfileSyncService.isSyncRequested()).thenReturn(true);
         when(mProfileSyncService.isEngineInitialized()).thenReturn(true);
-        when(mProfileSyncService.isUsingSecondaryPassphrase()).thenReturn(false);
+        when(mProfileSyncService.isUsingExplicitPassphrase()).thenReturn(false);
 
         Assert.assertEquals(
                 PasswordSettings.class.getCanonicalName(), mPasswordsPref.getFragment());
@@ -88,7 +88,7 @@ public class PasswordViewingTypeTest {
     public void testSyncingNativePasswordView() {
         when(mProfileSyncService.isSyncRequested()).thenReturn(true);
         when(mProfileSyncService.isEngineInitialized()).thenReturn(true);
-        when(mProfileSyncService.isUsingSecondaryPassphrase()).thenReturn(true);
+        when(mProfileSyncService.isUsingExplicitPassphrase()).thenReturn(true);
 
         Assert.assertEquals(
                 PasswordSettings.class.getCanonicalName(), mPasswordsPref.getFragment());
@@ -103,7 +103,7 @@ public class PasswordViewingTypeTest {
     public void testNonSyncingNativePasswordView() {
         when(mProfileSyncService.isSyncRequested()).thenReturn(false);
         when(mProfileSyncService.isEngineInitialized()).thenReturn(false);
-        when(mProfileSyncService.isUsingSecondaryPassphrase()).thenReturn(false);
+        when(mProfileSyncService.isUsingExplicitPassphrase()).thenReturn(false);
 
         Assert.assertEquals(
                 PasswordSettings.class.getCanonicalName(), mPasswordsPref.getFragment());

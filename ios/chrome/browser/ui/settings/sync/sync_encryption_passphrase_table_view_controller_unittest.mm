@@ -189,10 +189,10 @@ TEST_F(SyncEncryptionPassphraseTableViewControllerTest,
   ON_CALL(*fake_sync_service_->GetMockUserSettings(), IsPassphraseRequired())
       .WillByDefault(Return(false));
   ON_CALL(*fake_sync_service_->GetMockUserSettings(),
-          IsUsingSecondaryPassphrase())
+          IsUsingExplicitPassphrase())
       .WillByDefault(Return(true));
   [sync_controller onSyncStateChanged];
-  // Calling -onStateChanged with an accepted secondary passphrase should
+  // Calling -onStateChanged with an accepted explicit passphrase should
   // cause the controller to be popped off the navigation stack.
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool() {

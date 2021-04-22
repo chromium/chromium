@@ -63,7 +63,7 @@ public class FakeProfileSyncService extends ProfileSyncService {
     }
 
     @Override
-    public boolean isUsingSecondaryPassphrase() {
+    public boolean isUsingExplicitPassphrase() {
         return true;
     }
 

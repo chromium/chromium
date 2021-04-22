@@ -119,7 +119,7 @@ bool ShouldAffiliationBasedMatchingBeActive(syncer::SyncService* sync_service) {
   return sync_service && sync_service->IsSyncFeatureActive() &&
          sync_service->GetUserSettings()->GetSelectedTypes().Has(
              syncer::UserSelectableType::kPasswords) &&
-         !sync_service->GetUserSettings()->IsUsingSecondaryPassphrase();
+         !sync_service->GetUserSettings()->IsUsingExplicitPassphrase();
 }
 
 }  // namespace password_manager

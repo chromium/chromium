@@ -43,7 +43,7 @@ bool SyncUtils::AreSigninAndSyncSetUpForSafeBrowsingTokenFetches(
          (syncer::GetUploadToGoogleState(
               sync_service, syncer::ModelType::HISTORY_DELETE_DIRECTIVES) ==
           syncer::UploadState::ACTIVE) &&
-         !sync_service->GetUserSettings()->IsUsingSecondaryPassphrase();
+         !sync_service->GetUserSettings()->IsUsingExplicitPassphrase();
 }
 
 // TODO(bdea): Migrate other SB classes that define this method to call the one

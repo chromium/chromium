@@ -224,7 +224,7 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
   // Make a navigation entry that will accept an annotation.
   void SetupNavigationForAnnotation() {
     syncer::TestSyncService* sync_service = SetupBasicTestSync();
-    sync_service->SetIsUsingSecondaryPassphrase(false);
+    sync_service->SetIsUsingExplicitPassphrase(false);
     metrics_enabled_ = true;
     NavigateAndCommit(GURL("about:blank"));
   }
@@ -317,7 +317,7 @@ TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
   syncer::TestSyncService* sync_service = SetupBasicTestSync();
 
   sync_service->SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
-  sync_service->SetIsUsingSecondaryPassphrase(false);
+  sync_service->SetIsUsingExplicitPassphrase(false);
 
   ChromePasswordManagerClient* client = GetClient();
 
@@ -326,7 +326,7 @@ TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
             client->GetPasswordSyncState());
 
   // Again, using a custom passphrase.
-  sync_service->SetIsUsingSecondaryPassphrase(true);
+  sync_service->SetIsUsingExplicitPassphrase(true);
 
   EXPECT_EQ(password_manager::SyncState::kSyncingWithCustomPassphrase,
             client->GetPasswordSyncState());
@@ -338,7 +338,7 @@ TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
             client->GetPasswordSyncState());
 
   // Again, without a custom passphrase.
-  sync_service->SetIsUsingSecondaryPassphrase(false);
+  sync_service->SetIsUsingExplicitPassphrase(false);
 
   EXPECT_EQ(password_manager::SyncState::kNotSyncing,
             client->GetPasswordSyncState());
@@ -597,7 +597,7 @@ TEST_F(ChromePasswordManagerClientTest, WebUINoLogging) {
 TEST_F(ChromePasswordManagerClientTest,
        AnnotateNavigationEntryWithMetricsNoCustom) {
   syncer::TestSyncService* sync_service = SetupBasicTestSync();
-  sync_service->SetIsUsingSecondaryPassphrase(false);
+  sync_service->SetIsUsingExplicitPassphrase(false);
   metrics_enabled_ = true;
 
   NavigateAndCommit(GURL("about:blank"));
@@ -612,7 +612,7 @@ TEST_F(ChromePasswordManagerClientTest,
 TEST_F(ChromePasswordManagerClientTest,
        AnnotateNavigationEntryNoMetricsNoCustom) {
   syncer::TestSyncService* sync_service = SetupBasicTestSync();
-  sync_service->SetIsUsingSecondaryPassphrase(false);
+  sync_service->SetIsUsingExplicitPassphrase(false);
   metrics_enabled_ = false;
 
   NavigateAndCommit(GURL("about:blank"));
@@ -627,7 +627,7 @@ TEST_F(ChromePasswordManagerClientTest,
 TEST_F(ChromePasswordManagerClientTest,
        AnnotateNavigationEntryWithMetricsWithCustom) {
   syncer::TestSyncService* sync_service = SetupBasicTestSync();
-  sync_service->SetIsUsingSecondaryPassphrase(true);
+  sync_service->SetIsUsingExplicitPassphrase(true);
   metrics_enabled_ = true;
 
   NavigateAndCommit(GURL("about:blank"));
@@ -642,7 +642,7 @@ TEST_F(ChromePasswordManagerClientTest,
 TEST_F(ChromePasswordManagerClientTest,
        AnnotateNavigationEntryNoMetricsWithCustom) {
   syncer::TestSyncService* sync_service = SetupBasicTestSync();
-  sync_service->SetIsUsingSecondaryPassphrase(true);
+  sync_service->SetIsUsingExplicitPassphrase(true);
   metrics_enabled_ = false;
 
   NavigateAndCommit(GURL("about:blank"));

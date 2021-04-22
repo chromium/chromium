@@ -106,16 +106,16 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
         features::kAutofillEnableAccountWalletStorage));
   }
 
-  // Also don't offer upload for users that have a secondary sync passphrase.
+  // Also don't offer upload for users that have an explicit sync passphrase.
   // Users who have enabled a passphrase have chosen to not make their sync
   // information accessible to Google. Since upload makes credit card data
   // available to other Google systems, disable it for passphrase users.
-  if (sync_service->GetUserSettings()->IsUsingSecondaryPassphrase()) {
+  if (sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
     AutofillMetrics::LogCardUploadEnabledMetric(
         AutofillMetrics::CardUploadEnabledMetric::
-            USING_SECONDARY_SYNC_PASSPHRASE,
+            USING_EXPLICIT_SYNC_PASSPHRASE,
         sync_state);
-    LogCardUploadDisabled(log_manager, "USER_HAS_SECONDARY_SYNC_PASSPHRASE");
+    LogCardUploadDisabled(log_manager, "USER_HAS_EXPLICIT_SYNC_PASSPHRASE");
     return false;
   }
 

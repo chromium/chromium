@@ -61,7 +61,7 @@ bool CanAccountStorageBeEnabled(const syncer::SyncService* sync_service) {
 bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service) {
   return CanAccountStorageBeEnabled(sync_service) &&
          sync_service->IsEngineInitialized() &&
-         !sync_service->GetUserSettings()->IsUsingSecondaryPassphrase() &&
+         !sync_service->GetUserSettings()->IsUsingExplicitPassphrase() &&
          !sync_service->IsSyncFeatureEnabled();
 }
 

@@ -130,18 +130,18 @@ TEST_F(AutofillExperimentsTest,
 }
 
 TEST_F(AutofillExperimentsTest,
-       IsCardUploadEnabled_SyncServiceUsingSecondaryPassphrase) {
+       IsCardUploadEnabled_SyncServiceUsingExplicitPassphrase) {
   scoped_feature_list_.InitAndEnableFeature(features::kAutofillUpstream);
-  sync_service_.SetIsUsingSecondaryPassphrase(true);
+  sync_service_.SetIsUsingExplicitPassphrase(true);
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::USING_SECONDARY_SYNC_PASSPHRASE,
+      AutofillMetrics::CardUploadEnabledMetric::USING_EXPLICIT_SYNC_PASSPHRASE,
       1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::USING_SECONDARY_SYNC_PASSPHRASE,
+      AutofillMetrics::CardUploadEnabledMetric::USING_EXPLICIT_SYNC_PASSPHRASE,
       1);
 }
 

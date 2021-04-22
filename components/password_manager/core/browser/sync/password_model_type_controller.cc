@@ -144,7 +144,7 @@ bool PasswordModelTypeController::ShouldRunInTransportOnlyMode() const {
   if (!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
     return false;
   }
-  if (sync_service_->GetUserSettings()->IsUsingSecondaryPassphrase()) {
+  if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase()) {
     return false;
   }
   return true;

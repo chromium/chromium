@@ -47,5 +47,5 @@ PassphraseAcceptedChecker::PassphraseAcceptedChecker(
 bool PassphraseAcceptedChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Passhrase Accepted";
   return !service()->GetUserSettings()->IsPassphraseRequired() &&
-         service()->GetUserSettings()->IsUsingSecondaryPassphrase();
+         service()->GetUserSettings()->IsUsingExplicitPassphrase();
 }

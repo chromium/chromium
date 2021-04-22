@@ -61,7 +61,7 @@ void ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
   if (!sync_service || !sync_service->IsSyncFeatureActive() ||
       !sync_service->GetActiveDataTypes().Has(
           syncer::HISTORY_DELETE_DIRECTIVES) ||
-      sync_service->GetUserSettings()->IsUsingSecondaryPassphrase() ||
+      sync_service->GetUserSettings()->IsUsingExplicitPassphrase() ||
       !history_service) {
     std::move(callback).Run(false);
     return;
@@ -104,7 +104,7 @@ void ShouldPopupDialogAboutOtherFormsOfBrowsingHistory(
   if (!sync_service || !sync_service->IsSyncFeatureActive() ||
       !sync_service->GetActiveDataTypes().Has(
           syncer::HISTORY_DELETE_DIRECTIVES) ||
-      sync_service->GetUserSettings()->IsUsingSecondaryPassphrase() ||
+      sync_service->GetUserSettings()->IsUsingExplicitPassphrase() ||
       !history_service) {
     std::move(callback).Run(false);
     return;

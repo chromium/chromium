@@ -380,7 +380,7 @@ public class PasswordSettingsTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ProfileSyncService.overrideForTests(new ProfileSyncService() {
                 @Override
-                public boolean isUsingSecondaryPassphrase() {
+                public boolean isUsingExplicitPassphrase() {
                     return usingPassphrase;
                 }
 

@@ -98,7 +98,7 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
   jboolean IsTrustedVaultKeyRequiredForPreferredDataTypes(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
-  jboolean IsUsingSecondaryPassphrase(
+  jboolean IsUsingExplicitPassphrase(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
   jint GetPassphraseType(JNIEnv* env,

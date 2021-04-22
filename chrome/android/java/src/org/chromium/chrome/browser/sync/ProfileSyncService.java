@@ -443,14 +443,15 @@ public class ProfileSyncService {
     }
 
     /**
-     * Checks if sync is currently set to use a custom passphrase. The sync engine must be running
-     * (isEngineInitialized() returns true) before calling this function.
+     * Checks if sync is currently set to use a custom passphrase (or the similar -and legacy-
+     * frozen implicit passphrase). The sync engine must be running (isEngineInitialized() returns
+     * true) before calling this function.
      *
      * @return true if sync is using a custom passphrase.
      */
-    public boolean isUsingSecondaryPassphrase() {
+    public boolean isUsingExplicitPassphrase() {
         assert isEngineInitialized();
-        return ProfileSyncServiceJni.get().isUsingSecondaryPassphrase(
+        return ProfileSyncServiceJni.get().isUsingExplicitPassphrase(
                 mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
@@ -687,7 +688,7 @@ public class ProfileSyncService {
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean isTrustedVaultKeyRequiredForPreferredDataTypes(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
-        boolean isUsingSecondaryPassphrase(
+        boolean isUsingExplicitPassphrase(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean setDecryptionPassphrase(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller, String passphrase);

@@ -204,8 +204,8 @@ bool SyncUserSettingsImpl::IsTrustedVaultRecoverabilityDegraded() const {
          crypto_->IsTrustedVaultRecoverabilityDegraded();
 }
 
-bool SyncUserSettingsImpl::IsUsingSecondaryPassphrase() const {
-  return crypto_->IsUsingSecondaryPassphrase();
+bool SyncUserSettingsImpl::IsUsingExplicitPassphrase() const {
+  return crypto_->IsUsingExplicitPassphrase();
 }
 
 base::Time SyncUserSettingsImpl::GetExplicitPassphraseTime() const {
