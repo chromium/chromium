@@ -427,6 +427,33 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleEmptyLastKnownKey) {
   EXPECT_THAT(processed_response.last_key_version, Eq(kLastKeyVersion));
 }
 
+// Security domain member can contain constant key. Ensure that it's not exposed
+// to upper layers.
+TEST_F(DownloadKeysResponseHandlerTest, ShouldFilterOutConstantKey) {
+  // This test uses custom parameters for the handler ctor, so create new
+  // handler instead of using one from the fixture.
+  DownloadKeysResponseHandler handler(
+      /*last_trusted_vault_key_and_version=*/base::nullopt, MakeTestKeyPair());
+
+  const int kFirstKeyVersion = 123;
+  const DownloadKeysResponseHandler::ProcessedResponse processed_response =
+      handler.ProcessResponse(
+          /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
+          /*response_body=*/
+          CreateGetSecurityDomainMemberResponseWithSyncMembership(
+              /*trusted_vault_keys=*/{GetConstantTrustedVaultKey(),
+                                      kTrustedVaultKey1},
+              /*trusted_vault_keys_versions=*/
+              {kFirstKeyVersion, kFirstKeyVersion + 1},
+              /*signing_keys=*/{{}, {GetConstantTrustedVaultKey()}}));
+
+  EXPECT_THAT(processed_response.status,
+              Eq(TrustedVaultDownloadKeysStatus::kSuccess));
+  // Constant key shouldn't be presented in |new_keys|.
+  EXPECT_THAT(processed_response.new_keys, ElementsAre(kTrustedVaultKey1));
+  EXPECT_THAT(processed_response.last_key_version, Eq(kFirstKeyVersion + 1));
+}
+
 }  // namespace
 
 }  // namespace syncer

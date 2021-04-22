@@ -32,7 +32,8 @@ class DownloadKeysResponseHandler {
     TrustedVaultDownloadKeysStatus status;
 
     // Contains new keys (e.g. keys are stored by the server, excluding last
-    // known key and keys that predate it).
+    // known key and keys that predate it).  Excludes first key if it's a
+    // constant key.
     std::vector<std::vector<uint8_t>> new_keys;
     int last_key_version;
   };
