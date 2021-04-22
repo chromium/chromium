@@ -165,9 +165,7 @@ void PopulateChromeFrameBindersForExtension(
         base::BindRepeating(&chromeos::CameraAppUI::ConnectToCameraAppHelper));
   }
 
-  // TODO: extend to more extensions.
-  if (extension->id() == extension_misc::kGoogleSpeechSynthesisExtensionId ||
-      extension->id() == extension_misc::kEspeakSpeechSynthesisExtensionId) {
+  if (extension->id() == extension_misc::kGoogleSpeechSynthesisExtensionId) {
     binder_map->Add<chromeos::tts::mojom::TtsStreamFactory>(
         base::BindRepeating(&BindTtsStreamFactory));
   }
