@@ -1251,7 +1251,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'android_weblayer_x86_marshmallow_10_gtests',
+          'gtest_tests': 'android_weblayer_x86_10_gtests',
         }
       },
       'android-weblayer-marshmallow-x86-rel-tests': {
@@ -1264,7 +1264,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'android_weblayer_x86_marshmallow_10_gtests',
+          'gtest_tests': 'android_weblayer_x86_marshmallow_gtests',
         }
       },
       'android-weblayer-pie-x86-wpt-fyi-rel': {

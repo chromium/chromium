@@ -6834,7 +6834,25 @@
       }
     },
 
-    'android_weblayer_x86_marshmallow_10_gtests': {
+    'android_weblayer_x86_10_gtests': {
+      'weblayer_instrumentation_tests': {
+        'variants': [
+          {'identifier': 'ToT_Tests'}
+        ]
+      },
+      'weblayer_instrumentation_version_tests': {
+        'variants': [
+          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE',
+          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
+          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
+        ]
+      }
+    },
+
+    'android_weblayer_x86_marshmallow_gtests': {
       'weblayer_instrumentation_version_tests_with_chrome': {
         'variants': [
           'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE',
