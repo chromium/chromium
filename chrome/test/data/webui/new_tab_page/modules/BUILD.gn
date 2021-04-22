@@ -15,6 +15,7 @@ js_library("module_registry_test") {
     "//chrome/browser/resources/new_tab_page",
     "//chrome/test/data/webui:test_browser_proxy.m",
     "//chrome/test/data/webui:test_util.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

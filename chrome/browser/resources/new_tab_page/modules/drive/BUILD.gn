@@ -11,7 +11,7 @@ js_library("module") {
     "..:module_descriptor",
     "../..:i18n_setup",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
