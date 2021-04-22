@@ -19,6 +19,8 @@ namespace blink {
 namespace {
 
 class ScopedScrollbarPainter {
+  STACK_ALLOCATED();
+
  public:
   ScopedScrollbarPainter(cc::PaintCanvas& canvas, float device_scale_factor)
       : canvas_(canvas) {

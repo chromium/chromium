@@ -7,7 +7,10 @@
 
 #include <memory>
 
+#include "base/optional.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -19,10 +22,9 @@ class PaintCanvas;
 
 namespace blink {
 
-class GraphicsContext;
-class PaintController;
-
 class PLATFORM_EXPORT PaintRecordBuilder final : public DisplayItemClient {
+  STACK_ALLOCATED();
+
  public:
   // Constructs a new builder for the resulting paint record. A transient
   // PaintController is created and will be used for the duration of the picture
@@ -41,7 +43,7 @@ class PLATFORM_EXPORT PaintRecordBuilder final : public DisplayItemClient {
 
   ~PaintRecordBuilder() override;
 
-  GraphicsContext& Context() { return *context_; }
+  GraphicsContext& Context() { return context_; }
 
   // Returns a PaintRecord capturing all drawing performed on the builder's
   // context since construction, into the ancestor state given by
@@ -59,9 +61,9 @@ class PLATFORM_EXPORT PaintRecordBuilder final : public DisplayItemClient {
   String DebugName() const final { return "PaintRecordBuilder"; }
 
  private:
-  std::unique_ptr<PaintController> own_paint_controller_;
+  base::Optional<PaintController> own_paint_controller_;
   PaintController* paint_controller_;
-  std::unique_ptr<GraphicsContext> context_;
+  GraphicsContext context_;
 };
 
 }  // namespace blink
