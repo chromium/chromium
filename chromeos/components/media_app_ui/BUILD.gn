@@ -99,7 +99,7 @@ media_test_lib_closure_flags = system_app_closure_flags_strict + [
                                  "js_module_root=" +
                                      rebase_path(target_gen_dir,
                                                  root_build_dir),
-                               ] + ignore_load_time_data_errors_closure_flags
+                               ]
 
 # Use relaxed flags for the browsertest files themselves. This removes null
 # checks and "could not determine type" errors which don't add a lot of value.
@@ -110,7 +110,7 @@ media_browsertest_closure_flags = system_app_closure_flags + [
                                     "js_module_root=" +
                                         rebase_path(target_gen_dir,
                                                     root_build_dir),
-                                  ] + ignore_load_time_data_errors_closure_flags
+                                  ]
 
 js_type_check("closure_compile_test_lib") {
   testonly = true

@@ -28,13 +28,8 @@ constexpr base::FilePath::CharType kCr[] =
 constexpr base::FilePath::CharType kTestLibraryPath[] = FILE_PATH_LITERAL(
     "chromeos/components/media_app_ui/test/dom_testing_helpers.js");
 
-// File containing the query handlers for JS unit tests.
-constexpr base::FilePath::CharType kGuestQueryHandler[] = FILE_PATH_LITERAL(
-    "chromeos/components/media_app_ui/test/guest_query_receiver.js");
-
 // Test cases that run in the guest context.
-constexpr base::FilePath::CharType kGuestTestCases[] = FILE_PATH_LITERAL(
-    "chromeos/components/media_app_ui/test/media_app_guest_ui_browsertest.js");
+constexpr char kGuestTestCases[] = "media_app_guest_ui_browsertest.js";
 
 // Path to test files loaded via the TestFileRequestFilter.
 constexpr base::FilePath::CharType kTestFileLocation[] =
@@ -56,6 +51,12 @@ void HandleTestFileRequestCallback(
   std::move(callback).Run(base::RefCountedString::TakeString(&contents));
 }
 
+bool GuestTestShouldHandleRequest(const std::string& path) {
+  return path == "test_worker.js" ||
+         path == "media_app_guest_ui_browsertest.js" ||
+         path == "guest_query_receiver.js";
+}
+
 }  // namespace
 
 MediaAppUiBrowserTest::MediaAppUiBrowserTest()
@@ -63,9 +64,10 @@ MediaAppUiBrowserTest::MediaAppUiBrowserTest()
           chromeos::kChromeUIMediaAppURL,
           chromeos::kChromeUIMediaAppGuestURL,
           {base::FilePath(kTestLibraryPath), base::FilePath(kCr),
-           base::FilePath(kWebUiTestUtil), base::FilePath(kGuestQueryHandler),
-           base::FilePath(kGuestTestCases)}) {
+           base::FilePath(kWebUiTestUtil)},
+          kGuestTestCases) {
   chromeos::SetMediaAppGuestUITestRequestHandlerForTesting(
+      base::BindRepeating(&GuestTestShouldHandleRequest),
       base::BindRepeating(&HandleTestFileRequestCallback));
 
   chromeos::SetMediaAppUITestRequestHandlerForTesting(

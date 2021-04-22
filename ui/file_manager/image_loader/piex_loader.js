@@ -762,3 +762,5 @@ PiexLoader.load = function(source, onPiexModuleFailed) {
         imageBuffer && imageBuffer.close();
       });
 };
+
+/* #export */ const PIEX_LOADER_TEST_ONLY = {getModule: () => PiexModule};

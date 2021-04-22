@@ -204,6 +204,8 @@ grit("media_app_resources") {
   deps = [
     "//chromeos/components/media_app_ui:mojo_bindings_js",
     "//chromeos/components/media_app_ui/resources/js:launch_rollup",
+    "//chromeos/components/media_app_ui/resources/js:piex_rollup",
+    "//chromeos/components/media_app_ui/resources/js:receiver_rollup",
   ]
 }
 

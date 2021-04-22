@@ -501,7 +501,11 @@ MediaAppUIBrowserTest.LoadVideoWithSubtitles = async () => {
 
   // Initial launch should have two files, and they should both have valid
   // (non-null) File objects.
-  let data = /** @type {!LoadFilesMessage} */ (message.data);
+  // Note LoadFilesMessage is not type-checked here: the test file can't depend
+  // on messge_types.js directly because it's rolled up into launch.js. We
+  // *should* be able to re-export LoadFilesMessage, but that confuses closure
+  // too much. See b/185734620.
+  let data = /** !LoadFilesMessage */ (message.data);
   assertEquals(data.files.length, 2);
   assertEquals(data.files[0].name, 'zero_byte_video.webm');
   assertNotEquals(data.files[0].file, null);
@@ -513,7 +517,7 @@ MediaAppUIBrowserTest.LoadVideoWithSubtitles = async () => {
   const secondMessage = await secondMessageSent;
   assertEquals(secondMessage.messageId, Message.LOAD_EXTRA_FILES);
 
-  data = /** @type {!LoadFilesMessage} */ (secondMessage.data);
+  data = /** !LoadFilesMessage */ (secondMessage.data);
   assertEquals(data.files.length, 1);
   assertEquals(data.files[0].name, 'extra_video.webm');
   assertEquals(data.files[0].file, null);

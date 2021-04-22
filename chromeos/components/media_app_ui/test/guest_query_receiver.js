@@ -2,9 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Note we can only import from 'receiver.js': other modules are rolled-up into
+// it, and already loaded.
+import {TEST_ONLY} from './receiver.js';
+const {
+  DeleteResult,
+  RenameResult,
+  DELEGATE,
+  assertCast,
+  parentMessagePipe,
+  loadFiles,
+  setLoadFiles,
+} = TEST_ONLY;
+
 /**
  * The last file list loaded into the guest, updated via a spy on loadFiles().
- * @type {?ReceivedFileList}
+ * TODO(b/185734620): This should be type {ReceivedFileList} but closure fails
+ * to resolve it properly. See b/185734620 for details.
  */
 let lastReceivedFileList = null;
 
@@ -170,7 +184,7 @@ async function runTestCase(data) {
  * @param {string} testName
  * @param {function(): !Promise<undefined>} testCase
  */
-function GUEST_TEST(testName, testCase) {
+export function GUEST_TEST(testName, testCase) {
   guestTestCases.set(testName, testCase);
 }
 
@@ -249,14 +263,14 @@ function installTestHandlers() {
   // Install spies.
   const realLoadFiles = loadFiles;
   /**
-   * @param {!ReceivedFileList} fileList
+   * @param {*} fileList
    * @return {!Promise<undefined>}
    */
   async function watchLoadFiles(fileList) {
     lastReceivedFileList = fileList;
     return realLoadFiles(fileList);
   }
-  loadFiles = watchLoadFiles;
+  setLoadFiles(watchLoadFiles);
   signalTestHandlersReady();
 }
 
@@ -266,5 +280,3 @@ if (document.readyState !== 'complete') {
 } else {
   installTestHandlers();
 }
-
-//# sourceURL=guest_query_receiver.js

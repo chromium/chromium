@@ -278,8 +278,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFiles) {
   // includes an Exif rotation.
   constexpr char kAdd270DegreeRotation[] = R"(
     (function() {
-      const realPiexImage = PiexModule.image;
-      PiexModule.image = (memory, length) => {
+      const realPiexImage = getPiexModuleForTesting().image;
+      getPiexModuleForTesting().image = (memory, length) => {
         const response = realPiexImage(memory, length);
         response.preview.orientation = 8;
         return response;
@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
   // Rename "image3.jpg" to "x.jpg".
   constexpr int kRenameResultSuccess = 0;
   constexpr char kScript[] =
-      "lastLoadedReceivedFileList.item(0).renameOriginalFile('x.jpg')"
+      "lastLoadedReceivedFileList().item(0).renameOriginalFile('x.jpg')"
       ".then(result => domAutomationController.send(result));";
   int result = ~kRenameResultSuccess;
   EXPECT_EQ(true, content::ExecuteScriptAndExtractInt(app, kScript, &result));

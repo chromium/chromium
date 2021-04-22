@@ -18,6 +18,10 @@ copy("stage_static") {
     "error_reporter.js",
     "launch.js",
     "mojo_api_bootstrap.js",
+    "piex_module.js",
+    "piex_module_loader.js",
+    "receiver.js",
+    "sandboxed_load_time_data.js",
   ]
   outputs = [ stage_folder + "/{{source_file_part}}" ]
 }
@@ -25,6 +29,7 @@ copy("stage_static") {
 # This is for files that are generated in "gen/".
 copy("stage_generated") {
   sources = [
+    "$root_gen_dir/ui/file_manager/image_loader/piex_loader.m.js",
     "$target_gen_dir/../../../system_apps/public/js/message_pipe.m.js",
     "$target_gen_dir/../../media_app_ui.mojom-lite.js",
     "$target_gen_dir/message_types.m.js",
@@ -36,6 +41,7 @@ copy("stage_generated") {
     ":modulize",
     "//chromeos/components/media_app_ui:mojo_bindings_js",
     "//chromeos/components/system_apps/public/js:modulize",
+    "//ui/file_manager/image_loader:modulize",
   ]
 }
 
@@ -49,6 +55,35 @@ optimize_webui("launch_rollup") {
     ":stage_static",
   ]
 }
+
+optimize_webui("receiver_rollup") {
+  host = "media-app"
+  js_out_files = [ "receiver.rollup.js" ]
+  js_module_in_files = [ "receiver.js" ]
+  input = rebase_path(stage_folder, root_build_dir)
+  deps = [
+    ":stage_generated",
+    ":stage_static",
+  ]
+}
+
+optimize_webui("piex_rollup") {
+  host = "media-app"
+  js_out_files = [ "piex_module.rollup.js" ]
+  js_module_in_files = [ "piex_module.js" ]
+  input = rebase_path(stage_folder, root_build_dir)
+  deps = [
+    ":stage_generated",
+    ":stage_static",
+  ]
+}
+
+js_modulizer("modulize") {
+  input_files = [ "message_types.js" ]
+}
+
+# Build rules below here are just used for typechecking and don't influence what
+# is shipped to resources.pak.
 
 media_closure_flags = system_app_closure_flags_strict + [
                         "hide_warnings_for=chromeos/components/media_app_ui/media_app_ui.mojom-lite-for-compile.js",
@@ -65,22 +100,23 @@ group("closure_compile") {
   deps = [
     ":closure_compile_app",
     ":closure_compile_index",
+    ":closure_compile_piex_module",
   ]
 }
 
 js_type_check("closure_compile_index") {
   closure_flags = media_closure_flags
-  deps = [
-    ":app_context_test_support",
-    ":launch",
-    ":mojo_api_bootstrap",
-  ]
+  deps = [ ":launch" ]
 }
 
 js_type_check("closure_compile_app") {
-  closure_flags =
-      media_closure_flags + ignore_load_time_data_errors_closure_flags
+  closure_flags = media_closure_flags
   deps = [ ":receiver" ]
+}
+
+js_type_check("closure_compile_piex_module") {
+  closure_flags = media_closure_flags
+  deps = [ ":piex_module" ]
 }
 
 js_library("app_context_test_support") {
@@ -96,6 +132,7 @@ js_library("launch") {
     "media_app.externs.js",
   ]
   deps = [
+    ":app_context_test_support",
     ":error_reporter",
     ":message_types.m",
     ":mojo_api_bootstrap",
@@ -119,17 +156,20 @@ js_library("piex_module_loader") {
 }
 
 js_library("piex_module") {
-  deps = [ "//ui/file_manager/image_loader:piex_loader" ]
+  deps = [ "//ui/file_manager/image_loader:piex_loader.m" ]
+}
+
+js_library("sandboxed_load_time_data") {
 }
 
 js_library("receiver") {
   externs_list = [ "media_app.externs.js" ]
   deps = [
-    ":message_types",
-    ":piex_module",
+    ":app_context_test_support",
+    ":message_types.m",
     ":piex_module_loader",
-    "//chromeos/components/system_apps/public/js:message_pipe",
-    "//ui/webui/resources/js:load_time_data",
+    ":sandboxed_load_time_data",
+    "//chromeos/components/system_apps/public/js:message_pipe.m",
   ]
 }
 
@@ -137,8 +177,4 @@ js_library("mojo_api_bootstrap") {
   deps = [
     "//chromeos/components/media_app_ui:mojo_bindings_js_library_for_compile",
   ]
-}
-
-js_modulizer("modulize") {
-  input_files = [ "message_types.js" ]
 }

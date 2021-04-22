@@ -27,8 +27,10 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController {
   ~MediaAppGuestUI() override;
 };
 
+// Configures the data source request filter used for testing.
 void SetMediaAppGuestUITestRequestHandlerForTesting(
-    content::WebUIDataSource::HandleRequestCallback callback);
+    content::WebUIDataSource::ShouldHandleRequestCallback should_handle,
+    content::WebUIDataSource::HandleRequestCallback handler);
 
 }  // namespace chromeos
 

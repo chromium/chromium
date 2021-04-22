@@ -2,26 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @type {?Promise} */
+/** @type {?Promise<function(!ArrayBuffer): !Promise<!File>>} */
 let _piexLoadPromise = null;
 
 /**
  * Loads PIEX, the "Preview Image Extractor", via wasm.
- * @return {!Promise}
+ * @type {!Promise<function(!ArrayBuffer): !Promise<!File>>}
  */
-function loadPiex() {
+export function loadPiex() {
   async function startLoad() {
-    /** @type {function(string): !Promise} */
-    const loadJs = (/** string */ path) => new Promise((resolve, reject) => {
-      const script =
-          /** @type {!HTMLScriptElement} */ (document.createElement('script'));
-      script.onload = resolve;
-      script.onerror = reject;
-      script.src = path;
-      assertCast(document.head).appendChild(script);
-    });
-    await loadJs('piex/piex.js.wasm');
-    await loadJs('piex_module_scripts.js');
+    function loadJs(/** string */ path, /** boolean */ module) {
+      return new Promise((resolve, reject) => {
+        const script =
+            /** @type {!HTMLScriptElement} */ (
+                document.createElement('script'));
+        script.onload = resolve;
+        script.onerror = reject;
+        if (module) {
+          script.type = 'module';
+        }
+        script.src = path;
+        if (document.head) {
+          document.head.appendChild(script);
+        }  // else not reached (but needed to placate closure).
+      });
+    }
+    await loadJs('piex/piex.js.wasm', false);
+    await loadJs('piex_module.js', true);
+    return window['extractFromRawImageBuffer'];
   }
   if (!_piexLoadPromise) {
     _piexLoadPromise = startLoad();

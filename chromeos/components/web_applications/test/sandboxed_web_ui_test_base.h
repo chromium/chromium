@@ -20,7 +20,8 @@ class SandboxedWebUiAppTestBase : public MojoWebUIBrowserTest {
   // automatically injects |scripts|, in order, into the sandboxed frame.
   SandboxedWebUiAppTestBase(const std::string& host_url,
                             const std::string& sandboxed_url,
-                            const std::vector<base::FilePath>& scripts);
+                            const std::vector<base::FilePath>& scripts,
+                            const std::string& test_module = std::string());
   ~SandboxedWebUiAppTestBase() override;
 
   SandboxedWebUiAppTestBase(const SandboxedWebUiAppTestBase&) = delete;
@@ -50,6 +51,7 @@ class SandboxedWebUiAppTestBase : public MojoWebUIBrowserTest {
   const std::string host_url_;
   const std::string sandboxed_url_;
   const std::vector<base::FilePath> scripts_;
+  const std::string test_module_;
 };
 
 #endif  // CHROMEOS_COMPONENTS_WEB_APPLICATIONS_TEST_SANDBOXED_WEB_UI_TEST_BASE_H_

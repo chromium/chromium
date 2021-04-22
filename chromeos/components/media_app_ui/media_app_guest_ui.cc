@@ -20,17 +20,23 @@ namespace chromeos {
 
 namespace {
 
-// The URL of a hardcoded worker "file".
-constexpr char kTestWorkerURL[] = "test_worker.js";
-
-bool TestShouldHandleRequest(const std::string& path) {
-  return path == kTestWorkerURL;
+content::WebUIDataSource::ShouldHandleRequestCallback&
+GetTestShouldHandleRequest() {
+  static base::NoDestructor<
+      content::WebUIDataSource::ShouldHandleRequestCallback>
+      callback;
+  return *callback;
 }
 
 content::WebUIDataSource::HandleRequestCallback& GetTestRequestFilterHandler() {
   static base::NoDestructor<content::WebUIDataSource::HandleRequestCallback>
       callback;
   return *callback;
+}
+
+bool InvokeTestShouldHandleRequestCallback(const std::string& path) {
+  const auto& callback = GetTestShouldHandleRequest();
+  return callback ? callback.Run(path) : false;
 }
 
 void InvokeTestFileRequestFilterCallback(
@@ -45,10 +51,8 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
       content::WebUIDataSource::Create(kChromeUIMediaAppGuestURL);
   // Add resources from chromeos_media_app_resources.pak.
   source->AddResourcePath("app.html", IDR_MEDIA_APP_APP_HTML);
-  source->AddResourcePath("media_app_app_scripts.js",
-                          IDR_MEDIA_APP_APP_SCRIPTS_JS);
-  source->AddResourcePath("piex_module_scripts.js",
-                          IDR_MEDIA_APP_PIEX_MODULE_SCRIPTS_JS);
+  source->AddResourcePath("receiver.js", IDR_MEDIA_APP_RECEIVER_JS);
+  source->AddResourcePath("piex_module.js", IDR_MEDIA_APP_PIEX_MODULE_JS);
 
   // Add shared resources from chromeos_file_manager_resources.pak.
   source->AddResourcePath("piex/piex.js.wasm", IDR_IMAGE_LOADER_PIEX_WASM_JS);
@@ -67,7 +71,7 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
   const bool is_running_test = command_line->HasSwitch(::switches::kTestType);
   if (is_running_test) {
     source->SetRequestFilter(
-        base::BindRepeating(&TestShouldHandleRequest),
+        base::BindRepeating(&InvokeTestShouldHandleRequestCallback),
         base::BindRepeating(&InvokeTestFileRequestFilterCallback));
   }
   // Add all resources from chromeos_media_app_bundle_resources.pak.
@@ -124,8 +128,10 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
 }  // namespace
 
 void SetMediaAppGuestUITestRequestHandlerForTesting(  // IN-TEST
-    content::WebUIDataSource::HandleRequestCallback callback) {
-  GetTestRequestFilterHandler() = std::move(callback);
+    content::WebUIDataSource::ShouldHandleRequestCallback should_handle,
+    content::WebUIDataSource::HandleRequestCallback handler) {
+  GetTestShouldHandleRequest() = std::move(should_handle);
+  GetTestRequestFilterHandler() = std::move(handler);
 }
 
 MediaAppGuestUI::MediaAppGuestUI(content::WebUI* web_ui,

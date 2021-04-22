@@ -4,6 +4,8 @@
 
 /** @fileoverview Test suite for chrome-untrusted://media-app. */
 
+import {GUEST_TEST} from './guest_query_receiver.js';
+
 // Test web workers can be spawned from chrome-untrusted://media-app. Errors
 // will be logged in console from web_ui_browser_test.cc.
 GUEST_TEST('GuestCanSpawnWorkers', async () => {
@@ -30,7 +32,8 @@ GUEST_TEST('GuestHasLang', () => {
 });
 
 GUEST_TEST('GuestLoadsLoadTimeData', () => {
-  // Check `LoadTimeData` exists.
+  const loadTimeData = window['loadTimeData'];
+  // Check `LoadTimeData` exists on the global window object.
   chai.assert.isTrue(loadTimeData !== undefined);
   // Check data loaded into `LoadTimeData` by "strings.js" via
   // `source->UseStringsJs()` exists.

@@ -42,6 +42,19 @@ class SandboxedWebUiAppTestBase::TestCodeInjector
       ASSERT_TRUE(
           content::ExecuteScript(guest_frame, LoadJsTestLibrary(script)));
     }
+    if (!owner_->test_module_.empty()) {
+      constexpr char kScript[] = R"(
+          (() => {
+            const s = document.createElement('script');
+            s.type = 'module';
+            s.src = '$1';
+            document.body.appendChild(s);
+          })();
+      )";
+      ASSERT_TRUE(content::ExecuteScript(
+          guest_frame, base::ReplaceStringPlaceholders(
+                           kScript, {owner_->test_module_}, nullptr)));
+    }
     TestNavigationObserver::OnDidFinishNavigation(navigation_handle);
   }
 
@@ -52,8 +65,12 @@ class SandboxedWebUiAppTestBase::TestCodeInjector
 SandboxedWebUiAppTestBase::SandboxedWebUiAppTestBase(
     const std::string& host_url,
     const std::string& sandboxed_url,
-    const std::vector<base::FilePath>& scripts)
-    : host_url_(host_url), sandboxed_url_(sandboxed_url), scripts_(scripts) {}
+    const std::vector<base::FilePath>& scripts,
+    const std::string& test_module)
+    : host_url_(host_url),
+      sandboxed_url_(sandboxed_url),
+      scripts_(scripts),
+      test_module_(test_module) {}
 
 SandboxedWebUiAppTestBase::~SandboxedWebUiAppTestBase() = default;
 

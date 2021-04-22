@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PIEX_LOADER_TEST_ONLY, PiexLoader} from './piex_loader.m.js';
+
 /**
  * Set when PiexLoader has an unrecoverable error to disable future attempts.
  * @type {boolean}
@@ -187,3 +189,13 @@ async function extractFromRawImageBuffer(buffer) {
       [TIFF_HEADER, orientation, jpegWithoutSOI], 'raw-preview',
       {type: response.mimeType});
 }
+
+// Export to `window` manually until the toolchain has better support for
+// dynamic module loading. Dynamic modules require ES2020, but asking chromium's
+// closure typechecking toolchain for ES2020 input and output still complains
+// that dynamic imports can't be transpiled.
+window['extractFromRawImageBuffer'] = extractFromRawImageBuffer;
+
+// Expose the module on `window` for MediaAppIntegrationTest.HandleRawFiles.
+// TODO(b/185957537): Convert the test case to a JS module.
+window['getPiexModuleForTesting'] = PIEX_LOADER_TEST_ONLY.getModule;

@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './sandboxed_load_time_data.js';
+
+import {assertCast, MessagePipe} from './message_pipe.m.js';
+import {DeleteFileResponse, DeleteResult, FileContext, LoadFilesMessage, Message, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.m.js';
+import {loadPiex} from './piex_module_loader.js';
+
 /** A pipe through which we can send messages to the parent frame. */
 const parentMessagePipe = new MessagePipe('chrome://media-app', window.parent);
 
@@ -118,7 +124,7 @@ let lastLoadedReceivedFileList = null;
  * readable files in the directory, some of which may be writable.
  * @implements mediaApp.AbstractFileList
  */
-class ReceivedFileList {
+export class ReceivedFileList {
   /** @param {!LoadFilesMessage} filesMessage */
   constructor(filesMessage) {
     const {files, currentFileIndex} = filesMessage;
@@ -237,9 +243,9 @@ const DELEGATE = {
    */
   async extractPreview(file) {
     try {
-      const [buffer] = /** @type {!Array<!ArrayBuffer>} */ (
-          await Promise.all([file.arrayBuffer(), loadPiex()]));
-      return await extractFromRawImageBuffer(buffer);
+      const bufferPromise = file.arrayBuffer();
+      const extractFromRawImageBuffer = await loadPiex();
+      return await extractFromRawImageBuffer(await bufferPromise);
     } catch (/** @type {!Error} */ e) {
       console.warn(e);
       if (e.name === 'Error') {
@@ -325,3 +331,24 @@ window['chooseFileSystemEntries'] = null;
 window['showOpenFilePicker'] = null;
 window['showSaveFilePicker'] = null;
 window['showDirectoryPicker'] = null;
+
+export const TEST_ONLY = {
+  DeleteResult,
+  RenameResult,
+  DELEGATE,
+  assertCast,
+  parentMessagePipe,
+  loadFiles,
+  setLoadFiles: spy => {
+    loadFiles = spy;
+  },
+};
+
+// Small, auxiliary file that adds hooks to support test cases relying on the
+// "real" app context (e.g. for stack traces).
+import './app_context_test_support.js';
+
+// Temporarily expose lastLoadedReceivedFileList on `window` for
+// MediaAppIntegrationWithFilesAppAllProfilesTest.RenameFile.
+// TODO(b/185957537): Convert the test case to a JS module.
+window['lastLoadedReceivedFileList'] = () => lastLoadedReceivedFileList;
