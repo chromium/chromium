@@ -193,8 +193,7 @@ NSAttributedString* SubstringUtil::AttributedSubstringInRange(
     size_t location,
     size_t length,
     gfx::Point* baseline_point) {
-  if (frame->View()->NeedsLayout())
-    frame->View()->UpdateLayout();
+  frame->View()->UpdateStyleAndLayout();
 
   Element* editable = frame->Selection().RootEditableElementOrDocumentElement();
   if (!editable)

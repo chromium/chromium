@@ -1886,10 +1886,6 @@ bool Document::ShouldScheduleLayoutTreeUpdate() const {
     return false;
   if (InStyleRecalc())
     return false;
-  // InPreLayout will recalc style itself. There's no reason to schedule another
-  // recalc.
-  if (lifecycle_.GetState() == DocumentLifecycle::kInPreLayout)
-    return false;
   if (lifecycle_.GetState() == DocumentLifecycle::kInPerformLayout)
     return false;
   if (!ShouldScheduleLayout())
@@ -2077,6 +2073,10 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   InvalidateStyleAndLayoutForFontUpdates();
   UpdateStyleInvalidationIfNeeded();
   UpdateStyle();
+  if (GetStyleResolver().WasViewportResized()) {
+    GetStyleResolver().ClearResizedForViewportUnits();
+    View()->MarkOrthogonalWritingModeRootsForLayout();
+  }
 
   NotifyLayoutTreeOfSubtreeChanges();
 
@@ -2386,10 +2386,9 @@ void Document::UpdateStyleAndLayout(DocumentUpdateReason reason) {
   DCHECK(!frame_view || !frame_view->IsInPerformLayout())
       << "View layout should not be re-entrant";
 
-  if (HTMLFrameOwnerElement* owner = LocalOwner())
+  if (HTMLFrameOwnerElement* owner = LocalOwner()) {
     owner->GetDocument().UpdateStyleAndLayout(reason);
-
-  UpdateStyleAndLayoutTreeForThisDocument();
+  }
 
   if (!IsActive()) {
     if (reason != DocumentUpdateReason::kBeginMainFrame && frame_view)
@@ -2397,8 +2396,8 @@ void Document::UpdateStyleAndLayout(DocumentUpdateReason reason) {
     return;
   }
 
-  if (frame_view && frame_view->NeedsLayout())
-    frame_view->UpdateLayout();
+  if (frame_view)
+    frame_view->UpdateStyleAndLayout();
 
   if (Lifecycle().GetState() < DocumentLifecycle::kLayoutClean)
     Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
@@ -3405,19 +3404,7 @@ void Document::ImplicitClose() {
 
   fetcher_->ScheduleWarnUnusedPreloads();
 
-  // We used to force a synchronous display and flush here.  This really isn't
-  // necessary and can in fact be actively harmful if pages are loading at a
-  // rate of > 60fps
-  // (if your platform is syncing flushes and limiting them to 60fps).
-  if (!LocalOwner() || (LocalOwner()->GetLayoutObject() &&
-                        !LocalOwner()->GetLayoutObject()->NeedsLayout())) {
-    UpdateStyleAndLayoutTree();
-
-    // Always do a layout after loading if needed.
-    if (View() && GetLayoutView() &&
-        (!GetLayoutView()->FirstChild() || GetLayoutView()->NeedsLayout()))
-      View()->UpdateLayout();
-  }
+  UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
 
   load_event_progress_ = kLoadEventCompleted;
 
@@ -4508,17 +4495,25 @@ void Document::EvaluateMediaQueryList() {
     media_query_matcher_->MediaFeaturesChanged();
 }
 
-void Document::SetResizedForViewportUnits() {
+void Document::LayoutViewportWasResized() {
+  MediaQueryAffectingValueChanged(MediaValueChange::kSize);
   if (media_query_matcher_)
     media_query_matcher_->ViewportChanged();
+  // We need to be careful not to trigger a resize event when setting the
+  // initial layout size. It might seem like the correct check should be
+  // (load_event_progress_ >= kLoadEventInProgress), but that doesn't actually
+  // work because the initial value of load_event_progress_ is
+  // kLoadEventCompleted. DidFirstLayout() is a reliable indicator that the load
+  // event *actually* completed; but we also need to fire a resize event if the
+  // window size changes during load event dispatch.
+  if (View()->DidFirstLayout() ||
+      load_event_progress_ == kLoadEventInProgress) {
+    EnqueueResizeEvent();
+  }
   if (!HasViewportUnits())
     return;
   GetStyleResolver().SetResizedForViewportUnits();
   SetNeedsStyleRecalcForViewportUnits();
-}
-
-void Document::ClearResizedForViewportUnits() {
-  GetStyleResolver().ClearResizedForViewportUnits();
 }
 
 void Document::SetHoverElement(Element* new_hover_element) {

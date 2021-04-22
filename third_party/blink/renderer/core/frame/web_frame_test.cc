@@ -9375,7 +9375,7 @@ TEST_F(WebFrameSwapTest, EventsOnDisconnectedElementSkipped) {
   // Layout ensures that elements in the local_child frame get LayoutObjects
   // attached, but doesn't paint, because the child frame needs to not have
   // been composited for the purpose of this test.
-  local_child->GetFrameView()->UpdateLayout();
+  local_child->GetFrameView()->UpdateStyleAndLayout();
   Document* child_document = local_child->GetFrame()->GetDocument();
   EventHandlerRegistry& event_registry =
       local_child->GetFrame()->GetEventHandlerRegistry();

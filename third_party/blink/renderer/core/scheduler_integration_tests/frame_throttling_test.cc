@@ -510,6 +510,7 @@ TEST_P(FrameThrottlingTest, UnthrottlingFrameSchedulesAnimation) {
 
   LoadURL("https://example.com/");
   main_resource.Complete("<iframe sandbox id=frame></iframe>");
+  CompositeFrame();
 
   auto* frame_element =
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
@@ -1073,6 +1074,7 @@ TEST_P(FrameThrottlingTest, DumpThrottledFrame) {
   main_resource.Complete(
       "main <iframe id=frame sandbox=allow-scripts src=iframe.html></iframe>");
   frame_resource.Complete("");
+  CompositeFrame();
   auto* frame_element =
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
   frame_element->setAttribute(kStyleAttr, "transform: translateY(480px)");

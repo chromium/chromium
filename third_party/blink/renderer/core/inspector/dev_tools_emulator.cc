@@ -362,10 +362,10 @@ void DevToolsEmulator::EnableMobileEmulation() {
   web_view_->SetZoomFactorOverride(1);
   web_view_->GetPage()->SetDefaultPageScaleLimits(0.25f, 5);
 
-  // TODO(wjmaclean): Update all local frames in the WebView's frame tree, not
-  // just a local main frame.
-  if (web_view_->MainFrameImpl())
-    web_view_->MainFrameImpl()->GetFrameView()->UpdateLayout();
+  if (web_view_->MainFrameImpl()) {
+    web_view_->MainFrameImpl()->GetFrameView()->UpdateLifecycleToLayoutClean(
+        DocumentUpdateReason::kInspector);
+  }
 }
 
 void DevToolsEmulator::DisableMobileEmulation() {
@@ -401,8 +401,10 @@ void DevToolsEmulator::DisableMobileEmulation() {
                                                   embedder_max_page_scale_);
   emulate_mobile_enabled_ = false;
   // MainFrameImpl() could be null during cleanup or remote <-> local swap.
-  if (web_view_->MainFrameImpl())
-    web_view_->MainFrameImpl()->GetFrameView()->UpdateLayout();
+  if (web_view_->MainFrameImpl()) {
+    web_view_->MainFrameImpl()->GetFrameView()->UpdateLifecycleToLayoutClean(
+        DocumentUpdateReason::kInspector);
+  }
 }
 
 TransformationMatrix DevToolsEmulator::ForceViewport(

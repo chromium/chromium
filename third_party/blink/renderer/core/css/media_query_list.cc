@@ -24,6 +24,8 @@
 #include "third_party/blink/renderer/core/css/media_query_list_listener.h"
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_object.h"
 
 namespace blink {
 
@@ -98,6 +100,15 @@ bool MediaQueryList::UpdateMatches() {
 }
 
 bool MediaQueryList::matches() {
+  // If this is an iframe, viewport size depends on the layout of the embedding
+  // document.
+  if (matcher_->GetDocument()) {
+    if (auto* owner =
+            matcher_->GetDocument()->GetFrame()->OwnerLayoutObject()) {
+      owner->GetDocument().UpdateStyleAndLayout(
+          DocumentUpdateReason::kJavaScript);
+    }
+  }
   UpdateMatches();
   return matches_;
 }

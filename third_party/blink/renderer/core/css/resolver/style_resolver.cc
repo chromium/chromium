@@ -1307,7 +1307,6 @@ void StyleResolver::InvalidateMatchedPropertiesCache() {
 }
 
 void StyleResolver::SetResizedForViewportUnits() {
-  DCHECK(!was_viewport_resized_);
   was_viewport_resized_ = true;
   GetDocument().GetStyleEngine().UpdateActiveStyle();
   matched_properties_cache_.ClearViewportDependent();

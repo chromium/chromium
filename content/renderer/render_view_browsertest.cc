@@ -2943,6 +2943,8 @@ TEST_F(RenderViewImplTest, PreferredSizeZoomed) {
 
   main_frame_widget()->SetZoomLevelForTesting(
       blink::PageZoomFactorToZoomLevel(2.0));
+  view_->GetWebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
+      blink::DocumentUpdateReason::kTest);
   size = GetPreferredSize();
   EXPECT_EQ(gfx::Size(800 + scrollbar_width, 800), size);
 }

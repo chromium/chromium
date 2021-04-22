@@ -84,12 +84,14 @@ class CORE_EXPORT RootScrollerController
 
   // Called as part of the main document lifecycle. This will iterate the frame
   // tree in post order and select the effective root scroller in each frame.
-  void PerformRootScrollerSelection();
+  // Returns true if root scroller selection changed.
+  bool PerformRootScrollerSelection();
 
  private:
   // Ensures the effective root scroller is currently valid and replaces it
-  // with the default if not.
-  void RecomputeEffectiveRootScroller();
+  // with the default if not. Returns true if the effective root scroller
+  // changed.
+  bool RecomputeEffectiveRootScroller();
 
   // Determines whether the given element meets the criteria to become the
   // effective root scroller.

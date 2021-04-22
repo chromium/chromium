@@ -879,14 +879,14 @@ void WebViewTest::TestAutoResize(
 
   WebLocalFrameImpl* frame = web_view->MainFrameImpl();
   LocalFrameView* frame_view = frame->GetFrame()->View();
-  frame_view->UpdateLayout();
+  frame_view->UpdateStyleAndLayout();
   EXPECT_FALSE(frame_view->LayoutPending());
   EXPECT_FALSE(frame_view->NeedsLayout());
 
   web_view->EnableAutoResizeMode(min_auto_resize, max_auto_resize);
   EXPECT_TRUE(frame_view->LayoutPending());
   EXPECT_TRUE(frame_view->NeedsLayout());
-  frame_view->UpdateLayout();
+  frame_view->UpdateStyleAndLayout();
 
   EXPECT_TRUE(frame->GetFrame()->GetDocument()->IsHTMLDocument());
 
@@ -4578,18 +4578,21 @@ TEST_F(WebViewTest, PreferredSize) {
   EXPECT_EQ(100, size.height());
 
   web_view->SetZoomLevel(PageZoomFactorToZoomLevel(2.0));
+  UpdateAllLifecyclePhases();
   size = web_view->ContentsPreferredMinimumSize();
   EXPECT_EQ(200, size.width());
   EXPECT_EQ(200, size.height());
 
   // Verify that both width and height are rounded (in this case up)
   web_view->SetZoomLevel(PageZoomFactorToZoomLevel(0.9995));
+  UpdateAllLifecyclePhases();
   size = web_view->ContentsPreferredMinimumSize();
   EXPECT_EQ(100, size.width());
   EXPECT_EQ(100, size.height());
 
   // Verify that both width and height are rounded (in this case down)
   web_view->SetZoomLevel(PageZoomFactorToZoomLevel(1.0005));
+  UpdateAllLifecyclePhases();
   size = web_view->ContentsPreferredMinimumSize();
   EXPECT_EQ(100, size.width());
   EXPECT_EQ(100, size.height());
@@ -4600,6 +4603,7 @@ TEST_F(WebViewTest, PreferredSize) {
   web_view = web_view_helper_.InitializeAndLoad(url);
 
   web_view->SetZoomLevel(PageZoomFactorToZoomLevel(1));
+  UpdateAllLifecyclePhases();
   size = web_view->ContentsPreferredMinimumSize();
   EXPECT_EQ(2, size.width());
   EXPECT_EQ(2, size.height());

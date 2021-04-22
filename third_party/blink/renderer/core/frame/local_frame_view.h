@@ -164,7 +164,6 @@ class CORE_EXPORT LocalFrameView final
 
   void SetLayoutOverflowSize(const IntSize&);
 
-  void UpdateLayout();
   bool DidFirstLayout() const;
   bool LifecycleUpdatesActive() const;
   void SetLifecycleUpdatesThrottledForTesting(bool throttled = true);
@@ -200,6 +199,8 @@ class CORE_EXPORT LocalFrameView final
 
   void SetNeedsUpdateGeometries() { needs_update_geometries_ = true; }
   void UpdateGeometry() override;
+
+  void UpdateStyleAndLayout();
 
   // Marks this frame, and ancestor frames, as needing one intersection
   // observervation. This overrides throttling for one frame, up to
@@ -246,7 +247,9 @@ class CORE_EXPORT LocalFrameView final
   // If this is set to false, the layout size will need to be explicitly set by
   // the owner.  E.g. WebViewImpl sets its mainFrame's layout size manually
   void SetLayoutSizeFixedToFrameSize(bool);
-  bool LayoutSizeFixedToFrameSize() { return layout_size_fixed_to_frame_size_; }
+  bool LayoutSizeFixedToFrameSize() const {
+    return layout_size_fixed_to_frame_size_;
+  }
 
   void SetInitialViewportSize(const IntSize&);
   int InitialViewportWidth() const;
@@ -279,7 +282,6 @@ class CORE_EXPORT LocalFrameView final
   bool ShouldPaintBaseBackgroundColor() const;
 
   void AdjustViewSize();
-  void AdjustViewSizeAndLayout();
 
   // Scale used to convert incoming input events.
   float InputEventsScaleFactor() const;
@@ -862,15 +864,15 @@ class CORE_EXPORT LocalFrameView final
   void RunPaintLifecyclePhase(PaintBenchmarkMode = PaintBenchmarkMode::kNormal);
 
   void UpdateStyleAndLayoutIfNeededRecursive();
+  bool UpdateStyleAndLayoutInternal();
+  void UpdateLayout();
+  void PerformLayout();
+  void PerformPostLayoutTasks(bool view_size_changed);
 
   bool PaintTree(PaintBenchmarkMode);
   void PushPaintArtifactToCompositor(bool repainted);
 
   void ClearLayoutSubtreeRootsAndMarkContainingBlocks();
-
-  void PerformPreLayoutTasks();
-  void PerformLayout();
-  void PerformPostLayoutTasks(bool view_size_changed);
 
   DocumentLifecycle& Lifecycle() const;
 
@@ -893,8 +895,6 @@ class CORE_EXPORT LocalFrameView final
       const DoublePoint&) const;
 
   void UpdateGeometriesIfNeeded();
-  bool WasViewportResized();
-  void SendResizeEventIfNeeded(bool visual_viewport_size_changed);
 
   void ScheduleUpdatePluginsIfNecessary();
   void UpdatePluginsTimerFired(TimerBase*);
@@ -998,15 +998,12 @@ class CORE_EXPORT LocalFrameView final
   bool layout_scheduling_enabled_;
   unsigned layout_count_for_testing_;
   unsigned lifecycle_update_count_for_testing_;
-  unsigned nested_layout_count_;
   HeapTaskRunnerTimer<LocalFrameView> update_plugins_timer_;
 
   bool first_layout_;
   UseColorAdjustBackground use_color_adjust_background_{
       UseColorAdjustBackground::kNo};
   Color base_background_color_;
-  IntSize last_viewport_size_;
-  float last_zoom_factor_;
 
   // Used for tracking the frame's size and replicating it to the browser
   // process when it changes.
@@ -1146,6 +1143,7 @@ class CORE_EXPORT LocalFrameView final
 
 #if DCHECK_IS_ON()
   bool is_updating_descendant_dependent_flags_;
+  bool is_updating_layout_;
 #endif
 
   FRIEND_TEST_ALL_PREFIXES(FrameThrottlingTest, ForAllThrottledLocalFrameViews);

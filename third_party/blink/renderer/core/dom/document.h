@@ -1251,6 +1251,9 @@ class CORE_EXPORT Document : public ContainerNode,
   bool LoadEventStillNeeded() const {
     return load_event_progress_ == kLoadEventNotRun;
   }
+  bool LoadEventStarted() const {
+    return load_event_progress_ == kLoadEventInProgress;
+  }
   bool LoadEventFinished() const {
     return load_event_progress_ >= kLoadEventCompleted;
   }
@@ -1409,8 +1412,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void SetHasViewportUnits() { has_viewport_units_ = true; }
   bool HasViewportUnits() const { return has_viewport_units_; }
-  void SetResizedForViewportUnits();
-  void ClearResizedForViewportUnits();
+  void LayoutViewportWasResized();
 
   void InvalidateStyleAndLayoutForFontUpdates();
 

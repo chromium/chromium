@@ -983,6 +983,7 @@ TEST_P(AdTrackerVanillaOrAdSimTest, ExternalStylesheetInFrame) {
 
   frame.Complete(kPageWithVanillaExternalStylesheet);
   stylesheet.Complete(kStylesheetWithVanillaResources);
+  Compositor().BeginFrame();
 
   // Wait for stylesheet to fetch resources.
   ad_tracker_->WaitForSubresource(vanilla_font_url);

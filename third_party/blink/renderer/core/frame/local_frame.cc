@@ -1264,7 +1264,7 @@ void LocalFrame::SetPrinting(bool printing,
       layout_view->SetNeedsLayout(layout_invalidation_reason::kPrintingChanged);
       layout_view->InvalidatePaintForViewAndDescendants();
     }
-    View()->UpdateLayout();
+    GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
     View()->AdjustViewSize();
   }
 
@@ -1419,6 +1419,8 @@ void LocalFrame::SetPageAndTextZoomFactors(float page_zoom_factor,
       return;
   }
 
+  bool page_zoom_changed = (page_zoom_factor != page_zoom_factor_);
+
   page_zoom_factor_ = page_zoom_factor;
   text_zoom_factor_ = text_zoom_factor;
 
@@ -1430,12 +1432,15 @@ void LocalFrame::SetPageAndTextZoomFactors(float page_zoom_factor,
     }
   }
 
-  document->MediaQueryAffectingValueChanged(MediaValueChange::kOther);
+  if (page_zoom_changed) {
+    document->LayoutViewportWasResized();
+    document->MediaQueryAffectingValueChanged(MediaValueChange::kOther);
+  }
   document->GetStyleEngine().MarkViewportStyleDirty();
   document->GetStyleEngine().MarkAllElementsForStyleRecalc(
       StyleChangeReasonForTracing::Create(style_change_reason::kZoom));
-  if (View() && View()->DidFirstLayout())
-    document->UpdateStyleAndLayout(DocumentUpdateReason::kSizeChange);
+  if (View())
+    View()->SetNeedsLayout();
 }
 
 void LocalFrame::DeviceScaleFactorChanged() {

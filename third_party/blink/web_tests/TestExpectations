@@ -6897,13 +6897,11 @@ crbug.com/1177568 http/tests/devtools/console/console-api-on-call-frame.js [ Pas
 crbug.com/1177568 http/tests/devtools/runtime/evaluate-timeout.js [ Pass Failure ]
 crbug.com/1177568 http/tests/devtools/console/console-error-on-call-frame.js [ Pass Failure ]
 
-# Some cases in the non-virtual tests constantly fail, and their -expected.txt are rebaselined to
-# contain the FAIL expectations. The virtual/threaded-prefer-compositing variants sometimes produce
-# the same falures, while sometimes produce more PASSes.
-crbug.com/1178160 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/MediaQueryListEvent.html [ Pass Failure ]
-crbug.com/1178160 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/MediaQueryList-addListener-handleEvent.html [ Pass Failure ]
-crbug.com/1178160 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/MediaQueryList-extends-EventTarget.html [ Pass Failure ]
-crbug.com/1178160 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/MediaQueryList-extends-EventTarget-interop.html [ Pass Failure ]
+# MediaQueryList tests failing due to incorrect event dispatching. These tests
+# will pass because they have -expected.txt, but keep entries here because they
+# still need to get fixed.
+external/wpt/css/cssom-view/MediaQueryList-addListener-handleEvent-expected.txt [ Pass Failure ]
+external/wpt/css/cssom-view/MediaQueryList-extends-EventTarget-interop-expected.txt [ Pass Failure ]
 
 # Disabling test until https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/2801092 is merged.
 crbug.com/1195224 http/tests/devtools/filtered-item-selection-dialog-rendering.js [ Pass Failure ]
@@ -6963,8 +6961,6 @@ crbug.com/1180274 crbug.com/1046784 http/tests/inspector-protocol/network/naviga
 # Sheriff 2021-02-21
 crbug.com/1180491 [ Linux ] external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Pass Failure ]
 crbug.com/1180491 [ Linux ] virtual/storage-access-api/external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Pass Failure ]
-crbug.com/1180627 [ Linux ] external/wpt/css/cssom-view/MediaQueryList-addListener-removeListener.html [ Pass Failure ]
-crbug.com/1180627 [ Linux ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/MediaQueryList-addListener-removeListener.html [ Pass Failure ]
 
 # Sheriff 2021-02-23
 crbug.com/1181466 external/wpt/css/css-scroll-snap/snap-after-relayout/resnap-to-focused.html [ Pass Failure ]

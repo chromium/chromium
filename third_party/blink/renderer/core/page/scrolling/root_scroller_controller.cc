@@ -159,7 +159,7 @@ void RootScrollerController::DidUpdateIFrameFrameView(
     frame->ScheduleVisualUpdateUnlessThrottled();
 }
 
-void RootScrollerController::RecomputeEffectiveRootScroller() {
+bool RootScrollerController::RecomputeEffectiveRootScroller() {
   ProcessImplicitCandidates();
 
   Node* new_effective_root_scroller = document_;
@@ -179,7 +179,7 @@ void RootScrollerController::RecomputeEffectiveRootScroller() {
   // re-run process even if the element itself is the same.
   if (effective_root_scroller_ == new_effective_root_scroller &&
       effective_root_scroller_->IsEffectiveRootScroller())
-    return;
+    return false;
 
   Node* old_effective_root_scroller = effective_root_scroller_;
   effective_root_scroller_ = new_effective_root_scroller;
@@ -220,6 +220,8 @@ void RootScrollerController::RecomputeEffectiveRootScroller() {
     // VisualViewportScrollNode.
     page->GetVisualViewport().SetNeedsPaintPropertyUpdate();
   }
+
+  return true;
 }
 
 bool RootScrollerController::IsValidRootScroller(const Element& element) const {
@@ -472,19 +474,22 @@ void RootScrollerController::ForAllNonThrottledLocalControllers(
   function(*this);
 }
 
-void RootScrollerController::PerformRootScrollerSelection() {
+bool RootScrollerController::PerformRootScrollerSelection() {
   TRACE_EVENT0("blink", "RootScrollerController::PerformRootScrollerSelection");
 
   // Printing can cause a lifecycle update on a detached frame. In that case,
   // don't make any changes.
   if (!document_->GetFrame() || !document_->GetFrame()->IsLocalRoot())
-    return;
+    return false;
 
   DCHECK(document_->Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean);
 
-  ForAllNonThrottledLocalControllers([](RootScrollerController& controller) {
-    controller.RecomputeEffectiveRootScroller();
-  });
+  bool result = false;
+  ForAllNonThrottledLocalControllers(
+      [&result](RootScrollerController& controller) {
+        result |= controller.RecomputeEffectiveRootScroller();
+      });
+  return result;
 }
 
 }  // namespace blink

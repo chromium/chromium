@@ -241,32 +241,30 @@ TEST_F(ElementFragmentAnchorTest, AnchorRemovedBeforeBeginFrameCrash) {
   // We're still waiting on the stylesheet to load so the load event shouldn't
   // yet dispatch and parsing is deferred. This will install the anchor.
   ASSERT_FALSE(GetDocument().IsLoadCompleted());
+
   ASSERT_TRUE(GetDocument().View()->GetFragmentAnchor());
   ASSERT_TRUE(static_cast<ElementFragmentAnchor*>(
                   GetDocument().View()->GetFragmentAnchor())
-                  ->anchor_node_);
+                  ->anchor_node_.Get());
 
   // Remove the fragment anchor from the DOM and perform GC.
   GetDocument().getElementById("anchor")->remove();
-  v8::Isolate* isolate = ToIsolate(GetDocument().GetFrame());
-  isolate->RequestGarbageCollectionForTesting(
-      v8::Isolate::kFullGarbageCollection);
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
+  EXPECT_FALSE(static_cast<ElementFragmentAnchor*>(
+                   GetDocument().View()->GetFragmentAnchor())
+                   ->anchor_node_.Get());
 
   // Now that the element has been removed and GC'd, unblock parsing. The
-  // anchor should be installed at this point.
+  // anchor should be installed at this point. When parsing finishes, a
+  // synchronous layout update will run, which will invoke the fragment anchor.
   css_resource.Complete("");
   test::RunPendingTasks();
 
-  // We should still have a fragment anchor but its node pointer should be
-  // gone since it's a WeakMember.
-  ASSERT_TRUE(GetDocument().View()->GetFragmentAnchor());
-  ASSERT_FALSE(static_cast<ElementFragmentAnchor*>(
-                   GetDocument().View()->GetFragmentAnchor())
-                   ->anchor_node_);
-
-  // We'd normally focus the fragment during BeginFrame. Make sure we don't
-  // crash since it's been GC'd.
-  Compositor().BeginFrame();
+  // When the document finishes loading, it does a synchronous layout update,
+  // which should clear LocalFrameView::fragment_anchor_ ...
+  EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
 
   // Non-crash is considered a pass.
 }

@@ -82,6 +82,7 @@ TEST_F(IntersectionObserverTest, NotificationSentWhenRootRemoved) {
       <div id='target'></div>
     </div>
   )HTML");
+  Compositor().BeginFrame();
 
   Element* root = GetDocument().getElementById("root");
   ASSERT_TRUE(root);
@@ -126,6 +127,7 @@ TEST_F(IntersectionObserverTest, DocumentRootClips) {
     <div id='target'>Hello, world!</div>
     <div id='spacer' style='height:2000px'></div>
   )HTML");
+  Compositor().BeginFrame();
 
   Document* iframe_document = To<WebLocalFrameImpl>(MainFrame().FirstChild())
                                   ->GetFrame()
@@ -172,6 +174,7 @@ TEST_F(IntersectionObserverTest, ReportsFractionOfTargetOrRoot) {
     </style>
     <div id='target'></div>
   )HTML");
+  Compositor().BeginFrame();
 
   Element* target = GetDocument().getElementById("target");
   ASSERT_TRUE(target);
@@ -248,6 +251,7 @@ TEST_F(IntersectionObserverTest, TargetRectIsEmptyAfterMapping) {
       </div>
     </div>
   )HTML");
+  Compositor().BeginFrame();
 
   Element* target = GetDocument().getElementById("target");
   ASSERT_TRUE(target);
@@ -804,6 +808,7 @@ TEST_F(IntersectionObserverV2Test, BasicOcclusion) {
     </div>
     <div id='occluder'></div>
   )HTML");
+  Compositor().BeginFrame();
 
   IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
   observer_init->setTrackVisibility(true);
@@ -862,6 +867,7 @@ TEST_F(IntersectionObserverV2Test, BasicOpacity) {
       <div id='target'></div>
     </div>
   )HTML");
+  Compositor().BeginFrame();
 
   IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
   observer_init->setTrackVisibility(true);
@@ -911,6 +917,7 @@ TEST_F(IntersectionObserverV2Test, BasicTransform) {
       <div id='target'></div>
     </div>
   )HTML");
+  Compositor().BeginFrame();
 
   IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
   observer_init->setTrackVisibility(true);
@@ -971,6 +978,7 @@ TEST_F(IntersectionObserverTest, ApplyMarginToTarget) {
       <div id=target></div>
     </div>
   )HTML");
+  Compositor().BeginFrame();
 
   Element* target = GetDocument().getElementById("target");
   ASSERT_TRUE(target);
@@ -1036,6 +1044,7 @@ TEST_F(IntersectionObserverTest, TargetMarginPercentResolvesAgainstRoot) {
       <div id=target></div>
     </div>
   )HTML");
+  Compositor().BeginFrame();
 
   Element* target = GetDocument().getElementById("target");
   ASSERT_TRUE(target);

@@ -112,6 +112,8 @@ Response LegacyDOMSnapshotAgent::GetSnapshot(
         layout_tree_nodes,
     std::unique_ptr<protocol::Array<protocol::DOMSnapshot::ComputedStyle>>*
         computed_styles) {
+  document->View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kInspector);
   // Setup snapshot.
   dom_nodes_ =
       std::make_unique<protocol::Array<protocol::DOMSnapshot::DOMNode>>();

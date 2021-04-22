@@ -1985,8 +1985,10 @@ void WebFrameWidgetImpl::Resize(const gfx::Size& new_size) {
   // FIXME: In WebViewImpl this layout was a precursor to setting the minimum
   // scale limit.  It is not clear if this is necessary for frame-level widget
   // resize.
-  if (view->NeedsLayout())
-    view->UpdateLayout();
+  if (view->NeedsLayout()) {
+    view->GetFrame().GetDocument()->UpdateStyleAndLayout(
+        DocumentUpdateReason::kSizeChange);
+  }
 
   // FIXME: Investigate whether this is needed; comment from eseidel suggests
   // that this function is flawed.
