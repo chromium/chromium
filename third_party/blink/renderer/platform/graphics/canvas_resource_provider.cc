@@ -152,7 +152,8 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
     SkImageInfo info = SkImageInfo::Make(
         Size().Width(), Size().Height(), ColorParams().GetSkColorType(),
         kPremul_SkAlphaType, ColorParams().GetSkColorSpace());
-    return SkSurface::MakeRaster(info, ColorParams().GetSkSurfaceProps());
+    SkSurfaceProps props = ColorParams().GetSkSurfaceProps();
+    return SkSurface::MakeRaster(info, &props);
   }
 };
 
@@ -587,18 +588,18 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     if (IsGpuContextLost() || !resource_)
       return nullptr;
 
+    SkSurfaceProps props = ColorParams().GetSkSurfaceProps();
     if (is_accelerated_) {
       return SkSurface::MakeFromBackendTexture(
           GetGrContext(), CreateGrTextureForResource(), GetGrSurfaceOrigin(),
           0 /* msaa_sample_count */, ColorParams().GetSkColorType(),
-          ColorParams().GetSkColorSpace(), ColorParams().GetSkSurfaceProps());
+          ColorParams().GetSkColorSpace(), &props);
     }
 
     // For software raster path, we render into cpu memory managed internally
     // by SkSurface and copy the rendered results to the GMB before dispatching
     // it to the display compositor.
-    return SkSurface::MakeRaster(resource_->CreateSkImageInfo(),
-                                 ColorParams().GetSkSurfaceProps());
+    return SkSurface::MakeRaster(resource_->CreateSkImageInfo(), &props);
   }
 
   GrBackendTexture CreateGrTextureForResource() const {
@@ -839,10 +840,11 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     auto backend_texture = GrBackendTexture(Size().Width(), Size().Height(),
                                             GrMipMapped::kNo, texture_info);
 
+    SkSurfaceProps props = ColorParams().GetSkSurfaceProps();
     return SkSurface::MakeFromBackendTexture(
         GetGrContext(), backend_texture, kTopLeft_GrSurfaceOrigin,
         0 /* msaa_sample_count */, ColorParams().GetSkColorType(),
-        ColorParams().GetSkColorSpace(), ColorParams().GetSkSurfaceProps());
+        ColorParams().GetSkColorSpace(), &props);
   }
 
   void FlushIfNeeded() {

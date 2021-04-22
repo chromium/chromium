@@ -6,6 +6,7 @@
 
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -52,11 +53,9 @@ CanvasResourceParams::CanvasResourceParams(const SkImageInfo& info)
   // TODO(https://crbug.com/1157747): This ignores |info|'s SkAlphaType.
 }
 
-const SkSurfaceProps* CanvasResourceParams::GetSkSurfaceProps() const {
-  static const SkSurfaceProps disable_lcd_props(0, kUnknown_SkPixelGeometry);
-  if (alpha_type_ == kOpaque_SkAlphaType)
-    return nullptr;
-  return &disable_lcd_props;
+SkSurfaceProps CanvasResourceParams::GetSkSurfaceProps() const {
+  bool can_use_lcd_text = (alpha_type_ == kOpaque_SkAlphaType);
+  return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
 }
 
 uint8_t CanvasResourceParams::BytesPerPixel() const {
