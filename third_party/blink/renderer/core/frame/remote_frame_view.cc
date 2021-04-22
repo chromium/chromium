@@ -238,17 +238,6 @@ void RemoteFrameView::Dispose() {
   SetNeedsOcclusionTracking(false);
 }
 
-void RemoteFrameView::InvalidateRect(const IntRect& rect) {
-  auto* object = remote_frame_->OwnerLayoutObject();
-  if (!object)
-    return;
-
-  PhysicalRect repaint_rect(rect);
-  repaint_rect.Move(PhysicalOffset(object->BorderLeft() + object->PaddingLeft(),
-                                   object->BorderTop() + object->PaddingTop()));
-  object->InvalidatePaintRectangle(repaint_rect);
-}
-
 void RemoteFrameView::SetFrameRect(const IntRect& rect) {
   EmbeddedContentView::SetFrameRect(rect);
   if (needs_frame_rect_propagation_)

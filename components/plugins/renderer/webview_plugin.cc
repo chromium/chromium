@@ -315,9 +315,9 @@ void WebViewPlugin::WebViewHelper::SetToolTipText(
   }
 }
 
-void WebViewPlugin::WebViewHelper::DidInvalidateRect(const gfx::Rect& rect) {
+void WebViewPlugin::WebViewHelper::InvalidateContainer() {
   if (plugin_->container_)
-    plugin_->container_->InvalidateRect(rect);
+    plugin_->container_->Invalidate();
 }
 
 void WebViewPlugin::WebViewHelper::SetCursor(const ui::Cursor& cursor) {

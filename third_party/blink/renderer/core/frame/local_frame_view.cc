@@ -488,19 +488,6 @@ void LocalFrameView::SetLifecycleUpdatesThrottledForTesting(bool throttled) {
   lifecycle_updates_throttled_ = throttled;
 }
 
-void LocalFrameView::InvalidateRect(const IntRect& rect) {
-  auto* layout_object = GetLayoutEmbeddedContent();
-  if (!layout_object)
-    return;
-
-  IntRect paint_invalidation_rect = rect;
-  paint_invalidation_rect.Move(
-      (layout_object->BorderLeft() + layout_object->PaddingLeft()).ToInt(),
-      (layout_object->BorderTop() + layout_object->PaddingTop()).ToInt());
-  layout_object->InvalidatePaintRectangle(
-      PhysicalRect(paint_invalidation_rect));
-}
-
 void LocalFrameView::FrameRectsChanged(const IntRect& old_rect) {
   const bool width_changed = Size().Width() != old_rect.Width();
   const bool height_changed = Size().Height() != old_rect.Height();

@@ -288,14 +288,6 @@ void LayoutEmbeddedContent::PaintReplaced(
   EmbeddedContentPainter(*this).PaintReplaced(paint_info, paint_offset);
 }
 
-void LayoutEmbeddedContent::InvalidatePaint(
-    const PaintInvalidatorContext& context) const {
-  NOT_DESTROYED();
-  LayoutReplaced::InvalidatePaint(context);
-  if (auto* plugin = Plugin())
-    plugin->InvalidatePaint();
-}
-
 CursorDirective LayoutEmbeddedContent::GetCursor(const PhysicalOffset& point,
                                                  ui::Cursor& cursor) const {
   NOT_DESTROYED();

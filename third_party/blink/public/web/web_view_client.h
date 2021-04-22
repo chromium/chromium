@@ -86,7 +86,7 @@ class WebViewClient {
   // for non-composited WebViews that exist to contribute to a "parent" WebView
   // painting. Otherwise invalidations are transmitted to the compositor through
   // the layers.
-  virtual void DidInvalidateRect(const gfx::Rect&) {}
+  virtual void InvalidateContainer() {}
 
   // Called when script in the page calls window.print().  If frame is
   // non-null, then it selects a particular frame, including its

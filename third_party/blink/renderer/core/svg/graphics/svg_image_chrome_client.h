@@ -62,7 +62,7 @@ class CORE_EXPORT SVGImageChromeClient final : public EmptyChromeClient {
 
  private:
   void ChromeDestroyed() override;
-  void InvalidateRect(const IntRect&) override;
+  void InvalidateContainer() override;
   void ScheduleAnimation(const LocalFrameView*,
                          base::TimeDelta = base::TimeDelta()) override;
 

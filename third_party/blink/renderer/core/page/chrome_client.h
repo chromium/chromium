@@ -135,7 +135,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   // For non-composited WebViews that exist to contribute to a "parent" WebView
   // painting. This informs the client of the area that needs to be redrawn.
-  virtual void InvalidateRect(const IntRect& update_rect) = 0;
+  virtual void InvalidateContainer() = 0;
 
   // Converts the rect from the viewport coordinates to screen coordinates.
   virtual IntRect ViewportToScreen(const IntRect&,

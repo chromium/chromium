@@ -997,9 +997,7 @@ TEST_P(PaintAndRasterInvalidationTest, ResizeElementWhichHasNonCustomResizer) {
 
 class PaintInvalidatorTestClient : public RenderingTestChromeClient {
  public:
-  void InvalidateRect(const IntRect&) override {
-    invalidation_recorded_ = true;
-  }
+  void InvalidateContainer() override { invalidation_recorded_ = true; }
 
   bool InvalidationRecorded() { return invalidation_recorded_; }
 

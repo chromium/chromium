@@ -60,7 +60,7 @@ void SVGImageChromeClient::ChromeDestroyed() {
   image_ = nullptr;
 }
 
-void SVGImageChromeClient::InvalidateRect(const IntRect&) {
+void SVGImageChromeClient::InvalidateContainer() {
   // If image_->page_ is null, we're being destructed, so don't fire
   // |Changed()| in that case.
   if (image_ && image_->GetImageObserver() && image_->page_)

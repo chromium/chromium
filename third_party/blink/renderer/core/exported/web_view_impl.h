@@ -288,7 +288,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void ResetScaleStateImmediately();
   base::Optional<mojom::blink::ScreenOrientation> ScreenOrientationOverride();
 
-  void InvalidateRect(const IntRect&);
+  // This is only for non-composited WebViewPlugin.
+  void InvalidateContainer();
 
   void SetZoomFactorOverride(float);
   void SetCompositorDeviceScaleFactorOverride(float);

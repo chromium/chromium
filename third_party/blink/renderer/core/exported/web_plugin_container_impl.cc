@@ -223,22 +223,14 @@ void WebPluginContainerImpl::UpdateGeometry() {
     layout->UpdateGeometry(*this);
 }
 
-void WebPluginContainerImpl::InvalidateRect(const IntRect& rect) {
-  // InvalidateRect can be called from Dispose when this plugin is no longer
-  // attached.  In this case, we return immediately.
+void WebPluginContainerImpl::Invalidate() {
+  // This can be called from Dispose when this plugin is no longer attached.
+  // In this case, we return immediately.
   if (!IsAttached())
     return;
 
-  auto* layout_object = To<LayoutBox>(element_->GetLayoutObject());
-  if (!layout_object)
-    return;
-
-  IntRect dirty_rect = rect;
-  dirty_rect.Move(
-      (layout_object->BorderLeft() + layout_object->PaddingLeft()).ToInt(),
-      (layout_object->BorderTop() + layout_object->PaddingTop()).ToInt());
-
-  layout_object->InvalidatePaintRectangle(PhysicalRect(dirty_rect));
+  if (auto* layout_object = element_->GetLayoutObject())
+    layout_object->SetShouldDoFullPaintInvalidation();
 }
 
 void WebPluginContainerImpl::SetFocused(bool focused,
@@ -530,14 +522,6 @@ void WebPluginContainerImpl::EnqueueMessageEvent(
   if (!element_->GetExecutionContext())
     return;
   element_->EnqueueEvent(*event, TaskType::kInternalDefault);
-}
-
-void WebPluginContainerImpl::Invalidate() {
-  InvalidateRect(IntRect(0, 0, Size().Width(), Size().Height()));
-}
-
-void WebPluginContainerImpl::InvalidateRect(const gfx::Rect& rect) {
-  InvalidateRect(static_cast<IntRect>(rect));
 }
 
 void WebPluginContainerImpl::ScheduleAnimation() {

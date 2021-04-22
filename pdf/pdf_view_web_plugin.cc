@@ -385,7 +385,8 @@ void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
           .set_image(std::move(snapshot), cc::PaintImage::GetNextContentId())
           .set_id(cc::PaintImage::GetNextId())
           .TakePaintImage();
-  InvalidateRectInPluginContainer(gfx::Rect(plugin_rect().size()));
+  if (!plugin_rect().IsEmpty())
+    InvalidatePluginContainer();
 }
 
 base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {
@@ -482,15 +483,6 @@ void PdfViewWebPlugin::InvalidatePluginContainer() {
   DCHECK(container_);
 
   container_->Invalidate();
-}
-
-void PdfViewWebPlugin::InvalidateRectInPluginContainer(const gfx::Rect& rect) {
-  DCHECK(container_);
-
-  if (plugin_rect().IsEmpty())
-    return;
-
-  container_->InvalidateRect(rect);
 }
 
 }  // namespace chrome_pdf

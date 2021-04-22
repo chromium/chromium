@@ -1759,14 +1759,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
 }
 
 void WebViewImpl::ThemeChanged() {
-  if (!GetPage())
-    return;
-  if (!GetPage()->MainFrame()->IsLocalFrame())
-    return;
-  LocalFrameView* view = GetPage()->DeprecatedLocalMainFrame()->View();
-
-  IntRect damaged_rect(0, 0, size_.width(), size_.height());
-  view->InvalidateRect(damaged_rect);
+  if (auto* page = GetPage())
+    page->InvalidatePaint();
 }
 
 void WebViewImpl::EnterFullscreen(LocalFrame& frame,
@@ -3444,10 +3438,10 @@ void WebViewImpl::DidChangeRootLayer(bool root_layer_exists) {
   }
 }
 
-void WebViewImpl::InvalidateRect(const IntRect& rect) {
-  // This is only for WebViewPlugin.
+void WebViewImpl::InvalidateContainer() {
+  // This is only for non-composited WebViewPlugin.
   if (!does_composite_ && web_view_client_)
-    web_view_client_->DidInvalidateRect(rect);
+    web_view_client_->InvalidateContainer();
 }
 
 void WebViewImpl::ApplyViewportChanges(const ApplyViewportChangesArgs& args) {

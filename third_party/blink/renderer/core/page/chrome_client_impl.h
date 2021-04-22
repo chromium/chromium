@@ -131,7 +131,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                                     const String& default_value,
                                     String& result) override;
   bool TabsToLinks() override;
-  void InvalidateRect(const IntRect&) override;
+  void InvalidateContainer() override;
   void ScheduleAnimation(const LocalFrameView*, base::TimeDelta delay) override;
   IntRect ViewportToScreen(const IntRect&,
                            const LocalFrameView*) const override;

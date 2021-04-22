@@ -170,7 +170,7 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
     // WebViewClient methods:
     bool AcceptsLoadDrops() override;
     bool CanUpdateLayout() override;
-    void DidInvalidateRect(const gfx::Rect&) override;
+    void InvalidateContainer() override;
 
     // WebNonCompositedWidgetClient overrides.
     void ScheduleNonCompositedAnimation() override;

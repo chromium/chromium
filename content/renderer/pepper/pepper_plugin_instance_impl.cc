@@ -703,10 +703,6 @@ void PepperPluginInstanceImpl::InvalidateRect(const gfx::Rect& rect) {
   if (!container_ || view_data_.rect.size.width == 0 ||
       view_data_.rect.size.height == 0)
     return;  // Nothing to do.
-  if (rect.IsEmpty())
-    container_->Invalidate();
-  else
-    container_->InvalidateRect(rect);
 
   if (texture_layer_) {
     if (rect.IsEmpty()) {
@@ -714,6 +710,8 @@ void PepperPluginInstanceImpl::InvalidateRect(const gfx::Rect& rect) {
     } else {
       texture_layer_->SetNeedsDisplayRect(rect);
     }
+  } else {
+    container_->Invalidate();
   }
 }
 

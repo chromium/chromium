@@ -376,6 +376,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   static void PrepareForLeakDetection();
 
+  // Fully invalidate paint of all local frames in this page.
+  void InvalidatePaint();
+
  private:
   friend class ScopedPagePauser;
 
@@ -388,7 +391,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   void NotifyPluginsChanged() const;
 
   void InvalidateColorScheme();
-  void InvalidatePaint();
+
   // Typically, the main frame and Page should both be owned by the embedder,
   // which must call Page::willBeDestroyed() prior to destroying Page. This
   // call detaches the main frame and clears this pointer, thus ensuring that

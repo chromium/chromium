@@ -167,7 +167,7 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
 
   bool TabsToLinks() override { return false; }
 
-  void InvalidateRect(const IntRect&) override {}
+  void InvalidateContainer() override {}
   void ScheduleAnimation(const LocalFrameView*,
                          base::TimeDelta delay) override {}
   IntRect ViewportToScreen(const IntRect& r,

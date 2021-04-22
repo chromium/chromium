@@ -515,8 +515,6 @@ Response InspectorOverlayAgent::setShowPaintRects(bool show) {
   cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
   debug_state.show_paint_rects = show;
   widget->SetLayerTreeDebugState(debug_state);
-  if (!show && frame_impl_->GetFrameView())
-    frame_impl_->GetFrameView()->Invalidate();
   return Response::Success();
 }
 
@@ -531,9 +529,6 @@ Response InspectorOverlayAgent::setShowLayoutShiftRegions(bool show) {
   cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
   debug_state.show_layout_shift_regions = show;
   widget->SetLayerTreeDebugState(debug_state);
-
-  if (!show && frame_impl_->GetFrameView())
-    frame_impl_->GetFrameView()->Invalidate();
   return Response::Success();
 }
 
@@ -551,7 +546,6 @@ Response InspectorOverlayAgent::setShowScrollBottleneckRects(bool show) {
   debug_state.show_non_fast_scrollable_rects = show;
   debug_state.show_main_thread_scrolling_reason_rects = show;
   widget->SetLayerTreeDebugState(debug_state);
-
   return Response::Success();
 }
 

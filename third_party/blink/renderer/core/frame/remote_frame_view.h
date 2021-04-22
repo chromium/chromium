@@ -43,8 +43,6 @@ class RemoteFrameView final : public GarbageCollected<RemoteFrameView>,
   void Dispose() override;
   void SetFrameRect(const IntRect&) override;
   void PropagateFrameRects() override;
-  // Override to notify remote frame that its viewport size has changed.
-  void InvalidateRect(const IntRect&);
   void Paint(GraphicsContext&,
              const GlobalPaintFlags,
              const CullRect&,

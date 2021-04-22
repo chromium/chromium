@@ -239,7 +239,7 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
   // so that the client will initiate repaint of the contents.
   if (needs_invalidate_chrome_client_) {
     if (auto* client = root_frame_view.GetChromeClient())
-      client->InvalidateRect(IntRect(IntPoint(), root_frame_view.Size()));
+      client->InvalidateContainer();
   }
 }
 

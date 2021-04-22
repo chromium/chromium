@@ -404,9 +404,8 @@ bool ChromeClientImpl::TabsToLinks() {
   return web_view_->TabsToLinks();
 }
 
-void ChromeClientImpl::InvalidateRect(const IntRect& update_rect) {
-  if (!update_rect.IsEmpty())
-    web_view_->InvalidateRect(update_rect);
+void ChromeClientImpl::InvalidateContainer() {
+  web_view_->InvalidateContainer();
 }
 
 void ChromeClientImpl::ScheduleAnimation(const LocalFrameView* frame_view,

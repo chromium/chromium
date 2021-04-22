@@ -144,9 +144,6 @@ class CORE_EXPORT LocalFrameView final
   LocalFrameView(LocalFrame&, const IntSize& initial_size);
   ~LocalFrameView() override;
 
-  void Invalidate() { InvalidateRect(IntRect(0, 0, Width(), Height())); }
-  void InvalidateRect(const IntRect&);
-
   LocalFrame& GetFrame() const {
     DCHECK(frame_);
     return *frame_;

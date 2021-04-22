@@ -133,10 +133,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // page in it.
   void InvalidatePluginContainer();
 
-  // Schedules a paint of the page of a given region in the web plugin
-  // container. The coordinates are relative to the top-left of the container.
-  void InvalidateRectInPluginContainer(const gfx::Rect& rect);
-
   blink::WebPluginParams initial_params_;
   blink::WebPluginContainer* container_ = nullptr;
 
