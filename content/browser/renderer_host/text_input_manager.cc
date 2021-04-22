@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/numerics/clamped_math.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "ui/gfx/geometry/rect.h"
@@ -258,10 +259,10 @@ void TextInputManager::SelectionBoundsChanged(
       x_after_transform.back(), y_after_transform.back());
   const gfx::Rect bounding_box_transformed(
       bounding_box_origin_after_transform,
-      gfx::Size(bounding_box_bottom_right_after_transform.x() -
-                    bounding_box_origin_after_transform.x(),
-                bounding_box_bottom_right_after_transform.y() -
-                    bounding_box_origin_after_transform.y()));
+      gfx::Size(base::ClampSub(bounding_box_bottom_right_after_transform.x(),
+                               bounding_box_origin_after_transform.x()),
+                base::ClampSub(bounding_box_bottom_right_after_transform.y(),
+                               bounding_box_origin_after_transform.y())));
 
   if (anchor_bound == selection_region_map_[view].anchor &&
       focus_bound == selection_region_map_[view].focus &&
