@@ -3519,21 +3519,7 @@ ci.fyi_builder(
     ),
     goma_backend = None,
     reclient_instance = "rbe-chromium-trusted",
-    reclient_jobs = 250,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
-    os = os.LINUX_DEFAULT,
-)
-
-ci.fyi_builder(
-    name = "Linux Builder (j-250) (reclient)",
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-        short_name = "re",
-    ),
-    goma_backend = None,
-    reclient_instance = "rbe-chromium-trusted",
-    reclient_jobs = 250,
+    reclient_jobs = 500,
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
@@ -3600,22 +3586,6 @@ ci.fyi_builder(
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
-)
-
-ci.fyi_builder(
-    name = "TSAN Release (j-100) (reclient)",
-    console_view_entry = consoles.console_view_entry(
-        category = "linux tsan",
-        short_name = "rre",
-    ),
-    goma_backend = None,
-    reclient_instance = "rbe-chromium-trusted",
-    reclient_jobs = 100,
-    reclient_rewrapper_env = {"RBE_cache_silo": "Linux TSan Builder (reclient)"},
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
-    os = os.LINUX_DEFAULT,
-    schedule = "triggered",  # triggered manually via Scheduler UI
 )
 
 ci.fyi_builder(
