@@ -367,7 +367,11 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
             final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(mId);
             PhotoCapabilities.Builder builder = new PhotoCapabilities.Builder();
-
+            if (cameraCharacteristics == null) {
+                VideoCaptureJni.get().onGetPhotoCapabilitiesReply(mNativeVideoCaptureDeviceAndroid,
+                        VideoCaptureCamera2.this, mCallbackId, builder.build());
+                return;
+            }
             int minIso = 0;
             int maxIso = 0;
             final Range<Integer> iso_range =
@@ -753,6 +757,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
             assert mCameraThreadHandler.getLooper() == Looper.myLooper() : "called on wrong thread";
 
             final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(mId);
+            if (cameraCharacteristics == null) return;
             final Rect canvas =
                     cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
 
@@ -888,6 +893,11 @@ public class VideoCaptureCamera2 extends VideoCapture {
             }
 
             final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(mId);
+            if (cameraCharacteristics == null) {
+                Log.e(TAG, "cameraCharacteristics error");
+                notifyTakePhotoError(mCallbackId);
+                return;
+            }
             final StreamConfigurationMap streamMap = cameraCharacteristics.get(
                     CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             final Size[] supportedSizes = streamMap.getOutputSizes(ImageFormat.JPEG);
@@ -1087,6 +1097,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
             // available, see https://crbug.com/718387.
             // https://developer.android.com/reference/android/hardware/camera2/CaptureRequest.html#CONTROL_VIDEO_STABILIZATION_MODE
             final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(mId);
+            if (cameraCharacteristics == null) return false;
             final int[] stabilizationModes = cameraCharacteristics.get(
                     CameraCharacteristics.CONTROL_AVAILABLE_VIDEO_STABILIZATION_MODES);
             for (int mode : stabilizationModes) {
@@ -1162,7 +1173,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 // |mExposureCompensation|.
                 if (mLastExposureTimeNs != 0) {
                     requestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, mLastExposureTimeNs);
-                } else {
+                } else if (cameraCharacteristics != null) {
                     Range<Long> range = cameraCharacteristics.get(
                             CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
                     requestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME,
@@ -1229,9 +1240,12 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 requestBuilder.set(CaptureRequest.CONTROL_AWB_LOCK, true);
             }
             if (mColorTemperature > 0) {
-                final int colorSetting = getClosestWhiteBalance(mColorTemperature,
-                        cameraCharacteristics.get(
-                                CameraCharacteristics.CONTROL_AWB_AVAILABLE_MODES));
+                int colorSetting = -1;
+                if (cameraCharacteristics != null) {
+                    colorSetting = getClosestWhiteBalance(mColorTemperature,
+                            cameraCharacteristics.get(
+                                    CameraCharacteristics.CONTROL_AWB_AVAILABLE_MODES));
+                }
                 Log.d(TAG, " Color temperature (%d ==> %d)", mColorTemperature, colorSetting);
                 if (colorSetting != -1) {
                     requestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, colorSetting);
@@ -1564,6 +1578,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
             }
         }
         final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(mId);
+        if (cameraCharacteristics == null) return false;
         final StreamConfigurationMap streamMap =
                 cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
