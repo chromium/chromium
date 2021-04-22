@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_POWER_SCHEDULER_POWER_MODE_VOTER_H_
 #define COMPONENTS_POWER_SCHEDULER_POWER_MODE_VOTER_H_
 
+#include <memory>
+
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "components/power_scheduler/power_mode.h"
