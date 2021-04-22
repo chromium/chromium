@@ -40,6 +40,7 @@ import org.chromium.android_webview.test.util.VideoTestUtil;
 import org.chromium.android_webview.test.util.VideoTestWebServer;
 import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -74,6 +75,7 @@ import java.util.regex.Pattern;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+@Batch(Batch.PER_CLASS)
 public class AwSettingsTest {
     @Rule
     public AwActivityTestRule mActivityTestRule =
