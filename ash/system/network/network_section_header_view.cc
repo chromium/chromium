@@ -338,6 +338,12 @@ void MobileSectionHeaderView::AddExtraButtons(bool enabled) {
   if (!chromeos::features::IsCellularActivationUiEnabled())
     return;
 
+  // The button navigates to Settings, only add it if this can occur.
+  if (!TrayPopupUtils::CanOpenWebUISettings())
+    return;
+
+  // The button opens the eSIM setup flow, and should only be added if the
+  // device is eSIM-capable.
   if (IsESimSupported())
     PerformAddExtraButtons(enabled);
 }
