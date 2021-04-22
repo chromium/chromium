@@ -80,10 +80,7 @@ Polymer({
      */
     quickUnlockDisabledByPolicy_: {
       type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('quickUnlockDisabledByPolicy');
-      },
-      readOnly: true,
+      value: loadTimeData.getBoolean('quickUnlockDisabledByPolicy'),
     },
 
     /**
@@ -181,6 +178,13 @@ Polymer({
     this.fingerprintBrowserProxy_ =
         settings.FingerprintBrowserProxyImpl.getInstance();
     this.updateNumFingerprints_();
+
+    this.addWebUIListener(
+        'quick-unlock-disabled-by-policy-changed',
+        (quickUnlockDisabledByPolicy) => {
+          this.quickUnlockDisabledByPolicy_ = quickUnlockDisabledByPolicy;
+        });
+    chrome.send('RequestQuickUnlockDisabledByPolicy');
   },
 
   /**

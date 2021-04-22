@@ -935,7 +935,8 @@ void PeopleSection::AddHandlers(content::WebUI* web_ui) {
     web_ui->AddMessageHandler(std::make_unique<OSSyncHandler>(profile()));
 
   web_ui->AddMessageHandler(
-      std::make_unique<chromeos::settings::QuickUnlockHandler>());
+      std::make_unique<chromeos::settings::QuickUnlockHandler>(profile(),
+                                                               pref_service_));
 
   web_ui->AddMessageHandler(
       std::make_unique<chromeos::settings::FingerprintHandler>(profile()));

@@ -7,7 +7,7 @@
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 suite('LockScreenPage', function() {
@@ -45,5 +45,21 @@ suite('LockScreenPage', function() {
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Lock screen toggle should be focused for settingId=' + settingId);
+  });
+
+  test('Lock screen options disabled by policy', async () => {
+    const unlockTypeRadioGroup = lockScreenPage.$$('#unlockType');
+    assertTrue(!!unlockTypeRadioGroup);
+
+    await test_util.flushTasks();
+    assertFalse(unlockTypeRadioGroup.disabled);
+    cr.webUIListenerCallback('quick-unlock-disabled-by-policy-changed', true);
+
+    await test_util.flushTasks();
+    assertTrue(unlockTypeRadioGroup.disabled);
+    cr.webUIListenerCallback('quick-unlock-disabled-by-policy-changed', false);
+
+    await test_util.flushTasks();
+    assertFalse(unlockTypeRadioGroup.disabled);
   });
 });

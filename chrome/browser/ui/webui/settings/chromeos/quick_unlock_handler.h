@@ -7,6 +7,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "components/prefs/pref_change_registrar.h"
+
+class PrefService;
+class Profile;
 
 namespace base {
 class ListValue;
@@ -18,20 +22,26 @@ namespace settings {
 // Settings WebUI handler for quick unlock settings.
 class QuickUnlockHandler : public ::settings::SettingsPageUIHandler {
  public:
-  QuickUnlockHandler();
+  QuickUnlockHandler(Profile* profile, PrefService* pref_service);
   QuickUnlockHandler(const QuickUnlockHandler&) = delete;
   QuickUnlockHandler& operator=(const QuickUnlockHandler&) = delete;
   ~QuickUnlockHandler() override;
 
   // SettingsPageUIHandler:
   void RegisterMessages() override;
-  void OnJavascriptAllowed() override {}
-  void OnJavascriptDisallowed() override {}
+  void OnJavascriptAllowed() override;
+  void OnJavascriptDisallowed() override;
 
  private:
   void HandleRequestPinLoginState(const base::ListValue* args);
-
   void OnPinLoginAvailable(bool is_available);
+
+  void HandleQuickUnlockDisabledByPolicy(const base::ListValue* args);
+  void UpdateQuickUnlockDisabledByPolicy();
+
+  Profile* profile_;
+  PrefService* pref_service_;
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<QuickUnlockHandler> weak_ptr_factory_{this};
 };
