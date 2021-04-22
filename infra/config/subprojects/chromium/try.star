@@ -220,7 +220,6 @@ try_.blink_builder(
 try_.blink_builder(
     name = "win7-blink-rel",
     goma_backend = goma.backend.RBE_PROD,
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
     os = os.WINDOWS_ANY,
     builderless = True,
 )
@@ -285,7 +284,6 @@ try_.chromium_builder(
     os = os.WINDOWS_DEFAULT,
     cores = 32,
     execution_timeout = 6 * time.hour,
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 try_.chromium_android_builder(
@@ -708,7 +706,6 @@ try_.chromium_angle_builder(
 try_.chromium_angle_builder(
     name = "win-angle-chromium-x86-try",
     os = os.WINDOWS_ANY,
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
     executable = "recipe:angle_chromium_trybot",
 )
 
@@ -721,7 +718,6 @@ try_.chromium_angle_builder(
 try_.chromium_angle_builder(
     name = "win-angle-x86-try",
     os = os.WINDOWS_ANY,
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
     executable = "recipe:angle_chromium_trybot",
 )
 
@@ -910,7 +906,6 @@ try_.chromium_dawn_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     os = os.WINDOWS_ANY,
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/gpu/.+",
@@ -944,13 +939,11 @@ try_.chromium_dawn_builder(
 try_.chromium_dawn_builder(
     name = "dawn-try-win10-x86-rel",
     os = os.WINDOWS_ANY,
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 try_.chromium_dawn_builder(
     name = "dawn-try-win10-x64-asan-rel",
     os = os.WINDOWS_ANY,
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 try_.chromium_linux_builder(
@@ -1714,7 +1707,6 @@ try_.chromium_win_builder(
     executable = "recipe:chromium_libfuzzer_trybot",
     main_list_view = "try",
     os = os.WINDOWS_ANY,
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
     tryjob = try_.job(),
 )
 
@@ -1736,17 +1728,14 @@ try_.chromium_win_builder(
 
 try_.chromium_win_builder(
     name = "win_chromium_dbg_ng",
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 try_.chromium_win_builder(
     name = "win_chromium_x64_rel_ng",
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 try_.chromium_win_builder(
     name = "win_mojo",
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 try_.chromium_win_builder(
@@ -1760,7 +1749,6 @@ try_.chromium_win_builder(
 
 try_.chromium_win_builder(
     name = "win_x64_archive",
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 try_.chromium_win_builder(
@@ -1806,7 +1794,6 @@ try_.chromium_win_builder(
     cores = 16,
     execution_timeout = 4 * time.hour + 30 * time.minute,
     goma_jobs = goma.jobs.J300,
-    goma_enable_ats = True,  # TODO(b/183895446): remove this
     main_list_view = "try",
     ssd = True,
     tryjob = try_.job(
