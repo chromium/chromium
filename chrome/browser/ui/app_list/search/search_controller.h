@@ -31,6 +31,7 @@ namespace app_list {
 
 class SearchMetricsObserver;
 class SearchProvider;
+class RankerDelegate;
 enum class RankingItemType;
 
 // Controller that collects query from given SearchBoxModel, dispatches it
@@ -107,6 +108,15 @@ class SearchController {
 
   // If set, called when OnResultsChanged is invoked.
   ResultsChangedCallback results_changed_callback_;
+
+  // TODO(crbug/1199206): As part of the prototyping for category-based search,
+  // the behaviour of this class is significantly changed depending on whether
+  // the CategoricalSearch feature flag is enabled. Eventually, we intend to
+  // remove the Mixer class entirely.
+
+  // Top-level result ranker. Replaces the Mixer if the categorical search flag
+  // is enabled.
+  std::unique_ptr<RankerDelegate> ranker_;
 
   std::unique_ptr<Mixer> mixer_;
   std::unique_ptr<SearchMetricsObserver> metrics_observer_;

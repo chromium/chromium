@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
+#include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
 #include "chrome/browser/ui/app_list/search/search_metrics_observer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/chip_ranker.h"
@@ -72,14 +73,23 @@ SearchController::SearchController(AppListModelUpdater* model_updater,
                                    ash::AppListNotifier* notifier,
                                    Profile* profile)
     : profile_(profile),
-      mixer_(std::make_unique<Mixer>(model_updater)),
       metrics_observer_(std::make_unique<SearchMetricsObserver>(notifier)),
-      list_controller_(list_controller) {}
+      list_controller_(list_controller) {
+  if (app_list_features::IsCategoricalSearchEnabled()) {
+    ranker_ = std::make_unique<RankerDelegate>(profile, model_updater, this);
+  } else {
+    mixer_ = std::make_unique<Mixer>(model_updater);
+  }
+}
 
 SearchController::~SearchController() {}
 
 void SearchController::InitializeRankers() {
-  mixer_->InitializeRankers(profile_, this);
+  if (ranker_) {
+    // TODO(crbug.com/1199206): Implement.
+  } else {
+    mixer_->InitializeRankers(profile_, this);
+  }
 }
 
 void SearchController::Start(const std::u16string& query) {
@@ -135,15 +145,22 @@ void SearchController::InvokeResultAction(ChromeSearchResult* result,
 }
 
 size_t SearchController::AddGroup(size_t max_results) {
-  return mixer_->AddGroup(max_results);
+  if (ranker_) {
+    return 0ul;
+  } else {
+    return mixer_->AddGroup(max_results);
+  }
 }
 
 void SearchController::AddProvider(size_t group_id,
                                    std::unique_ptr<SearchProvider> provider) {
+  if (!ranker_) {
+    mixer_->AddProviderToGroup(group_id, provider.get());
+  }
+
   provider->set_result_changed_callback(
       base::BindRepeating(&SearchController::OnResultsChangedWithType,
                           base::Unretained(this), provider->ResultType()));
-  mixer_->AddProviderToGroup(group_id, provider.get());
   providers_.emplace_back(std::move(provider));
 }
 
@@ -162,7 +179,11 @@ void SearchController::OnResultsChanged() {
       query_for_recommendation_
           ? ash::SharedAppListConfig::instance().num_start_page_tiles()
           : ash::SharedAppListConfig::instance().max_search_results();
-  mixer_->MixAndPublish(num_max_results, last_query_);
+  if (ranker_) {
+    // TODO(crbug.com/1199206): Implement.
+  } else {
+    mixer_->MixAndPublish(num_max_results, last_query_);
+  }
 }
 
 ChromeSearchResult* SearchController::FindSearchResult(
@@ -181,7 +202,9 @@ void SearchController::OnSearchResultsImpressionMade(
     const ash::SearchResultIdWithPositionIndices& results,
     int launched_index) {
   if (trimmed_query.empty()) {
-    mixer_->search_result_ranker()->ZeroStateResultsDisplayed(results);
+    if (mixer_) {
+      mixer_->search_result_ranker()->ZeroStateResultsDisplayed(results);
+    }
 
     // Extract result types for logging.
     std::vector<RankingItemType> result_types;
@@ -254,7 +277,11 @@ void SearchController::Train(AppLaunchData&& app_launch_data) {
                      base::HashMetricName(base::UTF16ToUTF8(last_query_)))}});
 
   // Train all search result ranking models.
-  mixer_->Train(app_launch_data);
+  if (ranker_) {
+    // TODO(crbug.com/1199206): Implement.
+  } else {
+    mixer_->Train(app_launch_data);
+  }
 }
 
 void SearchController::AppListShown() {
