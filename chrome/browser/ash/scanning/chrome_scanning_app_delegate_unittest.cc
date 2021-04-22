@@ -12,6 +12,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -21,9 +22,29 @@ namespace ash {
 
 namespace {
 
+constexpr char kExpectedScanSettings[] = R"({
+    "lastUsedScannerName": "Brother MFC-J497DW",
+    "scanToPath": "path/to/file",
+    "scanners": [
+      {
+        "name": "Brother MFC-J497DW",
+        "lastScanDate": "2021-04-16T02:45:26.768Z",
+        "sourceName": "ADF",
+        "fileType": 2,
+        "colorMode": 1,
+        "pageSize": 2,
+        "resolutionDpi": 100
+      }
+    ]
+  })";
+
 // "root" is appended to the user's Google Drive directory to form the
 // complete path.
 constexpr char kRoot[] = "root";
+
+// The name of the sticky settings pref.
+constexpr char kScanningStickySettingsPref[] =
+    "scanning.scanning_sticky_settings";
 
 }  // namespace
 
@@ -137,6 +158,25 @@ TEST_F(ChromeScanningAppDelegateTest, ShowFilesAppReferencesNotSupported) {
   base::File(test_file, base::File::FLAG_CREATE | base::File::FLAG_READ);
   ASSERT_FALSE(chrome_scanning_app_delegate_->ShowFileInFilesApp(
       my_files_path_.Append("../MyFiles/test_file.png")));
+}
+
+// Validates that scan settings are saved to the Pref service.
+TEST_F(ChromeScanningAppDelegateTest, SaveScanSettings) {
+  chrome_scanning_app_delegate_->SaveScanSettingsToPrefs(kExpectedScanSettings);
+  EXPECT_EQ(kExpectedScanSettings,
+            profile_->GetPrefs()->GetString(kScanningStickySettingsPref));
+}
+
+// Validates that scan settings can be retrieved from the Pref service.
+TEST_F(ChromeScanningAppDelegateTest, GetScanSettings) {
+  // No pref should be found for |kScanningStickySettingsPref| yet.
+  EXPECT_EQ(std::string(),
+            chrome_scanning_app_delegate_->GetScanSettingsFromPrefs());
+
+  profile_->GetPrefs()->SetString(kScanningStickySettingsPref,
+                                  kExpectedScanSettings);
+  EXPECT_EQ(kExpectedScanSettings,
+            chrome_scanning_app_delegate_->GetScanSettingsFromPrefs());
 }
 
 }  // namespace ash

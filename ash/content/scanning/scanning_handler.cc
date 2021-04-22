@@ -60,6 +60,16 @@ void ScanningHandler::RegisterMessages() {
       "openFilesInMediaApp",
       base::BindRepeating(&ScanningHandler::HandleOpenFilesInMediaApp,
                           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "saveScanSettings",
+      base::BindRepeating(&ScanningHandler::HandleSaveScanSettings,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "getScanSettings",
+      base::BindRepeating(&ScanningHandler::HandleGetScanSettings,
+                          base::Unretained(this)));
 }
 
 void ScanningHandler::FileSelected(const base::FilePath& path,
@@ -180,6 +190,29 @@ void ScanningHandler::HandleGetMyFilesPath(const base::ListValue* args) {
   const base::FilePath my_files_path = scanning_app_delegate_->GetMyFilesPath();
   ResolveJavascriptCallback(base::Value(callback),
                             base::Value(my_files_path.value()));
+}
+
+void ScanningHandler::HandleSaveScanSettings(const base::ListValue* args) {
+  CHECK(base::FeatureList::IsEnabled(ash::features::kScanAppStickySettings));
+  if (!IsJavascriptAllowed())
+    return;
+
+  CHECK_EQ(1U, args->GetSize());
+  const std::string& scan_settings = args->GetList()[0].GetString();
+  scanning_app_delegate_->SaveScanSettingsToPrefs(scan_settings);
+}
+
+void ScanningHandler::HandleGetScanSettings(const base::ListValue* args) {
+  CHECK(base::FeatureList::IsEnabled(ash::features::kScanAppStickySettings));
+  if (!IsJavascriptAllowed())
+    return;
+
+  CHECK_EQ(1U, args->GetSize());
+  const std::string& callback = args->GetList()[0].GetString();
+
+  ResolveJavascriptCallback(
+      base::Value(callback),
+      base::Value(scanning_app_delegate_->GetScanSettingsFromPrefs()));
 }
 
 }  // namespace ash

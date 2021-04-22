@@ -76,6 +76,12 @@ class ScanningHandler : public content::WebUIMessageHandler,
   // Gets the MyFiles path for the current user.
   void HandleGetMyFilesPath(const base::ListValue* args);
 
+  // Saves scan settings to Pref service.
+  void HandleSaveScanSettings(const base::ListValue* args);
+
+  // Fetches scan settings from Pref service.
+  void HandleGetScanSettings(const base::ListValue* args);
+
   std::string scan_location_callback_id_;
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;

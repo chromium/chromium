@@ -20,6 +20,8 @@
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -34,6 +36,10 @@ namespace {
 // "root" is appended to the user's Google Drive directory to form the
 // complete path.
 constexpr char kRoot[] = "root";
+
+// The name of the sticky settings pref.
+constexpr char kScanningStickySettingsPref[] =
+    "scanning.scanning_sticky_settings";
 
 // Determines if |path_to_file| is a supported file path for the Files app. Only
 // files under the |drive_path| and |my_files_path| paths are allowed to be
@@ -90,6 +96,10 @@ base::FilePath ChromeScanningAppDelegate::GetMyFilesPath() {
   return my_files_path_;
 }
 
+std::string ChromeScanningAppDelegate::GetScanSettingsFromPrefs() {
+  return GetPrefs()->GetString(kScanningStickySettingsPref);
+}
+
 void ChromeScanningAppDelegate::OpenFilesInMediaApp(
     const std::vector<base::FilePath>& file_paths) {
   if (!base::FeatureList::IsEnabled(chromeos::features::kScanAppMediaLink))
@@ -109,6 +119,11 @@ void ChromeScanningAppDelegate::OpenFilesInMediaApp(
       apps::mojom::LaunchSource::kFromOtherApp, std::move(files));
 }
 
+void ChromeScanningAppDelegate::SaveScanSettingsToPrefs(
+    const std::string& scan_settings) {
+  GetPrefs()->SetString(kScanningStickySettingsPref, scan_settings);
+}
+
 bool ChromeScanningAppDelegate::ShowFileInFilesApp(
     const base::FilePath& path_to_file) {
   const bool can_show_file_picker =
@@ -121,6 +136,12 @@ bool ChromeScanningAppDelegate::ShowFileInFilesApp(
   return true;
 }
 
+// static
+void ChromeScanningAppDelegate::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterStringPref(kScanningStickySettingsPref, std::string());
+}
+
 void ChromeScanningAppDelegate::SetGoogleDrivePathForTesting(
     const base::FilePath& google_drive_path) {
   google_drive_path_ = google_drive_path;
@@ -129,6 +150,10 @@ void ChromeScanningAppDelegate::SetGoogleDrivePathForTesting(
 void ChromeScanningAppDelegate::SetMyFilesPathForTesting(
     const base::FilePath& my_files_path) {
   my_files_path_ = my_files_path;
+}
+
+PrefService* ChromeScanningAppDelegate::GetPrefs() const {
+  return Profile::FromWebUI(web_ui_)->GetPrefs();
 }
 
 }  // namespace ash

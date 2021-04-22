@@ -138,11 +138,18 @@ class FakeScanningAppDelegate : public ScanningAppDelegate {
     return kTestFilePath == path_to_file.value();
   }
 
+  void SaveScanSettingsToPrefs(const std::string& scan_settings) override {
+    scan_settings_ = scan_settings;
+  }
+
+  std::string GetScanSettingsFromPrefs() override { return scan_settings_; }
+
   // Returns the file paths saved in OpenFilesInMediaApp().
   const std::vector<base::FilePath>& file_paths() const { return file_paths_; }
 
  private:
   std::vector<base::FilePath> file_paths_;
+  std::string scan_settings_;
 };
 
 class ScanningHandlerTest : public testing::Test {
@@ -163,7 +170,9 @@ class ScanningHandlerTest : public testing::Test {
     base::ListValue args;
     web_ui_.HandleReceivedMessage("initialize", &args);
 
-    scoped_feature_list_.InitWithFeatures({features::kScanAppMediaLink}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kScanAppMediaLink, ash::features::kScanAppStickySettings},
+        {});
   }
 
   void TearDown() override { ui::SelectFileDialog::SetFactory(nullptr); }
@@ -279,6 +288,41 @@ TEST_F(ScanningHandlerTest, OpenFilesInMediaApp) {
   const std::vector<base::FilePath> expected_file_paths(
       {base::FilePath(file1), base::FilePath(file2)});
   EXPECT_EQ(expected_file_paths, fake_scanning_app_delegate_->file_paths());
+}
+
+// Validates that calling the saveScanSettings then the getScanSettings Web UI
+// event invokes ChromeScanningAppDelegate.SaveScanSettingsToPrefs() and
+// ChromeScanningAppDelegate.GetScanSettingsFromPrefs().
+TEST_F(ScanningHandlerTest, ScanSettingsPrefs) {
+  const std::string expected_sticky_settings = R"({
+    "lastUsedScannerName": "Brother MFC-J497DW",
+    "scanToPath": "path/to/file",
+    "scanners": [
+      {
+        "name": "Brother MFC-J497DW",
+        "lastScanDate": "2021-04-16T02:45:26.768Z",
+        "sourceName": "ADF",
+        "fileType": 2,
+        "colorMode": 1,
+        "pageSize": 2,
+        "resolutionDpi": 100
+      }
+    ]
+  })";
+
+  // First, save the expected scan settings to the Pref service.
+  base::ListValue save_args;
+  save_args.Append(expected_sticky_settings);
+  web_ui_.HandleReceivedMessage("saveScanSettings", &save_args);
+
+  // Then retrieve the expected scan settings from the Pref service.
+  const size_t call_data_count_before_call = web_ui_.call_data().size();
+  base::ListValue get_args;
+  get_args.Append(kHandlerFunctionName);
+  web_ui_.HandleReceivedMessage("getScanSettings", &get_args);
+  const content::TestWebUI::CallData& call_data =
+      GetCallData(call_data_count_before_call);
+  EXPECT_EQ(expected_sticky_settings, call_data.arg3()->GetString());
 }
 
 }  // namespace ash
