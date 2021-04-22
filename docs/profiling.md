@@ -241,3 +241,52 @@ If you use `pprof -proto chrome-profile-renderer-12345` to turn your perf data
 into a proto file, you can then use that resulting file with internal tools.
 See [http://go/cprof/user#fs-profiles](http://go/cprof/user#fs-profiles])
 for instructions on how to go about this.
+
+# macOS
+
+## General tricks
+
+### Using PIDs in commands
+
+Many of the profiling tools expect you to provide the PID of the process to profile. If the tool used does not support finding the application by name or you would like to run the command for many processes it can be useful to use `pgrep` to find the PIDs.
+
+Find the PID for Chromium (browser process):
+    
+    $ pgrep -X Chromium
+Find the PID for all child processes of Chromium:
+    
+    $ pgrep -P $CHROMIUM_PID
+Combine commands to run tool for Chromium and all and all it's children:
+    
+    $ cat <(pgrep -x Chromium) <(pgrep -P $(pgrep -x Chromium)) | xargs $MY_TOOL --pid
+
+## Checkout setup
+
+    is_debug = false
+    
+    # Most profiling techniques on macOS will work with minimal symbols for local builds.
+    # You should try and use minimal symbols when starting out because most tools will take
+    # an incredibly long time to process the symbols and in some cases will freeze the application
+    # while doing so.
+    blink_symbol_level = 0
+    symbol_level = 0
+
+## Tools
+
+### Sample
+#### Pros
+* Ships with macOS.
+* Traces can be symbolized after capturing.
+#### Cons
+* Has substantial observer impact and can interfere with the application, especially while loading symbols.
+* Does not differentiate between idle and active stacks so filtering is needed. Also obscures CPU impact of functions that sleep.
+
+#### Usage
+Sample stacks of $pid for 10 seconds grabbing a stack every 1ms. [-maydie] to still have stacks if process exits.
+    $ sample $pid 10 1 -mayDie -f ./output.txt
+
+### Instruments
+    $TODO(http://crbug.com/1201656) : Fill this in.
+
+### DTrace
+    $TODO(http://crbug.com/1201656) : Fill this in.
