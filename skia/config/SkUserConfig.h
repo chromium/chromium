@@ -202,19 +202,10 @@ SK_API void SkDebugf_FileLine(const char* file,
 // (https://bugs.chromium.org/p/skia/issues/detail?id=4863)
 #define SK_SUPPORT_LEGACY_ANISOTROPIC_MIPMAP_SCALE
 
-// For now, Chrome should only attempt to reduce opList splitting when recording
-// DDLs
-#define SK_DISABLE_REDUCE_OPLIST_SPLITTING
-
 // Max. verb count for paths rendered by the edge-AA tessellating path renderer.
 #define GR_AA_TESSELLATOR_MAX_VERB_COUNT 100
 
 #define SK_SUPPORT_LEGACY_AAA_CHOICE
-
-#define GR_OP_ALLOCATE_USE_NEW
-
-// Staging for lowp::bilerp_clamp_8888, and for planned misc. others.
-#define SK_DISABLE_LOWP_BILERP_CLAMP_CLAMP_STAGE
 
 #define SK_SUPPORT_LEGACY_DRAWLOOPER
 
@@ -222,6 +213,9 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_SUPPORT_LEGACY_DITHER
 
+#define SK_LEGACY_FLOAT_RSQRT
+
+#define SK_RASTER_PIPELINE_LEGACY_RCP_RSQRT
 
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
