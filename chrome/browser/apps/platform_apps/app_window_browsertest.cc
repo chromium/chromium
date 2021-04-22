@@ -155,9 +155,6 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest, DISABLED_TestMaximize) {
 // of lacros-chrome is complete.
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_TestMinimize DISABLED_TestMinimize
-#elif defined(OS_MAC)
-// Fails on Mac: https://crbug.com/834908
-#define MAYBE_TestMinimize DISABLED_TestMinimize
 #else
 #define MAYBE_TestMinimize TestMinimize
 #endif
@@ -180,15 +177,6 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest, DISABLED_TestRestoreAfterClose) {
 #define MAYBE_TestInitialBounds DISABLED_TestInitialBounds
 #define MAYBE_TestInitialConstraints DISABLED_TestInitialConstraints
 #define MAYBE_TestSetBounds DISABLED_TestSetBounds
-#define MAYBE_TestSetSizeConstraints DISABLED_TestSetSizeConstraints
-#elif defined(OS_MAC)
-// Most of these don't work under MacViews, which has never had complete support
-// for old-style app windows.
-// https://crbug.com/834908
-#define MAYBE_TestDeprecatedBounds TestDeprecatedBounds
-#define MAYBE_TestInitialBounds DISABLED_TestInitialBounds
-#define MAYBE_TestInitialConstraints DISABLED_TestInitialConstraints
-#define MAYBE_TestSetBounds TestSetBounds
 #define MAYBE_TestSetSizeConstraints DISABLED_TestSetSizeConstraints
 #else
 #define MAYBE_TestDeprecatedBounds TestDeprecatedBounds
