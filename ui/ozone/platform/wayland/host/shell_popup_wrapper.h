@@ -13,7 +13,7 @@ namespace ui {
 class WaylandConnection;
 class WaylandWindow;
 
-enum class MenuType {
+enum class PopupType {
   TYPE_RIGHT_CLICK,
   TYPE_3DOT_PARENT_MENU,
   TYPE_3DOT_CHILD_MENU,
@@ -78,17 +78,17 @@ class ShellPopupWrapper {
   // Sends acknowledge configure event back to wayland.
   virtual void AckConfigure(uint32_t serial) = 0;
 
-  MenuType GetMenuTypeForPositioner(WaylandConnection* connection,
-                                    WaylandWindow* parent_window) const;
+  PopupType GetPopupTypeForPositioner(WaylandConnection* connection,
+                                      WaylandWindow* parent_window) const;
   bool CanGrabPopup(WaylandConnection* connection) const;
 };
 
-gfx::Rect GetAnchorRect(MenuType menu_type,
+gfx::Rect GetAnchorRect(PopupType menu_type,
                         const gfx::Rect& menu_bounds,
                         const gfx::Rect& parent_window_bounds);
-WlAnchor GetAnchor(MenuType menu_type, const gfx::Rect& bounds);
-WlGravity GetGravity(MenuType menu_type, const gfx::Rect& bounds);
-WlConstraintAdjustment GetConstraintAdjustment(MenuType menu_type);
+WlAnchor GetAnchor(PopupType menu_type, const gfx::Rect& bounds);
+WlGravity GetGravity(PopupType menu_type, const gfx::Rect& bounds);
+WlConstraintAdjustment GetConstraintAdjustment(PopupType menu_type);
 
 }  // namespace ui
 

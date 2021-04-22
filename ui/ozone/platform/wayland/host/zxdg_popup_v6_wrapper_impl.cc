@@ -196,7 +196,7 @@ zxdg_positioner_v6* ZXDGPopupV6WrapperImpl::CreatePositioner(
   if (!positioner)
     return nullptr;
 
-  auto menu_type = GetMenuTypeForPositioner(connection, parent_window);
+  auto menu_type = GetPopupTypeForPositioner(connection, parent_window);
 
   // The parent we got must be the topmost in the stack of the same family
   // windows.
