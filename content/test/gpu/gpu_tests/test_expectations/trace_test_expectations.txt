@@ -88,7 +88,7 @@ crbug.com/1009860 [ chromeos ] SwapChainTraceTest_* [ Skip ]
 crbug.com/1009860 [ win7 ] SwapChainTraceTest_* [ Skip ]
 crbug.com/1009860 [ fuchsia ] SwapChainTraceTest_* [ Skip ]
 
-# Playing videos not yet supported in Fuchsia.
+# Playing videos not supported in Fuchsia emulators.
 crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_BackdropFilter [ Skip ]
 crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_MP4 [ Skip ]
 crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_MP4_DXVA [ Skip ]
@@ -143,7 +143,7 @@ crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Un
 crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Video_MP4_Fullsize [ Failure ]
 
 # Fuchsia Flakes.
-crbug.com/1058255 [ fuchsia ] TraceTest_WebGLGreenTriangle_AA_Alpha [ Skip ]
+crbug.com/1058255 [ fuchsia ] TraceTest_WebGLGreenTriangle_AA_Alpha [ Failure ]
 
 # Software compositing is not supported on Android/ChromeOS/Fuchsia: we skip the
 # tests that disable GPU compositing (--disable-gpu-compositing).

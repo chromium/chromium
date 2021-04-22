@@ -179,11 +179,11 @@ crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bit
 crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
 
 # Flaky on Fuchsia hardware devices
-[ fuchsia fuchsia-board-astro ] WebglExtension_EXT_float_blend [ Skip ]
-[ fuchsia fuchsia-board-astro ] conformance/rendering/rendering-stencil-large-viewport.html [ Skip ]
-[ fuchsia fuchsia-board-astro ] conformance/canvas/drawingbuffer-static-canvas-test.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-corner-case-videos.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-npot-video.html [ Skip ]
+[ fuchsia fuchsia-board-astro ] WebglExtension_EXT_float_blend [ Failure ]
+[ fuchsia fuchsia-board-astro ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
+[ fuchsia fuchsia-board-astro ] conformance/canvas/drawingbuffer-static-canvas-test.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-npot-video.html [ Failure ]
 
 # Fails on Android Nvidia Tegra driver version 343, passes on 361
 # We don't have tags for specific driver version so just skip all

@@ -114,10 +114,6 @@ crbug.com/1166141 [ mac ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ R
 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_Video* [ Skip ]
 
 # Fuchsia issues
-crbug.com/1115673 [ fuchsia ] Pixel_WebGLCopyImage [ Skip ]
-crbug.com/1115673 [ fuchsia ] Pixel_CanvasLowLatencyWebGLDrawImage [ Skip ]
-crbug.com/1115673 [ fuchsia ] Pixel_CanvasLowLatencyWebGLRoundedCorners [ Skip ]
-crbug.com/1115673 [ fuchsia ] Pixel_CanvasLowLatencyWebGLOccluded [ Skip ]
 crbug.com/1157136 [ fuchsia skia-renderer-vulkan ] Pixel_OffscreenCanvasWebGLDefault [ Skip ]
 
 # Tests running with SwiftShader are skipped on platforms where SwiftShader
@@ -384,7 +380,7 @@ crbug.com/1086758 [ win7 ] Pixel_DirectComposition* [ Skip ]
 
 # Flakes on gpu-fyi-try-chromeos-kevin and Fuchsia x64, produces notably different image.
 crbug.com/1086687 [ chromeos chromeos-board-kevin ] Pixel_PrecisionRoundedCorner [ Skip ]
-crbug.com/1136875 [ fuchsia ] Pixel_PrecisionRoundedCorner [ Skip ]
+crbug.com/1136875 [ fuchsia ] Pixel_PrecisionRoundedCorner [ Failure ]
 
 # Still fails on Nexus 5 after all other Pixel_CanvasLowLatency* pass.
 crbug.com/1097752 [ android android-nexus-5 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Skip ]
