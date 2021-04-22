@@ -28,9 +28,7 @@ const char kDefaultSandboxedPageCSP[] =
 const char kDefaultExtensionPagesCSP[] =
     "script-src 'self' blob: filesystem:; "
     "object-src 'self' blob: filesystem:;";
-const char kSecureExtensionPagesCSP[] =
-    "script-src 'self'; style-src 'self'; object-src 'self';";
-const char kSecureIsolatedWorldCSP[] = "script-src 'self'; object-src 'self';";
+const char kDefaultSecureCSP[] = "script-src 'self'; object-src 'self';";
 
 }  // namespace
 
@@ -126,37 +124,17 @@ TEST_F(CSPInfoUnitTest, CSPStringKey) {
 
 TEST_F(CSPInfoUnitTest, CSPDictionary_ExtensionPages) {
   struct {
-    const char* file_name = nullptr;
-    const char* csp = nullptr;
-    const char* expected_warning = nullptr;
-  } cases[] = {
-      {"csp_dictionary_valid_1.json", "default-src 'none'"},
-      {"csp_dictionary_valid_2.json",
-       "worker-src 'self'; script-src; default-src 'self'"},
-      {"csp_empty_dictionary_valid.json", kSecureExtensionPagesCSP},
-      {"csp_unsafe_style_src.json",
-       "script-src; object-src; default-src google.com",
-       "'content_security_policy.extension_pages': Insecure CSP value "
-       "\"google.com\" in directive 'style-src'. This will cause an error "
-       "beginning M93."},
-      {"csp_missing_style_src.json", "script-src; object-src;",
-       "'content_security_policy.extension_pages': CSP directive 'style-src' "
-       "must be specified (either explicitly, or implicitly via 'default-src') "
-       "and must allow only secure resources. This will cause an "
-       "error beginning M93."},
-      {"csp_safe_style_src.json", "script-src; object-src; style-src"}};
+    const char* file_name;
+    const char* csp;
+  } cases[] = {{"csp_dictionary_valid_1.json", "default-src 'none'"},
+               {"csp_dictionary_valid_2.json",
+                "worker-src 'self'; script-src; default-src 'self'"},
+               {"csp_empty_dictionary_valid.json", kDefaultSecureCSP}};
 
   for (const auto& test_case : cases) {
     SCOPED_TRACE(base::StringPrintf("Testing %s.", test_case.file_name));
-
-    scoped_refptr<Extension> extension;
-    if (!test_case.expected_warning) {
-      extension = LoadAndExpectSuccess(test_case.file_name);
-    } else {
-      extension =
-          LoadAndExpectWarning(test_case.file_name, test_case.expected_warning);
-    }
-
+    scoped_refptr<Extension> extension =
+        LoadAndExpectSuccess(test_case.file_name);
     ASSERT_TRUE(extension.get());
     EXPECT_EQ(test_case.csp, CSPInfo::GetExtensionPagesCSP(extension.get()));
   }
@@ -187,8 +165,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_Sandbox) {
 
   const char kCustomSandboxedCSP[] =
       "sandbox; script-src 'self'; child-src 'self';";
-  const char kCustomExtensionPagesCSP[] =
-      "script-src; object-src; style-src http://localhost;";
+  const char kCustomExtensionPagesCSP[] = "script-src; object-src;";
 
   struct {
     const char* file_name;
@@ -196,7 +173,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_Sandbox) {
     const char* expected_csp;
   } success_cases[] = {
       {"sandbox_dictionary_1.json", "/test", kCustomSandboxedCSP},
-      {"sandbox_dictionary_1.json", "/index", kSecureExtensionPagesCSP},
+      {"sandbox_dictionary_1.json", "/index", kDefaultSecureCSP},
       {"sandbox_dictionary_2.json", "/test", kDefaultSandboxedPageCSP},
       {"sandbox_dictionary_2.json", "/index", kCustomExtensionPagesCSP},
   };
@@ -243,11 +220,11 @@ TEST_F(CSPInfoUnitTest, CSPDictionaryMandatoryForV3) {
     const std::string* isolated_world_csp =
         CSPInfo::GetIsolatedWorldCSP(*extension);
     ASSERT_TRUE(isolated_world_csp);
-    EXPECT_EQ(kSecureIsolatedWorldCSP, *isolated_world_csp);
+    EXPECT_EQ(kDefaultSecureCSP, *isolated_world_csp);
 
     EXPECT_EQ(kDefaultSandboxedPageCSP,
               CSPInfo::GetSandboxContentSecurityPolicy(extension.get()));
-    EXPECT_EQ(kSecureExtensionPagesCSP,
+    EXPECT_EQ(kDefaultSecureCSP,
               CSPInfo::GetExtensionPagesCSP(extension.get()));
   }
 }
