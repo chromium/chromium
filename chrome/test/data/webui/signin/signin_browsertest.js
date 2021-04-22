@@ -248,3 +248,20 @@ var ProfileCustomizationTest = class extends SigninBrowserTest {
 TEST_F('ProfileCustomizationTest', 'Bubble', function() {
   mocha.run();
 });
+
+/**
+ * Test fixture for
+ * chrome/browser/resources/signin/enterprise_profile_welcome/enterprise_profile_welcome.html.
+ * This has to be declared as a variable for TEST_F to find it correctly.
+ */
+// eslint-disable-next-line no-var
+var SigninEnterpriseProfileWelcomeTest = class extends SigninBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://enterprise-profile-welcome/test_loader.html?module=signin/enterprise_profile_welcome_test.js';
+  }
+};
+
+TEST_F('SigninEnterpriseProfileWelcomeTest', 'Dialog', function() {
+  mocha.run();
+});

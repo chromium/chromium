@@ -10,11 +10,13 @@ js_type_check("closure_compile") {
                     "browser_resolver_prefix_replacements=\"chrome://signin-dice-web-intercept/=../../chrome/browser/resources/signin/dice_web_signin_intercept/\"",
                     "browser_resolver_prefix_replacements=\"chrome://profile-customization/=../../chrome/browser/resources/signin/profile_customization/\"",
                     "browser_resolver_prefix_replacements=\"chrome://profile-picker/=../../chrome/browser/resources/signin/profile_picker/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://enterprise-profile-welcome/=../../chrome/browser/resources/signin/enterprise_profile_welcome/\"",
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
   deps = [
     ":dice_web_signin_intercept_test",
+    ":enterprise_profile_welcome_test",
     ":local_profile_customization_test",
     ":profile_card_menu_test",
     ":profile_customization_test",
@@ -22,6 +24,7 @@ js_type_check("closure_compile") {
     ":profile_switch_test",
     ":profile_type_choice_test",
     ":test_dice_web_signin_intercept_browser_proxy",
+    ":test_enterprise_profile_welcome_browser_proxy",
     ":test_manage_profiles_browser_proxy",
     ":test_profile_customization_browser_proxy",
   ]
@@ -49,6 +52,15 @@ js_library("dice_web_signin_intercept_test") {
     "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("enterprise_profile_welcome_test") {
+  deps = [
+    "..:chai_assert",
+    "..:test_browser_proxy.m",
+    "..:test_util.m",
+    "//chrome/browser/resources/signin/enterprise_profile_welcome:enterprise_profile_welcome_app",
+  ]
 }
 
 js_library("profile_type_choice_test") {
@@ -122,5 +134,12 @@ js_library("test_manage_profiles_browser_proxy") {
   deps = [
     "..:test_browser_proxy.m",
     "//chrome/browser/resources/signin/profile_picker:profile_picker",
+  ]
+}
+
+js_library("test_enterprise_profile_welcome_browser_proxy") {
+  deps = [
+    "..:test_browser_proxy.m",
+    "//chrome/browser/resources/signin/enterprise_profile_welcome:enterprise_profile_welcome_browser_proxy",
   ]
 }

@@ -12,7 +12,7 @@ import {waitBeforeNextRender} from '../test_util.m.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 
-suite('ProfilePickerMainViewTest', function() {
+suite('ProfileSwitchTest', function() {
   /** @type {!ProfileSwitchElement} */
   let profileSwitchElement;
 

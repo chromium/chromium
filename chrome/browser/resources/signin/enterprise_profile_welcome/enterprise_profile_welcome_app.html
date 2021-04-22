@@ -177,7 +177,7 @@
     $i18n{enterpriseProfileWelcomeTitle}
   </h2>
   <template is="dom-if" if="[[enterpriseTitle_]]">
-    <p class="secondary">
+    <p id="enterpriseTitle" class="secondary">
       [[enterpriseTitle_]]
     </p>
   </template>
@@ -186,14 +186,14 @@
       <div class="icon-container">
         <iron-icon icon="cr:domain"></iron-icon>
       </div>
-      <p>
+      <p id="enterpriseInfo" >
         [[enterpriseInfo_]]
       </p>
     </div>
   </template>
 </div>
 <div id="buttonsContainer" class="action-container">
-  <cr-button class="action-button" on-click="onProceed_">
+  <cr-button id="proceedButton" class="action-button" on-click="onProceed_">
     [[proceedLabel_]]
   </cr-button>
   <cr-button id="cancelButton" on-click="onCancel_">
