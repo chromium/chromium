@@ -88,6 +88,28 @@ const char kAdditionalTrustTokenKeyCommitments[] =
 // set.
 const char kUseFirstPartySet[] = "use-first-party-set";
 
+// Specifies manual overrides to the IP address -> IP address space mapping.
+// This allows running local tests against "public" and "private" IP addresses.
+//
+// This switch is specified as a comma-separated list of overrides. Each
+// override is given as a colon-separated "<subnet>:<address space>" pair.
+// Grammar, in pseudo-BNF format:
+//
+//   switch := override-list
+//   override-list := override “,” override-list | <nil>
+//   override := cidr-block “=” address-space
+//   address-space := “public” | “private” | “local”
+//   cidr-block := see `net::ParseCIDRBlock()` for details
+//
+// Any invalid entries in the comma-separated list are ignored.
+//
+// See also the design doc:
+// https://docs.google.com/document/d/1-umCGylIOuSG02k9KGDwKayt3bzBXtGwVlCQHHkIcnQ/edit#
+//
+// And the Web Platform Test RFC #72 behind it:
+// https://github.com/web-platform-tests/rfcs/blob/master/rfcs/address_space_overrides.md
+const char kIpAddressSpaceOverrides[] = "ip-address-space-overrides";
+
 }  // namespace switches
 
 }  // namespace network

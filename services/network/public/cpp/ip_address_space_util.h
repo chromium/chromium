@@ -15,20 +15,24 @@ class IPAddress;
 
 namespace network {
 
-// Returns the IPAddressSpace from an IPAddress.
+// Returns the IPAddressSpace to which `address` belongs.
+//
+// Returns `kUnknown` for invalid addresses. Otherwise, takes into account the
+// `--ip-address-space-overrides` command-line switch.
 //
 // WARNING: This can only be used as-is for subresource requests loaded over the
-// network. For other cases, see the Calculate*AddressSpace() functions below.
+// network. Special URL schemes and resource headers must also be taken into
+// account at higher layers.
 mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP)
     IPAddressToIPAddressSpace(const net::IPAddress& address);
 
-// Returns whether |lhs| is less public than |rhs|.
+// Returns whether `lhs` is less public than `rhs`.
 //
 // This comparator is compatible with std::less.
 //
 // Address spaces go from most public to least public in the following order:
 //
-//  - public and unknown
+//  - public and unknown (equivalent)
 //  - private
 //  - local
 //
