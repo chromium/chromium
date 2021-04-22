@@ -172,7 +172,7 @@ class AutofillCapturedSitesInteractiveTest
 
  protected:
   AutofillCapturedSitesInteractiveTest()
-      : profile_(test::GetFullProfile()),
+      : profile_(test::GetIncompleteProfile2()),
         card_(CreditCard(base::GenerateGUID(), "http://www.example.com")) {
     for (size_t i = NO_SERVER_DATA; i < MAX_VALID_FIELD_TYPE; ++i) {
       ServerFieldType field_type = static_cast<ServerFieldType>(i);
