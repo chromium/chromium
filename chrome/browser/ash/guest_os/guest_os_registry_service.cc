@@ -18,6 +18,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/dip_px_util.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
@@ -741,6 +742,10 @@ void GuestOsRegistryService::LoadIcon(
           std::move(callback));
       return;
     } else {
+      // There are paths where nothing higher up the call stack will resize so
+      // we need to ensure that returned icons are always resized to be
+      // size_hint_in_dip big. crbug/1170455 is an example.
+      icon_key->icon_effects |= apps::IconEffects::kResizeAndPad;
       auto scale_factor = apps_util::GetPrimaryDisplayUIScaleFactor();
 
       // Try loading the icon from an on-disk cache. If that fails, fall back
