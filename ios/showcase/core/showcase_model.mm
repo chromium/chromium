@@ -4,11 +4,42 @@
 
 #import "ios/showcase/core/showcase_model.h"
 
+#include "base/check.h"
 #import "ios/showcase/core/showcase_model_buildflags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// Validates whether all classes referenced by name in |row| can be loaded
+// using Objective-C reflection.
+BOOL IsShowcaseModelRowValid(showcase::ModelRow* row) {
+  static NSArray<NSString*>* const keys =
+      @[ showcase::kClassForInstantiationKey ];
+
+  BOOL valid = YES;
+  for (NSString* key in keys) {
+    if (!NSClassFromString(row[key])) {
+      NSLog(@"Can't load class: %@", row[key]);
+      valid = NO;
+    }
+  }
+  return valid;
+}
+
+// Validates whether all row in |model| are valid.
+BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
+  BOOL valid = YES;
+  for (showcase::ModelRow* row in model) {
+    if (!IsShowcaseModelRowValid(row))
+      valid = NO;
+  }
+  return valid;
+}
+
+}  // namespace
 
 @implementation ShowcaseModel
 
@@ -17,7 +48,7 @@
 // |kShowcaseClassForDisplayKey| and |kShowcaseClassForInstantiationKey| are
 // required. |kShowcaseUseCaseKey| is optional.
 + (NSArray<showcase::ModelRow*>*)model {
-  return @[
+  NSArray<showcase::ModelRow*>* model = @[
     @{
       showcase::kClassForDisplayKey : @"ConsentViewController",
       showcase::kClassForInstantiationKey : @"ConsentViewController",
@@ -44,21 +75,6 @@
       showcase::kClassForDisplayKey : @"ContentSuggestionsViewController",
       showcase::kClassForInstantiationKey : @"SCContentSuggestionsCoordinator",
       showcase::kUseCaseKey : @"Content Suggestions UI",
-    },
-    @{
-      showcase::kClassForDisplayKey : @"PaymentRequestEditViewController",
-      showcase::kClassForInstantiationKey : @"SCPaymentsEditorCoordinator",
-      showcase::kUseCaseKey : @"Generic payment request editor",
-    },
-    @{
-      showcase::kClassForDisplayKey : @"PaymentRequestPickerViewController",
-      showcase::kClassForInstantiationKey : @"SCPaymentsPickerCoordinator",
-      showcase::kUseCaseKey : @"Payment request picker view",
-    },
-    @{
-      showcase::kClassForDisplayKey : @"PaymentRequestSelectorViewController",
-      showcase::kClassForInstantiationKey : @"SCPaymentsSelectorCoordinator",
-      showcase::kUseCaseKey : @"Payment request selector view",
     },
     @{
       showcase::kClassForDisplayKey : @"SettingsViewController",
@@ -114,11 +130,6 @@
       kClassForDisplayKey : @"TabGridTopToolbar, TabGridBottomToolbar",
       showcase::kClassForInstantiationKey : @"SCToolbarsViewController",
       showcase::kUseCaseKey : @"Toolbars for tab grid",
-    },
-    @{
-      showcase::kClassForDisplayKey : @"TableContainerViewController",
-      showcase::kClassForInstantiationKey : @"SCTableContainerCoordinator",
-      showcase::kUseCaseKey : @"Table View",
     },
     @{
       showcase::kClassForDisplayKey : @"TopAlignedImageView",
@@ -192,6 +203,8 @@
       showcase::kUseCaseKey : @"New FRE screen with scrolling example",
     },
   ];
+  DCHECK(IsShowcaseModelValid(model));
+  return model;
 }
 
 @end
