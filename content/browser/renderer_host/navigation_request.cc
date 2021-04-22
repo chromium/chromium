@@ -4213,31 +4213,48 @@ net::Error NavigationRequest::CheckCSPDirectives(
   // only the result last set.
   net::Error error = net::OK;
 
-  if (base::FeatureList::IsEnabled(
-          features::kExperimentalContentSecurityPolicyFeatures) &&
-      initiator_policies) {
-    // [navigate-to]
-    if (!IsAllowedByCSPDirective(
+  if (initiator_policies) {
+    // [form-action]
+    if (begin_params_->is_form_submission && !is_response_check &&
+        !IsAllowedByCSPDirective(
             initiator_policies->content_security_policies, &initiator_context,
-            network::mojom::CSPDirectiveName::NavigateTo, has_followed_redirect,
+            network::mojom::CSPDirectiveName::FormAction, has_followed_redirect,
             url_upgraded_after_redirect, is_response_check, disposition)) {
-      // net::ERR_ABORTED is used instead of net::ERR_BLOCKED_BY_CSP. This is a
-      // better user experience as the user is not presented with an error page.
-      // However if other CSP directives life frame-src are violated, it may be
-      // appropriate for them to use ERR_BLOCKED_BY_CSP so this can be overriden
-      // by the checks below.
+      // net::ERR_ABORTED is used instead of net::ERR_BLOCKED_BY_CSP. This is
+      // a better user experience as the user is not presented with an error
+      // page. However if other CSP directives like frame-src are violated, it
+      // may be appropriate for them to use ERR_BLOCKED_BY_CSP so this can be
+      // overridden by the checks below.
       error = net::ERR_ABORTED;
     }
 
-    // [prefetch-src]
-    if (blink::features::IsPrerender2Enabled() &&
-        frame_tree_node_->frame_tree()->is_prerendering()) {
+    if (base::FeatureList::IsEnabled(
+            features::kExperimentalContentSecurityPolicyFeatures)) {
+      // [navigate-to]
       if (!IsAllowedByCSPDirective(
               initiator_policies->content_security_policies, &initiator_context,
-              network::mojom::CSPDirectiveName::PrefetchSrc,
+              network::mojom::CSPDirectiveName::NavigateTo,
               has_followed_redirect, url_upgraded_after_redirect,
               is_response_check, disposition)) {
-        error = net::ERR_BLOCKED_BY_CSP;
+        // net::ERR_ABORTED is used instead of net::ERR_BLOCKED_BY_CSP. This is
+        // a better user experience as the user is not presented with an error
+        // page. However if other CSP directives life frame-src are violated, it
+        // may be appropriate for them to use ERR_BLOCKED_BY_CSP so this can be
+        // overridden by the checks below.
+        error = net::ERR_ABORTED;
+      }
+
+      // [prefetch-src]
+      if (blink::features::IsPrerender2Enabled() &&
+          frame_tree_node_->frame_tree()->is_prerendering()) {
+        if (!IsAllowedByCSPDirective(
+                initiator_policies->content_security_policies,
+                &initiator_context,
+                network::mojom::CSPDirectiveName::PrefetchSrc,
+                has_followed_redirect, url_upgraded_after_redirect,
+                is_response_check, disposition)) {
+          error = net::ERR_BLOCKED_BY_CSP;
+        }
       }
     }
   }

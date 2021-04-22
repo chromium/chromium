@@ -8,6 +8,7 @@
 #include "base/ranges/algorithm.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/content_security_policy/csp_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 
 namespace network {
 
@@ -185,15 +186,18 @@ bool UrlSourceListSubsumes(
 
 }  // namespace
 
-bool CheckCSPSourceList(const mojom::CSPSourceList& source_list,
+bool CheckCSPSourceList(mojom::CSPDirectiveName directive_name,
+                        const mojom::CSPSourceList& source_list,
                         const GURL& url,
                         const mojom::CSPSource& self_source,
                         bool has_followed_redirect,
                         bool is_response_check) {
   // If the source list allows all redirects, the decision can't be made until
   // the response is received.
-  if (source_list.allow_response_redirects && !is_response_check)
+  if (directive_name == mojom::CSPDirectiveName::NavigateTo &&
+      source_list.allow_response_redirects && !is_response_check) {
     return true;
+  }
 
   // Wildcards match network schemes ('http', 'https', 'ftp', 'ws', 'wss'), and
   // the scheme of the protected resource:

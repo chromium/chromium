@@ -20,9 +20,11 @@ bool Allow(const mojom::CSPSourceListPtr& source_list,
            const GURL& url,
            const mojom::CSPSource& self,
            bool is_redirect = false,
-           bool is_response_check = false) {
-  return CheckCSPSourceList(*source_list, url, self, is_redirect,
-                            is_response_check);
+           bool is_response_check = false,
+           mojom::CSPDirectiveName directive_name =
+               mojom::CSPDirectiveName::FrameSrc) {
+  return CheckCSPSourceList(directive_name, *source_list, url, self,
+                            is_redirect, is_response_check);
 }
 
 std::vector<mojom::ContentSecurityPolicyPtr> Parse(
@@ -175,6 +177,48 @@ TEST(CSPSourceTest, SelfIsUnique) {
   EXPECT_FALSE(Allow(source_list, GURL("http://a.com"), *no_self_source));
   EXPECT_FALSE(
       Allow(source_list, GURL("data:text/html,hello"), *no_self_source));
+}
+
+// Test that 'unsafe-allow-redirects' is only applied to navigate-to.
+TEST(CSPSourceList, UnsafeAllowRedirects) {
+  auto self = network::mojom::CSPSource::New("http", "example.com", 80, "",
+                                             false, false);
+  std::vector<mojom::CSPSourcePtr> sources;
+  sources.push_back(mojom::CSPSource::New("", "a.com", url::PORT_UNSPECIFIED,
+                                          "", false, false));
+  auto source_list = mojom::CSPSourceList::New();
+  source_list->sources = std::move(sources);
+  source_list->allow_response_redirects = true;
+
+  EXPECT_TRUE(Allow(source_list, GURL("http://a.com"), *self,
+                    /*is_redirect=*/false, /*is_response_check=*/false,
+                    mojom::CSPDirectiveName::NavigateTo));
+  EXPECT_TRUE(Allow(source_list, GURL("http://b.com"), *self,
+                    /*is_redirect=*/false, /*is_response_check=*/false,
+                    mojom::CSPDirectiveName::NavigateTo));
+  EXPECT_FALSE(Allow(source_list, GURL("http://b.com"), *self,
+                     /*is_redirect=*/false, /*is_response_check=*/true,
+                     mojom::CSPDirectiveName::NavigateTo));
+
+  EXPECT_TRUE(Allow(source_list, GURL("http://a.com"), *self,
+                    /*is_redirect=*/false, /*is_response_check=*/false,
+                    mojom::CSPDirectiveName::FrameSrc));
+  EXPECT_FALSE(Allow(source_list, GURL("http://b.com"), *self,
+                     /*is_redirect=*/false, /*is_response_check=*/false,
+                     mojom::CSPDirectiveName::FrameSrc));
+  EXPECT_FALSE(Allow(source_list, GURL("http://b.com"), *self,
+                     /*is_redirect=*/false, /*is_response_check=*/true,
+                     mojom::CSPDirectiveName::FrameSrc));
+
+  EXPECT_TRUE(Allow(source_list, GURL("http://a.com"), *self,
+                    /*is_redirect=*/false, /*is_response_check=*/false,
+                    mojom::CSPDirectiveName::FormAction));
+  EXPECT_FALSE(Allow(source_list, GURL("http://b.com"), *self,
+                     /*is_redirect=*/false, /*is_response_check=*/false,
+                     mojom::CSPDirectiveName::FormAction));
+  EXPECT_FALSE(Allow(source_list, GURL("http://b.com"), *self,
+                     /*is_redirect=*/false, /*is_response_check=*/true,
+                     mojom::CSPDirectiveName::FormAction));
 }
 
 TEST(CSPSourceList, Subsume) {

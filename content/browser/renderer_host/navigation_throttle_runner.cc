@@ -13,7 +13,6 @@
 #include "content/browser/renderer_host/ancestor_throttle.h"
 #include "content/browser/renderer_host/back_forward_cache_throttle.h"
 #include "content/browser/renderer_host/blocked_scheme_navigation_throttle.h"
-#include "content/browser/renderer_host/form_submission_throttle.h"
 #include "content/browser/renderer_host/http_error_navigation_throttle.h"
 #include "content/browser/renderer_host/mixed_content_navigation_throttle.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -148,7 +147,6 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
       BlockedSchemeNavigationThrottle::CreateThrottleForNavigation(request));
 
   AddThrottle(AncestorThrottle::MaybeCreateThrottleFor(request));
-  AddThrottle(FormSubmissionThrottle::MaybeCreateThrottleFor(request));
 
   // Check for mixed content. This is done after the AncestorThrottle and the
   // FormSubmissionThrottle so that when folks block mixed content with a CSP

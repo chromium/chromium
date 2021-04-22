@@ -1211,7 +1211,8 @@ bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
       continue;
 
     const auto& source_list = directive->second;
-    bool allowed = CheckCSPSourceList(*source_list, url, *(policy->self_origin),
+    bool allowed = CheckCSPSourceList(directive_name, *source_list, url,
+                                      *(policy->self_origin),
                                       has_followed_redirect, is_response_check);
 
     if (!allowed) {

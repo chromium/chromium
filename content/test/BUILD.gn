@@ -1992,7 +1992,6 @@ test("content_unittests") {
     "../browser/renderer_host/clipboard_host_impl_unittest.cc",
     "../browser/renderer_host/cursor_manager_unittest.cc",
     "../browser/renderer_host/embedded_frame_sink_provider_impl_unittest.cc",
-    "../browser/renderer_host/form_submission_throttle_unittest.cc",
     "../browser/renderer_host/frame_service_base_unittest.cc",
     "../browser/renderer_host/frame_token_message_queue_unittest.cc",
     "../browser/renderer_host/frame_tree_node_blame_context_unittest.cc",

@@ -471,9 +471,18 @@ void HTMLFormElement::ScheduleFormSubmission(
     return;
   }
 
-  if (!GetExecutionContext()->GetContentSecurityPolicy()->AllowFormAction(
-          form_submission->Action())) {
-    return;
+  if (form_submission->Action().ProtocolIsJavaScript()) {
+    // For javascript URLs we need to do the CSP check for 'form-action' here.
+    // All other schemes are checked in the browser.
+    //
+    // TODO(antoniosartori): Should we keep the 'form-action' check for
+    // javascript: URLs? For 'frame-src' and 'navigate-to', we do not check
+    // javascript: URLs. Reading the specification, it looks like 'form-action'
+    // should not apply to javascript: URLs.
+    if (!GetExecutionContext()->GetContentSecurityPolicy()->AllowFormAction(
+            form_submission->Action())) {
+      return;
+    }
   }
 
   UseCounter::Count(GetDocument(), WebFeature::kFormsSubmitted);

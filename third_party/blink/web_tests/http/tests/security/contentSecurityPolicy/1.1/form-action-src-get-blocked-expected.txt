@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 16: Refused to send form data to 'http://127.0.0.1:8000/navigation/resources/form-target.pl' because it violates the following Content Security Policy directive: "form-action 'none'".
+CONSOLE ERROR: line 16: Refused to send form data to 'http://127.0.0.1:8000/navigation/resources/form-target.pl?fieldname=fieldvalue' because it violates the following Content Security Policy directive: "form-action 'none'".
 
  
 
