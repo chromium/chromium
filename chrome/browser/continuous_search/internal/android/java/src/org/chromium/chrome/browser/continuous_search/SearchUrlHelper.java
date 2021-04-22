@@ -57,6 +57,8 @@ public class SearchUrlHelper {
                 return ".Organic";
             case PageCategory.NEWS_SRP:
                 return ".News";
+            case PageCategory.DISCOVER:
+                return ".Discover";
             default:
                 assert false : "No histogram suffix for type " + category;
                 return null;

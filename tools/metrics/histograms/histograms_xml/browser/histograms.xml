@@ -22,6 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <variants name="ContinuousSearchExperiment">
+  <variant name=".Discover"/>
   <variant name=".News"/>
   <variant name=".Organic"/>
 </variants>
