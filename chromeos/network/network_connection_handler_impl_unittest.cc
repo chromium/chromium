@@ -415,7 +415,9 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
         dbus::ObjectPath(kTestEuiccPath), kTestIccid, kTestCellularName,
         "service_provider", "activation_code", kTestCellularServicePath,
         hermes::profile::State::kInactive,
-        hermes::profile::ProfileClass::kOperational, /*service_only=*/false);
+        hermes::profile::ProfileClass::kOperational,
+        HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+            kAddProfileWithService);
     base::RunLoop().RunUntilIdle();
   }
 

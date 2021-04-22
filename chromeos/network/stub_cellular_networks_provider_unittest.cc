@@ -71,7 +71,9 @@ class StubCellularNetworksProviderTest : public testing::Test {
                               const std::string& activation_code) {
     dbus::ObjectPath path = helper_.hermes_euicc_test()->AddFakeCarrierProfile(
         dbus::ObjectPath(CreateTestEuiccPath(euicc_num)), state,
-        activation_code, /*service_only=*/false);
+        activation_code,
+        HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+            kAddProfileWithService);
     base::RunLoop().RunUntilIdle();
     return path;
   }

@@ -43,20 +43,22 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
   // HermesEuiccClient::TestInterface:
   void ClearEuicc(const dbus::ObjectPath& euicc_path) override;
   void ResetPendingEventsRequested() override;
-  dbus::ObjectPath AddFakeCarrierProfile(const dbus::ObjectPath& euicc_path,
-                                         hermes::profile::State state,
-                                         const std::string& activation_code,
-                                         bool service_only) override;
-  void AddCarrierProfile(const dbus::ObjectPath& path,
-                         const dbus::ObjectPath& euicc_path,
-                         const std::string& iccid,
-                         const std::string& name,
-                         const std::string& service_provider,
-                         const std::string& activation_code,
-                         const std::string& network_service_path,
-                         hermes::profile::State state,
-                         hermes::profile::ProfileClass profile_class,
-                         bool service_only) override;
+  dbus::ObjectPath AddFakeCarrierProfile(
+      const dbus::ObjectPath& euicc_path,
+      hermes::profile::State state,
+      const std::string& activation_code,
+      AddCarrierProfileBehavior add_carrier_profile_behavior) override;
+  void AddCarrierProfile(
+      const dbus::ObjectPath& path,
+      const dbus::ObjectPath& euicc_path,
+      const std::string& iccid,
+      const std::string& name,
+      const std::string& service_provider,
+      const std::string& activation_code,
+      const std::string& network_service_path,
+      hermes::profile::State state,
+      hermes::profile::ProfileClass profile_class,
+      AddCarrierProfileBehavior add_carrier_profile_behavior) override;
   bool RemoveCarrierProfile(
       const dbus::ObjectPath& euicc_path,
       const dbus::ObjectPath& carrier_profile_path) override;

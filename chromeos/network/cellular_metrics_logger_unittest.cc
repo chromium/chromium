@@ -175,7 +175,8 @@ class CellularMetricsLoggerTest : public testing::Test {
         dbus::ObjectPath(service_path), dbus::ObjectPath(kTestEuiccPath),
         kTestIccid, kTestProfileName, "service_provider", "activation_code",
         service_path, state, hermes::profile::ProfileClass::kOperational,
-        /*service_only=*/false);
+        HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+            kAddProfileWithService);
     base::RunLoop().RunUntilIdle();
   }
 

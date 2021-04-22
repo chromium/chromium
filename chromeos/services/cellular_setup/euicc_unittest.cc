@@ -120,10 +120,12 @@ TEST_F(EuiccTest, GetProfileList) {
       HermesEuiccClient::Get()->GetTestInterface();
   dbus::ObjectPath active_profile_path = euicc_test->AddFakeCarrierProfile(
       dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kActive, "",
-      /*service_only=*/false);
+      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+          kAddProfileWithService);
   dbus::ObjectPath pending_profile_path = euicc_test->AddFakeCarrierProfile(
       dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kPending, "",
-      /*service_only=*/false);
+      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+          kAddProfileWithService);
   base::RunLoop().RunUntilIdle();
 
   esim_profile_list = GetProfileList(euicc);
@@ -201,7 +203,8 @@ TEST_F(EuiccTest, InstallPendingProfileFromActivationCode) {
   // proper status code and profile object.
   dbus::ObjectPath profile_path = euicc_test->AddFakeCarrierProfile(
       dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kPending, "",
-      /*service_only=*/false);
+      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+          kAddProfileWithService);
   base::RunLoop().RunUntilIdle();
   HermesProfileClient::Properties* dbus_properties =
       HermesProfileClient::Get()->GetProperties(profile_path);

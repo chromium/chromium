@@ -134,7 +134,9 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
         activation_code,
         base::StringPrintf("%s%02d", "network_service_path_",
                            num_profiles_created_),
-        state, profile_class, /*service_only=*/false);
+        state, profile_class,
+        HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+            kAddProfileWithService);
 
     base::RunLoop().RunUntilIdle();
 

@@ -117,7 +117,7 @@ dbus::ObjectPath FakeHermesEuiccClient::AddFakeCarrierProfile(
     const dbus::ObjectPath& euicc_path,
     hermes::profile::State state,
     const std::string& activation_code,
-    bool service_only) {
+    AddCarrierProfileBehavior add_carrier_profile_behavior) {
   int index = fake_profile_counter_++;
   dbus::ObjectPath carrier_profile_path(
       base::StringPrintf("%s%02d", kFakeProfilePathPrefix, index));
@@ -131,7 +131,8 @@ dbus::ObjectPath FakeHermesEuiccClient::AddFakeCarrierProfile(
           ? base::StringPrintf("%s%02d", kFakeActivationCodePrefix, index)
           : activation_code,
       base::StringPrintf("%s%02d", kFakeNetworkServicePathPrefix, index), state,
-      hermes::profile::ProfileClass::kOperational, service_only);
+      hermes::profile::ProfileClass::kOperational,
+      add_carrier_profile_behavior);
   return carrier_profile_path;
 }
 
@@ -145,7 +146,7 @@ void FakeHermesEuiccClient::AddCarrierProfile(
     const std::string& network_service_path,
     hermes::profile::State state,
     hermes::profile::ProfileClass profile_class,
-    bool service_only) {
+    AddCarrierProfileBehavior add_carrier_profile_behavior) {
   DVLOG(1) << "Adding new profile path=" << path.value() << ", name=" << name
            << ", state=" << state;
   HermesProfileClient::Properties* profile_properties =
@@ -169,11 +170,24 @@ void FakeHermesEuiccClient::AddCarrierProfile(
     return;
   }
 
-  CreateCellularService(euicc_path, path);
-  if (service_only) {
+  bool should_create_service =
+      add_carrier_profile_behavior ==
+          AddCarrierProfileBehavior::kAddProfileWithService ||
+      add_carrier_profile_behavior ==
+          AddCarrierProfileBehavior::kAddDelayedProfileWithService;
+  if (should_create_service)
+    CreateCellularService(euicc_path, path);
+
+  bool should_delay_install =
+      add_carrier_profile_behavior ==
+          AddCarrierProfileBehavior::kAddDelayedProfileWithService ||
+      add_carrier_profile_behavior ==
+          AddCarrierProfileBehavior::kAddDelayedProfileWithoutService;
+  if (should_delay_install) {
     QueueInstalledProfile(euicc_path, path);
     return;
   }
+
   std::vector<dbus::ObjectPath> installed_profiles =
       euicc_properties->installed_carrier_profiles().value();
   installed_profiles.push_back(path);
@@ -345,9 +359,9 @@ void FakeHermesEuiccClient::DoInstallProfileFromActivationCode(
         installed_profiles);
   } else {
     // Create a new installed profile with given activation code.
-    profile_path =
-        AddFakeCarrierProfile(euicc_path, hermes::profile::State::kInactive,
-                              activation_code, /*service_only=*/false);
+    profile_path = AddFakeCarrierProfile(
+        euicc_path, hermes::profile::State::kInactive, activation_code,
+        AddCarrierProfileBehavior::kAddProfileWithService);
   }
   CreateCellularService(euicc_path, profile_path);
 
@@ -426,7 +440,7 @@ void FakeHermesEuiccClient::DoRequestPendingProfiles(
 
   if (!pending_event_requested_) {
     AddFakeCarrierProfile(euicc_path, hermes::profile::State::kPending, "",
-                          /*service_only=*/false);
+                          AddCarrierProfileBehavior::kAddProfileWithService);
     pending_event_requested_ = true;
   }
   std::move(callback).Run(HermesResponseStatus::kSuccess);

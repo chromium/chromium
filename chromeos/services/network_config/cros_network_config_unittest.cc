@@ -810,7 +810,9 @@ TEST_F(CrosNetworkConfigTest, ESimNetworkNameComesFromHermes) {
       dbus::ObjectPath(kTestEuiccPath), kTestIccid, kTestProfileName,
       "service_provider", "activation_code", kTestProfileServicePath,
       hermes::profile::State::kInactive,
-      hermes::profile::ProfileClass::kOperational, /*service_only=*/false);
+      hermes::profile::ProfileClass::kOperational,
+      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+          kAddProfileWithService);
   base::RunLoop().RunUntilIdle();
 
   // Change the network's name in Shill. Now, Hermes and Shill have different
@@ -1704,7 +1706,9 @@ TEST_F(CrosNetworkConfigTest, ESimManagedPropertiesNameComesFromHermes) {
       dbus::ObjectPath(kTestEuiccPath), kTestIccid, kTestProfileName,
       "service_provider", "activation_code", kTestProfileServicePath,
       hermes::profile::State::kInactive,
-      hermes::profile::ProfileClass::kOperational, /*service_only=*/false);
+      hermes::profile::ProfileClass::kOperational,
+      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+          kAddProfileWithService);
   base::RunLoop().RunUntilIdle();
 
   // Change the network's name in Shill. Now, Hermes and Shill have different
