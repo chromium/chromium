@@ -2681,16 +2681,6 @@
       'Optional Linux Release (NVIDIA)',
     ],
   },
-  'ui_base_unittests_wayland': {
-    'modifications': {
-      # CI Ozone/Wayland tester.
-      'Linux Tester (Ozone Wayland)': {
-        'args': [
-        '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.ui_base_unittests_wayland.filter',
-        ],
-      },
-    }
-  },
   'unit_tests': {
     'remove_from': [
       # There's no need to run unit_tests on both lollipop and marshmallow
