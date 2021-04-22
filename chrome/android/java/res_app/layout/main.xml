@@ -126,6 +126,14 @@
             android:layout_height="match_parent"
             android:clipChildren="false" />
 
+        <FrameLayout
+            android:id="@+id/survey_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:visibility="gone"
+            android:clipChildren="false"/>
+
     </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 
     <!-- This empty view is used as the anchor for custom menu -->
@@ -142,13 +150,4 @@
         android:layout_width="match_parent"
         android:layout_height="0px"
         android:layout_gravity="bottom" />
-
-    <FrameLayout
-        android:id="@+id/survey_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:visibility="gone"
-        android:clipChildren="false"/>
-
 </merge>
