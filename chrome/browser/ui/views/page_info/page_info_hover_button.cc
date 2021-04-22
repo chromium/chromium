@@ -125,13 +125,8 @@ PageInfoHoverButton::PageInfoHoverButton(
     subtitle_ = grid_layout->AddView(std::move(subtitle_label));
   }
 
-  auto insets = layout_provider->GetInsetsMetric(
-      views::InsetsMetric::INSETS_LABEL_BUTTON);
-  const int vert_spacing = insets.height();
-  const int horz_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
-  SetBorder(views::CreateEmptyBorder(vert_spacing, horz_spacing, vert_spacing,
-                                     horz_spacing));
+  SetBorder(views::CreateEmptyBorder(layout_provider->GetInsetsMetric(
+      ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)));
 
   SetID(click_target_id);
   SetTooltipText(tooltip_text);

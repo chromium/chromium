@@ -5,7 +5,10 @@
 #include "chrome/browser/ui/views/page_info/security_information_view.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "components/page_info/features.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -15,35 +18,67 @@
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
-namespace {
-
-// Adds a ColumnSet on |layout| with a single View column and padding columns
-// on either side of it with |margin| width.
-void AddColumnWithSideMargin(views::GridLayout* layout, int margin, int id) {
-  views::ColumnSet* column_set = layout->AddColumnSet(id);
-  column_set->AddPaddingColumn(views::GridLayout::kFixedSize, margin);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(views::GridLayout::kFixedSize, margin);
-}
-
-}  // namespace
-
 SecurityInformationView::SecurityInformationView(int side_margin) {
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  const int icon_label_spacing = layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());
 
   const int label_column_status = 1;
-  AddColumnWithSideMargin(layout, side_margin, label_column_status);
+  views::ColumnSet* column_set = layout->AddColumnSet(label_column_status);
+  column_set->AddPaddingColumn(views::GridLayout::kFixedSize, side_margin);
 
-  layout->StartRow(views::GridLayout::kFixedSize, label_column_status);
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
+    // Page info v2 has icon on the left side and all other content is indented
+    // by the icon size.
+    column_set->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER,
+                          views::GridLayout::kFixedSize,
+                          views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+    column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
+                                 icon_label_spacing);
+  }
+  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
+                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  column_set->AddPaddingColumn(views::GridLayout::kFixedSize, side_margin);
 
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
+    // Add padding before the title so that it's in the same position as when
+    // this control is a hover button.
+    auto hover_button_insets = layout_provider->GetInsetsMetric(
+        ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON);
+    layout->AddPaddingRow(views::GridLayout::kFixedSize,
+                          hover_button_insets.top());
+    layout->StartRow(views::GridLayout::kFixedSize, label_column_status);
+    icon_ = layout->AddView(std::make_unique<NonAccessibleImageView>());
+
+    auto security_summary_label = std::make_unique<views::StyledLabel>();
+    // TODO(olesiamarukhno): Check padding between summary and description
+    // labels after more UI is implemented.
+    security_summary_label->SetTextContext(
+        views::style::CONTEXT_DIALOG_BODY_TEXT);
+    security_summary_label_ =
+        layout->AddView(std::move(security_summary_label), 1.0, 1.0,
+                        views::GridLayout::FILL, views::GridLayout::LEADING);
+  }
+
+  auto start_secondary_row = [=]() {
+    layout->StartRow(views::GridLayout::kFixedSize, label_column_status);
+    // Skipping the icon's column.
+    if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop))
+      layout->SkipColumns(1);
+  };
+
+  start_secondary_row();
   auto security_details_label = std::make_unique<views::StyledLabel>();
   security_details_label_ =
       layout->AddView(std::move(security_details_label), 1.0, 1.0,
                       views::GridLayout::FILL, views::GridLayout::LEADING);
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop))
+    security_details_label_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
 
-  layout->StartRow(views::GridLayout::kFixedSize, label_column_status);
+  start_secondary_row();
   auto reset_decisions_label_container = std::make_unique<views::View>();
   reset_decisions_label_container->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
@@ -52,13 +87,29 @@ SecurityInformationView::SecurityInformationView(int side_margin) {
       layout->AddView(std::move(reset_decisions_label_container), 1.0, 1.0,
                       views::GridLayout::FILL, views::GridLayout::LEADING);
 
-  layout->StartRow(views::GridLayout::kFixedSize, label_column_status);
+  start_secondary_row();
   password_reuse_button_container_ =
       layout->AddView(std::make_unique<views::View>(), 1, 1,
                       views::GridLayout::FILL, views::GridLayout::LEADING);
+
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
+    const int end_padding =
+        layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
+    layout->AddPaddingRow(views::GridLayout::kFixedSize, end_padding);
+  }
 }
 
 SecurityInformationView::~SecurityInformationView() = default;
+
+void SecurityInformationView::SetIcon(const ui::ImageModel& image_icon) {
+  icon_->SetImage(image_icon);
+}
+
+void SecurityInformationView::SetSummary(const std::u16string& summary_text,
+                                         int text_style) {
+  security_summary_label_->SetText(summary_text);
+  security_summary_label_->SetDefaultTextStyle(text_style);
+}
 
 void SecurityInformationView::SetDetails(
     const std::u16string& details_text,
@@ -101,6 +152,10 @@ void SecurityInformationView::AddResetDecisionsLabel(
   views::StyledLabel* reset_cert_decisions_label =
       reset_decisions_label_container_->AddChildView(
           std::make_unique<views::StyledLabel>());
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
+    reset_cert_decisions_label->SetDefaultTextStyle(
+        views::style::STYLE_SECONDARY);
+  }
   reset_cert_decisions_label->SetText(text);
   gfx::Range link_range(offsets[1], text.length());
 
@@ -114,8 +169,14 @@ void SecurityInformationView::AddResetDecisionsLabel(
   reset_cert_decisions_label->SizeToFit(0);
 
   // Now that it contains a label, the container needs padding at the top.
+  const int between_paragraphs_distance =
+      base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)
+          ? ChromeLayoutProvider::Get()->GetDistanceMetric(
+                views::DISTANCE_RELATED_CONTROL_VERTICAL)
+          : 8;
   reset_decisions_label_container_->SetBorder(views::CreateEmptyBorder(
-      8, views::GridLayout::kFixedSize, views::GridLayout::kFixedSize, 0));
+      between_paragraphs_distance, views::GridLayout::kFixedSize,
+      views::GridLayout::kFixedSize, 0));
 
   InvalidateLayout();
 }

@@ -27,7 +27,7 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
       return vector_icons::kBusinessIcon;
     case security_state::WARNING:
     case security_state::DANGEROUS:
-      return omnibox::kNotSecureWarningIcon;
+      return vector_icons::kNotSecureWarningIcon;
     case security_state::SECURITY_LEVEL_COUNT:
       NOTREACHED();
       return omnibox::kHttpIcon;

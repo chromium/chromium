@@ -57,7 +57,6 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "install_desktop.icon",
     "install_download.icon",
     "keyword_search.icon",
-    "not_secure_warning.icon",
     "offline_pin.icon",
     "page.icon",
     "pedal.icon",

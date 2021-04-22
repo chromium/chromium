@@ -290,8 +290,8 @@ TEST_F(LocationBarModelImplTest, GetVectorIcon) {
   delegate()->SetSecurityLevel(security_state::SecurityLevel::WARNING);
 
   gfx::ImageSkia expected_icon =
-      gfx::CreateVectorIcon(omnibox::kNotSecureWarningIcon, gfx::kFaviconSize,
-                            gfx::kPlaceholderColor);
+      gfx::CreateVectorIcon(vector_icons::kNotSecureWarningIcon,
+                            gfx::kFaviconSize, gfx::kPlaceholderColor);
 
   gfx::ImageSkia icon = gfx::CreateVectorIcon(
       model()->GetVectorIcon(), gfx::kFaviconSize, gfx::kPlaceholderColor);

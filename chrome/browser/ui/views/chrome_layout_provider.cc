@@ -70,6 +70,15 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
     case INSETS_OMNIBOX_PILL_BUTTON:
       return touch_ui ? gfx::Insets(kHarmonyLayoutUnit / 2, kHarmonyLayoutUnit)
                       : gfx::Insets(5, 12);
+    case INSETS_PAGE_INFO_HOVER_BUTTON: {
+      const gfx::Insets insets =
+          LayoutProvider::GetInsetsMetric(views::INSETS_LABEL_BUTTON);
+      const int horizontal_padding =
+          GetDistanceMetric(views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
+      // Hover button in page info requires double the height compared to the
+      // label button because it behaves like a menu control.
+      return gfx::Insets(insets.height(), horizontal_padding);
+    }
     default:
       return LayoutProvider::GetInsetsMetric(metric);
   }

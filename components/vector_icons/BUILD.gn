@@ -66,6 +66,7 @@ aggregate_vector_icons("components_vector_icons") {
     "mic.icon",
     "mic_off.icon",
     "midi.icon",
+    "not_secure_warning.icon",
     "notification_explore.icon",
     "notifications.icon",
     "notifications_off.icon",

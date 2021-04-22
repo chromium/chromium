@@ -820,6 +820,14 @@ const ui::ImageModel PageInfoUI::GetLaunchIcon() {
       vector_icons::kLaunchIcon, ui::NativeTheme::kColorId_DefaultIconColor,
       kVectorIconSize);
 }
+
+// static
+const ui::ImageModel PageInfoUI::GetConnectionNotSecureIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kNotSecureWarningIcon,
+      ui::NativeTheme::kColorId_AlertSeverityHigh);
+}
+
 #endif
 
 // static

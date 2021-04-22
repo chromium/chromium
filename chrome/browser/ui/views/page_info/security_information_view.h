@@ -14,6 +14,8 @@ namespace views {
 class StyledLabel;
 }  // namespace views
 
+class NonAccessibleImageView;
+
 // View that represents the header of the page info bubble. The header shows the
 // status of the site's identity check and the name of the site's identity.
 class SecurityInformationView : public views::View {
@@ -24,8 +26,11 @@ class SecurityInformationView : public views::View {
   SecurityInformationView& operator=(const SecurityInformationView&) = delete;
   ~SecurityInformationView() override;
 
+  // Sets the icon representing security state for the current page.
+  void SetIcon(const ui::ImageModel& image_icon);
+
   // Sets the security summary for the current page.
-  void SetSummary(const std::u16string& summary_text);
+  void SetSummary(const std::u16string& summary_text, int text_style);
 
   // Sets the security details for the current page and the callback for the
   // "Learn more" link.
@@ -46,16 +51,18 @@ class SecurityInformationView : public views::View {
       views::Button::PressedCallback password_reuse_callback);
 
  private:
+  // The icon that representes the security state for this site. Used for page
+  // info v2 only.
+  NonAccessibleImageView* icon_ = nullptr;
+
+  // The label that displays the security summary for this site. Used for page
+  // info v2 only.
+  views::StyledLabel* security_summary_label_ = nullptr;
+
   // The label that displays the status of the identity check for this site.
   // Includes a link to open the Chrome Help Center article about connection
   // security.
   views::StyledLabel* security_details_label_ = nullptr;
-
-  // A container for the styled label containing organization name and
-  // jurisdiction details, if the site has an EV certificate.
-  // This is only shown sometimes, so we use a container to keep track of where
-  // to place it (if needed).
-  views::View* ev_certificate_label_container_ = nullptr;
 
   // A container for the styled label with a link for resetting cert decisions.
   // This is only shown sometimes, so we use a container to keep track of

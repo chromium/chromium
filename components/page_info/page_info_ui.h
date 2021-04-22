@@ -217,6 +217,9 @@ class PageInfoUI {
   // Returns the icon for a button which opens an external dialog or page (ex.
   // cookies dialog or site settings page).
   static const ui::ImageModel GetLaunchIcon();
+
+  // Returns the not secure state icon for the SecurityInformationView.
+  static const ui::ImageModel GetConnectionNotSecureIcon();
 #endif
 
   // Return true if the given ContentSettingsType is in PageInfoUI.

@@ -21,6 +21,8 @@ enum ChromeInsetsMetric {
   INSETS_TOAST,
   // Padding used in an omnibox pill button.
   INSETS_OMNIBOX_PILL_BUTTON,
+  // Padding used in an page info hover button.
+  INSETS_PAGE_INFO_HOVER_BUTTON,
 };
 
 enum ChromeDistanceMetric {

@@ -336,6 +336,8 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
             this));
   }
   details_text_ = security_description->details;
+  security_view_->SetIcon(PageInfoUI::GetConnectionNotSecureIcon());
+  security_view_->SetSummary(security_description->summary, text_style);
   security_view_->SetDetails(
       security_description->details,
       base::BindRepeating(&PageInfoMainView::SecurityDetailsClicked,
