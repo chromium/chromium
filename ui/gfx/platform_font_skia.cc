@@ -37,9 +37,9 @@ namespace {
 // GNOME/KDE is a non-scalable one. The name should be listed in the
 // IsFallbackFontAllowed function in skia/ext/SkFontHost_fontconfig_direct.cpp.
 #if defined(OS_ANDROID)
-const char* kFallbackFontFamilyName = "serif";
+const char kFallbackFontFamilyName[] = "serif";
 #else
-const char* kFallbackFontFamilyName = "sans";
+const char kFallbackFontFamilyName[] = "sans";
 #endif
 
 constexpr SkGlyphID kUnsupportedGlyph = 0;
