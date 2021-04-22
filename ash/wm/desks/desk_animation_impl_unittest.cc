@@ -4,14 +4,12 @@
 
 #include "ash/wm/desks/desk_animation_impl.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "base/barrier_closure.h"
-#include "base/test/scoped_feature_list.h"
 
 namespace ash {
 
@@ -34,9 +32,6 @@ using DeskActivationAnimationTest = AshTestBase;
 // starting screenshot has been taken. Regression test for
 // https://crbug.com/1148607.
 TEST_F(DeskActivationAnimationTest, EndSwipeBeforeStartingScreenshot) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEnhancedDeskAnimations);
-
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
 
@@ -55,9 +50,6 @@ TEST_F(DeskActivationAnimationTest, UpdateSwipeNewScreenshotCrash) {
   // Crash is only reproducible on different resolution widths and easier to
   // repro when the widths differ by a lot.
   UpdateDisplay("600x600,601+0-2000x600");
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEnhancedDeskAnimations);
 
   // Crash repro requires three desks.
   auto* desks_controller = DesksController::Get();
@@ -98,9 +90,6 @@ TEST_F(DeskActivationAnimationTest, VisibleDeskChangeCount) {
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEnhancedDeskAnimations);
 
   DeskActivationAnimation animation(desks_controller, 0, 1,
                                     DesksSwitchSource::kDeskSwitchTouchpad,
@@ -144,9 +133,6 @@ TEST_F(DeskActivationAnimationTest, CloseWindowDuringAnimation) {
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
 
   std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(250, 100));
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEnhancedDeskAnimations);
 
   DeskActivationAnimation animation(desks_controller, 0, 1,
                                     DesksSwitchSource::kDeskSwitchTouchpad,

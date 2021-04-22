@@ -3759,9 +3759,6 @@ TEST_F(DesksAcceleratorsTest, CannotMoveAlwaysOnTopWindows) {
 // Tests that hitting an acclerator to switch desks does not cause a crash if we
 // are already at an edge desk. Regression test for https://crbug.com/1159068.
 TEST_F(DesksAcceleratorsTest, HitAcceleratorWhenAlreadyAtEdge) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kEnhancedDeskAnimations);
-
   NewDesk();
 
   // Enable animations so that we can make sure that they occur.

@@ -332,9 +332,6 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // re-pushed on this queue.
   std::queue<int> available_container_ids_;
 
-  // True when the enhanced desk animations feature is enabled.
-  const bool is_enhanced_desk_animations_;
-
   // Responsible for tracking and writing number of desk traversals one has
   // done within a span of X seconds.
   std::unique_ptr<DeskTraversalsMetricsHelper> metrics_helper_;

@@ -228,8 +228,7 @@ class DesksController::DeskTraversalsMetricsHelper {
 };
 
 DesksController::DesksController()
-    : is_enhanced_desk_animations_(features::IsEnhancedDeskAnimations()),
-      metrics_helper_(std::make_unique<DeskTraversalsMetricsHelper>(this)) {
+    : metrics_helper_(std::make_unique<DeskTraversalsMetricsHelper>(this)) {
   Shell::Get()->activation_client()->AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
 
@@ -535,17 +534,11 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
 
 bool DesksController::ActivateAdjacentDesk(bool going_left,
                                            DesksSwitchSource source) {
-  // An on-going desk switch animation might be in progress. Skip this
-  // accelerator or touchpad event if enhanced desk animations are not enabled.
-  if (!is_enhanced_desk_animations_ && AreDesksBeingModified())
-    return false;
-
   if (Shell::Get()->session_controller()->IsUserSessionBlocked())
     return false;
 
   // Try replacing an ongoing desk animation of the same source.
-  if (is_enhanced_desk_animations_ && animation_ &&
-      animation_->Replace(going_left, source)) {
+  if (animation_ && animation_->Replace(going_left, source)) {
     return true;
   }
 
@@ -561,8 +554,6 @@ bool DesksController::ActivateAdjacentDesk(bool going_left,
 }
 
 bool DesksController::StartSwipeAnimation(bool move_left) {
-  DCHECK(is_enhanced_desk_animations_);
-
   // Activate an adjacent desk. It will replace an ongoing touchpad animation if
   // one exists.
   return ActivateAdjacentDesk(move_left,
@@ -570,13 +561,11 @@ bool DesksController::StartSwipeAnimation(bool move_left) {
 }
 
 void DesksController::UpdateSwipeAnimation(float scroll_delta_x) {
-  DCHECK(is_enhanced_desk_animations_);
   if (animation_)
     animation_->UpdateSwipeAnimation(scroll_delta_x);
 }
 
 void DesksController::EndSwipeAnimation() {
-  DCHECK(is_enhanced_desk_animations_);
   if (animation_)
     animation_->EndSwipeAnimation();
 }

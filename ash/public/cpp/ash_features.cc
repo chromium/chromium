@@ -42,9 +42,6 @@ const base::Feature kDisplayIdentification{"DisplayIdentification",
 const base::Feature kDockedMagnifier{"DockedMagnifier",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kEnhancedDeskAnimations{"EnhancedDeskAnimations",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kFullRestore{"FullRestore",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -179,10 +176,6 @@ bool IsCaptureModeEnabled() {
 
 bool IsDarkLightModeEnabled() {
   return base::FeatureList::IsEnabled(kDarkLightMode);
-}
-
-bool IsEnhancedDeskAnimations() {
-  return base::FeatureList::IsEnabled(kEnhancedDeskAnimations);
 }
 
 bool IsFullRestoreEnabled() {

@@ -4,13 +4,11 @@
 
 #include "ash/public/cpp/autotest_desks_api.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
@@ -107,25 +105,7 @@ TEST_F(AutotestDesksApiTest, RemoveActiveDesk) {
   EXPECT_FALSE(test_api.RemoveActiveDesk(base::DoNothing()));
 }
 
-class EnhancedDeskAnimationsAutotestDesksApiTest : public AutotestDesksApiTest {
- public:
-  EnhancedDeskAnimationsAutotestDesksApiTest() = default;
-  EnhancedDeskAnimationsAutotestDesksApiTest(
-      const EnhancedDeskAnimationsAutotestDesksApiTest&) = delete;
-  EnhancedDeskAnimationsAutotestDesksApiTest& operator=(
-      const EnhancedDeskAnimationsAutotestDesksApiTest&) = delete;
-  ~EnhancedDeskAnimationsAutotestDesksApiTest() override = default;
-
-  // AutotestDesksApiTest:
-  void SetUp() override {
-    features_.InitAndEnableFeature(features::kEnhancedDeskAnimations);
-
-    AutotestDesksApiTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
+using EnhancedDeskAnimationsAutotestDesksApiTest = AutotestDesksApiTest;
 
 TEST_F(EnhancedDeskAnimationsAutotestDesksApiTest,
        ActivateAdjacentDesksToTargetIndex) {

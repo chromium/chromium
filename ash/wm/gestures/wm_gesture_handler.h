@@ -59,8 +59,7 @@ class ASH_EXPORT WmGestureHandler {
   // Called by ProcessScrollEvent(). Depending on |finger_count|, may switch
   // desks, start overview or move the overview highlight. Returns true if the
   // event has been handled and should not be processed further, false
-  // otherwise. Forwards events to DesksController if
-  // |is_enhanced_desk_animations_| is true.
+  // otherwise. Forwards events to DesksController.
   bool ProcessEventImpl(int finger_count, float delta_x, float delta_y);
 
   // Called when a scroll is ended. Returns true if the scroll is processed.
@@ -78,9 +77,6 @@ class ASH_EXPORT WmGestureHandler {
 
   // Contains the data during a scroll session. Empty is no scroll is underway.
   base::Optional<ScrollData> scroll_data_;
-
-  // True when the enhanced desk animations feature is enabled.
-  const bool is_enhanced_desk_animations_;
 };
 
 }  // namespace ash

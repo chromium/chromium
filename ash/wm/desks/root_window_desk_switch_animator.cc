@@ -4,7 +4,6 @@
 
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/screen_util.h"
 #include "ash/utility/layer_util.h"
@@ -203,7 +202,6 @@ void RootWindowDeskSwitchAnimator::StartAnimation() {
 }
 
 bool RootWindowDeskSwitchAnimator::ReplaceAnimation(int new_ending_desk_index) {
-  DCHECK(features::IsEnhancedDeskAnimations());
   DCHECK(!for_remove_);
   DCHECK_NE(new_ending_desk_index, ending_desk_index_);
 

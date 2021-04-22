@@ -173,29 +173,9 @@ void MaybeHandleWrongHorizontalGesture(bool move_left,
   toast_manager->Cancel(kSwitchLastDeskToastId);
 }
 
-// Handles horizontal 4-finger scroll by switching desks if possible.
-// Returns true if the gesture was handled.
-bool HandleDesksSwitchHorizontalScroll(float scroll_x) {
-  if (std::fabs(scroll_x) < WmGestureHandler::kHorizontalThresholdDp)
-    return false;
-
-  auto* desks_controller = DesksController::Get();
-  const bool move_left = GetOffset(scroll_x) < 0;
-
-  MaybeHandleWrongHorizontalGesture(
-      move_left,
-      desks_controller->GetPreviousDesk(/*use_target_active_desk=*/false),
-      desks_controller->GetNextDesk(/*use_target_active_desk=*/false));
-
-  // If touchpad reverse scroll is on, the swipe direction will invert.
-  return desks_controller->ActivateAdjacentDesk(
-      move_left, DesksSwitchSource::kDeskSwitchTouchpad);
-}
-
 }  // namespace
 
-WmGestureHandler::WmGestureHandler()
-    : is_enhanced_desk_animations_(features::IsEnhancedDeskAnimations()) {}
+WmGestureHandler::WmGestureHandler() = default;
 
 WmGestureHandler::~WmGestureHandler() = default;
 
@@ -248,7 +228,7 @@ bool WmGestureHandler::ProcessEventImpl(int finger_count,
   const bool moved = MoveOverviewSelection(finger_count, scroll_data_->scroll_x,
                                            scroll_data_->scroll_y);
 
-  if (is_enhanced_desk_animations_ && finger_count == 4) {
+  if (finger_count == 4) {
     DCHECK(!moved);
     // Horizontal gesture may be flipped.
     const float offset_x = GetOffset(-delta_x);
@@ -306,9 +286,6 @@ bool WmGestureHandler::EndScroll() {
 
   if (finger_count != 4)
     return false;
-
-  if (!is_enhanced_desk_animations_)
-    return HandleDesksSwitchHorizontalScroll(scroll_x);
 
   if (continuous_gesture_started)
     DesksController::Get()->EndSwipeAnimation();

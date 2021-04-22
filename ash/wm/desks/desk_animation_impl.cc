@@ -46,8 +46,7 @@ constexpr base::TimeDelta kFastSwipeThresholdDuration =
     base::TimeDelta::FromMilliseconds(500);
 
 bool IsForContinuousGestures(DesksSwitchSource source) {
-  return source == DesksSwitchSource::kDeskSwitchTouchpad &&
-         features::IsEnhancedDeskAnimations();
+  return source == DesksSwitchSource::kDeskSwitchTouchpad;
 }
 
 }  // namespace

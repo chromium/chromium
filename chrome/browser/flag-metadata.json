@@ -2739,11 +2739,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enhanced-desk-animations",
-    "owners": ["sammiequon", "tclaiborne"],
-    "expiry_milestone": 92
-  },
-  {
     "name": "enterprise-realtime-extension-request",
     "owners": ["zmin", "parastoog"],
     "expiry_milestone": 98

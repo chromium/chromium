@@ -50,11 +50,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kDisplayIdentification;
 // https://crbug.com/709824.
 ASH_PUBLIC_EXPORT extern const base::Feature kDockedMagnifier;
 
-// Enables chaining of keyboard and touchpad swipe induced desk animations.
-// Enables continuous touchpad swiping to switch desks.
-// TODO(crbug.com/1111445): Remove this when the feature is fully launched.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnhancedDeskAnimations;
-
 // Enables the full restore feature. If this is enabled, we will restore apps
 // and app windows after a crash or reboot.
 ASH_PUBLIC_EXPORT extern const base::Feature kFullRestore;
@@ -211,8 +206,6 @@ ASH_PUBLIC_EXPORT bool IsAutoNightLightEnabled();
 ASH_PUBLIC_EXPORT bool IsCaptureModeEnabled();
 
 ASH_PUBLIC_EXPORT bool IsDarkLightModeEnabled();
-
-ASH_PUBLIC_EXPORT bool IsEnhancedDeskAnimations();
 
 ASH_PUBLIC_EXPORT bool IsFullRestoreEnabled();
 
