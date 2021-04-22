@@ -135,7 +135,6 @@ UIElement::UIElement(const UIElementType type,
 }
 
 bool UIElement::SetPropertiesFromString(const std::string& text) {
-  NOTREACHED();
   return false;
 }
 

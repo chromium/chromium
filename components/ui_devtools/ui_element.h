@@ -50,10 +50,13 @@ class UI_DEVTOOLS_EXPORT UIElement {
 
   using UIElements = std::vector<UIElement*>;
 
+  UIElement(const UIElement&) = delete;
+  UIElement& operator=(const UIElement&) = delete;
+  virtual ~UIElement();
+
   // resets node ids to 0 so that they are reusable
   static void ResetNodeId();
 
-  virtual ~UIElement();
   int node_id() const { return node_id_; }
   std::string GetTypeName() const;
   UIElement* parent() const { return parent_; }
@@ -158,8 +161,6 @@ class UI_DEVTOOLS_EXPORT UIElement {
   int base_stylesheet_id_;
   bool header_sent_ = false;
   std::vector<Source> sources_;
-
-  DISALLOW_COPY_AND_ASSIGN(UIElement);
 };
 
 }  // namespace ui_devtools

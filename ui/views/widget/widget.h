@@ -24,6 +24,8 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_types.h"
 #include "ui/views/widget/native_widget_delegate.h"
 #include "ui/views/window/client_view.h"
 #include "ui/views/window/non_client_view.h"
@@ -98,8 +100,10 @@ enum class CloseRequestResult { kCanClose, kCannotClose };
 class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
                             public ui::EventSource,
                             public FocusTraversable,
-                            public ui::NativeThemeObserver {
+                            public ui::NativeThemeObserver,
+                            public metadata::MetaDataProvider {
  public:
+  METADATA_HEADER_BASE(Widget);
   using Widgets = std::set<Widget*>;
   using ShapeRects = std::vector<gfx::Rect>;
   using PaintAsActiveCallbackList = base::RepeatingClosureList;
@@ -1035,6 +1039,21 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Set the native theme from which this widget gets color from.
   void SetNativeTheme(ui::NativeTheme* native_theme);
+
+  // The following methods are used by the property access system described in
+  // the comments on views::View. They follow the required naming convention in
+  // order to allow them to be visible via the metadata.
+  // TODO(kylixrd): Refactor code to use these methods directly.
+  int GetX() const;
+  int GetY() const;
+  int GetWidth() const;
+  int GetHeight() const;
+  bool GetVisible() const;
+  void SetX(int x);
+  void SetY(int y);
+  void SetWidth(int width);
+  void SetHeight(int height);
+  void SetVisible(bool visible);
 
  private:
   // Type of ways to ignore activation changes.

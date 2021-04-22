@@ -33,6 +33,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/focus_manager_factory.h"
 #include "ui/views/focus/widget_focus_manager.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/any_widget_observer_singleton.h"
@@ -1114,6 +1115,67 @@ void Widget::SetNativeTheme(ui::NativeTheme* native_theme) {
     native_theme_observation_.Observe(native_theme);
 }
 
+int Widget::GetX() const {
+  return GetRestoredBounds().x();
+}
+
+int Widget::GetY() const {
+  return GetRestoredBounds().y();
+}
+
+int Widget::GetWidth() const {
+  return GetRestoredBounds().width();
+}
+
+int Widget::GetHeight() const {
+  return GetRestoredBounds().height();
+}
+
+bool Widget::GetVisible() const {
+  return IsVisible();
+}
+
+void Widget::SetX(int x) {
+  gfx::Rect bounds = GetRestoredBounds();
+  if (x == bounds.x())
+    return;
+  bounds.set_x(x);
+  SetBounds(bounds);
+}
+
+void Widget::SetY(int y) {
+  gfx::Rect bounds = GetRestoredBounds();
+  if (y == bounds.y())
+    return;
+  bounds.set_y(y);
+  SetBounds(bounds);
+}
+
+void Widget::SetWidth(int width) {
+  gfx::Rect bounds = GetRestoredBounds();
+  if (width == bounds.width())
+    return;
+  bounds.set_width(width);
+  SetBounds(bounds);
+}
+
+void Widget::SetHeight(int height) {
+  gfx::Rect bounds = GetRestoredBounds();
+  if (height == bounds.height())
+    return;
+  bounds.set_height(height);
+  SetBounds(bounds);
+}
+
+void Widget::SetVisible(bool visible) {
+  if (visible == IsVisible())
+    return;
+  if (visible)
+    Show();
+  else
+    Hide();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Widget, NativeWidgetDelegate implementation:
 
@@ -1697,6 +1759,27 @@ void Widget::ClearFocusFromWidget() {
   if (focus_manager)
     focus_manager->ViewRemoved(root_view_.get());
 }
+
+DEFINE_ENUM_CONVERTERS(ui::ZOrderLevel,
+                       {ui::ZOrderLevel::kNormal, u"kNormal"},
+                       {ui::ZOrderLevel::kFloatingWindow, u"kFloatingWindow"},
+                       {ui::ZOrderLevel::kFloatingUIElement,
+                        u"kFloatingUIElement"},
+                       {ui::ZOrderLevel::kSecuritySurface, u"kSecuritySurface"})
+
+BEGIN_METADATA_BASE(Widget)
+ADD_READONLY_PROPERTY_METADATA(const char*, ClassName)
+ADD_READONLY_PROPERTY_METADATA(gfx::Rect, ClientAreaBoundsInScreen)
+ADD_READONLY_PROPERTY_METADATA(std::string, Name)
+ADD_READONLY_PROPERTY_METADATA(gfx::Rect, RestoredBounds)
+ADD_READONLY_PROPERTY_METADATA(gfx::Rect, WindowBoundsInScreen)
+ADD_PROPERTY_METADATA(int, X)
+ADD_PROPERTY_METADATA(int, Y)
+ADD_PROPERTY_METADATA(int, Width)
+ADD_PROPERTY_METADATA(int, Height)
+ADD_PROPERTY_METADATA(bool, Visible)
+ADD_PROPERTY_METADATA(ui::ZOrderLevel, ZOrderLevel)
+END_METADATA
 
 namespace internal {
 

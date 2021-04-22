@@ -15,6 +15,7 @@
 #include "ui/views/metadata/metadata_types.h"
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -72,7 +73,7 @@ class ObjectPropertyReadOnlyMetaData : public MemberMetaDataBase {
       const ObjectPropertyReadOnlyMetaData&) = delete;
   ~ObjectPropertyReadOnlyMetaData() override = default;
 
-  std::u16string GetValueAsString(View* obj) const override {
+  std::u16string GetValueAsString(void* obj) const override {
     if (!kTypeIsSerializable && !kTypeIsReadOnly)
       return std::u16string();
     return TConverter::ToString((static_cast<TClass*>(obj)->*Get)());
@@ -118,7 +119,7 @@ class ObjectPropertyMetaData
   ObjectPropertyMetaData& operator=(const ObjectPropertyMetaData&) = delete;
   ~ObjectPropertyMetaData() override = default;
 
-  void SetValueAsString(View* obj, const std::u16string& new_value) override {
+  void SetValueAsString(void* obj, const std::u16string& new_value) override {
     if (!kTypeIsSerializable || kTypeIsReadOnly)
       return;
     if (base::Optional<TValue> result = TConverter::FromString(new_value)) {
@@ -164,8 +165,13 @@ class ClassPropertyMetaData : public MemberMetaDataBase {
   // Returns the property value as a string.
   // If the property value is an pointer of type |TKValue*| and
   // |TKValue| == |TValue|, dereferences the pointer.
-  std::u16string GetValueAsString(View* obj) const override {
-    typename TypeHelper::TKValue value = obj->GetProperty(key_);
+  std::u16string GetValueAsString(void* obj) const override {
+    // This cast (here and below) is needed since the direct cast to
+    // ui::PropertyHandler* won't work due to the MI nature of View.
+    DCHECK(views::IsViewClass<View>(static_cast<View*>(obj)));
+    typename TypeHelper::TKValue value =
+        static_cast<ui::PropertyHandler*>(static_cast<View*>(obj))
+            ->GetProperty(key_);
     if (std::is_pointer<typename TypeHelper::TKValue>::value && !value) {
       return u"(not assigned)";
     } else {
@@ -176,10 +182,13 @@ class ClassPropertyMetaData : public MemberMetaDataBase {
     }
   }
 
-  void SetValueAsString(View* obj, const std::u16string& new_value) override {
+  void SetValueAsString(void* obj, const std::u16string& new_value) override {
     base::Optional<TValue> value = TConverter::FromString(new_value);
-    if (value)
-      obj->SetProperty(key_, *value);
+    if (value) {
+      DCHECK(views::IsViewClass<View>(static_cast<View*>(obj)));
+      static_cast<ui::PropertyHandler*>(static_cast<View*>(obj))
+          ->SetProperty(key_, *value);
+    }
   }
 
   PropertyFlags GetPropertyFlags() const override {

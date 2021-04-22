@@ -156,12 +156,12 @@ class VIEWS_EXPORT MemberMetaDataBase {
   // Access the value of this member and return it as a string.
   // |obj| is the instance on which to obtain the value of the property this
   // metadata represents.
-  virtual std::u16string GetValueAsString(View* obj) const = 0;
+  virtual std::u16string GetValueAsString(void* obj) const = 0;
 
   // Set the value of this member through a string on a specified object.
   // |obj| is the instance on which to set the value of the property this
   // metadata represents.
-  virtual void SetValueAsString(View* obj, const std::u16string& new_value);
+  virtual void SetValueAsString(void* obj, const std::u16string& new_value);
 
   // Return various information flags about the property.
   virtual PropertyFlags GetPropertyFlags() const = 0;

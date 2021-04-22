@@ -137,7 +137,7 @@ void ClassMetaData::SetTypeName(const std::string& type_name) {
   type_name_ = type_name;
 }
 
-void MemberMetaDataBase::SetValueAsString(View* obj,
+void MemberMetaDataBase::SetValueAsString(void* obj,
                                           const std::u16string& new_value) {
   NOTREACHED();
 }
