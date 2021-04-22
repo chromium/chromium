@@ -1451,9 +1451,6 @@ crbug.com/892032 fast/events/wheel/wheel-latched-scroll-node-removed.html [ Pass
 # Tests that fail when FormControlsRefresh is enabled:
 crbug.com/1051136 fast/forms/select/listbox-overlay-scrollbar.html [ Failure ]
 
-# This test needs the fuzzy-diff feature - it has small anti-aliasing failures:
-crbug.com/1051143 external/wpt/css/css-transforms/transform-input-015.html [ Pass Failure ]
-
 # These performance-sensitive user-timing tests are flaky in debug on all platforms, and flaky on all configurations of windows.
 # See: crbug.com/567965, crbug.com/518992, and crbug.com/518993
 
