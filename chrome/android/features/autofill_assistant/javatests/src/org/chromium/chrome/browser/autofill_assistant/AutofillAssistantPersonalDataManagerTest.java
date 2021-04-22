@@ -192,6 +192,7 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1197105")
     public void testCreateAndEditProfileMultipleTimes() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(
