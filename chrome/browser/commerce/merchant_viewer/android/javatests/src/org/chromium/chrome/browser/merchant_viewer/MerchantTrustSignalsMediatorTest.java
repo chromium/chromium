@@ -12,7 +12,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,18 +43,6 @@ import org.chromium.url.GURL;
 public class MerchantTrustSignalsMediatorTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        doReturn(mTabModelFilterProvider).when(mMockTabModelSelector).getTabModelFilterProvider();
-        doReturn(100).when(mMockPrimaryTab).getId();
-        doReturn("fake://url/2").when(mMockPrimaryTab).getUrlString();
-        doReturn(mMockWebContents).when(mMockPrimaryTab).getWebContents();
-
-        doReturn(200).when(mMockSecondaryTab).getId();
-        doReturn("fake://url/2").when(mMockSecondaryTab).getUrlString();
-        doReturn(mMockWebContents).when(mMockSecondaryTab).getWebContents();
-    }
 
     @Mock
     private MerchantTrustSignalsMediator.MerchantTrustSignalsCallback mMockDelegate;
@@ -87,8 +74,18 @@ public class MerchantTrustSignalsMediatorTest {
     @Captor
     private ArgumentCaptor<WebContentsObserver> mWebContentsObserver;
 
-    @After
-    public void tearDown() throws Exception {}
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        doReturn(mTabModelFilterProvider).when(mMockTabModelSelector).getTabModelFilterProvider();
+        doReturn(100).when(mMockPrimaryTab).getId();
+        doReturn("fake://url/2").when(mMockPrimaryTab).getUrlString();
+        doReturn(mMockWebContents).when(mMockPrimaryTab).getWebContents();
+
+        doReturn(200).when(mMockSecondaryTab).getId();
+        doReturn("fake://url/2").when(mMockSecondaryTab).getUrlString();
+        doReturn(mMockWebContents).when(mMockSecondaryTab).getWebContents();
+    }
 
     @Test
     public void testObserversSetup() {

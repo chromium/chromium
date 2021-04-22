@@ -7,6 +7,9 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustDetailsSheetContent.java",
+    "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustDetailsTabCoordinator.java",
+    "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustDetailsTabMediator.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageContext.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageScheduler.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsCoordinator.java",
@@ -14,23 +17,42 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEventStorage.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsMediator.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantViewerConfig.java",
+    "java/src/org/chromium/chrome/browser/merchant_viewer/WebContentsHelpers.java",
   ]
 
   deps = [
+    ":jni_headers",
     "//base:base_java",
     "//chrome/android:base_module_java",
+    "//chrome/android/features/tab_ui:java_resources",
+    "//chrome/android/features/tab_ui:java_strings_grd",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/version:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:content_view_java",
+    "//components/embedder_support/android:util_java",
+    "//components/embedder_support/android:web_contents_delegate_java",
     "//components/messages/android:java",
+    "//components/security_state/content/android:java",
+    "//components/security_state/core:security_state_enums_java",
+    "//components/thin_webview:factory_java",
+    "//components/thin_webview:java",
+    "//components/thin_webview:thin_webview",
+    "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
+  resources_package = "org.chromium.chrome.tab_ui"
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
@@ -42,6 +64,7 @@ java_library("junit") {
   testonly = true
 
   sources = [
+    "javatests/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustDetailsTabMediatorTest.java",
     "javatests/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageContextTest.java",
     "javatests/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageSchedulerTest.java",
     "javatests/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsCoordinatorTest.java",
@@ -50,16 +73,25 @@ java_library("junit") {
 
   deps = [
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/android:base_module_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/commerce/merchant_viewer/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/embedder_support/android:content_view_java",
+    "//components/embedder_support/android:util_java",
+    "//components/embedder_support/android:web_contents_delegate_java",
     "//components/messages/android:java",
+    "//components/security_state/content/android:java",
+    "//components/security_state/core:security_state_enums_java",
     "//content/public/android:content_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -98,5 +130,6 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEvent.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEventStorage.java",
+    "java/src/org/chromium/chrome/browser/merchant_viewer/WebContentsHelpers.java",
   ]
 }

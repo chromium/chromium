@@ -10,6 +10,10 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.view.View;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,11 +23,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -34,11 +43,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class MerchantTrustSignalsCoordinatorTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        doReturn(mTabModelFilterProvider).when(mMockTabModelSelector).getTabModelFilterProvider();
-    }
 
     @Mock
     private TabModelSelector mMockTabModelSelector;
@@ -51,6 +55,37 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @Mock
     private WebContents mMockWebContents;
+
+    @Mock
+    private Context mMockContext;
+
+    @Mock
+    private BottomSheetController mMockBottomSheetController;
+
+    @Mock
+    private View mMockDecorView;
+
+    @Mock
+    private Supplier<Tab> mMockTabProvider;
+
+    @Mock
+    private WindowAndroid mMockWindowAndroid;
+
+    @Mock
+    private Resources mMockResources;
+
+    @Mock
+    private DisplayAndroid mMockDisplayAndroid;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        doReturn(mTabModelFilterProvider).when(mMockTabModelSelector).getTabModelFilterProvider();
+        doReturn(100).when(mMockResources).getDimensionPixelSize(any(Integer.class));
+        doReturn(mMockResources).when(mMockContext).getResources();
+        doReturn(1f).when(mMockDisplayAndroid).getDipScale();
+        doReturn(mMockDisplayAndroid).when(mMockWindowAndroid).getDisplay();
+    }
 
     @Test
     public void testMaybeDisplayMessage() {
@@ -108,7 +143,8 @@ public class MerchantTrustSignalsCoordinatorTest {
     }
 
     private MerchantTrustSignalsCoordinator getCoordinatorUnderTest() {
-        return new MerchantTrustSignalsCoordinator(
-                mMockTabModelSelector, mMockMerchantMessageScheduler);
+        return new MerchantTrustSignalsCoordinator(mMockContext, mMockWindowAndroid,
+                mMockBottomSheetController, mMockDecorView, mMockTabModelSelector,
+                mMockMerchantMessageScheduler, mMockTabProvider);
     }
 }

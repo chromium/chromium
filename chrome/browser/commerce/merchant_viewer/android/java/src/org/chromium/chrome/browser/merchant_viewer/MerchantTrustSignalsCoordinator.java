@@ -4,10 +4,17 @@
 
 package org.chromium.chrome.browser.merchant_viewer;
 
+import android.content.Context;
+import android.view.View;
+
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.messages.MessageBannerProperties;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.concurrent.TimeUnit;
@@ -18,15 +25,29 @@ import java.util.concurrent.TimeUnit;
 public class MerchantTrustSignalsCoordinator {
     // TODO: Make the value configurable.
     @VisibleForTesting
-    public static final long MESSAGE_ENQUEUE_DELAY_MILLIS = TimeUnit.SECONDS.toMillis(10);
+    public static final long MESSAGE_ENQUEUE_DELAY_MILLIS = TimeUnit.SECONDS.toMillis(2);
     private final MerchantTrustSignalsMediator mMediator;
     private final MerchantTrustMessageScheduler mMessageScheduler;
+    private final MerchantTrustDetailsTabCoordinator mDetailsTabCoordinator;
+    private final Context mContext;
+    private final WindowAndroid mWindowAndroid;
+    private final BottomSheetController mBottomSheetController;
+    private final View mLayoutView;
 
     /** Creates a new instance. */
-    public MerchantTrustSignalsCoordinator(
-            TabModelSelector tabModelSelector, MerchantTrustMessageScheduler messageScheduler) {
+    public MerchantTrustSignalsCoordinator(Context context, WindowAndroid windowAndroid,
+            BottomSheetController bottomSheetController, View layoutView,
+            TabModelSelector tabModelSelector, MerchantTrustMessageScheduler messageScheduler,
+            Supplier<Tab> tabSupplier) {
+        mContext = context;
+        mWindowAndroid = windowAndroid;
+        mBottomSheetController = bottomSheetController;
+        mLayoutView = layoutView;
+
         mMediator = new MerchantTrustSignalsMediator(tabModelSelector, this::maybeDisplayMessage);
         mMessageScheduler = messageScheduler;
+        mDetailsTabCoordinator = new MerchantTrustDetailsTabCoordinator(
+                context, windowAndroid, bottomSheetController, tabSupplier, layoutView);
     }
 
     /** Cleans up internal state. */
@@ -50,6 +71,7 @@ public class MerchantTrustSignalsCoordinator {
             if (!isUnfamiliarMerchant(item.getHostName())) {
                 return;
             }
+
             mMessageScheduler.schedule(getMessagePropertyModel(item.getHostName()), item,
                     MESSAGE_ENQUEUE_DELAY_MILLIS);
         }
