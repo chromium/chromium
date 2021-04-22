@@ -80,6 +80,7 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
     _customSpacingAfterImage = kStackViewSpacingAfterIllustration;
     _showDismissBarButton = YES;
     _dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
+    _capitalizeTitle = YES;
   }
   return self;
 }
@@ -483,7 +484,11 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
       [UIFontMetrics metricsForTextStyle:self.titleTextStyle];
   title.font = [fontMetrics scaledFontForFont:font];
   title.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  title.text = self.titleString.capitalizedString;
+  if (self.capitalizeTitle) {
+    title.text = self.titleString.capitalizedString;
+  } else {
+    title.text = self.titleString;
+  }
   title.textAlignment = NSTextAlignmentCenter;
   title.translatesAutoresizingMaskIntoConstraints = NO;
   title.adjustsFontForContentSizeCategory = YES;
