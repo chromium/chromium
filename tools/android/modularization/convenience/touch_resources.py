@@ -130,11 +130,10 @@ def main():
           'strings.grd files. Existing strings can be left in and new strings '
           'can be added to '
           'chrome/browser/ui/android/strings/android_chrome_strings.grd')
-    else:
-      created_resources = _touch_values_files(resources_path, value_type,
-                                              qualifier_suffixes)
-      new_resources.extend(created_resources)
-      all_resources.extend(created_resources)
+    created_resources = _touch_values_files(resources_path, value_type,
+                                            qualifier_suffixes)
+    new_resources.extend(created_resources)
+    all_resources.extend(created_resources)
 
   # Process -d/--directories
   for subdirectory in arguments.directories:
@@ -143,8 +142,7 @@ def main():
       raise ValueError(
           'Use -v/--values to create the values directory and values resources.'
       )
-    else:
-      _touch_subdirectories(resources_path, subdirectory, qualifier_suffixes)
+    _touch_subdirectories(resources_path, subdirectory, qualifier_suffixes)
 
   if not changes_requested:
     print('No resource types specified to create, so just created the res/ '
@@ -188,12 +186,11 @@ def _determine_target_to_use(targets: List[str], target_type: str,
   if not num_targets:
     print(f'Found no existing {target_type} will create ":{default_name}".')
     return default_name
-  elif num_targets == 1:
+  if num_targets == 1:
     print(f'Found existing target {target_type}("{targets[0]}"), using it.')
     return targets[0]
-  else:
-    print(f'Found multiple existing {target_type} targets, pick one: ')
-    return _enumerate_targets_and_ask(targets)
+  print(f'Found multiple existing {target_type} targets, pick one: ')
+  return _enumerate_targets_and_ask(targets)
 
 
 def _enumerate_targets_and_ask(targets: List[str]) -> Optional[str]:
@@ -352,7 +349,7 @@ def _generate_resources_sources(build_gn_dir_path: pathlib.Path,
   return [f'"{str(r.relative_to(build_gn_dir_path))}"' for r in new_resources]
 
 
-def _list_to_lines(lines, indent):
+def _list_to_lines(lines: List[str], indent: int) -> str:
   spaces = ' ' * indent
   return '\n'.join([f'{spaces}{line},' for line in lines])
 

@@ -20,7 +20,6 @@ import collections
 import dataclasses
 import json
 import logging
-import os
 import pathlib
 import subprocess
 import sys
@@ -41,11 +40,11 @@ def main():
                           help='Build output directory.')
   arg_parser.add_argument('classes',
                           nargs='+',
-                          help=f'Java classes to search for')
+                          help='Java classes to search for')
   arg_parser.add_argument('-v',
                           '--verbose',
                           action='store_true',
-                          help=f'Verbose logging.')
+                          help='Verbose logging.')
 
   arguments = arg_parser.parse_args()
 
