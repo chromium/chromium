@@ -83,19 +83,8 @@ void ReportUVPlatformAuthenticatorAvailability() {
   // platform version is an exact proxy for whether a platform authenticator
   // can be used.
 #if defined(OS_MAC)
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  // IsUVPAA() is prone to crashes/hangs on macOS. Downsample metric collection
-  // to make occurrences less likely while we mitigate/fix the underlying issue.
-  // (See crbug.com/1169928).
-  if (base::RandGenerator(10'000) != 0u) {
-    return;
-  }
-  // Getting the profile has to be done on the main thread to avoid race
-  // conditions.
-  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(
-                     &ReportUVPlatformAuthenticatorAvailabilityMainThreadMac));
+  // The Mac startup metric is disabled due to a crash for a M90 merge. See
+  // crbug.com/1199266 for details.
 #elif defined(OS_WIN)
   content::IsUVPlatformAuthenticatorAvailable(
       device::WinWebAuthnApi::GetDefault(),
