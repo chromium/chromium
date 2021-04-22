@@ -189,7 +189,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptViewSource) {
 
 // crbug.com/126257 -- content scripts should not get injected into other
 // extensions.
-IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptOtherExtensions) {
+// TODO(crbug.com/1196340): Fix flakiness.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
+                       DISABLED_ContentScriptOtherExtensions) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   // First, load extension that sets up content script.
   ASSERT_TRUE(RunExtensionTest("content_scripts/other_extensions/injector"))
