@@ -215,7 +215,13 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, MultipleWheelScroll) {
   RunMultipleWheelScroll();
 }
 
-IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, MultipleWheelScrollOnMain) {
+#if !defined(NDEBUG) && defined(OS_LINUX)
+#define MAYBE_MultipleWheelScrollOnMain DISABLED_MultipleWheelScrollOnMain
+#else
+#define MAYBE_MultipleWheelScrollOnMain MultipleWheelScrollOnMain
+#endif
+IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
+                       MAYBE_MultipleWheelScrollOnMain) {
   disable_threaded_scrolling_ = true;
   LoadURL();
   RunMultipleWheelScroll();
