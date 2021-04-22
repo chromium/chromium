@@ -34,6 +34,10 @@ StylusBatteryDelegate::StylusBatteryDelegate() {
 StylusBatteryDelegate::~StylusBatteryDelegate() = default;
 
 SkColor StylusBatteryDelegate::GetColorForBatteryLevel() const {
+  if (!battery_level_.has_value()) {
+    return AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorWarning);
+  }
   if (battery_level_ <= kStylusLowBatteryThreshold && !IsBatteryCharging()) {
     return AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kIconColorAlert);
@@ -76,6 +80,9 @@ bool StylusBatteryDelegate::IsBatteryCharging() const {
 }
 
 bool StylusBatteryDelegate::IsBatteryLevelLow() const {
+  if (!battery_level_.has_value())
+    return false;
+
   return battery_level_ <= kStylusLowBatteryThreshold;
 }
 

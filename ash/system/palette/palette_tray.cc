@@ -98,7 +98,6 @@ class BatteryView : public views::View {
         views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 4));
 
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-    SetVisible(stylus_battery_delegate_.ShouldShowBatteryStatus());
 
     icon_ = AddChildView(std::make_unique<views::ImageView>());
 
