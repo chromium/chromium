@@ -700,7 +700,7 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::SendAttachments(
   info->set_transfer_update_callback(std::make_unique<TransferUpdateDecorator>(
       base::BindRepeating(&NearbySharingServiceImpl::OnOutgoingTransferUpdate,
                           weak_ptr_factory_.GetWeakPtr())));
-
+  send_attachments_timestamp_ = base::Time::Now();
   OnTransferStarted(/*is_incoming=*/false);
   is_connecting_ = true;
   InvalidateSendSurfaceState();
@@ -2411,6 +2411,8 @@ void NearbySharingServiceImpl::SendIntroduction(
 
   // We've successfully written the introduction, so we now have to wait for the
   // remote side to accept.
+  RecordNearbyShareTimeFromInitiateSendToRemoteDeviceNotificationMetric(
+      base::Time::Now() - send_attachments_timestamp_);
   NS_LOG(VERBOSE) << __func__ << ": Successfully wrote the introduction frame";
 
   mutual_acceptance_timeout_alarm_.Reset(base::BindOnce(

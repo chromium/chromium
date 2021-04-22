@@ -855,6 +855,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Nearby.Share.TimeFromInitiateSendToRemoteDeviceNotification"
+    units="ms" expires_after="2021-08-19">
+  <owner>cvandermerwe@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the time from initiating a send on a share target to sending the
+    introduction frame. This roughly measures the delay between choosing a share
+    target to initiate a transfer and displaying the accept/reject notification
+    on the receiving device. Emitted after the user selects a device when the
+    introduction frame has been sent, and this is only emitted after a
+    successful connection is established. This metric is only emitted for
+    outgoing transfers.
+  </summary>
+</histogram>
+
 <histogram
     name="Nearby.Share.Transfer.CompletionStatus.NotCompletedReason{Direction}{ShareTargetType}"
     enum="NearbyShareTransferNotCompletedReason" expires_after="2021-08-19">
