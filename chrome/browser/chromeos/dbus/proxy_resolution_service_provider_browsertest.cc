@@ -55,7 +55,8 @@ class ProxyResolutionServiceProviderTestWrapper {
         url,
         base::BindOnce(
             &ProxyResolutionServiceProviderTestWrapper::OnResolveProxyComplete,
-            &result, run_loop.QuitClosure()));
+            &result, run_loop.QuitClosure()),
+        SystemProxyOverride::kDefault);
 
     run_loop.Run();
 
@@ -172,6 +173,7 @@ class ProxyResolutionServiceProviderSystemProxyPolicyTest
 
  protected:
   void SetLocalProxyAddress(const std::string& local_proxy_url) {
+    SystemProxyManager::Get()->SetSystemProxyEnabledForTest(true);
     SystemProxyManager::Get()->SetSystemServicesProxyUrlForTest(
         local_proxy_url);
   }

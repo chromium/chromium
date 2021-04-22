@@ -24,7 +24,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/cros_system_api/dbus/service_constants.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -50,8 +49,10 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
       network::mojom::NetworkContext* network_context,
       const GURL& source_url,
       const net::NetworkIsolationKey& network_isolation_key,
-      ProxyResolutionServiceProvider::NotifyCallback notify_callback)
-      : notify_callback_(std::move(notify_callback)) {
+      ProxyResolutionServiceProvider::NotifyCallback notify_callback,
+      chromeos::SystemProxyOverride system_proxy_override)
+      : notify_callback_(std::move(notify_callback)),
+        system_proxy_override_(system_proxy_override) {
     mojo::PendingRemote<network::mojom::ProxyLookupClient> proxy_lookup_client =
         receiver_.BindNewPipeAndPassRemote();
     receiver_.set_disconnect_handler(base::BindOnce(
@@ -92,22 +93,27 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
   // local proxy connection fails. System-proxy itself does proxy resolution
   // trough the same Chrome proxy resolution service to connect to the
   // remote proxy server. The availability of this feature is controlled by the
-  // |SystemProxySettings| policy.
+  // |SystemProxySettings| policy and the feature flag
+  // `ash::features::kSystemProxyForSystemServices`.
   void AppendSystemProxyIfActive(std::string* pac_proxy_list) {
     SystemProxyManager* system_proxy_manager = SystemProxyManager::Get();
     // |system_proxy_manager| may be missing in tests.
-    if (!system_proxy_manager ||
-        system_proxy_manager->SystemServicesProxyPacString().empty()) {
+    if (!system_proxy_manager)
       return;
-    }
-    *pac_proxy_list = base::StringPrintf(
-        "%s; %s", system_proxy_manager->SystemServicesProxyPacString().c_str(),
-        pac_proxy_list->c_str());
+
+    std::string system_proxy_pac =
+        system_proxy_manager->SystemServicesProxyPacString(
+            system_proxy_override_);
+    if (system_proxy_pac.empty())
+      return;
+
+    *pac_proxy_list = base::StringPrintf("%s; %s", system_proxy_pac.c_str(),
+                                         pac_proxy_list->c_str());
   }
 
   mojo::Receiver<network::mojom::ProxyLookupClient> receiver_{this};
   ProxyResolutionServiceProvider::NotifyCallback notify_callback_;
-
+  chromeos::SystemProxyOverride system_proxy_override_;
   DISALLOW_COPY_AND_ASSIGN(ProxyLookupRequest);
 };
 
@@ -164,6 +170,22 @@ void ProxyResolutionServiceProvider::DbusResolveProxy(
     return;
   }
 
+  // Read `chromeos::SystemProxyOverride` option.
+  int int_state = 0;
+  if (!reader.PopInt32(&int_state)) {
+    VLOG(1) << "No SystemProxyOverride option specified.";
+  }
+  chromeos::SystemProxyOverride system_proxy_override;
+
+  if (int_state < 0 || int_state > chromeos::SystemProxyOverride::kOptOut) {
+    LOG(ERROR) << "Invalid value for SystemProxyOverride " << int_state;
+    // Fallback to default state,
+    system_proxy_override = chromeos::SystemProxyOverride::kDefault;
+  } else {
+    system_proxy_override =
+        static_cast<chromeos::SystemProxyOverride>(int_state);
+  }
+
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
 
@@ -172,12 +194,14 @@ void ProxyResolutionServiceProvider::DbusResolveProxy(
                      weak_ptr_factory_.GetWeakPtr(), std::move(response),
                      std::move(response_sender));
 
-  ResolveProxyInternal(source_url, std::move(notify_dbus_callback));
+  ResolveProxyInternal(source_url, std::move(notify_dbus_callback),
+                       system_proxy_override);
 }
 
 void ProxyResolutionServiceProvider::ResolveProxyInternal(
     const std::string& source_url,
-    NotifyCallback callback) {
+    NotifyCallback callback,
+    chromeos::SystemProxyOverride system_proxy_override) {
   auto* network_context = GetNetworkContext();
 
   if (!network_context) {
@@ -193,7 +217,7 @@ void ProxyResolutionServiceProvider::ResolveProxyInternal(
 
   VLOG(1) << "Starting network proxy resolution for " << url;
   new ProxyLookupRequest(network_context, url, network_isolation_key_,
-                         std::move(callback));
+                         std::move(callback), system_proxy_override);
 }
 
 void ProxyResolutionServiceProvider::NotifyProxyResolved(

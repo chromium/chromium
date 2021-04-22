@@ -19,6 +19,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/content_browser_client.h"
 #include "net/base/auth.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
 class RequestSystemProxyCredentialsView;
@@ -101,7 +102,9 @@ class SystemProxyManager : public NetworkStateHandlerObserver {
   // that authenticates system services, in PAC format, e.g.
   //     PROXY localhost:3128
   // otherwise it returns an empty string.
-  std::string SystemServicesProxyPacString() const;
+  std::string SystemServicesProxyPacString(
+      SystemProxyOverride system_proxy_override) const;
+
   void StartObservingPrimaryProfilePrefs(Profile* profile);
   void StopObservingPrimaryProfilePrefs();
   // If System-proxy is enabled, it will send a request via D-Bus to clear the

@@ -146,7 +146,6 @@ class SystemProxyManagerTest : public testing::Test {
     return SystemProxyClient::Get()->GetTestInterface();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<SystemProxyManager> system_proxy_manager_;
@@ -439,6 +438,36 @@ TEST_F(SystemProxyManagerTest, CanUsePolicyCredentialsMgsMaxTries) {
       GetAuthInfo(), /*first_auth_attempt=*/false));
 }
 
+TEST_F(SystemProxyManagerTest, SystemServicesProxyPacStringDefault) {
+  SetPolicy(/*system_proxy_enabled=*/true,
+            /*system_services_username=*/kPolicyUsername,
+            /*system_services_password=*/kPolicyPassword);
+  system_proxy::WorkerActiveSignalDetails details;
+  details.set_traffic_origin(system_proxy::TrafficOrigin::SYSTEM);
+  details.set_local_proxy_url(kProxyAuthUrl);
+  client_test_interface()->SendWorkerActiveSignal(details);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(system_proxy_manager_->SystemServicesProxyPacString(
+                SystemProxyOverride::kDefault),
+            "PROXY http://example.com:3128");
+}
+
+TEST_F(SystemProxyManagerTest, SystemServicesProxyPacStringOptOut) {
+  SetPolicy(/*system_proxy_enabled=*/true,
+            /*system_services_username=*/kPolicyUsername,
+            /*system_services_password=*/kPolicyPassword);
+  system_proxy::WorkerActiveSignalDetails details;
+  details.set_traffic_origin(system_proxy::TrafficOrigin::SYSTEM);
+  details.set_local_proxy_url(kProxyAuthUrl);
+  client_test_interface()->SendWorkerActiveSignal(details);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(system_proxy_manager_
+                  ->SystemServicesProxyPacString(SystemProxyOverride::kOptOut)
+                  .empty());
+}
+
 // Tests the behaviour of SystemProxyManager when enabled via the feature flag
 // `ash::features::kSystemProxyForSystemServices`.
 class FeatureEnabledSystemProxyTest : public SystemProxyManagerTest {
@@ -452,18 +481,34 @@ class FeatureEnabledSystemProxyTest : public SystemProxyManagerTest {
         ash::features::kSystemProxyForSystemServices);
     SystemProxyManagerTest::SetUp();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that system services get the address of the local proxy worker for
 // system services.
-TEST_F(FeatureEnabledSystemProxyTest, SystemServices) {
+TEST_F(FeatureEnabledSystemProxyTest, SystemServicesDefault) {
   system_proxy::WorkerActiveSignalDetails details;
   details.set_traffic_origin(system_proxy::TrafficOrigin::SYSTEM);
   details.set_local_proxy_url(kLocalProxyAddress);
   client_test_interface()->SendWorkerActiveSignal(details);
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(system_proxy_manager_->SystemServicesProxyPacString(),
+  EXPECT_TRUE(system_proxy_manager_
+                  ->SystemServicesProxyPacString(SystemProxyOverride::kDefault)
+                  .empty());
+}
+
+TEST_F(FeatureEnabledSystemProxyTest, SystemServicesOptIn) {
+  system_proxy::WorkerActiveSignalDetails details;
+  details.set_traffic_origin(system_proxy::TrafficOrigin::SYSTEM);
+  details.set_local_proxy_url(kLocalProxyAddress);
+  client_test_interface()->SendWorkerActiveSignal(details);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(system_proxy_manager_->SystemServicesProxyPacString(
+                SystemProxyOverride::kOptIn),
             "PROXY local-proxy.com:3128");
 }
 

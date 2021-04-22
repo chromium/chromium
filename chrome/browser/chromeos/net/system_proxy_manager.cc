@@ -166,10 +166,20 @@ void SystemProxyManager::Shutdown() {
   }
 }
 
-std::string SystemProxyManager::SystemServicesProxyPacString() const {
-  return IsEnabled() && !system_services_address_.empty()
-             ? "PROXY " + system_services_address_
-             : std::string();
+std::string SystemProxyManager::SystemServicesProxyPacString(
+    SystemProxyOverride system_proxy_override) const {
+  if (system_proxy_override == SystemProxyOverride::kOptOut ||
+      system_services_address_.empty()) {
+    return std::string();
+  }
+
+  if (system_proxy_state_ == SystemProxyState::kEnabledForAll ||
+      (system_proxy_state_ == SystemProxyState::kEnabledForSystemServices &&
+       system_proxy_override == SystemProxyOverride::kOptIn)) {
+    return "PROXY " + system_services_address_;
+  }
+
+  return std::string();
 }
 
 void SystemProxyManager::StartObservingPrimaryProfilePrefs(Profile* profile) {
@@ -430,7 +440,6 @@ void SystemProxyManager::SetSystemProxyEnabledForTest(bool enabled) {
 
 void SystemProxyManager::SetSystemServicesProxyUrlForTest(
     const std::string& local_proxy_url) {
-  system_proxy_state_ = SystemProxyState::kEnabledForAll;
   system_services_address_ = local_proxy_url;
 }
 

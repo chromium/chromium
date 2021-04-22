@@ -6,9 +6,16 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/chromeos/net/system_proxy_manager.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/services/service_provider_test_helper.h"
+#include "chromeos/dbus/shill/shill_clients.h"
+#include "chromeos/dbus/system_proxy/system_proxy_client.h"
+#include "chromeos/network/network_handler.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -202,6 +209,134 @@ TEST_F(ProxyResolutionServiceProviderTest,
   EXPECT_EQ("", result.error);
   EXPECT_EQ(kUrl, mock_network_context_.last_url());
   EXPECT_TRUE(mock_network_context_.last_network_isolation_key().IsTransient());
+}
+
+// Tests the behaviour of system-proxy when enabled via the feature flag
+// `ash::features::kSystemProxyForSystemServices` and via the device policy
+// SystemProxySettings.
+class ProxyResolutionServiceWithSystemProxyTest
+    : public ProxyResolutionServiceProviderTest {
+ public:
+  ProxyResolutionServiceWithSystemProxyTest()
+      : ProxyResolutionServiceProviderTest(),
+        local_state_(TestingBrowserProcess::GetGlobal()) {}
+  ~ProxyResolutionServiceWithSystemProxyTest() override = default;
+
+  // testing::Test
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kSystemProxyForSystemServices);
+    ProxyResolutionServiceProviderTest::SetUp();
+
+    shill_clients::InitializeFakes();
+    NetworkHandler::Initialize();
+    SystemProxyClient::InitializeFake();
+    SystemProxyManager::Initialize(local_state_.Get());
+    SystemProxyManager::Get()->SetSystemServicesProxyUrlForTest(
+        "system-proxy:3128");
+  }
+
+  void TearDown() override {
+    SystemProxyManager::Shutdown();
+    NetworkHandler::Shutdown();
+    shill_clients::Shutdown();
+    SystemProxyClient::Shutdown();
+  }
+
+ protected:
+  // Makes a D-Bus call to |service_provider_|'s ResolveProxy method and sets
+  // the parsed response in |result|.
+  void CallMethod(const std::string& source_url,
+                  ResolveProxyResult* result,
+                  SystemProxyOverride system_proxy_override) {
+    dbus::MethodCall method_call(kNetworkProxyServiceInterface,
+                                 kNetworkProxyServiceResolveProxyMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(source_url);
+    writer.AppendInt32(system_proxy_override);
+
+    std::unique_ptr<dbus::Response> response =
+        test_helper_.CallMethod(&method_call);
+
+    // Parse the |dbus::Response|.
+    ASSERT_TRUE(response);
+    dbus::MessageReader reader(response.get());
+    std::string proxy_info, error;
+    EXPECT_TRUE(reader.PopString(&result->proxy_info));
+    EXPECT_TRUE(reader.PopString(&result->error));
+  }
+
+ protected:
+  ScopedTestingLocalState local_state_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// When system-proxy is enabled via the flag and the caller explicitly opt into
+// using system-proxy for authentication, the network address of system-proxy
+// should be added first in the PAC style list of proxies.
+TEST_F(ProxyResolutionServiceWithSystemProxyTest, FlagOptIn) {
+  mock_network_context_.SetNextProxyResult({net::OK, "PROXY localhost:8080"});
+
+  ResolveProxyResult result;
+  CallMethod("http://www.gmail.com/", &result, SystemProxyOverride::kOptIn);
+
+  // The response should contain the system-proxy address and an empty error.
+  EXPECT_EQ("PROXY system-proxy:3128; PROXY localhost:8080", result.proxy_info);
+  EXPECT_EQ("", result.error);
+}
+
+// If there's no proxy configured in Chrome, the address of system-proxy should
+// not be returned by the proxy resolution service.
+TEST_F(ProxyResolutionServiceWithSystemProxyTest, DirectProxy) {
+  mock_network_context_.SetNextProxyResult({net::OK, "DIRECT"});
+  ResolveProxyResult result;
+  CallMethod("http://www.gmail.com/", &result, SystemProxyOverride::kOptIn);
+
+  EXPECT_EQ("DIRECT", result.proxy_info);
+  EXPECT_EQ("", result.error);
+}
+
+// When system-proxy is enabled via the flag and the caller doesn't explicitly
+// opt into using system-proxy for authentication, the address of system-proxy
+// should not be returned by the proxy resolution service.
+TEST_F(ProxyResolutionServiceWithSystemProxyTest, FlagDefault) {
+  mock_network_context_.SetNextProxyResult({net::OK, "PROXY localhost:8080"});
+  ResolveProxyResult result;
+  CallMethod("http://www.gmail.com/", &result, SystemProxyOverride::kDefault);
+
+  EXPECT_EQ("PROXY localhost:8080", result.proxy_info);
+  EXPECT_EQ("", result.error);
+}
+
+// When system-proxy is enabled via policy and the caller doesn't
+// explicitly opt into using system-proxy for authentication, the network
+// address of system-proxy should still be added first in the PAC style list of
+// proxies.
+TEST_F(ProxyResolutionServiceWithSystemProxyTest, PolicyDefault) {
+  mock_network_context_.SetNextProxyResult({net::OK, "PROXY localhost:8080"});
+  // Enable system-proxy via policy.
+  SystemProxyManager::Get()->SetSystemProxyEnabledForTest(true);
+  ResolveProxyResult result;
+  CallMethod("http://www.gmail.com/", &result, SystemProxyOverride::kDefault);
+
+  EXPECT_EQ("PROXY system-proxy:3128; PROXY localhost:8080", result.proxy_info);
+  EXPECT_EQ("", result.error);
+}
+
+// When system-proxy is enabled via policy and the caller explicitly opts out of
+// using system-proxy for authentication, the network address of system-proxy
+// should be not be returned.
+TEST_F(ProxyResolutionServiceWithSystemProxyTest, PolicyOptOut) {
+  mock_network_context_.SetNextProxyResult({net::OK, "PROXY localhost:8080"});
+  // Enable system-proxy via policy.
+  SystemProxyManager::Get()->SetSystemProxyEnabledForTest(true);
+  ResolveProxyResult result;
+  CallMethod("http://www.gmail.com/", &result, SystemProxyOverride::kOptOut);
+
+  EXPECT_EQ("PROXY localhost:8080", result.proxy_info);
+  EXPECT_EQ("", result.error);
 }
 
 }  // namespace chromeos

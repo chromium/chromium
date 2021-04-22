@@ -14,6 +14,7 @@
 #include "chromeos/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 #include "net/base/network_isolation_key.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -93,8 +94,10 @@ class ProxyResolutionServiceProvider
   void DbusResolveProxy(dbus::MethodCall* method_call,
                         dbus::ExportedObject::ResponseSender response_sender);
 
-  void ResolveProxyInternal(const std::string& source_url,
-                            NotifyCallback callback);
+  void ResolveProxyInternal(
+      const std::string& source_url,
+      NotifyCallback callback,
+      chromeos::SystemProxyOverride system_proxy_override);
 
   // Called on UI thread from OnResolutionComplete() to pass the resolved proxy
   // information to the client over D-Bus.
