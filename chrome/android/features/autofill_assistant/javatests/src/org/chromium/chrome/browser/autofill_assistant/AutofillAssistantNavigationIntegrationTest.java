@@ -306,25 +306,12 @@ public class AutofillAssistantNavigationIntegrationTest {
 
     @Test
     @MediumTest
-    public void navigateDuringOnboardingRemovesUI() {
+    public void navigateDuringOnboardingRemovesUI() throws Exception {
         // Onboarding has not been accepted.
         AutofillAssistantPreferencesUtil.setInitialPreferences(false);
         startAutofillAssistantOnTab(TEST_PAGE_A);
-
-        waitUntil(
-                ()
-                        -> ChromeTabUtils.getUrlOnUiThread(mTestRule.getActivity().getActivityTab())
-                                   .getSpec()
-                                   .equals(getURL(TEST_PAGE_A)));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
-
-        onView(withId(org.chromium.chrome.R.id.url_bar))
-                .perform(click(), typeText(getURL(TEST_PAGE_B)), pressImeActionButton());
-        waitUntil(
-                ()
-                        -> ChromeTabUtils.getUrlOnUiThread(mTestRule.getActivity().getActivityTab())
-                                   .getSpec()
-                                   .equals(getURL(TEST_PAGE_B)));
+        mTestRule.loadUrl(getURL(TEST_PAGE_B));
         waitUntilViewAssertionTrue(
                 withId(R.id.button_init_ok), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
     }

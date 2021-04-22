@@ -175,7 +175,6 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
             mOverlayCoordinator.destroy();
             mOverlayCoordinator = null;
         }
-        destroy();
     }
 
     @Override

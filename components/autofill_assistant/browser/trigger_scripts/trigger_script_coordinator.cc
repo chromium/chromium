@@ -152,6 +152,7 @@ void TriggerScriptCoordinator::PerformTriggerScriptAction(
         NOTREACHED();
         return;
       }
+      waiting_for_onboarding_ = true;
       starter_delegate_->ShowOnboarding(
           IsDialogOnboardingEnabled(), *trigger_context_.get(),
           base::BindOnce(&TriggerScriptCoordinator::OnOnboardingFinished,
@@ -166,6 +167,7 @@ void TriggerScriptCoordinator::OnOnboardingFinished(bool onboardingShown,
                                                     OnboardingResult result) {
   // TODO(b/174445633): Replace -1 with a constant like kTriggerScriptNotVisible
   // at all relevant places
+  waiting_for_onboarding_ = false;
   if (visible_trigger_script_ != -1) {
     TriggerUIType trigger_ui_type = GetTriggerUiTypeForVisibleScript();
     if (onboardingShown) {
@@ -268,6 +270,18 @@ void TriggerScriptCoordinator::Stop(Metrics::LiteScriptFinishedState state) {
   HideTriggerScript();
   StopCheckingTriggerConditions();
   ui_delegate_->Detach();
+
+  if (waiting_for_onboarding_ && state ==
+                                     Metrics::LiteScriptFinishedState::
+                                         LITE_SCRIPT_PROMPT_FAILED_NAVIGATE) {
+    starter_delegate_->HideOnboarding();
+    Metrics::RecordLiteScriptOnboarding(
+        ukm_recorder_, web_contents(), trigger_ui_type,
+        Metrics::LiteScriptOnboarding::
+            LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION);
+  }
+  waiting_for_onboarding_ = false;
+
   RunCallback(trigger_ui_type, state, /* trigger_script = */ base::nullopt);
 }
 

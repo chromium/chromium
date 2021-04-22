@@ -105,6 +105,7 @@ class Starter : public content::WebContentsObserver {
       bool start_regular_script,
       base::Optional<TriggerScriptProto> trigger_script = base::nullopt);
 
+  bool waiting_for_onboarding_ = false;
   bool is_custom_tab_ = false;
   StarterPlatformDelegate* platform_delegate_ = nullptr;
   ukm::UkmRecorder* ukm_recorder_ = nullptr;

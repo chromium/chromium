@@ -26,9 +26,6 @@ import org.chromium.chrome.browser.autofill_assistant.metrics.OnBoarding;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
-import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -60,8 +57,6 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
     private final Map<String, String> mParameters;
     private final Map<String, String> mStringMap = new HashMap<>();
 
-    @Nullable
-    private WebContentsObserver mWebContentsObserver;
     private boolean mOnboardingShown;
 
     final Context mContext;
@@ -87,20 +82,8 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
      * <p>Note that the onboarding screen will be hidden after the callback returns. Call, from the
      * callback, {@link #hide} to hide it earlier or {@link #transferControls} to take ownership of
      * it and possibly keep it past the end of the callback.
-     *
-     * <p>The {@code targetUrl} is the initial URL Autofill Assistant is being started on. The
-     * navigation to that URL is allowed, other navigations will hide Autofill Assistant.
      */
     @Override
-    public void show(Callback<Integer> callback, WebContents webContents, String targetUrl) {
-        addWebContentObserver(callback, webContents, targetUrl);
-        show(callback);
-    }
-
-    /**
-     * Same as {@link #show(Callback, WebContents, String)}, but does not break on navigation
-     * events.
-     */
     public void show(Callback<Integer> callback) {
         AutofillAssistantMetrics.recordOnBoarding(
                 OnBoarding.OB_SHOWN, mParameters.get(INTENT_IDENTFIER));
@@ -140,32 +123,6 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
     @Nullable
     public AssistantOverlayCoordinator transferControls() {
         return null;
-    }
-
-    /** Destroy web contents observer. */
-    void destroy() {
-        if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
-            mWebContentsObserver = null;
-        }
-    }
-
-    private void addWebContentObserver(
-            Callback<Integer> callback, WebContents webContents, String targetUrl) {
-        mWebContentsObserver = new WebContentsObserver(webContents) {
-            @Override
-            public void didStartNavigation(NavigationHandle navigationHandle) {
-                if (navigationHandle.getUrl().getSpec().equals(targetUrl)) {
-                    return;
-                }
-
-                if (navigationHandle.isInMainFrame() && !navigationHandle.isRendererInitiated()
-                        && !navigationHandle.isSameDocument()) {
-                    onUserAction(/* result= */ AssistantOnboardingResult.NAVIGATION, callback);
-                }
-            }
-        };
-        webContents.addObserver(mWebContentsObserver);
     }
 
     /**

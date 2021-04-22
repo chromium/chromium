@@ -227,6 +227,9 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   // Flag to ensure that we only get one LiteScriptFinished event per run.
   bool finished_state_recorded_ = false;
 
+  // True while the onboarding is being displayed.
+  bool waiting_for_onboarding_ = false;
+
   base::WeakPtrFactory<TriggerScriptCoordinator> weak_ptr_factory_{this};
 };
 

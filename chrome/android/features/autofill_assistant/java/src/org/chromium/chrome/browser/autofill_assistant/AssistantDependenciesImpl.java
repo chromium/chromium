@@ -78,7 +78,7 @@ public class AssistantDependenciesImpl implements AssistantDependencies {
      */
     @Override
     public void showOnboarding(boolean useDialogOnboarding, String experimentIds,
-            Map<String, String> parameters, String initialUrl, Callback<Integer> callback) {
+            Map<String, String> parameters, Callback<Integer> callback) {
         hideOnboarding();
         if (useDialogOnboarding) {
             mOnboardingCoordinator =
@@ -97,7 +97,7 @@ public class AssistantDependenciesImpl implements AssistantDependencies {
                 mOnboardingOverlayCoordinator = mOnboardingCoordinator.transferControls();
             }
             callback.onResult(result);
-        }, mWebContents, initialUrl);
+        });
     }
 
     @Override

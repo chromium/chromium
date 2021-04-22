@@ -57,6 +57,9 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   bool onboarding_accepted_ = true;
   bool show_onboarding_result_shown_ = false;
   OnboardingResult show_onboarding_result_ = OnboardingResult::ACCEPTED;
+  base::OnceCallback<void(
+      base::OnceCallback<void(bool, OnboardingResult)> result_callback)>
+      on_show_onboarding_callback_;
   bool proactive_help_enabled_ = true;
   bool msbb_enabled_ = true;
   bool is_custom_tab_ = true;

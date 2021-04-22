@@ -215,8 +215,7 @@ public class Starter extends EmptyTabObserver implements UserData {
 
     @CalledByNative
     private void showOnboarding(AssistantDependencies dependencies, boolean useDialogOnboarding,
-            String initialUrl, String experimentIds, String[] parameterKeys,
-            String[] parameterValues) {
+            String experimentIds, String[] parameterKeys, String[] parameterValues) {
         if (!AutofillAssistantPreferencesUtil.getShowOnboarding()) {
             safeNativeOnOnboardingFinished(
                     /* shown = */ false, 3 /* AssistantOnboardingResult.ACCEPTED*/);
@@ -228,7 +227,7 @@ public class Starter extends EmptyTabObserver implements UserData {
         for (int i = 0; i < parameterKeys.length; i++) {
             parameters.put(parameterKeys[i], parameterValues[i]);
         }
-        dependencies.showOnboarding(useDialogOnboarding, experimentIds, parameters, initialUrl,
+        dependencies.showOnboarding(useDialogOnboarding, experimentIds, parameters,
                 result -> safeNativeOnOnboardingFinished(true, result));
     }
 

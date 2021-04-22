@@ -61,6 +61,10 @@ void FakeStarterPlatformDelegate::ShowOnboarding(
     const TriggerContext& trigger_context,
     base::OnceCallback<void(bool shown, OnboardingResult result)> callback) {
   num_show_onboarding_called_++;
+  if (on_show_onboarding_callback_) {
+    std::move(on_show_onboarding_callback_).Run(std::move(callback));
+    return;
+  }
   std::move(callback).Run(show_onboarding_result_shown_,
                           show_onboarding_result_);
 }

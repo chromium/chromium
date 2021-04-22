@@ -77,6 +77,21 @@ Starter::~Starter() = default;
 
 void Starter::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  // User-initiated navigations during non-trigger-script startups will cancel
+  // the startup. This is mostly intended for navigations while the onboarding
+  // is being shown.
+  if (pending_callback_ && !navigation_handle->WasServerRedirect() &&
+      !trigger_script_coordinator_ &&
+      navigation_handle->GetURL() !=
+          StartupUtil().ChooseStartupUrlForIntent(*pending_trigger_context_)) {
+    Metrics::RecordDropOut(
+        waiting_for_onboarding_ ? Metrics::DropOutReason::ONBOARDING_NAVIGATION
+                                : Metrics::DropOutReason::NAVIGATION,
+        pending_trigger_context_->GetScriptParameters().GetIntent().value_or(
+            std::string()));
+    CancelPendingStartup();
+  }
+
   if (!fetch_trigger_scripts_on_navigation_) {
     return;
   }
@@ -173,6 +188,11 @@ void Starter::CancelPendingStartup() {
     return;
   }
   platform_delegate_->HideOnboarding();
+  if (waiting_for_onboarding_) {
+    Metrics::RecordOnboardingResult(Metrics::OnBoarding::OB_NO_ANSWER);
+    Metrics::RecordOnboardingResult(Metrics::OnBoarding::OB_SHOWN);
+    waiting_for_onboarding_ = false;
+  }
   RunCallback(/* start_regular_script = */ false);
   trigger_script_coordinator_.reset();
   pending_trigger_context_.reset();
@@ -315,6 +335,7 @@ void Starter::MaybeShowOnboarding(
   // onboarding, but if we have reached this part, we're already starting the
   // regular script, where we don't offer dialog onboarding.
   runtime_manager_->SetUIState(UIState::kShown);
+  waiting_for_onboarding_ = true;
   platform_delegate_->ShowOnboarding(
       /* use_dialog_onboarding = */ false, *pending_trigger_context_,
       base::BindOnce(&Starter::OnOnboardingFinished,
@@ -325,6 +346,7 @@ void Starter::OnOnboardingFinished(
     base::Optional<TriggerScriptProto> trigger_script,
     bool shown,
     OnboardingResult result) {
+  waiting_for_onboarding_ = false;
   auto intent =
       pending_trigger_context_->GetScriptParameters().GetIntent().value_or(
           std::string());
@@ -366,6 +388,10 @@ void Starter::RunCallback(bool start_regular_script,
                           base::Optional<TriggerScriptProto> trigger_script) {
   DCHECK(pending_callback_);
   if (!start_regular_script) {
+    // Catch-all to ensure that after a failed startup attempt we no longer
+    // register as visible to runtime observers.
+    runtime_manager_->SetUIState(UIState::kNotShown);
+
     pending_trigger_context_ = nullptr;
     std::move(pending_callback_)
         .Run(/* start_regular_script = */ false, GURL(), nullptr,

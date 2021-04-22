@@ -80,7 +80,6 @@ class DialogOnboardingCoordinator extends BaseOnboardingCoordinator {
             mDialog.cancel();
             mDialog = null;
         }
-        destroy();
     }
 
     @Override

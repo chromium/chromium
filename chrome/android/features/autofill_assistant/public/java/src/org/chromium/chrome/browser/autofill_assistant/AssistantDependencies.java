@@ -20,12 +20,10 @@ public interface AssistantDependencies {
      * @param useDialogOnboarding whether to show the dialog or bottom-sheet onboarding.
      * @param experimentIds the list of active experiment ids.
      * @param parameters the key/value map of script parameters use.
-     * @param initialUrl the initial url. The onboarding will automatically abort if the user
-     *         navigates away.
      * @param callback the callback to invoke with the {@code OnboardingResult}.
      */
     void showOnboarding(boolean useDialogOnboarding, String experimentIds,
-            Map<String, String> parameters, String initialUrl, Callback<Integer> callback);
+            Map<String, String> parameters, Callback<Integer> callback);
 
     /**
      * Hides the onboarding, if currently shown. Does not invoke the callback that was associated

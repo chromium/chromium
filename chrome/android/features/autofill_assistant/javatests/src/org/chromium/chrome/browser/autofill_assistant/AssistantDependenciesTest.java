@@ -78,7 +78,7 @@ public class AssistantDependenciesTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mAssistantDependencies.showOnboarding(/* useDialogOnboarding = */ false,
-                                "", Collections.emptyMap(), "", mOnboardingCallback));
+                                "", Collections.emptyMap(), mOnboardingCallback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
 
         onView(withId(R.id.button_init_ok)).perform(click());
@@ -91,7 +91,7 @@ public class AssistantDependenciesTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mAssistantDependencies.showOnboarding(/* useDialogOnboarding = */ true,
-                                "", Collections.emptyMap(), "", mOnboardingCallback));
+                                "", Collections.emptyMap(), mOnboardingCallback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
 
         // Check that the UI is shown in a dialog.
@@ -109,7 +109,7 @@ public class AssistantDependenciesTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mAssistantDependencies.showOnboarding(/* useDialogOnboarding = */ false,
-                                "", Collections.emptyMap(), "", mOnboardingCallback));
+                                "", Collections.emptyMap(), mOnboardingCallback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mAssistantDependencies.hideOnboarding());
@@ -124,7 +124,7 @@ public class AssistantDependenciesTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mAssistantDependencies.showOnboarding(/* useDialogOnboarding = */ true,
-                                "", Collections.emptyMap(), "", mOnboardingCallback));
+                                "", Collections.emptyMap(), mOnboardingCallback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mAssistantDependencies.hideOnboarding());

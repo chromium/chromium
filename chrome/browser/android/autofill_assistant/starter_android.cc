@@ -180,8 +180,6 @@ void StarterAndroid::ShowOnboarding(
   Java_Starter_showOnboarding(env, java_object_, java_dependencies_,
                               use_dialog_onboarding,
                               base::android::ConvertUTF8ToJavaString(
-                                  env, trigger_context.GetInitialUrl()),
-                              base::android::ConvertUTF8ToJavaString(
                                   env, trigger_context.GetExperimentIds()),
                               base::android::ToJavaArrayOfStrings(env, keys),
                               base::android::ToJavaArrayOfStrings(env, values));
