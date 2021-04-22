@@ -1,0 +1,59 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+
+static_library("internal") {
+  visibility = [
+    ":*",
+    "//chrome/browser",
+  ]
+
+  sources = [
+    "segmentation_platform_service_impl.cc",
+    "segmentation_platform_service_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/leveldb_proto",
+    "//components/segmentation_platform/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  visibility = [ "//components/segmentation_platform:unit_tests" ]
+
+  # IMPORTANT NOTE: When adding new tests, also remember to update the list of
+  # tests in //components/segmentation_platform/components_unittests.filter
+  sources = [ "segmentation_platform_service_impl_unittest.cc" ]
+
+  deps = [
+    ":internal",
+    "//base/test:test_support",
+    "//components/leveldb_proto:test_support",
+    "//components/segmentation_platform/public",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+if (is_android) {
+  android_library("internal_java") {
+    visibility = [ "//chrome/android:chrome_all_java" ]
+    sources = [ "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformServiceImpl.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//components/segmentation_platform/public:public_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+  }
+}

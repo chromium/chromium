@@ -53,6 +53,7 @@ include_rules = [
   "+components/permissions/android/java/src/org/chromium/components/permissions",
   "+components/search_engines/android/java/src/org/chromium/components/search_engines",
   "+components/security_state/content/android/java",
+  "+components/segmentation_platform/public/android/java",
   "+components/sync/android/java/src/org/chromium/components/sync",
   "+components/query_tiles/android/java",
   "+components/thin_webview/java",

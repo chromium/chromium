@@ -1,0 +1,22 @@
+# Segmentation Platform
+
+## Introduction
+The segmentation platform is a platform that uses intelligence and machine learning to guide developers for building purpose-built user experience for specific segments of users.
+
+
+Segmentation Platform is a layered component
+(https://sites.google.com/a/chromium.org/dev/developers/design-documents/layered-components-design)
+to enable it to be easily used on all platforms.
+
+## Code structure
+
+[components/segmentation_platform/public](.)
+Public interfaces and data structure.
+
+[components/segmentation_platform/internal](./internal)
+Internal implementations.
+
+[chrome/browser/segmentation_platform](../../chrome/browser/segmentation_platform)
+Includes factories to instantiate the service.
+
+`SegmentationPlatformService` - Public interface for segmentation platform service.
