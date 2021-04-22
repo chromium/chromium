@@ -14,6 +14,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_version_base_info.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace content {
@@ -86,7 +87,7 @@ void CookieStoreContext::CreateServiceForFrame(
 
 // static
 void CookieStoreContext::CreateServiceForWorker(
-    const ServiceWorkerVersionInfo& info,
+    const ServiceWorkerVersionBaseInfo& info,
     mojo::PendingReceiver<blink::mojom::CookieStore> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RenderProcessHost* render_process_host =

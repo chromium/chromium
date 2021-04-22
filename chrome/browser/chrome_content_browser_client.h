@@ -57,6 +57,7 @@ class BrowserContext;
 class FontAccessDelegate;
 class QuotaPermissionContext;
 enum class SmsFetchFailureType;
+struct ServiceWorkerVersionBaseInfo;
 }  // namespace content
 
 namespace safe_browsing {
@@ -418,14 +419,13 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override;
   void RegisterMojoBinderPoliciesForSameOriginPrerendering(
       content::MojoBinderPolicyMap& policy_map) override;
+  void RegisterBrowserInterfaceBindersForServiceWorker(
+      mojo::BinderMapWithContext<const content::ServiceWorkerVersionBaseInfo&>*
+          map) override;
   bool BindAssociatedReceiverFromFrame(
       content::RenderFrameHost* render_frame_host,
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle* handle) override;
-  void BindBadgeServiceReceiverFromServiceWorker(
-      content::RenderProcessHost* service_worker_process_host,
-      const GURL& service_worker_scope,
-      mojo::PendingReceiver<blink::mojom::BadgeService> receiver) override;
   void BindGpuHostReceiver(mojo::GenericPendingReceiver receiver) override;
   void BindUtilityHostReceiver(mojo::GenericPendingReceiver receiver) override;
   void BindHostReceiverForRenderer(

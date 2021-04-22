@@ -63,6 +63,7 @@
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_version_base_info.h"
 #include "content/public/browser/shared_worker_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
@@ -249,33 +250,6 @@ void BindUkmRecorderInterface(
     mojo::PendingReceiver<ukm::mojom::UkmRecorderInterface> receiver) {
   metrics::UkmRecorderInterface::Create(ukm::UkmRecorder::Get(),
                                         std::move(receiver));
-}
-
-void BindBadgeServiceForServiceWorkerOnUI(
-    int service_worker_process_id,
-    const GURL& service_worker_scope,
-    mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  content::RenderProcessHost* render_process_host =
-      content::RenderProcessHost::FromID(service_worker_process_id);
-  if (!render_process_host)
-    return;
-
-  GetContentClient()->browser()->BindBadgeServiceReceiverFromServiceWorker(
-      render_process_host, service_worker_scope, std::move(receiver));
-}
-
-void BindBadgeServiceForServiceWorker(
-    ServiceWorkerHost* service_worker_host,
-    mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  content::RunOrPostTaskOnThread(
-      FROM_HERE, content::BrowserThread::UI,
-      base::BindOnce(&BindBadgeServiceForServiceWorkerOnUI,
-                     service_worker_host->worker_process_id(),
-                     service_worker_host->version()->scope(),
-                     std::move(receiver)));
 }
 
 void BindColorChooserFactoryForFrame(
@@ -482,7 +456,7 @@ BindServiceWorkerReceiver(
 }
 
 template <typename Interface>
-base::RepeatingCallback<void(const ServiceWorkerVersionInfo&,
+base::RepeatingCallback<void(const ServiceWorkerVersionBaseInfo&,
                              mojo::PendingReceiver<Interface>)>
 BindServiceWorkerReceiverForOrigin(
     void (RenderProcessHostImpl::*method)(const url::Origin&,
@@ -492,7 +466,7 @@ BindServiceWorkerReceiverForOrigin(
       [](ServiceWorkerHost* host,
          void (RenderProcessHostImpl::*method)(
              const url::Origin&, mojo::PendingReceiver<Interface>),
-         const ServiceWorkerVersionInfo& info,
+         const ServiceWorkerVersionBaseInfo& info,
          mojo::PendingReceiver<Interface> receiver) {
         auto origin = info.origin;
         RunOrPostTaskToBindServiceWorkerReceiver<
@@ -503,7 +477,7 @@ BindServiceWorkerReceiverForOrigin(
 }
 
 template <typename Interface>
-base::RepeatingCallback<void(const ServiceWorkerVersionInfo&,
+base::RepeatingCallback<void(const ServiceWorkerVersionBaseInfo&,
                              mojo::PendingReceiver<Interface>)>
 BindServiceWorkerReceiverForOriginAndFrameId(
     void (RenderProcessHostImpl::*method)(int,
@@ -514,7 +488,7 @@ BindServiceWorkerReceiverForOriginAndFrameId(
       [](ServiceWorkerHost* host,
          void (RenderProcessHostImpl::*method)(
              int, const url::Origin&, mojo::PendingReceiver<Interface>),
-         const ServiceWorkerVersionInfo& info,
+         const ServiceWorkerVersionBaseInfo& info,
          mojo::PendingReceiver<Interface> receiver) {
         auto origin = info.origin;
         RunOrPostTaskToBindServiceWorkerReceiver<
@@ -1210,8 +1184,6 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
                           base::Unretained(host)));
   map->Add<blink::mojom::CacheStorage>(base::BindRepeating(
       &ServiceWorkerHost::BindCacheStorage, base::Unretained(host)));
-  map->Add<blink::mojom::BadgeService>(
-      base::BindRepeating(&BindBadgeServiceForServiceWorker, host));
 #if BUILDFLAG(ENABLE_REPORTING)
   map->Add<blink::mojom::ReportingServiceProxy>(base::BindRepeating(
       &CreateReportingServiceProxyForServiceWorker, base::Unretained(host)));
@@ -1232,7 +1204,7 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
 
 void PopulateBinderMapWithContext(
     ServiceWorkerHost* host,
-    mojo::BinderMapWithContext<const ServiceWorkerVersionInfo&>* map) {
+    mojo::BinderMapWithContext<const ServiceWorkerVersionBaseInfo&>* map) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   // static binders
@@ -1276,6 +1248,11 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::QuotaManagerHost>(
       BindServiceWorkerReceiverForOriginAndFrameId(
           &RenderProcessHostImpl::BindQuotaManagerHost, host));
+
+  // Give the embedder a chance to register binders.
+  GetContentClient()
+      ->browser()
+      ->RegisterBrowserInterfaceBindersForServiceWorker(map);
 }
 
 void PopulateBinderMap(ServiceWorkerHost* host, mojo::BinderMap* map) {

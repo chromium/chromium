@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/cache_stats_recorder.h"
 #include "chrome/browser/chrome_browser_interface_binders.h"
@@ -35,7 +34,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/resource_context.h"
+#include "content/public/browser/service_worker_version_base_info.h"
 #include "media/mojo/buildflags.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
@@ -71,6 +72,10 @@
 #if BUILDFLAG(HAS_SPELLCHECK_PANEL)
 #include "chrome/browser/spellchecker/spell_check_panel_host_impl.h"
 #endif
+#endif
+
+#if !defined(OS_ANDROID)
+#include "chrome/browser/badging/badge_manager.h"
 #endif
 
 namespace {
@@ -127,6 +132,23 @@ void MaybeCreateSafeBrowsingForRenderer(
                               allowlist_domains),
           std::move(receiver)));
 }
+
+// BadgeManager is not used for Android.
+#if !defined(OS_ANDROID)
+void BindBadgeServiceForServiceWorker(
+    const content::ServiceWorkerVersionBaseInfo& info,
+    mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  content::RenderProcessHost* render_process_host =
+      content::RenderProcessHost::FromID(info.process_id);
+  if (!render_process_host)
+    return;
+
+  badging::BadgeManager::BindServiceWorkerReceiver(
+      render_process_host, info.scope, std::move(receiver));
+}
+#endif
 
 }  // namespace
 
@@ -269,6 +291,16 @@ void ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
 #endif
 }
 
+void ChromeContentBrowserClient::
+    RegisterBrowserInterfaceBindersForServiceWorker(
+        mojo::BinderMapWithContext<
+            const content::ServiceWorkerVersionBaseInfo&>* map) {
+#if !defined(OS_ANDROID)
+  map->Add<blink::mojom::BadgeService>(
+      base::BindRepeating(&BindBadgeServiceForServiceWorker));
+#endif
+}
+
 bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
     content::RenderFrameHost* render_frame_host,
     const std::string& interface_name,
@@ -297,16 +329,6 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
   }
 
   return false;
-}
-
-void ChromeContentBrowserClient::BindBadgeServiceReceiverFromServiceWorker(
-    content::RenderProcessHost* service_worker_process_host,
-    const GURL& service_worker_scope,
-    mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
-#if !defined(OS_ANDROID)
-  badging::BadgeManager::BindServiceWorkerReceiver(
-      service_worker_process_host, service_worker_scope, std::move(receiver));
-#endif
 }
 
 void ChromeContentBrowserClient::BindGpuHostReceiver(

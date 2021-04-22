@@ -20,6 +20,7 @@ class RenderFrameHostImpl;
 class DedicatedWorkerHost;
 class SharedWorkerHost;
 class ServiceWorkerHost;
+struct ServiceWorkerVersionBaseInfo;
 
 namespace internal {
 
@@ -57,7 +58,7 @@ url::Origin GetContextForHost(SharedWorkerHost* host);
 void PopulateBinderMap(ServiceWorkerHost* host, mojo::BinderMap* map);
 void PopulateBinderMapWithContext(
     ServiceWorkerHost* host,
-    mojo::BinderMapWithContext<const ServiceWorkerVersionInfo&>* map);
+    mojo::BinderMapWithContext<const ServiceWorkerVersionBaseInfo&>* map);
 ServiceWorkerVersionInfo GetContextForHost(ServiceWorkerHost* host);
 
 // Registers the handlers for interfaces requested by `AgentSchedulingGroup`s.

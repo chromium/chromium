@@ -37,6 +37,7 @@ namespace content {
 
 class ServiceWorkerContextCore;
 class ServiceWorkerVersion;
+struct ServiceWorkerVersionBaseInfo;
 
 // ServiceWorkerHost is the host of a service worker execution context in the
 // renderer process. One ServiceWorkerHost instance hosts one service worker
@@ -86,7 +87,8 @@ class CONTENT_EXPORT ServiceWorkerHost {
   // owns |this|.
   ServiceWorkerVersion* const version_;
 
-  BrowserInterfaceBrokerImpl<ServiceWorkerHost, const ServiceWorkerVersionInfo&>
+  BrowserInterfaceBrokerImpl<ServiceWorkerHost,
+                             const ServiceWorkerVersionBaseInfo&>
       broker_{this};
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
       &broker_};

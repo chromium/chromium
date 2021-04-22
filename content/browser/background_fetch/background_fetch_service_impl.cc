@@ -17,11 +17,11 @@
 #include "content/browser/background_fetch/background_fetch_registration_notifier.h"
 #include "content/browser/background_fetch/background_fetch_request_match_params.h"
 #include "content/browser/bad_message.h"
-#include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/service_worker_version_base_info.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
@@ -35,7 +35,7 @@ constexpr size_t kMaxDeveloperIdLength = 1024 * 1024;
 
 // static
 void BackgroundFetchServiceImpl::CreateForWorker(
-    const ServiceWorkerVersionInfo& info,
+    const ServiceWorkerVersionBaseInfo& info,
     mojo::PendingReceiver<blink::mojom::BackgroundFetchService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RenderProcessHost* render_process_host =

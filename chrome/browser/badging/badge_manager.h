@@ -82,6 +82,10 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
   static void BindFrameReceiver(
       content::RenderFrameHost* frame,
       mojo::PendingReceiver<blink::mojom::BadgeService> receiver);
+
+  // Binds a remote ServiceWorkerGlobalScope to a badge service.  After
+  // receiving a badge update from a ServiceWorkerGlobalScope, the badge
+  // service must update the badge for each app under `service_worker_scope`.
   static void BindServiceWorkerReceiver(
       content::RenderProcessHost* service_worker_process_host,
       const GURL& service_worker_scope,

@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/service_worker_version_base_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
 #include "url/gurl.h"
@@ -24,7 +25,8 @@ namespace content {
 class ServiceWorkerClientInfo;
 enum class EmbeddedWorkerStatus;
 
-struct CONTENT_EXPORT ServiceWorkerVersionInfo {
+struct CONTENT_EXPORT ServiceWorkerVersionInfo
+    : public ServiceWorkerVersionBaseInfo {
  public:
   ServiceWorkerVersionInfo();
   ServiceWorkerVersionInfo(
@@ -32,6 +34,7 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo {
       ServiceWorkerVersion::Status status,
       ServiceWorkerVersion::FetchHandlerExistence fetch_handler_existence,
       const GURL& script_url,
+      const GURL& scope,
       const url::Origin& origin,
       int64_t registration_id,
       int64_t version_id,
@@ -40,17 +43,13 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo {
       int devtools_agent_route_id,
       ukm::SourceId ukm_source_id);
   ServiceWorkerVersionInfo(const ServiceWorkerVersionInfo& other);
-  ~ServiceWorkerVersionInfo();
+  ~ServiceWorkerVersionInfo() override;
 
   EmbeddedWorkerStatus running_status;
   ServiceWorkerVersion::Status status;
   ServiceWorkerVersion::FetchHandlerExistence fetch_handler_existence;
   blink::mojom::NavigationPreloadState navigation_preload_state;
   GURL script_url;
-  url::Origin origin;
-  int64_t registration_id;
-  int64_t version_id;
-  int process_id;
   int thread_id;
   int devtools_agent_route_id;
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;

@@ -89,7 +89,6 @@ class SequencedTaskRunner;
 namespace blink {
 namespace mojom {
 class DeviceAPIService;
-class BadgeService;
 class ManagedConfigurationService;
 class RendererPreferenceWatcher;
 class WebUsbService;
@@ -232,6 +231,7 @@ struct MainFunctionParams;
 struct OpenURLParams;
 struct PepperPluginInfo;
 struct Referrer;
+struct ServiceWorkerVersionBaseInfo;
 struct SocketPermissionRequest;
 
 #if defined(OS_ANDROID)
@@ -1108,6 +1108,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void RegisterMojoBinderPoliciesForSameOriginPrerendering(
       MojoBinderPolicyMap& policy_map) {}
 
+  // Allows to register browser interfaces which are exposed to a service worker
+  // execution context.
+  virtual void RegisterBrowserInterfaceBindersForServiceWorker(
+      mojo::BinderMapWithContext<const ServiceWorkerVersionBaseInfo&>* map) {}
+
   // Content was unable to bind a receiver for this associated interface, so the
   // embedder should try. Returns true if the |handle| was actually taken and
   // bound; false otherwise.
@@ -1115,17 +1120,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       RenderFrameHost* render_frame_host,
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle* handle);
-
-  // TODO(https://crbug.com/1045214): Generalize ContentBrowserClient support
-  // for service worker-scoped binders.
-  //
-  // Binds a remote ServiceWorkerGlobalScope to a badge service.  After
-  // receiving a badge update from a ServiceWorkerGlobalScope, the badge
-  // service must update the badge for each app under |service_worker_scope|.
-  virtual void BindBadgeServiceReceiverFromServiceWorker(
-      RenderProcessHost* service_worker_process_host,
-      const GURL& service_worker_scope,
-      mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {}
 
   // Handles an unhandled incoming interface binding request from the GPU
   // process. Called on the IO thread.

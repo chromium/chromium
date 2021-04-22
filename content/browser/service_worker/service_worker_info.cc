@@ -18,9 +18,6 @@ ServiceWorkerVersionInfo::ServiceWorkerVersionInfo()
       status(ServiceWorkerVersion::NEW),
       fetch_handler_existence(
           ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN),
-      registration_id(blink::mojom::kInvalidServiceWorkerRegistrationId),
-      version_id(blink::mojom::kInvalidServiceWorkerVersionId),
-      process_id(ChildProcessHost::kInvalidUniqueID),
       thread_id(ServiceWorkerConsts::kInvalidEmbeddedWorkerThreadId),
       devtools_agent_route_id(MSG_ROUTING_NONE),
       ukm_source_id(ukm::kInvalidSourceId) {}
@@ -30,6 +27,7 @@ ServiceWorkerVersionInfo::ServiceWorkerVersionInfo(
     ServiceWorkerVersion::Status status,
     ServiceWorkerVersion::FetchHandlerExistence fetch_handler_existence,
     const GURL& script_url,
+    const GURL& scope,
     const url::Origin& origin,
     int64_t registration_id,
     int64_t version_id,
@@ -37,14 +35,15 @@ ServiceWorkerVersionInfo::ServiceWorkerVersionInfo(
     int thread_id,
     int devtools_agent_route_id,
     ukm::SourceId ukm_source_id)
-    : running_status(running_status),
+    : ServiceWorkerVersionBaseInfo(scope,
+                                   origin,
+                                   registration_id,
+                                   version_id,
+                                   process_id),
+      running_status(running_status),
       status(status),
       fetch_handler_existence(fetch_handler_existence),
       script_url(script_url),
-      origin(origin),
-      registration_id(registration_id),
-      version_id(version_id),
-      process_id(process_id),
       thread_id(thread_id),
       devtools_agent_route_id(devtools_agent_route_id),
       ukm_source_id(ukm_source_id) {}

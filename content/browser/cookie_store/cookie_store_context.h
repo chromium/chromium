@@ -21,7 +21,7 @@ namespace content {
 class CookieStoreManager;
 class RenderFrameHost;
 class ServiceWorkerContextWrapper;
-struct ServiceWorkerVersionInfo;
+struct ServiceWorkerVersionBaseInfo;
 
 // UI thread handle to a CookieStoreManager.
 //
@@ -85,7 +85,7 @@ class CONTENT_EXPORT CookieStoreContext
   //
   // Must be called on the UI thread.
   static void CreateServiceForWorker(
-      const ServiceWorkerVersionInfo& info,
+      const ServiceWorkerVersionBaseInfo& info,
       mojo::PendingReceiver<blink::mojom::CookieStore> receiver);
 
  private:
