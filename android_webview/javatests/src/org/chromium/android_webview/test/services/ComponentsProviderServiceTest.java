@@ -31,6 +31,7 @@ import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.component_updater.IComponentsProviderService;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -249,6 +250,15 @@ public class ComponentsProviderServiceTest {
         final File file = new File(
                 versionDirectory, getComponentTestFileName(componentId, sequenceNumber, version));
         Assert.assertTrue("Failed to create file " + file.getAbsolutePath(), file.createNewFile());
+
+        FileWriter writer = new FileWriter(file);
+        for (int i = 0; i < 100; i++) {
+            writer.write("Adding some data to file...\n");
+        }
+        writer.close();
+
+        Assert.assertTrue("File " + file.getName() + " should not have size 0",
+                FileUtils.getFileSizeBytes(file) > 0);
     }
 
     private static String getComponentTestFileName(
