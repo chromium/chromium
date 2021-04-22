@@ -165,6 +165,9 @@ void WaitableEvent::Wait() {
 }
 
 bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
+  recordreplay::Assert("WaitableEvent::TimedWait Start %lu %d",
+                       recordreplay::PointerId(this), wait_delta.is_max());
+
   if (wait_delta <= TimeDelta()) {
     return IsSignaled();
   }
@@ -210,15 +213,21 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
   const TimeTicks end_time =
       wait_delta.is_max() ? TimeTicks::Max()
                           : subtle::TimeTicksNowIgnoringOverride() + wait_delta;
+
+  recordreplay::Assert("WaitableEvent::TimedWait #1");
+
   for (TimeDelta remaining = wait_delta; remaining > TimeDelta() && !sw.fired();
        remaining = end_time.is_max()
                        ? TimeDelta::Max()
                        : end_time - subtle::TimeTicksNowIgnoringOverride()) {
+    recordreplay::Assert("WaitableEvent::TimedWait #2 %d", end_time.is_max());
     if (end_time.is_max())
       sw.cv()->Wait();
     else
       sw.cv()->TimedWait(remaining);
   }
+
+  recordreplay::Assert("WaitableEvent::TimedWait #3");
 
   // Get the SyncWaiter signaled state before releasing the lock.
   const bool return_value = sw.fired();
