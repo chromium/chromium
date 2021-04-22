@@ -786,49 +786,33 @@ void BackgroundImageGeometry::CalculateFillTileSize(
     }
     case EFillSizeType::kContain:
     case EFillSizeType::kCover: {
+      if (image_intrinsic_size.IsEmpty()) {
+        tile_size_ = snapped_positioning_area_size;
+        return;
+      }
       // Always use the snapped positioning area size for this computation,
       // so that we resize the image to completely fill the actual painted
       // area.
-      float horizontal_scale_factor =
-          image_intrinsic_size.width
-              ? snapped_positioning_area_size.width.ToFloat() /
-                    image_intrinsic_size.width
-              : 1.0f;
-      float vertical_scale_factor =
-          image_intrinsic_size.height
-              ? snapped_positioning_area_size.height.ToFloat() /
-                    image_intrinsic_size.height
-              : 1.0f;
       // Force the dimension that determines the size to exactly match the
-      // positioning_area_size in that dimension, so that rounding of floating
-      // point approximation to LayoutUnit do not shrink the image to smaller
-      // than the positioning_area_size.
+      // positioning_area_size in that dimension.
+      tile_size_ = snapped_positioning_area_size.FitToAspectRatio(
+          image_intrinsic_size, type == EFillSizeType::kCover
+                                    ? kAspectRatioFitGrow
+                                    : kAspectRatioFitShrink);
+      // Snap the dependent dimension to avoid bleeding/blending artifacts
+      // at the edge of the image when we paint it.
       if (type == EFillSizeType::kContain) {
-        // Snap the dependent dimension to avoid bleeding/blending artifacts
-        // at the edge of the image when we paint it.
-        if (horizontal_scale_factor < vertical_scale_factor) {
-          tile_size_ = PhysicalSize(
-              snapped_positioning_area_size.width,
-              LayoutUnit(std::max(1.0f, roundf(image_intrinsic_size.height *
-                                               horizontal_scale_factor))));
-        } else {
-          tile_size_ = PhysicalSize(
-              LayoutUnit(std::max(1.0f, roundf(image_intrinsic_size.width *
-                                               vertical_scale_factor))),
-              snapped_positioning_area_size.height);
+        if (tile_size_.width != snapped_positioning_area_size.width)
+          tile_size_.width = LayoutUnit(std::max(1, tile_size_.width.Round()));
+        if (tile_size_.height != snapped_positioning_area_size.height) {
+          tile_size_.height =
+              LayoutUnit(std::max(1, tile_size_.height.Round()));
         }
-        return;
-      }
-      if (horizontal_scale_factor > vertical_scale_factor) {
-        tile_size_ = PhysicalSize(
-            snapped_positioning_area_size.width,
-            LayoutUnit(std::max(
-                1.0f, image_intrinsic_size.height * horizontal_scale_factor)));
       } else {
-        tile_size_ =
-            PhysicalSize(LayoutUnit(std::max(1.0f, image_intrinsic_size.width *
-                                                       vertical_scale_factor)),
-                         snapped_positioning_area_size.height);
+        if (tile_size_.width != snapped_positioning_area_size.width)
+          tile_size_.width = std::max(LayoutUnit(1), tile_size_.width);
+        if (tile_size_.height != snapped_positioning_area_size.height)
+          tile_size_.height = std::max(LayoutUnit(1), tile_size_.height);
       }
       return;
     }
