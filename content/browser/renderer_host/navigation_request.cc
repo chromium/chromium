@@ -2384,7 +2384,13 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult(
   DCHECK_EQ(state_, WILL_PROCESS_RESPONSE);
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  const url::Origin origin = url::Origin::Create(common_params_->url);
+  // This cannot simply calculate an origin from the committing URL, as Android
+  // WebView allows embedders to use loadDataWithBaseURL() to commit a data: URL
+  // with an arbitrary base URL.
+  const url::Origin origin =
+      NavigationRequest::IsLoadDataWithBaseURL(*common_params_)
+          ? url::Origin::Create(common_params_->base_url_for_data_url)
+          : url::Origin::Create(common_params_->url);
   const IsolationContext& isolation_context =
       render_frame_host_->GetSiteInstance()->GetIsolationContext();
   const bool got_isolated = policy->ShouldOriginGetOptInIsolation(
@@ -2945,7 +2951,9 @@ void NavigationRequest::OnResponseStarted(
       instance->ConvertToDefaultOrSetSite(GetUrlInfo());
     }
     // Now that we know the IsolationContext for the assigned SiteInstance, we
-    // opt the origin into OAC here if needed.
+    // opt the origin into OAC here if needed. Note that this doesn't need to
+    // account for loading data URLs with a base URL, because such a base URL
+    // can never opt into OAC.
     // TODO(wjmaclean): Remove this call/function when same-process
     // OriginAgentCluster moves to SiteInstanceGroup, as then all OAC origins
     // will get a SiteInstance (regardless of process isolation) and tracking
@@ -2961,13 +2969,21 @@ void NavigationRequest::OnResponseStarted(
     // should be marked as opted-out in this SiteInstance. At this point we know
     // that |render_frame_host_|'s SiteInstance has been finalized, so it's safe
     // to use it here to get the correct |IsolationContext|.
+    //
+    // When loading a data URL with a base URL, use the base URL to calculate
+    // the origin; otherwise, `AddNonIsolatedOriginIfNeeded()` will simply do
+    // nothing as a data: URL has an opaque origin.
+    //
     // TODO(wjmaclean): this won't handle cases like about:blank (where it
     // inherits an origin we care about).  We plan to compute the origin
     // before commit time (https://crbug.com/888079), which may make it
     // possible to compute the right origin here.
+    const url::Origin origin =
+        NavigationRequest::IsLoadDataWithBaseURL(*common_params_)
+            ? url::Origin::Create(common_params_->base_url_for_data_url)
+            : url::Origin::Create(common_params_->url);
     ChildProcessSecurityPolicyImpl::GetInstance()->AddNonIsolatedOriginIfNeeded(
-        isolation_context, url::Origin::Create(common_params().url),
-        false /* is_global_walk_or_frame_removal */);
+        isolation_context, origin, false /* is_global_walk_or_frame_removal */);
 
     // Replace the SiteInstance of the previously committed entry if it's for a
     // url that doesn't require a site assignment, since this new commit is
