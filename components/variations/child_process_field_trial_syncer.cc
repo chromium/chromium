@@ -38,14 +38,18 @@ void ChildProcessFieldTrialSyncer::InitFieldTrialObserving(
                                                       &initially_active_trials);
   std::set<std::string> initially_active_trials_set;
   for (const auto& entry : initially_active_trials) {
+    recordreplay::Assert("ChildProcessFieldTrialSyncer::InitFieldTrialObserving #1 %s",
+                         entry.trial_name.c_str());
     initially_active_trials_set.insert(std::move(entry.trial_name));
   }
 
   base::FieldTrial::ActiveGroups current_active_trials;
   base::FieldTrialList::GetActiveFieldTrialGroups(&current_active_trials);
   for (const auto& trial : current_active_trials) {
+    recordreplay::Assert("ChildProcessFieldTrialSyncer::InitFieldTrialObserving #2 %s",
+                         trial.trial_name.c_str());
     if (!base::Contains(initially_active_trials_set, trial.trial_name)) {
-      recordreplay::Assert("ChildProcessFieldTrialSyncer::InitFieldTrialObserving #1");
+      recordreplay::Assert("ChildProcessFieldTrialSyncer::InitFieldTrialObserving #3");
       observer_->OnFieldTrialGroupFinalized(trial.trial_name, trial.group_name);
     }
   }
