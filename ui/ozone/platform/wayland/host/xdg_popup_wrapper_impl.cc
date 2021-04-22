@@ -120,11 +120,9 @@ bool XDGPopupWrapperImpl::Initialize(WaylandConnection* connection,
   XDGSurfaceWrapperImpl* parent_xdg_surface = nullptr;
   // If the parent window is a popup, the surface of that popup must be used as
   // a parent.
-  if (wl::IsMenuType(wayland_window_->parent_window()->type())) {
-    auto* wayland_popup =
-        static_cast<WaylandPopup*>(wayland_window_->parent_window());
+  if (auto* parent_popup = wayland_window_->parent_window()->AsWaylandPopup()) {
     XDGPopupWrapperImpl* popup =
-        static_cast<XDGPopupWrapperImpl*>(wayland_popup->shell_popup());
+        static_cast<XDGPopupWrapperImpl*>(parent_popup->shell_popup());
     parent_xdg_surface = popup->xdg_surface_wrapper();
   } else {
     WaylandToplevelWindow* wayland_surface =

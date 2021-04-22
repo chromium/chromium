@@ -2908,7 +2908,7 @@ TEST_P(WaylandWindowTest, UsesCorrectParentForChildrenWindows) {
       gfx::Rect(10, 10, 10, 10), &menu_window_delegate);
 
   EXPECT_TRUE(menu_window->parent_window() == window2);
-  EXPECT_TRUE(wl::IsMenuType(menu_window->type()));
+  EXPECT_TRUE(menu_window->AsWaylandPopup());
 
   // Subcase 2: keyboard focus.
   window2->SetPointerFocus(false);
@@ -2942,7 +2942,7 @@ TEST_P(WaylandWindowTest, UsesCorrectParentForChildrenWindows) {
       gfx::Rect(10, 10, 10, 10), &menu_window_delegate);
 
   EXPECT_TRUE(menu_window->parent_window() == window2);
-  EXPECT_TRUE(wl::IsMenuType(menu_window->type()));
+  EXPECT_TRUE(menu_window->AsWaylandPopup());
 
   // Case 3: neither of the windows are focused. However, there is one that is
   // active. Must use that then.
@@ -2957,7 +2957,7 @@ TEST_P(WaylandWindowTest, UsesCorrectParentForChildrenWindows) {
       gfx::Rect(10, 10, 10, 10), &menu_window_delegate);
 
   EXPECT_TRUE(menu_window->parent_window() == window3);
-  EXPECT_TRUE(wl::IsMenuType(menu_window->type()));
+  EXPECT_TRUE(menu_window->AsWaylandPopup());
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

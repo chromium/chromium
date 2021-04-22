@@ -175,7 +175,7 @@ MenuType ShellPopupWrapper::GetMenuTypeForPositioner(
   // gravity and etc.
   if (is_right_click_menu)
     return MenuType::TYPE_RIGHT_CLICK;
-  else if (!wl::IsMenuType(parent_window->type()))
+  else if (!parent_window->AsWaylandPopup())
     return MenuType::TYPE_3DOT_PARENT_MENU;
   else
     return MenuType::TYPE_3DOT_CHILD_MENU;

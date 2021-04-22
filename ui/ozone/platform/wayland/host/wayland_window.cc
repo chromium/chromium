@@ -595,7 +595,7 @@ void WaylandWindow::AddEnteredOutputId(struct wl_output* output) {
   // Wayland does weird things for menus so instead of tracking outputs that
   // we entered or left, we take that from the parent window and ignore this
   // event.
-  if (wl::IsMenuType(type()) || type() == ui::PlatformWindowType::kTooltip)
+  if (AsWaylandPopup() || type() == ui::PlatformWindowType::kTooltip)
     return;
 
   entered_outputs_.emplace_back(
@@ -608,7 +608,7 @@ void WaylandWindow::RemoveEnteredOutputId(struct wl_output* output) {
   // Wayland does weird things for menus so instead of tracking outputs that
   // we entered or left, we take that from the parent window and ignore this
   // event.
-  if (wl::IsMenuType(type()))
+  if (AsWaylandPopup())
     return;
 
   auto entered_outputs_it_ =
@@ -679,6 +679,10 @@ bool WaylandWindow::IsOpaqueWindow() const {
 bool WaylandWindow::IsActive() const {
   // Please read the comment where the IsActive method is declared.
   return false;
+}
+
+WaylandPopup* WaylandWindow::AsWaylandPopup() {
+  return nullptr;
 }
 
 uint32_t WaylandWindow::DispatchEventToDelegate(

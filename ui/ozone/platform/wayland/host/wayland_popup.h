@@ -32,6 +32,7 @@ class WaylandPopup : public WaylandWindow {
   void HandleSurfaceConfigure(uint32_t serial) override;
   void OnCloseRequest() override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
+  WaylandPopup* AsWaylandPopup() override;
 
   // Creates a popup window, which is visible as a menu window.
   bool CreateShellPopup();

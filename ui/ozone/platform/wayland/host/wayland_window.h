@@ -35,6 +35,7 @@ class WaylandConnection;
 class WaylandSubsurface;
 class WaylandWindowDragController;
 class WaylandOutput;
+class WaylandPopup;
 
 using WidgetSubsurfaceSet = base::flat_set<std::unique_ptr<WaylandSubsurface>>;
 
@@ -218,6 +219,11 @@ class WaylandWindow : public PlatformWindow,
   // only applies to toplevel surfaces (surfaces such as popups, subsurfaces do
   // not support that).
   virtual bool IsActive() const;
+
+  // WaylandWindow can be any type of object - WaylandToplevelWindow,
+  // WaylandPopup, WaylandAuxiliaryWindow. This method casts itself to
+  // WaylandPopup, if |this| has type of WaylandPopup.
+  virtual WaylandPopup* AsWaylandPopup();
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner() {
     return ui_task_runner_;

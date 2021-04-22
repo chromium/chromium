@@ -75,9 +75,6 @@ gfx::Rect ApplyWaylandTransform(const gfx::Rect& rect,
 gfx::Size ApplyWaylandTransform(const gfx::Size& size,
                                 wl_output_transform transform);
 
-// Says if the type is kPopup or kMenu.
-bool IsMenuType(ui::PlatformWindowType type);
-
 // Returns the root WaylandWindow for the given wl_surface.
 ui::WaylandWindow* RootWindowFromWlSurface(wl_surface* surface);
 

@@ -128,7 +128,7 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
   // is above the top level parent window, the origin of the top level window
   // has to be shifted by that value on y-axis so that the origin of the menu
   // becomes x,0, and events can be handled normally.
-  if (!wl::IsMenuType(parent_window()->type())) {
+  if (!parent_window()->AsWaylandPopup()) {
     gfx::Rect parent_bounds = parent_window()->GetBounds();
     // The menu window is flipped along y-axis and have x,-y origin. Shift the
     // parent top level window instead.
@@ -170,7 +170,6 @@ void WaylandPopup::OnCloseRequest() {
 }
 
 bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties) {
-  DCHECK(wl::IsMenuType(type()));
   DCHECK(parent_window());
   root_surface()->SetBufferScale(parent_window()->buffer_scale(), false);
   set_ui_scale(parent_window()->ui_scale());
@@ -211,6 +210,10 @@ bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties) {
   // called.
   pending_initial_bounds_px_ = gfx::ToEnclosingRect(float_rect);
   return true;
+}
+
+WaylandPopup* WaylandPopup::AsWaylandPopup() {
+  return this;
 }
 
 }  // namespace ui
