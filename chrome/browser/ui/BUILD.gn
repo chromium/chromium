@@ -2954,8 +2954,6 @@ static_library("ui") {
 
   if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
     sources += [
-      "bookmarks/bookmark_bubble_sign_in_delegate.cc",
-      "bookmarks/bookmark_bubble_sign_in_delegate.h",
       "profile_picker.cc",
       "profile_picker.h",
       "signin_reauth_view_controller.cc",
@@ -3041,6 +3039,8 @@ static_library("ui") {
 
     if (enable_dice_support) {
       sources += [
+        "bookmarks/bookmark_bubble_sign_in_delegate.cc",
+        "bookmarks/bookmark_bubble_sign_in_delegate.h",
         "signin/dice_web_signin_interceptor_delegate.cc",
         "signin/dice_web_signin_interceptor_delegate.h",
         "signin/profile_customization_bubble_sync_controller.h",
