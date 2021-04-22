@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/service_sandbox_type.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -103,20 +104,11 @@ void ChromeCaptureModeDelegate::OpenScreenshotInImageEditor(
   if (!profile)
     return;
 
-  apps::AppServiceProxyChromeOs* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(
-          profile->GetOriginalProfile());
-  apps::mojom::FilePathsPtr file_paths_ptr =
-      apps::mojom::FilePaths::New(std::vector<base::FilePath>({file_path}));
-
-  // open the image with Essential App: Backlight.
-  proxy->LaunchAppWithFiles(
-      web_app::kMediaAppId,
-      apps::mojom::LaunchContainer::kLaunchContainerWindow,
-      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
-                          WindowOpenDisposition::NEW_WINDOW,
-                          /*preferred_container=*/true),
-      apps::mojom::LaunchSource::kFromFileManager, std::move(file_paths_ptr));
+  web_app::SystemAppLaunchParams params;
+  params.launch_paths = {file_path};
+  params.launch_source = apps::mojom::LaunchSource::kFromFileManager;
+  web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::MEDIA,
+                                   params);
 }
 
 bool ChromeCaptureModeDelegate::Uses24HourFormat() const {

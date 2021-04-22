@@ -405,10 +405,11 @@ void SystemTrayClient::ShowGestureEducationHelp() {
   if (!profile)
     return;
 
-  LaunchSystemWebAppAsync(
-      profile, web_app::SystemAppType::HELP,
-      {.url = GURL(chrome::kChromeOSGestureEducationHelpURL),
-       .launch_source = apps::mojom::LaunchSource::kFromOtherApp});
+  web_app::SystemAppLaunchParams params;
+  params.url = GURL(chrome::kChromeOSGestureEducationHelpURL);
+  params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
+  web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::HELP,
+                                   params);
 }
 
 void SystemTrayClient::ShowPaletteHelp() {
