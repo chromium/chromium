@@ -34,9 +34,14 @@ interface PageHandler {
   // chrome.send('dialogClose'), which could kill the page handler before
   // previous mojom calls have been run.
   OnPageClosed();
-  // Fetches the amount of free disk space, the result is sent via
-  // OnAmountOfFreeDiskSpace.
-  RequestAmountOfFreeDiskSpace();
+  // Fetches the amount of free disk space. `ticks` is an array of disk size
+  // options that the user is allowed to choose from based on the free disk
+  // size. `is_low_space_available` indicates that there is less than the
+  // recommended amount of space available for Crostini (though enough to
+  // continue with the installation).
+  RequestAmountOfFreeDiskSpace() => (array<crostini.mojom.DiskSliderTick> ticks,
+                                     int8 default_index,
+                                     bool is_low_space_available);
 };
 
 // Lives in the renderer process. The browser uses this to sends installation
@@ -52,13 +57,6 @@ interface Page {
   // After user cancels the installation, this is called when the cancellation
   // finishes.
   OnCanceled();
-  // Used to tell the UI how much disk space is available.
-  // |is_low_space_available| indicates that there is less than the recommended
-  // amount of space available for Crostini (though enough to continue with the
-  // installation).
-  OnAmountOfFreeDiskSpace(array<crostini.mojom.DiskSliderTick> ticks,
-                          int8 default_index,
-                          bool is_low_space_available);
   // Informs the page that it should be closed. The page should respond with
   // PageHandler::OnPageClosed() to indicate it is ready to be closed.
   RequestClose();

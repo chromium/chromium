@@ -17,6 +17,10 @@ class FakePageHandler extends TestBrowserProxy {
       'install', 'cancel', 'cancelBeforeStart', 'onPageClosed',
       'requestAmountOfFreeDiskSpace'
     ]);
+
+    this.requestAmountOfFreeDiskSpaceResult_ = new Promise((resolve) => {
+      this.resolveRequestAmountOfFreeDiskSpace_ = resolve;
+    });
   }
 
   /** @override */
@@ -42,6 +46,17 @@ class FakePageHandler extends TestBrowserProxy {
   /** @override */
   requestAmountOfFreeDiskSpace() {
     this.methodCalled('requestAmountOfFreeDiskSpace');
+    return this.requestAmountOfFreeDiskSpaceResult_;
+  }
+
+  /**
+   * Resolve the promise returned by `requestAmountOfFreeDiskSpace()`. Can only
+   * be called once for the lifetime of the handler.
+   */
+  resolveRequestAmountOfFreeDiskSpace(
+      ticks, defaultIndex, isLowSpaceAvailable) {
+    this.resolveRequestAmountOfFreeDiskSpace_(
+        {ticks, defaultIndex, isLowSpaceAvailable});
   }
 }
 
@@ -130,7 +145,8 @@ suite('<crostini-installer-app>', () => {
     await flushTasks();
     expectFalse(app.$$('#prompt-message').hidden);
 
-    fakeBrowserProxy.page.onAmountOfFreeDiskSpace(diskTicks, 0, false);
+    fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
+        diskTicks, 0, false);
     await flushTasks();
     expectFalse(app.$$('#configure-message').hidden);
     await clickCancel();  // Back to the prompt page.
@@ -178,7 +194,8 @@ suite('<crostini-installer-app>', () => {
     await flushTasks();
     expectFalse(app.$$('#prompt-message').hidden);
 
-    fakeBrowserProxy.page.onAmountOfFreeDiskSpace(diskTicks, 0, false);
+    fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
+        diskTicks, 0, false);
     await flushTasks();
     // Enter configure page as usual
     expectFalse(app.$$('#configure-message').hidden);
@@ -196,7 +213,7 @@ suite('<crostini-installer-app>', () => {
   test('straightToErrorPageIfMinDiskUnmet', async () => {
     expectFalse(app.$$('#prompt-message').hidden);
 
-    fakeBrowserProxy.page.onAmountOfFreeDiskSpace([], 0, false);
+    fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace([], 0, false);
 
     await clickNext();
     await flushTasks();
@@ -211,7 +228,8 @@ suite('<crostini-installer-app>', () => {
   test('showWarningIfLowFreeSpace', async () => {
     expectFalse(app.$$('#prompt-message').hidden);
 
-    fakeBrowserProxy.page.onAmountOfFreeDiskSpace(diskTicks, 0, true);
+    fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
+        diskTicks, 0, true);
 
     await clickNext();
     await flushTasks();
@@ -223,7 +241,7 @@ suite('<crostini-installer-app>', () => {
     test(`configDiskSpaceWithDefault-${defaultIndex}`, async () => {
       expectFalse(app.$$('#prompt-message').hidden);
 
-      fakeBrowserProxy.page.onAmountOfFreeDiskSpace(
+      fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
           diskTicks, defaultIndex, false);
 
       await clickNext();
@@ -245,7 +263,8 @@ suite('<crostini-installer-app>', () => {
   test('configDiskSpaceWithUserSelection', async () => {
     expectFalse(app.$$('#prompt-message').hidden);
 
-    fakeBrowserProxy.page.onAmountOfFreeDiskSpace(diskTicks, 0, false);
+    fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
+        diskTicks, 0, false);
 
     await clickNext();
     await flushTasks();
@@ -267,7 +286,8 @@ suite('<crostini-installer-app>', () => {
   });
 
   test('configUsername', async () => {
-    fakeBrowserProxy.page.onAmountOfFreeDiskSpace(diskTicks, 0, false);
+    fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
+        diskTicks, 0, false);
     await clickNext();
 
     expectEquals(
@@ -312,7 +332,8 @@ suite('<crostini-installer-app>', () => {
   });
 
   test('errorCancel', async () => {
-    fakeBrowserProxy.page.onAmountOfFreeDiskSpace(diskTicks, 0, false);
+    fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
+        diskTicks, 0, false);
     await clickNext();
     await clickInstall();
     fakeBrowserProxy.page.onInstallFinished(InstallerError.kErrorOffline);
@@ -329,7 +350,8 @@ suite('<crostini-installer-app>', () => {
   });
 
   test('errorRetry', async () => {
-    fakeBrowserProxy.page.onAmountOfFreeDiskSpace(diskTicks, 0, false);
+    fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
+        diskTicks, 0, false);
     await clickNext();
     await clickInstall();
     fakeBrowserProxy.page.onInstallFinished(InstallerError.kErrorOffline);
@@ -344,7 +366,8 @@ suite('<crostini-installer-app>', () => {
   });
 
   test('errorNeedUpdate', async () => {
-    fakeBrowserProxy.page.onAmountOfFreeDiskSpace(diskTicks, 0, false);
+    fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
+        diskTicks, 0, false);
     await clickNext();
     await clickInstall();
     fakeBrowserProxy.page.onInstallFinished(InstallerError.kNeedUpdate);
@@ -388,7 +411,7 @@ suite('<crostini-installer-app>', () => {
   [clickCancel,
    () => fakeBrowserProxy.page.requestClose(),
   ].forEach((canceller, i) => test(`cancelAfterStart-{i}`, async () => {
-              fakeBrowserProxy.page.onAmountOfFreeDiskSpace(
+              fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
                   diskTicks, 0, false);
               await clickNext();
               await clickInstall();

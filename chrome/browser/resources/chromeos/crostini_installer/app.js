@@ -190,29 +190,9 @@ Polymer({
       callbackRouter.requestClose.addListener(() => this.cancelOrBack_(true)),
     ];
 
-    // TODO(lxj): The listener should only be invoked once, so it is fine to use
-    // it with a promise. However, it is probably better to just make the mojom
-    // method requestAmountOfFreeDiskSpace() returns the result directly.
-    this.diskSpacePromise_ = new Promise((resolve, reject) => {
-      this.listenerIds_.push(callbackRouter.onAmountOfFreeDiskSpace.addListener(
-          (ticks, defaultIndex, isLowSpaceAvailable) => {
-            if (ticks.length === 0) {
-              reject();
-            } else {
-              this.defaultDiskSizeTick_ = defaultIndex;
-              this.diskSizeTicks_ = ticks;
-
-              this.minDisk_ = ticks[0].label;
-              this.maxDisk_ = ticks[ticks.length - 1].label;
-
-              this.isLowSpaceAvailable_ = isLowSpaceAvailable;
-              if (isLowSpaceAvailable) {
-                this.showDiskSlider_ = true;
-              }
-              resolve();
-            }
-          }));
-    });
+    // Query the disk space sooner than later to minimize delay.
+    this.diskSpacePromise_ =
+        BrowserProxy.getInstance().handler.requestAmountOfFreeDiskSpace();
 
     document.addEventListener('keyup', event => {
       if (event.key == 'Escape') {
@@ -221,7 +201,6 @@ Polymer({
       }
     });
 
-    BrowserProxy.getInstance().handler.requestAmountOfFreeDiskSpace();
     this.$$('.action-button:not([hidden])').focus();
   },
 
@@ -232,29 +211,43 @@ Polymer({
   },
 
   /** @private */
-  onNextButtonClick_() {
+  async onNextButtonClick_() {
     if (!this.onNextButtonClickIsRunning_) {
       assert(this.state_ === State.PROMPT);
       this.onNextButtonClickIsRunning_ = true;
-      // Making this async is not ideal, but we should get the disk space very
-      // soon (if have not already got it) so the user will at worst see a very
-      // short delay.
-      this.diskSpacePromise_
-          .then(() => {
-            this.state_ = State.CONFIGURE;
-            // Focus the username input and move the cursor to the end.
-            this.$.username.select(
-                this.username_.length, this.username_.length);
-          })
-          .catch(() => {
-            this.errorMessage_ =
-                loadTimeData.getString('minimumFreeSpaceUnmetError');
-            this.error_ = NoDiskSpaceError;
-            this.state_ = State.ERROR;
-          })
-          .finally(() => {
-            this.onNextButtonClickIsRunning_ = false;
-          });
+
+      // We should get the disk space very soon (if we have not already got it)
+      // so the user will at worst see a very short delay.
+      const diskSpace = await this.diskSpacePromise_;
+      const ticks = diskSpace.ticks;
+
+      if (ticks.length === 0) {
+        this.errorMessage_ =
+            loadTimeData.getString('minimumFreeSpaceUnmetError');
+        this.error_ = NoDiskSpaceError;
+        this.state_ = State.ERROR;
+
+        this.onNextButtonClickIsRunning_ = false;
+        return;
+      }
+
+
+      this.defaultDiskSizeTick_ = diskSpace.defaultIndex;
+      this.diskSizeTicks_ = ticks;
+
+      this.minDisk_ = ticks[0].label;
+      this.maxDisk_ = ticks[ticks.length - 1].label;
+
+      this.isLowSpaceAvailable_ = diskSpace.isLowSpaceAvailable;
+      if (this.isLowSpaceAvailable_) {
+        this.showDiskSlider_ = true;
+      }
+
+      this.state_ = State.CONFIGURE;
+      // Focus the username input and move the cursor to the end.
+      this.$.username.select(this.username_.length, this.username_.length);
+
+      this.onNextButtonClickIsRunning_ = false;
     }
   },
 

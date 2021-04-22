@@ -38,7 +38,8 @@ class CrostiniInstallerPageHandler
   void Cancel() override;
   void CancelBeforeStart() override;
   void OnPageClosed() override;
-  void RequestAmountOfFreeDiskSpace() override;
+  void RequestAmountOfFreeDiskSpace(
+      RequestAmountOfFreeDiskSpaceCallback callback) override;
 
   // Send a close request to the web page.
   void RequestClosePage();
@@ -48,7 +49,6 @@ class CrostiniInstallerPageHandler
                         double progress_fraction);
   void OnInstallFinished(crostini::mojom::InstallerError error);
   void OnCanceled();
-  void OnAmountOfFreeDiskSpace(int64_t free_bytes);
 
   crostini::CrostiniInstallerUIDelegate* installer_ui_delegate_;
   mojo::Receiver<chromeos::crostini_installer::mojom::PageHandler> receiver_;
