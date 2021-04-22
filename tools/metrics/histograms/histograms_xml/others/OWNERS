@@ -3,3 +3,6 @@
 # them. Otherwise, send the CL to chromium-metrics-reviews@google.com. Googlers
 # can read more about chromium-metrics-reviews@google.com at go/gwsq-gerrit.
 per-file histograms.xml=file://tools/metrics/histograms/histograms_xml/METRIC_REVIEWER_OWNERS
+
+# For the Discarding.* and PerformanceMonitor.* histograms:
+sebmarchand@chromium.org
