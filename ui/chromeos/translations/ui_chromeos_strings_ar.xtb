@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">شريط تمرير البحث</translation>
 <translation id="1404323374378969387">النرويجية</translation>
 <translation id="1430915738399379752">طباعة</translation>
+<translation id="1433628812591023318">‏لإفلات ملفات في Parallels Desktop، يجب نقل الملف إلى مجلد ملفات Windows.</translation>
 <translation id="1435838927755162558">‏مشاركة المجلد مع نظام Parallels Desktop</translation>
 <translation id="1467432559032391204">اليسار</translation>
 <translation id="1471718551822868769">السلوفاكية</translation>
@@ -611,6 +612,7 @@
 <translation id="7417453074306512035">لوحة المفاتيح الإثيوبية</translation>
 <translation id="7417705661718309329">‏خريطة Google</translation>
 <translation id="7460898608667578234">الأوكرانية</translation>
+<translation id="7486315294984620427">‏لإفلات ملفات في Parallels Desktop، يجب نسخ الملف إلى مجلد ملفات Windows.</translation>
 <translation id="7489215562877293245">‏تم العثور على <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     جاهز للاحتفاظ بنسخة احتياطية في <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>

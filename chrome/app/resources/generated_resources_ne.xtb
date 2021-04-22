@@ -637,7 +637,7 @@
 <translation id="1682548588986054654">नयँ इन्कग्निटो सन्झ्याल</translation>
 <translation id="1682867089915960590">क्यारेट ब्राउजिङ अन गर्ने हो?</translation>
 <translation id="1686550358074589746">ग्लाइड गरेर टाइप गर्ने सुविधा सक्षम पारियोस्</translation>
-<translation id="168715261339224929">आफ्ना सबै यन्त्रमा पुस्तक चिन्हहरू प्राप्त गर्न सिंक गर्ने सुविधा सक्रिय गर्नुहोस्।</translation>
+<translation id="168715261339224929">आफ्ना सबै डिभाइसमा पुस्तक चिन्हहरू प्राप्त गर्न सिंक गर्ने सुविधा सक्रिय गर्नुहोस्।</translation>
 <translation id="1688867105868176567">साइटको डेटा खाली गर्ने हो?</translation>
 <translation id="1688935057616748272">कुनै अक्षर टाइप गर्नुहोस्</translation>
 <translation id="168991973552362966">कुनै नजिकैको प्रिन्टर थप्नुहोस्</translation>
@@ -877,6 +877,7 @@
 <translation id="1928202201223835302">पुरानो PIN प्रविष्टि गर्नुहोस्</translation>
 <translation id="1928696683969751773">अपडेटहरू</translation>
 <translation id="1929186283613845153">यो फाइल स्क्यान गरिँदै छ।</translation>
+<translation id="1929343511231420085">जुनसुकै सिरियल पोर्ट</translation>
 <translation id="1929546189971853037">तपाईंको सबै साइन-इन भएको यन्त्रहरूमा आफ्नो ब्राउजिङ इतिहास पढ्नुहोस्</translation>
 <translation id="1930879306590754738">यो डिभाइस र तपाईंको Google खाताबाट पासवर्ड मेटाइयो</translation>
 <translation id="1931152874660185993">अवयवहरू स्थापित छैनन्।</translation>
@@ -2932,6 +2933,7 @@
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> को अपवाद हटाउनुहोस्</translation>
 <translation id="4220648711404560261">सक्रिय गर्ने क्रममा त्रुटि हुन गयो।</translation>
 <translation id="4222772810963087151">बिल्डसम्बन्धी विवरणहरू</translation>
+<translation id="4224284700924043865">विक्रेता <ph name="VENDOR_ID" /> का USB डिभाइसहरू (उत्पादन ID <ph name="PRODUCT_ID" /> भएका)</translation>
 <translation id="4225397296022057997">सबै साइटहरूमा</translation>
 <translation id="4231095370974836764">आफ्नो <ph name="DEVICE_TYPE" /> मा Google Play बाट एप र गेमहरू इन्स्टल गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos कन्फिगर गर्नुहोस्</translation>
@@ -3004,6 +3006,7 @@
 <translation id="431076611119798497">&amp;विवरणहरू</translation>
 <translation id="4312866146174492540">रोक लगाउनुहोस् (डिफल्ट मान)</translation>
 <translation id="4314815835985389558">सिंक व्यवस्थापन गर्नुहोस्</translation>
+<translation id="4316650123995163262"><ph name="VENDOR_NAME" /> का USB डिभाइसहरू (उत्पादन ID <ph name="PRODUCT_ID" /> भएका)</translation>
 <translation id="4316850752623536204">विकासकर्ता वेबसाइट</translation>
 <translation id="4317820549299924617">पुष्टि गर्ने कार्य असफल भयो</translation>
 <translation id="4320177379694898372">कुनै इन्टरनेट जडान छैन</translation>
@@ -3402,7 +3405,7 @@
 <translation id="4768332406694066911">तपाईँसँग यी संगठनहरूका तपाईँको पहिचान गर्ने प्रमाणपत्रहरू छन्</translation>
 <translation id="4770119228883592393">अनुमति मागियो, यस सम्बन्धमा कारबाही गर्न ⌘ + Option + डाउन एरो थिच्नुहोस्</translation>
 <translation id="4773112038801431077">Linux अपग्रेड गर्नुहोस्</translation>
-<translation id="4774357366578243684">यी पासवर्डहरू आफ्ना सबै यन्त्रमा प्रयोग गर्न यिनलाई आफ्नो Google खातामा सार्नुहोस्</translation>
+<translation id="4774357366578243684">यी पासवर्डहरू आफ्ना सबै डिभाइसमा प्रयोग गर्न यिनलाई आफ्नो Google खातामा सार्नुहोस्</translation>
 <translation id="477647109558161443">एउटा डेस्कटप सर्टकट सिर्जना गर्नुहोस्</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> को लागि लागि पासवर्ड</translation>
 <translation id="4777825441726637019">Play स्टोर</translation>
@@ -3445,6 +3448,7 @@
 <translation id="4824958205181053313">सिंक रद्द गर्ने हो?</translation>
 <translation id="4827675678516992122">जडान गर्न सकिएन</translation>
 <translation id="4827784381479890589">Chrome ब्राउजरमा परिष्कृत हिज्जे जाँच (हिज्जेसम्बन्धी सुझावहरू प्रदान गर्न टाइप गरिने पाठ Google मा पठाइन्छ)</translation>
+<translation id="482952334869563894">विक्रेता <ph name="VENDOR_ID" /> का USB डिभाइसहरू</translation>
 <translation id="4829768588131278040">PIN सेटअप गर्नुहोस्</translation>
 <translation id="4830121310592638841">कुनै साइटले मेरा स्क्रिनहरूमा विन्डो राख्न र त्यहाँ भएका विन्डो खोल्न खोज्दा त्यसो गर्न दिने कि नदिने भनी सोधियोस्</translation>
 <translation id="4830502475412647084">OS अद्यावधिक स्थापना गर्दै</translation>
@@ -3734,6 +3738,7 @@
 <translation id="5159419673777902220">तपाईंका अभिभावकले तपाईंलाई एक्स्टेन्सन प्रयोग गर्ने अनुमति दिनुभएको छैन</translation>
 <translation id="5160634252433617617">भौतिक किबोर्ड</translation>
 <translation id="5160857336552977725">तपाईँको <ph name="DEVICE_TYPE" /> मा साइन इन गर्नुहोस्</translation>
+<translation id="5161251470972801814"><ph name="VENDOR_NAME" /> का USB डिभाइसहरू</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> माथि रोक लगाइएको छ</translation>
 <translation id="5163910114647549394">यो ट्याब ट्याबस्ट्रिपको अन्त्यमा सारियो</translation>
 <translation id="5165085578392358314">निम्न कार्य गर्न कुन स्विच प्रयोग गर्ने भन्ने कुरा तोक्नुहोस्: <ph name="ACTION" /></translation>
@@ -5358,6 +5363,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - क्रियाकलापको लग</translation>
 <translation id="6997707937646349884">तपाईंका यन्त्रहरूमा:</translation>
 <translation id="6998793565256476099">भिडियो सम्मेलनका लागि यन्त्र दर्ता गर्नुहोस्‌</translation>
+<translation id="6999640176621571692">तपाईं Google लाई तपाईंले आफ्नो कार्टमा हाल्ने वस्तुहरूमा छुट उपलब्ध छ कि छैन भन्ने कुरा पत्ता लगाउने अनुमति दिन चाहनुहुन्छ?</translation>
 <translation id="6999956497249459195">नयाँ समूह</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> जोडिएको छ तर यसलाई कन्फिगर गर्नु पर्छ</translation>
 <translation id="7000347579424117903">Ctrl, Alt वा खोज कुञ्जी समावेश गर्नुहोस्</translation>

@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">‏عند السماح لمتصفِّح Chrome بمعرفة موقعك الجغرافي، سيرسِل Chrome موقعك الجغرافي إلى المواقع الإلكترونية التي منحتها إذنًا بالوصول إليه. قد تطلب المواقع الإلكترونية موقعك الجغرافي عند توفُّر معلومات محلية لعرضها مثل المتاجر القريبة أو الأخبار.</translation>
 <translation id="6036420186814142909">‏يشتمل Google Chrome على ميزات من شأنها مساعدتك على إدارة بيانات الإنترنت والوقوف على مدى السرعة التي يمكنك تحميل صفحات الويب من خلالها.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">‏السماح بتسجيل الدخول إلى Chrome</translation>
 <translation id="6181930887571472871">‏التبديل إلى Chrome</translation>
 <translation id="6238746320622508509">‏اسمح لمتصفّح Chrome بقفل علامات التبويب في وضع التصفّح المتخفي.</translation>
 <translation id="6573431926118603307">‏ستظهر هنا علامات التبويب التي فتحتها في Chrome من أجهزتك الأخرى.</translation>
@@ -96,5 +97,6 @@
   3. اختَر Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">‏الحفاظ على أمانك باستخدام Google Chrome</translation>
+<translation id="8772179140489533211">‏عرض رسائل مطالبة تسجيل الدخول إلى Chrome</translation>
 <translation id="9112744793181547300">‏هل تريد ضبط Chrome كمتصفّح تلقائي؟</translation>
 </translationbundle>

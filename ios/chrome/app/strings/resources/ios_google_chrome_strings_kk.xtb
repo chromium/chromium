@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Chrome-ға орналасқан жеріңізді анықтауға рұқсат етсеңіз, Chrome оны сіз рұқсат еткен кез келген сайтқа жібереді. Сайттарда маңайдағы дүкендер немесе жаңалықтар сияқты жергілікті ақпарат болғанда, геодерегіңізді сұрайды.</translation>
 <translation id="6036420186814142909">Интернет деректеріңізді басқаруға көмектесетін және веб-беттерді жүктеу жылдамдығыңызды көрсететін Google Chrome ерекшеліктері бар.
 <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Chrome-ға кіруге рұқсат ету</translation>
 <translation id="6181930887571472871">Chrome браузеріне ауысыңыз</translation>
 <translation id="6238746320622508509">Chrome браузеріне инкогнито қойындыларын құлыптауға рұқсат беріңіз.</translation>
 <translation id="6573431926118603307">Басқа құрылғыларда Chrome браузерінен ашылған қойындылар осы жерде шығады.</translation>
@@ -96,5 +97,6 @@
   3. Chrome браузерін таңдаңыз.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chrome-ның көмегімен қауіпсіз күйде қалыңыз</translation>
+<translation id="8772179140489533211">Chrome-ға кіру нұсқауларын көрсетеді.</translation>
 <translation id="9112744793181547300">Chrome-ды әдепкі браузер ретінде орнату керек пе?</translation>
 </translationbundle>

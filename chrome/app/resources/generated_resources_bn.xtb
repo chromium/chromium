@@ -882,7 +882,7 @@
 <translation id="1928202201223835302">পুরানো পিন লিখুন</translation>
 <translation id="1928696683969751773">আপডেট</translation>
 <translation id="1929186283613845153">এই ফাইল স্ক্যান করা হচ্ছে।</translation>
-<translation id="1929343511231420085">যেকোনও সিরিয়ালের পোর্ট</translation>
+<translation id="1929343511231420085">যেকোনও সিরিয়াল পোর্ট</translation>
 <translation id="1929546189971853037">আপনার সমস্ত প্রবেশ করা ডিভাইসের ব্রাউজিং ইতিহাস পড়ুন</translation>
 <translation id="1930879306590754738">এই ডিভাইস এবং আপনার Google অ্যাকাউন্ট থেকে পাসওয়ার্ড মুছে ফেলা হয়েছে</translation>
 <translation id="1931152874660185993">কোনো উপাদান ইনস্টল করা নেই৷</translation>
@@ -3450,7 +3450,7 @@
 <translation id="4824958205181053313">সিঙ্ক বাতিল করতে চান?</translation>
 <translation id="4827675678516992122">কানেক্ট করা যায়নি</translation>
 <translation id="4827784381479890589">Chrome ব্রাউজারে বানান পরীক্ষা করার উন্নত সুবিধা (বানান সংক্রান্ত সাজেশনের জন্য Google-এর কাছে টেক্সট পাঠানো হয়েছে)</translation>
-<translation id="482952334869563894"><ph name="VENDOR_ID" /> ভেন্ডরের ইউএসবি ডিভাইস</translation>
+<translation id="482952334869563894"><ph name="VENDOR_ID" />-এর ইউএসবি ডিভাইস</translation>
 <translation id="4829768588131278040">পিন সেট-আপ করুন</translation>
 <translation id="4830121310592638841">কোনও সাইট আপনার স্ক্রিনে উইন্ডো খুলতে ও রাখতে চাইলে অনুমতি নিতে বলুন</translation>
 <translation id="4830502475412647084">OS আপডেট ইনস্টল করা হচ্ছে</translation>
@@ -3740,7 +3740,7 @@
 <translation id="5159419673777902220">আপনার অভিভাবক এক্সটেনশন ব্যবহারের অনুমতি বন্ধ করে দিয়েছেন।</translation>
 <translation id="5160634252433617617">ফিজিক্যাল কীবোর্ড</translation>
 <translation id="5160857336552977725">আপনার <ph name="DEVICE_TYPE" />-এ সাইন-ইন করুন</translation>
-<translation id="5161251470972801814"><ph name="VENDOR_NAME" /> ভেন্ডরের ইউএসবি ডিভাইস</translation>
+<translation id="5161251470972801814"><ph name="VENDOR_NAME" />-এর ইউএসবি ডিভাইস</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ব্লক করা হয়েছে</translation>
 <translation id="5163910114647549394">ট্যাবস্ট্রিপের শেষে ট্যাব সরানো হয়েছে</translation>
 <translation id="5165085578392358314">সুইচ অ্যাসাইন করুন: <ph name="ACTION" /></translation>

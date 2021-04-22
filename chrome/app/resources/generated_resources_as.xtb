@@ -879,6 +879,7 @@
 <translation id="1928202201223835302">পুৰণি পিন দিয়ক</translation>
 <translation id="1928696683969751773">আপডে’টসমূহ</translation>
 <translation id="1929186283613845153">এই ফাইলটো স্কেন কৰি থকা হৈছে।</translation>
+<translation id="1929343511231420085">যিকোনো ক্ৰমিক পৰ্ট</translation>
 <translation id="1929546189971853037">আপুনি ছাইন ইন হৈ থকা সকলো ডিভাইচত নিজৰ ব্ৰাজিঙৰ ইতিহাস পঢ়ক</translation>
 <translation id="1930879306590754738">এই ডিভাইচটো আৰু আপোনাৰ Google একাউণ্টৰ পৰা পাছৱৰ্ড মচা হৈছে</translation>
 <translation id="1931152874660185993">কোনো উপাদান ইনষ্টল কৰা নাই।</translation>
@@ -2930,6 +2931,7 @@
 <translation id="4218274196133425560"><ph name="HOST_NAME" />ৰ বাবে ব্যতিক্ৰম আঁতৰাওক</translation>
 <translation id="4220648711404560261">সক্রিয় কৰি থাকোঁতে এটা আসোঁৱাহ হ’ল।</translation>
 <translation id="4222772810963087151">বিল্ডৰ সবিশেষ</translation>
+<translation id="4224284700924043865"><ph name="VENDOR_ID" />ৰ প্ৰ'ডাক্ট আইডি <ph name="PRODUCT_ID" />ৰ সৈতে ইউএছবি ডিভাইচ</translation>
 <translation id="4225397296022057997">সকলো ছাইটত</translation>
 <translation id="4231095370974836764">আপোনাৰ <ph name="DEVICE_TYPE" />ত Google Playৰ পৰা এপ্‌ আৰু গে’মসমূহ ইনষ্টল কৰক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos কনফিগাৰ কৰক</translation>
@@ -3002,6 +3004,7 @@
 <translation id="431076611119798497">&amp;সবিশেষ</translation>
 <translation id="4312866146174492540">অৱৰোধ কৰক (ডিফ’ল্ট)</translation>
 <translation id="4314815835985389558">ছিংক পৰিচালনা কৰক</translation>
+<translation id="4316650123995163262"><ph name="VENDOR_NAME" />ৰ প্ৰ'ডাক্ট আইডি <ph name="PRODUCT_ID" />ৰ সৈতে ইউএছবি ডিভাইচ</translation>
 <translation id="4316850752623536204">বিকাশকৰ্তাৰ ৱেবছাইট</translation>
 <translation id="4317820549299924617">সত্যাপন সফল নহ’ল</translation>
 <translation id="4320177379694898372">ইণ্টাৰনেট সংযোগ নাই</translation>
@@ -3442,6 +3445,7 @@
 <translation id="4824958205181053313">ছিংক বাতিল কৰিবনে?</translation>
 <translation id="4827675678516992122">সংযোগ কৰিব পৰা নগ’ল</translation>
 <translation id="4827784381479890589">Chrome ব্ৰাউজাৰত বৰ্ধিত বানান পৰীক্ষা (বানানৰ পৰামৰ্শসমূহৰ বাবে পাঠ Googleলৈ পঠিওৱা হয়)</translation>
+<translation id="482952334869563894"><ph name="VENDOR_ID" />ৰ ইউএছবি ডিভাইচ</translation>
 <translation id="4829768588131278040">পিন ছেট আপ কৰক</translation>
 <translation id="4830121310592638841">কোনো ছাইটে ৱিণ্ড’ খুলিবলৈ আৰু আপোনাৰ স্ক্ৰীনসমূহত থ’বলৈ বিচাৰিলে সোধক</translation>
 <translation id="4830502475412647084">OS আপডে'ট ইনষ্টল কৰি থকা হৈছে</translation>
@@ -3731,6 +3735,7 @@
 <translation id="5159419673777902220">আপোনাৰ অভিভাৱকে এক্সটেনশ্বনৰ অনুমতিসমূহ অক্ষম কৰিছে</translation>
 <translation id="5160634252433617617">কায়িক কীব’ৰ্ড</translation>
 <translation id="5160857336552977725">আপোনাৰ <ph name="DEVICE_TYPE" />ত ছাইন ইন কৰক</translation>
+<translation id="5161251470972801814"><ph name="VENDOR_NAME" />ৰ ইউএছবি ডিভাইচ</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> অৱৰোধ কৰা হৈছে</translation>
 <translation id="5163910114647549394">টেবটোক টেবষ্ট্ৰিপৰ শেষ অংশলৈ নিয়া হ'ল</translation>
 <translation id="5165085578392358314">ছুইচ আবণ্টন কৰক: <ph name="ACTION" /></translation>
@@ -5351,6 +5356,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - কাৰ্যকলাপৰ লগ</translation>
 <translation id="6997707937646349884">আপোনাৰ ডিভাইচসমূহত:</translation>
 <translation id="6998793565256476099">ডিভাইচটো ভিডি’অ কনফাৰেন্সিঙৰ বাবে পঞ্জীয়ন কৰক</translation>
+<translation id="6999640176621571692">আপুনি কাৰ্টত যোগ দিয়া বস্তুত ৰেহাই বিচাৰিবলৈ Googleক অনুমতি দিবনে?</translation>
 <translation id="6999956497249459195">নতুন গোট</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" />ক সংযোগ কৰা হৈছে কিন্তু কনফিগাৰেশ্বনৰ আৱশ্যক</translation>
 <translation id="7000347579424117903">Ctrl, Alt বা Search অন্তৰ্ভুক্ত কৰক</translation>

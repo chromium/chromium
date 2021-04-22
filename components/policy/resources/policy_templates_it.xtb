@@ -738,7 +738,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
       Le stampanti connesse a <ph name="CLOUD_PRINT_NAME" /> vengono considerate <ph name="PRINTER_TYPE_CLOUD" />, mentre le altre stampanti vengono classificate come <ph name="PRINTER_TYPE_LOCAL" />.
 
       Nota: l'omissione di un campo implica la corrispondenza di tutti i valori. Ad esempio, se non viene specificata la connettività, nell'Anteprima di stampa viene avviato il rilevamento di tutti i tipi di stampanti, <ph name="PRINTER_TYPE_LOCAL" /> e <ph name="PRINTER_TYPE_CLOUD" />. I pattern di espressioni regolari devono seguire la sintassi JavaScript RegExp e per le corrispondenze viene fatta distinzione tra maiuscole e minuscole.</translation>
-<translation id="2005506794355327448">L'azione da compiere quando il coperchio è abbassato.</translation>
+<translation id="2005506794355327448">L'azione da compiere quando lo schermo è abbassato.</translation>
 <translation id="2006530844219044261">Gestione dell'alimentazione</translation>
 <translation id="2008514891623783266">Criteri di gestione dell'IP di WebRTC</translation>
 <translation id="2013285471046373727">Consente di specificare la modalità di installazione di un'app. OPTIONAL: l'app non viene installata automaticamente, ma può essere installata dall'utente. Si tratta del comportamento predefinito se questo criterio non viene specificato. PRELOAD: l'app viene installata automaticamente, ma l'utente può disinstallarla. FORCE_INSTALLED: l'app viene installata automaticamente è l'utente non può disinstallarla. BLOCKED: l'app è bloccata e non può essere installata. Se l'app è stata installata in base a un criterio precedente, verrà disinstallata.</translation>
@@ -1252,7 +1252,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
       Le differenze rispetto a questi criteri sono le seguenti:
 
-      * Le azioni da compiere in caso di inattività o chiusura del coperchio non possono essere la chiusura della sessione.
+      * Le azioni da compiere in caso di inattività o chiusura dello schermo non possono essere la chiusura della sessione.
 
       * L'azione predefinita compiuta in caso di inattività durante l'utilizzo della corrente CA è l'arresto.
 
@@ -1283,7 +1283,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="264252574246191885">Non in elenco</translation>
 <translation id="2647069081229792812">Attiva o disattiva la funzione di modifica dei preferiti</translation>
 <translation id="2649896281375932517">Consenti agli utenti di decidere</translation>
-<translation id="2650049181907741121">Azione da compiere quando l'utente chiude il coperchio</translation>
+<translation id="2650049181907741121">Azione da compiere quando l'utente chiude lo schermo</translation>
 <translation id="2658653824183107970">Usa l'implementazione <ph name="CORS" /> legacy anziché la nuova implementazione <ph name="CORS" /></translation>
 <translation id="2660846099862559570">Non utilizzare mai un proxy</translation>
 <translation id="2664682171745499686">Elimina gli avvisi di domini simili dai domini</translation>
@@ -4880,7 +4880,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se il criterio viene impostato su falso o se non viene configurato, le informazioni non vengono segnalate.
       Se il criterio viene impostato su vero, i processi di stampa del dispositivo vengono segnalati.</translation>
-<translation id="7476447711788742702">La configurazione del criterio consente di specificare l'azione compiuta in <ph name="PRODUCT_OS_NAME" /> quando l'utente chiude il coperchio del dispositivo.
+<translation id="7476447711788742702">La configurazione del criterio consente di specificare l'azione compiuta in <ph name="PRODUCT_OS_NAME" /> quando l'utente chiude lo schermo del dispositivo.
 
       Se il criterio non viene configurato, viene compiuta l'azione di sospensione.
 

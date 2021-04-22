@@ -2940,7 +2940,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> için istisnayı kaldır</translation>
 <translation id="4220648711404560261">Etkinleştirme sırasında bir hata oluştu.</translation>
 <translation id="4222772810963087151">Derleme Ayrıntıları</translation>
-<translation id="4224284700924043865"><ph name="VENDOR_ID" /> adlı tedarikçi tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip USB cihazlar</translation>
+<translation id="4224284700924043865"><ph name="VENDOR_ID" /> tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip USB cihazlar</translation>
 <translation id="4225397296022057997">Tüm sitelerde</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> cihazınıza Google Play'den uygulama ve oyunlar yükleyin. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos'u yapılandırın</translation>
@@ -3457,7 +3457,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4824958205181053313">Senkronizasyon iptal edilsin mi?</translation>
 <translation id="4827675678516992122">Bağlanılamadı</translation>
 <translation id="4827784381479890589">Chrome tarayıcı için gelişmiş yazım denetimi (metin, yazım önerileri için Google'a gönderilir)</translation>
-<translation id="482952334869563894"><ph name="VENDOR_ID" /> adlı tedarikçi tarafından sağlanan USB cihazlar</translation>
+<translation id="482952334869563894"><ph name="VENDOR_ID" /> tarafından sağlanan USB cihazlar</translation>
 <translation id="4829768588131278040">PIN ayarla</translation>
 <translation id="4830121310592638841">Bir site ekranlarımda pencereler açıp yerleştirmek istediğinde sor</translation>
 <translation id="4830502475412647084">OS güncellemesini yükleyin</translation>

@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">సీక్ స్లయిడర్</translation>
 <translation id="1404323374378969387">నార్వేజియన్</translation>
 <translation id="1430915738399379752">ప్రింట్</translation>
+<translation id="1433628812591023318">Parallels Desktopలో ఫైల్‌లను డ్రాప్ చేయడానికి, ఫైల్ తప్పనిసరిగా Windows ఫైల్‌లకు తరలించాల్సి ఉంటుంది.</translation>
 <translation id="1435838927755162558">Parallels Desktopతో ఫోల్డర్‌ను షేర్ చేయండి</translation>
 <translation id="1467432559032391204">ఎడమ</translation>
 <translation id="1471718551822868769">స్లోవాక్</translation>
@@ -196,6 +197,7 @@
 <translation id="3067790092342515856">Windows ఫైల్‌లు</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" />తో భాగస్వామ్యం చేయండి</translation>
 <translation id="3083975830683400843">Chromebitలు</translation>
+<translation id="3113153474486991170">ఈ లొకేషన్ నుండి "<ph name="PATH" />"ను తెరవడం సాధ్యం కాలేదు. తెరుచుకోవాలంటే, దయచేసి "నా ఫైల్స్"కి కాపీ చేయండి.</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">పూర్తయింది</translation>
 <translation id="3188257591659621405">నా ఫైల్‌లు</translation>
@@ -610,6 +612,7 @@
 <translation id="7417453074306512035">ఇథియోపిక్ కీబోర్డ్</translation>
 <translation id="7417705661718309329">Google మ్యాప్</translation>
 <translation id="7460898608667578234">ఉక్రెయినియన్</translation>
+<translation id="7486315294984620427">Parallels Desktopలో ఫైల్‌లను డ్రాప్ చేయడానికి, ఫైల్ తప్పనిసరిగా Windows ఫైల్‌లకు కాపీ చేయబడి ఉండాలి.</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> కనుగొనబడ్డాయి
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google డిస్క్<ph name="END_LINK" />కు బ్యాకప్ చేయడానికి సిద్ధంగా ఉంది</translation>

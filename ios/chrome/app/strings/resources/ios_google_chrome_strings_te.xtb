@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">మీ లొకేషన్‌ను తెలుసుకోవడానికి మీరు Chromeను అనుమతించినప్పుడు, Chrome దానిని మీరు అనుమతించే ఏ సైట్‌లకు అయినా పంపుతుంది. సమీపంలోని షాప్‌లు లేదా వార్తలు వంటి స్థానిక సమాచారం మీకు చూపించాల్సి వచ్చినప్పుడు, సైట్‌లు మీ లొకేషన్ కోసం అడగవచ్చు.</translation>
 <translation id="6036420186814142909">మీ ఇంటర్నెట్ డేటాను నిర్వహించడంలో మరియు మీరు వెబ్ పేజీలను త్వరగా లోడ్ చేయగలగడంలో మీకు సహాయపడే ఫీచర్‌లు Google Chromeలో ఉన్నాయి.
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Chrome సైన్-ఇన్‌ను అనుమతించండి</translation>
 <translation id="6181930887571472871">Chromeకు మారండి</translation>
 <translation id="6238746320622508509">మీ అజ్ఞాత ట్యాబ్‌లను లాక్ చేయడానికి Chromeను అనుమతించండి.</translation>
 <translation id="6573431926118603307">మీరు మీ ఇతర పరికరాల్లోని Chromeలో తెరిచిన ట్యాబ్‌లు ఇక్కడ చూపబడతాయి.</translation>
@@ -96,5 +97,6 @@
   3. Chromeను ఎంచుకోండి.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chromeతో సురక్షితంగా ఉండండి</translation>
+<translation id="8772179140489533211">Chromeకు సైన్ ఇన్ చేయడానికి ప్రాంప్ట్‌లను చూపండి.</translation>
 <translation id="9112744793181547300">Chromeను ఆటోమేటిక్ సెట్టింగ్‌గా సెట్ చేయాలా?</translation>
 </translationbundle>
