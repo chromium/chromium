@@ -35,7 +35,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
-import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.animation.AnimationUtils;
 import android.view.autofill.AutofillValue;
@@ -177,7 +176,7 @@ public class AwContents implements SmartClipProvider {
     private static final Pattern sDataURLWithSelectorPattern =
             Pattern.compile("^[^#]*(#[A-Za-z][A-Za-z0-9\\-_:.]*)$");
 
-    private static final HashMap<View, AwContents.AwOnPreDrawListener> sRootViewPreDrawListeners =
+    private static final HashMap<View, AwWindowCoverageTracker> sWindowCoverageTrackers =
             new HashMap<>();
 
     private static class ForceAuxiliaryBitmapRendering {
@@ -480,6 +479,10 @@ public class AwContents implements SmartClipProvider {
     private AwDisplayCutoutController mDisplayCutoutController;
     private final AwDisplayModeController mDisplayModeController;
     private final Rect mCachedSafeAreaRect = new Rect();
+
+    // The current AwWindowCoverageTracker, if any. This will be non-null when the AwContents is
+    // attached to the Window and size tracking is enabled. It will be null otherwise.
+    private AwWindowCoverageTracker mAwWindowCoverageTracker;
 
     private static class WebContentsInternalsHolder implements WebContents.InternalsHolder {
         private final WeakReference<AwContents> mAwContentsRef;
@@ -850,19 +853,25 @@ public class AwContents implements SmartClipProvider {
         }
     };
 
-    private static class AwOnPreDrawListener implements ViewTreeObserver.OnPreDrawListener {
-        private View mRootView;
-        private List<AwContents> mAwContentsList = new ArrayList<AwContents>();
+    private static class AwWindowCoverageTracker {
+        private static final long RECALCULATION_DELAY_MS = 200;
 
-        public AwOnPreDrawListener(View rootView) {
+        private final View mRootView;
+        private List<AwContents> mAwContentsList = new ArrayList<>();
+        private long mRecalculationTime;
+        private boolean mPendingRecalculation;
+
+        private AwWindowCoverageTracker(View rootView) {
             mRootView = rootView;
         }
 
         public boolean trackContents(AwContents contents) {
+            contents.mAwWindowCoverageTracker = this;
             return mAwContentsList.add(contents);
         }
 
-        public boolean unTrackContents(AwContents contents) {
+        public boolean untrackContents(AwContents contents) {
+            contents.mAwWindowCoverageTracker = null;
             return mAwContentsList.remove(contents);
         }
 
@@ -870,15 +879,46 @@ public class AwContents implements SmartClipProvider {
             return mAwContentsList.size() > 0;
         }
 
-        @Override
-        public boolean onPreDraw() {
-            if (TRACE) Log.i(TAG, "%s onPreDraw", this);
+        /**
+         * Notifies this object that a recalculation of the window coverage is necessary.
+         *
+         * This should be called every time any of the tracked AwContents changes its size or
+         * whether it is displaying open web contents (the result of a call to
+         * {@link AwContentsJni#isDisplayingOpenWebContent}).
+         *
+         * Recalculation won't happen immediately, and will be rate limited.
+         */
+        public void onInputsUpdated() {
+            long time = SystemClock.uptimeMillis();
+
+            if (mPendingRecalculation) return;
+            mPendingRecalculation = true;
+
+            if (time > mRecalculationTime + RECALCULATION_DELAY_MS) {
+                // Enough time has elapsed since the last recalculation, run it now.
+                mRecalculationTime = time;
+            } else {
+                // Not enough time has elapsed, run it once enough time has elapsed.
+                mRecalculationTime += RECALCULATION_DELAY_MS;
+            }
+
+            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
+                recalculate();
+                mPendingRecalculation = false;
+            }, mRecalculationTime - time);
+        }
+
+        private void recalculate() {
+            if (TRACE) Log.i(TAG, "%s onVisibilityRectUpdated", this);
+
             List<Rect> openWebContentRects = new ArrayList<Rect>();
             for (AwContents content : mAwContentsList) {
                 assert !content.isDestroyed(NO_WARN);
                 if (AwContentsJni.get().isDisplayingOpenWebContent(
                             content.mNativeAwContents, content)) {
-                    openWebContentRects.add(content.getGlobalVisibleRect());
+                    // The result of getGlobalVisibleRect can change underneath us, so take a
+                    // protective copy.
+                    openWebContentRects.add(RectUtils.copyRect(content.getGlobalVisibleRect()));
                 }
             }
 
@@ -893,7 +933,6 @@ public class AwContents implements SmartClipProvider {
 
             AwContentsJni.get().updateOpenWebScreenArea(
                     openWebPixelCoverage, (int) openWebVisiblePercentage);
-            return true;
         }
     }
 
@@ -3005,41 +3044,40 @@ public class AwContents implements SmartClipProvider {
         mWindowAndroid.getWindowAndroid().getDisplay().addObserver(mDisplayObserver);
 
         if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_MEASURE_SCREEN_COVERAGE)) {
-            AwOnPreDrawListener listener = getOrCreateOnPreDrawListener(mContainerView);
-            listener.trackContents(this);
+            AwWindowCoverageTracker tracker = getOrCreateWindowCoverageTracker(mContainerView);
+            tracker.trackContents(this);
         }
 
         if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
     }
 
-    private AwOnPreDrawListener getOrCreateOnPreDrawListener(ViewGroup viewGroup) {
-        AwOnPreDrawListener listener = null;
+    private AwWindowCoverageTracker getOrCreateWindowCoverageTracker(ViewGroup viewGroup) {
         View rootView = viewGroup.getRootView();
-        if (!sRootViewPreDrawListeners.containsKey(rootView)) {
-            if (TRACE) Log.i(TAG, "%s installing OnPreDraw Listener for %s", this, rootView);
+        AwWindowCoverageTracker tracker = sWindowCoverageTrackers.get(rootView);
 
-            ViewTreeObserver viewTreeObserver = rootView.getViewTreeObserver();
-            listener = new AwOnPreDrawListener(rootView);
-            viewTreeObserver.addOnPreDrawListener(listener);
-            sRootViewPreDrawListeners.put(rootView, listener);
-        } else {
-            listener = sRootViewPreDrawListeners.get(rootView);
+        if (tracker == null) {
+            if (TRACE) Log.i(TAG, "%s creating WindowCoverageTracker for %s", this, rootView);
+
+            tracker = new AwWindowCoverageTracker(rootView);
+            sWindowCoverageTrackers.put(rootView, tracker);
         }
-        return listener;
+
+        return tracker;
     }
 
-    private void detachPreDrawListener() {
-        // Don't use getOrCreateOnPreDrawListener, if we have to create
+    private void detachWindowCoverageTracker() {
+        View rootView = mContainerView.getRootView();
+        // Don't use getOrCreateWindowCoverageTracker, if we have to create
         // the listener at this point then something has gone wrong and
         // we should fail rather than create a new one.
-        AwOnPreDrawListener listener = sRootViewPreDrawListeners.get(mContainerView.getRootView());
-        if (listener == null) return;
+        AwWindowCoverageTracker tracker = sWindowCoverageTrackers.get(rootView);
+        if (tracker == null) return;
 
-        listener.unTrackContents(this);
-        if (listener.isTracking()) return;
+        tracker.untrackContents(this);
+        if (tracker.isTracking()) return;
 
-        if (TRACE) Log.i(TAG, "%s removing " + listener, this);
-        sRootViewPreDrawListeners.remove(mContainerView.getRootView());
+        if (TRACE) Log.i(TAG, "%s removing " + tracker, this);
+        sWindowCoverageTrackers.remove(rootView);
     }
 
     /**
@@ -3050,7 +3088,7 @@ public class AwContents implements SmartClipProvider {
         if (TRACE) Log.i(TAG, "%s onDetachedFromWindow", this);
 
         if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_MEASURE_SCREEN_COVERAGE)) {
-            detachPreDrawListener();
+            detachWindowCoverageTracker();
         }
         mWindowAndroid.getWindowAndroid().getDisplay().removeObserver(mDisplayObserver);
         mAwViewMethods.onDetachedFromWindow();
@@ -3783,6 +3821,10 @@ public class AwContents implements SmartClipProvider {
         // Only valid within software onDraw().
         private final Rect mClipBoundsTemporary = new Rect();
 
+        // Variables that track the state as of the previous onDraw call.
+        private Rect mPreviousGlobalVisibleRect = new Rect();
+        private boolean mPreviouslyDisplayingWebContent;
+
         @SuppressLint("DrawAllocation") // For new AwFunctor.
         @Override
         public void onDraw(Canvas canvas) {
@@ -3815,6 +3857,20 @@ public class AwContents implements SmartClipProvider {
             int scrollX = mContainerView.getScrollX();
             int scrollY = mContainerView.getScrollY();
             Rect globalVisibleRect = getGlobalVisibleRect();
+
+            if (mAwWindowCoverageTracker != null) {
+                boolean displayingWebContent = AwContentsJni.get().isDisplayingOpenWebContent(
+                        mNativeAwContents, AwContents.this);
+
+                if (!globalVisibleRect.equals(mPreviousGlobalVisibleRect)
+                        || mPreviouslyDisplayingWebContent != displayingWebContent) {
+                    mPreviousGlobalVisibleRect.set(globalVisibleRect);
+                    mPreviouslyDisplayingWebContent = displayingWebContent;
+
+                    mAwWindowCoverageTracker.onInputsUpdated();
+                }
+            }
+
             // Workaround for bug in libhwui on N that does not swap if inserting functor is the
             // only operation in a canvas. See crbug.com/704212.
             if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
