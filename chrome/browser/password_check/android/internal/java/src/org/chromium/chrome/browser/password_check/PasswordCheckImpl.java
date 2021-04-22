@@ -89,6 +89,11 @@ class PasswordCheckImpl implements PasswordCheck, PasswordCheckObserver {
     }
 
     @Override
+    public void onEditCredential(CompromisedCredential credential, Context context) {
+        mPasswordCheckBridge.onEditCredential(credential, context, mSettingsLauncher);
+    }
+
+    @Override
     public void removeCredential(CompromisedCredential credential) {
         mPasswordCheckBridge.removeCredential(credential);
     }

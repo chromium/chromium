@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_check;
 
+import android.content.Context;
 import android.view.MenuItem;
 
 import androidx.annotation.VisibleForTesting;
@@ -39,8 +40,9 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
         /**
          * Edits the given Credential in the password store.
          * @param credential A {@link CompromisedCredential} to be edited.
+         * @param context The context to launch the editing UI from.
          */
-        void onEdit(CompromisedCredential credential);
+        void onEdit(CompromisedCredential credential, Context context);
 
         /**
          * Removes the given Credential from the password store.

@@ -102,7 +102,7 @@ public class CredentialEditControllerTest {
 
     @Test
     public void testSetsCredential() {
-        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD);
+        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD, false);
         assertEquals(TEST_USERNAME, mModel.get(USERNAME));
         assertEquals(TEST_PASSWORD, mModel.get(PASSWORD));
         assertFalse(mModel.get(PASSWORD_VISIBLE));
@@ -217,7 +217,7 @@ public class CredentialEditControllerTest {
 
     @Test
     public void testUsernameTextChangedUpdatesModel() {
-        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD);
+        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD, false);
         mMediator.setExistingUsernames(new String[] {TEST_USERNAME});
         mMediator.onUsernameTextChanged(NEW_TEST_USERNAME);
         assertEquals(NEW_TEST_USERNAME, mModel.get(USERNAME));
@@ -225,14 +225,14 @@ public class CredentialEditControllerTest {
 
     @Test
     public void testPasswordTextChangedUpdatesModel() {
-        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD);
+        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD, false);
         mMediator.onPasswordTextChanged(NEW_TEST_PASSWORD);
         assertEquals(NEW_TEST_PASSWORD, mModel.get(PASSWORD));
     }
 
     @Test
     public void testEmptyPasswordTriggersError() {
-        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD);
+        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD, false);
         mMediator.onPasswordTextChanged("");
         assertTrue(mModel.get(EMPTY_PASSWORD_ERROR));
         assertThat(RecordHistogram.getHistogramValueCountForTesting(
@@ -245,7 +245,7 @@ public class CredentialEditControllerTest {
 
     @Test
     public void testDuplicateUsernameTriggersError() {
-        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD);
+        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD, false);
         mMediator.setExistingUsernames(new String[] {TEST_USERNAME, NEW_TEST_USERNAME});
 
         mMediator.onUsernameTextChanged(NEW_TEST_USERNAME);
@@ -260,7 +260,7 @@ public class CredentialEditControllerTest {
 
     @Test
     public void testDeletingCredentialPromptsConfirmation() {
-        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD);
+        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD, false);
         Resources resources = ApplicationProvider.getApplicationContext().getResources();
         when(mDeleteDialogHelper.getResources()).thenReturn(resources);
 
@@ -291,9 +291,27 @@ public class CredentialEditControllerTest {
     }
 
     @Test
+    public void testDeletingCompromisedCredentialPromptsCorrectMessage() {
+        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD, true);
+        Resources resources = ApplicationProvider.getApplicationContext().getResources();
+        when(mDeleteDialogHelper.getResources()).thenReturn(resources);
+
+        String title =
+                resources.getString(R.string.password_entry_edit_delete_credential_dialog_title);
+        String message = resources.getString(
+                R.string.password_check_delete_credential_dialog_body, TEST_URL);
+        int confirmButtonTextId = R.string.password_entry_edit_delete_credential_dialog_confirm;
+
+        mMediator.onDelete();
+        verify(mDeleteDialogHelper)
+                .showConfirmation(
+                        eq(title), eq(message), eq(confirmButtonTextId), any(Runnable.class));
+    }
+
+    @Test
     public void testDeletingFederatedCredentialPromptsConfirmation() {
         initMediatorWithFederatedCredential();
-        mMediator.setCredential(TEST_USERNAME, "");
+        mMediator.setCredential(TEST_USERNAME, "", false);
         Resources resources = ApplicationProvider.getApplicationContext().getResources();
         when(mDeleteDialogHelper.getResources()).thenReturn(resources);
 

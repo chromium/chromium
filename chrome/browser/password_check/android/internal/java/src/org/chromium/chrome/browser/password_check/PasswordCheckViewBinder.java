@@ -527,7 +527,7 @@ class PasswordCheckViewBinder {
             if (textId == R.string.password_check_credential_menu_item_view_button_caption) {
                 credentialHandler.onView(credential);
             } else if (textId == R.string.password_check_credential_menu_item_edit_button_caption) {
-                credentialHandler.onEdit(credential);
+                credentialHandler.onEdit(credential, context);
             } else if (textId
                     == R.string.password_check_credential_menu_item_remove_button_caption) {
                 credentialHandler.onRemove(credential);

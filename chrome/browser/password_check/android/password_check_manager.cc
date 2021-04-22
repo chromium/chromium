@@ -134,6 +134,28 @@ void PasswordCheckManager::UpdateCredential(
   insecure_credentials_manager_.UpdateCredential(credential, new_password);
 }
 
+void PasswordCheckManager::OnEditCredential(
+    const password_manager::CredentialView& credential,
+    const base::android::JavaParamRef<jobject>& context,
+    const base::android::JavaParamRef<jobject>& settings_launcher) {
+  password_manager::SavedPasswordsPresenter::SavedPasswordsView forms =
+      insecure_credentials_manager_.GetSavedPasswordsFor(credential);
+  if (forms.empty() || credential_edit_bridge_)
+    return;
+
+  const PasswordForm form =
+      insecure_credentials_manager_.GetSavedPasswordsFor(credential)[0];
+
+  credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
+      std::move(form), CredentialEditBridge::IsInsecureCredential(true),
+      saved_passwords_presenter_.GetUsernamesForRealm(
+          credential.signon_realm, form.IsUsingAccountStore()),
+      &saved_passwords_presenter_, nullptr,
+      base::BindOnce(&PasswordCheckManager::OnEditUIDismissed,
+                     base::Unretained(this)),
+      context, settings_launcher);
+}
+
 void PasswordCheckManager::RemoveCredential(
     const password_manager::CredentialView& credential) {
   insecure_credentials_manager_.RemoveCredential(credential);
@@ -386,4 +408,8 @@ void PasswordCheckManager::FulfillPrecondition(CheckPreconditions condition) {
 
 void PasswordCheckManager::ResetPrecondition(CheckPreconditions condition) {
   fulfilled_preconditions_ &= ~condition;
+}
+
+void PasswordCheckManager::OnEditUIDismissed() {
+  credential_edit_bridge_.reset();
 }

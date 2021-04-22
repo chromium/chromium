@@ -588,7 +588,7 @@ public class PasswordCheckViewTest {
                         not(is(mPasswordCheckView.getActivity().getWindow().getDecorView()))))
                 .perform(click());
 
-        verify(mMockHandler).onEdit(eq(ANA));
+        verify(mMockHandler).onEdit(eq(ANA), eq(mPasswordCheckView.getContext()));
     }
 
     @Test
