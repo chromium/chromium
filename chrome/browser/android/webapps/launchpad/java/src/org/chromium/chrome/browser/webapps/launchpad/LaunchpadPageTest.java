@@ -81,22 +81,22 @@ public class LaunchpadPageTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
+        LaunchpadUtils.setOverrideItemListForTesting(MOCK_APP_LIST);
     }
 
     private void openLaunchpadPage() {
-        mLaunchpadCoordinator = new LaunchpadCoordinator(mActivityTestRule.getActivity(),
-                mActivityTestRule.getActivity().getModalDialogManagerSupplier(), MOCK_APP_LIST);
-
-        LaunchpadPage.setCoordinatorForTesting(mLaunchpadCoordinator);
-
         mActivityTestRule.loadUrl(UrlConstants.LAUNCHPAD_URL);
-        mItemContainer = mActivityTestRule.getActivity().findViewById(R.id.launchpad_recycler);
+        mLaunchpadCoordinator =
+                ((LaunchpadPage) mActivityTestRule.getActivity().getActivityTab().getNativePage())
+                        .getCoordinatorForTesting();
+        mItemContainer = mLaunchpadCoordinator.getView().findViewById(R.id.launchpad_recycler);
     }
 
     @Test
     @SmallTest
     public void testOpenLaunchpad() {
         openLaunchpadPage();
+
         Assert.assertEquals(2, mItemContainer.getAdapter().getItemCount());
 
         TileView app1 = (TileView) mItemContainer.getChildAt(0);

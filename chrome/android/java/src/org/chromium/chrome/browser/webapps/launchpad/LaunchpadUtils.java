@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.webapps.launchpad;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.webapps.WebApkIntentDataProviderFactory;
@@ -27,7 +30,18 @@ public class LaunchpadUtils {
     private static final String TAG = "LaunchpadUtils";
     private static final String CATEGORY_WEBAPK_API = "android.intent.category.WEBAPK_API";
 
+    private static List<LaunchpadItem> sOverrideItemListForTesting;
+
     private LaunchpadUtils() {}
+
+    /**
+     * Start LaunchpadActivity.
+     */
+    public static void showLaunchpadActivity(Activity activity) {
+        Intent intent = new Intent();
+        intent.setClass(activity, LaunchpadActivity.class);
+        activity.startActivity(intent);
+    }
 
     /**
      * Returns a list of |LaunchpadItem| with information for each installed WebAPK.
@@ -35,6 +49,8 @@ public class LaunchpadUtils {
      * and check whether it passes the signature checks.
      */
     public static List<LaunchpadItem> retrieveWebApks(Context context) {
+        if (sOverrideItemListForTesting != null) return sOverrideItemListForTesting;
+
         List<LaunchpadItem> apps = new ArrayList<LaunchpadItem>();
         PackageManager packageManager = context.getPackageManager();
 
@@ -68,5 +84,13 @@ public class LaunchpadUtils {
         // Sort the list to make apps in alphabetical order.
         Collections.sort(apps, (a, b) -> a.shortName.compareTo(b.shortName));
         return apps;
+    }
+
+    /**
+     * Overrides the WebAPKs list for tests to avoid querying and verifying the installed WebAPKs.
+     */
+    @VisibleForTesting
+    public static void setOverrideItemListForTesting(List<LaunchpadItem> items) {
+        sOverrideItemListForTesting = items;
     }
 }

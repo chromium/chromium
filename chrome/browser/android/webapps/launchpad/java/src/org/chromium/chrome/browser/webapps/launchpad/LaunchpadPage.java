@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.webapps.launchpad;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 
 import androidx.annotation.VisibleForTesting;
@@ -21,9 +20,6 @@ import java.util.List;
  * Native page for launching WebApks.
  */
 public class LaunchpadPage extends BasicNativePage {
-    @SuppressLint("StaticFieldLeak") // Test only.
-    private static LaunchpadCoordinator sLaunchpadCoordinatorForTesting;
-
     private LaunchpadCoordinator mLaunchpadCoordinator;
     private String mTitle;
 
@@ -38,9 +34,8 @@ public class LaunchpadPage extends BasicNativePage {
         super(host);
 
         mTitle = host.getContext().getResources().getString(R.string.launchpad_title);
-        mLaunchpadCoordinator = sLaunchpadCoordinatorForTesting != null
-                ? sLaunchpadCoordinatorForTesting
-                : new LaunchpadCoordinator(activity, modalDialogManagerSupplier, items);
+        mLaunchpadCoordinator = new LaunchpadCoordinator(
+                activity, modalDialogManagerSupplier, items, false /* isSeparateActivity */);
 
         initWithView(mLaunchpadCoordinator.getView());
     }
@@ -63,7 +58,7 @@ public class LaunchpadPage extends BasicNativePage {
     }
 
     @VisibleForTesting
-    static void setCoordinatorForTesting(LaunchpadCoordinator coordinator) {
-        sLaunchpadCoordinatorForTesting = coordinator;
+    LaunchpadCoordinator getCoordinatorForTesting() {
+        return mLaunchpadCoordinator;
     }
 }

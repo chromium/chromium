@@ -593,6 +593,13 @@
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>  # DIFF-ANCHOR: 9c5197e9
     </activity>  # DIFF-ANCHOR: aea75380
+    <activity  # DIFF-ANCHOR: 66a0be05
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.webapps.launchpad.LaunchpadActivity"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+    </activity>  # DIFF-ANCHOR: 66a0be05
     <activity  # DIFF-ANCHOR: a1fac31f
         android:exported="true"
         android:label="@string/cablev2_activity_title"
