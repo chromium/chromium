@@ -482,8 +482,8 @@ def WalkDirectory(root_path, actions, extensions, callback):
     if '.git' in dirs:
       dirs.remove('.git')
     for file in files:
-      ext = os.path.splitext(file)[1]
-      if ext in extensions:
+      filename, ext = os.path.splitext(file)
+      if ext in extensions and not filename.endswith('test'):
         callback(os.path.join(path, file), actions)
 
 def AddLiteralActions(actions):
