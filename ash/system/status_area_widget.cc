@@ -158,8 +158,6 @@ void StatusAreaWidget::Initialize() {
 
   Shell::Get()->session_controller()->AddObserver(this);
 
-  Shell::Get()->system_tray_model()->clock()->AddObserver(this);
-
   // NOTE: Container may be hidden depending on login/display state.
   Show();
 
@@ -168,7 +166,6 @@ void StatusAreaWidget::Initialize() {
 
 StatusAreaWidget::~StatusAreaWidget() {
   Shell::Get()->session_controller()->RemoveObserver(this);
-  Shell::Get()->system_tray_model()->clock()->RemoveObserver(this);
 }
 
 // static
@@ -194,18 +191,6 @@ void StatusAreaWidget::SetSystemTrayVisibility(bool visible) {
     tray->CloseBubble();
     Hide();
   }
-}
-
-void StatusAreaWidget::OnDateFormatChanged() {
-  CalculateTargetBounds();
-  UpdateLayout(false /*animate*/);
-  UpdateCollapseState();
-}
-
-void StatusAreaWidget::OnSystemClockTimeUpdated() {
-  CalculateTargetBounds();
-  UpdateLayout(false /*animate*/);
-  UpdateCollapseState();
 }
 
 void StatusAreaWidget::OnSessionStateChanged(

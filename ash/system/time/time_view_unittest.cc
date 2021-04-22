@@ -9,6 +9,8 @@
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -16,7 +18,10 @@ namespace tray {
 
 class TimeViewTest : public AshTestBase {
  public:
-  TimeViewTest() = default;
+  TimeViewTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  TimeViewTest(const TimeViewTest&) = delete;
+  TimeViewTest& operator=(const TimeViewTest&) = delete;
   ~TimeViewTest() override = default;
 
   void TearDown() override {
@@ -45,8 +50,33 @@ class TimeViewTest : public AshTestBase {
 
  private:
   std::unique_ptr<TimeView> time_view_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(TimeViewTest);
+class TimeViewObserver : public views::ViewObserver {
+ public:
+  TimeViewObserver(views::View* observed_view) {
+    observation_.Observe(observed_view);
+  }
+  TimeViewObserver(const TimeViewObserver&) = delete;
+  TimeViewObserver& operator=(const TimeViewObserver&) = delete;
+  ~TimeViewObserver() override = default;
+
+  void reset_preferred_size_changed_called() {
+    preferred_size_changed_called_ = false;
+  }
+
+  bool preferred_size_changed_called() const {
+    return preferred_size_changed_called_;
+  }
+
+  // views::ViewObserver:
+  void OnViewPreferredSizeChanged(views::View* observed_view) override {
+    preferred_size_changed_called_ = true;
+  }
+
+ private:
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+  bool preferred_size_changed_called_ = false;
 };
 
 // Test the basics of the time view, mostly to ensure we don't leak memory.
@@ -100,6 +130,30 @@ TEST_F(TimeViewTest, ShowDateMode) {
   time_view()->SetShowDateWhenHorizontal(true /* show_date_when_horizontal */);
   EXPECT_EQ(hours_text, vertical_label_hours()->GetText());
   EXPECT_EQ(minutes_text, vertical_label_minutes()->GetText());
+}
+
+// Test `PreferredSizeChanged()` is called when there's a size change of the
+// `TimeView`.
+TEST_F(TimeViewTest, UpdateSize) {
+  // Set current time to 8:00AM for testing.
+  task_environment()->AdvanceClock(base::Time::Now().LocalMidnight() +
+                                   base::TimeDelta::FromHours(32) -
+                                   base::Time::Now());
+
+  // A newly created horizontal clock only has the horizontal label.
+  CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK);
+  TimeViewObserver test_observer(time_view());
+  test_observer.reset_preferred_size_changed_called();
+
+  EXPECT_FALSE(test_observer.preferred_size_changed_called());
+
+  // Move to 9:59AM. There should be no layout change of the `time_view()`.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(119));
+  EXPECT_FALSE(test_observer.preferred_size_changed_called());
+
+  // Move to 10:00AM. There should be a layout change of the `time_view()`.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(61));
+  EXPECT_TRUE(test_observer.preferred_size_changed_called());
 }
 
 }  // namespace tray

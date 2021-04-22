@@ -205,8 +205,11 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
   std::u16string current_date_time = l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_DATE_TIME, FormatDate(now), current_time);
 
-  horizontal_label_->SetText(show_date_when_horizontal_ ? current_date_time
-                                                        : current_time);
+  std::u16string new_label =
+      show_date_when_horizontal_ ? current_date_time : current_time;
+  const bool label_length_changed =
+      horizontal_label_->GetText().length() != new_label.length();
+  horizontal_label_->SetText(new_label);
   horizontal_label_->SetTooltipText(base::TimeFormatFriendlyDate(now));
   horizontal_label_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
                                               true);
@@ -227,7 +230,13 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
       ax::mojom::Event::kTextChanged, true);
   vertical_label_minutes_->NotifyAccessibilityEvent(
       ax::mojom::Event::kTextChanged, true);
+
   Layout();
+
+  // When the `new_label` text does not have the some length as the
+  // old one's, the layout size of this time view changes as well.
+  if (label_length_changed)
+    PreferredSizeChanged();
 }
 
 void TimeView::SetupSubviews(ClockLayout clock_layout) {
