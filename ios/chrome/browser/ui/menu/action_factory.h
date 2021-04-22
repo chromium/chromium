@@ -110,6 +110,15 @@ API_AVAILABLE(ios(13.0))
 // The action will invoke the |block| when executed.
 - (UIAction*)actionToOpenJavascriptWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance for adding to the reading list.
+- (UIAction*)actionToAddToReadingListWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance for adding to bookmarks.
+- (UIAction*)actionToBookmarkWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance for closing a tab.
+- (UIAction*)actionToCloseTabWithBlock:(ProceduralBlock)block;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_ACTION_FACTORY_H_

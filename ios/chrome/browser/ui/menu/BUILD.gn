@@ -12,6 +12,8 @@ source_set("menu") {
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    "resources:bookmark",
+    "resources:close",
     "resources:copy_link_url",
     "resources:delete",
     "resources:edit",
@@ -22,6 +24,7 @@ source_set("menu") {
     "resources:open_in_incognito",
     "resources:open_in_new_tab",
     "resources:open_new_window",
+    "resources:read_later",
     "resources:remove",
     "resources:share",
     "//base",
@@ -51,6 +54,8 @@ source_set("unit_tests") {
   sources = [ "action_factory_unittest.mm" ]
   deps = [
     ":menu",
+    "resources:bookmark",
+    "resources:close",
     "resources:copy_link_url",
     "resources:delete",
     "resources:edit",
@@ -61,6 +66,7 @@ source_set("unit_tests") {
     "resources:open_in_incognito",
     "resources:open_in_new_tab",
     "resources:open_new_window",
+    "resources:read_later",
     "resources:remove",
     "resources:share",
     "//base",

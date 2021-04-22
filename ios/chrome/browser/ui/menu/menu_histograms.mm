@@ -29,6 +29,7 @@ const char kHistoryEntryActionsHistogram[] =
     "Mobile.ContextMenu.HistoryEntry.Actions";
 const char kMostVisitedEntryActionsHistogram[] =
     "Mobile.ContextMenu.MostVisitedEntry.Actions";
+const char kTabGridActionsHistogram[] = "Mobile.ContextMenu.TabGrid.Actions";
 const char KContextMenuImageActionsHistogram[] =
     "Mobile.ContextMenu.WebImage.Actions";
 const char KContextMenuImageLinkActionsHistogram[] =
@@ -63,5 +64,7 @@ const char* GetActionsHistogramName(MenuScenario scenario) {
       return KContextMenuImageLinkActionsHistogram;
     case MenuScenario::kContextMenuLink:
       return KContextMenuLinkActionsHistogram;
+    case MenuScenario::kTabGridEntry:
+      return kTabGridActionsHistogram;
   }
 }

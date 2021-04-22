@@ -87,6 +87,44 @@ TEST_F(ActionFactoryTest, CreateActionWithParameters) {
   }
 }
 
+// Tests that the bookmark action has the right title and image.
+TEST_F(ActionFactoryTest, BookmarkAction) {
+  if (@available(iOS 13.0, *)) {
+    ActionFactory* factory =
+        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
+                                      scenario:kTestMenuScenario];
+
+    UIImage* expectedImage = [UIImage imageNamed:@"bookmark"];
+    NSString* expectedTitle =
+        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_ADDTOBOOKMARKS);
+
+    UIAction* action = [factory actionToBookmarkWithBlock:^{
+    }];
+
+    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+    EXPECT_EQ(expectedImage, action.image);
+  }
+}
+
+// Tests that the close action has the right title and image.
+TEST_F(ActionFactoryTest, CloseAction) {
+  if (@available(iOS 13.0, *)) {
+    ActionFactory* factory =
+        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
+                                      scenario:kTestMenuScenario];
+
+    UIImage* expectedImage = [UIImage imageNamed:@"close"];
+    NSString* expectedTitle =
+        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSETAB);
+
+    UIAction* action = [factory actionToCloseTabWithBlock:^{
+    }];
+
+    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+    EXPECT_EQ(expectedImage, action.image);
+  }
+}
+
 // Tests that the copy action has the right title and image.
 TEST_F(ActionFactoryTest, CopyAction) {
   if (@available(iOS 13.0, *)) {
@@ -212,6 +250,25 @@ TEST_F(ActionFactoryTest, OpenInNewWindowAction) {
     UIAction* action =
         [factory actionToOpenInNewWindowWithURL:testURL
                                  activityOrigin:WindowActivityToolsOrigin];
+
+    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+    EXPECT_EQ(expectedImage, action.image);
+  }
+}
+
+// Tests that the read later action has the right title and image.
+TEST_F(ActionFactoryTest, ReadLaterAction) {
+  if (@available(iOS 13.0, *)) {
+    ActionFactory* factory =
+        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
+                                      scenario:kTestMenuScenario];
+
+    UIImage* expectedImage = [UIImage imageNamed:@"read_later"];
+    NSString* expectedTitle =
+        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST);
+
+    UIAction* action = [factory actionToAddToReadingListWithBlock:^{
+    }];
 
     EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
     EXPECT_EQ(expectedImage, action.image);
