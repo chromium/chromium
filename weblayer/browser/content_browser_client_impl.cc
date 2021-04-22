@@ -72,9 +72,9 @@
 #include "net/ssl/client_cert_identity.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -572,7 +572,7 @@ bool ContentBrowserClientImpl::IsHandledURL(const GURL& url) {
 
 #if !BUILDFLAG(DISABLE_FTP_SUPPORT)
   if (scheme == url::kFtpScheme &&
-      base::FeatureList::IsEnabled(blink::features::kFtpProtocol)) {
+      base::FeatureList::IsEnabled(network::features::kFtpProtocol)) {
     return true;
   }
 #endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)

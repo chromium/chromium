@@ -38,7 +38,6 @@ BLINK_COMMON_EXPORT extern const base::Feature
     kFrequencyCappingForOverlayPopupDetection;
 BLINK_COMMON_EXPORT extern const base::Feature
     kFrequencyCappingForLargeStickyAdDetection;
-BLINK_COMMON_EXPORT extern const base::Feature kFtpProtocol;
 BLINK_COMMON_EXPORT extern const base::Feature kInsertKeyToggleMode;
 BLINK_COMMON_EXPORT extern const base::Feature kDisplayLocking;
 BLINK_COMMON_EXPORT extern const base::Feature kJSONModules;

@@ -82,12 +82,12 @@
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/request_destination.h"
+#include "services/network/public/cpp/url_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/loader/mime_sniffing_throttle.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/loader/record_load_histograms.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
@@ -475,11 +475,10 @@ void NavigationURLLoaderImpl::Restart() {
   // if the redirected URL's scheme and the previous URL scheme don't match in
   // their use or disuse of the network service loader.
   if (!default_loader_used_ ||
-      (url_chain_.size() > 1 &&
-       blink::network_utils::IsURLHandledByNetworkService(
-           url_chain_[url_chain_.size() - 1]) !=
-           blink::network_utils::IsURLHandledByNetworkService(
-               url_chain_[url_chain_.size() - 2]))) {
+      (url_chain_.size() > 1 && network::IsURLHandledByNetworkService(
+                                    url_chain_[url_chain_.size() - 1]) !=
+                                    network::IsURLHandledByNetworkService(
+                                        url_chain_[url_chain_.size() - 2]))) {
     if (url_loader_)
       url_loader_->ResetForFollowRedirect();
     url_loader_.reset();
@@ -617,8 +616,7 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
   scoped_refptr<network::SharedURLLoaderFactory> factory;
 
   const bool should_be_handled_by_network_service =
-      blink::network_utils::IsURLHandledByNetworkService(
-          resource_request_->url) ||
+      network::IsURLHandledByNetworkService(resource_request_->url) ||
       resource_request_->web_bundle_token_params.has_value();
 
   if (!should_be_handled_by_network_service) {

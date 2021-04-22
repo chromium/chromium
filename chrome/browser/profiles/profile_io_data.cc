@@ -14,7 +14,7 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/net_buildflags.h"
-#include "third_party/blink/public/common/features.h"
+#include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -57,7 +57,7 @@ bool ProfileIOData::IsHandledProtocol(const std::string& scheme) {
   }
 #if !BUILDFLAG(DISABLE_FTP_SUPPORT)
   if (scheme == url::kFtpScheme &&
-      base::FeatureList::IsEnabled(blink::features::kFtpProtocol)) {
+      base::FeatureList::IsEnabled(network::features::kFtpProtocol)) {
     return true;
   }
 #endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)

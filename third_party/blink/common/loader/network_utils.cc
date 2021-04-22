@@ -4,13 +4,6 @@
 
 #include "third_party/blink/public/common/loader/network_utils.h"
 
-#include "base/feature_list.h"
-#include "build/build_config.h"
-#include "net/net_buildflags.h"
-#include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/blink/public/common/features.h"
-#include "url/url_constants.h"
-
 namespace blink {
 namespace network_utils {
 
@@ -24,17 +17,6 @@ bool AlwaysAccessNetwork(
          headers->HasHeaderValue("cache-control", "no-store") ||
          headers->HasHeaderValue("pragma", "no-cache") ||
          headers->HasHeaderValue("vary", "*");
-}
-
-bool IsURLHandledByNetworkService(const GURL& url) {
-  if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsWSOrWSS())
-    return true;
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  if (url.SchemeIs(url::kFtpScheme) &&
-      base::FeatureList::IsEnabled(features::kFtpProtocol))
-    return true;
-#endif
-  return false;
 }
 
 }  // namespace network_utils

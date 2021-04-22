@@ -112,6 +112,8 @@ component("cpp") {
     "trust_token_http_headers.cc",
     "trust_token_http_headers.h",
     "trust_token_operation_authorization.h",
+    "url_util.cc",
+    "url_util.h",
     "weak_wrapper_shared_url_loader_factory.cc",
     "weak_wrapper_shared_url_loader_factory.h",
     "web_sandbox_flags.cc",

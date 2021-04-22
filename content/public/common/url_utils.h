@@ -19,8 +19,14 @@ CONTENT_EXPORT bool HasWebUIScheme(const GURL& url);
 CONTENT_EXPORT bool IsSavableURL(const GURL& url);
 
 // Helper function to determine if the navigation to |url| should make a request
-// to the network stack. A request should not be sent for JavaScript URLs or
-// about:blank. In these cases, no request needs to be sent.
+// to the network stack. A request should not be sent for JavaScript URLs, or
+// about:srcdoc, or chrome://crash. In these cases, no request needs to be sent.
+//
+// See also `network::IsURLHandledByNetworkService` which answers if a request
+// is handled by a URLLoaderFactory returned by
+// `network::mojom::NetworkContext::CreateURLLoaderFactory`.  For example, for
+// "file:" URLs IsURLHandledByNetworkStack will return true, but
+// IsURLHandledByNetworkService will return false.
 CONTENT_EXPORT bool IsURLHandledByNetworkStack(const GURL& url);
 
 // Determines whether it is safe to redirect from |from_url| to |to_url|.

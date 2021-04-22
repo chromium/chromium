@@ -67,10 +67,10 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/features.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
@@ -1993,7 +1993,7 @@ class DownloadExtensionTestWithFtp : public DownloadExtensionTest {
   DownloadExtensionTestWithFtp() {
     // DownloadExtensionTest_Download_InvalidURLs2 requires FTP support.
     // TODO(https://crbug.com/333943): Remove FTP tests and FTP feature flags.
-    scoped_feature_list_.InitAndEnableFeature(blink::features::kFtpProtocol);
+    scoped_feature_list_.InitAndEnableFeature(network::features::kFtpProtocol);
   }
 
  private:

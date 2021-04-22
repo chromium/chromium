@@ -31,7 +31,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
-#include "third_party/blink/public/common/features.h"
+#include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 
 // This file tests that net::LoadTimingInfo is correctly hooked up to the
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, Proxy) {
 class LoadTimingBrowserTestWithFtp : public LoadTimingBrowserTest {
  public:
   LoadTimingBrowserTestWithFtp() {
-    scoped_feature_list_.InitAndEnableFeature(blink::features::kFtpProtocol);
+    scoped_feature_list_.InitAndEnableFeature(network::features::kFtpProtocol);
   }
 
  private:

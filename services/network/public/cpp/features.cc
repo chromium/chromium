@@ -220,5 +220,10 @@ const base::Feature kAcceptCHFrame{"AcceptCHFrame",
 const base::Feature kSCTAuditingRetryAndPersistReports{
     "SCTAuditingRetryAndPersistReports", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables support for FTP URLs. When disabled FTP URLs will behave the same as
+// any other URL scheme that's unknown to the UA. See https://crbug.com/333943
+const base::Feature kFtpProtocol{"FtpProtocol",
+                                 base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace network
