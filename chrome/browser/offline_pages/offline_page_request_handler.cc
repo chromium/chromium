@@ -506,18 +506,18 @@ OfflinePageRequestHandler::GetNetworkState() const {
 }
 
 void OfflinePageRequestHandler::Start() {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&OfflinePageRequestHandler::StartAsync,
-                                weak_ptr_factory_.GetWeakPtr()));
-}
-
-void OfflinePageRequestHandler::StartAsync() {
   network_state_ = GetNetworkState();
   if (network_state_ == NetworkState::CONNECTED_NETWORK) {
     delegate_->FallbackToDefault();
     return;
   }
 
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&OfflinePageRequestHandler::StartAsync,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OfflinePageRequestHandler::StartAsync() {
   if (content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
     GetPagesToServeURL(url_, offline_header_, network_state_,
                        delegate_->GetWebContentsGetter(),
