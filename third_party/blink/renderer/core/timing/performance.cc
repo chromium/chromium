@@ -938,6 +938,7 @@ void Performance::UpdatePerformanceObserverFilterOptions() {
 }
 
 void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
+  recordreplay::Assert("Performance::NotifyObserversOfEntry Start");
   DCHECK(entry.EntryTypeEnum() != PerformanceEntry::kEvent ||
          RuntimeEnabledFeatures::EventTimingEnabled(GetExecutionContext()));
   bool observer_found = false;
@@ -950,6 +951,7 @@ void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
   }
   if (observer_found && entry.EntryTypeEnum() == PerformanceEntry::kPaint)
     UseCounter::Count(GetExecutionContext(), WebFeature::kPaintTimingObserved);
+  recordreplay::Assert("Performance::NotifyObserversOfEntry Done");
 }
 
 bool Performance::HasObserverFor(
