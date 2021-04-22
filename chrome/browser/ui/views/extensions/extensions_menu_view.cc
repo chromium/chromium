@@ -42,6 +42,8 @@ ExtensionsMenuView* g_extensions_dialog = nullptr;
 
 constexpr int EXTENSIONS_SETTINGS_ID = 42;
 
+constexpr int kSettingsIconSize = 16;
+
 bool CompareExtensionMenuItemViews(const ExtensionsMenuItemView* a,
                                    const ExtensionsMenuItemView* b) {
   return base::i18n::ToLower(a->view_controller()->GetActionName()) <
@@ -146,15 +148,9 @@ void ExtensionsMenuView::Populate() {
   // TODO(pbos): Consider moving this a footnote view (::SetFootnoteView()).
   // If so this needs to be created before being added to a widget, constructor
   // would do.
-  constexpr int kSettingsIconSize = 16;
   auto footer = CreateBubbleMenuItem(
       EXTENSIONS_SETTINGS_ID, l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSION),
       base::BindRepeating(&chrome::ShowExtensions, browser_, std::string()));
-  footer->SetImage(
-      views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(vector_icons::kSettingsIcon, kSettingsIconSize,
-                            GetNativeTheme()->GetSystemColor(
-                                ui::NativeTheme::kColorId_MenuIconColor)));
 
   // Extension icons are larger-than-favicon as they contain internal padding
   // (space for badging). Add the same padding left and right of the icon to
@@ -171,7 +167,7 @@ void ExtensionsMenuView::Populate() {
   footer->SetImageLabelSpacing(footer->GetImageLabelSpacing() +
                                kSettingsIconHorizontalPadding);
 
-  manage_extensions_button_for_testing_ = footer.get();
+  manage_extensions_button_ = footer.get();
   AddChildView(std::move(footer));
 
   // Add menu items for each extension.
@@ -406,6 +402,17 @@ void ExtensionsMenuView::SanityCheck() {
 std::u16string ExtensionsMenuView::GetAccessibleWindowTitle() const {
   // The title is already spoken via the call to SetTitle().
   return std::u16string();
+}
+
+void ExtensionsMenuView::OnThemeChanged() {
+  BubbleDialogDelegateView::OnThemeChanged();
+  if (manage_extensions_button_) {
+    manage_extensions_button_->SetImage(
+        views::Button::STATE_NORMAL,
+        gfx::CreateVectorIcon(vector_icons::kSettingsIcon, kSettingsIconSize,
+                              GetNativeTheme()->GetSystemColor(
+                                  ui::NativeTheme::kColorId_MenuIconColor)));
+  }
 }
 
 void ExtensionsMenuView::TabChangedAt(content::WebContents* contents,

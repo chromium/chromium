@@ -29,9 +29,7 @@ ExtensionsMenuButton::ExtensionsMenuButton(
       browser_(browser),
       controller_(controller),
       allow_pinning_(allow_pinning) {
-  ConfigureBubbleMenuItem(this, 0);
   controller_->SetDelegate(this);
-  UpdateState();
 }
 
 ExtensionsMenuButton::~ExtensionsMenuButton() = default;
@@ -42,6 +40,11 @@ SkColor ExtensionsMenuButton::GetInkDropBaseColor() const {
 
 bool ExtensionsMenuButton::CanShowIconInToolbar() const {
   return allow_pinning_;
+}
+
+void ExtensionsMenuButton::AddedToWidget() {
+  ConfigureBubbleMenuItem(this, 0);
+  UpdateState();
 }
 
 // ToolbarActionViewDelegateViews:

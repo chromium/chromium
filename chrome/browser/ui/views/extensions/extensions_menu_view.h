@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
@@ -65,8 +66,9 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   GetSortedItemsForSectionForTesting(
       ToolbarActionViewController::PageInteractionStatus status);
 
-  // WidgetDelegate:
+  // views::BubbleDialogDelegateView:
   std::u16string GetAccessibleWindowTitle() const override;
+  void OnThemeChanged() override;
 
   // TabStripModelObserver:
   void TabChangedAt(content::WebContents* contents,
@@ -96,7 +98,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
     return extensions_menu_items_;
   }
   views::Button* manage_extensions_button_for_testing() {
-    return manage_extensions_button_for_testing_;
+    return manage_extensions_button_;
   }
   // Returns a scoped object allowing test dialogs to be created (i.e.,
   // instances of the ExtensionsMenuView that are not created through
@@ -172,7 +174,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
       toolbar_model_observation_{this};
   std::vector<ExtensionsMenuItemView*> extensions_menu_items_;
 
-  views::Button* manage_extensions_button_for_testing_ = nullptr;
+  views::LabelButton* manage_extensions_button_ = nullptr;
 
   // The different sections in the menu.
   Section cant_access_;

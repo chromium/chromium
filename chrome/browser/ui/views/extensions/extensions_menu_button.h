@@ -33,8 +33,10 @@ class ExtensionsMenuButton : public HoverButton,
   ExtensionsMenuButton& operator=(const ExtensionsMenuButton&) = delete;
   ~ExtensionsMenuButton() override;
 
+  // HoverButton:
   SkColor GetInkDropBaseColor() const override;
   bool CanShowIconInToolbar() const override;
+  void AddedToWidget() override;
 
   const std::u16string& label_text_for_testing() const {
     return label()->GetText();
