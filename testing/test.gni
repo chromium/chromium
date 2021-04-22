@@ -110,6 +110,8 @@ template("test") {
     assert(_use_raw_android_executable || enable_java_templates)
 
     if (_use_raw_android_executable) {
+      not_needed(invoker, [ "add_unwind_tables_in_apk" ])
+
       _exec_target = "${target_name}__exec"
       _dist_target = "${target_name}__dist"
       _exec_output =
