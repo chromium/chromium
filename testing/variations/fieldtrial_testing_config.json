@@ -2233,21 +2233,6 @@
             ]
         }
     ],
-    "DecoupleSyncFromAndroidMasterSync": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20201130",
-                    "enable_features": [
-                        "DecoupleSyncFromAndroidMasterSync"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultPassthroughCommandDecoder": [
         {
             "platforms": [

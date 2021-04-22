@@ -56,7 +56,7 @@ const base::Feature kSyncWifiConfigurations{"SyncWifiConfigurations",
 
 // Stops honoring the Android master sync toggle.
 const base::Feature kDecoupleSyncFromAndroidMasterSync{
-    "DecoupleSyncFromAndroidMasterSync", base::FEATURE_DISABLED_BY_DEFAULT};
+    "DecoupleSyncFromAndroidMasterSync", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Allows trusted vault implementation to follow key rotation (including device
 // registration).
