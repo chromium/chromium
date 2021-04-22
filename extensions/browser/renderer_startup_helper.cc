@@ -221,6 +221,24 @@ void RendererStartupHelper::ActivateExtensionInProcess(
   if (!IsExtensionVisibleToContext(extension, process->GetBrowserContext()))
     return;
 
+  // Populate NetworkContext's OriginAccessList for this extension.
+  //
+  // Doing it in ActivateExtensionInProcess rather than in OnExtensionLoaded
+  // ensures that we cover both the regular profile and incognito profiles.  See
+  // also https://crbug.com/1197798.
+  //
+  // This is guaranteed to happen before the extension can make any network
+  // requests (so there is no race) because ActivateExtensionInProcess will
+  // always be called before creating URLLoaderFactory for any extension frames
+  // that might be eventually hosted inside the renderer `process` (this
+  // Browser-side ordering will be replicated within the NetworkService because
+  // SetCorsOriginAccessListsForOrigin and CreateURLLoaderFactory are 2 methods
+  // of the same mojom::NetworkContext interface).
+  util::SetCorsOriginAccessListForExtension(
+      process->GetBrowserContext(), extension,
+      content::BrowserContext::TargetBrowserContexts::kSingleContext,
+      base::DoNothing::Once());
+
   auto remote = process_mojo_map_.find(process);
   if (remote != process_mojo_map_.end()) {
     DCHECK(base::Contains(extension_process_map_[extension.id()], process));
@@ -245,13 +263,6 @@ void RendererStartupHelper::OnExtensionLoaded(const Extension& extension) {
   // return early for performance reasons.
   if (extension.is_theme())
     return;
-
-  // Registers the initial origin access lists to the BrowserContext
-  // (and all related incognito contexts) asynchronously.
-  util::SetCorsOriginAccessListForExtension(
-      browser_context_, extension,
-      content::BrowserContext::TargetBrowserContexts::kSingleContext,
-      base::DoNothing::Once());
 
   // We don't need to include tab permisisons here, since the extension
   // was just loaded.

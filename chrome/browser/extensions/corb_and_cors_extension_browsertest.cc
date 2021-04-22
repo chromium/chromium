@@ -57,6 +57,8 @@
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -214,7 +216,8 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
               // other-without-permission.com.
           ],
           %s
-          "background": {"scripts": ["background_script.js"]}
+          "background": {"scripts": ["background_script.js"]},
+          "web_accessible_resources": [ "page.html" ]
         } )";
     dir_.WriteManifest(base::StringPrintf(
         kManifestTemplate,
@@ -228,7 +231,8 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
           FILE_PATH_LITERAL("content_script.js"),
           CreateFetchScript(resource_to_fetch_from_declarative_content_script));
     }
-    extension_ = LoadExtension(dir_.UnpackedPath());
+    extension_ =
+        LoadExtension(dir_.UnpackedPath(), {.allow_in_incognito = true});
     DCHECK(extension_);
 
     return extension_;
@@ -398,25 +402,26 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
   // Returns the body of the response.
   std::string FetchViaBackgroundPage(const GURL& url,
                                      const Extension* extension,
-                                     Profile* profile) {
+                                     Browser* browser) {
     content::WebContents* background_web_contents =
-        ProcessManager::Get(profile)
+        ProcessManager::Get(browser->profile())
             ->GetBackgroundHostForExtension(extension->id())
             ->host_contents();
-    return FetchViaWebContents(url, background_web_contents);
+    return FetchViaFrame(url, background_web_contents);
   }
   std::string FetchViaBackgroundPage(const GURL& url) {
-    return FetchViaBackgroundPage(url, extension_, browser()->profile());
+    return FetchViaBackgroundPage(url, extension_, browser());
   }
 
-  // Performs a fetch of |url| from |web_contents| (directly, without going
+  // Performs a fetch of `url` from `execution_target` (directly, without going
   // through content scripts).  Returns the body of the response.
-  std::string FetchViaWebContents(const GURL& url,
-                                  content::WebContents* web_contents) {
+  std::string FetchViaFrame(
+      const GURL& url,
+      const content::ToRenderFrameHost& execution_target) {
     return FetchHelper(
-        url,
-        base::BindOnce(&CorbAndCorsExtensionBrowserTest::ExecuteRegularScript,
-                       base::Unretained(this), base::Unretained(web_contents)));
+        url, base::BindOnce(
+                 &CorbAndCorsExtensionBrowserTest::ExecuteRegularScript,
+                 base::Unretained(this), execution_target.render_frame_host()));
   }
 
   // Performs a fetch of |url| from a srcdoc subframe added to |parent_frame|
@@ -433,9 +438,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
     return extension_->GetResourceURL(relative_path);
   }
 
-  url::Origin GetExtensionOrigin() {
-    return url::Origin::Create(extension_->url());
-  }
+  url::Origin GetExtensionOrigin() { return extension_->origin(); }
 
   GURL GetTestPageUrl(const std::string& hostname) {
     // Using the page below avoids a network fetch of /favicon.ico which helps
@@ -467,9 +470,9 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
   //
   // This is an implementation of FetchCallback.
   // Returns true if the script execution started succeessfully.
-  bool ExecuteRegularScript(content::WebContents* web_contents,
+  bool ExecuteRegularScript(content::RenderFrameHost* frame,
                             const std::string& regular_script) {
-    content::ExecuteScriptAsync(web_contents, regular_script);
+    content::ExecuteScriptAsync(frame, regular_script);
 
     // Report artificial success to meet FetchCallback's requirements.
     return true;
@@ -1340,15 +1343,18 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
                                            "" /* expected_response_body */);
 }
 
-// Test that LogInitiatorSchemeBypassingDocumentBlocking exits early for
-// requests that aren't from content scripts.
+// Test that requests from an extension background page use relaxed CORB
+// processing.
 IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
                        FromBackgroundPage_NoSniffXml) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
 
+  // This test covers the default incognito mode (spanning mode) where there is
+  // only a single background page (i.e. no separate incognito background page).
+  EXPECT_FALSE(IncognitoInfo::IsSplitMode(extension()));
+
   // Performs a cross-origin fetch from the background page.
-  base::HistogramTester histograms;
   GURL cross_site_resource(
       embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
   std::string fetch_result = FetchViaBackgroundPage(cross_site_resource);
@@ -1357,26 +1363,133 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   EXPECT_EQ("nosniff.xml - body\n", fetch_result);
 }
 
-// Test that requests from a extension page hosted in a foreground tab use
+// Test that requests from an extension background page use relaxed CORB
+// processing.  This test covers split-mode extensions - see:
+// https://developer.chrome.com/docs/extensions/mv2/manifest/incognito/#split)
+IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+                       FromBackgroundPage_IncognitoSplitMode) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Install a split-mode extension with permission to cross-site.com.
+  TestExtensionDir extension_dir;
+  constexpr char kManifest[] = R"(
+      {
+        "name": "Split-mode CORS-testing extension",
+        "version": "1.0",
+        "manifest_version": 2,
+        "incognito": "split",
+        "permissions": [ "*://cross-site.com/*" ],
+        "background": {
+          "scripts": ["bg_script.js"]
+        }
+      } )";
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("bg_script.js"), R"(
+      if (chrome.extension.inIncognitoContext) {
+          chrome.test.sendMessage('Ready: incognito');
+      } else {
+          chrome.test.sendMessage('Ready: not incognito');
+      } )");
+  const Extension* extension = nullptr;
+  {
+    ExtensionTestMessageListener listener("Ready: not incognito", false);
+    extension = LoadExtension(extension_dir.UnpackedPath(),
+                              {.allow_in_incognito = true});
+    ASSERT_TRUE(extension);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  // This test covers the split-mode incognito mode where there is a separate
+  // background page for the regular profile and a separate background page for
+  // the incognito profile.
+  EXPECT_TRUE(IncognitoInfo::IsSplitMode(extension));
+
+  // Open an incognito window.  (The incognito-specific background host for the
+  // extension will be created after creating a window.)
+  Browser* incognito_browser = nullptr;
+  {
+    ExtensionTestMessageListener listener("Ready: incognito", false);
+    incognito_browser = CreateIncognitoBrowser();
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  // Both the regular and the incognito background pages should be able to
+  // bypass CORS for accessing the `cross_site_resource`.
+  GURL cross_site_resource(
+      embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
+  {
+    SCOPED_TRACE("Regular profile's background page");
+    std::string fetch_result =
+        FetchViaBackgroundPage(cross_site_resource, extension, browser());
+    EXPECT_EQ("nosniff.xml - body\n", fetch_result);
+  }
+  {
+    SCOPED_TRACE("Incognito profile's background page");
+    std::string fetch_result = FetchViaBackgroundPage(
+        cross_site_resource, extension, incognito_browser);
+    EXPECT_EQ("nosniff.xml - body\n", fetch_result);
+  }
+}
+
+// Test that requests from an extension page hosted in a foreground tab use
 // relaxed CORB processing.
 IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
                        FromForegroundPage_NoSniffXml) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
 
-  // Navigate a tab to an extension page.
-  ui_test_utils::NavigateToURL(browser(), GetExtensionResource("page.html"));
-  ASSERT_EQ(GetExtensionOrigin(),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  // This test covers the default incognito mode (spanning mode) where there is
+  // only a single background page (i.e. no separate incognito background page),
+  // but multiple processes (one per profile) for extension frames.
+  EXPECT_FALSE(IncognitoInfo::IsSplitMode(extension()));
 
-  // Test case #1: Fetch from a chrome-extension://... main frame.
+  // Open an extension frame both in the regular window and in a new incognito
+  // window.
+  GURL extension_resource = GetExtensionResource("page.html");
+  ui_test_utils::NavigateToURL(browser(), extension_resource);
+  content::WebContents* incognito_contents = nullptr;
   {
-    // Perform a cross-origin fetch from the foreground extension page.
-    base::HistogramTester histograms;
-    GURL cross_site_resource(
-        embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
+    GURL http_test_page = GetTestPageUrl("fetch-initiator.com");
+    Browser* incognito_browser =
+        OpenURLOffTheRecord(browser()->profile(), http_test_page);
+    incognito_contents =
+        incognito_browser->tab_strip_model()->GetActiveWebContents();
+    ASSERT_EQ(http_test_page, incognito_contents->GetLastCommittedURL());
+
+    // Open an extension *subframe*.  Spanning-mode extensions cannot load in
+    // main frames of incognito tabs as enforced by ExtensionCanLoadInIncognito
+    // in //extensions/browser/extension_protocols.cc and described in
+    // https://developer.chrome.com/docs/extensions/mv2/manifest/incognito/#spanning
+    const char kScriptTemplate[] = R"(
+        var iframe = document.createElement('iframe');
+        iframe.src = $1;
+        document.body.appendChild(iframe);
+    )";
+    {
+      content::TestNavigationObserver navigation_observer(incognito_contents);
+      content::ExecuteScriptAsync(
+          incognito_contents,
+          content::JsReplace(kScriptTemplate, extension_resource));
+      navigation_observer.Wait();
+      ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
+      ASSERT_EQ(extension_resource, navigation_observer.last_navigation_url());
+    }
+  }
+  content::RenderFrameHost* regular_frame =
+      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  ASSERT_EQ(GetExtensionOrigin(), regular_frame->GetLastCommittedOrigin());
+  content::RenderFrameHost* incognito_frame =
+      content::ChildFrameAt(incognito_contents->GetMainFrame(), 0);
+  ASSERT_TRUE(incognito_frame);
+  ASSERT_EQ(GetExtensionOrigin(), incognito_frame->GetLastCommittedOrigin());
+
+  // Test case #1: Fetch from a regular profile's foreground tab.
+  GURL cross_site_resource(
+      embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
+  {
+    SCOPED_TRACE("Regular profile's foreground tab - main frame");
     std::string fetch_result =
-        FetchViaWebContents(cross_site_resource, active_web_contents());
+        FetchViaFrame(cross_site_resource, regular_frame);
 
     // Verify that no blocking occurred.
     EXPECT_EQ("nosniff.xml - body\n", fetch_result);
@@ -1385,12 +1498,87 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Test case #2: Fetch from an about:srcdoc subframe of a
   // chrome-extension://... frame.
   {
-    // Perform a cross-origin fetch from the foreground extension page.
-    base::HistogramTester histograms;
-    GURL cross_site_resource(
-        embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
-    std::string fetch_result = FetchViaSrcDocFrame(
-        cross_site_resource, active_web_contents()->GetMainFrame());
+    SCOPED_TRACE("Regular profile's foreground tab - srcdoc frame");
+    std::string fetch_result =
+        FetchViaSrcDocFrame(cross_site_resource, regular_frame);
+
+    // Verify that no blocking occurred.
+    EXPECT_EQ("nosniff.xml - body\n", fetch_result);
+  }
+
+  // Test case #3: Fetch from an extension subframe in an incognito foreground
+  // tab.
+  {
+    SCOPED_TRACE("Incognito profile's foreground tab - subframe");
+    std::string fetch_result =
+        FetchViaFrame(cross_site_resource, incognito_frame);
+
+    // Verify that no blocking occurred.
+    EXPECT_EQ("nosniff.xml - body\n", fetch_result);
+  }
+}
+
+// Test that requests from an extension page hosted in a foreground tab use
+// relaxed CORB processing.  This test covers split-mode extensions - see:
+// https://developer.chrome.com/docs/extensions/mv2/manifest/incognito/#split
+IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+                       FromForegroundPage_IncognitoSplitMode) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Install a split-mode extension with permission to cross-site.com.
+  TestExtensionDir extension_dir;
+  constexpr char kManifest[] = R"(
+      {
+        "name": "Split-mode CORS-testing extension",
+        "version": "1.0",
+        "manifest_version": 2,
+        "incognito": "split",
+        "permissions": [ "*://cross-site.com/*" ],
+        "background": { "scripts": ["bg_script.js"] }
+      } )";
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("bg_script.js"), "");
+  extension_dir.WriteFile(FILE_PATH_LITERAL("page.html"),
+                          "<body>Hello World!</body>");
+  const Extension* extension =
+      LoadExtension(extension_dir.UnpackedPath(), {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
+
+  // This test covers the split-mode incognito mode where there is a separate
+  // background page for the regular profile and a separate background page for
+  // the incognito profile.
+  EXPECT_TRUE(IncognitoInfo::IsSplitMode(extension));
+
+  // Open an extension tab both in the regular window and in a new incognito
+  // window.
+  GURL extension_page = extension->GetResourceURL("page.html");
+  content::WebContents* regular_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  Browser* incognito_browser =
+      OpenURLOffTheRecord(browser()->profile(), extension_page);
+  ui_test_utils::NavigateToURL(browser(), extension_page);
+  content::WebContents* incognito_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_EQ(extension->origin(),
+            regular_contents->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(extension->origin(),
+            incognito_contents->GetMainFrame()->GetLastCommittedOrigin());
+
+  // Test fetching a cross-site resource.
+  GURL cross_site_resource(
+      embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
+  {
+    SCOPED_TRACE("Regular profile's foreground tab");
+    std::string fetch_result =
+        FetchViaFrame(cross_site_resource, regular_contents);
+
+    // Verify that no blocking occurred.
+    EXPECT_EQ("nosniff.xml - body\n", fetch_result);
+  }
+  {
+    SCOPED_TRACE("Incognito profile's foreground tab");
+    std::string fetch_result =
+        FetchViaFrame(cross_site_resource, incognito_contents);
 
     // Verify that no blocking occurred.
     EXPECT_EQ("nosniff.xml - body\n", fetch_result);
@@ -1458,12 +1646,11 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   {
     // Perform a cross-origin fetch from the foreground extension page.
     // This should be intercepted by the service worker installed above.
-    base::HistogramTester histograms;
     GURL cross_site_resource_intercepted_by_service_worker(
         embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
     std::string fetch_result =
-        FetchViaWebContents(cross_site_resource_intercepted_by_service_worker,
-                            active_web_contents());
+        FetchViaFrame(cross_site_resource_intercepted_by_service_worker,
+                      active_web_contents());
 
     // Verify that no blocking occurred (and that the response really did go
     // through the service worker).
@@ -1480,11 +1667,10 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   {
     // Perform a cross-origin fetch from the foreground extension page.
     // This should be intercepted by the service worker installed above.
-    base::HistogramTester histograms;
     GURL cross_site_resource_ignored_by_service_worker(
         embedded_test_server()->GetURL("other-with-permission.com",
                                        "/nosniff.xml"));
-    std::string fetch_result = FetchViaWebContents(
+    std::string fetch_result = FetchViaFrame(
         cross_site_resource_ignored_by_service_worker, active_web_contents());
 
     // Verify that no blocking occurred.
@@ -2175,8 +2361,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // CORS exception shouldn't be initially granted based on ActiveTab.
   {
     SCOPED_TRACE("TEST STEP 1: Initial fetch.");
-    std::string fetch_result = FetchViaBackgroundPage(
-        cross_site_resource, extension, browser()->profile());
+    std::string fetch_result =
+        FetchViaBackgroundPage(cross_site_resource, extension, browser());
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
   }
 
@@ -2186,8 +2372,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
       ->RunAction(extension, false);
   {
     SCOPED_TRACE("TEST STEP 2: After BrowserAction without granting access.");
-    std::string fetch_result = FetchViaBackgroundPage(
-        cross_site_resource, extension, browser()->profile());
+    std::string fetch_result =
+        FetchViaBackgroundPage(cross_site_resource, extension, browser());
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
   }
 
@@ -2204,8 +2390,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     //    capabilities to the whole extension (rather than forcing the extension
     //    authors to jump through extra hurdles to utilize the new capability).
     SCOPED_TRACE("TEST STEP 3: After granting ActiveTab access.");
-    std::string fetch_result = FetchViaBackgroundPage(
-        cross_site_resource, extension, browser()->profile());
+    std::string fetch_result =
+        FetchViaBackgroundPage(cross_site_resource, extension, browser());
     EXPECT_EQ("nosniff.xml - body\n", fetch_result);
   }
 
@@ -2221,8 +2407,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     SCOPED_TRACE(
         "TEST STEP 4: After navigating the tab cross-document, "
         "but still same-origin.");
-    std::string fetch_result = FetchViaBackgroundPage(
-        cross_site_resource, extension, browser()->profile());
+    std::string fetch_result =
+        FetchViaBackgroundPage(cross_site_resource, extension, browser());
     EXPECT_EQ("nosniff.xml - body\n", fetch_result);
   }
 
@@ -2235,8 +2421,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   ui_test_utils::NavigateToURL(browser(), cross_origin_url);
   {
     SCOPED_TRACE("TEST STEP 5: After navigating the tab cross-origin.");
-    std::string fetch_result = FetchViaBackgroundPage(
-        cross_site_resource, extension, browser()->profile());
+    std::string fetch_result =
+        FetchViaBackgroundPage(cross_site_resource, extension, browser());
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
   }
 }
@@ -2274,19 +2460,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   constexpr char kActiveTabHost[] = "active-tab.example";
   GURL original_document_url =
       embedded_test_server()->GetURL(kActiveTabHost, "/title1.html");
-  Profile* regular_profile = browser()->profile();
-  Profile* incognito_profile = regular_profile->GetPrimaryOTRProfile();
   Browser* incognito_browser =
-      Browser::Create(Browser::CreateParams(incognito_profile, true));
-  {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
-    chrome::AddSelectedTabWithURL(incognito_browser, original_document_url,
-                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-    observer.Wait();
-    incognito_browser->window()->Show();
-  }
+      OpenURLOffTheRecord(browser()->profile(), original_document_url);
 
   // CORS exception shouldn't be initially granted based on ActiveTab.
   GURL cross_site_resource(
@@ -2295,14 +2470,14 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     SCOPED_TRACE("TEST STEP 1: Initial fetch.");
     {
       SCOPED_TRACE("Regular profile's background page");
-      std::string fetch_result = FetchViaBackgroundPage(
-          cross_site_resource, extension, regular_profile);
+      std::string fetch_result =
+          FetchViaBackgroundPage(cross_site_resource, extension, browser());
       EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
     }
     {
       SCOPED_TRACE("Incognito profile's background page");
       std::string fetch_result = FetchViaBackgroundPage(
-          cross_site_resource, extension, incognito_profile);
+          cross_site_resource, extension, incognito_browser);
       EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
     }
   }
@@ -2317,14 +2492,14 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     SCOPED_TRACE("TEST STEP 2: After granting ActiveTab access.");
     {
       SCOPED_TRACE("Regular profile's background page");
-      std::string fetch_result = FetchViaBackgroundPage(
-          cross_site_resource, extension, regular_profile);
+      std::string fetch_result =
+          FetchViaBackgroundPage(cross_site_resource, extension, browser());
       EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
     }
     {
       SCOPED_TRACE("Incognito profile's background page");
       std::string fetch_result = FetchViaBackgroundPage(
-          cross_site_resource, extension, incognito_profile);
+          cross_site_resource, extension, incognito_browser);
       EXPECT_EQ("nosniff.xml - body\n", fetch_result);
     }
   }
@@ -2340,14 +2515,14 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     SCOPED_TRACE("TEST STEP 3: After navigating the tab cross-origin.");
     {
       SCOPED_TRACE("Regular profile's background page");
-      std::string fetch_result = FetchViaBackgroundPage(
-          cross_site_resource, extension, regular_profile);
+      std::string fetch_result =
+          FetchViaBackgroundPage(cross_site_resource, extension, browser());
       EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
     }
     {
       SCOPED_TRACE("Incognito profile's background page");
       std::string fetch_result = FetchViaBackgroundPage(
-          cross_site_resource, extension, incognito_profile);
+          cross_site_resource, extension, incognito_browser);
       EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
     }
   }
@@ -2394,21 +2569,9 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
       embedded_test_server()->GetURL(kRegularHost, "/title2.html");
   GURL regular_resource_url =
       embedded_test_server()->GetURL(kRegularHost, "/nosniff.xml");
-  Profile* regular_profile = browser()->profile();
-  Browser* regular_browser = browser();
-  Profile* incognito_profile = regular_profile->GetPrimaryOTRProfile();
   Browser* incognito_browser =
-      Browser::Create(Browser::CreateParams(incognito_profile, true));
-  {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
-    chrome::AddSelectedTabWithURL(incognito_browser, incognito_page_url,
-                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-    observer.Wait();
-    incognito_browser->window()->Show();
-  }
-  ui_test_utils::NavigateToURL(regular_browser, regular_page_url);
+      OpenURLOffTheRecord(browser()->profile(), incognito_page_url);
+  ui_test_utils::NavigateToURL(browser(), regular_page_url);
 
   // No CORS exception for `kIncognitoHost` should be initially granted based on
   // ActiveTab.
@@ -2416,14 +2579,14 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     SCOPED_TRACE("TEST STEP 1: Initial fetch.");
     {
       SCOPED_TRACE("Regular profile's background page");
-      std::string fetch_result = FetchViaBackgroundPage(
-          incognito_resource_url, extension, regular_profile);
+      std::string fetch_result =
+          FetchViaBackgroundPage(incognito_resource_url, extension, browser());
       EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
     }
     {
       SCOPED_TRACE("Incognito profile's background page");
       std::string fetch_result = FetchViaBackgroundPage(
-          incognito_resource_url, extension, incognito_profile);
+          incognito_resource_url, extension, incognito_browser);
       EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
     }
   }
@@ -2438,14 +2601,14 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     SCOPED_TRACE("TEST STEP 2: After granting 'incognito' ActiveTab access.");
     {
       SCOPED_TRACE("Regular profile's background page");
-      std::string fetch_result = FetchViaBackgroundPage(
-          incognito_resource_url, extension, regular_profile);
+      std::string fetch_result =
+          FetchViaBackgroundPage(incognito_resource_url, extension, browser());
       EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
     }
     {
       SCOPED_TRACE("Incognito profile's background page");
       std::string fetch_result = FetchViaBackgroundPage(
-          incognito_resource_url, extension, incognito_profile);
+          incognito_resource_url, extension, incognito_browser);
       EXPECT_EQ("nosniff.xml - body\n", fetch_result);
     }
   }
@@ -2455,7 +2618,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // (unless there is a bug and we leak incognito permissions to the regular
   // background page).
   content::WebContents* regular_contents =
-      regular_browser->tab_strip_model()->GetActiveWebContents();
+      browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(kRegularHost,
             regular_contents->GetMainFrame()->GetLastCommittedOrigin().host());
   EXPECT_NE(kRegularHost, kIncognitoHost);
@@ -2465,8 +2628,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     SCOPED_TRACE("TEST STEP 3: After granting 'regular' ActiveTab access.");
     {
       SCOPED_TRACE("Regular profile's background page");
-      std::string fetch_result = FetchViaBackgroundPage(
-          incognito_resource_url, extension, regular_profile);
+      std::string fetch_result =
+          FetchViaBackgroundPage(incognito_resource_url, extension, browser());
       // TODO(https://crbug.com/1167262): Change to EXPECT_EQ after fixing the
       // leak of permissions from incognito profile to regular profile.
       EXPECT_NE(kCorsErrorWhenFetching, fetch_result);
@@ -2474,7 +2637,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     {
       SCOPED_TRACE("Incognito profile's background page");
       std::string fetch_result = FetchViaBackgroundPage(
-          incognito_resource_url, extension, incognito_profile);
+          incognito_resource_url, extension, incognito_browser);
       EXPECT_EQ("nosniff.xml - body\n", fetch_result);
     }
   }
@@ -2488,8 +2651,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     SCOPED_TRACE("TEST STEP 4: After closing the incognito tab.");
     {
       SCOPED_TRACE("Regular profile's background page");
-      std::string fetch_result = FetchViaBackgroundPage(
-          incognito_resource_url, extension, regular_profile);
+      std::string fetch_result =
+          FetchViaBackgroundPage(incognito_resource_url, extension, browser());
       // TODO(https://crbug.com/1167262): Change to EXPECT_EQ after fixing the
       // leak of permissions from incognito profile to regular profile.
       EXPECT_NE(kCorsErrorWhenFetching, fetch_result);
@@ -2530,19 +2693,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   constexpr char kActiveTabHost[] = "active-tab.example";
   GURL original_document_url =
       embedded_test_server()->GetURL(kActiveTabHost, "/title1.html");
-  Profile* regular_profile = browser()->profile();
-  Profile* incognito_profile = regular_profile->GetPrimaryOTRProfile();
   Browser* incognito_browser =
-      Browser::Create(Browser::CreateParams(incognito_profile, true));
-  {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
-    chrome::AddSelectedTabWithURL(incognito_browser, original_document_url,
-                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-    observer.Wait();
-    incognito_browser->window()->Show();
-  }
+      OpenURLOffTheRecord(browser()->profile(), original_document_url);
 
   // CORS exception shouldn't be initially granted based on ActiveTab.
   GURL cross_site_resource(
@@ -2551,7 +2703,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     SCOPED_TRACE("TEST STEP 1: Initial fetch.");
     SCOPED_TRACE("Regular profile's background page");
     std::string fetch_result =
-        FetchViaBackgroundPage(cross_site_resource, extension, regular_profile);
+        FetchViaBackgroundPage(cross_site_resource, extension, browser());
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
 
     // There is no separate incognito background page in "spanning" mode.
@@ -2565,7 +2717,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   {
     SCOPED_TRACE("TEST STEP 2: After granting ActiveTab access.");
     std::string fetch_result =
-        FetchViaBackgroundPage(cross_site_resource, extension, regular_profile);
+        FetchViaBackgroundPage(cross_site_resource, extension, browser());
     EXPECT_EQ("nosniff.xml - body\n", fetch_result);
 
     // There is no separate incognito background page in "spanning" mode.
@@ -2581,7 +2733,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   {
     SCOPED_TRACE("TEST STEP 3: After navigating the tab cross-origin.");
     std::string fetch_result =
-        FetchViaBackgroundPage(cross_site_resource, extension, regular_profile);
+        FetchViaBackgroundPage(cross_site_resource, extension, browser());
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
 
     // There is no separate incognito background page in "spanning" mode.
