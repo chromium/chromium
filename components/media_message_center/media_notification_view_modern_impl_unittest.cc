@@ -216,18 +216,19 @@ class MediaNotificationViewModernImplTest : public views::ViewsTestBase {
     return view()->media_controls_container_;
   }
 
-  views::Button* picture_in_picture_button() const {
-    return view()->picture_in_picture_button_for_testing();
-  }
-
   std::vector<views::Button*> media_control_buttons() const {
     std::vector<views::Button*> buttons;
     auto children = view()->media_controls_container_->children();
     std::transform(
         children.begin(), children.end(), std::back_inserter(buttons),
         [](views::View* child) { return views::Button::AsButton(child); });
-    buttons.push_back(views::Button::AsButton(picture_in_picture_button()));
+    buttons.push_back(
+        views::Button::AsButton(view()->picture_in_picture_button_));
     return buttons;
+  }
+
+  views::Button* picture_in_picture_button() const {
+    return view()->picture_in_picture_button_;
   }
 
   MediaControlsProgressView* progress_view() const { return view()->progress_; }
@@ -524,18 +525,20 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest,
   EnableAction(MediaSessionAction::kPlay);
 
   {
-    views::Button* button = GetButtonForAction(MediaSessionAction::kPlay);
-    EXPECT_NE(button, nullptr);
-    EXPECT_EQ(button->tag(), static_cast<int>(MediaSessionAction::kPlay));
+    views::ToggleImageButton* button = static_cast<views::ToggleImageButton*>(
+        GetButtonForAction(MediaSessionAction::kPlay));
+    ASSERT_EQ(views::ToggleImageButton::kViewClassName, button->GetClassName());
+    EXPECT_FALSE(button->GetToggled());
   }
 
   view()->UpdateWithMediaSessionInfo(
       media_session::mojom::MediaSessionInfo::New());
 
   {
-    views::Button* button = GetButtonForAction(MediaSessionAction::kPlay);
-    EXPECT_NE(button, nullptr);
-    EXPECT_EQ(button->tag(), static_cast<int>(MediaSessionAction::kPlay));
+    views::ToggleImageButton* button = static_cast<views::ToggleImageButton*>(
+        GetButtonForAction(MediaSessionAction::kPlay));
+    ASSERT_EQ(views::ToggleImageButton::kViewClassName, button->GetClassName());
+    EXPECT_FALSE(button->GetToggled());
   }
 }
 
@@ -545,9 +548,10 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest,
   EnableAction(MediaSessionAction::kPause);
 
   {
-    views::Button* button = GetButtonForAction(MediaSessionAction::kPlay);
-    EXPECT_NE(button, nullptr);
-    EXPECT_EQ(button->tag(), static_cast<int>(MediaSessionAction::kPlay));
+    views::ToggleImageButton* button = static_cast<views::ToggleImageButton*>(
+        GetButtonForAction(MediaSessionAction::kPlay));
+    ASSERT_EQ(views::ToggleImageButton::kViewClassName, button->GetClassName());
+    EXPECT_FALSE(button->GetToggled());
   }
 
   media_session::mojom::MediaSessionInfoPtr session_info(
@@ -558,9 +562,10 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest,
   view()->UpdateWithMediaSessionInfo(session_info.Clone());
 
   {
-    views::Button* button = GetButtonForAction(MediaSessionAction::kPause);
-    EXPECT_NE(button, nullptr);
-    EXPECT_EQ(button->tag(), static_cast<int>(MediaSessionAction::kPause));
+    views::ToggleImageButton* button = static_cast<views::ToggleImageButton*>(
+        GetButtonForAction(MediaSessionAction::kPause));
+    ASSERT_EQ(views::ToggleImageButton::kViewClassName, button->GetClassName());
+    EXPECT_TRUE(button->GetToggled());
   }
 
   session_info->playback_state =
@@ -568,9 +573,10 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest,
   view()->UpdateWithMediaSessionInfo(session_info.Clone());
 
   {
-    views::Button* button = GetButtonForAction(MediaSessionAction::kPlay);
-    EXPECT_NE(button, nullptr);
-    EXPECT_EQ(button->tag(), static_cast<int>(MediaSessionAction::kPlay));
+    views::ToggleImageButton* button = static_cast<views::ToggleImageButton*>(
+        GetButtonForAction(MediaSessionAction::kPlay));
+    ASSERT_EQ(views::ToggleImageButton::kViewClassName, button->GetClassName());
+    EXPECT_FALSE(button->GetToggled());
   }
 }
 
