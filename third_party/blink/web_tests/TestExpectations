@@ -4979,7 +4979,6 @@ crbug.com/1194557 fast/dom/geometry-interfaces-dom-matrix.html [ Failure Timeout
 crbug.com/1194557 fast/encoding/api/sharedarraybuffer.html [ Failure Timeout ]
 crbug.com/1194557 fast/events/constructors/midi-message-event-constructor.html [ Failure Timeout ]
 crbug.com/1194557 fast/files/blob-constructor.html [ Failure Timeout ]
-crbug.com/1194557 fast/peerconnection/RTCPeerConnection-datachannel.html [ Failure Timeout ]
 crbug.com/1194557 fast/webgl/webgl-sharedarraybuffer.html [ Failure Timeout ]
 crbug.com/1194557 fast/workers/worker-atomics-wait.html [ Failure Timeout ]
 crbug.com/1194557 fast/workers/worker-sharedarraybuffer-transfer.html [ Failure Timeout ]
