@@ -4,6 +4,8 @@
 
 static_library("browser") {
   sources = [
+    "prefs_util.cc",
+    "prefs_util.h",
     "print_composite_client.cc",
     "print_composite_client.h",
     "print_manager.cc",
@@ -20,6 +22,7 @@ static_library("browser") {
     "//build:chromeos_buildflags",
     "//components/crash/core/common",
     "//components/discardable_memory/service",
+    "//components/prefs",
     "//components/printing/common",
     "//components/printing/common:mojo_interfaces",
     "//components/services/print_compositor/public/cpp",

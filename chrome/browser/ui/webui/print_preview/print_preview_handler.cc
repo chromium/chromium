@@ -60,6 +60,7 @@
 #include "components/cloud_devices/common/cloud_devices_urls.h"
 #include "components/cloud_devices/common/printer_description.h"
 #include "components/prefs/pref_service.h"
+#include "components/printing/browser/prefs_util.h"
 #include "components/printing/common/cloud_print_cdd_conversion.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -257,22 +258,6 @@ UserActionBuckets DetermineUserAction(const base::Value& settings) {
   return UserActionBuckets::kPrintToPrinter;
 }
 
-base::Optional<gfx::Size> ParsePaperSize(const base::Value* paper_size_value) {
-  if (!paper_size_value || paper_size_value->DictEmpty())
-    return base::nullopt;
-
-  const base::Value* custom_size =
-      paper_size_value->FindKey(kPaperSizeCustomSize);
-  if (custom_size) {
-    return gfx::Size(*custom_size->FindIntKey(kPaperSizeWidth),
-                     *custom_size->FindIntKey(kPaperSizeHeight));
-  }
-
-  const std::string* name = paper_size_value->FindStringKey(kPaperSizeName);
-  DCHECK(name);
-  return ParsePaper(*name).size_um;
-}
-
 base::Value GetPolicies(const PrefService& prefs) {
   base::Value policies(base::Value::Type::DICTIONARY);
 
@@ -304,18 +289,14 @@ base::Value GetPolicies(const PrefService& prefs) {
     policies.SetKey(kCssBackground, std::move(background_graphics_policy));
 
   base::Value paper_size_policy(base::Value::Type::DICTIONARY);
-  if (prefs.HasPrefPath(prefs::kPrintingPaperSizeDefault)) {
-    base::Optional<gfx::Size> default_paper_size =
-        ParsePaperSize(prefs.Get(prefs::kPrintingPaperSizeDefault));
-    if (default_paper_size.has_value()) {
-      base::Value default_paper_size_value(base::Value::Type::DICTIONARY);
-      default_paper_size_value.SetIntKey(kPaperSizeWidth,
-                                         default_paper_size.value().width());
-      default_paper_size_value.SetIntKey(kPaperSizeHeight,
-                                         default_paper_size.value().height());
-      paper_size_policy.SetKey(kDefaultMode,
-                               std::move(default_paper_size_value));
-    }
+  base::Optional<gfx::Size> default_paper_size = ParsePaperSizeDefault(prefs);
+  if (default_paper_size.has_value()) {
+    base::Value default_paper_size_value(base::Value::Type::DICTIONARY);
+    default_paper_size_value.SetIntKey(kPaperSizeWidth,
+                                       default_paper_size.value().width());
+    default_paper_size_value.SetIntKey(kPaperSizeHeight,
+                                       default_paper_size.value().height());
+    paper_size_policy.SetKey(kDefaultMode, std::move(default_paper_size_value));
   }
   if (!paper_size_policy.DictEmpty())
     policies.SetKey(kMediaSize, std::move(paper_size_policy));
