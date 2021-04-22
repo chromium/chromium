@@ -84,7 +84,7 @@ void InputMethodEngine::FocusIn(
   context_id_ = next_context_id_;
   ++next_context_id_;
 
-  observer_->OnFocus(context_id_, input_context);
+  observer_->OnFocus(active_component_id_, context_id_, input_context);
 }
 
 void InputMethodEngine::FocusOut() {
@@ -95,7 +95,7 @@ void InputMethodEngine::FocusOut() {
 
   int context_id = context_id_;
   context_id_ = -1;
-  observer_->OnBlur(context_id);
+  observer_->OnBlur(active_component_id_, context_id);
 }
 
 void InputMethodEngine::Enable(const std::string& component_id) {

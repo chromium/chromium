@@ -49,9 +49,10 @@ class ImeObserver : public InputMethodEngineBase::Observer {
 
   // InputMethodEngineBase::Observer overrides.
   void OnActivate(const std::string& component_id) override;
-  void OnFocus(int context_id,
+  void OnFocus(const std::string& engine_id,
+               int context_id,
                const IMEEngineHandlerInterface::InputContext& context) override;
-  void OnBlur(int context_id) override;
+  void OnBlur(const std::string& engine_id, int context_id) override;
   void OnKeyEvent(
       const std::string& component_id,
       const ui::KeyEvent& event,

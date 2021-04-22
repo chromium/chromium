@@ -269,7 +269,6 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
         base::BindOnce(&ImeObserver::OnConnected, base::Unretained(this),
                        base::Time::Now(), new_engine_id));
 
-    active_engine_id_ = new_engine_id;
     remote_to_engine_->OnInputMethodChanged(new_engine_id);
 
     if (ShouldRouteToRuleBasedEngine(engine_id)) {
@@ -294,13 +293,14 @@ void NativeInputMethodEngine::ImeObserver::ProcessMessage(
 }
 
 void NativeInputMethodEngine::ImeObserver::OnFocus(
+    const std::string& engine_id,
     int context_id,
     const IMEEngineHandlerInterface::InputContext& context) {
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
     assistive_suggester_->OnFocus(context_id);
   }
   autocorrect_manager_->OnFocus(context_id);
-  if (active_engine_id_ && ShouldRouteToFstMojoEngine(*active_engine_id_)) {
+  if (ShouldRouteToFstMojoEngine(engine_id)) {
     if (remote_to_engine_.is_bound()) {
       remote_to_engine_->OnFocus(ime::mojom::InputFieldInfo::New(
           TextInputTypeToMojoType(context.type),
@@ -310,20 +310,21 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
               : ime::mojom::PersonalizationMode::kDisabled));
     }
   } else {
-    ime_base_observer_->OnFocus(context_id, context);
+    ime_base_observer_->OnFocus(engine_id, context_id, context);
   }
 }
 
-void NativeInputMethodEngine::ImeObserver::OnBlur(int context_id) {
+void NativeInputMethodEngine::ImeObserver::OnBlur(const std::string& engine_id,
+                                                  int context_id) {
   if (assistive_suggester_->IsAssistiveFeatureEnabled())
     assistive_suggester_->OnBlur();
 
-  if (active_engine_id_ && ShouldRouteToFstMojoEngine(*active_engine_id_)) {
+  if (ShouldRouteToFstMojoEngine(engine_id)) {
     if (remote_to_engine_.is_bound()) {
       remote_to_engine_->OnBlur();
     }
   } else {
-    ime_base_observer_->OnBlur(context_id);
+    ime_base_observer_->OnBlur(engine_id, context_id);
   }
 }
 
@@ -596,8 +597,6 @@ void NativeInputMethodEngine::ImeObserver::OnError(base::Time start) {
   } else {
     LogEvent(ImeServiceEvent::kServiceDisconnected);
   }
-
-  active_engine_id_.reset();
 }
 
 void NativeInputMethodEngine::ImeObserver::OnRuleBasedKeyEventResponse(

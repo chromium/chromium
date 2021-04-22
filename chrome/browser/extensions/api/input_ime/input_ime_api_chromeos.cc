@@ -256,6 +256,7 @@ class ImeObserverChromeOS : public ui::ImeObserver {
   }
 
   void OnFocus(
+      const std::string& engine_id,
       int context_id,
       const IMEEngineHandlerInterface::InputContext& context) override {
     if (extension_id_.empty())
@@ -296,7 +297,7 @@ class ImeObserverChromeOS : public ui::ImeObserver {
       return;
     }
 
-    ImeObserver::OnFocus(context_id, context);
+    ImeObserver::OnFocus(engine_id, context_id, context);
   }
 
   void OnAssistiveWindowButtonClicked(

@@ -65,11 +65,12 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
     // Called when a text field gains focus, and will be sending key events.
     // `context_id` is a unique ID given to this focus session.
     virtual void OnFocus(
+        const std::string& engine_id,
         int context_id,
         const IMEEngineHandlerInterface::InputContext& context) = 0;
 
     // Called when a text field loses focus, and will no longer generate events.
-    virtual void OnBlur(int context_id) = 0;
+    virtual void OnBlur(const std::string& engine_id, int context_id) = 0;
 
     // Called when the user pressed a key with a text field focused.
     virtual void OnKeyEvent(

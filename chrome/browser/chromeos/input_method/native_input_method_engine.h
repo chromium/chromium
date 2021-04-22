@@ -95,9 +95,10 @@ class NativeInputMethodEngine
     // InputMethodEngineBase::Observer:
     void OnActivate(const std::string& engine_id) override;
     void OnFocus(
+        const std::string& engine_id,
         int context_id,
         const IMEEngineHandlerInterface::InputContext& context) override;
-    void OnBlur(int context_id) override;
+    void OnBlur(const std::string& engine_id, int context_id) override;
     void OnKeyEvent(
         const std::string& engine_id,
         const ui::KeyEvent& event,
@@ -189,7 +190,6 @@ class NativeInputMethodEngine
     mojo::Remote<ime::mojom::InputEngineManager> remote_manager_;
     mojo::Receiver<ime::mojom::InputChannel> receiver_from_engine_;
     mojo::Remote<ime::mojom::InputChannel> remote_to_engine_;
-    base::Optional<std::string> active_engine_id_;
 
     std::unique_ptr<AssistiveSuggester> assistive_suggester_;
     std::unique_ptr<AutocorrectManager> autocorrect_manager_;

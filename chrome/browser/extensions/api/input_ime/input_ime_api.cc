@@ -154,6 +154,7 @@ void ImeObserver::OnActivate(const std::string& component_id) {
 }
 
 void ImeObserver::OnFocus(
+    const std::string& engine_id,
     int context_id,
     const IMEEngineHandlerInterface::InputContext& context) {
   if (extension_id_.empty() || !HasListener(input_ime::OnFocus::kEventName))
@@ -176,7 +177,7 @@ void ImeObserver::OnFocus(
                            input_ime::OnFocus::kEventName, std::move(args));
 }
 
-void ImeObserver::OnBlur(int context_id) {
+void ImeObserver::OnBlur(const std::string& engine_id, int context_id) {
   if (extension_id_.empty() || !HasListener(input_ime::OnBlur::kEventName))
     return;
 

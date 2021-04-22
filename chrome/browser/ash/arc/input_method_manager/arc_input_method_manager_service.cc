@@ -195,11 +195,14 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
     owner_->OnInputContextHandlerChanged();
   }
   void OnFocus(
+      const std::string& engine_id,
       int context_id,
       const ui::IMEEngineHandlerInterface::InputContext& context) override {
     owner_->Focus(context_id);
   }
-  void OnBlur(int context_id) override { owner_->Blur(); }
+  void OnBlur(const std::string& engine_id, int context_id) override {
+    owner_->Blur();
+  }
   void OnKeyEvent(
       const std::string& engine_id,
       const ui::KeyEvent& event,

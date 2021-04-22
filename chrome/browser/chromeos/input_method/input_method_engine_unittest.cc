@@ -94,11 +94,14 @@ class TestObserver : public InputMethodEngineBase::Observer {
     engine_id_ = engine_id;
   }
   void OnFocus(
+      const std::string& engine_id,
       int context_id,
       const ui::IMEEngineHandlerInterface::InputContext& context) override {
     calls_bitmap_ |= ONFOCUS;
   }
-  void OnBlur(int context_id) override { calls_bitmap_ |= ONBLUR; }
+  void OnBlur(const std::string& engine_id, int context_id) override {
+    calls_bitmap_ |= ONBLUR;
+  }
   void OnKeyEvent(
       const std::string& engine_id,
       const ui::KeyEvent& event,

@@ -28,9 +28,10 @@ class DummyInputMethodEngineObserver
 
   void OnActivate(const std::string& engine_id) override {}
   void OnFocus(
+      const std::string& engine_id,
       int context_id,
       const ui::IMEEngineHandlerInterface::InputContext& context) override {}
-  void OnBlur(int context_id) override {}
+  void OnBlur(const std::string& engine_id, int context_id) override {}
   void OnKeyEvent(
       const std::string& engine_id,
       const ui::KeyEvent& event,
