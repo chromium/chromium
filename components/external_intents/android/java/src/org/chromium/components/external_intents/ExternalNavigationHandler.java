@@ -584,8 +584,7 @@ public class ExternalNavigationHandler {
     /** Wrapper of check against the feature to support overriding for testing. */
     @VisibleForTesting
     boolean blockExternalFormRedirectsWithoutGesture() {
-        return ExternalIntentsFeatureList.isEnabled(
-                ExternalIntentsFeatureList.INTENT_BLOCK_EXTERNAL_FORM_REDIRECT_NO_GESTURE);
+        return ExternalIntentsFeatures.INTENT_BLOCK_EXTERNAL_FORM_REDIRECT_NO_GESTURE.isEnabled();
     }
 
     /**

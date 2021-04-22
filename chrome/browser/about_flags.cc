@@ -203,7 +203,7 @@
 #include "chrome/browser/webapps/android/features.h"
 #include "components/browser_ui/photo_picker/android/features.h"
 #include "components/browser_ui/site_settings/android/features.h"
-#include "components/external_intents/android/external_intents_feature_list.h"
+#include "components/external_intents/android/external_intents_features.h"
 #else  // OS_ANDROID
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
