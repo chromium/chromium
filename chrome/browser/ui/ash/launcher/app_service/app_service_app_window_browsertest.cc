@@ -129,7 +129,7 @@ views::Widget* CreateExoWindow(const std::string& window_app_id) {
   views::Widget* widget = new views::Widget();
   widget->Init(std::move(params));
   // Set app id before showing the window to be recognized in
-  // AppServiceAppWindowLauncherController.
+  // AppServiceAppWindowShelfController.
   exo::SetShellApplicationId(widget->GetNativeWindow(), window_app_id);
   widget->Show();
   widget->Activate();

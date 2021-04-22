@@ -15,7 +15,7 @@
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -30,7 +30,7 @@
 #include "ui/wm/public/activation_client.h"
 
 AppServiceInstanceRegistryHelper::AppServiceInstanceRegistryHelper(
-    AppServiceAppWindowLauncherController* controller)
+    AppServiceAppWindowShelfController* controller)
     : controller_(controller),
       proxy_(apps::AppServiceProxyFactory::GetForProfile(
           controller->owner()->profile())),
@@ -426,12 +426,12 @@ bool AppServiceInstanceRegistryHelper::IsOpenedInBrowser(
     }
   }
 
-  // For Extension apps, and Web apps, AppServiceAppWindowLauncherController
+  // For Extension apps, and Web apps, AppServiceAppWindowShelfController
   // should only handle Chrome apps, managed by extensions::AppWindow, which
   // should set |browser_context| in AppService InstanceRegistry. So if
   // |browser_context| is not null, the app is a Chrome app,
-  // AppServiceAppWindowLauncherController should handle it, otherwise, it is
-  // opened in a browser, and AppServiceAppWindowLauncherController should skip
+  // AppServiceAppWindowShelfController should handle it, otherwise, it is
+  // opened in a browser, and AppServiceAppWindowShelfController should skip
   // them.
   //
   // The window could be teleported from the inactive user's profile to the

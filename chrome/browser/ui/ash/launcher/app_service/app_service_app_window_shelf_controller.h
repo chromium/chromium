@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SERVICE_APP_SERVICE_APP_WINDOW_LAUNCHER_CONTROLLER_H_
-#define CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SERVICE_APP_SERVICE_APP_WINDOW_LAUNCHER_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SERVICE_APP_SERVICE_APP_WINDOW_SHELF_CONTROLLER_H_
+#define CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SERVICE_APP_SERVICE_APP_WINDOW_SHELF_CONTROLLER_H_
 
 #include <map>
 #include <memory>
@@ -31,11 +31,11 @@ class AppWindowBase;
 class ChromeLauncherController;
 class Profile;
 
-// AppServiceAppWindowLauncherController observes the AppService
+// AppServiceAppWindowShelfController observes the AppService
 // InstanceRegistry and the aura window manager. It manages app shelf items,
 // handles adding and removing launcher items from ChromeLauncherController and
 // puts running apps on the Chrome OS shelf.
-class AppServiceAppWindowLauncherController
+class AppServiceAppWindowShelfController
     : public AppWindowShelfController,
       public aura::EnvObserver,
       public aura::WindowObserver,
@@ -44,9 +44,8 @@ class AppServiceAppWindowLauncherController
  public:
   using ProfileList = std::vector<Profile*>;
 
-  explicit AppServiceAppWindowLauncherController(
-      ChromeLauncherController* owner);
-  ~AppServiceAppWindowLauncherController() override;
+  explicit AppServiceAppWindowShelfController(ChromeLauncherController* owner);
+  ~AppServiceAppWindowShelfController() override;
 
   // AppWindowShelfController:
   AppWindowShelfItemController* ControllerForWindow(
@@ -155,7 +154,7 @@ class AppServiceAppWindowLauncherController
   // A list of windows added for users.
   WindowList window_list_;
 
-  DISALLOW_COPY_AND_ASSIGN(AppServiceAppWindowLauncherController);
+  DISALLOW_COPY_AND_ASSIGN(AppServiceAppWindowShelfController);
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SERVICE_APP_SERVICE_APP_WINDOW_LAUNCHER_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SERVICE_APP_SERVICE_APP_WINDOW_SHELF_CONTROLLER_H_

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_item_controller.h"
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/pip/arc_pip_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -23,18 +23,17 @@
 #include "ui/aura/window.h"
 #include "ui/gfx/image/image.h"
 
-AppServiceAppWindowLauncherItemController::
-    AppServiceAppWindowLauncherItemController(
-        const ash::ShelfID& shelf_id,
-        AppServiceAppWindowLauncherController* controller)
+AppServiceAppWindowShelfItemController::AppServiceAppWindowShelfItemController(
+    const ash::ShelfID& shelf_id,
+    AppServiceAppWindowShelfController* controller)
     : AppWindowShelfItemController(shelf_id), controller_(controller) {
   DCHECK(controller_);
 }
 
-AppServiceAppWindowLauncherItemController::
-    ~AppServiceAppWindowLauncherItemController() = default;
+AppServiceAppWindowShelfItemController::
+    ~AppServiceAppWindowShelfItemController() = default;
 
-void AppServiceAppWindowLauncherItemController::ItemSelected(
+void AppServiceAppWindowShelfItemController::ItemSelected(
     std::unique_ptr<ui::Event> event,
     int64_t display_id,
     ash::ShelfLaunchSource source,
@@ -73,7 +72,7 @@ void AppServiceAppWindowLauncherItemController::ItemSelected(
 }
 
 ash::ShelfItemDelegate::AppMenuItems
-AppServiceAppWindowLauncherItemController::GetAppMenuItems(
+AppServiceAppWindowShelfItemController::GetAppMenuItems(
     int event_flags,
     const ItemFilterPredicate& filter_predicate) {
   if (!IsChromeApp()) {
@@ -128,7 +127,7 @@ AppServiceAppWindowLauncherItemController::GetAppMenuItems(
   return AppMenuItems();
 }
 
-void AppServiceAppWindowLauncherItemController::OnWindowTitleChanged(
+void AppServiceAppWindowShelfItemController::OnWindowTitleChanged(
     aura::Window* window) {
   if (!IsChromeApp())
     return;
@@ -162,19 +161,19 @@ void AppServiceAppWindowLauncherItemController::OnWindowTitleChanged(
   }
 }
 
-void AppServiceAppWindowLauncherItemController::AddTaskId(int task_id) {
+void AppServiceAppWindowShelfItemController::AddTaskId(int task_id) {
   task_ids_.insert(task_id);
 }
 
-void AppServiceAppWindowLauncherItemController::RemoveTaskId(int task_id) {
+void AppServiceAppWindowShelfItemController::RemoveTaskId(int task_id) {
   task_ids_.erase(task_id);
 }
 
-bool AppServiceAppWindowLauncherItemController::HasAnyTasks() const {
+bool AppServiceAppWindowShelfItemController::HasAnyTasks() const {
   return !task_ids_.empty();
 }
 
-bool AppServiceAppWindowLauncherItemController::IsChromeApp() {
+bool AppServiceAppWindowShelfItemController::IsChromeApp() {
   Profile* const profile = ChromeLauncherController::instance()->profile();
   return apps::AppServiceProxyFactory::GetForProfile(profile)
              ->AppRegistryCache()

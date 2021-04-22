@@ -25,7 +25,7 @@
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 
 class AppIconLoader;
-class AppServiceAppWindowLauncherController;
+class AppServiceAppWindowShelfController;
 class AppWindowShelfController;
 class BrowserShortcutShelfItemController;
 class BrowserStatusMonitor;
@@ -75,7 +75,7 @@ class ChromeLauncherController
   Profile* profile() const { return profile_; }
   ash::ShelfModel* shelf_model() const { return model_; }
 
-  AppServiceAppWindowLauncherController* app_service_app_window_controller() {
+  AppServiceAppWindowShelfController* app_service_app_window_controller() {
     return app_service_app_window_controller_;
   }
 
@@ -402,7 +402,7 @@ class ChromeLauncherController
   ash::ShelfModel* model_;
 
   // The AppService app window launcher controller.
-  AppServiceAppWindowLauncherController* app_service_app_window_controller_ =
+  AppServiceAppWindowShelfController* app_service_app_window_controller_ =
       nullptr;
 
   // When true, changes to pinned shelf items should update the sync model.

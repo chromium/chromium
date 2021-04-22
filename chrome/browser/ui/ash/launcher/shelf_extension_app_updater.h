@@ -2,25 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_LAUNCHER_EXTENSION_APP_UPDATER_H_
-#define CHROME_BROWSER_UI_ASH_LAUNCHER_LAUNCHER_EXTENSION_APP_UPDATER_H_
+#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_SHELF_EXTENSION_APP_UPDATER_H_
+#define CHROME_BROWSER_UI_ASH_LAUNCHER_SHELF_EXTENSION_APP_UPDATER_H_
 
 #include "base/macros.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/launcher/shelf_app_updater.h"
 #include "extensions/browser/extension_registry_observer.h"
 
-// TODO(khmel): this is not Launcher class. Consider moving this to proper
-// place.
-class LauncherExtensionAppUpdater
-    : public ShelfAppUpdater,
-      public extensions::ExtensionRegistryObserver,
-      public ArcAppListPrefs::Observer {
+class ShelfExtensionAppUpdater : public ShelfAppUpdater,
+                                 public extensions::ExtensionRegistryObserver,
+                                 public ArcAppListPrefs::Observer {
  public:
-  LauncherExtensionAppUpdater(Delegate* delegate,
-                              content::BrowserContext* browser_context,
-                              bool extensions_only);
-  ~LauncherExtensionAppUpdater() override;
+  ShelfExtensionAppUpdater(Delegate* delegate,
+                           content::BrowserContext* browser_context,
+                           bool extensions_only);
+  ~ShelfExtensionAppUpdater() override;
 
   // ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -55,7 +52,7 @@ class LauncherExtensionAppUpdater
   // life-cycle events for both Chrome apps and extensions.
   const bool extensions_only_;
 
-  DISALLOW_COPY_AND_ASSIGN(LauncherExtensionAppUpdater);
+  DISALLOW_COPY_AND_ASSIGN(ShelfExtensionAppUpdater);
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_LAUNCHER_EXTENSION_APP_UPDATER_H_
+#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_SHELF_EXTENSION_APP_UPDATER_H_

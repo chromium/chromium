@@ -24,13 +24,13 @@ namespace content {
 class WebContents;
 }
 
-class AppServiceAppWindowLauncherController;
+class AppServiceAppWindowShelfController;
 
 // The helper class to operate the App Service Instance Registry.
 class AppServiceInstanceRegistryHelper {
  public:
   explicit AppServiceInstanceRegistryHelper(
-      AppServiceAppWindowLauncherController* controller);
+      AppServiceAppWindowShelfController* controller);
   ~AppServiceInstanceRegistryHelper();
 
   void ActiveUserChanged();
@@ -118,7 +118,7 @@ class AppServiceInstanceRegistryHelper {
   // |browser_window_to_tab_window_|.
   void UpdateTabWindow(const std::string& app_id, aura::Window* window);
 
-  AppServiceAppWindowLauncherController* controller_ = nullptr;
+  AppServiceAppWindowShelfController* controller_ = nullptr;
 
   apps::AppServiceProxyChromeOs* proxy_ = nullptr;
 

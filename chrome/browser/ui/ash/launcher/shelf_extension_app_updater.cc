@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/launcher/launcher_extension_app_updater.h"
+#include "chrome/browser/ui/ash/launcher/shelf_extension_app_updater.h"
 
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -10,7 +10,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 
-LauncherExtensionAppUpdater::LauncherExtensionAppUpdater(
+ShelfExtensionAppUpdater::ShelfExtensionAppUpdater(
     Delegate* delegate,
     content::BrowserContext* browser_context,
     bool extensions_only)
@@ -26,7 +26,7 @@ LauncherExtensionAppUpdater::LauncherExtensionAppUpdater(
     prefs->AddObserver(this);
 }
 
-LauncherExtensionAppUpdater::~LauncherExtensionAppUpdater() {
+ShelfExtensionAppUpdater::~ShelfExtensionAppUpdater() {
   StopObservingExtensionRegistry();
 
   if (extensions_only_)
@@ -37,14 +37,14 @@ LauncherExtensionAppUpdater::~LauncherExtensionAppUpdater() {
     prefs->RemoveObserver(this);
 }
 
-void LauncherExtensionAppUpdater::OnExtensionLoaded(
+void ShelfExtensionAppUpdater::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
   if (ShouldHandleExtension(extension))
     delegate()->OnAppInstalled(browser_context, extension->id());
 }
 
-void LauncherExtensionAppUpdater::OnExtensionUnloaded(
+void ShelfExtensionAppUpdater::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     extensions::UnloadedExtensionReason reason) {
@@ -57,7 +57,7 @@ void LauncherExtensionAppUpdater::OnExtensionUnloaded(
     delegate()->OnAppUpdated(browser_context, extension->id());
 }
 
-void LauncherExtensionAppUpdater::OnExtensionUninstalled(
+void ShelfExtensionAppUpdater::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     extensions::UninstallReason reason) {
@@ -65,48 +65,47 @@ void LauncherExtensionAppUpdater::OnExtensionUninstalled(
     delegate()->OnAppUninstalled(browser_context, extension->id());
 }
 
-void LauncherExtensionAppUpdater::OnShutdown(
+void ShelfExtensionAppUpdater::OnShutdown(
     extensions::ExtensionRegistry* registry) {
   DCHECK_EQ(extension_registry_, registry);
   StopObservingExtensionRegistry();
 }
 
-void LauncherExtensionAppUpdater::OnPackageListInitialRefreshed() {
+void ShelfExtensionAppUpdater::OnPackageListInitialRefreshed() {
   const ArcAppListPrefs* prefs = ArcAppListPrefs::Get(browser_context());
   const std::vector<std::string> package_names = prefs->GetPackagesFromPrefs();
   for (const auto& package_name : package_names)
     UpdateEquivalentApp(package_name);
 }
 
-void LauncherExtensionAppUpdater::OnPackageInstalled(
+void ShelfExtensionAppUpdater::OnPackageInstalled(
     const arc::mojom::ArcPackageInfo& package_info) {
   UpdateEquivalentApp(package_info.package_name);
 }
 
-void LauncherExtensionAppUpdater::OnPackageRemoved(
-    const std::string& package_name,
-    bool uninstalled) {
+void ShelfExtensionAppUpdater::OnPackageRemoved(const std::string& package_name,
+                                                bool uninstalled) {
   UpdateEquivalentApp(package_name);
 }
 
-void LauncherExtensionAppUpdater::StartObservingExtensionRegistry() {
+void ShelfExtensionAppUpdater::StartObservingExtensionRegistry() {
   DCHECK(!extension_registry_);
   extension_registry_ = extensions::ExtensionRegistry::Get(browser_context());
   extension_registry_->AddObserver(this);
 }
 
-void LauncherExtensionAppUpdater::StopObservingExtensionRegistry() {
+void ShelfExtensionAppUpdater::StopObservingExtensionRegistry() {
   if (!extension_registry_)
     return;
   extension_registry_->RemoveObserver(this);
   extension_registry_ = nullptr;
 }
 
-void LauncherExtensionAppUpdater::UpdateApp(const std::string& app_id) {
+void ShelfExtensionAppUpdater::UpdateApp(const std::string& app_id) {
   delegate()->OnAppUpdated(browser_context(), app_id);
 }
 
-void LauncherExtensionAppUpdater::UpdateEquivalentApp(
+void ShelfExtensionAppUpdater::UpdateEquivalentApp(
     const std::string& arc_package_name) {
   const std::vector<std::string> extension_ids =
       extensions::util::GetEquivalentInstalledExtensions(browser_context(),
@@ -115,7 +114,7 @@ void LauncherExtensionAppUpdater::UpdateEquivalentApp(
     UpdateApp(iter);
 }
 
-bool LauncherExtensionAppUpdater::ShouldHandleExtension(
+bool ShelfExtensionAppUpdater::ShouldHandleExtension(
     const extensions::Extension* extension) const {
   return !extensions_only_ || extension->is_extension();
 }

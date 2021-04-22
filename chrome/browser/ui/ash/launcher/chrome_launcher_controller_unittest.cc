@@ -67,7 +67,7 @@
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
-#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/arc_app_window.h"
@@ -2141,7 +2141,7 @@ TEST_F(ChromeLauncherControllerWithArcTest, ArcDeferredLaunchForActiveApp) {
   // platform app.
   model_->SetShelfItemDelegate(
       shelf_id,
-      std::make_unique<AppServiceAppWindowLauncherItemController>(
+      std::make_unique<AppServiceAppWindowShelfItemController>(
           shelf_id, launcher_controller_->app_service_app_window_controller()));
   launcher_controller_->SetItemStatus(shelf_id, ash::STATUS_RUNNING);
 
@@ -4053,7 +4053,7 @@ TEST_F(ChromeLauncherControllerTest, MultipleAppIconLoaders) {
                     std::unique_ptr<AppIconLoader>(app_icon_loader2));
 
   launcher_controller_->CreateAppLauncherItem(
-      std::make_unique<AppServiceAppWindowLauncherItemController>(
+      std::make_unique<AppServiceAppWindowShelfItemController>(
           shelf_id3, launcher_controller_->app_service_app_window_controller()),
       ash::STATUS_RUNNING);
   EXPECT_EQ(0, app_icon_loader1->fetch_count());
@@ -4062,7 +4062,7 @@ TEST_F(ChromeLauncherControllerTest, MultipleAppIconLoaders) {
   EXPECT_EQ(0, app_icon_loader2->clear_count());
 
   launcher_controller_->CreateAppLauncherItem(
-      std::make_unique<AppServiceAppWindowLauncherItemController>(
+      std::make_unique<AppServiceAppWindowShelfItemController>(
           shelf_id2, launcher_controller_->app_service_app_window_controller()),
       ash::STATUS_RUNNING);
   EXPECT_EQ(0, app_icon_loader1->fetch_count());
@@ -4071,7 +4071,7 @@ TEST_F(ChromeLauncherControllerTest, MultipleAppIconLoaders) {
   EXPECT_EQ(0, app_icon_loader2->clear_count());
 
   launcher_controller_->CreateAppLauncherItem(
-      std::make_unique<AppServiceAppWindowLauncherItemController>(
+      std::make_unique<AppServiceAppWindowShelfItemController>(
           shelf_id1, launcher_controller_->app_service_app_window_controller()),
       ash::STATUS_RUNNING);
   EXPECT_EQ(1, app_icon_loader1->fetch_count());

@@ -9,7 +9,7 @@
 #include "base/containers/flat_set.h"
 #include "chrome/browser/ui/ash/launcher/crostini_app_display.h"
 
-class AppServiceAppWindowLauncherController;
+class AppServiceAppWindowShelfController;
 
 namespace aura {
 class Window;
@@ -24,7 +24,7 @@ class Permission;
 class AppServiceAppWindowCrostiniTracker {
  public:
   explicit AppServiceAppWindowCrostiniTracker(
-      AppServiceAppWindowLauncherController* app_service_controller);
+      AppServiceAppWindowShelfController* app_service_controller);
   ~AppServiceAppWindowCrostiniTracker();
 
   AppServiceAppWindowCrostiniTracker(
@@ -49,7 +49,7 @@ class AppServiceAppWindowCrostiniTracker {
   void RegisterCrostiniWindowForForceClose(aura::Window* window,
                                            const std::string& app_name);
 
-  AppServiceAppWindowLauncherController* const app_service_controller_;
+  AppServiceAppWindowShelfController* const app_service_controller_;
 
   CrostiniAppDisplay crostini_app_display_;
 

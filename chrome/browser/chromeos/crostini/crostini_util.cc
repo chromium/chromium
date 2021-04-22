@@ -32,7 +32,7 @@
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_crostini_tracker.h"
-#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_item_controller.h"
@@ -154,7 +154,7 @@ void LaunchApplication(
       ChromeLauncherController::instance();
   DCHECK(chrome_launcher_controller);
 
-  AppServiceAppWindowLauncherController* app_service_controller =
+  AppServiceAppWindowShelfController* app_service_controller =
       chrome_launcher_controller->app_service_app_window_controller();
   DCHECK(app_service_controller);
 

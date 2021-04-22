@@ -39,8 +39,8 @@ namespace gfx {
 class ImageSkia;
 }
 
-class AppServiceAppWindowLauncherController;
-class AppServiceAppWindowLauncherItemController;
+class AppServiceAppWindowShelfController;
+class AppServiceAppWindowShelfItemController;
 class ArcAppWindowInfo;
 class Profile;
 
@@ -51,7 +51,7 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
                                       public aura::WindowObserver {
  public:
   explicit AppServiceAppWindowArcTracker(
-      AppServiceAppWindowLauncherController* app_service_controller);
+      AppServiceAppWindowShelfController* app_service_controller);
   ~AppServiceAppWindowArcTracker() override;
 
   AppServiceAppWindowArcTracker(const AppServiceAppWindowArcTracker&) = delete;
@@ -111,7 +111,7 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
   // Maps shelf group id to controller. Shelf group id is optional parameter for
   // the Android task. If it is not set, app id is used instead.
   using ShelfGroupToAppControllerMap =
-      std::map<arc::ArcAppShelfId, AppServiceAppWindowLauncherItemController*>;
+      std::map<arc::ArcAppShelfId, AppServiceAppWindowShelfItemController*>;
 
   // Checks |arc_window_candidates_| and attaches controller when they
   // are ARC app windows and have task id.
@@ -145,7 +145,7 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
                       gfx::ImageSkia icon);
 
   Profile* const observed_profile_;
-  AppServiceAppWindowLauncherController* const app_service_controller_;
+  AppServiceAppWindowShelfController* const app_service_controller_;
 
   TaskIdToArcAppWindowInfo task_id_to_arc_app_window_info_;
   ShelfGroupToAppControllerMap app_shelf_group_to_controller_map_;

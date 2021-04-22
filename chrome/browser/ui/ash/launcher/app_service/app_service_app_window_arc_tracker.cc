@@ -23,8 +23,8 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
 #include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/arc_app_window.h"
@@ -41,7 +41,7 @@ constexpr int kArcAppWindowIconSize = extension_misc::EXTENSION_ICON_MEDIUM;
 }  // namespace
 
 AppServiceAppWindowArcTracker::AppServiceAppWindowArcTracker(
-    AppServiceAppWindowLauncherController* app_service_controller)
+    AppServiceAppWindowShelfController* app_service_controller)
     : observed_profile_(app_service_controller->owner()->profile()),
       app_service_controller_(app_service_controller) {
   DCHECK(observed_profile_);
@@ -418,10 +418,10 @@ void AppServiceAppWindowArcTracker::AttachControllerToTask(int task_id) {
   }
 
   const ash::ShelfID shelf_id(app_shelf_id.ToString());
-  std::unique_ptr<AppServiceAppWindowLauncherItemController> controller =
-      std::make_unique<AppServiceAppWindowLauncherItemController>(
+  std::unique_ptr<AppServiceAppWindowShelfItemController> controller =
+      std::make_unique<AppServiceAppWindowShelfItemController>(
           shelf_id, app_service_controller_);
-  AppServiceAppWindowLauncherItemController* item_controller = controller.get();
+  AppServiceAppWindowShelfItemController* item_controller = controller.get();
 
   if (!app_service_controller_->owner()->GetItem(shelf_id)) {
     app_service_controller_->owner()->CreateAppLauncherItem(

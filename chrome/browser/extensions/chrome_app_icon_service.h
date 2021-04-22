@@ -19,7 +19,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/ash/launcher/launcher_extension_app_updater.h"
+#include "chrome/browser/ui/ash/launcher/shelf_extension_app_updater.h"
 #endif
 
 namespace content {
@@ -108,7 +108,7 @@ class ChromeAppIconService : public KeyedService,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS this handles Chrome app life-cycle events that may change how
   // extension based app icon looks like.
-  std::unique_ptr<LauncherExtensionAppUpdater> app_updater_;
+  std::unique_ptr<ShelfExtensionAppUpdater> app_updater_;
 #endif
 
   // Deletes the icon set for |app_id| from the map if it is empty.

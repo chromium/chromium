@@ -49,7 +49,7 @@
 #include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_arc_tracker.h"
-#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_service/launcher_app_service_app_updater.h"
 #include "chrome/browser/ui/ash/launcher/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_shelf_controller.h"
@@ -58,8 +58,8 @@
 #include "chrome/browser/ui/ash/launcher/browser_status_monitor.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
 #include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
-#include "chrome/browser/ui/ash/launcher/launcher_extension_app_updater.h"
 #include "chrome/browser/ui/ash/launcher/multi_profile_browser_status_monitor.h"
+#include "chrome/browser/ui/ash/launcher/shelf_extension_app_updater.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
@@ -251,9 +251,8 @@ ChromeLauncherController::ChromeLauncherController(Profile* profile,
         std::make_unique<ChromeLauncherControllerUserSwitchObserver>(this);
   }
 
-  std::unique_ptr<AppServiceAppWindowLauncherController>
-      app_service_controller =
-          std::make_unique<AppServiceAppWindowLauncherController>(this);
+  std::unique_ptr<AppServiceAppWindowShelfController> app_service_controller =
+      std::make_unique<AppServiceAppWindowShelfController>(this);
   app_service_app_window_controller_ = app_service_controller.get();
   app_window_controllers_.emplace_back(std::move(app_service_controller));
   if (SessionControllerClientImpl::IsMultiProfileAvailable()) {
@@ -1376,11 +1375,11 @@ void ChromeLauncherController::AddAppUpdaterAndIconLoader(Profile* profile) {
 
     // Some special extensions open new windows, and on Chrome OS, those windows
     // should show the extension icon in the shelf. Extensions are not present
-    // in the App Service, so use LauncherExtensionAppUpdater to handle
+    // in the App Service, so use ShelfExtensionAppUpdater to handle
     // extensions life-cycle events.
-    std::unique_ptr<LauncherExtensionAppUpdater> extension_app_updater(
-        new LauncherExtensionAppUpdater(this, profile,
-                                        true /* extensions_only */));
+    std::unique_ptr<ShelfExtensionAppUpdater> extension_app_updater(
+        new ShelfExtensionAppUpdater(this, profile,
+                                     /*extensions_only=*/true));
     app_updaters_[profile].push_back(std::move(extension_app_updater));
   }
 

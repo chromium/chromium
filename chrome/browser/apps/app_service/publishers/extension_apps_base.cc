@@ -55,7 +55,7 @@
 // and be able to show download progress in the UI, a la
 // ExtensionAppModelBuilder. This might involve using an
 // extensions::InstallTracker. It might also need the equivalent of a
-// LauncherExtensionAppUpdater.
+// ShelfExtensionAppUpdater.
 
 // TODO(crbug.com/826982): consider that, per khmel@, "in some places Chrome
 // apps is not used and raw extension app without any effect is displayed...

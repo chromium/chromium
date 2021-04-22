@@ -22,7 +22,7 @@ ChromeAppIconService* ChromeAppIconService::Get(
 ChromeAppIconService::ChromeAppIconService(content::BrowserContext* context)
     : context_(context) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  app_updater_ = std::make_unique<LauncherExtensionAppUpdater>(
+  app_updater_ = std::make_unique<ShelfExtensionAppUpdater>(
       this, context, false /* extensions_only */);
 #endif
 

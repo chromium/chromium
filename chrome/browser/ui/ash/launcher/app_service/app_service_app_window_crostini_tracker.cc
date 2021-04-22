@@ -21,8 +21,8 @@
 #include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
@@ -71,7 +71,7 @@ void MoveWindowFromOldDisplayToNewDisplay(aura::Window* window,
 }  // namespace
 
 AppServiceAppWindowCrostiniTracker::AppServiceAppWindowCrostiniTracker(
-    AppServiceAppWindowLauncherController* app_service_controller)
+    AppServiceAppWindowShelfController* app_service_controller)
     : app_service_controller_(app_service_controller) {}
 
 AppServiceAppWindowCrostiniTracker::~AppServiceAppWindowCrostiniTracker() =

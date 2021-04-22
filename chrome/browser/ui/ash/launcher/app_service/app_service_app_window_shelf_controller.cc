@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_controller.h"
 
 #include <memory>
 
@@ -26,7 +26,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_arc_tracker.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_crostini_tracker.h"
-#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_item_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
 #include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/arc_app_window.h"
@@ -67,7 +67,7 @@ std::string GetAppId(const std::string& id) {
 
 }  // namespace
 
-AppServiceAppWindowLauncherController::AppServiceAppWindowLauncherController(
+AppServiceAppWindowShelfController::AppServiceAppWindowShelfController(
     ChromeLauncherController* owner)
     : AppWindowShelfController(owner),
       proxy_(apps::AppServiceProxyFactory::GetForProfile(owner->profile())),
@@ -105,8 +105,7 @@ AppServiceAppWindowLauncherController::AppServiceAppWindowLauncherController(
   }
 }
 
-AppServiceAppWindowLauncherController::
-    ~AppServiceAppWindowLauncherController() {
+AppServiceAppWindowShelfController::~AppServiceAppWindowShelfController() {
   aura::Env::GetInstance()->RemoveObserver(this);
 
   // We need to remove all Registry observers for added users.
@@ -121,8 +120,7 @@ AppServiceAppWindowLauncherController::
 }
 
 AppWindowShelfItemController*
-AppServiceAppWindowLauncherController::ControllerForWindow(
-    aura::Window* window) {
+AppServiceAppWindowShelfController::ControllerForWindow(aura::Window* window) {
   if (!window)
     return nullptr;
 
@@ -135,7 +133,7 @@ AppServiceAppWindowLauncherController::ControllerForWindow(
   return app_window->controller();
 }
 
-void AppServiceAppWindowLauncherController::ActiveUserChanged(
+void AppServiceAppWindowShelfController::ActiveUserChanged(
     const std::string& user_email) {
   proxy_ = apps::AppServiceProxyFactory::GetForProfile(owner()->profile());
   // Deactivates the running app windows in InstanceRegistry for the inactive
@@ -157,7 +155,7 @@ void AppServiceAppWindowLauncherController::ActiveUserChanged(
     arc_tracker_->ActiveUserChanged(user_email);
 }
 
-void AppServiceAppWindowLauncherController::AdditionalUserAddedToSession(
+void AppServiceAppWindowShelfController::AdditionalUserAddedToSession(
     Profile* profile) {
   // Each users InstanceRegister needs to be observed.
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
@@ -167,7 +165,7 @@ void AppServiceAppWindowLauncherController::AdditionalUserAddedToSession(
   app_service_instance_helper_->AdditionalUserAddedToSession();
 }
 
-void AppServiceAppWindowLauncherController::OnWindowInitialized(
+void AppServiceAppWindowShelfController::OnWindowInitialized(
     aura::Window* window) {
   // An app window has type WINDOW_TYPE_NORMAL, a WindowDelegate and
   // is a top level views widget. Tooltips, menus, and other kinds of transient
@@ -183,7 +181,7 @@ void AppServiceAppWindowLauncherController::OnWindowInitialized(
     arc_tracker_->AddCandidateWindow(window);
 }
 
-void AppServiceAppWindowLauncherController::OnWindowPropertyChanged(
+void AppServiceAppWindowShelfController::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
@@ -205,7 +203,7 @@ void AppServiceAppWindowLauncherController::OnWindowPropertyChanged(
   RegisterWindow(window, shelf_id);
 }
 
-void AppServiceAppWindowLauncherController::OnWindowVisibilityChanged(
+void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
     aura::Window* window,
     bool visible) {
   // Skip OnWindowVisibilityChanged for ancestors/descendants.
@@ -254,7 +252,7 @@ void AppServiceAppWindowLauncherController::OnWindowVisibilityChanged(
   }
 }
 
-void AppServiceAppWindowLauncherController::OnWindowDestroying(
+void AppServiceAppWindowShelfController::OnWindowDestroying(
     aura::Window* window) {
   DCHECK(observed_windows_.IsObserving(window));
   observed_windows_.Remove(window);
@@ -306,7 +304,7 @@ void AppServiceAppWindowLauncherController::OnWindowDestroying(
   aura_window_to_app_window_.erase(app_window_it);
 }
 
-void AppServiceAppWindowLauncherController::OnWindowActivated(
+void AppServiceAppWindowShelfController::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* new_active,
     aura::Window* old_active) {
@@ -319,7 +317,7 @@ void AppServiceAppWindowLauncherController::OnWindowActivated(
   SetWindowActivated(old_active, /*active*/ false);
 }
 
-void AppServiceAppWindowLauncherController::OnInstanceUpdate(
+void AppServiceAppWindowShelfController::OnInstanceUpdate(
     const apps::InstanceUpdate& update) {
   if (update.IsDestruction()) {
     // For Chrome apps edge case, it could be added for the inactive users, and
@@ -389,18 +387,18 @@ void AppServiceAppWindowLauncherController::OnInstanceUpdate(
   }
 }
 
-void AppServiceAppWindowLauncherController::OnInstanceRegistryWillBeDestroyed(
+void AppServiceAppWindowShelfController::OnInstanceRegistryWillBeDestroyed(
     apps::InstanceRegistry* instance_registry) {
   Observe(nullptr);
 }
 
-int AppServiceAppWindowLauncherController::GetActiveTaskId() const {
+int AppServiceAppWindowShelfController::GetActiveTaskId() const {
   if (arc_tracker_)
     return arc_tracker_->active_task_id();
   return arc::kNoTaskId;
 }
 
-void AppServiceAppWindowLauncherController::UnregisterWindow(
+void AppServiceAppWindowShelfController::UnregisterWindow(
     aura::Window* window) {
   auto app_window_it = aura_window_to_app_window_.find(window);
   if (app_window_it == aura_window_to_app_window_.end())
@@ -408,7 +406,7 @@ void AppServiceAppWindowLauncherController::UnregisterWindow(
   UnregisterAppWindow(app_window_it->second.get());
 }
 
-void AppServiceAppWindowLauncherController::AddWindowToShelf(
+void AppServiceAppWindowShelfController::AddWindowToShelf(
     aura::Window* window,
     const ash::ShelfID& shelf_id) {
   if (base::Contains(aura_window_to_app_window_, window))
@@ -446,28 +444,26 @@ void AppServiceAppWindowLauncherController::AddWindowToShelf(
   AddAppWindowToShelf(app_window);
 }
 
-AppWindowBase* AppServiceAppWindowLauncherController::GetAppWindow(
+AppWindowBase* AppServiceAppWindowShelfController::GetAppWindow(
     aura::Window* window) {
   if (!base::Contains(aura_window_to_app_window_, window))
     return nullptr;
   return aura_window_to_app_window_[window].get();
 }
 
-void AppServiceAppWindowLauncherController::ObserveWindow(
-    aura::Window* window) {
+void AppServiceAppWindowShelfController::ObserveWindow(aura::Window* window) {
   if (!window || observed_windows_.IsObserving(window))
     return;
   observed_windows_.Add(window);
 }
 
-bool AppServiceAppWindowLauncherController::IsObservingWindow(
+bool AppServiceAppWindowShelfController::IsObservingWindow(
     aura::Window* window) {
   DCHECK(window);
   return observed_windows_.IsObserving(window);
 }
 
-std::vector<aura::Window*>
-AppServiceAppWindowLauncherController::GetArcWindows() {
+std::vector<aura::Window*> AppServiceAppWindowShelfController::GetArcWindows() {
   std::vector<aura::Window*> arc_windows;
   std::copy_if(window_list_.begin(), window_list_.end(),
                std::inserter(arc_windows, arc_windows.end()),
@@ -475,7 +471,7 @@ AppServiceAppWindowLauncherController::GetArcWindows() {
   return arc_windows;
 }
 
-void AppServiceAppWindowLauncherController::SetWindowActivated(
+void AppServiceAppWindowShelfController::SetWindowActivated(
     aura::Window* window,
     bool active) {
   if (!window || !observed_windows_.IsObserving(window))
@@ -498,7 +494,7 @@ void AppServiceAppWindowLauncherController::SetWindowActivated(
                                             std::string(), state);
 }
 
-void AppServiceAppWindowLauncherController::RegisterWindow(
+void AppServiceAppWindowShelfController::RegisterWindow(
     aura::Window* window,
     const ash::ShelfID& shelf_id) {
   // Skip when this window has been handled. This can happen when the window
@@ -545,7 +541,7 @@ void AppServiceAppWindowLauncherController::RegisterWindow(
   AddWindowToShelf(window, shelf_id);
 }
 
-void AppServiceAppWindowLauncherController::UnregisterAppWindow(
+void AppServiceAppWindowShelfController::UnregisterAppWindow(
     AppWindowBase* app_window) {
   if (!app_window)
     return;
@@ -557,7 +553,7 @@ void AppServiceAppWindowLauncherController::UnregisterAppWindow(
   app_window->SetController(nullptr);
 }
 
-void AppServiceAppWindowLauncherController::AddAppWindowToShelf(
+void AppServiceAppWindowShelfController::AddAppWindowToShelf(
     AppWindowBase* app_window) {
   const ash::ShelfID shelf_id = app_window->shelf_id();
 
@@ -569,8 +565,8 @@ void AppServiceAppWindowLauncherController::AddAppWindowToShelf(
     return;
   }
 
-  auto controller = std::make_unique<AppServiceAppWindowLauncherItemController>(
-      shelf_id, this);
+  auto controller =
+      std::make_unique<AppServiceAppWindowShelfItemController>(shelf_id, this);
   item_controller = controller.get();
   item_controller->AddWindow(app_window);
   app_window->SetController(item_controller);
@@ -584,7 +580,7 @@ void AppServiceAppWindowLauncherController::AddAppWindowToShelf(
   }
 }
 
-void AppServiceAppWindowLauncherController::RemoveAppWindowFromShelf(
+void AppServiceAppWindowShelfController::RemoveAppWindowFromShelf(
     AppWindowBase* app_window) {
   const ash::ShelfID shelf_id = app_window->shelf_id();
 
@@ -600,7 +596,7 @@ void AppServiceAppWindowLauncherController::RemoveAppWindowFromShelf(
     owner()->CloseLauncherItem(item_controller->shelf_id());
 }
 
-void AppServiceAppWindowLauncherController::OnItemDelegateDiscarded(
+void AppServiceAppWindowShelfController::OnItemDelegateDiscarded(
     ash::ShelfItemDelegate* delegate) {
   for (auto& it : aura_window_to_app_window_) {
     AppWindowBase* app_window = it.second.get();
@@ -620,7 +616,7 @@ void AppServiceAppWindowLauncherController::OnItemDelegateDiscarded(
   }
 }
 
-ash::ShelfID AppServiceAppWindowLauncherController::GetShelfId(
+ash::ShelfID AppServiceAppWindowShelfController::GetShelfId(
     aura::Window* window) const {
   if (crosapi::browser_util::IsLacrosWindow(window))
     return ash::ShelfID(extension_misc::kLacrosAppId);
@@ -671,7 +667,7 @@ ash::ShelfID AppServiceAppWindowLauncherController::GetShelfId(
   return ash::ShelfID();
 }
 
-apps::mojom::AppType AppServiceAppWindowLauncherController::GetAppType(
+apps::mojom::AppType AppServiceAppWindowShelfController::GetAppType(
     const std::string& app_id) const {
   for (auto* profile : profile_list_) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
@@ -683,7 +679,7 @@ apps::mojom::AppType AppServiceAppWindowLauncherController::GetAppType(
   return apps::mojom::AppType::kUnknown;
 }
 
-void AppServiceAppWindowLauncherController::UserHasAppOnActiveDesktop(
+void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
     aura::Window* window,
     const ash::ShelfID& shelf_id,
     content::BrowserContext* browser_context) {
