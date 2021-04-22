@@ -132,16 +132,4 @@
   },
 };
 
-/**
- * TODO(stevenjb): Replace with an interface. b/24294625
- * @typedef {{
- *   i18n: function(string, ...string): string,
- *   i18nAdvanced: function(string, SanitizeInnerHtmlOpts=): string,
- *   i18nDynamic: function(string, string, ...string): string,
- *   i18nExists: function(string),
- *   i18nUpdateLocale: function()
- * }}
- */
-I18nBehavior.Proto;
-
 /* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');
