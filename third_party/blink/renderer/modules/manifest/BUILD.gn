@@ -23,6 +23,7 @@ blink_modules_sources("manifest") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//net",
     "//third_party/blink/renderer/modules/navigatorcontentutils:navigatorcontentutils",
     "//url",
