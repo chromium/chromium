@@ -6809,9 +6809,6 @@ crbug.com/1144171 http/tests/devtools/report-API-errors.js [ Skip ]
 # Sheriff 2020-12-07
 crbug.com/1156175 external/wpt/requestidlecallback/callback-iframe.html [ Pass Timeout ]
 
-# Sheriff 2020-12-08
-crbug.com/1154178 external/wpt/webmessaging/broadcastchannel/basics.html [ Pass Failure ]
-
 # Sheriff 2020-12-11
 # Flaking on Linux Trusty
 crbug.com/1157849 [ Linux Release ] external/wpt/webrtc/RTCPeerConnection-iceConnectionState.https.html [ Pass Timeout ]
