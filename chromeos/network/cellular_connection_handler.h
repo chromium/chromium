@@ -13,7 +13,6 @@
 #include "base/timer/timer.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "chromeos/network/cellular_inhibitor.h"
-#include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "dbus/object_path.h"
 
@@ -24,23 +23,31 @@ class CellularInhibitor;
 class NetworkStateHandler;
 class NetworkState;
 
-// Prepares an eSIM profile for connection. In order to connect to an eSIM
-// profile, the correct SIM slot must be selected, and the relevant profile must
-// be enabled.
+// Prepares cellular networks for connection. Before we can connect to a
+// cellular network, the network must be backed by Shill and must have its
+// Connectable property set to true (meaning that it is the selected SIM
+// profile in its slot).
 //
-// This class goes through a series of steps to ensure that this happens:
-// (1) Check to see if the profile is already enabled; if so, return early.
-// (2) Inhibit cellular scans.
-// (3) Request installed profiles from Hermes.
-// (4) Enable the relevant profile.
-// (5) Request installed profiles again.
-// (6) Uninhibit cellular scans.
-// (7) Wait until the associated NetworkState becomes connectable.
+// For pSIM networks, Chrome OS only supports a single physical SIM slot, so
+// pSIM networks should always have their Connectable properties set to true as
+// long as they are backed by Shill. Shill is expected to create a Service for
+// each pSIM, so the only thing that needs to be done is to wait for that pSIM
+// Service to be created by Shill.
 //
-// Note that if this class receies multiple connection requests, it processes
-// them in a queue.
+// For eSIM networks, it is possible that there are multiple eSIM profiles on a
+// single EUICC; in this case, Connectable == false refers to a disabled eSIM
+// profile which must be enabled via Hermes before a connection can succeed. The
+// steps for an eSIM network are:
+//   (1) Check to see if the profile is already enabled; if so, return early.
+//   (2) Inhibit cellular scans.
+//   (3) Request installed profiles from Hermes.
+//   (4) Enable the relevant profile.
+//   (5) Request installed profiles again.
+//   (6) Uninhibit cellular scans.
+//   (7) Wait until the associated NetworkState becomes connectable.
 //
-// TODO(khorimoto): Adapt this class to support pSIM connections as well.
+// Note that if this class receives multiple connection requests, it processes
+// them in FIFO order.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
     : public NetworkStateHandlerObserver {
  public:
@@ -54,50 +61,54 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
             CellularInhibitor* cellular_inhibitor,
             CellularESimProfileHandler* cellular_esim_profile_handler);
 
-  // Type of success callback for enable profile operations. This callback is
-  // called when enable was successful and profile is ready for connection. The
-  // callback receives path to the network service as argument.
+  // Success callback which receives the network's service path as a parameter.
   typedef base::OnceCallback<void(const std::string&)> SuccessCallback;
 
-  // Enables an eSIM profile to prepare for connecting to it. If successful,
-  // this operation causes the service's "connectable" property to be set to
-  // true. On error, |error_callback| is invoked.
-  void EnableProfileForConnection(
-      const std::string& service_path,
-      SuccessCallback success_callback,
-      network_handler::ErrorCallback error_callback);
+  // Error callback which receives the network's service path as the first
+  // parameter and an error name as the second parameter. If no service path is
+  // available (e.g., if no network with the given ICCID was found), an empty
+  // string is passed as the first parameter.
+  typedef base::OnceCallback<void(const std::string&, const std::string&)>
+      ErrorCallback;
 
-  // Enables a newly installed eSIM profile with |profile_path| on EUICC with
-  // given |euicc_path| to prepare for connecting to it. |inhibit_lock| is the
-  // lock acquired during installation and will be re-used for enable operations
-  // and destroyed before |success_callback| is invoked. If successful, a new
-  // network state corresponding to this profile will have been initialized with
-  // "connectable" property to set to true. On error, |error_callback| is
-  // invoked.
-  void EnableNewProfileForConnection(
+  // Prepares an existing network (i.e., one which has *not* just been
+  // installed) for a connection. Upon success, the network will be backed by
+  // Shill and will be connectable.
+  void PrepareExistingCellularNetworkForConnection(
+      const std::string& iccid,
+      SuccessCallback success_callback,
+      ErrorCallback error_callback);
+
+  // Prepares a newly-installed eSIM profile for connection. This should be
+  // called immediately after installation succeeds so that the profile is
+  // enabled in Hermes. Upon success, the network will be backed by Shill and
+  // will be connectable.
+  void PrepareNewlyInstalledCellularNetworkForConnection(
       const dbus::ObjectPath& euicc_path,
       const dbus::ObjectPath& profile_path,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
       SuccessCallback success_callback,
-      network_handler::ErrorCallback error_callback);
+      ErrorCallback error_callback);
 
  private:
   struct ConnectionRequestMetadata {
+    ConnectionRequestMetadata(const std::string& iccid,
+                              SuccessCallback success_callback,
+                              ErrorCallback error_callback);
     ConnectionRequestMetadata(
+        const dbus::ObjectPath& euicc_path,
+        const dbus::ObjectPath& profile_path,
         std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
-        const base::Optional<std::string>& service_path,
-        const base::Optional<dbus::ObjectPath>& euicc_path,
-        const base::Optional<dbus::ObjectPath>& profile_path,
         SuccessCallback success_callback,
-        network_handler::ErrorCallback error_callback);
+        ErrorCallback error_callback);
     ~ConnectionRequestMetadata();
 
-    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock;
-    base::Optional<std::string> service_path;
+    base::Optional<std::string> iccid;
     base::Optional<dbus::ObjectPath> euicc_path;
     base::Optional<dbus::ObjectPath> profile_path;
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock;
     SuccessCallback success_callback;
-    network_handler::ErrorCallback error_callback;
+    ErrorCallback error_callback;
   };
 
   enum class ConnectionState {
@@ -115,16 +126,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
   // NetworkStateHandlerObserver:
   void NetworkListChanged() override;
   void NetworkPropertiesUpdated(const NetworkState* network) override;
+  void NetworkIdentifierTransitioned(const std::string& old_service_path,
+                                     const std::string& new_service_path,
+                                     const std::string& old_guid,
+                                     const std::string& new_guid) override;
 
   void ProcessRequestQueue();
   void TransitionToConnectionState(ConnectionState state);
 
-  // If |error_name| is null and |service_path| is non null, invokes the success
-  // callback with |service_path|. Otherwise, invokes the error callback with
-  // |error_name|.
-  void CompleteConnectionAttempt(
-      const base::Optional<std::string>& error_name,
-      const base::Optional<std::string>& service_path);
+  // If |error_name| is is non-null, invokes the error callback. If |error_name|
+  // is non-null and a relevant network exists, invokes the success callback.
+  void CompleteConnectionAttempt(const base::Optional<std::string>& error_name);
 
   const NetworkState* GetNetworkStateForCurrentOperation() const;
   base::Optional<dbus::ObjectPath> GetEuiccPathForCurrentOperation() const;
@@ -144,6 +156,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
   void OnUninhibitScanResult(
       const base::Optional<std::string>& error_before_uninhibit,
       bool success);
+  void HandleNetworkPropertiesUpdate();
   void CheckForConnectable();
   void OnWaitForConnectableTimeout();
 
