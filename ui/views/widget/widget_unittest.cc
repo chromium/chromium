@@ -84,6 +84,15 @@ gfx::Point ConvertPointFromWidgetToView(View* view, const gfx::Point& p) {
   return tmp;
 }
 
+std::unique_ptr<ui::test::EventGenerator> CreateEventGenerator(
+    gfx::NativeWindow root_window,
+    gfx::NativeWindow target_window) {
+  auto generator =
+      std::make_unique<ui::test::EventGenerator>(root_window, target_window);
+  generator->set_assume_window_at_origin(false);
+  return generator;
+}
+
 class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
  public:
   explicit TestBubbleDialogDelegateView(View* anchor)
@@ -1784,12 +1793,12 @@ TEST_F(WidgetTest, SynthesizeMouseMoveEvent) {
   View* root_view = widget->GetRootView();
   widget->SetBounds(gfx::Rect(0, 0, 100, 100));
 
-  EventCountView* v1 = new EventCountView();
+  EventCountView* v1 =
+      root_view->AddChildView(std::make_unique<EventCountView>());
   v1->SetBounds(5, 5, 10, 10);
-  root_view->AddChildView(v1);
-  EventCountView* v2 = new EventCountView();
+  EventCountView* v2 =
+      root_view->AddChildView(std::make_unique<EventCountView>());
   v2->SetBounds(5, 15, 10, 10);
-  root_view->AddChildView(v2);
 
   widget->Show();
 
@@ -1798,9 +1807,10 @@ TEST_F(WidgetTest, SynthesizeMouseMoveEvent) {
   EXPECT_EQ(0, v1->GetEventCount(ui::ET_MOUSE_MOVED));
   EXPECT_EQ(0, v2->GetEventCount(ui::ET_MOUSE_MOVED));
 
-  gfx::Point cursor_location(5, 5);
-  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
-  generator.MoveMouseTo(cursor_location);
+  gfx::Point cursor_location(v1->GetBoundsInScreen().CenterPoint());
+  auto generator =
+      CreateEventGenerator(GetContext(), widget->GetNativeWindow());
+  generator->MoveMouseTo(cursor_location);
 
   EXPECT_EQ(1, v1->GetEventCount(ui::ET_MOUSE_MOVED));
   EXPECT_EQ(0, v2->GetEventCount(ui::ET_MOUSE_MOVED));
@@ -1809,7 +1819,7 @@ TEST_F(WidgetTest, SynthesizeMouseMoveEvent) {
   widget->SynthesizeMouseMoveEvent();
   EXPECT_EQ(2, v1->GetEventCount(ui::ET_MOUSE_MOVED));
 
-  delete v1;
+  root_view->RemoveChildViewT(v1);
   EXPECT_EQ(0, v2->GetEventCount(ui::ET_MOUSE_MOVED));
   v2->SetBounds(5, 5, 10, 10);
   EXPECT_EQ(0, v2->GetEventCount(ui::ET_MOUSE_MOVED));
@@ -1847,16 +1857,17 @@ TEST_F(WidgetTest, MouseEventDispatchWhileTouchIsDown) {
   widget->Show();
   widget->SetSize(gfx::Size(300, 300));
 
-  EventCountView* event_count_view = new EventCountView();
+  EventCountView* event_count_view =
+      widget->GetRootView()->AddChildView(std::make_unique<EventCountView>());
   event_count_view->SetBounds(0, 0, 300, 300);
-  widget->GetRootView()->AddChildView(event_count_view);
 
   MousePressEventConsumer consumer;
   event_count_view->AddPostTargetHandler(&consumer);
 
-  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
-  generator.PressTouch();
-  generator.ClickLeftButton();
+  auto generator =
+      CreateEventGenerator(GetContext(), widget->GetNativeWindow());
+  generator->PressTouch();
+  generator->ClickLeftButton();
 
   EXPECT_EQ(1, event_count_view->GetEventCount(ui::ET_MOUSE_PRESSED));
   EXPECT_EQ(1, event_count_view->GetEventCount(ui::ET_MOUSE_RELEASED));
@@ -1874,9 +1885,9 @@ TEST_F(WidgetTest, MousePressCausesCapture) {
   widget->Show();
   widget->SetSize(gfx::Size(300, 300));
 
-  EventCountView* event_count_view = new EventCountView();
+  EventCountView* event_count_view =
+      widget->GetRootView()->AddChildView(std::make_unique<EventCountView>());
   event_count_view->SetBounds(0, 0, 300, 300);
-  widget->GetRootView()->AddChildView(event_count_view);
 
   // No capture has been set.
   EXPECT_EQ(
@@ -1885,8 +1896,10 @@ TEST_F(WidgetTest, MousePressCausesCapture) {
 
   MousePressEventConsumer consumer;
   event_count_view->AddPostTargetHandler(&consumer);
-  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
-  generator.PressLeftButton();
+  auto generator =
+      CreateEventGenerator(GetContext(), widget->GetNativeWindow());
+  generator->MoveMouseTo(widget->GetClientAreaBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
 
   EXPECT_EQ(1, event_count_view->GetEventCount(ui::ET_MOUSE_PRESSED));
   EXPECT_EQ(
@@ -1935,9 +1948,9 @@ TEST_F(WidgetTest, CaptureDuringMousePressNotOverridden) {
   widget->Show();
   widget->SetSize(gfx::Size(300, 300));
 
-  EventCountView* event_count_view = new EventCountView();
+  EventCountView* event_count_view =
+      widget->GetRootView()->AddChildView(std::make_unique<EventCountView>());
   event_count_view->SetBounds(0, 0, 300, 300);
-  widget->GetRootView()->AddChildView(event_count_view);
 
   EXPECT_EQ(
       gfx::kNullNativeView,
@@ -1947,11 +1960,12 @@ TEST_F(WidgetTest, CaptureDuringMousePressNotOverridden) {
   // Gives explicit capture to |widget2|
   CaptureEventConsumer consumer(widget2);
   event_count_view->AddPostTargetHandler(&consumer);
-  ui::test::EventGenerator generator(GetRootWindow(widget),
-                                     widget->GetNativeWindow());
+  auto generator =
+      CreateEventGenerator(GetRootWindow(widget), widget->GetNativeWindow());
+  generator->MoveMouseTo(widget->GetClientAreaBoundsInScreen().CenterPoint());
   // This event should implicitly give capture to |widget|, except that
   // |consumer| will explicitly set capture on |widget2|.
-  generator.PressLeftButton();
+  generator->PressLeftButton();
 
   EXPECT_EQ(1, event_count_view->GetEventCount(ui::ET_MOUSE_PRESSED));
   EXPECT_NE(
@@ -2017,8 +2031,8 @@ TEST_F(WidgetTest, DestroyedWithCaptureViaEventMonitor) {
   // both need to try). Note the regression test would only fail when the
   // SetCapture() handler did _not_ swallow the event, but it still needs to try
   // to close the Widget otherwise it will be left open, which fails elsewhere.
-  ClosingView* closing_view = new ClosingView(widget);
-  widget->GetContentsView()->AddChildView(closing_view);
+  ClosingView* closing_view = widget->GetContentsView()->AddChildView(
+      std::make_unique<ClosingView>(widget));
   widget->SetCapture(closing_view);
 
   ClosingEventObserver closing_event_observer(widget);
@@ -2026,11 +2040,12 @@ TEST_F(WidgetTest, DestroyedWithCaptureViaEventMonitor) {
       &closing_event_observer, widget->GetNativeWindow(),
       {ui::ET_MOUSE_PRESSED});
 
-  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
-  generator.set_target(ui::test::EventGenerator::Target::APPLICATION);
+  auto generator =
+      CreateEventGenerator(GetContext(), widget->GetNativeWindow());
+  generator->set_target(ui::test::EventGenerator::Target::APPLICATION);
 
   EXPECT_FALSE(observer.widget_closed());
-  generator.PressLeftButton();
+  generator->PressLeftButton();
   EXPECT_TRUE(observer.widget_closed());
 }
 
@@ -2227,12 +2242,13 @@ TEST_F(WidgetTest, WidgetDeleted_InOnMousePressed) {
   widget->SetSize(gfx::Size(100, 100));
   widget->Show();
 
-  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
+  auto generator =
+      CreateEventGenerator(GetContext(), widget->GetNativeWindow());
 
   WidgetDeletionObserver deletion_observer(widget);
-  generator.PressLeftButton();
+  generator->PressLeftButton();
   if (deletion_observer.IsWidgetAlive())
-    generator.ReleaseLeftButton();
+    generator->ReleaseLeftButton();
   EXPECT_FALSE(deletion_observer.IsWidgetAlive());
 
   // Yay we did not crash!
@@ -2253,10 +2269,11 @@ TEST_F(WidgetTest, WidgetDeleted_InDispatchGestureEvent) {
   widget->SetSize(gfx::Size(100, 100));
   widget->Show();
 
-  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
+  auto generator =
+      CreateEventGenerator(GetContext(), widget->GetNativeWindow());
 
   WidgetDeletionObserver deletion_observer(widget);
-  generator.GestureTapAt(widget->GetWindowBoundsInScreen().CenterPoint());
+  generator->GestureTapAt(widget->GetWindowBoundsInScreen().CenterPoint());
   EXPECT_FALSE(deletion_observer.IsWidgetAlive());
 
   // Yay we did not crash!
@@ -2481,14 +2498,15 @@ TEST_F(WidgetTest, NoCrashOnWidgetDeleteWithPendingEvents) {
   std::unique_ptr<Widget> widget = CreateTestWidget();
   widget->Show();
 
-  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
-  generator.MoveMouseTo(10, 10);
+  auto generator =
+      CreateEventGenerator(GetContext(), widget->GetNativeWindow());
+  generator->MoveMouseTo(10, 10);
 
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
 #if defined(OS_APPLE)
-  generator.ClickLeftButton();
+  generator->ClickLeftButton();
 #else
-  generator.PressTouch();
+  generator->PressTouch();
 #endif
   widget.reset();
 }
@@ -3383,30 +3401,31 @@ TEST_F(ChildDesktopWidgetTest, IsActiveFromDestroy) {
 // Tests that events propagate through from the dispatcher with the correct
 // event type, and that the different platforms behave the same.
 TEST_F(WidgetTest, MouseEventTypesViaGenerator) {
-  EventCountView* view = new EventCountView;
+  WidgetAutoclosePtr widget(CreateTopLevelFramelessPlatformWidget());
+  EventCountView* view =
+      widget->GetRootView()->AddChildView(std::make_unique<EventCountView>());
   view->set_handle_mode(EventCountView::CONSUME_EVENTS);
   view->SetBounds(10, 10, 50, 40);
-
-  WidgetAutoclosePtr widget(CreateTopLevelFramelessPlatformWidget());
-  widget->GetRootView()->AddChildView(view);
 
   widget->SetBounds(gfx::Rect(0, 0, 100, 80));
   widget->Show();
 
-  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
-  generator.set_current_screen_location(gfx::Point(20, 20));
+  auto generator =
+      CreateEventGenerator(GetContext(), widget->GetNativeWindow());
+  const gfx::Point view_center_point = view->GetBoundsInScreen().CenterPoint();
+  generator->set_current_screen_location(view_center_point);
 
-  generator.ClickLeftButton();
+  generator->ClickLeftButton();
   EXPECT_EQ(1, view->GetEventCount(ui::ET_MOUSE_PRESSED));
   EXPECT_EQ(1, view->GetEventCount(ui::ET_MOUSE_RELEASED));
   EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, view->last_flags());
 
-  generator.PressRightButton();
+  generator->PressRightButton();
   EXPECT_EQ(2, view->GetEventCount(ui::ET_MOUSE_PRESSED));
   EXPECT_EQ(1, view->GetEventCount(ui::ET_MOUSE_RELEASED));
   EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON, view->last_flags());
 
-  generator.ReleaseRightButton();
+  generator->ReleaseRightButton();
   EXPECT_EQ(2, view->GetEventCount(ui::ET_MOUSE_PRESSED));
   EXPECT_EQ(2, view->GetEventCount(ui::ET_MOUSE_RELEASED));
   EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON, view->last_flags());
@@ -3415,32 +3434,34 @@ TEST_F(WidgetTest, MouseEventTypesViaGenerator) {
   EXPECT_EQ(0, view->GetEventCount(ui::ET_MOUSE_MOVED));
   EXPECT_EQ(0, view->GetEventCount(ui::ET_MOUSE_ENTERED));
 
-  // Move the mouse within the view (20, 20) -> (30, 30).
-  generator.MoveMouseTo(gfx::Point(30, 30));
+  // Move the mouse a displacement of (10, 10).
+  generator->MoveMouseTo(view_center_point + gfx::Vector2d(10, 10));
   EXPECT_EQ(1, view->GetEventCount(ui::ET_MOUSE_MOVED));
   EXPECT_EQ(1, view->GetEventCount(ui::ET_MOUSE_ENTERED));
   EXPECT_EQ(ui::EF_NONE, view->last_flags());
 
   // Move it again - entered count shouldn't change.
-  generator.MoveMouseTo(gfx::Point(31, 31));
+  generator->MoveMouseTo(view_center_point + gfx::Vector2d(11, 11));
   EXPECT_EQ(2, view->GetEventCount(ui::ET_MOUSE_MOVED));
   EXPECT_EQ(1, view->GetEventCount(ui::ET_MOUSE_ENTERED));
   EXPECT_EQ(0, view->GetEventCount(ui::ET_MOUSE_EXITED));
 
   // Move it off the view.
-  generator.MoveMouseTo(gfx::Point(5, 5));
+  const gfx::Point out_of_bounds_point =
+      view->GetBoundsInScreen().bottom_right() + gfx::Vector2d(10, 10);
+  generator->MoveMouseTo(out_of_bounds_point);
   EXPECT_EQ(2, view->GetEventCount(ui::ET_MOUSE_MOVED));
   EXPECT_EQ(1, view->GetEventCount(ui::ET_MOUSE_ENTERED));
   EXPECT_EQ(1, view->GetEventCount(ui::ET_MOUSE_EXITED));
 
   // Move it back on.
-  generator.MoveMouseTo(gfx::Point(20, 20));
+  generator->MoveMouseTo(view_center_point);
   EXPECT_EQ(3, view->GetEventCount(ui::ET_MOUSE_MOVED));
   EXPECT_EQ(2, view->GetEventCount(ui::ET_MOUSE_ENTERED));
   EXPECT_EQ(1, view->GetEventCount(ui::ET_MOUSE_EXITED));
 
   // Drargging. Cover HasCapture() and NativeWidgetPrivate::IsMouseButtonDown().
-  generator.DragMouseTo(gfx::Point(40, 40));
+  generator->DragMouseTo(out_of_bounds_point);
   EXPECT_EQ(3, view->GetEventCount(ui::ET_MOUSE_PRESSED));
   EXPECT_EQ(3, view->GetEventCount(ui::ET_MOUSE_RELEASED));
   EXPECT_EQ(1, view->GetEventCount(ui::ET_MOUSE_DRAGGED));
@@ -3777,15 +3798,15 @@ TEST_F(WidgetTest, WidgetRemovalsObserverCalledWhenMovingBetweenWidgets) {
 TEST_F(WidgetTest, MouseWheelEvent) {
   WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
   widget->SetBounds(gfx::Rect(0, 0, 600, 600));
-  EventCountView* event_count_view = new EventCountView();
-  widget->client_view()->AddChildView(event_count_view);
+  EventCountView* event_count_view =
+      widget->client_view()->AddChildView(std::make_unique<EventCountView>());
   event_count_view->SetBounds(0, 0, 600, 600);
   widget->Show();
 
-  ui::test::EventGenerator event_generator(GetContext(),
-                                           widget->GetNativeWindow());
+  auto event_generator =
+      CreateEventGenerator(GetContext(), widget->GetNativeWindow());
 
-  event_generator.MoveMouseWheel(1, 1);
+  event_generator->MoveMouseWheel(1, 1);
   EXPECT_EQ(1, event_count_view->GetEventCount(ui::ET_MOUSEWHEEL));
 }
 
