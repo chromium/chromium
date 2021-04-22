@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 
+import {CrGridElement} from 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
+import {CrSplitterElement} from 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {helloWorld} from 'chrome://resources/js/hello_world.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
@@ -43,7 +47,6 @@ export class TsAppElement extends PolymerElement {
 
   constructor() {
     super();
-
 
     // Try helloWorld().
     this.message = helloWorld() + ' from TypeScript!';
@@ -90,6 +93,15 @@ export class TsAppElement extends PolymerElement {
 
     const dialog = this.shadowRoot!.querySelector('cr-dialog');
     console.log(dialog!.showOnAttach);
+
+    // Try cr_elements/ Polymer dependencies, that use class-based syntax.
+    const grid = document.createElement('cr-grid') as CrGridElement;
+    console.log(grid.columns);
+    this.shadowRoot!.appendChild(grid);
+
+    const splitter = document.createElement('cr-splitter') as CrSplitterElement;
+    console.log(splitter.resizeNextElement);
+    this.shadowRoot!.appendChild(splitter);
   }
 
   disconnectedCallback() {

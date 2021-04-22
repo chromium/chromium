@@ -36,6 +36,7 @@ def main(argv):
   parser.add_argument('--out_dir', required=True)
   parser.add_argument('--root_dir', required=True)
   parser.add_argument('--js_files', nargs='*', required=True)
+  parser.add_argument('--path_mappings', nargs='*')
   args = parser.parse_args(argv)
 
   with open(os.path.join(_HERE_DIR, _TSCONFIG_BASE)) as root_tsconfig:
@@ -47,6 +48,16 @@ def main(argv):
   tsconfig['files'] = [os.path.join(root_dir, f) for f in args.js_files]
   tsconfig['compilerOptions']['rootDir'] = root_dir
   tsconfig['compilerOptions']['outDir'] = out_dir
+
+  # Handle custom path mappings, for example chrome://resources/ URLs.
+  if args.path_mappings is not None:
+    path_mappings = {}
+    for m in args.path_mappings:
+      mapping = m.split('|')
+      if not path_mappings.has_key(mapping[0]):
+        path_mappings[mapping[0]] = []
+      path_mappings[mapping[0]].append(os.path.join('./', mapping[1]))
+    tsconfig['compilerOptions']['paths'] = path_mappings
 
   _write_tsconfig_json(args.gen_dir, tsconfig)
 
