@@ -18,6 +18,7 @@ namespace {
 const char kTokenHandlePref[] = "PasswordTokenHandle";
 const char kTokenHandleStatusPref[] = "TokenHandleStatus";
 const char kTokenHandleLastCheckedPref[] = "TokenHandleLastChecked";
+const char kTokenHandleRotated[] = "TokenHandleRotated";
 
 const char kHandleStatusValid[] = "valid";
 const char kHandleStatusInvalid[] = "invalid";
@@ -96,9 +97,9 @@ bool HasTokenStatusInvalid(const AccountId& account_id) {
 
 }  // namespace
 
-TokenHandleUtil::TokenHandleUtil() {}
+TokenHandleUtil::TokenHandleUtil() = default;
 
-TokenHandleUtil::~TokenHandleUtil() {}
+TokenHandleUtil::~TokenHandleUtil() = default;
 
 // static
 bool TokenHandleUtil::HasToken(const AccountId& account_id) {
@@ -127,7 +128,11 @@ bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) {
 
 // static
 bool TokenHandleUtil::ShouldObtainHandle(const AccountId& account_id) {
-  return !HasToken(account_id) || HasTokenStatusInvalid(account_id);
+  bool token_rotated = false;
+  user_manager::known_user::GetBooleanPref(account_id, kTokenHandleRotated,
+                                           &token_rotated);
+  return !HasToken(account_id) || HasTokenStatusInvalid(account_id) ||
+         !token_rotated;
 }
 
 // static
@@ -176,6 +181,8 @@ void TokenHandleUtil::StoreTokenHandle(const AccountId& account_id,
   user_manager::known_user::SetStringPref(account_id, kTokenHandlePref, handle);
   user_manager::known_user::SetStringPref(account_id, kTokenHandleStatusPref,
                                           kHandleStatusValid);
+  user_manager::known_user::SetBooleanPref(account_id, kTokenHandleRotated,
+                                           true);
   user_manager::known_user::SetPref(account_id, kTokenHandleLastCheckedPref,
                                     util::TimeToValue(base::Time::Now()));
 }
