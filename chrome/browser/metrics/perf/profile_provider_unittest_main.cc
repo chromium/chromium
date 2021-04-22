@@ -260,12 +260,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
 };
 
 // Flaky on chromeos: crbug.com/1184119
-#if defined(OS_CHROMEOS)
-#define MAYBE_SuspendDone DISABLED_SuspendDone
-#else
-#define MAYBE_SuspendDone SuspendDone
-#endif
-TEST_F(ProfileProviderRealCollectionTest, MAYBE_SuspendDone) {
+TEST_F(ProfileProviderRealCollectionTest, SuspendDone) {
   // Trigger a resume from suspend.
   profile_provider_->SuspendDone(base::TimeDelta::FromMinutes(10));
 
@@ -286,12 +281,7 @@ TEST_F(ProfileProviderRealCollectionTest, SessionRestoreDone) {
 }
 
 // Flaky on Chrome OS: crbug.com/1188498.
-#if defined(OS_CHROMEOS)
-#define MAYBE_OnJankStarted DISABLED_OnJankStarted
-#else
-#define MAYBE_OnJankStarted OnJankStarted
-#endif
-TEST_F(ProfileProviderRealCollectionTest, MAYBE_OnJankStarted) {
+TEST_F(ProfileProviderRealCollectionTest, OnJankStarted) {
   // Trigger a resume from suspend.
   profile_provider_->OnJankStarted();
 
