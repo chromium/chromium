@@ -292,7 +292,7 @@ void FakeCameraStream::SetBufferCollection(
   // Duplicate the token to access from the stream.
   fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken> local_token;
   zx_status_t status =
-      token->Duplicate(/*rights_attenuation_mask=*/0, local_token.NewRequest());
+      token->Duplicate(ZX_RIGHT_SAME_RIGHTS, local_token.NewRequest());
   EXPECT_EQ(status, ZX_OK);
 
   fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken> failed_token;
