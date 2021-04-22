@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <body>
-    <video src="../tulip2.webm" />
+    <video src="../tulip2.webm" loop=true />
   </body>
 
   <script>
@@ -29,6 +29,12 @@
     }
 
     async function play() {
+      await video.play();
+      return true;
+    }
+
+    async function updateVideoSrcAndPlay() {
+      video.src="../tulip2.webm";
       await video.play();
       return true;
     }

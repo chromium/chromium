@@ -42,10 +42,12 @@ class PictureInPictureSession : public blink::mojom::PictureInPictureSession {
 
   // blink::mojom::PictureInPictureSession interface.
   void Stop(StopCallback callback) final;
-  void Update(uint32_t player_id,
-              const base::Optional<viz::SurfaceId>& surface_id,
-              const gfx::Size& natural_size,
-              bool show_play_pause_button) final;
+  void Update(
+      uint32_t player_id,
+      mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
+      const base::Optional<viz::SurfaceId>& surface_id,
+      const gfx::Size& natural_size,
+      bool show_play_pause_button) final;
 
   void NotifyWindowResized(const gfx::Size& size);
 
