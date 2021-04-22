@@ -42,6 +42,11 @@ void MediaStreamAudioTrackUnderlyingSource::DisconnectFromTrack() {
   track_.Clear();
 }
 
+void MediaStreamAudioTrackUnderlyingSource::ContextDestroyed() {
+  AudioFrameQueueUnderlyingSource::ContextDestroyed();
+  DisconnectFromTrack();
+}
+
 void MediaStreamAudioTrackUnderlyingSource::Trace(Visitor* visitor) const {
   visitor->Trace(media_stream_track_processor_);
   visitor->Trace(track_);

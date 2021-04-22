@@ -253,4 +253,25 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest, QueueSizeCannotBeZero) {
   track->stopTrack(v8_scope.GetExecutionContext());
 }
 
+TEST_F(MediaStreamAudioTrackUnderlyingSourceTest, PlatformSourceAliveAfterGC) {
+  // This persistent is used to make |track->Component()| (and its
+  // MediaStreamAudioTrack) outlive |v8_scope| and stay alive after GC.
+  Persistent<MediaStreamComponent> component;
+  {
+    V8TestingScope v8_scope;
+    auto* track = CreateTrack(v8_scope.GetExecutionContext());
+    component = track->Component();
+    auto* source = CreateSource(v8_scope.GetScriptState(), track);
+    ReadableStream::CreateWithCountQueueingStrategy(v8_scope.GetScriptState(),
+                                                    source, 0);
+    // |source| is a sink of |track|.
+    EXPECT_TRUE(source->Track());
+  }
+  blink::WebHeap::CollectAllGarbageForTesting();
+  // At this point, if |source| were still a sink of the MediaStreamAudioTrack
+  // owned by |component|, the MediaStreamAudioTrack cleanup would crash since
+  // it would try to access |source|, which has been garbage collected.
+  // A scenario like this one could occur when an execution context is detached.
+}
+
 }  // namespace blink
