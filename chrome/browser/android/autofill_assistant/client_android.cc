@@ -203,8 +203,9 @@ void ClientAndroid::FetchWebsiteActions(
   base::android::ScopedJavaGlobalRef<jobject> scoped_jcallback(env, jcallback);
   controller_->Track(
       ui_controller_android_utils::CreateTriggerContext(
-          env, jexperiment_ids, jparameter_names, jparameter_values,
-          /* is_cct = */ false, /* onboarding_shown = */ false,
+          env, web_contents_, jexperiment_ids, jparameter_names,
+          jparameter_values,
+          /* onboarding_shown = */ false,
           /* is_direct_action = */ true,
           /* jinitial_url = */ nullptr),
       base::BindOnce(&ClientAndroid::OnFetchWebsiteActions,
@@ -323,8 +324,8 @@ bool ClientAndroid::PerformDirectAction(
       base::android::ConvertJavaStringToUTF8(env, jaction_name);
 
   auto trigger_context = ui_controller_android_utils::CreateTriggerContext(
-      env, jexperiment_ids, jparameter_names, jparameter_values,
-      /* is_cct = */ false, /* onboarding_shown = */ false,
+      env, web_contents_, jexperiment_ids, jparameter_names, jparameter_values,
+      /* onboarding_shown = */ false,
       /* is_direct_action = */ true,
       /* jinitial_url = */ nullptr);
 

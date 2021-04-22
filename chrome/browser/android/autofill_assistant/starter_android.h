@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/onboarding_result.h"
 #include "components/autofill_assistant/browser/starter.h"
@@ -67,6 +68,15 @@ class StarterAndroid : public StarterPlatformDelegate,
   bool GetProactiveHelpSettingEnabled() const override;
   void SetProactiveHelpSettingEnabled(bool enabled) override;
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
+  bool GetIsCustomTab() const override;
+
+  // Called by Java to start an autofill-assistant flow for an incoming intent.
+  void Start(JNIEnv* env,
+             const base::android::JavaParamRef<jobject>& jcaller,
+             const base::android::JavaRef<jstring>& jexperiment_ids,
+             const base::android::JavaRef<jobjectArray>& jparameter_names,
+             const base::android::JavaRef<jobjectArray>& jparameter_values,
+             const base::android::JavaRef<jstring>& jinitial_url);
 
   // Called by Java to start an autofill-assistant flow for an incoming intent.
   void Start(JNIEnv* env,
@@ -94,6 +104,12 @@ class StarterAndroid : public StarterPlatformDelegate,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,
       jboolean is_interactable);
+
+  // Called by Java when the activity attachment of the tab has changed, such as
+  // when transitioning from a custom tab to a regular tab.
+  void OnActivityAttachmentChanged(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller);
 
  private:
   friend class content::WebContentsUserData<StarterAndroid>;

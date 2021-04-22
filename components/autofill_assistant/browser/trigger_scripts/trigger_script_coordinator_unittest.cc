@@ -902,7 +902,7 @@ TEST_F(TriggerScriptCoordinatorTest, OnProactiveHelpSettingDisabled) {
               Run(Metrics::LiteScriptFinishedState::
                       LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING,
                   _, _));
-  fake_platform_delegate_.proactive_help_enabled = false;
+  fake_platform_delegate_.proactive_help_enabled_ = false;
   SimulateWebContentsInteractabilityChanged(false);
   SimulateWebContentsInteractabilityChanged(true);
   AssertRecordedFinishedState(UNSPECIFIED_TRIGGER_UI_TYPE,
@@ -966,8 +966,8 @@ TEST_F(TriggerScriptCoordinatorTest, OnboardingShownAndAccepted) {
       .WillRepeatedly(RunOnceCallback<1>());
   EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).Times(1);
   fake_platform_delegate_.is_first_time_user_ = false;
-  fake_platform_delegate_.show_onboarding_result = OnboardingResult::ACCEPTED;
-  fake_platform_delegate_.show_onboarding_result_shown = true;
+  fake_platform_delegate_.show_onboarding_result_ = OnboardingResult::ACCEPTED;
+  fake_platform_delegate_.show_onboarding_result_shown_ = true;
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
 
@@ -977,7 +977,7 @@ TEST_F(TriggerScriptCoordinatorTest, OnboardingShownAndAccepted) {
           testing::Optional(response.trigger_scripts(0))));
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
 
-  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called, Eq(1));
+  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(1));
   AssertRecordedLiteScriptOnboardingState(
       CART_RETURNING_USER,
       Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_ACCEPTED,
@@ -1008,16 +1008,17 @@ TEST_F(TriggerScriptCoordinatorTest,
                       mock_callback_.Get());
 
   EXPECT_CALL(mock_callback_, Run).Times(0);
-  fake_platform_delegate_.show_onboarding_result = OnboardingResult::REJECTED;
-  fake_platform_delegate_.show_onboarding_result_shown = true;
+  fake_platform_delegate_.show_onboarding_result_ = OnboardingResult::REJECTED;
+  fake_platform_delegate_.show_onboarding_result_shown_ = true;
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
 
-  fake_platform_delegate_.show_onboarding_result = OnboardingResult::DISMISSED;
-  fake_platform_delegate_.show_onboarding_result_shown = true;
+  fake_platform_delegate_.show_onboarding_result_ = OnboardingResult::DISMISSED;
+  fake_platform_delegate_.show_onboarding_result_shown_ = true;
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
 
-  fake_platform_delegate_.show_onboarding_result = OnboardingResult::NAVIGATION;
-  fake_platform_delegate_.show_onboarding_result_shown = true;
+  fake_platform_delegate_.show_onboarding_result_ =
+      OnboardingResult::NAVIGATION;
+  fake_platform_delegate_.show_onboarding_result_shown_ = true;
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
 
   EXPECT_CALL(
@@ -1025,11 +1026,11 @@ TEST_F(TriggerScriptCoordinatorTest,
       Run(Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED, _,
           testing::Optional(response.trigger_scripts(0))));
   EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(0);
-  fake_platform_delegate_.show_onboarding_result = OnboardingResult::ACCEPTED;
-  fake_platform_delegate_.show_onboarding_result_shown = true;
+  fake_platform_delegate_.show_onboarding_result_ = OnboardingResult::ACCEPTED;
+  fake_platform_delegate_.show_onboarding_result_shown_ = true;
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
 
-  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called, Eq(4));
+  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(4));
   AssertRecordedLiteScriptOnboardingState(
       CART_RETURNING_USER,
       Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED,
@@ -1073,11 +1074,11 @@ TEST_F(TriggerScriptCoordinatorTest,
                   _, _));
   EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(1);
   EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).Times(0);
-  fake_platform_delegate_.show_onboarding_result = OnboardingResult::REJECTED;
-  fake_platform_delegate_.show_onboarding_result_shown = true;
+  fake_platform_delegate_.show_onboarding_result_ = OnboardingResult::REJECTED;
+  fake_platform_delegate_.show_onboarding_result_shown_ = true;
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
 
-  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called, Eq(1));
+  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(1));
   AssertRecordedLiteScriptOnboardingState(
       CART_RETURNING_USER,
       Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED,
@@ -1109,7 +1110,7 @@ TEST_F(TriggerScriptCoordinatorTest, OnboardingNotShown) {
           _));
   EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).Times(0);
   fake_platform_delegate_.onboarding_accepted_ = true;
-  fake_platform_delegate_.show_onboarding_result_shown = false;
+  fake_platform_delegate_.show_onboarding_result_shown_ = false;
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
 
   AssertRecordedLiteScriptOnboardingState(

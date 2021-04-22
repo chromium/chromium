@@ -84,7 +84,7 @@ public class Starter extends EmptyTabObserver implements UserData {
         StarterJni.get().start(mNativeStarter, Starter.this, triggerContext.getExperimentIds(),
                 triggerContext.getParameters().keySet().toArray(new String[0]),
                 triggerContext.getParameters().values().toArray(new String[0]),
-                triggerContext.isCustomTab(), triggerContext.getInitialUrl());
+                triggerContext.getInitialUrl());
     }
 
     /**
@@ -131,6 +131,7 @@ public class Starter extends EmptyTabObserver implements UserData {
     @Override
     public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
         detectWebContentsChange(tab);
+        safeNativeOnActivityAttachmentChanged();
     }
 
     @Override
@@ -159,6 +160,14 @@ public class Starter extends EmptyTabObserver implements UserData {
         }
 
         StarterJni.get().onInteractabilityChanged(mNativeStarter, Starter.this, isInteractable);
+    }
+
+    private void safeNativeOnActivityAttachmentChanged() {
+        if (mNativeStarter == 0) {
+            return;
+        }
+
+        StarterJni.get().onActivityAttachmentChanged(mNativeStarter, Starter.this);
     }
 
     @CalledByNative
@@ -277,8 +286,8 @@ public class Starter extends EmptyTabObserver implements UserData {
                 long nativeStarterAndroid, Starter caller, boolean shown, int result);
         void onInteractabilityChanged(
                 long nativeStarterAndroid, Starter caller, boolean isInteractable);
+        void onActivityAttachmentChanged(long nativeStarterAndroid, Starter caller);
         void start(long nativeStarterAndroid, Starter caller, String experimentIds,
-                String[] parameterNames, String[] parameterValues, boolean isCCT,
-                String initialUrl);
+                String[] parameterNames, String[] parameterValues, String initialUrl);
     }
 }

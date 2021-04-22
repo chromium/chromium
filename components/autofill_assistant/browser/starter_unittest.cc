@@ -99,8 +99,9 @@ class StarterTest : public content::RenderViewHostTestHarness {
     fake_platform_delegate_.onboarding_accepted_ = false;
     fake_platform_delegate_.feature_module_installation_result_ = Metrics::
         FeatureModuleInstallation::DFM_FOREGROUND_INSTALLATION_SUCCEEDED;
-    fake_platform_delegate_.show_onboarding_result_shown = true;
-    fake_platform_delegate_.show_onboarding_result = OnboardingResult::ACCEPTED;
+    fake_platform_delegate_.show_onboarding_result_shown_ = true;
+    fake_platform_delegate_.show_onboarding_result_ =
+        OnboardingResult::ACCEPTED;
   }
 
   void SetupPlatformDelegateForReturningUser() {
@@ -297,8 +298,9 @@ TEST_F(StarterTest, RegularStartupForReturningUsersSucceeds) {
           std::make_unique<ScriptParameters>(script_parameters), options),
       mock_callback_.Get());
 
-  EXPECT_THAT(fake_platform_delegate_.num_install_feature_module_called, Eq(0));
-  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called, Eq(0));
+  EXPECT_THAT(fake_platform_delegate_.num_install_feature_module_called_,
+              Eq(0));
+  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(0));
   EXPECT_THAT(fake_platform_delegate_.GetOnboardingAccepted(), Eq(true));
   EXPECT_FALSE(UkmLiteScriptStarted());
   EXPECT_FALSE(UkmLiteScriptFinished());
@@ -331,8 +333,9 @@ TEST_F(StarterTest, RegularStartupForFirstTimeUsersSucceeds) {
           std::make_unique<ScriptParameters>(script_parameters), options),
       mock_callback_.Get());
 
-  EXPECT_THAT(fake_platform_delegate_.num_install_feature_module_called, Eq(1));
-  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called, Eq(1));
+  EXPECT_THAT(fake_platform_delegate_.num_install_feature_module_called_,
+              Eq(1));
+  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(1));
   EXPECT_THAT(fake_platform_delegate_.GetOnboardingAccepted(), Eq(true));
   EXPECT_FALSE(UkmLiteScriptStarted());
   EXPECT_FALSE(UkmLiteScriptFinished());
@@ -364,8 +367,9 @@ TEST_F(StarterTest, RegularStartupFailsIfDfmInstallationFails) {
           std::make_unique<ScriptParameters>(script_parameters), options),
       mock_callback_.Get());
 
-  EXPECT_THAT(fake_platform_delegate_.num_install_feature_module_called, Eq(1));
-  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called, Eq(0));
+  EXPECT_THAT(fake_platform_delegate_.num_install_feature_module_called_,
+              Eq(1));
+  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(0));
   EXPECT_THAT(fake_platform_delegate_.GetOnboardingAccepted(), Eq(false));
   EXPECT_FALSE(UkmLiteScriptStarted());
   EXPECT_FALSE(UkmLiteScriptFinished());
@@ -381,7 +385,7 @@ TEST_F(StarterTest, RegularStartupFailsIfDfmInstallationFails) {
 TEST_F(StarterTest, RegularStartupFailsIfOnboardingRejected) {
   SetupPlatformDelegateForFirstTimeUser();
   fake_platform_delegate_.feature_module_installed_ = true;
-  fake_platform_delegate_.show_onboarding_result = OnboardingResult::REJECTED;
+  fake_platform_delegate_.show_onboarding_result_ = OnboardingResult::REJECTED;
   std::map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
@@ -411,7 +415,7 @@ TEST_F(StarterTest, RegularStartupFailsIfOnboardingRejected) {
 
 TEST_F(StarterTest, RpcTriggerScriptFailsIfMsbbIsDisabled) {
   SetupPlatformDelegateForReturningUser();
-  fake_platform_delegate_.msbb_enabled = false;
+  fake_platform_delegate_.msbb_enabled_ = false;
   std::map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
@@ -439,7 +443,7 @@ TEST_F(StarterTest, RpcTriggerScriptFailsIfMsbbIsDisabled) {
 
 TEST_F(StarterTest, RpcTriggerScriptFailsIfProactiveHelpIsDisabled) {
   SetupPlatformDelegateForReturningUser();
-  fake_platform_delegate_.proactive_help_enabled = false;
+  fake_platform_delegate_.proactive_help_enabled_ = false;
   std::map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
@@ -516,7 +520,7 @@ TEST_F(StarterTest, RpcTriggerScriptSucceeds) {
           std::make_unique<ScriptParameters>(script_parameters), options),
       mock_callback_.Get());
 
-  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called, Eq(1));
+  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(1));
   EXPECT_TRUE(UkmLiteScriptStarted(
       Metrics::LiteScriptStarted::LITE_SCRIPT_FIRST_TIME_USER));
   EXPECT_TRUE(UkmLiteScriptFinished(
@@ -562,7 +566,7 @@ TEST_F(StarterTest, Base64TriggerScriptFailsForInvalidBase64) {
 
 TEST_F(StarterTest, Base64TriggerScriptFailsIfProactiveHelpIsDisabled) {
   SetupPlatformDelegateForReturningUser();
-  fake_platform_delegate_.proactive_help_enabled = false;
+  fake_platform_delegate_.proactive_help_enabled_ = false;
   fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
   mock_trigger_script_service_request_sender_ = nullptr;
 
@@ -593,7 +597,7 @@ TEST_F(StarterTest, Base64TriggerScriptSucceeds) {
   SetupPlatformDelegateForFirstTimeUser();
   fake_platform_delegate_.feature_module_installed_ = true;
   // Base64 trigger scripts should not require MSBB to be enabled.
-  fake_platform_delegate_.msbb_enabled = false;
+  fake_platform_delegate_.msbb_enabled_ = false;
   // No need to inject a mock request sender for base64 trigger scripts, we can
   // use the real one.
   fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
@@ -624,7 +628,7 @@ TEST_F(StarterTest, Base64TriggerScriptSucceeds) {
           std::make_unique<ScriptParameters>(script_parameters), options),
       mock_callback_.Get());
 
-  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called, Eq(1));
+  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(1));
   EXPECT_TRUE(UkmLiteScriptStarted(
       Metrics::LiteScriptStarted::LITE_SCRIPT_FIRST_TIME_USER));
   EXPECT_TRUE(UkmLiteScriptFinished(
@@ -636,6 +640,29 @@ TEST_F(StarterTest, Base64TriggerScriptSucceeds) {
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
   histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
                                      0u);
+}
+
+TEST_F(StarterTest, CancelPendingTriggerScriptWhenTransitioningFromCctToTab) {
+  SetupPlatformDelegateForReturningUser();
+  fake_platform_delegate_.is_custom_tab_ = true;
+  fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
+  mock_trigger_script_service_request_sender_ = nullptr;
+
+  std::map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "false"},
+      {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
+      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+
+  EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript);
+  starter_->Start(std::make_unique<TriggerContext>(
+                      std::make_unique<ScriptParameters>(script_parameters),
+                      TriggerContext::Options{}),
+                  mock_callback_.Get());
+
+  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ false, _, _, _));
+  fake_platform_delegate_.is_custom_tab_ = false;
+  starter_->CheckSettings();
 }
 
 }  // namespace

@@ -60,16 +60,6 @@ public class TriggerContext {
             return this;
         }
 
-        public Builder withIsCustomTab(boolean isCustomTab) {
-            mTriggerContext.mIsCustomTab = isCustomTab;
-            return this;
-        }
-
-        public Builder withIsDirectAction(boolean isDirectAction) {
-            mTriggerContext.mIsDirectAction = isDirectAction;
-            return this;
-        }
-
         public Builder addParameter(String key, Object value) {
             mTriggerContext.mScriptParameters.put(key, value);
             return this;
@@ -155,8 +145,6 @@ public class TriggerContext {
     private final Map<String, Object> mScriptParameters;
     private final StringBuilder mExperimentIds;
     private String mInitialUrl;
-    private boolean mIsCustomTab;
-    private boolean mIsDirectAction;
     private boolean mOnboardingShown;
 
     private TriggerContext() {
@@ -275,11 +263,6 @@ public class TriggerContext {
     /** Whether the caller requested a trigger script to start in any of the supported ways. */
     public boolean containsTriggerScript() {
         return requestsTriggerScript() || containsBase64TriggerScripts();
-    }
-
-    /** Whether this trigger context was created in a custom tab. */
-    public boolean isCustomTab() {
-        return mIsCustomTab;
     }
 
     public void setOnboardingShown(boolean onboardingShown) {

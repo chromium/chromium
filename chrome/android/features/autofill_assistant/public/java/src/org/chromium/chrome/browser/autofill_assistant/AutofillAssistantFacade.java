@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.directactions.DirectActionHandler;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -31,7 +30,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.IntentToAutofillAllowingAppResult;
 
-/** Facade for starting Autofill Assistant on a custom tab. */
+/** Facade for starting Autofill Assistant on a tab. */
 public class AutofillAssistantFacade {
     /** Used for logging. */
     private static final String TAG = "AutofillAssistant";
@@ -62,7 +61,6 @@ public class AutofillAssistantFacade {
                 TriggerContext.newBuilder()
                         .fromBundle(activity.getInitialIntent().getExtras())
                         .withInitialUrl(activity.getInitialIntent().getDataString())
-                        .withIsCustomTab(activity instanceof CustomTabActivity)
                         .build());
     }
 
@@ -82,7 +80,6 @@ public class AutofillAssistantFacade {
                 TriggerContext.newBuilder()
                         .fromBundle(bundleExtras)
                         .withInitialUrl(initialUrl)
-                        .withIsCustomTab(chromeActivity instanceof CustomTabActivity)
                         .build());
     }
 

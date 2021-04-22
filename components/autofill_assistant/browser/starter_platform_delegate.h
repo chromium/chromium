@@ -73,6 +73,8 @@ class StarterPlatformDelegate {
   // TODO(arbesser): Move this out of the platform delegate.
   // Returns whether the MSBB seetting is enabled.
   virtual bool GetMakeSearchesAndBrowsingBetterEnabled() const = 0;
+  // Returns whether this is a custom tab or not.
+  virtual bool GetIsCustomTab() const = 0;
 };
 
 }  // namespace autofill_assistant

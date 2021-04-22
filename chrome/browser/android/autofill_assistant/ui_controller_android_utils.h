@@ -16,6 +16,7 @@
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/view_layout.pb.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -110,13 +111,17 @@ std::map<std::string, std::string> CreateStringMapFromJava(
 // Creates a C++ trigger context for the specified java inputs.
 std::unique_ptr<TriggerContext> CreateTriggerContext(
     JNIEnv* env,
+    content::WebContents* web_contents,
     const base::android::JavaRef<jstring>& jexperiment_ids,
     const base::android::JavaRef<jobjectArray>& jparameter_names,
     const base::android::JavaRef<jobjectArray>& jparameter_values,
-    jboolean is_cct,
     jboolean onboarding_shown,
     jboolean is_direct_action,
     const base::android::JavaRef<jstring>& jinitial_url);
+
+// Returns true if |web_contents| is owned by a custom tab. Assumes that
+// |web_contents| is valid and currently owned by a tab.
+bool IsCustomTab(content::WebContents* web_contents);
 
 }  // namespace ui_controller_android_utils
 }  //  namespace autofill_assistant

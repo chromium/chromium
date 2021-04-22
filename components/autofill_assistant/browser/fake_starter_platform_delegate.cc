@@ -36,7 +36,7 @@ void FakeStarterPlatformDelegate::InstallFeatureModule(
     bool show_ui,
     base::OnceCallback<void(Metrics::FeatureModuleInstallation result)>
         callback) {
-  num_install_feature_module_called++;
+  num_install_feature_module_called_++;
   std::move(callback).Run(feature_module_installation_result_);
 }
 
@@ -60,23 +60,28 @@ void FakeStarterPlatformDelegate::ShowOnboarding(
     bool use_dialog_onboarding,
     const TriggerContext& trigger_context,
     base::OnceCallback<void(bool shown, OnboardingResult result)> callback) {
-  num_show_onboarding_called++;
-  std::move(callback).Run(show_onboarding_result_shown, show_onboarding_result);
+  num_show_onboarding_called_++;
+  std::move(callback).Run(show_onboarding_result_shown_,
+                          show_onboarding_result_);
 }
 
 void FakeStarterPlatformDelegate::HideOnboarding() {}
 
 bool FakeStarterPlatformDelegate::GetProactiveHelpSettingEnabled() const {
-  return proactive_help_enabled;
+  return proactive_help_enabled_;
 }
 
 void FakeStarterPlatformDelegate::SetProactiveHelpSettingEnabled(bool enabled) {
-  proactive_help_enabled = enabled;
+  proactive_help_enabled_ = enabled;
 }
 
 bool FakeStarterPlatformDelegate::GetMakeSearchesAndBrowsingBetterEnabled()
     const {
-  return msbb_enabled;
+  return msbb_enabled_;
+}
+
+bool FakeStarterPlatformDelegate::GetIsCustomTab() const {
+  return is_custom_tab_;
 }
 
 }  // namespace autofill_assistant

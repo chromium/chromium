@@ -126,6 +126,19 @@ void StarterAndroid::OnInteractabilityChanged(
   starter_->CheckSettings();
 }
 
+void StarterAndroid::OnActivityAttachmentChanged(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  java_dependencies_ = nullptr;
+  if (!starter_) {
+    return;
+  }
+
+  // Notify the starter. Some flows are only available in CCT or in regular tab,
+  // so we need to cancel ongoing flows if they are no longer supported.
+  starter_->CheckSettings();
+}
+
 bool StarterAndroid::GetIsFirstTimeUser() const {
   return Java_Starter_getIsFirstTimeUser(base::android::AttachCurrentThread());
 }
@@ -210,6 +223,10 @@ bool StarterAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {
       base::android::AttachCurrentThread());
 }
 
+bool StarterAndroid::GetIsCustomTab() const {
+  return ui_controller_android_utils::IsCustomTab(web_contents_);
+}
+
 void StarterAndroid::CreateJavaDependenciesIfNecessary() {
   if (java_dependencies_) {
     return;
@@ -226,11 +243,10 @@ void StarterAndroid::Start(
     const base::android::JavaRef<jstring>& jexperiment_ids,
     const base::android::JavaRef<jobjectArray>& jparameter_names,
     const base::android::JavaRef<jobjectArray>& jparameter_values,
-    jboolean is_cct,
     const base::android::JavaRef<jstring>& jinitial_url) {
   DCHECK(starter_);
   auto trigger_context = ui_controller_android_utils::CreateTriggerContext(
-      env, jexperiment_ids, jparameter_names, jparameter_values, is_cct,
+      env, web_contents_, jexperiment_ids, jparameter_names, jparameter_values,
       /* onboarding_shown = */ false, /* is_direct_action = */ false,
       jinitial_url);
 

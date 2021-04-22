@@ -85,6 +85,9 @@ void Starter::DidFinishNavigation(
 }
 
 void Starter::CheckSettings() {
+  bool prev_is_custom_tab = is_custom_tab_;
+  is_custom_tab_ = platform_delegate_->GetIsCustomTab();
+  bool switched_from_cct_to_tab = prev_is_custom_tab && !is_custom_tab_;
   bool proactive_help_setting_enabled =
       platform_delegate_->GetProactiveHelpSettingEnabled();
   bool msbb_setting_enabled =
@@ -106,12 +109,20 @@ void Starter::CheckSettings() {
         {msbb_setting_enabled, proactive_help_setting_enabled,
          feature_module_installed});
     switch (startup_mode) {
+      case StartupMode::START_REGULAR:
+        return;
       case StartupMode::START_BASE64_TRIGGER_SCRIPT:
       case StartupMode::START_RPC_TRIGGER_SCRIPT:
-      case StartupMode::START_REGULAR:
+        if (!switched_from_cct_to_tab) {
+          return;
+        }
+        // Trigger scripts are not allowed to persist when transitioning from
+        // CCT to regular tab.
+        CancelPendingStartup();
         return;
       default:
         CancelPendingStartup();
+        return;
     }
   }
 }

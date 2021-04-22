@@ -42,11 +42,12 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   bool GetProactiveHelpSettingEnabled() const override;
   void SetProactiveHelpSettingEnabled(bool enabled) override;
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
+  bool GetIsCustomTab() const override;
 
+  // Intentionally public to give tests direct access.
   std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
-      trigger_script_ui_delegate_ = nullptr;
-  std::unique_ptr<ServiceRequestSender>
-      trigger_script_request_sender_for_test_ = nullptr;
+      trigger_script_ui_delegate_;
+  std::unique_ptr<ServiceRequestSender> trigger_script_request_sender_for_test_;
   WebsiteLoginManager* website_login_manager_ = nullptr;
   version_info::Channel channel_ = version_info::Channel::UNKNOWN;
   bool feature_module_installed_ = true;
@@ -54,13 +55,14 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED;
   bool is_first_time_user_ = false;
   bool onboarding_accepted_ = true;
-  bool show_onboarding_result_shown = false;
-  OnboardingResult show_onboarding_result = OnboardingResult::ACCEPTED;
-  bool proactive_help_enabled = true;
-  bool msbb_enabled = true;
+  bool show_onboarding_result_shown_ = false;
+  OnboardingResult show_onboarding_result_ = OnboardingResult::ACCEPTED;
+  bool proactive_help_enabled_ = true;
+  bool msbb_enabled_ = true;
+  bool is_custom_tab_ = true;
 
-  int num_install_feature_module_called = 0;
-  int num_show_onboarding_called = 0;
+  int num_install_feature_module_called_ = 0;
+  int num_show_onboarding_called_ = 0;
 };
 
 }  // namespace autofill_assistant

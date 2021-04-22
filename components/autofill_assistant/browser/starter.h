@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "components/autofill_assistant/browser/controller.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/public/runtime_manager_impl.h"
@@ -104,6 +105,7 @@ class Starter : public content::WebContentsObserver {
       bool start_regular_script,
       base::Optional<TriggerScriptProto> trigger_script = base::nullopt);
 
+  bool is_custom_tab_ = false;
   StarterPlatformDelegate* platform_delegate_ = nullptr;
   ukm::UkmRecorder* ukm_recorder_ = nullptr;
   base::WeakPtr<RuntimeManagerImpl> runtime_manager_;
