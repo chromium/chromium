@@ -1983,6 +1983,9 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
       // we may have fallen back to the document root.
       layout_tree_rebuild_root_.Clear();
       layout_tree_rebuild_root_.Update(nullptr, &container);
+    } else {
+      DCHECK(FlatTreeTraversal::Contains(
+          container, *layout_tree_rebuild_root_.GetRootNode()));
     }
     RebuildLayoutTree();
   }
