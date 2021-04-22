@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 
 namespace location {
@@ -76,6 +77,17 @@ void SubmittableExecutor::Execute(Runnable&& runnable) {
 
 void SubmittableExecutor::RunTask(Runnable&& runnable) {
   {
+    // The Nearby Connections library relies on many long running thread tasks
+    // which do not meet the usual usage pattern of a task on the chrome thread
+    // pool (short lived and non-blocking). Without WILL_BLOCK we end up thread
+    // starving tasks when multiple clients are using Nearby Connections at the
+    // same time because the thread pool by default is not big enough. By
+    // scoping this task as WILL_BLOCK we are letting the thread pool know that
+    // it should allocate an additional thread so this task does not starve
+    // other tasks if it does block and/or is long lived. See b/185628066 for
+    // examples of this starvation happening before this change.
+    base::ScopedBlockingCall blocking_call{FROM_HERE,
+                                           base::BlockingType::WILL_BLOCK};
     // base::ScopedAllowBaseSyncPrimitives is required as code inside the
     // runnable uses blocking primitive, which lives outside Chrome.
     base::ScopedAllowBaseSyncPrimitives allow_wait;

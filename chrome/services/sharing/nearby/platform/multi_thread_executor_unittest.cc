@@ -10,11 +10,13 @@
 #include <utility>
 
 #include "base/callback_forward.h"
+#include "base/barrier_closure.h"
 #include "base/run_loop.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -83,6 +85,7 @@ class MultiThreadExecutorTest : public testing::Test {
     };
   }
 
+  void WaitOnThreadWaitableEvent() { thread_event_.Wait(); }
   void NotifyThreadWaitableEvent() { thread_event_.Signal(); }
 
   base::test::TaskEnvironment task_environment_;
@@ -163,6 +166,36 @@ TEST_F(MultiThreadExecutorTest, ShutdownPreventsFurtherTasks) {
       CreateTrackedRunnable(run_loop, task_id, wait_run_loop)));
 
   EXPECT_FALSE(HasTaskExecuted(task_id));
+}
+
+TEST_F(MultiThreadExecutorTest, ManyParallelTasks) {
+  // This large number of threads is used to illustate the fact that the default
+  // process thread pool that multi_thread_executor_ posts to will not spin up
+  // new threads fast enough for Nearby Connections. This test will time out if
+  // we rely on the default thread spin up which adds a 2-4 threads every second
+  // or so depending on task priority. By introducing a WILL_BLOCK annotation in
+  // SubmittableExecutor::RunTask we ensure the threads are spun up immediately.
+  const int number_of_threads = 255;
+
+  base::RepeatingClosure barrier_closure =
+      base::BarrierClosure(number_of_threads, base::BindLambdaForTesting([&] {
+                             // This function is triggered once ALL threads have
+                             // called the |barrier_closure|.
+                             NotifyThreadWaitableEvent();
+                           }));
+
+  auto trigger_and_wait = [barrier_closure = barrier_closure, this]() {
+    barrier_closure.Run();
+    // Block and wait until all other threads have hit the |barrier_closure|.
+    WaitOnThreadWaitableEvent();
+  };
+
+  for (int i = 0; i < number_of_threads; i++) {
+    multi_thread_executor_->Execute(trigger_and_wait);
+  }
+  // The destructor of the executor waits for all tasks to complete which used
+  // to time out before the WILL_BLOCK scope was introduced.
+  multi_thread_executor_.reset();
 }
 
 }  // namespace chrome
