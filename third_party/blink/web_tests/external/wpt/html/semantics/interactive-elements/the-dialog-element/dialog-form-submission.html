@@ -69,7 +69,7 @@ promise_test(async () => {
   assert_false(dialog.open, "dialog should be closed now");
   assert_not_equals(dialog.returnValue, "", "returnValue shouldn't be empty string");
   assert_equals(dialog.returnValue, expectedReturnValue, "returnValue should be the offsets of the click");
-}, "input image button should return the coordianates");
+}, "input image button should return the coordinates");
 
 promise_test(async () => {
   const dialog = document.querySelector('dialog');

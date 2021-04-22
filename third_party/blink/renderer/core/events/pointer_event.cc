@@ -102,9 +102,9 @@ bool PointerEvent::IsMouseEvent() const {
 }
 
 bool PointerEvent::ShouldHaveIntegerCoordinates() const {
-  if (RuntimeEnabledFeatures::ClickPointerEventIntegerCoordinatesEnabled() &&
-      (type() == event_type_names::kClick ||
-       type() == event_type_names::kContextmenu)) {
+  if (type() == event_type_names::kClick ||
+      type() == event_type_names::kContextmenu ||
+      type() == event_type_names::kAuxclick) {
     return true;
   }
   return false;
