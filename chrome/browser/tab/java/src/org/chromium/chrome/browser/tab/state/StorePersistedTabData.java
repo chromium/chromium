@@ -15,10 +15,11 @@ import org.chromium.chrome.browser.tab.Tab;
 import java.util.Locale;
 
 /**
- * {@link PersistedTabData} for Store websites with opening/closing hours
+ * {@link PersistedTabData} for Store websites with opening/closing hours.
+ * TODO(crbug.com/1199134) Add tests for StorePersistedTabData
  */
 public class StorePersistedTabData extends PersistedTabData {
-    // TODO(crbug.com/1196065) Make endpoint finch configurable
+    // TODO(crbug.com/1196065) Make endpoint finch configurable.
     private static final String ENDPOINT =
             "https://task-management-chrome.sandbox.google.com/tabs/representations?url=%s&locale=en:US";
     private static final String[] SCOPES =
@@ -72,8 +73,8 @@ public class StorePersistedTabData extends PersistedTabData {
      * StoreHours data type for {@link StorePersistedTabData}
      */
     public static class StoreHours {
-        private final int mOpeningTime;
-        private final int mClosingTime;
+        protected final int mOpeningTime;
+        protected final int mClosingTime;
 
         /**
          * @param openingTime opening time in military minutes 0000 = 12:00 A.M
@@ -83,18 +84,53 @@ public class StorePersistedTabData extends PersistedTabData {
             mOpeningTime = openingTime;
             mClosingTime = closingTime;
         }
-
-        @Override
-        public String toString() {
-            // TODO(crbug.com/1192807) Implement converting of openingTime and closingTime to a
-            // String
-            return "9:00 AM - 5:00 P.M";
-        }
     }
 
-    public StoreHours getStoreHours() {
-        assert mStoreHours != null;
-        return mStoreHours;
+    public String getStoreHoursString() {
+        return formatStoreHours(mStoreHours.mOpeningTime, mStoreHours.mClosingTime);
+    }
+
+    // Formats opening and closing time to string displayed in frontend.
+    private static String formatStoreHours(int openingTime, int closingTime) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(createTimeString(openingTime));
+        sb.append(" - ");
+        sb.append(createTimeString(closingTime));
+        return sb.toString();
+    }
+
+    private static String createTimeString(int time) {
+        int standardTimeMinutes = time;
+        if (time < 100) {
+            standardTimeMinutes += 1200;
+        }
+        if (time >= 1300) {
+            standardTimeMinutes -= 1200;
+        }
+        return getTimeStringFromStandardTimeMinutes(standardTimeMinutes, time >= 1200);
+    }
+
+    private static String getTimeStringFromStandardTimeMinutes(
+            int standardTimeMinutes, boolean isPM) {
+        if (standardTimeMinutes < 0) return "";
+        StringBuilder standardTimeMinutesSB =
+                new StringBuilder(String.valueOf(standardTimeMinutes));
+        StringBuilder timeString = new StringBuilder();
+        if (standardTimeMinutesSB.length() < 3) {
+            timeString.append(standardTimeMinutesSB.charAt(0));
+            timeString.append(":");
+            timeString.append(standardTimeMinutesSB.substring(1, 3));
+        } else {
+            timeString.append(standardTimeMinutesSB.substring(0, 2));
+            timeString.append(":");
+            timeString.append(standardTimeMinutesSB.substring(2, 4));
+        }
+        if (isPM) {
+            timeString.append(" P.M");
+        } else {
+            timeString.append(" A.M");
+        }
+        return timeString.toString();
     }
 
     @Override

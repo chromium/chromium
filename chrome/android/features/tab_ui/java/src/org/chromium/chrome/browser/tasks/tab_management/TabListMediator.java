@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tab.state.StorePersistedTabData;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -210,6 +211,28 @@ class TabListMediator {
                 mPriceWelcomeMessageController.showPriceWelcomeMessage(
                         new PriceTabData(mTab.getId(), shoppingPersistedTabData.getPriceDrop()));
             });
+        }
+    }
+
+    /**
+     * Provides capability to asynchronously acquire {@link StorePersistedTabData}
+     */
+    static class StorePersistedTabDataFetcher {
+        protected Tab mTab;
+
+        /**
+         * @param tab {@link Tab} {@link StorePersistedTabData} will be acquired for.
+         */
+        StorePersistedTabDataFetcher(Tab tab) {
+            mTab = tab;
+        }
+
+        /**
+         * Asynchronously acquire {@link StorePersistedTabData}
+         * @param callback {@link Callback} to pass {@link StorePersistedTabData} back in
+         */
+        public void fetch(Callback<StorePersistedTabData> callback) {
+            StorePersistedTabData.from(mTab, (res) -> { callback.onResult(res); });
         }
     }
 
@@ -1142,13 +1165,20 @@ class TabListMediator {
                     TabProperties.PAGE_INFO_ICON_DRAWABLE_ID, mSearchChipIconDrawableId);
         }
 
-        if (mMode == TabListMode.GRID && pseudoTab.hasRealTab() && !pseudoTab.isIncognito()
-                && PriceTrackingUtilities.isTrackPricesOnTabsEnabled()) {
-            mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
-                    new ShoppingPersistedTabDataFetcher(
-                            pseudoTab.getTab(), mPriceWelcomeMessageController));
+        if (mMode == TabListMode.GRID && pseudoTab.hasRealTab() && !pseudoTab.isIncognito()) {
+            if (PriceTrackingUtilities.isTrackPricesOnTabsEnabled()) {
+                mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
+                        new ShoppingPersistedTabDataFetcher(
+                                pseudoTab.getTab(), mPriceWelcomeMessageController));
+            }
+            // TODO(crbug.com/1198277): Add flag to only enable store hours if flag enabled.
+            else if (StoreTrackingUtilities.isStoreHoursOnTabsEnabled()) {
+                mModel.get(index).model.set(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER,
+                        new StorePersistedTabDataFetcher(pseudoTab.getTab()));
+            }
         } else {
             mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
+            mModel.get(index).model.set(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER, null);
         }
 
         updateFaviconForTab(pseudoTab, null);

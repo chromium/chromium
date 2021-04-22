@@ -236,6 +236,24 @@ class TabGridViewBinder {
             } else {
                 priceCardView.setVisibility(View.GONE);
             }
+        } else if (TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER == propertyKey) {
+            StoreHoursCardView storeHoursCardView =
+                    (StoreHoursCardView) view.fastFindViewById(R.id.store_hours_box_outer);
+            if (model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER) != null) {
+                model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER)
+                        .fetch((storePersistedTabData) -> {
+                            if (storePersistedTabData == null
+                                    || storePersistedTabData.getStoreHoursString().equals("")) {
+                                storeHoursCardView.setVisibility(View.GONE);
+                            } else {
+                                storeHoursCardView.setStoreHours(
+                                        storePersistedTabData.getStoreHoursString());
+                                storeHoursCardView.setVisibility(View.VISIBLE);
+                            }
+                        });
+            } else {
+                storeHoursCardView.setVisibility(View.GONE);
+            }
         } else if (TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP == propertyKey) {
             if (model.get(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP)) {
                 PriceCardView priceCardView =
