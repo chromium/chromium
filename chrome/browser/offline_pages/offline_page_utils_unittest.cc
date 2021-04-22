@@ -63,20 +63,6 @@ const char* kTestPage2ClientId = "5678";
 const char* kTestPage3ClientId = "7890";
 const char* kTestPage4ClientId = "42";
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL TestPage1Url() {
-  return GURL("http://test.org/page1");
-}
-GURL TestPage2Url() {
-  return GURL("http://test.org/page2");
-}
-GURL TestPage3Url() {
-  return GURL("http://test.org/page3");
-}
-GURL TestPage4Url() {
-  return GURL("http://test.org/page4");
-}
 
 void RunTasksForDuration(base::TimeDelta delta) {
   base::RunLoop run_loop;
@@ -179,6 +165,12 @@ class OfflinePageUtilsTest
     return result;
   }
 
+ protected:
+  const GURL kTestPage1Url{"http://test.org/page1"};
+  const GURL kTestPage2Url{"http://test.org/page2"};
+  const GURL kTestPage3Url{"http://test.org/page3"};
+  const GURL kTestPage4Url{"http://test.org/page4"};
+
  private:
   void CreateOfflinePages();
   void CreateRequests();
@@ -259,22 +251,22 @@ void OfflinePageUtilsTest::SavePage(
 void OfflinePageUtilsTest::CreateOfflinePages() {
   // Create page 1.
   std::unique_ptr<OfflinePageTestArchiver> archiver(BuildArchiver(
-      TestPage1Url(), base::FilePath(FILE_PATH_LITERAL("page1.mhtml"))));
+      kTestPage1Url, base::FilePath(FILE_PATH_LITERAL("page1.mhtml"))));
   offline_pages::ClientId client_id;
   client_id.name_space = kDownloadNamespace;
   client_id.id = kTestPage1ClientId;
-  SavePage(TestPage1Url(), client_id, std::move(archiver));
+  SavePage(kTestPage1Url, client_id, std::move(archiver));
 
   // Create page 2.
-  archiver = BuildArchiver(TestPage2Url(),
+  archiver = BuildArchiver(kTestPage2Url,
                            base::FilePath(FILE_PATH_LITERAL("page2.mhtml")));
   client_id.id = kTestPage2ClientId;
-  SavePage(TestPage2Url(), client_id, std::move(archiver));
+  SavePage(kTestPage2Url, client_id, std::move(archiver));
 }
 
 void OfflinePageUtilsTest::CreateRequests() {
   RequestCoordinator::SavePageLaterParams params;
-  params.url = TestPage3Url();
+  params.url = kTestPage3Url;
   params.client_id =
       offline_pages::ClientId(kDownloadNamespace, kTestPage3ClientId);
   base::RunLoop run_loop;
@@ -295,27 +287,27 @@ void OfflinePageUtilsTest::CreateCachedOfflinePages() {
   // Time 01:00:00.
   clock()->Advance(base::TimeDelta::FromHours(1));
   std::unique_ptr<OfflinePageTestArchiver> archiver(BuildArchiver(
-      TestPage1Url(), base::FilePath(FILE_PATH_LITERAL("page1.mhtml"))));
+      kTestPage1Url, base::FilePath(FILE_PATH_LITERAL("page1.mhtml"))));
   client_id.id = kTestPage1ClientId;
-  SavePage(TestPage1Url(), client_id, std::move(archiver));
+  SavePage(kTestPage1Url, client_id, std::move(archiver));
   // time 02:00:00.
   clock()->Advance(base::TimeDelta::FromHours(1));
-  archiver = BuildArchiver(TestPage2Url(),
+  archiver = BuildArchiver(kTestPage2Url,
                            base::FilePath(FILE_PATH_LITERAL("page2.mhtml")));
   client_id.id = kTestPage2ClientId;
-  SavePage(TestPage2Url(), client_id, std::move(archiver));
+  SavePage(kTestPage2Url, client_id, std::move(archiver));
   // time 03:00:00.
   clock()->Advance(base::TimeDelta::FromHours(1));
-  archiver = BuildArchiver(TestPage3Url(),
+  archiver = BuildArchiver(kTestPage3Url,
                            base::FilePath(FILE_PATH_LITERAL("page3.mhtml")));
   client_id.id = kTestPage3ClientId;
-  SavePage(TestPage3Url(), client_id, std::move(archiver));
+  SavePage(kTestPage3Url, client_id, std::move(archiver));
   // Add a temporary page to test boundary at 10:00:00.
   clock()->Advance(base::TimeDelta::FromHours(7));
-  archiver = BuildArchiver(TestPage4Url(),
+  archiver = BuildArchiver(kTestPage4Url,
                            base::FilePath(FILE_PATH_LITERAL("page4.mhtml")));
   client_id.id = kTestPage4ClientId;
-  SavePage(TestPage4Url(), client_id, std::move(archiver));
+  SavePage(kTestPage4Url, client_id, std::move(archiver));
   // Reset clock->to 03:00:00.
   clock()->Advance(base::TimeDelta::FromHours(-7));
 }
@@ -349,58 +341,52 @@ int OfflinePageUtilsTest::FindRequestByNamespaceAndURL(
 TEST_F(OfflinePageUtilsTest, CheckDuplicateDownloads) {
   // The duplicate page should be found for this.
   EXPECT_EQ(OfflinePageUtils::DuplicateCheckResult::DUPLICATE_PAGE_FOUND,
-            CheckDuplicateDownloads(TestPage1Url()));
+            CheckDuplicateDownloads(kTestPage1Url));
 
   // The duplicate request should be found for this.
   EXPECT_EQ(OfflinePageUtils::DuplicateCheckResult::DUPLICATE_REQUEST_FOUND,
-            CheckDuplicateDownloads(TestPage3Url()));
+            CheckDuplicateDownloads(kTestPage3Url));
 
   // No duplicate should be found for this.
   EXPECT_EQ(OfflinePageUtils::DuplicateCheckResult::NOT_FOUND,
-            CheckDuplicateDownloads(TestPage4Url()));
+            CheckDuplicateDownloads(kTestPage4Url));
 }
 
 TEST_F(OfflinePageUtilsTest, ScheduleDownload) {
   // Pre-check.
-  ASSERT_EQ(0,
-            FindRequestByNamespaceAndURL(kDownloadNamespace, TestPage1Url()));
-  ASSERT_EQ(1,
-            FindRequestByNamespaceAndURL(kDownloadNamespace, TestPage3Url()));
-  ASSERT_EQ(0,
-            FindRequestByNamespaceAndURL(kDownloadNamespace, TestPage4Url()));
+  ASSERT_EQ(0, FindRequestByNamespaceAndURL(kDownloadNamespace, kTestPage1Url));
+  ASSERT_EQ(1, FindRequestByNamespaceAndURL(kDownloadNamespace, kTestPage3Url));
+  ASSERT_EQ(0, FindRequestByNamespaceAndURL(kDownloadNamespace, kTestPage4Url));
 
   // TODO(harringtond): Remove request creation in Setup().
   size_t request_count_wait = 1;
   // Re-downloading a page with duplicate page found.
   OfflinePageUtils::ScheduleDownload(
-      web_contents(), kDownloadNamespace, TestPage1Url(),
+      web_contents(), kDownloadNamespace, kTestPage1Url,
       OfflinePageUtils::DownloadUIActionFlags::NONE);
   WaitForRequestMinCount(++request_count_wait);
-  EXPECT_EQ(1,
-            FindRequestByNamespaceAndURL(kDownloadNamespace, TestPage1Url()));
+  EXPECT_EQ(1, FindRequestByNamespaceAndURL(kDownloadNamespace, kTestPage1Url));
 
   // Re-downloading a page with duplicate request found.
   OfflinePageUtils::ScheduleDownload(
-      web_contents(), kDownloadNamespace, TestPage3Url(),
+      web_contents(), kDownloadNamespace, kTestPage3Url,
       OfflinePageUtils::DownloadUIActionFlags::NONE);
   WaitForRequestMinCount(++request_count_wait);
-  EXPECT_EQ(2,
-            FindRequestByNamespaceAndURL(kDownloadNamespace, TestPage3Url()));
+  EXPECT_EQ(2, FindRequestByNamespaceAndURL(kDownloadNamespace, kTestPage3Url));
 
   // Downloading a page with no duplicate found.
   OfflinePageUtils::ScheduleDownload(
-      web_contents(), kDownloadNamespace, TestPage4Url(),
+      web_contents(), kDownloadNamespace, kTestPage4Url,
       OfflinePageUtils::DownloadUIActionFlags::NONE);
   WaitForRequestMinCount(++request_count_wait);
-  EXPECT_EQ(1,
-            FindRequestByNamespaceAndURL(kDownloadNamespace, TestPage4Url()));
+  EXPECT_EQ(1, FindRequestByNamespaceAndURL(kDownloadNamespace, kTestPage4Url));
 }
 
 #if defined(OS_ANDROID)
 TEST_F(OfflinePageUtilsTest, ScheduleDownloadWithFailedFileAcecssRequest) {
   DownloadControllerBase::Get()->SetApproveFileAccessRequestForTesting(false);
   OfflinePageUtils::ScheduleDownload(
-      web_contents(), kDownloadNamespace, TestPage4Url(),
+      web_contents(), kDownloadNamespace, kTestPage4Url,
       OfflinePageUtils::DownloadUIActionFlags::NONE);
 
   // Here, we're waiting to make sure a request is not created. We can't use
@@ -408,8 +394,7 @@ TEST_F(OfflinePageUtilsTest, ScheduleDownloadWithFailedFileAcecssRequest) {
   // Instead, just wait a bit and assume ScheduleDownload is complete.
   RunTasksForDuration(base::TimeDelta::FromSeconds(1));
 
-  EXPECT_EQ(0,
-            FindRequestByNamespaceAndURL(kDownloadNamespace, TestPage4Url()));
+  EXPECT_EQ(0, FindRequestByNamespaceAndURL(kDownloadNamespace, kTestPage4Url));
 }
 #endif
 
