@@ -23,12 +23,6 @@
   // all data is received, or a decoding error occurs.
   Promise<ImageDecodeResult> decode(optional ImageDecodeOptions options);
 
-  // Decodes only the metadata for an image; resolves the promise when metadata
-  // can be decoded. Normally this is done automatically at construction time.
-  // However when using a ReadableStream, there may not be enough data to decode
-  // metadata at the time of construction.
-  Promise<void> decodeMetadata();
-
   // Aborts all pending metadata and decode promises.
   void reset();
 

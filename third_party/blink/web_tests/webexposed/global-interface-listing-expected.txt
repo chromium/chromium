@@ -4727,7 +4727,6 @@ interface ImageDecoder
     method close
     method constructor
     method decode
-    method decodeMetadata
     method reset
 interface ImageTrack
     attribute @@toStringTag
@@ -4740,6 +4739,7 @@ interface ImageTrack
 interface ImageTrackList
     attribute @@toStringTag
     getter length
+    getter ready
     getter selectedIndex
     getter selectedTrack
     method @@iterator

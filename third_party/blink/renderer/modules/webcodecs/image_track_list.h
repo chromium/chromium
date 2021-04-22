@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_IMAGE_TRACK_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_IMAGE_TRACK_LIST_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -25,8 +27,13 @@ class MODULES_EXPORT ImageTrackList final : public ScriptWrappable {
   ImageTrack* AnonymousIndexedGetter(uint32_t index) const;
   int32_t selectedIndex() const;
   base::Optional<ImageTrack*> selectedTrack() const;
+  ScriptPromise ready(ScriptState* script_state);
 
   bool IsEmpty() const { return tracks_.IsEmpty(); }
+
+  // Called when initial track metadata is known or an error has occurred. Pass
+  // a valid |exception| to reject the ready() promise.
+  void OnTracksReady(DOMException* exception = nullptr);
 
   // Helper method for ImageDecoder to add tracks. Only one track may be marked
   // as selected at any given time.
@@ -46,6 +53,10 @@ class MODULES_EXPORT ImageTrackList final : public ScriptWrappable {
   Member<ImageDecoderExternal> image_decoder_;
   HeapVector<Member<ImageTrack>> tracks_;
   base::Optional<wtf_size_t> selected_track_id_;
+
+  using ReadyProperty =
+      ScriptPromiseProperty<ToV8UndefinedGenerator, Member<DOMException>>;
+  Member<ReadyProperty> ready_property_;
 };
 
 }  // namespace blink

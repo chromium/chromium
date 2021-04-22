@@ -4,11 +4,18 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 async_test(function(t) {
-  fetch("/resources/square.png").then(t.step_func(response => {
-    response.arrayBuffer().then(t.step_func(buffer => {
-      let decoder = new ImageDecoder({data: buffer, type: "image/gif"})
-      decoder.decodeMetadata().then(t.unreached_func()).catch(t.done());
-    })).catch(t.unreached_func());
-  })).catch(t.unreached_func());
+  fetch('/resources/square.png')
+      .then(t.step_func(response => {
+        response.arrayBuffer()
+            .then(t.step_func(buffer => {
+              let decoder = new ImageDecoder({data: buffer, type: 'image/gif'})
+              decoder.tracks.ready.then(t.unreached_func())
+                  .catch(t.step_func(e => {
+                    t.done();
+                  }));
+            }))
+            .catch(t.unreached_func());
+      }))
+      .catch(t.unreached_func());
 });
 </script>

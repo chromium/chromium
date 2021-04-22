@@ -44,22 +44,6 @@ DOMException* CreateUnsupportedImageTypeException(String type) {
                      type.Ascii().c_str()));
 }
 
-DOMException* CreateClosedException() {
-  return MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kInvalidStateError, "The decoder has been closed.");
-}
-
-DOMException* CreateNoSelectedTracksException() {
-  return MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kInvalidStateError, "No selected track.");
-}
-
-DOMException* CreateDecodeFailure(uint32_t index) {
-  return MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kEncodingError,
-      String::Format("Failed to decode frame at index %d", index));
-}
-
 }  // namespace
 
 // static
@@ -121,8 +105,10 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     desired_size = SkISize::Make(init->desiredWidth(), init->desiredHeight());
 
   mime_type_ = init->type().LowerASCII();
-  if (!IsTypeSupportedInternal(mime_type_))
+  if (!IsTypeSupportedInternal(mime_type_)) {
+    tracks_->OnTracksReady(CreateUnsupportedImageTypeException(mime_type_));
     return;
+  }
 
   if (init->hasPreferAnimation()) {
     prefer_animation_ = init->preferAnimation();
@@ -203,7 +189,8 @@ ScriptPromise ImageDecoderExternal::decode(const ImageDecodeOptions* options) {
   auto promise = resolver->Promise();
 
   if (closed_) {
-    resolver->Reject(CreateClosedException());
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "The decoder has been closed."));
     return promise;
   }
 
@@ -213,7 +200,8 @@ ScriptPromise ImageDecoderExternal::decode(const ImageDecodeOptions* options) {
   }
 
   if (!tracks_->IsEmpty() && !tracks_->selectedTrack()) {
-    resolver->Reject(CreateNoSelectedTracksException());
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "No selected track."));
     return promise;
   }
 
@@ -222,27 +210,6 @@ ScriptPromise ImageDecoderExternal::decode(const ImageDecodeOptions* options) {
       options ? options->completeFramesOnly() : true));
 
   MaybeSatisfyPendingDecodes();
-  return promise;
-}
-
-ScriptPromise ImageDecoderExternal::decodeMetadata() {
-  DVLOG(1) << __func__;
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
-  auto promise = resolver->Promise();
-
-  if (closed_) {
-    resolver->Reject(CreateClosedException());
-    return promise;
-  }
-
-  if (!decoder_) {
-    resolver->Reject(CreateUnsupportedImageTypeException(mime_type_));
-    return promise;
-  }
-
-  pending_metadata_decodes_.push_back(resolver);
-  MaybeSatisfyPendingMetadataDecodes();
   return promise;
 }
 
@@ -296,23 +263,28 @@ void ImageDecoderExternal::reset(DOMException* exception) {
   decode_weak_factory_.InvalidateWeakPtrs();
 
   // Move all state to local variables since promise resolution is reentrant.
-  HeapVector<Member<ScriptPromiseResolver>> local_pending_metadata_decodes;
-  local_pending_metadata_decodes.swap(pending_metadata_decodes_);
   HeapVector<Member<DecodeRequest>> local_pending_decodes;
   local_pending_decodes.swap(pending_decodes_);
-
-  for (auto& resolver : local_pending_metadata_decodes)
-    resolver->Reject(exception);
 
   for (auto& request : local_pending_decodes)
     request->resolver->Reject(exception);
 }
 
 void ImageDecoderExternal::close() {
-  reset(MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
-                                           "Aborted by close."));
+  if (closed_)
+    return;
+
+  auto* exception = MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kAbortError, "Aborted by close.");
+  reset(exception);
+
+  // Failure cases should have already rejected the tracks ready promise.
+  if (!failed_ && decoder_ && tracks_->IsEmpty())
+    tracks_->OnTracksReady(exception);
+
   if (consumer_)
     consumer_->Cancel();
+
   weak_factory_.InvalidateWeakPtrs();
   pending_metadata_requests_ = 0;
   consumer_ = nullptr;
@@ -366,7 +338,6 @@ void ImageDecoderExternal::Trace(Visitor* visitor) const {
   visitor->Trace(consumer_);
   visitor->Trace(tracks_);
   visitor->Trace(pending_decodes_);
-  visitor->Trace(pending_metadata_decodes_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
@@ -388,9 +359,8 @@ bool ImageDecoderExternal::HasPendingActivity() const {
   // WTF::SequenceBound.Then() usage must be accounted for. Failure to do so
   // will cause issues where WeakPtrs are valid between GC finalization and
   // destruction.
-  const bool has_pending_activity = !pending_metadata_decodes_.IsEmpty() ||
-                                    !pending_decodes_.IsEmpty() ||
-                                    pending_metadata_requests_ > 0;
+  const bool has_pending_activity =
+      !pending_decodes_.IsEmpty() || pending_metadata_requests_ > 0;
 
   if (!has_pending_activity) {
     DCHECK(!weak_factory_.HasWeakPtrs());
@@ -407,7 +377,10 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
 
   for (auto& request : pending_decodes_) {
     if (failed_) {
-      request->exception = CreateDecodeFailure(request->frame_index);
+      request->exception = MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kEncodingError,
+          String::Format("Failed to decode frame at index %d",
+                         request->frame_index));
       continue;
     }
 
@@ -504,22 +477,6 @@ void ImageDecoderExternal::OnDecodeReady(
   MaybeSatisfyPendingDecodes();
 }
 
-void ImageDecoderExternal::MaybeSatisfyPendingMetadataDecodes() {
-  DCHECK(decoder_);
-  DCHECK(!closed_);
-
-  if (tracks_->IsEmpty() && !failed_)
-    return;
-
-  for (auto& resolver : pending_metadata_decodes_) {
-    if (failed_)
-      resolver->Reject();
-    else
-      resolver->Resolve();
-  }
-  pending_metadata_decodes_.clear();
-}
-
 void ImageDecoderExternal::DecodeMetadata() {
   DCHECK(decoder_);
   DCHECK(tracks_->IsEmpty() || tracks_->selectedTrack());
@@ -554,46 +511,56 @@ void ImageDecoderExternal::OnMetadata(
     return;
   }
 
-  if (tracks_->IsEmpty()) {
-    // TODO(crbug.com/1073995): None of the underlying ImageDecoders actually
-    // expose tracks yet. So for now just assume a still and animated track for
-    // images which declare to be multi-image and have animations.
-
-    if (metadata.image_has_both_still_and_animated_sub_images) {
-      int selected_track_id = 1;  // Currently animation is always default.
-      if (prefer_animation_.has_value()) {
-        selected_track_id = prefer_animation_.value() ? 1 : 0;
-
-        // Sadly there's currently no way to get the frame count information for
-        // unselected tracks, so for now just leave frame count as unknown but
-        // force repetition count to be animated.
-        if (!prefer_animation_.value()) {
-          metadata.frame_count = 0;
-          metadata.repetition_count = kAnimationLoopOnce;
-        }
-      }
-
-      // All multi-track images have a still image track. Even if it's just the
-      // first frame of the animation.
-      tracks_->AddTrack(1, kAnimationNone, selected_track_id == 0);
-      tracks_->AddTrack(metadata.frame_count, metadata.repetition_count,
-                        selected_track_id == 1);
-    } else {
-      tracks_->AddTrack(metadata.frame_count, metadata.repetition_count, true);
-    }
-  } else {
+  if (!tracks_->IsEmpty()) {
     tracks_->selectedTrack().value()->UpdateTrack(metadata.frame_count,
                                                   metadata.repetition_count);
+    return;
   }
 
-  MaybeSatisfyPendingMetadataDecodes();
+  // TODO(crbug.com/1073995): None of the underlying ImageDecoders actually
+  // expose tracks yet. So for now just assume a still and animated track for
+  // images which declare to be multi-image and have animations.
+
+  if (metadata.image_has_both_still_and_animated_sub_images) {
+    int selected_track_id = 1;  // Currently animation is always default.
+    if (prefer_animation_.has_value()) {
+      selected_track_id = prefer_animation_.value() ? 1 : 0;
+
+      // Sadly there's currently no way to get the frame count information for
+      // unselected tracks, so for now just leave frame count as unknown but
+      // force repetition count to be animated.
+      if (!prefer_animation_.value()) {
+        metadata.frame_count = 0;
+        metadata.repetition_count = kAnimationLoopOnce;
+      }
+    }
+
+    // All multi-track images have a still image track. Even if it's just the
+    // first frame of the animation.
+    tracks_->AddTrack(1, kAnimationNone, selected_track_id == 0);
+    tracks_->AddTrack(metadata.frame_count, metadata.repetition_count,
+                      selected_track_id == 1);
+  } else {
+    tracks_->AddTrack(metadata.frame_count, metadata.repetition_count, true);
+  }
+
+  tracks_->OnTracksReady();
 }
 
 void ImageDecoderExternal::SetFailed() {
   DVLOG(1) << __func__;
+  if (failed_) {
+    DCHECK(pending_decodes_.IsEmpty());
+    return;
+  }
+
   failed_ = true;
   decode_weak_factory_.InvalidateWeakPtrs();
-  MaybeSatisfyPendingMetadataDecodes();
+  if (tracks_->IsEmpty()) {
+    tracks_->OnTracksReady(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "Failed to retrieve track metadata."));
+  }
   MaybeSatisfyPendingDecodes();
 }
 

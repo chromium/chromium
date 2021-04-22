@@ -197,7 +197,7 @@ message SelectTrack {
 message ImageDecoderApiInvocation {
   oneof Api {
     DecodeImage decode_image = 1;
-    DecodeMetadata decode_metadata = 2;
+    DecodeMetadata decode_metadata = 2 [deprecated = true];
     SelectTrack select_track = 3;
   }
 }

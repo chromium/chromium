@@ -189,7 +189,7 @@ TEST_F(ImageDecoderTest, DecodeUnsupported) {
   EXPECT_FALSE(v8_scope.GetExceptionState().HadException());
 
   {
-    auto promise = decoder->decodeMetadata();
+    auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
     EXPECT_TRUE(tester.IsRejected());
@@ -224,7 +224,7 @@ TEST_F(ImageDecoderTest, DecodeGif) {
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   {
-    auto promise = decoder->decodeMetadata();
+    auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
     ASSERT_TRUE(tester.IsFulfilled());
@@ -288,7 +288,7 @@ TEST_F(ImageDecoderTest, DecoderReset) {
 
   // Ensure decoding works properly after reset.
   {
-    auto promise = decoder->decodeMetadata();
+    auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
     ASSERT_TRUE(tester.IsFulfilled());
@@ -331,7 +331,7 @@ TEST_F(ImageDecoderTest, DecoderClose) {
   decoder->close();
 
   {
-    auto promise = decoder->decodeMetadata();
+    auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
     EXPECT_TRUE(tester.IsRejected());
@@ -359,7 +359,7 @@ TEST_F(ImageDecoderTest, DecoderContextDestroyed) {
   // pending activity.
   EXPECT_TRUE(decoder->HasPendingActivity());
   {
-    auto promise = decoder->decodeMetadata();
+    auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
     EXPECT_TRUE(tester.IsFulfilled());
@@ -377,11 +377,10 @@ TEST_F(ImageDecoderTest, DecoderContextDestroyed) {
   EXPECT_FALSE(decoder->HasPendingActivity());
 
   // Promises won't resolve or reject now that the context is destroyed, but we
-  // should ensure decodeMetadata() and decode() don't trigger any issues.
-  decoder->decodeMetadata();
+  // should ensure decode() doesn't trigger any issues.
   decoder->decode(MakeOptions(0, true));
 
-  // This will fail if a decode() or decodeMetadata() was queued.
+  // This will fail if a decode() or metadata decode was queued.
   EXPECT_FALSE(decoder->HasPendingActivity());
 }
 
@@ -419,7 +418,7 @@ TEST_F(ImageDecoderTest, DecoderReadableStream) {
 
   // Ensure we have metadata.
   {
-    auto promise = decoder->decodeMetadata();
+    auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
     ASSERT_TRUE(tester.IsFulfilled());
@@ -439,7 +438,7 @@ TEST_F(ImageDecoderTest, DecoderReadableStream) {
 
   // Metadata should resolve okay while no track is selected.
   {
-    auto promise = decoder->decodeMetadata();
+    auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
     ASSERT_TRUE(tester.IsFulfilled());
@@ -501,7 +500,7 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
       v8_scope.GetIsolate(),
       ToV8(DOMUint8Array::Create(data_ptr, 1), v8_scope.GetScriptState())));
 
-  auto metadata_promise = decoder->decodeMetadata();
+  auto metadata_promise = decoder->tracks().ready(v8_scope.GetScriptState());
   auto decode_promise = decoder->decode();
   base::RunLoop().RunUntilIdle();
 
@@ -558,7 +557,7 @@ TEST_F(ImageDecoderTest, DecodePartialImage) {
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   {
-    auto promise = decoder->decodeMetadata();
+    auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
     ASSERT_TRUE(tester.IsFulfilled());

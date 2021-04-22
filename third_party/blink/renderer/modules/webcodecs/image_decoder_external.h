@@ -50,7 +50,6 @@ class MODULES_EXPORT ImageDecoderExternal final
 
   // image_decoder.idl implementation.
   ScriptPromise decode(const ImageDecodeOptions* options = nullptr);
-  ScriptPromise decodeMetadata();
   void reset(DOMException* exception = nullptr);
   void close();
   String type() const;
@@ -75,7 +74,6 @@ class MODULES_EXPORT ImageDecoderExternal final
 
  private:
   void MaybeSatisfyPendingDecodes();
-  void MaybeSatisfyPendingMetadataDecodes();
 
   void OnDecodeReady(
       std::unique_ptr<ImageDecoderCore::ImageDecodeResult> result);
@@ -147,7 +145,6 @@ class MODULES_EXPORT ImageDecoderExternal final
     Member<DOMException> exception;
   };
   HeapVector<Member<DecodeRequest>> pending_decodes_;
-  HeapVector<Member<ScriptPromiseResolver>> pending_metadata_decodes_;
 
   // WeakPtrFactory used only for decode() requests. Invalidated upon decoding
   // errors or a call to reset().

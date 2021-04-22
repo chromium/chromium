@@ -11,7 +11,9 @@
 namespace blink {
 
 ImageTrackList::ImageTrackList(ImageDecoderExternal* image_decoder)
-    : image_decoder_(image_decoder) {}
+    : image_decoder_(image_decoder),
+      ready_property_(MakeGarbageCollected<ReadyProperty>(
+          image_decoder->GetExecutionContext())) {}
 
 ImageTrackList::~ImageTrackList() = default;
 
@@ -27,6 +29,20 @@ base::Optional<ImageTrack*> ImageTrackList::selectedTrack() const {
   if (!selected_track_id_)
     return base::nullopt;
   return tracks_[*selected_track_id_].Get();
+}
+
+ScriptPromise ImageTrackList::ready(ScriptState* script_state) {
+  return ready_property_->Promise(script_state->World());
+}
+
+void ImageTrackList::OnTracksReady(DOMException* exception) {
+  if (!exception) {
+    DCHECK(!IsEmpty());
+    ready_property_->ResolveWithUndefined();
+  } else {
+    DCHECK(IsEmpty());
+    ready_property_->Reject(exception);
+  }
 }
 
 void ImageTrackList::AddTrack(uint32_t frame_count,
@@ -68,6 +84,7 @@ void ImageTrackList::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(image_decoder_);
   visitor->Trace(tracks_);
+  visitor->Trace(ready_property_);
 }
 
 }  // namespace blink

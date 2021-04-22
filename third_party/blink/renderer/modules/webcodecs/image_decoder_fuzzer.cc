@@ -67,7 +67,7 @@ void RunFuzzingLoop(ImageDecoderExternal* image_decoder,
         image_decoder->decode(options);
         break;
       case wc_fuzzer::ImageDecoderApiInvocation::kDecodeMetadata:
-        image_decoder->decodeMetadata();
+        // Deprecated.
         break;
       case wc_fuzzer::ImageDecoderApiInvocation::kSelectTrack: {
         auto* track = image_decoder->tracks().AnonymousIndexedGetter(

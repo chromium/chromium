@@ -772,7 +772,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method close
 [Worker]     method constructor
 [Worker]     method decode
-[Worker]     method decodeMetadata
 [Worker]     method reset
 [Worker] interface ImageTrack
 [Worker]     attribute @@toStringTag
@@ -785,6 +784,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface ImageTrackList
 [Worker]     attribute @@toStringTag
 [Worker]     getter length
+[Worker]     getter ready
 [Worker]     getter selectedIndex
 [Worker]     getter selectedTrack
 [Worker]     method @@iterator

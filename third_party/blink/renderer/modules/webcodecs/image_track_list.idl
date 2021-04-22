@@ -16,4 +16,8 @@
 
   // Helper accessor for the currently selected track.
   readonly attribute ImageTrack? selectedTrack;
+
+  // Property-based promise for signaling initial metadata readiness (e.g.,
+  // track count, animation status, etc).
+  [CallWith=ScriptState] readonly attribute Promise<void> ready;
 };
