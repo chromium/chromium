@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.UiRestriction;
@@ -61,6 +62,9 @@ public class ExploreSurfaceViewBinderTest {
     @Mock
     private ScrollableContainerDelegate mScrollableContainerDelegate;
 
+    @Mock
+    private BottomSheetController mBottomSheetController;
+
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityFromLauncher();
@@ -70,10 +74,15 @@ public class ExploreSurfaceViewBinderTest {
         // well in debug build).
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
-            mExploreSurfaceCoordinator = new ExploreSurfaceCoordinator(
-                    mActivityTestRule.getActivity(),
-                    mActivityTestRule.getActivity().getCompositorViewHolder(), mPropertyModel, true,
-                    null, new ObservableSupplierImpl<>(), mScrollableContainerDelegate);
+            mExploreSurfaceCoordinator =
+                    new ExploreSurfaceCoordinator(mActivityTestRule.getActivity(),
+                            mActivityTestRule.getActivity().getCompositorViewHolder(),
+                            mPropertyModel, true, mBottomSheetController,
+                            new ObservableSupplierImpl<>(), mScrollableContainerDelegate,
+                            mActivityTestRule.getActivity().getSnackbarManager(),
+                            mActivityTestRule.getActivity().getShareDelegateSupplier(),
+                            mActivityTestRule.getActivity().getWindowAndroid(),
+                            mActivityTestRule.getActivity().getTabModelSelector());
             mFeedSurfaceCoordinator =
                     mExploreSurfaceCoordinator.getFeedSurfaceCreator().createFeedSurfaceCoordinator(
                             false, /* isPlaceholderShown= */ false);

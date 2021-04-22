@@ -29,6 +29,13 @@ public class StartSurfaceDelegate {
             OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
             Supplier<Tab> parentTabSupplier, boolean hadWarmStart, WindowAndroid windowAndroid) {
         return new StartSurfaceCoordinator(activity, scrimCoordinator, sheetController,
-                startSurfaceOneshotSupplier, parentTabSupplier, hadWarmStart, windowAndroid);
+                startSurfaceOneshotSupplier, parentTabSupplier, hadWarmStart, windowAndroid,
+                activity.getCompositorViewHolder(),
+                activity.getCompositorViewHolder()::getDynamicResourceLoader,
+                activity.getTabModelSelector(), activity.getBrowserControlsManager(),
+                activity.getSnackbarManager(), activity.getShareDelegateSupplier(),
+                activity.getToolbarManager().getOmniboxStub(), activity.getTabContentManager(),
+                activity.getModalDialogManager(),
+                /* chromeActivityNativeDelegate= */ activity);
     }
 }

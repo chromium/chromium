@@ -5,7 +5,9 @@
 package org.chromium.chrome.features.start_surface;
 
 import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -17,15 +19,22 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.ntp.ScrollListener;
 import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.TasksSurface;
 import org.chromium.chrome.browser.tasks.TasksSurfaceProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.features.start_surface.StartSurfaceMediator.SurfaceMode;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -33,9 +42,11 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +64,16 @@ public class StartSurfaceCoordinator implements StartSurface {
     private final BottomSheetController mBottomSheetController;
     private final Supplier<Tab> mParentTabSupplier;
     private final WindowAndroid mWindowAndroid;
+    private final ViewGroup mContainerView;
+    private final Supplier<DynamicResourceLoader> mDynamicResourceLoaderSupplier;
+    private final TabModelSelector mTabModelSelector;
+    private final BrowserControlsManager mBrowserControlsManager;
+    private final SnackbarManager mSnackbarManager;
+    private final Supplier<ShareDelegate> mShareDelegateSupplier;
+    private final OmniboxStub mOmniboxStub;
+    private final TabContentManager mTabContentManager;
+    private final ModalDialogManager mModalDialogManager;
+    private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
 
     // Non-null in SurfaceMode.SINGLE_PANE mode.
     @Nullable
@@ -125,49 +146,68 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         @Override
         public int getRootViewHeight() {
-            return mActivity.getCompositorViewHolder().getHeight();
+            return mContainerView.getHeight();
         }
 
         @Override
         public int getTopPositionRelativeToContainerView(View childView) {
             int[] pos = new int[2];
-            ViewUtils.getRelativeLayoutPosition(
-                    mActivity.getCompositorViewHolder(), childView, pos);
+            ViewUtils.getRelativeLayoutPosition(mContainerView, childView, pos);
             return pos[1];
         }
     }
 
     // TODO(http://crbug.com/1093421): Remove dependency on ChromeActivity.
-    public StartSurfaceCoordinator(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
-            BottomSheetController sheetController,
-            OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
-            Supplier<Tab> parentTabSupplier, boolean hadWarmStart, WindowAndroid windowAndroid) {
+    public StartSurfaceCoordinator(@NonNull ChromeActivity activity,
+            @NonNull ScrimCoordinator scrimCoordinator,
+            @NonNull BottomSheetController sheetController,
+            @NonNull OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
+            @NonNull Supplier<Tab> parentTabSupplier, boolean hadWarmStart,
+            @NonNull WindowAndroid windowAndroid, @NonNull ViewGroup containerView,
+            @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull BrowserControlsManager browserControlsManager,
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
+            @NonNull OmniboxStub omniboxStub, @NonNull TabContentManager tabContentManager,
+            @NonNull ModalDialogManager modalDialogManager,
+            @NonNull ChromeActivityNativeDelegate chromeActivityNativeDelegate) {
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
         mSurfaceMode = computeSurfaceMode();
         mBottomSheetController = sheetController;
         mParentTabSupplier = parentTabSupplier;
         mWindowAndroid = windowAndroid;
+        mContainerView = containerView;
+        mDynamicResourceLoaderSupplier = dynamicResourceLoaderSupplier;
+        mTabModelSelector = tabModelSelector;
+        mBrowserControlsManager = browserControlsManager;
+        mSnackbarManager = snackbarManager;
+        mShareDelegateSupplier = shareDelegateSupplier;
+        mOmniboxStub = omniboxStub;
+        mTabContentManager = tabContentManager;
+        mModalDialogManager = modalDialogManager;
+        mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
 
         boolean excludeMVTiles = StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES.getValue()
                 || mSurfaceMode == SurfaceMode.NO_START_SURFACE;
         if (mSurfaceMode == SurfaceMode.NO_START_SURFACE) {
             // Create Tab switcher directly to save one layer in the view hierarchy.
             mTabSwitcher = TabManagementModuleProvider.getDelegate().createGridTabSwitcher(
-                    mActivity, mActivity.getCompositorViewHolder(), scrimCoordinator);
+                    mActivity, mContainerView, scrimCoordinator);
         } else {
             createAndSetStartSurface(excludeMVTiles);
         }
 
         TabSwitcher.Controller controller =
                 mTabSwitcher != null ? mTabSwitcher.getController() : mTasksSurface.getController();
-        mStartSurfaceMediator = new StartSurfaceMediator(controller,
-                mActivity.getTabModelSelector(), mPropertyModel,
+        mStartSurfaceMediator = new StartSurfaceMediator(controller, mTabModelSelector,
+                mPropertyModel,
                 mSurfaceMode == SurfaceMode.SINGLE_PANE ? this::initializeSecondaryTasksSurface
                                                         : null,
-                mSurfaceMode, mActivity, mActivity.getBrowserControlsManager(),
-                this::isActivityFinishingOrDestroyed, excludeMVTiles,
-                startSurfaceOneshotSupplier, hadWarmStart);
+                mSurfaceMode, mActivity, mBrowserControlsManager,
+                this::isActivityFinishingOrDestroyed, excludeMVTiles, startSurfaceOneshotSupplier,
+                hadWarmStart);
 
         // Show feed loading image.
         if (mStartSurfaceMediator.shouldShowFeedPlaceholder()) {
@@ -260,24 +300,22 @@ public class StartSurfaceCoordinator implements StartSurface {
             mExploreSurfaceCoordinator =
                     new ExploreSurfaceCoordinator(mActivity, mTasksSurface.getBodyViewContainer(),
                             mPropertyModel, true, mBottomSheetController, mParentTabSupplier,
-                            new ScrollableContainerDelegateImpl());
+                            new ScrollableContainerDelegateImpl(), mSnackbarManager,
+                            mShareDelegateSupplier, mWindowAndroid, mTabModelSelector);
         }
-        mStartSurfaceMediator.initWithNative(mSurfaceMode != SurfaceMode.NO_START_SURFACE
-                        ? mActivity.getToolbarManager().getOmniboxStub()
-                        : null,
+        mStartSurfaceMediator.initWithNative(
+                mSurfaceMode != SurfaceMode.NO_START_SURFACE ? mOmniboxStub : null,
                 mExploreSurfaceCoordinator != null
                         ? mExploreSurfaceCoordinator.getFeedSurfaceCreator()
                         : null,
                 UserPrefs.get(Profile.getLastUsedRegularProfile()));
 
         if (mTabSwitcher != null) {
-            mTabSwitcher.initWithNative(mActivity, mActivity.getTabContentManager(),
-                    mActivity.getCompositorViewHolder().getDynamicResourceLoader(), mActivity,
-                    mActivity.getModalDialogManager());
+            mTabSwitcher.initWithNative(mActivity, mTabContentManager,
+                    mDynamicResourceLoaderSupplier.get(), mActivity, mModalDialogManager);
         }
         if (mTasksSurface != null) {
-            mTasksSurface.onFinishNativeInitialization(
-                    mActivity, mActivity.getToolbarManager().getOmniboxStub());
+            mTasksSurface.onFinishNativeInitialization(mActivity, mOmniboxStub);
         }
 
         if (mIsInitPending) {
@@ -286,8 +324,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         if (mIsSecondaryTaskInitPending) {
             mIsSecondaryTaskInitPending = false;
-            mSecondaryTasksSurface.onFinishNativeInitialization(
-                    mActivity, mActivity.getToolbarManager().getOmniboxStub());
+            mSecondaryTasksSurface.onFinishNativeInitialization(mActivity, mOmniboxStub);
             mSecondaryTasksSurface.initialize();
         }
     }
@@ -390,8 +427,8 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         mTasksSurfacePropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mPropertyModel,
-                new TasksSurfaceViewBinder.ViewHolder(mActivity.getCompositorViewHolder(),
-                        mTasksSurface.getView(), mTasksSurface.getTopToolbarPlaceholderView()),
+                new TasksSurfaceViewBinder.ViewHolder(mContainerView, mTasksSurface.getView(),
+                        mTasksSurface.getTopToolbarPlaceholderView()),
                 TasksSurfaceViewBinder::bind);
     }
 
@@ -405,8 +442,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mActivity, mScrimCoordinator, propertyModel, TabSwitcherType.GRID,
                 mParentTabSupplier, false, mWindowAndroid);
         if (mIsInitializedWithNative) {
-            mSecondaryTasksSurface.onFinishNativeInitialization(
-                    mActivity, mActivity.getToolbarManager().getOmniboxStub());
+            mSecondaryTasksSurface.onFinishNativeInitialization(mActivity, mOmniboxStub);
             mSecondaryTasksSurface.initialize();
         } else {
             mIsSecondaryTaskInitPending = true;
@@ -415,7 +451,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mSecondaryTasksSurface.getView().setId(R.id.secondary_tasks_surface_view);
         mSecondaryTasksSurfacePropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(mPropertyModel,
-                        new TasksSurfaceViewBinder.ViewHolder(mActivity.getCompositorViewHolder(),
+                        new TasksSurfaceViewBinder.ViewHolder(mContainerView,
                                 mSecondaryTasksSurface.getView(),
                                 mSecondaryTasksSurface.getTopToolbarPlaceholderView()),
                         SecondaryTasksSurfaceViewBinder::bind);
@@ -433,7 +469,8 @@ public class StartSurfaceCoordinator implements StartSurface {
     // ChromeTabbedActivity.startNativeInitialization where creates the Start surface. So one
     // possible reason is the ChromeTabbedActivity is finishing or destroyed when showing overview.
     private boolean isActivityFinishingOrDestroyed() {
-        boolean finishingOrDestroyed = mActivity.isActivityFinishingOrDestroyed()
+        boolean finishingOrDestroyed =
+                mChromeActivityNativeDelegate.isActivityFinishingOrDestroyed()
                 || ApplicationStatus.getStateForActivity(mActivity) == ActivityState.DESTROYED;
         // TODO(crbug.com/1047488): Assert false. Do not do that in this CL to keep it small since
         // Start surface is eanbled in the fieldtrial_testing_config.json, which requires update of
