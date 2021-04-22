@@ -37,6 +37,11 @@
 #include "ui/display/test/display_manager_test_api.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(OS_LINUX) && defined(USE_OZONE)
+#include "ui/base/ui_base_features.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 using url::kAboutBlankURL;
 using content::WebContents;
 using ui::PAGE_TRANSITION_TYPED;
@@ -93,8 +98,8 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
   }
 
  private:
-   void ToggleTabFullscreen_Internal(bool enter_fullscreen,
-                                     bool retry_until_success);
+  void ToggleTabFullscreen_Internal(bool enter_fullscreen,
+                                    bool retry_until_success);
 };
 
 void FullscreenControllerInteractiveTest::ToggleTabFullscreen(
@@ -153,6 +158,14 @@ void FullscreenControllerInteractiveTest::ToggleTabFullscreen_Internal(
 // Tests that while in fullscreen creating a new tab will exit fullscreen.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        TestNewTabExitsFullscreen) {
+#if defined(OS_LINUX) && defined(USE_OZONE)
+  // Flaky in Linux interactive_ui_tests_wayland: crbug.com/1200036
+  if (features::IsUsingOzonePlatform() &&
+      ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    GTEST_SKIP();
+  }
+#endif
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   AddTabAtIndex(0, GURL(url::kAboutBlankURL), PAGE_TRANSITION_TYPED);
