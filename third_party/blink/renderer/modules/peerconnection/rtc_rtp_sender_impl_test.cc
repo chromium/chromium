@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/test_webrtc_stats_report_obtainer.h"
+#include "third_party/blink/renderer/modules/peerconnection/testing/mock_rtp_sender.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
@@ -28,7 +29,6 @@
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/webrtc/api/stats/rtc_stats_report.h"
 #include "third_party/webrtc/api/stats/rtcstats_objects.h"
-#include "third_party/webrtc/api/test/mock_rtpsender.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -45,7 +45,7 @@ class RTCRtpSenderImplTest : public ::testing::Test {
         dependency_factory_.Get(), main_thread_);
     peer_connection_ = new rtc::RefCountedObject<blink::MockPeerConnectionImpl>(
         dependency_factory_.Get(), nullptr);
-    mock_webrtc_sender_ = new rtc::RefCountedObject<webrtc::MockRtpSender>();
+    mock_webrtc_sender_ = new rtc::RefCountedObject<MockRtpSender>();
   }
 
   void TearDown() override {
@@ -148,7 +148,7 @@ class RTCRtpSenderImplTest : public ::testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map_;
   rtc::scoped_refptr<blink::MockPeerConnectionImpl> peer_connection_;
-  rtc::scoped_refptr<webrtc::MockRtpSender> mock_webrtc_sender_;
+  rtc::scoped_refptr<MockRtpSender> mock_webrtc_sender_;
   std::unique_ptr<RTCRtpSenderImpl> sender_;
 };
 

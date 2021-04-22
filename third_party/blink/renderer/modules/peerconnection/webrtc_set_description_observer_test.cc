@@ -18,11 +18,11 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl.h"
+#include "third_party/blink/renderer/modules/peerconnection/testing/mock_peer_connection_interface.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
-#include "third_party/webrtc/api/test/mock_peerconnectioninterface.h"
 #include "third_party/webrtc/media/base/fake_media_engine.h"
 
 using ::testing::Return;
@@ -221,7 +221,7 @@ class WebRtcSetDescriptionObserverHandlerTest
         surfacer_type_(std::get<1>(GetParam())) {}
 
   void SetUp() override {
-    pc_ = new webrtc::MockPeerConnectionInterface;
+    pc_ = new MockPeerConnectionInterface;
     dependency_factory_ =
         MakeGarbageCollected<MockPeerConnectionDependencyFactory>();
     main_thread_ = blink::scheduler::GetSingleThreadTaskRunnerForTesting();
@@ -361,7 +361,7 @@ class WebRtcSetDescriptionObserverHandlerTest
   }
 
  protected:
-  scoped_refptr<webrtc::MockPeerConnectionInterface> pc_;
+  scoped_refptr<MockPeerConnectionInterface> pc_;
   Persistent<MockPeerConnectionDependencyFactory> dependency_factory_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map_;

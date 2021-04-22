@@ -16,12 +16,12 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
+#include "third_party/blink/renderer/modules/peerconnection/testing/mock_transformable_video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
-#include "third_party/webrtc/api/test/mock_transformable_video_frame.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 using testing::_;
@@ -93,8 +93,7 @@ class RTCEncodedVideoUnderlyingSinkTest : public testing::Test {
   RTCEncodedVideoStreamTransformer* GetTransformer() { return &transformer_; }
 
   ScriptValue CreateEncodedVideoFrameChunk(ScriptState* script_state) {
-    auto mock_frame =
-        std::make_unique<NiceMock<webrtc::MockTransformableVideoFrame>>();
+    auto mock_frame = std::make_unique<NiceMock<MockTransformableVideoFrame>>();
     ON_CALL(*mock_frame.get(), GetSsrc).WillByDefault(Return(kSSRC));
     RTCEncodedVideoFrame* frame =
         MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(mock_frame));

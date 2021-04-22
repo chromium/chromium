@@ -25,8 +25,6 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
-#include "third_party/webrtc/api/test/mock_rtpreceiver.h"
-#include "third_party/webrtc/api/test/mock_rtpsender.h"
 
 namespace blink {
 

@@ -19,13 +19,13 @@
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/test_webrtc_stats_report_obtainer.h"
+#include "third_party/blink/renderer/modules/peerconnection/testing/mock_rtp_receiver.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/webrtc/api/stats/rtc_stats_report.h"
 #include "third_party/webrtc/api/stats/rtcstats_objects.h"
-#include "third_party/webrtc/api/test/mock_rtpreceiver.h"
 
 namespace blink {
 
@@ -99,8 +99,7 @@ class RTCRtpReceiverImplTest : public ::testing::Test {
       std::unique_ptr<blink::WebRtcMediaStreamTrackAdapterMap::AdapterRef>*
           track_ref,
       base::RunLoop* run_loop) {
-    mock_webrtc_receiver_ =
-        new rtc::RefCountedObject<webrtc::MockRtpReceiver>();
+    mock_webrtc_receiver_ = new rtc::RefCountedObject<MockRtpReceiver>();
     *track_ref = track_map_->GetOrCreateRemoteTrackAdapter(webrtc_track);
     run_loop->Quit();
   }
@@ -111,7 +110,7 @@ class RTCRtpReceiverImplTest : public ::testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map_;
   rtc::scoped_refptr<blink::MockPeerConnectionImpl> peer_connection_;
-  rtc::scoped_refptr<webrtc::MockRtpReceiver> mock_webrtc_receiver_;
+  rtc::scoped_refptr<MockRtpReceiver> mock_webrtc_receiver_;
   std::unique_ptr<RTCRtpReceiverImpl> receiver_;
 };
 
