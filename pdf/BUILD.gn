@@ -20,16 +20,18 @@ buildflag_header("buildflags") {
 }
 
 if (enable_pdf) {
-  config("pdf_common_config") {
+  config("common") {
     configs = [ "//build/config/compiler:noshadowing" ]
+  }
 
+  config("pdfium_includes") {
     include_dirs = [ "//third_party/pdfium" ]
   }
 
   static_library("pdf") {
     sources = [ "pdf.cc" ]
 
-    configs += [ ":pdf_common_config" ]
+    configs += [ ":common" ]
 
     public = [ "pdf.h" ]
 
@@ -44,7 +46,7 @@ if (enable_pdf) {
   static_library("pdf_ppapi") {
     sources = [ "pdf_ppapi.cc" ]
 
-    configs += [ ":pdf_common_config" ]
+    configs += [ ":common" ]
 
     public = [ "pdf_ppapi.h" ]
 
@@ -63,7 +65,7 @@ if (enable_pdf) {
   source_set("features") {
     sources = [ "pdf_features.cc" ]
 
-    configs += [ ":pdf_common_config" ]
+    configs += [ ":common" ]
 
     public = [ "pdf_features.h" ]
 
@@ -150,7 +152,9 @@ if (enable_pdf) {
       "url_loader_wrapper_impl.h",
     ]
 
-    configs += [ ":pdf_common_config" ]
+    public_configs = [ ":pdfium_includes" ]
+
+    configs += [ ":common" ]
 
     public_deps = [ "//skia" ]
 
@@ -195,7 +199,7 @@ if (enable_pdf) {
       "ppapi_migration/ppapi_assert_matching_enums.cc",
     ]
 
-    configs += [ ":pdf_common_config" ]
+    configs += [ ":common" ]
 
     deps = [
       ":accessibility_structs",
@@ -219,7 +223,7 @@ if (enable_pdf) {
       "accessibility_structs.h",
     ]
 
-    configs += [ ":pdf_common_config" ]
+    configs += [ ":common" ]
 
     deps = [
       "//base",
@@ -249,7 +253,7 @@ if (enable_pdf) {
       "ppapi_migration/value_conversions.h",
     ]
 
-    configs += [ ":pdf_common_config" ]
+    configs += [ ":common" ]
 
     public_deps = [ "//third_party/abseil-cpp:absl" ]
 
@@ -273,7 +277,7 @@ if (enable_pdf) {
       "out_of_process_instance.h",
     ]
 
-    configs += [ ":pdf_common_config" ]
+    configs += [ ":common" ]
 
     public_deps = [ "//third_party/abseil-cpp:absl" ]
 
@@ -309,7 +313,7 @@ if (enable_pdf) {
       "post_message_sender.h",
     ]
 
-    configs += [ ":pdf_common_config" ]
+    configs += [ ":common" ]
 
     public = [ "pdf_view_web_plugin.h" ]
 
@@ -389,7 +393,7 @@ if (enable_pdf) {
     ]
 
     configs += [
-      ":pdf_common_config",
+      ":common",
       "//v8:external_startup_data",
     ]
 
