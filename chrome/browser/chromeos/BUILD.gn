@@ -4097,6 +4097,7 @@ source_set("unit_tests") {
     "policy/off_hours/off_hours_policy_applier_unittest.cc",
     "policy/off_hours/off_hours_proto_parser_unittest.cc",
     "policy/powerwash_requirements_checker_unittest.cc",
+    "policy/remote_commands/crd_host_delegate_unittest.cc",
     "policy/remote_commands/device_command_get_available_routines_job_unittest.cc",
     "policy/remote_commands/device_command_get_routine_update_job_unittest.cc",
     "policy/remote_commands/device_command_remote_powerwash_job_unittest.cc",

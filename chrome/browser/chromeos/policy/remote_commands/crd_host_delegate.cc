@@ -38,6 +38,25 @@ constexpr char kChromotingRemoteSupportOAuth2Scope[] =
 constexpr char kTachyonOAuth2Scope[] =
     "https://www.googleapis.com/auth/tachyon";
 
+class DefaultNativeMessageHostFactory
+    : public CRDHostDelegate::NativeMessageHostFactory {
+ public:
+  DefaultNativeMessageHostFactory() = default;
+  DefaultNativeMessageHostFactory(const DefaultNativeMessageHostFactory&) =
+      delete;
+  DefaultNativeMessageHostFactory& operator=(
+      const DefaultNativeMessageHostFactory&) = delete;
+  ~DefaultNativeMessageHostFactory() override = default;
+
+  // CRDHostDelegate::NativeMessageHostFactory implementation:
+  std::unique_ptr<extensions::NativeMessageHost> CreateNativeMessageHostHost()
+      override {
+    return remoting::CreateIt2MeNativeMessagingHostForChromeOS(
+        content::GetIOThreadTaskRunner({}), content::GetUIThreadTaskRunner({}),
+        g_browser_process->policy_service());
+  }
+};
+
 }  // namespace
 
 // Helper class that asynchronously fetches the OAuth token, and passes it to
@@ -46,24 +65,24 @@ class CRDHostDelegate::OAuthTokenFetcher
     : public OAuth2AccessTokenManager::Consumer {
  public:
   OAuthTokenFetcher(
+      DeviceOAuth2TokenService* oauth_service,
       DeviceCommandStartCRDSessionJob::OAuthTokenCallback success_callback,
       DeviceCommandStartCRDSessionJob::ErrorCallback error_callback)
       : OAuth2AccessTokenManager::Consumer("crd_host_delegate"),
+        oauth_service_(*oauth_service),
         success_callback_(std::move(success_callback)),
-        error_callback_(std::move(error_callback)) {}
+        error_callback_(std::move(error_callback)) {
+    DCHECK(oauth_service);
+  }
   OAuthTokenFetcher(const OAuthTokenFetcher&) = delete;
   OAuthTokenFetcher& operator=(const OAuthTokenFetcher&) = delete;
   ~OAuthTokenFetcher() override = default;
 
   void Start() {
-    DeviceOAuth2TokenService* oauth_service =
-        DeviceOAuth2TokenServiceFactory::Get();
-
     OAuth2AccessTokenManager::ScopeSet scopes{
         GaiaConstants::kGoogleUserInfoEmail, kCloudDevicesOAuth2Scope,
         kChromotingRemoteSupportOAuth2Scope, kTachyonOAuth2Scope};
-
-    oauth_request_ = oauth_service->StartAccessTokenRequest(scopes, this);
+    oauth_request_ = oauth_service_.StartAccessTokenRequest(scopes, this);
   }
 
   bool is_running() const { return oauth_request_ != nullptr; }
@@ -85,6 +104,7 @@ class CRDHostDelegate::OAuthTokenFetcher
     oauth_request_.reset();
   }
 
+  DeviceOAuth2TokenService& oauth_service_;
   DeviceCommandStartCRDSessionJob::OAuthTokenCallback success_callback_;
   DeviceCommandStartCRDSessionJob::ErrorCallback error_callback_;
   // Handler for the OAuth access token request.
@@ -92,7 +112,14 @@ class CRDHostDelegate::OAuthTokenFetcher
   std::unique_ptr<OAuth2AccessTokenManager::Request> oauth_request_;
 };
 
-CRDHostDelegate::CRDHostDelegate() = default;
+CRDHostDelegate::CRDHostDelegate()
+    : CRDHostDelegate(std::make_unique<DefaultNativeMessageHostFactory>()) {}
+
+CRDHostDelegate::CRDHostDelegate(
+    std::unique_ptr<NativeMessageHostFactory> factory)
+    : factory_(std::move(factory)) {
+  DCHECK(factory_);
+}
 
 CRDHostDelegate::~CRDHostDelegate() {}
 
@@ -146,10 +173,11 @@ base::TimeDelta CRDHostDelegate::GetIdlenessPeriod() const {
 void CRDHostDelegate::FetchOAuthToken(
     DeviceCommandStartCRDSessionJob::OAuthTokenCallback success_callback,
     DeviceCommandStartCRDSessionJob::ErrorCallback error_callback) {
+  DCHECK(oauth_service());
   DCHECK(!oauth_token_fetcher_ || !oauth_token_fetcher_->is_running());
 
   oauth_token_fetcher_ = std::make_unique<OAuthTokenFetcher>(
-      std::move(success_callback), std::move(error_callback));
+      oauth_service(), std::move(success_callback), std::move(error_callback));
   oauth_token_fetcher_->Start();
 }
 
@@ -161,11 +189,11 @@ void CRDHostDelegate::StartCRDHostAndGetCode(
   DCHECK(!host_);
   DCHECK(!code_success_callback_);
   DCHECK(!error_callback_);
+  DCHECK(oauth_service());
 
   // Store all parameters for future connect call.
   base::Value connect_params(base::Value::Type::DICTIONARY);
-  CoreAccountId account_id =
-      DeviceOAuth2TokenServiceFactory::Get()->GetRobotAccountId();
+  CoreAccountId account_id = oauth_service()->GetRobotAccountId();
 
   // TODO(msarda): This conversion will not be correct once account id is
   // migrated to be the Gaia ID on ChromeOS. Fix it.
@@ -187,9 +215,7 @@ void CRDHostDelegate::StartCRDHostAndGetCode(
   error_callback_ = std::move(error_callback);
 
   // TODO(antrim): set up watchdog timer (reasonable cutoff).
-  host_ = remoting::CreateIt2MeNativeMessagingHostForChromeOS(
-      content::GetIOThreadTaskRunner({}), content::GetUIThreadTaskRunner({}),
-      g_browser_process->policy_service());
+  host_ = factory_->CreateNativeMessageHostHost();
   host_->Start(this);
 
   base::Value params(base::Value::Type::DICTIONARY);
@@ -199,6 +225,11 @@ void CRDHostDelegate::StartCRDHostAndGetCode(
 void CRDHostDelegate::PostMessageFromNativeHost(const std::string& message) {
   std::unique_ptr<base::Value> message_value =
       base::JSONReader::ReadDeprecated(message);
+  if (!message_value) {
+    OnProtocolBroken("Message is invalid JSON");
+    return;
+  }
+
   if (!message_value->is_dict()) {
     OnProtocolBroken("Message is not a dictionary");
     return;
@@ -216,14 +247,14 @@ void CRDHostDelegate::PostMessageFromNativeHost(const std::string& message) {
     OnHelloResponse();
     return;
   } else if (type == remoting::kConnectResponse) {
-    // Ok, just ignore.
+    //  Ok, just ignore.
     return;
   } else if (type == remoting::kDisconnectResponse) {
     OnDisconnectResponse();
     return;
   } else if (type == remoting::kHostStateChangedMessage ||
              type == remoting::kErrorMessage) {
-    // Handle CRD host state changes
+    //  Handle CRD host state changes
     auto* state_value = message_value->FindKeyOfType(remoting::kState,
                                                      base::Value::Type::STRING);
     if (!state_value) {
@@ -243,7 +274,7 @@ void CRDHostDelegate::PostMessageFromNativeHost(const std::string& message) {
       OnStateError(state, *message_value);
     } else if (state == remoting::kHostStateStarting ||
                state == remoting::kHostStateRequestedAccessCode) {
-      // Just ignore these states.
+      //  Just ignore these states.
     } else {
       LOG(WARNING) << "Unhandled state :" << type;
     }
@@ -270,21 +301,21 @@ void CRDHostDelegate::OnStateError(std::string error_state,
                                    base::Value& message) {
   std::string error_message;
   if (error_state == remoting::kHostStateDomainError) {
-    error_message = "CRD Error : Invalid domain";
+    error_message = "Invalid domain";
   } else {
     auto* error_code_value = message.FindKeyOfType(remoting::kErrorMessageCode,
                                                    base::Value::Type::STRING);
     if (error_code_value)
       error_message = error_code_value->GetString();
     else
-      error_message = "Unknown CRD Error";
+      error_message = "Unknown Error";
   }
   // Notify callback if command is still running.
   if (command_awaiting_crd_access_code_) {
     command_awaiting_crd_access_code_ = false;
     std::move(error_callback_)
         .Run(DeviceCommandStartCRDSessionJob::FAILURE_CRD_HOST_ERROR,
-             "CRD Error state " + error_state);
+             "CRD State Error: " + error_message);
     code_success_callback_.Reset();
   }
   // Shut down host, if any.
@@ -395,6 +426,10 @@ Profile* CRDHostDelegate::GetKioskProfile() const {
   auto* user_manager = user_manager::UserManager::Get();
   return chromeos::ProfileHelper::Get()->GetProfileByUser(
       user_manager->GetActiveUser());
+}
+
+DeviceOAuth2TokenService* CRDHostDelegate::oauth_service() const {
+  return DeviceOAuth2TokenServiceFactory::Get();
 }
 
 }  // namespace policy

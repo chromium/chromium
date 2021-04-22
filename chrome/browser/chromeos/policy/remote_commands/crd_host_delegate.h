@@ -15,6 +15,7 @@
 #include "chrome/browser/chromeos/policy/remote_commands/device_command_start_crd_session_job.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 
+class DeviceOAuth2TokenService;
 class Profile;
 
 namespace policy {
@@ -23,11 +24,17 @@ namespace policy {
 class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
                         public extensions::NativeMessageHost::Client {
  public:
-  CRDHostDelegate();
-  ~CRDHostDelegate() override;
+  class NativeMessageHostFactory {
+   public:
+    virtual ~NativeMessageHostFactory() = default;
 
- private:
-  class OAuthTokenFetcher;
+    virtual std::unique_ptr<extensions::NativeMessageHost>
+    CreateNativeMessageHostHost() = 0;
+  };
+
+  CRDHostDelegate();
+  explicit CRDHostDelegate(std::unique_ptr<NativeMessageHostFactory> factory);
+  ~CRDHostDelegate() override;
 
   // DeviceCommandStartCRDSessionJob::Delegate:
   bool HasActiveSession() const override;
@@ -43,6 +50,9 @@ class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
       bool terminate_upon_input,
       DeviceCommandStartCRDSessionJob::AccessCodeCallback success_callback,
       DeviceCommandStartCRDSessionJob::ErrorCallback error_callback) override;
+
+ private:
+  class OAuthTokenFetcher;
 
   // extensions::NativeMessageHost::Client:
   // Invoked when native host sends a message
@@ -69,6 +79,10 @@ class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
   void OnStateReceivedAccessCode(base::Value& message);
 
   Profile* GetKioskProfile() const;
+
+  DeviceOAuth2TokenService* oauth_service() const;
+
+  std::unique_ptr<NativeMessageHostFactory> factory_;
 
   std::unique_ptr<OAuthTokenFetcher> oauth_token_fetcher_;
 
