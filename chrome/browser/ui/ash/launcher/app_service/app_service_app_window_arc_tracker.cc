@@ -32,6 +32,9 @@
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/common/chrome_features.h"
+#include "components/arc/compat_mode/arc_splash_screen_dialog_view.h"
+#include "components/exo/shell_surface_base.h"
+#include "components/exo/shell_surface_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/widget.h"
@@ -224,8 +227,7 @@ void AppServiceAppWindowArcTracker::OnTaskDestroyed(int32_t task_id) {
   // Check if we may close controller now, at this point we can safely remove
   // controllers without window.
   const auto app_shelf_id = it->second->app_shelf_id();
-  auto it_controller =
-      app_shelf_group_to_controller_map_.find(app_shelf_id);
+  auto it_controller = app_shelf_group_to_controller_map_.find(app_shelf_id);
   if (it_controller != app_shelf_group_to_controller_map_.end()) {
     it_controller->second->RemoveTaskId(task_id);
     if (!it_controller->second->HasAnyTasks()) {
@@ -315,7 +317,33 @@ void AppServiceAppWindowArcTracker::OnWindowPropertyChanged(
   if (new_resize_lock_state &&
       current_resize_lock_state == arc::mojom::ArcResizeLockState::READY) {
     prefs->SetResizeLockState(*app_id, arc::mojom::ArcResizeLockState::ON);
-    // TODO(b/180253004): Show the splash screen.
+    auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(window);
+    if (!shell_surface_base)
+      return;
+    if (shell_surface_base->HasOverlay())
+      return;
+
+    // Show the splash screen in current window. The splash screen is an
+    // overlay covering the entire window. User can only remove the overlay
+    // before closing the window.
+    auto splash_screen_dialog = arc::BuildSplashScreenDialogView(
+        views::Button::PressedCallback(base::BindRepeating(
+            [](aura::Window* window, const ui::Event& event) {
+              auto* shell_surface_base =
+                  exo::GetShellSurfaceBaseForWindow(window);
+              if (!shell_surface_base)
+                return;
+              if (shell_surface_base->HasOverlay()) {
+                shell_surface_base->RemoveOverlay();
+              }
+              return;
+            },
+            base::Unretained(window))));
+
+    exo::ShellSurfaceBase::OverlayParams params(
+        std::move(splash_screen_dialog));
+    params.translucent = true;
+    shell_surface_base->AddOverlay(std::move(params));
   }
 }
 
