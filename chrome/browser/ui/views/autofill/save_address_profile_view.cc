@@ -78,12 +78,7 @@ std::unique_ptr<views::View> CreateAddressLineView() {
       line->SetLayoutManager(std::make_unique<views::FlexLayout>());
   line_layout->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetIgnoreDefaultMainAxisMargins(true)
-      .SetCollapseMargins(true)
-      // TODO(crbug.com/1167060): Use proper horizontal insets upon getting
-      // final mocks. Ideally it should be same width as a blankspace.
-      .SetDefault(views::kMarginsKey, gfx::Insets(
-                                          /*vertical=*/0,
-                                          /*horizontal=*/3));
+      .SetCollapseMargins(true);
   return line;
 }
 
@@ -113,11 +108,8 @@ std::unique_ptr<views::View> CreateStreetAddressView(
   const std::u16string& country_code = profile.GetInfo(kCountryCode, locale);
 
   std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> components;
-  // TODO(crbug.com/1167060): Update this implementation after
-  // GetAddressComponents() is adjusted to return address separators (e.g.
-  // commas).
   autofill::GetAddressComponents(base::UTF16ToUTF8(country_code), locale,
-                                 /*include_literals=*/false, &components,
+                                 /*include_literals=*/true, &components,
                                  nullptr);
 
   for (const std::vector<::i18n::addressinput::AddressUiComponent>& line :
@@ -125,8 +117,15 @@ std::unique_ptr<views::View> CreateStreetAddressView(
     std::unique_ptr<views::View> line_view = CreateAddressLineView();
     std::vector<std::u16string> components_str;
     for (const ::i18n::addressinput::AddressUiComponent& component : line) {
-      std::u16string field_value = profile.GetInfo(
-          autofill::AddressFieldToServerFieldType(component.field), locale);
+      // AddressUiComponent can represent an address field such as City, or a
+      // formatting literal such as "," or "-". If the literal field is empty,
+      // then it represents a field, otherwise, it is a literal.
+      std::u16string field_value =
+          component.literal.empty()
+              ? profile.GetInfo(
+                    autofill::AddressFieldToServerFieldType(component.field),
+                    locale)
+              : base::UTF8ToUTF16(component.literal);
       if (!field_value.empty())
         line_view->AddChildView(CreateAddressComponentLabel(field_value));
     }
