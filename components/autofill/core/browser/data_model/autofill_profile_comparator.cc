@@ -35,9 +35,17 @@ namespace {
 // The values corresponding to those types are visible in the settings.
 ServerFieldTypeSet GetUserVisibleTypes() {
   static const ServerFieldTypeSet user_visibe_type = {
-      NAME_FULL,         NAME_HONORIFIC_PREFIX,   ADDRESS_HOME_STREET_ADDRESS,
-      ADDRESS_HOME_CITY, ADDRESS_HOME_ZIP,        ADDRESS_HOME_COUNTRY,
-      EMAIL_ADDRESS,     PHONE_HOME_WHOLE_NUMBER, COMPANY_NAME};
+      NAME_FULL,
+      NAME_HONORIFIC_PREFIX,
+      ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY,
+      EMAIL_ADDRESS,
+      PHONE_HOME_WHOLE_NUMBER,
+      COMPANY_NAME};
   return user_visibe_type;
 }
 
