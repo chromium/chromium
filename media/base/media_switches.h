@@ -246,6 +246,8 @@ MEDIA_EXPORT std::string GetEffectiveAutoplayPolicy(
 
 MEDIA_EXPORT bool IsVideoCaptureAcceleratedJpegDecodingEnabled();
 
+MEDIA_EXPORT bool IsLiveCaptionFeatureEnabled();
+
 enum class kCrosGlobalMediaControlsPinOptions {
   kPin,
   kNotPin,

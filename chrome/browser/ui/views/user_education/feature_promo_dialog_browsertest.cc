@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_LiveCaption) {
-  if (!base::FeatureList::IsEnabled(media::kLiveCaption))
+  if (!media::IsLiveCaptionFeatureEnabled())
     return;
 
   BrowserView::GetBrowserViewForBrowser(browser())

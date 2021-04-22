@@ -91,7 +91,7 @@ void MediaToolbarButtonView::Hide() {
 void MediaToolbarButtonView::Enable() {
   SetEnabled(true);
 
-  if (base::FeatureList::IsEnabled(media::kLiveCaption)) {
+  if (media::IsLiveCaptionFeatureEnabled()) {
     // Live Caption multi language is only enabled when SODA is also enabled.
     if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
         base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {

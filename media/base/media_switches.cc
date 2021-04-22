@@ -9,6 +9,10 @@
 #include "build/chromeos_buildflags.h"
 #include "components/system_media_controls/linux/buildflags/buildflags.h"
 
+#if defined(OS_LINUX)
+#include "base/cpu.h"
+#endif
+
 namespace switches {
 
 // Allow users to specify a custom buffer size for debugging purpose.
@@ -864,6 +868,23 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
   return true;
 #endif
   return false;
+}
+
+bool IsLiveCaptionFeatureEnabled() {
+  if (!base::FeatureList::IsEnabled(media::kLiveCaption))
+    return false;
+
+#if defined(OS_LINUX)
+  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
+    // Check if the CPU has the required instruction set to run the Speech
+    // On-Device API (SODA) library.
+    static bool has_sse42 = base::CPU().has_sse42();
+    if (!has_sse42)
+      return false;
+  }
+#endif
+
+  return true;
 }
 
 }  // namespace media

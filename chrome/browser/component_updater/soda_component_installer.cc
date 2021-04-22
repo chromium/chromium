@@ -229,7 +229,7 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
-      base::FeatureList::IsEnabled(media::kLiveCaption)) {
+      media::IsLiveCaptionFeatureEnabled()) {
     auto installer = base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<SodaComponentInstallerPolicy>(
             base::BindRepeating(
@@ -255,7 +255,7 @@ void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
-      base::FeatureList::IsEnabled(media::kLiveCaption)) {
+      media::IsLiveCaptionFeatureEnabled()) {
     base::Optional<speech::SodaLanguagePackComponentConfig> config =
         speech::GetLanguageComponentConfig(
             profile_prefs->GetString(prefs::kLiveCaptionLanguageCode));

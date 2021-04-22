@@ -178,7 +178,7 @@ gfx::Size MediaDialogView::CalculatePreferredSize() const {
 
 void MediaDialogView::UpdateBubbleSize() {
   SizeToContents();
-  if (!base::FeatureList::IsEnabled(media::kLiveCaption))
+  if (!media::IsLiveCaptionFeatureEnabled())
     return;
 
   const int width = active_sessions_view_->GetPreferredSize().width();
@@ -253,7 +253,7 @@ MediaDialogView::~MediaDialogView() {
 void MediaDialogView::Init() {
   // Remove margins.
   set_margins(gfx::Insets());
-  if (!base::FeatureList::IsEnabled(media::kLiveCaption)) {
+  if (!media::IsLiveCaptionFeatureEnabled()) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     return;
   }

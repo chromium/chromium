@@ -330,7 +330,7 @@ bool AreExperimentalA11yLabelsAllowed() {
 }
 
 bool IsLiveCaptionEnabled() {
-  return base::FeatureList::IsEnabled(media::kLiveCaption);
+  return media::IsLiveCaptionFeatureEnabled();
 }
 
 bool IsMagnifierPanningImprovementsEnabled() {
