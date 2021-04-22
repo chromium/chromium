@@ -114,10 +114,7 @@ class BLINK_EXPORT WebFrame {
   void ClearOpener();
 
   // Returns the parent frame or 0 if this is a top-most frame.
-  // TODO(sashab): "Virtual" is needed here temporarily to resolve linker errors
-  // in core/. Remove the "virtual" keyword once WebFrame and WebLocalFrameImpl
-  // have been moved to core/.
-  virtual WebFrame* Parent() const;
+  WebFrame* Parent() const;
 
   // Returns the top-most frame in the hierarchy containing this frame.
   WebFrame* Top() const;
