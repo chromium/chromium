@@ -6,6 +6,9 @@
 
 #include <algorithm>
 
+#include "base/guid.h"
+#include "chromeos/network/cellular_utils.h"
+
 namespace chromeos {
 
 FakeStubCellularNetworksProvider::FakeStubCellularNetworksProvider() = default;
@@ -36,7 +39,7 @@ bool FakeStubCellularNetworksProvider::AddOrRemoveStubCellularNetworks(
     changed = true;
     for (const IccidEidPair& pair : stubs_to_add) {
       new_stub_networks.push_back(NetworkState::CreateNonShillCellularNetwork(
-          pair.first, pair.second, device));
+          pair.first, pair.second, GetGuidForStubIccid(pair.first), device));
     }
   }
 
@@ -81,6 +84,33 @@ bool FakeStubCellularNetworksProvider::AddOrRemoveStubCellularNetworks(
   }
 
   return changed;
+}
+
+bool FakeStubCellularNetworksProvider::GetStubNetworkMetadata(
+    const std::string& iccid,
+    const DeviceState* cellular_device,
+    std::string* service_path_out,
+    std::string* guid_out) {
+  const auto it = std::find_if(
+      stub_iccid_and_eid_pairs_.begin(), stub_iccid_and_eid_pairs_.end(),
+      [&iccid](const IccidEidPair& pair) { return pair.first == iccid; });
+  if (it == stub_iccid_and_eid_pairs_.end())
+    return false;
+
+  *service_path_out = GenerateStubCellularServicePath(iccid);
+  *guid_out = GetGuidForStubIccid(iccid);
+  return true;
+}
+
+const std::string& FakeStubCellularNetworksProvider::GetGuidForStubIccid(
+    const std::string& iccid) {
+  std::string& guid = iccid_to_guid_map_[iccid];
+
+  // If we have not yet generated a GUID for this ICCID, generate one.
+  if (guid.empty())
+    guid = base::GenerateGUID();
+
+  return guid;
 }
 
 std::vector<FakeStubCellularNetworksProvider::IccidEidPair>

@@ -40,11 +40,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FakeStubCellularNetworksProvider
       NetworkStateHandler::ManagedStateList& network_list,
       NetworkStateHandler::ManagedStateList& new_stub_networks,
       const DeviceState* device) override;
+  bool GetStubNetworkMetadata(const std::string& iccid,
+                              const DeviceState* cellular_device,
+                              std::string* service_path_out,
+                              std::string* guid_out) override;
 
+  const std::string& GetGuidForStubIccid(const std::string& iccid);
   std::vector<IccidEidPair> GetStubsNotBackedByShill(
       const NetworkStateHandler::ManagedStateList& network_list) const;
 
   base::flat_set<IccidEidPair> stub_iccid_and_eid_pairs_;
+  base::flat_map<std::string, std::string> iccid_to_guid_map_;
 };
 
 }  // namespace chromeos

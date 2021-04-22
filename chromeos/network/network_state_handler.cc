@@ -1353,6 +1353,7 @@ void NetworkStateHandler::UpdateNetworkStateProperties(
   std::string prev_connection_state = network->connection_state();
   NetworkState::PortalState prev_portal_state = network->portal_state();
   bool metered = false;
+  bool had_icccid_before_update = !network->iccid().empty();
   for (const auto iter : properties.DictItems()) {
     if (network->PropertyChanged(iter.first, iter.second))
       network_property_updated = true;
@@ -1367,10 +1368,11 @@ void NetworkStateHandler::UpdateNetworkStateProperties(
   network_property_updated |= network->InitialPropertiesReceived(properties);
 
   UpdateGuid(network);
-  if (network->Matches(NetworkTypePattern::Cellular()))
-    UpdateCellularStateFromDevice(network);
 
   network_list_sorted_ = false;
+
+  if (network->Matches(NetworkTypePattern::Cellular()))
+    HandleCellularNetworkUpdateReceived(network, had_icccid_before_update);
 
   // Notify observers of NetworkState changes.
   if (network_property_updated || network->update_requested()) {
@@ -1783,11 +1785,32 @@ void NetworkStateHandler::UpdateGuid(NetworkState* network) {
   network->SetGuid(guid);
 }
 
-void NetworkStateHandler::UpdateCellularStateFromDevice(NetworkState* network) {
+void NetworkStateHandler::HandleCellularNetworkUpdateReceived(
+    NetworkState* network,
+    bool had_icccid_before_update) {
   const DeviceState* device = GetDeviceState(network->device_path());
   if (!device)
     return;
+
+  // One "roaming" state is shared between all cellular networks.
   network->provider_requires_roaming_ = device->provider_requires_roaming();
+
+  const std::string& iccid = network->iccid();
+
+  // If this network previously did not have an ICCID but just received one via
+  // a property update, this may indicates that a stub cellular network has
+  // transitioned to a Shill-backed network.
+  if (!had_icccid_before_update && !iccid.empty() &&
+      stub_cellular_networks_provider_) {
+    std::string stub_service_path, stub_guid;
+    bool replaced_stub =
+        stub_cellular_networks_provider_->GetStubNetworkMetadata(
+            iccid, device, &stub_service_path, &stub_guid);
+    if (replaced_stub) {
+      NotifyNetworkIdentifierTransitioned(stub_service_path, network->path(),
+                                          stub_guid, network->guid());
+    }
+  }
 }
 
 bool NetworkStateHandler::AddOrRemoveStubCellularNetworks() {
@@ -2057,6 +2080,22 @@ void NetworkStateHandler::NotifyScanStarted(const DeviceState* device) {
   NET_LOG(EVENT) << "NOTIFY: ScanStarted for: " << device->path();
   for (auto& observer : observers_)
     observer.ScanStarted(device);
+}
+
+void NetworkStateHandler::NotifyNetworkIdentifierTransitioned(
+    const std::string& old_service_path,
+    const std::string& new_service_path,
+    const std::string& old_guid,
+    const std::string& new_guid) {
+  SCOPED_NET_LOG_IF_SLOW();
+  NET_LOG(EVENT) << "NOTIFY: NetworkIdentifierTransitioned: "
+                 << "Service path: " << old_service_path << " => "
+                 << new_service_path << ", GUID: " << old_guid << " => "
+                 << new_guid;
+  for (auto& observer : observers_) {
+    observer.NetworkIdentifierTransitioned(old_service_path, new_service_path,
+                                           old_guid, new_guid);
+  }
 }
 
 void NetworkStateHandler::LogPropertyUpdated(const ManagedState* state,

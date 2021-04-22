@@ -94,6 +94,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
         ManagedStateList& network_list,
         ManagedStateList& new_stub_networks,
         const DeviceState* device) = 0;
+
+    // Provides metadata associated with a stub network with the given ICCID.
+    // If |iccid| corresponds to an installed eSIM profile or SIM card, true is
+    // returned and the "out" parameters are set. Otherwise, false is returned
+    // and the values are not set.
+    virtual bool GetStubNetworkMetadata(const std::string& iccid,
+                                        const DeviceState* cellular_device,
+                                        std::string* service_path_out,
+                                        std::string* guid_out) = 0;
   };
 
   enum TechnologyState {
@@ -547,8 +556,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // Ensure a valid GUID for NetworkState.
   void UpdateGuid(NetworkState* network);
 
-  // Update networkState properties from the associated DeviceState.
-  void UpdateCellularStateFromDevice(NetworkState* network);
+  // Handles cellular network updates by providing some NetworkState properties
+  // from the Cellular DeviceState and alerting receivers if a network has
+  // transitioned from a stub to a Shill-backed network.
+  void HandleCellularNetworkUpdateReceived(NetworkState* network,
+                                           bool had_icccid_before_update);
 
   // Calls AddOrRemoveStubCellularNetworks on StubCellularNetworksProvider if
   // set and updates GUID for newly added networks as needed. Returns true if
@@ -611,6 +623,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
 
   // Called whenever Device.Scanning state transitions to false.
   void NotifyScanCompleted(const DeviceState* device);
+
+  // Called when a stub network is replaced by a Shill-backed network.
+  void NotifyNetworkIdentifierTransitioned(const std::string& old_service_path,
+                                           const std::string& new_service_path,
+                                           const std::string& old_guid,
+                                           const std::string& new_guid);
 
   // Helper function to log property updated events.
   void LogPropertyUpdated(const ManagedState* network,

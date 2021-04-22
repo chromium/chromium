@@ -40,6 +40,12 @@ void NetworkStateHandlerObserver::ScanStarted(const DeviceState* device) {}
 
 void NetworkStateHandlerObserver::ScanCompleted(const DeviceState* device) {}
 
+void NetworkStateHandlerObserver::NetworkIdentifierTransitioned(
+    const std::string& old_service_path,
+    const std::string& new_service_path,
+    const std::string& old_guid,
+    const std::string& new_guid) {}
+
 void NetworkStateHandlerObserver::HostnameChanged(const std::string& hostname) {
 }
 

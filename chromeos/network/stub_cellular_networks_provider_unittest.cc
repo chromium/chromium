@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "components/prefs/testing_pref_service.h"
@@ -100,6 +101,23 @@ class StubCellularNetworksProviderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void CallGetStubNetworkMetadata(const std::string& iccid, bool should_exist) {
+    std::string service_path, guid;
+    bool exists = provider_->GetStubNetworkMetadata(
+        iccid,
+        helper_.network_state_handler()->GetDeviceStateByType(
+            NetworkTypePattern::Cellular()),
+        &service_path, &guid);
+
+    if (!should_exist) {
+      EXPECT_FALSE(exists);
+      return;
+    }
+
+    EXPECT_TRUE(exists);
+    EXPECT_EQ(GenerateStubCellularServicePath(iccid), service_path);
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper helper_;
@@ -118,8 +136,17 @@ TEST_F(StubCellularNetworksProviderTest, AddOrRemoveStubCellularNetworks) {
   dbus::ObjectPath profile2_path =
       AddProfile(/*euicc_num=*/1, hermes::profile::State::kInactive,
                  /*activation_code=*/"code1");
+  HermesProfileClient::Properties* profile1_properties =
+      HermesProfileClient::Get()->GetProperties(profile1_path);
   HermesProfileClient::Properties* profile2_properties =
       HermesProfileClient::Get()->GetProperties(profile2_path);
+
+  CallGetStubNetworkMetadata(profile1_properties->iccid().value(),
+                             /*should_exist=*/false);
+  CallGetStubNetworkMetadata(profile2_properties->iccid().value(),
+                             /*should_exist=*/true);
+  CallGetStubNetworkMetadata(kTestPSimIccid, /*should_exist=*/true);
+  CallGetStubNetworkMetadata("nonexistent_iccid", /*should_exist=*/false);
 
   NetworkStateHandler::ManagedStateList network_list, new_stub_networks;
 
