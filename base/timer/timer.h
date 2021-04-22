@@ -76,7 +76,7 @@ class TickClock;
 
 namespace internal {
 
-class BaseTimerTaskInternal;
+class TaskDestructionDetector;
 
 //-----------------------------------------------------------------------------
 // This class wraps TaskRunner::PostDelayedTask to manage delayed and repeating
@@ -118,11 +118,11 @@ class BASE_EXPORT TimerBase {
   // TaskEnvironment::TimeSource::MOCK_TIME.
   virtual void SetTaskRunner(scoped_refptr<SequencedTaskRunner> task_runner);
 
-  // Call this method to stop and cancel the timer.  It is a no-op if the timer
+  // Call this method to stop and cancel the timer. It is a no-op if the timer
   // is not running.
   virtual void Stop();
 
-  // Stop running task (if any) and abandon scheduled task (if any).
+  // Abandons the scheduled task (if any) and stops the timer (if running).
   void AbandonAndStop() {
     AbandonScheduledTask();
 
@@ -149,10 +149,10 @@ class BASE_EXPORT TimerBase {
   // destroyed or restarted on another sequence.
   SequenceChecker origin_sequence_checker_;
 
-  // Allocates a new |scheduled_task_| and posts it on the current sequence with
-  // the given |delay|. |scheduled_task_| must be null. |scheduled_run_time_|
-  // and |desired_run_time_| are reset to Now() + delay.
-  void PostNewScheduledTask(TimeDelta delay);
+  // Schedules |OnScheduledTaskInvoked()| to run on the current sequence with
+  // the given |delay|. |scheduled_run_time_| and |desired_run_time_| are reset
+  // to Now() + delay.
+  void ScheduleNewTask(TimeDelta delay);
 
   void StartInternal(const Location& posted_from, TimeDelta delay);
 
@@ -167,24 +167,28 @@ class BASE_EXPORT TimerBase {
   // Returns the current tick count.
   TimeTicks Now() const;
 
-  // Disable |scheduled_task_| and abandon it so that it no longer refers back
+  // Disables the scheduled task and abandon it so that it no longer refers back
   // to this object.
   void AbandonScheduledTask();
 
-  // Called by BaseTimerTaskInternal when the delayed task fires.
-  void RunScheduledTask();
+  // Called when the scheduled task is invoked. Will run the  |user_task| if the
+  // timer is still running and |desired_run_time_| was reached.
+  // |task_destruction_detector| is owned by the callback to detect when the
+  // scheduled task is deleted before being executed.
+  void OnScheduledTaskInvoked(
+      std::unique_ptr<TaskDestructionDetector> task_destruction_detector);
 
-  // When non-null, the |scheduled_task_| was posted to call RunScheduledTask()
-  // at |scheduled_run_time_|.
-  BaseTimerTaskInternal* scheduled_task_;
+  // Detects when the scheduled task is deleted before being executed. Null when
+  // there is no scheduled task.
+  TaskDestructionDetector* task_destruction_detector_;
 
   // Location in user code.
   Location posted_from_;
   // Delay requested by user.
   TimeDelta delay_;
 
-  // The time at which |scheduled_task_| is expected to fire. This time can be a
-  // "zero" TimeTicks if the task must be run immediately.
+  // The time at which the scheduled task is expected to fire. This time can be
+  // null if the task must be run immediately.
   TimeTicks scheduled_run_time_;
 
   // The desired run time of |user_task_|. The user may update this at any time,
@@ -201,6 +205,8 @@ class BASE_EXPORT TimerBase {
 
   // If true, |user_task_| is scheduled to run sometime in the future.
   bool is_running_;
+
+  WeakPtrFactory<TimerBase> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TimerBase);
 };

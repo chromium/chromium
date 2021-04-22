@@ -696,6 +696,20 @@ TEST(TimerTest, ContinuationReset) {
   }
 }
 
+TEST(TimerTest, AbandonedTaskIsCancelled) {
+  test::TaskEnvironment task_environment(
+      test::TaskEnvironment::TimeSource::MOCK_TIME);
+  OneShotTimer timer;
+
+  // Start a timer. There will be a pending task on the current sequence.
+  timer.Start(FROM_HERE, TimeDelta::FromSeconds(5), base::DoNothing());
+  EXPECT_EQ(1u, task_environment.GetPendingMainThreadTaskCount());
+
+  // After AbandonAndStop(), the task is correctly treated as cancelled.
+  timer.AbandonAndStop();
+  EXPECT_EQ(0u, task_environment.GetPendingMainThreadTaskCount());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          TimerTestWithThreadType,
                          testing::ValuesIn(testing_main_threads));
