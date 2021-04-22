@@ -11,12 +11,10 @@
 
 class DownloadShelfHandler {
  public:
-  using GetDownloadsCallback = base::OnceCallback<void(
-      std::vector<download_shelf::mojom::DownloadItemPtr>)>;
-
   virtual ~DownloadShelfHandler() = default;
 
-  virtual void GetDownloads(GetDownloadsCallback callback) = 0;
+  virtual void GetDownloads(
+      download_shelf::mojom::PageHandler::GetDownloadsCallback callback) = 0;
 
   virtual void ShowContextMenu(uint32_t download_id,
                                int32_t client_x,

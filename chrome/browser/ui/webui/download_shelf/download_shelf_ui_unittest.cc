@@ -22,7 +22,8 @@ namespace {
 
 class TestDownloadShelfHandler : public DownloadShelfHandler {
  public:
-  MOCK_METHOD1(GetDownloads, void(GetDownloadsCallback));
+  MOCK_METHOD1(GetDownloads,
+               void(download_shelf::mojom::PageHandler::GetDownloadsCallback));
   MOCK_METHOD3(ShowContextMenu,
                void(uint32_t download_id, int32_t client_x, int32_t client_y));
   MOCK_METHOD1(DoShowDownload, void(DownloadUIModel*));
