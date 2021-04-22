@@ -17,6 +17,10 @@ struct BLINK_COMMON_EXPORT UseCounterFeature {
   uint32_t value;
 };
 
+bool BLINK_COMMON_EXPORT operator==(const UseCounterFeature& lhs,
+                                    const UseCounterFeature& rhs);
+bool BLINK_COMMON_EXPORT operator<(const UseCounterFeature& lhs,
+                                   const UseCounterFeature& rhs);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_USE_COUNTER_USE_COUNTER_FEATURE_H_

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_RENDERER_PAGE_TIMING_METRICS_SENDER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_RENDERER_PAGE_TIMING_METRICS_SENDER_H_
 
-#include <bitset>
 #include <memory>
 
 #include "base/containers/flat_set.h"
@@ -17,8 +16,7 @@
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
-#include "third_party/blink/public/mojom/use_counter/css_property_id.mojom-shared.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
+#include "third_party/blink/public/common/use_counter/use_counter_feature_tracker.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 
 class GURL;
@@ -49,9 +47,7 @@ class PageTimingMetricsSender {
   ~PageTimingMetricsSender();
 
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior);
-  void DidObserveNewFeatureUsage(blink::mojom::WebFeature feature);
-  void DidObserveNewCssPropertyUsage(blink::mojom::CSSSampleId css_property,
-                                     bool is_animated);
+  void DidObserveNewFeatureUsage(const blink::UseCounterFeature& feature);
   void DidObserveLayoutShift(double score, bool after_input_or_scroll);
   void DidObserveInputForLayoutShiftTracking(base::TimeTicks timestamp);
   void DidObserveLayoutNg(uint32_t all_block_count,
@@ -119,12 +115,7 @@ class PageTimingMetricsSender {
   mojom::FrameRenderDataUpdate render_data_;
   mojom::DeferredResourceCountsPtr new_deferred_resource_data_;
 
-  std::bitset<static_cast<size_t>(blink::mojom::WebFeature::kNumberOfFeatures)>
-      features_sent_;
-  std::bitset<static_cast<size_t>(blink::mojom::CSSSampleId::kMaxValue) + 1>
-      css_properties_sent_;
-  std::bitset<static_cast<size_t>(blink::mojom::CSSSampleId::kMaxValue) + 1>
-      animated_css_properties_sent_;
+  blink::UseCounterFeatureTracker feature_tracker_;
 
   bool have_sent_ipc_ = false;
 

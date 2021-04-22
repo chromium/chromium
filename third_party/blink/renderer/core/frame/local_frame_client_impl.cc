@@ -698,18 +698,9 @@ void LocalFrameClientImpl::DidObserveLoadingBehavior(
 }
 
 void LocalFrameClientImpl::DidObserveNewFeatureUsage(
-    mojom::WebFeature feature) {
+    const UseCounterFeature& feature) {
   if (web_frame_->Client())
     web_frame_->Client()->DidObserveNewFeatureUsage(feature);
-}
-
-void LocalFrameClientImpl::DidObserveNewCssPropertyUsage(
-    mojom::CSSSampleId css_property,
-    bool is_animated) {
-  if (web_frame_->Client()) {
-    web_frame_->Client()->DidObserveNewCssPropertyUsage(css_property,
-                                                        is_animated);
-  }
 }
 
 void LocalFrameClientImpl::DidObserveLayoutShift(double score,

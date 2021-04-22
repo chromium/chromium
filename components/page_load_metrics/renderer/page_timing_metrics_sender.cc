@@ -17,6 +17,8 @@
 #include "components/page_load_metrics/renderer/page_timing_sender.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace page_load_metrics {
@@ -73,29 +75,26 @@ void PageTimingMetricsSender::DidObserveLoadingBehavior(
 }
 
 void PageTimingMetricsSender::DidObserveNewFeatureUsage(
-    blink::mojom::WebFeature feature) {
-  size_t feature_id = static_cast<size_t>(feature);
-  if (features_sent_.test(feature_id)) {
+    const blink::UseCounterFeature& feature) {
+  if (feature_tracker_.TestAndSet(feature))
     return;
-  }
-  features_sent_.set(feature_id);
-  new_features_->features.push_back(feature);
-  EnsureSendTimer();
-}
 
-void PageTimingMetricsSender::DidObserveNewCssPropertyUsage(
-    blink::mojom::CSSSampleId css_property,
-    bool is_animated) {
-  size_t css_property_id = static_cast<size_t>(css_property);
-  if (is_animated && !animated_css_properties_sent_.test(css_property_id)) {
-    animated_css_properties_sent_.set(css_property_id);
-    new_features_->animated_css_properties.push_back(css_property);
-    EnsureSendTimer();
-  } else if (!is_animated && !css_properties_sent_.test(css_property_id)) {
-    css_properties_sent_.set(css_property_id);
-    new_features_->css_properties.push_back(css_property);
-    EnsureSendTimer();
+  switch (feature.type) {
+    case blink::mojom::UseCounterFeatureType::kWebFeature:
+      new_features_->features.push_back(
+          static_cast<blink::mojom::WebFeature>(feature.value));
+      break;
+    case blink::mojom::UseCounterFeatureType::kCssProperty:
+      new_features_->css_properties.push_back(
+          static_cast<blink::mojom::CSSSampleId>(feature.value));
+      break;
+    case blink::mojom::UseCounterFeatureType::kAnimatedCssProperty:
+      new_features_->animated_css_properties.push_back(
+          static_cast<blink::mojom::CSSSampleId>(feature.value));
+      break;
   }
+
+  EnsureSendTimer();
 }
 
 void PageTimingMetricsSender::DidObserveLayoutShift(

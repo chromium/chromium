@@ -47,9 +47,8 @@ class MetricsRenderFrameObserver
   void DidObserveInputDelay(base::TimeDelta input_delay) override;
   void DidChangeCpuTiming(base::TimeDelta time) override;
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;
-  void DidObserveNewFeatureUsage(blink::mojom::WebFeature feature) override;
-  void DidObserveNewCssPropertyUsage(blink::mojom::CSSSampleId css_property,
-                                     bool is_animated) override;
+  void DidObserveNewFeatureUsage(
+      const blink::UseCounterFeature& feature) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
   void DidObserveInputForLayoutShiftTracking(
       base::TimeTicks timestamp) override;

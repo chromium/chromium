@@ -44,11 +44,11 @@
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/use_counter/css_property_id.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
@@ -78,9 +78,6 @@
 #include "v8/include/v8.h"
 
 namespace blink {
-namespace mojom {
-enum class WebFeature : int32_t;
-}  // namespace mojom
 
 class AssociatedInterfaceProvider;
 class DocumentLoader;
@@ -193,15 +190,9 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   // propogates renderer loading behavior to the browser process for histograms.
   virtual void DidObserveLoadingBehavior(LoadingBehaviorFlag) {}
 
-  // Will be called when a new UseCounter feature has been observed in a frame.
-  // This propogates feature usage to the browser process for histograms.
-  virtual void DidObserveNewFeatureUsage(mojom::WebFeature) {}
-  // Will be called when a new UseCounter CSS property or animated CSS property
-  // has been observed in a frame. This propogates feature usage to the browser
-  // process for histograms.
-  virtual void DidObserveNewCssPropertyUsage(
-      mojom::CSSSampleId /*css_property*/,
-      bool /*is_animated*/) {}
+  // Will be called when a new UseCounterFeature has been observed in a frame.
+  // This propagates feature usage to the browser process for histograms.
+  virtual void DidObserveNewFeatureUsage(const UseCounterFeature&) {}
 
   // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
   virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {

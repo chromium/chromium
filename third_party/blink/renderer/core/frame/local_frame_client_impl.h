@@ -137,8 +137,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DidObserveInputDelay(base::TimeDelta) override;
   void DidChangeCpuTiming(base::TimeDelta) override;
   void DidObserveLoadingBehavior(LoadingBehaviorFlag) override;
-  void DidObserveNewFeatureUsage(mojom::WebFeature) override;
-  void DidObserveNewCssPropertyUsage(mojom::CSSSampleId, bool) override;
+  void DidObserveNewFeatureUsage(const UseCounterFeature&) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
   void DidObserveInputForLayoutShiftTracking(
       base::TimeTicks timestamp) override;

@@ -4205,16 +4205,9 @@ void RenderFrameImpl::DidObserveLoadingBehavior(
 }
 
 void RenderFrameImpl::DidObserveNewFeatureUsage(
-    blink::mojom::WebFeature feature) {
+    const blink::UseCounterFeature& feature) {
   for (auto& observer : observers_)
     observer.DidObserveNewFeatureUsage(feature);
-}
-
-void RenderFrameImpl::DidObserveNewCssPropertyUsage(
-    blink::mojom::CSSSampleId css_property,
-    bool is_animated) {
-  for (auto& observer : observers_)
-    observer.DidObserveNewCssPropertyUsage(css_property, is_animated);
 }
 
 void RenderFrameImpl::DidObserveLayoutShift(double score,

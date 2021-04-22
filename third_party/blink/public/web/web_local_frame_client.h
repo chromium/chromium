@@ -43,6 +43,7 @@
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom-shared.h"
@@ -52,7 +53,6 @@
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom-shared.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-shared.h"
-#include "third_party/blink/public/mojom/use_counter/css_property_id.mojom-shared.h"
 #include "third_party/blink/public/platform/blame_context.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
@@ -99,7 +99,6 @@ class Rect;
 namespace blink {
 namespace mojom {
 enum class TreeScopeType;
-enum class WebFeature : int32_t;
 }  // namespace mojom
 
 class AssociatedInterfaceProvider;
@@ -516,19 +515,11 @@ class BLINK_EXPORT WebLocalFrameClient {
   // use for segregated histograms.
   virtual void DidObserveLoadingBehavior(LoadingBehaviorFlag) {}
 
-  // Blink hits the code path for a certain web feature for the first time on
-  // this frame. As a performance optimization, features already hit on other
+  // Blink hits the code path for a certain UseCounterFeature for the first time
+  // on this frame. As a performance optimization, features already hit on other
   // frames associated with the same page in the renderer are not currently
-  // reported. This is used for reporting UseCounter features histograms.
-  virtual void DidObserveNewFeatureUsage(mojom::WebFeature) {}
-  // Blink hits the code path for a certain CSS property (either an animated CSS
-  // property or not) for the first time on this frame. As a performance
-  // optimization, features already hit on other frames associated with the same
-  // page in the renderer are not currently reported. This is used for reporting
-  // UseCounter CSS histograms.
-  virtual void DidObserveNewCssPropertyUsage(
-      mojom::CSSSampleId /*css_property*/,
-      bool /*is_animated*/) {}
+  // reported.
+  virtual void DidObserveNewFeatureUsage(const UseCounterFeature&) {}
 
   // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
   virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {

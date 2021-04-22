@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace page_load_metrics {
@@ -107,49 +109,12 @@ void FakePageTimingSender::PageTimingValidator::VerifyExpectedCpuTimings()
 }
 
 void FakePageTimingSender::PageTimingValidator::UpdateExpectPageLoadFeatures(
-    const blink::mojom::WebFeature feature) {
+    const blink::UseCounterFeature& feature) {
   expected_features_.insert(feature);
 }
 
-void FakePageTimingSender::PageTimingValidator::
-    UpdateExpectPageLoadCssProperties(
-        blink::mojom::CSSSampleId css_property_id) {
-  expected_css_properties_.insert(css_property_id);
-}
-
 void FakePageTimingSender::PageTimingValidator::VerifyExpectedFeatures() const {
-  ASSERT_EQ(actual_features_.size(), expected_features_.size());
-  std::vector<blink::mojom::WebFeature> diff;
-  std::set_difference(actual_features_.begin(), actual_features_.end(),
-                      expected_features_.begin(), expected_features_.end(),
-                      diff.begin());
-  EXPECT_TRUE(diff.empty())
-      << "Expected more features than the actual features observed";
-
-  std::set_difference(expected_features_.begin(), expected_features_.end(),
-                      actual_features_.begin(), actual_features_.end(),
-                      diff.begin());
-  EXPECT_TRUE(diff.empty())
-      << "More features are actually observed than expected";
-}
-
-void FakePageTimingSender::PageTimingValidator::VerifyExpectedCssProperties()
-    const {
-  ASSERT_EQ(actual_css_properties_.size(), expected_css_properties_.size());
-  std::vector<blink::mojom::CSSSampleId> diff;
-  std::set_difference(actual_css_properties_.begin(),
-                      actual_css_properties_.end(),
-                      expected_css_properties_.begin(),
-                      expected_css_properties_.end(), diff.begin());
-  EXPECT_TRUE(diff.empty())
-      << "Expected more CSS properties than the actual features observed";
-
-  std::set_difference(expected_css_properties_.begin(),
-                      expected_css_properties_.end(),
-                      actual_css_properties_.begin(),
-                      actual_css_properties_.end(), diff.begin());
-  EXPECT_TRUE(diff.empty())
-      << "More CSS Properties are actually observed than expected";
+  EXPECT_THAT(actual_features_, ::testing::ContainerEq(expected_features_));
 }
 
 void FakePageTimingSender::PageTimingValidator::VerifyExpectedRenderData()
@@ -183,18 +148,39 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   if (!cpu_timing->task_time.is_zero()) {
     actual_cpu_timings_.push_back(cpu_timing.Clone());
   }
-  for (const auto feature : new_features->features) {
+  for (const blink::mojom::WebFeature web_feature : new_features->features) {
+    blink::UseCounterFeature feature = {
+        blink::mojom::UseCounterFeatureType::kWebFeature,
+        static_cast<uint32_t>(web_feature)};
+
     EXPECT_EQ(actual_features_.find(feature), actual_features_.end())
-        << "Feature " << feature << "has been sent more than once";
+        << "Feature " << web_feature << "has been sent more than once";
     actual_features_.insert(feature);
   }
-  for (const auto css_property_id : new_features->css_properties) {
-    EXPECT_EQ(actual_css_properties_.find(css_property_id),
-              actual_css_properties_.end())
-        << "CSS Property ID " << css_property_id
-        << "has been sent more than once";
-    actual_css_properties_.insert(css_property_id);
+
+  for (const blink::mojom::CSSSampleId css_property :
+       new_features->css_properties) {
+    blink::UseCounterFeature feature = {
+        blink::mojom::UseCounterFeatureType::kCssProperty,
+        static_cast<uint32_t>(css_property)};
+
+    EXPECT_EQ(actual_features_.find(feature), actual_features_.end())
+        << "Feature " << css_property << "has been sent more than once";
+    actual_features_.insert(feature);
   }
+
+  for (const blink::mojom::CSSSampleId animated_css_property :
+       new_features->animated_css_properties) {
+    blink::UseCounterFeature feature = {
+        blink::mojom::UseCounterFeatureType::kAnimatedCssProperty,
+        static_cast<uint32_t>(animated_css_property)};
+
+    EXPECT_EQ(actual_features_.find(feature), actual_features_.end())
+        << "Feature " << animated_css_property
+        << "has been sent more than once";
+    actual_features_.insert(feature);
+  }
+
   actual_render_data_.layout_shift_delta = render_data.layout_shift_delta;
   actual_frame_intersection_update_ = metadata->intersection_update.Clone();
 
@@ -207,7 +193,6 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   VerifyExpectedTimings();
   VerifyExpectedCpuTimings();
   VerifyExpectedFeatures();
-  VerifyExpectedCssProperties();
   VerifyExpectedRenderData();
   VerifyExpectedFrameIntersectionUpdate();
   VerifyExpectedMobileFriendliness();

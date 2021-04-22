@@ -126,18 +126,9 @@ void MetricsRenderFrameObserver::DidObserveLoadingBehavior(
 }
 
 void MetricsRenderFrameObserver::DidObserveNewFeatureUsage(
-    blink::mojom::WebFeature feature) {
+    const blink::UseCounterFeature& feature) {
   if (page_timing_metrics_sender_)
     page_timing_metrics_sender_->DidObserveNewFeatureUsage(feature);
-}
-
-void MetricsRenderFrameObserver::DidObserveNewCssPropertyUsage(
-    blink::mojom::CSSSampleId css_property,
-    bool is_animated) {
-  if (page_timing_metrics_sender_) {
-    page_timing_metrics_sender_->DidObserveNewCssPropertyUsage(css_property,
-                                                               is_animated);
-  }
 }
 
 void MetricsRenderFrameObserver::DidObserveLayoutShift(

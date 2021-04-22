@@ -240,27 +240,18 @@ bool UseCounterImpl::ReportMeasurement(const UseCounterFeature& feature,
       WebFeature web_feature = static_cast<WebFeature>(feature.value);
       if (context_ != kDefaultContext)
         CountFeature(web_feature);
-      client->DidObserveNewFeatureUsage(web_feature);
       NotifyFeatureCounted(web_feature);
-      return true;
+      break;
     }
     case mojom::blink::UseCounterFeatureType::kAnimatedCssProperty:
-      if (context_ == kExtensionContext)
-        return false;
-
-      client->DidObserveNewCssPropertyUsage(
-          static_cast<mojom::blink::CSSSampleId>(feature.value),
-          /* is_animated */ true);
-      return true;
     case mojom::blink::UseCounterFeatureType::kCssProperty:
       if (context_ == kExtensionContext)
         return false;
-
-      client->DidObserveNewCssPropertyUsage(
-          static_cast<mojom::blink::CSSSampleId>(feature.value),
-          /* is_animated */ false);
-      return true;
+      break;
   }
+
+  client->DidObserveNewFeatureUsage(feature);
+  return true;
 }
 
 // Note that HTTPArchive tooling looks specifically for this event - see
