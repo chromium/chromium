@@ -61,6 +61,9 @@ int32_t WebrtcDummyVideoEncoder::RegisterEncodeCompleteCallback(
     webrtc::EncodedImageCallback* callback) {
   base::AutoLock lock(lock_);
   encoded_callback_ = callback;
+  main_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&VideoChannelStateObserver::OnEncoderReady,
+                                video_channel_state_observer_));
   return WEBRTC_VIDEO_CODEC_OK;
 }
 

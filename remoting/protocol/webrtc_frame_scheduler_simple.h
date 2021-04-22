@@ -33,6 +33,7 @@ class WebrtcFrameSchedulerSimple : public WebrtcFrameScheduler {
   ~WebrtcFrameSchedulerSimple() override;
 
   // VideoChannelStateObserver implementation.
+  void OnEncoderReady() override;
   void OnKeyFrameRequested() override;
   void OnTargetBitrateChanged(int bitrate_kbps) override;
   void OnRttUpdate(base::TimeDelta rtt) override;
@@ -59,7 +60,7 @@ class WebrtcFrameSchedulerSimple : public WebrtcFrameScheduler {
   base::RepeatingClosure capture_callback_;
   bool paused_ = false;
 
-  // Set to true after the first key frame is requested.
+  // Set to true when the encoder is ready to receive frames.
   bool encoder_ready_ = false;
 
   // Set to true when a key frame was requested.

@@ -82,9 +82,14 @@ WebrtcFrameSchedulerSimple::~WebrtcFrameSchedulerSimple() {
   DCHECK(thread_checker_.CalledOnValidThread());
 }
 
-void WebrtcFrameSchedulerSimple::OnKeyFrameRequested() {
+void WebrtcFrameSchedulerSimple::OnEncoderReady() {
   DCHECK(thread_checker_.CalledOnValidThread());
   encoder_ready_ = true;
+  ScheduleNextFrame();
+}
+
+void WebrtcFrameSchedulerSimple::OnKeyFrameRequested() {
+  DCHECK(thread_checker_.CalledOnValidThread());
   key_frame_request_ = true;
   ScheduleNextFrame();
 }

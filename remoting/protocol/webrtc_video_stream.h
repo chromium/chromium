@@ -59,6 +59,7 @@ class WebrtcVideoStream : public VideoStream,
   void SelectSource(int id) override;
 
   // VideoChannelStateObserver interface.
+  void OnEncoderReady() override;
   void OnKeyFrameRequested() override;
   void OnTargetBitrateChanged(int bitrate_kbps) override;
   void OnRttUpdate(base::TimeDelta rtt) override;

@@ -180,6 +180,11 @@ void WebrtcVideoStream::SetObserver(Observer* observer) {
   observer_ = observer;
 }
 
+void WebrtcVideoStream::OnEncoderReady() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  scheduler_->OnEncoderReady();
+}
+
 void WebrtcVideoStream::OnKeyFrameRequested() {
   DCHECK(thread_checker_.CalledOnValidThread());
   scheduler_->OnKeyFrameRequested();
