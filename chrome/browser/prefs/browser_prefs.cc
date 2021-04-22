@@ -212,6 +212,7 @@
 #include "chrome/browser/android/preferences/browser_prefs_android.h"
 #include "chrome/browser/android/usage_stats/usage_stats_bridge.h"
 #include "chrome/browser/first_run/android/first_run_prefs.h"
+#include "chrome/browser/lens/android/lens_prefs.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "chrome/browser/video_tutorials/prefs.h"
@@ -747,6 +748,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ::android::RegisterPrefs(registry);
 
   registry->RegisterIntegerPref(first_run::kTosDialogBehavior, 0);
+  registry->RegisterBooleanPref(lens::kLensCameraAssistedSearchEnabled, true);
 #else  // defined(OS_ANDROID)
   enterprise_reporting::RegisterLocalStatePrefs(registry);
   gcm::RegisterPrefs(registry);

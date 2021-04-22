@@ -7133,6 +7133,33 @@
           Note that patterns you list here are treated as domains, not URLs, so you should not specify a scheme or port.''',
     },
     {
+      'name': 'LensCameraAssistedSearchEnabled',
+      'owners': [ 'yusuyoutube@google.com', 'benwgold@google.com', 'wylieb@chromium.org', 'fgorski@chromium.org', 'lens-chrome@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['android'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Lens camera assisted search for Enterprise user',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Lens camera assisted search for Enterprise user',
+        },
+      ],
+      'example_value': True,
+      'default': True,
+      'id': 853,
+      'caption': '''Allow <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> Camera Assisted Search''',
+      'tags': [],
+      'desc': '''Leaving the policy unset or setting it to Enabled allows users to search with their cameras using <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph>. Setting the policy to False means users can't see the <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> button in the search box when <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> Camera Assisted Search is supported.''',
+    },
+    {
       'name': 'InsecurePrivateNetworkRequestsAllowed',
       'owners': [
         'titouan@chromium.org',
@@ -26464,6 +26491,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 850, 851],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 852,
+  'highest_id_currently_used': 853,
   'highest_atomic_group_id_currently_used': 40
 }

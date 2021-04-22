@@ -8276,6 +8276,15 @@
       }
     ]
   },
+  "LensCameraAssistedSearchEnabled" : {
+    "os": ["android"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "LensCameraAssistedSearchEnabled": true },
+        "prefs": { "policy.lens_camera_assisted_search_enabled": { "location": "local_state" } }
+      }
+    ]
+  },
   "DefaultFileSystemReadGuardSetting": {
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [

@@ -102,6 +102,7 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/first_run/android/first_run_prefs.h"
+#include "chrome/browser/lens/android/lens_prefs.h"
 #include "chrome/browser/search/contextual_search_policy_handler_android.h"
 #else  // defined(OS_ANDROID)
 #include "chrome/browser/download/default_download_dir_policy_handler.h"
@@ -661,6 +662,15 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::STRING },
   { key::kBackForwardCacheEnabled,
     prefs::kMixedFormsWarningsEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kTosDialogBehavior,
+    first_run::kTosDialogBehavior,
+    base::Value::Type::INTEGER },
+  { key::kLensCameraAssistedSearchEnabled,
+    lens::kLensCameraAssistedSearchEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kWebXRImmersiveArEnabled,
+    prefs::kWebXRImmersiveArEnabled,
     base::Value::Type::BOOLEAN },
 #else  // defined(OS_ANDROID)
   { key::kDefaultInsecureContentSetting,
@@ -1356,23 +1366,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     policy::policy_prefs::kTargetBlankImpliesNoOpener,
     base::Value::Type::BOOLEAN },
 
-#if defined(OS_ANDROID)
-  { key::kTosDialogBehavior,
-    first_run::kTosDialogBehavior,
-    base::Value::Type::INTEGER },
-#endif  // defined(OS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   { key::kLacrosAllowed,
     prefs::kLacrosAllowed,
     base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if defined(OS_ANDROID)
-  { key::kWebXRImmersiveArEnabled,
-    prefs::kWebXRImmersiveArEnabled,
-    base::Value::Type::BOOLEAN },
-#endif  // defined(OS_ANDROID)
 
 #if !defined(OS_ANDROID)
   { key::kFetchKeepaliveDurationSecondsOnShutdown,
