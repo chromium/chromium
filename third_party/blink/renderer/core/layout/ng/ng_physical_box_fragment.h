@@ -353,6 +353,9 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   // Return true if this is the first fragment generated from a node.
   bool IsFirstForNode() const { return is_first_for_node_; }
 
+  // Return true if this is the only fragment generated from a node.
+  bool IsOnlyForNode() const { return IsFirstForNode() && !BreakToken(); }
+
   bool HasDescendantsForTablePart() const {
     DCHECK(IsTableNGPart() || IsTableNGCell());
     return has_descendants_for_table_part_;

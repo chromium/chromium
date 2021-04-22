@@ -77,10 +77,6 @@ NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey passkey,
   if (builder->has_block_fragmentation_) {
     RareData* rare_data = EnsureRareData();
 
-    // We don't support fragment caching when block-fragmenting, so mark the
-    // result as non-reusable.
-    rare_data->is_single_use = true;
-
     if (builder->tallest_unbreakable_block_size_ >= LayoutUnit()) {
       rare_data->tallest_unbreakable_block_size =
           builder->tallest_unbreakable_block_size_;

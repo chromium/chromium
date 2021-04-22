@@ -3274,7 +3274,7 @@ bool LayoutBox::NGPhysicalFragmentList::Contains(
 void LayoutBox::SetCachedLayoutResult(const NGLayoutResult* result) {
   NOT_DESTROYED();
   DCHECK(!result->PhysicalFragment().BreakToken());
-  DCHECK(!result->IsSingleUse());
+  DCHECK(To<NGPhysicalBoxFragment>(result->PhysicalFragment()).IsOnlyForNode());
 
   if (result->GetConstraintSpaceForCaching().CacheSlot() ==
       NGCacheSlot::kMeasure) {
@@ -3430,7 +3430,7 @@ const NGLayoutResult* LayoutBox::GetCachedLayoutResult() const {
     return nullptr;
   // Only return re-usable results.
   const NGLayoutResult* result = layout_results_[0];
-  if (result->IsSingleUse())
+  if (!To<NGPhysicalBoxFragment>(result->PhysicalFragment()).IsOnlyForNode())
     return nullptr;
   DCHECK(!result->PhysicalFragment().IsLayoutObjectDestroyedOrMoved() ||
          BeingDestroyed());
@@ -3443,7 +3443,8 @@ const NGLayoutResult* LayoutBox::GetCachedMeasureResult() const {
   if (!measure_result_)
     return nullptr;
 
-  if (measure_result_->IsSingleUse())
+  if (!To<NGPhysicalBoxFragment>(measure_result_->PhysicalFragment())
+           .IsOnlyForNode())
     return nullptr;
 
   return measure_result_;

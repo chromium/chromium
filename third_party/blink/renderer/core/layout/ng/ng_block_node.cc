@@ -704,16 +704,17 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
         << "Legacy layout was supposed to use the size that NG computed";
   }
 
-  // Add all layout results (and fragments) generated from a node to a list in
-  // the layout object. Some extra care is required to correctly overwrite
-  // intermediate layout results: The sequence number of an incoming break token
-  // corresponds with the fragment index in the layout object (off by 1,
-  // though). When writing back a layout result, we remove any fragments in the
-  // layout box at higher indices than that of the one we're writing back.
-  if (layout_result->IsSingleUse())
-    box_->AddLayoutResult(layout_result, FragmentIndex(break_token));
-  else
+  if (physical_fragment.IsOnlyForNode()) {
     box_->SetCachedLayoutResult(layout_result);
+  } else {
+    // Add all layout results (and fragments) generated from a node to a list in
+    // the layout object. Some extra care is required to correctly overwrite
+    // intermediate layout results: The sequence number of an incoming break
+    // token corresponds with the fragment index in the layout object (off by 1,
+    // though). When writing back a layout result, we remove any fragments in
+    // the layout box at higher indices than that of the one we're writing back.
+    box_->AddLayoutResult(layout_result, FragmentIndex(break_token));
+  }
 
   if (block_flow) {
     const NGFragmentItems* items = physical_fragment.Items();

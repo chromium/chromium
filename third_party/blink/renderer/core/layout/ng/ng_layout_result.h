@@ -229,14 +229,6 @@ class CORE_EXPORT NGLayoutResult final
     return HasRareData() && rare_data_->has_violating_break;
   }
 
-  // Return whether this result is single-use only (true), or if it is allowed
-  // to be involved in cache hits in future layout passes (false).
-  // For example, this happens when a block is fragmented, since we don't yet
-  // support caching of block-fragmented results.
-  bool IsSingleUse() const {
-    return HasRareData() && rare_data_->is_single_use;
-  }
-
   SerializedScriptValue* CustomLayoutData() const {
     return HasRareData() ? rare_data_->custom_layout_data.get() : nullptr;
   }
@@ -438,7 +430,6 @@ class CORE_EXPORT NGLayoutResult final
           custom_layout_data(rare_data.custom_layout_data),
           annotation_overflow(rare_data.annotation_overflow),
           block_end_annotation_space(rare_data.block_end_annotation_space),
-          is_single_use(rare_data.is_single_use),
           has_violating_break(rare_data.has_violating_break),
           lines_until_clamp(rare_data.lines_until_clamp),
           table_column_count_(rare_data.table_column_count_),
@@ -478,7 +469,6 @@ class CORE_EXPORT NGLayoutResult final
 
     LayoutUnit annotation_overflow;
     LayoutUnit block_end_annotation_space;
-    bool is_single_use = false;
     bool has_violating_break = false;
     int lines_until_clamp = 0;
     wtf_size_t table_column_count_ = 0;

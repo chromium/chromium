@@ -2058,5 +2058,148 @@ TEST_F(NGLayoutResultCachingTest, HitTableSectionRemove) {
   EXPECT_NE(result, nullptr);
 }
 
+TEST_F(NGLayoutResultCachingTest, MissFragmentainerSizeChange) {
+  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .multicol { columns:2; column-fill:auto; height:100px; }
+      .child { height:80px; }
+    </style>
+    <div class="multicol" style="height:50px;">
+      <div id="test" class="child"></div>
+    </div>
+    <div class="multicol">
+      <div id="src" class="child"></div>
+    </div>
+  )HTML");
+
+  auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
+  auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
+
+  EXPECT_NE(src->GetCachedLayoutResult(), nullptr);
+  // Block-fragmented nodes aren't cacheable.
+  EXPECT_EQ(test->GetCachedLayoutResult(), nullptr);
+}
+
+TEST_F(NGLayoutResultCachingTest, MissBfcOffsetChangeInFragmentainer) {
+  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .multicol { columns:2; column-fill:auto; height:100px; }
+      .first { height:10px; }
+      .second { display: flow-root; height:80px; }
+    </style>
+    <div class="multicol">
+      <div class="first" style="height:50px;"></div>
+      <div id="test" class="second"></div>
+    </div>
+    <div class="multicol">
+      <div class="first"></div>
+      <div id="src" class="second"></div>
+    </div>
+  )HTML");
+
+  auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
+  auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
+
+  EXPECT_NE(src->GetCachedLayoutResult(), nullptr);
+  // Block-fragmented nodes aren't cached at all.
+  EXPECT_EQ(test->GetCachedLayoutResult(), nullptr);
+}
+
+TEST_F(NGLayoutResultCachingTest, MissBlockOffsetChangeInFragmentainer) {
+  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .multicol { columns:2; column-fill:auto; height:100px; }
+      .first { height:10px; }
+      .second { height:80px; }
+    </style>
+    <div class="multicol">
+      <div class="first" style="height:50px;"></div>
+      <div id="test" class="second"></div>
+    </div>
+    <div class="multicol">
+      <div class="first"></div>
+      <div id="src" class="second"></div>
+    </div>
+  )HTML");
+
+  auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
+  auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
+
+  EXPECT_NE(src->GetCachedLayoutResult(), nullptr);
+  // Block-fragmented nodes aren't cached at all.
+  EXPECT_EQ(test->GetCachedLayoutResult(), nullptr);
+}
+
+TEST_F(NGLayoutResultCachingTest, HitBlockOffsetUnchangedInFragmentainer) {
+  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .multicol { columns:2; column-fill:auto; height:100px; }
+      .third { height:50px; }
+    </style>
+    <div class="multicol">
+      <div height="10px;"></div>
+      <div height="20px;"></div>
+      <div id="test" class="third"></div>
+    </div>
+    <div class="multicol">
+      <div height="20px;"></div>
+      <div height="10px;"></div>
+      <div id="src" class="third"></div>
+    </div>
+  )HTML");
+
+  auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
+  auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
+
+  NGLayoutCacheStatus cache_status;
+  base::Optional<NGFragmentGeometry> fragment_geometry;
+  ASSERT_NE(src->GetCachedLayoutResult(), nullptr);
+  ASSERT_NE(test->GetCachedLayoutResult(), nullptr);
+  const NGConstraintSpace& space =
+      src->GetCachedLayoutResult()->GetConstraintSpaceForCaching();
+  const NGLayoutResult* result = test->CachedLayoutResult(
+      space, nullptr, nullptr, &fragment_geometry, &cache_status);
+
+  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_NE(result, nullptr);
+}
+
+TEST_F(NGLayoutResultCachingTest, MissMonolithicChangeInFragmentainer) {
+  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .multicol { columns:2; column-fill:auto; height:100px; }
+      .container { height:150px; }
+      .child { height:150px; }
+    </style>
+    <div class="multicol">
+      <div class="container">
+        <div id="test" class="child"></div>
+      </div>
+    </div>
+    <div class="multicol">
+      <div class="container" style="contain:size;">
+        <div id="src" class="child"></div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
+  auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
+
+  EXPECT_NE(src->GetCachedLayoutResult(), nullptr);
+  // Block-fragmented nodes aren't cached at all.
+  EXPECT_EQ(test->GetCachedLayoutResult(), nullptr);
+}
+
 }  // namespace
 }  // namespace blink
