@@ -561,11 +561,7 @@ AuthenticatorPaaskSheetModel::AuthenticatorPaaskSheetModel(
 AuthenticatorPaaskSheetModel::~AuthenticatorPaaskSheetModel() = default;
 
 bool AuthenticatorPaaskSheetModel::IsBackButtonVisible() const {
-#if defined(OS_WIN)
-  return !base::FeatureList::IsEnabled(device::kWebAuthUseNativeWinApi);
-#else
   return true;
-#endif
 }
 
 bool AuthenticatorPaaskSheetModel::IsActivityIndicatorVisible() const {
@@ -651,11 +647,7 @@ AuthenticatorPaaskV2SheetModel::AuthenticatorPaaskV2SheetModel(
 AuthenticatorPaaskV2SheetModel::~AuthenticatorPaaskV2SheetModel() = default;
 
 bool AuthenticatorPaaskV2SheetModel::IsBackButtonVisible() const {
-#if defined(OS_WIN)
-  return !base::FeatureList::IsEnabled(device::kWebAuthUseNativeWinApi);
-#else
   return true;
-#endif
 }
 
 bool AuthenticatorPaaskV2SheetModel::IsActivityIndicatorVisible() const {
