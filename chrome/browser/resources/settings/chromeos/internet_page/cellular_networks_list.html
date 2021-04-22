@@ -79,6 +79,12 @@
         cursor: pointer;
         margin-inline-start: 0;
       }
+
+      network-list {
+        --cr-network-row-padding-bottom: 8px;
+        --cr-network-row-padding-top: 8px;
+        --cr-network-row-height: auto;
+      }
     </style>
     <template is="dom-if" if="[[shouldShowEsimSection_(euicc_,
         cellularDeviceState, cellularDeviceState.*)]]" restamp>
