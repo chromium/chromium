@@ -30,8 +30,11 @@ bool IsEventFromVK(const ui::KeyEvent& event) {
 bool IsSameKeyEvent(const ui::KeyEvent& lhs, const ui::KeyEvent& rhs) {
   // Note that we do not check timestamp here in order to support wayland's
   // text_input::keysym, which does not have timestamp.
+  // Ignore EF_IS_REPEAT here, because they may be calculated in KeyEvent's
+  // ctor, so we cannot rely on it to detect whether key events come from
+  // the same native event.
   return lhs.type() == rhs.type() && lhs.code() == rhs.code() &&
-         lhs.flags() == rhs.flags();
+         (lhs.flags() & ~ui::EF_IS_REPEAT) == (rhs.flags() & ~ui::EF_IS_REPEAT);
 }
 
 }  // namespace
