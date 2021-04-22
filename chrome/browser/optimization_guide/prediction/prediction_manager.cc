@@ -574,6 +574,7 @@ void PredictionManager::FetchModelsAndHostModelFeatures() {
       prediction_model_fetcher_->FetchOptimizationGuideServiceModels(
           models_info, top_hosts, active_field_trials,
           optimization_guide::proto::CONTEXT_BATCH_UPDATE,
+          g_browser_process->GetApplicationLocale(),
           base::BindOnce(&PredictionManager::OnModelsAndHostFeaturesFetched,
                          ui_weak_ptr_factory_.GetWeakPtr()));
 

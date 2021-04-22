@@ -67,10 +67,12 @@ class PredictionModelFetcherTest : public testing::Test {
   bool FetchModels(const std::vector<proto::ModelInfo> models_request_info,
                    const std::vector<std::string>& hosts,
                    const std::vector<proto::FieldTrial>& active_field_trials,
-                   proto::RequestContext request_context) {
+                   proto::RequestContext request_context,
+                   const std::string& locale) {
     bool status =
         prediction_model_fetcher_->FetchOptimizationGuideServiceModels(
             models_request_info, hosts, active_field_trials, request_context,
+            locale,
             base::BindOnce(&PredictionModelFetcherTest::OnModelsFetched,
                            base::Unretained(this)));
     RunUntilIdle();
@@ -121,7 +123,8 @@ TEST_F(PredictionModelFetcherTest, FetchOptimizationGuideServiceModels) {
   std::vector<proto::ModelInfo> models_request_info({});
   std::vector<proto::FieldTrial> active_field_trials({});
   EXPECT_TRUE(FetchModels(models_request_info, hosts, active_field_trials,
-                          proto::RequestContext::CONTEXT_BATCH_UPDATE));
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE,
+                          "en-US"));
   VerifyHasPendingFetchRequests();
 
   histogram_tester.ExpectUniqueSample(
@@ -151,7 +154,8 @@ TEST_F(PredictionModelFetcherTest,
   std::vector<proto::ModelInfo> models_request_info({});
   std::vector<proto::FieldTrial> active_field_trials({});
   EXPECT_TRUE(FetchModels(models_request_info, hosts, active_field_trials,
-                          proto::RequestContext::CONTEXT_BATCH_UPDATE));
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE,
+                          "en-US"));
   VerifyHasPendingFetchRequests();
 
   histogram_tester.ExpectUniqueSample(
@@ -176,7 +180,8 @@ TEST_F(PredictionModelFetcherTest, FetchFilterInvalidHosts) {
   std::vector<proto::ModelInfo> models_request_info({});
   std::vector<proto::FieldTrial> active_field_trials({});
   EXPECT_TRUE(FetchModels(models_request_info, hosts, active_field_trials,
-                          proto::RequestContext::CONTEXT_BATCH_UPDATE));
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE,
+                          "en-US"));
   VerifyHasPendingFetchRequests();
 
   histogram_tester.ExpectUniqueSample(
@@ -202,7 +207,8 @@ TEST_F(PredictionModelFetcherTest, FetchReturned404) {
   std::vector<proto::ModelInfo> models_request_info({});
   std::vector<proto::FieldTrial> active_field_trials({});
   EXPECT_TRUE(FetchModels(models_request_info, hosts, active_field_trials,
-                          proto::RequestContext::CONTEXT_BATCH_UPDATE));
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE,
+                          "en-US"));
   // Send a 404 to HintsFetcher.
   SimulateResponse(response_content, net::HTTP_NOT_FOUND);
   EXPECT_FALSE(models_fetched());
@@ -223,7 +229,8 @@ TEST_F(PredictionModelFetcherTest, FetchReturnBadResponse) {
   std::vector<proto::ModelInfo> models_request_info({});
   std::vector<proto::FieldTrial> active_field_trials({});
   EXPECT_TRUE(FetchModels(models_request_info, hosts, active_field_trials,
-                          proto::RequestContext::CONTEXT_BATCH_UPDATE));
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE,
+                          "en-US"));
   VerifyHasPendingFetchRequests();
   EXPECT_TRUE(SimulateResponse(response_content, net::HTTP_OK));
   EXPECT_FALSE(models_fetched());
@@ -236,12 +243,14 @@ TEST_F(PredictionModelFetcherTest, FetchAttemptWhenNetworkOffline) {
   std::vector<proto::ModelInfo> models_request_info({});
   std::vector<proto::FieldTrial> active_field_trials({});
   EXPECT_FALSE(FetchModels(models_request_info, hosts, active_field_trials,
-                           proto::RequestContext::CONTEXT_BATCH_UPDATE));
+                           proto::RequestContext::CONTEXT_BATCH_UPDATE,
+                           "en-US"));
   EXPECT_FALSE(models_fetched());
 
   SetConnectionOnline();
   EXPECT_TRUE(FetchModels(models_request_info, hosts, active_field_trials,
-                          proto::RequestContext::CONTEXT_BATCH_UPDATE));
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE,
+                          "en-US"));
   VerifyHasPendingFetchRequests();
   EXPECT_TRUE(SimulateResponse(response_content, net::HTTP_OK));
   EXPECT_TRUE(models_fetched());
@@ -254,7 +263,8 @@ TEST_F(PredictionModelFetcherTest, EmptyModelInfoAndHosts) {
   std::vector<proto::ModelInfo> models_request_info({});
   std::vector<proto::FieldTrial> active_field_trials({});
   EXPECT_FALSE(FetchModels(models_request_info, hosts, active_field_trials,
-                           proto::RequestContext::CONTEXT_BATCH_UPDATE));
+                           proto::RequestContext::CONTEXT_BATCH_UPDATE,
+                           "en-US"));
 
   EXPECT_FALSE(models_fetched());
 }

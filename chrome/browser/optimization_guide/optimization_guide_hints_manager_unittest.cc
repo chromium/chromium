@@ -14,6 +14,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
@@ -192,6 +193,7 @@ class TestHintsFetcher : public optimization_guide::HintsFetcher {
       const base::flat_set<optimization_guide::proto::OptimizationType>&
           optimization_types,
       optimization_guide::proto::RequestContext request_context,
+      const std::string& locale,
       optimization_guide::HintsFetchedCallback hints_fetched_callback)
       override {
     HintsFetcherEndState fetch_state =
@@ -199,6 +201,7 @@ class TestHintsFetcher : public optimization_guide::HintsFetcher {
             ? fetch_states_[num_fetches_requested_]
             : fetch_states_.back();
     num_fetches_requested_++;
+    locale_requested_ = locale;
     switch (fetch_state) {
       case HintsFetcherEndState::kFetchFailed:
         std::move(hints_fetched_callback).Run(base::nullopt);
@@ -227,11 +230,14 @@ class TestHintsFetcher : public optimization_guide::HintsFetcher {
     return true;
   }
 
-  int num_fetches_requested() { return num_fetches_requested_; }
+  int num_fetches_requested() const { return num_fetches_requested_; }
+
+  std::string locale_requested() const { return locale_requested_; }
 
  private:
   std::vector<HintsFetcherEndState> fetch_states_;
   int num_fetches_requested_ = 0;
+  std::string locale_requested_;
 };
 
 // A mock class of HintsFetcherFactory that returns instances of
@@ -2130,12 +2136,15 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
   tab_url_provider()->SetUrls(
       {GURL("https://a.com"), GURL("https://b.com"), GURL("chrome://new-tab")});
 
+  g_browser_process->SetApplicationLocale("en-US");
+
   // Force timer to expire after random delay and schedule a hints fetch that
   // succeeds.
   MoveClockForwardBy(base::TimeDelta::FromSeconds(60 * 2));
   EXPECT_EQ(1, top_host_provider->get_num_top_hosts_called());
   EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
   EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
+  EXPECT_EQ("en-US", batch_update_hints_fetcher()->locale_requested());
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 2, 1);
 

@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 #include "chrome/test/base/testing_profile.h"
@@ -251,6 +252,7 @@ class TestPredictionModelFetcher : public PredictionModelFetcher {
       const std::vector<std::string>& hosts,
       const std::vector<proto::FieldTrial>& active_field_trials,
       proto::RequestContext request_context,
+      const std::string& locale,
       ModelsFetchedCallback models_fetched_callback) override {
     if (!ValidateModelsInfoForFetch(models_request_info)) {
       std::move(models_fetched_callback).Run(base::nullopt);
@@ -259,6 +261,7 @@ class TestPredictionModelFetcher : public PredictionModelFetcher {
 
     std::unique_ptr<proto::GetModelsResponse> get_models_response;
     count_hosts_fetched_ = hosts.size();
+    locale_requested_ = locale;
     switch (fetch_state_) {
       case PredictionModelFetcherEndState::kFetchFailed:
         get_models_response = nullptr;
@@ -347,13 +350,16 @@ class TestPredictionModelFetcher : public PredictionModelFetcher {
     count_hosts_fetched_ = false;
   }
 
-  bool models_fetched() { return models_fetched_; }
-  size_t hosts_fetched() { return count_hosts_fetched_; }
+  bool models_fetched() const { return models_fetched_; }
+  size_t hosts_fetched() const { return count_hosts_fetched_; }
+
+  std::string locale_requested() const { return locale_requested_; }
 
  private:
   bool models_fetched_ = false;
   size_t count_hosts_fetched_ = 0;
   bool check_expected_version_ = false;
+  std::string locale_requested_;
   // The desired behavior of the TestPredictionModelFetcher.
   PredictionModelFetcherEndState fetch_state_;
   base::flat_map<proto::OptimizationTarget, proto::Any> expected_metadata_;
@@ -1829,6 +1835,8 @@ TEST_F(PredictionManagerTest, ModelFetcherTimerFetchSucceeds) {
           PredictionModelFetcherEndState::
               kFetchSuccessWithModelsAndHostsModelFeatures));
 
+  g_browser_process->SetApplicationLocale("en-US");
+
   prediction_manager()->RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
 
@@ -1836,6 +1844,7 @@ TEST_F(PredictionManagerTest, ModelFetcherTimerFetchSucceeds) {
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
   MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
+  EXPECT_EQ("en-US", prediction_model_fetcher()->locale_requested());
 
   // Reset the prediction model fetcher to detect when the next fetch occurs.
   prediction_manager()->SetPredictionModelFetcherForTesting(

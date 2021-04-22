@@ -91,6 +91,7 @@ class HintsFetcher {
       const base::flat_set<optimization_guide::proto::OptimizationType>&
           optimization_types,
       optimization_guide::proto::RequestContext request_context,
+      const std::string& locale,
       HintsFetchedCallback hints_fetched_callback);
 
   // Set |time_clock_| for testing.

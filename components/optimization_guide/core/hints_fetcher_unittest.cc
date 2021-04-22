@@ -113,7 +113,7 @@ class HintsFetcherTest : public testing::Test,
                   const std::vector<GURL>& urls) {
     bool status = hints_fetcher_->FetchOptimizationGuideServiceHints(
         hosts, urls, {optimization_guide::proto::NOSCRIPT},
-        optimization_guide::proto::CONTEXT_BATCH_UPDATE,
+        optimization_guide::proto::CONTEXT_BATCH_UPDATE, "en-US",
         base::BindOnce(&HintsFetcherTest::OnHintsFetched,
                        base::Unretained(this)));
     RunUntilIdle();
