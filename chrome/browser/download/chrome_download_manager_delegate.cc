@@ -28,8 +28,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_crx_util.h"
@@ -89,7 +87,6 @@
 #include "net/base/mime_util.h"
 #include "net/base/network_change_notifier.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if defined(OS_ANDROID)
@@ -135,6 +132,9 @@ using safe_browsing::DownloadFileType;
 using safe_browsing::DownloadProtectionService;
 
 namespace {
+
+// Default minimum file size in kilobyte to trigger download later feature.
+const int64_t kDownloadLaterDefaultMinFileSizeKb = 300 * 1024;
 
 // Used with GetPlatformDownloadPath() to indicate which platform path to
 // return.
@@ -412,9 +412,15 @@ void ChromeDownloadManagerDelegate::ShowDownloadDialog(
     bool supports_later_dialog,
     DownloadDialogBridge::DialogCallback callback) {
   DCHECK(download_dialog_bridge_);
-  download_dialog_bridge_->ShowDialog(native_window, total_bytes, dialog_type,
-                                      suggested_path, supports_later_dialog,
-                                      std::move(callback));
+  auto connection_type = net::NetworkChangeNotifier::GetConnectionType();
+  bool show_date_time_picker = base::GetFieldTrialParamByFeatureAsBool(
+      download::features::kDownloadLater,
+      download::features::kDownloadLaterShowDateTimePicker,
+      /*default_value=*/true);
+
+  download_dialog_bridge_->ShowDialog(
+      native_window, total_bytes, connection_type, dialog_type, suggested_path,
+      supports_later_dialog, show_date_time_picker, std::move(callback));
 }
 
 void ChromeDownloadManagerDelegate::SetDownloadDialogBridgeForTesting(
@@ -1001,7 +1007,8 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
         return;
       }
 
-      if (!ShouldShowDownloadLaterDialog() &&
+      bool show_download_later_dialog = ShouldShowDownloadLaterDialog(download);
+      if (!show_download_later_dialog &&
           !download_prefs_->PromptForDownload() && web_contents) {
         android::ChromeDuplicateDownloadInfoBarDelegate::Create(
             InfoBarService::FromWebContents(web_contents), download,
@@ -1017,7 +1024,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
           base::BindOnce(
               &ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone,
               weak_ptr_factory_.GetWeakPtr(), native_window,
-              std::move(callback)));
+              show_download_later_dialog, std::move(callback)));
       return;
     }
 
@@ -1046,7 +1053,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
     gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
     ShowDownloadDialog(
         native_window, download->GetTotalBytes(), dialog_type, suggested_path,
-        ShouldShowDownloadLaterDialog(),
+        ShouldShowDownloadLaterDialog(download),
         base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
     return;
   }
@@ -1161,6 +1168,7 @@ void ChromeDownloadManagerDelegate::ShowFilePickerForDownload(
 #if defined(OS_ANDROID)
 void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
     gfx::NativeWindow native_window,
+    bool show_download_later_dialog,
     DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
     PathValidationResult result,
     const base::FilePath& target_path) {
@@ -1168,12 +1176,11 @@ void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
   // with the filename automatically set to be the unique filename.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (result == PathValidationResult::SUCCESS) {
-    bool show_download_later = ShouldShowDownloadLaterDialog();
-    if (download_prefs_->PromptForDownload() || show_download_later) {
+    if (download_prefs_->PromptForDownload() || show_download_later_dialog) {
       ShowDownloadDialog(
           native_window, 0 /* total_bytes */,
           DownloadLocationDialogType::NAME_CONFLICT, target_path,
-          show_download_later,
+          show_download_later_dialog,
           base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
       return;
     }
@@ -1198,45 +1205,33 @@ void ChromeDownloadManagerDelegate::OnDownloadCanceled(
 }
 #endif  // defined(OS_ANDROID)
 
-bool ChromeDownloadManagerDelegate::ShouldShowDownloadLaterDialog() const {
+bool ChromeDownloadManagerDelegate::ShouldShowDownloadLaterDialog(
+    const download::DownloadItem* download) const {
   if (!base::FeatureList::IsEnabled(download::features::kDownloadLater) ||
-      profile_->IsOffTheRecord()) {
+      profile_->IsOffTheRecord() || !download_prefs_->PromptDownloadLater()) {
     return false;
   }
 
-  bool require_cellular = base::GetFieldTrialParamByFeatureAsBool(
-      download::features::kDownloadLater,
-      download::features::kDownloadLaterRequireCellular,
-      /*default_value=*/true);
+  // Show download later dialog on slow network connection types.
+  using ConnectionType = net::NetworkChangeNotifier::ConnectionType;
+  auto network_type = net::NetworkChangeNotifier::GetConnectionType();
+  bool met_network_condition =
+      network_type == ConnectionType::CONNECTION_2G ||
+      network_type == ConnectionType::CONNECTION_BLUETOOTH;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           download::switches::kDownloadLaterDebugOnWifi)) {
-    require_cellular = false;
+    met_network_condition = true;
   }
 
-  bool on_cellular = network::NetworkConnectionTracker::IsConnectionCellular(
-      network::mojom::ConnectionType(
-          net::NetworkChangeNotifier::GetConnectionType()));
+  int64_t min_file_size_kb = base::GetFieldTrialParamByFeatureAsInt(
+      download::features::kDownloadLater,
+      download::features::kDownloadLaterMinFileSizeKb,
+      kDownloadLaterDefaultMinFileSizeKb);
 
-  // Check whether network condition is met.
-  if (require_cellular && !on_cellular)
-    return false;
-
-  // Check lite mode if the download later prompt is never shown before.
-  if (!download_prefs_->HasDownloadLaterPromptShown()) {
-    bool require_lite_mode = base::GetFieldTrialParamByFeatureAsBool(
-        download::features::kDownloadLater,
-        download::features::kDownloadLaterRequireLiteMode,
-        /*default_value=*/false);
-    auto* data_reduction_settings =
-        DataReductionProxyChromeSettingsFactory::GetForBrowserContext(profile_);
-    bool lite_mode_enabled =
-        data_reduction_settings->IsDataReductionProxyEnabled();
-
-    if (require_lite_mode && !lite_mode_enabled)
-      return false;
-  }
-
-  return download_prefs_->PromptDownloadLater();
+  // Show download later dialog on large download file.
+  bool met_file_size_condition =
+      download && download->GetTotalBytes() >= min_file_size_kb * 1024;
+  return (met_network_condition || met_file_size_condition);
 }
 
 void ChromeDownloadManagerDelegate::DetermineLocalPath(

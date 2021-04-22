@@ -1411,7 +1411,7 @@ Your Google account may have other forms of browsing history like searches and a
 
       <!-- Download later -->
       <message name="IDS_DOWNLOAD_LATER_DIALOG_TITLE" desc="Title of the download later dialog that let the user to choose the time to download.">
-        Choose when to download
+        Download later instead?
       </message>
       <message name="IDS_DOWNLOAD_LATER_DIALOG_SUBTITLE" desc="Subtitle of the download later dialog that let the user to choose the time to download.">
         You'll see a notification when this file is ready
@@ -1433,6 +1433,24 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_DOWNLOAD_LATER_PROMPT_ENABLED_TITLE" desc="A setting text to ask whether to show a dialog about when to download.">
         Ask when to save files
+      </message>
+      <message name="IDS_DOWNLOAD_LATER_SLOW_NETWORK_SUBTITLE" desc="A subtitle in the download later dialog to inform the user about slow network connection.">
+        Your <ph name="CONNECTION_TYPE">%1$s<ex>2G</ex></ph> connection might slow down your download
+      </message>
+      <message name="IDS_DOWNLOAD_LATER_2G_CONNECTION" desc="2G connection type.">
+        2G
+      </message>
+      <message name="IDS_DOWNLOAD_LATER_BLUETOOTH_CONNECTION" desc="Bluetooth connection type.">
+        Bluetooth
+      </message>
+      <message name="IDS_DOWNLOAD_LATER_WIFI_CONNECTION" desc="WIFI connection type.">
+        Wi-Fi
+      </message>
+      <message name="IDS_DOWNLOAD_LATER_LARGE_FILE_SUBTITLE" desc="A subtitle in the download later dialog to inform the user about large download file size.">
+        This file is large (<ph name="FILE_SIZE">%1$s<ex>300MB</ex></ph>)
+      </message>
+      <message name="IDS_DOWNLOAD_LATER_DIALOG_POSITIVE_BUTTON_TEXT" desc="The text of positive button on the download later dialog.">
+        Done
       </message>
 
       <!-- Downloads location -->
@@ -2015,13 +2033,13 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         <ph name="MESSAGE">%1$s<ex>Downloading file (200 MB)</ex></ph> <ph name="LINK_NAME">%2$s<ex>Details</ex></ph> button
       </message>
       <message name="IDS_DOWNLOAD_SCHEDULED_ON_WIFI" desc="Label describing that the download was scheduled to start on Wi-Fi.">
-        Download will start on Wi-Fi.
+        You’ll see a notification when this download starts on Wi-Fi.
       </message>
       <message name="IDS_DOWNLOAD_SCHEDULED_ON_DATE" desc="Label describing that the download was scheduled to start at a later date.">
-        Download will start on <ph name="date">%1$s<ex>Feb 28 2020</ex></ph>.
+        You’ll see a notification when this download starts on <ph name="date">%1$s<ex>Feb 28 2020</ex></ph>.
       </message>
       <message name="IDS_DOWNLOAD_SCHEDULED_ON_TIME" desc="Label describing that the download was scheduled to start at a later time.">
-        Download will start at <ph name="time">%1$s<ex>8:30PM</ex></ph>.
+        You’ll see a notification when this download starts at <ph name="time">%1$s<ex>8:30PM</ex></ph>.
       </message>
 
       <!-- Inline Update Infobar -->

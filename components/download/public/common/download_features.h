@@ -12,13 +12,13 @@
 namespace download {
 namespace features {
 
-// The Finch parameter for download later feature to function only on cellular
-// network.
-constexpr char kDownloadLaterRequireCellular[] = "require_cellular";
+// The Finch parameter to control whether download later dialog should show the
+// date time picker option.
+constexpr char kDownloadLaterShowDateTimePicker[] = "show_date_time_picker";
 
-// The Finch parameter for download later feature to enable only in lite
-// mode(data saver).
-constexpr char kDownloadLaterRequireLiteMode[] = "require_lite_mode";
+// The Finch parameter to control the minimum download file size to show the
+// download later dialog.
+constexpr char kDownloadLaterMinFileSizeKb[] = "min_file_size_kb";
 
 // Whether offline content provider should be used for the downloads UI..
 COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature

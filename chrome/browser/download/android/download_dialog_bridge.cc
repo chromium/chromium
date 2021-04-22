@@ -40,12 +40,15 @@ DownloadDialogBridge::~DownloadDialogBridge() {
   Java_DownloadDialogBridge_destroy(env, java_obj_);
 }
 
-void DownloadDialogBridge::ShowDialog(gfx::NativeWindow native_window,
-                                      int64_t total_bytes,
-                                      DownloadLocationDialogType dialog_type,
-                                      const base::FilePath& suggested_path,
-                                      bool supports_later_dialog,
-                                      DialogCallback dialog_callback) {
+void DownloadDialogBridge::ShowDialog(
+    gfx::NativeWindow native_window,
+    int64_t total_bytes,
+    net::NetworkChangeNotifier::ConnectionType connection_type,
+    DownloadLocationDialogType dialog_type,
+    const base::FilePath& suggested_path,
+    bool supports_later_dialog,
+    bool show_date_time_picker,
+    DialogCallback dialog_callback) {
   if (!native_window)
     return;
 
@@ -77,10 +80,11 @@ void DownloadDialogBridge::ShowDialog(gfx::NativeWindow native_window,
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_DownloadDialogBridge_showDialog(
       env, java_obj_, native_window->GetJavaObject(),
-      static_cast<long>(total_bytes), static_cast<int>(dialog_type),
+      static_cast<long>(total_bytes), static_cast<int>(connection_type),
+      static_cast<int>(dialog_type),
       base::android::ConvertUTF8ToJavaString(env,
                                              suggested_path.AsUTF8Unsafe()),
-      supports_later_dialog);
+      supports_later_dialog, show_date_time_picker);
 }
 
 void DownloadDialogBridge::OnComplete(

@@ -221,6 +221,7 @@ class ChromeDownloadManagerDelegate
   friend class base::RefCountedThreadSafe<ChromeDownloadManagerDelegate>;
   FRIEND_TEST_ALL_PREFIXES(ChromeDownloadManagerDelegateTest,
                            RequestConfirmation_Android);
+  FRIEND_TEST_ALL_PREFIXES(DownloadLaterTriggerTest, DownloadLaterTrigger);
 
   using IdCallbackVector = std::vector<content::DownloadIdCallback>;
 
@@ -279,13 +280,15 @@ class ChromeDownloadManagerDelegate
   // TARGET_CONFLICT and the new file name should be displayed to the user.
   void GenerateUniqueFileNameDone(
       gfx::NativeWindow native_window,
+      bool show_download_later_dialog,
       DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
       download::PathValidationResult result,
       const base::FilePath& target_path);
 #endif
 
   // Returns whether to show download later dialog.
-  bool ShouldShowDownloadLaterDialog() const;
+  bool ShouldShowDownloadLaterDialog(
+      const download::DownloadItem* download) const;
 
   Profile* profile_;
 
