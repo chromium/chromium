@@ -12,6 +12,8 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/hit_test.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/platform/wayland/host/gtk_shell1.h"
+#include "ui/ozone/platform/wayland/host/gtk_surface1.h"
 #include "ui/ozone/platform/wayland/host/shell_object_factory.h"
 #include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -57,7 +59,7 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
   shell_toplevel_->SetTitle(window_title_);
   SetSizeConstraints();
   TriggerStateChanges();
-  InitializeAuraShellSurface();
+  SetUpShellIntegration();
   OnDecorationModeChanged();
   // This could be the proper time to update window mask using
   // NonClientView::GetWindowMask, since |non_client_view| is not created yet
@@ -190,11 +192,19 @@ PlatformWindowState WaylandToplevelWindow::GetPlatformWindowState() const {
 }
 
 void WaylandToplevelWindow::Activate() {
-  // Only supported by compositors that support zaura_shell (e.g. exo).
-  // TODO(https://crbug.com/1175327): Use standard Wayland extensions, such as
-  // xdg-activation, when those are available.
+  // Activation is supported through optional protocol extensions and hence may
+  // or may not work depending on the compositor.  The details depend on the
+  // compositor as well; for example, Mutter doesn't bring the window to the top
+  // when it requests focus, but instead shows a system popup notification to
+  // user.
+  //
+  // Exo provides activation through aura-shell, Mutter--through gtk-shell.
+  //
+  // TODO(crbug.com/1175327): add support for xdg-activation.
   if (aura_surface_)
     zaura_surface_activate(aura_surface_.get());
+  else if (gtk_surface1_)
+    gtk_surface1_->RequestFocus();
 }
 
 void WaylandToplevelWindow::SizeConstraintsChanged() {
@@ -555,9 +565,8 @@ void WaylandToplevelWindow::SetOrResetRestoredBounds() {
   }
 }
 
-void WaylandToplevelWindow::InitializeAuraShellSurface() {
-  // InitializeAuraShellSurface() should be called after the XDG surface is
-  // initialized.
+void WaylandToplevelWindow::SetUpShellIntegration() {
+  // This method should be called after the XDG surface is initialized.
   DCHECK(shell_toplevel_);
 
   if (connection()->zaura_shell() && !aura_surface_) {
@@ -573,6 +582,11 @@ void WaylandToplevelWindow::InitializeAuraShellSurface() {
     zaura_surface_add_listener(aura_surface_.get(), &zaura_surface_listener,
                                this);
     SetImmersiveFullscreenStatus(false);
+  }
+
+  if (connection()->gtk_shell1()) {
+    gtk_surface1_ =
+        connection()->gtk_shell1()->GetGtkSurface1(root_surface()->surface());
   }
 }
 

@@ -13,6 +13,8 @@ struct gtk_primary_selection_device;
 struct gtk_primary_selection_device_manager;
 struct gtk_primary_selection_offer;
 struct gtk_primary_selection_source;
+struct gtk_shell1;
+struct gtk_surface1;
 struct zwp_primary_selection_device_v1;
 struct zwp_primary_selection_device_manager_v1;
 struct zwp_primary_selection_offer_v1;
@@ -110,6 +112,18 @@ template <>
 struct ObjectTraits<gtk_primary_selection_source> {
   static const wl_interface* interface;
   static void (*deleter)(gtk_primary_selection_source*);
+};
+
+template <>
+struct ObjectTraits<gtk_shell1> {
+  static const wl_interface* interface;
+  static void (*deleter)(gtk_shell1*);
+};
+
+template <>
+struct ObjectTraits<gtk_surface1> {
+  static const wl_interface* interface;
+  static void (*deleter)(gtk_surface1*);
 };
 
 template <>

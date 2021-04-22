@@ -46,6 +46,7 @@ class WaylandDataDeviceManager;
 class WaylandCursorPosition;
 class WaylandWindowDragController;
 class GtkPrimarySelectionDeviceManager;
+class GtkShell1;
 class ZwpPrimarySelectionDeviceManager;
 class XdgForeignWrapper;
 
@@ -161,6 +162,8 @@ class WaylandConnection {
     return gtk_primary_selection_device_manager_.get();
   }
 
+  GtkShell1* gtk_shell1() { return gtk_shell1_.get(); }
+
   ZwpPrimarySelectionDeviceManager* zwp_primary_selection_device_manager()
       const {
     return zwp_primary_selection_device_manager_.get();
@@ -257,6 +260,7 @@ class WaylandConnection {
 
   std::unique_ptr<GtkPrimarySelectionDeviceManager>
       gtk_primary_selection_device_manager_;
+  std::unique_ptr<GtkShell1> gtk_shell1_;
 
   std::unique_ptr<ZwpPrimarySelectionDeviceManager>
       zwp_primary_selection_device_manager_;

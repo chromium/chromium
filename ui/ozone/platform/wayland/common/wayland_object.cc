@@ -8,6 +8,7 @@
 #include <cursor-shapes-unstable-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <gtk-primary-selection-client-protocol.h>
+#include <gtk-shell-client-protocol.h>
 #include <keyboard-extension-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
@@ -95,6 +96,14 @@ const wl_interface* ObjectTraits<gtk_primary_selection_source>::interface =
     &gtk_primary_selection_source_interface;
 void (*ObjectTraits<gtk_primary_selection_source>::deleter)(
     gtk_primary_selection_source*) = &gtk_primary_selection_source_destroy;
+
+const wl_interface* ObjectTraits<gtk_shell1>::interface = &gtk_shell1_interface;
+void (*ObjectTraits<gtk_shell1>::deleter)(gtk_shell1*) = &gtk_shell1_destroy;
+
+const wl_interface* ObjectTraits<gtk_surface1>::interface =
+    &gtk_surface1_interface;
+void (*ObjectTraits<gtk_surface1>::deleter)(gtk_surface1*) =
+    &gtk_surface1_destroy;
 
 const wl_interface*
     ObjectTraits<zwp_primary_selection_device_manager_v1>::interface =

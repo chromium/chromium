@@ -15,6 +15,7 @@
 
 namespace ui {
 
+class GtkSurface1;
 class ShellToplevelWrapper;
 
 class WaylandToplevelWindow : public WaylandWindow,
@@ -106,9 +107,9 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   void SetOrResetRestoredBounds();
 
-  // Initializes the aura-shell surface, in the case aura-shell EXO extension
-  // is available.
-  void InitializeAuraShellSurface();
+  // Initializes additional shell integration, if the appropriate interfaces are
+  // available.
+  void SetUpShellIntegration();
 
   // Sets decoration mode for a window.
   void OnDecorationModeChanged();
@@ -159,6 +160,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   base::Optional<gfx::Size> max_size_;
 
   wl::Object<zaura_surface> aura_surface_;
+  // |gtk_surface1_| is the optional GTK surface that provides better
+  // integration with the desktop shell.
+  std::unique_ptr<GtkSurface1> gtk_surface1_;
 
   // When use_native_frame is false, client-side decoration is set,
   // e.g. lacros-browser.

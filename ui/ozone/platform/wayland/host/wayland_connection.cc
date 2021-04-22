@@ -24,6 +24,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device_manager.h"
+#include "ui/ozone/platform/wayland/host/gtk_shell1.h"
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy_impl.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
@@ -81,6 +82,12 @@ constexpr uint32_t kMaxExtendedDragVersion = 1;
 // value.
 constexpr uint32_t kMinWlDrmVersion = 2;
 constexpr uint32_t kMinWlOutputVersion = 2;
+
+// gtk_shell1 exposes request_focus() since version 3.  Below that, it is not
+// interesting for us, although it provides some shell integration that might be
+// useful.
+constexpr uint32_t kMinGtkShell1Version = 3;
+constexpr uint32_t kMaxGtkShell1Version = 4;
 }  // namespace
 
 WaylandConnection::WaylandConnection() = default;
@@ -439,6 +446,11 @@ void WaylandConnection::Global(void* data,
     connection->gtk_primary_selection_device_manager_ =
         std::make_unique<GtkPrimarySelectionDeviceManager>(manager.release(),
                                                            connection);
+  } else if (!connection->gtk_shell1_ && strcmp(interface, "gtk_shell1") == 0 &&
+             version >= kMinGtkShell1Version) {
+    wl::Object<::gtk_shell1> gtk_shell1 = wl::Bind<::gtk_shell1>(
+        registry, name, std::min(version, kMaxGtkShell1Version));
+    connection->gtk_shell1_ = std::make_unique<GtkShell1>(gtk_shell1.release());
   } else if (!connection->zwp_primary_selection_device_manager_ &&
              strcmp(interface, "zwp_primary_selection_device_manager_v1") ==
                  0) {
