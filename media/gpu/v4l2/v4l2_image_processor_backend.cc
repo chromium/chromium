@@ -702,7 +702,17 @@ bool V4L2ImageProcessorBackend::ApplyCrop(const gfx::Rect& visible_rect,
 
   const gfx::Rect adjusted_visible_rect(rect.left, rect.top, rect.width,
                                         rect.height);
-  if (visible_rect != adjusted_visible_rect) {
+
+  // The adjusted visible rectangle might not be exactly as we requested due to
+  // hardware constraints (e.g. hardware not supporting odd resolutions).
+  // This is ok as long as the top-left point is the same as the request, and
+  // the adjusted rect is bigger than the requested one. Even though we will be
+  // delivered more pixels than we requested, we will pass the actual visible
+  // rectangle to the rest of the pipeline, so the buffer will be displayed
+  // correctly.
+  if (visible_rect.origin() != adjusted_visible_rect.origin() ||
+      visible_rect.width() > adjusted_visible_rect.width() ||
+      visible_rect.height() > adjusted_visible_rect.height()) {
     VLOGF(1) << "Unsupported visible rectangle: " << visible_rect.ToString()
              << ", the rectangle adjusted by the driver: "
              << adjusted_visible_rect.ToString();
