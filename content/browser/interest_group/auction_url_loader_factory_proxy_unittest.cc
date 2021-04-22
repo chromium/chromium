@@ -8,18 +8,21 @@
 
 #include <vector>
 
+#include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,7 +54,17 @@ const char kAcceptJson[] = "application/json";
 
 class ActionUrlLoaderFactoryProxyTest : public testing::Test {
  public:
-  ActionUrlLoaderFactoryProxyTest() {
+  ActionUrlLoaderFactoryProxyTest() { CreateUrlLoaderFactoryProxy(); }
+
+  ~ActionUrlLoaderFactoryProxyTest() override {
+    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+  }
+
+  void CreateUrlLoaderFactoryProxy() {
+    // The AuctionURLLoaderFactoryProxy should only be created if there is no
+    // old one, or the old one's pipe was closed.
+    DCHECK(!remote_url_loader_factory_ ||
+           !remote_url_loader_factory_.is_connected());
     blink::mojom::AuctionAdConfigPtr auction_config =
         blink::mojom::AuctionAdConfig::New();
     auction_config->decision_logic_url = GURL(kScoringWorkletUrl);
@@ -73,18 +86,20 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
     bidders.back()->group = blink::mojom::InterestGroup::New();
     bidders.back()->group->bidding_url = GURL(kBiddingWorkletUrl3);
 
+    remote_url_loader_factory_.reset();
     url_loader_factory_proxy_ = std::make_unique<AuctionURLLoaderFactoryProxy>(
-        url_loader_factory_.GetSafeWeakWrapper(), "foo.test", *auction_config,
-        bidders);
+        remote_url_loader_factory_.BindNewPipeAndPassReceiver(),
+        base::BindRepeating(
+            [](network::mojom::URLLoaderFactory* factory) { return factory; },
+            &proxied_url_loader_factory_),
+        frame_origin_, *auction_config, bidders);
   }
-
-  ~ActionUrlLoaderFactoryProxyTest() override = default;
 
   // Attempts to make a request for `request`. Return true of the request is
   // passed through AuctionURLLoaderFactoryProxy to the nested
   // TestURLLoaderFactory.
   bool TryMakeRequest(const network::ResourceRequest& request) {
-    int initial_num_requests = url_loader_factory_.NumPending();
+    int initial_num_requests = proxied_url_loader_factory_.NumPending();
 
     // Try to send a request. Requests are never run to completion, instead,
     // requests that make it to the nested `url_loader_factory_` are tracked in
@@ -94,16 +109,27 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
     // Set a couple random options, which should be ignored.
     int options = network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
                   network::mojom::kURLLoadOptionSniffMimeType;
-    url_loader_factory_proxy_->CreateLoaderAndStart(
+    remote_url_loader_factory_->CreateLoaderAndStart(
         receiver.InitWithNewPipeAndPassReceiver(), 0 /* request_id_ */, options,
         request, client.InitWithNewPipeAndPassRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
+    // Wait until requests have made it through the Mojo pipe. NumPending()
+    // actually spinds the message loop already, but seems best to be safe.
+    remote_url_loader_factory_.FlushForTesting();
+
     // If there are just as many requests now as there were before a request was
-    // made, then the proxy blocked the request. Note that NumPending() spins
-    // the run loop, ensuring any async mojo calls have completed.
-    int final_num_requests = url_loader_factory_.NumPending();
-    if (initial_num_requests == final_num_requests)
+    // made, then the proxy blocked the request.
+    int final_num_requests = proxied_url_loader_factory_.NumPending();
+    bool request_rejected = initial_num_requests == final_num_requests;
+
+    // A request being rejected closes the receiver. Need to create a new
+    // AuctionURLLoaderFactoryProxy for next test.
+    EXPECT_EQ(request_rejected, !remote_url_loader_factory_.is_connected());
+    if (!remote_url_loader_factory_.is_connected())
+      CreateUrlLoaderFactoryProxy();
+
+    if (request_rejected)
       return false;
 
     // If there are more pending requests than before, there should only be one
@@ -111,7 +137,7 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
     EXPECT_EQ(initial_num_requests + 1, final_num_requests);
 
     const auto& pending_request =
-        url_loader_factory_.pending_requests()->back();
+        proxied_url_loader_factory_.pending_requests()->back();
 
     // These should always be the same for all requests.
     EXPECT_EQ(0u, pending_request.options);
@@ -123,7 +149,7 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
     // unique within the browser process, not just among requests using the
     // AuctionURLLoaderFactoryProxy.
     for (const auto& other_pending_request :
-         *url_loader_factory_.pending_requests()) {
+         *proxied_url_loader_factory_.pending_requests()) {
       if (&other_pending_request == &pending_request)
         continue;
       EXPECT_NE(other_pending_request.request_id, pending_request.request_id);
@@ -151,6 +177,9 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
               observed_request.credentials_mode);
     EXPECT_EQ(network::mojom::RedirectMode::kError,
               observed_request.redirect_mode);
+
+    // The initiator should be set.
+    EXPECT_EQ(frame_origin_, observed_request.request_initiator);
 
     // Validate `observed_request.trusted_params`.
     EXPECT_TRUE(observed_request.trusted_params);
@@ -183,8 +212,11 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  network::TestURLLoaderFactory url_loader_factory_;
+
+  url::Origin frame_origin_ = url::Origin::Create(GURL("https://foo.test/"));
+  network::TestURLLoaderFactory proxied_url_loader_factory_;
   std::unique_ptr<AuctionURLLoaderFactoryProxy> url_loader_factory_proxy_;
+  mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory_;
 };
 
 // Test exact URL matches. Trusted bidding signals URLs should be rejected
