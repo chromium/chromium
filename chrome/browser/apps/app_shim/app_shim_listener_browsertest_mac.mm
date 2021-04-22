@@ -16,6 +16,7 @@
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/app_shim/app_shim_controller.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
@@ -39,17 +40,6 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 
-using OnShimConnectedCallback =
-    chrome::mojom::AppShimHostBootstrap::OnShimConnectedCallback;
-
-const char kTestAppMode[] = "test_app";
-
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL TestAppUrl() {
-  return GURL("https://example.com");
-}
-
 // A test version of the AppShimController mojo client in chrome_main_app_mode.
 class TestShimClient : public chrome::mojom::AppShim {
  public:
@@ -66,7 +56,9 @@ class TestShimClient : public chrome::mojom::AppShim {
   mojo::PendingReceiver<chrome::mojom::AppShimHost> GetHostReceiver() {
     return std::move(host_receiver_);
   }
-  OnShimConnectedCallback GetOnShimConnectedCallback() {
+
+  chrome::mojom::AppShimHostBootstrap::OnShimConnectedCallback
+  GetOnShimConnectedCallback() {
     return base::BindOnce(&TestShimClient::OnShimConnectedDone,
                           base::Unretained(this));
   }
@@ -106,10 +98,9 @@ TestShimClient::TestShimClient()
   base::FilePath user_data_dir;
   CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
 
-  std::string name_fragment =
-      base::StringPrintf("%s.%s.%s", base::mac::BaseBundleID(),
-                         app_mode::kAppShimBootstrapNameFragment,
-                         base::MD5String(user_data_dir.value()).c_str());
+  std::string name_fragment = base::StrCat(
+      {base::mac::BaseBundleID(), ".", app_mode::kAppShimBootstrapNameFragment,
+       ".", base::MD5String(user_data_dir.value())});
   mojo::PlatformChannelEndpoint endpoint = ConnectToBrowser(name_fragment);
 
   mojo::ScopedMessagePipeHandle message_pipe =
@@ -193,8 +184,8 @@ IN_PROC_BROWSER_TEST_F(AppShimListenerBrowserTest, LaunchNormal) {
   test_client_ = std::make_unique<TestShimClient>();
   auto app_shim_info = chrome::mojom::AppShimInfo::New();
   app_shim_info->profile_path = browser()->profile()->GetPath();
-  app_shim_info->app_id = kTestAppMode;
-  app_shim_info->app_url = TestAppUrl();
+  app_shim_info->app_id = "test_app";
+  app_shim_info->app_url = GURL("https://example.com");
   app_shim_info->launch_type = chrome::mojom::AppShimLaunchType::kNormal;
   test_client_->host_bootstrap()->OnShimConnected(
       test_client_->GetHostReceiver(), std::move(app_shim_info),
@@ -209,13 +200,12 @@ IN_PROC_BROWSER_TEST_F(AppShimListenerBrowserTest, LaunchRegisterOnly) {
   test_client_ = std::make_unique<TestShimClient>();
   auto app_shim_info = chrome::mojom::AppShimInfo::New();
   app_shim_info->profile_path = browser()->profile()->GetPath();
-  app_shim_info->app_id = kTestAppMode;
-  app_shim_info->app_url = TestAppUrl();
+  app_shim_info->app_id = "test_app";
+  app_shim_info->app_url = GURL("https://example.com");
   app_shim_info->launch_type = chrome::mojom::AppShimLaunchType::kRegisterOnly;
   test_client_->host_bootstrap()->OnShimConnected(
       test_client_->GetHostReceiver(), std::move(app_shim_info),
       test_client_->GetOnShimConnectedCallback());
-
   RunAndExitGracefully();
   EXPECT_EQ(chrome::mojom::AppShimLaunchType::kRegisterOnly,
             *last_launch_type_);
