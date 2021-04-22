@@ -220,11 +220,9 @@ class DataTransferDlpBrowserTest : public LoginPolicyTestBase {
 
 // Flaky on MSan bots: http://crbug.com/1178328
 #if defined(MEMORY_SANITIZER)
-#define MAYBE_EmptyPolicy \
-  DISABLED_EmptyPolicy
+#define MAYBE_EmptyPolicy DISABLED_EmptyPolicy
 #else
-#define MAYBE_EmptyPolicy \
-  EmptyPolicy
+#define MAYBE_EmptyPolicy EmptyPolicy
 #endif
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_EmptyPolicy) {
   SkipToLoginScreen();
@@ -318,11 +316,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
 
 // Flaky on MSan bots: http://crbug.com/1178328
 #if defined(MEMORY_SANITIZER)
-#define MAYBE_BlockComponent \
-  DISABLED_BlockComponent
+#define MAYBE_BlockComponent DISABLED_BlockComponent
 #else
-#define MAYBE_BlockComponent \
-  BlockComponent
+#define MAYBE_BlockComponent BlockComponent
 #endif
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_BlockComponent) {
   SkipToLoginScreen();
@@ -374,11 +370,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_BlockComponent) {
 
 // Flaky on MSan bots: http://crbug.com/1178328
 #if defined(MEMORY_SANITIZER)
-#define MAYBE_WarnDestination \
-  DISABLED_WarnDestination
+#define MAYBE_WarnDestination DISABLED_WarnDestination
 #else
-#define MAYBE_WarnDestination \
-  WarnDestination
+#define MAYBE_WarnDestination WarnDestination
 #endif
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
   SkipToLoginScreen();
@@ -470,11 +464,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
 
 // Flaky on MSan bots: http://crbug.com/1178328
 #if defined(MEMORY_SANITIZER)
-#define MAYBE_WarnComponent \
-  DISABLED_WarnComponent
+#define MAYBE_WarnComponent DISABLED_WarnComponent
 #else
-#define MAYBE_WarnComponent \
-  WarnComponent
+#define MAYBE_WarnComponent WarnComponent
 #endif
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnComponent) {
   SkipToLoginScreen();
@@ -560,7 +552,9 @@ class DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, ProceedOnWarn) {
+// Flaky: crbug.com/1195297
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
+                       DISABLED_ProceedOnWarn) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -637,7 +631,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, ProceedOnWarn) {
   EXPECT_EQ(kClipboardText1, EvalJs(GetActiveWebContents(), "p"));
 }
 
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, CancelWarn) {
+// Flaky: crbug.com/1195297
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, DISABLED_CancelWarn) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
