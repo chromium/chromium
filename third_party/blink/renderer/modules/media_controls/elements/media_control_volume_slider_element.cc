@@ -25,9 +25,8 @@ namespace blink {
 
 namespace {
 
-// When adjusting the volume by scroll wheel, this is the amount we multiply the
-// scroll distance by to get the change in volume.
-constexpr double kScrollDeltaMultiplier = 0.0001;
+// The amount to change the volume by for a wheel event.
+constexpr double kScrollVolumeDelta = 0.1;
 
 }  // namespace
 
@@ -182,9 +181,11 @@ bool MediaControlVolumeSliderElement::KeepEventInNode(
 
 void MediaControlVolumeSliderElement::OnWheelEvent(WheelEvent* wheel_event) {
   double current_volume = value().ToDouble();
-  double delta =
-      kScrollDeltaMultiplier * static_cast<double>(wheel_event->wheelDelta());
-  double new_volume = std::max(0.0, std::min(1.0, current_volume + delta));
+  double new_volume = (wheel_event->wheelDelta() > 0)
+                          ? current_volume + kScrollVolumeDelta
+                          : current_volume - kScrollVolumeDelta;
+  new_volume = std::max(0.0, std::min(1.0, new_volume));
+
   UnmuteAndSetVolume(new_volume);
   wheel_event->SetDefaultHandled();
 }
