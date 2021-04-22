@@ -306,11 +306,6 @@ cr.define('cr.ui.login', function() {
       this.forceKeyboardFlow_ = value;
       if (value) {
         keyboard.initializeKeyboardFlow(false);
-        for (var i = 0; i < this.screens_.length; ++i) {
-          var screen = $(this.screens_[i]);
-          if (screen.enableKeyboardFlow)
-            screen.enableKeyboardFlow();
-        }
       }
     },
 
