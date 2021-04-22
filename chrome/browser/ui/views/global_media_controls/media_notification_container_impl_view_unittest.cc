@@ -348,7 +348,7 @@ class MediaNotificationContainerImplViewOverlayControlsTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(b/161612403): Remove this class once
+// TODO(b/185139027): Remove this class once
 // |media_router::kGlobalMediaControlsCastStartStop| is enabled by default.
 class MediaNotificationContainerImplViewCastTest
     : public MediaNotificationContainerImplViewTest {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/media_message_center/media_notification_controller.h"
 #include "components/media_router/browser/media_router.h"
@@ -14,10 +15,18 @@ namespace {
 
 bool ShouldHideNotification(const media_router::MediaRoute& route) {
   // TODO(crbug.com/1195382): Display multizone group route.
-  // Hide a route if it's not for display or it's a mirroring route.
-  if (!route.for_display() || route.media_source().IsTabMirroringSource() ||
-      route.media_source().IsDesktopMirroringSource() ||
-      route.media_source().IsLocalFileSource()) {
+  if (!route.for_display()) {
+    return true;
+  }
+
+  if (media_router::GlobalMediaControlsCastStartStopEnabled()) {
+    // Hide a route if it's not for display or it's a mirroring route.
+    if (route.media_source().IsTabMirroringSource() ||
+        route.media_source().IsDesktopMirroringSource() ||
+        route.media_source().IsLocalFileSource())
+      return true;
+  } else if (route.controller_type() !=
+             media_router::RouteControllerType::kGeneric) {
     return true;
   }
 
