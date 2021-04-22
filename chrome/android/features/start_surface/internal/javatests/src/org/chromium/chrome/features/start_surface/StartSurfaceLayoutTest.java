@@ -939,6 +939,7 @@ public class StartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
+    @FlakyTest(message = "https://crbug.com/1198484")
     public void testShowOnlyOneTabSuggestionMessageCard_withHardCleanup()
             throws InterruptedException {
         // clang-format on
