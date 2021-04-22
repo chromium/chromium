@@ -18,6 +18,8 @@ import org.chromium.chrome.browser.password_check.PasswordCheckComponentUi;
 import org.chromium.chrome.browser.password_check.PasswordCheckEditFragmentView;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Objects;
 
 /**
@@ -34,6 +36,8 @@ public class PasswordCheckChangePasswordHelper {
     private static final String INTENT = "PASSWORD_CHANGE";
     private static final String START_IMMEDIATELY_PARAMETER = "START_IMMEDIATELY";
     private static final String ORIGINAL_DEEPLINK_PARAMETER = "ORIGINAL_DEEPLINK";
+
+    private static final String ENCODING = "UTF-8";
 
     private final Context mContext;
     private final SettingsLauncher mSettingsLauncher;
@@ -131,10 +135,19 @@ public class PasswordCheckChangePasswordHelper {
      */
     private void populateAutofillAssistantExtras(Intent intent, String origin, String username) {
         intent.putExtra(AUTOFILL_ASSISTANT_ENABLED_KEY, true);
-        intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + ORIGINAL_DEEPLINK_PARAMETER, origin);
-        intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + PASSWORD_CHANGE_USERNAME_PARAMETER, username);
         intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + INTENT_PARAMETER, INTENT);
         intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + START_IMMEDIATELY_PARAMETER, true);
+        // Note: All string-typed parameters must be URL-encoded, because the
+        // corresponding extraction logic will URL-*de*code them before use,
+        // see TriggerContext.java.
+        try {
+            intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + ORIGINAL_DEEPLINK_PARAMETER,
+                    URLEncoder.encode(origin, ENCODING));
+            intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + PASSWORD_CHANGE_USERNAME_PARAMETER,
+                    URLEncoder.encode(username, ENCODING));
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("Encoding not available.", e);
+        }
         // TODO(crbug.com/1086114): Also add the following parameters when server side changes is
         // ready: CALLER, SOURCE. That would be useful for metrics.
     }
