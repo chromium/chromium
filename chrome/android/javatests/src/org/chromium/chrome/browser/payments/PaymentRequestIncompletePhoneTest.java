@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -58,6 +59,7 @@ public class PaymentRequestIncompletePhoneTest implements MainActivityStartCallb
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @FlakyTest(message = "https://crbug.com/1197578")
     public void testEditIncompletePhoneAndCancel() throws TimeoutException {
         // Not ready to pay since Contact phone is invalid.
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());

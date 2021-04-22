@@ -45,6 +45,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
@@ -223,6 +224,7 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    @FlakyTest(message = "https://crbug.com/1197578")
     public void testSigninFREFragmentWithAdultAccount() throws IOException {
         HistogramDelta countHistogram =
                 new HistogramDelta("Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
