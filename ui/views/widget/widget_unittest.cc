@@ -1209,7 +1209,12 @@ TEST_F(WidgetTest, GetWindowPlacement) {
 #else
 TEST_F(DesktopWidgetTest, GetWindowPlacement) {
 #endif
-  SKIP_TEST_IF_NOT_OZONE_X11();
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform() &&
+      ui::OzonePlatform::GetPlatformNameForTest() != "x11") {
+    GTEST_SKIP() << "This test is X11-only";
+  }
+#endif
 
   WidgetAutoclosePtr widget;
   widget.reset(CreateTopLevelNativeWidget());

@@ -923,7 +923,7 @@ test("ui_base_unittests") {
   }
 
   data = []
-  data_deps = [ "//testing/buildbot/filters:ui_base_unittests_filters" ]
+  data_deps = []
   deps = [
     ":ui_base_test_resources_grit",
     ":ui_base_unittests_bundle_data",
@@ -1136,11 +1136,6 @@ test("ui_base_unittests") {
       "//ui/events",
       "//ui/events/platform",
     ]
-  }
-
-  if (use_x11) {
-    sources += [ "dragdrop/os_exchange_data_provider_x11_unittest.cc" ]
-    deps += [ "//ui/gfx/x:unit_test" ]
   }
 
   if (is_chromeos_ash) {

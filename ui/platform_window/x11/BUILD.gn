@@ -64,14 +64,17 @@ test("x11_unittests") {
     "test/x11_event_translation_unittest.cc",
     "test/x11_window_unittest.cc",
   ]
+
   deps = [
     ":x11",
+    "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
     "//ui/base:features",
     "//ui/base/x",
     "//ui/base/x:test_support",
@@ -80,8 +83,19 @@ test("x11_unittests") {
     "//ui/events/x",
     "//ui/gfx:test_support",
     "//ui/gfx/x",
+    "//ui/gfx/x:unit_test",
     "//ui/platform_window",
   ]
+
+  if (!is_chromeos && !is_chromeos_ash && !is_chromeos_lacros) {
+    sources += [ "test/os_exchange_data_provider_x11_unittest.cc" ]
+    deps += [ "//ui/base/clipboard:clipboard_types" ]
+  }
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+
   configs += [ "//build/config:precompiled_headers" ]
 
   # Needed for tests.  Please note that if you want to run tests locally,
