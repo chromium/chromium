@@ -186,6 +186,7 @@ external/wpt/dom/traversal/NodeFilter-constants.html
 external/wpt/dom/traversal/TreeWalker-walking-outside-a-tree.html
 external/wpt/domxpath/001.html
 external/wpt/encoding/iso-2022-jp-encoder.html
+external/wpt/encoding/sharedarraybuffer.https.html
 external/wpt/encoding/textdecoder-fatal-streaming.html
 external/wpt/fetch/api/basic/scheme-blob.html
 external/wpt/fetch/api/headers/headers-casing.html
@@ -513,7 +514,6 @@ fast/dom/Window/alert-undefined.html
 fast/dom/Window/window-remove-event-listener.html
 fast/dom/viewport/viewport-scale-inert.html
 fast/dynamic/5872671.html
-fast/encoding/api/sharedarraybuffer.html
 fast/encoding/css-charset-evil/css-charset-evil.html
 fast/encoding/hebrew/iso-ir-138.html
 fast/encoding/not-http-equiv-content.html
