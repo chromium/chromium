@@ -151,9 +151,8 @@ class VIEWS_EXPORT MenuItemView : public View {
                               const std::u16string& label,
                               const std::u16string& secondary_label,
                               const std::u16string& minor_text,
-                              const ui::ThemedVectorIcon& minor_icon,
-                              const gfx::ImageSkia& icon,
-                              const ui::ThemedVectorIcon& vector_icon,
+                              const ui::ImageModel& minor_icon,
+                              const ui::ImageModel& icon,
                               Type type,
                               ui::MenuSeparatorType separator_style);
 
@@ -225,7 +224,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   void SetMinorText(const std::u16string& minor_text);
 
   // Sets the minor icon.
-  void SetMinorIcon(const ui::ThemedVectorIcon& minor_icon);
+  void SetMinorIcon(const ui::ImageModel& minor_icon);
 
   // Returns the type of this menu.
   const Type& GetType() const { return type_; }
@@ -254,21 +253,12 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Sets the |tooltip| for a menu item view with |item_id| identifier.
   void SetTooltip(const std::u16string& tooltip, int item_id);
 
-  // Sets the icon for the descendant identified by item_id.
-  void SetIcon(const gfx::ImageSkia& icon, int item_id);
-
   // Sets the icon of this menu item.
-  void SetIcon(const gfx::ImageSkia& icon);
-
-  // Sets the icon as a vector icon which gets its color from the NativeTheme or
-  // the included color.
-  void SetIcon(const ui::ThemedVectorIcon& icon);
+  void SetIcon(const ui::ImageModel& icon);
 
   // Sets the view used to render the icon. This clobbers any icon set via
   // SetIcon(). MenuItemView takes ownership of |icon_view|.
   void SetIconView(std::unique_ptr<ImageView> icon_view);
-
-  void UpdateIconViewFromVectorIconAndTheme();
 
   // Sets the command id of this menu item.
   void SetCommand(int command) { command_ = command; }
@@ -294,8 +284,6 @@ class VIEWS_EXPORT MenuItemView : public View {
   // from GetPreferredSize().width() if the item has a child view with flexible
   // dimensions.
   int GetHeightForWidth(int width) const override;
-
-  void OnThemeChanged() override;
 
   // Returns the bounds of the submenu part of the ACTIONABLE_SUBMENU.
   gfx::Rect GetSubmenuAreaOfActionableSubmenu() const;
@@ -452,7 +440,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   std::u16string GetMinorText() const;
 
   // Returns the icon that should be displayed to the left of the minor text.
-  ui::ThemedVectorIcon GetMinorIcon() const;
+  ui::ImageModel GetMinorIcon() const;
 
   // Returns the text color for the current state.  |minor| specifies if the
   // minor text or the normal text is desired.
@@ -549,11 +537,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   std::u16string title_;
   std::u16string secondary_title_;
   std::u16string minor_text_;
-  ui::ThemedVectorIcon minor_icon_;
-
-  // The icon used for |icon_view_| when a vector icon has been set instead of a
-  // gfx::Image.
-  ui::ThemedVectorIcon vector_icon_;
+  ui::ImageModel minor_icon_;
 
   // Does the title have a mnemonic? Only useful on the root menu item.
   bool has_mnemonics_ = false;

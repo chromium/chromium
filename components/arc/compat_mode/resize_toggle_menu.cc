@@ -48,9 +48,9 @@ ResizeToggleMenu::ResizeToggleMenu(views::Widget* widget,
   if (currentMode) {
     auto* item = root_view_->GetMenuItemByID(*currentMode);
     item->SetSelected(true);
-    item->SetMinorIcon(
-        ui::ThemedVectorIcon(&ash::kHollowCheckCircleIcon,
-                             ui::NativeTheme::kColorId_ProminentButtonColor));
+    item->SetMinorIcon(ui::ImageModel::FromVectorIcon(
+        ash::kHollowCheckCircleIcon,
+        ui::NativeTheme::kColorId_ProminentButtonColor));
   }
 
   menu_runner_ = std::make_unique<views::MenuRunner>(

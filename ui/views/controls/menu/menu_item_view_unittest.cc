@@ -402,25 +402,27 @@ TEST_F(MenuItemViewPaintUnitTest, MinorTextAndIconAssertionCoverage) {
                         auto minor_icon) {
     menu_item_view()->AddMenuItemAt(
         0, 1000, base::ASCIIToUTF16(label), secondary_label, minor_label,
-        minor_icon, gfx::ImageSkia(), ui::ThemedVectorIcon(),
-        views::MenuItemView::Type::kNormal, ui::NORMAL_SEPARATOR);
+        minor_icon, ui::ImageModel(), views::MenuItemView::Type::kNormal,
+        ui::NORMAL_SEPARATOR);
   };
   AddItem("No secondary label, no minor content", std::u16string(),
-          std::u16string(), ui::ThemedVectorIcon());
+          std::u16string(), ui::ImageModel());
   AddItem("No secondary label, minor text only", std::u16string(),
-          u"minor text", ui::ThemedVectorIcon());
+          u"minor text", ui::ImageModel());
   AddItem("No secondary label, minor icon only", std::u16string(),
-          std::u16string(), ui::ThemedVectorIcon(&views::kMenuCheckIcon));
+          std::u16string(),
+          ui::ImageModel::FromVectorIcon(views::kMenuCheckIcon));
   AddItem("No secondary label, minor text and icon", std::u16string(),
-          u"minor text", ui::ThemedVectorIcon(&views::kMenuCheckIcon));
+          u"minor text", ui::ImageModel::FromVectorIcon(views::kMenuCheckIcon));
   AddItem("Secondary label, no minor content", u"secondary label",
-          std::u16string(), ui::ThemedVectorIcon());
+          std::u16string(), ui::ImageModel());
   AddItem("Secondary label, minor text only", u"secondary label", u"minor text",
-          ui::ThemedVectorIcon());
+          ui::ImageModel());
   AddItem("Secondary label, minor icon only", u"secondary label",
-          std::u16string(), ui::ThemedVectorIcon(&views::kMenuCheckIcon));
+          std::u16string(),
+          ui::ImageModel::FromVectorIcon(views::kMenuCheckIcon));
   AddItem("Secondary label, minor text and icon", u"secondary label",
-          u"minor text", ui::ThemedVectorIcon(&views::kMenuCheckIcon));
+          u"minor text", ui::ImageModel::FromVectorIcon(views::kMenuCheckIcon));
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,

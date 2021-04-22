@@ -391,7 +391,7 @@ void BookmarkMenuDelegate::BookmarkNodeFaviconChanged(
   const gfx::ImageSkia* icon = image.IsEmpty()
                                    ? favicon::GetDefaultFavicon().ToImageSkia()
                                    : image.ToImageSkia();
-  menu_pair->second->SetIcon(*icon);
+  menu_pair->second->SetIcon(ui::ImageModel::FromImageSkia(*icon));
 }
 
 void BookmarkMenuDelegate::WillRemoveBookmarks(

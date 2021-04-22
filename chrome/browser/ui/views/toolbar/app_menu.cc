@@ -704,12 +704,7 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
     int command_id = model_->GetCommandIdAt(index);
     views::MenuItemView* item = menu_item_->GetMenuItemByID(command_id);
     DCHECK(item);
-    ui::ImageModel image = model_->GetIconAt(index);
-    // TODO (kylixrd): Use a utility function to get this as an actual image.
-    if (image.IsImage())
-      item->SetIcon(*image.GetImage().ToImageSkia());
-    else if (image.IsVectorIcon())
-      item->SetIcon(ui::ThemedVectorIcon(image.GetVectorIcon()));
+    item->SetIcon(model_->GetIconAt(index));
   }
 
   void OnMenuStructureChanged() override {
@@ -1149,11 +1144,7 @@ MenuItemView* AppMenu::AddMenuItem(MenuItemView* parent,
     menu_item->SetVisible(model->IsVisibleAt(model_index));
 
     if (menu_type == MenuModel::TYPE_COMMAND && model->HasIcons()) {
-      ui::ImageModel icon = model->GetIconAt(model_index);
-      if (icon.IsImage())
-        menu_item->SetIcon(*icon.GetImage().ToImageSkia());
-      else if (icon.IsVectorIcon())
-        menu_item->SetIcon(ui::ThemedVectorIcon(icon.GetVectorIcon()));
+      menu_item->SetIcon(model->GetIconAt(model_index));
     }
 
     // If we want to show items relating to reopening the last-closed tab as
