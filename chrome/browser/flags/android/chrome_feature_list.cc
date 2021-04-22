@@ -141,6 +141,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kAssistantIntentTranslateInfo,
     &kAppLaunchpad,
     &kAppMenuMobileSiteOption,
+    &kAppToWebAttribution,
     &kBackgroundThreadPool,
     &kBentoOffline,
     &kBookmarkBottomSheet,
@@ -368,6 +369,9 @@ const base::Feature kAppLaunchpad{"AppLaunchpad",
 
 const base::Feature kAppMenuMobileSiteOption{"AppMenuMobileSiteOption",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kAppToWebAttribution{"AppToWebAttribution",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kBackgroundTaskComponentUpdate{
     "BackgroundTaskComponentUpdate", base::FEATURE_DISABLED_BY_DEFAULT};
