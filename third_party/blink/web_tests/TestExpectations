@@ -6769,3 +6769,6 @@ crbug.com/1195295 fast/events/touch/multi-touch-timestamp.html [ Pass Failure ]
 
 crbug.com/1197296 [ Mac10.15 ] external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Pass Failure ]
 crbug.com/1197296 [ Mac10.15 ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Pass Failure ]
+
+# Sheriff 2021-04-15
+crbug.com/1199380 virtual/scroll-unification-prefer_compositing_to_lcd_text/fast/scroll-behavior/overflow-scroll-root-frame-animates.html [ Skip ]
