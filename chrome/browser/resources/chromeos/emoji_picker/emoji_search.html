@@ -20,10 +20,15 @@
     --cr-search-field-underline-display: none;
     align-items: center;
     background-color: var(--google-grey-100);
+    border: 2px solid transparent;
     border-radius: 41px;
     height: 40px;
     line-height: 40px;
     margin-bottom: 8px;
+  }
+
+  cr-search-field:focus-within {
+    border: 2px solid var(--cr-focus-outline-color);
   }
 
   #container {
@@ -37,7 +42,7 @@
   }
   .result:focus,
   .result:active {
-    border-color: var(--cr-toggle-color);
+    border-color: var(--cr-focus-outline-color);
     border-radius: 4px;
     border-style: solid;
     border-width: 2px;
