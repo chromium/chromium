@@ -228,17 +228,6 @@ GURL Origin4() {
   return GURL("https://host3.com:1");
 }
 
-GURL OriginExt() {
-  return GURL("chrome-extension://abcdefghijklmnopqrstuvwxyz");
-}
-GURL OriginDevTools() {
-  return GURL("devtools://abcdefghijklmnopqrstuvw");
-}
-
-GURL DSEOrigin() {
-  return GURL("https://search.com");
-}
-
 // Testers --------------------------------------------------------------------
 
 #if defined(OS_ANDROID)
@@ -264,7 +253,7 @@ class TestSearchEngineDelegate
   std::u16string GetDSEName() override { return std::u16string(); }
 
   url::Origin GetDSEOrigin() override {
-    return url::Origin::Create(DSEOrigin());
+    return url::Origin::Create(GURL("https://search.com"));
   }
 
   void SetDSEChangedCallback(base::RepeatingClosure callback) override {
@@ -1107,12 +1096,12 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     static_cast<ChromeBrowsingDataRemoverDelegate*>(
         profile_->GetBrowsingDataRemoverDelegate())
         ->OverrideWebappRegistryForTesting(
-            base::WrapUnique<WebappRegistry>(new TestWebappRegistry()));
+            std::make_unique<TestWebappRegistry>());
 
     SearchPermissionsService* service =
         SearchPermissionsService::Factory::GetForBrowserContext(profile_.get());
-    std::unique_ptr<TestSearchEngineDelegate> delegate =
-        std::make_unique<TestSearchEngineDelegate>();
+    auto delegate = std::make_unique<TestSearchEngineDelegate>();
+    dse_origin_ = delegate->GetDSEOrigin().GetURL();
     TestSearchEngineDelegate* delegate_ptr = delegate.get();
     service->SetSearchEngineDelegateForTest(std::move(delegate));
     delegate_ptr->UpdateDSEOrigin();
@@ -1190,6 +1179,8 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
 
   TestingProfile* GetProfile() { return profile_.get(); }
 
+  GURL dse_origin() const { return dse_origin_; }
+
   bool Match(const GURL& origin,
              uint64_t mask,
              storage::SpecialStoragePolicy* policy) {
@@ -1215,6 +1206,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<network::NetworkContext> network_context_;
   std::unique_ptr<TestingProfile> profile_;
+  GURL dse_origin_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowsingDataRemoverDelegateTest);
 };
@@ -2046,13 +2038,16 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
+  const bool has_dse_origin = !dse_origin().is_empty();
   auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
   map->SetContentSettingDefaultScope(Origin1(), Origin1(),
                                      ContentSettingsType::GEOLOCATION,
                                      CONTENT_SETTING_ALLOW);
-  map->SetContentSettingDefaultScope(DSEOrigin(), DSEOrigin(),
-                                     ContentSettingsType::GEOLOCATION,
-                                     CONTENT_SETTING_BLOCK);
+  if (has_dse_origin) {
+    map->SetContentSettingDefaultScope(dse_origin(), dse_origin(),
+                                       ContentSettingsType::GEOLOCATION,
+                                       CONTENT_SETTING_BLOCK);
+  }
   map->SetContentSettingDefaultScope(Origin2(), Origin2(),
                                      ContentSettingsType::NOTIFICATIONS,
                                      CONTENT_SETTING_ALLOW);
@@ -2066,22 +2061,12 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_CONTENT_SETTINGS, false);
 
-  // Everything except the default settings should be deleted. On Android the
-  // default search engine setting should also not be deleted.
-  bool expect_geolocation_dse_origin = false;
-  bool expect_notifications_dse_origin = false;
-
-#if defined(OS_ANDROID)
-  expect_geolocation_dse_origin = true;
-  expect_notifications_dse_origin = true;
-#endif
-
   ContentSettingsForOneType host_settings;
   map->GetSettingsForOneType(ContentSettingsType::GEOLOCATION, &host_settings);
 
-  if (expect_geolocation_dse_origin) {
+  if (has_dse_origin) {
     ASSERT_EQ(2u, host_settings.size());
-    EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(DSEOrigin()),
+    EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(dse_origin()),
               host_settings[0].primary_pattern)
         << host_settings[0].primary_pattern.ToString();
     EXPECT_EQ(ContentSettingsPattern::Wildcard(),
@@ -2104,9 +2089,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
   map->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS,
                              &host_settings);
 
-  if (expect_notifications_dse_origin) {
+  if (has_dse_origin) {
     ASSERT_EQ(2u, host_settings.size());
-    EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(DSEOrigin()),
+    EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(dse_origin()),
               host_settings[0].primary_pattern)
         << host_settings[0].primary_pattern.ToString();
     EXPECT_EQ(CONTENT_SETTING_ALLOW, host_settings[0].GetContentSetting());
@@ -2611,70 +2596,86 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, OriginTypeMasks) {
-  scoped_refptr<MockExtensionSpecialStoragePolicy> mock_policy =
-      new MockExtensionSpecialStoragePolicy;
-  // Protect Origin1().
-  mock_policy->AddProtected(Origin1().GetOrigin());
+  const GURL kOriginProtected("http://protected.com");
+  const GURL kOriginUnprotected("http://unprotected.com");
+  const GURL kOriginExtension("chrome-extension://abcdefghijklmnopqrstuvwxyz");
+  const GURL kOriginDevTools("devtools://abcdefghijklmnopqrstuvw");
 
-  EXPECT_FALSE(Match(Origin1(), kUnprotected, mock_policy.get()));
-  EXPECT_TRUE(Match(Origin2(), kUnprotected, mock_policy.get()));
-  EXPECT_FALSE(Match(OriginExt(), kUnprotected, mock_policy.get()));
-  EXPECT_FALSE(Match(OriginDevTools(), kUnprotected, mock_policy.get()));
+  auto mock_policy = base::MakeRefCounted<MockExtensionSpecialStoragePolicy>();
+  // Protect |kOriginProtected|.
+  mock_policy->AddProtected(kOriginProtected.GetOrigin());
 
-  EXPECT_TRUE(Match(Origin1(), kProtected, mock_policy.get()));
-  EXPECT_FALSE(Match(Origin2(), kProtected, mock_policy.get()));
-  EXPECT_FALSE(Match(OriginExt(), kProtected, mock_policy.get()));
-  EXPECT_FALSE(Match(OriginDevTools(), kProtected, mock_policy.get()));
+  EXPECT_FALSE(Match(kOriginProtected, kUnprotected, mock_policy.get()));
+  EXPECT_TRUE(Match(kOriginUnprotected, kUnprotected, mock_policy.get()));
+  EXPECT_FALSE(Match(kOriginExtension, kUnprotected, mock_policy.get()));
+  EXPECT_FALSE(Match(kOriginDevTools, kUnprotected, mock_policy.get()));
 
-  EXPECT_FALSE(Match(Origin1(), kExtension, mock_policy.get()));
-  EXPECT_FALSE(Match(Origin2(), kExtension, mock_policy.get()));
-  EXPECT_TRUE(Match(OriginExt(), kExtension, mock_policy.get()));
-  EXPECT_FALSE(Match(OriginDevTools(), kExtension, mock_policy.get()));
+  EXPECT_TRUE(Match(kOriginProtected, kProtected, mock_policy.get()));
+  EXPECT_FALSE(Match(kOriginUnprotected, kProtected, mock_policy.get()));
+  EXPECT_FALSE(Match(kOriginExtension, kProtected, mock_policy.get()));
+  EXPECT_FALSE(Match(kOriginDevTools, kProtected, mock_policy.get()));
 
-  EXPECT_TRUE(Match(Origin1(), kUnprotected | kProtected, mock_policy.get()));
-  EXPECT_TRUE(Match(Origin2(), kUnprotected | kProtected, mock_policy.get()));
+  EXPECT_FALSE(Match(kOriginProtected, kExtension, mock_policy.get()));
+  EXPECT_FALSE(Match(kOriginUnprotected, kExtension, mock_policy.get()));
+  EXPECT_TRUE(Match(kOriginExtension, kExtension, mock_policy.get()));
+  EXPECT_FALSE(Match(kOriginDevTools, kExtension, mock_policy.get()));
+
+  EXPECT_TRUE(
+      Match(kOriginProtected, kUnprotected | kProtected, mock_policy.get()));
+  EXPECT_TRUE(
+      Match(kOriginUnprotected, kUnprotected | kProtected, mock_policy.get()));
   EXPECT_FALSE(
-      Match(OriginExt(), kUnprotected | kProtected, mock_policy.get()));
+      Match(kOriginExtension, kUnprotected | kProtected, mock_policy.get()));
   EXPECT_FALSE(
-      Match(OriginDevTools(), kUnprotected | kProtected, mock_policy.get()));
+      Match(kOriginDevTools, kUnprotected | kProtected, mock_policy.get()));
 
-  EXPECT_FALSE(Match(Origin1(), kUnprotected | kExtension, mock_policy.get()));
-  EXPECT_TRUE(Match(Origin2(), kUnprotected | kExtension, mock_policy.get()));
-  EXPECT_TRUE(Match(OriginExt(), kUnprotected | kExtension, mock_policy.get()));
   EXPECT_FALSE(
-      Match(OriginDevTools(), kUnprotected | kExtension, mock_policy.get()));
-
-  EXPECT_TRUE(Match(Origin1(), kProtected | kExtension, mock_policy.get()));
-  EXPECT_FALSE(Match(Origin2(), kProtected | kExtension, mock_policy.get()));
-  EXPECT_TRUE(Match(OriginExt(), kProtected | kExtension, mock_policy.get()));
+      Match(kOriginProtected, kUnprotected | kExtension, mock_policy.get()));
+  EXPECT_TRUE(
+      Match(kOriginUnprotected, kUnprotected | kExtension, mock_policy.get()));
+  EXPECT_TRUE(
+      Match(kOriginExtension, kUnprotected | kExtension, mock_policy.get()));
   EXPECT_FALSE(
-      Match(OriginDevTools(), kProtected | kExtension, mock_policy.get()));
+      Match(kOriginDevTools, kUnprotected | kExtension, mock_policy.get()));
 
-  EXPECT_TRUE(Match(Origin1(), kUnprotected | kProtected | kExtension,
+  EXPECT_TRUE(
+      Match(kOriginProtected, kProtected | kExtension, mock_policy.get()));
+  EXPECT_FALSE(
+      Match(kOriginUnprotected, kProtected | kExtension, mock_policy.get()));
+  EXPECT_TRUE(
+      Match(kOriginExtension, kProtected | kExtension, mock_policy.get()));
+  EXPECT_FALSE(
+      Match(kOriginDevTools, kProtected | kExtension, mock_policy.get()));
+
+  EXPECT_TRUE(Match(kOriginProtected, kUnprotected | kProtected | kExtension,
                     mock_policy.get()));
-  EXPECT_TRUE(Match(Origin2(), kUnprotected | kProtected | kExtension,
+  EXPECT_TRUE(Match(kOriginUnprotected, kUnprotected | kProtected | kExtension,
                     mock_policy.get()));
-  EXPECT_TRUE(Match(OriginExt(), kUnprotected | kProtected | kExtension,
+  EXPECT_TRUE(Match(kOriginExtension, kUnprotected | kProtected | kExtension,
                     mock_policy.get()));
-  EXPECT_FALSE(Match(OriginDevTools(), kUnprotected | kProtected | kExtension,
+  EXPECT_FALSE(Match(kOriginDevTools, kUnprotected | kProtected | kExtension,
                      mock_policy.get()));
 }
 #endif
 
 // If extensions are disabled, there is no policy.
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, OriginTypeMasksNoPolicy) {
-  EXPECT_TRUE(Match(Origin1(), kUnprotected, nullptr));
-  EXPECT_FALSE(Match(OriginExt(), kUnprotected, nullptr));
-  EXPECT_FALSE(Match(OriginDevTools(), kUnprotected, nullptr));
+  const GURL kOriginStandard("http://test.com");
+  const GURL kOriginExtension("chrome-extension://abcdefghijklmnopqrstuvwxyz");
+  const GURL kOriginDevTools("devtools://abcdefghijklmnopqrstuvw");
 
-  EXPECT_FALSE(Match(Origin1(), kProtected, nullptr));
-  EXPECT_FALSE(Match(OriginExt(), kProtected, nullptr));
-  EXPECT_FALSE(Match(OriginDevTools(), kProtected, nullptr));
+  EXPECT_TRUE(Match(kOriginStandard, kUnprotected, nullptr));
+  EXPECT_FALSE(Match(kOriginExtension, kUnprotected, nullptr));
+  EXPECT_FALSE(Match(kOriginDevTools, kUnprotected, nullptr));
+
+  EXPECT_FALSE(Match(kOriginStandard, kProtected, nullptr));
+  EXPECT_FALSE(Match(kOriginExtension, kProtected, nullptr));
+  EXPECT_FALSE(Match(kOriginDevTools, kProtected, nullptr));
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  EXPECT_FALSE(Match(Origin1(), kExtension, nullptr));
-  EXPECT_TRUE(Match(OriginExt(), kExtension, nullptr));
-  EXPECT_FALSE(Match(OriginDevTools(), kExtension, nullptr));
+  EXPECT_FALSE(Match(kOriginStandard, kExtension, nullptr));
+  EXPECT_TRUE(Match(kOriginExtension, kExtension, nullptr));
+  EXPECT_FALSE(Match(kOriginDevTools, kExtension, nullptr));
 #endif
 }
 
