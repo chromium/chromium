@@ -10,6 +10,9 @@ namespace web_app {
 // manifest served by the PWA.
 // Please maintain the alphabetical order when adding new app IDs.
 
+// TODO(crbug.com/1198418): Update when app URL is finalized.
+const char kA4AppId[] = "ihckehilkadhemjaebeicgkdhdbfehcg";
+
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "chrome://camera-app/views/main.html"))
 const char kCameraAppId[] = "njfbnohfdkmbmnjapinfcopialeghnmh";
