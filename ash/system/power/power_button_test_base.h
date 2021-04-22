@@ -24,8 +24,6 @@ enum class LoginStatus;
 class PowerButtonTestBase : public AshTestBase {
  public:
   PowerButtonTestBase();
-  explicit PowerButtonTestBase(base::test::TaskEnvironment::TimeSource time);
-
   ~PowerButtonTestBase() override;
 
   using ButtonType = PowerButtonController::ButtonType;
