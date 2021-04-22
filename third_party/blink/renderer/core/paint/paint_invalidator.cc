@@ -31,21 +31,6 @@
 
 namespace blink {
 
-void PaintInvalidatorContext::Trace(Visitor* visitor) const {
-  visitor->Trace(parent_context_accessor_);
-  visitor->Trace(directly_composited_container);
-  visitor->Trace(directly_composited_container_for_stacked_contents);
-  visitor->Trace(painting_layer);
-  visitor->Trace(fragment_data);
-}
-
-const PaintInvalidatorContext*
-PaintInvalidatorContext::ParentContextAccessor::ParentContext() const {
-  return tree_walk_ ? &tree_walk_->ContextAt(parent_context_index_)
-                           .paint_invalidator_context
-                    : nullptr;
-}
-
 void PaintInvalidator::UpdatePaintingLayer(const LayoutObject& object,
                                            PaintInvalidatorContext& context,
                                            bool is_ng_painting) {
@@ -261,10 +246,9 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
       box.IsLayoutBlockFlow() && box.ChildrenInline() && box.SlowFirstChild();
   if (should_create_containing_block_scope) {
     // For layout shift tracking of contained LayoutTexts.
-    context.containing_block_scope_ =
-        std::make_unique<LayoutShiftTracker::ContainingBlockScope>(
-            PhysicalSizeToBeNoop(box.PreviousSize()),
-            PhysicalSizeToBeNoop(box.Size()), old_rect, new_rect);
+    context.containing_block_scope_.emplace(
+        PhysicalSizeToBeNoop(box.PreviousSize()),
+        PhysicalSizeToBeNoop(box.Size()), old_rect, new_rect);
   }
 
   bool should_report_layout_shift = [&]() -> bool {
