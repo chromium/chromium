@@ -14,6 +14,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_observer.h"
 #include "ui/views/window/frame_caption_button.h"
 
 namespace ash {
@@ -63,6 +64,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
     // views::Views:
     std::unique_ptr<ui::Layer> RecreateLayer() override;
+    void LayerDestroyed(ui::Layer* layer) override;
 
     // ViewObserver:
     void OnChildViewReordered(views::View* observed_view,

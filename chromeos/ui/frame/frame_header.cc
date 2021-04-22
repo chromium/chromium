@@ -148,6 +148,11 @@ void FrameHeader::FrameAnimatorView::OnViewBoundsChanged(
   SetBoundsRect(parent_->GetLocalBounds());
 }
 
+void FrameHeader::FrameAnimatorView::LayerDestroyed(ui::Layer* layer) {
+  CHECK(!layer_owner_ || layer_owner_->root() != layer);
+  views::View::LayerDestroyed(layer);
+}
+
 void FrameHeader::FrameAnimatorView::OnImplicitAnimationsCompleted() {
   // TODO(crbug.com/1172694): Remove this DCHECK if this is indeed the cause.
   DCHECK(layer_owner_);
