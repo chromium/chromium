@@ -322,7 +322,18 @@ void WebAppInstallFinalizer::Shutdown() {
 
 void WebAppInstallFinalizer::UninstallWebApp(const AppId& app_id,
                                              UninstallWebAppCallback callback) {
+  // If the app is already uninstalling then avoid triggering another uninstall.
+  ScopedRegistryUpdate update(registry_controller().AsWebAppSyncBridge());
+  WebApp* app = update->UpdateApp(app_id);
+  if (!app || app->is_uninstalling()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  /*uninstalled=*/false));
+    return;
+  }
 
+  // Set uninstalling flag and continue with app uninstall.
+  app->SetIsUninstalling(true);
   registrar().NotifyWebAppWillBeUninstalled(app_id);
   os_integration_manager().UninstallAllOsHooks(
       app_id, base::BindOnce(&WebAppInstallFinalizer::OnUninstallOsHooks,

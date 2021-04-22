@@ -99,6 +99,9 @@ class WebApp {
   // using |sync_fallback_data| fields.
   bool is_in_sync_install() const { return is_in_sync_install_; }
 
+  // Represents whether the web app is being uninstalled.
+  bool is_uninstalling() const { return is_uninstalling_; }
+
   // Represents the last time the Badging API was used.
   const base::Time& last_badging_time() const { return last_badging_time_; }
   // Represents the last time this app is launched.
@@ -219,6 +222,7 @@ class WebApp {
   void SetWebAppChromeOsData(base::Optional<WebAppChromeOsData> chromeos_data);
   void SetIsLocallyInstalled(bool is_locally_installed);
   void SetIsInSyncInstall(bool is_in_sync_install);
+  void SetIsUninstalling(bool is_uninstalling);
   void SetIconInfos(std::vector<WebApplicationIconInfo> icon_infos);
   // Performs sorting and uniquifying of |sizes| if passed as vector.
   void SetDownloadedIconSizes(IconPurpose purpose, SortedSizesPx sizes);
@@ -275,6 +279,11 @@ class WebApp {
   base::Optional<WebAppChromeOsData> chromeos_data_;
   bool is_locally_installed_ = true;
   bool is_in_sync_install_ = false;
+  // Note: This field is not persisted in the database.
+  // TODO: Add this field to the protocol buffer file and other places to
+  // save it to the database, and then make sure to continue uninstallation
+  // on startup if any web apps have this field set to true.
+  bool is_uninstalling_ = false;
   std::vector<WebApplicationIconInfo> icon_infos_;
   SortedSizesPx downloaded_icon_sizes_any_;
   // TODO (crbug.com/1114638): Monochrome icons are not currently downloaded.

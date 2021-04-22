@@ -202,6 +202,10 @@ void WebApp::SetIsInSyncInstall(bool is_in_sync_install) {
   is_in_sync_install_ = is_in_sync_install;
 }
 
+void WebApp::SetIsUninstalling(bool is_uninstalling) {
+  is_uninstalling_ = is_uninstalling;
+}
+
 void WebApp::SetIconInfos(std::vector<WebApplicationIconInfo> icon_infos) {
   icon_infos_ = std::move(icon_infos);
 }
