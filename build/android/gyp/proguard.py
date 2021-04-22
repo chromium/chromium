@@ -592,7 +592,7 @@ def _CreateDynamicConfig(options):
   if options.enable_obfuscation:
     ret.append("-repackageclasses ''")
   else:
-    ret.append("-keepnames,allowoptimization class *** { *; }")
+    ret.append("-dontobfuscate")
 
   if options.apply_mapping:
     ret.append("-applymapping '%s'" % options.apply_mapping)
