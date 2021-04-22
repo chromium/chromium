@@ -29,6 +29,7 @@ class NGSVGTextLayoutAlgorithm {
       const NGFragmentItemsBuilder::ItemWithOffsetList& items);
   void AdjustPositionsXY(
       const NGFragmentItemsBuilder::ItemWithOffsetList& items);
+  void ApplyAnchoring(const NGFragmentItemsBuilder::ItemWithOffsetList& items);
 
   float ScalingFactorAt(const NGFragmentItemsBuilder::ItemWithOffsetList& items,
                         wtf_size_t addressable_index) const;

@@ -90,6 +90,8 @@ void NGSVGTextLayoutAlgorithm::Layout(
 
   // 2. Set flags and assign initial positions
   SetFlags(ifc_text_content, items);
+  if (addressable_count_ == 0)
+    return;
 
   // 3. Resolve character positioning
   // This was already done in PrepareLayout() step. See
@@ -113,7 +115,7 @@ void NGSVGTextLayoutAlgorithm::Layout(
   AdjustPositionsXY(items);
 
   // 7. Apply anchoring
-  // TODO(crbug.com/1179585): Implement this step.
+  ApplyAnchoring(items);
 
   // 8. Position on path
   // TODO(crbug.com/1179585): Implement this step.
@@ -288,6 +290,85 @@ void NGSVGTextLayoutAlgorithm::AdjustPositionsXY(
       if (i + 1 < result_.size())
         result_[i + 1].anchored_chunk = true;
     }
+  }
+}
+
+void NGSVGTextLayoutAlgorithm::ApplyAnchoring(
+    const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
+  DCHECK_GT(result_.size(), 0u);
+  DCHECK(result_[0].anchored_chunk);
+  // 1. For each slice result[i..j] (inclusive of both i and j), where:
+  //  * the "anchored chunk" flag of result[i] is true,
+  //  * the "anchored chunk" flags of result[k] where i < k ≤ j are false, and
+  //  * j = count − 1 or the "anchored chunk" flag of result[j + 1] is true;
+  wtf_size_t i = 0;
+  while (i < result_.size()) {
+    auto* next_anchor =
+        std::find_if(result_.begin() + i + 1, result_.end(),
+                     [](const auto& info) { return info.anchored_chunk; });
+    wtf_size_t j = std::distance(result_.begin(), next_anchor) - 1;
+
+    // 1.1. Let a = +Infinity and b = −Infinity.
+    // ==> 'a' is left/top of characters. 'b' is right/top of characters.
+    float a = std::numeric_limits<float>::infinity();
+    float b = -std::numeric_limits<float>::infinity();
+    // 1.2. For each index k in the range [i, j] where the "addressable" flag
+    // of result[k] is true:
+    for (wtf_size_t k = i; k <= j; ++k) {
+      // 1.2.1. Let pos = the x coordinate of the position in result[k], if
+      // the "horizontal" flag is true, and the y coordinate otherwise.
+      float pos = horizontal_ ? *result_[k].x : *result_[k].y;
+      // 2.2.2. Let advance = the advance of the typographic character
+      // corresponding to character k.
+      PhysicalSize item_size = items[result_[k].item_index]->Size();
+      float advance = horizontal_ ? item_size.width : item_size.height;
+      // 2.2.3. Set a = min(a, pos, pos + advance).
+      a = std::min(a, pos);
+      // 2.2.4. Set b = max(b, pos, pos + advance).
+      b = std::max(b, pos + advance);
+    }
+
+    // 1.3. if a != +Infinity, then:
+    if (a != std::numeric_limits<float>::infinity()) {
+      // 1.3.1. Let shift be the x coordinate of result[i], if the "horizontal"
+      // flag is true, and the y coordinate otherwise.
+      float shift = horizontal_ ? *result_[i].x : *result_[i].y;
+      // 1.3.2. Adjust shift based on the value of text-anchor and direction
+      // of the element the character at index i is in:
+      //  -> (start, ltr) or (end, rtl)
+      //       Set shift = shift − a.
+      //  -> (start, rtl) or (end, ltr)
+      //       Set shift = shift − b.
+      //  -> (middle, ltr) or (middle, rtl)
+      //       Set shift = shift − (a + b) / 2.
+      const ComputedStyle& style = items[result_[i].item_index]->Style();
+      const bool is_ltr = style.IsLeftToRightDirection();
+      switch (style.TextAnchor()) {
+        default:
+          NOTREACHED();
+          FALLTHROUGH;
+        case ETextAnchor::kStart:
+          shift = is_ltr ? shift - a : shift - b;
+          break;
+        case ETextAnchor::kEnd:
+          shift = is_ltr ? shift - b : shift - a;
+          break;
+        case ETextAnchor::kMiddle:
+          shift = shift - (a + b) / 2;
+          break;
+      }
+
+      // 1.3.3. For each index k in the range [i, j]:
+      for (wtf_size_t k = i; k <= j; ++k) {
+        // 1.3.3.1. Add shift to the x coordinate of the position in result[k],
+        // if the "horizontal" flag is true, and to the y coordinate otherwise.
+        if (horizontal_)
+          *result_[k].x += shift;
+        else
+          *result_[k].y += shift;
+      }
+    }
+    i = j + 1;
   }
 }
 
