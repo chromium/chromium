@@ -347,6 +347,18 @@ void ThreadDebugger::installAdditionalCommandLineAPI(
       "function getEventListeners(node) { [Command Line API] }",
       v8::SideEffectType::kHasNoSideEffect);
 
+  CreateFunctionProperty(
+      context, object, "getAccessibleName",
+      ThreadDebugger::GetAccessibleNameCallback,
+      "function getAccessibleName(node) { [Command Line API] }",
+      v8::SideEffectType::kHasNoSideEffect);
+
+  CreateFunctionProperty(
+      context, object, "getAccessibleRole",
+      ThreadDebugger::GetAccessibleRoleCallback,
+      "function getAccessibleRole(node) { [Command Line API] }",
+      v8::SideEffectType::kHasNoSideEffect);
+
   v8::Local<v8::Value> function_value;
   bool success =
       V8ScriptRunner::CompileAndRunInternalScript(
@@ -461,6 +473,36 @@ void ThreadDebugger::MonitorEventsCallback(
 void ThreadDebugger::UnmonitorEventsCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   SetMonitorEventsCallback(info, false);
+}
+
+// static
+void ThreadDebugger::GetAccessibleNameCallback(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  if (info.Length() < 1)
+    return;
+
+  v8::Isolate* isolate = info.GetIsolate();
+  v8::Local<v8::Value> value = info[0];
+
+  Node* node = V8Node::ToImplWithTypeCheck(isolate, value);
+  if (auto* element = DynamicTo<Element>(node)) {
+    V8SetReturnValueString(info, element->computedName(), isolate);
+  }
+}
+
+// static
+void ThreadDebugger::GetAccessibleRoleCallback(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  if (info.Length() < 1)
+    return;
+
+  v8::Isolate* isolate = info.GetIsolate();
+  v8::Local<v8::Value> value = info[0];
+
+  Node* node = V8Node::ToImplWithTypeCheck(isolate, value);
+  if (auto* element = DynamicTo<Element>(node)) {
+    V8SetReturnValueString(info, element->computedRole(), isolate);
+  }
 }
 
 // static

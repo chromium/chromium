@@ -1,0 +1,40 @@
+Tests a11y getters exposed via command line API.
+{
+    id : <number>
+    result : {
+        result : {
+            type : string
+            value : Test
+        }
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        result : {
+            type : string
+            value : button
+        }
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        result : {
+            type : undefined
+        }
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        result : {
+            type : undefined
+        }
+    }
+    sessionId : <string>
+}
+

@@ -108,6 +108,10 @@ class CORE_EXPORT ThreadDebugger : public v8_inspector::V8InspectorClient,
   static void MonitorEventsCallback(const v8::FunctionCallbackInfo<v8::Value>&);
   static void UnmonitorEventsCallback(
       const v8::FunctionCallbackInfo<v8::Value>&);
+  static void GetAccessibleNameCallback(
+      const v8::FunctionCallbackInfo<v8::Value>&);
+  static void GetAccessibleRoleCallback(
+      const v8::FunctionCallbackInfo<v8::Value>&);
 
   static void GetEventListenersCallback(
       const v8::FunctionCallbackInfo<v8::Value>&);
