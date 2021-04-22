@@ -786,7 +786,14 @@ IN_PROC_BROWSER_TEST_F(PDFPluginDisabledTest, DirectNavigationToPDF) {
   ValidateSingleSuccessfulDownloadAndNoPDFPluginLaunch();
 }
 
-IN_PROC_BROWSER_TEST_F(PDFPluginDisabledTest, EmbedPdfPlaceholderWithCSP) {
+// TODO(crbug.com/1201401): fix flakiness and reenable
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_EmbedPdfPlaceholderWithCSP DISABLED_EmbedPdfPlaceholderWithCSP
+#else
+#define MAYBE_EmbedPdfPlaceholderWithCSP EmbedPdfPlaceholderWithCSP
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PDFPluginDisabledTest,
+                       MAYBE_EmbedPdfPlaceholderWithCSP) {
   // Navigate to a page with CSP that uses <embed> to embed a PDF as a plugin.
   GURL embed_page_url =
       embedded_test_server()->GetURL("/pdf/pdf_embed_csp.html");
