@@ -56,7 +56,7 @@ void GLVersionInfo::Initialize(const char* version_str,
       is_angle_swiftshader =
           renderer_string.find("SwiftShader Device") != std::string::npos;
       is_angle_vulkan = renderer_string.find("Vulkan") != std::string::npos;
-      is_angle_metal = renderer_string.find("Metal") != std::string::npos;
+      is_angle_metal = renderer_string.find("ANGLE Metal") != std::string::npos;
     }
 
     is_swiftshader = base::StartsWith(renderer_str, "Google SwiftShader",
@@ -253,7 +253,7 @@ void GLVersionInfo::ExtractDriverVendorANGLE(const char* renderer_str) {
     driver_vendor = "ANGLE (Google)";
   }
   if (is_angle_metal) {
-    DCHECK(base::StartsWith(rstr, "Metal", base::CompareCase::SENSITIVE));
+    DCHECK(base::StartsWith(rstr, "ANGLE Metal", base::CompareCase::SENSITIVE));
   }
   if (base::StartsWith(rstr, "NVIDIA ", base::CompareCase::SENSITIVE))
     driver_vendor = "ANGLE (NVIDIA)";
