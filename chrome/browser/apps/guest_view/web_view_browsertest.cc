@@ -4641,7 +4641,16 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, AutoResizeMessages) {
 }
 
 // Test that a guest sees the synthetic wheel events of a touchpad pinch.
-IN_PROC_BROWSER_TEST_F(WebViewTest, TouchpadPinchSyntheticWheelEvents) {
+//
+// Test is flaky on Linux Ozone. See crbug.com/1201372
+#if defined(OS_LINUX)
+#define MAYBE_TouchpadPinchSyntheticWheelEvents \
+  DISABLED_TouchpadPinchSyntheticWheelEvents
+#else
+#define MAYBE_TouchpadPinchSyntheticWheelEvents \
+  TouchpadPinchSyntheticWheelEvents
+#endif  // defined(OS_LINUX)
+IN_PROC_BROWSER_TEST_F(WebViewTest, MAYBE_TouchpadPinchSyntheticWheelEvents) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   LoadAppWithGuest("web_view/touchpad_pinch");
   content::WebContents* guest_contents = GetGuestWebContents();
