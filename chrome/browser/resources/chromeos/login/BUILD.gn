@@ -28,14 +28,8 @@ group("closure_compile") {
   ]
 }
 
-# TODO(crbug.com/118596): Reenable this on ChromeOS. This is temporarily
-# removed, as it does not build, to have the 'all' target compile so it can be
-# added to buildbots.
-if (!is_chromeos) {
-  js_type_check("closure_compile_module") {
-    is_polymer3 = true
-    deps = [ "components:closure_compile_module" ]
-  }
+group("closure_compile_module") {
+  deps = [ "components:closure_compile_module" ]
 }
 
 js_type_check("closure_compile_local") {

@@ -10,6 +10,7 @@
   <include name="IDR_OOBE_COMPONENTS_FOCUS_BEHAVIOR_JS" file="components/oobe_focus_behavior/oobe_focus_behavior.js" resource_path="components/oobe_focus_behavior.js" type="chrome_html" />
   <include name="IDR_OOBE_COMPONENTS_SCROLLABLE_BEHAVIOR_HTML" file="components/oobe_scrollable_behavior/oobe_scrollable_behavior.html" resource_path="components/oobe_scrollable_behavior.html" type="chrome_html" />
   <include name="IDR_OOBE_COMPONENTS_SCROLLABLE_BEHAVIOR_JS" file="components/oobe_scrollable_behavior/oobe_scrollable_behavior.js" resource_path="components/oobe_scrollable_behavior.js" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_OOBE_ICONS_HTML" file="components/oobe_icons.html" type="chrome_html" />
 
   <include name="IDR_OOBE_COMPONENTS_LOGIN_SCREEN_BEHAVIOR_HTML" file="components/login_screen_behavior.html" type="chrome_html" />
   <include name="IDR_OOBE_COMPONENTS_LOGIN_SCREEN_BEHAVIOR_JS" file="components/login_screen_behavior.js" type="chrome_html" />
