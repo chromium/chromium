@@ -116,10 +116,10 @@ Polymer({
    * @private
    */
   getDisplayText_(language) {
-    let displayText = language.displayName;
-    // If the native name is different, add it.
+    let displayText = language.nativeDisplayName;
+    // If the local name is different, add it.
     if (language.displayName !== language.nativeDisplayName) {
-      displayText += ' - ' + language.nativeDisplayName;
+      displayText += ' - ' + language.displayName;
     }
     return displayText;
   },

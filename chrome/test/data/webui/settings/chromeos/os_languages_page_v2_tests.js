@@ -592,7 +592,7 @@ suite('languages page', () => {
        * @return {string}
        */
       function getNativeDisplayName(text) {
-        return text.includes(' - ') ? text.split(' - ')[1] : text;
+        return text.includes(' - ') ? text.split(' - ')[0] : text;
       }
 
       const items = getListItems();

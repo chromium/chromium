@@ -127,6 +127,20 @@ Polymer({
   },
 
   /**
+   * @param {!chrome.languageSettingsPrivate.Language} language
+   * @return {string} The text to be displayed.
+   * @private
+   */
+  getDisplayText_(language) {
+    let displayText = language.displayName;
+    // If the native name is different, add it.
+    if (language.displayName !== language.nativeDisplayName) {
+      displayText += ' - ' + language.nativeDisplayName;
+    }
+    return displayText;
+  },
+
+  /**
    * @return {boolean}
    * @private
    */

@@ -41,7 +41,7 @@
                   checked="[[willAdd_(item.language.code,
                       languageCodesToAdd_.size)]]"
                   on-change="onCheckboxChange_" tab-index="[[tabIndex]]">
-                [[item.language.displayName]]
+                [[getDisplayText_(item.language)]]
               </cr-checkbox>
             </div>
           </template>
@@ -59,7 +59,7 @@
                 checked="[[willAdd_(item.language.code,
                     languageCodesToAdd_.size)]]" disabled="[[item.isManaged]]"
                 on-change="onCheckboxChange_" tab-index="[[tabIndex]]">
-              [[item.language.displayName]]
+              [[getDisplayText_(item.language)]]
             </cr-checkbox>
             <template is="dom-if" if="[[item.isManaged]]">
               <iron-icon id="policy[[index]]" class="policy" icon="cr20:domain"
