@@ -1322,7 +1322,10 @@ class LayerTreeHostScrollTestImplOnlyScrollSnap
   bool snap_animation_finished_ = false;
 };
 
+// TODO(crbug.com/1201662): Flaky on Fuchsia, ChromeOS, and Linux.
+#if !defined(OS_FUCHSIA) && !defined(OS_CHROMEOS) && !defined(OS_LINUX)
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestImplOnlyScrollSnap);
+#endif
 
 // This test simulates scrolling on the impl thread such that 2 impl-only
 // scrolls occur between main frames. It ensures that the snap target ids will
