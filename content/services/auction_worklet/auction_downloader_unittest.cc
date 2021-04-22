@@ -86,7 +86,41 @@ TEST_F(AuctionDownloaderTest, HttpError) {
   // This is an unlikely response for an error case, but should fail if it ever
   // happens.
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
-              kAsciiResponseBody, net::HTTP_NOT_FOUND);
+              kAsciiResponseBody, kAllowFledgeHeader, net::HTTP_NOT_FOUND);
+  EXPECT_FALSE(RunRequest());
+}
+
+TEST_F(AuctionDownloaderTest, AllowFledge) {
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, "X-Allow-FLEDGE: true");
+  EXPECT_TRUE(RunRequest());
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, "x-aLLow-fLeDgE: true");
+  EXPECT_TRUE(RunRequest());
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, "X-Allow-FLEDGE: false");
+  EXPECT_FALSE(RunRequest());
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, "X-Allow-FLEDGE: sometimes");
+  EXPECT_FALSE(RunRequest());
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, "X-Allow-FLEDGE: ");
+  EXPECT_FALSE(RunRequest());
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, "X-Allow-Hats: true");
+  EXPECT_FALSE(RunRequest());
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, "");
+  EXPECT_FALSE(RunRequest());
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, base::nullopt);
   EXPECT_FALSE(RunRequest());
 }
 
@@ -103,7 +137,8 @@ TEST_F(AuctionDownloaderTest, Redirect) {
       std::make_pair(redirect_info, network::mojom::URLResponseHead::New()));
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
-              kAsciiResponseBody, net::HTTP_OK, std::move(redirects));
+              kAsciiResponseBody, kAllowFledgeHeader, net::HTTP_OK,
+              std::move(redirects));
   EXPECT_FALSE(RunRequest());
 }
 

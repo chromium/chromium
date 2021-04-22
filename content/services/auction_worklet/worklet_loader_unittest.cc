@@ -52,7 +52,7 @@ class WorkletLoaderTest : public testing::Test {
 TEST_F(WorkletLoaderTest, NetworkError) {
   // Make this look like a valid response in all ways except the response code.
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, base::nullopt,
-              kValidScript, net::HTTP_NOT_FOUND);
+              kValidScript, kAllowFledgeHeader, net::HTTP_NOT_FOUND);
   WorkletLoader worklet_loader(
       &url_loader_factory_, url_, &v8_helper_,
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,

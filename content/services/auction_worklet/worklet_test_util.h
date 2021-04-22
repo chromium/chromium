@@ -6,6 +6,7 @@
 #define CONTENT_SERVICES_AUCTION_WORKLET_WORKLET_TEST_UTIL_H_
 
 #include <string>
+#include <vector>
 
 #include "base/optional.h"
 #include "net/http/http_status_code.h"
@@ -19,12 +20,20 @@ namespace auction_worklet {
 extern const char kJavascriptMimeType[];
 extern const char kJsonMimeType[];
 
+// "X-Allow-Fledge: true" header.
+extern const char kAllowFledgeHeader[];
+
 // Enqueues a response to `url_loader_factory` using the specified values.
+//
+// `headers` contains the HTTP header lines (no status line + header lines) used
+// to create the HttpResponseHeaders value. If nullopt, HttpResponseHeaders is
+// null, and `http_status` is ignored.
 void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
                  const GURL& url,
                  base::Optional<std::string> mime_type,
                  base::Optional<std::string> charset,
                  const std::string content,
+                 base::Optional<std::string> headers = kAllowFledgeHeader,
                  net::HttpStatusCode http_status = net::HTTP_OK,
                  network::TestURLLoaderFactory::Redirects redirects =
                      network::TestURLLoaderFactory::Redirects());
