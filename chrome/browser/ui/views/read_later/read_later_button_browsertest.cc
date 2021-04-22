@@ -71,18 +71,6 @@ IN_PROC_BROWSER_TEST_F(ReadLaterButtonBrowserTest, MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(ReadLaterButtonBrowserTest, AddToReadingListMetrics) {
-  base::HistogramTester histogram_tester;
-  constexpr char kEveryAddHistogramName[] =
-      "ReadingList.BookmarkBarState.OnEveryAddToReadingList";
-
-  histogram_tester.ExpectTotalCount(kEveryAddHistogramName, 0);
-  chrome::MoveCurrentTabToReadLater(browser());
-  histogram_tester.ExpectTotalCount(kEveryAddHistogramName, 1);
-  chrome::MoveCurrentTabToReadLater(browser());
-  histogram_tester.ExpectTotalCount(kEveryAddHistogramName, 2);
-}
-
 IN_PROC_BROWSER_TEST_F(ReadLaterButtonBrowserTest,
                        DotIndicatorVisibleWithUnreadItems) {
   ReadingListModel* model =

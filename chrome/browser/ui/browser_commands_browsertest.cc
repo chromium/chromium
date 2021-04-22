@@ -226,13 +226,17 @@ IN_PROC_BROWSER_TEST_F(ReadLaterBrowserCommandsTest,
   base::HistogramTester histogram_tester;
   constexpr char kFirstAddHistogramName[] =
       "ReadingList.BookmarkBarState.OnFirstAddToReadingList";
+  constexpr char kEveryAddHistogramName[] =
+      "ReadingList.BookmarkBarState.OnEveryAddToReadingList";
 
   histogram_tester.ExpectTotalCount(kFirstAddHistogramName, 0);
+  histogram_tester.ExpectTotalCount(kEveryAddHistogramName, 0);
   EXPECT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
   // Verify the bookmark bar is shown after saving to the reading list.
   MoveCurrentTabToReadLater(browser());
   EXPECT_EQ(BookmarkBar::SHOW, browser()->bookmark_bar_state());
   histogram_tester.ExpectTotalCount(kFirstAddHistogramName, 1);
+  histogram_tester.ExpectTotalCount(kEveryAddHistogramName, 1);
   ToggleBookmarkBar(browser());
   EXPECT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
   // Verify the bookmark bar isn't reshown on subsequent saves to the reading
@@ -240,6 +244,7 @@ IN_PROC_BROWSER_TEST_F(ReadLaterBrowserCommandsTest,
   MoveCurrentTabToReadLater(browser());
   EXPECT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
   histogram_tester.ExpectTotalCount(kFirstAddHistogramName, 1);
+  histogram_tester.ExpectTotalCount(kEveryAddHistogramName, 2);
 }
 
 // Verify that the bookmark bar is not reshown after Chrome restarts.
