@@ -16,6 +16,8 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"
@@ -73,6 +75,12 @@ class WindowsAccessibilityEnabler
   }
 
   void OnUIAutomationUsed() override {
+    DCHECK(::switches::IsExperimentalAccessibilityPlatformUIAEnabled());
+
+    // Firing a UIA event can cause UIA to call back into our APIs, don't
+    // consider this to be usage.
+    if (firing_uia_events_)
+      return;
     // UI Automation insulates providers from knowing about the client(s) asking
     // for information. When UI Automation is requested, assume the presence of
     // a full-fledged accessibility technology and enable full support.
@@ -81,6 +89,14 @@ class WindowsAccessibilityEnabler
     BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
   }
 
+  void StartFiringUIAEvents() override { firing_uia_events_ = true; }
+
+  void EndFiringUIAEvents() override { firing_uia_events_ = false; }
+
+  // This should be set to true while we are firing uia events. Firing UIA
+  // events causes UIA to call back into our APIs, this should not be considered
+  // usage.
+  bool firing_uia_events_ = false;
   bool screen_reader_honeypot_queried_ = false;
   bool acc_name_called_ = false;
 };

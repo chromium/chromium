@@ -573,6 +573,8 @@ void BrowserAccessibilityManagerWin::FireUiaAccessibilityEvent(
     return;
   }
 
+  ui::WinAccessibilityAPIUsageScopedUIAEventsNotifier scoped_events_notifier;
+
   ::UiaRaiseAutomationEvent(ToBrowserAccessibilityWin(node)->GetCOM(),
                             uia_event);
 }
@@ -595,6 +597,8 @@ void BrowserAccessibilityManagerWin::FireUiaPropertyChangedEvent(
   // The old value is not used by the system
   VARIANT old_value = {};
   old_value.vt = VT_EMPTY;
+
+  ui::WinAccessibilityAPIUsageScopedUIAEventsNotifier scoped_events_notifier;
 
   auto* provider = ToBrowserAccessibilityWin(node)->GetCOM();
   base::win::ScopedVariant new_value;
@@ -629,6 +633,8 @@ void BrowserAccessibilityManagerWin::FireUiaStructureChangedEvent(
   auto* provider_com = provider ? provider->GetCOM() : nullptr;
   if (!provider || !provider_com)
     return;
+
+  ui::WinAccessibilityAPIUsageScopedUIAEventsNotifier scoped_events_notifier;
 
   switch (change_type) {
     case StructureChangeType_ChildRemoved: {

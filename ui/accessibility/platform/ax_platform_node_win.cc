@@ -283,6 +283,22 @@ GetWinAccessibilityAPIUsageObserverList() {
   return g_win_accessibility_api_usage_observer_list.Get();
 }
 
+// Used to simplify calling StartFiringUIAEvents and EndFiringEvents
+WinAccessibilityAPIUsageScopedUIAEventsNotifier::
+    WinAccessibilityAPIUsageScopedUIAEventsNotifier() {
+  for (ui::WinAccessibilityAPIUsageObserver& observer :
+       ui::GetWinAccessibilityAPIUsageObserverList()) {
+    observer.StartFiringUIAEvents();
+  }
+}
+WinAccessibilityAPIUsageScopedUIAEventsNotifier::
+    ~WinAccessibilityAPIUsageScopedUIAEventsNotifier() {
+  for (ui::WinAccessibilityAPIUsageObserver& observer :
+       ui::GetWinAccessibilityAPIUsageObserverList()) {
+    observer.EndFiringUIAEvents();
+  }
+}
+
 //
 // AXPlatformNode::Create
 //

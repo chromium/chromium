@@ -337,6 +337,8 @@ class AX_EXPORT WinAccessibilityAPIUsageObserver {
   virtual void OnScreenReaderHoneyPotQueried() = 0;
   virtual void OnAccNameCalled() = 0;
   virtual void OnUIAutomationUsed() = 0;
+  virtual void StartFiringUIAEvents() = 0;
+  virtual void EndFiringUIAEvents() = 0;
 };
 
 // Get an observer list that allows modules across the codebase to
@@ -344,6 +346,13 @@ class AX_EXPORT WinAccessibilityAPIUsageObserver {
 extern AX_EXPORT
     base::ObserverList<WinAccessibilityAPIUsageObserver>::Unchecked&
     GetWinAccessibilityAPIUsageObserverList();
+
+// Used to simplify calling StartFiringUIAEvents and EndFiringEvents
+class AX_EXPORT WinAccessibilityAPIUsageScopedUIAEventsNotifier {
+ public:
+  WinAccessibilityAPIUsageScopedUIAEventsNotifier();
+  ~WinAccessibilityAPIUsageScopedUIAEventsNotifier();
+};
 
 // TODO(nektar): Remove multithread superclass since we don't support it.
 class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
