@@ -72,7 +72,6 @@ class ExtensionActionViewController
   void UpdateState() override;
   void RegisterCommand() override;
   void UnregisterCommand() override;
-  bool DisabledClickOpensMenu() const override;
 
   // ExtensionContextMenuModel::PopupDelegate:
   void InspectPopup() override;

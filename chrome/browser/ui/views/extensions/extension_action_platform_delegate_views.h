@@ -38,7 +38,6 @@ class ExtensionActionPlatformDelegateViews
       std::unique_ptr<extensions::ExtensionViewHost> host,
       bool grant_tab_permissions,
       ExtensionActionViewController::PopupShowAction show_action) override;
-  void ShowContextMenu() override;
 
   // extensions::CommandService::Observer:
   void OnExtensionCommandAdded(const std::string& extension_id,

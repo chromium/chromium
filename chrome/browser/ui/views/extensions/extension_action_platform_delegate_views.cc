@@ -89,12 +89,6 @@ void ExtensionActionPlatformDelegateViews::ShowPopup(
                             arrow, popup_show_action);
 }
 
-void ExtensionActionPlatformDelegateViews::ShowContextMenu() {
-  views::View* view = GetDelegateViews()->GetAsView();
-  view->context_menu_controller()->ShowContextMenuForView(
-      view, view->GetKeyboardContextMenuLocation(), ui::MENU_SOURCE_NONE);
-}
-
 void ExtensionActionPlatformDelegateViews::OnExtensionCommandAdded(
     const std::string& extension_id,
     const extensions::Command& command) {

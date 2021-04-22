@@ -86,6 +86,13 @@ void ExtensionsMenuButton::UpdateState() {
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
 }
 
+void ExtensionsMenuButton::ShowContextMenuAsFallback() {
+  // The items in the extensions menu are disabled and unclickable if the
+  // primary action cannot be taken; ShowContextMenuAsFallback() should never
+  // be called directly.
+  NOTREACHED();
+}
+
 void ExtensionsMenuButton::ButtonPressed() {
   base::RecordAction(
       base::UserMetricsAction("Extensions.Toolbar.ExtensionActivatedFromMenu"));

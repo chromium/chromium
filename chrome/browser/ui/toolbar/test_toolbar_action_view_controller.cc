@@ -82,10 +82,6 @@ void TestToolbarActionViewController::UpdateState() {
   UpdateDelegate();
 }
 
-bool TestToolbarActionViewController::DisabledClickOpensMenu() const {
-  return disabled_click_opens_menu_;
-}
-
 ToolbarActionViewController::PageInteractionStatus
 TestToolbarActionViewController::GetPageInteractionStatus(
     content::WebContents* web_contents) const {
@@ -117,12 +113,6 @@ void TestToolbarActionViewController::SetTooltip(
 
 void TestToolbarActionViewController::SetEnabled(bool is_enabled) {
   is_enabled_ = is_enabled;
-  UpdateDelegate();
-}
-
-void TestToolbarActionViewController::SetDisabledClickOpensMenu(
-    bool disabled_click_opens_menu) {
-  disabled_click_opens_menu_ = disabled_click_opens_menu;
   UpdateDelegate();
 }
 

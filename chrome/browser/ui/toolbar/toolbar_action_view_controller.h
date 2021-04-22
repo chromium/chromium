@@ -124,10 +124,6 @@ class ToolbarActionViewController {
   // Updates the current state of the action.
   virtual void UpdateState() = 0;
 
-  // Returns true if clicking on an otherwise-disabled action should open the
-  // context menu.
-  virtual bool DisabledClickOpensMenu() const = 0;
-
   // Registers an accelerator. Called when the view is added to a widget.
   virtual void RegisterCommand() {}
 

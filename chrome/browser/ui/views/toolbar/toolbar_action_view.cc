@@ -137,13 +137,6 @@ void ToolbarActionView::UpdateState() {
   if (!sessions::SessionTabHelper::IdForTab(web_contents).is_valid())
     return;
 
-  if (!view_controller_->IsEnabled(web_contents) &&
-      !view_controller_->DisabledClickOpensMenu()) {
-    SetState(views::Button::STATE_DISABLED);
-  } else if (GetState() == views::Button::STATE_DISABLED) {
-    SetState(views::Button::STATE_NORMAL);
-  }
-
   gfx::ImageSkia icon(
       view_controller_->GetIcon(web_contents, GetPreferredSize())
           .AsImageSkia());
@@ -251,6 +244,11 @@ views::Button* ToolbarActionView::GetReferenceButtonForPopup() {
   return GetVisible() ? this : delegate_->GetOverflowReferenceView();
 }
 
+void ToolbarActionView::ShowContextMenuAsFallback() {
+  context_menu_controller()->ShowContextMenuForView(
+      this, GetKeyboardContextMenuLocation(), ui::MENU_SOURCE_NONE);
+}
+
 bool ToolbarActionView::CanShowIconInToolbar() const {
   return delegate_->CanShowIconInToolbar();
 }
@@ -279,9 +277,7 @@ void ToolbarActionView::ButtonPressed() {
     view_controller_->ExecuteAction(
         true, ToolbarActionViewController::InvocationSource::kToolbarButton);
   } else {
-    // We should only get a button pressed event with a non-enabled action if
-    // the left-click behavior should open the menu.
-    DCHECK(view_controller_->DisabledClickOpensMenu());
+    // If the action isn't enabled, show the context menu as a fallback.
     context_menu_controller()->ShowContextMenuForView(this, GetMenuPosition(),
                                                       ui::MENU_SOURCE_NONE);
   }

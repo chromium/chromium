@@ -209,8 +209,8 @@ bool ExtensionActionViewController::ExecuteAction(bool by_user,
     return false;
 
   if (!IsEnabled(view_delegate_->GetCurrentWebContents())) {
-    if (DisabledClickOpensMenu())
-      GetPreferredPopupViewController()->platform_delegate_->ShowContextMenu();
+    GetPreferredPopupViewController()
+        ->view_delegate_->ShowContextMenuAsFallback();
     return false;
   }
 
@@ -257,10 +257,6 @@ void ExtensionActionViewController::RegisterCommand() {
 
 void ExtensionActionViewController::UnregisterCommand() {
   platform_delegate_->UnregisterCommand();
-}
-
-bool ExtensionActionViewController::DisabledClickOpensMenu() const {
-  return true;
 }
 
 void ExtensionActionViewController::InspectPopup() {

@@ -91,6 +91,7 @@ class ToolbarActionView : public views::MenuButton,
   views::View* GetAsView() override;
   views::FocusManager* GetFocusManagerForAccelerator() override;
   views::Button* GetReferenceButtonForPopup() override;
+  void ShowContextMenuAsFallback() override;
   bool CanShowIconInToolbar() const override;
   void OnPopupShown(bool by_user) override;
   void OnPopupClosed() override;

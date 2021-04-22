@@ -49,6 +49,7 @@ class ExtensionsMenuButton : public HoverButton,
   views::Button* GetReferenceButtonForPopup() override;
   content::WebContents* GetCurrentWebContents() const override;
   void UpdateState() override;
+  void ShowContextMenuAsFallback() override;
 
   void ButtonPressed();
 

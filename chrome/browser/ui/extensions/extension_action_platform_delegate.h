@@ -32,9 +32,6 @@ class ExtensionActionPlatformDelegate {
       std::unique_ptr<extensions::ExtensionViewHost> host,
       bool grant_tab_permissions,
       ExtensionActionViewController::PopupShowAction show_action) = 0;
-
-  // Shows the context menu for the extension.
-  virtual void ShowContextMenu() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_H_
