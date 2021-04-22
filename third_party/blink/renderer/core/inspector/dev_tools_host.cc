@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/inspector/dev_tools_host.h"
 
+#include "base/json/json_reader.h"
 #include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -161,35 +162,28 @@ void DevToolsHost::copyText(const String& text) {
   frontend_frame_->GetSystemClipboard()->CommitWrite();
 }
 
-static String EscapeInvalidUnicode(const String& str) {
-  const UChar kSurrogateStart = 0xD800;
-  const UChar kSurrogateEnd = 0xDFFF;
-
-  unsigned i = 0;
-  while (i < str.length() &&
-         (str[i] < kSurrogateStart || str[i] > kSurrogateEnd))
-    ++i;
-  if (i == str.length())
-    return str;
-
-  StringBuilder dst;
-  dst.Append(str, 0, i);
-  for (; i < str.length(); ++i) {
-    UChar c = str[i];
-    if (kSurrogateStart <= c && c <= kSurrogateEnd) {
-      unsigned symbol = static_cast<unsigned>(c);
-      String symbol_code = String::Format("\\u%04X", symbol);
-      dst.Append(symbol_code);
-    } else {
-      dst.Append(c);
+void DevToolsHost::sendMessageToEmbedder(const String& message) {
+  if (client_) {
+    // Strictly convert, as we expect message to be serialized JSON.
+    auto value = base::JSONReader::Read(
+        message.Utf8(WTF::UTF8ConversionMode::kStrictUTF8Conversion));
+    if (!value || !value->is_dict()) {
+      ScriptState* script_state = ToScriptStateForMainWorld(frontend_frame_);
+      if (!script_state)
+        return;
+      V8ThrowException::ThrowTypeError(
+          script_state->GetIsolate(),
+          value ? "Message to embedder must deserialize to a dictionary value"
+                : "Message to embedder couldn't be JSON-deserialized");
+      return;
     }
+    client_->SendMessageToEmbedder(std::move(*value));
   }
-  return dst.ToString();
 }
 
-void DevToolsHost::sendMessageToEmbedder(const String& message) {
+void DevToolsHost::sendMessageToEmbedder(base::Value message) {
   if (client_)
-    client_->SendMessageToEmbedder(EscapeInvalidUnicode(message));
+    client_->SendMessageToEmbedder(std::move(message));
 }
 
 void DevToolsHost::ShowContextMenu(LocalFrame* target_frame,

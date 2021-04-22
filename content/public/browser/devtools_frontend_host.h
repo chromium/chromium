@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 #include "content/common/content_export.h"
 
 namespace base {
@@ -27,8 +28,7 @@ class RenderFrameHost;
 // Note: DevToolsFrontendHost is not supported on Android.
 class DevToolsFrontendHost {
  public:
-  using HandleMessageCallback =
-      base::RepeatingCallback<void(const std::string&)>;
+  using HandleMessageCallback = base::RepeatingCallback<void(base::Value)>;
 
   // Creates a new DevToolsFrontendHost for RenderFrameHost where DevTools
   // frontend is loaded.

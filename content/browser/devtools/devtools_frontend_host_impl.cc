@@ -90,9 +90,8 @@ void DevToolsFrontendHostImpl::BadMessageReceived() {
                                   bad_message::DFH_BAD_EMBEDDER_MESSAGE);
 }
 
-void DevToolsFrontendHostImpl::DispatchEmbedderMessage(
-    const std::string& message) {
-  handle_message_callback_.Run(message);
+void DevToolsFrontendHostImpl::DispatchEmbedderMessage(base::Value message) {
+  handle_message_callback_.Run(std::move(message));
 }
 
 }  // namespace content

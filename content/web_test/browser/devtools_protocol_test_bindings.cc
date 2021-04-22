@@ -88,15 +88,11 @@ void DevToolsProtocolTestBindings::WebContentsDestroyed() {
   }
 }
 
-void DevToolsProtocolTestBindings::HandleMessageFromTest(
-    const std::string& message) {
+void DevToolsProtocolTestBindings::HandleMessageFromTest(base::Value message) {
   std::string method;
   base::ListValue* params = nullptr;
   base::DictionaryValue* dict = nullptr;
-  std::unique_ptr<base::Value> parsed_message =
-      base::JSONReader::ReadDeprecated(message);
-  if (!parsed_message || !parsed_message->GetAsDictionary(&dict) ||
-      !dict->GetString("method", &method)) {
+  if (!message.GetAsDictionary(&dict) || !dict->GetString("method", &method)) {
     return;
   }
 

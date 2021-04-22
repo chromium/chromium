@@ -731,15 +731,14 @@ DevToolsUIBindings::~DevToolsUIBindings() {
 
 // content::DevToolsFrontendHost::Delegate implementation ---------------------
 void DevToolsUIBindings::HandleMessageFromDevToolsFrontend(
-    const std::string& message) {
+    base::Value message) {
   if (!frontend_host_)
     return;
   const std::string* method = nullptr;
   base::Value* params = nullptr;
-  base::Optional<base::Value> parsed_message = base::JSONReader::Read(message);
-  if (parsed_message && parsed_message->is_dict()) {
-    method = parsed_message->FindStringKey(kFrontendHostMethod);
-    params = parsed_message->FindKey(kFrontendHostParams);
+  if (message.is_dict()) {
+    method = message.FindStringKey(kFrontendHostMethod);
+    params = message.FindKey(kFrontendHostParams);
   }
   if (!method || (params && !params->is_list())) {
     LOG(ERROR) << "Invalid message was sent to embedder: " << message;
@@ -749,7 +748,7 @@ void DevToolsUIBindings::HandleMessageFromDevToolsFrontend(
   if (!params) {
     params = &empty_params;
   }
-  int id = parsed_message->FindIntKey(kFrontendHostId).value_or(0);
+  int id = message.FindIntKey(kFrontendHostId).value_or(0);
   base::ListValue* params_list;
   params->GetAsList(&params_list);
   embedder_message_dispatcher_->Dispatch(

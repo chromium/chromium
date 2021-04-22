@@ -123,9 +123,9 @@ void DevToolsFrontendImpl::SetupDevToolsExtensionAPI(
   api_script_ = extension_api;
 }
 
-void DevToolsFrontendImpl::SendMessageToEmbedder(const String& message) {
+void DevToolsFrontendImpl::SendMessageToEmbedder(base::Value message) {
   if (host_.is_bound())
-    host_->DispatchEmbedderMessage(message);
+    host_->DispatchEmbedderMessage(std::move(message));
 }
 
 void DevToolsFrontendImpl::DestroyOnHostGone() {

@@ -845,6 +845,28 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/inspector',
+            'third_party/blink/renderer/controller/dev_tools_frontend_impl.h',
+            'third_party/blink/renderer/controller/dev_tools_frontend_impl.cc',
+            'third_party/blink/renderer/modules/filesystem/dev_tools_host_file_system.cc'
+        ],
+        'allowed': [
+            # Commands from the DevTools window are parsed from a JSON string in
+            # the devtools renderer and sent on as base::Value.
+            'base::Value',
+        ],
+    },
+    {
+        'paths':
+        ['third_party/blink/renderer/core/inspector/dev_tools_host.cc'],
+        'allowed': [
+            # Commands from the DevTools window are parsed from a JSON string in
+            # the devtools renderer and sent on as base::Value.
+            'base::JSONReader',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/core/inspector/inspector_performance_agent.cc'
         ],
         'allowed': [
