@@ -6573,25 +6573,6 @@
             ]
         }
     ],
-    "TFLiteLanguageDetectionAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "TFLiteLanguageDetectionEnabled_20210421",
-                    "params": {
-                        "unrestricted_model_downloading": "true"
-                    },
-                    "enable_features": [
-                        "OptimizationGuideModelDownloading",
-                        "TFLiteLanguageDetectionEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabGridLayoutAndroid": [
         {
             "platforms": [
