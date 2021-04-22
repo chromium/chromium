@@ -314,6 +314,16 @@ class OptimizationGuideHintsManagerTest
     run_loop.Run();
   }
 
+  void ProcessHintsComponentInfoWithBadConfig(const std::string& version) {
+    optimization_guide::HintsComponentInfo info(
+        base::Version(version),
+        temp_dir().Append(FILE_PATH_LITERAL("badconfig.pb")));
+    ASSERT_EQ(7, base::WriteFile(info.path, "garbage", 7));
+
+    hints_manager_->OnHintsComponentAvailable(info);
+    RunUntilIdle();
+  }
+
   void ProcessHints(const optimization_guide::proto::Configuration& config,
                     const std::string& version) {
     optimization_guide::HintsComponentInfo info(
@@ -582,6 +592,29 @@ TEST_F(OptimizationGuideHintsManagerTest, ParseTwoConfigVersions) {
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ProcessHintsResult",
         optimization_guide::ProcessHintsComponentResult::kSuccess, 1);
+  }
+}
+
+TEST_F(OptimizationGuideHintsManagerTest, ParseInvalidConfigVersions) {
+  // Test the first time parsing the config.
+  {
+    base::HistogramTester histogram_tester;
+    InitializeWithDefaultConfig("1.0.0.0");
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ProcessHintsResult",
+        optimization_guide::ProcessHintsComponentResult::kSuccess, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    ProcessHintsComponentInfoWithBadConfig("2.0.0.0");
+    // If we have already parsed a version later than this version, we expect
+    // for the hints to not be updated.
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ProcessHintsResult",
+        optimization_guide::ProcessHintsComponentResult::
+            kFailedInvalidConfiguration,
+        1);
   }
 }
 
