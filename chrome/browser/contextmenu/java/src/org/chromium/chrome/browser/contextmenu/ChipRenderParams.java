@@ -33,6 +33,9 @@ public class ChipRenderParams {
     // based on asynchronous calls.
     public @ChipType int chipType;
 
+    // Indicates whether the chip remove icon should be hidden.
+    public boolean isRemoveIconHidden;
+
     /**
      * Defines the types of chips that can be rendered.
      */

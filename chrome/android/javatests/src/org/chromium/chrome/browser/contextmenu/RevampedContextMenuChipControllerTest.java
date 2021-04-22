@@ -39,7 +39,12 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     // 16 (close button start padding)
     // 24 (close button icon width)
     // 16 (close button end padding)
-    private static final int EXPECTEED_CHIP_WIDTH_DP = 234;
+    private static final int EXPECTED_CHIP_WIDTH_DP = 234;
+    // Computed by taking the 338dp max width and subtracting:
+    // 16 (chip start padding)
+    // 24 (main icon width)
+    // 8 (text start padding)
+    private static final int EXPECTED_CHIP_NO_END_BUTTON_WIDTH_DP = 290;
 
     private final Runnable mEmptyChipClickCallbackForTesting = () -> {
         return;
@@ -132,8 +137,18 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     public void testExpectedChipTextMaxWidthPx() {
         RevampedContextMenuChipController chipController =
                 new RevampedContextMenuChipController(getActivity(), mAnchorView);
-        assertEquals("Vertical px is not matching the expectation",
-                (int) (EXPECTEED_CHIP_WIDTH_DP * mMeasuredDeviceDensity),
-                chipController.getChipTextMaxWidthPx());
+        assertEquals("Chip width px is not matching the expectation",
+                (int) (EXPECTED_CHIP_WIDTH_DP * mMeasuredDeviceDensity),
+                chipController.getChipTextMaxWidthPx(false));
+    }
+
+    @Test
+    @SmallTest
+    public void testExpectedChipTextMaxWidthPx_EndButtonHidden() {
+        RevampedContextMenuChipController chipController =
+                new RevampedContextMenuChipController(getActivity(), mAnchorView);
+        assertEquals("Chip width px is not matching the expectation",
+                (int) (EXPECTED_CHIP_NO_END_BUTTON_WIDTH_DP * mMeasuredDeviceDensity),
+                chipController.getChipTextMaxWidthPx(true));
     }
 }
