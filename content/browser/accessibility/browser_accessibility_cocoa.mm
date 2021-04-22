@@ -3542,7 +3542,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     }
   }
 
-  if (_owner->GetBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot)) {
+  if (_owner->IsTextField()) {
     [ret addObjectsFromArray:@[
       NSAccessibilityInsertionPointLineNumberAttribute,
       NSAccessibilityNumberOfCharactersAttribute,

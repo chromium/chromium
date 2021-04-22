@@ -14,39 +14,47 @@
   <div id="contenteditable-div" contenteditable>
     <p id="paragraph1">Line 1<br>
       Line 2</p>
+    <p id="plaintext" contenteditable="plaintext-only">Plain text.</p>
     <p id="paragraph2">Line 3</p>
   </div>
 
 </div>
 
 <script>
-test(function() {
-    var axInput = accessibilityController.accessibleElementById('input');
-    assert_true(axInput.isEditableRoot);
-}, 'An input element is an editable root.');
+'use strict';
 
 test(function() {
-    var axContentEditable = accessibilityController.accessibleElementById('contenteditable-textbox');
+    const axInput = accessibilityController.accessibleElementById('input');
+    assert_false(axInput.isEditableRoot);
+}, 'An input element is not an editable root.');
+
+test(function() {
+    const axContentEditable = accessibilityController.accessibleElementById('contenteditable-textbox');
     assert_true(axContentEditable.isEditableRoot);
 }, 'A content editable with a role of textbox is an editable root.');
 
 test(function() {
-    var axInnerInput = accessibilityController.accessibleElementById('inner-input');
-    assert_true(axInnerInput.isEditableRoot);
-}, 'An input element embedded inside a content editable is an editable root.');
+    const axInnerInput = accessibilityController.accessibleElementById('inner-input');
+    assert_false(axInnerInput.isEditableRoot);
+}, 'An input element embedded inside a content editable is not an editable root.');
 
 test(function() {
-    var axInnerTextarea = accessibilityController.accessibleElementById('inner-textarea');
-    assert_true(axInnerTextarea.isEditableRoot);
-}, 'A textarea embedded inside a content editable is an editable root.');
+    const axInnerTextarea = accessibilityController.accessibleElementById('inner-textarea');
+    assert_false(axInnerTextarea.isEditableRoot);
+}, 'A textarea embedded inside a content editable is not an editable root.');
 
 test(function() {
-    var axContentEditable = accessibilityController.accessibleElementById('contenteditable-div');
-    var axParagraph1 = accessibilityController.accessibleElementById('paragraph1');
-    var axParagraph2 = accessibilityController.accessibleElementById('paragraph2');
+    const axContentEditable = accessibilityController.accessibleElementById('contenteditable-div');
+    const axParagraph1 = accessibilityController.accessibleElementById('paragraph1');
+    const axParagraph2 = accessibilityController.accessibleElementById('paragraph2');
     assert_true(axContentEditable.isEditableRoot);
     assert_false(axParagraph1.isEditableRoot);
     assert_false(axParagraph2.isEditableRoot);
 }, 'A paragraph within a content editable is not an editable root but the content editable is.');
+
+test(function() {
+    const axInnerContentEditable = accessibilityController.accessibleElementById('plaintext');
+    assert_true(axInnerContentEditable.isEditableRoot);
+}, 'A plaintext-only content editable within another content editable is an editable root.');
 
 </script>

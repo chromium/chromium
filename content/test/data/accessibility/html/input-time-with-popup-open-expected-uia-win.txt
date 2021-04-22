@@ -4,19 +4,14 @@ Document
 ++++++Group IsControlElement=false
 ++++++++Group IsControlElement=false
 ++++++++++Spinner Name='Hours' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=12.00 RangeValue.Minimum=1.00 RangeValue.Value=1.00 Value.Value='01'
-++++++++++++Text Name='01'
 ++++++++++Text Name=':'
 ++++++++++Spinner Name='Minutes' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=59.00 RangeValue.Minimum=0.00 RangeValue.Value=50.00 Value.Value='50'
-++++++++++++Text Name='50'
 ++++++++++Text Name=':'
 ++++++++++Spinner Name='Seconds' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=59.00 RangeValue.Minimum=0.00 RangeValue.Value=2.00 Value.Value='02'
-++++++++++++Text Name='02'
 ++++++++++Text Name='.'
 ++++++++++Spinner Name='Milliseconds' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=999.00 RangeValue.Minimum=0.00 RangeValue.Value=922.00 Value.Value='922'
-++++++++++++Text Name='922'
 ++++++++++Text Name=' '
 ++++++++++Spinner Name='AM/PM' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=2.00 RangeValue.Minimum=1.00 RangeValue.Value=2.00 Value.Value='PM'
-++++++++++++Text Name='PM'
 ++++++Button Name='Show time picker' ExpandCollapse.ExpandCollapseState='Collapsed'
 ++++++Pane Name='Chrome Legacy Window' IsControlElement=false
 ++++++++Document

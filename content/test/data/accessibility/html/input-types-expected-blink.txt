@@ -4,7 +4,7 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Default: '
 ++++++++++inlineTextBox name='Default: '
-++++++++textField editable name='Default:' editableRoot=true
+++++++++textField editable name='Default:'
 ++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Button: '
@@ -20,7 +20,7 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Email: '
 ++++++++++inlineTextBox name='Email: '
-++++++++textField editable name='Email:' editableRoot=true
+++++++++textField editable name='Email:'
 ++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='File: '
@@ -41,7 +41,7 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Number: '
 ++++++++++inlineTextBox name='Number: '
-++++++++spinButton editable name='Number:' editableRoot=true
+++++++++spinButton editable name='Number:'
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer editable
@@ -49,7 +49,7 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Password: '
 ++++++++++inlineTextBox name='Password: '
-++++++++textField editable protected name='Password:' editableRoot=true
+++++++++textField editable protected name='Password:'
 ++++++++++genericContainer editable
 ++++++radioButton name='Radio:' checkedState=false
 ++++++labelText
@@ -65,7 +65,7 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Search: '
 ++++++++++inlineTextBox name='Search: '
-++++++++searchBox editable name='Search:' editableRoot=true
+++++++++searchBox editable name='Search:'
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer editable
@@ -79,15 +79,15 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Tel: '
 ++++++++++inlineTextBox name='Tel: '
-++++++++textField editable name='Tel:' editableRoot=true
+++++++++textField editable name='Tel:'
 ++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Text: '
 ++++++++++inlineTextBox name='Text: '
-++++++++textField editable name='Text:' editableRoot=true
+++++++++textField editable name='Text:'
 ++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Url: '
 ++++++++++inlineTextBox name='Url: '
-++++++++textField editable name='Url:' editableRoot=true
+++++++++textField editable name='Url:'
 ++++++++++genericContainer editable

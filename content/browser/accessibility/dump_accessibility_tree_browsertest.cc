@@ -1687,7 +1687,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityContenteditablePlaintextWithRole) {
+                       DISABLED_AccessibilityContenteditablePlaintextWithRole) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-plaintext-with-role.html"));
 }
 

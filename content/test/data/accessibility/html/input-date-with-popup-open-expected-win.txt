@@ -3,14 +3,11 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
 ++++IA2_ROLE_DATE_EDITOR value='2008-09-01' FOCUSABLE ia2_hypertext='<obj0><obj1><obj2>'
 ++++++IA2_ROLE_SECTION ia2_hypertext='<obj0>'
 ++++++++IA2_ROLE_SECTION ia2_hypertext='<obj0>/<obj2>/<obj4>'
-++++++++++ROLE_SYSTEM_SPINBUTTON name='Month' value='09' FOCUSABLE ia2_hypertext='09'
-++++++++++++ROLE_SYSTEM_STATICTEXT name='09' ia2_hypertext='09'
+++++++++++ROLE_SYSTEM_SPINBUTTON name='Month' value='09' FOCUSABLE
 ++++++++++ROLE_SYSTEM_STATICTEXT name='/' ia2_hypertext='/'
-++++++++++ROLE_SYSTEM_SPINBUTTON name='Day' value='01' FOCUSABLE ia2_hypertext='01'
-++++++++++++ROLE_SYSTEM_STATICTEXT name='01' ia2_hypertext='01'
+++++++++++ROLE_SYSTEM_SPINBUTTON name='Day' value='01' FOCUSABLE
 ++++++++++ROLE_SYSTEM_STATICTEXT name='/' ia2_hypertext='/'
-++++++++++ROLE_SYSTEM_SPINBUTTON name='Year' value='2008' FOCUSABLE ia2_hypertext='2008'
-++++++++++++ROLE_SYSTEM_STATICTEXT name='2008' ia2_hypertext='2008'
+++++++++++ROLE_SYSTEM_SPINBUTTON name='Year' value='2008' FOCUSABLE
 ++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP
 ++++++ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
 ++++++++IA2_ROLE_SECTION ia2_hypertext='<obj0>'

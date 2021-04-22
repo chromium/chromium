@@ -15,6 +15,6 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>' caret_offset=1 n_
 ++++++++++ROLE_SYSTEM_STATICTEXT name='Always expose editable tables as tables.' IA2_STATE_EDITABLE ia2_hypertext='Always expose editable tables as tables.' n_selections=1 selection_start=0 selection_end=3
 ++++ROLE_SYSTEM_LIST IA2_STATE_EDITABLE ia2_hypertext='<obj0>' n_selections=1 selection_start=0 selection_end=3
 ++++++ROLE_SYSTEM_LISTITEM IA2_STATE_EDITABLE ia2_hypertext='<obj0>Editable list item.' n_selections=1 selection_start=0 selection_end=3
-++++++++IA2_ROLE_REDUNDANT_OBJECT IA2_STATE_EDITABLE ia2_hypertext='1. ' n_selections=1 selection_start=0 selection_end=3
+++++++++IA2_ROLE_REDUNDANT_OBJECT ia2_hypertext='1. ' n_selections=1 selection_start=0 selection_end=3
 ++++++++++ROLE_SYSTEM_STATICTEXT name='1. ' ia2_hypertext='1. ' n_selections=1 selection_start=0 selection_end=3
 ++++++++ROLE_SYSTEM_STATICTEXT name='Editable list item.' IA2_STATE_EDITABLE ia2_hypertext='Editable list item.' n_selections=1 selection_start=0 selection_end=3

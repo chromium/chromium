@@ -1,7 +1,7 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View content_invalid name='invalid=true'
-++android.widget.EditText clickable editable_text focusable has_non_empty_value name='An error via invalid=spelling' text_change_added_count=29
-++android.widget.EditText clickable editable_text focusable has_non_empty_value name='An error via invalid=grammar' text_change_added_count=28
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='An error via invalid=spelling' text_change_added_count=29
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='An error via invalid=grammar' text_change_added_count=28
 ++android.view.View name='invalid=false'
 ++android.view.View name='invalid=<empty>'
 ++android.view.View name='invalid=<default>'

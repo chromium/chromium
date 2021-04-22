@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++textField value='Hello<newline><newline>Bye'
+++++++textField multiline value='Hello<newline><newline>Bye'
 ++++++++list
 ++++++++++listItem
 ++++++++++++listMarker name='%E2%80%A2 '
