@@ -10,8 +10,8 @@
  * handled by a C++ templatizer.
  */
 
-// #import {parseHtmlSubset} from './parse_html_subset.m.js';
-// #import {loadTimeData, SanitizeInnerHtmlOpts} from './load_time_data.m.js';
+// #import {parseHtmlSubset, SanitizeInnerHtmlOpts, sanitizeInnerHtml} from './parse_html_subset.m.js';
+// #import {loadTimeData} from './load_time_data.m.js';
 
 /** @polymerBehavior */
 /* #export */ const I18nBehavior = {
@@ -83,7 +83,7 @@
     opts = opts || {};
     const args = [id].concat(opts.substitutions || []);
     const rawString = this.i18nRaw_.apply(this, args);
-    return loadTimeData.sanitizeInnerHtml(rawString, opts);
+    return sanitizeInnerHtml(rawString, opts);
   },
 
   /**

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.m.js';
+import {parseHtmlSubset, sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
 
 suite('ParseHtmlSubsetModuleTest', function() {
   function parseAndAssertThrows() {
@@ -112,6 +112,16 @@ suite('ParseHtmlSubsetModuleTest', function() {
 
   test('invalid optional attribute\'s value', function() {
     parseAndAssertThrows('<a is="xss-link">link</a>', null, ['is']);
+  });
+
+  test('sanitizeInnerHtml', function() {
+    assertEquals(
+        '<a href="chrome://foo"></a>',
+        sanitizeInnerHtml('<a href="chrome://foo"></a>'));
+    assertThrows(() => {
+      sanitizeInnerHtml('<iframe></iframe>');
+    }, 'IFRAME is not supported');
+    assertEquals('<div></div>', sanitizeInnerHtml('<div></div>'));
   });
 
   test('on error async', function(done) {

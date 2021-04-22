@@ -187,7 +187,10 @@ js_library("i18n_template_process") {
 }
 
 js_library("i18n_behavior") {
-  deps = [ ":load_time_data" ]
+  deps = [
+    ":load_time_data",
+    ":parse_html_subset",
+  ]
 }
 
 js_library("list_property_update_behavior") {
@@ -196,7 +199,6 @@ js_library("list_property_update_behavior") {
 js_library("load_time_data") {
   deps = [
     ":assert",
-    ":parse_html_subset",
     "//third_party/jstemplate:jstemplate",
   ]
 }
@@ -326,7 +328,6 @@ js_library("load_time_data.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/load_time_data.m.js" ]
   deps = [
     ":assert.m",
-    ":parse_html_subset.m",
     "//third_party/jstemplate:jstemplate",
   ]
   extra_deps = [ ":modulize_local" ]

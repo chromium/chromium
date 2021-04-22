@@ -14,6 +14,7 @@ import './strings.m.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -378,8 +379,7 @@ Polymer({
       try {
         // Sanitizing the message could throw an error if it contains non
         // supported markup.
-        this.eolAdminMessage_ =
-            loadTimeData.sanitizeInnerHtml(data.eolAdminMessage);
+        this.eolAdminMessage_ = sanitizeInnerHtml(data.eolAdminMessage);
       } catch (e) {
         this.eolAdminMessage_ = '';
       }

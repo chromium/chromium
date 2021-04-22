@@ -3,6 +3,30 @@
 // found in the LICENSE file.
 
 /**
+ * @typedef {{
+ *   substitutions: (!Array<string>|undefined),
+ *   attrs: (!Array<string>|undefined),
+ *   tags: (!Array<string>|undefined),
+ * }}
+ */
+/* #export */ let SanitizeInnerHtmlOpts;
+
+/**
+ * Make a string safe for Polymer bindings that are inner-h-t-m-l or other
+ * innerHTML use.
+ * @param {string} rawString The unsanitized string
+ * @param {SanitizeInnerHtmlOpts=} opts Optional additional allowed tags and
+ *     attributes.
+ * @return {string}
+ */
+/* #export */ const sanitizeInnerHtml = function(rawString, opts) {
+  opts = opts || {};
+  return parseHtmlSubset('<b>' + rawString + '</b>', opts.tags, opts.attrs)
+      .firstChild.innerHTML;
+};
+
+
+/**
  * Parses a very small subset of HTML. This ensures that insecure HTML /
  * javascript cannot be injected into WebUI.
  * @param {string} s The string to parse.

@@ -110,7 +110,7 @@ Polymer({
    * @param {string} eolMessage Not sanitized end of life message from policy
    */
   setEolMessage(eolMessage) {
-    this.eolAdminMessage_ = loadTimeData.sanitizeInnerHtml(eolMessage);
+    this.eolAdminMessage_ = sanitizeInnerHtml(eolMessage);
   },
 
   /** @param {boolean} connected */

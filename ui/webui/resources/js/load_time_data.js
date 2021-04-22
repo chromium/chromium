@@ -15,16 +15,6 @@
  */
 
 // #import {assert} from './assert.m.js';
-// #import {parseHtmlSubset} from './parse_html_subset.m.js';
-
-/**
- * @typedef {{
- *   substitutions: (!Array<string>|undefined),
- *   attrs: (!Array<string>|undefined),
- *   tags: (!Array<string>|undefined),
- * }}
- */
-/* #export */ let SanitizeInnerHtmlOpts;
 
 // eslint-disable-next-line no-var
 /* #export */ /** @type {!LoadTimeData} */ var loadTimeData;
@@ -105,20 +95,6 @@ class LoadTimeData {
     const args = Array.prototype.slice.call(arguments);
     args[0] = value;
     return this.substituteString.apply(this, args);
-  }
-
-  /**
-   * Make a string safe for use with with Polymer bindings that are
-   * inner-h-t-m-l (or other innerHTML use).
-   * @param {string} rawString The unsanitized string.
-   * @param {SanitizeInnerHtmlOpts=} opts Optional additional allowed tags and
-   *     attributes.
-   * @return {string}
-   */
-  sanitizeInnerHtml(rawString, opts) {
-    opts = opts || {};
-    return parseHtmlSubset('<b>' + rawString + '</b>', opts.tags, opts.attrs)
-        .firstChild.innerHTML;
   }
 
   /**

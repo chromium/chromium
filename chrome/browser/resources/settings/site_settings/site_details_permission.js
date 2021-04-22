@@ -14,6 +14,7 @@ import '../settings_vars_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -373,7 +374,7 @@ Polymer({
       if (!drmDisabledString) {
         return null;
       }
-      return loadTimeData.sanitizeInnerHtml(loadTimeData.substituteString(
+      return sanitizeInnerHtml(loadTimeData.substituteString(
           drmDisabledString,
           routes.SITE_SETTINGS_PROTECTED_CONTENT.getAbsolutePath()));
     } else if (source === SiteSettingSource.EMBARGO) {
