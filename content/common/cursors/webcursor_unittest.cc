@@ -86,23 +86,6 @@ TEST(WebCursorTest, WebCursorCursorConstructorCustom) {
 #endif
 }
 
-TEST(WebCursorTest, CopyConstructorType) {
-  ui::Cursor cursor(ui::mojom::CursorType::kHand);
-  WebCursor webcursor(cursor);
-  WebCursor copy(webcursor);
-  EXPECT_EQ(webcursor, copy);
-}
-
-TEST(WebCursorTest, CopyConstructorCustom) {
-  ui::Cursor cursor(ui::mojom::CursorType::kCustom);
-  cursor.set_custom_bitmap(CreateTestBitmap(32, 32));
-  cursor.set_custom_hotspot(gfx::Point(10, 20));
-  cursor.set_image_scale_factor(1.5f);
-  WebCursor webcursor(cursor);
-  WebCursor copy(webcursor);
-  EXPECT_EQ(webcursor, copy);
-}
-
 TEST(WebCursorTest, ClampHotspot) {
   // Initialize a cursor with an invalid hotspot; it should be clamped.
   ui::Cursor cursor(ui::mojom::CursorType::kCustom);
@@ -174,11 +157,6 @@ TEST(WebCursorTest, CursorScaleFactor) {
 #else
   EXPECT_EQ(2.1f, webcursor.GetNativeCursor().image_scale_factor());
 #endif
-
-  // Test that the Display dsf is copied.
-  WebCursor copy(webcursor);
-  EXPECT_EQ(webcursor.GetNativeCursor().image_scale_factor(),
-            copy.GetNativeCursor().image_scale_factor());
 }
 
 TEST(WebCursorTest, UnscaledImageCopy) {

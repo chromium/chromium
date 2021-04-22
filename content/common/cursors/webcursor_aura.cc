@@ -60,14 +60,6 @@ float WebCursor::GetCursorScaleFactor(SkBitmap* bitmap) {
 }
 #endif
 
-void WebCursor::CopyPlatformData(const WebCursor& other) {
-  custom_cursor_ = other.custom_cursor_;
-  device_scale_factor_ = other.device_scale_factor_;
-#if defined(USE_OZONE)
-  maximum_cursor_size_ = other.maximum_cursor_size_;
-#endif
-}
-
 void WebCursor::CleanupPlatformData() {
   custom_cursor_.reset();
 }

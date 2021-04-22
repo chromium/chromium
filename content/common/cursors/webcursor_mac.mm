@@ -278,6 +278,4 @@ gfx::NativeCursor WebCursor::GetNativeCursor() {
 
 void WebCursor::CleanupPlatformData() {}
 
-void WebCursor::CopyPlatformData(const WebCursor& other) {}
-
 }  // namespace content

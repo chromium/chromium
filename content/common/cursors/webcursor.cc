@@ -19,15 +19,7 @@ WebCursor::WebCursor(const ui::Cursor& cursor) {
   SetCursor(cursor);
 }
 
-WebCursor::WebCursor(const WebCursor& other) {
-  CopyAllData(other);
-}
-
-WebCursor& WebCursor::operator=(const WebCursor& other) {
-  CleanupPlatformData();
-  CopyAllData(other);
-  return *this;
-}
+WebCursor::WebCursor(const WebCursor& other) = default;
 
 bool WebCursor::SetCursor(const ui::Cursor& cursor) {
   static constexpr int kMaxSize = 1024;
@@ -68,11 +60,6 @@ bool WebCursor::operator==(const WebCursor& other) const {
 
 bool WebCursor::operator!=(const WebCursor& other) const {
   return !(*this == other);
-}
-
-void WebCursor::CopyAllData(const WebCursor& other) {
-  SetCursor(other.cursor_);
-  CopyPlatformData(other);
 }
 
 }  // namespace content

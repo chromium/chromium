@@ -31,7 +31,6 @@ class CONTENT_EXPORT WebCursor {
   WebCursor();
   explicit WebCursor(const ui::Cursor& info);
   explicit WebCursor(const WebCursor& other);
-  WebCursor& operator=(const WebCursor& other);
   ~WebCursor();
 
   const ui::Cursor& cursor() const { return cursor_; }
@@ -58,12 +57,6 @@ class CONTENT_EXPORT WebCursor {
 #endif
 
  private:
-  // Copies all data from |other| to this object.
-  void CopyAllData(const WebCursor& other);
-
-  // Copies platform specific data from the WebCursor instance passed in.
-  void CopyPlatformData(const WebCursor& other);
-
   // Platform specific cleanup.
   void CleanupPlatformData();
 
