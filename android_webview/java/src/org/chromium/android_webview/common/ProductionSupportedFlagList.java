@@ -124,5 +124,7 @@ public final class ProductionSupportedFlagList {
                     AwFeatures.WEBVIEW_ORIGIN_TRIALS, "Enables Origin Trials support on WebView."),
             Flag.baseFeature(UiFeatures.FORM_CONTROLS_REFRESH,
                     "Enables the Form Controls visual improvements and dark mode."),
+            Flag.baseFeature(
+                    BlinkFeatures.LAYOUT_NG_TABLE, "Enables Blink's next generation table layout."),
     };
 }
