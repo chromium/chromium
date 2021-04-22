@@ -5,15 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PATTERN_PROVIDER_PATTERN_PROVIDER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PATTERN_PROVIDER_PATTERN_PROVIDER_H_
 
+#include <map>
 #include <string>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "base/types/strong_alias.h"
 #include "base/version.h"
-#include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/common/language_code.h"
@@ -76,5 +75,7 @@ class PatternProvider {
   // Version for keeping track which pattern set is currently used.
   base::Version pattern_version_;
 };
+
 }  // namespace autofill
+
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PATTERN_PROVIDER_PATTERN_PROVIDER_H_
