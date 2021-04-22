@@ -29,6 +29,7 @@ constexpr gfx::Size kSize720p = gfx::Size(1280, 720);
 constexpr gfx::Size kSize1080p = gfx::Size(1920, 1080);
 
 class SimpleContext : public WebContentsFrameTracker::Context {
+ public:
   ~SimpleContext() override = default;
 
   // WebContentsFrameTracker::Context overrides.
@@ -40,11 +41,13 @@ class SimpleContext : public WebContentsFrameTracker::Context {
   }
   void IncrementCapturerCount(const gfx::Size& capture_size) override {
     ++capturer_count_;
+    last_capture_size_ = capture_size;
   }
   void DecrementCapturerCount() override { --capturer_count_; }
 
-  // Setters.
   int capturer_count() const { return capturer_count_; }
+  const gfx::Size& last_capture_size() const { return last_capture_size_; }
+
   void set_frame_sink_id(viz::FrameSinkId frame_sink_id) {
     frame_sink_id_ = frame_sink_id;
   }
@@ -55,22 +58,8 @@ class SimpleContext : public WebContentsFrameTracker::Context {
  private:
   int capturer_count_ = 0;
   viz::FrameSinkId frame_sink_id_;
+  gfx::Size last_capture_size_;
   base::Optional<gfx::Rect> screen_bounds_;
-};
-
-class SimpleWebContentsDelegate : public WebContentsDelegate {
- public:
-  void UpdatePreferredSize(WebContents* contents,
-                           const gfx::Size& size) override {
-    // We generally get a zero-value preferred size update when the contents are
-    // torn down--this can be safely ignored for the purpose of these tests.
-    if (size == gfx::Size{}) {
-      return;
-    }
-    current_size = size;
-  }
-
-  gfx::Size current_size;
 };
 
 // The capture device is mostly for interacting with the frame tracker. We do
@@ -105,8 +94,6 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
     tracker_ = std::make_unique<WebContentsFrameTracker>(device_->AsWeakPtr(),
                                                          controller());
 
-    // It's fine to use the UI thread task runner for callbacks here, since the
-    // mock delegate doesn't care what thread it executes on.
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&WebContentsFrameTrackerTest::SetUpOnUIThread,
                                   base::Unretained(this)));
@@ -114,7 +101,6 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
   }
 
   void SetUpOnUIThread() {
-    web_contents_->SetDelegate(&delegate_);
     auto context = std::make_unique<SimpleContext>();
     raw_context_ = context.get();
     tracker_->SetWebContentsAndContextForTesting(web_contents_.get(),
@@ -168,9 +154,9 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
     return &controller_;
 #endif
   }
-  const SimpleWebContentsDelegate& delegate() const { return delegate_; }
   WebContentsFrameTracker* tracker() { return tracker_.get(); }
   SimpleContext* context() { return raw_context_; }
+  StrictMock<MockCaptureDevice>* device() { return device_.get(); }
 
  private:
 #if !defined(OS_ANDROID)
@@ -178,7 +164,6 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
 #endif
 
   std::unique_ptr<TestWebContents> web_contents_;
-  SimpleWebContentsDelegate delegate_;
   std::unique_ptr<StrictMock<MockCaptureDevice>> device_;
   std::unique_ptr<WebContentsFrameTracker> tracker_;
 
@@ -188,15 +173,9 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
 
 TEST_F(WebContentsFrameTrackerTest, CalculatesPreferredSizeClampsToView) {
   SetScreenSize(kSize720p);
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](WebContentsFrameTracker* tracker) {
-            EXPECT_EQ(kSize720p, tracker->CalculatePreferredSize(kSize720p));
-            EXPECT_EQ(kSize720p, tracker->CalculatePreferredSize(kSize1080p));
-          },
-          base::Unretained(tracker())));
   RunAllTasksUntilIdle();
+  EXPECT_EQ(kSize720p, tracker()->CalculatePreferredSize(kSize720p));
+  EXPECT_EQ(kSize720p, tracker()->CalculatePreferredSize(kSize1080p));
 }
 
 TEST_F(WebContentsFrameTrackerTest,
@@ -215,18 +194,18 @@ TEST_F(WebContentsFrameTrackerTest, UpdatesPreferredSizeOnWebContents) {
 
   // In this case, the capture size requested is smaller than the screen size,
   // so it should be used.
-  EXPECT_EQ(kSize720p, delegate().current_size);
+  EXPECT_EQ(kSize720p, context()->last_capture_size());
   EXPECT_EQ(context()->capturer_count(), 1);
   // When we stop the tracker, the web contents issues a preferred size change
   // of the "old" size--so it shouldn't change.
   StopTrackerOnUIThread();
   RunAllTasksUntilIdle();
-  EXPECT_EQ(kSize720p, delegate().current_size);
+  EXPECT_EQ(kSize720p, context()->last_capture_size());
   EXPECT_EQ(context()->capturer_count(), 0);
 }
 
 TEST_F(WebContentsFrameTrackerTest, NotifiesOfLostTargets) {
-  EXPECT_CALL(*device_, OnTargetPermanentlyLost()).Times(1);
+  EXPECT_CALL(*device(), OnTargetPermanentlyLost()).Times(1);
   tracker()->WebContentsDestroyed();
   RunAllTasksUntilIdle();
 }
@@ -235,7 +214,7 @@ TEST_F(WebContentsFrameTrackerTest, NotifiesOfLostTargets) {
 // test the observer callbacks here.
 TEST_F(WebContentsFrameTrackerTest, NotifiesOfTargetChanges) {
   const viz::FrameSinkId kNewId(42, 1337);
-  EXPECT_CALL(*device_, OnTargetChanged(kNewId)).Times(1);
+  EXPECT_CALL(*device(), OnTargetChanged(kNewId)).Times(1);
   SetFrameSinkId(kNewId);
   // The tracker doesn't actually use the frame host information, just
   // posts a possible target change.
