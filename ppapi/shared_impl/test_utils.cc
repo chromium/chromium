@@ -11,6 +11,8 @@
 #include <unordered_map>
 
 #include "base/logging.h"
+#include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "ipc/ipc_message.h"
 #include "ppapi/shared_impl/array_var.h"
 #include "ppapi/shared_impl/dictionary_var.h"

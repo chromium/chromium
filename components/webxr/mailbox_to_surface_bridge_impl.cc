@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/browser_task_traits.h"

@@ -13,6 +13,10 @@
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-forward.h"
 
+namespace base {
+class FilePath;
+}
+
 namespace content {
 
 // A ref-counted permission grant. This is needed so the implementation of

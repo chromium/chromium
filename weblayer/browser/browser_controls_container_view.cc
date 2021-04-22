@@ -7,6 +7,7 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/layers/ui_resource_layer.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/render_view_host.h"

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/modulescript/document_module_script_fetcher.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"

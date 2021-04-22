@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_REQUEST_PARAMS_H_
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_REQUEST_PARAMS_H_
 
+#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/optional.h"

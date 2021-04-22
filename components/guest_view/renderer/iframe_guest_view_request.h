@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/values.h"
 #include "components/guest_view/renderer/guest_view_request.h"
 #include "ipc/ipc_message.h"
 #include "v8/include/v8.h"

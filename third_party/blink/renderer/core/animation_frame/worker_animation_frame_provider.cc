@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation_frame/worker_animation_frame_provider.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"

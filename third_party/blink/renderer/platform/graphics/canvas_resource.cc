@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/resource_format_utils.h"

@@ -6,7 +6,9 @@
 
 #include <algorithm>
 #include <utility>
+
 #include "base/auto_reset.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"

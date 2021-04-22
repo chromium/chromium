@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_sync_message.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

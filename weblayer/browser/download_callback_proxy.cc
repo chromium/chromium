@@ -5,6 +5,7 @@
 #include "weblayer/browser/download_callback_proxy.h"
 
 #include "base/android/jni_string.h"
+#include "base/trace_event/trace_event.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "weblayer/browser/download_impl.h"

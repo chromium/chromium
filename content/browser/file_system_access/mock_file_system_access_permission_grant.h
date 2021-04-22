@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_FILE_SYSTEM_ACCESS_PERMISSION_GRANT_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_FILE_SYSTEM_ACCESS_PERMISSION_GRANT_H_
 
+#include "base/files/file_path.h"
 #include "content/public/browser/file_system_access_permission_grant.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

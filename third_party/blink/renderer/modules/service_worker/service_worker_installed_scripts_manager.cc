@@ -9,6 +9,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/threading/thread_checker.h"
+#include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

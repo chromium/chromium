@@ -21,6 +21,10 @@ struct ExtensionMsg_ExternalConnectionInfo;
 struct ExtensionMsg_TabTargetConnectionInfo;
 struct ServiceWorkerIdentifier;
 
+namespace base {
+class DictionaryValue;
+}
+
 namespace content {
 class BrowserContext;
 }

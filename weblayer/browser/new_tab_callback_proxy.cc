@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/new_tab_callback_proxy.h"
 
+#include "base/trace_event/trace_event.h"
 #include "url/gurl.h"
 #include "weblayer/browser/java/jni/NewTabCallbackProxy_jni.h"
 #include "weblayer/browser/tab_impl.h"

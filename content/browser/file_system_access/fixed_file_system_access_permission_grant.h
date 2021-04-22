@@ -7,6 +7,7 @@
 
 #include "content/public/browser/file_system_access_permission_grant.h"
 
+#include "base/files/file_path.h"
 #include "content/common/content_export.h"
 
 namespace content {

@@ -26,6 +26,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/renderer_host/dwrite_font_file_util_win.h"
 #include "content/browser/renderer_host/dwrite_font_uma_logging_win.h"
 #include "content/public/common/content_features.h"

@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/threading/platform_thread.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/child/child_process.h"

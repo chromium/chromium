@@ -13,7 +13,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/pickle.h"
-#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ipc/ipc_buildflags.h"
 #include "ipc/ipc_message_support_export.h"

@@ -56,6 +56,7 @@ class Time;
 class TimeDelta;
 class TimeTicks;
 class UnguessableToken;
+class Value;
 struct FileDescriptor;
 }
 

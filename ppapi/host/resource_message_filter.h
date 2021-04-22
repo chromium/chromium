@@ -15,6 +15,9 @@
 namespace base {
 class SequencedTaskRunner;
 class SingleThreadTaskRunner;
+
+template <typename T>
+class DeleteHelper;
 }
 
 namespace IPC {

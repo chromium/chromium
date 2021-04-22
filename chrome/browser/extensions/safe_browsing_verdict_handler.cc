@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/safe_browsing_verdict_handler.h"
 
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/extensions/blocklist_extension_prefs.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "extensions/browser/blocklist_state.h"

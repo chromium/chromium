@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WORKER_HOST_DEDICATED_WORKER_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_WORKER_HOST_DEDICATED_WORKER_SERVICE_IMPL_H_
 
+#include "base/containers/flat_map.h"
 #include "base/observer_list.h"
 #include "content/public/browser/dedicated_worker_service.h"
 #include "url/gurl.h"

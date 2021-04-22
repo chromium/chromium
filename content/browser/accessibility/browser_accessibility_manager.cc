@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/common/render_accessibility.mojom.h"

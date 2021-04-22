@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/audio_fifo.h"
 #include "media/base/audio_parameters.h"
 #include "third_party/blink/public/web/web_local_frame.h"

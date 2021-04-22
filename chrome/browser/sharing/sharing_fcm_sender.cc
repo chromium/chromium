@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
+#include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sharing_constants.h"

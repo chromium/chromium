@@ -15,6 +15,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/player/android/jni_headers/PlayerCompositorDelegateImpl_jni.h"

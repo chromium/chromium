@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/features.h"

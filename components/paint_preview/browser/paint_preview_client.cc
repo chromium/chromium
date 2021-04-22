@@ -15,6 +15,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "components/paint_preview/common/capture_result.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-forward.h"
