@@ -661,7 +661,7 @@ vulnerability in the relevant feature, not Safe Browsing itself.
 ## What is the security story for Service Workers?
 
 See our dedicated [Service Worker Security
-FAQ](https://chromium.googlesource.com/chromium/src/+/master/docs/security/service-worker-security-faq.md).
+FAQ](https://chromium.googlesource.com/chromium/src/+/main/docs/security/service-worker-security-faq.md).
 
 <a name="TOC-What-about-URL-spoofs-using-Internationalized-Domain-Names-IDN-"></a>
 ## What about URL spoofs using Internationalized Domain Names (IDN)?
@@ -672,7 +672,7 @@ IDN display issues we are still working on.
 
 *    Please see [this document](https://docs.google.com/document/d/1_xJz3J9kkAPwk3pma6K3X12SyPTyyaJDSCxTfF8Y5sU)
 for a list of known issues and how we handle them.
-*    [This document](https://www.chromium.org/developers/design-documents/idn-in-google-chrome)
+*    [This document](https://chromium.googlesource.com/chromium/src/+/main/docs/idn.md)
 describes Chrome's IDN policy in detail.
 
 <a name="TOC-Chrome-silently-syncs-extensions-across-devices.-Is-this-a-security-vulnerability-"></a>
