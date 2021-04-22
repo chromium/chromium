@@ -220,16 +220,16 @@ message CompletionCandidate {
 // Protobuf version of SuggestionMode in
 // chromeos/services/ime/public/mojom/input_engine.mojom
 enum SuggestionMode {
-  COMPLETION = 1;
-  PREDICTION = 2;
+  SUGGESTION_MODE_COMPLETION = 1;
+  SUGGESTION_MODE_PREDICTION = 2;
 }
 
 // Protobuf version of SuggestionType in
 // chromeos/services/ime/public/mojom/input_engine.mojom
 enum SuggestionType {
-  ASSISTIVE_PERSONAL_INFO = 1;
-  ASSISTIVE_EMOJI = 2;
-  MULTI_WORD = 3;
+  SUGGESTION_TYPE_ASSISTIVE_PERSONAL_INFO = 1;
+  SUGGESTION_TYPE_ASSISTIVE_EMOJI = 2;
+  SUGGESTION_TYPE_MULTI_WORD = 3;
 }
 
 // Protobuf version of SuggestionsRequest in
