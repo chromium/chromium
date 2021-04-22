@@ -32,7 +32,7 @@ class AXTreeServer final {
   void Run(BuildTree build_tree, const base::FilePath& filters_path);
 
   // Generates property filters.
-  std::vector<ui::AXPropertyFilter> GetPropertyFilters(
+  base::Optional<std::vector<ui::AXPropertyFilter>> GetPropertyFilters(
       const base::FilePath& filters_path);
 
 #if defined(OS_WIN)
