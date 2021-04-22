@@ -970,5 +970,11 @@ class WPTExpectationsUpdater(object):
 
     @memoized
     def _get_try_bots(self):
-        return self.host.builders.filter_builders(
-            is_try=True, exclude_specifiers={'android'})
+        builder_set = frozenset(
+            self.host.builders.filter_builders(is_try=True,
+                                               exclude_specifiers={'android'}))
+        # Omit the CQ bots if we are only using data from blink trybots.
+        if self.options.rebaseline_blink_try_bots_only:
+            builder_set -= frozenset(
+                self.host.builders.all_cq_try_builder_names())
+        return list(builder_set)
