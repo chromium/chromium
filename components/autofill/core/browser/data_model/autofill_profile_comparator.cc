@@ -35,9 +35,9 @@ namespace {
 // The values corresponding to those types are visible in the settings.
 ServerFieldTypeSet GetUserVisibleTypes() {
   static const ServerFieldTypeSet user_visibe_type = {
-      NAME_FULL,         NAME_HONORIFIC_PREFIX,  ADDRESS_HOME_STREET_ADDRESS,
-      ADDRESS_HOME_CITY, ADDRESS_HOME_ZIP,       ADDRESS_HOME_COUNTRY,
-      EMAIL_ADDRESS,     PHONE_HOME_WHOLE_NUMBER};
+      NAME_FULL,         NAME_HONORIFIC_PREFIX,   ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_CITY, ADDRESS_HOME_ZIP,        ADDRESS_HOME_COUNTRY,
+      EMAIL_ADDRESS,     PHONE_HOME_WHOLE_NUMBER, COMPANY_NAME};
   return user_visibe_type;
 }
 
@@ -253,6 +253,29 @@ AutofillProfileComparator::GetSettingsVisibleProfileDifference(
     }
   }
   return difference;
+}
+
+base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
+AutofillProfileComparator::GetSettingsVisibleProfileDifferenceMap(
+    const AutofillProfile& first_profile,
+    const AutofillProfile& second_profile,
+    const std::string& app_locale) {
+  std::vector<
+      std::pair<ServerFieldType, std::pair<std::u16string, std::u16string>>>
+      result;
+
+  result.reserve(GetUserVisibleTypes().size());
+
+  for (auto& diff :
+       AutofillProfileComparator::GetSettingsVisibleProfileDifference(
+           first_profile, second_profile, app_locale)) {
+    result.push_back(
+        {diff.type,
+         {std::move(diff.first_value), std::move(diff.second_value)}});
+  }
+  return base::flat_map<ServerFieldType,
+                        std::pair<std::u16string, std::u16string>>(
+      std::move(result));
 }
 
 bool AutofillProfileComparator::Compare(base::StringPiece16 text1,
