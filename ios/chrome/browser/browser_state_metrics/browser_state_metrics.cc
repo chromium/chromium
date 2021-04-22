@@ -34,10 +34,3 @@ void LogNumberOfBrowserStates(ios::ChromeBrowserStateManager* manager) {
   CountBrowserStateInformation(manager, &counts);
   profile_metrics::LogProfileMetricsCounts(counts);
 }
-
-profile_metrics::BrowserProfileType GetBrowserStateType(
-    web::BrowserState* browser_state) {
-  return browser_state->IsOffTheRecord()
-             ? profile_metrics::BrowserProfileType::kIncognito
-             : profile_metrics::BrowserProfileType::kRegular;
-}

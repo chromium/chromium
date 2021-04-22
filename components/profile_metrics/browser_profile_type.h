@@ -6,7 +6,6 @@
 #define COMPONENTS_PROFILE_METRICS_BROWSER_PROFILE_TYPE_H_
 
 #include "base/supports_user_data.h"
-#include "build/build_config.h"
 
 namespace profile_metrics {
 
@@ -24,13 +23,17 @@ enum class BrowserProfileType {
   kMaxValue = kEphemeralGuest,
 };
 
-// TODO(https://crbug.com/1169142): Expand to iOS.
-#if !defined(OS_IOS)
+// Returns the BrowserProfileType value associated with |browser_context|.
+// Note that the browser profile type should be set for all BrowserContext (or
+// equivalent) objects during creation or initialization of the object. This
+// function will result in a crash if |SetBrowserProfileType| is not called
+// before to associate the browser profile type.
 BrowserProfileType GetBrowserProfileType(
     const base::SupportsUserData* browser_context);
+
+// Associates |type| as the BrowserProfileType value for |browser_context|.
 void SetBrowserProfileType(base::SupportsUserData* browser_context,
                            BrowserProfileType type);
-#endif
 }  // namespace profile_metrics
 
 #endif  // COMPONENTS_PROFILE_METRICS_BROWSER_PROFILE_TYPE_H_

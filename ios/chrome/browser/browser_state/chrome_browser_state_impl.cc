@@ -17,6 +17,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/proxy_config/ios/proxy_service_factory.h"
 #include "components/proxy_config/pref_proxy_config_tracker.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -82,6 +83,9 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
       pref_registry_(new user_prefs::PrefRegistrySyncable),
       io_data_(new ChromeBrowserStateImplIOData::Handle(this)) {
   otr_state_path_ = state_path_.Append(FILE_PATH_LITERAL("OTR"));
+
+  profile_metrics::SetBrowserProfileType(
+      this, profile_metrics::BrowserProfileType::kRegular);
 
   // It would be nice to use PathService for fetching this directory, but
   // the cache directory depends on the browser state stash directory, which

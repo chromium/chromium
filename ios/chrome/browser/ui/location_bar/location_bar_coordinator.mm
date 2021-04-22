@@ -398,8 +398,9 @@
     return;
   }
 
-  base::UmaHistogramEnumeration("iOS.LocationBar.ShareButton.PerProfileType",
-                                GetBrowserStateType(self.browserState));
+  base::UmaHistogramEnumeration(
+      "iOS.LocationBar.ShareButton.PerProfileType",
+      profile_metrics::GetBrowserProfileType(self.browserState));
 }
 
 - (void)locationBarVisitCopyLinkTapped {

@@ -279,6 +279,7 @@ source_set("web_view_sources") {
     "//components/password_manager/ios:password_manager_feature",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/profile_metrics",
     "//components/proxy_config",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/security_state/ios",

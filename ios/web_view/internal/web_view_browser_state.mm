@@ -23,6 +23,7 @@
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_filter.h"
 #include "components/prefs/pref_service_factory.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/sync_prefs.h"
@@ -81,6 +82,10 @@ WebViewBrowserState::WebViewBrowserState(
          (off_the_record && recording_browser_state &&
           !recording_browser_state->IsOffTheRecord()));
   recording_browser_state_ = recording_browser_state;
+
+  profile_metrics::SetBrowserProfileType(
+      this, off_the_record ? profile_metrics::BrowserProfileType::kIncognito
+                           : profile_metrics::BrowserProfileType::kRegular);
 
   // IO access is required to setup the browser state. In Chrome, this is
   // already allowed during thread startup. However, startup time of

@@ -4,6 +4,7 @@
 
 static_library("profile_metrics") {
   sources = [
+    "browser_profile_type.cc",
     "browser_profile_type.h",
     "counts.cc",
     "counts.h",
@@ -11,11 +12,18 @@ static_library("profile_metrics") {
     "state.h",
   ]
 
-  if (!is_ios) {
-    sources += [ "browser_profile_type.cc" ]
-  }
-
   deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "browser_profile_type_unittest.cc" ]
+
+  deps = [
+    ":profile_metrics",
+    "//base",
+    "//testing/gtest",
+  ]
 }
 
 if (is_android) {

@@ -10,7 +10,6 @@
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
@@ -152,7 +151,7 @@ void WebStateListMetricsBrowserAgent::DidFinishNavigation(
       item ? item->GetVirtualURL() : GURL::EmptyGURL(),
       navigation_context->IsSameDocument(),
       web_state->GetBrowserState()->IsOffTheRecord(),
-      GetBrowserStateType(web_state->GetBrowserState()));
+      profile_metrics::GetBrowserProfileType(web_state->GetBrowserState()));
 }
 
 void WebStateListMetricsBrowserAgent::PageLoaded(

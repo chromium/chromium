@@ -27,6 +27,7 @@
 #include "components/history/ios/browser/history_database_helper.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/undo/bookmark_undo_service.h"
@@ -99,6 +100,9 @@ TestChromeBrowserState::TestChromeBrowserState(
   // off-the-record TestChromeBrowserState must be established before this
   // method can be called.
   DCHECK(original_browser_state_);
+
+  profile_metrics::SetBrowserProfileType(
+      this, profile_metrics::BrowserProfileType::kIncognito);
 }
 
 TestChromeBrowserState::TestChromeBrowserState(
@@ -122,6 +126,9 @@ TestChromeBrowserState::TestChromeBrowserState(
   for (const auto& pair : refcounted_testing_factories) {
     pair.first->SetTestingFactory(this, std::move(pair.second));
   }
+
+  profile_metrics::SetBrowserProfileType(
+      this, profile_metrics::BrowserProfileType::kRegular);
 
   Init();
 }
