@@ -12,6 +12,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "third_party/blink/public/common/features.h"
@@ -60,6 +61,21 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<TestBrowserContext> browser_context_;
 };
 
+// Finish a prerendering navigation that was already started with
+// CreateAndStartHost().
+void CommitPrerenderNavigation(PrerenderHost& host) {
+  // Normally we could use EmbeddedTestServer to provide a response, but these
+  // tests use RenderViewHostImplTestHarness so the load goes through a
+  // TestNavigationURLLoader which we don't have access to in order to
+  // complete. Use NavigationSimulator to finish the navigation.
+  FrameTreeNode* ftn = FrameTreeNode::From(host.GetPrerenderedMainFrameHost());
+  std::unique_ptr<NavigationSimulator> sim =
+      NavigationSimulatorImpl::CreateFromPendingInFrame(ftn);
+  sim->ReadyToCommit();
+  sim->Commit();
+  EXPECT_TRUE(host.is_ready_for_activation());
+}
+
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHost) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
@@ -76,10 +92,7 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost) {
   ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
-
-  // Artificially finish navigation to make the prerender host ready to activate
-  // the prerendered page.
-  prerender_host->DidFinishNavigation(nullptr);
+  CommitPrerenderNavigation(*prerender_host);
 
   EXPECT_EQ(registry->ReserveHostToActivate(
                 kPrerenderingUrl, *render_frame_host->frame_tree_node()),
@@ -115,10 +128,7 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
   EXPECT_EQ(frame_tree_node_id1, frame_tree_node_id2);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl),
             prerender_host1);
-
-  // Artificially finish navigation to make the prerender host ready to activate
-  // the prerendered page.
-  prerender_host1->DidFinishNavigation(nullptr);
+  CommitPrerenderNavigation(*prerender_host1);
 
   EXPECT_EQ(registry->ReserveHostToActivate(
                 kPrerenderingUrl, *render_frame_host->frame_tree_node()),
@@ -151,11 +161,8 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForDifferentURLs) {
       registry->FindHostByUrlForTesting(kPrerenderingUrl1);
   PrerenderHost* prerender_host2 =
       registry->FindHostByUrlForTesting(kPrerenderingUrl2);
-
-  // Artificially finish navigation to make the prerender hosts ready to
-  // activate the prerendered pages.
-  prerender_host1->DidFinishNavigation(nullptr);
-  prerender_host2->DidFinishNavigation(nullptr);
+  CommitPrerenderNavigation(*prerender_host1);
+  CommitPrerenderNavigation(*prerender_host2);
 
   // Select the first host.
   EXPECT_EQ(registry->ReserveHostToActivate(

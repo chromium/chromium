@@ -277,11 +277,12 @@ void PrerenderHost::StartPrerendering() {
   page_holder_->GetNavigationController().LoadURLWithParams(load_url_params);
 }
 
-// TODO(https://crbug.com/1199695): Does not work with MPArch as we get
-// navigation events for all FrameTrees.
 void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
-  // The prerendered contents are considered ready for activation when it
-  // reaches DidFinishNavigation.
+  if (navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_)
+    return;
+
+  // The prerendered contents are considered ready for activation when the
+  // main frame navigation reaches DidFinishNavigation.
   DCHECK(!is_ready_for_activation_);
   is_ready_for_activation_ = true;
 
