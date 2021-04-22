@@ -64,6 +64,7 @@ include_rules = [
   "+components/version_info",
   "+components/visitedlink/renderer",
   "+components/webapps/renderer",
+  "+components/web_cache/public",
   "+components/web_cache/renderer",
   "+content/public/child",
   "+content/public/renderer",

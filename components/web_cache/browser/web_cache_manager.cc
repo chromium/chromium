@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/web_cache/public/features.h"
 
 using base::Time;
 using base::TimeDelta;
@@ -326,6 +327,8 @@ void WebCacheManager::ClearRendererCache(
 }
 
 void WebCacheManager::ReviseAllocationStrategy() {
+  DCHECK(!base::FeatureList::IsEnabled(kTrimWebCacheOnMemoryPressureOnly));
+
   DCHECK(stats_.size() <=
       active_renderers_.size() + inactive_renderers_.size());
 
@@ -377,6 +380,9 @@ void WebCacheManager::ReviseAllocationStrategy() {
 }
 
 void WebCacheManager::ReviseAllocationStrategyLater() {
+  if (base::FeatureList::IsEnabled(kTrimWebCacheOnMemoryPressureOnly))
+    return;
+
   // Ask to be called back in a few milliseconds to actually recompute our
   // allocation.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(

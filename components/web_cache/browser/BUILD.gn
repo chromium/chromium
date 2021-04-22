@@ -13,6 +13,7 @@ static_library("browser") {
   deps = [
     "//base",
     "//components/prefs",
+    "//components/web_cache/public:features",
     "//components/web_cache/public/mojom",
     "//content/public/browser",
     "//content/public/common",
