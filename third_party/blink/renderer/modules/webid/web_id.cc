@@ -166,7 +166,8 @@ ScriptPromise WebId::provide(ScriptState* script_state, String id_token) {
   return promise;
 }
 
-ScriptPromise WebId::logout(ScriptState* script_state) {
+ScriptPromise WebId::logout(ScriptState* script_state,
+                            const Vector<String>& logout_endpoints) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   resolver->Resolve();
