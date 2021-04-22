@@ -1619,6 +1619,9 @@ extern const char kBackgroundTaskComponentUpdateDescription[];
 extern const char kBentoOfflineName[];
 extern const char kBentoOfflineDescription[];
 
+extern const char kBookmarkBottomSheetName[];
+extern const char kBookmarkBottomSheetDescription[];
+
 extern const char kCCTIncognitoName[];
 extern const char kCCTIncognitoDescription[];
 

@@ -26,6 +26,7 @@ extern const base::Feature kAssistantIntentTranslateInfo;
 extern const base::Feature kAppLaunchpad;
 extern const base::Feature kBackgroundTaskComponentUpdate;
 extern const base::Feature kBentoOffline;
+extern const base::Feature kBookmarkBottomSheet;
 extern const base::Feature kCloseTabSuggestions;
 extern const base::Feature kCriticalPersistedTabData;
 extern const base::Feature kCastDeviceFilter;

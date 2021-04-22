@@ -468,6 +468,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "bookmark-bottom-sheet",
+    "owners": [ "xingliu" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "bypass-app-banner-engagement-checks",
     "owners": [ "dmurph" ],
     "expiry_milestone": 95

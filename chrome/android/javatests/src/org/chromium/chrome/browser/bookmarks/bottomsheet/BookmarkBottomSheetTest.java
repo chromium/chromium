@@ -58,7 +58,7 @@ import java.util.ArrayList;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+@Features.EnableFeatures({ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, ChromeFeatureList.READ_LATER})
 public class BookmarkBottomSheetTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
