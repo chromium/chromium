@@ -2326,23 +2326,13 @@ void ChildProcessSecurityPolicyImpl::AddNonIsolatedOriginIfNeeded(
     return;
   }
 
-  auto it = origin_isolation_non_isolated_by_browsing_instance_.find(
-      browsing_instance_id);
-  if (it == origin_isolation_non_isolated_by_browsing_instance_.end()) {
-    // We need to create the entry for this BrowsingInstance. Note this
-    // guarantees |origin| isn't already in the list.
-    origin_isolation_non_isolated_by_browsing_instance_.emplace(
-        browsing_instance_id, std::vector<url::Origin>());
-    it = origin_isolation_non_isolated_by_browsing_instance_.find(
-        browsing_instance_id);
-  } else if (base::Contains(it->second, origin)) {
-    // |origin| is already in the list, no need to add it. This can happen if
-    // (i) during the global walk we encounter a page with multiple instances of
-    // |origin| or (ii) if we encounter it again in the FrameTree walk (after
-    // the session history walk).
+  std::vector<url::Origin>& non_isolated_origins =
+      origin_isolation_non_isolated_by_browsing_instance_[browsing_instance_id];
+  if (base::Contains(non_isolated_origins, origin)) {
+    // `origin` is already marked as non-isolated; nothing to do.
     return;
   }
-  it->second.push_back(origin);
+  non_isolated_origins.push_back(origin);
 }
 
 void ChildProcessSecurityPolicyImpl::
