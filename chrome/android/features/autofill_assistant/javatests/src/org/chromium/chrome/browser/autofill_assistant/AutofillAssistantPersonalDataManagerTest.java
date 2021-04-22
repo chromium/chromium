@@ -23,6 +23,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -47,6 +48,7 @@ import android.support.test.InstrumentationRegistry;
 import android.widget.RadioButton;
 
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -55,7 +57,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -830,7 +831,6 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1163659")
     public void testCreateShippingAddressAndCreditCard() {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add((ActionProto) ActionProto.newBuilder()
@@ -853,7 +853,11 @@ public class AutofillAssistantPersonalDataManagerTest {
         startAutofillAssistant(mTestRule.getActivity(), testService);
 
         waitUntilViewMatchesCondition(withText("Shipping address"), isCompletelyDisplayed());
-        onView(allOf(withText("Add address"), isDisplayed())).perform(click());
+        waitUntilViewMatchesCondition(
+                allOf(withText("Add address"), withEffectiveVisibility(Visibility.VISIBLE)),
+                isEnabled());
+        onView(allOf(withText("Add address"), withEffectiveVisibility(Visibility.VISIBLE)))
+                .perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
         onView(withContentDescription("Name*")).perform(scrollTo(), typeText("John Doe"));
@@ -871,6 +875,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         while (!hasAddress() && tryNumber++ < maxRetries) {
             // If the new address is not yet present, we first need to close the popup dialog.
             Espresso.pressBack();
+            waitUntilViewMatchesCondition(withText("Cancel"), isEnabled());
             onView(withText("Cancel")).perform(scrollTo(), click());
             addCreditCardAndSelectAddress();
         }
@@ -880,7 +885,7 @@ public class AutofillAssistantPersonalDataManagerTest {
     private void addCreditCardAndSelectAddress() {
         waitUntilViewMatchesCondition(
                 allOf(withId(R.id.section_title_add_button_label), withText("Add card")),
-                isCompletelyDisplayed());
+                allOf(isCompletelyDisplayed(), isEnabled()));
         onView(allOf(withId(R.id.section_title_add_button_label), withText("Add card")))
                 .perform(click());
         waitUntilViewMatchesCondition(
