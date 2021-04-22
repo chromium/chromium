@@ -140,8 +140,21 @@ void V8HTMLConstructor::HtmlConstructor(
   V8SetReturnValue(info, wrapper);
 
   // 11. Perform element.[[SetPrototypeOf]](prototype). Rethrow any exceptions.
-  // Note: I don't think this prototype set *can* throw exceptions.
-  wrapper->SetPrototype(script_state->GetContext(), prototype.As<v8::Object>())
-      .ToChecked();
+  // Note that SetPrototype doesn't actually return the exceptions, it just
+  // returns false or Nothing on exception. See crbug.com/1197894 for an
+  // example.
+  v8::Maybe<bool> maybe_result = wrapper->SetPrototype(
+      script_state->GetContext(), prototype.As<v8::Object>());
+  bool success;
+  if (!maybe_result.To(&success)) {
+    // Exception has already been thrown in this case.
+    return;
+  }
+  if (!success) {
+    // Likely, Reflect.preventExtensions() has been called on the element.
+    exception_state.ThrowTypeError(
+        "Unable to call SetPrototype on this element");
+    return;
+  }
 }
 }  // namespace blink
