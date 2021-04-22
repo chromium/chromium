@@ -86,6 +86,12 @@ class FakeCameraStream : public fuchsia::camera3::testing::Stream_TestBase,
   // fuchsia::camera3::testing::Stream_TestBase override.
   void NotImplemented_(const std::string& name) override;
 
+  void OnBufferCollectionSyncDone(
+      fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
+          token_for_client,
+      fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
+          failed_token);
+
   void OnBufferCollectionError(zx_status_t status);
 
   void OnBufferCollectionAllocated(
@@ -126,8 +132,10 @@ class FakeCameraStream : public fuchsia::camera3::testing::Stream_TestBase,
       fuchsia::camera3::Orientation::UP;
   WatchOrientationCallback watch_orientation_callback_;
 
+  fuchsia::sysmem::BufferCollectionTokenPtr new_buffer_collection_token_;
+
   base::Optional<fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>>
-      new_buffer_collection_token_;
+      new_buffer_collection_token_for_client_;
   WatchBufferCollectionCallback watch_buffer_collection_callback_;
 
   base::Optional<fuchsia::camera3::FrameInfo> next_frame_;

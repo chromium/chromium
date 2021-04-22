@@ -497,8 +497,7 @@ void WebEngineIntegrationCameraTest::RunCameraTest(bool grant_permission) {
   navigation_listener()->RunUntilTitleEquals("ended");
 }
 
-// TODO(crbug.com/1104562): Disabled due to flake.
-TEST_F(WebEngineIntegrationCameraTest, DISABLED_CameraAccess_WithPermission) {
+TEST_F(WebEngineIntegrationCameraTest, CameraAccess_WithPermission) {
   StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   RunCameraTest(/*grant_permission=*/true);
 }
@@ -508,8 +507,7 @@ TEST_F(WebEngineIntegrationCameraTest, CameraAccess_WithoutPermission) {
   RunCameraTest(/*grant_permission=*/false);
 }
 
-// TODO(crbug.com/1104562): Disabled due to flake.
-TEST_F(WebEngineIntegrationCameraTest, DISABLED_CameraNoVideoCaptureProcess) {
+TEST_F(WebEngineIntegrationCameraTest, CameraNoVideoCaptureProcess) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII("disable-features", "MojoVideoCapture");
   StartWebEngine(std::move(command_line));
