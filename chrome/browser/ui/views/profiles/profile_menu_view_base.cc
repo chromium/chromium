@@ -83,6 +83,8 @@ constexpr int kMinimumScrollableContentHeight = 40;
 // the menu items.
 constexpr int kMenuEdgeMargin = 16;
 
+constexpr int kSyncInfoInsidePadding = 12;
+
 gfx::ImageSkia SizeImage(const gfx::ImageSkia& image, int size) {
   return gfx::ImageSkiaOperations::CreateResizedImage(
       image, skia::ImageOperations::RESIZE_BEST, gfx::Size(size, size));
@@ -686,14 +688,12 @@ void ProfileMenuViewBase::SetSyncInfo(const SyncInfo& sync_info,
   const int kDescriptionIconSpacing =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-  constexpr int kInsidePadding = 12;
-
   sync_background_state_ = sync_info.background_state;
 
   sync_info_container_->RemoveAllChildViews(/*delete_children=*/true);
   sync_info_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(kInsidePadding),
-      kInsidePadding));
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      kSyncInfoInsidePadding));
 
   if (description.empty()) {
     sync_info_container_->AddChildView(std::make_unique<SyncButton>(
@@ -1016,6 +1016,7 @@ void ProfileMenuViewBase::OnThemeChanged() {
   switch (sync_background_state_) {
     case SyncInfoContainerBackgroundState::kNoError:
       sync_info_container_->SetBackground(nullptr);
+      // Return early to avoid a visible padded border, set below.
       return;
     case SyncInfoContainerBackgroundState::kPaused:
       bg_color = ui::NativeTheme::kColorId_SyncInfoContainerPaused;
@@ -1030,10 +1031,12 @@ void ProfileMenuViewBase::OnThemeChanged() {
       views::Emphasis::kHigh);
   sync_info_container_->SetBackground(views::CreateRoundedRectBackground(
       native_theme->GetSystemColor(bg_color), radius));
-  sync_info_container_->SetBorder(views::CreateRoundedRectBorder(
-      1, radius,
-      native_theme->GetSystemColor(
-          ui::NativeTheme::kColorId_MenuSeparatorColor)));
+  sync_info_container_->SetBorder(views::CreatePaddedBorder(
+      views::CreateRoundedRectBorder(
+          1, radius,
+          native_theme->GetSystemColor(
+              ui::NativeTheme::kColorId_MenuSeparatorColor)),
+      gfx::Insets(kSyncInfoInsidePadding)));
 }
 
 ax::mojom::Role ProfileMenuViewBase::GetAccessibleWindowRole() {
