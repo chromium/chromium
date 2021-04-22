@@ -1257,40 +1257,6 @@ TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForContainerStarted) {
   ExpectRestarterUmaCount(1);
 }
 
-TEST_F(CrostiniManagerRestartTest, AbortOnSshKeysFetched) {
-  abort_on_ssh_keys_fetched_ = true;
-  // Use termina/penguin names to allow fetch ssh keys.
-  restart_id_ = crostini_manager()->RestartCrostini(
-      ContainerId::GetDefault(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->Run();
-  EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->get_container_ssh_keys_call_count(), 1);
-  ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
-  ExpectRestarterUmaCount(1);
-}
-
-TEST_F(CrostiniManagerRestartTest, TimeoutDuringSshKeysFetched) {
-  fake_concierge_client_->send_get_container_ssh_keys_response_delay(
-      base::TimeDelta::Max());
-  // Use termina/penguin names to allow fetch ssh keys.
-  restart_id_ = crostini_manager()->RestartCrostini(
-      ContainerId::GetDefault(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  task_environment_.FastForwardBy(kLongTime);
-  task_environment_.RunUntilIdle();
-  EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->get_container_ssh_keys_call_count(), 1);
-  ExpectCrostiniRestartResult(CrostiniResult::FETCH_SSH_KEYS_TIMED_OUT);
-  ExpectRestarterUmaCount(1);
-}
-
 TEST_F(CrostiniManagerRestartTest, AbortOnContainerMounted) {
   abort_on_container_mounted_ = true;
 
@@ -1368,31 +1334,6 @@ TEST_F(CrostiniManagerRestartTest, AbortOnMountEventWithError) {
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->get_container_ssh_keys_call_count(), 1);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
-  ExpectRestarterUmaCount(1);
-
-  chromeos::disks::DiskMountManager::Shutdown();
-}
-
-TEST_F(CrostiniManagerRestartTest, TimeoutDuringMountContainer) {
-  disk_mount_manager_mock_ = new chromeos::disks::MockDiskMountManager;
-  chromeos::disks::DiskMountManager::InitializeForTesting(
-      disk_mount_manager_mock_);
-  disk_mount_manager_mock_->SetupDefaultReplies();
-  // EXPECT_CALL(*disk_mount_manager_mock_, MountPath)
-  //     .WillOnce(base::DoNothing::Once());
-
-  // Use termina/penguin names to allow fetch ssh keys.
-  restart_id_ = crostini_manager()->RestartCrostini(
-      ContainerId::GetDefault(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  task_environment_.FastForwardBy(kLongTime);
-  task_environment_.RunUntilIdle();
-  EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->get_container_ssh_keys_call_count(), 1);
-  ExpectCrostiniRestartResult(CrostiniResult::MOUNT_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 
   chromeos::disks::DiskMountManager::Shutdown();
@@ -1526,9 +1467,6 @@ TEST_F(CrostiniManagerRestartTest, MountForTerminaPenguin) {
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->get_container_ssh_keys_call_count(), 1);
-  EXPECT_TRUE(crostini_manager()
-                  ->GetContainerInfo(ContainerId::GetDefault())
-                  ->sshfs_mounted);
   EXPECT_EQ(1, restart_crostini_callback_count_);
   base::FilePath path;
   EXPECT_TRUE(

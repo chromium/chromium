@@ -173,7 +173,6 @@ struct ContainerInfo {
   std::string name;
   std::string username;
   base::FilePath homedir;
-  bool sshfs_mounted = false;
   std::string ipv4_address;
 };
 
