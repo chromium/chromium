@@ -68,7 +68,7 @@ class SystemEngine : public InputEngine {
 
   base::Optional<ImeDecoder::EntryPoints> decoder_entry_points_;
 
-  mojo::ReceiverSet<mojom::InputChannel> decoder_channel_receivers_;
+  mojo::Receiver<mojom::InputChannel> decoder_channel_receiver_;
 
   // Sequence ID for protobuf messages sent from the engine.
   uint64_t current_seq_id_ = 0;

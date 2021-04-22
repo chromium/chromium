@@ -83,7 +83,8 @@ void FakeDecoderEntryPointsForTesting(  // IN-TEST
   g_fake_decoder_entry_points_for_testing = decoder_entry_points;
 }
 
-SystemEngine::SystemEngine(ImeCrosPlatform* platform) : platform_(platform) {
+SystemEngine::SystemEngine(ImeCrosPlatform* platform)
+    : platform_(platform), decoder_channel_receiver_(this) {
   if (g_fake_decoder_entry_points_for_testing) {
     decoder_entry_points_ = g_fake_decoder_entry_points_for_testing;
   } else {
@@ -120,7 +121,7 @@ bool SystemEngine::BindRequest(
             new ClientDelegate(ime_spec, std::move(remote),
                                base::BindRepeating(&SystemEngine::OnReply,
                                                    base::Unretained(this))))) {
-      decoder_channel_receivers_.Add(this, std::move(receiver));
+      decoder_channel_receiver_.Bind(std::move(receiver));
       // TODO(https://crbug.com/837156): Registry connection error handler.
       return true;
     }
