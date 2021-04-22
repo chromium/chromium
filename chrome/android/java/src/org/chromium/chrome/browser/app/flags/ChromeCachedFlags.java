@@ -69,6 +69,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.ANDROID_MANAGED_BY_MENU_ITEM,
                 ChromeFeatureList.ANDROID_PARTNER_CUSTOMIZATION_PHENOTYPE,
                 ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION,
+                ChromeFeatureList.BOOKMARK_BOTTOM_SHEET,
                 ChromeFeatureList.CCT_INCOGNITO,
                 ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY,
                 ChromeFeatureList.CCT_REMOVE_REMOTE_VIEW_IDS,
@@ -87,6 +88,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.PAINT_PREVIEW_DEMO,
                 ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP,
                 ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS,
+                ChromeFeatureList.READ_LATER,
                 ChromeFeatureList.START_SURFACE_ANDROID,
                 ChromeFeatureList.SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT,
                 ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
@@ -96,7 +98,6 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.THEME_REFACTOR_ANDROID,
                 ChromeFeatureList.TOOLBAR_USE_HARDWARE_BITMAP_DRAW,
                 ChromeFeatureList.USE_CHIME_ANDROID_SDK,
-                ChromeFeatureList.READ_LATER,
                 ChromeFeatureList.OFFLINE_MEASUREMENTS_BACKGROUND_TASK);
         // clang-format on
         CachedFeatureFlags.cacheNativeFlags(featuresToCache);

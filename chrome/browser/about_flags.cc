@@ -4627,6 +4627,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadLaterReminderNotificationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(
          reading_list::switches::kReadLaterReminderNotification)},
+
+    {"bookmark-bottom-sheet", flag_descriptions::kBookmarkBottomSheetName,
+     flag_descriptions::kBookmarkBottomSheetDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kBookmarkBottomSheet)},
 #endif
 
     {"tab-groups-auto-create", flag_descriptions::kTabGroupsAutoCreateName,

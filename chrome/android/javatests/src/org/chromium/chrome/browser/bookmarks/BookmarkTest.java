@@ -1031,7 +1031,8 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    @Features.
+    EnableFeatures({ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, ChromeFeatureList.READ_LATER})
     public void testReadingListItemsInSelectionMode() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
@@ -1060,7 +1061,8 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    @Features.
+    EnableFeatures({ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, ChromeFeatureList.READ_LATER})
     public void testReadingListItemMenuItems() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
@@ -1101,7 +1103,8 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    @Features.
+    EnableFeatures({ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, ChromeFeatureList.READ_LATER})
     public void testReadingListDeletion() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
@@ -1124,7 +1127,8 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    @Features.
+    EnableFeatures({ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, ChromeFeatureList.READ_LATER})
     public void testSearchReadingList_Deletion() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
@@ -1154,7 +1158,8 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    @Features.
+    EnableFeatures({ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, ChromeFeatureList.READ_LATER})
     public void testReadingListEmptyView() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
@@ -1176,7 +1181,8 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    @Features.
+    EnableFeatures({ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, ChromeFeatureList.READ_LATER})
     public void testReadingListOpenInCCT() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
@@ -1683,7 +1689,8 @@ public class BookmarkTest {
      */
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    @Features.
+    EnableFeatures({ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, ChromeFeatureList.READ_LATER})
     public void testReadingListFolderShown() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
@@ -1707,9 +1714,33 @@ public class BookmarkTest {
                 BookmarkListEntry.ViewType.FOLDER, getAdapter().getItemViewType(2));
     }
 
+    /**
+     * Verifies the bottom sheet will shown without reading list enabled if
+     * {@link ChromeFeatureList#BOOKMARK_BOTTOM_SHEET} is enabled.
+     */
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    @Features.EnableFeatures({ChromeFeatureList.BOOKMARK_BOTTOM_SHEET})
+    @Features.DisableFeatures({ChromeFeatureList.READ_LATER})
+    public void testBookmarkBottomSheetShownWithoutReadingList() throws Exception {
+        BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
+        openBookmarkManager();
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
+        RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
+        Assert.assertEquals("Wrong number of top level elements.", 1, getAdapter().getItemCount());
+
+        // Reading list should show in the root folder.
+        onView(withText("Reading list")).check(doesNotExist());
+        Assert.assertEquals("The 1st view should be a normal folder.",
+                BookmarkListEntry.ViewType.FOLDER, getAdapter().getItemViewType(0));
+    }
+
+    @Test
+    @SmallTest
+    @Features.
+    EnableFeatures({ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, ChromeFeatureList.READ_LATER})
     public void testReadingListFolderShownOneUnreadPage() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
@@ -1724,7 +1755,8 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    @Features.
+    EnableFeatures({ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, ChromeFeatureList.READ_LATER})
     public void testReadingListFolderShownMultipleUnreadPages() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
@@ -1740,7 +1772,8 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    @Features.
+    EnableFeatures({ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, ChromeFeatureList.READ_LATER})
     public void testAddReadingListItemFromBottomSheet() throws Exception {
         mActivityTestRule.loadUrl(mTestPage);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -1780,7 +1813,8 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    @Features.
+    EnableFeatures({ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, ChromeFeatureList.READ_LATER})
     public void testShowBookmarkManagerReadingListPage() {
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         TestThreadUtils.runOnUiThreadBlocking(

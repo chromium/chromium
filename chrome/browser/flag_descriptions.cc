@@ -2824,6 +2824,10 @@ const char kBentoOfflineName[] =
 const char kBentoOfflineDescription[] =
     "Enables displaying Bento content on the offline page for Android.";
 
+const char kBookmarkBottomSheetName[] = "Enables bookmark bottom sheet";
+const char kBookmarkBottomSheetDescription[] =
+    "Enables showing a bookmark bottom sheet when adding a bookmark.";
+
 const char kCCTIncognitoName[] = "Chrome Custom Tabs Incognito mode";
 const char kCCTIncognitoDescription[] =
     "Enables incognito mode for Chrome Custom Tabs, on Android.";
