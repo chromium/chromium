@@ -150,10 +150,6 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   // view inside the client view.
   set_margins(gfx::Insets());
 
-  // Inset the tab hover cards anchor rect to bring the card closer to the tab.
-  constexpr gfx::Insets kTabHoverCardAnchorInsets(2, 0);
-  set_anchor_view_insets(kTabHoverCardAnchorInsets);
-
   // Set so that when hovering over a tab in a inactive window that window will
   // not become active. Setting this to false creates the need to explicitly
   // hide the hovercard on press, touch, and keyboard events.

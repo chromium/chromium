@@ -49,6 +49,9 @@ class TabSlotView : public views::View {
   void set_animating(bool animating) { animating_ = animating; }
   bool animating() const { return animating_; }
 
+  // views::View:
+  gfx::Rect GetAnchorBoundsInScreen() const override;
+
  private:
   base::Optional<tab_groups::TabGroupId> group_;
 
