@@ -15,7 +15,7 @@ FakeSyncEncryptionHandler::FakeSyncEncryptionHandler() = default;
 
 FakeSyncEncryptionHandler::~FakeSyncEncryptionHandler() = default;
 
-void FakeSyncEncryptionHandler::Init() {}
+void FakeSyncEncryptionHandler::NotifyInitialStateToObservers() {}
 
 bool FakeSyncEncryptionHandler::NeedKeystoreKey() const {
   return keystore_key_.empty();

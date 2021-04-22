@@ -501,7 +501,7 @@ void NigoriSyncBridgeImpl::RemoveObserver(Observer* observer) {
   broadcasting_observer_->RemoveObserver(observer);
 }
 
-void NigoriSyncBridgeImpl::Init() {
+void NigoriSyncBridgeImpl::NotifyInitialStateToObservers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // We need to expose whole bridge state through notifications, because it
   // can be different from default due to restoring from the file or
