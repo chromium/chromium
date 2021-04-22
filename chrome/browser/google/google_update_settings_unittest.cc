@@ -80,6 +80,22 @@ TEST_F(GoogleUpdateTest, IsOrganicFirstRunBrandCodes) {
 #endif
 }
 
+TEST_F(GoogleUpdateTest, IsEnterpriseBrandCodes) {
+  EXPECT_TRUE(google_brand::IsEnterprise("GGRV"));
+  std::string gce_prefix = "GCE";
+  for (char ch = 'A'; ch <= 'Z'; ++ch)
+    EXPECT_TRUE(google_brand::IsEnterprise(gce_prefix + ch));
+  EXPECT_FALSE(google_brand::IsEnterprise("ggrv"));
+  EXPECT_FALSE(google_brand::IsEnterprise("gcea"));
+  EXPECT_FALSE(google_brand::IsEnterprise("GGRA"));
+  EXPECT_FALSE(google_brand::IsEnterprise("AGCE"));
+  EXPECT_FALSE(google_brand::IsEnterprise("GCCE"));
+  EXPECT_FALSE(google_brand::IsEnterprise("CHFO"));
+  EXPECT_FALSE(google_brand::IsEnterprise("CHMA"));
+  EXPECT_FALSE(google_brand::IsEnterprise("EUBA"));
+  EXPECT_FALSE(google_brand::IsEnterprise(""));
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Test for http://crbug.com/383003
 TEST_F(GoogleUpdateTest, ConsentFileIsWorldReadable) {

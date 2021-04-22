@@ -150,6 +150,11 @@ bool IsInternetCafeBrandCode(const std::string& brand) {
   return base::Contains(kBrands, brand);
 }
 
+bool IsEnterprise(const std::string& brand) {
+  return brand == "GGRV" ||
+         base::StartsWith(brand, "GCE", base::CompareCase::SENSITIVE);
+}
+
 // BrandForTesting ------------------------------------------------------------
 
 BrandForTesting::BrandForTesting(const std::string& brand) : brand_(brand) {
