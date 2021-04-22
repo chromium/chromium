@@ -417,7 +417,14 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
   // Web Apps sync is disabled by default.
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions) &&
       web_app::WebAppProvider::Get(profile_)) {
-    if (!disabled_types.Has(syncer::WEB_APPS)) {
+    bool enable_web_apps_sync = !disabled_types.Has(syncer::WEB_APPS);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (base::FeatureList::IsEnabled(features::kLacrosWebApps)) {
+      enable_web_apps_sync = false;
+    }
+#endif
+
+    if (enable_web_apps_sync) {
       controllers.push_back(CreateWebAppsModelTypeController(sync_service));
     }
   }

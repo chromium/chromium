@@ -7,6 +7,7 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
@@ -52,7 +54,12 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
   TwoClientWebAppsBMOSyncTest()
       : SyncTest(TWO_CLIENT),
         test_web_app_provider_creator_(
-            base::BindRepeating(&CreateTestWebAppProvider)) {}
+            base::BindRepeating(&CreateTestWebAppProvider)) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Disable LacrosWebApps, so that Web Apps get synced in the Ash browser.
+    scoped_feature_list_.InitAndDisableFeature(features::kLacrosWebApps);
+#endif
+  }
   ~TwoClientWebAppsBMOSyncTest() override = default;
 
   bool SetupClients() override {
@@ -187,6 +194,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
 
  private:
   TestWebAppProviderCreator test_web_app_provider_creator_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(TwoClientWebAppsBMOSyncTest);
 };

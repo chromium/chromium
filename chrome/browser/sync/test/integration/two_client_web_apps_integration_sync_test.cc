@@ -5,11 +5,14 @@
 #include "base/barrier_closure.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/network_switches.h"
 
@@ -17,7 +20,7 @@ namespace web_app {
 
 namespace {
 
-const std::string kTestCaseFileName =
+const char kTestCaseFileName[] =
     "web_app_integration_browsertest_sync_cases.csv";
 
 // Returns the path of the requested file in the test data directory.
@@ -42,7 +45,12 @@ class TwoClientWebAppsIntegrationSyncTest
       public WebAppIntegrationBrowserTestBase::TestDelegate,
       public testing::WithParamInterface<std::string> {
  public:
-  TwoClientWebAppsIntegrationSyncTest() : SyncTest(TWO_CLIENT), helper_(this) {}
+  TwoClientWebAppsIntegrationSyncTest() : SyncTest(TWO_CLIENT), helper_(this) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Disable LacrosWebApps, so that Web Apps get synced in the Ash browser.
+    scoped_feature_list_.InitAndDisableFeature(features::kLacrosWebApps);
+#endif
+  }
 
   // WebAppIntegrationBrowserTestBase::TestDelegate
   Browser* CreateBrowser(Profile* profile) override {
@@ -117,6 +125,8 @@ class TwoClientWebAppsIntegrationSyncTest
     }
     return true;
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // This test is a part of the web app integration test suite, which is

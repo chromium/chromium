@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -42,8 +43,16 @@ const char kVersion[] = "1.0.0.1";
 // Chrome OS syncs apps as an OS type.
 class SingleClientWebAppsOsSyncTest : public OsSyncTest {
  public:
-  SingleClientWebAppsOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {}
+  SingleClientWebAppsOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Disable LacrosWebApps, so that Web Apps get synced in the Ash browser.
+    scoped_feature_list_.InitAndDisableFeature(features::kLacrosWebApps);
+#endif
+  }
   ~SingleClientWebAppsOsSyncTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsOsSyncTest,
@@ -64,7 +73,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsOsSyncTest,
 
 class SingleClientWebAppsSyncTest : public SyncTest {
  public:
-  SingleClientWebAppsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientWebAppsSyncTest() : SyncTest(SINGLE_CLIENT) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Disable LacrosWebApps, so that Web Apps get synced in the Ash browser.
+    scoped_feature_list_.InitAndDisableFeature(features::kLacrosWebApps);
+#endif
+  }
   ~SingleClientWebAppsSyncTest() override = default;
 
   bool SetupClients() override {
@@ -128,6 +142,9 @@ class SingleClientWebAppsSyncTest : public SyncTest {
             /*non_unique_name=*/"", app_id, entity, kDefaultTime,
             kDefaultTime));
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
