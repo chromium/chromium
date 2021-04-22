@@ -99,16 +99,16 @@ TEST_F(PasswordManagerPasswordBubbleExperimentTest,
             : syncer::SyncService::TransportState::
                   PENDING_DESIRED_CONFIGURATION);
     prefs()->SetBoolean(prefs::kSigninAllowed, test_case.is_signin_allowed);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    EXPECT_FALSE(ShouldShowChromeSignInPasswordPromo(prefs(), sync_service()));
-#else
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     EXPECT_EQ(test_case.result,
               ShouldShowChromeSignInPasswordPromo(prefs(), sync_service()));
+#else
+    EXPECT_FALSE(ShouldShowChromeSignInPasswordPromo(prefs(), sync_service()));
 #endif
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(PasswordManagerPasswordBubbleExperimentTest, ReviveSignInPasswordPromo) {
   // If kEnablePasswordsAccountStorage is enabled, then the password manager
   // bubble never shows Sync promos, so this test doesn't apply.

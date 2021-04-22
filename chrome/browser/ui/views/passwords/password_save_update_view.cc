@@ -26,6 +26,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/storage_partition.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/combobox_model.h"
@@ -406,9 +407,7 @@ void PasswordSaveUpdateView::UpdateUsernameAndPasswordInModel() {
 }
 
 void PasswordSaveUpdateView::ReplaceWithPromo() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED();
-#else
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)  // PasswordSignInPromoView requires DICE
   RemoveAllChildViews(true);
   username_dropdown_ = nullptr;
   password_dropdown_ = nullptr;
@@ -428,7 +427,9 @@ void PasswordSaveUpdateView::ReplaceWithPromo() {
   DialogModelChanged();
 
   SizeToContents();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 void PasswordSaveUpdateView::UpdateBubbleUIElements() {

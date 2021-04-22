@@ -17,6 +17,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -61,9 +62,7 @@ void TurnOffAutoSignin(PrefService* prefs) {
 bool ShouldShowChromeSignInPasswordPromo(
     PrefService* prefs,
     const syncer::SyncService* sync_service) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return false;
-#else
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // If the account-scoped storage for passwords is enabled, then the user
   // doesn't need to enable the full Sync feature to get their account
   // passwords, so suppress the promo in this case.
@@ -97,7 +96,9 @@ bool ShouldShowChromeSignInPasswordPromo(
          prefs->GetInteger(
              password_manager::prefs::kNumberSignInPasswordPromoShown) <
              kThreshold;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 }  // namespace password_bubble_experiment
