@@ -24,7 +24,7 @@ class FilePath;
 //
 // To override the `ProfileManager` instance in tests, call
 //   `TestingBrowserProcess::GetGlobal()->SetProfileManager(
-//                   new FakeProfileManager(user_data_dir));`
+//                   std::make_unique<FakeProfileManager>(user_data_dir));`
 class FakeProfileManager : public ProfileManagerWithoutInit {
  public:
   explicit FakeProfileManager(const base::FilePath& user_data_dir);

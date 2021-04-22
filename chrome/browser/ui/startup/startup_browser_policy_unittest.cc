@@ -147,7 +147,7 @@ TEST_F(StartupBrowserPolicyUnitTest, ForceEphemeralProfiles) {
   RegisterLocalState(local_state.registry());
 
   TestingBrowserProcess::GetGlobal()->SetProfileManager(
-      new FakeProfileManager(temp_dir_.GetPath()));
+      std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile* profile = CreateTestingProfile(profile_manager, "path_1");

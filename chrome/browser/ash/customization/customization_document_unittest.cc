@@ -280,7 +280,7 @@ class ServicesCustomizationDocumentTest : public testing::Test {
     std::unique_ptr<TestingProfile> profile = profile_builder.Build();
     // Make sure we have a Profile Manager.
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
-        new ProfileManagerWithoutInit(profile->GetPath()));
+        std::make_unique<ProfileManagerWithoutInit>(profile->GetPath()));
     return profile;
   }
 

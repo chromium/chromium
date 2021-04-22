@@ -140,7 +140,7 @@ class TabDesktopMediaListTest : public testing::Test {
     // Create a new temporary directory, and store the path.
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
-        new FakeProfileManager(temp_dir_.GetPath()));
+        std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
@@ -175,7 +175,7 @@ class TabDesktopMediaListTest : public testing::Test {
     manually_added_web_contents_.clear();
 
     browser_.reset();
-    TestingBrowserProcess::GetGlobal()->SetProfileManager(NULL);
+    TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
     base::RunLoop().RunUntilIdle();
     rvh_test_enabler_.reset();
   }

@@ -167,8 +167,8 @@ class ProfileManagerTest : public testing::Test {
   }
 
  protected:
-  virtual ProfileManager* CreateProfileManagerForTest() {
-    return new FakeProfileManager(temp_dir_.GetPath());
+  virtual std::unique_ptr<ProfileManager> CreateProfileManagerForTest() {
+    return std::make_unique<FakeProfileManager>(temp_dir_.GetPath());
   }
 
   // Helper function to create a profile at `path` for a profile `manager`.
@@ -697,10 +697,11 @@ class ProfileManagerGuestTest : public ProfileManagerTest,
   }
 
  protected:
-  ProfileManager* CreateProfileManagerForTest() override {
-    unittest_profile_manager_ =
-        new UnittestGuestProfileManager(temp_dir_.GetPath());
-    return unittest_profile_manager_;
+  std::unique_ptr<ProfileManager> CreateProfileManagerForTest() override {
+    auto profile_manager_unique =
+        std::make_unique<UnittestGuestProfileManager>(temp_dir_.GetPath());
+    unittest_profile_manager_ = profile_manager_unique.get();
+    return profile_manager_unique;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

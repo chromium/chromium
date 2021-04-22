@@ -184,7 +184,8 @@ ProfileManager* TestingBrowserProcess::profile_manager() {
   return profile_manager_.get();
 }
 
-void TestingBrowserProcess::SetProfileManager(ProfileManager* profile_manager) {
+void TestingBrowserProcess::SetProfileManager(
+    std::unique_ptr<ProfileManager> profile_manager) {
   // NotificationUIManager can contain references to elements in the current
   // ProfileManager (for example, the MessageCenterSettingsController maintains
   // a pointer to the ProfileInfoCache). So when we change the ProfileManager
@@ -192,7 +193,7 @@ void TestingBrowserProcess::SetProfileManager(ProfileManager* profile_manager) {
   // maintain references to it. See SetLocalState() for a description of a
   // similar situation.
   notification_ui_manager_.reset();
-  profile_manager_.reset(profile_manager);
+  profile_manager_ = std::move(profile_manager);
 }
 
 PrefService* TestingBrowserProcess::local_state() {

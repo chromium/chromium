@@ -223,7 +223,7 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PolicyDisabled) {
 
   // Log user in, start sync.
   TestingBrowserProcess::GetGlobal()->SetProfileManager(
-      new ProfileManagerWithoutInit(temp_dir().GetPath()));
+      std::make_unique<ProfileManagerWithoutInit>(temp_dir().GetPath()));
 
   auto identity_test_env_profile_adaptor =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
@@ -242,7 +242,7 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PolicyDisabled) {
 
   EXPECT_TRUE(registry()->GetInstalledExtension(kStandaloneAppId));
 
-  TestingBrowserProcess::GetGlobal()->SetProfileManager(NULL);
+  TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
 }
 
 // User signed in, sync service started, install app when priority sync is

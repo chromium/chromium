@@ -216,11 +216,11 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
         crx_file::id_util::GenerateId("test_app"));
     ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
 
-    auto profile_manager =
+    auto profile_manager_unique =
         std::make_unique<UnittestProfileManager>(user_data_dir_.GetPath());
-    profile_manager_ = profile_manager.get();
+    profile_manager_ = profile_manager_unique.get();
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
-        profile_manager.release());
+        std::move(profile_manager_unique));
 
     // Needed by note taking helper.
     arc_session_manager_ = arc::CreateTestArcSessionManager(

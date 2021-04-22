@@ -149,7 +149,7 @@ class TestingBrowserProcess : public BrowserProcess {
   // Set the local state for tests. Consumer is responsible for cleaning it up
   // afterwards (using ScopedTestingLocalState, for example).
   void SetLocalState(PrefService* local_state);
-  void SetProfileManager(ProfileManager* profile_manager);
+  void SetProfileManager(std::unique_ptr<ProfileManager> profile_manager);
   void SetSafeBrowsingService(safe_browsing::SafeBrowsingService* sb_service);
   void SetRulesetService(
       std::unique_ptr<subresource_filter::RulesetService> ruleset_service);

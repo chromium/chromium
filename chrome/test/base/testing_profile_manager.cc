@@ -50,7 +50,7 @@ TestingProfileManager::TestingProfileManager(
 TestingProfileManager::~TestingProfileManager() {
   // Destroying this class also destroys the LocalState, so make sure the
   // associated ProfileManager is also destroyed.
-  browser_process_->SetProfileManager(NULL);
+  browser_process_->SetProfileManager(nullptr);
 }
 
 bool TestingProfileManager::SetUp(const base::FilePath& profiles_path) {
@@ -269,8 +269,10 @@ void TestingProfileManager::SetUpInternal(const base::FilePath& profiles_path) {
   user_data_dir_override_ = std::make_unique<base::ScopedPathOverride>(
       chrome::DIR_USER_DATA, profiles_path_);
 
-  profile_manager_ = new FakeProfileManager(profiles_path_);
-  browser_process_->SetProfileManager(profile_manager_);  // Takes ownership.
+  auto profile_manager_unique =
+      std::make_unique<FakeProfileManager>(profiles_path_);
+  profile_manager_ = profile_manager_unique.get();
+  browser_process_->SetProfileManager(std::move(profile_manager_unique));
 
   profile_manager_->GetProfileInfoCache().
       set_disable_avatar_download_for_testing(true);

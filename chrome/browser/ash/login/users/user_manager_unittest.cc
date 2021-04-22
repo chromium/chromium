@@ -95,7 +95,7 @@ class UserManagerTest : public testing::Test {
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
-        new FakeProfileManager(temp_dir_.GetPath()));
+        std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
 
     chromeos::DBusThreadManager::Initialize();
 
@@ -111,7 +111,7 @@ class UserManagerTest : public testing::Test {
 
     // Shut down the DeviceSettingsService.
     DeviceSettingsService::Get()->UnsetSessionManager();
-    TestingBrowserProcess::GetGlobal()->SetProfileManager(NULL);
+    TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
 
     // Unregister the in-memory local settings instance.
     local_state_.reset();

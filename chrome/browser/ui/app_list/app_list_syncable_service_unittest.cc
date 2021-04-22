@@ -234,7 +234,7 @@ class AppListSyncableServiceTest : public AppListTestBase {
     // Make sure we have a Profile Manager.
     DCHECK(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
-        new ProfileManagerWithoutInit(temp_dir_.GetPath()));
+        std::make_unique<ProfileManagerWithoutInit>(temp_dir_.GetPath()));
 
     model_updater_factory_scope_ = std::make_unique<
         app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>(

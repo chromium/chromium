@@ -652,7 +652,7 @@ TEST_F(ProfileInfoCacheTest, CreateSupervisedTestingProfile) {
   // Supervised profiles have a custom theme, which needs to be deleted on the
   // FILE thread. Reset the profile manager now so everything is deleted while
   // we still have a FILE thread.
-  TestingBrowserProcess::GetGlobal()->SetProfileManager(NULL);
+  TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
 }
 #endif
 

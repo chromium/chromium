@@ -78,8 +78,11 @@ class DiceSignedInProfileCreatorTest
       : local_state_(TestingBrowserProcess::GetGlobal()),
         use_guest_profile_(GetParam()) {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    profile_manager_ = new UnittestProfileManager(temp_dir_.GetPath());
-    TestingBrowserProcess::GetGlobal()->SetProfileManager(profile_manager_);
+    auto profile_manager_unique =
+        std::make_unique<UnittestProfileManager>(temp_dir_.GetPath());
+    profile_manager_ = profile_manager_unique.get();
+    TestingBrowserProcess::GetGlobal()->SetProfileManager(
+        std::move(profile_manager_unique));
     profile_ = BuildTestingProfile(base::FilePath(), /*delegate=*/nullptr,
                                    /*tokens_loaded=*/true);
     identity_test_env_profile_adaptor_ =

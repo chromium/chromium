@@ -243,7 +243,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
-        new UnittestProfileManager(temp_dir_.GetPath()));
+        std::make_unique<UnittestProfileManager>(temp_dir_.GetPath()));
 
     profile_ = BuildTestingProfile(base::FilePath(), /*delegate=*/nullptr);
     identity_test_env_profile_adaptor_ =

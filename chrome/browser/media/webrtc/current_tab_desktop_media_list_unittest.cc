@@ -72,7 +72,7 @@ class CurrentTabDesktopMediaListTest : public testing::Test {
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
-        new FakeProfileManager(temp_dir_.GetPath()));
+        std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
