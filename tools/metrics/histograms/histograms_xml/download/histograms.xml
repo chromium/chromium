@@ -181,10 +181,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Download.DownloadSize" units="KB"
-    expires_after="2020-10-04">
+    expires_after="never">
+<!-- expires-never: Used for long term download system health monitoring. -->
+
 <!-- Name completed by histogram_suffixes name="Download.Parallelizable" -->
 
   <owner>dtrainor@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
   <summary>The size of successfully completed downloads.</summary>
 </histogram>
 
