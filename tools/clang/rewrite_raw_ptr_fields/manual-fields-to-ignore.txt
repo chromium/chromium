@@ -36,7 +36,7 @@ content::AudioStreamMonitor::clock_
 remoting::ChromotingHostTest::client1_
 remoting::ChromotingHostTest::client2_
 WTF::ICUConverterWrapper::converter
-WebAuthnCableSecondFactor::model_
+(anonymous namespace)::WebAuthnCableSecondFactor::model_
 
 # Populated manually - always holds a pointer to an OilPan-allocated memory.
 blink::PersistentBase::raw_
