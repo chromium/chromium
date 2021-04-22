@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/record_replay.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -406,18 +407,24 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure closure,
                        TimeDelta delay) override {
-    if (!g_manager_is_alive)
+    recordreplay::Assert("PooledSingleThreadTaskRunner::PostDelayedTask Start");
+    if (!g_manager_is_alive) {
+      recordreplay::Assert("PooledSingleThreadTaskRunner::PostDelayedTask #1");
       return false;
+    }
 
     Task task(from_here, std::move(closure), delay);
 
     if (!outer_->task_tracker_->WillPostTask(&task,
                                              sequence_->shutdown_behavior())) {
+      recordreplay::Assert("PooledSingleThreadTaskRunner::PostDelayedTask #2");
       return false;
     }
 
-    if (task.delayed_run_time.is_null())
+    if (task.delayed_run_time.is_null()) {
+      recordreplay::Assert("PooledSingleThreadTaskRunner::PostDelayedTask #3");
       return GetDelegate()->PostTaskNow(sequence_, std::move(task));
+    }
 
     // Unretained(GetDelegate()) is safe because this TaskRunner and its
     // worker are kept alive as long as there are pending Tasks.
@@ -426,6 +433,8 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
         BindOnce(IgnoreResult(&WorkerThreadDelegate::PostTaskNow),
                  Unretained(GetDelegate()), sequence_),
         this);
+
+    recordreplay::Assert("PooledSingleThreadTaskRunner::PostDelayedTask Done");
     return true;
   }
 
