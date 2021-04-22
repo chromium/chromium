@@ -1974,7 +1974,7 @@ ExtensionFunction::ResponseAction TabsCaptureVisibleTabFunction::Run() {
 
 void TabsCaptureVisibleTabFunction::OnCaptureSuccess(const SkBitmap& bitmap) {
   base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&TabsCaptureVisibleTabFunction::EncodeBitmapOnWorkerThread,
                      this, base::ThreadTaskRunnerHandle::Get(), bitmap));
 }
