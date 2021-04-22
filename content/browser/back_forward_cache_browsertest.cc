@@ -4866,7 +4866,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
 
 // Disabled on Android, since we have problems starting up the websocket test
 // server in the host
-#if defined(OS_ANDROID)
+// TODO(crbug.com/1200285): Fix flakiness on macOS.
+#if defined(OS_ANDROID) || defined(OS_MAC)
 #define MAYBE_WebSocketNotCached DISABLED_WebSocketNotCached
 #else
 #define MAYBE_WebSocketNotCached WebSocketNotCached
