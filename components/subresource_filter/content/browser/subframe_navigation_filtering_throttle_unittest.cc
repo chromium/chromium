@@ -278,7 +278,7 @@ TEST_F(SubframeNavigationFilteringThrottleTest, DelayMetrics) {
   InitializeDocumentSubresourceFilter(GURL("https://example.test"));
   CreateTestSubframeAndInitNavigation(GURL("https://example.test/allowed.html"),
                                       main_rfh());
-  navigation_simulator()->SetTransition(ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
+  navigation_simulator()->SetTransition(ui::PAGE_TRANSITION_AUTO_SUBFRAME);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateStartAndGetResult(navigation_simulator()));
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
@@ -316,7 +316,7 @@ TEST_F(SubframeNavigationFilteringThrottleTest, DelayMetricsDryRun) {
                                       mojom::ActivationLevel::kDryRun);
   CreateTestSubframeAndInitNavigation(GURL("https://example.test/allowed.html"),
                                       main_rfh());
-  navigation_simulator()->SetTransition(ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
+  navigation_simulator()->SetTransition(ui::PAGE_TRANSITION_AUTO_SUBFRAME);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateStartAndGetResult(navigation_simulator()));
   EXPECT_EQ(content::NavigationThrottle::PROCEED,

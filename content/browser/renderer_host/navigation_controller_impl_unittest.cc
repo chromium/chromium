@@ -1354,6 +1354,7 @@ TEST_F(NavigationControllerTest, ResetEntryValuesAfterCommit) {
   const GURL url1("http://foo/1");
   auto navigation =
       NavigationSimulatorImpl::CreateBrowserInitiated(url1, contents());
+  navigation->set_should_replace_current_entry(true);
   navigation->Start();
 
   // Set up some sample values.
@@ -1373,7 +1374,6 @@ TEST_F(NavigationControllerTest, ResetEntryValuesAfterCommit) {
   EXPECT_TRUE(pending_entry->should_clear_history_list());
 
   // Fake a commit response.
-  navigation->set_should_replace_current_entry(true);
   navigation->Commit();
 
   // Certain values that are only used for pending entries get reset after

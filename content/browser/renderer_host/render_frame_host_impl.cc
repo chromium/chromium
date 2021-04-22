@@ -866,7 +866,8 @@ enum class VerifyDidCommitParamsDifference {
   kHTTPStatusCode = 6,
   kShouldUpdateHistory = 7,
   kGesture = 8,
-  kMaxValue = kGesture,
+  kShouldReplaceCurrentEntry = 9,
+  kMaxValue = kShouldReplaceCurrentEntry,
 };
 
 bool ValidateCSPAttribute(const std::string& value) {
@@ -8616,7 +8617,6 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
     const NavigationGesture& gesture,
     const std::vector<GURL>& redirects,
     const GURL& original_request_url,
-    const blink::PageState& page_state,
     bool is_same_document,
     bool is_same_document_history_api_navigation) {
   // This function must only be called when there are no NavigationRequests for
@@ -8686,8 +8686,7 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
       frame_tree_node_, this, is_same_document, url, origin, isolation_info,
       std::move(referrer), transition, should_replace_current_entry, method,
       gesture, is_overriding_user_agent, redirects, original_request_url,
-      page_state, std::move(coep_reporter),
-      std::move(web_bundle_navigation_info),
+      std::move(coep_reporter), std::move(web_bundle_navigation_info),
       std::move(subresource_web_bundle_navigation_info), http_status_code);
 }
 
@@ -9147,8 +9146,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     navigation_request = CreateNavigationRequestForCommit(
         params->url, params->origin, params->referrer.Clone(),
         params->transition, params->should_replace_current_entry,
-        params->gesture, redirects, params->url, params->page_state,
-        is_same_document_navigation,
+        params->gesture, redirects, params->url, is_same_document_navigation,
         same_document_params &&
             same_document_params->is_history_api_navigation);
   }
@@ -9331,6 +9329,8 @@ void RenderFrameHostImpl::DidCommitNewDocument(
 void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
     NavigationRequest* navigation_request) {
   is_error_page_ = navigation_request->DidEncounterError();
+
+  last_base_url_ = navigation_request->common_params().base_url_for_data_url;
 
   cross_origin_opener_policy_ =
       navigation_request->coop_status().current_coop();
@@ -10056,6 +10056,111 @@ int CalculateHTTPStatusCode(NavigationRequest* request,
   return request_response_code;
 }
 
+bool CalculateShouldReplaceCurrentEntry(
+    NavigationRequest* request,
+    const mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params,
+    FrameTreeNode* node,
+    const GURL& last_committed_url,
+    bool previous_commit_is_loaded_from_load_data_with_base_url,
+    const GURL& last_base_url) {
+  // We want to predict the value of DidCommitProvisionalLoadParams'
+  // should_replace_current_entry. We use the value from CommonNavigationParams
+  // to start off. This is what the browser sent the renderer at commit time,
+  // but the actual result that came back from the renderer after commit might
+  // be because of various decisions made by the renderer, which are considered
+  // below.
+  bool result = request->common_params().should_replace_current_entry;
+
+  // -- Prepare the values needed for prediction.
+
+  // For URLs loaded with base URL, use the base URL instead of the last commit
+  // URL when doing comparisons.
+  GURL previous_url = previous_commit_is_loaded_from_load_data_with_base_url
+                          ? last_base_url
+                          : last_committed_url;
+  const bool is_restore =
+      NavigationTypeUtils::IsRestore(request->common_params().navigation_type);
+  const bool is_history =
+      NavigationTypeUtils::IsHistory(request->common_params().navigation_type);
+  const bool is_reload =
+      NavigationTypeUtils::IsReload(request->common_params().navigation_type);
+  const bool has_valid_page_state =
+      (request->commit_params().page_state.IsValid());
+  const bool is_error_page = (request->GetNetErrorCode() != net::OK);
+
+  // Predict if the renderer classified the navigation as a "back/forward"
+  // navigation (WebFrameLoadType::kBackForward).
+  bool will_be_classified_as_back_forward_navigation = false;
+  if (is_error_page) {
+    // For error pages, whenever the navigation has a valid PageState, it will
+    // be considered as a back/forward navigation. This includes history
+    // navigations and restores. See RenderFrameImpl's CommitFailedNavigation().
+    will_be_classified_as_back_forward_navigation = has_valid_page_state;
+  } else {
+    // For normal navigations, RenderFrameImpl's NavigationTypeToLoadType()
+    // will classify a navigation as kBackForward if it's a history navigation,
+    // or if it's a restore navigation with valid PageState.
+    will_be_classified_as_back_forward_navigation =
+        is_history || (is_restore && has_valid_page_state);
+  }
+
+  // -- Now we have all the information we need to determine the final value of
+  // should_replace_current_entry.
+  if (same_document_params) {
+    // If this is a history API navigation (pushState, replaceState), the
+    // NavigationRequest will be constructed at commit time, so the value from
+    // CommonNavigationParams must be correct.
+    if (same_document_params->is_history_api_navigation) {
+      return result;
+    }
+    // DocumentLoader::UpdateForSameDocumentNavigation() sets the "replace" bit
+    // to true for anything that's not WebFrameLoadType::kStandard.
+    // This includes navigations classified as kBackForward and
+    // kReplaceCurrentItem:
+    // - We know if it's classified as kBackForward through
+    // |will_be_classified_as_back_forward_navigation|
+    // - Same-URL navigations will be converted into kReplaceCurrentItem in
+    // DocumentLoader::CommitSameDocumentNavigationInternal().
+    result |= (will_be_classified_as_back_forward_navigation ||
+               previous_url == request->GetURL());
+  } else {
+    if (is_error_page) {
+      // For error page commits: reloads, history, and same-url navigations will
+      // result in replacement if the navigation doesn't have a valid PageState.
+      // See RenderFrameImpl::CommitFailedNavigation().
+      result |=
+          !has_valid_page_state &&
+          (is_reload || is_history || last_committed_url == request->GetURL());
+    }
+
+    // Simulate FrameLoader::DetermineFrameLoadType()'s handling of navigations
+    // after the subframe's initial empty document.
+    if (!will_be_classified_as_back_forward_navigation && !is_reload) {
+      // Non-back-forward/reload navigations on a subframe's initial empty
+      // document will result in replacement.
+      result |= (!node->IsMainFrame() && !node->has_committed_real_load());
+    }
+  }
+
+  // Simulate FrameLoader::DetermineFrameLoadType()'s handling of navigations on
+  // a main frame when the history length is 0. If the navigation is not the
+  // to an empty URL on a newly opened window, it will be turned into a standard
+  // non-replacement commit.
+  if (node->IsMainFrame() &&
+      request->commit_params().current_history_list_length == 0 &&
+      (!request->GetURL().is_empty() || !node->opener())) {
+    result = false;
+  }
+
+  // Note that we won't simulate FrameLoader::DetermineFrameLoadType()'s
+  // handling of same-URL navigations here as it's not needed: only standard
+  // commits (which excludes back/forward navigations and replacements) will be
+  // converted to reloads, and the reloads will have
+  // should_replace_current_entry == false, same as standard commits that don't
+  // get converted.
+  return result;
+}
+
 bool ShouldVerify(const std::string& param) {
 #if DCHECK_IS_ON()
   return true;
@@ -10092,6 +10197,7 @@ void RenderFrameHostImpl::
   // - http_status_code
   // - should_update_history
   // - gesture
+  // - should_replace_current_entry
   // TODO(crbug.com/1131832): Verify more params.
   // We can know if we're going to be in an error page after this navigation
   // if the net error code is not net::OK, or if we're doing a same-document
@@ -10139,6 +10245,12 @@ void RenderFrameHostImpl::
   const bool renderer_gesture =
       (params.gesture == NavigationGesture::NavigationGestureUser);
 
+  const bool browser_should_replace_current_entry =
+      CalculateShouldReplaceCurrentEntry(
+          request, same_document_params.Clone(), frame_tree_node_,
+          last_committed_url_, is_loaded_from_load_data_with_base_url_,
+          last_base_url_);
+
   if ((!ShouldVerify("intended_as_new_entry") ||
        request->commit_params().intended_as_new_entry ==
            params.intended_as_new_entry) &&
@@ -10152,7 +10264,10 @@ void RenderFrameHostImpl::
        browser_http_status_code == params.http_status_code) &&
       (!ShouldVerify("should_update_history") ||
        browser_should_update_history == params.should_update_history) &&
-      (!ShouldVerify("gesture") || browser_gesture == renderer_gesture)) {
+      (!ShouldVerify("gesture") || browser_gesture == renderer_gesture) &&
+      (!ShouldVerify("should_replace_current_entry") ||
+       browser_should_replace_current_entry ==
+           params.should_replace_current_entry)) {
     return;
   }
 
@@ -10212,6 +10327,11 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "browser_gesture", browser_gesture);
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_gesture",
                         renderer_gesture);
+
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "browser_replace",
+                        browser_should_replace_current_entry);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_replace",
+                        params.should_replace_current_entry);
 
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_same_document",
                         is_same_document_navigation);
@@ -10296,6 +10416,8 @@ void RenderFrameHostImpl::
   DCHECK_EQ(browser_http_status_code, params.http_status_code);
   DCHECK_EQ(browser_should_update_history, params.should_update_history);
   DCHECK_EQ(browser_gesture, renderer_gesture);
+  DCHECK_EQ(browser_should_replace_current_entry,
+            params.should_replace_current_entry);
 
   // Log histograms to trigger Chrometto slow reports, allowing us to see traces
   // to analyze what happened in these navigations.
@@ -10331,6 +10453,11 @@ void RenderFrameHostImpl::
   if (browser_gesture != renderer_gesture) {
     LogVerifyDidCommitParamsDifference(
         VerifyDidCommitParamsDifference::kGesture);
+  }
+  if (browser_should_replace_current_entry !=
+      params.should_replace_current_entry) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kShouldReplaceCurrentEntry);
   }
 
   base::debug::DumpWithoutCrashing();

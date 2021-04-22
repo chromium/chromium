@@ -26,6 +26,11 @@ class NavigationTypeUtils {
     return value == mojom::NavigationType::HISTORY_SAME_DOCUMENT ||
            value == mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
   }
+
+  static bool IsRestore(mojom::NavigationType value) {
+    return value == mojom::NavigationType::RESTORE ||
+           value == mojom::NavigationType::RESTORE_WITH_POST;
+  }
 };
 
 }  // namespace content

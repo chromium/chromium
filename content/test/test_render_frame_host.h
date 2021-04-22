@@ -263,7 +263,8 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       bool did_create_new_entry,
       const GURL& url,
       ui::PageTransition transition,
-      int response_code);
+      int response_code,
+      bool is_same_document);
 
   mojom::DidCommitProvisionalLoadInterfaceParamsPtr
   BuildDidCommitInterfaceParams(bool is_same_document);

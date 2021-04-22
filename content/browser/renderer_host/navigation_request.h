@@ -228,7 +228,6 @@ class CONTENT_EXPORT NavigationRequest
       bool is_overriding_user_agent,
       const std::vector<GURL>& redirects,
       const GURL& original_url,
-      const blink::PageState& page_state,
       std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
       std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
       std::unique_ptr<SubresourceWebBundleNavigationInfo>

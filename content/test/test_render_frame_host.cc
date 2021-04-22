@@ -258,7 +258,7 @@ void TestRenderFrameHost::SendNavigateWithParameters(
            GetLastCommittedURL().ReplaceComponents(replacements));
 
   auto params = BuildDidCommitParams(did_create_new_entry, url, transition,
-                                     response_code);
+                                     response_code, was_within_same_document);
   if (!was_within_same_document)
     params->embedding_token = base::UnguessableToken::Create();
 
@@ -513,14 +513,24 @@ mojom::DidCommitProvisionalLoadParamsPtr
 TestRenderFrameHost::BuildDidCommitParams(bool did_create_new_entry,
                                           const GURL& url,
                                           ui::PageTransition transition,
-                                          int response_code) {
+                                          int response_code,
+                                          bool is_same_document) {
   auto params = mojom::DidCommitProvisionalLoadParams::New();
   params->url = url;
   params->referrer = blink::mojom::Referrer::New();
   params->transition = transition;
   params->should_update_history = true;
   params->did_create_new_entry = did_create_new_entry;
+  // See CalculateShouldReplaceCurrentEntry() in RenderFrameHostImpl on why we
+  // calculate "should_replace_current_entry" in this way.
   params->should_replace_current_entry = false;
+  if (is_same_document) {
+    params->should_replace_current_entry |= (GetLastCommittedURL() == url);
+  } else {
+    params->should_replace_current_entry |=
+        (!frame_tree_node()->IsMainFrame() &&
+         !frame_tree_node()->has_committed_real_load());
+  }
   params->gesture = NavigationGestureUser;
   params->contents_mime_type = "text/html";
   params->method = "GET";

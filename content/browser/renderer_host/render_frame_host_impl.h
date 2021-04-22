@@ -2559,7 +2559,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const NavigationGesture& gesture,
       const std::vector<GURL>& redirects,
       const GURL& original_request_url,
-      const blink::PageState& page_state,
       bool is_same_document,
       bool is_same_document_history_api_navigation);
 
@@ -2938,6 +2937,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //
   // TODO(https://crbug.com/888079): Remove the above.
   url::Origin last_committed_origin_;
+
+  // The base URL of the last committed navigation.
+  GURL last_base_url_;
 
   // The policy to apply to private network requests issued by the last
   // committed document. Set to a default value until a document commits for the

@@ -1021,7 +1021,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
     bool is_overriding_user_agent,
     const std::vector<GURL>& redirects,
     const GURL& original_url,
-    const blink::PageState& page_state,
     std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
     std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
     std::unique_ptr<SubresourceWebBundleNavigationInfo>
@@ -1051,6 +1050,13 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
           std::string() /* href_translate */,
           false /* is_history_navigation_in_new_child_frame */,
           base::TimeTicks::Now() /* input_start */);
+  // Note that some params are set to default values (e.g. page_state set to
+  // the default blink::PageState()) even if the DidCommit message that came
+  // from the renderer contained relevant info that can be used to fill the
+  // params, because setting those values don't match with the pattern used
+  // by navigations that went through the browser (e.g. page_state is only
+  // set in CommitNavigationParams of history navigations) or these values are
+  // not used by the browser after commit.
   mojom::CommitNavigationParamsPtr commit_params =
       mojom::CommitNavigationParams::New(
           origin, network::mojom::WebSandboxFlags(), is_overriding_user_agent,
@@ -1058,7 +1064,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
           std::vector<net::RedirectInfo>(),
           std::string() /* redirect_response */, original_url,
           method /* original_method */, false /* can_load_local_resources */,
-          page_state, 0 /* nav_entry_id*/,
+          blink::PageState(), 0 /* nav_entry_id*/,
           base::flat_map<std::string, bool>() /* subframe_unique_names */,
           false /* intended_as_new_entry */,
           -1 /* pending_history_list_offset */,

@@ -1003,6 +1003,8 @@ void NavigationSimulatorImpl::BrowserInitiatedStartAndWaitBeforeUnload() {
       NavigationController::LoadURLParams load_url_params(navigation_url_);
       load_url_params.referrer = Referrer(*referrer_);
       load_url_params.transition_type = transition_;
+      load_url_params.should_replace_current_entry =
+          should_replace_current_entry_;
       if (initial_method_ == "POST")
         load_url_params.load_type = NavigationController::LOAD_TYPE_HTTP_POST;
 
@@ -1197,6 +1199,7 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
           : mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->has_user_gesture = has_user_gesture_;
   common_params->should_check_main_world_csp = should_check_main_world_csp_;
+  common_params->should_replace_current_entry = should_replace_current_entry_;
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
       navigation_client_remote;
@@ -1331,7 +1334,23 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   }
   params->history_list_was_cleared = history_list_was_cleared_;
   params->did_create_new_entry = DidCreateNewEntry();
+
+  const bool is_history_navigation = (session_history_offset_ != 0);
+  RenderFrameHostImpl* current_rfh = frame_tree_node_->current_frame_host();
+
+  // See CalculateShouldReplaceCurrentEntry() in RenderFrameHostImpl on why we
+  // calculate "should_replace_current_entry" in this way.
   params->should_replace_current_entry = should_replace_current_entry_;
+  if (same_document) {
+    params->should_replace_current_entry |=
+        (is_history_navigation ||
+         current_rfh->GetLastCommittedURL() == navigation_url_);
+  } else {
+    params->should_replace_current_entry |=
+        (!frame_tree_node_->IsMainFrame() &&
+         !frame_tree_node_->has_committed_real_load());
+  }
+
   params->navigation_token = request_
                                  ? request_->commit_params().navigation_token
                                  : base::UnguessableToken::Create();
@@ -1340,8 +1359,6 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   params->intended_as_new_entry =
       request_ ? request_->commit_params().intended_as_new_entry : false;
   params->method = request_ ? request_->common_params().method : "GET";
-
-  RenderFrameHostImpl* current_rfh = frame_tree_node_->current_frame_host();
 
   if (failed_navigation) {
     // Note: Error pages must commit in a unique origin. So it is left unset.
