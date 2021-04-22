@@ -91,7 +91,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       return vector_icons::kFileDownloadIcon;
     case RequestType::kNotifications:
       return vector_icons::kNotificationsIcon;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
     case RequestType::kProtectedMediaIdentifier:
       // This icon is provided by ChromePermissionsClient::GetOverrideIconId.
       NOTREACHED();
@@ -144,7 +144,7 @@ RequestType ContentSettingsTypeToRequestType(
       return RequestType::kMidiSysex;
     case ContentSettingsType::NOTIFICATIONS:
       return RequestType::kNotifications;
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
       return RequestType::kProtectedMediaIdentifier;
 #endif
@@ -217,7 +217,7 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
 #endif
     case permissions::RequestType::kNotifications:
       return "notifications";
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
     case permissions::RequestType::kProtectedMediaIdentifier:
       return "protected_media_identifier";
 #endif

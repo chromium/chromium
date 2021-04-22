@@ -211,7 +211,8 @@ static_assert(base::size(kPolicyIndicatorTypeStringMapping) ==
 //    4. Enterprise policy.
 //    5. Extensions.
 //    6. Activated for ads filtering (for Ads ContentSettingsType only).
-//    7. DRM disabled (for CrOS's Protected Content ContentSettingsType only).
+//    7. DRM disabled (for CrOS and Windows Protected Content
+//       ContentSettingsType only).
 //    8. User-set per-origin setting.
 //    9. Embargo.
 //   10. User-set patterns.

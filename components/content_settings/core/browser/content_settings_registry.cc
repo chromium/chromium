@@ -80,14 +80,27 @@ std::set<ContentSetting> ValidSettings(ContentSetting setting1,
 ContentSetting GetInitialDefaultContentSettingForProtectedMediaIdentifier() {
 // On Android, the default value is ALLOW or ASK depending on whether per-origin
 // provisioning is used (https://crbug.com/854737 and https://crbug.com/904883).
-// On ChromeOS the default value is always ASK.
+// On ChromeOS the default value is always ASK. On Windows it is ALLOW.
 #if defined(OS_ANDROID)
   return media::MediaDrmBridge::IsPerOriginProvisioningSupported()
              ? CONTENT_SETTING_ALLOW
              : CONTENT_SETTING_ASK;
+#elif defined(OS_WIN)
+  return CONTENT_SETTING_ALLOW;
 #else
   return CONTENT_SETTING_ASK;
-#endif  // defined(OS_ANDROID)
+#endif
+}
+
+std::set<ContentSetting> GetValidSettingsForProtectedMediaIdentifier() {
+// On Windows, only support ALLOW and BLOCK. On Android and Chrome OS, ASK is
+// also supported.
+#if defined(OS_WIN)
+  return ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK);
+#else
+  return ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
+                       CONTENT_SETTING_ASK);
+#endif
 }
 
 }  // namespace
@@ -277,11 +290,11 @@ void ContentSettingsRegistry::Init() {
   Register(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
            "protected-media-identifier", protected_media_identifier_setting,
            WebsiteSettingsInfo::UNSYNCABLE, AllowlistedSchemes(),
-           ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
-                         CONTENT_SETTING_ASK),
+           GetValidSettingsForProtectedMediaIdentifier(),
            WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::PLATFORM_ANDROID |
-               WebsiteSettingsRegistry::PLATFORM_CHROMEOS,
+               WebsiteSettingsRegistry::PLATFORM_CHROMEOS |
+               WebsiteSettingsRegistry::PLATFORM_WINDOWS,
            protected_media_identifier_setting == CONTENT_SETTING_ALLOW
                ? ContentSettingsInfo::INHERIT_IN_INCOGNITO
                : ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,

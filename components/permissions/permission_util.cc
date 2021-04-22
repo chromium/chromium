@@ -104,7 +104,7 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     *out = PermissionType::AUDIO_CAPTURE;
   } else if (type == ContentSettingsType::BACKGROUND_SYNC) {
     *out = PermissionType::BACKGROUND_SYNC;
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OW_WIN)
   } else if (type == ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER) {
     *out = PermissionType::PROTECTED_MEDIA_IDENTIFIER;
 #endif
@@ -160,7 +160,7 @@ bool PermissionUtil::IsPermission(ContentSettingsType type) {
     case ContentSettingsType::MEDIASTREAM_CAMERA:
     case ContentSettingsType::MEDIASTREAM_MIC:
     case ContentSettingsType::BACKGROUND_SYNC:
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OW_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
 #endif
     case ContentSettingsType::SENSORS:

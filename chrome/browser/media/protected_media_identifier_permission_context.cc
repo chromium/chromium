@@ -37,8 +37,8 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/user_prefs/user_prefs.h"
 #include "ui/views/widget/widget.h"
-#elif !defined(OS_ANDROID)
-#error This file currently only supports Chrome OS and Android.
+#elif !defined(OS_ANDROID) && !defined(OS_WIN)
+#error This file currently only supports Chrome OS, Android and Windows.
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -129,8 +129,8 @@ ProtectedMediaIdentifierPermissionContext::GetPermissionStatusInternal(
 
   // For automated testing of protected content - having a prompt that
   // requires user intervention is problematic. If the domain has been
-  // whitelisted as safe - suppress the request and allow.
-  if (content_setting == CONTENT_SETTING_ASK &&
+  // allowlisted as safe - suppress the request and allow.
+  if (content_setting != CONTENT_SETTING_ALLOW &&
       IsOriginAllowed(requesting_origin)) {
     content_setting = CONTENT_SETTING_ALLOW;
   }
@@ -175,7 +175,7 @@ void ProtectedMediaIdentifierPermissionContext::UpdateTabContext(
 bool ProtectedMediaIdentifierPermissionContext::IsRestrictedToSecureOrigins()
     const {
   // EME is not supported on insecure origins, see https://goo.gl/Ks5zf7
-  // Note that origins whitelisted by --unsafely-treat-insecure-origin-as-secure
+  // Note that origins allowlisted by --unsafely-treat-insecure-origin-as-secure
   // flag will be treated as "secure" so they will not be affected.
   return true;
 }
@@ -184,15 +184,16 @@ bool ProtectedMediaIdentifierPermissionContext::IsRestrictedToSecureOrigins()
 // across platforms.
 bool ProtectedMediaIdentifierPermissionContext::
     IsProtectedMediaIdentifierEnabled() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  // Platform verification is not allowed in incognito or guest mode.
+  // Identifier is not allowed in incognito or guest mode.
   if (profile->IsOffTheRecord() || profile->IsGuestSession()) {
     DVLOG(1) << "Protected media identifier disabled in incognito or guest "
                 "mode.";
     return false;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(chromeos::switches::kSystemDevMode) &&
       !command_line->HasSwitch(chromeos::switches::kAllowRAInDevMode)) {
@@ -205,13 +206,17 @@ bool ProtectedMediaIdentifierPermissionContext::
   if (!ash::CrosSettings::Get()->GetBoolean(
           chromeos::kAttestationForContentProtectionEnabled,
           &enabled_for_device) ||
-      !enabled_for_device ||
-      !profile->GetPrefs()->GetBoolean(prefs::kEnableDRM)) {
+      !enabled_for_device) {
     DVLOG(1) << "Protected media identifier disabled by the user or by device "
                 "policy.";
     return false;
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (!profile->GetPrefs()->GetBoolean(prefs::kEnableDRM))
+    return false;
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
 
   return true;
 }

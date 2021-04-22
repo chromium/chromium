@@ -156,7 +156,7 @@ base::span<const PermissionsUIInfo> GetContentSettingsUIInfo() {
      IDS_AUTOMATIC_DOWNLOADS_TAB_LABEL},
     {ContentSettingsType::MIDI_SYSEX, IDS_PAGE_INFO_TYPE_MIDI_SYSEX},
     {ContentSettingsType::BACKGROUND_SYNC, IDS_PAGE_INFO_TYPE_BACKGROUND_SYNC},
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
     {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
      IDS_PAGE_INFO_TYPE_PROTECTED_MEDIA_IDENTIFIER},
 #endif
@@ -686,7 +686,7 @@ const ui::ImageModel PageInfoUI::GetPermissionIcon(
     case ContentSettingsType::AUTOMATIC_DOWNLOADS:
       icon = &vector_icons::kFileDownloadIcon;
       break;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
       icon = &vector_icons::kProtectedContentIcon;
       break;

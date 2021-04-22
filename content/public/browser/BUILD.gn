@@ -493,7 +493,7 @@ source_set("browser_sources") {
     "//content/browser",
   ]
 
-  if (is_chromeos_ash || is_android || is_chromecast || is_fuchsia) {
+  if (is_chromeos_ash || is_android || is_win || is_chromecast || is_fuchsia) {
     defines = [ "ENABLE_PROTECTED_MEDIA_IDENTIFIER_PERMISSION" ]
   }
 

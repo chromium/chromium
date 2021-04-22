@@ -41,7 +41,7 @@ enum class RequestType {
   kNfcDevice,
 #endif
   kNotifications,
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
   kProtectedMediaIdentifier,
 #endif
 #if !defined(OS_ANDROID)

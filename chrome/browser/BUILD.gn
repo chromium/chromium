@@ -5341,7 +5341,9 @@ static_library("browser") {
       "upgrade_detector/upgrade_detector_impl.cc",
       "upgrade_detector/upgrade_detector_impl.h",
     ]
-  } else {  # is_android || is_chromeos_ash
+  }
+
+  if (is_android || is_chromeos_ash || is_win) {
     sources += [
       "media/protected_media_identifier_permission_context.cc",
       "media/protected_media_identifier_permission_context.h",

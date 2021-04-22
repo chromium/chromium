@@ -91,8 +91,8 @@ const char kUseCras[] = "use-cras";
 #endif  // defined(USE_CRAS)
 
 // For automated testing of protected content, this switch allows specific
-// domains (e.g. example.com) to skip asking the user for permission to share
-// the protected media identifier. In this context, domain does not include the
+// domains (e.g. example.com) to always allow the permission to share the
+// protected media identifier. In this context, domain does not include the
 // port number. User's content settings will not be affected by enabling this
 // switch.
 // Reference: http://crbug.com/718608

@@ -8,6 +8,7 @@
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
@@ -416,8 +417,8 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
   EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kPreference), source);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, content_setting);
 
-// ChromeOS - DRM disabled.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// ChromeOS and Windows - DRM disabled.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
   profile.GetPrefs()->SetBoolean(prefs::kEnableDRM, false);
   // Note this is not testing |kContentType|, because this setting is only valid
   // for protected content.
@@ -425,7 +426,11 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
       &profile, map, origin, ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
       &source, extension_registry, &display_name);
   EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kDrmDisabled), source);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(CONTENT_SETTING_BLOCK, content_setting);
+#elif defined(OS_WIN)
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, content_setting);
+#endif
 #endif
 
   // Extension.
