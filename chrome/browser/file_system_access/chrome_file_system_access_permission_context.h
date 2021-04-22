@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
+#include "base/timer/timer.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/object_permission_context_base.h"
@@ -107,7 +108,7 @@ class ChromeFileSystemAccessPermissionContext
     kUpdatePersistedPermission,
   };
 
-  // Returns a snapshot of the currently granted permissions.
+  // Returns a snapshot of the currently granted active permissions.
   struct Grants {
     Grants();
     ~Grants();
@@ -137,6 +138,7 @@ class ChromeFileSystemAccessPermissionContext
 
   void TriggerTimersForTesting();
 
+  void UpdatePersistedPermissionsForTesting();
   bool HasPersistedPermissionForTesting(const url::Origin& origin,
                                         const base::FilePath& path,
                                         HandleType handle_type,
@@ -144,8 +146,24 @@ class ChromeFileSystemAccessPermissionContext
 
   HostContentSettingsMap* content_settings() { return content_settings_.get(); }
 
+  // This long after the handle has last been used, revoke the persisted
+  // permission.
+  static constexpr base::TimeDelta
+      kPersistentPermissionExpirationTimeoutNonPWA =
+          base::TimeDelta::FromHours(5);
+  static constexpr base::TimeDelta kPersistentPermissionExpirationTimeoutPWA =
+      base::TimeDelta::FromDays(30);
+
  protected:
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::RepeatingTimer&
+  periodic_sweep_persisted_permissions_timer_for_testing() {
+    return periodic_sweep_persisted_permissions_timer_;
+  }
+
+  // Overridden in tests.
+  virtual bool OriginIsInstalledPWA(const url::Origin& origin);
 
  private:
   class PermissionGrantImpl;
@@ -177,7 +195,23 @@ class ChromeFileSystemAccessPermissionContext
 
   // Checks if any tabs are open for |origin|, and if not revokes all active
   // permissions for that origin.
-  void MaybeCleanupPermissions(const url::Origin& origin);
+  void MaybeCleanupActivePermissions(const url::Origin& origin);
+
+  // Sweeps HostContentSettingsMap, revoking expired persisted permissions and
+  // auto-extending persisted permissions with active grants.
+  void UpdatePersistedPermissions();
+  // Only sweep persisted permissions for the given |origin|.
+  void UpdatePersistedPermissionsForOrigin(const url::Origin& origin);
+
+  // Renew the persisted permission if it has active permissions, or
+  // revoke the persisted permission if it has expired.
+  void MaybeRenewOrRevokePersistedPermission(const url::Origin& origin,
+                                             base::Value grant,
+                                             bool is_installed_pwa);
+  // Returns true if the permission was revoked.
+  bool RevokePersistedPermissionIfExpired(const url::Origin& origin,
+                                          const base::Value& grant,
+                                          bool is_installed_pwa);
 
   base::Optional<base::Value> GetPersistedPermission(
       const url::Origin& origin,
@@ -186,8 +220,8 @@ class ChromeFileSystemAccessPermissionContext
                               const base::FilePath& path,
                               HandleType handle_type,
                               GrantType grant_type);
-  bool PersistentPermissionIsExpired(const url::Origin& origin,
-                                     const base::Time& last_used);
+  bool PersistentPermissionIsExpired(const base::Time& last_used,
+                                     bool is_installed_pwa);
 
   base::WeakPtr<ChromeFileSystemAccessPermissionContext> GetWeakPtr();
 
@@ -205,6 +239,7 @@ class ChromeFileSystemAccessPermissionContext
   size_t max_ids_per_origin_ = 32u;
 
   const base::Clock* const clock_;
+  base::RepeatingTimer periodic_sweep_persisted_permissions_timer_;
 
   base::WeakPtrFactory<ChromeFileSystemAccessPermissionContext> weak_factory_{
       this};
