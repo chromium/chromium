@@ -452,6 +452,39 @@ void NetworkConnectionHandlerImpl::NetworkPropertiesUpdated(
     CheckPendingRequest(network->path());
 }
 
+void NetworkConnectionHandlerImpl::NetworkIdentifierTransitioned(
+    const std::string& old_service_path,
+    const std::string& new_service_path,
+    const std::string& old_guid,
+    const std::string& new_guid) {
+  auto it = pending_requests_.find(old_service_path);
+
+  // If the service path transition does not apply to any networks which have
+  // pending network requests, there is nothing to update.
+  if (it == pending_requests_.end())
+    return;
+
+  NET_LOG(EVENT) << "ConnectRequest cache updated service path: "
+                 << old_service_path << " => " << new_service_path;
+
+  const NetworkState* network =
+      network_state_handler_->GetNetworkState(new_service_path);
+  std::string profile_path;
+  if (!network || network->profile_path().empty())
+    profile_path = GetDefaultUserProfilePath(network);
+
+  // Remove the old map entry from the previous service path and add a new
+  // mapping with the updated service path.
+  ConnectRequest request = std::move(it->second);
+  request.service_path = new_service_path;
+  request.profile_path = profile_path;
+  pending_requests_.erase(it);
+  pending_requests_.emplace(new_service_path, std::move(request));
+
+  network_state_handler_->SetNetworkConnectRequested(
+      new_service_path, /*connect_requested=*/true);
+}
+
 bool NetworkConnectionHandlerImpl::HasConnectingNetwork(
     const std::string& service_path) {
   return pending_requests_.count(service_path) != 0;

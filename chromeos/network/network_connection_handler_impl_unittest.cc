@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/network/cellular_connection_handler.h"
 #include "chromeos/network/cellular_inhibitor.h"
+#include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/managed_network_configuration_handler_impl.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_configuration_handler.h"
@@ -28,6 +29,7 @@
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/network/prohibited_technologies_handler.h"
+#include "chromeos/network/stub_cellular_networks_provider.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "components/onc/onc_constants.h"
@@ -186,6 +188,11 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     cellular_esim_profile_handler_.reset(new TestCellularESimProfileHandler());
     cellular_esim_profile_handler_->Init(helper_.network_state_handler(),
                                          cellular_inhibitor_.get());
+
+    stub_cellular_networks_provider_ =
+        std::make_unique<StubCellularNetworksProvider>();
+    stub_cellular_networks_provider_->Init(
+        helper_.network_state_handler(), cellular_esim_profile_handler_.get());
 
     cellular_connection_handler_.reset(new CellularConnectionHandler());
     cellular_connection_handler_->Init(helper_.network_state_handler(),
@@ -386,21 +393,15 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
 
   void AddNonConnectablePSimService() {
     AddCellularDevice();
-
-    // Add idle, non-connectable pSIM network.
-    helper_.service_test()->AddService(
-        kTestCellularServicePath, kTestCellularGuid, kTestCellularName,
-        shill::kTypeCellular, shill::kStateIdle, /*visible=*/true);
-    base::RunLoop().RunUntilIdle();
-
-    // Add an ICCID and for that service.
-    helper_.service_test()->SetServiceProperty(kTestCellularServicePath,
-                                               shill::kIccidProperty,
-                                               base::Value(kTestIccid));
-    base::RunLoop().RunUntilIdle();
+    AddCellularService(/*has_eid=*/false);
   }
 
-  void AddCellularServiceWithESimProfile() {
+  void AddNonConnectableESimService() {
+    AddCellularDevice();
+    AddCellularService(/*has_eid=*/true);
+  }
+
+  void AddCellularServiceWithESimProfile(bool is_stub = false) {
     AddCellularDevice();
 
     // Add EUICC which will hold the profile.
@@ -408,16 +409,18 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
                                             kTestEid, /*is_active=*/true,
                                             /*physical_slot=*/0);
 
-    // Add eSIM profile; internally, this causes an associated Shill service to
-    // be created.
+    HermesEuiccClient::TestInterface::AddCarrierProfileBehavior behavior =
+        is_stub ? HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+                      kAddProfileWithoutService
+                : HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+                      kAddProfileWithService;
+
     helper_.hermes_euicc_test()->AddCarrierProfile(
         dbus::ObjectPath(kTestCellularServicePath),
         dbus::ObjectPath(kTestEuiccPath), kTestIccid, kTestCellularName,
         "service_provider", "activation_code", kTestCellularServicePath,
         hermes::profile::State::kInactive,
-        hermes::profile::ProfileClass::kOperational,
-        HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
-            kAddProfileWithService);
+        hermes::profile::ProfileClass::kOperational, behavior);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -460,6 +463,24 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void AddCellularService(bool has_eid) {
+    // Add idle, non-connectable network.
+    helper_.service_test()->AddService(
+        kTestCellularServicePath, kTestCellularGuid, kTestCellularName,
+        shill::kTypeCellular, shill::kStateIdle, /*visible=*/true);
+    base::RunLoop().RunUntilIdle();
+
+    if (has_eid) {
+      helper_.service_test()->SetServiceProperty(
+          kTestCellularServicePath, shill::kEidProperty, base::Value(kTestEid));
+    }
+
+    helper_.service_test()->SetServiceProperty(kTestCellularServicePath,
+                                               shill::kIccidProperty,
+                                               base::Value(kTestIccid));
+    base::RunLoop().RunUntilIdle();
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NetworkStateTestHelper helper_{false /* use_default_devices_and_services */};
@@ -471,6 +492,8 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
   std::unique_ptr<TestCellularESimProfileHandler>
       cellular_esim_profile_handler_;
+  std::unique_ptr<StubCellularNetworksProvider>
+      stub_cellular_networks_provider_;
   std::unique_ptr<CellularConnectionHandler> cellular_connection_handler_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
   crypto::ScopedTestNSSDB test_nssdb_;
@@ -984,6 +1007,33 @@ TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_EnableProfile) {
   Connect(kTestCellularServicePath);
   SetCellularServiceConnectable();
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
+}
+
+TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_StubToShillBacked) {
+  AddCellularServiceWithESimProfile(/*is_stub=*/true);
+
+  // Connect to a stub path. Internally, this should wait until a connectable
+  // Shill-backed service is created.
+  Connect(GenerateStubCellularServicePath(kTestIccid));
+
+  // Now, create a non-stub service and make it connectable.
+  AddNonConnectableESimService();
+  SetCellularServiceConnectable();
+
+  EXPECT_EQ(kSuccessResult, GetResultAndReset());
+
+  // A connection was requested to the stub service path, not the actual one.
+  EXPECT_TRUE(network_connection_observer()->GetRequested(
+      GenerateStubCellularServicePath(kTestIccid)));
+  EXPECT_FALSE(
+      network_connection_observer()->GetRequested(kTestCellularServicePath));
+
+  // However, the connection success was part of the actual service path, not
+  // the stub one.
+  EXPECT_EQ(std::string(), network_connection_observer()->GetResult(
+                               GenerateStubCellularServicePath(kTestIccid)));
+  EXPECT_EQ(kSuccessResult,
+            network_connection_observer()->GetResult(kTestCellularServicePath));
 }
 
 TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_EnableProfile_Fails) {
