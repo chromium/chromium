@@ -25,7 +25,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_uint8_array.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bidirectional_stream.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_quic_transport_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
@@ -186,8 +186,8 @@ class ScopedQuicTransport : public mojom::blink::QuicTransportConnector {
         base::BindRepeating(&ScopedQuicTransport::BindConnector,
                             weak_ptr_factory_.GetWeakPtr()));
     quic_transport_ = QuicTransport::Create(
-        scope.GetScriptState(), "quic-transport://example.com/",
-        MakeGarbageCollected<QuicTransportOptions>(), ASSERT_NO_EXCEPTION);
+        scope.GetScriptState(), "https://example.com/",
+        MakeGarbageCollected<WebTransportOptions>(), ASSERT_NO_EXCEPTION);
 
     test::RunPendingTasks();
   }

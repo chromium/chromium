@@ -27,7 +27,7 @@ class MODULES_EXPORT WebTransport final
   using PassKey = base::PassKey<WebTransport>;
   static WebTransport* Create(ScriptState*,
                               const String& url,
-                              QuicTransportOptions*,
+                              WebTransportOptions*,
                               ExceptionState&);
 
   WebTransport(PassKey, QuicTransport*);

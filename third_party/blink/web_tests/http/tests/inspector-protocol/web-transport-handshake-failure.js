@@ -1,7 +1,7 @@
 (async function(testRunner) {
   const {session, dp} = await testRunner.startBlank(
-      `Check the console message printed on a QuicTransport handshake failure.`);
-  const url = 'quic-transport://localhost';
+      `Check the console message printed on a WebTransport handshake failure.`);
+  const url = 'https://localhost';
 
   await dp.Log.enable();
   testRunner.log('Log Enabled');
@@ -17,6 +17,6 @@
     testRunner.completeTest();
   });
 
-  session.evaluate(`new QuicTransport('${url}');`);
-  testRunner.log('Instantiate QuicTransport.');
+  session.evaluate(`new WebTransport('${url}');`);
+  testRunner.log('Instantiate WebTransport.');
 })

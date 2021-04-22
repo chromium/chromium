@@ -17,9 +17,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_quic_transport_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_dtls_fingerprint.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_close_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -360,7 +360,7 @@ class QuicTransport::BidirectionalStreamVendor final
 
 QuicTransport* QuicTransport::Create(ScriptState* script_state,
                                      const String& url,
-                                     QuicTransportOptions* options,
+                                     WebTransportOptions* options,
                                      ExceptionState& exception_state) {
   DVLOG(1) << "QuicTransport::Create() url=" << url;
   DCHECK(options);
@@ -645,11 +645,10 @@ void QuicTransport::Trace(Visitor* visitor) const {
   visitor->Trace(received_bidirectional_streams_);
   visitor->Trace(received_bidirectional_streams_underlying_source_);
   ExecutionContextLifecycleObserver::Trace(visitor);
-  ScriptWrappable::Trace(visitor);
 }
 
 void QuicTransport::Init(const String& url,
-                         const QuicTransportOptions& options,
+                         const WebTransportOptions& options,
                          ExceptionState& exception_state) {
   DVLOG(1) << "QuicTransport::Init() url=" << url << " this=" << this;
   if (!url_.IsValid()) {
@@ -658,20 +657,11 @@ void QuicTransport::Init(const String& url,
     return;
   }
 
-  if (!url_.ProtocolIs("quic-transport") && !url_.ProtocolIs("https")) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kSyntaxError,
-        "The URL's scheme must be 'quic-transport' or 'https'. '" +
-            url_.Protocol() + "' is not allowed.");
-    return;
-  }
-
-  if (url_.ProtocolIs("quic-transport") &&
-      !RuntimeEnabledFeatures::QuicTransportEnabled()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kSyntaxError,
-        "You need to enable the \"QuicTransport\" "
-        "feature to use WebTransport over QUIC");
+  if (!url_.ProtocolIs("https")) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      "The URL's scheme must be 'https'. '" +
+                                          url_.Protocol() +
+                                          "' is not allowed.");
     return;
   }
 

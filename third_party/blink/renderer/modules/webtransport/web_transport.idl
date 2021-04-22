@@ -8,7 +8,7 @@
     Exposed=(Window,Worker),
     RuntimeEnabled=WebTransport
 ] interface WebTransport {
-  [CallWith=ScriptState, RaisesException, MeasureAs=WebTransport] constructor(USVString url, optional QuicTransportOptions options = {});
+  [CallWith=ScriptState, RaisesException, MeasureAs=WebTransport] constructor(USVString url, optional WebTransportOptions options = {});
   [CallWith=ScriptState, RaisesException] Promise<SendStream>
       createUnidirectionalStream();
   readonly attribute ReadableStream incomingUnidirectionalStreams;

@@ -1691,10 +1691,6 @@
       status: "experimental",
     },
     {
-      name: "QuicTransport",
-      status: "experimental",
-    },
-    {
       name: "QuotaChange",
       status: "experimental",
     },

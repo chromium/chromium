@@ -13,11 +13,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/quic_transport.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -27,32 +26,29 @@
 namespace blink {
 
 class ExceptionState;
-class QuicTransportOptions;
 class ReadableStream;
 class ReadableStreamDefaultControllerWithScriptScope;
 class ScriptPromise;
 class ScriptPromiseResolver;
-class ScriptPromiseResolver;
 class ScriptState;
 class WebTransportCloseInfo;
+class WebTransportOptions;
 class WebTransportStream;
 class WritableStream;
 
 // https://wicg.github.io/web-transport/#quic-transport
 class MODULES_EXPORT QuicTransport final
-    : public ScriptWrappable,
-      public ActiveScriptWrappable<QuicTransport>,
+    : public GarbageCollected<QuicTransport>,
       public ExecutionContextLifecycleObserver,
       public network::mojom::blink::QuicTransportHandshakeClient,
       public network::mojom::blink::QuicTransportClient {
-  DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(QuicTransport, Dispose);
 
  public:
   using PassKey = base::PassKey<QuicTransport>;
   static QuicTransport* Create(ScriptState*,
                                const String& url,
-                               QuicTransportOptions*,
+                               WebTransportOptions*,
                                ExceptionState&);
 
   QuicTransport(PassKey, ScriptState*, const String& url);
@@ -85,8 +81,8 @@ class MODULES_EXPORT QuicTransport final
   // Implementation of ExecutionContextLifecycleObserver
   void ContextDestroyed() final;
 
-  // Implementation of ActiveScriptWrappable
-  bool HasPendingActivity() const final;
+  // Implementation of WebTransport::HasPendingActivity()
+  bool HasPendingActivity() const;
 
   // Forwards a SendFin() message to the mojo interface.
   void SendFin(uint32_t stream_id);
@@ -111,7 +107,7 @@ class MODULES_EXPORT QuicTransport final
 
   QuicTransport(ScriptState*, const String& url, ExecutionContext* context);
 
-  void Init(const String& url, const QuicTransportOptions&, ExceptionState&);
+  void Init(const String& url, const WebTransportOptions&, ExceptionState&);
 
   // Reset the QuicTransport object and all associated streams.
   void ResetAll();

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/web-transport/#quic-transport-configuration
+// https://w3c.github.io/webtransport/#dictdef-webtransportoptions
 
-dictionary QuicTransportOptions {
+dictionary WebTransportOptions {
   sequence<RTCDtlsFingerprint> serverCertificateFingerprints;
 
   // This is an experimental and non-standard parameter. This controls the high

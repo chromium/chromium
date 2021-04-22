@@ -14,7 +14,7 @@ WebTransport::~WebTransport() = default;
 
 WebTransport* WebTransport::Create(ScriptState* script_state,
                                    const String& url,
-                                   QuicTransportOptions* options,
+                                   WebTransportOptions* options,
                                    ExceptionState& exception_state) {
   QuicTransport* quic_transport =
       QuicTransport::Create(script_state, url, options, exception_state);
