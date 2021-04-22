@@ -960,8 +960,6 @@ BUILDERS = {
                 'extra_args': [
                     # The magic hostname that resolves to a CrOS device in the test lab
                     '--remote=variable_chromeos_device_hostname',
-                    '--board=eve',
-                    '--flash',
                 ],
             },
         ],

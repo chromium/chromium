@@ -1137,9 +1137,7 @@
           "--browser=lacros-chrome",
           "--upload-results",
           "--test-shard-map-filename=lacros-eve-perf_map.json",
-          "--remote=variable_chromeos_device_hostname",
-          "--board=eve",
-          "--flash"
+          "--remote=variable_chromeos_device_hostname"
         ],
         "isolate_name": "performance_test_suite_eve",
         "merge": {

@@ -14,18 +14,10 @@ if (is_chromeos_device) {
 
   generate_runner_script("cros_update_wrapper") {
     generated_script = "$root_build_dir/bin/cros_update_wrapper"
-    deploy_chrome = true
-  }
-
-  if (cros_boards != "") {
-    foreach(_board, string_split(cros_boards, ":")) {
-      _board_underscore = string_replace(_board, "-", "_")
-      generate_runner_script("cros_update_wrapper_${_board_underscore}") {
-        generated_script =
-            "$root_build_dir/bin/cros_update_wrapper_${_board_underscore}"
-        deploy_chrome = true
-        override_board = _board
-      }
+    if (is_chromeos_ash) {
+      deploy_chrome = true
+    } else {
+      deploy_lacros = true
     }
   }
 }
@@ -85,12 +77,6 @@ group("telemetry_chrome_test") {
 
   if (is_chromeos_device) {
     data_deps += [ ":cros_update_wrapper" ]
-    if (cros_boards != "") {
-      foreach(_board, string_split(cros_boards, ":")) {
-        _board_underscore = string_replace(_board, "-", "_")
-        data_deps += [ ":cros_update_wrapper_${_board_underscore}" ]
-      }
-    }
   }
 
   if (is_chromeos_ash && is_chromeos_device) {
