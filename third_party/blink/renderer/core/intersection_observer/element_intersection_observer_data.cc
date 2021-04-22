@@ -9,6 +9,20 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 
+// This appears in several files and needs to be moved to a shared header.
+struct RecordReplayCompareMemberByPointerId {
+  template <typename T>
+  bool operator()(const T& a, const T& b) const {
+    if (recordreplay::IsRecordingOrReplaying()) {
+      int ida = recordreplay::PointerId(a.Get());
+      int idb = recordreplay::PointerId(b.Get());
+      CHECK(ida && idb);
+      return ida < idb;
+    }
+    return a < b;
+  }
+};
+
 namespace blink {
 
 ElementIntersectionObserverData::ElementIntersectionObserverData() = default;
@@ -61,9 +75,20 @@ void ElementIntersectionObserverData::StopTrackingWithController(
 bool ElementIntersectionObserverData::ComputeIntersectionsForTarget(
     unsigned flags) {
   bool needs_occlusion_tracking = false;
+
+  // Intersections need to be computed in a consistent order.
+  HeapVector<Member<IntersectionObservation>> observations_to_process;
+
   for (auto& entry : observations_) {
     needs_occlusion_tracking |= entry.key->NeedsOcclusionTracking();
-    entry.value->ComputeIntersection(flags);
+    observations_to_process.push_back(entry.value);
+  }
+
+  std::sort(observations_to_process.begin(), observations_to_process.end(),
+            RecordReplayCompareMemberByPointerId());
+
+  for (auto& observation : observations_to_process) {
+    observation->ComputeIntersection(flags);
   }
   return needs_occlusion_tracking;
 }
