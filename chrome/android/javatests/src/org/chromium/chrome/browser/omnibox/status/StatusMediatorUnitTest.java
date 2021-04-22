@@ -79,6 +79,8 @@ public final class StatusMediatorUnitTest {
     TemplateUrlService mTemplateUrlService;
     @Mock
     PermissionDialogController mPermissionDialogController;
+    @Mock
+    PageInfoIPHController mPageInfoIPHController;
 
     Context mContext;
     Resources mResources;
@@ -119,7 +121,7 @@ public final class StatusMediatorUnitTest {
                     mUrlBarEditingTextStateProvider,
                     /* isTablet */ false, mLocationBarDataProvider, mPermissionDialogController,
                     mSearchEngineLogoUtils, mTemplateUrlServiceSupplier,
-                    () -> mProfile, null, null);
+                    () -> mProfile, mPageInfoIPHController, null);
             mTemplateUrlServiceSupplier.set(mTemplateUrlService);
         });
         mBitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);

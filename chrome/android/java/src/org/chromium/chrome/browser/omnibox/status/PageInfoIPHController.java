@@ -21,7 +21,7 @@ import org.chromium.components.feature_engagement.Tracker;
 /**
  * Controller to manage when an IPH bubble for PageInfo is shown.
  */
-class PageInfoIPHController {
+public class PageInfoIPHController {
     private final UserEducationHelper mUserEducationHelper;
     private final View mStatusView;
 

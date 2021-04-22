@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.status.PageInfoIPHController;
 import org.chromium.chrome.browser.omnibox.status.StatusMediator;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
@@ -177,6 +178,8 @@ public class PageInfoDiscoverabilityTest {
     Profile mProfile;
     @Mock
     TemplateUrlService mTemplateUrlService;
+    @Mock
+    PageInfoIPHController mPageInfoIPHController;
 
     Context mContext;
     Resources mResources;
@@ -199,7 +202,9 @@ public class PageInfoDiscoverabilityTest {
                     mUrlBarEditingTextStateProvider,
                     /* isTablet */ false, mLocationBarDataProvider, mPermissionDialogController,
                     mSearchEngineLogoUtils, mTemplateUrlServiceSupplier,
-                    () -> mProfile, null, sPermissionTestRule.getActivity().getWindowAndroid());
+                    ()
+                            -> mProfile,
+                    mPageInfoIPHController, sPermissionTestRule.getActivity().getWindowAndroid());
             mTemplateUrlServiceSupplier.set(mTemplateUrlService);
         });
     }
