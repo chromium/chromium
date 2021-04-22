@@ -240,9 +240,11 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   InputHandler::ScrollStatus TryScroll(const ScrollTree& scroll_tree,
                                        ScrollNode* scroll_node) const;
 
+  enum class SnapReason { kGestureScrollEnd, kScrollOffsetAnimationFinished };
+
   // Creates an animation curve and returns true if we need to update the
   // scroll position to a snap point. Otherwise returns false.
-  bool SnapAtScrollEnd();
+  bool SnapAtScrollEnd(SnapReason reason);
 
   // |layer| is returned from a regular hit test, and
   // |first_scrolling_layer_or_drawn_scrollbar| is returned from a hit test

@@ -520,7 +520,7 @@ void ThreadedInputHandler::ScrollEnd(bool should_snap) {
     return;
   }
 
-  if (should_snap && SnapAtScrollEnd()) {
+  if (should_snap && SnapAtScrollEnd(SnapReason::kGestureScrollEnd)) {
     deferred_scroll_end_ = true;
     return;
   }
@@ -1096,7 +1096,8 @@ void ThreadedInputHandler::ScrollOffsetAnimationFinished() {
   //  2- snap scroll animation is over (IsAnimatingForSnap == true).
   //
   //  Only for case (1) we should check and run snap scroll animation if needed.
-  if (!IsAnimatingForSnap() && SnapAtScrollEnd())
+  if (!IsAnimatingForSnap() &&
+      SnapAtScrollEnd(SnapReason::kScrollOffsetAnimationFinished))
     return;
 
   // The end of a scroll offset animation means that the scrolling node is at
@@ -2004,7 +2005,7 @@ bool ThreadedInputHandler::ShouldAnimateScroll(
   return !has_precise_scroll_deltas;
 }
 
-bool ThreadedInputHandler::SnapAtScrollEnd() {
+bool ThreadedInputHandler::SnapAtScrollEnd(SnapReason reason) {
   ScrollNode* scroll_node = CurrentlyScrollingNode();
   if (!scroll_node || !scroll_node->snap_container_data.has_value())
     return false;
@@ -2028,9 +2029,14 @@ bool ThreadedInputHandler::SnapAtScrollEnd() {
   gfx::ScrollOffset last_scroll_delta = last_scroll_state.DeltaOrHint();
 
   std::unique_ptr<SnapSelectionStrategy> strategy;
-
-  if (imprecise_wheel_scrolling && !last_scroll_delta.IsZero()) {
+  if (imprecise_wheel_scrolling && !last_scroll_delta.IsZero() &&
+      reason == SnapReason::kScrollOffsetAnimationFinished) {
     // This was an imprecise wheel scroll so use direction snapping.
+    // Note: gesture scroll end is delayed in anticipation of future wheel
+    // scrolls so it is fired well after the scroll ends as opposed to precise
+    // touch devices where we fire it as soon as the user lifts their finger.
+    // TODO(crbug.com/1201678): The directional scroll should probably be
+    // triggered at gesture scroll begin to improve responsiveness.
     strategy = SnapSelectionStrategy::CreateForDirection(
         current_position, last_scroll_delta, true);
   } else {
