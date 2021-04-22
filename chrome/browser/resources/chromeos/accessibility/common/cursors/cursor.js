@@ -175,7 +175,7 @@ cursors.Cursor = class {
    * @return {AutomationNode}
    */
   get node() {
-    if (this.recovery_.requiresRecovery()) {
+    if (this.requiresRecovery()) {
       // If we need to recover, the index is no longer valid.
       this.index_ = cursors.NODE_INDEX;
     }
@@ -573,6 +573,14 @@ cursors.Cursor = class {
    */
   isValid() {
     return this.node != null;
+  }
+
+  /**
+   * Returns true if this cursor requires recovery.
+   * @return {boolean}
+   */
+  requiresRecovery() {
+    return this.recovery_.requiresRecovery();
   }
 
   /**

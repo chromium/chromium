@@ -100,13 +100,13 @@ BaseAutomationHandler = class {
     }
 
     // Decide whether to announce and sync this event.
+    const prevRange = ChromeVoxState.instance.getCurrentRangeWithoutRecovery();
     if (!DesktopAutomationHandler.announceActions &&
+        (prevRange && !prevRange.requiresRecovery()) &&
         evt.eventFrom === 'action' &&
         evt.eventFromAction !== ActionType.DO_DEFAULT) {
       return;
     }
-
-    const prevRange = ChromeVoxState.instance.getCurrentRangeWithoutRecovery();
 
     ChromeVoxState.instance.setCurrentRange(cursors.Range.fromNode(node));
 
