@@ -7,8 +7,14 @@
 #endif
 #define BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_
 
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#error This header must be included iff PartitionAlloc-Everywhere is enabled.
+#endif
+
 namespace base {
 namespace allocator {
+
+void InitializeDefaultAllocatorPartitionRoot();
 
 namespace {
 
@@ -139,11 +145,20 @@ void MallocZoneFreeDefiniteSize(malloc_zone_t* zone, void* ptr, size_t size) {
 malloc_introspection_t g_mac_malloc_introspection{};
 malloc_zone_t g_mac_malloc_zone{};
 
-}  // namespace
-
-void InitializeDefaultAllocatorPartitionRoot();
-
-void AddMacMallocZoneAsDefaultZone() {
+// Replaces the default malloc zone with our own malloc zone backed by
+// PartitionAlloc.  Since we'd like to make as much code as possible to use our
+// own memory allocator (and reduce bugs caused by mixed use of the system
+// allocator and our own allocator), run the following function
+// `InitializeDefaultAllocatorPartitionRoot` with the highest priority.
+//
+// Note that, despite of the highest priority of the initialization order,
+// [NSThread init] runs before InitializeDefaultMallocZoneWithPartitionAlloc
+// unfortunately and allocates memory with the system allocator.  Plus, the
+// allocated memory will be deallocated with the default zone's `free` at that
+// moment without using a zone dispatcher.  Hence, our own `free` function
+// receives an address allocated by the system allocator.
+__attribute__((constructor(0))) void
+InitializeDefaultMallocZoneWithPartitionAlloc() {
   // Instantiate the existing regular and purgeable zones in order to make the
   // existing purgeable zone use the existing regular zone since PartitionAlloc
   // doesn't support a purgeable zone.
@@ -218,6 +233,8 @@ void AddMacMallocZoneAsDefaultZone() {
     malloc_zone_register(top_zone);
   }
 }
+
+}  // namespace
 
 }  // namespace allocator
 }  // namespace base
