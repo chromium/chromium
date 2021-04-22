@@ -162,9 +162,10 @@ class SiteSettingsHandlerTest : public testing::Test {
 
     // Fully initialize |profile_| in the constructor since some children
     // classes need it right away for SetUp().
-    DCHECK(profile_dir_.CreateUniqueTempDir());
     TestingProfile::Builder profile_builder;
-    profile_builder.SetPath(profile_dir_.GetPath());
+    profile_builder.AddTestingFactory(
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
   }
 
@@ -488,10 +489,6 @@ class SiteSettingsHandlerTest : public testing::Test {
   const size_t kNumberContentSettingListeners = 2;
 
  private:
-  // A profile directory that outlives |task_environment_| is needed because
-  // TestingProfile::CreateHistoryService uses the directory to host a
-  // database. See https://crbug.com/546640 for more details.
-  base::ScopedTempDir profile_dir_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   TestingProfile* incognito_profile_;
@@ -1160,7 +1157,6 @@ TEST_F(SiteSettingsHandlerTest, Origins) {
 TEST_F(SiteSettingsHandlerTest, NotificationPermissionRevokeUkm) {
   const std::string google("https://www.google.com");
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  ASSERT_TRUE(profile()->CreateHistoryService());
   auto* history_service = HistoryServiceFactory::GetForProfile(
       profile(), ServiceAccessType::EXPLICIT_ACCESS);
   history_service->AddPage(GURL(google), base::Time::Now(),
@@ -1218,8 +1214,6 @@ TEST_F(SiteSettingsHandlerTest, NotificationPermissionRevokeUkm) {
 #define MAYBE_DefaultSettingSource DefaultSettingSource
 #endif
 TEST_F(SiteSettingsHandlerTest, MAYBE_DefaultSettingSource) {
-  ASSERT_TRUE(profile()->CreateHistoryService());
-
   // Use a non-default port to verify the display name does not strip this
   // off.
   const std::string google("https://www.google.com:183");
