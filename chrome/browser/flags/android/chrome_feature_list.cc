@@ -165,6 +165,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kChromeStartupDelegate,
     &kChromeSurveyNextAndroid,
     &kCommandLineOnNonRooted,
+    &kCommerceMerchantViewer,
     &kConditionalTabStripAndroid,
     &kContentSuggestionsScrollToLoad,
     &kContextMenuEnableLensShoppingAllowlist,
@@ -446,6 +447,9 @@ const base::Feature kChromeSurveyNextAndroid{"ChromeSurveyNextAndroid",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kCommandLineOnNonRooted{"CommandLineOnNonRooted",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kCommerceMerchantViewer{"CommerceMerchantViewer",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kContentSuggestionsScrollToLoad{

@@ -13,6 +13,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEvent.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEventStorage.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsMediator.java",
+    "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantViewerConfig.java",
   ]
 
   deps = [

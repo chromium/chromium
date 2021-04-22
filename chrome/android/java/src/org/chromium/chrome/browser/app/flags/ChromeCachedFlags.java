@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensFeature;
+import org.chromium.chrome.browser.merchant_viewer.MerchantViewerConfig;
 import org.chromium.chrome.browser.page_annotations.PageAnnotationsServiceConfig;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceConfig;
@@ -112,6 +113,7 @@ public class ChromeCachedFlags {
                 LensFeature.ENABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_TABLET,
                 LensFeature.SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH,
                 LensFeature.MIN_AGSA_VERSION_LENS_CAMERA_ASSISTED_SEARCH,
+                MerchantViewerConfig.DEFAULT_TRUST_SIGNALS_MESSAGE_DELAY,
                 PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL,
                 ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS,
                 ShoppingPersistedTabData.TIME_TO_LIVE_MS,
