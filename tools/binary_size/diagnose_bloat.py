@@ -375,9 +375,11 @@ class _BuildHelper(object):
     logging.info('Building %s within %s (this might take a while).',
                  self.target, os.path.relpath(self.output_directory))
     if self.clean:
-      _RunCmd([_GN_PATH, 'clean', self.output_directory])
-    retcode = _RunCmd(
-        self._GenGnCmd(), verbose=True, exit_on_failure=False)[1]
+      _RunCmd([_GN_PATH, 'clean', self.output_directory], cwd=_SRC_ROOT)
+    retcode = _RunCmd(self._GenGnCmd(),
+                      cwd=_SRC_ROOT,
+                      verbose=True,
+                      exit_on_failure=False)[1]
     if retcode:
       return retcode
     return _RunCmd(
@@ -648,7 +650,7 @@ def _EnsureDirsExist(path):
     os.makedirs(path)
 
 
-def _RunCmd(cmd, verbose=False, exit_on_failure=True):
+def _RunCmd(cmd, cwd=None, verbose=False, exit_on_failure=True):
   """Convenience function for running commands.
 
   Args:
@@ -668,8 +670,11 @@ def _RunCmd(cmd, verbose=False, exit_on_failure=True):
     proc_stdout, proc_stderr = sys.stdout, subprocess.STDOUT
 
   # pylint: disable=unexpected-keyword-arg
-  proc = subprocess.Popen(
-      cmd, stdout=proc_stdout, stderr=proc_stderr, encoding='utf-8')
+  proc = subprocess.Popen(cmd,
+                          cwd=cwd,
+                          stdout=proc_stdout,
+                          stderr=proc_stderr,
+                          encoding='utf-8')
   stdout, stderr = proc.communicate()
 
   if proc.returncode and exit_on_failure:
