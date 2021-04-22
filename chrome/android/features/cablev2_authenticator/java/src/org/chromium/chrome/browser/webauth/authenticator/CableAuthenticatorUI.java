@@ -453,6 +453,8 @@ public class CableAuthenticatorUI
                     break;
             }
             Toast.makeText(getActivity(), getResources().getString(id), Toast.LENGTH_SHORT).show();
+
+            getActivity().finish();
         });
     }
 
