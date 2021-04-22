@@ -4,6 +4,5 @@ include_rules = [
   "+components/strings",
   "+crypto",
   "+net",
-  "+third_party/zlib/google",
   "+ui/base",
 ]

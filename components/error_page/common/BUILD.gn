@@ -24,7 +24,6 @@ static_library("common") {
     "//components/strings",
     "//components/url_formatter",
     "//net",
-    "//third_party/zlib/google:compression_utils",
     "//ui/base",
     "//url",
   ]
