@@ -40,6 +40,7 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
             // Enabled:
             network::features::kCrossOriginOpenerPolicy,
             network::features::kCrossOriginOpenerPolicyReporting,
+            network::features::kCrossOriginEmbedderPolicyCredentialless,
             // SharedArrayBuffer is needed for these tests.
             features::kSharedArrayBuffer,
         },
@@ -1024,10 +1025,100 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   ExpectHistogramIncreasedBy(2);
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CoepNoneMainFrame) {
+  GURL url = https_server().GetURL("a.com",
+                                   "/set-header?"
+                                   "Cross-Origin-Embedder-Policy: unsafe-none");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCorsOrCredentialless, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CoepCorsOrCredentiallessMainFrame) {
+  GURL url = https_server().GetURL(
+      "a.com",
+      "/set-header?"
+      "Cross-Origin-Embedder-Policy: cors-or-credentialless");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCorsOrCredentialless, 1);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CoepRequireCorpMainFrame) {
+  GURL url =
+      https_server().GetURL("a.com",
+                            "/set-header?"
+                            "Cross-Origin-Embedder-Policy: require-corp");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCorsOrCredentialless, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CoepReportOnlyCorsOrCredentiallessMainFrame) {
+  GURL url = https_server().GetURL(
+      "a.com",
+      "/set-header?"
+      "Cross-Origin-Embedder-Policy-Report-Only: cors-or-credentialless");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCorsOrCredentialless, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CoepReportOnlyRequireCorpMainFrame) {
+  GURL url = https_server().GetURL(
+      "a.com",
+      "/set-header?"
+      "Cross-Origin-Embedder-Policy-Report-Only: cors-or-credentialless");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCorsOrCredentialless, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CoepRequireCorpEmbedsCorsOrCredentialless) {
+  GURL main_url =
+      https_server().GetURL("a.com",
+                            "/set-header?"
+                            "Cross-Origin-Embedder-Policy: require-corp");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCorsOrCredentialless, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 1);
+  GURL child_url = https_server().GetURL(
+      "a.com",
+      "/set-header?"
+      "Cross-Origin-Embedder-Policy: cors-or-credentialless");
+  LoadIFrame(child_url);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCorsOrCredentialless, 1);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CoepCorsOrCredentiallessEmbedsRequireCorp) {
+  GURL main_url = https_server().GetURL(
+      "a.com",
+      "/set-header?"
+      "Cross-Origin-Embedder-Policy: cors-or-credentialless");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCorsOrCredentialless, 1);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 0);
+  GURL child_url =
+      https_server().GetURL("a.com",
+                            "/set-header?"
+                            "Cross-Origin-Embedder-Policy: require-corp");
+  LoadIFrame(child_url);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCorsOrCredentialless, 1);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 1);
+}
+
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:
 // - CrossOriginOpenerPolicySameOrigin
 // - CrossOriginOpenerPolicySameOriginAllowPopups
-// - CrossOriginEmbedderPolicyRequireCorp
 // - CoopAndCoepIsolated
 //
 // Added by:

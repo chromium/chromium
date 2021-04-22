@@ -77,10 +77,18 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
                  kCrossOriginOpenerPolicySameOriginAllowPopups);
   }
 
-  if (rfh->cross_origin_embedder_policy().value ==
-      network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp) {
-    client->LogWebFeatureForCurrentPage(
-        rfh, blink::mojom::WebFeature::kCrossOriginEmbedderPolicyRequireCorp);
+  switch (rfh->cross_origin_embedder_policy().value) {
+    case network::mojom::CrossOriginEmbedderPolicyValue::kNone:
+      break;
+    case network::mojom::CrossOriginEmbedderPolicyValue::kCorsOrCredentialless:
+      client->LogWebFeatureForCurrentPage(
+          rfh, blink::mojom::WebFeature::
+                   kCrossOriginEmbedderPolicyCorsOrCredentialless);
+      break;
+    case network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:
+      client->LogWebFeatureForCurrentPage(
+          rfh, blink::mojom::WebFeature::kCrossOriginEmbedderPolicyRequireCorp);
+      break;
   }
 
   if (rfh->cross_origin_opener_policy().value ==
