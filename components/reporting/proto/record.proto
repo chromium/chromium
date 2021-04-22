@@ -56,10 +56,10 @@ message WrappedRecord {
 // Information about how the record was encrypted.
 message EncryptionInfo {
   // Encryption key (optional).
-  // Represents a symmetric key used for |encrypted_wrapped_record|
-  // encryption; itself encrypted with asymmetric encryption by a public key.
-  // The private portion of the key is known to the receiver only, and
-  // identified with the |public_key_id|.
+  // Represents the client's X25519 public key used along with the server's
+  // private key (identified by |public_key_id|) for shared secret recreation
+  // by the server to get the symmetric key used for |encrypted_wrapped_record|
+  // encryption.
   optional bytes encryption_key = 1;
 
   // Public key id (optional)
