@@ -662,6 +662,7 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/open_ntp_instead_of_start/true"})
+    @FlakyTest(message = "https://crbug.com/1201548")
     public void testCreateNewTab_OpenNTPInsteadOfStart() {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
