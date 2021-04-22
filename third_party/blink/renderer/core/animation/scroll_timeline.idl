@@ -13,8 +13,6 @@ typedef (ScrollTimelineContainerBasedOffset or ScrollTimelineElementBasedOffset)
     [CallWith=Document, RaisesException, MeasureAs=ScrollTimelineConstructor] constructor(optional ScrollTimelineOptions options = {});
     readonly attribute Element? scrollSource;
     readonly attribute ScrollDirection orientation;
-    readonly attribute ScrollTimelineOffset startScrollOffset;
-    readonly attribute ScrollTimelineOffset endScrollOffset;
     readonly attribute FrozenArray<ScrollTimelineOffset> scrollOffsets;
     readonly attribute (double or ScrollTimelineAutoKeyword) timeRange;
 };

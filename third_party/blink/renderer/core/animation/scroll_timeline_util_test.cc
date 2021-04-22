@@ -63,8 +63,8 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
   options->setTimeRange(
       DoubleOrScrollTimelineAutoKeyword::FromDouble(time_range));
   options->setOrientation("block");
-  options->setStartScrollOffset(OffsetFromString(GetDocument(), "50px"));
-  options->setEndScrollOffset(OffsetFromString(GetDocument(), "auto"));
+  options->setScrollOffsets({OffsetFromString(GetDocument(), "50px"),
+                             OffsetFromString(GetDocument(), "auto")});
   ScrollTimeline* timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 

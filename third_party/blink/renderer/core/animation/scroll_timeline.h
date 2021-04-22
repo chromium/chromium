@@ -61,11 +61,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // IDL API implementation.
   Element* scrollSource() const;
   String orientation();
-  // TODO(crbug.com/1094014): scrollOffsets will replace start and end
-  // offsets once spec decision on multiple scroll offsets is finalized.
-  // https://github.com/w3c/csswg-drafts/issues/4912
-  void startScrollOffset(ScrollTimelineOffsetValue& result) const;
-  void endScrollOffset(ScrollTimelineOffsetValue& result) const;
   const HeapVector<ScrollTimelineOffsetValue> scrollOffsets() const;
 
   void currentTime(CSSNumberish&) override;
@@ -130,6 +125,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);
+  FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, ResolveScrollOffsets);
   // https://wicg.github.io/scroll-animations/#avoiding-cycles
   // Snapshots scroll timeline current time and phase.
   // Called once per animation frame.

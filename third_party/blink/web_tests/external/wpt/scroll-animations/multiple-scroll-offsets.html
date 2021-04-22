@@ -118,7 +118,7 @@ promise_test(async t => {
     scrollSource: scroller,
     timeRange: scrollerSize,
     orientation: 'block',
-    scrollOffsets: [CSS.px(0), CSS.px(400), CSS.px(200)],
+    scrollOffsets: ['auto', CSS.px(400), CSS.px(200)],
   });
 
   scroller.scrollTop = 100;

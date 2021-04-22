@@ -8160,11 +8160,9 @@ interface ScriptProcessorNode : AudioNode
     setter onaudioprocess
 interface ScrollTimeline : AnimationTimeline
     attribute @@toStringTag
-    getter endScrollOffset
     getter orientation
     getter scrollOffsets
     getter scrollSource
-    getter startScrollOffset
     getter timeRange
     method constructor
 interface SecurityPolicyViolationEvent : Event

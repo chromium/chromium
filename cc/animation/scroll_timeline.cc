@@ -85,6 +85,7 @@ bool ScrollTimeline::IsActive(const ScrollTree& scroll_tree,
   return scroll_tree.FindNodeFromElementId(scroller_id);
 }
 
+// https://drafts.csswg.org/scroll-animations-1/#current-time-algorithm
 base::Optional<base::TimeTicks> ScrollTimeline::CurrentTime(
     const ScrollTree& scroll_tree,
     bool is_active_tree) const {
@@ -137,9 +138,11 @@ base::Optional<base::TimeTicks> ScrollTimeline::CurrentTime(
     return base::TimeTicks() + base::TimeDelta::FromMillisecondsD(time_range_);
   }
 
-  // 5. Return the result of evaluating the following expression:
-  //   ((current scroll offset - startScrollOffset) /
-  //      (endScrollOffset - startScrollOffset)) * effective time range
+  // Otherwise,
+  // 5.1 Let progress be a result of applying calculate scroll timeline progress
+  // procedure for current scroll offset.
+  // 5.2 The current time is the result of evaluating the following expression:
+  //                progress × effective time range
   return base::TimeTicks() + base::TimeDelta::FromMillisecondsD(
                                  ComputeProgress<std::vector<double>>(
                                      current_offset, scroll_offsets_) *

@@ -30,6 +30,13 @@ static constexpr double time_error_ms = 0.001 + 1e-13;
 #define EXPECT_TIME_NEAR(expected, value) \
   EXPECT_NEAR(expected, value, time_error_ms)
 
+void ExpectVectorDoubleEqual(const WTF::Vector<double>& expected,
+                             const WTF::Vector<double>& value) {
+  EXPECT_EQ(expected.size(), value.size());
+  for (unsigned int i = 0; i < expected.size(); i++)
+    EXPECT_DOUBLE_EQ(expected[i], value[i]);
+}
+
 HeapVector<Member<ScrollTimelineOffset>> CreateScrollOffsets(
     ScrollTimelineOffset* start_scroll_offset =
         MakeGarbageCollected<ScrollTimelineOffset>(
@@ -149,8 +156,8 @@ TEST_F(ScrollTimelineTest,
       DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
   options->setTimeRange(time_range);
   options->setScrollSource(GetElementById("scroller"));
-  options->setStartScrollOffset(OffsetFromString("10px"));
-  options->setEndScrollOffset(OffsetFromString("90px"));
+  options->setScrollOffsets(
+      {OffsetFromString("10px"), OffsetFromString("90px")});
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 
@@ -218,8 +225,8 @@ TEST_F(ScrollTimelineTest,
       DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
   options->setTimeRange(time_range);
   options->setScrollSource(GetElementById("scroller"));
-  options->setStartScrollOffset(OffsetFromString("80px"));
-  options->setEndScrollOffset(OffsetFromString("40px"));
+  options->setScrollOffsets(
+      {OffsetFromString("80px"), OffsetFromString("40px")});
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 
@@ -271,8 +278,8 @@ TEST_F(ScrollTimelineTest, PhasesAreCorrectWhenUsingOffsets) {
       DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
   options->setTimeRange(time_range);
   options->setScrollSource(GetElementById("scroller"));
-  options->setStartScrollOffset(OffsetFromString("10px"));
-  options->setEndScrollOffset(OffsetFromString("90px"));
+  options->setScrollOffsets(
+      {OffsetFromString("10px"), OffsetFromString("90px")});
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 
@@ -784,6 +791,72 @@ TEST_F(ScrollTimelineTest,
   SimulateFrame();
   // Verify animation finished event is fired only once in finished state.
   EXPECT_FALSE(event_listener->EventReceived());
+}
+
+TEST_F(ScrollTimelineTest, ResolveScrollOffsets) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller { overflow: scroll; width: 100px; height: 100px; }
+      #spacer { height: 1000px; }
+    </style>
+    <div id='scroller'>
+      <div id ='spacer'></div>
+    </div>
+  )HTML");
+
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
+  ASSERT_TRUE(scroller);
+  PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
+  ASSERT_TRUE(scrollable_area);
+  double time_range = 100.0;
+  ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
+  options->setTimeRange(
+      DoubleOrScrollTimelineAutoKeyword::FromDouble(time_range));
+  options->setScrollSource(GetElementById("scroller"));
+  // Empty scroll offsets resolve into [0, 100%].
+  HeapVector<ScrollTimelineOffsetValue> scroll_offsets = {};
+  options->setScrollOffsets(scroll_offsets);
+
+  ScrollTimeline* scroll_timeline =
+      ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
+
+  WTF::Vector<double> resolved_offsets;
+  WTF::Vector<double> expected_offsets = {0, 900.0};
+  scroll_timeline->ResolveScrollOffsets(resolved_offsets);
+  ExpectVectorDoubleEqual(expected_offsets, resolved_offsets);
+
+  // Single 'auto' offset resolve into [0, 100%].
+  scroll_offsets = {OffsetFromString("auto")};
+  options->setScrollOffsets(scroll_offsets);
+  scroll_timeline =
+      ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
+  resolved_offsets.clear();
+  scroll_timeline->ResolveScrollOffsets(resolved_offsets);
+  expected_offsets = {0, 900.0};
+  ExpectVectorDoubleEqual(expected_offsets, resolved_offsets);
+
+  // Start and end 'auto' offsets resolve into [0, 100%].
+  scroll_offsets = {OffsetFromString("auto"), OffsetFromString("auto")};
+  options->setScrollOffsets(scroll_offsets);
+  scroll_timeline =
+      ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
+  resolved_offsets.clear();
+  scroll_timeline->ResolveScrollOffsets(resolved_offsets);
+  expected_offsets = {0, 900.0};
+  ExpectVectorDoubleEqual(expected_offsets, resolved_offsets);
+
+  // Three offsets, start and end are 'auto' resolve into [0, middle offset,
+  // 100%].
+  scroll_offsets = {OffsetFromString("auto"), OffsetFromString("500px"),
+                    OffsetFromString("auto")};
+  options->setScrollOffsets(scroll_offsets);
+  scroll_timeline =
+      ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
+  resolved_offsets.clear();
+  scroll_timeline->ResolveScrollOffsets(resolved_offsets);
+  expected_offsets = {0, 500.0, 900.0};
+  ExpectVectorDoubleEqual(expected_offsets, resolved_offsets);
 }
 
 TEST_F(ScrollTimelineTest, MultipleScrollOffsetsCurrentTimeCalculations) {
