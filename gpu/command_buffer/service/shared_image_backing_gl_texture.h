@@ -71,4 +71,4 @@ class SharedImageBackingGLTexture : public SharedImageBacking {
 
 }  // namespace gpu
 
-#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_FACTORY_GL_TEXTURE_INTERNAL_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_GL_TEXTURE_H_

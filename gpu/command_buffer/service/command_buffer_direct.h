@@ -68,4 +68,4 @@ class GPU_EXPORT CommandBufferDirect : public CommandBuffer,
 
 }  // namespace gpu
 
-#endif  // GPU_COMMAND_BUFFER_SERVICE_COMMAND_BUFFER_DIRECT_H
+#endif  // GPU_COMMAND_BUFFER_SERVICE_COMMAND_BUFFER_DIRECT_H_

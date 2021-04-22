@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_GLES2_CONFORM_SUPPORT_EGL_STATE_H_
-#define GPU_GLES2_CONFORM_SUPPORT_EGL_STATE_H_
+#ifndef GPU_GLES2_CONFORM_SUPPORT_EGL_THREAD_STATE_H_
+#define GPU_GLES2_CONFORM_SUPPORT_EGL_THREAD_STATE_H_
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -69,4 +69,4 @@ class ThreadState {
 }  // namespace egl
 }  // namespace gles2_conform_support
 
-#endif
+#endif  // GPU_GLES2_CONFORM_SUPPORT_EGL_THREAD_STATE_H_

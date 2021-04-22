@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_GLES2_CONFORM_TEST_CONTEXT_H_
-#define GPU_GLES2_CONFORM_TEST_CONTEXT_H_
+#ifndef GPU_GLES2_CONFORM_SUPPORT_EGL_CONTEXT_H_
+#define GPU_GLES2_CONFORM_SUPPORT_EGL_CONTEXT_H_
 
 #include <memory>
 
@@ -139,4 +139,4 @@ class Context : public base::RefCountedThreadSafe<Context>,
 }  // namespace egl
 }  // namespace gles2_conform_support
 
-#endif  // GPU_GLES2_CONFORM_TEST_CONTEXT_H_
+#endif  // GPU_GLES2_CONFORM_SUPPORT_EGL_CONTEXT_H_

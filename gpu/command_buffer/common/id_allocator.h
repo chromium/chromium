@@ -4,8 +4,8 @@
 
 // This file contains the definition of the IdAllocator class.
 
-#ifndef GPU_COMMAND_BUFFER_CLIENT_ID_ALLOCATOR_H_
-#define GPU_COMMAND_BUFFER_CLIENT_ID_ALLOCATOR_H_
+#ifndef GPU_COMMAND_BUFFER_COMMON_ID_ALLOCATOR_H_
+#define GPU_COMMAND_BUFFER_COMMON_ID_ALLOCATOR_H_
 
 #include <stdint.h>
 
@@ -64,4 +64,4 @@ class GPU_EXPORT IdAllocator {
 
 }  // namespace gpu
 
-#endif  // GPU_COMMAND_BUFFER_CLIENT_ID_ALLOCATOR_H_
+#endif  // GPU_COMMAND_BUFFER_COMMON_ID_ALLOCATOR_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_GPU_IPC_SERVICE_EXPORT_H_
-#define GPU_GPU_IPC_SERVICE_EXPORT_H_
+#ifndef GPU_IPC_SERVICE_GPU_IPC_SERVICE_EXPORT_H_
+#define GPU_IPC_SERVICE_GPU_IPC_SERVICE_EXPORT_H_
 
 #if defined(COMPONENT_BUILD) && !defined(NACL_WIN64)
 #if defined(WIN32)
@@ -26,4 +26,4 @@
 #define GPU_IPC_SERVICE_EXPORT
 #endif
 
-#endif  // GPU_GPU_IPC_SERVICE_EXPORT_H_
+#endif  // GPU_IPC_SERVICE_GPU_IPC_SERVICE_EXPORT_H_

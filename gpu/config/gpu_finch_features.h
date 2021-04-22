@@ -5,8 +5,8 @@
 // This file defines all the public base::FeatureList features for the gpu
 // module.
 
-#ifndef GPU_CONFIG_GPU_FEATURES_H_
-#define GPU_CONFIG_GPU_FEATURES_H_
+#ifndef GPU_CONFIG_GPU_FINCH_FEATURES_H_
+#define GPU_CONFIG_GPU_FINCH_FEATURES_H_
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
@@ -68,4 +68,4 @@ GPU_EXPORT bool IsWebViewZeroCopyVideoEnabled();
 
 }  // namespace features
 
-#endif  // GPU_CONFIG_GPU_FEATURES_H_
+#endif  // GPU_CONFIG_GPU_FINCH_FEATURES_H_

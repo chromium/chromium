@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_GLES2_CONFORM_TEST_SURFACE_H_
-#define GPU_GLES2_CONFORM_TEST_SURFACE_H_
+#ifndef GPU_GLES2_CONFORM_SUPPORT_EGL_SURFACE_H_
+#define GPU_GLES2_CONFORM_SUPPORT_EGL_SURFACE_H_
 
 #include <EGL/egl.h>
 
@@ -41,4 +41,4 @@ class Surface : public base::RefCountedThreadSafe<Surface> {
 }  // namespace egl
 }  // namespace gles2_conform_support
 
-#endif  // GPU_GLES2_CONFORM_TEST_SURFACE_H_
+#endif  // GPU_GLES2_CONFORM_SUPPORT_EGL_SURFACE_H_

@@ -29,4 +29,4 @@ CommandBufferGLESSetNextCreateWindowSurfaceCreatesPBuffer(EGLDisplay eglDisplay,
                                                           EGLint width,
                                                           EGLint height);
 }
-#endif
+#endif  // GPU_GLES2_CONFORM_SUPPORT_EGL_TEST_SUPPORT_H_
