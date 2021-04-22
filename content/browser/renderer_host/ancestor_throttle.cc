@@ -278,8 +278,7 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
           blink::mojom::ConsoleMessageLevel::kWarning,
           "The page delivered both an 'X-Frame-Options' header and a "
           "'Content-Security-Policy' header with a 'frame-ancestors' "
-          "directive. Although the 'X-Frame-Options' header alone would have "
-          "blocked embedding, it has been ignored.");
+          "directive. The 'X-Frame-Options' header has been ignored.");
     }
     RecordXFrameOptionsUsage(XFrameOptionsHistogram::BYPASS);
     return CheckResult::PROCEED;

@@ -89,8 +89,7 @@ IN_PROC_BROWSER_TEST_F(AncestorThrottleTest, XFOAndCSPFrameAncestors) {
   console_observer.SetPattern(
       "The page delivered both an 'X-Frame-Options' header and a "
       "'Content-Security-Policy' header with a 'frame-ancestors' directive. "
-      "Although the 'X-Frame-Options' header alone would have blocked "
-      "embedding, it has been ignored.");
+      "The 'X-Frame-Options' header has been ignored.");
   EXPECT_TRUE(NavigateToURL(web_contents, parent_url));
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test_iframe", iframe_url));
 
