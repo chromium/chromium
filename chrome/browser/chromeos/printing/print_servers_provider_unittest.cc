@@ -35,102 +35,20 @@ constexpr char kPrintServersPolicyJson1[] = R"json(
   }
 ])json";
 
-// An example allowlist.
-const std::vector<std::string> kPrintServersPolicyAllowlist1 = {"id3", "idX",
-                                                                "id1"};
-// Test pref name for allowlist.
-std::string allowlist_pref_name_ = "test";
-// A different configuration file with print servers.
-constexpr char kPrintServersPolicyJson2[] = R"json(
-[
-  {
-    "id": "id1",
-    "display_name": "CUPS",
-    "url": "ipp://192.168.1.15"
-  }
-])json";
-
-// Another configuration file with print servers, this time with invalid URLs.
-constexpr char kPrintServersPolicyJson3[] = R"json(
-[
-  {
-    "id": "1",
-    "display_name": "server_1",
-    "url": "ipp://aaa.bbb.ccc:666/xx"
-  }, {
-    "id": "2",
-    "display_name": "server_2",
-    "url":"ipps:/print.server.intra.example.com:443z/ipp"
-  }, {
-    "id": "3",
-    "display_name": "server_3",
-    "url": "file://192.168.1.8/bleble/print"
-  }, {
-    "id": "4",
-    "display_name": "server_4",
-    "url": "http://aaa.bbb.ccc:666/xx"
-  }, {
-    "id": "5",
-    "display_name": "server_5",
-    "url": "\n \t ipps://aaa.bbb.ccc:666/yy"
-  }, {
-    "id": "6",
-    "display_name": "server_6",
-    "url":"ipps:/print.server^.intra.example.com/ipp"
-  }, {
-    "id": "3",
-    "display_name": "server_7",
-    "url": "file://194.169.2.18/bleble2/print"
-  }, {
-    "display_name": "server_8",
-    "url": "file://195.161.3.28/bleble/print"
-  }
-])json";
-
 PrintServer Server1() {
-  return PrintServer("id1", GURL("http://192.168.1.5:631"), "MyPrintServer");
-}
-
-PrintServer Server2() {
-  return PrintServer(
-      "id2", GURL("https://print-server.intra.example.com:444/ipp/cl2k4"),
-      "Server API");
+  return {"id1", GURL("http://192.168.1.5:631"), "MyPrintServer"};
 }
 
 PrintServer Server3() {
-  return PrintServer("id3", GURL("http://192.168.1.8/bleble/print"), "YaLP");
+  return {"id3", GURL("http://192.168.1.8/bleble/print"), "YaLP"};
 }
 
 // Corresponding vector with PrintServers.
 std::vector<PrintServer> PrintServersPolicyData1() {
-  return std::vector<PrintServer>({Server1(), Server2(), Server3()});
-}
-
-// Corresponding vector filtered with the allowlist defined above.
-std::vector<PrintServer> PrintServersPolicyData1Allowlist1() {
-  return std::vector<PrintServer>({Server1(), Server3()});
-}
-
-// Corresponding vector with PrintServers.
-std::vector<PrintServer> PrintServersPolicyData2() {
-  return std::vector<PrintServer>(
-      {{"id1", GURL("http://192.168.1.15:631"), "CUPS"}});
-}
-
-// Corresponding vector with PrintServers. Only two records are included,
-// because other ones are invalid:
-// server_1 - OK
-// server_2 - invalid URL - invalid port number
-// server_3 - unsupported scheme
-// server_4 - duplicate of server_1
-// server_5 - leading whitespaces, but OK
-// server_6 - invalid URL - forbidden character
-// server_7 - duplicate id
-// server_8 - missing id
-std::vector<PrintServer> PrintServersPolicyData3() {
-  return std::vector<PrintServer>(
-      {{"1", GURL("http://aaa.bbb.ccc:666/xx"), "server_1"},
-       {"5", GURL("https://aaa.bbb.ccc:666/yy"), "server_5"}});
+  return {{Server1(),
+           {"id2", GURL("https://print-server.intra.example.com:444/ipp/cl2k4"),
+            "Server API"},
+           Server3()}};
 }
 
 // Observer that stores all its calls.
@@ -139,8 +57,8 @@ class TestObserver : public PrintServersProvider::Observer {
   struct ObserverCall {
     bool complete;
     std::vector<PrintServer> servers;
-    ObserverCall(bool complete, const std::vector<PrintServer>& servers)
-        : complete(complete), servers(servers) {}
+    ObserverCall(bool complete, std::vector<PrintServer> servers)
+        : complete(complete), servers(std::move(servers)) {}
   };
 
   ~TestObserver() override = default;
@@ -161,22 +79,27 @@ class TestObserver : public PrintServersProvider::Observer {
 
 class PrintServersProviderTest : public testing::Test {
  public:
-  PrintServersProviderTest()
-      : external_servers_(PrintServersProvider::Create()) {}
+  PrintServersProviderTest() = default;
 
  protected:
   void SetUp() override {
-    pref_service_.registry()->RegisterListPref(allowlist_pref_name_);
-    external_servers_->SetAllowlistPref(&pref_service_, allowlist_pref_name_);
+    pref_service_.registry()->RegisterListPref(kAllowlistPrefName);
+    external_servers_->SetAllowlistPref(&pref_service_, kAllowlistPrefName);
   }
+
+  static constexpr char kAllowlistPrefName[] = "test";
 
   // Everything must be called on Chrome_UIThread.
   content::BrowserTaskEnvironment task_environment_;
   // Test prefs.
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   // Tested object.
-  std::unique_ptr<PrintServersProvider> external_servers_;
+  std::unique_ptr<PrintServersProvider> external_servers_ =
+      PrintServersProvider::Create();
 };
+
+// static
+constexpr char PrintServersProviderTest::kAllowlistPrefName[];
 
 // Verify that the object can be destroyed while parsing is in progress.
 TEST_F(PrintServersProviderTest, DestructionIsSafe) {
@@ -221,10 +144,10 @@ TEST_F(PrintServersProviderTest, ClearData2) {
 // SetData(...) sets "complete" flag = false, then parse given data in the
 // background and sets resultant list with "complete" flag = true.
 TEST_F(PrintServersProviderTest, SetData) {
-  auto blob1 = std::make_unique<std::string>(kPrintServersPolicyJson1);
   TestObserver obs;
   external_servers_->AddObserver(&obs);
-  external_servers_->SetData(std::move(blob1));
+  external_servers_->SetData(
+      std::make_unique<std::string>(kPrintServersPolicyJson1));
   // single call from AddObserver, since SetData(...) is not processed yet
   ASSERT_EQ(obs.GetCalls().size(), 1u);
   // make sure that SetData(...) is processed
@@ -238,14 +161,20 @@ TEST_F(PrintServersProviderTest, SetData) {
 
 // Verify two SetData() calls.
 TEST_F(PrintServersProviderTest, SetData2) {
-  auto blob1 = std::make_unique<std::string>(kPrintServersPolicyJson1);
-  auto blob2 = std::make_unique<std::string>(kPrintServersPolicyJson2);
   TestObserver obs;
   external_servers_->AddObserver(&obs);
-  external_servers_->SetData(std::move(blob1));
+  external_servers_->SetData(
+      std::make_unique<std::string>(kPrintServersPolicyJson1));
   // single call from AddObserver, since SetData(...) is not processed yet
   ASSERT_EQ(obs.GetCalls().size(), 1u);
-  external_servers_->SetData(std::move(blob2));
+  external_servers_->SetData(std::make_unique<std::string>(R"json(
+[
+  {
+    "id": "id1",
+    "display_name": "CUPS",
+    "url": "ipp://192.168.1.15"
+  }
+])json"));
   // no changes, because nothing was processed yet
   ASSERT_EQ(obs.GetCalls().size(), 1u);
   task_environment_.RunUntilIdle();
@@ -254,16 +183,18 @@ TEST_F(PrintServersProviderTest, SetData2) {
   EXPECT_EQ(obs.GetCalls()[1].complete, false);
   EXPECT_EQ(obs.GetCalls()[1].servers, PrintServersPolicyData1());
   EXPECT_EQ(obs.GetCalls()[2].complete, true);
-  EXPECT_EQ(obs.GetCalls()[2].servers, PrintServersPolicyData2());
+  EXPECT_EQ(obs.GetCalls()[2].servers,
+            std::vector<PrintServer>(
+                {{"id1", GURL("http://192.168.1.15:631"), "CUPS"}}));
   external_servers_->RemoveObserver(&obs);
 }
 
 // Verifies SetData() + ClearData() before SetData() completes.
 TEST_F(PrintServersProviderTest, SetDataClearData) {
-  auto blob1 = std::make_unique<std::string>(kPrintServersPolicyJson1);
   TestObserver obs;
   external_servers_->AddObserver(&obs);
-  external_servers_->SetData(std::move(blob1));
+  external_servers_->SetData(
+      std::make_unique<std::string>(kPrintServersPolicyJson1));
   // single call from AddObserver, since SetData(...) is not processed yet
   ASSERT_EQ(obs.GetCalls().size(), 1u);
   external_servers_->ClearData();
@@ -280,7 +211,6 @@ TEST_F(PrintServersProviderTest, SetDataClearData) {
 
 // Verifies ClearData() before AddObserver() + SetData() after.
 TEST_F(PrintServersProviderTest, ClearDataSetData) {
-  auto blob1 = std::make_unique<std::string>(kPrintServersPolicyJson1);
   TestObserver obs;
   external_servers_->ClearData();
   external_servers_->AddObserver(&obs);
@@ -288,7 +218,8 @@ TEST_F(PrintServersProviderTest, ClearDataSetData) {
   ASSERT_EQ(obs.GetCalls().size(), 1u);
   EXPECT_EQ(obs.GetCalls().back().complete, true);
   EXPECT_TRUE(obs.GetCalls().back().servers.empty());
-  external_servers_->SetData(std::move(blob1));
+  external_servers_->SetData(
+      std::make_unique<std::string>(kPrintServersPolicyJson1));
   // SetData(...) is not completed, but generates a call switching "complete"
   // flag to false
   ASSERT_EQ(obs.GetCalls().size(), 2u);
@@ -305,41 +236,87 @@ TEST_F(PrintServersProviderTest, ClearDataSetData) {
 
 // Verify that invalid URLs are filtered out.
 TEST_F(PrintServersProviderTest, InvalidURLs) {
-  auto blob3 = std::make_unique<std::string>(kPrintServersPolicyJson3);
   TestObserver obs;
   external_servers_->AddObserver(&obs);
-  external_servers_->SetData(std::move(blob3));
+  external_servers_->SetData(std::make_unique<std::string>(R"json(
+[
+  {
+    "id": "1",
+    "display_name": "server_1",
+    "url": "ipp://aaa.bbb.ccc:666/xx"
+  }, {
+    "id": "2",
+    "display_name": "server_2",
+    "url":"ipps:/print.server.intra.example.com:443z/ipp"
+  }, {
+    "id": "3",
+    "display_name": "server_3",
+    "url": "file://192.168.1.8/bleble/print"
+  }, {
+    "id": "4",
+    "display_name": "server_4",
+    "url": "http://aaa.bbb.ccc:666/xx"
+  }, {
+    "id": "5",
+    "display_name": "server_5",
+    "url": "\n \t ipps://aaa.bbb.ccc:666/yy"
+  }, {
+    "id": "6",
+    "display_name": "server_6",
+    "url":"ipps:/print.server^.intra.example.com/ipp"
+  }, {
+    "id": "3",
+    "display_name": "server_7",
+    "url": "file://194.169.2.18/bleble2/print"
+  }, {
+    "display_name": "server_8",
+    "url": "file://195.161.3.28/bleble/print"
+  }
+])json"));
   task_environment_.RunUntilIdle();
   ASSERT_EQ(obs.GetCalls().size(), 2u);
   EXPECT_EQ(obs.GetCalls().back().complete, true);
-  EXPECT_EQ(obs.GetCalls().back().servers, PrintServersPolicyData3());
+  // Only two records are valid:
+  // server_1 - OK
+  // server_2 - invalid URL - invalid port number
+  // server_3 - unsupported scheme
+  // server_4 - duplicate of server_1
+  // server_5 - leading whitespaces, but OK
+  // server_6 - invalid URL - forbidden character
+  // server_7 - duplicate id
+  // server_8 - missing id
+  EXPECT_EQ(obs.GetCalls().back().servers,
+            std::vector<PrintServer>(
+                {{"1", GURL("http://aaa.bbb.ccc:666/xx"), "server_1"},
+                 {"5", GURL("https://aaa.bbb.ccc:666/yy"), "server_5"}}));
   external_servers_->RemoveObserver(&obs);
 }
 
 // Verify that allowlist works as expected.
 TEST_F(PrintServersProviderTest, Allowlist) {
   // The sequence from SetData test.
-  auto blob1 = std::make_unique<std::string>(kPrintServersPolicyJson1);
   TestObserver obs;
   external_servers_->AddObserver(&obs);
-  external_servers_->SetData(std::move(blob1));
+  external_servers_->SetData(
+      std::make_unique<std::string>(kPrintServersPolicyJson1));
   // Apply an empty allowlist on the top.
-  auto value = std::make_unique<base::ListValue>();
-  pref_service_.SetManagedPref(allowlist_pref_name_, std::move(value));
+  pref_service_.SetManagedPref(kAllowlistPrefName,
+                               std::make_unique<base::ListValue>());
   // Check the resultant list - is is supposed to be empty.
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(obs.GetCalls().empty());
   EXPECT_TRUE(obs.GetCalls().back().complete);
   EXPECT_TRUE(obs.GetCalls().back().servers.empty());
-  // Apply allowlist1.
-  value = std::make_unique<base::ListValue>();
-  for (const std::string& id : kPrintServersPolicyAllowlist1)
+  // Apply allowlist.
+  auto value = std::make_unique<base::ListValue>();
+  for (const std::string& id : {"id3", "idX", "id1"})
     value->Append(base::Value(id));
-  pref_service_.SetManagedPref(allowlist_pref_name_, std::move(value));
+  pref_service_.SetManagedPref(kAllowlistPrefName, std::move(value));
   // Check the resultant list.
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(obs.GetCalls().back().complete);
-  EXPECT_EQ(obs.GetCalls().back().servers, PrintServersPolicyData1Allowlist1());
+  EXPECT_EQ(obs.GetCalls().back().servers,
+            std::vector<PrintServer>({Server1(), Server3()}));
   // The end.
   external_servers_->RemoveObserver(&obs);
 }
