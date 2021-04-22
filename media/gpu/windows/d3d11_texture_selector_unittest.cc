@@ -129,7 +129,7 @@ TEST_F(D3D11TextureSelectorUnittest, P010CopiesTo10BitRGBInHDR) {
       CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue,
                                TextureSelector::HDRMode::kSDROrHDR);
 
-  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_ARGB);
+  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_XB30);
   EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_R10G10B10A2_UNORM);
   EXPECT_TRUE(tex_sel->WillCopyForTesting());
 }

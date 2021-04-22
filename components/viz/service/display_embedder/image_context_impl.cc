@@ -139,7 +139,8 @@ void ImageContextImpl::BeginAccessIfNecessary(
   if (BindOrCopyTextureIfNecessary(texture_base, &texture_size) &&
       texture_size != size()) {
     DLOG(ERROR) << "Failed to fulfill the promise texture - texture "
-                   "size does not match TransferableResource size.";
+                   "size does not match TransferableResource size: "
+                << texture_size.ToString() << " vs " << size().ToString();
     CreateFallbackImage(context_state);
     return;
   }
@@ -202,7 +203,9 @@ bool ImageContextImpl::BeginAccessIfNecessaryForSharedImage(
 
     if (representation->size() != size()) {
       DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
-                     "size does not match TransferableResource size.";
+                     "size does not match TransferableResource size: "
+                  << representation->size().ToString() << " vs "
+                  << size().ToString();
       return false;
     }
 

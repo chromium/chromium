@@ -19,7 +19,6 @@
 
 namespace gl {
 class DCLayerTree;
-class GLImageDXGI;
 class GLImageMemory;
 
 // SwapChainPresenter holds a swap chain, direct composition visuals, and other
@@ -161,14 +160,20 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // Try presenting to a decode swap chain based on various conditions such as
   // global state (e.g. finch, NV12 support), texture flags, and transform.
   // Returns true on success.  See PresentToDecodeSwapChain() for more info.
-  bool TryPresentToDecodeSwapChain(GLImageDXGI* nv12_image,
-                                   const gfx::Rect& content_rect,
-                                   const gfx::Size& swap_chain_size);
+  bool TryPresentToDecodeSwapChain(
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
+      unsigned array_slice,
+      const gfx::ColorSpace& color_space,
+      const gfx::Rect& content_rect,
+      const gfx::Size& swap_chain_size,
+      DXGI_FORMAT swap_chain_format);
 
   // Present to a decode swap chain created from compatible video decoder
   // buffers using given |nv12_image| with destination size |swap_chain_size|.
   // Returns true on success.
-  bool PresentToDecodeSwapChain(GLImageDXGI* nv12_image,
+  bool PresentToDecodeSwapChain(Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
+                                unsigned array_slice,
+                                const gfx::ColorSpace& color_space,
                                 const gfx::Rect& content_rect,
                                 const gfx::Size& swap_chain_size);
 
