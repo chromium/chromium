@@ -68,10 +68,12 @@ base::Optional<net::IPEndPoint> GetLocalAddr(
   return local_addr;
 }
 
+#if BUILDFLAG(ENABLE_MDNS)
 bool ResemblesMulticastDNSName(const std::string& hostname) {
   return base::EndsWith(hostname, ".local") ||
          base::EndsWith(hostname, ".local.");
 }
+#endif  // !BUILDFLAG(ENABLE_MDNS)
 
 bool ContainNonPubliclyRoutableAddress(const net::AddressList& addresses) {
   DCHECK(!addresses.empty());
