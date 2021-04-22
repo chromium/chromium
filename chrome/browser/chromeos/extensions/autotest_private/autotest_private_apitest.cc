@@ -366,7 +366,9 @@ class AutotestPrivateSystemWebAppsTest : public AutotestPrivateApiTest {
   std::unique_ptr<web_app::TestSystemWebAppInstallation> installation_;
 };
 
-IN_PROC_BROWSER_TEST_F(AutotestPrivateSystemWebAppsTest, SystemWebApps) {
+// TODO(crbug.com/1201545): Fix flakiness.
+IN_PROC_BROWSER_TEST_F(AutotestPrivateSystemWebAppsTest,
+                       DISABLED_SystemWebApps) {
   ASSERT_TRUE(RunExtensionTest(
       {.name = "autotest_private", .custom_arg = "systemWebApps"},
       {.load_as_component = true}))
