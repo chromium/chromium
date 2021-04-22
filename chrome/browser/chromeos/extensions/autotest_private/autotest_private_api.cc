@@ -1961,9 +1961,8 @@ AutotestPrivateLaunchSystemWebAppFunction::Run() {
   if (!app_type.has_value())
     return RespondNow(Error("No mapped system web app found"));
 
-  web_app::SystemAppLaunchParams swa_params;
-  swa_params.url = GURL(params->url);
-  web_app::LaunchSystemWebAppAsync(profile, *app_type, swa_params);
+  web_app::LaunchSystemWebAppAsync(profile, *app_type,
+                                   {.url = GURL(params->url)});
 
   return RespondNow(NoArguments());
 }

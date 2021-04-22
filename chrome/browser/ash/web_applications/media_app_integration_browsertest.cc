@@ -19,7 +19,6 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/common/chrome_paths.h"
@@ -152,7 +151,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaApp) {
 }
 
 // Test that the MediaApp successfully loads a file passed in on its launch
-// params. This exercises only web_applications logic.
+// params.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
   WaitForTestSystemAppInstall();
   content::WebContents* app;
@@ -177,37 +176,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
   }
 
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
-}
-
-// Test that the MediaApp successfully loads a file using
-// LaunchSystemWebAppAsync. This exercises high level integration with SWA
-// platform (a different code path than MediaAppLaunchWithFile test).
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
-                       MediaAppWithLaunchSystemWebAppAsync) {
-  WaitForTestSystemAppInstall();
-
-  content::WebContents* app;
-
-  // Launch the App for the first time.
-  {
-    web_app::SystemAppLaunchParams params;
-    params.launch_paths.push_back(TestFile(kFilePng800x600));
-    web_app::LaunchSystemWebAppAsync(browser()->profile(),
-                                     web_app::SystemAppType::MEDIA, params);
-    web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
-    app = PrepareActiveBrowserForTest();
-    EXPECT_EQ("800x600", WaitForImageAlt(app, kFilePng800x600));
-  }
-
-  // Launch the App for the second time. This re-uses the existing window.
-  {
-    web_app::SystemAppLaunchParams params;
-    params.launch_paths.push_back(TestFile(kFileJpeg640x480));
-    web_app::LaunchSystemWebAppAsync(browser()->profile(),
-                                     web_app::SystemAppType::MEDIA, params);
-    web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
-    EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
-  }
 }
 
 // Regression test for b/172881869.

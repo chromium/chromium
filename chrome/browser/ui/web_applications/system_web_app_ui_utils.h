@@ -33,22 +33,13 @@ base::Optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
 
 // Additional parameters to control LaunchSystemAppAsync behaviors.
 struct SystemAppLaunchParams {
-  SystemAppLaunchParams();
-  ~SystemAppLaunchParams();
-
-  // If provided launches System Apps into |url|, instead of its start_url (as
-  // specified its WebApplicationInfo). Mutually exclusive with non-empty
-  // |launch_paths|.
-  base::Optional<GURL> url;
+  // If provided (i.e. the URL is valid), launches System Apps into |url|
+  // instead of it's start_url (as specified its WebApplicationInfo).
+  GURL url;
 
   // Where the app is launched from.
   apps::mojom::LaunchSource launch_source =
       apps::mojom::LaunchSource::kFromChromeInternal;
-
-  // If non-empty, specifies files passed to Web File Handling. Apps need to
-  // have "FileHandling" origin trial in its SystemAppInfo, and file handlers
-  // in its WebApplicationInfo. Mutually exclusive with |url|.
-  std::vector<base::FilePath> launch_paths;
 };
 
 // Launch the given System Web App |type|, |params| can be used to tweak the

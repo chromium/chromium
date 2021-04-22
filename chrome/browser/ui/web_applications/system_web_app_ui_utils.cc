@@ -139,9 +139,6 @@ base::FilePath GetLaunchDirectory(
 
 }  // namespace
 
-SystemAppLaunchParams::SystemAppLaunchParams() = default;
-SystemAppLaunchParams::~SystemAppLaunchParams() = default;
-
 void LaunchSystemWebAppAsync(Profile* profile,
                              const SystemAppType type,
                              const SystemAppLaunchParams& params,
@@ -194,25 +191,14 @@ void LaunchSystemWebAppAsync(Profile* profile,
       apps::mojom::LaunchContainer::kLaunchContainerNone,
       WindowOpenDisposition::NEW_WINDOW, /* prefer_container */ false);
 
-  if (!params.launch_paths.empty()) {
-    DCHECK(!params.url.has_value())
-        << "Launch URL can't be used with launch_paths.";
-    app_service->LaunchAppWithFiles(
-        *app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-        event_flags, params.launch_source,
-        apps::mojom::FilePaths::New(params.launch_paths));
-    return;
-  }
-
-  if (params.url) {
-    DCHECK(params.url->is_valid());
-    app_service->LaunchAppWithUrl(*app_id, event_flags, *params.url,
+  if (params.url.is_empty()) {
+    app_service->Launch(app_id.value(), event_flags, params.launch_source,
+                        std::move(window_info));
+  } else {
+    DCHECK(params.url.is_valid());
+    app_service->LaunchAppWithUrl(app_id.value(), event_flags, params.url,
                                   params.launch_source, std::move(window_info));
-    return;
   }
-
-  app_service->Launch(*app_id, event_flags, params.launch_source,
-                      std::move(window_info));
 }
 
 Browser* LaunchSystemWebAppImpl(Profile* profile,

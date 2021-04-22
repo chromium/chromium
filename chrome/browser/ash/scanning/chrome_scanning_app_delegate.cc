@@ -18,7 +18,6 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -108,11 +107,16 @@ void ChromeScanningAppDelegate::OpenFilesInMediaApp(
 
   DCHECK(!file_paths.empty());
 
-  web_app::SystemAppLaunchParams params;
-  params.launch_paths = file_paths;
-  params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
-  web_app::LaunchSystemWebAppAsync(Profile::FromWebUI(web_ui_),
-                                   web_app::SystemAppType::MEDIA, params);
+  apps::mojom::FilePathsPtr files = apps::mojom::FilePaths::New(file_paths);
+  auto* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(Profile::FromWebUI(web_ui_));
+  proxy->LaunchAppWithFiles(
+      web_app::kMediaAppId,
+      apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
+                          WindowOpenDisposition::NEW_WINDOW,
+                          /* preferred_container=*/false),
+      apps::mojom::LaunchSource::kFromOtherApp, std::move(files));
 }
 
 void ChromeScanningAppDelegate::SaveScanSettingsToPrefs(
