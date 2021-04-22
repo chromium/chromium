@@ -189,11 +189,14 @@ void SSLManager::DidCommitProvisionalLoad(const LoadCommittedDetails& details) {
     if (previous_entry) {
       add_content_status_flags = previous_entry->GetSSL().content_status;
     }
-  } else {
-    // For main-frame non-same-page navigations, clear content status
-    // flags. These flags are set based on the content on the page, and thus
-    // should reflect the current content, even if the navigation was to an
-    // existing entry that already had content status flags set.
+  } else if (!details.is_prerender_activation) {
+    // For main-frame navigations that are not same-document and not prerender
+    // activations, clear content status flags. These flags are set based on the
+    // content on the page, and thus should reflect the current content, even if
+    // the navigation was to an existing entry that already had content status
+    // flags set. The status flags are kept for prerender activations because
+    // |entry| points to the NavigationEntry that has just committed and it may
+    // contain existing ssl flags which we do not want to reset.
     remove_content_status_flags = ~0;
     // Also clear any UserData from the SSLStatus.
     if (entry)

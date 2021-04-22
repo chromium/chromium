@@ -81,6 +81,8 @@
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/navigation_handle_observer.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/signed_exchange_browser_test_helper.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -2138,5 +2140,170 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeSecurityStateTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(, SignedExchangeSecurityStateTest, testing::Bool());
+
+class SecurityStateTabHelperPrerenderTest : public SecurityStateTabHelperTest {
+ public:
+  SecurityStateTabHelperPrerenderTest()
+      : prerender_helper_(base::BindRepeating(
+            &SecurityStateTabHelperPrerenderTest::web_contents,
+            base::Unretained(this))) {
+    // Disable mixed content autoupgrading to allow mixed content to load and
+    // test that mixed content is recorded correctly on the prerender navigation
+    // entry.
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2},
+        {blink::features::kMixedContentAutoupgrade});
+  }
+  ~SecurityStateTabHelperPrerenderTest() override = default;
+  SecurityStateTabHelperPrerenderTest(
+      const SecurityStateTabHelperPrerenderTest&) = delete;
+  SecurityStateTabHelperPrerenderTest& operator=(
+      const SecurityStateTabHelperPrerenderTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
+    prerender_helper_.SetUpOnMainThread(&https_server_);
+    SecurityStateTabHelperTest::SetUpOnMainThread();
+  }
+
+  void SetUpMockCertVerifierForHttpsServer(net::EmbeddedTestServer& test_server,
+                                           net::CertStatus cert_status,
+                                           int net_result) {
+    scoped_refptr<net::X509Certificate> cert(test_server.GetCertificate());
+    net::CertVerifyResult verify_result;
+    verify_result.is_issued_by_known_root = false;
+    verify_result.verified_cert = cert;
+    verify_result.cert_status = cert_status;
+
+    mock_cert_verifier()->AddResultForCert(cert, verify_result, net_result);
+  }
+
+  content::WebContents* web_contents() { return web_contents_; }
+
+ protected:
+  content::WebContents* web_contents_ = nullptr;
+  content::test::PrerenderTestHelper prerender_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that starting a prerender will not modify the existing security info
+// and navigating to a previously prerendered URL may trigger a failure.
+IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperPrerenderTest, InvalidPrerender) {
+  // Start test server.
+  auto test_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  test_server->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  test_server->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(test_server->Start());
+
+  // Setup a mock certificate verifier.
+  SetUpMockCertVerifierForHttpsServer(*test_server, 0, net::OK);
+
+  // Load a valid HTTPS page.
+  auto primary_url = test_server->GetURL("/prerender/add_prerender.html");
+  ui_test_utils::NavigateToURL(browser(), primary_url);
+  CheckSecurityInfoForSecure(web_contents(), security_state::SECURE, false,
+                             false, false,
+                             false /* expect cert status error */);
+
+  // Shutdown server.
+  ASSERT_TRUE(test_server->ShutdownAndWaitUntilComplete());
+
+  // Start test server with invalid certificate.
+  auto port = test_server->port();
+  test_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  test_server->SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
+  test_server->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(test_server->Start(port));
+
+  // Setup a mock certificate verifier.
+  SetUpMockCertVerifierForHttpsServer(
+      *test_server, net::CERT_STATUS_DATE_INVALID, net::ERR_CERT_DATE_INVALID);
+
+  // Try to prerender the page with an invalid certificate.
+  auto prerender_url = test_server->GetURL("/title1.html");
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      web_contents());
+  content::NavigationHandleObserver nav_observer(web_contents(), prerender_url);
+  prerender_helper_.AddPrerenderAsync(prerender_url);
+
+  // Ensure that the prerender has started.
+  registry_observer.WaitForTrigger(prerender_url);
+  auto prerender_id = prerender_helper_.GetHostForUrl(prerender_url);
+  EXPECT_NE(content::RenderFrameHost::kNoFrameTreeNodeId, prerender_id);
+  content::test::PrerenderHostObserver host_observer(web_contents(),
+                                                     prerender_id);
+
+  // Since the prerender has not yet activated, the state should still be
+  // secure.
+  CheckSecurityInfoForSecure(web_contents(), security_state::SECURE, false,
+                             false, false,
+                             false /* expect cert status error */);
+
+  // The prerender should be abandoned since the it commits an interstitial,
+  // wait for the PrerenderHost to be destroyed.
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(content::RenderFrameHost::kNoFrameTreeNodeId,
+            prerender_helper_.GetHostForUrl(prerender_url));
+  EXPECT_EQ(net::ERR_CERT_DATE_INVALID, nav_observer.net_error_code());
+
+  // Navigate to prerender_url and expect cert error.
+  prerender_helper_.NavigatePrimaryPage(prerender_url);
+  CheckSecurityInfoForSecure(web_contents(), security_state::DANGEROUS, false,
+                             false, false, true /* expect cert status error */);
+
+  // Make sure that the prerender was not activated.
+  EXPECT_FALSE(host_observer.was_activated());
+
+  // Shutdown server.
+  ASSERT_TRUE(test_server->ShutdownAndWaitUntilComplete());
+}
+
+IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperPrerenderTest,
+                       PrerenderedMixedContent) {
+  // Start test server.
+  auto test_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  test_server->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  test_server->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(test_server->Start());
+
+  // Setup a mock certificate verifier.
+  SetUpMockCertVerifierForHttpsServer(*test_server, 0, net::OK);
+
+  // Load a valid HTTPS page.
+  auto primary_url = test_server->GetURL("/prerender/add_prerender.html");
+  ui_test_utils::NavigateToURL(browser(), primary_url);
+  CheckSecurityInfoForSecure(web_contents(), security_state::SECURE, false,
+                             false, false,
+                             false /* expect cert status error */);
+
+  // Load prerender page that displays mixed content.
+  auto prerender_url =
+      test_server->GetURL("/ssl/page_displays_insecure_content.html");
+  prerender_helper_.AddPrerender(prerender_url);
+  auto prerender_id = prerender_helper_.GetHostForUrl(prerender_url);
+  EXPECT_NE(content::RenderFrameHost::kNoFrameTreeNodeId, prerender_id);
+  content::test::PrerenderHostObserver host_observer(web_contents(),
+                                                     prerender_id);
+
+  // Since the prerender has not yet activated, the state should still be
+  // secure.
+  CheckSecurityInfoForSecure(web_contents(), security_state::SECURE, false,
+                             false, false,
+                             false /* expect cert status error */);
+
+  // Navigate to prerender_url and expect warning.
+  prerender_helper_.NavigatePrimaryPage(prerender_url);
+  CheckSecurityInfoForSecure(web_contents(), security_state::WARNING, false,
+                             true, false, false /* expect cert status error */);
+
+  // Make sure that the prerender was activated.
+  EXPECT_TRUE(host_observer.was_activated());
+
+  // Shutdown server.
+  ASSERT_TRUE(test_server->ShutdownAndWaitUntilComplete());
+}
 
 }  // namespace

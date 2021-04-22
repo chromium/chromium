@@ -1,0 +1,48 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Adds <link rel=prerender> for the URL.
+function add_prerender(url) {
+  const link = document.createElement('link');
+  link.rel = 'prerender';
+  link.href = url;
+  document.head.appendChild(link);
+}
+
+// Creates a new iframe with the URL, and returns a promise.
+function add_iframe(url) {
+  const frame = document.createElement('iframe');
+  frame.src = url;
+  document.body.appendChild(frame);
+  return new Promise(resolve => {
+    frame.onload = e => resolve('LOADED');
+  });
+}
+
+// Creates a new iframe with the URL asynchronously.
+const iframe_promises = [];
+function add_iframe_async(url) {
+  if (iframe_promises[url])
+    throw "URL ALREADY USED";
+  iframe_promises[url] = add_iframe(url);
+}
+
+// Waits until added iframe with the URL finishes loading.
+async function wait_iframe_async(url) {
+  if (!iframe_promises[url])
+    return "URL NOT FOUND";
+  const target_promise = iframe_promises[url];
+  iframe_promises[url] = null;
+  return target_promise;
+}
+
+// Opens a new pop-up window with the URL.
+async function open_window(url) {
+  const win = window.open(url, '_blank');
+  if (!win)
+    return 'FAILED';
+  return await new Promise(resolve => {
+    win.onload = e => resolve('LOADED');
+  });
+}

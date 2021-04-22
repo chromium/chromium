@@ -91,9 +91,19 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // C, then this returns A.
   virtual SiteInstance* GetSourceSiteInstance() = 0;
 
-  // Whether the navigation is taking place in the main frame or in a subframe.
-  // This remains constant over the navigation lifetime.
+  // Whether the navigation is taking place in a main frame or in a subframe.
+  // This can also return true for navigations in the root of a non-primary
+  // page, so consider whether you want to call IsInPrimaryMainFrame() instead.
+  // See the documentation below for details. This remains constant over the
+  // navigation lifetime.
   virtual bool IsInMainFrame() = 0;
+
+  // Whether the navigation is taking place in the main frame of the primary
+  // frame tree. With MPArch (crbug.com/1164280), a WebContents may have
+  // additional frame trees for prerendering pages in addition to the primary
+  // frame tree (holding the page currently shown to the user). This remains
+  // constant over the navigation lifetime.
+  virtual bool IsInPrimaryMainFrame() = 0;
 
   // Whether the navigation was initiated by the renderer process. Examples of
   // renderer-initiated navigations include:

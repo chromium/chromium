@@ -54,6 +54,9 @@ struct CONTENT_EXPORT LoadCommittedDetails {
   // sub-frame.
   bool is_main_frame;
 
+  // True when the navigation triggered a prerender activation.
+  bool is_prerender_activation = false;
+
   // Returns whether the main frame navigated to a different page (e.g., not
   // scrolling to a fragment inside the current page). We often need this logic
   // for showing or hiding something.

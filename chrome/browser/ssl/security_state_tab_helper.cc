@@ -155,16 +155,16 @@ void SecurityStateTabHelper::DidStartNavigation(
 
 void SecurityStateTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // Ignore subframe navigations, same-document navigations, and navigations
-  // that did not commit (e.g. HTTP/204 or file downloads).
-  if (!navigation_handle->IsInMainFrame() ||
+  // Ignore non-primary FrameTree navigations, subframe navigations,
+  // same-document navigations, and navigations that did not commit (e.g.
+  // HTTP/204 or file downloads).
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument() ||
       !navigation_handle->HasCommitted()) {
     return;
   }
 
-  content::NavigationEntry* entry =
-      web_contents()->GetController().GetLastCommittedEntry();
+  content::NavigationEntry* entry = navigation_handle->GetNavigationEntry();
   if (entry) {
     UMA_HISTOGRAM_ENUMERATION(
         "Security.CertificateTransparency.MainFrameNavigationCompliance",
