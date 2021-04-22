@@ -673,6 +673,8 @@
 - (void)hidePromo {
   [self.defaultBrowserPromoCoordinator stop];
   self.defaultBrowserPromoCoordinator = nil;
+  [self.tailoredPromoCoordinator stop];
+  self.tailoredPromoCoordinator = nil;
 }
 
 #pragma mark - FindInPageCommands

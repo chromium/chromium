@@ -36,7 +36,10 @@ class DefaultBrowserUtilsTest : public PlatformTest {
   void ClearUserDefaults() {
     NSArray<NSString*>* keys = @[
       @"lastSignificantUserEvent", @"lastSignificantUserEventStaySafe",
-      @"lastSignificantUserEventMadeForIOS", @"lastSignificantUserEventAllTabs"
+      @"lastSignificantUserEventMadeForIOS", @"lastSignificantUserEventAllTabs",
+      @"userHasInteractedWithFullscreenPromo",
+      @"userHasInteractedWithTailoredFullscreenPromo",
+      @"lastTimeUserInteractedWithFullscreenPromo"
     ];
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     for (NSString* key in keys) {
@@ -89,62 +92,52 @@ TEST_F(DefaultBrowserUtilsTest, LogInterestingActivityEach) {
   EXPECT_TRUE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeAllTabs));
 }
 
-// Tests interesting information for any type.
-TEST_F(DefaultBrowserUtilsTest, LogInterestingActivityAny) {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    // On iOS < 14 it should always be false.
-    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
-    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
-    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
-    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
-    EXPECT_FALSE(IsLikelyInterestedDefaultBrowserUser());
-    return;
-  }
-
-  // General log.
-  EXPECT_FALSE(IsLikelyInterestedDefaultBrowserUser());
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
-  EXPECT_TRUE(IsLikelyInterestedDefaultBrowserUser());
-  ClearUserDefaults();
-
-  // Stay safe log.
-  EXPECT_FALSE(IsLikelyInterestedDefaultBrowserUser());
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
-  EXPECT_TRUE(IsLikelyInterestedDefaultBrowserUser());
-  ClearUserDefaults();
-
-  // Made for iOS log.
-  EXPECT_FALSE(IsLikelyInterestedDefaultBrowserUser());
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
-  EXPECT_TRUE(IsLikelyInterestedDefaultBrowserUser());
-  ClearUserDefaults();
-
-  // All tabs log.
-  EXPECT_FALSE(IsLikelyInterestedDefaultBrowserUser());
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
-  EXPECT_TRUE(IsLikelyInterestedDefaultBrowserUser());
-}
-
 // Tests most recent interest type.
 TEST_F(DefaultBrowserUtilsTest, MostRecentInterestDefaultPromoType) {
   if (!base::ios::IsRunningOnIOS14OrLater()) {
     // iOS < 14 not supported.
     return;
   }
-  DefaultPromoType type = MostRecentInterestDefaultPromoType();
+  DefaultPromoType type = MostRecentInterestDefaultPromoType(NO);
   EXPECT_EQ(type, DefaultPromoTypeGeneral);
 
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
-  type = MostRecentInterestDefaultPromoType();
+  type = MostRecentInterestDefaultPromoType(NO);
   EXPECT_EQ(type, DefaultPromoTypeAllTabs);
+  type = MostRecentInterestDefaultPromoType(YES);
+  EXPECT_NE(type, DefaultPromoTypeAllTabs);
 
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
-  type = MostRecentInterestDefaultPromoType();
+  type = MostRecentInterestDefaultPromoType(NO);
   EXPECT_EQ(type, DefaultPromoTypeStaySafe);
 
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
-  type = MostRecentInterestDefaultPromoType();
+  type = MostRecentInterestDefaultPromoType(NO);
   EXPECT_EQ(type, DefaultPromoTypeMadeForIOS);
+}
+
+// Tests cool down between promos.
+TEST_F(DefaultBrowserUtilsTest, PromoCoolDown) {
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    // iOS < 14 not supported.
+    return;
+  }
+  LogUserInteractionWithFullscreenPromo();
+  EXPECT_TRUE(UserInFullscreenPromoCooldown());
+
+  ClearUserDefaults();
+  LogUserInteractionWithTailoredFullscreenPromo();
+  EXPECT_TRUE(UserInFullscreenPromoCooldown());
+}
+
+// Tests no 2 tailored promos are not shown.
+TEST_F(DefaultBrowserUtilsTest, TailoredPromoDoesNotAppearTwoTimes) {
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    // iOS < 14 not supported.
+    return;
+  }
+  LogUserInteractionWithTailoredFullscreenPromo();
+  EXPECT_TRUE(HasUserInteractedWithTailoredFullscreenPromoBefore());
 }
 
 }  // namespace

@@ -93,7 +93,7 @@ using l10n_util::GetNSString;
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss"));
   // This ensures that a modal swipe dismiss will also be logged.
-  // TODO(crbug.com/1191732): log interaction with promo.
+  LogUserInteractionWithTailoredFullscreenPromo();
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -106,7 +106,7 @@ using l10n_util::GetNSString;
 - (void)confirmationAlertPrimaryAction {
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted"));
-  // TODO(crbug.com/1191732): log interaction with promo.
+  LogUserInteractionWithTailoredFullscreenPromo();
   [[UIApplication sharedApplication]
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}
@@ -118,7 +118,7 @@ using l10n_util::GetNSString;
 - (void)confirmationAlertSecondaryAction {
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss"));
-  // TODO(crbug.com/1191732): log interaction with promo.
+  LogUserInteractionWithTailoredFullscreenPromo();
   [self.handler hidePromo];
 }
 
