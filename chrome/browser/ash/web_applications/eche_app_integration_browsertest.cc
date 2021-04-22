@@ -137,3 +137,28 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, ShouldAllowCloseWindow) {
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     EcheAppIntegrationTest);
+
+class EcheAppEnableResizingTest : public SystemWebAppIntegrationTest {
+ public:
+  EcheAppEnableResizingTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kEcheSWA, chromeos::features::kEcheSWAResizing},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(EcheAppEnableResizingTest,
+                       WindowResizeableAfterEnableEcheSWAResizingFlag) {
+  WaitForTestSystemAppInstall();
+  Browser* browser;
+  LaunchApp(web_app::SystemAppType::ECHE, &browser);
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser);
+  EXPECT_TRUE(browser_view->CanResize());
+}
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    EcheAppEnableResizingTest);

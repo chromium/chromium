@@ -2522,6 +2522,9 @@ extern const char kVideoPlayerJsModulesDescription[];
 extern const char kEcheSWAName[];
 extern const char kEcheSWADescription[];
 
+extern const char kEcheSWAResizingName[];
+extern const char kEcheSWAResizingDescription[];
+
 extern const char kEnableNetworkingInDiagnosticsAppName[];
 extern const char kEnableNetworkingInDiagnosticsAppDescription[];
 

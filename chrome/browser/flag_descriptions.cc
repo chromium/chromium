@@ -4336,6 +4336,10 @@ const char kTrimOnMemoryPressureDescription[] =
 const char kEcheSWAName[] = "Enable Eche App SWA.";
 const char kEcheSWADescription[] = "Enable the SWA version of the Eche.";
 
+const char kEcheSWAResizingName[] = "Allow resizing Eche App.";
+const char kEcheSWAResizingDescription[] =
+    "Enable a naive resize for the Eche window";
+
 const char kEnableNetworkingInDiagnosticsAppName[] =
     "Enable networking cards in the Diagnostics App";
 const char kEnableNetworkingInDiagnosticsAppDescription[] =

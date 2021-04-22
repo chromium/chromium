@@ -262,7 +262,13 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
     infos.at(SystemAppType::ECHE).capture_navigations = true;
     infos.at(SystemAppType::ECHE).show_in_launcher = false;
     infos.at(SystemAppType::ECHE).show_in_search = false;
-    infos.at(SystemAppType::ECHE).is_resizeable = false;
+
+    if (base::FeatureList::IsEnabled(chromeos::features::kEcheSWAResizing)) {
+      infos.at(SystemAppType::ECHE).is_resizeable = true;
+    } else {
+      infos.at(SystemAppType::ECHE).is_resizeable = false;
+    }
+
     infos.at(SystemAppType::ECHE).is_maximizable = false;
     infos.at(SystemAppType::ECHE).should_have_reload_button_in_minimal_ui =
         false;
