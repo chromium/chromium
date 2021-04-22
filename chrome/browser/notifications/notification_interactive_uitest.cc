@@ -157,7 +157,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCreateSimpleNotification) {
   EXPECT_EQ(u"My Body", (*notifications.rbegin())->message());
 }
 
-IN_PROC_BROWSER_TEST_F(NotificationsTest, NotificationBlockerTest) {
+// https://crbug.com/1201550
+IN_PROC_BROWSER_TEST_F(NotificationsTest, DISABLED_NotificationBlockerTest) {
   ToggledNotificationBlocker blocker;
   TestMessageCenterObserver observer;
 
