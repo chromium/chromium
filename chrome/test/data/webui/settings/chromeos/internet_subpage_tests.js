@@ -205,10 +205,11 @@ suite('InternetSubpage', function() {
       const mojom = chromeos.networkConfig.mojom;
       await flushAsync();
       const cellularNetworkList = internetSubpage.$$('#cellularNetworkList');
-      cellularNetworkList.deviceState = {
+      cellularNetworkList.cellularDeviceState = {
         type: mojom.NetworkType.kCellular,
         deviceState: mojom.DeviceStateType.kEnabled,
-        inhibitReason: mojom.InhibitReason.kNotInhibited
+        inhibitReason: mojom.InhibitReason.kNotInhibited,
+        simInfos: [{eid: 'eid'}],
       };
       cellularNetworkList.globalPolicy = {
         allowOnlyPolicyNetworksToConnect: false,
