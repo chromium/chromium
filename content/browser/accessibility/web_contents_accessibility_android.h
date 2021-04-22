@@ -239,6 +239,12 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
                      jint id,
                      float value);
 
+  // Responds to a hover event without relying on the renderer for hit testing.
+  bool OnHoverEventNoRenderer(JNIEnv* env,
+                              const base::android::JavaParamRef<jobject>& obj,
+                              jfloat x,
+                              jfloat y);
+
   // Returns true if the given subtree has inline text box data, or if there
   // aren't any to load.
   jboolean AreInlineTextBoxesLoaded(

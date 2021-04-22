@@ -87,6 +87,7 @@ public class PlayerFrameView extends FrameLayout {
 
     /**
      * Updates the sub-frame views that this {@link PlayerFrameView} should display.
+     *
      * @param subFrameViews List of all sub-frame views.
      */
     void updateSubFrameViews(List<View> subFrameViews) {
@@ -95,6 +96,7 @@ public class PlayerFrameView extends FrameLayout {
 
     /**
      * Updates clip rects for sub-frames that this {@link PlayerFrameView} should display.
+     *
      * @param subFrameRects List of all sub-frames clip rects.
      */
     void updateSubFrameRects(List<Rect> subFrameRects) {
@@ -134,6 +136,15 @@ public class PlayerFrameView extends FrameLayout {
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
         return mGestureDetector.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onHoverEvent(MotionEvent event) {
+        if (mWebContentsAccessibility != null
+                && mWebContentsAccessibility.isTouchExplorationEnabled()) {
+            return mWebContentsAccessibility.onHoverEventNoRenderer(event);
+        }
+        return super.onHoverEvent(event);
     }
 
     private void layoutSubFrames() {

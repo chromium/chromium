@@ -497,6 +497,24 @@ bool WebContentsAccessibilityAndroid::OnHoverEvent(
   return true;
 }
 
+bool WebContentsAccessibilityAndroid::OnHoverEventNoRenderer(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jfloat x,
+    jfloat y) {
+  gfx::PointF point = gfx::PointF(x, y);
+  if (auto* root_manager = GetRootBrowserAccessibilityManager()) {
+    auto* hover_node = static_cast<BrowserAccessibilityAndroid*>(
+        root_manager->GetRoot()->ApproximateHitTest(
+            gfx::ToFlooredPoint(point)));
+    if (hover_node && hover_node != root_manager->GetRoot()) {
+      HandleHover(hover_node->unique_id());
+      return true;
+    }
+  }
+  return false;
+}
+
 void WebContentsAccessibilityAndroid::HandleNavigate() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);

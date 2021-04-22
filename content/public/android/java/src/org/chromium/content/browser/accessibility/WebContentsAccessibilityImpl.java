@@ -242,6 +242,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         if (mDelegate.getWebContents() != null) {
             mCaptioningController = new CaptioningController(mDelegate.getWebContents());
             WindowEventObserverManager.from(mDelegate.getWebContents()).addObserver(this);
+        } else {
+            refreshState();
         }
         mDelegate.setOnScrollPositionChangedCallback(
                 () -> handleScrollPositionChanged(mAccessibilityFocusId));
@@ -948,6 +950,15 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         mIsHovering = true;
         mUserHasTouchExplored = true;
         return true;
+    }
+
+    @Override
+    public boolean onHoverEventNoRenderer(MotionEvent event) {
+        if (!onHoverEvent(event.getAction())) return false;
+
+        float x = event.getX() + mDelegate.getAccessibilityCoordinates().getScrollX();
+        float y = event.getY() + mDelegate.getAccessibilityCoordinates().getScrollY();
+        return WebContentsAccessibilityImplJni.get().onHoverEventNoRenderer(mNativeObj, this, x, y);
     }
 
     /**
@@ -2102,5 +2113,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         void signalEndOfTestForTesting(long nativeWebContentsAccessibilityAndroid);
         void setIsRunningAsWebView(long nativeWebContentsAccessibilityAndroid,
                 WebContentsAccessibilityImpl caller, boolean isWebView);
+        boolean onHoverEventNoRenderer(long nativeWebContentsAccessibilityAndroid,
+                WebContentsAccessibilityImpl caller, float x, float y);
     }
 }
