@@ -301,6 +301,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserPromo.TailoredFullscreen.{Action}"
+    enum="IOSDefaultBrowserTailoredPromoType" expires_after="2022-04-20">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
+  <summary>
+    Logged when the {Action} action happens in a tailored default browser promo.
+    Records the type of promo.
+  </summary>
+  <token key="Action">
+    <variant name="Accepted"/>
+    <variant name="Appear"/>
+    <variant name="Dismiss"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.Dialogs.JavaScriptDialogClosed"
     enum="IOSJavaScriptDialogDismissalCause" expires_after="M80">
   <owner>kkhorimoto@chromium.org</owner>
