@@ -134,7 +134,7 @@ void PageActionIconController::Init(const PageActionIconParams& params,
         add_page_action_icon(
             type, std::make_unique<PwaInstallView>(
                       params.command_updater, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate));
+                      params.page_action_icon_delegate, params.browser));
         break;
       case PageActionIconType::kQRCodeGenerator:
         add_page_action_icon(
