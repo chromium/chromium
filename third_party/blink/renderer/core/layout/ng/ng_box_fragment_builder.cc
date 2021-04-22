@@ -632,6 +632,27 @@ void NGBoxFragmentBuilder::
   }
 }
 
+void NGBoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
+  if (!HasMulticolsWithPendingOOFs() || !PreviousBreakToken() ||
+      !node_.IsFixedContainer())
+    return;
+
+  // If the fixedpos containing block is fragmented, adjust the offset to be
+  // from the first containing block fragment to the fragmentation context root.
+  // Also, update the multicol offset such that it is relative to the fixedpos
+  // containing block.
+  LayoutUnit previous_consumed_block_size =
+      PreviousBreakToken()->ConsumedBlockSize();
+  for (auto& multicol : multicols_with_pending_oofs_) {
+    NGMulticolWithPendingOOFs<LogicalOffset>& value = multicol.value;
+    if (!value.fixedpos_containing_block.fragment) {
+      value.fixedpos_containing_block.offset.block_offset -=
+          previous_consumed_block_size;
+      value.multicol_offset.block_offset += previous_consumed_block_size;
+    }
+  }
+}
+
 #if DCHECK_IS_ON()
 
 void NGBoxFragmentBuilder::CheckNoBlockFragmentation() const {

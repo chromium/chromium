@@ -574,6 +574,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
       NGLogicalOutOfFlowPositionedNode& descendant,
       bool only_fixedpos_containing_block = false);
   void AdjustFixedposContainingBlockForFragmentainerDescendants();
+  void AdjustFixedposContainingBlockForInnerMulticols();
 
   // OOF positioned elements inside a fragmentation context are laid out once
   // they reach the fragmentation context root, so we need to adjust the offset

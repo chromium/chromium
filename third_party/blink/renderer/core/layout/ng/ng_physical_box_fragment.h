@@ -34,7 +34,9 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
       const base::Optional<PhysicalRect> updated_layout_overflow =
           base::nullopt);
 
-  using MulticolCollection = NGContainerFragmentBuilder::MulticolCollection;
+  using MulticolCollection =
+      HeapHashMap<Member<LayoutBox>,
+                  Member<NGMulticolWithPendingOOFs<PhysicalOffset>>>;
   using PassKey = base::PassKey<NGPhysicalBoxFragment>;
   NGPhysicalBoxFragment(PassKey,
                         NGBoxFragmentBuilder* builder,

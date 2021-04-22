@@ -432,14 +432,14 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
         descendant.node,
         descendant.static_position.ConvertToPhysical(converter),
         descendant.inline_container,
-        NGPhysicalContainingBlock(
+        NGContainingBlock<PhysicalOffset>(
             descendant.containing_block.offset.ConvertToPhysical(
                 builder->Style().GetWritingDirection(), size,
                 descendant.containing_block.fragment
                     ? descendant.containing_block.fragment->Size()
                     : PhysicalSize()),
             descendant.containing_block.fragment),
-        NGPhysicalContainingBlock(
+        NGContainingBlock<PhysicalOffset>(
             descendant.fixedpos_containing_block.offset.ConvertToPhysical(
                 builder->Style().GetWritingDirection(), size,
                 descendant.fixedpos_containing_block.fragment
@@ -447,9 +447,20 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
                     : PhysicalSize()),
             descendant.fixedpos_containing_block.fragment));
   }
-  if (builder->HasMulticolsWithPendingOOFs()) {
-    multicols_with_pending_oofs =
-        std::move(builder->multicols_with_pending_oofs_);
+  for (const auto& multicol : builder->multicols_with_pending_oofs_) {
+    auto& value = multicol.value;
+    multicols_with_pending_oofs.insert(
+        multicol.key,
+        MakeGarbageCollected<NGMulticolWithPendingOOFs<PhysicalOffset>>(
+            value.multicol_offset.ConvertToPhysical(
+                builder->Style().GetWritingDirection(), size, PhysicalSize()),
+            NGContainingBlock<PhysicalOffset>(
+                value.fixedpos_containing_block.offset.ConvertToPhysical(
+                    builder->Style().GetWritingDirection(), size,
+                    value.fixedpos_containing_block.fragment
+                        ? value.fixedpos_containing_block.fragment->Size()
+                        : PhysicalSize()),
+                value.fixedpos_containing_block.fragment)));
   }
   if (builder->table_grid_rect_)
     table_grid_rect = *builder->table_grid_rect_;

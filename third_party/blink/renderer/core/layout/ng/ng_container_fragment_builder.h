@@ -47,7 +47,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   };
 
   using ChildrenVector = HeapVector<ChildWithOffset, 4>;
-  using MulticolCollection = HeapHashSet<Member<LayoutBox>>;
+  using MulticolCollection =
+      HeapHashMap<Member<LayoutBox>, NGMulticolWithPendingOOFs<LogicalOffset>>;
 
   LayoutUnit BfcLineOffset() const { return bfc_line_offset_; }
   void SetBfcLineOffset(LayoutUnit bfc_line_offset) {
@@ -139,7 +140,10 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // However, once at the outer context, they will get laid out inside the
   // inner multicol in which their containing block resides. Thus, we need to
   // store such inner multicols for later use.
-  void AddMulticolWithPendingOOFs(const NGBlockNode& multicol);
+  void AddMulticolWithPendingOOFs(
+      const NGBlockNode& multicol,
+      const NGMulticolWithPendingOOFs<LogicalOffset>& multicol_info =
+          NGMulticolWithPendingOOFs<LogicalOffset>());
 
   void SwapOutOfFlowPositionedCandidates(
       HeapVector<NGLogicalOutOfFlowPositionedNode>* candidates);
@@ -151,9 +155,16 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
       MulticolCollection* multicols_with_pending_oofs);
 
   // Transfer the candidates from |oof_positioned_candidates_| to
-  // |destination_builder|.
+  // |destination_builder|, adding any |additional_offset| to the candidate
+  // static positions. |multicol| indicates that the candidates were passed
+  // up the tree via an inner multicol. This will be used to determine if
+  // a candidate should be added as a fragmentainer descendant instead
+  // (i.e. in the case where the |multicol| has found a fixedpos containing
+  // block in its ancestor path).
   void TransferOutOfFlowCandidates(
-      NGContainerFragmentBuilder* destination_builder);
+      NGContainerFragmentBuilder* destination_builder,
+      LogicalOffset additional_offset,
+      const NGMulticolWithPendingOOFs<LogicalOffset>* multicol = nullptr);
 
   bool HasOutOfFlowPositionedCandidates() const {
     return !oof_positioned_candidates_.IsEmpty();
@@ -195,7 +206,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
       LogicalOffset offset,
       const LayoutInline* inline_container = nullptr,
       LayoutUnit containing_block_adjustment = LayoutUnit(),
-      const NGLogicalContainingBlock* fixedpos_containing_block = nullptr,
+      const NGContainingBlock<LogicalOffset>* fixedpos_containing_block =
+          nullptr,
       LogicalOffset additional_fixedpos_offset = LogicalOffset());
 
   void SetIsSelfCollapsing() { is_self_collapsing_ = true; }
