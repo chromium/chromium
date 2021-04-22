@@ -7684,6 +7684,109 @@ TEST_P(RationalizationFieldTypeRelationshipsTest,
             forms[0]->field(3)->Type().GetStorableType());
 }
 
+// When two fields have the same signature and the server response has multiple
+// predictions for that signature, apply the server predictions in the order
+// that they were received.
+TEST_F(FormStructureTestImpl, ParseQueryResponse_RankEqualSignatures) {
+  FormData form_data;
+  FormFieldData field;
+  form_data.url = GURL("http://foo.com");
+  field.form_control_type = "text";
+
+  field.label = u"First Name";
+  field.name = u"name";
+  field.unique_renderer_id = MakeFieldRendererId();
+  form_data.fields.push_back(field);
+
+  field.label = u"Last Name";
+  field.name = u"name";
+  field.unique_renderer_id = MakeFieldRendererId();
+  form_data.fields.push_back(field);
+
+  field.label = u"email";
+  field.name = u"email";
+  field.autocomplete_attribute = "address-level2";
+  field.unique_renderer_id = MakeFieldRendererId();
+  form_data.fields.push_back(field);
+
+  ASSERT_EQ(CalculateFieldSignatureForField(form_data.fields[0]),
+            CalculateFieldSignatureForField(form_data.fields[1]));
+
+  FormStructure form(form_data);
+  form.DetermineHeuristicTypes(nullptr, nullptr);
+
+  // Setup the query response.
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  AddFieldSuggestionToForm(form_suggestion, form_data.fields[0], NAME_FIRST);
+  AddFieldSuggestionToForm(form_suggestion, form_data.fields[1], NAME_LAST);
+  AddFieldSuggestionToForm(form_suggestion, form_data.fields[2], EMAIL_ADDRESS);
+
+  std::string response_string = SerializeAndEncode(response);
+
+  // Parse the response and update the field type predictions.
+  std::vector<FormStructure*> forms{&form};
+  FormStructure::ParseApiQueryResponse(
+      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  ASSERT_EQ(form.field_count(), 3U);
+
+  EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
+  EXPECT_EQ(NAME_LAST, form.field(1)->server_type());
+  EXPECT_EQ(EMAIL_ADDRESS, form.field(2)->server_type());
+}
+
+// When two fields have the same signature and the server response has one
+// prediction, apply the prediction to every field with that signature.
+TEST_F(FormStructureTestImpl,
+       ParseQueryResponse_EqualSignaturesFewerPredictions) {
+  FormData form_data;
+  FormFieldData field;
+  form_data.url = GURL("http://foo.com");
+  field.form_control_type = "text";
+
+  field.label = u"First Name";
+  field.name = u"name";
+  field.unique_renderer_id = MakeFieldRendererId();
+  form_data.fields.push_back(field);
+
+  field.label = u"Last Name";
+  field.name = u"name";
+  field.unique_renderer_id = MakeFieldRendererId();
+  form_data.fields.push_back(field);
+
+  field.label = u"email";
+  field.name = u"email";
+  field.autocomplete_attribute = "address-level2";
+  field.unique_renderer_id = MakeFieldRendererId();
+  form_data.fields.push_back(field);
+
+  ASSERT_EQ(CalculateFieldSignatureForField(form_data.fields[0]),
+            CalculateFieldSignatureForField(form_data.fields[1]));
+
+  FormStructure form(form_data);
+  form.DetermineHeuristicTypes(nullptr, nullptr);
+
+  // Setup the query response.
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  AddFieldSuggestionToForm(form_suggestion, form_data.fields[0], NAME_FIRST);
+  AddFieldSuggestionToForm(form_suggestion, form_data.fields[2], EMAIL_ADDRESS);
+
+  std::string response_string = SerializeAndEncode(response);
+
+  // Parse the response and update the field type predictions.
+  std::vector<FormStructure*> forms{&form};
+  FormStructure::ParseApiQueryResponse(
+      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  ASSERT_EQ(form.field_count(), 3U);
+
+  EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
+  // This field gets the same signature as the previous one, because they have
+  // the same signature.
+  EXPECT_EQ(NAME_FIRST, form.field(1)->server_type());
+  EXPECT_EQ(EMAIL_ADDRESS, form.field(2)->server_type());
+}
+
 TEST_F(FormStructureTestImpl, AllowBigForms) {
   FormData form;
   form.url = GURL("http://foo.com");

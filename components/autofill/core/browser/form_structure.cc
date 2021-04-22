@@ -830,7 +830,7 @@ void FormStructure::ProcessQueryResponse(
   bool query_response_overrode_heuristics = false;
 
   std::map<std::pair<FormSignature, FieldSignature>,
-           AutofillQueryResponse::FormSuggestion::FieldSuggestion>
+           std::deque<AutofillQueryResponse::FormSuggestion::FieldSuggestion>>
       field_types;
   for (int form_idx = 0;
        form_idx < std::min(response.form_suggestions_size(),
@@ -840,7 +840,7 @@ void FormStructure::ProcessQueryResponse(
     for (const auto& field :
          response.form_suggestions(form_idx).field_suggestions()) {
       FieldSignature field_sig(field.field_signature());
-      field_types[std::make_pair(form_sig, field_sig)] = field;
+      field_types[std::make_pair(form_sig, field_sig)].push_back(field);
     }
   }
 
@@ -853,7 +853,13 @@ void FormStructure::ProcessQueryResponse(
       if (it == field_types.end())
         continue;
 
-      const auto& current_field = it->second;
+      // Get the next suggestion for this signature. If this is the last
+      // suggestion, keep it for all subsequent fields with this signature.
+      DCHECK(!it->second.empty());
+      AutofillQueryResponse::FormSuggestion::FieldSuggestion current_field =
+          it->second.front();
+      if (it->second.size() > 1)
+        it->second.pop_front();
 
       ServerFieldType field_type =
           static_cast<ServerFieldType>(current_field.primary_type_prediction());
