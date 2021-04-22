@@ -5,26 +5,25 @@
 {
   const LONG_TOUCH_TIME_MS = 1000;
 
-  function TitleLongTouchDetector(element, callback) {
-    this.callback_ = callback;
+  class TitleLongTouchDetector {
+    constructor(element, callback) {
+      this.callback_ = callback;
+      /**
+       * This is timeout ID used to kill window timeout that fires "detected"
+       * callback if touch event was cancelled.
+       *
+       * @private {number|null}
+       */
+      this.timeoutId_ = null;
 
-    element.addEventListener('touchstart', this.onTouchStart_.bind(this));
-    element.addEventListener('touchend', this.killTimer_.bind(this));
-    element.addEventListener('touchcancel', this.killTimer_.bind(this));
+      element.addEventListener('touchstart', this.onTouchStart_.bind(this));
+      element.addEventListener('touchend', this.killTimer_.bind(this));
+      element.addEventListener('touchcancel', this.killTimer_.bind(this));
 
-    element.addEventListener('mousedown', this.onTouchStart_.bind(this));
-    element.addEventListener('mouseup', this.killTimer_.bind(this));
-    element.addEventListener('mouseleave', this.killTimer_.bind(this));
-  }
-
-  TitleLongTouchDetector.prototype = {
-    /**
-     * This is timeout ID used to kill window timeout that fires "detected"
-     * callback if touch event was cancelled.
-     *
-     * @private {number|null}
-     */
-    timeoutId_: null,
+      element.addEventListener('mousedown', this.onTouchStart_.bind(this));
+      element.addEventListener('mouseup', this.killTimer_.bind(this));
+      element.addEventListener('mouseleave', this.killTimer_.bind(this));
+    }
 
     /**
      *  window.setTimeout() callback.
@@ -34,16 +33,16 @@
     onTimeout_() {
       this.killTimer_();
       this.callback_();
-    },
+    }
 
     /**
      * @private
      */
     onTouchStart_() {
       this.killTimer_();
-      this.timeoutId_ = window.setTimeout(
-          this.onTimeout_.bind(this, this.attempt_), LONG_TOUCH_TIME_MS);
-    },
+      this.timeoutId_ =
+          window.setTimeout(this.onTimeout_.bind(this), LONG_TOUCH_TIME_MS);
+    }
 
     /**
      * @private
@@ -54,8 +53,8 @@
 
       window.clearTimeout(this.timeoutId_);
       this.timeoutId_ = null;
-    },
-  };
+    }
+  }
 
   const VIDEO_DEVICE = {
     CHROMEBOX: 'chromebox',
