@@ -8,10 +8,24 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_buffer_android.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace tracing {
+
+namespace {
+
+uint32_t ToLittleEndian(uint32_t val) {
+  uint32_t res = 0;
+  for (unsigned i = 0; i < sizeof(val); ++i) {
+    res |= (val & 0xFF) << (8 * (sizeof(val) - i - 1));
+    val = val >> 8;
+  }
+  return res;
+}
+
+}  // namespace
 
 TEST(HprofParserTest, BasicParse) {
   base::ScopedTempDir temp_dir;
@@ -53,7 +67,7 @@ TEST(HprofParserTest, ParseStringTag) {
   unsigned char file_data[length]{0,   0,   0,   1,     // string_id
                                   116, 101, 115, 116};  // "test"
   HprofParser parser("dummy_file");
-  parser.hprof_ = std::make_unique<HprofBuffer>(
+  parser.hprof_buffer_ = std::make_unique<HprofBuffer>(
       reinterpret_cast<const unsigned char*>(file_data), length);
   parser.ParseStringTag(8);
 
@@ -67,7 +81,7 @@ TEST(HprofParserTest, ParseClassTag) {
                                   0,   0,   0,   0,  0, 0, 0, 1,  // string_id
                                   116, 101, 115, 116};            // "test"
   HprofParser parser("dummy_file");
-  parser.hprof_ = std::make_unique<HprofBuffer>(
+  parser.hprof_buffer_ = std::make_unique<HprofBuffer>(
       reinterpret_cast<const unsigned char*>(file_data), length);
 
   parser.strings_.emplace(
@@ -101,7 +115,7 @@ TEST(HprofParserTest, ParseClassObjectDumpSubtag) {
       116, 101, 115, 116  // "test"
   };
   HprofParser parser("dummy_file");
-  parser.hprof_ = std::make_unique<HprofBuffer>(
+  parser.hprof_buffer_ = std::make_unique<HprofBuffer>(
       reinterpret_cast<const unsigned char*>(file_data), length);
 
   parser.strings_.emplace(
@@ -137,7 +151,7 @@ TEST(HprofParserTest, ParseClassInstanceDumpSubtag) {
                                   0, 0, 0, 4,              // instance_size
                                   0, 0, 0, 0};
   HprofParser parser("dummy_file");
-  parser.hprof_ = std::make_unique<HprofBuffer>(
+  parser.hprof_buffer_ = std::make_unique<HprofBuffer>(
       reinterpret_cast<const unsigned char*>(file_data), length);
 
   parser.ParseClassInstanceDumpSubtag();
@@ -156,7 +170,7 @@ TEST(HprofParserTest, ParseObjectArrayDumpSubtag) {
                                   0, 0, 0, 4,              // class_id
                                   0, 0, 0, 0, 0, 0, 0, 0};
   HprofParser parser("dummy_file");
-  parser.hprof_ = std::make_unique<HprofBuffer>(
+  parser.hprof_buffer_ = std::make_unique<HprofBuffer>(
       reinterpret_cast<const unsigned char*>(file_data), length);
 
   parser.ParseObjectArrayDumpSubtag();
@@ -177,7 +191,7 @@ TEST(HprofParserTest, ParsePrimitiveArrayDumpSubtag) {
                                   4,                       // type_index
                                   0, 0, 0, 0};
   HprofParser parser("dummy_file");
-  parser.hprof_ = std::make_unique<HprofBuffer>(
+  parser.hprof_buffer_ = std::make_unique<HprofBuffer>(
       reinterpret_cast<const unsigned char*>(file_data), length);
 
   parser.ParsePrimitiveArrayDumpSubtag();
@@ -197,16 +211,16 @@ TEST(HprofParserTest, BasicResolveClassInstanceReferences) {
       0, 0, 0, 102   // instance_field_2
   };
   HprofParser parser("dummy_file");
-  parser.hprof_ = std::make_unique<HprofBuffer>(
+  parser.hprof_buffer_ = std::make_unique<HprofBuffer>(
       reinterpret_cast<const unsigned char*>(file_data), length);
 
   // Class object with 1 instance field.
   parser.class_objects_.emplace(
       3, std::make_unique<ClassObject>(3, "class_obj_dummy"));
   parser.class_objects_[3].get()->instance_size = 40;
-  parser.class_objects_[3].get()->instance_fields.push_back(
+  parser.class_objects_[3].get()->instance_fields.emplace_back(
       Field("instance_field_1", DataType::OBJECT, 3));
-  parser.class_objects_[3].get()->instance_fields.push_back(
+  parser.class_objects_[3].get()->instance_fields.emplace_back(
       Field("instance_field_2", DataType::OBJECT, 3));
 
   // Class object with zero instance fields.
@@ -251,6 +265,54 @@ TEST(HprofParserTest, BasicResolveClassInstanceReferences) {
       100u);
 }
 
+std::unique_ptr<ClassObject> GetClassObjectWith2Fields(int id,
+                                                       base::StringPiece name) {
+  auto obj = std::make_unique<ClassObject>(id, std::string{name});
+  obj->instance_fields = {Field(base::StrCat({name, "_f1"}), DataType::INT, 0),
+                          Field(base::StrCat({name, "_f2"}), DataType::INT, 0)};
+  return obj;
+}
+
+TEST(HprofParserTest, ResolveSuperClassObjectFields) {
+  HprofParser parser("dummy_file");
+  parser.class_objects_.emplace(1, GetClassObjectWith2Fields(1, "base"));
+  parser.class_objects_.emplace(2, GetClassObjectWith2Fields(2, "child1"));
+  parser.class_objects_[2]->super_class_id = 1;
+  parser.class_objects_.emplace(3, GetClassObjectWith2Fields(3, "child2"));
+  parser.class_objects_[3]->super_class_id = 1;
+  parser.class_objects_.emplace(4, GetClassObjectWith2Fields(4, "child11"));
+  parser.class_objects_[4]->super_class_id = 2;
+  parser.class_objects_.emplace(5, GetClassObjectWith2Fields(5, "child12"));
+  parser.class_objects_[5]->super_class_id = 2;
+  parser.ResolveSuperClassFields();
+
+  std::vector<const char*> expected[] = {
+      {"base", "base_f1", "base_f2"},
+      {"child1", "child1_f1", "child1_f2", "base_f1", "base_f2"},
+      {"child2", "child2_f1", "child2_f2", "base_f1", "base_f2"},
+      {"child11", "child11_f1", "child11_f2", "child1_f1", "child1_f2",
+       "base_f1", "base_f2"},
+      {"child12", "child12_f1", "child12_f2", "child1_f1", "child1_f2",
+       "base_f1", "base_f2"},
+  };
+
+  ASSERT_EQ(parser.class_objects().size(), base::size(expected));
+  for (unsigned i = 1; i < base::size(expected); ++i) {
+    const auto& expected_class = expected[i - 1];
+    auto it = parser.class_objects().find(i);
+    ASSERT_TRUE(it != parser.class_objects().end())
+        << "missing object id " << i;
+    const auto& processed = *it->second;
+    EXPECT_EQ(processed.base_instance.type_name, expected_class[0]);
+    ASSERT_EQ(processed.instance_fields.size(), expected_class.size() - 1);
+    for (unsigned field_num = 0; field_num < processed.instance_fields.size();
+         ++field_num) {
+      EXPECT_EQ(processed.instance_fields[field_num].name,
+                expected_class[field_num + 1]);
+    }
+  }
+}
+
 TEST(HprofParserTest, MissingObjectReferenceResolveClassInstanceReferences) {
   const int length = 8;
   unsigned char file_data[length]{
@@ -258,16 +320,16 @@ TEST(HprofParserTest, MissingObjectReferenceResolveClassInstanceReferences) {
       0, 0, 0, 102   // instance_field_2
   };
   HprofParser parser("dummy_file");
-  parser.hprof_ = std::make_unique<HprofBuffer>(
+  parser.hprof_buffer_ = std::make_unique<HprofBuffer>(
       reinterpret_cast<const unsigned char*>(file_data), length);
 
   // Class object with 1 instance field.
   parser.class_objects_.emplace(
       3, std::make_unique<ClassObject>(3, "class_obj_dummy"));
   parser.class_objects_[3].get()->instance_size = 40;
-  parser.class_objects_[3].get()->instance_fields.push_back(
+  parser.class_objects_[3].get()->instance_fields.emplace_back(
       Field("instance_field_1", DataType::OBJECT, 3));
-  parser.class_objects_[3].get()->instance_fields.push_back(
+  parser.class_objects_[3].get()->instance_fields.emplace_back(
       Field("instance_field_2", DataType::OBJECT, 3));
 
   // Class object with zero instance fields.
@@ -296,16 +358,16 @@ TEST(HprofParserTest,
       0, 0, 0, 102   // instance_field_2
   };
   HprofParser parser("dummy_file");
-  parser.hprof_ = std::make_unique<HprofBuffer>(
+  parser.hprof_buffer_ = std::make_unique<HprofBuffer>(
       reinterpret_cast<const unsigned char*>(file_data), length);
 
   // Class object with 1 instance field.
   parser.class_objects_.emplace(
       3, std::make_unique<ClassObject>(3, "class_obj_dummy"));
   parser.class_objects_[3].get()->instance_size = 40;
-  parser.class_objects_[3].get()->instance_fields.push_back(
+  parser.class_objects_[3].get()->instance_fields.emplace_back(
       Field("instance_field_1", DataType::OBJECT, 3));
-  parser.class_objects_[3].get()->instance_fields.push_back(
+  parser.class_objects_[3].get()->instance_fields.emplace_back(
       Field("instance_field_2", DataType::OBJECT, 3));
 
   // Class object with zero instance fields.
@@ -347,16 +409,16 @@ TEST(HprofParserTest, MultipleInstanceFieldsResolveClassInstanceReferences) {
       0, 0, 0, 102   // primitive array instance
   };
   HprofParser parser("dummy_file");
-  parser.hprof_ = std::make_unique<HprofBuffer>(
+  parser.hprof_buffer_ = std::make_unique<HprofBuffer>(
       reinterpret_cast<const unsigned char*>(file_data), length);
 
   // Class object with 1 instance field.
   parser.class_objects_.emplace(
       3, std::make_unique<ClassObject>(3, "class_obj_dummy"));
   parser.class_objects_[3].get()->instance_size = 40;
-  parser.class_objects_[3].get()->instance_fields.push_back(
+  parser.class_objects_[3].get()->instance_fields.emplace_back(
       Field("object_array_instance", DataType::OBJECT, 3));
-  parser.class_objects_[3].get()->instance_fields.push_back(
+  parser.class_objects_[3].get()->instance_fields.emplace_back(
       Field("primitive_array_instance", DataType::OBJECT, 3));
 
   // Class object with zero instance fields.
@@ -412,7 +474,7 @@ TEST(HprofParserTest, BasicResolveObjectArrayInstanceReferences) {
       0, 0, 0, 201  // object array member instance
   };
   HprofParser parser("dummy_file");
-  parser.hprof_ = std::make_unique<HprofBuffer>(
+  parser.hprof_buffer_ = std::make_unique<HprofBuffer>(
       reinterpret_cast<const unsigned char*>(file_data), length);
 
   parser.class_objects_.emplace(
@@ -456,7 +518,7 @@ TEST(HprofParserTest,
       0, 0, 0, 202   // object array member instance
   };
   HprofParser parser("dummy_file");
-  parser.hprof_ = std::make_unique<HprofBuffer>(
+  parser.hprof_buffer_ = std::make_unique<HprofBuffer>(
       reinterpret_cast<const unsigned char*>(file_data), length);
 
   parser.class_objects_.emplace(
@@ -498,7 +560,7 @@ TEST(HprofParserTest, ModifyClassObjectTypeNames) {
   const int length = 0;
   unsigned char file_data[length]{};
   HprofParser parser("dummy_file");
-  parser.hprof_ = std::make_unique<HprofBuffer>(
+  parser.hprof_buffer_ = std::make_unique<HprofBuffer>(
       reinterpret_cast<const unsigned char*>(file_data), length);
 
   parser.class_objects_.emplace(
@@ -515,6 +577,64 @@ TEST(HprofParserTest, ModifyClassObjectTypeNames) {
   auto class_obj__empty_it = parser.class_objects_.find(4);
   EXPECT_EQ(class_obj__empty_it->second->base_instance.type_name,
             "java.lang.Class:class_obj_dummy_empty");
+}
+
+TEST(HprofParserTest, NativeSizeComputation) {
+  HprofParser parser("dummy_file");
+  constexpr uint32_t kCleanrInstanceId = 101;
+  constexpr uint32_t kThunkInstanceId = 102;
+  constexpr uint32_t kRegistryInstanceId = 103;
+  constexpr uint32_t kReferentInstanceId = 104;
+  // Sample data that mocks a sun.misc.Cleaner instance.
+  uint32_t file_data[]{// Fields of Cleaner instance:
+                       ToLittleEndian(kThunkInstanceId), /*dummy=*/0,
+                       ToLittleEndian(kReferentInstanceId),
+                       // Thunk:
+                       ToLittleEndian(kRegistryInstanceId),
+                       // Registry
+                       0, ToLittleEndian(9876)};
+  const int length = base::size(file_data) * sizeof(uint32_t);
+  constexpr uint32_t kCleanerOffset = 0;    // First object
+  constexpr uint32_t kThunkOffset = 12;     // Second object
+  constexpr uint32_t kRegistryOffset = 16;  // Third object
+
+  parser.hprof_buffer_ = std::make_unique<HprofBuffer>(
+      reinterpret_cast<const unsigned char*>(file_data), length);
+
+  auto cleaner_inst =
+      std::make_unique<ClassInstance>(kCleanrInstanceId, 51, kCleanerOffset);
+  auto cleaner_class = std::make_unique<ClassObject>(51, "sun.misc.Cleaner");
+  cleaner_class->instance_fields = {Field("thunk", DataType::OBJECT, 0),
+                                    Field("dummy", DataType::OBJECT, 0),
+                                    Field("referent", DataType::OBJECT, 0)};
+  auto thunk_inst =
+      std::make_unique<ClassInstance>(kThunkInstanceId, 52, kThunkOffset);
+  auto thunk_class = std::make_unique<ClassObject>(52, "Thunk");
+  thunk_class->instance_fields = {Field("this$0", DataType::OBJECT, 0)};
+  auto registry_inst =
+      std::make_unique<ClassInstance>(kRegistryInstanceId, 53, kRegistryOffset);
+  auto registry_class = std::make_unique<ClassObject>(53, "Registry");
+  registry_class->instance_fields = {Field("size", DataType::LONG, 0)};
+  auto referent_inst =
+      std::make_unique<ClassInstance>(kReferentInstanceId, 54, 0);
+  auto referent_class = std::make_unique<ClassObject>(54, "SomeAllocator");
+
+  parser.class_objects_.emplace(51, std::move(cleaner_class));
+  parser.class_objects_.emplace(52, std::move(thunk_class));
+  parser.class_objects_.emplace(53, std::move(registry_class));
+  parser.class_objects_.emplace(54, std::move(referent_class));
+  parser.class_instances_.emplace(kCleanrInstanceId, std::move(cleaner_inst));
+  parser.class_instances_.emplace(kThunkInstanceId, std::move(thunk_inst));
+  parser.class_instances_.emplace(kRegistryInstanceId,
+                                  std::move(registry_inst));
+  parser.class_instances_.emplace(kReferentInstanceId,
+                                  std::move(referent_inst));
+
+  parser.ResolveClassInstanceReferences();
+  parser.ComputeNativeSizeOfObjects();
+  auto it = parser.class_instances().find(kReferentInstanceId);
+  ASSERT_NE(it, parser.class_instances().end());
+  EXPECT_EQ(it->second->base_instance.size, 9876u);
 }
 
 }  // namespace tracing
