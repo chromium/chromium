@@ -44,7 +44,7 @@ const std::string* GetShellApplicationId(const aura::Window* window);
 // application using startup notification protocol.
 void SetShellStartupId(ui::PropertyHandler* property_handler,
                        const base::Optional<std::string>& id);
-const std::string* GetShellStartupId(aura::Window* window);
+const std::string* GetShellStartupId(const aura::Window* window);
 
 // Hides/shows the shelf when fullscreen. If true, shelf is inaccessible
 // (plain fullscreen). If false, shelf auto-hides and can be shown with a

@@ -21,6 +21,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Borealis.EngagementTime.{Variant}" units="ms"
+    expires_after="2022-04-08">
+  <owner>lqu@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    {Variant} Engagement time metrics, along with foreground and background
+    time, are only collected on users with Borealis enabled. All four metrics
+    are accumulated and recorded to UMA once a day.
+  </summary>
+  <token key="Variant">
+    <variant name="Background"
+        summary="Times when a user is engaged and Borealis apps are running
+                 in the background, but the user isn't focusing on an
+                 Borealis app window."/>
+    <variant name="BorealisTotal"
+        summary="Total of Borealis.EngagementTime.Background and .Foreground,
+                 which is the time the user is engaged and Borealis is
+                 running either in the foreground or background."/>
+    <variant name="Foreground"
+        summary="Times when a user is engaged and focuses on a Borealis GUI
+                 window."/>
+    <variant name="Total" summary="Should be same as BorealisTotal."/>
+  </token>
+</histogram>
+
 <histogram name="Borealis.Install.NumAttempts" enum="BooleanAttempted"
     expires_after="2021-11-01">
   <owner>danielng@google.com</owner>

@@ -27,7 +27,7 @@ const char kBorealisAnonymousPrefix[] = "borealis_anon:";
 
 // Returns an ID for this window (which is the app_id or startup_id, depending
 // on which are set. The ID string is owned by the window.
-const std::string* GetWindowId(aura::Window* window) {
+const std::string* GetWindowId(const aura::Window* window) {
   const std::string* id = exo::GetShellApplicationId(window);
   if (id)
     return id;
@@ -68,7 +68,7 @@ bool IsAnonymousAppId(const std::string& app_id) {
 namespace borealis {
 
 // static
-bool BorealisWindowManager::IsBorealisWindow(aura::Window* window) {
+bool BorealisWindowManager::IsBorealisWindow(const aura::Window* window) {
   const std::string* id = GetWindowId(window);
   if (!id)
     return false;

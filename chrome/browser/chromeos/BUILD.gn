@@ -912,6 +912,8 @@ source_set("chromeos") {
     "../ash/borealis/borealis_context_manager.h",
     "../ash/borealis/borealis_context_manager_impl.cc",
     "../ash/borealis/borealis_context_manager_impl.h",
+    "../ash/borealis/borealis_engagement_metrics.cc",
+    "../ash/borealis/borealis_engagement_metrics.h",
     "../ash/borealis/borealis_features.cc",
     "../ash/borealis/borealis_features.h",
     "../ash/borealis/borealis_game_mode_controller.cc",

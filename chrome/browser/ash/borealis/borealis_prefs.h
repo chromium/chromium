@@ -18,6 +18,8 @@ extern const char kBorealisInstalledOnDevice[];
 // (mainly used by enterprises).
 extern const char kBorealisAllowedForUser[];
 
+extern const char kEngagementPrefsPrefix[];
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace prefs

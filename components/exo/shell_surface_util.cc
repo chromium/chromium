@@ -105,7 +105,7 @@ void SetShellStartupId(ui::PropertyHandler* property_handler,
     property_handler->ClearProperty(kStartupIdKey);
 }
 
-const std::string* GetShellStartupId(aura::Window* window) {
+const std::string* GetShellStartupId(const aura::Window* window) {
   return window->GetProperty(kStartupIdKey);
 }
 

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "chrome/browser/ash/borealis/borealis_game_mode_controller.h"
 
 class Profile;
 
@@ -19,6 +18,8 @@ class GuestOsStabilityMonitor;
 namespace borealis {
 
 class BorealisLifetimeObserver;
+class BorealisGameModeController;
+class BorealisEngagementMetrics;
 
 // An object to track information about the state of the Borealis VM.
 // BorealisContext objects should only be created by the Borealis Context
@@ -66,6 +67,8 @@ class BorealisContext {
       guest_os_stability_monitor_;
 
   std::unique_ptr<BorealisGameModeController> game_mode_controller_;
+
+  std::unique_ptr<BorealisEngagementMetrics> engagement_metrics_;
 };
 
 }  // namespace borealis

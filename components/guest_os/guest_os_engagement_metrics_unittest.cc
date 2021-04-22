@@ -46,16 +46,11 @@ class GuestOsEngagementMetricsTest : public testing::Test {
 
     prefs::RegisterEngagementProfilePrefs(pref_service_->registry(),
                                           kPrefPrefix);
-    engagement_metrics_ = std::make_unique<GuestOsEngagementMetrics>(
-        pref_service_.get(),
-        base::BindRepeating(&GuestOsEngagementMetricsTest::MatchWindow,
-                            base::Unretained(this)),
-        kPrefPrefix, kUmaName);
 
     // The code doesn't work for correctly for a clock just at the epoch so
     // advance by a day first.
     test_clock_.Advance(base::TimeDelta::FromDays(1));
-    engagement_metrics_->SetClocksForTesting(&test_clock_, &test_tick_clock_);
+    CreateEngagementMetrics();
     SetSessionState(session_manager::SessionState::ACTIVE);
   }
 
@@ -109,6 +104,17 @@ class GuestOsEngagementMetricsTest : public testing::Test {
   void ExpectTime(const std::string& histogram, int seconds) {
     tester_.ExpectTimeBucketCount("Foo.EngagementTime." + histogram,
                                   base::TimeDelta::FromSeconds(seconds), 1);
+  }
+
+  void DestroyEngagementMetrics() { engagement_metrics_.reset(); }
+
+  void CreateEngagementMetrics() {
+    engagement_metrics_ =
+        GuestOsEngagementMetrics::GetEngagementMetricsForTesting(
+            pref_service_.get(),
+            base::BindRepeating(&GuestOsEngagementMetricsTest::MatchWindow,
+                                base::Unretained(this)),
+            kPrefPrefix, kUmaName, &test_clock_, &test_tick_clock_);
   }
 
  private:
@@ -214,6 +220,28 @@ TEST_F(GuestOsEngagementMetricsTest,
   ExpectTime(kHistogramForeground, 4);
   ExpectTime(kHistogramBackground, 12);
   ExpectTime(kHistogramActiveTotal, 16);
+}
+
+TEST_F(GuestOsEngagementMetricsTest, RecordEngagementTimeIfDestroyed) {
+  AdvanceSeconds(1);  // Total
+  engagement_metrics()->SetBackgroundActive(true);
+  FocusMatchedWindow();
+  AdvanceSeconds(1);  // Total + foreground + active
+
+  DestroyEngagementMetrics();
+
+  AdvanceSeconds(1);  // Nothing
+
+  CreateEngagementMetrics();
+  engagement_metrics()->SetBackgroundActive(true);
+  FocusNonMatchedWindow();
+  AdvanceSeconds(1);  // Total + background + active
+
+  TriggerRecordEngagementTimeToUma();
+  ExpectTime(kHistogramTotal, 3);
+  ExpectTime(kHistogramForeground, 1);
+  ExpectTime(kHistogramBackground, 1);
+  ExpectTime(kHistogramActiveTotal, 2);
 }
 
 }  // namespace

@@ -56,8 +56,6 @@ class GuestOsEngagementMetrics : public wm::ActivationChangeObserver,
   // changes.
   void SetBackgroundActive(bool background_active);
 
-  void SetClocksForTesting(base::Clock* clock, base::TickClock* tick_clock);
-
   // wm::ActivationChangeObserver:
   void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
                          aura::Window* gained_active,
@@ -70,7 +68,23 @@ class GuestOsEngagementMetrics : public wm::ActivationChangeObserver,
   void ScreenIdleStateChanged(
       const power_manager::ScreenIdleState& proto) override;
 
+  static std::unique_ptr<GuestOsEngagementMetrics>
+  GetEngagementMetricsForTesting(PrefService* pref_service,
+                                 WindowMatcher window_matcher,
+                                 const std::string& pref_prefix,
+                                 const std::string& uma_name,
+                                 const base::Clock* clock,
+                                 const base::TickClock* tick_clock);
+
  private:
+  // Private, for testing use only
+  GuestOsEngagementMetrics(PrefService* pref_service,
+                           WindowMatcher window_matcher,
+                           const std::string& pref_prefix,
+                           const std::string& uma_name,
+                           const base::Clock* clock,
+                           const base::TickClock* tick_clock);
+
   // Restores accumulated engagement time in previous sessions from profile
   // preferences.
   void RestoreEngagementTimeFromPrefs();
