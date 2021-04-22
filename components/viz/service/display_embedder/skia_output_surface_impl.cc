@@ -444,18 +444,11 @@ void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
   }
   current_buffer_modified_ = false;
 
-  base::TimeTicks post_task_timestamp;
-  if (should_measure_next_post_task_) {
-    should_measure_next_post_task_ = false;
-    post_task_timestamp = base::TimeTicks::Now();
-    has_enqueued_measured_post_task_ = true;
-  }
-
   // impl_on_gpu_ is released on the GPU thread by a posted task from
   // SkiaOutputSurfaceImpl::dtor. So it is safe to use base::Unretained.
-  auto callback = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SwapBuffers,
-                                 base::Unretained(impl_on_gpu_.get()),
-                                 post_task_timestamp, std::move(frame));
+  auto callback =
+      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SwapBuffers,
+                     base::Unretained(impl_on_gpu_.get()), std::move(frame));
   EnqueueGpuTask(std::move(callback), std::move(resource_sync_tokens_),
                  /*make_current=*/true,
                  /*need_framebuffer=*/!dependency_->IsOffscreen());
@@ -577,18 +570,11 @@ void SkiaOutputSurfaceImpl::EndPaint(base::OnceClosure on_finished) {
       it->second->clear_image();
     }
 
-    base::TimeTicks post_task_timestamp;
-    if (should_measure_next_post_task_) {
-      should_measure_next_post_task_ = false;
-      post_task_timestamp = base::TimeTicks::Now();
-    }
-
-    auto task =
-        base::BindOnce(&SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass,
-                       base::Unretained(impl_on_gpu_.get()),
-                       post_task_timestamp, current_paint_->render_pass_id(),
-                       std::move(ddl), std::move(images_in_current_paint_),
-                       resource_sync_tokens_, std::move(on_finished));
+    auto task = base::BindOnce(
+        &SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass,
+        base::Unretained(impl_on_gpu_.get()), current_paint_->render_pass_id(),
+        std::move(ddl), std::move(images_in_current_paint_),
+        resource_sync_tokens_, std::move(on_finished));
     EnqueueGpuTask(std::move(task), std::move(resource_sync_tokens_),
                    /*make_current=*/true, /*need_framebuffer=*/false);
   } else {
@@ -991,14 +977,25 @@ void SkiaOutputSurfaceImpl::FlushGpuTasks(bool wait_for_finish) {
   auto event =
       wait_for_finish ? std::make_unique<base::WaitableEvent>() : nullptr;
 
+  base::TimeTicks post_task_timestamp;
+  if (should_measure_next_post_task_) {
+    post_task_timestamp = base::TimeTicks::Now();
+  }
+
   auto callback = base::BindOnce(
       [](std::vector<GpuTask> tasks, base::WaitableEvent* event,
-         SkiaOutputSurfaceImplOnGpu* impl_on_gpu, bool need_framebuffer) {
+         SkiaOutputSurfaceImplOnGpu* impl_on_gpu, bool make_current,
+         bool need_framebuffer, base::TimeTicks post_task_timestamp) {
         gpu::ContextUrl::SetActiveUrl(GetActiveUrl());
-        // MakeCurrent() will mark context lost in SkiaOutputSurfaceImplOnGpu,
-        // if it fails.
-        if (impl_on_gpu)
-          impl_on_gpu->MakeCurrent(need_framebuffer);
+        // impl_on_gpu can be null during destruction.
+        if (impl_on_gpu) {
+          if (!post_task_timestamp.is_null())
+            impl_on_gpu->SetDrawTimings(post_task_timestamp);
+          // MakeCurrent() will mark context lost in SkiaOutputSurfaceImplOnGpu,
+          // if it fails.
+          if (make_current)
+            impl_on_gpu->MakeCurrent(need_framebuffer);
+        }
         // Each task can check SkiaOutputSurfaceImplOnGpu::contest_is_lost_
         // to detect errors.
         for (auto& task : tasks) {
@@ -1007,11 +1004,11 @@ void SkiaOutputSurfaceImpl::FlushGpuTasks(bool wait_for_finish) {
         if (event)
           event->Signal();
       },
-      std::move(gpu_tasks_), event.get(),
-      make_current_ ? impl_on_gpu_.get() : nullptr, need_framebuffer_);
+      std::move(gpu_tasks_), event.get(), impl_on_gpu_.get(), make_current_,
+      need_framebuffer_, post_task_timestamp);
 
   gpu::GpuTaskSchedulerHelper::ReportingCallback reporting_callback;
-  if (has_enqueued_measured_post_task_) {
+  if (should_measure_next_post_task_) {
     // Note that the usage of base::Unretained() with the impl_on_gpu_ is
     // considered safe as it is also owned by |callback| and share the same
     // lifetime.
@@ -1026,7 +1023,7 @@ void SkiaOutputSurfaceImpl::FlushGpuTasks(bool wait_for_finish) {
 
   make_current_ = false;
   need_framebuffer_ = false;
-  has_enqueued_measured_post_task_ = false;
+  should_measure_next_post_task_ = false;
   gpu_task_sync_tokens_.clear();
   gpu_tasks_.clear();
 

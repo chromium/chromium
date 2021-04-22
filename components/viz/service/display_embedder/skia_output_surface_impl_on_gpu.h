@@ -135,18 +135,17 @@ class SkiaOutputSurfaceImplOnGpu
   void ScheduleOutputSurfaceAsOverlay(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane&
           output_surface_plane);
-  void SwapBuffers(base::TimeTicks post_task_timestamp,
-                   OutputSurfaceFrame frame);
+  void SwapBuffers(OutputSurfaceFrame frame);
 
   void SetDependenciesResolvedTimings(base::TimeTicks task_ready);
+  void SetDrawTimings(base::TimeTicks task_ready);
 
   // Runs |deferred_framebuffer_draw_closure| when SwapBuffers() or CopyOutput()
   // will not.
   void SwapBuffersSkipped();
   void EnsureBackbuffer() { output_device_->EnsureBackbuffer(); }
   void DiscardBackbuffer() { output_device_->DiscardBackbuffer(); }
-  void FinishPaintRenderPass(base::TimeTicks post_task_timestamp,
-                             AggregatedRenderPassId id,
+  void FinishPaintRenderPass(AggregatedRenderPassId id,
                              sk_sp<SkDeferredDisplayList> ddl,
                              std::vector<ImageContextImpl*> image_contexts,
                              std::vector<gpu::SyncToken> sync_tokens,

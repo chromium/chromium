@@ -308,9 +308,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
 
   bool should_measure_next_post_task_ = false;
 
-  // whether thee is a measured post task enqueued.
-  bool has_enqueued_measured_post_task_ = false;
-
   // GPU tasks pending for flush.
   std::vector<GpuTask> gpu_tasks_;
   // GPU sync tokens which are depended by |gpu_tasks_|.

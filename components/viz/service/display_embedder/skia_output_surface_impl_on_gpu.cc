@@ -758,14 +758,9 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOutputSurfaceAsOverlay(
 }
 
 void SkiaOutputSurfaceImplOnGpu::SwapBuffers(
-    base::TimeTicks post_task_timestamp,
     OutputSurfaceFrame frame) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::SwapBuffers");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  if (!post_task_timestamp.is_null()) {
-    output_device_->SetDrawTimings(post_task_timestamp, base::TimeTicks::Now());
-  }
 
   SwapBuffersInternal(std::move(frame));
 }
@@ -776,13 +771,17 @@ void SkiaOutputSurfaceImplOnGpu::SetDependenciesResolvedTimings(
   output_device_->SetDependencyTimings(task_ready);
 }
 
+void SkiaOutputSurfaceImplOnGpu::SetDrawTimings(base::TimeTicks task_posted) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  output_device_->SetDrawTimings(task_posted, base::TimeTicks::Now());
+}
+
 void SkiaOutputSurfaceImplOnGpu::SwapBuffersSkipped() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   SwapBuffersInternal(base::nullopt);
 }
 
 void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
-    base::TimeTicks post_task_timestamp,
     AggregatedRenderPassId id,
     sk_sp<SkDeferredDisplayList> ddl,
     std::vector<ImageContextImpl*> image_contexts,
@@ -791,10 +790,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(ddl);
-
-  if (!post_task_timestamp.is_null()) {
-    output_device_->SetDrawTimings(post_task_timestamp, base::TimeTicks::Now());
-  }
 
   if (context_is_lost_)
     return;
