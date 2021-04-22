@@ -15,7 +15,7 @@
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/cellular_esim_connection_handler.h"
+#include "chromeos/network/cellular_connection_handler.h"
 #include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/client_cert_resolver.h"
 #include "chromeos/network/client_cert_util.h"
@@ -197,7 +197,7 @@ void NetworkConnectionHandlerImpl::Init(
     NetworkStateHandler* network_state_handler,
     NetworkConfigurationHandler* network_configuration_handler,
     ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
-    CellularESimConnectionHandler* cellular_esim_connection_handler) {
+    CellularConnectionHandler* cellular_connection_handler) {
   if (NetworkCertLoader::IsInitialized()) {
     network_cert_loader_ = NetworkCertLoader::Get();
     network_cert_loader_->AddObserver(this);
@@ -217,7 +217,7 @@ void NetworkConnectionHandlerImpl::Init(
   }
   configuration_handler_ = network_configuration_handler;
   managed_configuration_handler_ = managed_network_configuration_handler;
-  cellular_esim_connection_handler_ = cellular_esim_connection_handler;
+  cellular_connection_handler_ = cellular_connection_handler;
 
   // After this point, the NetworkConnectionHandlerImpl is fully initialized
   // (all handler references set, observers registered, ...).
@@ -330,9 +330,9 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
       }
 
       // eSIM networks are Cellular networks with an associated EID. Note that
-      // |cellular_esim_connection_handler_| is expected to be null if the flag
+      // |cellular_connection_handler_| is expected to be null if the flag
       // is disabled.
-      if (cellular_esim_connection_handler_ && !network->eid().empty() &&
+      if (cellular_connection_handler_ && !network->eid().empty() &&
           !network->connectable()) {
         is_non_connectable_esim_network = true;
       }
@@ -375,7 +375,7 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
     // eSIM profiles need to be enabled before a connection to them can be
     // initiated. If this operation is successful, the network's "connectable"
     // property will be set, and we can invoke CallShillConnect().
-    cellular_esim_connection_handler_->EnableProfileForConnection(
+    cellular_connection_handler_->EnableProfileForConnection(
         service_path,
         base::BindOnce(&NetworkConnectionHandlerImpl::CallShillConnect,
                        AsWeakPtr()),

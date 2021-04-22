@@ -79,8 +79,7 @@ class TestNetworkConnectionHandler : public NetworkConnectionHandler {
       NetworkStateHandler* network_state_handler,
       NetworkConfigurationHandler* network_configuration_handler,
       ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
-      CellularESimConnectionHandler* cellular_esim_connection_handler)
-      override {}
+      CellularConnectionHandler* cellular_connection_handler) override {}
 
  private:
   base::OnceClosure disconnect_callback_;

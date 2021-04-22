@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/cellular_esim_connection_handler.h"
+#include "chromeos/network/cellular_connection_handler.h"
 
 #include <memory>
 
@@ -67,11 +67,11 @@ std::string CreateTestEid(int euicc_num) {
 
 }  // namespace
 
-class CellularESimConnectionHandlerTest : public testing::Test {
+class CellularConnectionHandlerTest : public testing::Test {
  protected:
-  CellularESimConnectionHandlerTest()
+  CellularConnectionHandlerTest()
       : helper_(/*use_default_devices_and_services=*/false) {}
-  ~CellularESimConnectionHandlerTest() override = default;
+  ~CellularConnectionHandlerTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -85,9 +85,9 @@ class CellularESimConnectionHandlerTest : public testing::Test {
   void StartEnableProfileForConnection(int profile_num) {
     handler_.EnableProfileForConnection(
         CreateTestServicePath(profile_num),
-        base::BindOnce(&CellularESimConnectionHandlerTest::OnSuccess,
+        base::BindOnce(&CellularConnectionHandlerTest::OnSuccess,
                        base::Unretained(this)),
-        base::BindOnce(&CellularESimConnectionHandlerTest::OnFailure,
+        base::BindOnce(&CellularConnectionHandlerTest::OnFailure,
                        base::Unretained(this)));
   }
 
@@ -99,9 +99,9 @@ class CellularESimConnectionHandlerTest : public testing::Test {
         dbus::ObjectPath(CreateTestEuiccPath(profile_num)),
         dbus::ObjectPath(CreateTestProfilePath(profile_num)),
         std::move(inhibit_lock),
-        base::BindOnce(&CellularESimConnectionHandlerTest::OnSuccess,
+        base::BindOnce(&CellularConnectionHandlerTest::OnSuccess,
                        base::Unretained(this)),
-        base::BindOnce(&CellularESimConnectionHandlerTest::OnFailure,
+        base::BindOnce(&CellularConnectionHandlerTest::OnFailure,
                        base::Unretained(this)));
   }
 
@@ -215,14 +215,14 @@ class CellularESimConnectionHandlerTest : public testing::Test {
   NetworkStateTestHelper helper_;
   CellularInhibitor inhibitor_;
   TestCellularESimProfileHandler profile_handler_;
-  CellularESimConnectionHandler handler_;
+  CellularConnectionHandler handler_;
 
   base::OnceClosure on_success_callback_;
   base::OnceClosure on_failure_callback_;
   std::string expected_error_name_;
 };
 
-TEST_F(CellularESimConnectionHandlerTest, NoService) {
+TEST_F(CellularConnectionHandlerTest, NoService) {
   // Note: No cellular service added.
 
   base::RunLoop run_loop;
@@ -231,7 +231,7 @@ TEST_F(CellularESimConnectionHandlerTest, NoService) {
   run_loop.Run();
 }
 
-TEST_F(CellularESimConnectionHandlerTest, ServiceAlreadyConnectable) {
+TEST_F(CellularConnectionHandlerTest, ServiceAlreadyConnectable) {
   AddCellularDevice();
   AddCellularService(/*profile_num=*/1);
   SetServiceConnectable(/*profile_num=*/1);
@@ -242,7 +242,7 @@ TEST_F(CellularESimConnectionHandlerTest, ServiceAlreadyConnectable) {
   run_loop.Run();
 }
 
-TEST_F(CellularESimConnectionHandlerTest, FailsInhibiting) {
+TEST_F(CellularConnectionHandlerTest, FailsInhibiting) {
   // Note: No cellular device added. This causes the inhibit operation to fail.
 
   AddCellularService(/*profile_num=*/1);
@@ -254,7 +254,7 @@ TEST_F(CellularESimConnectionHandlerTest, FailsInhibiting) {
   run_loop.Run();
 }
 
-TEST_F(CellularESimConnectionHandlerTest, NoRelevantEuicc) {
+TEST_F(CellularConnectionHandlerTest, NoRelevantEuicc) {
   AddCellularDevice();
   AddCellularService(/*profile_num=*/1);
 
@@ -264,7 +264,7 @@ TEST_F(CellularESimConnectionHandlerTest, NoRelevantEuicc) {
   run_loop.Run();
 }
 
-TEST_F(CellularESimConnectionHandlerTest, FailsRequestingInstalledProfiles) {
+TEST_F(CellularConnectionHandlerTest, FailsRequestingInstalledProfiles) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
   AddProfile(/*profile_num=*/1, /*euicc_num=*/1);
@@ -278,7 +278,7 @@ TEST_F(CellularESimConnectionHandlerTest, FailsRequestingInstalledProfiles) {
   run_loop.Run();
 }
 
-TEST_F(CellularESimConnectionHandlerTest, TimeoutWaitingForConnectable) {
+TEST_F(CellularConnectionHandlerTest, TimeoutWaitingForConnectable) {
   const base::TimeDelta kWaitingForConnectableTimeout =
       base::TimeDelta::FromSeconds(30);
 
@@ -300,7 +300,7 @@ TEST_F(CellularESimConnectionHandlerTest, TimeoutWaitingForConnectable) {
   run_loop.Run();
 }
 
-TEST_F(CellularESimConnectionHandlerTest, Success) {
+TEST_F(CellularConnectionHandlerTest, Success) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
   AddProfile(/*profile_num=*/1, /*euicc_num=*/1);
@@ -314,7 +314,7 @@ TEST_F(CellularESimConnectionHandlerTest, Success) {
   ExpectServiceConnectable(/*profile_num=*/1);
 }
 
-TEST_F(CellularESimConnectionHandlerTest, MultipleRequests) {
+TEST_F(CellularConnectionHandlerTest, MultipleRequests) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
   AddProfile(/*profile_num=*/1, /*euicc_num=*/1);
@@ -343,7 +343,7 @@ TEST_F(CellularESimConnectionHandlerTest, MultipleRequests) {
   ExpectServiceConnectable(/*profile_num=*/2);
 }
 
-TEST_F(CellularESimConnectionHandlerTest, NewProfileTest) {
+TEST_F(CellularConnectionHandlerTest, NewProfileTest) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
   AddProfile(/*profile_num=*/1, /*euicc_num=*/1);

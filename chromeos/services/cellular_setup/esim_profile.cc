@@ -10,7 +10,7 @@
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
-#include "chromeos/network/cellular_esim_connection_handler.h"
+#include "chromeos/network/cellular_connection_handler.h"
 #include "chromeos/network/cellular_esim_profile.h"
 #include "chromeos/network/cellular_esim_uninstall_handler.h"
 #include "chromeos/network/cellular_inhibitor.h"
@@ -380,13 +380,12 @@ void ESimProfile::OnPendingProfileInstallResult(
 
   // inhibit_lock will be released by esim connection handler.
   // Cellular device will uninhibit automatically at that point.
-  esim_manager_->cellular_esim_connection_handler()
-      ->EnableNewProfileForConnection(
-          euicc_->path(), path_, std::move(inhibit_lock),
-          base::BindOnce(&ESimProfile::OnNewProfileEnableSuccess,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&ESimProfile::OnNewProfileConnectFailure,
-                         weak_ptr_factory_.GetWeakPtr()));
+  esim_manager_->cellular_connection_handler()->EnableNewProfileForConnection(
+      euicc_->path(), path_, std::move(inhibit_lock),
+      base::BindOnce(&ESimProfile::OnNewProfileEnableSuccess,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&ESimProfile::OnNewProfileConnectFailure,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ESimProfile::OnNewProfileEnableSuccess(const std::string& service_path) {

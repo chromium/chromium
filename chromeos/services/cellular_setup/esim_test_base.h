@@ -24,7 +24,7 @@ class NetworkStateHandler;
 class NetworkDeviceHandler;
 class NetworkConfigurationHandler;
 class FakeNetworkConnectionHandler;
-class CellularESimConnectionHandler;
+class CellularConnectionHandler;
 class CellularESimUninstallHandler;
 class CellularESimProfileHandler;
 
@@ -77,8 +77,7 @@ class ESimTestBase : public testing::Test {
   std::unique_ptr<FakeNetworkConnectionHandler> network_connection_handler_;
   std::unique_ptr<CellularESimUninstallHandler>
       cellular_esim_uninstall_handler_;
-  std::unique_ptr<CellularESimConnectionHandler>
-      cellular_esim_connection_handler_;
+  std::unique_ptr<CellularConnectionHandler> cellular_connection_handler_;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<ESimManager> esim_manager_;

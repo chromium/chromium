@@ -149,11 +149,11 @@ NetworkConnectionHandler::InitializeForTesting(
     NetworkStateHandler* network_state_handler,
     NetworkConfigurationHandler* network_configuration_handler,
     ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
-    CellularESimConnectionHandler* cellular_esim_connection_handler) {
+    CellularConnectionHandler* cellular_connection_handler) {
   NetworkConnectionHandlerImpl* handler = new NetworkConnectionHandlerImpl();
   handler->Init(network_state_handler, network_configuration_handler,
                 managed_network_configuration_handler,
-                cellular_esim_connection_handler);
+                cellular_connection_handler);
   return base::WrapUnique(handler);
 }
 

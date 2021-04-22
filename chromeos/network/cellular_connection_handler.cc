@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/cellular_esim_connection_handler.h"
+#include "chromeos/network/cellular_connection_handler.h"
 
 #include "base/bind.h"
 #include "base/check.h"
@@ -63,14 +63,13 @@ base::Optional<dbus::ObjectPath> GetProfilePath(const std::string& eid,
 
 }  // namespace
 
-CellularESimConnectionHandler::ConnectionRequestMetadata::
-    ConnectionRequestMetadata(
-        std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
-        const base::Optional<std::string>& service_path,
-        const base::Optional<dbus::ObjectPath>& euicc_path,
-        const base::Optional<dbus::ObjectPath>& profile_path,
-        CellularESimConnectionHandler::SuccessCallback success_callback,
-        network_handler::ErrorCallback error_callback)
+CellularConnectionHandler::ConnectionRequestMetadata::ConnectionRequestMetadata(
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+    const base::Optional<std::string>& service_path,
+    const base::Optional<dbus::ObjectPath>& euicc_path,
+    const base::Optional<dbus::ObjectPath>& profile_path,
+    CellularConnectionHandler::SuccessCallback success_callback,
+    network_handler::ErrorCallback error_callback)
     : inhibit_lock(std::move(inhibit_lock)),
       service_path(service_path),
       euicc_path(euicc_path),
@@ -78,17 +77,17 @@ CellularESimConnectionHandler::ConnectionRequestMetadata::
       success_callback(std::move(success_callback)),
       error_callback(std::move(error_callback)) {}
 
-CellularESimConnectionHandler::ConnectionRequestMetadata::
+CellularConnectionHandler::ConnectionRequestMetadata::
     ~ConnectionRequestMetadata() = default;
 
-CellularESimConnectionHandler::CellularESimConnectionHandler() = default;
+CellularConnectionHandler::CellularConnectionHandler() = default;
 
-CellularESimConnectionHandler::~CellularESimConnectionHandler() {
+CellularConnectionHandler::~CellularConnectionHandler() {
   if (network_state_handler_)
     network_state_handler_->RemoveObserver(this, FROM_HERE);
 }
 
-void CellularESimConnectionHandler::Init(
+void CellularConnectionHandler::Init(
     NetworkStateHandler* network_state_handler,
     CellularInhibitor* cellular_inhibitor,
     CellularESimProfileHandler* cellular_esim_profile_handler) {
@@ -99,9 +98,9 @@ void CellularESimConnectionHandler::Init(
   network_state_handler_->AddObserver(this, FROM_HERE);
 }
 
-void CellularESimConnectionHandler::EnableProfileForConnection(
+void CellularConnectionHandler::EnableProfileForConnection(
     const std::string& service_path,
-    CellularESimConnectionHandler::SuccessCallback success_callback,
+    CellularConnectionHandler::SuccessCallback success_callback,
     network_handler::ErrorCallback error_callback) {
   request_queue_.emplace(std::make_unique<ConnectionRequestMetadata>(
       /*inhibit_lock=*/nullptr, service_path, /*euicc_path=*/base::nullopt,
@@ -110,11 +109,11 @@ void CellularESimConnectionHandler::EnableProfileForConnection(
   ProcessRequestQueue();
 }
 
-void CellularESimConnectionHandler::EnableNewProfileForConnection(
+void CellularConnectionHandler::EnableNewProfileForConnection(
     const dbus::ObjectPath& euicc_path,
     const dbus::ObjectPath& profile_path,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
-    CellularESimConnectionHandler::SuccessCallback success_callback,
+    CellularConnectionHandler::SuccessCallback success_callback,
     network_handler::ErrorCallback error_callback) {
   request_queue_.emplace(std::make_unique<ConnectionRequestMetadata>(
       std::move(inhibit_lock), /*service_path=*/base::nullopt, euicc_path,
@@ -122,18 +121,18 @@ void CellularESimConnectionHandler::EnableNewProfileForConnection(
   ProcessRequestQueue();
 }
 
-void CellularESimConnectionHandler::NetworkListChanged() {
+void CellularConnectionHandler::NetworkListChanged() {
   if (state_ == ConnectionState::kWaitingForConnectable)
     CheckForConnectable();
 }
 
-void CellularESimConnectionHandler::NetworkPropertiesUpdated(
+void CellularConnectionHandler::NetworkPropertiesUpdated(
     const NetworkState* network) {
   if (state_ == ConnectionState::kWaitingForConnectable)
     CheckForConnectable();
 }
 
-void CellularESimConnectionHandler::ProcessRequestQueue() {
+void CellularConnectionHandler::ProcessRequestQueue() {
   // No requests to process.
   if (request_queue_.empty())
     return;
@@ -160,13 +159,13 @@ void CellularESimConnectionHandler::ProcessRequestQueue() {
   }
 }
 
-void CellularESimConnectionHandler::TransitionToConnectionState(
+void CellularConnectionHandler::TransitionToConnectionState(
     ConnectionState state) {
   NET_LOG(DEBUG) << "eSIM connection handler: " << state_ << " => " << state;
   state_ = state;
 }
 
-void CellularESimConnectionHandler::CompleteConnectionAttempt(
+void CellularConnectionHandler::CompleteConnectionAttempt(
     const base::Optional<std::string>& error_name,
     const base::Optional<std::string>& service_path) {
   DCHECK(state_ != ConnectionState::kIdle);
@@ -195,7 +194,7 @@ void CellularESimConnectionHandler::CompleteConnectionAttempt(
 }
 
 const NetworkState*
-CellularESimConnectionHandler::GetNetworkStateForCurrentOperation() const {
+CellularConnectionHandler::GetNetworkStateForCurrentOperation() const {
   if (request_queue_.empty())
     return nullptr;
 
@@ -222,7 +221,7 @@ CellularESimConnectionHandler::GetNetworkStateForCurrentOperation() const {
 }
 
 base::Optional<dbus::ObjectPath>
-CellularESimConnectionHandler::GetEuiccPathForCurrentOperation() const {
+CellularConnectionHandler::GetEuiccPathForCurrentOperation() const {
   const ConnectionRequestMetadata* current_request =
       request_queue_.front().get();
   if (current_request->euicc_path) {
@@ -237,7 +236,7 @@ CellularESimConnectionHandler::GetEuiccPathForCurrentOperation() const {
 }
 
 base::Optional<dbus::ObjectPath>
-CellularESimConnectionHandler::GetProfilePathForCurrentOperation() const {
+CellularConnectionHandler::GetProfilePathForCurrentOperation() const {
   const ConnectionRequestMetadata* current_request =
       request_queue_.front().get();
   if (current_request->profile_path) {
@@ -251,7 +250,7 @@ CellularESimConnectionHandler::GetProfilePathForCurrentOperation() const {
   return GetProfilePath(network_state->eid(), network_state->iccid());
 }
 
-void CellularESimConnectionHandler::CheckServiceStatus() {
+void CellularConnectionHandler::CheckServiceStatus() {
   DCHECK_EQ(state_, ConnectionState::kCheckingServiceStatus);
   NET_LOG(USER) << "Starting eSIM connection flow for path "
                 << *request_queue_.front()->service_path;
@@ -274,11 +273,11 @@ void CellularESimConnectionHandler::CheckServiceStatus() {
   TransitionToConnectionState(ConnectionState::kInhibitingScans);
   cellular_inhibitor_->InhibitCellularScanning(
       CellularInhibitor::InhibitReason::kConnectingToProfile,
-      base::BindOnce(&CellularESimConnectionHandler::OnInhibitScanResult,
+      base::BindOnce(&CellularConnectionHandler::OnInhibitScanResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void CellularESimConnectionHandler::OnInhibitScanResult(
+void CellularConnectionHandler::OnInhibitScanResult(
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
   DCHECK_EQ(state_, ConnectionState::kInhibitingScans);
 
@@ -296,7 +295,7 @@ void CellularESimConnectionHandler::OnInhibitScanResult(
   RequestInstalledProfiles();
 }
 
-void CellularESimConnectionHandler::RequestInstalledProfiles() {
+void CellularConnectionHandler::RequestInstalledProfiles() {
   base::Optional<dbus::ObjectPath> euicc_path =
       GetEuiccPathForCurrentOperation();
   if (!euicc_path) {
@@ -308,12 +307,12 @@ void CellularESimConnectionHandler::RequestInstalledProfiles() {
 
   cellular_esim_profile_handler_->RefreshProfileList(
       *euicc_path,
-      base::BindOnce(&CellularESimConnectionHandler::OnRefreshProfileListResult,
+      base::BindOnce(&CellularConnectionHandler::OnRefreshProfileListResult,
                      weak_ptr_factory_.GetWeakPtr()),
       std::move(request_queue_.front()->inhibit_lock));
 }
 
-void CellularESimConnectionHandler::OnRefreshProfileListResult(
+void CellularConnectionHandler::OnRefreshProfileListResult(
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
   DCHECK(state_ == ConnectionState::kRequestingProfilesBeforeEnabling ||
          state_ == ConnectionState::kRequestingProfilesAfterEnabling);
@@ -340,7 +339,7 @@ void CellularESimConnectionHandler::OnRefreshProfileListResult(
   EnableProfile();
 }
 
-void CellularESimConnectionHandler::EnableProfile() {
+void CellularConnectionHandler::EnableProfile() {
   base::Optional<dbus::ObjectPath> profile_path =
       GetProfilePathForCurrentOperation();
   if (!profile_path) {
@@ -352,12 +351,11 @@ void CellularESimConnectionHandler::EnableProfile() {
 
   HermesProfileClient::Get()->EnableCarrierProfile(
       *profile_path,
-      base::BindOnce(
-          &CellularESimConnectionHandler::OnEnableCarrierProfileResult,
-          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&CellularConnectionHandler::OnEnableCarrierProfileResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void CellularESimConnectionHandler::OnEnableCarrierProfileResult(
+void CellularConnectionHandler::OnEnableCarrierProfileResult(
     HermesResponseStatus status) {
   DCHECK_EQ(state_, ConnectionState::kEnablingProfile);
 
@@ -376,7 +374,7 @@ void CellularESimConnectionHandler::OnEnableCarrierProfileResult(
   RequestInstalledProfiles();
 }
 
-void CellularESimConnectionHandler::CheckForConnectable() {
+void CellularConnectionHandler::CheckForConnectable() {
   DCHECK_EQ(state_, ConnectionState::kWaitingForConnectable);
   const NetworkState* network_state = GetNetworkStateForCurrentOperation();
 
@@ -401,13 +399,12 @@ void CellularESimConnectionHandler::CheckForConnectable() {
   if (!timer_.IsRunning()) {
     timer_.Start(
         FROM_HERE, kWaitingForConnectableTimeout,
-        base::BindOnce(
-            &CellularESimConnectionHandler::OnWaitForConnectableTimeout,
-            weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&CellularConnectionHandler::OnWaitForConnectableTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
-void CellularESimConnectionHandler::OnWaitForConnectableTimeout() {
+void CellularConnectionHandler::OnWaitForConnectableTimeout() {
   DCHECK_EQ(state_, ConnectionState::kWaitingForConnectable);
   NET_LOG(ERROR) << "eSIM connection timed out waiting for network to become "
                  << "connectable";
@@ -417,29 +414,29 @@ void CellularESimConnectionHandler::OnWaitForConnectableTimeout() {
 
 std::ostream& operator<<(
     std::ostream& stream,
-    const CellularESimConnectionHandler::ConnectionState& state) {
+    const CellularConnectionHandler::ConnectionState& state) {
   switch (state) {
-    case CellularESimConnectionHandler::ConnectionState::kIdle:
+    case CellularConnectionHandler::ConnectionState::kIdle:
       stream << "[Idle]";
       break;
-    case CellularESimConnectionHandler::ConnectionState::kCheckingServiceStatus:
+    case CellularConnectionHandler::ConnectionState::kCheckingServiceStatus:
       stream << "[Checking service status]";
       break;
-    case CellularESimConnectionHandler::ConnectionState::kInhibitingScans:
+    case CellularConnectionHandler::ConnectionState::kInhibitingScans:
       stream << "[Inhibiting scans]";
       break;
-    case CellularESimConnectionHandler::ConnectionState::
+    case CellularConnectionHandler::ConnectionState::
         kRequestingProfilesBeforeEnabling:
       stream << "[Requesting profiles before enabling]";
       break;
-    case CellularESimConnectionHandler::ConnectionState::kEnablingProfile:
+    case CellularConnectionHandler::ConnectionState::kEnablingProfile:
       stream << "[Enabling profile]";
       break;
-    case CellularESimConnectionHandler::ConnectionState::
+    case CellularConnectionHandler::ConnectionState::
         kRequestingProfilesAfterEnabling:
       stream << "[Requesting profiles after enabling]";
       break;
-    case CellularESimConnectionHandler::ConnectionState::kWaitingForConnectable:
+    case CellularConnectionHandler::ConnectionState::kWaitingForConnectable:
       stream << "[Waiting for network to become connectable]";
       break;
   }

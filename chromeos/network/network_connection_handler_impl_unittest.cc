@@ -15,7 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
-#include "chromeos/network/cellular_esim_connection_handler.h"
+#include "chromeos/network/cellular_connection_handler.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/managed_network_configuration_handler_impl.h"
 #include "chromeos/network/network_cert_loader.h"
@@ -187,16 +187,15 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     cellular_esim_profile_handler_->Init(helper_.network_state_handler(),
                                          cellular_inhibitor_.get());
 
-    cellular_esim_connection_handler_.reset(
-        new CellularESimConnectionHandler());
-    cellular_esim_connection_handler_->Init(
-        helper_.network_state_handler(), cellular_inhibitor_.get(),
-        cellular_esim_profile_handler_.get());
+    cellular_connection_handler_.reset(new CellularConnectionHandler());
+    cellular_connection_handler_->Init(helper_.network_state_handler(),
+                                       cellular_inhibitor_.get(),
+                                       cellular_esim_profile_handler_.get());
 
     network_connection_handler_.reset(new NetworkConnectionHandlerImpl());
     network_connection_handler_->Init(
         helper_.network_state_handler(), network_config_handler_.get(),
-        managed_config_handler_.get(), cellular_esim_connection_handler_.get());
+        managed_config_handler_.get(), cellular_connection_handler_.get());
     network_connection_observer_.reset(new TestNetworkConnectionObserver);
     network_connection_handler_->AddObserver(
         network_connection_observer_.get());
@@ -470,8 +469,7 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
   std::unique_ptr<TestCellularESimProfileHandler>
       cellular_esim_profile_handler_;
-  std::unique_ptr<CellularESimConnectionHandler>
-      cellular_esim_connection_handler_;
+  std::unique_ptr<CellularConnectionHandler> cellular_connection_handler_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
   crypto::ScopedTestNSSDB test_nssdb_;
   std::unique_ptr<net::NSSCertDatabaseChromeOS> test_nsscertdb_;
@@ -968,7 +966,7 @@ TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_AlreadyConnectable) {
   AddCellularServiceWithESimProfile();
 
   // Set the service to be connectable before trying to connect. This does not
-  // invoke the CellularESimConnectionHandler flow since the profile is already
+  // invoke the CellularConnectionHandler flow since the profile is already
   // enabled.
   SetCellularServiceConnectable();
   Connect(kTestCellularServicePath);

@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
       NetworkStateHandler* network_state_handler,
       NetworkConfigurationHandler* network_configuration_handler,
       ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
-      CellularESimConnectionHandler* cellular_esim_connection_handler) override;
+      CellularConnectionHandler* cellular_connection_handler) override;
 
  private:
   struct ConnectRequest {
@@ -142,7 +142,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
   NetworkStateHandler* network_state_handler_ = nullptr;
   NetworkConfigurationHandler* configuration_handler_ = nullptr;
   ManagedNetworkConfigurationHandler* managed_configuration_handler_ = nullptr;
-  CellularESimConnectionHandler* cellular_esim_connection_handler_ = nullptr;
+  CellularConnectionHandler* cellular_connection_handler_ = nullptr;
 
   // Map of pending connect requests, used to prevent repeated attempts while
   // waiting for Shill and to trigger callbacks on eventual success or failure.

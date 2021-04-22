@@ -11,7 +11,7 @@
 #include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "chromeos/network/cellular_esim_connection_handler.h"
+#include "chromeos/network/cellular_connection_handler.h"
 #include "chromeos/network/cellular_esim_profile.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/network_connection_handler.h"
@@ -264,13 +264,12 @@ void Euicc::OnProfileInstallResult(
   }
 
   install_calls_pending_connect_.emplace(*profile_path, std::move(callback));
-  esim_manager_->cellular_esim_connection_handler()
-      ->EnableNewProfileForConnection(
-          path_, *profile_path, std::move(inhibit_lock),
-          base::BindOnce(&Euicc::OnNewProfileEnableSuccess,
-                         weak_ptr_factory_.GetWeakPtr(), *profile_path),
-          base::BindOnce(&Euicc::OnNewProfileConnectFailure,
-                         weak_ptr_factory_.GetWeakPtr(), *profile_path));
+  esim_manager_->cellular_connection_handler()->EnableNewProfileForConnection(
+      path_, *profile_path, std::move(inhibit_lock),
+      base::BindOnce(&Euicc::OnNewProfileEnableSuccess,
+                     weak_ptr_factory_.GetWeakPtr(), *profile_path),
+      base::BindOnce(&Euicc::OnNewProfileConnectFailure,
+                     weak_ptr_factory_.GetWeakPtr(), *profile_path));
 }
 
 void Euicc::OnNewProfileEnableSuccess(const dbus::ObjectPath& profile_path,
