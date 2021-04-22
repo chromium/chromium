@@ -337,6 +337,7 @@ void AppShimController::SendBootstrapOnShimConnected(
           ? chrome::mojom::AppShimLaunchType::kRegisterOnly
           : chrome::mojom::AppShimLaunchType::kNormal;
   app_shim_info->files = launch_files_;
+  app_shim_info->urls = launch_urls_;
 
   if (base::mac::WasLaunchedAsHiddenLoginItem()) {
     app_shim_info->login_item_restore_state =
@@ -514,5 +515,13 @@ void AppShimController::ProfileMenuItemSelected(uint32_t index) {
       host_->ProfileSelectedFromMenu(mojo_item->profile_path);
       return;
     }
+  }
+}
+
+void AppShimController::OpenUrls(const std::vector<GURL>& urls) {
+  if (init_state_ == InitState::kWaitingForAppToFinishLaunch) {
+    launch_urls_ = urls;
+  } else {
+    host_->UrlsOpened(urls);
   }
 }

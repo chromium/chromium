@@ -7,7 +7,24 @@
 
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 
+#include "base/callback.h"
+
+namespace content {
+class WebContents;
+}
+
+namespace apps {
+struct AppLaunchParams;
+}
+
 namespace web_app {
+
+using BrowserAppLauncherForTesting = base::OnceCallback<content::WebContents*(
+    const apps::AppLaunchParams& params)>;
+
+// Test helper that hooking calls to BrowserAppLauncher::LaunchAppWithParams
+void SetBrowserAppLauncherForTesting(
+    BrowserAppLauncherForTesting browserAppLauncherForTesting);
 
 class WebAppShimManagerDelegate : public apps::AppShimManager::Delegate {
  public:
@@ -27,6 +44,7 @@ class WebAppShimManagerDelegate : public apps::AppShimManager::Delegate {
   void LaunchApp(Profile* profile,
                  const AppId& app_id,
                  const std::vector<base::FilePath>& files,
+                 const std::vector<GURL>& urls,
                  chrome::mojom::AppShimLoginItemRestoreState
                      login_item_restore_state) override;
   void LaunchShim(Profile* profile,

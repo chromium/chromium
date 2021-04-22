@@ -63,6 +63,11 @@ class AppShimController : public chrome::mojom::AppShim {
   // Called when a profile is selected from the profiles NSMenu.
   void ProfileMenuItemSelected(uint32_t index);
 
+  // Called by AppShimDelegate in response to an URL being opened. If this
+  // occurs before OnDidFinishLaunching, then the argument is the files that
+  // triggered the launch of the app.
+  void OpenUrls(const std::vector<GURL>& urls);
+
  private:
   friend class TestShimClient;
   friend class apps::MachBootstrapAcceptorTest;
@@ -134,6 +139,10 @@ class AppShimController : public chrome::mojom::AppShim {
   // Populated by OpenFiles if it was called before OnAppFinishedLaunching
   // was called.
   std::vector<base::FilePath> launch_files_;
+
+  // Populated by OpenUrls if it was called before nAppFinishedLaunching
+  // was called.
+  std::vector<GURL> launch_urls_;
 
   // This is the Chrome process that this app is committed to connecting to.
   // The app will quit if this process is terminated before the mojo connection

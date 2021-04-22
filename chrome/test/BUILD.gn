@@ -5582,6 +5582,7 @@ test("unit_tests") {
       sources += [
         "../browser/apps/app_shim/app_shim_host_mac_unittest.cc",
         "../browser/apps/app_shim/app_shim_manager_mac_unittest.cc",
+        "../browser/apps/app_shim/web_app_shim_manager_delegate_mac_unittest.cc",
       ]
     }
 
