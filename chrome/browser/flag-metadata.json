@@ -505,12 +505,12 @@
   {
     "name": "cct-incognito",
     "owners": [ "rhalavati", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 100
   },
   {
     "name": "cct-incognito-available-to-third-party",
     "owners": [ "rhalavati", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 100
   },
   {
     "name": "cdm-factory-daemon",
