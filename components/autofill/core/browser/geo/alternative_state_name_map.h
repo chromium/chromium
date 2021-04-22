@@ -7,15 +7,15 @@
 
 #include <string>
 
-#include "components/autofill/core/browser/proto/states.pb.h"
-
 #include "base/i18n/case_conversion.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/types/strong_alias.h"
+#include "components/autofill/core/browser/proto/states.pb.h"
 
 namespace autofill {
+
 // AlternativeStateNameMap encapsulates mappings from state names in the
 // profiles to their localized and the abbreviated names.
 //
