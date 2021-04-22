@@ -50,4 +50,13 @@ bool DawnControlClientHolder::IsContextLost() const {
   return lost_;
 }
 
+std::unique_ptr<RecyclableCanvasResource>
+DawnControlClientHolder::GetOrCreateCanvasResource(
+    const IntSize& size,
+    const CanvasResourceParams& params,
+    bool is_origin_top_left) {
+  return recyclable_resource_cache_.GetOrCreateCanvasResource(
+      size, params, is_origin_top_left);
+}
+
 }  // namespace blink

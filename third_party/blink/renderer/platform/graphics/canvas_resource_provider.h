@@ -114,10 +114,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
       const IntSize& size,
-      SkFilterQuality filter_quality,
       const CanvasResourceParams& params,
-      ShouldInitialize initialize_provider,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
+      bool is_origin_top_left);
 
   static std::unique_ptr<CanvasResourceProvider> CreatePassThroughProvider(
       const IntSize& size,
@@ -238,6 +236,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // method also calls FlushCanvas() to ensure that all operations are accounted
   // for in the digest.
   const IdentifiabilityPaintOpDigest& GetIdentifiablityPaintOpDigest();
+  virtual void OnAcquireRecyclableCanvasResource() {}
+  virtual void OnDestroyRecyclableCanvasResource() {}
 
  protected:
   class CanvasImageProvider;

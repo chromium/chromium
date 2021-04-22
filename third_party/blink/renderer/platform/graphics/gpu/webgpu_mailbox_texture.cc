@@ -23,7 +23,8 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
   return base::AdoptRef(new WebGPUMailboxTexture(
       std::move(dawn_control_client), device, usage,
       image->GetMailboxHolder().mailbox, image->GetMailboxHolder().sync_token,
-      std::move(finished_access_callback)));
+      std::move(finished_access_callback),
+      /*recyclable_canvas_resource=*/nullptr));
 }
 
 // static
@@ -31,7 +32,13 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
     scoped_refptr<DawnControlClientHolder> dawn_control_client,
     WGPUDevice device,
     WGPUTextureUsage usage,
-    scoped_refptr<CanvasResource> canvas_resource) {
+    std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource) {
+  scoped_refptr<CanvasResource> canvas_resource =
+      recyclable_canvas_resource->resource_provider()->ProduceCanvasResource();
+  DCHECK(canvas_resource->IsValid());
+  DCHECK(canvas_resource->IsAccelerated());
+
+  // TODO(magchen@): move WaitSyncToken into ~RecyclableCanvasResource().
   auto finished_access_callback = WTF::Bind(&CanvasResource::WaitSyncToken,
                                             WTF::RetainedRef(canvas_resource));
 
@@ -40,7 +47,8 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
   gpu::SyncToken sync_token = canvas_resource->GetSyncToken();
   return base::AdoptRef(new WebGPUMailboxTexture(
       std::move(dawn_control_client), device, usage, mailbox, sync_token,
-      std::move(finished_access_callback)));
+      std::move(finished_access_callback),
+      std::move(recyclable_canvas_resource)));
 }
 
 WebGPUMailboxTexture::WebGPUMailboxTexture(
@@ -49,10 +57,12 @@ WebGPUMailboxTexture::WebGPUMailboxTexture(
     WGPUTextureUsage usage,
     const gpu::Mailbox& mailbox,
     const gpu::SyncToken& sync_token,
-    base::OnceCallback<void(const gpu::SyncToken&)> destroy_callback)
+    base::OnceCallback<void(const gpu::SyncToken&)> destroy_callback,
+    std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource)
     : dawn_control_client_(std::move(dawn_control_client)),
       device_(device),
-      destroy_callback_(std::move(destroy_callback)) {
+      destroy_callback_(std::move(destroy_callback)),
+      recyclable_canvas_resource_(std::move(recyclable_canvas_resource)) {
   dawn_control_client_->GetProcs().deviceReference(device_);
 
   gpu::webgpu::WebGPUInterface* webgpu = dawn_control_client_->GetInterface();

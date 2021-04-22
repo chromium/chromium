@@ -141,9 +141,11 @@ found in the LICENSE file.
         video.crossorigin = "anonymous";
         videos.push(video);
       }
-      // For the small video.
+      // For the small video at the upper right corner.
       videos[videoRows * videoColumns].width = 89;
       videos[videoRows * videoColumns].height = 50;
+      // Use the 640x360 source to simulate the local camera.
+      videos[videoRows * videoColumns].src = GetVideoSource(1, 1, codec);
 
       await Promise.all(videos.map(video => video.play()));
       p.remove();

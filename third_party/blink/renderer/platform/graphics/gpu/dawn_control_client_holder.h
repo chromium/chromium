@@ -8,6 +8,7 @@
 #include <dawn/dawn_proc_table.h>
 #include <dawn/webgpu.h>
 
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -21,6 +22,10 @@ class WebGPUInterface;
 }  // namespace gpu
 
 namespace blink {
+
+// TODO(magchen@): Increase the size after the timer for cleaning up stale
+// resources is added.
+constexpr wtf_size_t kWebGPUMaxRecyclableResourceCaches = 4;
 
 // This class holds the WebGPUInterface and a |destroyed_| flag.
 // DawnControlClientHolder::Destroy() should be called to destroy the backing
@@ -41,6 +46,10 @@ class PLATFORM_EXPORT DawnControlClientHolder
   void SetContextLost();
   bool IsContextLost() const;
   void SetLostContextCallback();
+  std::unique_ptr<RecyclableCanvasResource> GetOrCreateCanvasResource(
+      const IntSize& size,
+      const CanvasResourceParams& params,
+      bool is_origin_top_left);
 
  private:
   friend class RefCounted<DawnControlClientHolder>;
@@ -50,6 +59,8 @@ class PLATFORM_EXPORT DawnControlClientHolder
   gpu::webgpu::WebGPUInterface* interface_;
   DawnProcTable procs_;
   bool lost_ = false;
+  WebGPURecyclableResourceCache recyclable_resource_cache_{
+      kWebGPUMaxRecyclableResourceCaches};
 };
 
 }  // namespace blink

@@ -683,6 +683,14 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     return static_cast<const CanvasResourceSharedImage*>(resource_.get());
   }
 
+  // For WebGpu RecyclableCanvasResource.
+  void OnAcquireRecyclableCanvasResource() override { EnsureWriteAccess(); }
+  void OnDestroyRecyclableCanvasResource() override {
+    // RecyclableCanvasResource should be the only one that holds onto
+    // |resource_|.
+    DCHECK(resource_->HasOneRef());
+  }
+
   const bool is_accelerated_;
   const uint32_t shared_image_usage_flags_;
   bool current_resource_has_write_access_ = false;
@@ -853,19 +861,6 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
   scoped_refptr<CanvasResourceSwapChain> resource_;
 };
 
-namespace {
-
-enum class CanvasResourceType {
-  kDirect3DPassThrough,
-  kDirect2DSwapChain,
-  kSharedImage,
-  kSharedBitmap,
-  kBitmap,
-  kSkiaDawnSharedImage,
-};
-
-}  // unnamed namespace
-
 std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreateBitmapProvider(
     const IntSize& size,
@@ -975,15 +970,14 @@ CanvasResourceProvider::CreateSharedImageProvider(
 std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreateWebGPUImageProvider(
     const IntSize& size,
-    SkFilterQuality filter_quality,
     const CanvasResourceParams& params,
-    ShouldInitialize initialize_provider,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-        context_provider_wrapper) {
+    bool is_origin_top_left) {
+  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
   return CreateSharedImageProvider(
-      size, filter_quality, params, initialize_provider,
-      std::move(context_provider_wrapper), RasterMode::kGPU,
-      true /* is_origin_top_left */, gpu::SHARED_IMAGE_USAGE_WEBGPU);
+      size, kLow_SkFilterQuality, params,
+      CanvasResourceProvider::ShouldInitialize::kNo,
+      std::move(context_provider_wrapper), RasterMode::kGPU, is_origin_top_left,
+      gpu::SHARED_IMAGE_USAGE_WEBGPU);
 }
 
 std::unique_ptr<CanvasResourceProvider>

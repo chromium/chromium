@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 
 namespace blink {
@@ -131,54 +132,53 @@ GPUTexture* GPUTexture::FromVideo(GPUDevice* device,
     return nullptr;
   }
 
-  // Create a CanvasResourceProvider for producing WebGPU-compatible shared
-  // images.
-  // TODO(crbug.com/1174809): This should recycle resources instead of creating
-  // a new shared image every time.
-  const auto intrinsic_size = IntSize(media_video_frame->natural_size());
-  std::unique_ptr<CanvasResourceProvider> resource_provider =
-      CanvasResourceProvider::CreateWebGPUImageProvider(
-          intrinsic_size, kLow_SkFilterQuality,
-          CanvasResourceParams(CanvasColorSpace::kSRGB, kN32_SkColorType,
-                               kPremul_SkAlphaType),
-          CanvasResourceProvider::ShouldInitialize::kNo,
-          SharedGpuContext::ContextProviderWrapper());
+  // If the context is lost, the resource provider would be invalid.
+  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
+  if (!context_provider_wrapper ||
+      context_provider_wrapper->ContextProvider()->IsContextLost())
+    return nullptr;
 
-  if (!resource_provider) {
+  // TODO:(magchen@): Use kN32_SkColorType when kBGRA_8888_SkColorType is
+  // supported. Set kRGBA_8888_SkColorType for now to keep recycling working.
+  const CanvasResourceParams params(
+      CanvasColorSpace::kSRGB, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
+  const auto intrinsic_size = IntSize(media_video_frame->natural_size());
+
+  // Get a recyclable resource for producing WebGPU-compatible shared images.
+  std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
+      device->GetDawnControlClient()->GetOrCreateCanvasResource(
+          intrinsic_size, params, /*is_origin_top_left=*/true);
+  if (!recyclable_canvas_resource) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to import texture from video");
     return nullptr;
   }
 
+  CanvasResourceProvider* resource_provider =
+      recyclable_canvas_resource->resource_provider();
+  DCHECK(resource_provider);
+
   viz::RasterContextProvider* raster_context_provider = nullptr;
-  if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-    if (auto* context_provider = wrapper->ContextProvider())
-      raster_context_provider = context_provider->RasterContextProvider();
-  }
+  if (auto* context_provider = context_provider_wrapper->ContextProvider())
+    raster_context_provider = context_provider->RasterContextProvider();
 
   // TODO(crbug.com/1174809): This isn't efficient for VideoFrames which are
   // already available as a shared image. A WebGPUMailboxTexture should be
   // created directly from the VideoFrame instead.
   const auto dest_rect = gfx::Rect(media_video_frame->natural_size());
   if (!DrawVideoFrameIntoResourceProvider(
-          std::move(media_video_frame), resource_provider.get(),
+          std::move(media_video_frame), resource_provider,
           raster_context_provider, dest_rect, video_renderer)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to import texture from video");
     return nullptr;
   }
 
-  // Acquire the CanvasResource wrapping the shared image.
-  scoped_refptr<CanvasResource> canvas_resource =
-      resource_provider->ProduceCanvasResource();
-  DCHECK(canvas_resource->IsValid());
-  DCHECK(canvas_resource->IsAccelerated());
-
   // Extract the format. This is only used to validate copyImageBitmapToTexture
   // right now. We may want to reflect it from this function or validate it
   // against some input parameters.
   WGPUTextureFormat format;
-  switch (canvas_resource->CreateSkImageInfo().colorType()) {
+  switch (resource_provider->ColorParams().GetSkColorType()) {
     case SkColorType::kRGBA_8888_SkColorType:
       format = WGPUTextureFormat_RGBA8Unorm;
       break;
@@ -208,9 +208,10 @@ GPUTexture* GPUTexture::FromVideo(GPUDevice* device,
   }
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
-      WebGPUMailboxTexture::FromCanvasResource(device->GetDawnControlClient(),
-                                               device->GetHandle(), usage,
-                                               std::move(canvas_resource));
+      WebGPUMailboxTexture::FromCanvasResource(
+          device->GetDawnControlClient(), device->GetHandle(), usage,
+          std::move(recyclable_canvas_resource));
+
   DCHECK(mailbox_texture->GetTexture() != nullptr);
 
   return MakeGarbageCollected<GPUTexture>(device, format,
