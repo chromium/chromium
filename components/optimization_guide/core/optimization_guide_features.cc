@@ -355,18 +355,6 @@ base::TimeDelta PredictionModelFetchInterval() {
       kOptimizationTargetPrediction, "fetch_interval_hours", 24));
 }
 
-base::flat_set<std::string> ExternalAppPackageNamesApprovedForFetch() {
-  std::string value = base::GetFieldTrialParamValueByFeature(
-      kRemoteOptimizationGuideFetching, "approved_external_app_packages");
-  if (value.empty())
-    return {};
-
-  std::vector<std::string> app_packages_list = base::SplitString(
-      value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  return base::flat_set<std::string>(app_packages_list.begin(),
-                                     app_packages_list.end());
-}
-
 base::flat_set<uint32_t> FieldTrialNameHashesAllowedForFetch() {
   std::string value = base::GetFieldTrialParamValueByFeature(
       kOptimizationHintsFieldTrials, "allowed_field_trial_names");

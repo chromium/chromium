@@ -270,22 +270,6 @@ public class WarmupManager {
         WarmupManagerJni.get().startPreconnectPredictorInitialization(profile);
     }
 
-    /**
-     * Reports to WarmupManager on the next set of URLs that the user is expected to navigate to
-     * next. The set of URLs are reported by an external Android app.
-     *
-     * @param profile The profile to use.
-     * @param packagesName Possible names of the external Android apps that may have reported the
-     *         set of URLs.
-     * @param urls Ordered list of URLs that the user is expected to navigate to next. The URLs are
-     *         ordered in non-increasing probability of navigation.
-     */
-    public static void reportNextLikelyNavigationsOnUiThread(
-            Profile profile, String[] packagesName, String[] urls) {
-        ThreadUtils.assertOnUiThread();
-        WarmupManagerJni.get().reportNextLikelyNavigations(profile, packagesName, urls);
-    }
-
     /** Asynchronously preconnects to a given URL if the data reduction proxy is not in use.
      *
      * @param profile The profile to use for the preconnection.
@@ -416,6 +400,5 @@ public class WarmupManager {
         void startPreconnectPredictorInitialization(Profile profile);
         void preconnectUrlAndSubresources(Profile profile, String url);
         void warmupSpareRenderer(Profile profile);
-        void reportNextLikelyNavigations(Profile profile, String[] packagesName, String[] urls);
     }
 }

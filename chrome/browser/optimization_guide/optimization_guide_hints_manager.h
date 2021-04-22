@@ -159,6 +159,9 @@ class OptimizationGuideHintsManager
   // |navigation_redirect_chain| has finished.
   void OnNavigationFinish(const std::vector<GURL>& navigation_redirect_chain);
 
+  // Fetch the hints for the given predicted URLs.
+  void FetchHintsForPredictions(std::vector<GURL> target_urls);
+
   // Returns the persistent store for |this|.
   optimization_guide::OptimizationGuideStore* hint_store();
 
@@ -177,21 +180,14 @@ class OptimizationGuideHintsManager
   FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerFetchingTest,
                            HintsFetched_AtSRP_ECT_4G);
   FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerFetchingTest,
+                           HintsFetched_AtSRP_ECT_4G_GoogleLinksIgnored);
+  FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerFetchingTest,
                            HintsFetched_AtNonSRP_ECT_SLOW_2G);
   FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerFetchingTest,
                            HintsFetched_AtSRP_ECT_SLOW_2G_DuplicatesRemoved);
   FRIEND_TEST_ALL_PREFIXES(
       OptimizationGuideHintsManagerFetchingTest,
       HintsFetched_AtSRP_ECT_SLOW_2G_NonHTTPOrHTTPSHostsRemoved);
-  FRIEND_TEST_ALL_PREFIXES(
-      OptimizationGuideHintsManagerFetchingTest,
-      HintsFetched_ExternalAndroidApp_ECT_SLOW_2G_NonHTTPOrHTTPSHostsRemovedAppWhitelisted);
-  FRIEND_TEST_ALL_PREFIXES(
-      OptimizationGuideHintsManagerFetchingTest,
-      HintsFetched_ExternalAndroidApp_ECT_SLOW_2G_NonHTTPOrHTTPSHostsRemovedNotAllAppsWhitelisted);
-  FRIEND_TEST_ALL_PREFIXES(
-      OptimizationGuideHintsManagerFetchingTest,
-      HintsFetched_ExternalAndroidApp_ECT_SLOW_2G_NonHTTPOrHTTPSHostsRemovedAppNotWhitelisted);
 
   // Processes the optimization filters contained in the hints component.
   void ProcessOptimizationFilters(
@@ -415,10 +411,6 @@ class OptimizationGuideHintsManager
   // used to create the initial fetcher for the batch update context.
   std::unique_ptr<optimization_guide::HintsFetcherFactory>
       hints_fetcher_factory_;
-
-  // The external app packages that have been approved for fetching from the
-  // remote Optimization Guide Service.
-  base::flat_set<std::string> external_app_packages_approved_for_fetch_;
 
   // The top host provider that can be queried. Not owned.
   optimization_guide::TopHostProvider* top_host_provider_ = nullptr;

@@ -55,25 +55,15 @@ void WritePredictionToConsoleLog(
 NavigationPredictorKeyedService::Prediction::Prediction(
     content::WebContents* web_contents,
     const base::Optional<GURL>& source_document_url,
-    const base::Optional<std::vector<std::string>>& external_app_packages_name,
     PredictionSource prediction_source,
     const std::vector<GURL>& sorted_predicted_urls)
     : web_contents_(web_contents),
       source_document_url_(source_document_url),
-      external_app_packages_name_(external_app_packages_name),
       prediction_source_(prediction_source),
       sorted_predicted_urls_(sorted_predicted_urls) {
-  switch (prediction_source_) {
-    case PredictionSource::kAnchorElementsParsedFromWebPage:
-      DCHECK(!source_document_url->is_empty());
-      DCHECK(!external_app_packages_name);
-      break;
-    case PredictionSource::kExternalAndroidApp:
-      DCHECK(!web_contents_);
-      DCHECK(!source_document_url);
-      DCHECK(!external_app_packages_name->empty());
-      break;
-  }
+  DCHECK_EQ(prediction_source_,
+            PredictionSource::kAnchorElementsParsedFromWebPage);
+  DCHECK(!source_document_url->is_empty());
 }
 
 NavigationPredictorKeyedService::Prediction::Prediction(
@@ -81,16 +71,7 @@ NavigationPredictorKeyedService::Prediction::Prediction(
     : web_contents_(other.web_contents_),
       prediction_source_(other.prediction_source_) {
   // Use non-default copy constructor operator that does deep-copy.
-  if (other.source_document_url_)
-    source_document_url_ = other.source_document_url_;
-
-  if (other.external_app_packages_name_) {
-    external_app_packages_name_ = std::vector<std::string>();
-    external_app_packages_name_->reserve(
-        other.external_app_packages_name_->size());
-    for (const auto& entry : other.external_app_packages_name_.value())
-      external_app_packages_name_->push_back(entry);
-  }
+  source_document_url_ = other.source_document_url_;
 
   sorted_predicted_urls_.reserve(other.sorted_predicted_urls_.size());
   for (const auto& entry : other.sorted_predicted_urls_)
@@ -104,21 +85,7 @@ NavigationPredictorKeyedService::Prediction::operator=(
   web_contents_ = other.web_contents_;
 
   source_document_url_.reset();
-  if (other.source_document_url_)
-    source_document_url_ = other.source_document_url_;
-
-  if (external_app_packages_name_)
-    external_app_packages_name_.reset();
-
-  if (other.external_app_packages_name_) {
-    external_app_packages_name_ = std::vector<std::string>();
-    external_app_packages_name_->reserve(
-        other.external_app_packages_name_->size());
-    for (const auto& entry : other.external_app_packages_name_.value())
-      external_app_packages_name_->push_back(entry);
-  } else {
-    external_app_packages_name_.reset();
-  }
+  source_document_url_ = other.source_document_url_;
   prediction_source_ = other.prediction_source_;
 
   sorted_predicted_urls_.clear();
@@ -136,13 +103,6 @@ NavigationPredictorKeyedService::Prediction::source_document_url() const {
   DCHECK_EQ(PredictionSource::kAnchorElementsParsedFromWebPage,
             prediction_source_);
   return source_document_url_;
-}
-
-const base::Optional<std::vector<std::string>>&
-NavigationPredictorKeyedService::Prediction::external_app_packages_name()
-    const {
-  DCHECK_EQ(PredictionSource::kExternalAndroidApp, prediction_source_);
-  return external_app_packages_name_;
 }
 
 const std::vector<GURL>&
@@ -187,9 +147,8 @@ void NavigationPredictorKeyedService::OnPredictionUpdated(
   DCHECK_EQ(PredictionSource::kAnchorElementsParsedFromWebPage,
             prediction_source);
 
-  last_prediction_ = Prediction(web_contents, document_url,
-                                /*external_app_packages_name=*/base::nullopt,
-                                prediction_source, sorted_predicted_urls);
+  last_prediction_ = Prediction(web_contents, document_url, prediction_source,
+                                sorted_predicted_urls);
   for (auto& observer : observer_list_) {
     observer.OnPredictionUpdated(last_prediction_);
   }
@@ -198,25 +157,6 @@ void NavigationPredictorKeyedService::OnPredictionUpdated(
           "console-log-json-navigation-predictions-for-testing")) {
     WritePredictionToConsoleLog(last_prediction_.value());
   }
-}
-
-void NavigationPredictorKeyedService::OnPredictionUpdatedByExternalAndroidApp(
-    const std::vector<std::string>& external_app_packages_name,
-    const std::vector<GURL>& sorted_predicted_urls) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (external_app_packages_name.empty() || sorted_predicted_urls.empty()) {
-    return;
-  }
-  last_prediction_ =
-      Prediction(nullptr, base::nullopt, external_app_packages_name,
-                 PredictionSource::kExternalAndroidApp, sorted_predicted_urls);
-  for (auto& observer : observer_list_) {
-    observer.OnPredictionUpdated(last_prediction_);
-  }
-
-  UMA_HISTOGRAM_COUNTS_100(
-      "NavigationPredictor.ExternalAndroidApp.CountPredictedURLs",
-      sorted_predicted_urls.size());
 }
 
 void NavigationPredictorKeyedService::AddObserver(Observer* observer) {
@@ -250,9 +190,9 @@ void NavigationPredictorKeyedService::OnWebContentsDestroyed(
 
 bool NavigationPredictorKeyedService::IsBrowserAppLikelyInForeground() const {
   // If no web contents is in foreground, then allow a very short cool down
-  // period before considering app in background. This cooldown period is needed
-  // since when switching between the tabs, none of the web contents is in
-  // foreground for a very short period.
+  // period before considering app in background. This cooldown period is
+  // needed since when switching between the tabs, none of the web contents is
+  // in foreground for a very short period.
   if (visible_web_contents_.empty() &&
       tick_clock_->NowTicks() - last_web_contents_state_change_time_ >
           base::TimeDelta::FromSeconds(1)) {

@@ -160,14 +160,6 @@ class PrefetchProxyTabHelperTestBase : public ChromeRenderViewHostTestHarness {
     task_environment()->RunUntilIdle();
   }
 
-  void MakeExternalAndroidAppNavigationPrediction(
-      const std::vector<GURL>& predicted_urls) {
-    NavigationPredictorKeyedServiceFactory::GetForProfile(profile())
-        ->OnPredictionUpdatedByExternalAndroidApp({"com.example.foo"},
-                                                  predicted_urls);
-    task_environment()->RunUntilIdle();
-  }
-
   void TriggerRedirectHistogramRecording() {
     content::MockNavigationHandle handle(web_contents());
     tab_helper_->DidStartNavigation(&handle);
@@ -919,18 +911,6 @@ TEST_F(PrefetchProxyTabHelperTest, UserSettingDisabled) {
 
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
-}
-
-// Verify that prefetch proxy is not triggered if the predictions for next
-// likely navigations are provided by external Android app.
-TEST_F(PrefetchProxyTabHelperTest, ExternalAndroidApp) {
-  NavigateSomewhere();
-  GURL doc_url("https://www.google.com/search?q=cats");
-  GURL prediction_url("https://www.cat-food.com/");
-  MakeExternalAndroidAppNavigationPrediction({prediction_url});
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(RequestCount(), 0);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, IgnoreSameDocNavigations) {

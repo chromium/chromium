@@ -1233,6 +1233,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NavigationPredictor.ExternalAndroidApp.CountPredictedURLs"
     units="Count" expires_after="2021-07-26">
+  <obsolete>
+    Predictions from external Android apps are no longer supported. Removed
+    2021/04.
+  </obsolete>
   <owner>sophiechang@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>

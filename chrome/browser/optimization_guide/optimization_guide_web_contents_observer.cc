@@ -4,6 +4,7 @@
 
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 
+#include "chrome/browser/optimization_guide/optimization_guide_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_top_host_provider.h"
@@ -15,6 +16,7 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
 
@@ -61,6 +63,12 @@ OptimizationGuideNavigationData* OptimizationGuideWebContentsObserver::
 void OptimizationGuideWebContentsObserver::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Clear any leftover hint requests from a previous navigation.
+  if (navigation_handle->IsInMainFrame()) {
+    ClearHintsToFetchBasedOnPredictions(navigation_handle);
+  }
+
   if (!IsValidOptimizationGuideNavigation(navigation_handle))
     return;
 
@@ -88,12 +96,24 @@ void OptimizationGuideWebContentsObserver::DidRedirectNavigation(
       navigation_handle);
 }
 
+void OptimizationGuideWebContentsObserver::ClearHintsToFetchBasedOnPredictions(
+    content::NavigationHandle* navigation_handle) {
+  hints_target_urls_.clear();
+  sent_batched_hints_request_ = false;
+}
+
 void OptimizationGuideWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!IsValidOptimizationGuideNavigation(navigation_handle))
+  // Clear any leftover hint requests from a previous navigation.
+  if (navigation_handle->IsInMainFrame()) {
+    ClearHintsToFetchBasedOnPredictions(navigation_handle);
+  }
+
+  if (!IsValidOptimizationGuideNavigation(navigation_handle)) {
     return;
+  }
 
   // Delete Optimization Guide information later, so that other
   // DidFinishNavigation methods can reliably use
@@ -108,6 +128,52 @@ void OptimizationGuideWebContentsObserver::DidFinishNavigation(
           &OptimizationGuideWebContentsObserver::NotifyNavigationFinish,
           weak_factory_.GetWeakPtr(), navigation_handle->GetNavigationId(),
           navigation_handle->GetRedirectChain()));
+}
+
+void OptimizationGuideWebContentsObserver::DocumentOnLoadCompletedInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
+  if (!render_frame_host->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+  if (web_contents() !=
+      content::WebContents::FromRenderFrameHost(render_frame_host)) {
+    // The current web contents isn't for the main frame that reached onload.
+    return;
+  }
+  // NavigationPredictor currently sends predictions just after onload. This
+  // will soon change, but in the meantime, give it 200 ms to report predictions
+  // before fetching them.
+  // TODO(spelchat): avoid posting a task and just inline FetchHints here
+  // once NavigationPredictor starts streaming predictions rather than sending
+  // them just after onload.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&OptimizationGuideWebContentsObserver::FetchHints,
+                     weak_factory_.GetWeakPtr()),
+      base::TimeDelta::FromMilliseconds(200));
+}
+
+void OptimizationGuideWebContentsObserver::FetchHintsUsingManagerForTesting(
+    OptimizationGuideHintsManager* hints_manager) {
+  DCHECK(hints_manager);
+  sent_batched_hints_request_ = true;
+  hints_manager->FetchHintsForPredictions(
+      std::move(hints_target_urls_.vector()));
+  hints_target_urls_.clear();
+}
+
+void OptimizationGuideWebContentsObserver::FetchHints() {
+  if (!optimization_guide_keyed_service_) {
+    return;
+  }
+
+  OptimizationGuideHintsManager* hints_manager =
+      optimization_guide_keyed_service_->GetHintsManager();
+  DCHECK(hints_manager);
+  sent_batched_hints_request_ = true;
+  hints_manager->FetchHintsForPredictions(
+      std::move(hints_target_urls_.vector()));
+  hints_target_urls_.clear();
 }
 
 void OptimizationGuideWebContentsObserver::NotifyNavigationFinish(
@@ -134,6 +200,21 @@ void OptimizationGuideWebContentsObserver::NotifyNavigationFinish(
 void OptimizationGuideWebContentsObserver::FlushLastNavigationData() {
   if (last_navigation_data_)
     last_navigation_data_.reset();
+}
+
+void OptimizationGuideWebContentsObserver::AddURLsToBatchFetchBasedOnPrediction(
+    std::vector<GURL> urls,
+    content::WebContents* web_contents) {
+  if (!this->web_contents()) {
+    return;
+  }
+  DCHECK_EQ(this->web_contents(), web_contents);
+  if (sent_batched_hints_request_) {
+    return;
+  }
+  for (const GURL& url : urls) {
+    hints_target_urls_.insert(url);
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(OptimizationGuideWebContentsObserver)

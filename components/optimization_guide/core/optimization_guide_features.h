@@ -187,10 +187,6 @@ base::TimeDelta PredictionModelFetchRetryDelay();
 // refresh models.
 base::TimeDelta PredictionModelFetchInterval();
 
-// Returns a set of external Android app packages whose predictions have been
-// approved for fetching from the remote Optimization Guide Service.
-base::flat_set<std::string> ExternalAppPackageNamesApprovedForFetch();
-
 // Returns a set of field trial name hashes that can be sent in the request to
 // the remote Optimization Guide Service if the client is in one of the
 // specified field trials.
