@@ -1,3 +1,11 @@
+<!--
+This file cannot be upstreamed to WPT until:
+* startPrerendering() usage is replaced with a WebDriver API
+* internals.setPermission() usage is replaced with a WebDriver API
+* The defer expectation is replaced with rejecting the promise with
+  “SecurityError” to match the specification at:
+  https://jeremyroman.github.io/alternate-loading-modes/#patch-serial
+-->
 <!DOCTYPE html>
 <title>Access to the Web HID API is deferred</title>
 <script src="/resources/testharness.js"></script>
@@ -6,8 +14,6 @@
 <body>
 <script>
 
-// This test cannot be upstreamed to WPT until:
-//   - startPrerendering() usage is replaced with a WebDriver API.
 promise_test(async t => {
   const bc = new BroadcastChannel('test-channel');
 
