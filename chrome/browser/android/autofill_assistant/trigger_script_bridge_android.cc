@@ -45,11 +45,6 @@ void TriggerScriptBridgeAndroid::Detach() {
   trigger_script_coordinator_ = nullptr;
 }
 
-void TriggerScriptBridgeAndroid::SetDisableHeaderAnimationsForTesting(
-    bool disable) {
-  disable_header_animations_for_testing_ = disable;
-}
-
 void TriggerScriptBridgeAndroid::OnTriggerScriptAction(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,
@@ -109,9 +104,6 @@ void TriggerScriptBridgeAndroid::ShowTriggerScript(
       Java_AssistantTriggerScriptBridge_createHeaderAndGetModel(env,
                                                                 java_object_);
   AssistantHeaderModel header_model(jheader_model);
-  if (disable_header_animations_for_testing_) {
-    header_model.SetDisableAnimations(disable_header_animations_for_testing_);
-  }
   header_model.SetStatusMessage(proto.status_message());
   header_model.SetBubbleMessage(proto.callout_message());
   header_model.SetProgressVisible(proto.has_progress_bar());

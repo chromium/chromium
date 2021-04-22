@@ -31,10 +31,6 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::UiDelegate {
   void Attach(TriggerScriptCoordinator* trigger_script_coordinator) override;
   void Detach() override;
 
-  // Disables header animations while showing trigger scripts. For testing only.
-  // TODO(arbesser): do this automatically or via proto, remove this method.
-  void SetDisableHeaderAnimationsForTesting(bool disable);
-
   // Called by the UI to execute a specific trigger script action.
   void OnTriggerScriptAction(
       JNIEnv* env,
@@ -68,8 +64,6 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::UiDelegate {
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   // Pointer to the native coordinator. Only set while attached.
   TriggerScriptCoordinator* trigger_script_coordinator_ = nullptr;
-
-  bool disable_header_animations_for_testing_ = false;
 };
 
 }  // namespace autofill_assistant

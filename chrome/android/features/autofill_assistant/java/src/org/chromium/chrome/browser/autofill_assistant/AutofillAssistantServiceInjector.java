@@ -93,4 +93,12 @@ public class AutofillAssistantServiceInjector {
 
         return sNativeServiceRequestSenderProvider.createNativeServiceRequestSender();
     }
+
+    /**
+     * Returns whether a provider for a service request sender to inject has been provided.
+     * Generally, this means that we are in a test environment.
+     */
+    public static boolean hasServiceRequestSenderToInject() {
+        return sNativeServiceRequestSenderProvider != null;
+    }
 }
