@@ -29,6 +29,8 @@
 #if defined(OS_WIN)
 #include <aclapi.h>
 #include <windows.h>
+
+#include "base/metrics/histogram_functions.h"
 #include "sandbox/win/src/sid.h"
 #endif
 
@@ -49,6 +51,21 @@ static_assert(base::size(kSodaPublicKeySHA256) == crypto::kSHA256Length,
               "Wrong hash length");
 
 constexpr char kSodaManifestName[] = "SODA Library";
+
+#if defined(OS_WIN)
+
+constexpr base::FilePath::CharType kSodaIndicatorFile[] =
+#if defined(ARCH_CPU_X86)
+    FILE_PATH_LITERAL("SODAFiles/arch_x86");
+#elif defined(ARCH_CPU_X86_64)
+    FILE_PATH_LITERAL("SODAFiles/arch_x64");
+#else
+    {};
+#endif
+
+static_assert(sizeof(kSodaIndicatorFile) > 0, "Unknown CPU architecture.");
+
+#endif
 
 }  // namespace
 
@@ -139,6 +156,19 @@ void SodaComponentInstallerPolicy::OnCustomUninstall() {}
 bool SodaComponentInstallerPolicy::VerifyInstallation(
     const base::DictionaryValue& manifest,
     const base::FilePath& install_dir) const {
+#ifdef OS_WIN
+  bool missing_indicator_file =
+      !base::PathExists(install_dir.Append(kSodaIndicatorFile));
+
+  base::UmaHistogramBoolean(
+      "Accessibility.LiveCaption.SodaVerificationFailureMissingIndicatorFile",
+      missing_indicator_file);
+
+  if (missing_indicator_file) {
+    return false;
+  }
+#endif
+
   return base::PathExists(install_dir.Append(speech::kSodaBinaryRelativePath));
 }
 
