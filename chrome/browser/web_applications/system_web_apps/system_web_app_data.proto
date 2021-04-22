@@ -27,6 +27,7 @@ message SystemWebAppDataProto {
     CROSH = 14;
     PERSONALIZATION = 15;
     SHORTCUT_CUSTOMIZATION = 16;
+    SHIMLESS_RMA = 17;
   };
 
   optional SystemAppType system_app_type = 1;

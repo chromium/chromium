@@ -7,5 +7,6 @@
 namespace ash {
 
 const char kChromeUIShimlessRMAHost[] = "shimless-rma";
+const char kChromeUIShimlessRMAUrl[] = "chrome://shimless-rma";
 
 }  // namespace ash

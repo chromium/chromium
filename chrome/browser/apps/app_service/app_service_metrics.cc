@@ -64,10 +64,11 @@ enum class DefaultAppName {
   kDiagnosticsApp = 42,
   kPrintManagementApp = 43,
   kShortcutCustomizationApp = 44,
+  kShimlessRMAApp = 45,
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kShortcutCustomizationApp,
+  kMaxValue = kShimlessRMAApp,
 };
 
 void RecordDefaultAppLaunch(DefaultAppName default_app_name,
@@ -288,6 +289,8 @@ void RecordAppLaunch(const std::string& app_id,
   } else if (app_id == web_app::kShortcutCustomizationAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kShortcutCustomizationApp,
                            launch_source);
+  } else if (app_id == web_app::kShimlessRMAAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kShimlessRMAApp, launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 

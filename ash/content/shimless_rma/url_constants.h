@@ -8,6 +8,7 @@
 namespace ash {
 
 extern const char kChromeUIShimlessRMAHost[];
+extern const char kChromeUIShimlessRMAUrl[];
 
 }  // namespace ash
 

@@ -57,6 +57,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/content/shimless_rma/url_constants.h"
 #include "ash/content/shortcut_customization_ui/url_constants.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "chrome/browser/ash/web_applications/camera_system_web_app_info.h"
@@ -70,6 +71,7 @@
 #include "chrome/browser/ash/web_applications/personalization_app_info.h"
 #include "chrome/browser/ash/web_applications/print_management_web_app_info.h"
 #include "chrome/browser/ash/web_applications/scanning_system_web_app_info.h"
+#include "chrome/browser/ash/web_applications/shimless_rma_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/shortcut_customization_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/terminal_system_web_app_info.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
@@ -224,6 +226,19 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
     infos.at(SystemAppType::SCANNING).minimum_window_size = {600, 420};
     infos.at(SystemAppType::SCANNING).capture_navigations = true;
     infos.at(SystemAppType::SCANNING).show_in_launcher = false;
+  }
+
+  if (SystemWebAppManager::IsAppEnabled(SystemAppType::SHIMLESS_RMA)) {
+    infos.emplace(
+        SystemAppType::SHIMLESS_RMA,
+        SystemAppInfo(
+            "ShimlessRMA", GURL(ash::kChromeUIShimlessRMAUrl),
+            base::BindRepeating(&CreateWebAppInfoForShimlessRMASystemWebApp)));
+    infos.at(SystemAppType::SHIMLESS_RMA).capture_navigations = true;
+    infos.at(SystemAppType::SHIMLESS_RMA).show_in_launcher = false;
+    infos.at(SystemAppType::SHIMLESS_RMA).show_in_search = false;
+    infos.at(SystemAppType::SHIMLESS_RMA).is_resizeable = false;
+    infos.at(SystemAppType::SHIMLESS_RMA).allow_scripts_to_close_windows = true;
   }
 
   if (SystemWebAppManager::IsAppEnabled(
@@ -398,6 +413,8 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
       return true;
     case SystemAppType::SCANNING:
       return true;
+    case SystemAppType::SHIMLESS_RMA:
+      return ash::features::IsShimlessRMAFlowEnabled();
     case SystemAppType::DIAGNOSTICS:
       return base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp);
     case SystemAppType::CONNECTIVITY_DIAGNOSTICS:

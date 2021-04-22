@@ -57,7 +57,6 @@ message ChromeOSDataProto {
   optional bool oem_installed = 5;
 }
 
-// Properties for System Web Apps.
 message ClientDataProto {
   optional SystemWebAppDataProto system_web_app_data = 1;
 }

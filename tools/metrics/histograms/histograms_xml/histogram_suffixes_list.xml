@@ -20047,6 +20047,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="PrintManagement" label="PrintManagement"/>
   <suffix name="Sample" label="Sample"/>
   <suffix name="Scanning" label="Scanning"/>
+  <suffix name="ShimlessRMA" label="Shimless RMA"/>
   <suffix name="ShortcutCustomization" label="ShortcutCustomization"/>
   <suffix name="Telemetry" label="Telemetry"/>
   <suffix name="Terminal" label="Terminal"/>

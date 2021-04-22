@@ -43,6 +43,15 @@ enum class SystemAppType {
   PERSONALIZATION = 15,
   SHORTCUT_CUSTOMIZATION = 16,
 
+  // SHIMLESS RMA Flow is SWA that provides step by step guides for the
+  // repair/RMA process.
+  //
+  // You can find information about this SWA at: http://go/shimless-ux.
+  //
+  // Source: //ash/content/shimless_rma/
+  // Contact: cros-peripherals@google.com
+  SHIMLESS_RMA = 17,
+
   // When adding a new System App, remember to:
   //
   // 1. Add a corresponding histogram suffix in WebAppSystemAppInternalName

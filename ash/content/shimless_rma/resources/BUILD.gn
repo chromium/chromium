@@ -14,7 +14,10 @@ preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 polymer_element_files = [ "shimless_rma.js" ]
 
 generate_grd("build_grd") {
-  input_files = [ "index.html" ]
+  input_files = [
+    "index.html",
+    "app_icon_192.png",
+  ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [ ":preprocess_generated" ]
   manifest_files = [ "$target_gen_dir/$preprocessed_gen_manifest" ]

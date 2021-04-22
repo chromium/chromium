@@ -17533,6 +17533,7 @@ Called by update_debug_scenarios.py.-->
   <int value="41" label="ScanningApp"/>
   <int value="42" label="DiagnosticsApp"/>
   <int value="43" label="PrintManagementApp"/>
+  <int value="45" label="ShimlessRMAApp"/>
 </enum>
 
 <enum name="DefaultBrowserAsyncAttemptResult">

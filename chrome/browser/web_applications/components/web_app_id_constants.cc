@@ -100,6 +100,10 @@ const char kSettingsAppId[] = "inogagmajamaleonmanpkpkkigmklfad";
 const char kShortcutCustomizationAppId[] = "ihgeegogifolehadhdgelgcnbnmemikp";
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "chrome://shimless-rma/"))
+const char kShimlessRMAAppId[] = "ijolhdommgkkhpenofmpkkhlepahelcm";
+
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "https://www.showtime.com/"))
 const char kShowtimeAppId[] = "eoccpgmpiempcflglfokeengliildkag";
 

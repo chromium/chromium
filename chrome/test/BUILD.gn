@@ -2664,6 +2664,7 @@ if (!is_android) {
         "../browser/ash/web_applications/print_management_app_integration_browsertest.cc",
         "../browser/ash/web_applications/scanning_app_integration_browsertest.cc",
         "../browser/ash/web_applications/settings_app_integration_browsertest.cc",
+        "../browser/ash/web_applications/shimless_rma_integration_browsertest.cc",
         "../browser/ash/web_applications/shortcut_customization_app_integration_browsertest.cc",
         "../browser/ash/web_applications/system_web_app_integration_test.cc",
         "../browser/ash/web_applications/system_web_app_integration_test.h",

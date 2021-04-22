@@ -30,6 +30,7 @@ extern const char kPrintManagementAppId[];
 extern const char kScanningAppId[];
 extern const char kSettingsAppId[];
 extern const char kShortcutCustomizationAppId[];
+extern const char kShimlessRMAAppId[];
 extern const char kShowtimeAppId[];
 extern const char kStadiaAppId[];
 extern const char kYoutubeAppId[];
