@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.signin.services;
 
-import static org.mockito.MockitoAnnotations.initMocks;
-
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -24,6 +22,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
@@ -66,6 +67,9 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
     public final AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(new FakeProfileDataSource());
 
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock
     private AccountTrackerService mAccountTrackerServiceMock;
 
@@ -83,7 +87,6 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
 
     @Before
     public void setUp() {
-        initMocks(this);
         AccountInfoService.init(mIdentityManager, mAccountTrackerServiceMock);
         final ProfileDataSource.ProfileData profileData = new ProfileDataSource.ProfileData(
                 TEST_ACCOUNT_NAME, createAvatar(), "Full Name", "Given Name");

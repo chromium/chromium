@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -35,6 +34,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -104,14 +106,14 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     @Rule
     public final JniMocker mocker = new JniMocker();
 
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock
     private AccountTrackerService mAccountTrackerServiceMock;
 
     @Mock
     private IdentityManager.Natives mIdentityManagerNativeMock;
-
-    @Mock
-    private ProfileDataCache.Observer mObserverMock;
 
     private final IdentityManager mIdentityManager =
             IdentityManager.create(NATIVE_IDENTITY_MANAGER, null /* OAuth2TokenService */);
@@ -127,11 +129,7 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
 
     @Before
     public void setUp() {
-        initMocks(this);
         mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
-        doAnswer(AdditionalAnswers.answerVoid(Runnable::run))
-                .when(mAccountTrackerServiceMock)
-                .seedAccountsIfNeeded(any(Runnable.class));
         AccountInfoService.init(mIdentityManager, mAccountTrackerServiceMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Activity activity = getActivity();
@@ -156,6 +154,9 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     @MediumTest
     @Feature("RenderTest")
     public void testProfileDataWithAvatarFromIdentityManager() throws IOException {
+        doAnswer(AdditionalAnswers.answerVoid(Runnable::run))
+                .when(mAccountTrackerServiceMock)
+                .seedAccountsIfNeeded(any(Runnable.class));
         when(mIdentityManagerNativeMock
                         .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
                                 anyLong(), eq(ACCOUNT_EMAIL)))
@@ -170,6 +171,9 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     @MediumTest
     @Feature("RenderTest")
     public void testProfileDataUpdatedFromIdentityManagerObserver() throws IOException {
+        doAnswer(AdditionalAnswers.answerVoid(Runnable::run))
+                .when(mAccountTrackerServiceMock)
+                .seedAccountsIfNeeded(any(Runnable.class));
         mAccountManagerTestRule.addAccount(
                 new ProfileDataSource.ProfileData(ACCOUNT_EMAIL, null, "Full Name", "Given Name"));
         mIdentityManager.onExtendedAccountInfoUpdated(mAccountInfoWithAvatar);
@@ -192,6 +196,9 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     @EnableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
     @Feature("RenderTest")
     public void testProfileDataPopulatedWithoutGmsProfileDataSource() throws IOException {
+        doAnswer(AdditionalAnswers.answerVoid(Runnable::run))
+                .when(mAccountTrackerServiceMock)
+                .seedAccountsIfNeeded(any(Runnable.class));
         when(mIdentityManagerNativeMock
                         .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
                                 anyLong(), eq(ACCOUNT_EMAIL)))
