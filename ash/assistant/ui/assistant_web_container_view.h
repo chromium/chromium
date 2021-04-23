@@ -45,6 +45,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantWebContainerView
   // Invoke to open the specified |url|.
   void OpenUrl(const GURL& url);
 
+  void SetCanGoBackForTesting(bool can_go_back);
+
  private:
   AssistantWebView* ContentsView();
   void InitLayout();

@@ -136,6 +136,10 @@ void AssistantWebContainerView::OpenUrl(const GURL& url) {
   ContentsView()->Navigate(url);
 }
 
+void AssistantWebContainerView::SetCanGoBackForTesting(bool can_go_back) {
+  DidChangeCanGoBack(can_go_back);
+}
+
 AssistantWebView* AssistantWebContainerView::ContentsView() {
   return contents_view_ptr_ ? contents_view_ptr_ : contents_view_.get();
 }
