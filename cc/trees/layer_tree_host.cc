@@ -1396,6 +1396,16 @@ void LayerTreeHost::SetExternalPageScaleFactor(
 
 void LayerTreeHost::SetLocalSurfaceIdFromParent(
     const viz::LocalSurfaceId& local_surface_id_from_parent) {
+  // If the viz::LocalSurfaceId is invalid we will be hitting the early exit.
+  // However creating a hash for tracing of an invalid id throw an error. So
+  // exit here. This is either from unit testing where no ids are being setup,
+  // or from a disconnect in Renderer and Browser startup, in which Renderers
+  // have a partial state before the Browser sends the full visual properties.
+  //
+  // TODO(jonross): Untangle startup so that we don't have this invalid partial
+  // state. (https://crbug.com/1185286) (https://crbug.com/419087)
+  if (local_surface_id_from_parent_ == local_surface_id_from_parent)
+    return;
   const viz::LocalSurfaceId current_local_surface_id_from_parent =
       local_surface_id_from_parent_;
 

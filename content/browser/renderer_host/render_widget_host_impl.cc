@@ -1138,15 +1138,21 @@ bool RenderWidgetHostImpl::SynchronizeVisualProperties(
       delegate_->DidChangeScreenOrientation();
   }
 
-  TRACE_EVENT_WITH_FLOW2(
-      TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
-      "RenderWidgetHostImpl::SynchronizeVisualProperties send message",
-      visual_properties->local_surface_id.value_or(viz::LocalSurfaceId())
-          .submission_trace_id(),
-      TRACE_EVENT_FLAG_FLOW_OUT, "message",
-      "WidgetMsg_SynchronizeVisualProperties", "local_surface_id",
-      visual_properties->local_surface_id.value_or(viz::LocalSurfaceId())
-          .ToString());
+  // If we do not have a valid viz::LocalSurfaceId then we are a child frame
+  // waiting on the id to be propagated from our parent. We cannot create a hash
+  // for tracing of an invalid id.
+  //
+  // TODO(jonross): Untangle startup so that we don't have this invalid partial
+  // state. (https://crbug.com/1185286) (https://crbug.com/419087)
+  if (visual_properties->local_surface_id.has_value()) {
+    TRACE_EVENT_WITH_FLOW2(
+        TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
+        "RenderWidgetHostImpl::SynchronizeVisualProperties send message",
+        visual_properties->local_surface_id->submission_trace_id(),
+        TRACE_EVENT_FLAG_FLOW_OUT, "message",
+        "WidgetMsg_SynchronizeVisualProperties", "local_surface_id",
+        visual_properties->local_surface_id->ToString());
+  }
   visual_properties_ack_pending_ =
       DoesVisualPropertiesNeedAck(old_visual_properties_, *visual_properties);
   old_visual_properties_ = std::move(visual_properties);
