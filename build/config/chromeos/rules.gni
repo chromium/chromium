@@ -117,25 +117,22 @@ if (cros_sdk_version != "") {
 #       build dir to the VM or DUT after launching it.
 #   runtime_deps_file: Path to file listing runtime deps for the test. If set,
 #       all files listed will be copied to the VM before testing.
-#   override_board: "cros_board" variable was used to decide both the toolchain
-#       to build Chrome and the DUTs to test the binary, however, with the
-#       introduction of Lacros, this is not true anymore: a Lacros chrome can be
-#       built by an amd64-generic toolchain, but tested on eve devices, and to
-#       accommondate the use case, this variable is introduced to allow
-#       overriding the board to test the built binary.
-#       WARNING: Do not use, this is to be deprecated.
-#       TODO(crbug.com/1195415): deprecate this argument.
+#   skip_generating_board_args: By default, this template generates an '--board'
+#       arg with corresponding '--flash' or '--use-vm' args for device and vm
+#       respectively. This argument instructs the template to skip generating
+#       them, and it's designed for use cases where one builds for one board
+#       (e.g. amd64-generic), but tests on a different board (e.g. eve).
 #   tast_vars: A list of "key=value" runtime variable pairs to pass to invoke
 #       the Tast tests. For more details, please see:
 #       https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Runtime-variables
 template("generate_runner_script") {
   forward_variables_from(invoker,
                          [
-                           "override_board",
                            "deploy_chrome",
                            "deploy_lacros",
                            "generated_script",
                            "runtime_deps_file",
+                           "skip_generating_board_args",
                            "tast_attr_expr",
                            "tast_tests",
                            "tast_vars",
@@ -143,12 +140,12 @@ template("generate_runner_script") {
                            "test_exe",
                          ])
 
-  if (defined(override_board)) {
-    cros_board = override_board
+  if (!defined(skip_generating_board_args)) {
+    skip_generating_board_args = false
   }
 
-  if (is_chromeos_lacros) {
-    # Lacros doesn't need cros_board, so setting it to empty to avoid being used
+  if (skip_generating_board_args) {
+    # cros_board is not needed, so setting it to empty to avoid being used
     # accidentally below.
     cros_board = ""
     not_needed([ cros_board ])
@@ -289,10 +286,7 @@ template("generate_runner_script") {
       "-v",
     ]
 
-    # At build time, Lacros tests don't know whether they'll run on VM or HW,
-    # and instead, these flags are specified at runtime when invoking the
-    # generated runner script.
-    if (is_chromeos_ash) {
+    if (!skip_generating_board_args) {
       executable_args += [
         "--board",
         cros_board,
@@ -447,6 +441,11 @@ template("lacros_tast_tests") {
     deploy_lacros = true
     generated_script = "$root_build_dir/bin/run_${target_name}"
     runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
+
+    # At build time, Lacros tests don't know whether they'll run on VM or HW,
+    # and instead, these flags are specified at runtime when invoking the
+    # generated runner script.
+    skip_generating_board_args = true
 
     # By default, tast tests download a lacros-chrome from a gcs location and
     # use it for testing. To support running lacros tast tests from Chromium CI,

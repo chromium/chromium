@@ -18,6 +18,7 @@ if (is_chromeos_device) {
       deploy_chrome = true
     } else {
       deploy_lacros = true
+      skip_generating_board_args = true
     }
   }
 }
