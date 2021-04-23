@@ -267,9 +267,9 @@ void FakeVideoCaptureDeviceFactory::ParseFakeDevicesConfigFromOptionsString(
       FakeVideoCaptureDevice::DisplayMediaType::ANY;
 
   while (option_tokenizer.GetNext()) {
-    std::vector<std::string> param =
-        base::SplitString(option_tokenizer.token(), "=", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
+    std::vector<base::StringPiece> param = base::SplitStringPiece(
+        option_tokenizer.token_piece(), "=", base::TRIM_WHITESPACE,
+        base::SPLIT_WANT_NONEMPTY);
 
     if (param.size() != 2u) {
       LOG(WARNING) << "Forget a value '" << options_string
