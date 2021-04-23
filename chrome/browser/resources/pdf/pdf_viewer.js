@@ -22,7 +22,7 @@ import {Bookmark} from './bookmark_type.js';
 import {BrowserApi} from './browser_api.js';
 import {Attachment, DocumentMetadata, FittingType, Point, SaveRequestType} from './constants.js';
 import {PluginController} from './controller.js';
-import {ViewerErrorScreenElement} from './elements/viewer-error-screen.js';
+import {ViewerErrorDialogElement} from './elements/viewer-error-dialog.js';
 import {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
 import {ViewerToolbarElement} from './elements/viewer-toolbar.js';
 // <if expr="chromeos">
@@ -325,11 +325,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   /** @override */
   getSizer() {
     return /** @type {!HTMLDivElement} */ (this.$$('#sizer'));
-  }
-
-  /** @override */
-  getErrorScreen() {
-    return /** @type {!ViewerErrorScreenElement} */ (this.$$('#error-screen'));
   }
 
   /**
@@ -707,6 +702,20 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       this.loadProgress_ = progress;
     }
     super.updateProgress(progress);
+  }
+
+  /** @private */
+  onErrorDialog_() {
+    // The error screen can only reload from a normal tab.
+    if (!chrome.tabs || this.browserApi.getStreamInfo().tabId === -1) {
+      return;
+    }
+
+    const errorDialog = /** @type {!ViewerErrorDialogElement} */ (
+        this.shadowRoot.querySelector('#error-dialog'));
+    errorDialog.reloadFn = () => {
+      chrome.tabs.reload(this.browserApi.getStreamInfo().tabId);
+    };
   }
 
   /** @private */

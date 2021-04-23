@@ -12,11 +12,7 @@ const tests = [
   function testHasElements() {
     const viewer = /** @type {!PDFViewerElement} */ (
         document.body.querySelector('pdf-viewer'));
-    const elementNames = [
-      'viewer-error-screen',
-      'viewer-pdf-sidenav',
-      'viewer-toolbar',
-    ];
+    const elementNames = ['viewer-pdf-sidenav', 'viewer-toolbar'];
 
     for (let i = 0; i < elementNames.length; i++) {
       const elements = viewer.shadowRoot.querySelectorAll(elementNames[i]);

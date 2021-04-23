@@ -217,7 +217,7 @@ preprocess_if_expr("preprocess_pdf_generated") {
   in_files = [
     "pdf/elements/icons.js",
     "pdf/elements/shared-vars.js",
-    "pdf/elements/viewer-error-screen.js",
+    "pdf/elements/viewer-error-dialog.js",
     "pdf/elements/viewer-page-indicator.js",
     "pdf/elements/viewer-zoom-button.js",
     "pdf/elements/viewer-zoom-toolbar.js",

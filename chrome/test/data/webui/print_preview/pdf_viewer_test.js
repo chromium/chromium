@@ -10,7 +10,7 @@ import 'chrome://print/pdf/elements/viewer-page-indicator.js';
 import {PDFCreateOutOfProcessPlugin} from 'chrome://print/pdf/pdf_scripting_api.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.m.js';
+import {eventToPromise, waitAfterNextRender} from '../test_util.m.js';
 
 window.pdf_viewer_test = {};
 pdf_viewer_test.suiteName = 'PdfViewerTest';
@@ -43,8 +43,8 @@ suite(pdf_viewer_test.suiteName, function() {
       assertEquals(id, element.id);
     };
 
-    ['zoom-toolbar', 'error-screen', 'page-indicator'].forEach(
-        id => verifyElement(id));
+    ['zoom-toolbar', 'page-indicator'].forEach(id => verifyElement(id));
+
     // Should also have the sizer and content divs
     assertTrue(!!viewer.shadowRoot.querySelector('#sizer'));
     assertTrue(!!viewer.shadowRoot.querySelector('#content'));
@@ -52,6 +52,12 @@ suite(pdf_viewer_test.suiteName, function() {
     // These elements don't exist in Print Preview's viewer.
     ['viewer-pdf-toolbar', 'viewer-form-warning'].forEach(
         name => assertFalse(!!viewer.shadowRoot.querySelector(name)));
+
+    // The error dialog only appears when it is needed.
+    assertFalse(!!viewer.shadowRoot.querySelector('viewer-error-dialog'));
+    viewer.showErrorDialog = true;
+    await waitAfterNextRender(viewer);
+    assertTrue(!!viewer.shadowRoot.querySelector('viewer-error-dialog'));
   });
 
   test(assert(pdf_viewer_test.TestNames.PageIndicator), function() {

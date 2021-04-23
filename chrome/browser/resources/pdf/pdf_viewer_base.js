@@ -11,7 +11,6 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {BrowserApi, ZoomBehavior} from './browser_api.js';
 import {FittingType, Point} from './constants.js';
 import {ContentController, MessageData, PluginController, PluginControllerEventType} from './controller.js';
-import {ViewerErrorScreenElement} from './elements/viewer-error-screen.js';
 import {record, recordFitTo, UserAction} from './metrics.js';
 import {OpenPdfParams, OpenPdfParamsParser} from './open_pdf_params_parser.js';
 import {LoadState} from './pdf_scripting_api.js';
@@ -45,6 +44,12 @@ export class PDFViewerBaseElement extends PolymerElement {
 
   static get properties() {
     return {
+      /** @protected */
+      showErrorDialog: {
+        type: Boolean,
+        value: false,
+      },
+
       /** @protected {Object|undefined} */
       strings: Object,
     };
@@ -122,12 +127,6 @@ export class PDFViewerBaseElement extends PolymerElement {
    * @protected
    */
   getSizer() {}
-
-  /**
-   * @return {!ViewerErrorScreenElement}
-   * @protected
-   */
-  getErrorScreen() {}
 
   /**
    * @param {!FittingType} view
@@ -216,13 +215,6 @@ export class PDFViewerBaseElement extends PolymerElement {
       return PluginController.getInstance().getNamedDestination(destination);
     });
 
-    // Can only reload if we are in a normal tab.
-    if (chrome.tabs && this.browserApi.getStreamInfo().tabId !== -1) {
-      this.getErrorScreen().reloadFn = () => {
-        chrome.tabs.reload(this.browserApi.getStreamInfo().tabId);
-      };
-    }
-
     // Determine the scrolling container.
     const isPrintPreview =
         document.documentElement.hasAttribute('is-print-preview');
@@ -304,7 +296,7 @@ export class PDFViewerBaseElement extends PolymerElement {
   updateProgress(progress) {
     if (progress === -1) {
       // Document load failed.
-      this.getErrorScreen().show();
+      this.showErrorDialog = true;
       this.getSizer().style.display = 'none';
       this.setLoadState(LoadState.FAILED);
       this.sendDocumentLoadedMessage();

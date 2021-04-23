@@ -8,9 +8,9 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-export class ViewerErrorScreenElement extends PolymerElement {
+export class ViewerErrorDialogElement extends PolymerElement {
   static get is() {
-    return 'viewer-error-screen';
+    return 'viewer-error-dialog';
   }
 
   static get template() {
@@ -19,19 +19,17 @@ export class ViewerErrorScreenElement extends PolymerElement {
 
   static get properties() {
     return {
+      /** @type {?function(): undefined} */
       reloadFn: Function,
     };
   }
 
-  show() {
-    /** @type {!CrDialogElement} */ (this.$.dialog).showModal();
-  }
-
-  reload() {
+  /** @private */
+  onReload_() {
     if (this.reloadFn) {
       this.reloadFn();
     }
   }
 }
 
-customElements.define(ViewerErrorScreenElement.is, ViewerErrorScreenElement);
+customElements.define(ViewerErrorDialogElement.is, ViewerErrorDialogElement);

@@ -12,7 +12,7 @@ js_type_check("closure_compile") {
     ":viewer-bookmark",
     ":viewer-document-outline",
     ":viewer-download-controls",
-    ":viewer-error-screen",
+    ":viewer-error-dialog",
     ":viewer-page-indicator",
     ":viewer-page-selector",
     ":viewer-password-dialog",
@@ -58,7 +58,7 @@ js_library("viewer-download-controls") {
   ]
 }
 
-js_library("viewer-error-screen") {
+js_library("viewer-error-dialog") {
   deps = [ "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m" ]
 }
 
@@ -187,7 +187,7 @@ html_to_js("web_components") {
     "viewer-bookmark.js",
     "viewer-document-outline.js",
     "viewer-download-controls.js",
-    "viewer-error-screen.js",
+    "viewer-error-dialog.js",
     "viewer-page-indicator.js",
     "viewer-page-selector.js",
     "viewer-password-dialog.js",
