@@ -12,6 +12,7 @@ import android.util.DisplayMetrics;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeClassQualifiedName;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.xsurface.ImagePrefetcher;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
@@ -126,6 +127,33 @@ public final class FeedServiceBridge {
         return FeedServiceBridgeJni.get().getReliabilityLoggingId();
     }
 
+    /** Observes whether or not the Feed stream contains unread content */
+    public static class UnreadContentObserver {
+        private long mNativePtr;
+
+        /**
+         * Begins observing.
+         *
+         * @param isWebFeed  Whether to observe the Web Feed, or the For-you Feed.
+         */
+        UnreadContentObserver(boolean isWebFeed) {
+            mNativePtr = FeedServiceBridgeJni.get().addUnreadContentObserver(this, isWebFeed);
+        }
+
+        /** Stops observing. Must be called when this observer is no longer needed */
+        public void destroy() {
+            FeedServiceBridgeJni.get().destroy(mNativePtr);
+            mNativePtr = 0;
+        }
+
+        /**
+         * Called to signal whether unread content is available. Called once after the observer is
+         * initialized, and after that, called each time unread content status changes.
+         */
+        @CalledByNative("UnreadContentObserver")
+        public void hasUnreadContentChanged(boolean hasUnreadContent) {}
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isEnabled();
@@ -137,5 +165,8 @@ public final class FeedServiceBridge {
         int getVideoPreviewsTypePreference();
         void setVideoPreviewsTypePreference(int videoPreviewsType);
         long getReliabilityLoggingId();
+        long addUnreadContentObserver(Object object, boolean isWebFeed);
+        @NativeClassQualifiedName("feed::JavaUnreadContentObserver")
+        void destroy(long nativePtr);
     }
 }

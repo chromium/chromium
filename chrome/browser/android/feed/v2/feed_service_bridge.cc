@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/check_op.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/feed/v2/feed_service_factory.h"
@@ -30,6 +31,13 @@ FeedService* GetFeedService() {
   if (!profile)
     return nullptr;
   return FeedServiceFactory::GetForBrowserContext(profile);
+}
+
+FeedApi* GetFeedApi() {
+  FeedService* service = GetFeedService();
+  if (!service)
+    return nullptr;
+  return service->GetStream();
 }
 
 }  // namespace
@@ -55,19 +63,18 @@ static int JNI_FeedServiceBridge_GetLoadMoreTriggerScrollDistanceDp(
 
 static void JNI_FeedServiceBridge_ReportOpenVisitComplete(JNIEnv* env,
                                                           jlong visitTimeMs) {
-  FeedService* service = GetFeedService();
-  if (!service)
+  FeedApi* api = GetFeedApi();
+  if (!api)
     return;
-  service->GetStream()->ReportOpenVisitComplete(
-      base::TimeDelta::FromMilliseconds(visitTimeMs));
+  api->ReportOpenVisitComplete(base::TimeDelta::FromMilliseconds(visitTimeMs));
 }
 
 static base::android::ScopedJavaLocalRef<jstring>
 JNI_FeedServiceBridge_GetClientInstanceId(JNIEnv* env) {
-  FeedService* service = GetFeedService();
   std::string instance_id;
-  if (service) {
-    instance_id = service->GetStream()->GetClientInstanceId();
+  FeedApi* api = GetFeedApi();
+  if (api) {
+    instance_id = api->GetClientInstanceId();
   }
   return base::android::ConvertUTF8ToJavaString(env, instance_id);
 }
@@ -85,6 +92,20 @@ static void JNI_FeedServiceBridge_SetVideoPreviewsTypePreference(JNIEnv* env,
 
 static jlong JNI_FeedServiceBridge_GetReliabilityLoggingId(JNIEnv* env) {
   return FeedServiceBridge::GetReliabilityLoggingId();
+}
+
+static jlong JNI_FeedServiceBridge_AddUnreadContentObserver(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_observer,
+    jboolean is_web_feed) {
+  FeedApi* api = GetFeedApi();
+  if (!api)
+    return 0;
+  JavaUnreadContentObserver* observer = new JavaUnreadContentObserver(
+      base::android::ScopedJavaGlobalRef<jobject>(j_observer));
+  api->AddUnreadContentObserver(is_web_feed ? kWebFeedStream : kForYouStream,
+                                observer);
+  return reinterpret_cast<jlong>(observer);
 }
 
 std::string FeedServiceBridge::GetLanguageTag() {
@@ -132,6 +153,23 @@ uint64_t FeedServiceBridge::GetReliabilityLoggingId() {
   }
   return FeedService::GetReliabilityLoggingId(
       g_browser_process->metrics_service()->GetClientId(), profile_prefs);
+}
+
+JavaUnreadContentObserver::JavaUnreadContentObserver(
+    base::android::ScopedJavaGlobalRef<jobject> j_observer)
+    : obj_(j_observer) {}
+
+feed::JavaUnreadContentObserver::~JavaUnreadContentObserver() = default;
+
+void JavaUnreadContentObserver::HasUnreadContentChanged(
+    bool has_unread_content) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_UnreadContentObserver_hasUnreadContentChanged(env, obj_,
+                                                     has_unread_content);
+}
+
+void JavaUnreadContentObserver::Destroy(JNIEnv*) {
+  delete this;
 }
 
 }  // namespace feed

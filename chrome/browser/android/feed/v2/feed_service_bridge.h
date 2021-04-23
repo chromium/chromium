@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/android/jni_android.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/types.h"
 
 namespace feed {
@@ -20,6 +22,19 @@ class FeedServiceBridge {
   static bool IsEnabled();
   static void PrefetchImage(const GURL& url);
   static uint64_t GetReliabilityLoggingId();
+};
+
+class JavaUnreadContentObserver : public FeedApi::UnreadContentObserver {
+ public:
+  JavaUnreadContentObserver(
+      base::android::ScopedJavaGlobalRef<jobject> j_observer);
+  ~JavaUnreadContentObserver() override;
+
+  void HasUnreadContentChanged(bool has_unread_content) override;
+  void Destroy(JNIEnv*);
+
+ private:
+  base::android::ScopedJavaGlobalRef<jobject> obj_;
 };
 
 }  // namespace feed
