@@ -1,5 +1,7 @@
-if (self.importScripts)
+if (self.importScripts) {
     importScripts('../resources/js-test.js');
+    importScripts('../resources/sab-polyfill.js');
+}
 
 description("Tests crypto.randomValues.");
 
@@ -37,8 +39,6 @@ try {
     debug(ex);
 }
 
-if (self.SharedArrayBuffer) {
-    shouldThrow("crypto.getRandomValues(new Uint8Array(new SharedArrayBuffer(100)))");
-}
+shouldThrow("crypto.getRandomValues(new Uint8Array(new SharedArrayBuffer(100)))");
 
 finishJSTest();
