@@ -12,15 +12,17 @@ var priceRegexTemplate = '((reg|regular|orig|from|' + priceCleanupPrefix +
     ')\\s+)?' +
     '(\\d+\\s*/\\s*)?(US(D)?\\s*)?' +
     '\\$[\\d.,]+(\\s+(to|-|–)\\s+(\\$)?[\\d.,]+)?' + priceCleanupPostfix + '?';
-var priceRegexFull = new RegExp('^' + priceRegexTemplate + '$', 'i');
+var priceRegexFull = new RegExp('^' + priceRegexTemplate + '( ea)?$', 'i');
 var priceRegex = new RegExp(priceRegexTemplate, 'i');
 var priceCleanupRegex = new RegExp(
     '^((' + priceCleanupPrefix + ')\\s+)|' + priceCleanupPostfix + '$', 'i');
-var cartItemHTMLRegex = new RegExp('(cart|basket|bundle)[-_]?item', 'i')
+var cartItemHTMLRegex = new RegExp(
+    '(cart|basket|bundle)[-_]?(item|product)', 'i')
 var cartItemTextContentRegex = new RegExp(
     'remove|delete|save for later|move to (favo(u?)rite|list|wish( ?)list)s?',
     'i')
-var notCartItemTextContentRegex = new RegExp('move to cart', 'i')
+var moveToCartRegex = new RegExp('move to (cart|bag)', 'i')
+var addToCartRegex = new RegExp('add to cart', 'i')
 
 function getLazyLoadingURL(image) {
   // FIXME: some lazy images in Nordstrom and Staples don't have URLs in the
@@ -160,6 +162,13 @@ function getAbsoluteUrlOfSrcSet(image) {
 }
 
 function extractUrl(item) {
+  // Some sites doesn't use <a> tag or explicitly state href. E.g. samsclub.com
+  // triggers JS to initiate navigation instead of <a>, and ae.com shows side
+  // panel after clicking on each item instead of directing to product page.
+  if (document.URL.includes("samsclub.com")
+      || document.URL.includes("ae.com")) {
+    return "";
+  }
   let anchors;
   if (item.tagName == 'A') {
     anchors = [item];
@@ -443,6 +452,11 @@ function choosePrice(priceArray) {
 }
 
 function extractPrice(item) {
+  // shein.com shows price by one element per digit and it's challenging
+  // to decide based on textContent.
+  if (document.URL.includes("shein.com")) {
+    return "";
+  }
   // Etsy mobile
   const prices = item.querySelectorAll(`
       .currency-value
@@ -548,19 +562,24 @@ function hasOverlap(target, list) {
   return false;
 }
 
-function isCartItem(item) {
-  // TODO: Improve the heuristic here to accommodate more formats of cart item.
+function matchNonCartPattern(item, pattern) {
   if (item.parentElement) {
     // Walmart has 'move to cart' outside of the div.cart-item.
-    if (item.parentElement.textContent.toLowerCase().match(
-            notCartItemTextContentRegex))
-      return false;
-  } else {
-    if (item.textContent.toLowerCase().match(notCartItemTextContentRegex))
-      return false;
+    if (item.parentElement.textContent.toLowerCase().match(pattern))
+      return true;
   }
+  return item.textContent.toLowerCase().match(pattern);
+}
+
+function isCartItem(item) {
+  // TODO: Improve the heuristic here to accommodate more formats of cart item.
+  if (matchNonCartPattern(item, moveToCartRegex)) return false;
+  // Item element in bestbuy.com contains "add to cart" for things
+  // like protection plans.
+  if (!document.URL.includes("bestbuy.com")
+    && matchNonCartPattern(item, addToCartRegex)) return false;
   return item.textContent.toLowerCase().match(cartItemTextContentRegex) ||
-      item.innerHTML.toLowerCase().match(cartItemHTMLRegex);
+      item.outerHTML.toLowerCase().match(cartItemHTMLRegex);
 }
 
 function extractOneItem(item, extracted_items, processed, output) {
@@ -682,6 +701,9 @@ function extractAllItems(root) {
     }
   }
   items = Array.from(ancestors);
+  if (document.URL.includes("samsclub.com")) {
+    items = root.querySelectorAll(".sc-cart-item-shipping");
+  }
 
   if (verbose > 0)
     console.log(items);
