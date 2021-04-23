@@ -534,8 +534,7 @@ void UserSessionManager::CompleteGuestSessionLogin(const GURL& start_url) {
   const base::CommandLine& browser_command_line =
       *base::CommandLine::ForCurrentProcess();
   base::CommandLine command_line(browser_command_line.GetProgram());
-  GetOffTheRecordCommandLine(start_url, StartupUtils::IsOobeCompleted(),
-                             browser_command_line, &command_line);
+  GetOffTheRecordCommandLine(start_url, browser_command_line, &command_line);
 
   // This makes sure that Chrome restarts with no per-session flags. The guest
   // profile will always have empty set of per-session flags. If this is not

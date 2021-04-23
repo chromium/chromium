@@ -171,6 +171,11 @@ class ErrorScreen : public BaseScreen,
 
   ErrorScreenView* view_ = nullptr;
 
+  // We have the guest login logic in this screen because it might be required
+  // quite early during OOBE. When Login screen is not yet shown and existing
+  // user controller not created. At this point even Guest button is not shown
+  // on the shelf. But we let user enter the guest session from the error screen
+  // to be able to look into the logs, etc.
   std::unique_ptr<LoginPerformer> guest_login_performer_;
 
   bool offline_login_allowed_ = false;

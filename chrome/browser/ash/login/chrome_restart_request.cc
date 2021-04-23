@@ -357,7 +357,6 @@ void ChromeRestartRequest::OnRestartJob(base::ScopedFD local_auth_fd,
 }  // namespace
 
 void GetOffTheRecordCommandLine(const GURL& start_url,
-                                bool is_oobe_completed,
                                 const base::CommandLine& base_command_line,
                                 base::CommandLine* command_line) {
   base::DictionaryValue otr_switches;
@@ -374,12 +373,6 @@ void GetOffTheRecordCommandLine(const GURL& start_url,
   // Override the home page.
   otr_switches.SetString(::switches::kHomePage,
                          GURL(chrome::kChromeUINewTabURL).spec());
-
-  // If OOBE is not finished yet, lock down the guest session to not allow
-  // surfing the web. Guest mode is still useful to inspect logs and run network
-  // diagnostics.
-  if (!is_oobe_completed)
-    otr_switches.SetString(switches::kOobeGuestSession, std::string());
 
   DeriveCommandLine(start_url, base_command_line, otr_switches, command_line);
   DeriveEnabledFeatures(command_line);

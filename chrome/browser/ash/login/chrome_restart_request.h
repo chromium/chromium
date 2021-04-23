@@ -26,7 +26,6 @@ enum class RestartChromeReason : uint32_t {
 
 // Determines the `command_line` to be used for the OTR process.
 void GetOffTheRecordCommandLine(const GURL& start_url,
-                                bool is_oobe_completed,
                                 const base::CommandLine& base_command_line,
                                 base::CommandLine* command_line);
 

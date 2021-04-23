@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
-#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/captive_portal_window_proxy.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
@@ -315,8 +314,7 @@ void ErrorScreen::OnOffTheRecordAuthSuccess() {
   const base::CommandLine& browser_command_line =
       *base::CommandLine::ForCurrentProcess();
   base::CommandLine command_line(browser_command_line.GetProgram());
-  GetOffTheRecordCommandLine(GURL(), StartupUtils::IsOobeCompleted(),
-                             browser_command_line, &command_line);
+  GetOffTheRecordCommandLine(GURL(), browser_command_line, &command_line);
   RestartChrome(command_line, RestartChromeReason::kGuest);
 }
 

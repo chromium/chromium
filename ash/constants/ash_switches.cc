@@ -510,9 +510,6 @@ const char kOobeEulaUrlForTests[] = "oobe-eula-url-for-tests";
 // is not in tablet mode.
 const char kOobeForceTabletFirstRun[] = "oobe-force-tablet-first-run";
 
-// Indicates that a guest session has been started before OOBE completion.
-const char kOobeGuestSession[] = "oobe-guest-session";
-
 // Skips all other OOBE pages after user login.
 const char kOobeSkipPostLogin[] = "oobe-skip-postlogin";
 

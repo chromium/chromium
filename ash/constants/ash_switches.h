@@ -186,7 +186,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kNoteTakingAppIds[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeEulaUrlForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kOobeForceTabletFirstRun[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeGuestSession[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeSkipPostLogin[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeSkipToLogin[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeTimerInterval[];

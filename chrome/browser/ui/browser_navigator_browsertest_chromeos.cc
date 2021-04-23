@@ -93,8 +93,8 @@ class BrowserGuestSessionNavigatorTest : public BrowserNavigatorTest {
     command_line_copy.AppendSwitchASCII(chromeos::switches::kLoginProfile,
                                         "user");
     command_line_copy.AppendSwitch(chromeos::switches::kGuestSession);
-    chromeos::GetOffTheRecordCommandLine(GetGoogleURL(), true,
-                                         command_line_copy, command_line);
+    chromeos::GetOffTheRecordCommandLine(GetGoogleURL(), command_line_copy,
+                                         command_line);
   }
 };
 
