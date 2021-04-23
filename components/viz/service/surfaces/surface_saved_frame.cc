@@ -6,10 +6,12 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/service/surfaces/surface.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace viz {
 
@@ -67,10 +69,16 @@ bool SurfaceSavedFrame::IsValid() const {
 
 void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
   DCHECK(surface->HasActiveFrame());
+
+  // RGBA_TEXTURE will become RGBA_BITMAP with SoftwareCompositing path.
+  // TODO(kylechar): Add RGBA_NATIVE that returns either RGBA_TEXTURE or
+  // RGBA_BITMAP depending on what is native.
+  constexpr auto result_format = CopyOutputRequest::ResultFormat::RGBA_TEXTURE;
+
   const auto& root_geometry = GetRootRenderPassGeometry(surface);
   // Bind kRoot and root geometry information to the callback.
   auto request = std::make_unique<CopyOutputRequest>(
-      CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
+      result_format,
       base::BindOnce(&SurfaceSavedFrame::NotifyCopyOfOutputComplete,
                      weak_factory_.GetWeakPtr(), ResultType::kRoot, 0,
                      root_geometry.rect, root_geometry.target_transform));
@@ -88,7 +96,7 @@ void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
     // Shared callbacks bind kShared with an index, and geometry information on
     // the callbacks.
     auto request = std::make_unique<CopyOutputRequest>(
-        CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
+        result_format,
         base::BindOnce(&SurfaceSavedFrame::NotifyCopyOfOutputComplete,
                        weak_factory_.GetWeakPtr(), ResultType::kShared, i,
                        geometry.rect, geometry.target_transform));
@@ -128,11 +136,6 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
   if (output_copy->IsEmpty())
     return;
 
-  // TODO(crbug.com/1174129): We need to support SoftwareRenderer, which would
-  // return a bitmap result here.
-  if (!output_copy->GetTextureResult())
-    return;
-
   ++valid_result_count_;
   if (!frame_result_) {
     frame_result_.emplace();
@@ -141,7 +144,6 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
         directive_.shared_render_pass_ids().size());
   }
 
-  auto output_copy_texture = *output_copy->GetTextureResult();
   OutputCopyResult* slot = nullptr;
   if (type == ResultType::kRoot) {
     slot = &frame_result_->root_result;
@@ -154,23 +156,34 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
 
   DCHECK(slot);
   DCHECK_EQ(output_copy->size(), rect.size());
-  slot->mailbox = output_copy_texture.mailbox;
-  slot->sync_token = output_copy_texture.sync_token;
-  slot->release_callback = output_copy->TakeTextureOwnership();
-  slot->rect = rect;
-  slot->target_transform = target_transform;
-  slot->is_software = false;
+  if (output_copy->format() == CopyOutputResult::Format::RGBA_BITMAP) {
+    slot->bitmap = output_copy->ScopedAccessSkBitmap().GetOutScopedBitmap();
+    slot->rect = rect;
+    slot->target_transform = target_transform;
+    slot->is_software = true;
+  } else {
+    auto output_copy_texture = *output_copy->GetTextureResult();
+    slot->mailbox = output_copy_texture.mailbox;
+    slot->sync_token = output_copy_texture.sync_token;
+    slot->release_callback = output_copy->TakeTextureOwnership();
+    slot->rect = rect;
+    slot->target_transform = target_transform;
+    slot->is_software = false;
+  }
 }
 
 base::Optional<SurfaceSavedFrame::FrameResult> SurfaceSavedFrame::TakeResult() {
   return std::exchange(frame_result_, base::nullopt);
 }
 
-void SurfaceSavedFrame::CompleteSavedFrameForTesting(
-    ReleaseCallback release_callback) {
+void SurfaceSavedFrame::CompleteSavedFrameForTesting() {
+  SkBitmap bitmap;
+  bitmap.allocPixels(
+      SkImageInfo::MakeN32Premul(kDefaultTextureSizeForTesting.width(),
+                                 kDefaultTextureSizeForTesting.height()));
+
   frame_result_.emplace();
-  frame_result_->root_result.mailbox = gpu::Mailbox::GenerateForSharedImage();
-  frame_result_->root_result.release_callback = std::move(release_callback);
+  frame_result_->root_result.bitmap = std::move(bitmap);
   frame_result_->root_result.rect = gfx::Rect(kDefaultTextureSizeForTesting);
   frame_result_->root_result.target_transform.MakeIdentity();
   frame_result_->root_result.is_software = true;
@@ -201,6 +214,9 @@ SurfaceSavedFrame::OutputCopyResult::operator=(OutputCopyResult&& other) {
 
   sync_token = std::move(other.sync_token);
   other.sync_token = gpu::SyncToken();
+
+  bitmap = std::move(other.bitmap);
+  other.bitmap = SkBitmap();
 
   rect = std::move(other.rect);
   target_transform = std::move(other.target_transform);

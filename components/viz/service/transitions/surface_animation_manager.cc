@@ -52,6 +52,7 @@ void CreateAndAppendSrcTextureQuad(CompositorRenderPass* render_pass,
                                    const gfx::Rect& output_rect,
                                    const gfx::Transform& src_transform,
                                    float src_opacity,
+                                   bool y_flipped,
                                    ResourceId id) {
   auto* src_quad_state = render_pass->CreateAndAppendSharedQuadState();
   src_quad_state->SetAll(
@@ -75,8 +76,7 @@ void CreateAndAppendSrcTextureQuad(CompositorRenderPass* render_pass,
       /*uv_top_left=*/gfx::PointF(0, 0),
       /*uv_bottom_right=*/gfx::PointF(1, 1),
       /*background_color=*/SK_ColorTRANSPARENT,
-      /*vertex_opacity=*/vertex_opacity,
-      /*y_flipped=*/true,
+      /*vertex_opacity=*/vertex_opacity, y_flipped,
       /*nearest_neighbor=*/true,
       /*secure_output_only=*/false,
       /*protected_video_type=*/gfx::ProtectedVideoType::kClear);
@@ -127,7 +127,10 @@ void CreateAndAppendSharedRenderPassDrawQuad(
 
 }  // namespace
 
-SurfaceAnimationManager::SurfaceAnimationManager() = default;
+SurfaceAnimationManager::SurfaceAnimationManager(
+    SharedBitmapManager* shared_bitmap_manager)
+    : transferable_resource_tracker_(shared_bitmap_manager) {}
+
 SurfaceAnimationManager::~SurfaceAnimationManager() = default;
 
 void SurfaceAnimationManager::SetDirectiveFinishedCallback(
@@ -300,10 +303,13 @@ void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
   gfx::Transform src_transform = root_animation_.src_transform().Apply();
   gfx::Transform dst_transform = root_animation_.dst_transform().Apply();
 
+  // GPU textures are flipped but software bitmaps are not.
+  bool y_flipped = !saved_textures_->root.resource.is_software;
+
   if (src_on_top) {
     CreateAndAppendSrcTextureQuad(animation_pass.get(), output_rect,
                                   src_transform, root_animation_.src_opacity(),
-                                  saved_textures_->root.resource.id);
+                                  y_flipped, saved_textures_->root.resource.id);
   }
 
   auto* dst_quad_state = animation_pass->CreateAndAppendSharedQuadState();
@@ -336,7 +342,7 @@ void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
   if (!src_on_top) {
     CreateAndAppendSrcTextureQuad(animation_pass.get(), output_rect,
                                   src_transform, root_animation_.src_opacity(),
-                                  saved_textures_->root.resource.id);
+                                  y_flipped, saved_textures_->root.resource.id);
   }
 
   interpolated_frame.render_pass_list.push_back(std::move(animation_pass));
@@ -469,8 +475,9 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
     float opacity = animation.src_opacity();
 
     if (src_texture.has_value()) {
+      bool y_flipped = !src_texture->resource.is_software;
       CreateAndAppendSrcTextureQuad(animation_pass, rect, transform, opacity,
-                                    src_texture->resource.id);
+                                    y_flipped, src_texture->resource.id);
       interpolated_frame->resource_list.push_back(src_texture->resource);
     }
 

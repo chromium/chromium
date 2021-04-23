@@ -6,7 +6,10 @@
 
 #include <stdint.h>
 
+#include <utility>
+
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/notreached.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -59,6 +62,14 @@ bool TestSharedBitmapManager::ChildAllocatedSharedBitmap(
   DCHECK_EQ(notified_set_.count(id), 0u);
   notified_set_.insert(id);
   return true;
+}
+
+bool TestSharedBitmapManager::LocalAllocatedSharedBitmap(
+    SkBitmap bitmap,
+    const SharedBitmapId& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NOTIMPLEMENTED();
+  return false;
 }
 
 void TestSharedBitmapManager::ChildDeletedSharedBitmap(

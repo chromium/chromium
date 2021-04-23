@@ -69,8 +69,7 @@ void SurfaceSavedFrameStorage::ExpireForTesting() {
 
 void SurfaceSavedFrameStorage::CompleteForTesting() {
   if (saved_frame_) {
-    saved_frame_->CompleteSavedFrameForTesting(  // IN-TEST
-        base::BindOnce([](const gpu::SyncToken&, bool) {}));
+    saved_frame_->CompleteSavedFrameForTesting();  // IN-TEST
   }
 }
 

@@ -38,6 +38,8 @@ class VIZ_SERVICE_EXPORT ServerSharedBitmapManager
       const SharedBitmapId& id) override;
   base::UnguessableToken GetSharedBitmapTracingGUIDFromId(
       const SharedBitmapId& id) override;
+  bool LocalAllocatedSharedBitmap(SkBitmap bitmap,
+                                  const SharedBitmapId& id) override;
   bool ChildAllocatedSharedBitmap(base::ReadOnlySharedMemoryMapping mapping,
                                   const SharedBitmapId& id) override;
   void ChildDeletedSharedBitmap(const SharedBitmapId& id) override;

@@ -15,6 +15,7 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "components/viz/service/transitions/transferable_resource_tracker.h"
 #include "components/viz/service/viz_service_export.h"
@@ -39,7 +40,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   using TransitionDirectiveCompleteCallback =
       base::RepeatingCallback<void(uint32_t)>;
 
-  SurfaceAnimationManager();
+  explicit SurfaceAnimationManager(SharedBitmapManager* shared_bitmap_manager);
   ~SurfaceAnimationManager();
 
   void SetDirectiveFinishedCallback(

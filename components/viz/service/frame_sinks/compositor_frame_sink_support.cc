@@ -65,6 +65,7 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
       surface_resource_holder_(this),
       is_root_(is_root),
       allow_copy_output_requests_(is_root),
+      surface_animation_manager_(frame_sink_manager_->shared_bitmap_manager()),
       // Don't track the root surface for PowerMode voting. All child surfaces
       // are tracked individually instead, and tracking the root surface could
       // override votes from the children.

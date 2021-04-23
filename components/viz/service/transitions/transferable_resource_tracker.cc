@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -20,9 +21,11 @@
 
 namespace viz {
 
-TransferableResourceTracker::TransferableResourceTracker()
+TransferableResourceTracker::TransferableResourceTracker(
+    SharedBitmapManager* shared_bitmap_manager)
     : starting_id_(kVizReservedRangeStartId.GetUnsafeValue()),
-      next_id_(kVizReservedRangeStartId.GetUnsafeValue()) {}
+      next_id_(kVizReservedRangeStartId.GetUnsafeValue()),
+      shared_bitmap_manager_(shared_bitmap_manager) {}
 
 TransferableResourceTracker::~TransferableResourceTracker() = default;
 
@@ -55,24 +58,49 @@ TransferableResourceTracker::PositionedResource
 TransferableResourceTracker::ImportResource(
     SurfaceSavedFrame::OutputCopyResult output_copy) {
   TransferableResource resource;
+
+  TransferableResourceHolder::ResourceReleaseCallback release_callback;
   if (output_copy.is_software) {
-    // TODO(vmpstr): This needs to be updated and tested in software. For
-    // example, we don't currently have a release callback in software, although
-    // tests do set one up.
-    resource = TransferableResource::MakeSoftware(
-        output_copy.mailbox, output_copy.rect.size(), RGBA_8888);
+    DCHECK(output_copy.mailbox.IsZero());
+    DCHECK(!output_copy.release_callback);
+
+    SharedBitmapId id = SharedBitmap::GenerateId();
+    shared_bitmap_manager_->LocalAllocatedSharedBitmap(
+        std::move(output_copy.bitmap), id);
+    resource = TransferableResource::MakeSoftware(id, output_copy.rect.size(),
+                                                  RGBA_8888);
+
+    // Remove the bitmap from shared bitmap manager when no longer in use.
+    release_callback = base::BindOnce(
+        [](SharedBitmapManager* manager, const TransferableResource& resource) {
+          const SharedBitmapId& id = resource.mailbox_holder.mailbox;
+          manager->ChildDeletedSharedBitmap(id);
+        },
+        shared_bitmap_manager_);
   } else {
+    DCHECK(output_copy.bitmap.drawsNothing());
+
     resource = TransferableResource::MakeGL(
         output_copy.mailbox, GL_LINEAR, GL_TEXTURE_2D, output_copy.sync_token,
         output_copy.rect.size(),
         /*is_overlay_candidate=*/false);
+
+    // Run the SingleReleaseCallback when no longer in use.
+    if (output_copy.release_callback) {
+      release_callback = base::BindOnce(
+          [](ReleaseCallback callback, const TransferableResource& resource) {
+            std::move(callback).Run(resource.mailbox_holder.sync_token,
+                                    /*is_lost=*/false);
+          },
+          std::move(output_copy.release_callback));
+    }
   }
 
   resource.id = GetNextAvailableResourceId();
   DCHECK(!base::Contains(managed_resources_, resource.id));
   managed_resources_.emplace(
-      resource.id, TransferableResourceHolder(
-                       resource, std::move(output_copy.release_callback)));
+      resource.id,
+      TransferableResourceHolder(resource, std::move(release_callback)));
 
   PositionedResource result;
   result.resource = resource;
@@ -130,18 +158,15 @@ TransferableResourceTracker::TransferableResourceHolder::
     TransferableResourceHolder(TransferableResourceHolder&& other) = default;
 TransferableResourceTracker::TransferableResourceHolder::
     TransferableResourceHolder(const TransferableResource& resource,
-                               ReleaseCallback release_callback)
+                               ResourceReleaseCallback release_callback)
     : resource(resource),
       release_callback(std::move(release_callback)),
       ref_count(1u) {}
 
 TransferableResourceTracker::TransferableResourceHolder::
     ~TransferableResourceHolder() {
-  if (release_callback) {
-    std::move(release_callback)
-        .Run(resource.mailbox_holder.sync_token,
-             /*is_lost=*/false);
-  }
+  if (release_callback)
+    std::move(release_callback).Run(resource);
 }
 
 TransferableResourceTracker::TransferableResourceHolder&

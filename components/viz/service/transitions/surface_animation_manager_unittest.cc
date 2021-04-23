@@ -55,7 +55,7 @@ class SurfaceAnimationManagerTest : public testing::Test {
     CompositorFrame frame = MakeDefaultCompositorFrame();
     support_->SubmitCompositorFrame(local_surface_id, std::move(frame));
 
-    manager_.emplace();
+    manager_.emplace(&shared_bitmap_manager_);
     manager_->SetDirectiveFinishedCallback(base::DoNothing());
     manager_->UpdateFrameTime(current_time_);
   }
@@ -200,9 +200,7 @@ class SurfaceAnimationManagerTest : public testing::Test {
 
   SurfaceAnimationManager& manager() { return *manager_; }
 
- private:
-  base::Optional<SurfaceAnimationManager> manager_;
-
+ protected:
   base::TimeTicks current_time_;
 
   ServerSharedBitmapManager shared_bitmap_manager_;
@@ -210,6 +208,8 @@ class SurfaceAnimationManagerTest : public testing::Test {
   SurfaceManager* surface_manager_;
   std::unique_ptr<CompositorFrameSinkSupport> support_;
   SurfaceId surface_id_;
+
+  base::Optional<SurfaceAnimationManager> manager_;
 };
 
 TEST_F(SurfaceAnimationManagerTest, DefaultState) {

@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_TEST_TEST_SHARED_BITMAP_MANAGER_H_
 
 #include <map>
+#include <memory>
 #include <set>
 
 #include "base/memory/shared_memory_mapping.h"
@@ -27,6 +28,8 @@ class TestSharedBitmapManager : public SharedBitmapManager {
   base::UnguessableToken GetSharedBitmapTracingGUIDFromId(
       const SharedBitmapId& id) override;
   bool ChildAllocatedSharedBitmap(base::ReadOnlySharedMemoryMapping mapping,
+                                  const SharedBitmapId& id) override;
+  bool LocalAllocatedSharedBitmap(SkBitmap bitmap,
                                   const SharedBitmapId& id) override;
   void ChildDeletedSharedBitmap(const SharedBitmapId& id) override;
 

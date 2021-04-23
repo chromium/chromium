@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "components/viz/common/resources/shared_bitmap.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace gfx {
 class Size;
@@ -19,8 +20,8 @@ namespace viz {
 
 class SharedBitmapManager {
  public:
-  SharedBitmapManager() {}
-  virtual ~SharedBitmapManager() {}
+  SharedBitmapManager() = default;
+  virtual ~SharedBitmapManager() = default;
 
   // Used in the display compositor to find the bitmap associated with an id.
   virtual std::unique_ptr<SharedBitmap> GetSharedBitmapFromId(
@@ -29,6 +30,9 @@ class SharedBitmapManager {
       const SharedBitmapId& id) = 0;
   virtual base::UnguessableToken GetSharedBitmapTracingGUIDFromId(
       const SharedBitmapId& id) = 0;
+  // Used for locally allocated bitmaps that are not in shared memory.
+  virtual bool LocalAllocatedSharedBitmap(SkBitmap bitmap,
+                                          const SharedBitmapId& id) = 0;
   // Used in the display compositor to associate an id to a shm mapping.
   virtual bool ChildAllocatedSharedBitmap(
       base::ReadOnlySharedMemoryMapping mapping,
