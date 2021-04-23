@@ -29,7 +29,7 @@ namespace {
 const char kShowNotificationID[] = "show_release_notes_notification";
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 ReleaseNotesNotification::ReleaseNotesNotification(Profile* profile)
     : profile_(profile), weak_ptr_factory_(this) {}
@@ -74,4 +74,4 @@ void ReleaseNotesNotification::ShowReleaseNotesNotification() {
       *release_notes_available_notification_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

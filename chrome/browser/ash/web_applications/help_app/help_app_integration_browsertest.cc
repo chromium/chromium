@@ -226,9 +226,9 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   auto display_service =
       std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
   auto release_notes_notification =
-      std::make_unique<chromeos::ReleaseNotesNotification>(profile());
+      std::make_unique<ash::ReleaseNotesNotification>(profile());
   auto release_notes_storage =
-      std::make_unique<chromeos::ReleaseNotesStorage>(profile());
+      std::make_unique<ash::ReleaseNotesStorage>(profile());
 
   // Force the release notes notification to show up.
   profile()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone, 20);

@@ -21,7 +21,7 @@
 #include "components/version_info/version_info.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 class ReleaseNotesNotificationTest : public BrowserWithTestWindowTest {
  public:
@@ -44,9 +44,8 @@ class ReleaseNotesNotificationTest : public BrowserWithTestWindowTest {
     release_notes_notification_ =
         std::make_unique<ReleaseNotesNotification>(profile());
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kReleaseNotesNotification,
-                              chromeos::features::
-                                  kReleaseNotesNotificationAllChannels},
+        /*enabled_features=*/{features::kReleaseNotesNotification,
+                              features::kReleaseNotesNotificationAllChannels},
         /*disabled_features=*/{});
   }
 
@@ -102,4 +101,4 @@ TEST_F(ReleaseNotesNotificationTest, ShowReleaseNotesNotification) {
   EXPECT_EQ(1, notification_count_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

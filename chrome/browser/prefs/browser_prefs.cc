@@ -1111,7 +1111,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
       registry);
   ash::MultiProfileUserController::RegisterProfilePrefs(registry);
   chromeos::NetworkMetadataStore::RegisterPrefs(registry);
-  chromeos::ReleaseNotesStorage::RegisterProfilePrefs(registry);
+  ash::ReleaseNotesStorage::RegisterProfilePrefs(registry);
   chromeos::quick_unlock::FingerprintStorage::RegisterProfilePrefs(registry);
   chromeos::quick_unlock::PinStoragePrefs::RegisterProfilePrefs(registry);
   chromeos::Preferences::RegisterProfilePrefs(registry);

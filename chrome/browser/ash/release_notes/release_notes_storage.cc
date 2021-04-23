@@ -34,7 +34,7 @@ int GetMilestone() {
 bool IsEligibleProfile(Profile* profile) {
   std::string user_email = profile->GetProfileUserName();
   return gaia::IsGoogleInternalAccountEmail(user_email) ||
-         (chromeos::ProfileHelper::Get()
+         (ash::ProfileHelper::Get()
               ->GetUserByProfile(profile)
               ->HasGaiaAccount() &&
           !profile->GetProfilePolicyConnector()->IsManaged());
@@ -43,12 +43,12 @@ bool IsEligibleProfile(Profile* profile) {
 bool ShouldShowForCurrentChannel() {
   return chrome::GetChannel() == version_info::Channel::STABLE ||
          base::FeatureList::IsEnabled(
-             chromeos::features::kReleaseNotesNotificationAllChannels);
+             ash::features::kReleaseNotesNotificationAllChannels);
 }
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 void ReleaseNotesStorage::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kReleaseNotesLastShownMilestone, -1);
@@ -63,8 +63,7 @@ ReleaseNotesStorage::~ReleaseNotesStorage() = default;
 
 bool ReleaseNotesStorage::ShouldNotify() {
   // TODO(b/174514401): Make this server controlled.
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kReleaseNotesNotification))
+  if (!base::FeatureList::IsEnabled(features::kReleaseNotesNotification))
     return false;
 
   if (!ShouldShowForCurrentChannel())
@@ -102,8 +101,7 @@ void ReleaseNotesStorage::MarkNotificationShown() {
 }
 
 bool ReleaseNotesStorage::ShouldShowSuggestionChip() {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kReleaseNotesSuggestionChip)) {
+  if (!base::FeatureList::IsEnabled(features::kReleaseNotesSuggestionChip)) {
     return false;
   }
 
@@ -127,4 +125,4 @@ void ReleaseNotesStorage::StopShowingSuggestionChip() {
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
 }
 
-}  // namespace chromeos
+}  // namespace ash

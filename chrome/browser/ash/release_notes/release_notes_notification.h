@@ -15,9 +15,9 @@
 
 namespace message_center {
 class Notification;
-}
+}  // namespace message_center
 
-namespace chromeos {
+namespace ash {
 
 class ReleaseNotesNotificationTest;
 
@@ -52,6 +52,11 @@ class ReleaseNotesNotification {
   DISALLOW_COPY_AND_ASSIGN(ReleaseNotesNotification);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+using ::ash::ReleaseNotesNotification;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_RELEASE_NOTES_RELEASE_NOTES_NOTIFICATION_H_

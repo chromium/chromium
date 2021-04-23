@@ -21,7 +21,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 class ReleaseNotesStorageTest : public testing::Test,
                                 public testing::WithParamInterface<bool> {
@@ -43,10 +43,9 @@ class ReleaseNotesStorageTest : public testing::Test,
   std::unique_ptr<Profile> SetupStandardEnvironmentAndProfile(std::string email,
                                                               bool is_managed) {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kReleaseNotesNotification,
-                              chromeos::features::
-                                  kReleaseNotesNotificationAllChannels,
-                              chromeos::features::kReleaseNotesSuggestionChip},
+        /*enabled_features=*/{features::kReleaseNotesNotification,
+                              features::kReleaseNotesNotificationAllChannels,
+                              features::kReleaseNotesSuggestionChip},
         /*disabled_features=*/{});
     std::unique_ptr<Profile> profile = CreateProfile(email);
     profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(
@@ -155,7 +154,7 @@ TEST_F(ReleaseNotesStorageTest, ShouldShowReleaseNotesForGoogler) {
 
 TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesIfFeatureDisabled) {
   scoped_feature_list_.InitAndDisableFeature(
-      chromeos::features::kReleaseNotesNotification);
+      features::kReleaseNotesNotification);
   std::unique_ptr<Profile> profile = CreateProfile("test@gmail.com");
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
@@ -213,4 +212,4 @@ TEST_F(ReleaseNotesStorageTest, ShowSuggestionChipWhenNotificationShown) {
   EXPECT_EQ(true, release_notes_storage->ShouldShowSuggestionChip());
 }
 
-}  // namespace chromeos
+}  // namespace ash

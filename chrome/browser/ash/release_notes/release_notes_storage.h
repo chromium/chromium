@@ -10,7 +10,7 @@
 class Profile;
 class PrefRegistrySimple;
 
-namespace chromeos {
+namespace ash {
 
 // Class used to determine when/if to show user notification that release notes
 // are available for their recently updated device.
@@ -44,6 +44,6 @@ class ReleaseNotesStorage {
   DISALLOW_COPY_AND_ASSIGN(ReleaseNotesStorage);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_RELEASE_NOTES_RELEASE_NOTES_STORAGE_H_
