@@ -48,3 +48,34 @@ async function writeValueToServer(key, value) {
   const serverUrl = `${STORE_URL}?key=${key}&value=${value}`;
   await fetch(serverUrl);
 }
+
+// Loads the initiator page, and the page will start a prerender.
+function loadInitiatorPage() {
+  // Used to communicate with the prerendering page.
+  const prerenderChannel = new BroadcastChannel('prerender-channel');
+  window.addEventListener('unload', () => {
+    prerenderChannel.close();
+  });
+
+  // We need to wait for load before navigation since the prerendering
+  // implementation in Chromium can only activate if the response for the
+  // prerendering navigation has already been received and the prerendering
+  // document was created.
+  const loaded = new Promise(resolve => {
+    prerenderChannel.addEventListener('message', e => {
+      resolve(e.data);
+    }, {once: true});
+  });
+
+  const url = new URL(document.URL);
+  url.searchParams.append('prerendering', '');
+  // Prerender a page that notifies the initiator page of page load via
+  // `loaded`.
+  startPrerendering(url.toString());
+
+  // Navigate to the prerendered page after being informed.
+  loaded.then(() => {
+    // navigate to the prerenderered page.
+    window.location = url.toString();
+  });
+}
