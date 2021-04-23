@@ -50,8 +50,10 @@ gfx::ImageSkia StylusBatteryDelegate::GetBatteryImage() const {
   PowerStatus::BatteryImageInfo info;
   info.charge_percent = battery_level_.value_or(0);
 
-  if (IsBatteryCharging())
+  if (IsBatteryCharging()) {
     info.icon_badge = &kUnifiedMenuBatteryBoltIcon;
+    info.badge_outline = &kUnifiedMenuBatteryBoltOutlineIcon;
+  }
 
   const SkColor icon_fg_color = GetColorForBatteryLevel();
   const SkColor icon_bg_color = AshColorProvider::Get()->GetBackgroundColor();
