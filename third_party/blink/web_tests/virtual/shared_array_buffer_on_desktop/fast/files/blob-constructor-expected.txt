@@ -1,3 +1,4 @@
+CONSOLE WARNING: SharedArrayBuffer will require cross-origin isolation as of M91, around May 2021. See https://developer.chrome.com/blog/enabling-shared-array-buffer/ for more details.
 Test the Blob constructor.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
@@ -29,6 +30,7 @@ PASS new Blob([(new Float32Array(100)).buffer]).size is 400
 PASS new Blob([(new Float64Array(100)).buffer]).size is 800
 PASS new Blob([(new Float64Array(100)).buffer, (new Int32Array(100)).buffer, (new Uint8Array(100)).buffer, (new DataView(new ArrayBuffer(100))).buffer]).size is 1400
 PASS new Blob([new Blob([(new Int32Array(100)).buffer]), (new Uint8Array(100)).buffer, (new Float32Array(100)).buffer, (new DataView(new ArrayBuffer(100))).buffer]).size is 1000
+PASS new Blob([new Uint8Array(new SharedArrayBuffer(4))]) threw exception TypeError: Failed to construct 'Blob': The provided ArrayBufferView value must not be shared..
 PASS successfullyParsed is true
 
 TEST COMPLETE

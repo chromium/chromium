@@ -5068,30 +5068,24 @@ crbug.com/705490 external/wpt/fetch/api/basic/error-after-response.html [ Timeou
 
 crbug.com/716320 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/broadcastchannel-success-and-failure.https.html [ Failure Timeout ]
 
-# These tests require the Blink SharedArrayBufferOnDesktop feature, now that
-# SharedArrayBuffer is disabled by default everywhere.
-# TODO(crbug.com/1194557) Rework these tests to use COOP+COEP, and remove the
-# virtual tests.
-crbug.com/1194557 crypto/random-values.html [ Failure Timeout ]
-crbug.com/1194557 crypto/worker-random-values.html [ Failure Timeout ]
-crbug.com/1194557 crypto/subtle/importKey-badParameters.html [ Failure Timeout ]
-crbug.com/1194557 fast/beacon/beacon-basic.html [ Failure Timeout ]
-crbug.com/1194557 fast/css/fontface-arraybuffer.html [ Failure Timeout ]
-crbug.com/1194557 fast/dom/geometry-interfaces-dom-matrix.html [ Failure Timeout ]
-crbug.com/1194557 fast/events/constructors/midi-message-event-constructor.html [ Failure Timeout ]
-crbug.com/1194557 fast/files/blob-constructor.html [ Failure Timeout ]
-crbug.com/1194557 fast/webgl/webgl-sharedarraybuffer.html [ Failure Timeout ]
-crbug.com/1194557 fast/workers/worker-atomics-wait.html [ Failure Timeout ]
-crbug.com/1194557 fast/workers/worker-sharedarraybuffer-transfer.html [ Failure Timeout ]
-crbug.com/1194557 fast/workers/chromium/worker-sharedarraybuffer-transfer-two-workers.html [ Failure Timeout ]
-crbug.com/1194557 fast/xmlhttprequest/xmlhttprequest-send-sharedarraybuffer.html [ Failure Timeout ]
-crbug.com/1194557 http/tests/devtools/local-object-properties-section.js [ Failure Timeout ]
-crbug.com/1194557 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Timeout ]
-crbug.com/1194557 http/tests/devtools/sources/debugger-breakpoints/set-breakpoint-while-blocking-main-thread.js [ Failure Timeout ]
-crbug.com/1194557 http/tests/devtools/unit/object-properties-expand-recursively.js [ Failure Timeout ]
-crbug.com/1194557 http/tests/websocket/send-arraybufferview.html [ Failure Timeout ]
-crbug.com/1194557 virtual/shared_array_buffer_on_desktop/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-subdomain-yes-2-subdomain2-no.sub.https.html [ Failure Timeout ]
-crbug.com/1194557 webaudio/dom-exceptions.html [ Failure Timeout ]
+# Test timing out when SharedArrayBuffer is disable by default.
+# See https://crbug.com/1094557
+crbug.com/1194557 http/tests/devtools/sources/debugger-breakpoints/set-breakpoint-while-blocking-main-thread.js [ Timeout ]
+crbug.com/1194557 virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger-breakpoints/set-breakpoint-while-blocking-main-thread.js [ Pass ]
+
+# Failing test, but expectation file name is too long. See https://crbug.com/612667
+# See https://crbug.com/1094557
+crbug.com/1194557 external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-subdomain-yes-2-subdomain2-no.sub.https.html [ Timeout ]
+crbug.com/1194557 virtual/shared_array_buffer_on_desktop/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-subdomain-yes-2-subdomain2-no.sub.https.html [ Failure Pass ]
+
+# Failing devtool tests. Independently of SharedArrayBuffer enabled or not.
+crbug.com/1194557 http/tests/devtools/local-object-properties-section.js [ Failure ]
+crbug.com/1194557 http/tests/devtools/unit/object-properties-expand-recursively.js [ Failure ]
+
+# Test output varies depending on the bot. A single expectation file doesn't
+# work.
+crbug.com/1194557 fast/beacon/beacon-basic.html [ Failure Pass ]
+crbug.com/1194557 virtual/shared_array_buffer_on_desktop/fast/beacon/beacon-basic.html [ Pass ]
 
 # This test passes only when the JXL feature is enabled.
 crbug.com/1161994 http/tests/inspector-protocol/emulation/emulation-set-disabled-image-types-jxl.js [ Pass Failure ]

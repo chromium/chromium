@@ -1,3 +1,4 @@
+CONSOLE WARNING: line 125: SharedArrayBuffer will require cross-origin isolation as of M91, around May 2021. See https://developer.chrome.com/blog/enabling-shared-array-buffer/ for more details.
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "DOMMatrix(numberSequence) constructor"
 PASS DOMMatrix() constructor
@@ -14,6 +15,7 @@ PASS DOMMatrix.is2D can never be set to 'true' when it was set to 'false' before
 PASS DOMMatrix fromFloat*Array - invalid array size of nearby 6
 PASS DOMMatrix fromFloat*Array - invalid array size of nearby 16
 PASS DOMMatrix fromFloat*Array - invalid array size
+PASS DOMMatrix fromFloat*Array - can't use SharedArrayBuffer view
 PASS DOMMatrix.fromMatrix() with no parameter
 PASS DOMMatrix.fromMatrix() with null
 PASS DOMMatrix.fromMatrix() with undefined

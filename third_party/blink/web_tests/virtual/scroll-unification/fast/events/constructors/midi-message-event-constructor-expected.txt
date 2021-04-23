@@ -1,3 +1,4 @@
+CONSOLE WARNING: line 35: SharedArrayBuffer will require cross-origin isolation as of M91, around May 2021. See https://developer.chrome.com/blog/enabling-shared-array-buffer/ for more details.
 This tests the constructor for the MIDIMessageEvent DOM class.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
@@ -13,6 +14,7 @@ PASS new MIDIMessageEvent('eventType', { data: data }).data == '0,0,0,0,0,0,0,0,
 PASS new MIDIMessageEvent('eventType', { bubbles: true, cancelable: true, data: data }).bubbles is true
 PASS new MIDIMessageEvent('eventType', { bubbles: true, cancelable: true, data: data }).cancelable is true
 PASS new MIDIMessageEvent('eventType', { bubbles: true, cancelable: true, data: data }).data == '0,0,0' is true
+PASS new MIDIMessageEvent('eventType', { data: data }) threw exception TypeError: Failed to construct 'MIDIMessageEvent': The provided ArrayBufferView value must not be shared..
 PASS successfullyParsed is true
 
 TEST COMPLETE
