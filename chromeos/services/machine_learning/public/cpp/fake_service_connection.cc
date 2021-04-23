@@ -15,6 +15,8 @@ namespace machine_learning {
 FakeServiceConnectionImpl::FakeServiceConnectionImpl()
     : output_tensor_(mojom::Tensor::New()),
       load_handwriting_model_result_(mojom::LoadHandwritingModelResult::OK),
+      load_web_platform_handwriting_model_result_(
+          mojom::LoadHandwritingModelResult::OK),
       load_model_result_(mojom::LoadModelResult::OK),
       load_text_classifier_result_(mojom::LoadModelResult::OK),
       load_soda_result_(mojom::LoadModelResult::OK),
@@ -106,6 +108,24 @@ void FakeServiceConnectionImpl::LoadHandwritingModelWithSpec(
         callback) {
   ScheduleCall(base::BindOnce(
       &FakeServiceConnectionImpl::HandleLoadHandwritingModelWithSpecCall,
+      base::Unretained(this), std::move(receiver), std::move(callback)));
+}
+
+void FakeServiceConnectionImpl::HandleLoadWebPlatformHandwritingModelCall(
+    mojo::PendingReceiver<web_platform::mojom::HandwritingRecognizer> receiver,
+    mojom::MachineLearningService::LoadHandwritingModelCallback callback) {
+  if (load_handwriting_model_result_ == mojom::LoadHandwritingModelResult::OK)
+    web_platform_handwriting_receivers_.Add(this, std::move(receiver));
+  std::move(callback).Run(load_web_platform_handwriting_model_result_);
+}
+
+void FakeServiceConnectionImpl::LoadWebPlatformHandwritingModel(
+    web_platform::mojom::HandwritingModelConstraintPtr constraint,
+    mojo::PendingReceiver<web_platform::mojom::HandwritingRecognizer> receiver,
+    mojom::MachineLearningService::LoadWebPlatformHandwritingModelCallback
+        callback) {
+  ScheduleCall(base::BindOnce(
+      &FakeServiceConnectionImpl::HandleLoadWebPlatformHandwritingModelCall,
       base::Unretained(this), std::move(receiver), std::move(callback)));
 }
 
@@ -295,6 +315,15 @@ void FakeServiceConnectionImpl::SetOutputHandwritingRecognizerResult(
   handwriting_result_ = result.Clone();
 }
 
+void FakeServiceConnectionImpl::SetOutputWebPlatformHandwritingRecognizerResult(
+    const std::vector<web_platform::mojom::HandwritingPredictionPtr>&
+        predictions) {
+  web_platform_handwriting_result_.clear();
+  for (auto const& prediction : predictions) {
+    web_platform_handwriting_result_.emplace_back(prediction.Clone());
+  }
+}
+
 void FakeServiceConnectionImpl::SetOutputGrammarCheckerResult(
     const mojom::GrammarCheckerResultPtr& result) {
   grammar_checker_result_ = result.Clone();
@@ -330,6 +359,17 @@ void FakeServiceConnectionImpl::Recognize(
   ScheduleCall(base::BindOnce(&FakeServiceConnectionImpl::HandleRecognizeCall,
                               base::Unretained(this), std::move(query),
                               std::move(callback)));
+}
+
+void FakeServiceConnectionImpl::GetPrediction(
+    std::vector<web_platform::mojom::HandwritingStrokePtr> strokes,
+    web_platform::mojom::HandwritingHintsPtr hints,
+    web_platform::mojom::HandwritingRecognizer::GetPredictionCallback
+        callback) {
+  ScheduleCall(
+      base::BindOnce(&FakeServiceConnectionImpl::HandleGetPredictionCall,
+                     base::Unretained(this), std::move(strokes),
+                     std::move(hints), std::move(callback)));
 }
 
 void FakeServiceConnectionImpl::Check(
@@ -387,6 +427,18 @@ void FakeServiceConnectionImpl::HandleRecognizeCall(
     mojom::HandwritingRecognitionQueryPtr query,
     mojom::HandwritingRecognizer::RecognizeCallback callback) {
   std::move(callback).Run(handwriting_result_.Clone());
+}
+
+void FakeServiceConnectionImpl::HandleGetPredictionCall(
+    std::vector<web_platform::mojom::HandwritingStrokePtr> strokes,
+    web_platform::mojom::HandwritingHintsPtr hints,
+    web_platform::mojom::HandwritingRecognizer::GetPredictionCallback
+        callback) {
+  std::vector<web_platform::mojom::HandwritingPredictionPtr> predictions;
+  for (auto const& prediction : web_platform_handwriting_result_) {
+    predictions.emplace_back(prediction.Clone());
+  }
+  std::move(callback).Run(std::move(predictions));
 }
 
 void FakeServiceConnectionImpl::HandleLoadGrammarCheckerCall(

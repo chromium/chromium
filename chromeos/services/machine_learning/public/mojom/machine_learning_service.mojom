@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 1
+// Next MinVersion: 2
 
 // Top-level API of the Machine Learning Service: loading models for inference.
 
@@ -25,6 +25,7 @@ import "chromeos/services/machine_learning/public/mojom/handwriting_recognizer.m
 import "chromeos/services/machine_learning/public/mojom/model.mojom";
 import "chromeos/services/machine_learning/public/mojom/soda.mojom";
 import "chromeos/services/machine_learning/public/mojom/text_classifier.mojom";
+import "chromeos/services/machine_learning/public/mojom/web_platform_handwriting.mojom";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -37,8 +38,9 @@ enum LoadModelResult {
   LANGUAGE_NOT_SUPPORTED_ERROR = 4,
 };
 
-// Top-level interface between Chromium and the ML Service daemon.
-// Next ordinal: 8
+// Top-level interface between Chromium browser process and the ML Service
+// daemon.
+// Next ordinal: 10 (8 is reserved for libTextSuggester)
 [Stable, Uuid="9e5e4750-40cc-4eda-ac09-3457d06a45ab"]
 interface MachineLearningService {
   // Binds another pipe to this instance.
@@ -74,4 +76,17 @@ interface MachineLearningService {
   // Create and initialize a grammar checker.
   LoadGrammarChecker@7(pending_receiver<GrammarChecker> receiver)
       => (LoadModelResult result);
+  // Create a handwriting recognizer for web platform API.
+  // This API shares the same HWR engine with `LoadHandwritingModel` and
+  // `LoadHandwritingModelWithSpec` but with a different interface. This API is
+  // as identical to the Web Platform HWR API as possible so that we do not
+  // need to convert the input/output in the browser process. This is required
+  // for security reasons.
+  [MinVersion=1] LoadWebPlatformHandwritingModel@9(
+    chromeos.machine_learning.web_platform.mojom.HandwritingModelConstraint
+      constraint,
+    pending_receiver<
+      chromeos.machine_learning.web_platform.mojom.HandwritingRecognizer>
+      receiver)
+      => (LoadHandwritingModelResult result);
 };

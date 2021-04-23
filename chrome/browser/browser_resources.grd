@@ -459,6 +459,7 @@
         <include name="IDR_MACHINE_LEARNING_INTERNALS_TEST_MODEL_TAB_JS" file="resources\chromeos\machine_learning\test_model_tab.js" type="BINDATA" />
         <include name="IDR_MACHINE_LEARNING_INTERNALS_TIME_MOJO_JS" file="${root_gen_dir}\mojo/public/mojom/base/time.mojom-lite.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_MACHINE_LEARNING_INTERNALS_UTILS_JS" file="resources\chromeos\machine_learning\machine_learning_internals_utils.js" type="BINDATA" />
+        <include name="IDR_MACHINE_LEARNING_INTERNALS_WEB_PLATFORM_HANDWRITING_MOJO_JS" file="${root_gen_dir}\chromeos\services\machine_learning\public\mojom\web_platform_handwriting.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       </if>
       <if expr="not is_android">
         <!-- Chrome Cart -->
