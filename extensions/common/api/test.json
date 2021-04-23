@@ -383,6 +383,23 @@
         }
       },
       {
+        "name": "loadScript",
+        "type": "function",
+        "nocompile": true,
+        "description": "Loads a JS script in the current JS context.",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "scriptUrl"
+          }
+        ],
+        "returns": {
+          "type": "object",
+          "isInstanceOf": "Promise",
+          "description": "A promise that will be resolved once the script is loaded."
+        }
+      },
+      {
         "name": "setExceptionHandler",
         "type": "function",
         "description": "Sets the function to be called when an exception occurs. By default this is a function which fails the test. This is reset for every test run through $ref:test.runTests.",

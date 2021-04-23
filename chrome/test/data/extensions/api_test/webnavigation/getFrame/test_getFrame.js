@@ -5,24 +5,14 @@
 const inServiceWorker = 'ServiceWorkerGlobalScope' in self;
 const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
 let ready;
+let onScriptLoad = chrome.test.loadScript(scriptUrl);
 
-// Note: Importing scripts is different depending on if this script is
-// executing in a Service Worker context.
 if (inServiceWorker) {
-  importScripts(scriptUrl);
-  ready = Promise.resolve();
+  ready = onScriptLoad;
 } else {
-  let script = document.createElement('script');
-  let onScriptLoad = new Promise((resolve) => {
-    script.onload = resolve;
-  });
-  script.src = scriptUrl;
-  document.body.appendChild(script);
-
   let onWindowLoad = new Promise((resolve) => {
     window.onload = resolve;
   });
-
   ready = Promise.all([onWindowLoad, onScriptLoad]);
 }
 

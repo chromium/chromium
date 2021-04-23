@@ -292,6 +292,23 @@ apiBridge.registerCustomHook(function(api) {
     }
   });
 
+  apiFunctions.setHandleRequest('loadScript', function(scriptUrl) {
+    // Note: Importing scripts is different depending on if this script is
+    // executing in a Service Worker context.
+    const inServiceWorker = 'ServiceWorkerGlobalScope' in self;
+    if (inServiceWorker) {
+      importScripts(scriptUrl);
+      return Promise.resolve();
+    }
+    let script = document.createElement('script');
+    let onScriptLoad = new Promise((resolve) => {
+      script.onload = resolve;
+    });
+    script.src = scriptUrl;
+    document.body.appendChild(script);
+    return onScriptLoad;
+  });
+
   apiFunctions.setHandleRequest('assertPromiseRejects',
                                 function(promise, expectedMessage) {
     pendingPromiseRejections++;
