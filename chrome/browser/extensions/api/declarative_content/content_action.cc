@@ -309,9 +309,8 @@ RequestContentScript::~RequestContentScript() {
   // associated `script_loader_` may have been deleted before this object which
   // means the loader has already removed `script_`.
   if (script_loader_) {
-    script_loader_->RemoveScripts(
-        {UserScriptIDPair(script_.id(), script_.host_id())},
-        UserScriptLoader::ScriptsLoadedCallback());
+    script_loader_->RemoveScripts({script_.id()},
+                                  UserScriptLoader::ScriptsLoadedCallback());
   }
 }
 

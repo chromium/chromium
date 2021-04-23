@@ -6,6 +6,7 @@
 
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/mojom/host_id.mojom.h"
@@ -13,10 +14,7 @@
 namespace extensions {
 
 UserScriptManager::UserScriptManager(content::BrowserContext* browser_context)
-    : manifest_script_loader_(browser_context,
-                              ExtensionId(),
-                              true /* listen_for_extension_system_loaded */),
-      browser_context_(browser_context) {
+    : browser_context_(browser_context) {
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(browser_context_));
 }
@@ -35,11 +33,10 @@ UserScriptLoader* UserScriptManager::GetUserScriptLoaderByID(
 
 ExtensionUserScriptLoader* UserScriptManager::GetUserScriptLoaderForExtension(
     const ExtensionId& extension_id) {
-  // TODO(crbug.com/1168627): This should be created when the extension loads.
   auto it = extension_script_loaders_.find(extension_id);
-  return (it == extension_script_loaders_.end())
-             ? CreateExtensionUserScriptLoader(extension_id)
-             : it->second.get();
+  DCHECK(it != extension_script_loaders_.end());
+
+  return it->second.get();
 }
 
 WebUIUserScriptLoader* UserScriptManager::GetUserScriptLoaderForWebUI(
@@ -52,26 +49,52 @@ WebUIUserScriptLoader* UserScriptManager::GetUserScriptLoaderForWebUI(
 void UserScriptManager::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
-  manifest_script_loader_.AddScripts(GetManifestScriptsMetadata(extension),
-                                     UserScriptLoader::ScriptsLoadedCallback());
+  ExtensionUserScriptLoader* loader =
+      extension_script_loaders_
+          .emplace(extension->id(),
+                   std::make_unique<ExtensionUserScriptLoader>(
+                       browser_context_, *extension,
+                       true /* listen_for_extension_system_loaded */))
+          .first->second.get();
+
+  std::unique_ptr<UserScriptList> scripts =
+      GetManifestScriptsMetadata(extension);
+
+  // Don't bother adding scripts if this extension has none because adding an
+  // empty set of scripts will not trigger a load. This also prevents redundant
+  // calls to OnInitialExtensionLoadComplete.
+  if (!scripts->empty()) {
+    pending_manifest_load_count_++;
+    loader->AddScripts(
+        std::move(scripts),
+        base::BindOnce(&UserScriptManager::OnInitialExtensionLoadComplete,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 void UserScriptManager::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  const UserScriptList& script_list =
-      ContentScriptsInfo::GetContentScripts(extension);
-  std::set<UserScriptIDPair> scripts_to_remove;
-  for (const std::unique_ptr<UserScript>& script : script_list)
-    scripts_to_remove.insert(UserScriptIDPair(script->id(), script->host_id()));
-  manifest_script_loader_.RemoveScripts(
-      scripts_to_remove, UserScriptLoader::ScriptsLoadedCallback());
-
   // The renderer will clean up its scripts from an IPC message which is sent
   // when the extension is unloaded. All we need to do here is to remove the
   // unloaded extension's loader.
   extension_script_loaders_.erase(extension->id());
+}
+
+void UserScriptManager::OnInitialExtensionLoadComplete(
+    UserScriptLoader* loader,
+    const base::Optional<std::string>& error) {
+  --pending_manifest_load_count_;
+  DCHECK_GE(pending_manifest_load_count_, 0);
+
+  // If there are no more pending manifest script loads, then notify the
+  // UserScriptListener.
+  if (pending_manifest_load_count_ == 0) {
+    DCHECK(ExtensionsBrowserClient::Get());
+    ExtensionsBrowserClient::Get()->SignalContentScriptsLoaded(
+        browser_context_);
+  }
 }
 
 std::unique_ptr<UserScriptList> UserScriptManager::GetManifestScriptsMetadata(
@@ -91,24 +114,16 @@ std::unique_ptr<UserScriptList> UserScriptManager::GetManifestScriptsMetadata(
   return script_vector;
 }
 
-ExtensionUserScriptLoader* UserScriptManager::CreateExtensionUserScriptLoader(
-    const ExtensionId& extension_id) {
-  // Inserts a new ExtensionUserScriptLoader and returns a ptr to it.
-  return extension_script_loaders_
-      .emplace(extension_id,
-               std::make_unique<ExtensionUserScriptLoader>(
-                   browser_context_, extension_id,
-                   false /* listen_for_extension_system_loaded */))
-      .first->second.get();
-}
-
 WebUIUserScriptLoader* UserScriptManager::CreateWebUIUserScriptLoader(
     const GURL& url) {
   // Inserts a new WebUIUserScriptLoader and returns a ptr to it.
-  return webui_script_loaders_
-      .emplace(url,
-               std::make_unique<WebUIUserScriptLoader>(browser_context_, url))
-      .first->second.get();
+  WebUIUserScriptLoader* loader =
+      webui_script_loaders_
+          .emplace(url, std::make_unique<WebUIUserScriptLoader>(
+                            browser_context_, url))
+          .first->second.get();
+
+  return loader;
 }
 
 }  // namespace extensions

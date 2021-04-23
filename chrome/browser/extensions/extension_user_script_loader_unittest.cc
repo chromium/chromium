@@ -26,7 +26,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/content_verifier.h"
-#include "extensions/test/test_content_script_load_waiter.h"
+#include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::URLPatternSet;
@@ -37,7 +37,7 @@ static void AddPattern(URLPatternSet* extent, const std::string& pattern) {
   int schemes = URLPattern::SCHEME_ALL;
   extent->AddPattern(URLPattern(schemes, pattern));
 }
-}
+}  // namespace
 
 namespace extensions {
 
@@ -60,23 +60,11 @@ class ExtensionUserScriptLoaderTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(ExtensionUserScriptLoaderTest);
 };
 
-// Test that we get notified even when there are no scripts.
-TEST_F(ExtensionUserScriptLoaderTest, NoScripts) {
-  TestingProfile profile;
-  ExtensionUserScriptLoader loader(&profile, ExtensionId(),
-                                   /*listen_for_extension_system_loaded=*/true,
-                                   /*content_verifier=*/nullptr);
-  ContentScriptLoadWaiter waiter(&loader);
-  loader.StartLoadForTesting(UserScriptLoader::ScriptsLoadedCallback());
-  waiter.Wait();
-  content::RunAllTasksUntilIdle();
-}
-
-// Repeat the above test, except we verify that a callback passed in will get
-// called once scripts are loaded.
+// Test that a callback passed in will get called once scripts are loaded.
 TEST_F(ExtensionUserScriptLoaderTest, NoScriptsWithCallbackAfterLoad) {
   TestingProfile profile;
-  ExtensionUserScriptLoader loader(&profile, ExtensionId(),
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
+  ExtensionUserScriptLoader loader(&profile, *extension,
                                    /*listen_for_extension_system_loaded=*/true,
                                    /*content_verifier=*/nullptr);
   base::RunLoop run_loop;
@@ -95,7 +83,8 @@ TEST_F(ExtensionUserScriptLoaderTest, NoScriptsWithCallbackAfterLoad) {
 // immediately but will not trigger a load.
 TEST_F(ExtensionUserScriptLoaderTest, NoScriptsAddedWithCallback) {
   TestingProfile profile;
-  ExtensionUserScriptLoader loader(&profile, ExtensionId(),
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
+  ExtensionUserScriptLoader loader(&profile, *extension,
                                    /*listen_for_extension_system_loaded=*/true,
                                    /*content_verifier=*/nullptr);
 
@@ -115,60 +104,41 @@ TEST_F(ExtensionUserScriptLoaderTest, NoScriptsAddedWithCallback) {
   EXPECT_TRUE(callback_called);
 }
 
-// Test that callbacks for a queued load will be called after callbacks for the
-// current load.
+// Test that all callbacks will be called when a load completes and no other
+// load is queued.
 TEST_F(ExtensionUserScriptLoaderTest, QueuedLoadWithCallback) {
   TestingProfile profile;
-  ExtensionUserScriptLoader loader(&profile, ExtensionId(),
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
+  ExtensionUserScriptLoader loader(&profile, *extension,
                                    /*listen_for_extension_system_loaded=*/true,
                                    /*content_verifier=*/nullptr);
   base::RunLoop run_loop;
 
-  // Record which callbacks were called. The test succeeds when all three
+  // Record if one callback has already been called. The test succeeds if two
   // callbacks are called.
-  bool first_callback_fired = false, second_callback_fired = false,
-       third_callback_fired = false;
-  auto on_first_load_complete =
-      [&first_callback_fired, &second_callback_fired, &third_callback_fired](
-          UserScriptLoader* loader, const base::Optional<std::string>& error) {
-        EXPECT_FALSE(error.has_value()) << *error;
-
-        // Callbacks for the second load should not have been called.
-        EXPECT_FALSE(second_callback_fired);
-        EXPECT_FALSE(third_callback_fired);
-        first_callback_fired = true;
-      };
+  bool first_callback_fired = false;
 
   // Creates a callback which:
-  // 1) Checks |first_callback_fired| to ensure that the first callback has
-  // been called.
-  // 2) Sets |second_callback_fired| or |third_callback_fired| to true, based on
-  // the number of callbacks already called.
-  // 3) Completes the test if all callbacks have been called.
-  auto on_second_load_complete =
-      [&run_loop, &first_callback_fired, &second_callback_fired,
-       &third_callback_fired](UserScriptLoader* loader,
+  // 1) Checks that the loader has completed its initial load.
+  // 2) Sets |first_callback_fired| to true if no callback has been called yet,
+  // otherwise completes the test.
+  auto on_load_complete = [&run_loop, &first_callback_fired](
+                              UserScriptLoader* loader,
                               const base::Optional<std::string>& error) {
-        EXPECT_FALSE(error.has_value()) << *error;
-        EXPECT_TRUE(first_callback_fired);
-        if (second_callback_fired)
-          third_callback_fired = true;
-        else
-          second_callback_fired = true;
+    EXPECT_FALSE(error.has_value()) << *error;
+    EXPECT_TRUE(loader->initial_load_complete());
+    if (first_callback_fired)
+      run_loop.Quit();
+    else
+      first_callback_fired = true;
+  };
 
-        if (third_callback_fired)
-          run_loop.Quit();
-      };
+  loader.StartLoadForTesting(base::BindLambdaForTesting(on_load_complete));
 
-  loader.StartLoadForTesting(
-      base::BindLambdaForTesting(on_first_load_complete));
-
-  // The next 2 load requests should be batched into one load, which should
-  // start after the first load has completed.
-  loader.StartLoadForTesting(
-      base::BindLambdaForTesting(on_second_load_complete));
-  loader.StartLoadForTesting(
-      base::BindLambdaForTesting(on_second_load_complete));
+  // The next load request should be queued, but both `on_load_complete`
+  // callbacks should be released at the same time as the queued load will merge
+  // with the current load.
+  loader.StartLoadForTesting(base::BindLambdaForTesting(on_load_complete));
   run_loop.Run();
 }
 
@@ -310,7 +280,8 @@ TEST_F(ExtensionUserScriptLoaderTest, SkipBOMAtTheBeginning) {
   user_scripts->push_back(std::move(user_script));
 
   TestingProfile profile;
-  ExtensionUserScriptLoader loader(&profile, ExtensionId(),
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
+  ExtensionUserScriptLoader loader(&profile, *extension,
                                    /*listen_for_extension_system_loaded=*/true,
                                    /*content_verifier=*/nullptr);
   user_scripts = loader.LoadScriptsForTest(std::move(user_scripts));
@@ -333,7 +304,8 @@ TEST_F(ExtensionUserScriptLoaderTest, LeaveBOMNotAtTheBeginning) {
   user_scripts->push_back(std::move(user_script));
 
   TestingProfile profile;
-  ExtensionUserScriptLoader loader(&profile, ExtensionId(),
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
+  ExtensionUserScriptLoader loader(&profile, *extension,
                                    /*listen_for_extension_system_loaded=*/true,
                                    /*content_verifier=*/nullptr);
   user_scripts = loader.LoadScriptsForTest(std::move(user_scripts));
@@ -357,7 +329,8 @@ TEST_F(ExtensionUserScriptLoaderTest, ComponentExtensionContentScriptIsLoaded) {
   user_scripts->push_back(std::move(user_script));
 
   TestingProfile profile;
-  ExtensionUserScriptLoader loader(&profile, ExtensionId(),
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
+  ExtensionUserScriptLoader loader(&profile, *extension,
                                    /*listen_for_extension_system_loaded=*/true,
                                    /*content_verifier=*/nullptr);
   user_scripts = loader.LoadScriptsForTest(std::move(user_scripts));

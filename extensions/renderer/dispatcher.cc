@@ -1096,14 +1096,9 @@ void Dispatcher::UpdateTabSpecificPermissions(const std::string& extension_id,
 void Dispatcher::UpdateUserScripts(
     base::ReadOnlySharedMemoryRegion shared_memory,
     mojom::HostIDPtr host_id,
-    std::vector<mojom::HostIDPtr> changed_hosts,
     bool allowlisted_only) {
-  std::set<mojom::HostID> changed_hosts_set;
-  for (const auto& host : changed_hosts)
-    changed_hosts_set.insert(*host);
-
-  user_script_set_manager_->OnUpdateUserScripts(
-      std::move(shared_memory), *host_id, changed_hosts_set, allowlisted_only);
+  user_script_set_manager_->OnUpdateUserScripts(std::move(shared_memory),
+                                                *host_id, allowlisted_only);
 }
 
 void Dispatcher::ClearTabSpecificPermissions(
@@ -1316,9 +1311,11 @@ void Dispatcher::SetActivityLoggingEnabled(bool enabled) {
   user_script_set_manager_->set_activity_logging_enabled(enabled);
 }
 
-void Dispatcher::OnUserScriptsUpdated(
-    const std::set<mojom::HostID>& changed_hosts) {
-  UpdateActiveExtensions();
+void Dispatcher::OnUserScriptsUpdated(const mojom::HostID& changed_host) {
+  // Update the set of active extensions if `changed_host` is an extension and
+  // it has scripts.
+  if (changed_host.type == mojom::HostID::HostType::kExtensions)
+    UpdateActiveExtensions();
 }
 
 void Dispatcher::UpdateActiveExtensions() {

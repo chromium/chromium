@@ -149,17 +149,6 @@ bool LoadScriptContent(const mojom::HostID& host_id,
   return true;
 }
 
-SubstitutionMap* GetLocalizationMessages(
-    const ExtensionUserScriptLoader::HostsInfo& hosts_info,
-    const mojom::HostID& host_id) {
-  auto iter = hosts_info.find(host_id);
-  if (iter == hosts_info.end())
-    return nullptr;
-  const ExtensionUserScriptLoader::PathAndLocaleInfo& info = iter->second;
-  return file_util::LoadMessageBundleSubstitutionMap(
-      info.file_path, host_id.id, info.default_locale, info.gzip_permission);
-}
-
 void FillScriptFileResourceIds(const UserScript::FileList& script_files,
                                ScriptResourceIds& script_resource_ids) {
   const ComponentExtensionResourceManager* extension_resource_manager =
@@ -179,11 +168,12 @@ void FillScriptFileResourceIds(const UserScript::FileList& script_files,
   }
 }
 
-void LoadUserScripts(UserScriptList* user_scripts,
-                     ScriptResourceIds script_resource_ids,
-                     const ExtensionUserScriptLoader::HostsInfo& hosts_info,
-                     const std::set<std::string>& added_script_ids,
-                     const scoped_refptr<ContentVerifier>& verifier) {
+void LoadUserScripts(
+    UserScriptList* user_scripts,
+    ScriptResourceIds script_resource_ids,
+    const ExtensionUserScriptLoader::PathAndLocaleInfo& host_info,
+    const std::set<std::string>& added_script_ids,
+    const scoped_refptr<ContentVerifier>& verifier) {
   for (const std::unique_ptr<UserScript>& script : *user_scripts) {
     if (added_script_ids.count(script->id()) == 0)
       continue;
@@ -196,7 +186,10 @@ void LoadUserScripts(UserScriptList* user_scripts,
     }
     if (script->css_scripts().size() > 0) {
       std::unique_ptr<SubstitutionMap> localization_messages(
-          GetLocalizationMessages(hosts_info, script->host_id()));
+          file_util::LoadMessageBundleSubstitutionMap(
+              host_info.file_path, script->host_id().id,
+              host_info.default_locale, host_info.gzip_permission));
+
       for (const std::unique_ptr<UserScript::File>& script_file :
            script->css_scripts()) {
         if (script_file->GetContent().empty()) {
@@ -212,14 +205,14 @@ void LoadUserScripts(UserScriptList* user_scripts,
 void LoadScriptsOnFileTaskRunner(
     std::unique_ptr<UserScriptList> user_scripts,
     ScriptResourceIds script_resource_ids,
-    const ExtensionUserScriptLoader::HostsInfo& hosts_info,
+    const ExtensionUserScriptLoader::PathAndLocaleInfo& host_info,
     const std::set<std::string>& added_script_ids,
     const scoped_refptr<ContentVerifier>& verifier,
     UserScriptLoader::LoadScriptsCallback callback) {
   DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
   DCHECK(user_scripts.get());
-  LoadUserScripts(user_scripts.get(), std::move(script_resource_ids),
-                  hosts_info, added_script_ids, verifier);
+  LoadUserScripts(user_scripts.get(), std::move(script_resource_ids), host_info,
+                  added_script_ids, verifier);
   base::ReadOnlySharedMemoryRegion memory =
       UserScriptLoader::Serialize(*user_scripts);
   // Explicit priority to prevent unwanted task priority inheritance.
@@ -233,25 +226,26 @@ void LoadScriptsOnFileTaskRunner(
 
 ExtensionUserScriptLoader::ExtensionUserScriptLoader(
     BrowserContext* browser_context,
-    const ExtensionId& extension_id,
+    const Extension& extension,
     bool listen_for_extension_system_loaded)
     : ExtensionUserScriptLoader(
           browser_context,
-          extension_id,
+          extension,
           listen_for_extension_system_loaded,
           ExtensionSystem::Get(browser_context)->content_verifier()) {}
 
 ExtensionUserScriptLoader::ExtensionUserScriptLoader(
     BrowserContext* browser_context,
-    const ExtensionId& extension_id,
+    const Extension& extension,
     bool listen_for_extension_system_loaded,
     scoped_refptr<ContentVerifier> content_verifier)
     : UserScriptLoader(
           browser_context,
-          mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id)),
+          mojom::HostID(mojom::HostID::HostType::kExtensions, extension.id())),
+      host_info_({extension.path(), LocaleInfo::GetDefaultLocale(&extension),
+                  extension_l10n_util::GetGzippedMessagesPermissionForExtension(
+                      &extension)}),
       content_verifier_(std::move(content_verifier)) {
-  extension_registry_observation_.Observe(
-      ExtensionRegistry::Get(browser_context));
   if (listen_for_extension_system_loaded) {
     ExtensionSystem::Get(browser_context)
         ->ready()
@@ -272,13 +266,12 @@ std::unique_ptr<UserScriptList> ExtensionUserScriptLoader::LoadScriptsForTest(
   for (const std::unique_ptr<UserScript>& script : *user_scripts)
     added_script_ids.insert(script->id());
 
-  std::set<mojom::HostID> changed_hosts;
   std::unique_ptr<UserScriptList> result;
 
   // Block until the scripts have been loaded on the file task runner so that
   // we can return the result synchronously.
   base::RunLoop run_loop;
-  LoadScripts(std::move(user_scripts), changed_hosts, added_script_ids,
+  LoadScripts(std::move(user_scripts), added_script_ids,
               base::BindOnce(
                   [](base::OnceClosure done_callback,
                      std::unique_ptr<UserScriptList>& loaded_user_scripts,
@@ -295,12 +288,9 @@ std::unique_ptr<UserScriptList> ExtensionUserScriptLoader::LoadScriptsForTest(
 
 void ExtensionUserScriptLoader::LoadScripts(
     std::unique_ptr<UserScriptList> user_scripts,
-    const std::set<mojom::HostID>& changed_hosts,
     const std::set<std::string>& added_script_ids,
     LoadScriptsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  UpdateHostsInfo(changed_hosts);
 
   ScriptResourceIds script_resource_ids;
   for (const std::unique_ptr<UserScript>& script : *user_scripts) {
@@ -313,35 +303,8 @@ void ExtensionUserScriptLoader::LoadScripts(
   GetExtensionFileTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&LoadScriptsOnFileTaskRunner, std::move(user_scripts),
-                     std::move(script_resource_ids), hosts_info_,
+                     std::move(script_resource_ids), host_info_,
                      added_script_ids, content_verifier_, std::move(callback)));
-}
-
-void ExtensionUserScriptLoader::UpdateHostsInfo(
-    const std::set<mojom::HostID>& changed_hosts) {
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
-  for (const mojom::HostID& host_id : changed_hosts) {
-    const Extension* extension =
-        registry->GetExtensionById(host_id.id, ExtensionRegistry::ENABLED);
-    // |changed_hosts_| may include hosts that have been removed,
-    // which leads to the above lookup failing. In this case, just continue.
-    if (!extension)
-      continue;
-    if (hosts_info_.find(host_id) != hosts_info_.end())
-      continue;
-    hosts_info_[host_id] = PathAndLocaleInfo{
-        extension->path(), LocaleInfo::GetDefaultLocale(extension),
-        extension_l10n_util::GetGzippedMessagesPermissionForExtension(
-            extension)};
-  }
-}
-
-void ExtensionUserScriptLoader::OnExtensionUnloaded(
-    content::BrowserContext* browser_context,
-    const Extension* extension,
-    UnloadedExtensionReason reason) {
-  hosts_info_.erase(
-      mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()));
 }
 
 void ExtensionUserScriptLoader::OnExtensionSystemReady() {

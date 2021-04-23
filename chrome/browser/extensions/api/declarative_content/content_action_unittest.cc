@@ -61,7 +61,9 @@ class RequestContentScriptTest : public ExtensionServiceTestBase {
     InitializeEmptyExtensionService();
     auto* extension_system =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
+
     extension_system->CreateUserScriptManager();
+    service()->AddExtension(extension());
     extension_system->SetReady();
     base::RunLoop().RunUntilIdle();
   }

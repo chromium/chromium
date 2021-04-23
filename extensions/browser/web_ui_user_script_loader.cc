@@ -74,7 +74,6 @@ void WebUIUserScriptLoader::AddScripts(
 
 void WebUIUserScriptLoader::LoadScripts(
     std::unique_ptr<extensions::UserScriptList> user_scripts,
-    const std::set<extensions::mojom::HostID>& changed_hosts,
     const std::set<std::string>& added_script_ids,
     LoadScriptsCallback callback) {
   DCHECK(!user_scripts_cache_) << "Loading scripts in flight.";

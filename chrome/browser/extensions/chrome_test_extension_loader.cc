@@ -132,12 +132,10 @@ bool ChromeTestExtensionLoader::WaitForExtensionReady(
   // Note: |user_script_manager| can be null in tests.
   if (user_script_manager &&
       !ContentScriptsInfo::GetContentScripts(&extension).empty()) {
-    UserScriptLoader* user_script_loader =
-        user_script_manager->manifest_script_loader();
-    mojom::HostID host_id(mojom::HostID::HostType::kExtensions, extension_id_);
-    if (!user_script_loader->HasLoadedScripts(host_id)) {
+    ExtensionUserScriptLoader* user_script_loader =
+        user_script_manager->GetUserScriptLoaderForExtension(extension_id_);
+    if (!user_script_loader->HasLoadedScripts()) {
       ContentScriptLoadWaiter waiter(user_script_loader);
-      waiter.RestrictToHostID(host_id);
       waiter.Wait();
     }
   }

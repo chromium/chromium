@@ -37,8 +37,8 @@ class UserScriptInjector : public ScriptInjector,
 
  private:
   // UserScriptSet::Observer implementation.
-  void OnUserScriptsUpdated(const std::set<mojom::HostID>& changed_hosts,
-                            const UserScriptList& scripts) override;
+  void OnUserScriptsUpdated() override;
+  void OnUserScriptSetDestroyed() override;
 
   // ScriptInjector implementation.
   mojom::InjectionType script_type() const override;
@@ -75,12 +75,12 @@ class UserScriptInjector : public ScriptInjector,
   const UserScript* script_;
 
   // The UserScriptSet that eventually owns the UserScript this
-  // UserScriptInjector points to.
-  // Outlives |this|.
+  // UserScriptInjector points to. Outlives `this` unless the UserScriptSet may
+  // be destroyed first, and `this` will be destroyed immediately after.
   UserScriptSet* const user_script_set_;
 
   // The id of the associated user script. We cache this because when we update
-  // the |script_| associated with this injection, the old referance may be
+  // the |script_| associated with this injection, the old reference may be
   // deleted.
   std::string script_id_;
 

@@ -102,6 +102,10 @@ UserScriptListener::CreateNavigationThrottle(
   return throttle;
 }
 
+void UserScriptListener::OnScriptsLoaded(content::BrowserContext* context) {
+  UserScriptsReady(context);
+}
+
 void UserScriptListener::SetUserScriptsNotReadyForTesting(
     content::BrowserContext* context) {
   AppendNewURLPatterns(context, {URLPattern(URLPattern::SCHEME_ALL,
@@ -205,16 +209,6 @@ void UserScriptListener::Observe(int type,
       auto* registry = ExtensionRegistry::Get(profile);
       DCHECK(!extension_registry_observations_.IsObservingSource(registry));
       extension_registry_observations_.AddObservation(registry);
-
-      UserScriptManager* user_script_manager =
-          ExtensionSystem::Get(profile)->user_script_manager();
-      // Note: |user_script_manager| can be null in some tests.
-      if (user_script_manager) {
-        UserScriptLoader* loader =
-            user_script_manager->manifest_script_loader();
-        DCHECK(!user_script_loader_observations_.IsObservingSource(loader));
-        user_script_loader_observations_.AddObservation(loader);
-      }
       break;
     }
     default:
@@ -261,16 +255,6 @@ void UserScriptListener::OnExtensionUnloaded(
 
 void UserScriptListener::OnShutdown(ExtensionRegistry* registry) {
   extension_registry_observations_.RemoveObservation(registry);
-}
-
-void UserScriptListener::OnScriptsLoaded(
-    UserScriptLoader* loader,
-    content::BrowserContext* browser_context) {
-  UserScriptsReady(browser_context);
-}
-
-void UserScriptListener::OnUserScriptLoaderDestroyed(UserScriptLoader* loader) {
-  user_script_loader_observations_.RemoveObservation(loader);
 }
 
 }  // namespace extensions

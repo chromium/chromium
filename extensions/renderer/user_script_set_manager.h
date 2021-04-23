@@ -42,8 +42,7 @@ class UserScriptSetManager {
   // associated with the manager.
   class Observer {
    public:
-    virtual void OnUserScriptsUpdated(
-        const std::set<mojom::HostID>& changed_hosts) = 0;
+    virtual void OnUserScriptsUpdated(const mojom::HostID& changed_host) = 0;
   };
 
   UserScriptSetManager();
@@ -71,40 +70,33 @@ class UserScriptSetManager {
       int tab_id,
       mojom::RunLocation run_location);
 
-  // Get active extension IDs from |static_scripts| and each of
-  // |programmatic_scripts_|.
+  // Get active extension IDs from `static_scripts_`.
   void GetAllActiveExtensionIds(std::set<std::string>* ids) const;
 
   // Handle the UpdateUserScripts extension message.
   void OnUpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
                            const mojom::HostID& host_id,
-                           const std::set<mojom::HostID>& changed_hosts,
                            bool allowlisted_only);
 
-  // Invalidates script injections for the UserScriptSet in
-  // `programmatic_scripts_` corresponding to `extension_id` and deletes the
-  // script set.
+  // Invalidates script injections for the UserScriptSet in `scripts_`
+  // corresponding to `extension_id` and deletes the script set.
   void OnExtensionUnloaded(const std::string& extension_id);
-
-  const UserScriptSet* static_scripts() const { return &static_scripts_; }
 
   void set_activity_logging_enabled(bool enabled) {
     activity_logging_enabled_ = enabled;
   }
 
  private:
-  // Map for per-extension sets that may be defined programmatically.
+  // Map for per-host script sets.
   using UserScriptSetMap =
       std::map<mojom::HostID, std::unique_ptr<UserScriptSet>>;
 
-  UserScriptSet* GetProgrammaticScriptsByHostID(const mojom::HostID& host_id);
+  UserScriptSet* GetScriptsByHostID(const mojom::HostID& host_id);
 
-  // Scripts statically defined in extension manifests.
-  UserScriptSet static_scripts_;
-
-  // Scripts programmatically-defined through API calls (initialized and stored
-  // per-extension).
-  UserScriptSetMap programmatic_scripts_;
+  // Stores all scripts, defined in extension manifests and programmatically
+  // from extension APIs and webview tags. Each UserScriptSet is keyed by a
+  // HostID.
+  UserScriptSetMap scripts_;
 
   // Whether or not dom activity should be logged for injected scripts.
   bool activity_logging_enabled_;

@@ -80,9 +80,8 @@ IN_PROC_BROWSER_TEST_F(ChromeTestExtensionLoaderUnitTest,
 
   ExtensionSystem* extension_system = ExtensionSystem::Get(profile());
   EXPECT_TRUE(extension_system->user_script_manager()
-                  ->manifest_script_loader()
-                  ->HasLoadedScripts(mojom::HostID(
-                      mojom::HostID::HostType::kExtensions, extension->id())));
+                  ->GetUserScriptLoaderForExtension(extension->id())
+                  ->HasLoadedScripts());
 
   // Sanity check: Test that the scripts inject.
   ui_test_utils::NavigateToURL(

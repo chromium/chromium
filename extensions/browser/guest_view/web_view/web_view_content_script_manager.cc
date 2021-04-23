@@ -75,24 +75,23 @@ void WebViewContentScriptManager::AddContentScripts(
 
   // Step 2: Updates the guest_content_script_map_.
   ContentScriptMap& map = iter->second;
-  std::set<UserScriptIDPair> to_delete;
+  std::set<std::string> ids_to_delete;
   for (const std::unique_ptr<UserScript>& script : *scripts) {
     auto map_iter = map.find(script->name());
     // If a content script has the same name as the new one, remove the old
     // script first, and insert the new one.
     if (map_iter != map.end()) {
-      to_delete.insert(map_iter->second);
+      ids_to_delete.insert(map_iter->second);
       map.erase(map_iter);
     }
-    map.insert(std::pair<std::string, UserScriptIDPair>(
-        script->name(), UserScriptIDPair(script->id(), script->host_id())));
+    map.emplace(script->name(), script->id());
     ids_to_add.insert(script->id());
   }
 
-  if (!to_delete.empty()) {
+  if (!ids_to_delete.empty()) {
     pending_operation_count_++;
     loader->RemoveScripts(
-        to_delete,
+        ids_to_delete,
         base::BindOnce(&WebViewContentScriptManager::OnScriptsUpdated,
                        weak_factory_.GetWeakPtr()));
   }
@@ -155,19 +154,17 @@ void WebViewContentScriptManager::RemoveContentScripts(
 
   // We need to update WebViewRenderState.
   std::set<std::string> ids_to_delete;
-  std::set<UserScriptIDPair> scripts_to_delete;
 
   // Step 1: Removes content scripts from |set| and updates
   // |guest_content_script_map_|.
-  std::map<std::string, UserScriptIDPair>& map = script_map_iter->second;
+  std::map<std::string, std::string>& map = script_map_iter->second;
   // If the |script_name_list| is empty, all the content scripts added by the
   // guest will be removed; otherwise, removes the scripts in the
   // |script_name_list|.
   if (script_name_list.empty()) {
     auto it = map.begin();
     while (it != map.end()) {
-      scripts_to_delete.insert(it->second);
-      ids_to_delete.insert(it->second.id);
+      ids_to_delete.insert(it->second);
       map.erase(it++);
     }
   } else {
@@ -175,9 +172,7 @@ void WebViewContentScriptManager::RemoveContentScripts(
       auto iter = map.find(name);
       if (iter == map.end())
         continue;
-      const UserScriptIDPair& id_pair = iter->second;
-      ids_to_delete.insert(id_pair.id);
-      scripts_to_delete.insert(id_pair);
+      ids_to_delete.insert(iter->second);
       map.erase(iter);
     }
   }
@@ -185,7 +180,7 @@ void WebViewContentScriptManager::RemoveContentScripts(
   // Step 2: Removes content scripts from set.
   pending_operation_count_++;
   loader->RemoveScripts(
-      scripts_to_delete,
+      ids_to_delete,
       base::BindOnce(&WebViewContentScriptManager::OnScriptsUpdated,
                      weak_factory_.GetWeakPtr()));
 
@@ -208,7 +203,7 @@ std::set<std::string> WebViewContentScriptManager::GetContentScriptIDSet(
     return ids;
   const ContentScriptMap& map = iter->second;
   for (const auto& id_pair : map)
-    ids.insert(id_pair.second.id);
+    ids.insert(id_pair.second);
 
   return ids;
 }

@@ -74,7 +74,9 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data {
 
  private:
   using GuestMapKey = std::pair<int, int>;
-  using ContentScriptMap = std::map<std::string, UserScriptIDPair>;
+
+  // Maps a content script's name to its id.
+  using ContentScriptMap = std::map<std::string, std::string>;
   using GuestContentScriptMap = std::map<GuestMapKey, ContentScriptMap>;
 
   // Invoked when scripts are updated from any kind of operation or when a

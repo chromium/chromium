@@ -247,7 +247,6 @@ class Dispatcher : public content::RenderThreadObserver,
                                     bool update_origin_whitelist) override;
   void UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
                          mojom::HostIDPtr host_id,
-                         std::vector<mojom::HostIDPtr> changed_hosts,
                          bool allowlisted_only) override;
   void ClearTabSpecificPermissions(
       const std::vector<std::string>& extension_ids,
@@ -275,8 +274,7 @@ class Dispatcher : public content::RenderThreadObserver,
   void OnUpdatePermissions(const ExtensionMsg_UpdatePermissions_Params& params);
 
   // UserScriptSetManager::Observer implementation.
-  void OnUserScriptsUpdated(
-      const std::set<mojom::HostID>& changed_hosts) override;
+  void OnUserScriptsUpdated(const mojom::HostID& changed_host) override;
 
   void UpdateActiveExtensions();
 

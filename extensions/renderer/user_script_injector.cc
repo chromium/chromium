@@ -106,25 +106,18 @@ UserScriptInjector::UserScriptInjector(const UserScript* script,
 UserScriptInjector::~UserScriptInjector() {
 }
 
-void UserScriptInjector::OnUserScriptsUpdated(
-    const std::set<mojom::HostID>& changed_hosts,
-    const UserScriptList& scripts) {
-  // When user scripts are updated, all the old script pointers are invalidated.
+void UserScriptInjector::OnUserScriptsUpdated() {
+  // When user scripts are updated, this means the host causing this injection
+  // has changed. All old script pointers are invalidated and this injection
+  // will be removed as there's no guarantee the backing script still exists.
   script_ = nullptr;
-  // If the host causing this injection changed, then this injection
-  // will be removed, and there's no guarantee the backing script still exists.
-  if (changed_hosts.count(host_id_) > 0)
-    return;
+}
 
-  for (const std::unique_ptr<UserScript>& script : scripts) {
-    if (script->id() == script_id_) {
-      script_ = script.get();
-      break;
-    }
-  }
-  // If |host_id_| wasn't in |changed_hosts|, then the script for this injection
-  // should be guaranteed to exist.
-  DCHECK(script_);
+void UserScriptInjector::OnUserScriptSetDestroyed() {
+  user_script_set_observation_.Reset();
+  // Invalidate the script pointer as the UserScriptSet which this script
+  // belongs to has been destroyed.
+  script_ = nullptr;
 }
 
 mojom::InjectionType UserScriptInjector::script_type() const {

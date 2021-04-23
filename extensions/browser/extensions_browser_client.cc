@@ -90,6 +90,9 @@ UserScriptListener* ExtensionsBrowserClient::GetUserScriptListener() {
   return nullptr;
 }
 
+void ExtensionsBrowserClient::SignalContentScriptsLoaded(
+    content::BrowserContext* context) {}
+
 std::string ExtensionsBrowserClient::GetUserAgent() const {
   return std::string();
 }

@@ -275,24 +275,19 @@ void ScriptInjectionManager::OnExtensionUnloaded(
 }
 
 void ScriptInjectionManager::OnInjectionFinished(ScriptInjection* injection) {
-  auto iter =
-      std::find_if(running_injections_.begin(), running_injections_.end(),
-                   [injection](const std::unique_ptr<ScriptInjection>& mode) {
-                     return injection == mode.get();
-                   });
-  if (iter != running_injections_.end())
-    running_injections_.erase(iter);
+  base::EraseIf(running_injections_,
+                [&injection](const std::unique_ptr<ScriptInjection>& mode) {
+                  return injection == mode.get();
+                });
 }
 
 void ScriptInjectionManager::OnUserScriptsUpdated(
-    const std::set<mojom::HostID>& changed_hosts) {
-  for (auto iter = pending_injections_.begin();
-       iter != pending_injections_.end();) {
-    if (changed_hosts.count((*iter)->host_id()) > 0)
-      iter = pending_injections_.erase(iter);
-    else
-      ++iter;
-  }
+    const mojom::HostID& changed_host) {
+  base::EraseIf(
+      pending_injections_,
+      [&changed_host](const std::unique_ptr<ScriptInjection>& injection) {
+        return changed_host == injection->host_id();
+      });
 }
 
 void ScriptInjectionManager::RemoveObserver(RFOHelper* helper) {
@@ -309,13 +304,10 @@ void ScriptInjectionManager::InvalidateForFrame(content::RenderFrame* frame) {
   // note it.
   active_injection_frames_.erase(frame);
 
-  for (auto iter = pending_injections_.begin();
-       iter != pending_injections_.end();) {
-    if ((*iter)->render_frame() == frame)
-      iter = pending_injections_.erase(iter);
-    else
-      ++iter;
-  }
+  base::EraseIf(pending_injections_,
+                [&frame](const std::unique_ptr<ScriptInjection>& injection) {
+                  return injection->render_frame() == frame;
+                });
 
   frame_statuses_.erase(frame);
 }

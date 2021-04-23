@@ -343,6 +343,10 @@ class ExtensionsBrowserClient {
 
   virtual UserScriptListener* GetUserScriptListener();
 
+  // Called when all initial script loads from extensions have been completed
+  // for the given BrowserContext.
+  virtual void SignalContentScriptsLoaded(content::BrowserContext* context);
+
   // Returns the user agent used by the content module.
   virtual std::string GetUserAgent() const;
 

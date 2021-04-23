@@ -308,17 +308,6 @@ class UserScript {
   DISALLOW_COPY_AND_ASSIGN(UserScript);
 };
 
-// Information we need while removing scripts from a UserScriptLoader.
-struct UserScriptIDPair {
-  UserScriptIDPair(std::string id, const mojom::HostID& host_id);
-  explicit UserScriptIDPair(std::string id);
-
-  std::string id;
-  mojom::HostID host_id;
-};
-
-bool operator<(const UserScriptIDPair& a, const UserScriptIDPair& b);
-
 using UserScriptList = std::vector<std::unique_ptr<UserScript>>;
 
 }  // namespace extensions

@@ -17,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/user_script.h"
@@ -86,14 +85,16 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   // removed, if specified.
   // TODO(lazyboy): Likely we can make |scripts| a std::vector, but
   // WebViewContentScriptManager makes this non-trivial.
-  void RemoveScripts(const std::set<UserScriptIDPair>& scripts,
+  void RemoveScripts(const std::set<std::string>& script_ids,
                      ScriptsLoadedCallback callback);
 
-  // Returns true if the scripts for the given |host_id| have been loaded.
-  bool HasLoadedScripts(const mojom::HostID& host_id) const;
+  // Returns true if the scripts for this loader's HostID have been loaded.
+  bool HasLoadedScripts() const;
 
   // Returns true if we have any scripts ready.
   bool initial_load_complete() const { return shared_memory_.IsValid(); }
+
+  const mojom::HostID& host_id() const { return host_id_; }
 
   // Pickle user scripts and return pointer to the shared memory.
   static base::ReadOnlySharedMemoryRegion Serialize(
@@ -112,7 +113,6 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   // Allows the derived classes to have different ways to load user scripts.
   // This may not be synchronous with the calls to Add/Remove/Clear scripts.
   virtual void LoadScripts(std::unique_ptr<UserScriptList> user_scripts,
-                           const std::set<mojom::HostID>& changed_hosts,
                            const std::set<std::string>& added_script_ids,
                            LoadScriptsCallback callback) = 0;
 
@@ -121,7 +121,6 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   void SetReady(bool ready);
 
   content::BrowserContext* browser_context() const { return browser_context_; }
-  const mojom::HostID& host_id() const { return host_id_; }
 
  private:
   // content::RenderProcessHostCreationObserver:
@@ -145,13 +144,10 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   void OnScriptsLoaded(std::unique_ptr<UserScriptList> user_scripts,
                        base::ReadOnlySharedMemoryRegion shared_memory);
 
-  // Sends the renderer process a new set of user scripts. If
-  // |changed_hosts| is not empty, this signals that only the scripts from
-  // those hosts should be updated. Otherwise, all hosts will be
-  // updated.
+  // Sends the renderer process a new set of user scripts for this
+  // UserScriptLoader's host.
   void SendUpdate(content::RenderProcessHost* process,
-                  const base::ReadOnlySharedMemoryRegion& shared_memory,
-                  const std::set<mojom::HostID>& changed_hosts);
+                  const base::ReadOnlySharedMemoryRegion& shared_memory);
 
   bool is_loading() const {
     // |loaded_scripts_| is reset when loading.
@@ -169,11 +165,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   // removed since the last script load. These maps are keyed by script ids.
   // Note that we only need HostID information for removal.
   std::map<std::string, std::unique_ptr<UserScript>> added_scripts_map_;
-  std::set<UserScriptIDPair> removed_script_hosts_;
-
-  // The IDs of the extensions which changed in the last update sent to the
-  // renderer.
-  std::set<mojom::HostID> changed_hosts_;
+  std::set<std::string> removed_script_ids_;
 
   // If the initial set of hosts has finished loading.
   bool ready_;
@@ -200,7 +192,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   // A list of callbacks associated with script updates that will be applied in
   // the current script load. These callbacks are called once scripts have
-  // finished loading.
+  // finished loading and IPC messages to renderers have been sent.
   std::list<ScriptsLoadedCallback> loading_callbacks_;
 
   base::WeakPtrFactory<UserScriptLoader> weak_factory_{this};

@@ -328,14 +328,4 @@ void UserScript::UnpickleScripts(const base::Pickle& pickle,
   }
 }
 
-UserScriptIDPair::UserScriptIDPair(std::string id, const mojom::HostID& host_id)
-    : id(std::move(id)), host_id(host_id) {}
-
-UserScriptIDPair::UserScriptIDPair(std::string id)
-    : id(std::move(id)), host_id(mojom::HostID()) {}
-
-bool operator<(const UserScriptIDPair& a, const UserScriptIDPair& b) {
-  return a.id < b.id;
-}
-
 }  // namespace extensions

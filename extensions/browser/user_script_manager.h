@@ -9,6 +9,8 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -38,10 +40,6 @@ class UserScriptManager : public ExtensionRegistryObserver {
   UserScriptManager(const UserScriptManager& other) = delete;
   UserScriptManager& operator=(const UserScriptManager& other) = delete;
 
-  UserScriptLoader* manifest_script_loader() {
-    return &manifest_script_loader_;
-  }
-
   UserScriptLoader* GetUserScriptLoaderByID(const mojom::HostID& host_id);
 
   ExtensionUserScriptLoader* GetUserScriptLoaderForExtension(
@@ -57,31 +55,23 @@ class UserScriptManager : public ExtensionRegistryObserver {
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
+  // Called when the |loader| has finished loading its initial set of scripts.
+  // This is only fired for extension script loaders.
+  void OnInitialExtensionLoadComplete(UserScriptLoader* loader,
+                                      const base::Optional<std::string>& error);
+
   // Gets an extension's manifest scripts' metadata; i.e., gets a list of
   // UserScript objects that contains script info, but not the contents of the
   // scripts.
   std::unique_ptr<UserScriptList> GetManifestScriptsMetadata(
       const Extension* extension);
 
-  // Creates a ExtensionUserScriptLoader object.
-  // TODO(crbug.com/1168627): Remove this method once ExtensionUserScriptLoader
-  // is created only when an extension loads.
-  ExtensionUserScriptLoader* CreateExtensionUserScriptLoader(
-      const ExtensionId& extension_id);
-
   // Creates a WebUIUserScriptLoader object.
   WebUIUserScriptLoader* CreateWebUIUserScriptLoader(const GURL& url);
-
-  // Script loader for manifest extension scripts that handles loading contents
-  // of scripts into shared memory and notifying renderers of scripts in shared
-  // memory.
-  ExtensionUserScriptLoader manifest_script_loader_;
 
   // A map of ExtensionUserScriptLoader for each extension host, with one loader
   // per extension. Currently, each loader is lazily initialized and contains
   // scripts from APIs webview tags.
-  // TODO(crbug.com/1168627): Put manifest scripts in here too and remove
-  // |manifest_script_loader_|.
   std::map<ExtensionId, std::unique_ptr<ExtensionUserScriptLoader>>
       extension_script_loaders_;
 
@@ -90,10 +80,15 @@ class UserScriptManager : public ExtensionRegistryObserver {
   // initialized.
   std::map<GURL, std::unique_ptr<WebUIUserScriptLoader>> webui_script_loaders_;
 
+  // Tracks the number of manifest script loads currently in progress.
+  int pending_manifest_load_count_ = 0;
+
   content::BrowserContext* const browser_context_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
+
+  base::WeakPtrFactory<UserScriptManager> weak_factory_{this};
 };
 
 }  // namespace extensions
