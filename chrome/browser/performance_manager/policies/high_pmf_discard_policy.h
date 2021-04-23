@@ -8,6 +8,7 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/system_node.h"
 
@@ -62,6 +63,10 @@ class HighPMFDiscardPolicy : public GraphOwned,
 
   size_t discard_attempts_count_while_pmf_is_high_ = 0;
   size_t successful_discards_count_while_pmf_is_high_ = 0;
+
+  std::unique_ptr<
+      performance_manager::ProcessMetricsDecorator::ScopedMetricsInterestToken>
+      metrics_interest_token_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

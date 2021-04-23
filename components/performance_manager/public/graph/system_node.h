@@ -49,6 +49,10 @@ class SystemNodeObserver {
   virtual void OnBeforeSystemNodeRemoved(const SystemNode* system_node) = 0;
 
   // Called when a new set of process memory metrics is available.
+  //
+  // Note: This is only valid if at least one component has expressed interest
+  // for process memory metrics by calling
+  // ProcessMetricsDecorator::RegisterInterestForProcessMetrics.
   virtual void OnProcessMemoryMetricsAvailable(
       const SystemNode* system_node) = 0;
 

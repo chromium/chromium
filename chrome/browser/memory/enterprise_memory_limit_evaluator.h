@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/util/memory_pressure/memory_pressure_voter.h"
+#include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/system_node.h"
 
@@ -91,6 +92,10 @@ class EnterpriseMemoryLimitEvaluator::GraphObserver
 
  private:
   const base::RepeatingCallback<void(uint64_t)> on_sample_callback_;
+
+  std::unique_ptr<
+      performance_manager::ProcessMetricsDecorator::ScopedMetricsInterestToken>
+      metrics_interest_token_;
 
   // The task runner on which |on_sample_callback_| should be invoked.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

@@ -91,6 +91,10 @@ class ProcessNode : public Node {
   // Returns the most recently measured private memory footprint of the process.
   // This is roughly private, anonymous, non-discardable, resident or swapped
   // memory in kilobytes. For more details, see https://goo.gl/3kPb9S.
+  //
+  // Note: This is only valid if at least one component has expressed interest
+  // for process memory metrics by calling
+  // ProcessMetricsDecorator::RegisterInterestForProcessMetrics.
   virtual uint64_t GetPrivateFootprintKb() const = 0;
 
   // Returns the most recently measured resident set of the process, in

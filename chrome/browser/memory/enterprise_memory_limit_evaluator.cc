@@ -5,6 +5,7 @@
 #include "chrome/browser/memory/enterprise_memory_limit_evaluator.h"
 
 #include "base/bind.h"
+#include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 
@@ -101,11 +102,14 @@ EnterpriseMemoryLimitEvaluator::GraphObserver::~GraphObserver() = default;
 void EnterpriseMemoryLimitEvaluator::GraphObserver::OnPassedToGraph(
     performance_manager::Graph* graph) {
   graph->AddSystemNodeObserver(this);
+  metrics_interest_token_ = performance_manager::ProcessMetricsDecorator::
+      RegisterInterestForProcessMetrics(graph);
 }
 
 void EnterpriseMemoryLimitEvaluator::GraphObserver::OnTakenFromGraph(
     performance_manager::Graph* graph) {
   graph->RemoveSystemNodeObserver(this);
+  metrics_interest_token_.reset();
 }
 
 void EnterpriseMemoryLimitEvaluator::GraphObserver::

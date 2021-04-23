@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/decorators/process_metrics_decorator.h"
+#include "components/performance_manager/public/decorators/process_metrics_decorator.h"
+
+#include <memory>
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/system_node_impl.h"
+#include "components/performance_manager/public/features.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 
 namespace performance_manager {
-
 
 namespace {
 
@@ -31,20 +33,79 @@ constexpr base::TimeDelta kFastRefreshTimerPeriod =
 
 }  // namespace
 
-ProcessMetricsDecorator::ProcessMetricsDecorator() = default;
+ProcessMetricsDecorator::ProcessMetricsDecorator() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 ProcessMetricsDecorator::~ProcessMetricsDecorator() = default;
 
+// Concrete implementation of a
+// ProcessMetricsDecorator::ScopedMetricsInterestToken
+class ProcessMetricsDecorator::ScopedMetricsInterestTokenImpl
+    : public ProcessMetricsDecorator::ScopedMetricsInterestToken {
+ public:
+  explicit ScopedMetricsInterestTokenImpl(Graph* graph);
+  ScopedMetricsInterestTokenImpl(const ScopedMetricsInterestTokenImpl& other) =
+      delete;
+  ScopedMetricsInterestTokenImpl& operator=(
+      const ScopedMetricsInterestTokenImpl&) = delete;
+  ~ScopedMetricsInterestTokenImpl() override;
+
+ protected:
+  Graph* graph_;
+};
+
+ProcessMetricsDecorator::ScopedMetricsInterestTokenImpl::
+    ScopedMetricsInterestTokenImpl(Graph* graph)
+    : graph_(graph) {
+  auto* decorator = graph->GetRegisteredObjectAs<ProcessMetricsDecorator>();
+  DCHECK(decorator);
+  decorator->OnMetricsInterestTokenCreated();
+}
+
+ProcessMetricsDecorator::ScopedMetricsInterestTokenImpl::
+    ~ScopedMetricsInterestTokenImpl() {
+  auto* decorator = graph_->GetRegisteredObjectAs<ProcessMetricsDecorator>();
+  // This could be destroyed after removing the decorator from the graph.
+  if (decorator)
+    decorator->OnMetricsInterestTokenReleased();
+}
+
+// static
+std::unique_ptr<ProcessMetricsDecorator::ScopedMetricsInterestToken>
+ProcessMetricsDecorator::RegisterInterestForProcessMetrics(Graph* graph) {
+  return std::make_unique<ScopedMetricsInterestTokenImpl>(graph);
+}
+
 void ProcessMetricsDecorator::OnPassedToGraph(Graph* graph) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph_ = graph;
-  StartTimer();
+  graph_->RegisterObject(this);
 }
 
 void ProcessMetricsDecorator::OnTakenFromGraph(Graph* graph) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StopTimer();
+  graph_->UnregisterObject(this);
   graph_ = nullptr;
 }
 
+void ProcessMetricsDecorator::OnMetricsInterestTokenCreated() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ++metrics_interest_token_count_;
+  if (metrics_interest_token_count_ == 1)
+    StartTimer();
+}
+
+void ProcessMetricsDecorator::OnMetricsInterestTokenReleased() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GT(metrics_interest_token_count_, 0U);
+  --metrics_interest_token_count_;
+  if (metrics_interest_token_count_ == 0)
+    StopTimer();
+}
+
 void ProcessMetricsDecorator::StartTimer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::TimeDelta refresh_period = kDefaultRefreshTimerPeriod;
 
 #if !defined(OS_ANDROID)
@@ -66,10 +127,12 @@ void ProcessMetricsDecorator::StartTimer() {
 }
 
 void ProcessMetricsDecorator::StopTimer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   refresh_timer_.Stop();
 }
 
 void ProcessMetricsDecorator::RefreshMetrics() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RequestProcessesMemoryMetrics(base::BindOnce(
       &ProcessMetricsDecorator::DidGetMemoryUsage, weak_factory_.GetWeakPtr()));
 }
@@ -77,6 +140,7 @@ void ProcessMetricsDecorator::RefreshMetrics() {
 void ProcessMetricsDecorator::RequestProcessesMemoryMetrics(
     memory_instrumentation::MemoryInstrumentation::RequestGlobalDumpCallback
         callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(sebmarchand): Use the synchronous calls once they are available.
   auto* mem_instrumentation =
       memory_instrumentation::MemoryInstrumentation::GetInstance();
@@ -91,6 +155,7 @@ void ProcessMetricsDecorator::RequestProcessesMemoryMetrics(
 void ProcessMetricsDecorator::DidGetMemoryUsage(
     bool success,
     std::unique_ptr<memory_instrumentation::GlobalMemoryDump> process_dumps) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!success)
     return;
 

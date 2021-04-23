@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/decorators/process_metrics_decorator.h"
+#include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 
 #include <memory>
 
@@ -12,6 +12,7 @@
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -116,6 +117,9 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
         std::make_unique<MockSinglePageWithMultipleProcessesGraph>(graph());
     EXPECT_FALSE(decorator_raw_->IsTimerRunningForTesting());
     graph()->PassToGraph(std::move(decorator));
+    EXPECT_FALSE(decorator_raw_->IsTimerRunningForTesting());
+    metrics_interest_token_ =
+        ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
     EXPECT_TRUE(decorator_raw_->IsTimerRunningForTesting());
   }
 
@@ -125,10 +129,15 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
     return mock_graph_.get();
   }
 
+  void ReleaseMetricsInterestToken() { metrics_interest_token_.reset(); }
+
  private:
   TestProcessMetricsDecorator* decorator_raw_;
 
   std::unique_ptr<MockSinglePageWithMultipleProcessesGraph> mock_graph_;
+
+  std::unique_ptr<ProcessMetricsDecorator::ScopedMetricsInterestToken>
+      metrics_interest_token_;
 
   DISALLOW_COPY_AND_ASSIGN(ProcessMetricsDecoratorTest);
 };
@@ -211,6 +220,23 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshFailure) {
 
   EXPECT_EQ(0U, mock_graph()->process->resident_set_kb());
   EXPECT_EQ(0U, mock_graph()->process->private_footprint_kb());
+}
+
+TEST_F(ProcessMetricsDecoratorTest, MetricsInterestTokens) {
+  ReleaseMetricsInterestToken();
+  EXPECT_FALSE(decorator()->IsTimerRunningForTesting());
+  auto metrics_interest_token1 =
+      ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
+  EXPECT_TRUE(decorator()->IsTimerRunningForTesting());
+
+  auto metrics_interest_token2 =
+      ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
+  EXPECT_TRUE(decorator()->IsTimerRunningForTesting());
+
+  metrics_interest_token1.reset();
+  EXPECT_TRUE(decorator()->IsTimerRunningForTesting());
+  metrics_interest_token2.reset();
+  EXPECT_FALSE(decorator()->IsTimerRunningForTesting());
 }
 
 }  // namespace performance_manager

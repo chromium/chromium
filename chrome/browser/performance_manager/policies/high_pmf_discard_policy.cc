@@ -43,6 +43,9 @@ void HighPMFDiscardPolicy::OnPassedToGraph(Graph* graph) {
   graph->AddSystemNodeObserver(this);
   graph_ = graph;
 
+  metrics_interest_token_ = performance_manager::ProcessMetricsDecorator::
+      RegisterInterestForProcessMetrics(graph_);
+
   base::SystemMemoryInfoKB mem_info = {};
   if (base::GetSystemMemoryInfo(&mem_info))
     pmf_limit_kb_ = mem_info.total * kRAMRatioPMFLimitFactor.Get();
@@ -55,6 +58,7 @@ void HighPMFDiscardPolicy::OnPassedToGraph(Graph* graph) {
 void HighPMFDiscardPolicy::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph->RemoveSystemNodeObserver(this);
+  metrics_interest_token_.reset();
   graph_ = nullptr;
   pmf_limit_kb_ = kInvalidPMFLimitValue;
 }

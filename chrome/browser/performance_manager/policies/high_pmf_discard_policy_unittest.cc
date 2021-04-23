@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
+#include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
@@ -29,6 +30,7 @@ class HighPMFDiscardPolicyTest
     testing::GraphTestHarnessWithMockDiscarder::SetUp();
 
     // Create the policy and pass it to the graph.
+    graph()->PassToGraph(std::make_unique<ProcessMetricsDecorator>());
     auto policy = std::make_unique<HighPMFDiscardPolicy>();
     policy_ = policy.get();
     graph()->PassToGraph(std::move(policy));
