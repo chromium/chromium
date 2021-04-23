@@ -44166,6 +44166,7 @@ from previous Chrome versions.
   <int value="-1930720286" label="nacl-debug-mask"/>
   <int value="-1928198763" label="enable-async-dns"/>
   <int value="-1927080237" label="Vulkan:enabled"/>
+  <int value="-1926124919" label="WebViewOriginTrials:enabled"/>
   <int value="-1925453192" label="BlockInsecurePrivateNetworkRequests:enabled"/>
   <int value="-1925214028"
       label="EnterpriseReportingApiKeychainRecreation:enabled"/>
@@ -48671,6 +48672,7 @@ from previous Chrome versions.
   <int value="2063091429" label="OfflinePagesSharing:enabled"/>
   <int value="2063420769" label="SharedHighlightingV2:disabled"/>
   <int value="2066015302" label="QueryTiles:disabled"/>
+  <int value="2066508701" label="WebViewOriginTrials:disabled"/>
   <int value="2067634730" label="LsdPermissionPrompt:disabled"/>
   <int value="2067735898" label="WebVrAutopresentFromIntent:enabled"/>
   <int value="2067903732"
