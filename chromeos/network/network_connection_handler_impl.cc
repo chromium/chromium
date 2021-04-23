@@ -847,15 +847,8 @@ void NetworkConnectionHandlerImpl::HandleShillConnectSuccess(
         << NetworkPathId(service_path);
     return;
   }
-  if (request->mode == ConnectCallbackMode::ON_STARTED) {
-    if (!request->success_callback.is_null())
-      std::move(request->success_callback).Run();
-    // Request started; do not invoke success or error callbacks on
-    // completion.
-    request->success_callback.Reset();
-    request->error_callback = network_handler::ErrorCallback();
-  }
-  request->connect_state = ConnectRequest::CONNECT_STARTED;
+
+  HandleNetworkConnectStarted(request);
   NET_LOG(EVENT) << "Connect Request Acknowledged: "
                  << NetworkPathId(service_path);
   // Do not call success_callback here, wait for one of the following
@@ -876,6 +869,21 @@ void NetworkConnectionHandlerImpl::HandleShillConnectFailure(
         << NetworkPathId(service_path);
     return;
   }
+
+  // Ignore failure if Shill returns an in progress error. This indicates that a
+  // connection attempt is already progress. This connect request will be
+  // completed with a success or failure in CheckPendingRequest when the network
+  // state changes.
+  if (dbus_error_name == shill::kErrorResultInProgress) {
+    NET_LOG(DEBUG)
+        << "Ignoring connect request in progress error. service_path="
+        << service_path;
+    // Set connection request to started and check if service has connected.
+    HandleNetworkConnectStarted(request);
+    CheckPendingRequest(service_path);
+    return;
+  }
+
   network_handler::ErrorCallback error_callback =
       std::move(request->error_callback);
   ClearPendingRequest(service_path);
@@ -883,8 +891,6 @@ void NetworkConnectionHandlerImpl::HandleShillConnectFailure(
   std::string error;
   if (dbus_error_name == shill::kErrorResultAlreadyConnected) {
     error = kErrorConnected;
-  } else if (dbus_error_name == shill::kErrorResultInProgress) {
-    error = kErrorConnecting;
   } else {
     network_state_handler_->SetShillConnectError(service_path, dbus_error_name);
     error = kErrorConnectFailed;
@@ -892,6 +898,19 @@ void NetworkConnectionHandlerImpl::HandleShillConnectFailure(
   NET_LOG(ERROR) << "Connect Failure: " << NetworkPathId(service_path)
                  << " Error: " << error << " Shill error: " << dbus_error_name;
   InvokeConnectErrorCallback(service_path, std::move(error_callback), error);
+}
+
+void NetworkConnectionHandlerImpl::HandleNetworkConnectStarted(
+    ConnectRequest* request) {
+  if (request->mode == ConnectCallbackMode::ON_STARTED) {
+    if (!request->success_callback.is_null())
+      std::move(request->success_callback).Run();
+    // Request started; do not invoke success or error callbacks on
+    // completion.
+    request->success_callback.Reset();
+    request->error_callback = network_handler::ErrorCallback();
+  }
+  request->connect_state = ConnectRequest::CONNECT_STARTED;
 }
 
 void NetworkConnectionHandlerImpl::CheckPendingRequest(

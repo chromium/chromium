@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -253,6 +254,15 @@ void FakeShillServiceClient::Connect(const dbus::ObjectPath& service_path,
   if (!service_properties) {
     LOG(ERROR) << "Service not found: " << service_path.value();
     std::move(error_callback).Run("Error.InvalidService", "Invalid Service");
+    return;
+  }
+
+  if (connect_error_name_) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(error_callback), *connect_error_name_,
+                       /*error_message=*/std::string()));
+    connect_error_name_ = base::nullopt;
     return;
   }
 
@@ -635,6 +645,11 @@ void FakeShillServiceClient::SetConnectBehavior(
     const std::string& service_path,
     const base::RepeatingClosure& behavior) {
   connect_behavior_[service_path] = behavior;
+}
+
+void FakeShillServiceClient::SetErrorForNextConnectionAttempt(
+    const std::string& error_name) {
+  connect_error_name_ = error_name;
 }
 
 void FakeShillServiceClient::SetHoldBackServicePropertyUpdates(bool hold_back) {

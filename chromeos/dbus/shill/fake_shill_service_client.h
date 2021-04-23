@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 
@@ -108,6 +109,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   void ClearServices() override;
   void SetConnectBehavior(const std::string& service_path,
                           const base::RepeatingClosure& behavior) override;
+  void SetErrorForNextConnectionAttempt(const std::string& error_name) override;
   void SetHoldBackServicePropertyUpdates(bool hold_back) override;
   void SetRequireServiceToGetProperties(
       bool require_service_to_get_properties) override;
@@ -132,6 +134,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   // attempt. The callback can for example modify the services properties in
   // order to simulate a connection failure.
   std::map<std::string, base::RepeatingClosure> connect_behavior_;
+
+  // If set the next Connect call will fail with this error_name.
+  base::Optional<std::string> connect_error_name_;
 
   // Observer list for each service.
   std::map<dbus::ObjectPath, std::unique_ptr<PropertyObserverList>>

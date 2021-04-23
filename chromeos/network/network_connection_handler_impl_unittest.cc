@@ -364,6 +364,12 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetCellularServiceState(const std::string& state) {
+    helper_.service_test()->SetServiceProperty(
+        kTestCellularServicePath, shill::kStateProperty, base::Value(state));
+    base::RunLoop().RunUntilIdle();
+  }
+
   void SetCellularServiceOutOfCredits() {
     helper_.service_test()->SetServiceProperty(kTestCellularServicePath,
                                                shill::kOutOfCreditsProperty,
@@ -443,6 +449,10 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
 
   void AdvanceClock(base::TimeDelta time_delta) {
     task_environment_.FastForwardBy(time_delta);
+  }
+
+  void SetShillConnectError(const std::string& error_name) {
+    helper_.service_test()->SetErrorForNextConnectionAttempt(error_name);
   }
 
   NetworkStateHandler* network_state_handler() {
@@ -624,6 +634,46 @@ TEST_F(NetworkConnectionHandlerImplTest,
   EXPECT_TRUE(network_connection_observer()->GetRequested(wifi3_service_path));
   EXPECT_EQ(NetworkConnectionHandler::kErrorPassphraseRequired,
             network_connection_observer()->GetResult(wifi3_service_path));
+}
+
+TEST_F(NetworkConnectionHandlerImplTest,
+       IgnoreConnectInProgressError_Succeeds) {
+  AddCellularServiceWithESimProfile();
+  // Verify the result is not returned and observers are not called if shill
+  // returns InProgress error.
+  SetShillConnectError(shill::kErrorResultInProgress);
+  Connect(kTestCellularServicePath);
+  EXPECT_TRUE(GetResultAndReset().empty());
+  EXPECT_TRUE(network_connection_observer()
+                  ->GetResult(kTestCellularServicePath)
+                  .empty());
+
+  // Verify that connect request returns when service state changes to
+  // connected.
+  SetCellularServiceState(shill::kStateOnline);
+  EXPECT_EQ(kSuccessResult,
+            network_connection_observer()->GetResult(kTestCellularServicePath));
+  EXPECT_EQ(kSuccessResult, GetResultAndReset());
+}
+
+TEST_F(NetworkConnectionHandlerImplTest, IgnoreConnectInProgressError_Fails) {
+  AddCellularServiceWithESimProfile();
+  SetShillConnectError(shill::kErrorResultInProgress);
+  Connect(kTestCellularServicePath);
+  EXPECT_TRUE(GetResultAndReset().empty());
+  EXPECT_TRUE(network_connection_observer()
+                  ->GetResult(kTestCellularServicePath)
+                  .empty());
+
+  // Set cellular service to connecting state.
+  SetCellularServiceState(shill::kStateAssociation);
+
+  // Verify the connect request fails with error when returned and observers are
+  // not called if shill returns InProgress error.
+  SetCellularServiceState(shill::kStateIdle);
+  EXPECT_EQ(NetworkConnectionHandler::kErrorConnectFailed,
+            network_connection_observer()->GetResult(kTestCellularServicePath));
+  EXPECT_EQ(NetworkConnectionHandler::kErrorConnectFailed, GetResultAndReset());
 }
 
 namespace {

@@ -118,6 +118,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
                                  const std::string& error_name,
                                  const std::string& error_message);
 
+  // Sets connection request to started and calls callback if necessary.
+  void HandleNetworkConnectStarted(ConnectRequest* request);
+
   // Note: |service_path| is passed by value here, because in some cases
   // the value may be located in the map and then it can be deleted, producing
   // a reference to invalid memory.
