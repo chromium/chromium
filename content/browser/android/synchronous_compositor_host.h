@@ -55,7 +55,7 @@ class CONTENT_EXPORT SynchronousCompositorHost
       const gfx::Size& viewport_size,
       const gfx::Rect& viewport_rect_for_tile_priority,
       const gfx::Transform& transform_for_tile_priority) override;
-  bool DemandDrawSw(SkCanvas* canvas) override;
+  bool DemandDrawSw(SkCanvas* canvas, bool software_canvas) override;
   void ReturnResources(uint32_t layer_tree_frame_sink_id,
                        std::vector<viz::ReturnedResource> resources) override;
   void DidPresentCompositorFrames(viz::FrameTimingDetailsMap timing_details,

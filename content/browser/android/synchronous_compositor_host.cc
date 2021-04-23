@@ -31,9 +31,10 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/events/blink/did_overscroll_params.h"
 #include "ui/gfx/skia_util.h"
@@ -356,7 +357,8 @@ struct SynchronousCompositorHost::SharedMemoryWithSize {
   DISALLOW_COPY_AND_ASSIGN(SharedMemoryWithSize);
 };
 
-bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas) {
+bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas,
+                                             bool software_canvas) {
   if (use_in_process_zero_copy_software_draw_)
     return DemandDrawSwInProc(canvas);
 
@@ -404,17 +406,30 @@ bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas) {
   UpdateFrameMetaData(metadata_version, std::move(*metadata));
 
   SkBitmap bitmap;
-  if (!bitmap.installPixels(info, software_draw_shm_->shared_memory.memory(),
-                            stride)) {
-    return false;
-  }
+  SkPixmap pixmap(info, software_draw_shm_->shared_memory.memory(), stride);
 
+  bool pixels_released = false;
   {
     TRACE_EVENT0("browser", "DrawBitmap");
     canvas->save();
     canvas->resetMatrix();
-    canvas->drawImage(bitmap.asImage(), 0, 0);
+    sk_sp<SkImage> image;
+    // Software canvas will draw immediately, so it's safe to avoid this copy.
+    if (software_canvas) {
+      auto mark_bool = [](const void* pixels, void* context) {
+        *static_cast<bool*>(context) = true;
+      };
+      image = SkImage::MakeFromRaster(pixmap, mark_bool, &pixels_released);
+    } else {
+      image = SkImage::MakeRasterCopy(pixmap);
+    }
+    canvas->drawImage(image, 0, 0);
     canvas->restore();
+  }
+
+  if (software_canvas) {
+    // It could lead to UAF if this CHECK fails, hence it's a release CHECK.
+    CHECK(pixels_released);
   }
 
   return true;

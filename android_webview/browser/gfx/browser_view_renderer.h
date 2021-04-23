@@ -188,7 +188,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   void SetActiveCompositor(content::SynchronousCompositor* compositor);
   void SetTotalRootLayerScrollOffset(const gfx::Vector2dF& new_value_dip);
   bool CanOnDraw();
-  bool CompositeSW(SkCanvas* canvas);
+  bool CompositeSW(SkCanvas* canvas, bool software_canvas);
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
   RootLayerStateAsValue(const gfx::Vector2dF& total_scroll_offset_dip,
                         const gfx::SizeF& scrollable_size_dip);

@@ -103,7 +103,9 @@ class CONTENT_EXPORT SynchronousCompositor {
 
   // "On demand" SW draw, into the supplied canvas (observing the transform
   // and clip set there-in).
-  virtual bool DemandDrawSw(SkCanvas* canvas) = 0;
+  // `software canvas` being true means drawing happens immediately instead
+  // of being cached, which allows more efficient drawing.
+  virtual bool DemandDrawSw(SkCanvas* canvas, bool software_canvas) = 0;
 
   // Set the memory limit policy of this compositor.
   virtual void SetMemoryPolicy(size_t bytes_limit) = 0;

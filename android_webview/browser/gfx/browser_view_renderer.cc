@@ -414,7 +414,7 @@ void BrowserViewRenderer::ReturnUsedResources(
 
 bool BrowserViewRenderer::OnDrawSoftware(SkCanvas* canvas) {
   did_invalidate_since_last_draw_ = false;
-  return CanOnDraw() && CompositeSW(canvas);
+  return CanOnDraw() && CompositeSW(canvas, /*software_canvas=*/true);
 }
 
 bool BrowserViewRenderer::NeedToDrawBackgroundColor() {
@@ -442,7 +442,7 @@ sk_sp<SkPicture> BrowserViewRenderer::CapturePicture(int width,
                                                    gfx::Vector2dF());
       compositor_->DidChangeRootLayerScrollOffset(
           gfx::ScrollOffset(scroll_offset_unscaled_));
-      CompositeSW(rec_canvas);
+      CompositeSW(rec_canvas, /*software_canvas=*/false);
     }
     compositor_->DidChangeRootLayerScrollOffset(
         gfx::ScrollOffset(scroll_offset_unscaled_));
@@ -914,9 +914,9 @@ void BrowserViewRenderer::PostInvalidate(
   client_->PostInvalidate();
 }
 
-bool BrowserViewRenderer::CompositeSW(SkCanvas* canvas) {
+bool BrowserViewRenderer::CompositeSW(SkCanvas* canvas, bool software_canvas) {
   DCHECK(compositor_);
-  return compositor_->DemandDrawSw(canvas);
+  return compositor_->DemandDrawSw(canvas, software_canvas);
 }
 
 std::string BrowserViewRenderer::ToString() const {

@@ -50,7 +50,8 @@ void TestSynchronousCompositor::SwapReturnedResources(FrameAckArray* array) {
   frame_ack_array_.swap(*array);
 }
 
-bool TestSynchronousCompositor::DemandDrawSw(SkCanvas* canvas) {
+bool TestSynchronousCompositor::DemandDrawSw(SkCanvas* canvas,
+                                             bool software_canvas) {
   DCHECK(canvas);
   return true;
 }

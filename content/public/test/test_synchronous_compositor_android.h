@@ -32,7 +32,7 @@ class CONTENT_EXPORT TestSynchronousCompositor : public SynchronousCompositor {
                        std::vector<viz::ReturnedResource> resources) override;
   void DidPresentCompositorFrames(viz::FrameTimingDetailsMap timing_details,
                                   uint32_t frame_token) override {}
-  bool DemandDrawSw(SkCanvas* canvas) override;
+  bool DemandDrawSw(SkCanvas* canvas, bool software_canvas) override;
   void SetMemoryPolicy(size_t bytes_limit) override {}
   void DidBecomeActive() override {}
   void DidChangeRootLayerScrollOffset(
