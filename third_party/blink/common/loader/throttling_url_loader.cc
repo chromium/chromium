@@ -304,6 +304,9 @@ std::unique_ptr<ThrottlingURLLoader> ThrottlingURLLoader::CreateLoaderAndStart(
 }
 
 ThrottlingURLLoader::~ThrottlingURLLoader() {
+  recordreplay::Assert("ThrottlingURLLoader::~ThrottlingURLLoader %lu", recordreplay::PointerId(this));
+  recordreplay::UnregisterPointer(this);
+
   if (inside_delegate_calls_ > 0) {
     // A throttle is calling into this object. In this case, delay destruction
     // of the throttles, so that throttles don't need to worry about any
@@ -423,6 +426,7 @@ ThrottlingURLLoader::ThrottlingURLLoader(
     network::mojom::URLLoaderClient* client,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
     : forwarding_client_(client), traffic_annotation_(traffic_annotation) {
+  recordreplay::RegisterPointer(this);
   throttles_.reserve(throttles.size());
   for (auto& throttle : throttles)
     throttles_.emplace_back(this, std::move(throttle));
