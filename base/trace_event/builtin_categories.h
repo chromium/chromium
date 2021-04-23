@@ -172,6 +172,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("animation-worklet"))                      \
   X(TRACE_DISABLED_BY_DEFAULT("audio"))                                  \
   X(TRACE_DISABLED_BY_DEFAULT("audio-worklet"))                          \
+  X(TRACE_DISABLED_BY_DEFAULT("base"))                                   \
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug"))                            \
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug.display_lock"))               \
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout"))                     \

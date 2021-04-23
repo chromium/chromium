@@ -284,13 +284,15 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
       // As in ProcessNextWindowsMessage().
       auto scoped_do_native_work = run_state_->delegate->BeginNativeWork();
       {
-        TRACE_EVENT0("base", "MessagePumpForUI::WaitForWork GetQueueStatus");
+        TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("base"),
+                     "MessagePumpForUI::WaitForWork GetQueueStatus");
         if (HIWORD(::GetQueueStatus(QS_SENDMESSAGE)) & QS_SENDMESSAGE)
           return;
       }
       {
         MSG msg;
-        TRACE_EVENT0("base", "MessagePumpForUI::WaitForWork PeekMessage");
+        TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("base"),
+                     "MessagePumpForUI::WaitForWork PeekMessage");
         if (::PeekMessage(&msg, nullptr, 0, 0, PM_NOREMOVE))
           return;
       }
@@ -471,7 +473,8 @@ bool MessagePumpForUI::ProcessNextWindowsMessage() {
       // sampling profiler's thread while the sampled thread is swapped out on
       // this frame).
       TRACE_EVENT0(
-          "base", "MessagePumpForUI::ProcessNextWindowsMessage GetQueueStatus");
+          TRACE_DISABLED_BY_DEFAULT("base"),
+          "MessagePumpForUI::ProcessNextWindowsMessage GetQueueStatus");
       DWORD queue_status = ::GetQueueStatus(QS_SENDMESSAGE);
 
       // If there are sent messages in the queue then PeekMessage internally
@@ -487,7 +490,8 @@ bool MessagePumpForUI::ProcessNextWindowsMessage() {
       // and emit the boolean param to see if it ever janks independently (ref.
       // comment on GetQueueStatus).
       TRACE_EVENT(
-          "base", "MessagePumpForUI::ProcessNextWindowsMessage PeekMessage",
+          TRACE_DISABLED_BY_DEFAULT("base"),
+          "MessagePumpForUI::ProcessNextWindowsMessage PeekMessage",
           [&](perfetto::EventContext ctx) {
             perfetto::protos::pbzero::ChromeMessagePump* msg_pump_data =
                 ctx.event()->set_chrome_message_pump();
@@ -505,12 +509,6 @@ bool MessagePumpForUI::ProcessNextWindowsMessage() {
 bool MessagePumpForUI::ProcessMessageHelper(const MSG& msg) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
-  TRACE_EVENT("base,toplevel", "MessagePumpForUI::ProcessMessageHelper",
-              [&](perfetto::EventContext ctx) {
-                ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                    ->set_chrome_message_pump_for_ui()
-                    ->set_message_id(msg.message);
-              });
   if (msg.message == WM_QUIT) {
     // WM_QUIT is the standard way to exit a ::GetMessage() loop. Our
     // MessageLoop has its own quit mechanism, so WM_QUIT should only terminate
@@ -530,6 +528,13 @@ bool MessagePumpForUI::ProcessMessageHelper(const MSG& msg) {
     return ProcessPumpReplacementMessage();
 
   auto scoped_do_native_work = run_state_->delegate->BeginNativeWork();
+
+  TRACE_EVENT("base,toplevel", "MessagePumpForUI DispatchMessage",
+              [&](perfetto::EventContext ctx) {
+                ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                    ->set_chrome_message_pump_for_ui()
+                    ->set_message_id(msg.message);
+              });
 
   for (Observer& observer : observers_)
     observer.WillDispatchMSG(msg);
@@ -559,7 +564,7 @@ bool MessagePumpForUI::ProcessPumpReplacementMessage() {
     // ::PeekMessage may process internal events. Consider it native work.
     auto scoped_do_native_work = run_state_->delegate->BeginNativeWork();
 
-    TRACE_EVENT0("base",
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("base"),
                  "MessagePumpForUI::ProcessPumpReplacementMessage PeekMessage");
 
     // The system headers don't define PM_QS_ALLEVENTS; it's equivalent to
