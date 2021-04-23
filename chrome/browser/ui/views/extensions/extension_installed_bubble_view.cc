@@ -38,7 +38,7 @@
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/views/sync/dice_bubble_sync_promo_view.h"
 #endif
 
@@ -78,20 +78,17 @@ views::View* AnchorViewForBrowser(const ExtensionInstalledBubbleModel* model,
   return reference_view;
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 std::unique_ptr<views::View> CreateSigninPromoView(
     Profile* profile,
     BubbleSyncPromoDelegate* delegate) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS does not show the signin promo.
-  return nullptr;
-#else
   return std::make_unique<DiceBubbleSyncPromoView>(
       profile, delegate,
       signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
       IDS_EXTENSION_INSTALLED_DICE_PROMO_SYNC_MESSAGE,
       /*dice_signin_button_prominent=*/true);
-#endif
 }
+#endif
 
 }  // namespace
 
@@ -172,7 +169,10 @@ ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
   chrome::RecordDialogCreation(chrome::DialogIdentifier::EXTENSION_INSTALLED);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   if (model_->show_sign_in_promo()) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    // Promo view requires DICE, so show it only if DICE support is enabled.
     SetFootnoteView(CreateSigninPromoView(browser->profile(), this));
+#endif
   }
   SetIcon(model_->MakeIconOfSize(kMaxIconSize));
   SetShowIcon(true);
