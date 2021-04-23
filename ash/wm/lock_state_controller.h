@@ -107,6 +107,7 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   void set_animator_for_test(SessionStateAnimator* animator) {
     animator_.reset(animator);
   }
+  bool animating_lock_for_test() const { return animating_lock_; }
 
  private:
   friend class LockStateControllerTestApi;

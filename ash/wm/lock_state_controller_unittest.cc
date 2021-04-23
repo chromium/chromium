@@ -18,15 +18,18 @@
 #include "ash/system/power/power_button_controller_test_api.h"
 #include "ash/system/power/power_button_test_base.h"
 #include "ash/touch/touch_devices_controller.h"
+#include "ash/utility/layer_copy_animator.h"
 #include "ash/wallpaper/wallpaper_view.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/lock_state_controller_test_api.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/session_state_animator.h"
 #include "ash/wm/test_session_state_animator.h"
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "ui/display/fake/fake_display_snapshot.h"
@@ -730,6 +733,75 @@ TEST_F(LockStateControllerTest, CancelShouldResetWallpaperBlur) {
 
   // Verify wallpaper blur are restored to overview's.
   EXPECT_EQ(wallpaper_constants::kOverviewBlur, wallpaper_view->blur_sigma());
+}
+
+class LockStateControllerMockTimeTest : public PowerButtonTestBase {
+ public:
+  LockStateControllerMockTimeTest()
+      : PowerButtonTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  LockStateControllerMockTimeTest(const LockStateControllerMockTimeTest&) =
+      delete;
+  LockStateControllerMockTimeTest& operator=(
+      const LockStateControllerMockTimeTest&) = delete;
+  ~LockStateControllerMockTimeTest() override = default;
+
+  void Advance(const base::TimeDelta& delta) {
+    task_environment()->FastForwardBy(delta);
+  }
+
+  void SetUp() override {
+    PowerButtonTestBase::SetUp();
+    InitPowerButtonControllerMembers(
+        chromeos::PowerManagerClient::TabletMode::UNSUPPORTED);
+  }
+};
+
+class TestLayerCopyAnimator final : public LayerCopyAnimator {
+ public:
+  TestLayerCopyAnimator(aura::Window* window, base::OnceClosure callback)
+      : LayerCopyAnimator(window), callback_(std::move(callback)) {}
+  TestLayerCopyAnimator(const TestLayerCopyAnimator&) = delete;
+  TestLayerCopyAnimator& operator=(const TestLayerCopyAnimator&) = delete;
+  ~TestLayerCopyAnimator() override = default;
+
+  // LayerCopyAnimator:
+  void OnLayerCopied(std::unique_ptr<ui::Layer> new_layer) override {
+    // Move the callback first because the object may be deleted.
+    auto callback = std::move(callback_);
+    LayerCopyAnimator::OnLayerCopied(std::move(new_layer));
+    std::move(callback).Run();
+  }
+
+ private:
+  base::OnceClosure callback_;
+};
+
+TEST_F(LockStateControllerMockTimeTest, LockWithoutAnimation) {
+  Initialize(ButtonType::LEGACY, LoginStatus::USER);
+  EXPECT_FALSE(Shell::Get()->session_controller()->IsScreenLocked());
+  auto* shelf_container = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+                                              kShellWindowId_ShelfContainer);
+  auto* lock_container =
+      Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+                          kShellWindowId_LockScreenContainersContainer);
+
+  base::RunLoop loop;
+  base::RepeatingClosure done_closure =
+      base::BarrierClosure(2, loop.QuitClosure());
+
+  auto callback = [&]() { done_closure.Run(); };
+
+  new TestLayerCopyAnimator(shelf_container,
+                            base::BindLambdaForTesting(callback));
+  new TestLayerCopyAnimator(lock_container,
+                            base::BindLambdaForTesting(callback));
+
+  lock_state_controller_->LockWithoutAnimation();
+  EXPECT_TRUE(lock_state_controller_->animating_lock_for_test());
+  loop.Run();
+  EXPECT_FALSE(lock_state_controller_->animating_lock_for_test());
+  EXPECT_TRUE(Shell::Get()->session_controller()->IsScreenLocked());
 }
 
 }  // namespace ash
