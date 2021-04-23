@@ -5090,7 +5090,6 @@ crbug.com/1194557 http/tests/devtools/application-panel/resources-panel-resource
 crbug.com/1194557 http/tests/devtools/sources/debugger-breakpoints/set-breakpoint-while-blocking-main-thread.js [ Failure Timeout ]
 crbug.com/1194557 http/tests/devtools/unit/object-properties-expand-recursively.js [ Failure Timeout ]
 crbug.com/1194557 http/tests/websocket/send-arraybufferview.html [ Failure Timeout ]
-crbug.com/1194557 storage/indexeddb/shared-array-buffer-throws.html [ Failure Timeout ]
 crbug.com/1194557 virtual/shared_array_buffer_on_desktop/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-subdomain-yes-2-subdomain2-no.sub.https.html [ Failure Timeout ]
 crbug.com/1194557 webaudio/dom-exceptions.html [ Failure Timeout ]
 
