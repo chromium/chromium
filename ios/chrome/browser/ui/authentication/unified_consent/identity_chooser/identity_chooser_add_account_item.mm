@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_add_account_item.h"
 
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_cell.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_cell.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -18,12 +18,12 @@
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
   if (self) {
-    self.cellClass = [IdentityChooserCell class];
+    self.cellClass = [TableViewIdentityCell class];
   }
   return self;
 }
 
-- (void)configureCell:(IdentityChooserCell*)cell
+- (void)configureCell:(TableViewIdentityCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   NSString* title =

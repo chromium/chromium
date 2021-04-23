@@ -55,7 +55,7 @@ namespace {
 // Returns a matcher for |userEmail| in IdentityChooserViewController.
 id<GREYMatcher> identityChooserButtonMatcherWithEmail(NSString* userEmail) {
   return grey_allOf(grey_accessibilityID(userEmail),
-                    grey_kindOfClassName(@"IdentityChooserCell"),
+                    grey_kindOfClassName(@"TableViewIdentityCell"),
                     grey_sufficientlyVisible(), nil);
 }
 

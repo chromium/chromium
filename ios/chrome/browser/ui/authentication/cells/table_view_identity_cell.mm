@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_cell.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_cell.h"
 
-#import "base/i18n/rtl.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_view.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 
@@ -23,11 +20,11 @@ const CGFloat kIdentityViewVerticalMargin = 7.;
 const CGFloat kCheckmarkMagin = 26.;
 }  // namespace
 
-@interface IdentityChooserCell ()
+@interface TableViewIdentityCell ()
 @property(nonatomic, strong) IdentityView* identityView;
 @end
 
-@implementation IdentityChooserCell
+@implementation TableViewIdentityCell
 
 @synthesize identityView = _identityView;
 
@@ -47,7 +44,7 @@ const CGFloat kCheckmarkMagin = 26.;
     AddSameConstraintsToSidesWithInsets(_identityView, self.contentView,
                                         sideFlags, insets);
     if (@available(iOS 13.4, *)) {
-        [self addInteraction:[[ViewPointerInteraction alloc] init]];
+      [self addInteraction:[[ViewPointerInteraction alloc] init]];
     }
   }
   return self;

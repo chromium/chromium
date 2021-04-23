@@ -7,8 +7,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
 #import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_consumer.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_item.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
@@ -44,8 +44,8 @@
 - (void)setSelectedIdentity:(ChromeIdentity*)selectedIdentity {
   if ([_selectedIdentity isEqual:selectedIdentity])
     return;
-  IdentityChooserItem* previousSelectedItem = [self.consumer
-      identityChooserItemWithGaiaID:self.selectedIdentity.gaiaID];
+  TableViewIdentityItem* previousSelectedItem = [self.consumer
+      tableViewIdentityItemWithGaiaID:self.selectedIdentity.gaiaID];
   if (previousSelectedItem) {
     previousSelectedItem.selected = NO;
     [self.consumer itemHasChanged:previousSelectedItem];
@@ -54,8 +54,8 @@
   if (!_selectedIdentity) {
     return;
   }
-  IdentityChooserItem* selectedItem = [self.consumer
-      identityChooserItemWithGaiaID:self.selectedIdentity.gaiaID];
+  TableViewIdentityItem* selectedItem = [self.consumer
+      tableViewIdentityItemWithGaiaID:self.selectedIdentity.gaiaID];
   DCHECK(selectedItem);
   selectedItem.selected = YES;
   [self.consumer itemHasChanged:selectedItem];
@@ -74,19 +74,20 @@
   // Create all the identity items.
   NSArray<ChromeIdentity*>* identities =
       self.chromeIdentityService->GetAllIdentitiesSortedForDisplay();
-  NSMutableArray<IdentityChooserItem*>* items = [NSMutableArray array];
+  NSMutableArray<TableViewIdentityItem*>* items = [NSMutableArray array];
   for (ChromeIdentity* identity in identities) {
-    IdentityChooserItem* item = [[IdentityChooserItem alloc] initWithType:0];
-    [self updateIdentityChooserItem:item withChromeIdentity:identity];
+    TableViewIdentityItem* item =
+        [[TableViewIdentityItem alloc] initWithType:0];
+    [self updateTableViewIdentityItem:item withChromeIdentity:identity];
     [items addObject:item];
   }
 
   [self.consumer setIdentityItems:items];
 }
 
-// Updates an IdentityChooserItem based on a ChromeIdentity.
-- (void)updateIdentityChooserItem:(IdentityChooserItem*)item
-               withChromeIdentity:(ChromeIdentity*)identity {
+// Updates an TableViewIdentityItem based on a ChromeIdentity.
+- (void)updateTableViewIdentityItem:(TableViewIdentityItem*)item
+                 withChromeIdentity:(ChromeIdentity*)identity {
   item.gaiaID = identity.gaiaID;
   item.name = identity.userFullName;
   item.email = identity.userEmail;
@@ -122,9 +123,9 @@
 }
 
 - (void)profileUpdate:(ChromeIdentity*)identity {
-  IdentityChooserItem* item =
-      [self.consumer identityChooserItemWithGaiaID:identity.gaiaID];
-  [self updateIdentityChooserItem:item withChromeIdentity:identity];
+  TableViewIdentityItem* item =
+      [self.consumer tableViewIdentityItemWithGaiaID:identity.gaiaID];
+  [self updateTableViewIdentityItem:item withChromeIdentity:identity];
 }
 
 - (void)chromeIdentityServiceWillBeDestroyed {

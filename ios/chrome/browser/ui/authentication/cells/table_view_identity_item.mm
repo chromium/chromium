@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_item.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
 
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_cell.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_cell.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@implementation IdentityChooserItem
+@implementation TableViewIdentityItem
 
 @synthesize gaiaID = _gaiaID;
 @synthesize name = _name;
@@ -21,12 +21,12 @@
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
   if (self) {
-    self.cellClass = [IdentityChooserCell class];
+    self.cellClass = [TableViewIdentityCell class];
   }
   return self;
 }
 
-- (void)configureCell:(IdentityChooserCell*)cell
+- (void)configureCell:(TableViewIdentityCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   NSString* title = self.name;

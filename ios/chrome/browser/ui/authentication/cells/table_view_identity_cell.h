@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_UNIFIED_CONSENT_IDENTITY_CHOOSER_IDENTITY_CHOOSER_CELL_H_
-#define IOS_CHROME_BROWSER_UI_AUTHENTICATION_UNIFIED_CONSENT_IDENTITY_CHOOSER_IDENTITY_CHOOSER_CELL_H_
+#ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_CELLS_TABLE_VIEW_IDENTITY_CELL_H_
+#define IOS_CHROME_BROWSER_UI_AUTHENTICATION_CELLS_TABLE_VIEW_IDENTITY_CELL_H_
 
 #import <UIKit/UIKit.h>
 
@@ -12,14 +12,14 @@
 @class IdentityView;
 
 // Cell to display an user identity or the "Add Account…" button.
-@interface IdentityChooserCell : TableViewCell
+@interface TableViewIdentityCell : TableViewCell
 
-// Initializes IdentityChooserCell instance.
+// Initializes TableViewIdentityCell instance.
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier
     NS_DESIGNATED_INITIALIZER;
 
-// -[IdentityChooserCell initWithStyle:reuseIdentifier:] should be used.
+// -[TableViewIdentityCell initWithStyle:reuseIdentifier:] should be used.
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
 // Configures the cell with the title, subtitle and image. If |checked| is YES,
@@ -31,4 +31,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_UNIFIED_CONSENT_IDENTITY_CHOOSER_IDENTITY_CHOOSER_CELL_H_
+#endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_CELLS_TABLE_VIEW_IDENTITY_CELL_H_

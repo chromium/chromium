@@ -7,9 +7,9 @@
 #include "base/check_op.h"
 #include "base/mac/foundation_util.h"
 #include "base/notreached.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_add_account_item.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_header_item.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_item.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
 
@@ -68,12 +68,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ListItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   switch ((ItemType)item.type) {
     case IdentityItemType: {
-      IdentityChooserItem* identityChooserItem =
-          base::mac::ObjCCastStrict<IdentityChooserItem>(item);
-      DCHECK(identityChooserItem);
+      TableViewIdentityItem* tableViewIdentityItem =
+          base::mac::ObjCCastStrict<TableViewIdentityItem>(item);
+      DCHECK(tableViewIdentityItem);
       [self.presentationDelegate
           identityChooserViewController:self
-            didSelectIdentityWithGaiaID:identityChooserItem.gaiaID];
+            didSelectIdentityWithGaiaID:tableViewIdentityItem.gaiaID];
       break;
     }
     case AddAccountItemType:
@@ -122,13 +122,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self reconfigureCellsForItems:@[ changedItem ]];
 }
 
-- (IdentityChooserItem*)identityChooserItemWithGaiaID:(NSString*)gaiaID {
-  for (IdentityChooserItem* item in [self.tableViewModel
+- (TableViewIdentityItem*)tableViewIdentityItemWithGaiaID:(NSString*)gaiaID {
+  for (TableViewIdentityItem* item in [self.tableViewModel
            itemsInSectionWithIdentifier:IdentitiesSectionIdentifier]) {
     if (item.type != IdentityItemType)
       continue;
-    IdentityChooserItem* identityItem =
-        base::mac::ObjCCastStrict<IdentityChooserItem>(item);
+    TableViewIdentityItem* identityItem =
+        base::mac::ObjCCastStrict<TableViewIdentityItem>(item);
     if ([identityItem.gaiaID isEqualToString:gaiaID])
       return identityItem;
   }
