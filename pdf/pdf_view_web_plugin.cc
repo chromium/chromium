@@ -111,6 +111,28 @@ class PerProcessInitializer final {
   THREAD_CHECKER(thread_checker_);
 };
 
+class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
+ public:
+  explicit BlinkContainerWrapper(blink::WebPluginContainer* container)
+      : container_(container) {
+    DCHECK(container_);
+  }
+  BlinkContainerWrapper(const BlinkContainerWrapper&) = delete;
+  BlinkContainerWrapper& operator=(const BlinkContainerWrapper&) = delete;
+  ~BlinkContainerWrapper() override = default;
+
+  void Invalidate() override { container_->Invalidate(); }
+
+  float DeviceScaleFactor() const override {
+    return container_->DeviceScaleFactor();
+  }
+
+  blink::WebPluginContainer* Container() override { return container_; }
+
+ private:
+  blink::WebPluginContainer* const container_;
+};
+
 }  // namespace
 
 PdfViewWebPlugin::PdfViewWebPlugin(const blink::WebPluginParams& params)
@@ -118,10 +140,15 @@ PdfViewWebPlugin::PdfViewWebPlugin(const blink::WebPluginParams& params)
 
 PdfViewWebPlugin::~PdfViewWebPlugin() = default;
 
-// Modeled on `OutOfProcessInstance::Init()`.
 bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
   DCHECK_EQ(container->Plugin(), this);
-  container_ = container;
+  return InitializeCommon(std::make_unique<BlinkContainerWrapper>(container));
+}
+
+// Modeled on `OutOfProcessInstance::Init()`.
+bool PdfViewWebPlugin::InitializeCommon(
+    std::unique_ptr<ContainerWrapper> container_wrapper) {
+  container_wrapper_ = std::move(container_wrapper);
 
   std::string stream_url;
   for (size_t i = 0; i < initial_params_.attribute_names.size(); ++i) {
@@ -145,26 +172,25 @@ bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
   PerProcessInitializer::GetInstance().Acquire();
   InitializeEngine(PDFiumFormFiller::ScriptOption::kNoJavaScript);
   LoadUrl(stream_url, /*is_print_preview=*/false);
-  post_message_sender_.set_container(container_);
+  post_message_sender_.set_container(Container());
   return true;
 }
 
 void PdfViewWebPlugin::Destroy() {
-  if (container_) {
+  if (container_wrapper_) {
     // Explicitly destroy the PDFEngine during destruction as it may call back
     // into this object.
     DestroyEngine();
     PerProcessInitializer::GetInstance().Release();
+    container_wrapper_.reset();
+    post_message_sender_.set_container(nullptr);
   }
-
-  container_ = nullptr;
-  post_message_sender_.set_container(nullptr);
 
   delete this;
 }
 
 blink::WebPluginContainer* PdfViewWebPlugin::Container() const {
-  return container_;
+  return container_wrapper_ ? container_wrapper_->Container() : nullptr;
 }
 
 v8::Local<v8::Object> PdfViewWebPlugin::V8ScriptableObject(
@@ -216,7 +242,7 @@ void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
                                       const gfx::Rect& clip_rect,
                                       const gfx::Rect& unobscured_rect,
                                       bool is_visible) {
-  OnViewportChanged(window_rect, container_->DeviceScaleFactor());
+  OnViewportChanged(window_rect, container_wrapper_->DeviceScaleFactor());
 }
 
 void PdfViewWebPlugin::UpdateFocus(bool focused,
@@ -346,33 +372,33 @@ void PdfViewWebPlugin::ScheduleTaskOnMainThread(const base::Location& from_here,
 }
 
 bool PdfViewWebPlugin::IsValid() const {
-  return container_ && container_->GetDocument().GetFrame();
+  return Container() && Container()->GetDocument().GetFrame();
 }
 
 blink::WebURL PdfViewWebPlugin::CompleteURL(
     const blink::WebString& partial_url) const {
   DCHECK(IsValid());
-  return container_->GetDocument().CompleteURL(partial_url);
+  return Container()->GetDocument().CompleteURL(partial_url);
 }
 
 net::SiteForCookies PdfViewWebPlugin::SiteForCookies() const {
   DCHECK(IsValid());
-  return container_->GetDocument().SiteForCookies();
+  return Container()->GetDocument().SiteForCookies();
 }
 
 void PdfViewWebPlugin::SetReferrerForRequest(
     blink::WebURLRequest& request,
     const blink::WebURL& referrer_url) {
   DCHECK(IsValid());
-  container_->GetDocument().GetFrame()->SetReferrerForRequest(request,
-                                                              referrer_url);
+  Container()->GetDocument().GetFrame()->SetReferrerForRequest(request,
+                                                               referrer_url);
 }
 
 std::unique_ptr<blink::WebAssociatedURLLoader>
 PdfViewWebPlugin::CreateAssociatedURLLoader(
     const blink::WebAssociatedURLLoaderOptions& options) {
   DCHECK(IsValid());
-  return container_->GetDocument().GetFrame()->CreateAssociatedURLLoader(
+  return Container()->GetDocument().GetFrame()->CreateAssociatedURLLoader(
       options);
 }
 
@@ -481,9 +507,7 @@ void PdfViewWebPlugin::OnViewportChanged(const gfx::Rect& view_rect,
 }
 
 void PdfViewWebPlugin::InvalidatePluginContainer() {
-  DCHECK(container_);
-
-  container_->Invalidate();
+  container_wrapper_->Invalidate();
 }
 
 }  // namespace chrome_pdf

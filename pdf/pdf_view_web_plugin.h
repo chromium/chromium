@@ -5,6 +5,8 @@
 #ifndef PDF_PDF_VIEW_WEB_PLUGIN_H_
 #define PDF_PDF_VIEW_WEB_PLUGIN_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "cc/paint/paint_image.h"
 #include "pdf/pdf_view_plugin_base.h"
@@ -29,6 +31,22 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                public PostMessageReceiver::Client,
                                public SkiaGraphics::Client {
  public:
+  class ContainerWrapper {
+   public:
+    virtual ~ContainerWrapper() = default;
+
+    // Invalidates the entire web plugin container and schedules a paint of the
+    // page in it.
+    virtual void Invalidate() = 0;
+
+    // Returns the device scale factor.
+    virtual float DeviceScaleFactor() const = 0;
+
+    // Returns the blink web plugin container pointer that's wrapped inside this
+    // object. Returns nullptr if this object is for test only.
+    virtual blink::WebPluginContainer* Container() = 0;
+  };
+
   explicit PdfViewWebPlugin(const blink::WebPluginParams& params);
   PdfViewWebPlugin(const PdfViewWebPlugin& other) = delete;
   PdfViewWebPlugin& operator=(const PdfViewWebPlugin& other) = delete;
@@ -127,6 +145,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Call `Destroy()` instead.
   ~PdfViewWebPlugin() override;
 
+  bool InitializeCommon(std::unique_ptr<ContainerWrapper> container_wrapper);
+
   void OnViewportChanged(const gfx::Rect& view_rect, float new_device_scale);
 
   // Invalidates the entire web plugin container and schedules a paint of the
@@ -134,7 +154,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void InvalidatePluginContainer();
 
   blink::WebPluginParams initial_params_;
-  blink::WebPluginContainer* container_ = nullptr;
+
+  std::unique_ptr<ContainerWrapper> container_wrapper_;
 
   v8::Persistent<v8::Object> scriptable_receiver_;
   PostMessageSender post_message_sender_;
