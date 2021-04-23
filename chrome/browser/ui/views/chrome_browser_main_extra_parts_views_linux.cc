@@ -19,6 +19,7 @@
 
 #if defined(USE_OZONE)
 #include "ui/base/ime/input_method.h"
+#include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
@@ -26,6 +27,13 @@
 namespace {
 
 std::unique_ptr<views::LinuxUI> BuildLinuxUI() {
+  // If the ozone backend hasn't provided a LinuxUiDelegate, don't try to create
+  // a LinuxUi instance as this may result in a crash in toolkit initialization.
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform() && !ui::LinuxUiDelegate::GetInstance())
+    return nullptr;
+#endif
+
   // GtkUi is the only LinuxUI implementation for now.
 #if BUILDFLAG(USE_GTK)
   return BuildGtkUi();
