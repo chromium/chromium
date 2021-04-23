@@ -43,7 +43,6 @@
 #include "ui/views/controls/tree/tree_view_controller.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
-#include "ui/views/vector_icons.h"
 
 using ui::TreeModel;
 using ui::TreeModelNode;
@@ -1119,7 +1118,7 @@ void TreeView::PaintExpandControl(gfx::Canvas* canvas,
                                   const gfx::Rect& node_bounds,
                                   bool expanded) {
   gfx::ImageSkia arrow = gfx::CreateVectorIcon(
-      kSubmenuArrowIcon,
+      vector_icons::kSubmenuArrowIcon,
       color_utils::DeriveDefaultIconColor(
           drawing_provider()->GetTextColorForNode(this, nullptr)));
   if (expanded) {

@@ -68,6 +68,8 @@ class PageInfoHoverButton : public HoverButton {
   void SetTitleText(int title_resource_id,
                     const std::u16string& secondary_text);
 
+  void SetTitleText(const std::u16string& title_text);
+
  protected:
   views::StyledLabel* title() const { return title_; }
   views::Label* subtitle() const { return subtitle_; }

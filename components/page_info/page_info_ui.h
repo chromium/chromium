@@ -220,6 +220,12 @@ class PageInfoUI {
 
   // Returns the not secure state icon for the SecurityInformationView.
   static const ui::ImageModel GetConnectionNotSecureIcon();
+
+  // Returns the icon for the secure connection button.
+  static const ui::ImageModel GetConnectionSecureIcon();
+
+  // Returns the icon for a button which opens a subpage within page info.
+  static const ui::ImageModel GetOpenSubpageIcon();
 #endif
 
   // Return true if the given ContentSettingsType is in PageInfoUI.

@@ -22,7 +22,7 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
     case security_state::NONE:
       return omnibox::kHttpIcon;
     case security_state::SECURE:
-      return omnibox::kHttpsValidIcon;
+      return vector_icons::kHttpsValidIcon;
     case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
       return vector_icons::kBusinessIcon;
     case security_state::WARNING:

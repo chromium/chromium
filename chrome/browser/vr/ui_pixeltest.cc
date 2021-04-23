@@ -7,7 +7,7 @@
 #include "chrome/browser/vr/model/location_bar_state.h"
 #include "chrome/browser/vr/test/constants.h"
 #include "chrome/browser/vr/test/ui_pixel_test.h"
-#include "components/omnibox/browser/vector_icons.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_WIN)
@@ -33,7 +33,7 @@ TEST_F(UiPixelTest, DrawVrBrowsingMode) {
   ui_initial_state.in_web_vr = false;
   MakeUi(ui_initial_state,
          LocationBarState(GURL("https://example.com"), security_state::SECURE,
-                          &omnibox::kHttpsValidIcon, true, false));
+                          &vector_icons::kHttpsValidIcon, true, false));
 
   // Draw UI.
   DrawUi(gfx::Vector3dF(0.0f, 0.0f, -1.0f), gfx::Point3F(0.5f, -0.5f, 0.0f),

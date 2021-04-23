@@ -477,6 +477,7 @@ test("vr_pixeltests") {
   deps = [
     ":vr_gl_test_support",
     ":vr_test_support",
+    "//components/vector_icons",
   ]
   if (is_android) {
     deps += [ "//ui/android:ui_java" ]

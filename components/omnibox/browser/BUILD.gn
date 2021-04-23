@@ -52,7 +52,6 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "google_sites.icon",
     "google_super_g.icon",
     "http.icon",
-    "https_valid.icon",
     "https_valid_in_chip.icon",
     "install_desktop.icon",
     "install_download.icon",

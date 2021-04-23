@@ -816,6 +816,8 @@ const ui::ImageModel PageInfoUI::GetVrSettingsIcon() {
 
 // static
 const ui::ImageModel PageInfoUI::GetLaunchIcon() {
+  // TODO(olesiamarukhno): The icon color should be lighter shade, based on
+  // secondary text style. Add new color id: kColorId_SecondaryIconColor.
   return ui::ImageModel::FromVectorIcon(
       vector_icons::kLaunchIcon, ui::NativeTheme::kColorId_DefaultIconColor,
       kVectorIconSize);
@@ -826,6 +828,20 @@ const ui::ImageModel PageInfoUI::GetConnectionNotSecureIcon() {
   return ui::ImageModel::FromVectorIcon(
       vector_icons::kNotSecureWarningIcon,
       ui::NativeTheme::kColorId_AlertSeverityHigh);
+}
+
+// static
+const ui::ImageModel PageInfoUI::GetConnectionSecureIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kHttpsValidIcon,
+      ui::NativeTheme::kColorId_DefaultIconColor);
+}
+
+// static
+const ui::ImageModel PageInfoUI::GetOpenSubpageIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kSubmenuArrowIcon,
+      ui::NativeTheme::kColorId_DefaultIconColor);
 }
 
 #endif

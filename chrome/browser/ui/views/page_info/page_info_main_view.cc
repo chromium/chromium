@@ -31,6 +31,29 @@
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #endif
 
+namespace {
+
+// The column set id of the permissions table for |permissions_view_|.
+constexpr int kPermissionColumnSetId = 0;
+// The column set id of the `ChosenObjectView` instances for |selector_rows_|.
+constexpr int kChosenObjectSectionId = 1;
+// The column set id for separators between and after permissions section.
+constexpr int kSeparatorSectionId = 2;
+
+int GetSideMargin() {
+  return ChromeLayoutProvider::Get()
+      ->GetInsetsMetric(views::INSETS_DIALOG)
+      .left();
+}
+
+int GetImageButtonRightPadding() {
+  return ChromeLayoutProvider::Get()
+      ->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON)
+      .right();
+}
+
+}  // namespace
+
 PageInfoMainView::PageInfoMainView(PageInfo* presenter,
                                    PageInfoUiDelegate* ui_delegate,
                                    Profile* profile)
@@ -56,19 +79,13 @@ PageInfoMainView::PageInfoMainView(PageInfo* presenter,
   layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnId,
                               views::GridLayout::kFixedSize,
                               hover_list_spacing);
-  security_view_ = layout->AddView(std::make_unique<SecurityInformationView>(
-      layout_provider->GetInsetsMetric(views::INSETS_DIALOG).left()));
+  security_container_view_ = layout->AddView(CreateContainerView());
 
   layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
   permissions_view_ = layout->AddView(std::make_unique<views::View>());
 
   layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
-  layout->AddView(std::make_unique<views::Separator>());
-
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnId,
-                              views::GridLayout::kFixedSize,
-                              hover_list_spacing);
-  site_settings_view_ = layout->AddView(CreateSiteSettingsView());
+  site_settings_view_ = layout->AddView(CreateContainerView());
 
   if (!profile->IsGuestSession()) {
     layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnId,
@@ -160,20 +177,32 @@ void PageInfoMainView::SetPermissionInfo(
   if (!permissions_view_->children().empty())
     return;
 
+  if (permission_info_list.empty() && chosen_object_info_list.empty())
+    return;
+
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  const int hover_list_spacing =
+      layout_provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_SINGLE);
+
   views::GridLayout* layout = permissions_view_->SetLayoutManager(
       std::make_unique<views::GridLayout>());
-  const bool is_list_empty =
-      permission_info_list.empty() && chosen_object_info_list.empty();
-  LayoutPermissionsLikeUiRow(layout, is_list_empty, kPermissionColumnSetId);
+
+  views::ColumnSet* separator_set = layout->AddColumnSet(kSeparatorSectionId);
+  separator_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
+                           1.0, views::GridLayout::ColumnSize::kUsePreferred,
+                           views::GridLayout::kFixedSize, 0);
+
+  layout->StartRowWithPadding(
+      views::GridLayout::kFixedSize, kSeparatorSectionId,
+      views::GridLayout::kFixedSize, hover_list_spacing);
+  layout->AddView(std::make_unique<views::Separator>());
+  layout->AddPaddingRow(views::GridLayout::kFixedSize, hover_list_spacing);
+
+  LayoutPermissionsLikeUiRow(layout, kPermissionColumnSetId);
 
   // |ChosenObjectView| will layout itself, so just add the missing padding
   // here.
-  constexpr int kChosenObjectSectionId = 1;
-  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  const int list_item_padding =
-      layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
-  const int side_margin =
-      layout_provider->GetInsetsMetric(views::INSETS_DIALOG).left();
+  const int side_margin = GetSideMargin();
   views::ColumnSet* chosen_object_set =
       layout->AddColumnSet(kChosenObjectSectionId);
   chosen_object_set->AddPaddingColumn(views::GridLayout::kFixedSize,
@@ -182,9 +211,11 @@ void PageInfoMainView::SetPermissionInfo(
                                1.0,
                                views::GridLayout::ColumnSize::kUsePreferred,
                                views::GridLayout::kFixedSize, 0);
-  chosen_object_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                      side_margin);
-
+  // Adjust right padding by the delete button's insets to align all icons on
+  // the right side.
+  chosen_object_set->AddPaddingColumn(
+      views::GridLayout::kFixedSize,
+      side_margin - GetImageButtonRightPadding());
   int min_height_for_permission_rows = 0;
   for (const auto& permission : permission_info_list) {
     std::unique_ptr<PermissionSelectorRow> selector =
@@ -218,7 +249,7 @@ void PageInfoMainView::SetPermissionInfo(
     // make sure its height is the same as the permissions row's minimum height
     // plus padding.
     layout->StartRow(1.0, kChosenObjectSectionId,
-                     min_height_for_permission_rows + list_item_padding);
+                     min_height_for_permission_rows);
     // The view takes ownership of the object info.
     auto object_view = std::make_unique<ChosenObjectView>(
         std::move(object),
@@ -227,7 +258,12 @@ void PageInfoMainView::SetPermissionInfo(
     object_view->AddObserver(this);
     layout->AddView(std::move(object_view));
   }
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, list_item_padding);
+
+  layout->StartRowWithPadding(
+      views::GridLayout::kFixedSize, kSeparatorSectionId,
+      views::GridLayout::kFixedSize, hover_list_spacing);
+  layout->AddView(std::make_unique<views::Separator>());
+  layout->AddPaddingRow(views::GridLayout::kFixedSize, hover_list_spacing);
 
   layout->Layout(permissions_view_);
   PreferredSizeChanged();
@@ -237,113 +273,31 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
   std::unique_ptr<PageInfoUI::SecurityDescription> security_description =
       GetSecurityDescription(identity_info);
 
-  title_->SetText(security_description->summary);
+  title_->SetText(base::UTF8ToUTF16(identity_info.site_identity));
   SetSecurityDescriptionType(security_description->type);
-  int text_style = views::style::STYLE_PRIMARY;
-  switch (security_description->summary_style) {
-    case SecuritySummaryColor::RED:
-      text_style = STYLE_RED;
-      break;
-    case SecuritySummaryColor::GREEN:
-      text_style = STYLE_GREEN;
-      break;
-  }
-  title_->SetEnabledColor(views::style::GetColor(
-      *this, views::style::CONTEXT_DIALOG_TITLE, text_style));
 
-  if (identity_info.certificate) {
-    certificate_ = identity_info.certificate;
-
-    if (identity_info.show_ssl_decision_revoke_button) {
-      security_view_->AddResetDecisionsLabel(base::BindRepeating(
-          &PageInfoMainView::ResetDecisionsClicked, base::Unretained(this)));
-    }
-
-    // Show information about the page's certificate.
-    // The text of link to the Certificate Viewer varies depending on the
-    // validity of the Certificate.
-    const bool valid_identity =
-        (identity_info.identity_status != PageInfo::SITE_IDENTITY_STATUS_ERROR);
-    std::u16string tooltip;
-    if (valid_identity) {
-      tooltip = l10n_util::GetStringFUTF16(
-          IDS_PAGE_INFO_CERTIFICATE_VALID_LINK_TOOLTIP,
-          base::UTF8ToUTF16(certificate_->issuer().GetDisplayName()));
-    } else {
-      tooltip = l10n_util::GetStringUTF16(
-          IDS_PAGE_INFO_CERTIFICATE_INVALID_LINK_TOOLTIP);
-    }
-
-    // Add the Certificate Section.
-    const ui::ImageModel icon = PageInfoUI::GetCertificateIcon();
-    const std::u16string secondary_text = l10n_util::GetStringUTF16(
-        valid_identity ? IDS_PAGE_INFO_CERTIFICATE_VALID_PARENTHESIZED
-                       : IDS_PAGE_INFO_CERTIFICATE_INVALID_PARENTHESIZED);
-
-    std::u16string subtitle_text;
-    if (base::FeatureList::IsEnabled(features::kEvDetailsInPageInfo)) {
-      // Only show the EV certificate details if there are no errors or mixed
-      // content.
-      if (identity_info.identity_status ==
-              PageInfo::SITE_IDENTITY_STATUS_EV_CERT &&
-          identity_info.connection_status ==
-              PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED) {
-        // An EV cert is required to have an organization name and a country.
-        if (!certificate_->subject().organization_names.empty() &&
-            !certificate_->subject().country_name.empty()) {
-          subtitle_text = l10n_util::GetStringFUTF16(
-              IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED,
-              base::UTF8ToUTF16(certificate_->subject().organization_names[0]),
-              base::UTF8ToUTF16(certificate_->subject().country_name));
-        }
-      }
-    }
-
-    // If the certificate button has been added previously, remove the old one
-    // before recreating it. Re-adding it bumps it to the bottom of the
-    // container, but its unlikely that the user will notice, since other things
-    // are changing too.
-    if (certificate_button_) {
-      site_settings_view_->RemoveChildView(certificate_button_);
-      auto to_delete = std::make_unique<views::View*>(certificate_button_);
-    }
-    certificate_button_ = site_settings_view_->AddChildView(
+  security_container_view_->RemoveAllChildViews(true);
+  if (security_description->summary_style == SecuritySummaryColor::GREEN) {
+    connection_button_ = security_container_view_->AddChildView(
         std::make_unique<PageInfoHoverButton>(
             base::BindRepeating(
                 [](PageInfoMainView* view) {
-                  view->HandleMoreInfoRequest(view->certificate_button_);
+                  // TODO(olesiamarukhno): Open Connection page.
                 },
                 this),
-            icon, IDS_PAGE_INFO_CERTIFICATE, secondary_text,
-            VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER, tooltip,
-            subtitle_text, PageInfoUI::GetLaunchIcon())
+            PageInfoUI::GetConnectionSecureIcon(), 0, std::u16string(),
+            VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION,
+            std::u16string(), std::u16string(),
+            PageInfoUI::GetOpenSubpageIcon())
             .release());
+    connection_button_->SetTitleText(security_description->summary);
+  } else {
+    security_view_ = security_container_view_->AddChildView(
+        std::make_unique<SecurityInformationView>(GetSideMargin()));
+    UpdateSecurityView(identity_info);
   }
 
-  if (identity_info.show_change_password_buttons) {
-    security_view_->AddPasswordReuseButtons(
-        identity_info.safe_browsing_status,
-        base::BindRepeating(
-            [](PageInfoMainView* view) {
-              view->presenter_->OnChangePasswordButtonPressed();
-            },
-            this),
-        base::BindRepeating(
-            [](PageInfoMainView* view) {
-              view->GetWidget()->Close();
-              view->presenter_->OnAllowlistPasswordReuseButtonPressed();
-            },
-            this));
-  }
   details_text_ = security_description->details;
-  security_view_->SetIcon(PageInfoUI::GetConnectionNotSecureIcon());
-  security_view_->SetSummary(security_description->summary, text_style);
-  security_view_->SetDetails(
-      security_description->details,
-      base::BindRepeating(&PageInfoMainView::SecurityDetailsClicked,
-                          base::Unretained(this)));
-
-  Layout();
   PreferredSizeChanged();
 }
 
@@ -403,15 +357,11 @@ void PageInfoMainView::OnChosenObjectDeleted(
                                         info.chooser_object->value);
 }
 
-std::unique_ptr<views::View> PageInfoMainView::CreateSiteSettingsView() {
-  auto site_settings_view = std::make_unique<views::View>();
-  auto* box_layout =
-      site_settings_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical));
-  box_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStretch);
-
-  return site_settings_view;
+std::unique_ptr<views::View> PageInfoMainView::CreateContainerView() {
+  auto container_view = std::make_unique<views::View>();
+  container_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  return container_view;
 }
 
 void PageInfoMainView::HandleMoreInfoRequest(views::View* source) {
@@ -440,23 +390,9 @@ void PageInfoMainView::HandleMoreInfoRequestAsync(int view_id) {
 }
 
 void PageInfoMainView::LayoutPermissionsLikeUiRow(views::GridLayout* layout,
-                                                  bool is_list_empty,
                                                   int column_id) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  if (is_list_empty) {
-    // If nothing to show, just add padding above the separator and exit.
-    layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                          layout_provider->GetDistanceMetric(
-                              views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
-    return;
-  }
-
-  const int list_item_padding =
-      layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, list_item_padding);
-
-  const int side_margin =
-      layout_provider->GetInsetsMetric(views::INSETS_DIALOG).left();
+  const int side_margin = GetSideMargin();
   // A permissions row will have an icon, title, and combobox, with a padding
   // column on either side to match the dialog insets. Note the combobox can be
   // variable widths depending on the text inside.
@@ -526,8 +462,8 @@ gfx::Size PageInfoMainView::CalculatePreferredSize() const {
 
 std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
   auto header = std::make_unique<views::View>();
-  header->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(gfx::Insets(0, kIconColumnWidth));
+  auto* flex_layout =
+      header->SetLayoutManager(std::make_unique<views::FlexLayout>());
   title_ = header->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_TITLE));
   title_->SetProperty(
@@ -543,8 +479,111 @@ std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
                 views::Widget::ClosedReason::kCloseButtonClicked);
           },
           base::Unretained(this)));
+
+  // To align with other UI elements on the right side, adjust right padding by
+  // the value of the close button insets.
+  flex_layout->SetInteriorMargin(gfx::Insets(
+      0, kIconColumnWidth, 0, kIconColumnWidth - GetImageButtonRightPadding()));
   close_button->SetVisible(true);
   header->AddChildView(close_button.release());
 
   return header;
+}
+
+void PageInfoMainView::UpdateSecurityView(const IdentityInfo& identity_info) {
+  std::unique_ptr<PageInfoUI::SecurityDescription> security_description =
+      GetSecurityDescription(identity_info);
+
+  DCHECK(security_view_);
+  DCHECK_EQ(security_description->summary_style, SecuritySummaryColor::RED);
+  security_view_->SetIcon(PageInfoUI::GetConnectionNotSecureIcon());
+  security_view_->SetSummary(security_description->summary, STYLE_RED);
+  security_view_->SetDetails(
+      security_description->details,
+      base::BindRepeating(&PageInfoMainView::SecurityDetailsClicked,
+                          base::Unretained(this)));
+  if (identity_info.certificate) {
+    certificate_ = identity_info.certificate;
+
+    if (identity_info.show_ssl_decision_revoke_button) {
+      security_view_->AddResetDecisionsLabel(base::BindRepeating(
+          &PageInfoMainView::ResetDecisionsClicked, base::Unretained(this)));
+    }
+
+    // Show information about the page's certificate.
+    // The text of link to the Certificate Viewer varies depending on the
+    // validity of the Certificate.
+    const bool valid_identity =
+        (identity_info.identity_status != PageInfo::SITE_IDENTITY_STATUS_ERROR);
+    std::u16string tooltip;
+    if (valid_identity) {
+      tooltip = l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_CERTIFICATE_VALID_LINK_TOOLTIP,
+          base::UTF8ToUTF16(certificate_->issuer().GetDisplayName()));
+    } else {
+      tooltip = l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_CERTIFICATE_INVALID_LINK_TOOLTIP);
+    }
+
+    // Add the Certificate Section.
+    const ui::ImageModel icon = PageInfoUI::GetCertificateIcon();
+    const std::u16string secondary_text = l10n_util::GetStringUTF16(
+        valid_identity ? IDS_PAGE_INFO_CERTIFICATE_VALID_PARENTHESIZED
+                       : IDS_PAGE_INFO_CERTIFICATE_INVALID_PARENTHESIZED);
+
+    std::u16string subtitle_text;
+    if (base::FeatureList::IsEnabled(features::kEvDetailsInPageInfo)) {
+      // Only show the EV certificate details if there are no errors or mixed
+      // content.
+      if (identity_info.identity_status ==
+              PageInfo::SITE_IDENTITY_STATUS_EV_CERT &&
+          identity_info.connection_status ==
+              PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED) {
+        // An EV cert is required to have an organization name and a country.
+        if (!certificate_->subject().organization_names.empty() &&
+            !certificate_->subject().country_name.empty()) {
+          subtitle_text = l10n_util::GetStringFUTF16(
+              IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED,
+              base::UTF8ToUTF16(certificate_->subject().organization_names[0]),
+              base::UTF8ToUTF16(certificate_->subject().country_name));
+        }
+      }
+    }
+
+    // If the certificate button has been added previously, remove the old one
+    // before recreating it. Re-adding it bumps it to the bottom of the
+    // container, but its unlikely that the user will notice, since other
+    // things are changing too.
+    if (certificate_button_) {
+      site_settings_view_->RemoveChildView(certificate_button_);
+      auto to_delete = std::make_unique<views::View*>(certificate_button_);
+    }
+    certificate_button_ = site_settings_view_->AddChildView(
+        std::make_unique<PageInfoHoverButton>(
+            base::BindRepeating(
+                [](PageInfoMainView* view) {
+                  view->HandleMoreInfoRequest(view->certificate_button_);
+                },
+                this),
+            icon, IDS_PAGE_INFO_CERTIFICATE, secondary_text,
+            VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER, tooltip,
+            subtitle_text, PageInfoUI::GetLaunchIcon())
+            .release());
+  }
+
+  if (identity_info.show_change_password_buttons) {
+    security_view_->AddPasswordReuseButtons(
+        identity_info.safe_browsing_status,
+        base::BindRepeating(
+            [](PageInfoMainView* view) {
+              view->presenter_->OnChangePasswordButtonPressed();
+            },
+            this),
+        base::BindRepeating(
+            [](PageInfoMainView* view) {
+              view->GetWidget()->Close();
+              view->presenter_->OnAllowlistPasswordReuseButtonPressed();
+            },
+            this));
+  }
 }

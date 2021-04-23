@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/webauthn/webauthn_hover_button.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
@@ -24,7 +25,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
-#include "ui/views/vector_icons.h"
 
 namespace {
 
@@ -62,8 +62,8 @@ std::unique_ptr<WebAuthnHoverButton> CreateHoverButtonForListItem(
     case ItemType::kButton: {
       constexpr int kChevronSize = 8;
       auto chevron_image = std::make_unique<views::ImageView>();
-      chevron_image->SetImage(gfx::CreateVectorIcon(views::kSubmenuArrowIcon,
-                                                    kChevronSize, icon_color));
+      chevron_image->SetImage(gfx::CreateVectorIcon(
+          vector_icons::kSubmenuArrowIcon, kChevronSize, icon_color));
       secondary_view = std::move(chevron_image);
       break;
     }

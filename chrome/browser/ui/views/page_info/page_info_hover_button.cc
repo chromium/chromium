@@ -58,6 +58,10 @@ PageInfoHoverButton::PageInfoHoverButton(
 
   constexpr int kColumnSetId = 0;
   views::ColumnSet* columns = grid_layout->AddColumnSet(kColumnSetId);
+  // TODO(olesiamarukhno): Unify the column width through all views in the
+  // page info (PageInfoHoverButton, PermissionSelectorRow, ChosenObjectView,
+  // SecurityInformationView). Currently, it isn't same everywhere and it
+  // causes label text next to icon not to be aligned by 1 or 2px.
   columns->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER,
                      views::GridLayout::kFixedSize,
                      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
@@ -111,7 +115,9 @@ PageInfoHoverButton::PageInfoHoverButton(
     title_wrapper->SetCanProcessEventsWithinSubtree(false);
     grid_layout->AddView(std::move(title_wrapper));
   }
-  SetTitleText(title_resource_id, secondary_text);
+
+  if (title_resource_id)
+    SetTitleText(title_resource_id, secondary_text);
 
   if (!subtitle_text.empty()) {
     grid_layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
@@ -153,7 +159,12 @@ void PageInfoHoverButton::SetTitleText(int title_resource_id,
     title_->AddStyleRange(gfx::Range(offset, offset + secondary_text.length()),
                           style_info);
   }
-  title_->SizeToFit(0);
+  UpdateAccessibleName();
+}
+
+void PageInfoHoverButton::SetTitleText(const std::u16string& title_text) {
+  DCHECK(title_);
+  title_->SetText(title_text);
   UpdateAccessibleName();
 }
 

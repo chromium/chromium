@@ -37,6 +37,7 @@
 #include "components/payments/core/strings_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -59,7 +60,6 @@
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
-#include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 
 namespace payments {
@@ -281,8 +281,8 @@ class PaymentSheetRowBuilder {
       std::unique_ptr<views::View> content_view,
       std::unique_ptr<views::View> extra_content_view) {
     auto chevron = std::make_unique<views::ColorTrackingIconView>(
-        views::kSubmenuArrowIcon,
-        gfx::GetDefaultSizeOfVectorIcon(views::kSubmenuArrowIcon));
+        vector_icons::kSubmenuArrowIcon,
+        gfx::GetDefaultSizeOfVectorIcon(vector_icons::kSubmenuArrowIcon));
     chevron->SetCanProcessEventsWithinSubtree(false);
     std::unique_ptr<PaymentRequestRowView> section = CreatePaymentSheetRow(
         GetPressedCallback(), section_name_, accessible_content_,
