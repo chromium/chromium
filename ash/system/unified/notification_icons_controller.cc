@@ -33,7 +33,6 @@ namespace {
 // Maximum number of notification icons shown in the system tray button.
 constexpr int kMaxNotificationIconsShown = 2;
 constexpr int kNotificationIconSpacing = 1;
-constexpr gfx::Insets kSeparatorPadding(6, 4);
 
 const char kBatteryNotificationId[] = "battery";
 const char kUsbNotificationId[] = "usb-charger";
@@ -55,26 +54,6 @@ bool ShouldShowNotification(message_center::Notification* notification) {
              message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
 }
 
-class SeparatorTrayItemView : public TrayItemView {
- public:
-  explicit SeparatorTrayItemView(Shelf* shelf) : TrayItemView(shelf) {
-    views::Separator* separator = new views::Separator();
-    separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kSeparatorColor));
-    separator->SetBorder(views::CreateEmptyBorder(kSeparatorPadding));
-    AddChildView(separator);
-
-    set_use_scale_in_animation(false);
-  }
-  ~SeparatorTrayItemView() override = default;
-  SeparatorTrayItemView(const SeparatorTrayItemView&) = delete;
-  SeparatorTrayItemView& operator=(const SeparatorTrayItemView&) = delete;
-
-  // TrayItemView:
-  void HandleLocaleChange() override {}
-  const char* GetClassName() const override { return "SeparatorTrayItemView"; }
-};
-
 }  // namespace
 
 NotificationIconTrayItemView::NotificationIconTrayItemView(Shelf* shelf)
@@ -93,8 +72,7 @@ void NotificationIconTrayItemView::SetNotification(
   auto* theme = GetNativeTheme();
   gfx::Image masked_small_icon = notification->GenerateMaskedSmallIcon(
       kUnifiedTrayIconSize,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary),
+      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()),
       theme->GetSystemColor(
           ui::NativeTheme::kColorId_MessageCenterSmallImageMaskBackground),
       theme->GetSystemColor(
@@ -104,8 +82,7 @@ void NotificationIconTrayItemView::SetNotification(
   } else {
     image_view()->SetImage(gfx::CreateVectorIcon(
         message_center::kProductIcon, kUnifiedTrayIconSize,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary)));
+        TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
   }
 
   image_view()->SetTooltipText(notification->title());
@@ -245,6 +222,7 @@ void NotificationIconsController::OnSessionStateChanged(
     session_manager::SessionState state) {
   UpdateNotificationIcons();
   UpdateNotificationIndicators();
+  separator_->UpdateColor(state);
 }
 
 void NotificationIconsController::UpdateNotificationIcons() {

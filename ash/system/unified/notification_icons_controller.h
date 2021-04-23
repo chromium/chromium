@@ -23,6 +23,7 @@ class TrayContainer;
 class TrayItemView;
 class NotificationCounterView;
 class QuietModeView;
+class SeparatorTrayItemView;
 
 // Tray item view for notification icon shown in the tray.
 class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
@@ -139,7 +140,7 @@ class ASH_EXPORT NotificationIconsController
 
   NotificationCounterView* notification_counter_view_ = nullptr;
   QuietModeView* quiet_mode_view_ = nullptr;
-  TrayItemView* separator_ = nullptr;
+  SeparatorTrayItemView* separator_ = nullptr;
 
   base::ScopedObservation<UnifiedSystemTrayModel,
                           UnifiedSystemTrayModel::Observer>
