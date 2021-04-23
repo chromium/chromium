@@ -106,7 +106,11 @@ class BaseOptimizationTargetModelExecutorTest : public testing::Test {
     model_observer_tracker_ = std::make_unique<ModelObserverTracker>();
   }
 
-  void TearDown() override { model_executor_.reset(); }
+  void TearDown() override {
+    // TODO(crbug/1202253): Remove the run until idle.
+    RunUntilIdle();
+    model_executor_.reset();
+  }
 
   void CreateModelExecutor() {
     if (model_executor_)
@@ -227,6 +231,16 @@ TEST_F(OptimizationTargetModelExecutorTest,
           optimization_guide::GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
       0, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutor.TaskSchedulingLatency." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecutor.ModelAvailableToLoad." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      false, 1);
 }
 
 TEST_F(OptimizationTargetModelExecutorTest, ExecuteWithLoadedModel) {
@@ -267,6 +281,16 @@ TEST_F(OptimizationTargetModelExecutorTest, ExecuteWithLoadedModel) {
           optimization_guide::GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
       1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutor.TaskSchedulingLatency." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecutor.ModelAvailableToLoad." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      true, 1);
   // The run count histogram is only recorded on destruction.
   ResetModelExecutor();
   histogram_tester.ExpectUniqueSample(
@@ -328,6 +352,16 @@ TEST_F(OptimizationTargetModelExecutorTest, ExecuteTwiceWithLoadedModel) {
           optimization_guide::GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
       2);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutor.TaskSchedulingLatency." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      2);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecutor.ModelAvailableToLoad." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      true, 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.TimeSincePreviousRun." +
           optimization_guide::GetStringNameForOptimizationTarget(
@@ -393,6 +427,7 @@ class OptimizationTargetModelExecutorWithModelLoadingTest
 
 TEST_F(OptimizationTargetModelExecutorWithModelLoadingTest,
        LoadModelFileForEachExecution) {
+  base::HistogramTester histogram_tester;
   CreateModelExecutor();
 
   proto::Any any_metadata;
@@ -432,6 +467,38 @@ TEST_F(OptimizationTargetModelExecutorWithModelLoadingTest,
   RunUntilIdle();
   EXPECT_FALSE(model_executor()->HasLoadedModel());
   EXPECT_FALSE(model_executor()->supported_features_for_loaded_model());
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutor.TaskSchedulingLatency." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecutor.ModelAvailableToLoad." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      true, 1);
+
+  // Run again and expect a second model load histogram count.
+  run_loop = std::make_unique<base::RunLoop>();
+  model_executor()->ExecuteModelWithInput(
+      base::BindOnce(
+          [](base::RunLoop* run_loop, TestModelExecutor* model_executor,
+             const base::Optional<std::vector<float>>& output) {
+            EXPECT_TRUE(output.has_value());
+            EXPECT_TRUE(model_executor->HasLoadedModel());
+            EXPECT_TRUE(model_executor->supported_features_for_loaded_model());
+            run_loop->Quit();
+          },
+          run_loop.get(), model_executor()),
+      input);
+  run_loop->Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecutor.ModelAvailableToLoad." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      true, 2);
 }
 
 }  // namespace optimization_guide
