@@ -224,6 +224,8 @@ WebViewImpl* TouchActionTest::SetupTest(String file) {
   // Set size to enable hit testing, and avoid line wrapping for consistency
   // with browser.
   web_view->MainFrameViewWidget()->Resize(gfx::Size(900, 1600));
+  web_view->MainFrameWidget()->UpdateLifecycle(WebLifecycleUpdate::kAll,
+                                               DocumentUpdateReason::kTest);
 
   // Scroll to verify the code properly transforms windows to client co-ords.
   const int kScrollOffset = 100;

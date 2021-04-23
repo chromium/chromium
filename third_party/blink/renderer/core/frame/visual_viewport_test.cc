@@ -243,6 +243,7 @@ TEST_P(VisualViewportTest, TestResize) {
   WebView()->ResizeWithBrowserControls(
       gfx::Size(320, 240), gfx::Size(320, 240),
       WebView()->GetBrowserControls().Params());
+  UpdateAllLifecyclePhases();
 
   NavigateTo("about:blank");
   ForceFullCompositingUpdate();
@@ -259,6 +260,7 @@ TEST_P(VisualViewportTest, TestResize) {
   WebView()->MainFrameViewWidget()->Resize(web_view_size);
   WebView()->ResizeWithBrowserControls(
       web_view_size, web_view_size, WebView()->GetBrowserControls().Params());
+  UpdateAllLifecyclePhases();
   EXPECT_EQ(web_view_size, WebView()->MainFrameViewWidget()->Size());
   EXPECT_EQ(web_view_size, gfx::Size(visual_viewport.Size()));
 
@@ -285,6 +287,7 @@ TEST_P(VisualViewportTest, TestVisibleContentRect) {
   WebView()->ResizeWithBrowserControls(
       gfx::Size(size), gfx::Size(size),
       WebView()->GetBrowserControls().Params());
+  UpdateAllLifecyclePhases();
 
   // Scroll layout viewport and verify visibleContentRect.
   WebView()->MainFrameImpl()->SetScrollOffset(gfx::ScrollOffset(0, 50));
@@ -317,6 +320,7 @@ TEST_P(VisualViewportTest, TestResizeAtFullyScrolledPreservesViewportLocation) {
   WebView()->ResizeWithBrowserControls(
       gfx::Size(800, 600), gfx::Size(800, 600),
       WebView()->GetBrowserControls().Params());
+  UpdateAllLifecyclePhases();
 
   RegisterMockedHttpURLLoad("content-width-1000.html");
   NavigateTo(base_url_ + "content-width-1000.html");
@@ -345,6 +349,7 @@ TEST_P(VisualViewportTest, TestResizeAtFullyScrolledPreservesViewportLocation) {
   WebView()->ResizeWithBrowserControls(
       gfx::Size(700, 550), gfx::Size(800, 600),
       WebView()->GetBrowserControls().Params());
+  UpdateAllLifecyclePhases();
 
   EXPECT_EQ(expected_location,
             frame_view.GetScrollableArea()->VisibleContentRect().Location());
@@ -352,6 +357,7 @@ TEST_P(VisualViewportTest, TestResizeAtFullyScrolledPreservesViewportLocation) {
   WebView()->ResizeWithBrowserControls(
       gfx::Size(800, 600), gfx::Size(800, 600),
       WebView()->GetBrowserControls().Params());
+  UpdateAllLifecyclePhases();
 
   EXPECT_EQ(expected_location,
             frame_view.GetScrollableArea()->VisibleContentRect().Location());
@@ -1335,6 +1341,7 @@ static ScrollOffset expectedMaxLayoutViewportScrollOffset(
 TEST_P(VisualViewportTest, TestBrowserControlsAdjustment) {
   InitializeWithAndroidSettings();
   WebView()->ResizeWithBrowserControls(gfx::Size(500, 450), 20, 0, false);
+  UpdateAllLifecyclePhases();
 
   RegisterMockedHttpURLLoad("content-width-1000.html");
   NavigateTo(base_url_ + "content-width-1000.html");
@@ -1388,6 +1395,7 @@ TEST_P(VisualViewportTest, TestBrowserControlsAdjustment) {
 TEST_P(VisualViewportTest, TestBrowserControlsAdjustmentWithScale) {
   InitializeWithAndroidSettings();
   WebView()->ResizeWithBrowserControls(gfx::Size(500, 450), 20, 0, false);
+  UpdateAllLifecyclePhases();
 
   RegisterMockedHttpURLLoad("content-width-1000.html");
   NavigateTo(base_url_ + "content-width-1000.html");
@@ -1480,6 +1488,7 @@ TEST_P(VisualViewportTest, TestBrowserControlsAdjustmentAndResize) {
       gfx::Size(500, visual_viewport_height - browser_controls_height),
       gfx::Size(500, visual_viewport_height - browser_controls_height),
       controls);
+  UpdateAllLifecyclePhases();
   WebView()->GetBrowserControls().SetShownRatio(1, 0);
 
   RegisterMockedHttpURLLoad("content-width-1000.html");
@@ -1527,6 +1536,7 @@ TEST_P(VisualViewportTest, TestBrowserControlsAdjustmentAndResize) {
   WebView()->ResizeWithBrowserControls(gfx::Size(500, visual_viewport_height),
                                        gfx::Size(500, visual_viewport_height),
                                        controls);
+  UpdateAllLifecyclePhases();
 
   EXPECT_EQ(IntSize(500, visual_viewport_height), visual_viewport.Size());
   EXPECT_EQ(FloatSize(250, visual_viewport_height / page_scale),
@@ -1558,6 +1568,7 @@ TEST_P(VisualViewportTest, TestBrowserControlsShrinkAdjustmentAndResize) {
   // Initialize with browser controls hidden and not shrinking the Blink size.
   WebView()->ResizeWithBrowserControls(gfx::Size(500, visual_viewport_height),
                                        20, 0, false);
+  UpdateAllLifecyclePhases();
   WebView()->GetBrowserControls().SetShownRatio(0, 0);
 
   RegisterMockedHttpURLLoad("content-width-1000.html");
@@ -1605,6 +1616,7 @@ TEST_P(VisualViewportTest, TestBrowserControlsShrinkAdjustmentAndResize) {
   WebView()->ResizeWithBrowserControls(
       gfx::Size(500, visual_viewport_height - browser_controls_height), 20, 0,
       true);
+  UpdateAllLifecyclePhases();
 
   EXPECT_EQ(IntSize(500, visual_viewport_height - browser_controls_height),
             visual_viewport.Size());
@@ -1624,10 +1636,12 @@ TEST_P(VisualViewportTest, TestTopControlHidingResizeDoesntClampMainFrame) {
   InitializeWithAndroidSettings();
   WebView()->ResizeWithBrowserControls(
       gfx::Size(WebView()->MainFrameViewWidget()->Size()), 500, 0, false);
+  UpdateAllLifecyclePhases();
   WebView()->MainFrameViewWidget()->ApplyViewportChangesForTesting(
       {gfx::ScrollOffset(), gfx::Vector2dF(), 1, false, 1, 0,
        cc::BrowserControlsState::kBoth});
   WebView()->ResizeWithBrowserControls(gfx::Size(1000, 1000), 500, 0, true);
+  UpdateAllLifecyclePhases();
 
   RegisterMockedHttpURLLoad("content-width-1000.html");
   NavigateTo(base_url_ + "content-width-1000.html");
@@ -1646,6 +1660,7 @@ TEST_P(VisualViewportTest, TestTopControlHidingResizeDoesntClampMainFrame) {
 
   // Now send the resize, make sure the scroll offset doesn't change.
   WebView()->ResizeWithBrowserControls(gfx::Size(1000, 1500), 500, 0, false);
+  UpdateAllLifecyclePhases();
   EXPECT_EQ(500, frame_view.LayoutViewport()->GetScrollOffset().Height());
 }
 
@@ -1673,6 +1688,7 @@ TEST_P(VisualViewportTest,
        TestScrollbarsAttachedWhenHideScrollbarsSettingIsFalse) {
   InitializeWithAndroidSettings();
   WebView()->MainFrameViewWidget()->Resize(gfx::Size(100, 150));
+  UpdateAllLifecyclePhases();
   NavigateTo("about:blank");
 
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
@@ -2060,9 +2076,9 @@ TEST_P(VisualViewportTest, ResizeWithScrollAnchoring) {
   LocalFrameView& frame_view = *WebView()->MainFrameImpl()->GetFrameView();
   frame_view.LayoutViewport()->SetScrollOffset(
       ScrollOffset(700, 500), mojom::blink::ScrollType::kProgrammatic);
-  UpdateAllLifecyclePhases();
 
   WebView()->MainFrameViewWidget()->Resize(gfx::Size(800, 300));
+  UpdateAllLifecyclePhases();
   EXPECT_EQ(ScrollOffset(700, 200),
             frame_view.LayoutViewport()->GetScrollOffset());
 }
@@ -2083,6 +2099,7 @@ TEST_P(VisualViewportTest, ResizeCompositedAndFixedBackground) {
 
   web_view_impl->ResizeWithBrowserControls(gfx::Size(page_width, page_height),
                                            browser_controls_height, 0, false);
+  UpdateAllLifecyclePhases();
 
   RegisterMockedHttpURLLoad("http://example.com/foo.png", "white-1x1.png");
   WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
@@ -2116,6 +2133,7 @@ TEST_P(VisualViewportTest, ResizeCompositedAndFixedBackground) {
 
   web_view_impl->ResizeWithBrowserControls(
       gfx::Size(page_width, smallest_height), browser_controls_height, 0, true);
+  UpdateAllLifecyclePhases();
 
   // The layout size should not have changed.
   ASSERT_EQ(page_width, document->View()->GetLayoutSize().Width());
@@ -2127,6 +2145,7 @@ TEST_P(VisualViewportTest, ResizeCompositedAndFixedBackground) {
 
   web_view_impl->ResizeWithBrowserControls(gfx::Size(page_width, page_height),
                                            browser_controls_height, 0, true);
+  UpdateAllLifecyclePhases();
 
   // The background layer's size should change again.
   EXPECT_EQ(page_width, background_layer->Size().width());
@@ -2157,6 +2176,7 @@ TEST_P(VisualViewportTest, ResizeNonCompositedAndFixedBackground) {
 
   web_view_impl->ResizeWithBrowserControls(gfx::Size(page_width, page_height),
                                            browser_controls_height, 0, false);
+  UpdateAllLifecyclePhases();
 
   RegisterMockedHttpURLLoad("http://example.com/foo.png", "white-1x1.png");
   WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
@@ -2180,6 +2200,7 @@ TEST_P(VisualViewportTest, ResizeNonCompositedAndFixedBackground) {
   document->View()->SetTracksRasterInvalidations(true);
   web_view_impl->ResizeWithBrowserControls(
       gfx::Size(page_width, smallest_height), browser_controls_height, 0, true);
+  UpdateAllLifecyclePhases();
 
   // The layout size should not have changed.
   ASSERT_EQ(page_width, document->View()->GetLayoutSize().Width());
@@ -2200,6 +2221,7 @@ TEST_P(VisualViewportTest, ResizeNonCompositedAndFixedBackground) {
   document->View()->SetTracksRasterInvalidations(true);
   web_view_impl->ResizeWithBrowserControls(gfx::Size(page_width, page_height),
                                            browser_controls_height, 0, true);
+  UpdateAllLifecyclePhases();
 
   // Fixed-attachment background is affected by viewport size.
   EXPECT_FALSE(MainGraphicsLayerHasRasterInvalidations(document));
@@ -2227,6 +2249,7 @@ TEST_P(VisualViewportTest, ResizeNonFixedBackgroundNoLayoutOrInvalidation) {
 
   web_view_impl->ResizeWithBrowserControls(gfx::Size(page_width, page_height),
                                            browser_controls_height, 0, false);
+  UpdateAllLifecyclePhases();
 
   RegisterMockedHttpURLLoad("http://example.com/foo.png", "white-1x1.png");
   WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
@@ -2264,6 +2287,7 @@ TEST_P(VisualViewportTest, ResizeNonFixedBackgroundNoLayoutOrInvalidation) {
   document->View()->SetTracksRasterInvalidations(true);
   web_view_impl->ResizeWithBrowserControls(
       gfx::Size(page_width, smallest_height), browser_controls_height, 0, true);
+  UpdateAllLifecyclePhases();
 
   // The layout size should not have changed.
   ASSERT_EQ(page_width, document->View()->GetLayoutSize().Width());
@@ -2290,6 +2314,7 @@ TEST_P(VisualViewportTest, InvalidateLayoutViewWhenDocumentSmallerThanView) {
 
   web_view_impl->ResizeWithBrowserControls(gfx::Size(page_width, page_height),
                                            browser_controls_height, 0, true);
+  UpdateAllLifecyclePhases();
 
   frame_test_helpers::LoadFrame(web_view_impl->MainFrameImpl(), "about:blank");
   UpdateAllLifecyclePhases();
@@ -2300,6 +2325,7 @@ TEST_P(VisualViewportTest, InvalidateLayoutViewWhenDocumentSmallerThanView) {
   document->View()->SetTracksRasterInvalidations(true);
   web_view_impl->ResizeWithBrowserControls(
       gfx::Size(page_width, largest_height), browser_controls_height, 0, false);
+  UpdateAllLifecyclePhases();
 
   // The layout size should not have changed.
   ASSERT_EQ(page_width, document->View()->GetLayoutSize().Width());
@@ -2324,6 +2350,7 @@ TEST_P(VisualViewportTest, InvalidateLayoutViewWhenDocumentSmallerThanView) {
   document->View()->SetTracksRasterInvalidations(true);
   web_view_impl->ResizeWithBrowserControls(gfx::Size(page_width, page_height),
                                            browser_controls_height, 0, false);
+  UpdateAllLifecyclePhases();
 
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     // No raster invalidation is needed because of no change within the root
@@ -2391,6 +2418,7 @@ TEST_P(VisualViewportTest, EnsureEffectNodeForScrollbars) {
 TEST_P(VisualViewportTest, AutoResizeNoHeightUsesMinimumHeight) {
   InitializeWithDesktopSettings();
   WebView()->ResizeWithBrowserControls(gfx::Size(0, 0), 0, 0, false);
+  UpdateAllLifecyclePhases();
   WebView()->EnableAutoResizeMode(gfx::Size(25, 25), gfx::Size(100, 100));
   WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
   frame_test_helpers::LoadHTMLString(WebView()->MainFrameImpl(),
@@ -2818,6 +2846,7 @@ TEST_P(VisualViewportTest, SetLocationBeforePrePaint) {
 TEST_P(VisualViewportTest, ScrollbarGeometryOnSizeChange) {
   InitializeWithAndroidSettings();
   WebView()->MainFrameViewWidget()->Resize(gfx::Size(100, 100));
+  UpdateAllLifecyclePhases();
   RegisterMockedHttpURLLoad("content-width-1000.html");
   NavigateTo(base_url_ + "content-width-1000.html");
 
@@ -2836,7 +2865,7 @@ TEST_P(VisualViewportTest, ScrollbarGeometryOnSizeChange) {
 
   // Simulate hiding of the top controls.
   WebView()->MainFrameViewWidget()->Resize(gfx::Size(100, 120));
-  UpdateAllLifecyclePhasesExceptPaint();
+  UpdateAllLifecyclePhases();
   EXPECT_FALSE(GetFrame()->View()->VisualViewportNeedsRepaint());
   UpdateAllLifecyclePhases();
   EXPECT_EQ(IntSize(100, 120), visual_viewport.Size());

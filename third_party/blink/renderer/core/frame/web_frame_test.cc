@@ -2011,6 +2011,7 @@ TEST_F(WebFrameTest, SetForceZeroLayoutHeightWorksWithWrapContentMode) {
   EXPECT_EQ(gfx::Size(), scroll_container->Size());
 
   web_view_helper.Resize(gfx::Size(viewport_width, 0));
+  UpdateAllLifecyclePhases(web_view_helper.GetWebView());
   EXPECT_EQ(IntSize(viewport_width, 0), frame_view->GetLayoutSize());
   EXPECT_EQ(gfx::Size(viewport_width, 0), scroll_container->Size());
 
@@ -2020,6 +2021,7 @@ TEST_F(WebFrameTest, SetForceZeroLayoutHeightWorksWithWrapContentMode) {
   // affected.
   web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
   EXPECT_FALSE(frame_view->NeedsLayout());
+  UpdateAllLifecyclePhases(web_view_helper.GetWebView());
   EXPECT_EQ(IntSize(viewport_width, 0), frame_view->GetLayoutSize());
   EXPECT_EQ(gfx::Size(viewport_width, viewport_height),
             scroll_container->Size());
@@ -3153,6 +3155,7 @@ TEST_F(WebFrameTest, updateOverlayScrollbarLayers)
   EXPECT_TRUE(view->LayoutViewport()->LayerForVerticalScrollbar());
 
   web_view_helper.Resize(gfx::Size(view_width * 10, view_height * 10));
+  UpdateAllLifecyclePhases(web_view_helper.GetWebView());
   EXPECT_FALSE(view->LayoutViewport()->LayerForHorizontalScrollbar());
   EXPECT_FALSE(view->LayoutViewport()->LayerForVerticalScrollbar());
 }
@@ -11802,6 +11805,7 @@ TEST_F(WebFrameTest, RootLayerMinimumHeight) {
   web_view->ResizeWithBrowserControls(
       gfx::Size(kViewportWidth, kViewportHeight), kBrowserControlsHeight, 0,
       false);
+  UpdateAllLifecyclePhases(web_view);
 
   EXPECT_EQ(kViewportHeight,
             compositor->RootLayer()->BoundingBoxForCompositing().Height());

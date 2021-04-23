@@ -471,6 +471,7 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
 
     WebView().StopDeferringMainFrameUpdate();
     FrameWidgetBase()->UpdateCompositorViewportRect(gfx::Rect(200, 100));
+    Compositor().BeginFrame();
 
     auto* root_layer =
         FrameWidgetBase()->LayerTreeHostForTesting()->root_layer();

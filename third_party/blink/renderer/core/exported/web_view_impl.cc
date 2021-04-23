@@ -1189,10 +1189,9 @@ void WebViewImpl::ResizeViewWhileAnchored(
 
   fullscreen_controller_->UpdateSize();
 
-  // Update lifecycle phases immediately to recalculate the minimum scale limit
-  // for rotation anchoring, and to make sure that no lifecycle states are
-  // stale if this WebView is embedded in another one.
-  MainFrameWidget()->UpdateLifecycle(WebLifecycleUpdate::kAll,
+  // Page scale constraints may need to be updated; running layout now will
+  // do that.
+  MainFrameWidget()->UpdateLifecycle(WebLifecycleUpdate::kLayout,
                                      DocumentUpdateReason::kSizeChange);
 }
 

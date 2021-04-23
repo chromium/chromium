@@ -45,10 +45,6 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
     web_view_helper_->Initialize(nullptr, nullptr,
                                  &ConfigureCompositingWebView);
     web_view_helper_->Resize(gfx::Size(200, 200));
-
-    // The paint artifact compositor should have been created as part of the
-    // web view helper setup.
-    DCHECK(paint_artifact_compositor());
   }
 
   void TearDown() override { web_view_helper_.reset(); }
@@ -116,6 +112,7 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
 INSTANTIATE_PAINT_TEST_SUITE_P(CompositingTest);
 
 TEST_P(CompositingTest, DisableAndEnableAcceleratedCompositing) {
+  UpdateAllLifecyclePhases();
   auto* settings = GetLocalFrameView()->GetFrame().GetSettings();
   size_t num_layers = RootCcLayer()->children().size();
   EXPECT_GT(num_layers, 1u);

@@ -903,14 +903,8 @@ void PrepareFrameAndViewForPrint::ResizeForPrinting() {
   if (IsPrintingNodeOrPdfFrame(frame(), node_to_print_))
     return;
 
-  // TODO(szager): PrintBegin()/PrintEnd() do a lot of unnecessary work here,
-  // but they serve the purpose of preventing scroll anchoring adjustments while
-  // the view is resizing. With some refactoring, the call to Resize() could be
-  // relocated to happen after PrintBegin() in the caller.
   prev_view_size_ = frame()->LocalRoot()->FrameWidget()->Size();
-  frame()->LocalRoot()->PrintBegin(web_print_params_, node_to_print_);
   frame()->LocalRoot()->FrameWidget()->Resize(print_layout_size);
-  frame()->LocalRoot()->PrintEnd();
 }
 
 void PrepareFrameAndViewForPrint::StartPrinting() {
