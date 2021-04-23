@@ -188,8 +188,8 @@ public class SearchActivity extends AsyncInitializationActivity
                 SearchEngineLogoUtils.getInstance(), /*launchAssistanceSettingsAction=*/() -> {},
                 /*pageInfoAction=*/(tab, permission) -> {},
                 /*spareRendererCreator=*/(profile) -> {}, IntentHandler::bringTabToFront,
-                /*saveOfflineButtonState=*/(tab) -> false, TabWindowManagerSingleton::getInstance,
-                /*bookmarkState=*/(url) -> false);
+                /*saveOfflineButtonState=*/(tab) -> false, /*omniboxUma*/(url, transition) -> {},
+                TabWindowManagerSingleton::getInstance, /*bookmarkState=*/(url) -> false);
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         mLocationBarCoordinator.getOmniboxStub().addUrlFocusChangeListener(this);

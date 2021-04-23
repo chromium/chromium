@@ -6,7 +6,6 @@ include_rules = [
 
   "+chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/locale/LocaleManager.java",
-  "+chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPageUma.java",
 
   "+base/android/java/src/org/chromium/base",
   "+chrome/browser/feature_engagement",

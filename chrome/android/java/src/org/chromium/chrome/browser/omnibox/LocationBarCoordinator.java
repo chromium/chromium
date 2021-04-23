@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.lens.LensFeature;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.omnibox.LocationBarMediator.OmniboxUma;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.SaveOfflineButtonState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
@@ -120,6 +121,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      * @param spareRendererCallback Callback to warm up a spare renderer.
      * @param bringTabToFrontCallback Callback to bring the browser foreground and switch to a tab.
      * @param saveOfflineButtonState Whether the 'save offline' button should be enabled.
+     * @param omniboxUma Interface for logging UMA histogram.
      * @param tabWindowManagerSupplier Supplier of glue-level TabWindowManager object.
      * @param bookmarkState State of a URL bookmark state.
      */
@@ -138,7 +140,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             @NonNull Runnable launchAssistanceSettingsAction,
             @NonNull PageInfoAction pageInfoAction, @NonNull Callback<Profile> spareRendererCreator,
             @NonNull Callback<Tab> bringTabToFrontCallback,
-            @NonNull SaveOfflineButtonState saveOfflineButtonState,
+            @NonNull SaveOfflineButtonState saveOfflineButtonState, @NonNull OmniboxUma omniboxUma,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
@@ -157,7 +159,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 AppHooks.get().getLocaleManager(), mTemplateUrlServiceSupplier, backKeyBehavior,
                 windowAndroid, isTablet() && isTabletLayout(), searchEngineLogoUtils,
                 LensController.getInstance(), launchAssistanceSettingsAction,
-                saveOfflineButtonState);
+                saveOfflineButtonState, omniboxUma);
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),

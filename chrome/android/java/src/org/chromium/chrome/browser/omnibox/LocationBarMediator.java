@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
@@ -94,6 +93,16 @@ class LocationBarMediator
         boolean isEnabled(Tab tab);
     }
 
+    /** Uma methods for omnibox. */
+    public interface OmniboxUma {
+        /**
+         * Record the NTP navigation events on omnibox.
+         * @param url The URL to which the user navigated.
+         * @param transition The transition type of the navigation.
+         */
+        void recordNavigationOnNtp(String url, int transition);
+    }
+
     private final Property<LocationBarMediator, Float> mUrlFocusChangeFractionProperty =
             new Property<LocationBarMediator, Float>(Float.class, "") {
                 @Override
@@ -147,6 +156,7 @@ class LocationBarMediator
     private final Rect mRootViewBounds = new Rect();
     private final SearchEngineLogoUtils mSearchEngineLogoUtils;
     private final SaveOfflineButtonState mSaveOfflineButtonState;
+    private final OmniboxUma mOmniboxUma;
 
     private boolean mNativeInitialized;
     private boolean mUrlFocusedFromFakebox;
@@ -175,7 +185,8 @@ class LocationBarMediator
             boolean isTablet, @NonNull SearchEngineLogoUtils searchEngineLogoUtils,
             @NonNull LensController lensController,
             @NonNull Runnable launchAssistanceSettingsAction,
-            @NonNull SaveOfflineButtonState saveOfflineButtonState) {
+            @NonNull SaveOfflineButtonState saveOfflineButtonState,
+            @NonNull OmniboxUma omniboxUma) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -197,6 +208,7 @@ class LocationBarMediator
         mShouldShowButtonsWhenUnfocused = isTablet;
         mLensController = lensController;
         mSaveOfflineButtonState = saveOfflineButtonState;
+        mOmniboxUma = omniboxUma;
     }
 
     /**
@@ -431,7 +443,7 @@ class LocationBarMediator
 
         if (currentTab != null
                 && (currentTab.isNativePage() || UrlUtilities.isNTPUrl(currentTab.getUrl()))) {
-            NewTabPageUma.recordOmniboxNavigation(url, transition);
+            mOmniboxUma.recordNavigationOnNtp(url, transition);
             // Passing in an empty string should not do anything unless the user is at the NTP.
             // Since the NTP has no url, pressing enter while clicking on the URL bar should refresh
             // the page as it does when you click and press enter on any other site.

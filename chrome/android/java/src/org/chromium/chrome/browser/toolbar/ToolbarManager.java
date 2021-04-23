@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -511,7 +512,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     toolbarPageInfo::show,
                     WarmupManager.getInstance()::createSpareRenderProcessHost,
                     IntentHandler::bringTabToFront, DownloadUtils::isAllowedToDownloadPage,
-                    TabWindowManagerSingleton::getInstance,
+                    NewTabPageUma::recordOmniboxNavigation, TabWindowManagerSingleton::getInstance,
                     (url) -> mBookmarkBridgeSupplier.hasValue()
                             && mBookmarkBridgeSupplier.get().isBookmarked(url));
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
