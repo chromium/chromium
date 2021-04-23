@@ -779,6 +779,8 @@ bool MessagePumpForIO::WaitForIOCompletion(DWORD timeout) {
   if (ProcessInternalIOItem(item))
     return true;
 
+  auto scoped_do_native_work = run_state_->delegate->BeginNativeWork();
+
   TRACE_EVENT(
       "base,toplevel", "IOHandler::OnIOCompleted",
       [&](perfetto::EventContext ctx) {
@@ -788,7 +790,6 @@ bool MessagePumpForIO::WaitForIOCompletion(DWORD timeout) {
                           item.handler->io_handler_location())));
       });
 
-  auto scoped_do_native_work = run_state_->delegate->BeginNativeWork();
   item.handler->OnIOCompleted(item.context, item.bytes_transfered, item.error);
 
   return true;
