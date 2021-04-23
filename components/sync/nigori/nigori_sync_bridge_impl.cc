@@ -224,22 +224,6 @@ bool IsValidEncryptedTypesTransition(bool old_encrypt_everything,
   return specifics.encrypt_everything() || !old_encrypt_everything;
 }
 
-// Updates |*current_encrypt_everything| if needed. Returns true if its value
-// was changed.
-bool UpdateEncryptedTypes(const NigoriSpecifics& specifics,
-                          bool* current_encrypt_everything) {
-  DCHECK(current_encrypt_everything);
-  DCHECK(
-      IsValidEncryptedTypesTransition(*current_encrypt_everything, specifics));
-  // TODO(crbug.com/922900): more logic is to be added here, once we support
-  // enforced encryption for individual datatypes.
-  if (*current_encrypt_everything == specifics.encrypt_everything()) {
-    return false;
-  }
-  *current_encrypt_everything = specifics.encrypt_everything();
-  return true;
-}
-
 // Packs explicit passphrase key in order to persist it. Returns empty string in
 // case of errors.
 std::string PackExplicitPassphraseKey(const Encryptor& encryptor,
@@ -326,13 +310,6 @@ std::vector<std::string> UnpackKeystoreKeys(
     }
   }
   return keystore_keys;
-}
-
-ModelTypeSet GetEncryptedTypes(bool encrypt_everything) {
-  if (encrypt_everything) {
-    return EncryptableUserTypes();
-  }
-  return AlwaysEncryptedUserTypes();
 }
 
 }  // namespace
@@ -508,8 +485,8 @@ void NigoriSyncBridgeImpl::NotifyInitialStateToObservers() {
   // completeness of first sync cycle (which happens before Init() call).
   // TODO(crbug.com/922900): try to avoid double notification (second one can
   // happen during UpdateLocalState() call).
-  broadcasting_observer_->OnEncryptedTypesChanged(
-      GetEncryptedTypes(state_.encrypt_everything), state_.encrypt_everything);
+  broadcasting_observer_->OnEncryptedTypesChanged(state_.GetEncryptedTypes(),
+                                                  state_.encrypt_everything);
   broadcasting_observer_->OnCryptographerStateChanged(
       state_.cryptographer.get(), state_.pending_keys.has_value());
 
@@ -797,12 +774,13 @@ base::Optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
     return ModelError(FROM_HERE, "Invalid encrypted types transition.");
   }
 
+  const ModelTypeSet encrypted_types_before_update = state_.GetEncryptedTypes();
+
+  state_.encrypt_everything = specifics.encrypt_everything();
+
   const bool passphrase_type_changed =
       UpdatePassphraseType(new_passphrase_type, &state_.passphrase_type);
   DCHECK_NE(state_.passphrase_type, NigoriSpecifics::UNKNOWN);
-
-  const bool encrypted_types_changed =
-      UpdateEncryptedTypes(specifics, &state_.encrypt_everything);
 
   if (specifics.has_custom_passphrase_time()) {
     state_.custom_passphrase_time =
@@ -838,13 +816,12 @@ base::Optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
         *ProtoPassphraseInt32ToEnum(state_.passphrase_type),
         GetExplicitPassphraseTime());
   }
-  if (encrypted_types_changed) {
-    // Currently the only way to change encrypted types is to enable
-    // encrypt_everything.
-    DCHECK(state_.encrypt_everything);
-    broadcasting_observer_->OnEncryptedTypesChanged(EncryptableUserTypes(),
+
+  if (encrypted_types_before_update != state_.GetEncryptedTypes()) {
+    broadcasting_observer_->OnEncryptedTypesChanged(state_.GetEncryptedTypes(),
                                                     state_.encrypt_everything);
   }
+
   broadcasting_observer_->OnCryptographerStateChanged(
       state_.cryptographer.get(), state_.pending_keys.has_value());
 
@@ -1035,7 +1012,7 @@ void NigoriSyncBridgeImpl::ApplyDisableSyncChanges() {
   broadcasting_observer_->OnCryptographerStateChanged(
       state_.cryptographer.get(),
       /*has_pending_keys=*/false);
-  broadcasting_observer_->OnEncryptedTypesChanged(AlwaysEncryptedUserTypes(),
+  broadcasting_observer_->OnEncryptedTypesChanged(state_.GetEncryptedTypes(),
                                                   false);
 }
 
@@ -1050,7 +1027,7 @@ NigoriSyncBridgeImpl::GetPassphraseTypeForTesting() const {
 }
 
 ModelTypeSet NigoriSyncBridgeImpl::GetEncryptedTypesForTesting() const {
-  return GetEncryptedTypes(state_.encrypt_everything);
+  return state_.GetEncryptedTypes();
 }
 
 bool NigoriSyncBridgeImpl::HasPendingKeysForTesting() const {

@@ -237,7 +237,7 @@ sync_pb::NigoriSpecifics NigoriState::ToSpecificsProto() const {
   specifics.set_keybag_is_frozen(true);
   specifics.set_encrypt_everything(encrypt_everything);
   if (encrypt_everything) {
-    UpdateNigoriSpecificsFromEncryptedTypes(EncryptableUserTypes(), &specifics);
+    UpdateNigoriSpecificsFromEncryptedTypes(GetEncryptedTypes(), &specifics);
   }
   specifics.set_passphrase_type(passphrase_type);
   if (passphrase_type == sync_pb::NigoriSpecifics::CUSTOM_PASSPHRASE) {
@@ -307,6 +307,14 @@ bool NigoriState::NeedsKeystoreReencryption() const {
   // Migration from backward compatible to full keystore mode.
   return base::FeatureList::IsEnabled(
       switches::kSyncTriggerFullKeystoreMigration);
+}
+
+ModelTypeSet NigoriState::GetEncryptedTypes() const {
+  if (!encrypt_everything) {
+    return AlwaysEncryptedUserTypes();
+  }
+
+  return EncryptableUserTypes();
 }
 
 }  // namespace syncer

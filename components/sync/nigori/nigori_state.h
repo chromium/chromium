@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
@@ -50,6 +51,8 @@ struct NigoriState {
   NigoriState Clone() const;
 
   bool NeedsKeystoreReencryption() const;
+
+  ModelTypeSet GetEncryptedTypes() const;
 
   // TODO(crbug.com/1109221): Make this const unique_ptr to avoid the object
   // being destroyed after it's been injected to the ModelTypeWorker-s.

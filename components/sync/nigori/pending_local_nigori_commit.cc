@@ -91,7 +91,7 @@ class CustomPassphraseSetter : public PendingLocalNigoriCommit {
                                       state.custom_passphrase_time);
     observer->OnCryptographerStateChanged(state.cryptographer.get(),
                                           /*has_pending_keys=*/false);
-    observer->OnEncryptedTypesChanged(EncryptableUserTypes(),
+    observer->OnEncryptedTypesChanged(state.GetEncryptedTypes(),
                                       /*encrypt_everything=*/true);
     observer->OnPassphraseAccepted();
 

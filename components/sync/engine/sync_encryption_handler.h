@@ -85,7 +85,7 @@ class SyncEncryptionHandler {
     //
     // |encrypted_types| will always be a superset of
     // AlwaysEncryptedUserTypes().  If |encrypt_everything| is
-    // true, |encrypted_types| will be the set of all known types.
+    // true, |encrypted_types| will be the set of all encryptable types.
     //
     // Until this function is called, observers can assume that the
     // set of encrypted types is AlwaysEncryptedUserTypes() and that the
