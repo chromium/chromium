@@ -4941,14 +4941,11 @@ void LayerTreeHostImpl::SetUkmSmoothnessDestination(
 
 void LayerTreeHostImpl::NotifyDidPresentCompositorFrameOnImplThread(
     uint32_t frame_token,
-    PresentationTimeCallbackBuffer::PendingCallbacks callbacks,
+    std::vector<LayerTreeHost::PresentationTimeCallback> callbacks,
     const viz::FrameTimingDetails& details) {
   frame_trackers_.NotifyFramePresented(frame_token,
                                        details.presentation_feedback);
-  // The callbacks in |compositor_thread_callbacks| expect to be run on the
-  // compositor thread so we'll run them now.
-  for (LayerTreeHost::PresentationTimeCallback& callback :
-       callbacks.compositor_thread_callbacks) {
+  for (LayerTreeHost::PresentationTimeCallback& callback : callbacks) {
     std::move(callback).Run(details.presentation_feedback);
   }
 }

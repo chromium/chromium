@@ -820,7 +820,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // was presented.
   void NotifyDidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
-      PresentationTimeCallbackBuffer::PendingCallbacks callbacks,
+      std::vector<LayerTreeHost::PresentationTimeCallback> callbacks,
       const viz::FrameTimingDetails& details);
 
   CompositorFrameReportingController* compositor_frame_reporting_controller()
