@@ -276,14 +276,14 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, FormSubmission) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/formSubmission")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, Download) {
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Download) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   content::DownloadManager* download_manager =
       content::BrowserContext::GetDownloadManager(browser()->profile());
   content::DownloadTestObserverTerminal observer(
       download_manager, 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
-  bool result = RunExtensionTest("webnavigation/download");
+  bool result = RunTest("webnavigation/download");
   observer.WaitForFinished();
   ASSERT_TRUE(result) << message_;
 }
