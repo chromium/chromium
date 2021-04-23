@@ -1113,8 +1113,9 @@ void AXNodeObject::Init(AXObject* parent) {
 }
 
 void AXNodeObject::Detach() {
-#if DCHECK_IS_ON()
-  DCHECK(!is_adding_children_) << "Cannot Detach |this| during AddChildren()";
+#if defined(AX_FAIL_FAST_BUILD)
+  SANITIZER_CHECK(!is_adding_children_)
+      << "Cannot detach |this| during AddChildren(): " << GetNode();
 #endif
   AXObject::Detach();
   node_ = nullptr;
@@ -3358,19 +3359,18 @@ int AXNodeObject::TextOffsetInFormattingContext(int offset) const {
 //
 
 void AXNodeObject::LoadInlineTextBoxes() {
-  if (!GetLayoutObject())
-    return;
-
-  if (GetLayoutObject()->IsText()) {
+  if (ui::CanHaveInlineTextBoxChildren(RoleValue())) {
     ClearChildren();
-    AddInlineTextBoxChildren(true);
+    AddInlineTextBoxChildren(/*force*/ true);
     children_dirty_ = false;  // Avoid adding these children twice.
     return;
   }
 
-  for (const auto& child : ChildrenIncludingIgnored()) {
+#if defined(AX_FAIL_FAST_BUILD)
+  base::AutoReset<bool> reentrancy_protector(&is_loading_inline_boxes_, true);
+#endif
+  for (const auto& child : ChildrenIncludingIgnored())
     child->LoadInlineTextBoxes();
-  }
 }
 
 void AXNodeObject::AddInlineTextBoxChildren(bool force) {
@@ -3665,16 +3665,20 @@ void AXNodeObject::AddChildrenImpl() {
 void AXNodeObject::AddChildren() {
 #if DCHECK_IS_ON()
   DCHECK(!IsDetached());
-  DCHECK(!is_adding_children_) << " Reentering method on " << GetNode();
-  base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
   // If the need to add more children in addition to existing children arises,
   // childrenChanged should have been called, which leads to children_dirty_
   // being true, then UpdateChildrenIfNecessary() clears the children before
   // calling AddChildren().
-  DCHECK_EQ(children_.size(), 0U)
+  DCHECK(children_.IsEmpty())
       << "\nParent still has " << children_.size() << " children before adding:"
       << "\nParent is " << ToString(true, true) << "\nFirst child is "
       << children_[0]->ToString(true, true);
+#endif
+
+#if defined(AX_FAIL_FAST_BUILD)
+  SANITIZER_CHECK(!is_adding_children_)
+      << " Reentering method on " << GetNode();
+  base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
 #endif
 
   AddChildrenImpl();

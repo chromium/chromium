@@ -530,12 +530,15 @@ void AXObject::Detach() {
   }
 
 #if DCHECK_IS_ON()
-  DCHECK(!is_adding_children_) << ToString(true, true);
   DCHECK(ax_object_cache_);
   DCHECK(!ax_object_cache_->IsFrozen())
       << "Do not detach children while the tree is frozen, in order to avoid "
          "an object detaching itself in the middle of computing its own "
          "accessibility properties.";
+#endif
+
+#if defined(AX_FAIL_FAST_BUILD)
+  SANITIZER_CHECK(!is_adding_children_) << ToString(true, true);
 #endif
 
   // Clear any children and call DetachFromParent() on them so that
@@ -4119,11 +4122,14 @@ void AXObject::ClearChildren() const {
   // AccessibilityExposeIgnoredNodes().
 
   // Loop through AXObject children.
-
-#if DCHECK_IS_ON()
-  DCHECK(!is_adding_children_)
+#if defined(AX_FAIL_FAST_BUILD)
+  SANITIZER_CHECK(!is_adding_children_)
       << "Should not be attempting to clear children while in the middle of "
          "adding children on parent: "
+      << ToString(true, true);
+  SANITIZER_CHECK(!is_loading_inline_boxes_)
+      << "Should not be attempting to clear children while in the middle of "
+         "iterating children to load inline text boxes on the same object."
       << ToString(true, true);
 #endif
 

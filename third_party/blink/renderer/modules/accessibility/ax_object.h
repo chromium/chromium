@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 #include "ui/accessibility/ax_mode.h"
 
@@ -343,7 +344,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 #if DCHECK_IS_ON()
   bool is_initializing_ = false;
   mutable bool is_updating_cached_values_ = false;
+#endif
+
+#if defined(AX_FAIL_FAST_BUILD)
   bool is_adding_children_ = false;
+  bool is_loading_inline_boxes_ = false;
 #endif
 
  public:
