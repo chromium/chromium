@@ -477,7 +477,7 @@ class ChannelMac : public Channel,
 
   // base::MessagePumpKqueue::MachPortWatcher:
   void OnMachMessageReceived(mach_port_t port) override {
-    TRACE_EVENT("ipc,toplevel", "Mojo read message");
+    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"), "Mojo read message");
 
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
