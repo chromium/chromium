@@ -92,6 +92,7 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
   // This function creates a widget with the bounds passed in which eventually
   // becomes the parent of the child window passed in.
   static aura::Window* CreateParentWindow(aura::Window* child_window,
+                                          aura::Window* context,
                                           const gfx::Rect& bounds,
                                           bool full_screen,
                                           bool is_menu,
@@ -120,6 +121,10 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
                                   ? Widget::InitParams::Activatable::kYes
                                   : Widget::InitParams::Activatable::kNo;
     init_params.z_order = root_z_order;
+    // Also provide the context, which Ozone (in particular - Wayland) will use
+    // to parent this newly created toplevel native widget to. Please refer to
+    // https://crrev.com/c/2831291 for more details.
+    init_params.context = context;
 
     // This widget instance will get deleted when the window is
     // destroyed.
@@ -215,7 +220,8 @@ class DesktopNativeWidgetAuraWindowParentingClient
         root_z_order = native_widget->GetZOrderLevel();
 
       return DesktopNativeWidgetTopLevelHandler::CreateParentWindow(
-          window, bounds, is_fullscreen, is_menu, root_z_order);
+          window, root_window_ /* context */, bounds, is_fullscreen, is_menu,
+          root_z_order);
     }
     return root_window_;
   }

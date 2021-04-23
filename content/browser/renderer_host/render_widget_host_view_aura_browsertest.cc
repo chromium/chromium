@@ -208,8 +208,19 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
 }
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
+// TODO(1126339): fix the way how exo creates accelerated widgets. At the
+// moment, they are created only after the client attaches a buffer to a
+// surface, which is incorrect and results in the "[destroyed object]: error 1:
+// popup parent not constructed" error.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_SetKeyboardFocusOnTapAfterDismissingPopup \
+  DISABLED_SetKeyboardFocusOnTapAfterDismissingPopup
+#else
+#define MAYBE_SetKeyboardFocusOnTapAfterDismissingPopup \
+  SetKeyboardFocusOnTapAfterDismissingPopup
+#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
-                       SetKeyboardFocusOnTapAfterDismissingPopup) {
+                       MAYBE_SetKeyboardFocusOnTapAfterDismissingPopup) {
   GURL page(
       "data:text/html;charset=utf-8,"
       "<!DOCTYPE html>"
