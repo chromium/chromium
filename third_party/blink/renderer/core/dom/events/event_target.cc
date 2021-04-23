@@ -1011,10 +1011,13 @@ void EventTarget::RemoveAllEventListeners() {
 }
 
 void EventTarget::EnqueueEvent(Event& event, TaskType task_type) {
+  recordreplay::Assert("EventTarget::EnqueueEvent %lu %lu",
+                       recordreplay::PointerId(this), recordreplay::PointerId(&event));
   ExecutionContext* context = GetExecutionContext();
   if (!context)
     return;
   probe::AsyncTaskScheduled(context, event.type(), event.async_task_id());
+  recordreplay::Assert("EventTarget::EnqueueEvent #1");
   context->GetTaskRunner(task_type)->PostTask(
       FROM_HERE,
       WTF::Bind(&EventTarget::DispatchEnqueuedEvent, WrapPersistent(this),
@@ -1023,6 +1026,8 @@ void EventTarget::EnqueueEvent(Event& event, TaskType task_type) {
 
 void EventTarget::DispatchEnqueuedEvent(Event* event,
                                         ExecutionContext* context) {
+  recordreplay::Assert("EventTarget::DispatchEnqueuedEvent %lu %lu",
+                       recordreplay::PointerId(this), recordreplay::PointerId(event));
   if (!GetExecutionContext()) {
     probe::AsyncTaskCanceled(context, event->async_task_id());
     return;
