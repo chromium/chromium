@@ -1684,6 +1684,7 @@
       'linux-ash-chromium-generator-rel': {
         'additional_compile_targets': [
           'chrome',
+          'gen_linux_ash_chromium_cipd_yaml',
         ],
       },
       'linux-cfm-rel': {

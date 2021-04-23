@@ -1621,6 +1621,26 @@ ci.chromiumos_builder(
     ),
     tree_closing = False,
     main_console_view = "main",
+    triggered_by = [],
+    properties = {
+        # The format of these properties is defined at archive/properties.proto
+        "$build/archive": {
+            "cipd_archive_datas": [
+                {
+                    "yaml_files": [
+                        "gen_linux_ash_chromium_cipd_yaml_cipd.yaml",
+                    ],
+                    "refs": [
+                        "{%channel%}",
+                    ],
+                    "tags": {
+                        "version": "{%chromium_version%}",
+                    },
+                    "only_set_refs_on_tests_success": True,
+                },
+            ],
+        },
+    },
 )
 
 ci.chromiumos_builder(
