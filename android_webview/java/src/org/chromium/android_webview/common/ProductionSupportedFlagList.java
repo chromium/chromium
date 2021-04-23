@@ -11,6 +11,7 @@ import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.viz.common.VizFeatures;
 import org.chromium.gpu.config.GpuFeatures;
 import org.chromium.gpu.config.GpuSwitches;
+import org.chromium.services.network.NetworkServiceFeatures;
 import org.chromium.ui.base.UiFeatures;
 
 /**
@@ -126,5 +127,7 @@ public final class ProductionSupportedFlagList {
                     "Enables the Form Controls visual improvements and dark mode."),
             Flag.baseFeature(
                     BlinkFeatures.LAYOUT_NG_TABLE, "Enables Blink's next generation table layout."),
+            Flag.baseFeature(
+                    NetworkServiceFeatures.TRUST_TOKENS, "Enables the prototype Trust Tokens API."),
     };
 }

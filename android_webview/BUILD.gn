@@ -664,6 +664,7 @@ android_library("common_java") {
     "//components/metrics:metrics_java",
     "//components/viz:viz_java",
     "//gpu/config:config_java",
+    "//services/network/public:features_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public/common:common_java",
     "//ui/android:ui_features_java",
