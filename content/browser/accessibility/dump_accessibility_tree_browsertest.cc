@@ -2005,8 +2005,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(AccessibilityInputDateWithPopupOpenMultiple_TestFile);
 }
 
+// TODO(crbug.com/1201658): Flakes heavily on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_AccessibilityInputTimeWithPopupOpen \
+  DISABLED_AccessibilityInputTimeWithPopupOpen
+#else
+#define MAYBE_AccessibilityInputTimeWithPopupOpen \
+  AccessibilityInputTimeWithPopupOpen
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityInputTimeWithPopupOpen) {
+                       MAYBE_AccessibilityInputTimeWithPopupOpen) {
   RunHtmlTest(FILE_PATH_LITERAL("input-time-with-popup-open.html"));
 }
 
