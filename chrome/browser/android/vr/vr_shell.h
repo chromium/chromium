@@ -28,6 +28,7 @@
 #include "chrome/browser/vr/ui_unsupported_mode.h"
 #include "components/page_info/page_info_ui.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/vr_device.h"
 #include "mojo/public/cpp/bindings/remote.h"

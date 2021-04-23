@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list_types.h"
-#include "components/arc/mojom/notifications.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace ash {

@@ -18,7 +18,6 @@
 #include "extensions/browser/api/webcam_private/webcam.h"
 #include "extensions/common/api/serial.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/device/public/mojom/serial.mojom.h"
 
 namespace extensions {
 
