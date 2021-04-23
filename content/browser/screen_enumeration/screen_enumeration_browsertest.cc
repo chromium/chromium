@@ -105,29 +105,35 @@ class ScreenEnumerationTest : public ContentBrowserTest {
   }
 };
 
+IN_PROC_BROWSER_TEST_F(ScreenEnumerationTest, GetScreensNoPermission) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
+  ASSERT_EQ(true, EvalJs(shell(), "'getScreens' in self"));
+  // getScreens() rejects its promise without the WindowPlacement permission.
+  EXPECT_FALSE(EvalJs(shell(), "await getScreens()").error.empty());
+}
+
 // TODO(crbug.com/1119974): Need content_browsertests permission controls.
 IN_PROC_BROWSER_TEST_F(ScreenEnumerationTest, DISABLED_GetScreensBasic) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
-  ASSERT_EQ(true, EvalJs(shell()->web_contents(), "'getScreens' in self"));
-  auto result = EvalJs(shell()->web_contents(), kGetScreensScript);
+  ASSERT_EQ(true, EvalJs(shell(), "'getScreens' in self"));
+  auto result = EvalJs(shell(), kGetScreensScript);
   EXPECT_EQ(GetExpectedScreens(), base::Value::AsListValue(result.value));
 }
 
 IN_PROC_BROWSER_TEST_F(ScreenEnumerationTest, IsMultiScreenBasic) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
-  ASSERT_EQ(true, EvalJs(shell()->web_contents(), "'isMultiScreen' in self"));
-  auto result = EvalJs(shell()->web_contents(), kIsMultiScreenScript);
+  ASSERT_EQ(true, EvalJs(shell(), "'isMultiScreen' in self"));
+  auto result = EvalJs(shell(), kIsMultiScreenScript);
   EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays() > 1,
             result.ExtractBool());
 }
 
 IN_PROC_BROWSER_TEST_F(ScreenEnumerationTest, IsExtendedBasic) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
-  ASSERT_EQ(true, EvalJs(shell()->web_contents(), "'isExtended' in screen"));
-  EXPECT_EQ("boolean",
-            EvalJs(shell()->web_contents(), "typeof screen.isExtended"));
+  ASSERT_EQ(true, EvalJs(shell(), "'isExtended' in screen"));
+  EXPECT_EQ("boolean", EvalJs(shell(), "typeof screen.isExtended"));
   EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays() > 1,
-            EvalJs(shell()->web_contents(), "screen.isExtended"));
+            EvalJs(shell(), "screen.isExtended"));
 }
 
 // Tests screen enumeration functionality with a fake Screen object.
@@ -174,14 +180,14 @@ class FakeScreenEnumerationTest : public ScreenEnumerationTest {
 #endif
 IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_GetScreensFaked) {
   ASSERT_TRUE(NavigateToURL(test_shell(), GetTestUrl(nullptr, "empty.html")));
-  ASSERT_EQ(true, EvalJs(test_shell()->web_contents(), "'getScreens' in self"));
+  ASSERT_EQ(true, EvalJs(test_shell(), "'getScreens' in self"));
 
   screen()->display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
   screen()->display_list().AddDisplay({2, gfx::Rect(901, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
 
-  auto result = EvalJs(test_shell()->web_contents(), kGetScreensScript);
+  auto result = EvalJs(test_shell(), kGetScreensScript);
   EXPECT_EQ(GetExpectedScreens(), base::Value::AsListValue(result.value));
 }
 
@@ -194,16 +200,15 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_GetScreensFaked) {
 #endif
 IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_IsMultiScreenFaked) {
   ASSERT_TRUE(NavigateToURL(test_shell(), GetTestUrl(nullptr, "empty.html")));
-  ASSERT_EQ(true,
-            EvalJs(test_shell()->web_contents(), "'isMultiScreen' in self"));
-  EXPECT_EQ(false, EvalJs(test_shell()->web_contents(), kIsMultiScreenScript));
+  ASSERT_EQ(true, EvalJs(test_shell(), "'isMultiScreen' in self"));
+  EXPECT_EQ(false, EvalJs(test_shell(), kIsMultiScreenScript));
 
   screen()->display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
-  EXPECT_EQ(true, EvalJs(test_shell()->web_contents(), kIsMultiScreenScript));
+  EXPECT_EQ(true, EvalJs(test_shell(), kIsMultiScreenScript));
 
   screen()->display_list().RemoveDisplay(1);
-  EXPECT_EQ(false, EvalJs(test_shell()->web_contents(), kIsMultiScreenScript));
+  EXPECT_EQ(false, EvalJs(test_shell(), kIsMultiScreenScript));
 }
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
@@ -215,14 +220,14 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_IsMultiScreenFaked) {
 #endif
 IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_IsExtendedFaked) {
   ASSERT_TRUE(NavigateToURL(test_shell(), GetTestUrl(nullptr, "empty.html")));
-  EXPECT_EQ(false, EvalJs(test_shell()->web_contents(), "screen.isExtended"));
+  EXPECT_EQ(false, EvalJs(test_shell(), "screen.isExtended"));
 
   screen()->display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
-  EXPECT_EQ(true, EvalJs(test_shell()->web_contents(), "screen.isExtended"));
+  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
 
   screen()->display_list().RemoveDisplay(1);
-  EXPECT_EQ(false, EvalJs(test_shell()->web_contents(), "screen.isExtended"));
+  EXPECT_EQ(false, EvalJs(test_shell(), "screen.isExtended"));
 }
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
@@ -237,43 +242,42 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_IsExtendedFaked) {
 IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
                        MAYBE_OnScreensChangeNoPermission) {
   ASSERT_TRUE(NavigateToURL(test_shell(), GetTestUrl(nullptr, "empty.html")));
-  ASSERT_EQ(true,
-            EvalJs(test_shell()->web_contents(), "'onscreenschange' in self"));
+  ASSERT_EQ(true, EvalJs(test_shell(), "'onscreenschange' in self"));
   constexpr char kSetOnScreensChange[] = R"(
     onscreenschange = function() { ++document.title; };
     document.title = 0;
   )";
-  EXPECT_EQ(0, EvalJs(test_shell()->web_contents(), kSetOnScreensChange));
-  EXPECT_EQ("0", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ(0, EvalJs(test_shell(), kSetOnScreensChange));
+  EXPECT_EQ("0", EvalJs(test_shell(), "document.title"));
 
   // isMultiScreen() changes from false to true here, so an event is sent.
-  EXPECT_EQ(false, EvalJs(test_shell()->web_contents(), kIsMultiScreenScript));
+  EXPECT_EQ(false, EvalJs(test_shell(), kIsMultiScreenScript));
   screen()->display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
-  EXPECT_EQ(true, EvalJs(test_shell()->web_contents(), kIsMultiScreenScript));
-  EXPECT_EQ("1", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ(true, EvalJs(test_shell(), kIsMultiScreenScript));
+  EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // isMultiScreen() remains unchanged, so no event is sent.
   screen()->display_list().AddDisplay({2, gfx::Rect(901, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
-  EXPECT_EQ(true, EvalJs(test_shell()->web_contents(), kIsMultiScreenScript));
-  EXPECT_EQ("1", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ(true, EvalJs(test_shell(), kIsMultiScreenScript));
+  EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // isMultiScreen() remains unchanged, so no event is sent.
   EXPECT_NE(0u, screen()->display_list().UpdateDisplay(
                     {2, gfx::Rect(902, 100, 801, 802)}));
-  EXPECT_EQ(true, EvalJs(test_shell()->web_contents(), kIsMultiScreenScript));
-  EXPECT_EQ("1", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ(true, EvalJs(test_shell(), kIsMultiScreenScript));
+  EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // isMultiScreen() remains unchanged, so no event is sent.
   screen()->display_list().RemoveDisplay(2);
-  EXPECT_EQ(true, EvalJs(test_shell()->web_contents(), kIsMultiScreenScript));
-  EXPECT_EQ("1", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ(true, EvalJs(test_shell(), kIsMultiScreenScript));
+  EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // isMultiScreen() changes from true to false here, so an event is sent.
   screen()->display_list().RemoveDisplay(1);
-  EXPECT_EQ(false, EvalJs(test_shell()->web_contents(), kIsMultiScreenScript));
-  EXPECT_EQ("2", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ(false, EvalJs(test_shell(), kIsMultiScreenScript));
+  EXPECT_EQ("2", EvalJs(test_shell(), "document.title"));
 }
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
@@ -287,42 +291,42 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
 IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
                        MAYBE_ScreenOnChangeForIsExtended) {
   ASSERT_TRUE(NavigateToURL(test_shell(), GetTestUrl(nullptr, "empty.html")));
-  ASSERT_EQ(true, EvalJs(test_shell()->web_contents(), "'onchange' in screen"));
+  ASSERT_EQ(true, EvalJs(test_shell(), "'onchange' in screen"));
   constexpr char kSetScreenOnChange[] = R"(
     screen.onchange = function() { ++document.title; };
     document.title = 0;
   )";
-  EXPECT_EQ(0, EvalJs(test_shell()->web_contents(), kSetScreenOnChange));
-  EXPECT_EQ("0", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ(0, EvalJs(test_shell(), kSetScreenOnChange));
+  EXPECT_EQ("0", EvalJs(test_shell(), "document.title"));
 
   // Screen.isExtended changes from false to true here, so an event is sent.
-  EXPECT_EQ(false, EvalJs(test_shell()->web_contents(), "screen.isExtended"));
+  EXPECT_EQ(false, EvalJs(test_shell(), "screen.isExtended"));
   screen()->display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
-  EXPECT_EQ(true, EvalJs(test_shell()->web_contents(), "screen.isExtended"));
-  EXPECT_EQ("1", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // The current Screen remains unchanged, so no event is sent.
   screen()->display_list().AddDisplay({2, gfx::Rect(901, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
-  EXPECT_EQ(true, EvalJs(test_shell()->web_contents(), "screen.isExtended"));
-  EXPECT_EQ("1", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // The current Screen remains unchanged, so no event is sent.
   EXPECT_NE(0u, screen()->display_list().UpdateDisplay(
                     {2, gfx::Rect(902, 100, 801, 802)}));
-  EXPECT_EQ(true, EvalJs(test_shell()->web_contents(), "screen.isExtended"));
-  EXPECT_EQ("1", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // The current Screen remains unchanged, so no event is sent.
   screen()->display_list().RemoveDisplay(2);
-  EXPECT_EQ(true, EvalJs(test_shell()->web_contents(), "screen.isExtended"));
-  EXPECT_EQ("1", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // Screen.isExtended changes from true to false here, so an event is sent.
   screen()->display_list().RemoveDisplay(1);
-  EXPECT_EQ(false, EvalJs(test_shell()->web_contents(), "screen.isExtended"));
-  EXPECT_EQ("2", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ(false, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_EQ("2", EvalJs(test_shell(), "document.title"));
 }
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
@@ -336,24 +340,24 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
 IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
                        MAYBE_ScreenOnChangeForAttributes) {
   ASSERT_TRUE(NavigateToURL(test_shell(), GetTestUrl(nullptr, "empty.html")));
-  ASSERT_EQ(true, EvalJs(test_shell()->web_contents(), "'onchange' in screen"));
+  ASSERT_EQ(true, EvalJs(test_shell(), "'onchange' in screen"));
   constexpr char kSetScreenOnChange[] = R"(
     screen.onchange = function() { ++document.title; };
     document.title = 0;
   )";
-  EXPECT_EQ(0, EvalJs(test_shell()->web_contents(), kSetScreenOnChange));
-  EXPECT_EQ("0", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ(0, EvalJs(test_shell(), kSetScreenOnChange));
+  EXPECT_EQ("0", EvalJs(test_shell(), "document.title"));
 
   // An event is sent when Screen work area changes.
   display::Display display = screen()->display_list().displays()[0];
   display.set_work_area(gfx::Rect(101, 102, 903, 904));
   EXPECT_NE(0u, screen()->display_list().UpdateDisplay(display));
-  EXPECT_EQ("1", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // An event is sent when Screen scaling changes.
   display.set_device_scale_factor(display.device_scale_factor() * 2);
   EXPECT_NE(0u, screen()->display_list().UpdateDisplay(display));
-  EXPECT_EQ("2", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ("2", EvalJs(test_shell(), "document.title"));
 }
 
 }  // namespace content
