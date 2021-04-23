@@ -1,5 +1,7 @@
 # System WebView Shell
 
+[TOC]
+
 ![WebView Shell](images/webview_shell.png)
 
 WebView team maintains a "shell"&mdash;a thin interface over the WebView
@@ -75,6 +77,34 @@ $ out/Default/bin/system_webview_shell_apk --help
 https://crbug.com/959425. Instead, you should modify WebView's flags by
 following [commandline-flags.md](./commandline-flags.md).
 ***
+
+## Prebuilt APKs
+
+We maintain a **public** archive of prebuilt WebView shell APKs. This saves you
+the effort of setting up a chromium checkout just for the sake of compiling this
+test app. You can download a prebuilt APK from this cloud storage bucket:
+https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Android/
+
+1. The builds are sorted from oldest to newest. You should scroll to the
+   **bottom of the page** to get the latest revision. Note that the page can
+   take some time to load all the revisions, so you may have to scroll multiple
+   times. Keep scrolling until you see a file named `LAST_CHANGE`, then pick the
+   numbered folder immediately above it.
+     * Your WebView shell version **does not** need to match your device's
+       WebView version. We recommend using the latest WebView shell build
+       regardless of your WebView version to make sure you have the latest
+       features and bug fixes of the shell app itself.
+1. Click `chrome-android.zip` to download the archived APKs. Unzip this and look
+   for a file named `SystemWebViewShell.apk`.
+1. Now you can install this like any other APK:
+
+     ```sh
+     # Install adb if it's not already installed:
+     $ which adb || sudo apt install adb
+
+     # Replace this path with the path to your downloaded APK
+     $ adb install -d -r ~/Downloads/chrome-android/SystemWebViewShell.apk
+     ```
 
 ## Troubleshooting
 
