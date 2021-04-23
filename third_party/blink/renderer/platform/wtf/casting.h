@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CASTING_H_
 
 #include "base/notreached.h"
+#include "base/template_util.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
@@ -63,11 +64,32 @@ struct DowncastTraits {
   }
 };
 
+namespace internal {
+
+// Though redundant with the return type inferred by `auto`, the trailing return
+// type is needed for SFINAE.
+template <typename Derived, typename Base>
+auto IsDowncastAllowedHelper(const Base& from, base::internal::priority_tag<1>)
+    -> decltype(DowncastTraits<Derived>::AllowFrom(from)) {
+  return DowncastTraits<Derived>::AllowFrom(from);
+}
+
+// Though redundant with the return type inferred by `auto`, the trailing return
+// type is needed for SFINAE.
+template <typename Derived, typename Base>
+auto IsDowncastAllowedHelper(const Base& from, base::internal::priority_tag<0>)
+    -> decltype(Derived::IsClassOf(from)) {
+  return Derived::IsClassOf(from);
+}
+
+}  // namespace internal
+
 // Returns true iff the conversion from Base to Derived is allowed. For the
 // pointer overloads, returns false if the input pointer is nullptr.
 template <typename Derived, typename Base>
 bool IsA(const Base& from) {
-  return DowncastTraits<Derived>::AllowFrom(from);
+  return internal::IsDowncastAllowedHelper<Derived>(
+      from, base::internal::priority_tag<1>());
 }
 
 template <typename Derived, typename Base>

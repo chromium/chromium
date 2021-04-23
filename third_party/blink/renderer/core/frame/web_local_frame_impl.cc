@@ -2359,17 +2359,6 @@ blink::mojom::CommitResult WebLocalFrameImpl::CommitSameDocumentNavigation(
       mojom::blink::TriggeringEventInfo::kNotFromEvent, std::move(extra_data));
 }
 
-WebNavigationControl::FallbackContentResult
-WebLocalFrameImpl::MaybeRenderFallbackContent(const WebURLError& error) const {
-  DCHECK(GetFrame());
-
-  if (!GetFrame()->Owner() || !GetFrame()->Owner()->CanRenderFallbackContent())
-    return NoFallbackContent;
-
-  return GetFrame()->Loader().MaybeRenderFallbackContent() ? FallbackRendered
-                                                           : NoLoadInProgress;
-}
-
 bool WebLocalFrameImpl::IsLoading() const {
   if (!GetFrame() || !GetFrame()->GetDocument())
     return false;

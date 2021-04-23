@@ -121,6 +121,7 @@ FrameTreeNode::FrameTreeNode(
       frame_tree_node_id_(next_frame_tree_node_id_++),
       parent_(parent),
       depth_(parent ? parent->frame_tree_node()->depth_ + 1 : 0u),
+      frame_owner_element_type_(owner_type),
       replication_state_(blink::mojom::FrameReplicationState::New(
           url::Origin(),
           name,
@@ -129,16 +130,13 @@ FrameTreeNode::FrameTreeNode(
           network::mojom::WebSandboxFlags::kNone,
           blink::FramePolicy(),
           scope,
-          blink::mojom::InsecureRequestPolicy::
-              kLeaveInsecureRequestsAlone /* should enforce strict mixed content
-                                             checking */
-          ,
-          std::vector<uint32_t>()
-          /* hashes of hosts for insecure request upgrades */,
+          // should enforce strict mixed content checking
+          blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
+          // hashes of hosts for insecure request upgrades
+          std::vector<uint32_t>(),
           false /* is a potentially trustworthy unique origin */,
           false /* has an active user gesture */,
           false /* has received a user gesture before nav */,
-          owner_type,
           blink::mojom::AdFrameType::kNonAd)),
       is_created_by_script_(is_created_by_script),
       devtools_frame_token_(devtools_frame_token),

@@ -128,8 +128,7 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     web_frame = parent->web_frame()->CreateRemoteChild(
         replicated_state->scope,
         blink::WebString::FromUTF8(replicated_state->name),
-        replicated_state->frame_policy,
-        replicated_state->frame_owner_element_type, proxy.get(),
+        replicated_state->frame_policy, proxy.get(),
         proxy->blink_interface_registry_.get(),
         proxy->GetRemoteAssociatedInterfaces(), frame_token,
         devtools_frame_token, opener);

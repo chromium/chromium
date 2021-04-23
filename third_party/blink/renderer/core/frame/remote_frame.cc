@@ -423,12 +423,14 @@ bool RemoteFrame::BubbleLogicalScrollFromChildFrame(
 }
 
 void RemoteFrame::RenderFallbackContent() {
-  // TODO(ekaramad): If the owner renders its own content, then the current
-  // ContentFrame() should detach and free-up the OOPIF process (see
-  // https://crbug.com/850223).
-  auto* owner = DeprecatedLocalOwner();
-  DCHECK(IsA<HTMLObjectElement>(owner));
-  owner->RenderFallbackContent(this);
+  Frame::RenderFallbackContent();
+}
+
+void RemoteFrame::RenderFallbackContentWithResourceTiming(
+    mojom::blink::ResourceTimingInfoPtr timing,
+    const String& server_timing_value) {
+  Frame::RenderFallbackContentWithResourceTiming(std::move(timing),
+                                                 server_timing_value);
 }
 
 void RemoteFrame::AddResourceTimingFromChild(

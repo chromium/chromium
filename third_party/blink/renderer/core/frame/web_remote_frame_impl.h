@@ -68,7 +68,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
       InterfaceRegistry*,
       WebFrame* previous_sibling,
       const WebFrameOwnerProperties&,
-      mojom::FrameOwnerElementType,
       const LocalFrameToken& frame_token,
       WebFrame* opener,
       std::unique_ptr<blink::WebPolicyContainer> policy_container) override;
@@ -76,7 +75,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
       mojom::blink::TreeScopeType,
       const WebString& name,
       const FramePolicy&,
-      mojom::FrameOwnerElementType,
       WebRemoteFrameClient*,
       InterfaceRegistry*,
       AssociatedInterfaceProvider*,

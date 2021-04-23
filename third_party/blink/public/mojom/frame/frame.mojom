@@ -358,10 +358,6 @@ interface LocalFrameHost {
   // of a user action.
   GoToEntryAtOffset(int32 offset, bool has_user_gesture);
 
-  // Asks the frame host to notify the owner element in parent process that it
-  // should render fallback content.
-  RenderFallbackContentInParentProcess();
-
   // Changes the title for the page in the UI when the page is navigated or the
   // title changes. Sent for top-level frames. This can be null when loading an
   // initial empty document (and in some tests).
@@ -644,10 +640,17 @@ interface LocalFrame {
   // current page load happening on the frame.
   ReportBlinkFeatureUsage(array<blink.mojom.WebFeature> features);
 
-  // Sent to this frame in parent frame's process to ask for rendering fallback
-  // contents. This only happens for frame owners which render their own
-  // fallback contents (i.e., <object>).
+  // Sent to this frame in parent frame's process to render fallback contents.
+  // This is only used for <object> elements that failed a navigation with a
+  // network error.
   RenderFallbackContent();
+
+  // Sent to this frame in parent frame's process to render fallback contents.
+  // This is only used for <object> elements that failed a navigation with an
+  // HTTP error.
+  RenderFallbackContentWithResourceTiming(
+      ResourceTimingInfo timing,
+      string server_timing_value);
 
   // Instructs the frame to invoke the beforeunload event handler.
   //
@@ -1025,10 +1028,17 @@ interface RemoteFrame {
   // Sets page-level focus and notifies FocusController.
   SetPageFocus(bool is_focused);
 
-  // Sent to the remote frame in parent frame's process to ask for rendering fallback
-  // contents. This only happens for frame owners which render their own
-  // fallback contents (i.e., <object>).
+  // Sent to this frame in parent frame's process to render fallback contents.
+  // This is only used for <object> elements that failed a navigation (HTTP or
+  // network error).
   RenderFallbackContent();
+
+  // Sent to this frame in parent frame's process to render fallback contents.
+  // This is only used for <object> elements that failed a navigation with an
+  // HTTP error.
+  RenderFallbackContentWithResourceTiming(
+      ResourceTimingInfo timing,
+      string server_timing_value);
 
   // Sent to the remote frame placeholder in the parent process so that
   // resource timing information can be added to the parent frame.

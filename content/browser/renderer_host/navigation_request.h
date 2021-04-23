@@ -1301,6 +1301,10 @@ class CONTENT_EXPORT NavigationRequest
   // sends all console messages to the final RenderFrameHost.
   void SendDeferredConsoleMessages();
 
+  bool ShouldRenderFallbackContentForResponse(
+      const net::HttpResponseHeaders& response_head) const;
+  void RenderFallbackContentForObjectTag();
+
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
 

@@ -419,7 +419,7 @@ class CONTENT_EXPORT FrameTreeNode {
   void PruneChildFrameNavigationEntries(NavigationEntryImpl* entry);
 
   blink::mojom::FrameOwnerElementType frame_owner_element_type() const {
-    return replication_state_->frame_owner_element_type;
+    return frame_owner_element_type_;
   }
 
   void SetAdFrameType(blink::mojom::AdFrameType ad_frame_type);
@@ -536,6 +536,10 @@ class CONTENT_EXPORT FrameTreeNode {
 
   // Whether the frame's owner element in the parent document is collapsed.
   bool is_collapsed_ = false;
+
+  // The type of frame owner for this frame, if any.
+  const blink::mojom::FrameOwnerElementType frame_owner_element_type_ =
+      blink::mojom::FrameOwnerElementType::kNone;
 
   // Track information that needs to be replicated to processes that have
   // proxies for this frame.

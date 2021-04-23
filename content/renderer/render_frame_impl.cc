@@ -1556,9 +1556,8 @@ void RenderFrameImpl::CreateFrame(
         replicated_state->frame_policy, render_frame,
         render_frame->blink_interface_registry_.get(),
         previous_sibling_web_frame,
-        frame_owner_properties->To<blink::WebFrameOwnerProperties>(),
-        replicated_state->frame_owner_element_type, token, opener,
-        ToWebPolicyContainer(std::move(policy_container)));
+        frame_owner_properties->To<blink::WebFrameOwnerProperties>(), token,
+        opener, ToWebPolicyContainer(std::move(policy_container)));
 
     // The RenderFrame is created and inserted into the frame tree in the above
     // call to createLocalChild.
@@ -2954,45 +2953,10 @@ void RenderFrameImpl::CommitFailedNavigation(
   // renderer should never see this.
   CHECK_NE(net::ERR_ABORTED, error_code);
 
-  // On load failure, a frame can ask its owner to render fallback content.
-  // When that happens, don't load an error page.
-  base::WeakPtr<RenderFrameImpl> weak_this = weak_factory_.GetWeakPtr();
-  blink::WebNavigationControl::FallbackContentResult fallback_result =
-      frame_->MaybeRenderFallbackContent(error);
-
-  // The rendering fallback content can result in this frame being removed.
-  // Use a WeakPtr as an easy way to detect whether this has occurred. If so,
-  // this method should return immediately and not touch any part of the object,
-  // otherwise it will result in a use-after-free bug.
-  if (!weak_this)
-    return;
-
   if (commit_params->nav_entry_id == 0) {
     // For renderer initiated navigations, we send out a
     // DidFailProvisionalLoad() notification.
     NotifyObserversOfFailedProvisionalLoad();
-  }
-
-  if (fallback_result != blink::WebNavigationControl::NoFallbackContent) {
-    AbortCommitNavigation();
-    if (fallback_result == blink::WebNavigationControl::NoLoadInProgress) {
-      // If the frame wasn't loading but was fallback-eligible, the fallback
-      // content won't be shown. However, showing an error page isn't right
-      // either, as the frame has already been populated with something
-      // unrelated to this navigation failure. In that case, just send a stop
-      // IPC to the browser to unwind its state, and leave the frame as-is.
-      GetFrameHost()->DidStopLoading();
-    }
-    browser_side_navigation_pending_ = false;
-
-    // Disarm AssertNavigationCommits and pretend that the commit actually
-    // happened. Hopefully, either:
-    // - the browser process is signalled to stop loading, which /should/ signal
-    //   the browser to tear down the speculative RFH associated with |this| or
-    // - fallback content is triggered, which /should/ eventually discard |this|
-    //   as well.
-    navigation_commit_state_ = NavigationCommitState::kDidCommit;
-    return;
   }
 
   // Replace the current history entry in reloads, and loads of the same url.
@@ -3072,6 +3036,7 @@ void RenderFrameImpl::CommitFailedNavigation(
   // Use a WeakPtr as an easy way to detect whether this has occurred. If so,
   // this method should return immediately and not touch any part of the object,
   // otherwise it will result in a use-after-free bug.
+  base::WeakPtr<RenderFrameImpl> weak_this = weak_factory_.GetWeakPtr();
   frame_->CommitNavigation(std::move(navigation_params),
                            std::move(document_state));
   if (!weak_this)
@@ -5858,15 +5823,6 @@ RenderFrameImpl::CreateWebSocketHandshakeThrottle() {
   return websocket_handshake_throttle_provider_->CreateThrottle(
       render_frame_id,
       render_frame->GetTaskRunner(blink::TaskType::kInternalDefault));
-}
-
-void RenderFrameImpl::AbortCommitNavigation() {
-  DCHECK(navigation_client_impl_);
-  // This is only called by CommitFailedNavigation(), which should have already
-  // reset any extant MHTMLBodyLoaderClient.
-  DCHECK(!mhtml_body_loader_client_);
-  // See comment in header for more information of how navigation cleanup works.
-  navigation_client_impl_.reset();
 }
 
 bool RenderFrameImpl::GetCaretBoundsFromFocusedPlugin(gfx::Rect& rect) {

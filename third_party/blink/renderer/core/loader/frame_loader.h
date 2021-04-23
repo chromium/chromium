@@ -206,8 +206,6 @@ class CORE_EXPORT FrameLoader final {
     return committing_navigation_ || client_navigation_.get();
   }
 
-  bool MaybeRenderFallbackContent();
-
   // Like ClearClientNavigation, but also notifies the client to actually cancel
   // the navigation.
   void CancelClientNavigation();

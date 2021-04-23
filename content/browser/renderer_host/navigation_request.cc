@@ -40,6 +40,7 @@
 #include "content/browser/loader/cached_navigation_url_loader.h"
 #include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/navigation_url_loader.h"
+#include "content/browser/loader/object_navigation_fallback_body_loader.h"
 #include "content/browser/net/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
 #include "content/browser/network_service_instance_impl.h"
@@ -56,6 +57,7 @@
 #include "content/browser/renderer_host/origin_policy_throttle.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -109,6 +111,7 @@
 #include "net/url_request/redirect_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
+#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/features.h"
@@ -129,6 +132,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
@@ -2680,9 +2684,11 @@ void NavigationRequest::OnResponseStarted(
 
   // Check if the response should be sent to a renderer.
   response_should_be_rendered_ =
-      !is_download && (!response_head_->headers.get() ||
-                       (response_head_->headers->response_code() != 204 &&
-                        response_head_->headers->response_code() != 205));
+      !is_download &&
+      (!response_head_->headers.get() ||
+       (response_head_->headers->response_code() != 204 &&
+        response_head_->headers->response_code() != 205 &&
+        !ShouldRenderFallbackContentForResponse(*response_head_->headers)));
 
   // Response that will not commit should be marked as aborted in the
   // NavigationHandle.
@@ -3635,6 +3641,47 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
           false /*collapse_frame*/);
       // DO NOT ADD CODE after this. The previous call to OnRequestFailed has
       // destroyed the NavigationRequest.
+      return;
+    }
+
+    // Per https://whatwg.org/C/iframe-embed-object.html#the-object-element,
+    // this implements step 4.7 from "determine what the object element
+    // represents": "If the load failed (e.g. there was an HTTP 404 error, there
+    // was a DNS error), fire an event named error at the element, then jump to
+    // the step below labeled fallback."
+    //
+    // This case handles HTTP errors, which are otherwise considered a
+    // "successful" navigation.
+    //
+    // TODO(dcheng): According to the standard, an <object> element shouldn't
+    // even have a browsing context associated with it unless a successful
+    // navigation would commit in it.
+    if (response()->headers &&
+        ShouldRenderFallbackContentForResponse(*response()->headers)) {
+      // Spin up a helper to drain the response body for this navigation. The
+      // helper will request fallback content (triggering completion) and report
+      // the resource timing info once the entire response body is drained.
+      //
+      // The response body fetcher has a lifetime that's weakly associated with
+      // `this`. The helper will check if `this` is still live before requesting
+      // fallback content and reporting the timing info to the renderer.
+      //
+      // TODO(dcheng): Migrate this to be a NavigationRequest::UserData once
+      // that's implemented.
+      ObjectNavigationFallbackBodyLoader::CreateAndStart(
+          *common_params_, *commit_params_, *response(),
+          std::move(response_body_), std::move(url_loader_client_endpoints_),
+          weak_factory_.GetWeakPtr(),
+          base::BindOnce(&NavigationRequest::OnRequestFailedInternal,
+                         weak_factory_.GetWeakPtr(),
+                         network::URLLoaderCompletionStatus(net::ERR_ABORTED),
+                         false /* skip_throttles */,
+                         base::nullopt /* error_page_content */,
+                         false /* collapse_frame */));
+      // Unlike the other early returns, intentionally skip calling
+      // `OnRequestFailedInternal()`. This allows the response body drainer to
+      // track the lifetime of `this` and skip the remaining work if `this` is
+      // deleted before the response body is completely loaded.
       return;
     }
   }
@@ -6227,7 +6274,45 @@ bool NavigationRequest::MaybeCancelFailedNavigation() {
     return true;
   }
 
+  // Per https://whatwg.org/C/iframe-embed-object.html#the-object-element,
+  // this implements step 4.7 from "determine what the object element
+  // represents": "If the load failed (e.g. there was an HTTP 404 error, there
+  // was a DNS error), fire an event named error at the element, then jump to
+  // the step below labeled fallback."
+  //
+  // This case handles navigation failure, e.g. due to the navigation being
+  // blocked by WebRequest, DNS errors, et cetera.
+  if (frame_tree_node()->frame_owner_element_type() ==
+      blink::mojom::FrameOwnerElementType::kObject) {
+    RenderFallbackContentForObjectTag();
+    frame_tree_node_->ResetNavigationRequest(false);
+    return true;
+  }
+
   return false;
+}
+
+bool NavigationRequest::ShouldRenderFallbackContentForResponse(
+    const net::HttpResponseHeaders& http_headers) const {
+  return frame_tree_node()->frame_owner_element_type() ==
+             blink::mojom::FrameOwnerElementType::kObject &&
+         !network::cors::IsOkStatus(http_headers.response_code());
+}
+
+void NavigationRequest::RenderFallbackContentForObjectTag() {
+  // https://whatwg.org/C/iframe-embed-object.html#the-object-element:fallback-content-5:
+  // Fallback content is represented by the children of the <object> tag, so it
+  // will be rendered in the process of the parent's document.
+  DCHECK_EQ(blink::mojom::FrameOwnerElementType::kObject,
+            frame_tree_node_->frame_owner_element_type());
+  if (RenderFrameProxyHost* proxy =
+          frame_tree_node_->render_manager()->GetProxyToParent()) {
+    proxy->GetAssociatedRemoteFrame()->RenderFallbackContent();
+  } else {
+    frame_tree_node_->current_frame_host()
+        ->GetAssociatedLocalFrame()
+        ->RenderFallbackContent();
+  }
 }
 
 bool NavigationRequest::IsPrerenderedPageActivation() const {

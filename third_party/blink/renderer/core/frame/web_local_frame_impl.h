@@ -341,8 +341,6 @@ class CORE_EXPORT WebLocalFrameImpl final
       bool has_transient_user_activation,
       const WebSecurityOrigin& initiator_origin,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) override;
-  FallbackContentResult MaybeRenderFallbackContent(
-      const WebURLError&) const override;
   void SetCommittedFirstRealLoad() override;
   bool HasCommittedFirstRealLoad() override;
   bool WillStartNavigation(const WebNavigationInfo&) override;

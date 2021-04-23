@@ -58,8 +58,6 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
 
   bool HasFallbackContent() const override;
   bool UseFallbackContent() const override;
-  bool CanRenderFallbackContent() const override { return true; }
-  void RenderFallbackContent(Frame*) override;
 
   bool IsFormControlElement() const override { return false; }
 
@@ -90,6 +88,14 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   // Returns true if this object started to load something, and finished
   // the loading regardless of success or failure.
   bool DidFinishLoading() const;
+
+  enum class ErrorEventPolicy {
+    kDoNotDispatch,
+    kDispatch,
+  };
+  void RenderFallbackContent(ErrorEventPolicy should_dispatch_error_event);
+
+  static bool IsClassOf(const FrameOwner& owner);
 
  private:
   void ParseAttribute(const AttributeModificationParams&) override;

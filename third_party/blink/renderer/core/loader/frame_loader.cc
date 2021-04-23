@@ -1286,28 +1286,6 @@ void FrameLoader::Detach() {
   virtual_time_pauser_.UnpauseVirtualTime();
 }
 
-bool FrameLoader::MaybeRenderFallbackContent() {
-  DCHECK(frame_->Owner() && frame_->Owner()->CanRenderFallbackContent());
-  // |client_navigation_| can be null here:
-  // 1. We asked client to navigation through BeginNavigation();
-  // 2. Meanwhile, another navigation has been started, e.g. to about:srcdoc.
-  //    This navigation has been processed, |client_navigation_| has been
-  //    reset, and browser process was informed about cancellation.
-  // 3. Before the cancellation reached the browser process, it decided that
-  //    first navigation has failed and asks to commit the failed navigation.
-  // 4. We come here, while |client_navigation_| is null.
-  // TODO(dgozman): shouldn't we abandon the commit of navigation failure
-  // because we've already notified the client about cancellation? This needs
-  // to be double-checked, perhaps this is dead code.
-  if (!client_navigation_)
-    return false;
-
-  frame_->Owner()->RenderFallbackContent(frame_);
-  ClearClientNavigation();
-  DidFinishNavigation(FrameLoader::NavigationFinishState::kSuccess);
-  return true;
-}
-
 bool FrameLoader::ShouldPerformFragmentNavigation(bool is_form_submission,
                                                   const String& http_method,
                                                   WebFrameLoadType load_type,

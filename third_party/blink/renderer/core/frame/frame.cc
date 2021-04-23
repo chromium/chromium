@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
+#include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -55,6 +56,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -308,6 +310,25 @@ bool Frame::ConsumeTransientUserActivationInFrameTree() {
 void Frame::ClearUserActivationInFrameTree() {
   for (Frame* node = this; node; node = node->Tree().TraverseNext(this))
     node->user_activation_state_.Clear();
+}
+
+void Frame::RenderFallbackContent() {
+  // Fallback has been requested by the browser navigation code, so triggering
+  // the fallback content should also dispatch an error event.
+  To<HTMLObjectElement>(Owner())->RenderFallbackContent(
+      HTMLObjectElement::ErrorEventPolicy::kDispatch);
+}
+
+void Frame::RenderFallbackContentWithResourceTiming(
+    mojom::blink::ResourceTimingInfoPtr timing,
+    const String& server_timing_value) {
+  auto* local_dom_window = To<LocalDOMWindow>(Parent()->DomWindow());
+  DOMWindowPerformance::performance(*local_dom_window)
+      ->AddResourceTimingWithUnparsedServerTiming(
+          std::move(timing), server_timing_value,
+          html_names::kObjectTag.LocalName(), mojo::NullReceiver(),
+          local_dom_window);
+  RenderFallbackContent();
 }
 
 void Frame::SetOwner(FrameOwner* owner) {

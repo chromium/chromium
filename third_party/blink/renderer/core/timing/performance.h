@@ -192,6 +192,13 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
       mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
           worker_timing_receiver,
       ExecutionContext* context);
+  void AddResourceTimingWithUnparsedServerTiming(
+      mojom::blink::ResourceTimingInfoPtr,
+      const String& server_timing_value,
+      const AtomicString& initiator_type,
+      mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
+          worker_timing_receiver,
+      ExecutionContext* context);
 
   void NotifyNavigationTimingToObservers();
 

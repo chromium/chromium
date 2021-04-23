@@ -104,8 +104,6 @@ void FakeLocalFrameHost::DispatchLoad() {}
 void FakeLocalFrameHost::GoToEntryAtOffset(int32_t offset,
                                            bool has_user_gesture) {}
 
-void FakeLocalFrameHost::RenderFallbackContentInParentProcess() {}
-
 void FakeLocalFrameHost::UpdateTitle(
     const WTF::String& title,
     base::i18n::TextDirection title_direction) {}

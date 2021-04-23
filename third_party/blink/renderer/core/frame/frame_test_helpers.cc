@@ -315,8 +315,7 @@ WebRemoteFrameImpl* CreateRemoteChild(
   std::unique_ptr<TestWebRemoteFrameClient> owned_client;
   client = CreateDefaultClientIfNeeded(client, owned_client);
   auto* frame = To<WebRemoteFrameImpl>(parent.CreateRemoteChild(
-      mojom::blink::TreeScopeType::kDocument, name, FramePolicy(),
-      mojom::blink::FrameOwnerElementType::kIframe, client,
+      mojom::blink::TreeScopeType::kDocument, name, FramePolicy(), client,
       InterfaceRegistry::GetEmptyInterfaceRegistry(),
       client->GetRemoteAssociatedInterfaces(), RemoteFrameToken(),
       /*devtools_frame_token=*/base::UnguessableToken(), nullptr));
@@ -484,8 +483,7 @@ WebLocalFrameImpl* WebViewHelper::CreateLocalChild(
   MockPolicyContainerHost mock_policy_container_host;
   auto* frame = To<WebLocalFrameImpl>(parent.CreateLocalChild(
       mojom::blink::TreeScopeType::kDocument, name, FramePolicy(), client,
-      nullptr, previous_sibling, properties,
-      mojom::blink::FrameOwnerElementType::kIframe, LocalFrameToken(), nullptr,
+      nullptr, previous_sibling, properties, LocalFrameToken(), nullptr,
       std::make_unique<WebPolicyContainer>(
           WebPolicyContainerPolicies(),
           mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote())));

@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/timing/performance_measure.h"
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
 #include "third_party/blink/renderer/core/timing/performance_resource_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_server_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_user_timing.h"
 #include "third_party/blink/renderer/core/timing/profiler.h"
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
@@ -489,6 +490,8 @@ void Performance::GenerateAndAddResourceTiming(
       info.TakeWorkerTimingReceiver(), context);
 }
 
+// Please keep this function in sync with ObjectNavigationFallbackBodyLoader's
+// GenerateResourceTiming() helper.
 mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
     const SecurityOrigin& destination_origin,
     const ResourceTimingInfo& info,
@@ -589,6 +592,22 @@ void Performance::AddResourceTiming(
                                                     FROM_HERE);
   }
   resource_timing_secondary_buffer_.push_back(entry);
+}
+
+void Performance::AddResourceTimingWithUnparsedServerTiming(
+    mojom::blink::ResourceTimingInfoPtr info,
+    const String& server_timing_value,
+    const AtomicString& initiator_type,
+    mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
+        worker_timing_receiver,
+    ExecutionContext* context) {
+  if (info->allow_timing_details) {
+    info->server_timing =
+        PerformanceServerTiming::ParseServerTimingFromHeaderValueToMojo(
+            server_timing_value);
+  }
+  AddResourceTiming(std::move(info), initiator_type,
+                    std::move(worker_timing_receiver), context);
 }
 
 // Called after loadEventEnd happens.

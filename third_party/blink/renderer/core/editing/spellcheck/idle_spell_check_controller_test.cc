@@ -149,7 +149,7 @@ TEST_F(IdleSpellCheckControllerTest, ColdModeRangeCrossesShadow) {
   auto* html_object_element =
       To<HTMLObjectElement>(GetDocument().QuerySelector("object"));
   html_object_element->RenderFallbackContent(
-      html_object_element->ContentFrame());
+      HTMLObjectElement::ErrorEventPolicy::kDispatch);
   GetDocument().QuerySelector("div")->focus();
   UpdateAllLifecyclePhasesForTest();
 

@@ -1069,12 +1069,6 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::WebHistoryItem* item_for_history_navigation,
       blink::WebFrameLoadType* load_type);
 
-  // Ignores the navigation commit and stop its processing in the RenderFrame.
-  // This will drop the NavigationRequest in the RenderFrameHost.
-  // Note: This is only meant to be used before building the DocumentState.
-  // Commit abort and navigation end is handled by it afterwards.
-  void AbortCommitNavigation();
-
   // Implements AddMessageToConsole().
   void AddMessageToConsoleImpl(blink::mojom::ConsoleMessageLevel level,
                                const std::string& message,
@@ -1233,11 +1227,11 @@ class CONTENT_EXPORT RenderFrameImpl
   // - (a.com) performing a navigation in (b.com) *will not* create a request
   //   NavigationClient but
   // - (a.com) performing a navigation in (example.a.com) *will* create a
-  // request
+  //   request NavigationClient
   //
-  // Finally, note that the initiating RenderFrameImpl does *not* own the
-  // request NavigationClient. Rather, the RanderFrameImpl that the navigation
-  // *targets* is the RenderFrameImpl that owns the request NavigationClient.
+  // Note that the initiating RenderFrameImpl does *not* own the request
+  // NavigationClient. Rather, the RanderFrameImpl that the navigation *targets*
+  // is the RenderFrameImpl that owns the request NavigationClient.
   //
   // ## Commit NavigationClient ##
   // Always set in the RenderFrameImpl that has been selected to commit a
@@ -1249,33 +1243,24 @@ class CONTENT_EXPORT RenderFrameImpl
   // the commit NavigationClient.
   //
   // ## Navigation Cancellation ##
-  // Cancellation is signalled by resetting the NavigationClient.  This will
-  // eventually trigger a connection error in the browser process, which
-  // normally invokes NavigationRequest::OnRendererAbortedNavigation().
+  // Cancellation is signalled by closing the NavigationClient message pipe.
+  // This will eventually trigger a connection error in the browser process,
+  // which normally invokes NavigationRequest::OnRendererAbortedNavigation().
   //
   // However, once the NavigationRequest reaches READY_TO_COMMIT in the browser
-  // process, *only* the commit NavigationClient may cancel the navigation. This
-  // has several implications:
+  // process, *only* the commit NavigationClient may cancel the navigation by
+  // closing the message pipe. Thus, only navigations which reuse the RFH may be
+  // cancelled (or more accurately, ignored) at this point.
   //
-  // - Web APIs like window.stop() and document() use AbortClientNavigation().
-  //   However, once the NavigationRequest reaches READY_TO_COMMIT, cancellation
-  //   is only respected if the navigation reuses the same RenderFrameImpl;
-  //   otherwise, it is ignored.
+  // Unfortunately, this behavior is important for web compatibility: there are
+  // sites which depend on a call to window.stop() or document.open() to cancel
+  // a same-site navigation: see https://crbug.com/763106 for background.
   //
-  //   Note that using RenderDocument means that all cross-document navigations
-  //   will use a provisional RenderFrameImpl: as such, all cross-document
-  //   navigations with RenderDocument will ignore cancellation after
-  //   READY_TO_COMMIT. This will be a compatibility issue for shipping
-  //   RenderDocument: see https://crbug.com/763106 for historical context.
-  //
-  // - If the frame is owned by an <object> element, CommitFailedNavigation()
-  //   will first trigger the fallback path (for remote frames, this
-  //   unconditionally sends the RenderFallbackContentInParentProcess() IPC; for
-  //   local frames, things are a bit more complicated...) before then
-  //   unconditionally calling AbortCommitNavigation() to ignore the commit.
-  //
-  //   TODO(dcheng): The browser side knows the owner type of the navigating
-  //   frame. Don't bother sending a commit at all in that case.
+  // Note that using RenderDocument means that all cross-document navigations
+  // will use a provisional RenderFrameImpl: as such, all cross-document
+  // navigations with RenderDocument will ignore cancellation after
+  // READY_TO_COMMIT. This is a known compatibility issue with RenderDocument
+  // and will need to eventually be addressed.
   std::unique_ptr<NavigationClient> navigation_client_impl_;
 
   // Creates various media clients.

@@ -10675,12 +10675,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // not result in the renderer ignoring a `CommitNavigation()` IPC.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        CommitNavigationWithHTTPErrorInObjectTag) {
-  // TODO(https://crbug.com/1151424): This triggers a DCHECK() since the
-  // fallback path expects the frame (which is still provisional) to already be
-  // swapped in.
-  if (GetRenderDocumentLevel() == RenderDocumentLevel::kSubframe)
-    return;
-
   // Set up a test page with a same-site child frame hosted in an <object> tag.
   // TODO(dcheng): In the future, it might be useful to also have a test where
   // the child frame is same-site but cross-origin, and have the parent
@@ -10704,14 +10698,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       first_child->render_manager()->current_frame_host(), url2));
 
   nav_manager.WaitForNavigationFinished();
-  // Though this test triggers fallback handling, the navigation itself should
-  // still be committed.
-  EXPECT_TRUE(nav_manager.was_committed());
-  // Despite the fact that this is an HTTP error, it still commits as a regular
-  // navigation and will be considered successful.
-  EXPECT_TRUE(nav_manager.was_successful());
-
-  // Note: Chrome is not compliant with the spec. An HTTP error triggers
+  // There should be no commit...
+  EXPECT_FALSE(nav_manager.was_committed());
+  // .. and the navigation should have been aborted.
+  EXPECT_FALSE(nav_manager.was_successful());
+  // Fallback handling should discard the child browsing context and render the
+  // fallback contents.
+  // TODO(dcheng): Chrome is not compliant with the spec. An HTTP error triggers
   // fallback content, which is supposed to discard the nested browsing
   // context...
   EXPECT_EQ(1, EvalJs(web_contents(), "window.length"));

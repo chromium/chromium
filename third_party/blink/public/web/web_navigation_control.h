@@ -17,7 +17,6 @@ namespace blink {
 
 class WebSecurityOrigin;
 class WebURL;
-struct WebURLError;
 struct WebNavigationInfo;
 struct WebNavigationParams;
 
@@ -56,18 +55,6 @@ class WebNavigationControl : public WebLocalFrame {
       bool has_transient_user_activation,
       const WebSecurityOrigin& initiator_origin,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) = 0;
-
-  enum FallbackContentResult {
-    // An error page should be shown instead of fallback.
-    NoFallbackContent,
-    // Something else committed, no fallback content or error page needed.
-    NoLoadInProgress,
-    // Fallback content rendered, no error page needed.
-    FallbackRendered
-  };
-  // On load failure, attempts to make frame's parent render fallback content.
-  virtual FallbackContentResult MaybeRenderFallbackContent(
-      const WebURLError&) const = 0;
 
   // Override the normal rules for whether a load has successfully committed
   // in this frame. Used to propagate state when this frame has navigated

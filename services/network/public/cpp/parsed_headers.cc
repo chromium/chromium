@@ -12,6 +12,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/link_header_parser.h"
 #include "services/network/public/cpp/origin_agent_cluster_parser.h"
+#include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/cpp/x_frame_options_parser.h"
 
 namespace network {
@@ -57,6 +58,13 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
   parsed_headers->xfo = ParseXFrameOptions(*headers);
 
   parsed_headers->link_headers = ParseLinkHeaders(*headers, url);
+
+  std::string timing_allow_origin_value;
+  if (headers->GetNormalizedHeader("Timing-Allow-Origin",
+                                   &timing_allow_origin_value)) {
+    parsed_headers->timing_allow_origin =
+        ParseTimingAllowOrigin(timing_allow_origin_value);
+  }
 
   return parsed_headers;
 }

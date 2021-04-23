@@ -176,6 +176,9 @@ class CORE_EXPORT RemoteFrame final : public Frame,
       const base::UnguessableToken& embedding_token) override;
   void SetPageFocus(bool is_focused) override;
   void RenderFallbackContent() override;
+  void RenderFallbackContentWithResourceTiming(
+      mojom::blink::ResourceTimingInfoPtr timing,
+      const String& server_timing_values) final;
   void ScrollRectToVisible(
       const gfx::Rect& rect_to_scroll,
       mojom::blink::ScrollIntoViewParamsPtr params) override;

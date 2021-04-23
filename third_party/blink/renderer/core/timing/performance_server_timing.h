@@ -31,6 +31,8 @@ class CORE_EXPORT PerformanceServerTiming final : public ScriptWrappable {
 
   static Vector<mojom::blink::ServerTimingInfoPtr> ParseServerTimingToMojo(
       const ResourceTimingInfo&);
+  static Vector<mojom::blink::ServerTimingInfoPtr>
+  ParseServerTimingFromHeaderValueToMojo(const String& value);
   static HeapVector<Member<PerformanceServerTiming>> ParseServerTiming(
       const ResourceTimingInfo&);
   static HeapVector<Member<PerformanceServerTiming>> FromParsedServerTiming(

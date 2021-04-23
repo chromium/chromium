@@ -7,7 +7,6 @@ module blink.mojom;
 import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
-import "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
@@ -111,14 +110,6 @@ struct FrameReplicationState {
   // Whether the frame has received a user gesture in a previous navigation so
   // long as a the frame has staying on the same eTLD+1.
   bool has_received_user_gesture_before_nav = false;
-
-  // The type of the (local) frame owner for this frame in the parent process.
-  // Note: This should really be const, as it can never change once a frame is
-  // created. However, making it const makes it a pain to embed into IPC message
-  // params: having a const member implicitly deletes the copy assignment
-  // operator.
-  blink.mojom.FrameOwnerElementType frame_owner_element_type =
-      blink.mojom.FrameOwnerElementType.kNone;
 
   // Whether this frame is an ad frame. Once a frame becomes an ad, it stays as
   // an ad throughout its lifetime, even if it later navigates to a non-ad

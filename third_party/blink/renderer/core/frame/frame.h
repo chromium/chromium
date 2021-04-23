@@ -42,6 +42,7 @@
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/scroll_direction.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/frame_lifecycle.h"
@@ -414,6 +415,11 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
       mojom::blink::UserActivationNotificationType notification_type);
   bool ConsumeTransientUserActivationInFrameTree();
   void ClearUserActivationInFrameTree();
+
+  void RenderFallbackContent();
+  void RenderFallbackContentWithResourceTiming(
+      mojom::blink::ResourceTimingInfoPtr timing,
+      const String& server_timing_values);
 
   mutable FrameTree tree_node_;
 

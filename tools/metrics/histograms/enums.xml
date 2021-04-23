@@ -7213,7 +7213,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="204" label="OBSOLETE_RFPH_BLOB_URL_TOKEN_FOR_NON_BLOB_URL"/>
   <int value="205" label="RFH_ERROR_PROCESS_NON_ERROR_COMMIT"/>
   <int value="206" label="RFH_ERROR_PROCESS_NON_UNIQUE_ORIGIN_COMMIT"/>
-  <int value="207" label="RFH_CANNOT_RENDER_FALLBACK_CONTENT"/>
+  <int value="207" label="OBSOLETE_RFH_CANNOT_RENDER_FALLBACK_CONTENT"/>
   <int value="208" label="RFH_CHILD_FRAME_NEEDS_OWNER_ELEMENT_TYPE"/>
   <int value="209" label="OBSOLETE_RFH_INVALID_WEB_REPORTING_CRASH_ID"/>
   <int value="210" label="RFH_DETACH_MAIN_FRAME"/>

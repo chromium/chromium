@@ -72,6 +72,10 @@ void FakeLocalFrame::ReportBlinkFeatureUsage(
 
 void FakeLocalFrame::RenderFallbackContent() {}
 
+void FakeLocalFrame::RenderFallbackContentWithResourceTiming(
+    blink::mojom::ResourceTimingInfoPtr,
+    const std::string& server_timing_value) {}
+
 void FakeLocalFrame::BeforeUnload(bool is_reload,
                                   BeforeUnloadCallback callback) {
   base::TimeTicks now = base::TimeTicks::Now();

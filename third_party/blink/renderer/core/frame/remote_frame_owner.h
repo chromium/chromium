@@ -26,10 +26,7 @@ class CORE_EXPORT RemoteFrameOwner final
     : public GarbageCollected<RemoteFrameOwner>,
       public FrameOwner {
  public:
-  RemoteFrameOwner(
-      const FramePolicy&,
-      const WebFrameOwnerProperties&,
-      mojom::blink::FrameOwnerElementType frame_owner_element_type);
+  RemoteFrameOwner(const FramePolicy&, const WebFrameOwnerProperties&);
 
   // FrameOwner overrides:
   Frame* ContentFrame() const override { return frame_.Get(); }
@@ -38,11 +35,6 @@ class CORE_EXPORT RemoteFrameOwner final
   const FramePolicy& GetFramePolicy() const override { return frame_policy_; }
   void AddResourceTiming(const ResourceTimingInfo&) override;
   void DispatchLoad() override;
-  bool CanRenderFallbackContent() const override {
-    return frame_owner_element_type_ ==
-           mojom::blink::FrameOwnerElementType::kObject;
-  }
-  void RenderFallbackContent(Frame*) override;
   void IntrinsicSizingInfoChanged() override;
   void SetNeedsOcclusionTracking(bool) override;
 
@@ -103,7 +95,6 @@ class CORE_EXPORT RemoteFrameOwner final
   bool is_display_none_;
   mojom::blink::ColorScheme color_scheme_;
   bool needs_occlusion_tracking_;
-  const mojom::blink::FrameOwnerElementType frame_owner_element_type_;
 };
 
 template <>

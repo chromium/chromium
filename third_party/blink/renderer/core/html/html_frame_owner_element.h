@@ -103,8 +103,6 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   void AddResourceTiming(const ResourceTimingInfo&) final;
   void DispatchLoad() final;
   const FramePolicy& GetFramePolicy() const final { return frame_policy_; }
-  bool CanRenderFallbackContent() const override { return false; }
-  void RenderFallbackContent(Frame*) override {}
   void IntrinsicSizingInfoChanged() override {}
   void SetNeedsOcclusionTracking(bool) override {}
   AtomicString BrowsingContextContainerName() const override {

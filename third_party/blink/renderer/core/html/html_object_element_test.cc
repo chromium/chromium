@@ -37,7 +37,7 @@ TEST_F(HTMLObjectElementTest, FallbackRecalcForReattach) {
 
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
-  object->RenderFallbackContent(nullptr);
+  object->RenderFallbackContent(HTMLObjectElement::ErrorEventPolicy::kDispatch);
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   GetDocument().GetStyleEngine().RecalcStyle();
   EXPECT_TRUE(IsA<HTMLSlotElement>(slot));

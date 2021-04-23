@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -969,8 +970,18 @@ void DocumentLoader::LoadFailed(const ResourceError& error) {
   body_loader_.reset();
   virtual_time_pauser_.UnpauseVirtualTime();
 
-  if (!error.IsCancellation() && frame_->Owner())
-    frame_->Owner()->RenderFallbackContent(frame_);
+  // `LoadFailed()` should never be called for a navigation failure in a frame
+  // owned by <object>. Browser-side navigation must handle these (whether
+  // network errors, blocked by CSP/XFO, or otherwise) and never delegate to the
+  // renderer.
+  //
+  // `LoadFailed()` *can* be called for a frame owned by <object> if the
+  // navigation body load is cancelled, e.g.:
+  // - `StartLoadingResponse()` calls `StopLoading()` when loading a
+  //   `MediaDocument`.
+  // - `LocalFrame::Detach()` calls `StopLoading()`.
+  // - `window.stop()` calls `StopAllLoaders()` which calls `StopLoading()`.
+  DCHECK(!IsA<HTMLObjectElement>(frame_->Owner()) || error.IsCancellation());
 
   WebHistoryCommitType history_commit_type = LoadTypeToCommitType(load_type_);
   DCHECK_EQ(kCommitted, state_);
@@ -1193,9 +1204,9 @@ void DocumentLoader::HandleResponse() {
     }
   }
 
-  if (frame_->Owner() && response_.IsHTTP() &&
-      !cors::IsOkStatus(response_.HttpStatusCode()))
-    frame_->Owner()->RenderFallbackContent(frame_);
+  if (response_.IsHTTP() && !cors::IsOkStatus(response_.HttpStatusCode())) {
+    DCHECK(!IsA<HTMLObjectElement>(frame_->Owner()));
+  }
 }
 
 void DocumentLoader::CommitData(const char* bytes, size_t length) {
@@ -1583,6 +1594,7 @@ void DocumentLoader::StartLoadingInternal() {
 }
 
 void DocumentLoader::StartLoadingResponse() {
+  // TODO(dcheng): Clean up the null checks in this helper.
   if (!frame_)
     return;
 
@@ -1621,8 +1633,16 @@ void DocumentLoader::StartLoadingResponse() {
     return;
   }
 
-  // TODO(dgozman): why do we stop loading for media documents?
-  // This seems like a hack.
+  // Implements "Then, the user agent must act as if it had stopped parsing."
+  // from https://html.spec.whatwg.org/C/browsing-the-web.html#read-media
+  //
+  // This is an oddity of navigating to a media resource: the original request
+  // for the media resource—which resulted in a committed navigation—is simply
+  // discarded, while the media element created inside the MediaDocument then
+  // makes *another new* request for the same media resource.
+  //
+  // TODO(dcheng): Barring something really strange and unusual, there should
+  // always be a frame here.
   if (frame_ && frame_->GetDocument()->IsMediaDocument()) {
     parser_->Finish();
     StopLoading();

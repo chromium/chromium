@@ -5122,33 +5122,6 @@ void RenderFrameHostImpl::BubbleLogicalScrollInParentFrame(
                                                          granularity);
 }
 
-void RenderFrameHostImpl::RenderFallbackContentInParentProcess() {
-  bool is_object_type =
-      frame_tree_node()->current_replication_state().frame_owner_element_type ==
-      blink::mojom::FrameOwnerElementType::kObject;
-  if (!is_object_type) {
-    // Only object elements are expected to render their own fallback content
-    // and since the owner type is set at the creation time of the
-    // FrameTreeNode, this received IPC makes no sense here.
-    bad_message::ReceivedBadMessage(
-        GetProcess(), bad_message::RFH_CANNOT_RENDER_FALLBACK_CONTENT);
-    return;
-  }
-
-  // The ContentFrame() of the owner element in parent process could be either
-  // a frame or a proxy. When navigating cross-site from a frame which is same-
-  // site with its parent, the frame is still local (e.g., about:blank).
-  // However, navigating from an origin which is cross-site with parent, the
-  // frame of the owner is a proxy.
-  auto* rfh = frame_tree_node()->current_frame_host();
-  if (rfh->GetSiteInstance() == rfh->GetParent()->GetSiteInstance()) {
-    rfh->GetAssociatedLocalFrame()->RenderFallbackContent();
-  } else if (auto* proxy =
-                 frame_tree_node()->render_manager()->GetProxyToParent()) {
-    proxy->GetAssociatedRemoteFrame()->RenderFallbackContent();
-  }
-}
-
 void RenderFrameHostImpl::ShowPopupMenu(
     mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
     const gfx::Rect& bounds,

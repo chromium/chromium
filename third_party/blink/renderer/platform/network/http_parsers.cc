@@ -225,7 +225,10 @@ blink::LinkHeaderPtr ConvertToBlink(const LinkHeaderPtr& in) {
 }
 
 blink::TimingAllowOriginPtr ConvertToBlink(const TimingAllowOriginPtr& in) {
-  DCHECK(in);
+  if (!in) {
+    return nullptr;
+  }
+
   switch (in->which()) {
     case TimingAllowOrigin::Tag::kSerializedOrigins:
       return blink::TimingAllowOrigin::NewSerializedOrigins(
@@ -248,7 +251,8 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
       in->critical_ch.has_value()
           ? base::make_optional(ConvertToBlink(in->critical_ch.value()))
           : base::nullopt,
-      in->xfo, ConvertToBlink(in->link_headers));
+      in->xfo, ConvertToBlink(in->link_headers),
+      ConvertToBlink(in->timing_allow_origin));
 }
 
 }  // namespace mojom

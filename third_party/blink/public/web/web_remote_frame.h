@@ -79,7 +79,6 @@ class WebRemoteFrame : public WebFrame {
       InterfaceRegistry*,
       WebFrame* previous_sibling,
       const WebFrameOwnerProperties&,
-      mojom::FrameOwnerElementType,
       const LocalFrameToken& frame_token,
       WebFrame* opener,
       std::unique_ptr<WebPolicyContainer> policy_container) = 0;
@@ -88,7 +87,6 @@ class WebRemoteFrame : public WebFrame {
       mojom::TreeScopeType,
       const WebString& name,
       const FramePolicy&,
-      mojom::FrameOwnerElementType,
       WebRemoteFrameClient*,
       InterfaceRegistry*,
       AssociatedInterfaceProvider*,

@@ -268,7 +268,7 @@ void HTMLObjectElement::UpdatePluginInternal() {
     if (!url_.IsEmpty())
       DispatchErrorEvent();
     if (HasFallbackContent())
-      RenderFallbackContent(ContentFrame());
+      RenderFallbackContent(ErrorEventPolicy::kDoNotDispatch);
   } else {
     if (IsErrorplaceholder())
       DispatchErrorEvent();
@@ -327,8 +327,18 @@ void HTMLObjectElement::ReattachFallbackContent() {
   }
 }
 
-void HTMLObjectElement::RenderFallbackContent(Frame* frame) {
-  DCHECK(!frame || frame == ContentFrame());
+void HTMLObjectElement::RenderFallbackContent(
+    ErrorEventPolicy should_dispatch_error_event) {
+  // This method approximately corresponds to step 7 from
+  // https://whatwg.org/C/iframe-embed-object.html#the-object-element:
+  //
+  // If the load failed (e.g. there was an HTTP 404 error, there was a DNS
+  // error), fire an event named error at the element, then jump to the step
+  // below labeled fallback.
+  if (should_dispatch_error_event == ErrorEventPolicy::kDispatch) {
+    DispatchErrorEvent();
+  }
+
   if (UseFallbackContent())
     return;
 
@@ -350,8 +360,17 @@ void HTMLObjectElement::RenderFallbackContent(Frame* frame) {
     }
   }
 
+  // TODO(dcheng): Detach the content frame here.
   use_fallback_content_ = true;
   ReattachFallbackContent();
+}
+
+// static
+bool HTMLObjectElement::IsClassOf(const FrameOwner& owner) {
+  auto* owner_element = DynamicTo<HTMLFrameOwnerElement>(owner);
+  if (!owner_element)
+    return false;
+  return IsA<HTMLObjectElement>(owner_element);
 }
 
 bool HTMLObjectElement::IsExposed() const {

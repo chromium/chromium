@@ -88,10 +88,18 @@ void HTMLImageLoader::ImageNotifyFinished(ImageResourceContent*) {
       input->EnsurePrimaryContent();
   }
 
-  auto* html_image_element = DynamicTo<HTMLObjectElement>(element);
+  auto* html_object_element = DynamicTo<HTMLObjectElement>(element);
   if ((load_error || cached_image->GetResponse().HttpStatusCode() >= 400) &&
-      html_image_element)
-    html_image_element->RenderFallbackContent(nullptr);
+      html_object_element) {
+    // https://whatwg.org/C/iframe-embed-object.html#the-object-element does not
+    // specify dispatching an error event on image decode failure and simply
+    // jumps straight to the fallback step.
+    //
+    // Interestingly enough, Blink still fires an error event in this case since
+    // the ImageLoader base class will dispatch an error event itself directly.
+    html_object_element->RenderFallbackContent(
+        HTMLObjectElement::ErrorEventPolicy::kDoNotDispatch);
+  }
 }
 
 }  // namespace blink

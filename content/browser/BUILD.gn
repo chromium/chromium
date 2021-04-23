@@ -1048,6 +1048,8 @@ source_set("browser") {
     "loader/navigation_url_loader_factory.h",
     "loader/navigation_url_loader_impl.cc",
     "loader/navigation_url_loader_impl.h",
+    "loader/object_navigation_fallback_body_loader.cc",
+    "loader/object_navigation_fallback_body_loader.h",
     "loader/prefetch_url_loader.cc",
     "loader/prefetch_url_loader.h",
     "loader/prefetch_url_loader_service.cc",

@@ -29,10 +29,17 @@ ScriptValue PerformanceServerTiming::toJSONForBinding(
 Vector<mojom::blink::ServerTimingInfoPtr>
 PerformanceServerTiming::ParseServerTimingToMojo(
     const ResourceTimingInfo& info) {
-  Vector<mojom::blink::ServerTimingInfoPtr> result;
   const ResourceResponse& response = info.FinalResponse();
-  std::unique_ptr<ServerTimingHeaderVector> headers = ParseServerTimingHeader(
+  return ParseServerTimingFromHeaderValueToMojo(
       response.HttpHeaderField(http_names::kServerTiming));
+}
+
+Vector<mojom::blink::ServerTimingInfoPtr>
+PerformanceServerTiming::ParseServerTimingFromHeaderValueToMojo(
+    const String& value) {
+  std::unique_ptr<ServerTimingHeaderVector> headers =
+      ParseServerTimingHeader(value);
+  Vector<mojom::blink::ServerTimingInfoPtr> result;
   result.ReserveCapacity(headers->size());
   for (const auto& header : *headers) {
     result.emplace_back(mojom::blink::ServerTimingInfo::New(

@@ -653,6 +653,9 @@ class CORE_EXPORT LocalFrame final
   void SaveImageAt(const gfx::Point& window_point) final;
   void ReportBlinkFeatureUsage(const Vector<mojom::blink::WebFeature>&) final;
   void RenderFallbackContent() final;
+  void RenderFallbackContentWithResourceTiming(
+      mojom::blink::ResourceTimingInfoPtr timing,
+      const String& server_timing_values) final;
   void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) final;
   void DispatchBeforeUnload(bool is_reload,
                             BeforeUnloadCallback callback) final;
