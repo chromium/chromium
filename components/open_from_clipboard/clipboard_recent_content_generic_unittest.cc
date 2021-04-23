@@ -8,12 +8,57 @@
 #include <string>
 #include <utility>
 
+#include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "url/gurl.h"
+
+namespace {
+
+class HasDataCallbackWaiter {
+ public:
+  explicit HasDataCallbackWaiter(ClipboardRecentContentGeneric* recent_content)
+      : received_(false) {
+    std::set<ClipboardContentType> desired_types = {
+        ClipboardContentType::URL, ClipboardContentType::Text,
+        ClipboardContentType::Image};
+
+    recent_content->HasRecentContentFromClipboard(
+        desired_types, base::BindOnce(&HasDataCallbackWaiter::OnComplete,
+                                      weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void WaitForCallbackDone() {
+    if (received_)
+      return;
+
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  std::set<ClipboardContentType> GetContentType() { return result; }
+
+ private:
+  void OnComplete(std::set<ClipboardContentType> matched_types) {
+    result = std::move(matched_types);
+    received_ = true;
+    if (quit_closure_)
+      std::move(quit_closure_).Run();
+  }
+
+  base::OnceClosure quit_closure_;
+  bool received_;
+  std::set<ClipboardContentType> result;
+
+  base::WeakPtrFactory<HasDataCallbackWaiter> weak_ptr_factory_{this};
+};
+
+}  // namespace
 
 class ClipboardRecentContentGenericTest : public testing::Test {
  protected:
@@ -172,4 +217,56 @@ TEST_F(ClipboardRecentContentGenericTest, HasRecentImageFromClipboard) {
   EXPECT_TRUE(recent_content.HasRecentImageFromClipboard());
   EXPECT_FALSE(recent_content.GetRecentURLFromClipboard().has_value());
   EXPECT_FALSE(recent_content.GetRecentTextFromClipboard().has_value());
+}
+
+TEST_F(ClipboardRecentContentGenericTest, HasRecentContentFromClipboard_URL) {
+  ClipboardRecentContentGeneric recent_content;
+  base::Time now = base::Time::Now();
+  std::string title = "foo";
+  std::string url_text = "http://example.com/";
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  // The linux and chromeos clipboard treats the presence of text on the
+  // clipboard as the url format being available.
+  test_clipboard_->WriteText(url_text.data(), url_text.length());
+#else
+  test_clipboard_->WriteBookmark(title.data(), title.length(), url_text.data(),
+                                 url_text.length());
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+  test_clipboard_->SetLastModifiedTime(now - base::TimeDelta::FromSeconds(10));
+
+  HasDataCallbackWaiter waiter(&recent_content);
+  waiter.WaitForCallbackDone();
+  std::set<ClipboardContentType> types = waiter.GetContentType();
+
+  EXPECT_TRUE(types.find(ClipboardContentType::URL) != types.end());
+}
+
+TEST_F(ClipboardRecentContentGenericTest, HasRecentContentFromClipboard_Text) {
+  ClipboardRecentContentGeneric recent_content;
+  base::Time now = base::Time::Now();
+  std::string text = "  Foo Bar   ";
+  test_clipboard_->WriteText(text.data(), text.length());
+  test_clipboard_->SetLastModifiedTime(now - base::TimeDelta::FromSeconds(10));
+
+  HasDataCallbackWaiter waiter(&recent_content);
+  waiter.WaitForCallbackDone();
+  std::set<ClipboardContentType> types = waiter.GetContentType();
+
+  EXPECT_TRUE(types.find(ClipboardContentType::Text) != types.end());
+}
+
+TEST_F(ClipboardRecentContentGenericTest, HasRecentContentFromClipboard_Image) {
+  ClipboardRecentContentGeneric recent_content;
+  base::Time now = base::Time::Now();
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(3, 2);
+  bitmap.eraseARGB(255, 0, 255, 0);
+  test_clipboard_->WriteBitmap(bitmap);
+  test_clipboard_->SetLastModifiedTime(now - base::TimeDelta::FromSeconds(10));
+
+  HasDataCallbackWaiter waiter(&recent_content);
+  waiter.WaitForCallbackDone();
+  std::set<ClipboardContentType> types = waiter.GetContentType();
+
+  EXPECT_TRUE(types.find(ClipboardContentType::Image) != types.end());
 }

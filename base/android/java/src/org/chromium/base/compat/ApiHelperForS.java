@@ -5,9 +5,13 @@
 package org.chromium.base.compat;
 
 import android.annotation.TargetApi;
+import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.pm.PackageManager;
 import android.os.Process;
+import android.view.textclassifier.TextLinks;
+
+import androidx.annotation.NonNull;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
@@ -40,6 +44,35 @@ public final class ApiHelperForS {
         } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
             Log.e(TAG, "Failed to invoke ClipDescription#isStyledText() ", e);
             return false;
+        }
+    }
+
+    /**
+     * See {@link ClipDescription#getConfidenceScore()}.
+     */
+    public static float getConfidenceScore(
+            ClipDescription clipDescription, @NonNull String entityType) {
+        try {
+            Method getConfidenceScoreMethod =
+                    ClipDescription.class.getDeclaredMethod("getConfidenceScore", String.class);
+            return (float) getConfidenceScoreMethod.invoke(clipDescription, entityType);
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException
+                | IllegalStateException e) {
+            Log.e(TAG, "Failed to invoke ClipDescription#getConfidenceScore() ", e);
+            return 0;
+        }
+    }
+
+    /**
+     * See {@link ClipData.Item#getTextLinks()}.
+     */
+    public static TextLinks getTextLinks(ClipData.Item item) {
+        try {
+            Method getTextLinksMethod = ClipData.Item.class.getDeclaredMethod("getTextLinks");
+            return (TextLinks) getTextLinksMethod.invoke(item);
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+            Log.e(TAG, "Failed to invoke ClipData.Item#getTextLinks() ", e);
+            return null;
         }
     }
 
