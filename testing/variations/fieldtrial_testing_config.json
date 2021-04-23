@@ -3018,6 +3018,21 @@
             ]
         }
     ],
+    "EnableManualPasswordGenerationIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableManualPasswordGeneration"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableSuggestedFiles": [
         {
             "platforms": [
