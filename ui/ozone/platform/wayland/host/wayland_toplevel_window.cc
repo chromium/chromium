@@ -199,7 +199,8 @@ void WaylandToplevelWindow::Activate() {
   // Exo provides activation through aura-shell, Mutter--through gtk-shell.
   //
   // TODO(crbug.com/1175327): add support for xdg-activation.
-  if (aura_surface_)
+  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
+                           ZAURA_SURFACE_ACTIVATE_SINCE_VERSION)
     zaura_surface_activate(aura_surface_.get());
   else if (gtk_surface1_)
     gtk_surface1_->RequestFocus();
@@ -421,7 +422,8 @@ void WaylandToplevelWindow::StartWindowDraggingSessionIfNeeded() {
 }
 
 void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
-  if (aura_surface_) {
+  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
+                           ZAURA_SURFACE_SET_FULLSCREEN_MODE_SINCE_VERSION) {
     auto mode = status ? ZAURA_SURFACE_FULLSCREEN_MODE_IMMERSIVE
                        : ZAURA_SURFACE_FULLSCREEN_MODE_PLAIN;
     zaura_surface_set_fullscreen_mode(aura_surface_.get(), mode);
