@@ -98,13 +98,15 @@ FileSystemRenameHandler::FileSystemRenameHandler(
     : download::DownloadItemRenameHandler(download_item),
       target_path_(download_item->GetTargetFilePath()),
       settings_(std::move(settings)),
-      uploader_(download_item) {}
+      uploader_(BoxUploader::Create(download_item)) {
+  DCHECK_EQ(settings_.service_provider, "box");
+}
 
 FileSystemRenameHandler::~FileSystemRenameHandler() = default;
 
 void FileSystemRenameHandler::Start(Callback callback) {
   download_callback_ = std::move(callback);
-  uploader_.Init(
+  uploader_->Init(
       base::BindRepeating(&FileSystemRenameHandler::OnApiAuthenticationError,
                           weak_factory_.GetWeakPtr()),
       base::BindOnce(&FileSystemRenameHandler::NotifyResultToDownloadThread,
@@ -115,7 +117,7 @@ void FileSystemRenameHandler::Start(Callback callback) {
 
 void FileSystemRenameHandler::TryUploaderTask(content::BrowserContext* context,
                                               const std::string& access_token) {
-  uploader_.TryTask(GetURLLoaderFactory(context), access_token);
+  uploader_->TryTask(GetURLLoaderFactory(context), access_token);
 }
 
 void FileSystemRenameHandler::PromptUserSignInForAuthorization(
@@ -138,8 +140,8 @@ void FileSystemRenameHandler::FetchAccessToken(
                         settings_.scopes);
 }
 
-BoxUploader* FileSystemRenameHandler::GetUploaderForTesting() {
-  return &uploader_;
+BoxUploader* FileSystemRenameHandler::GetUploaderForTesting() const {
+  return uploader_.get();
 }
 
 void FileSystemRenameHandler::OpenDownload() {}

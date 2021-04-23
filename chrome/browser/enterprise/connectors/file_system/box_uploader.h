@@ -20,10 +20,9 @@ namespace enterprise_connectors {
 // file.
 class BoxUploader {
  public:
-  // Constructor with download::DownloadItem* to access download_item fields but
-  // does not store the pointer internally and the ownership of download_item
-  // remains with the caller.
-  explicit BoxUploader(download::DownloadItem* download_item);
+  static std::unique_ptr<BoxUploader> Create(
+      download::DownloadItem* download_item);
+
   virtual ~BoxUploader();
 
   // Initialize with callbacks from FileSystemRenameHandler, set
@@ -46,17 +45,28 @@ class BoxUploader {
   void NotifyResultForTesting(bool success);
 
  protected:
+  // Constructor with download::DownloadItem* to access download_item fields but
+  // does not store the pointer internally and the ownership of download_item
+  // remains with the caller.
+  explicit BoxUploader(download::DownloadItem* download_item);
+
   void TryCurrentApiCall();
   bool EnsureSuccessResponse(bool success, int response_code);
   void OnApiCallFlowDone(bool upload_success);
 
+  // To be overridden to test API calls flow and file delete separately.
+  virtual void StartCurrentApiCall();
+  // Must be implemented in child classes.
+  virtual std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall() = 0;
   // Can be overridden to handle failure differently from simply calling
   // OnApiCallFlowDone(false).
   virtual void OnApiCallFlowFailure();
 
-  // To be overridden to test API calls flow and file delete separately.
-  virtual void StartCurrentApiCall();
-  virtual std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall();
+  const base::FilePath GetLocalFilePath() const;
+  const base::FilePath GetTargetFileName() const;
+  const std::string GetFolderId();
+  void SetFolderId(std::string folder_id);
+  void SetCurrentApiCall(std::unique_ptr<OAuth2ApiCallFlow> api_call);
 
  private:
   // Box API call pre-upload steps:
@@ -72,7 +82,6 @@ class BoxUploader {
                                       int response_code,
                                       const std::string& folder_id);
   void OnPreflightCheckResponse(bool success, int response_code);
-  void OnWholeFileUploadResponse(bool success, int response_code);
 
   // The followings are not necessarily specific to Box:
   // Post a task to ThreadPool to delete the local file, after the entire file
@@ -103,12 +112,28 @@ class BoxUploader {
   // PrefService used to store folder_id.
   PrefService* prefs_;
 
-  // Used to determine whether to go through whole or chunked file upload.
-  size_t file_size_;
-
   base::WeakPtrFactory<BoxUploader> weak_factory_{this};
 };
 
+// Task Manager extended from BoxUploader specifically to upload the whole file
+// directly using API specified at
+// https://developer.box.com/guides/uploads/direct/.
+class BoxDirectUploader : public BoxUploader {
+ public:
+  explicit BoxDirectUploader(download::DownloadItem* download_item);
+  ~BoxDirectUploader() override;
+
+ private:
+  // BoxUploader interface.
+  std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall() override;
+
+  // Box API call step.
+  void OnWholeFileUploadResponse(bool success, int response_code);
+
+  base::WeakPtrFactory<BoxDirectUploader> weak_factory_{this};
+};
+
+// TODO(https://crbug.com/1192671) class BoxChunkedUploader.
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_UPLOADER_H_

@@ -87,6 +87,24 @@ class BoxUploaderTestBase : public testing::Test {
   base::OnceClosure quit_closure_;
 };
 
+class MockApiCallFlow : public BoxApiCallFlow {
+ public:
+  MockApiCallFlow();
+  ~MockApiCallFlow() override;
+
+ protected:
+  MOCK_METHOD(void,
+              ProcessApiCallSuccess,
+              (const network::mojom::URLResponseHead*,
+               std::unique_ptr<std::string>),
+              (override));
+  MOCK_METHOD(void,
+              ProcessApiCallFailure,
+              (int,
+               const network::mojom::URLResponseHead*,
+               std::unique_ptr<std::string>),
+              (override));
+};
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_UPLOADER_TEST_HELPER_H_

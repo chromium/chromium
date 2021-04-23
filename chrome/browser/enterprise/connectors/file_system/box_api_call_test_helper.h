@@ -12,8 +12,8 @@ namespace enterprise_connectors {
 // Expected url's for each of the Box mini classes for whole file upload.
 extern const char kFileSystemBoxFindFolderUrl[];
 extern const char kFileSystemBoxCreateFolderUrl[];
-extern const char kFileSystemBoxWholeFileUploadUrl[];
 extern const char kFileSystemBoxPreflightCheckUrl[];
+extern const char kFileSystemBoxDirectUploadUrl[];
 
 // Expected responses for calls to Box endpoints.
 

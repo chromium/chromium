@@ -11,15 +11,22 @@
 
 namespace enterprise_connectors {
 
+class BoxUploaderCreateTest : public BoxUploaderTestBase {};
+
+TEST_F(BoxUploaderCreateTest, TestFileSizes) {
+  ASSERT_TRUE(BoxUploader::Create(&test_item_));
+  test_item_.SetTotalBytes(BoxApiCallFlow::kChunkFileUploadMinSize * 2);
+  ASSERT_FALSE(BoxUploader::Create(&test_item_));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BoxUploader: Pre-Upload Test
 ////////////////////////////////////////////////////////////////////////////////
 
-class BoxUploaderForPreUploadTest : public BoxUploader {
+class BoxUploaderForTest : public BoxUploader {
  public:
-  explicit BoxUploaderForPreUploadTest(
-      download::DownloadItem* download_item,
-      base::OnceCallback<void(void)> preupload_cb)
+  explicit BoxUploaderForTest(download::DownloadItem* download_item,
+                              base::OnceCallback<void(void)> preupload_cb)
       : BoxUploader(download_item), preupload_cb_(std::move(preupload_cb)) {}
 
  protected:
@@ -27,7 +34,7 @@ class BoxUploaderForPreUploadTest : public BoxUploader {
   // pre-upload steps specifically.
   std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall() override {
     upload_call_created_ = true;
-    return BoxUploader::MakeFileUploadApiCall();
+    return std::make_unique<MockApiCallFlow>();
   }
 
   void StartCurrentApiCall() override {
@@ -42,14 +49,14 @@ class BoxUploaderForPreUploadTest : public BoxUploader {
   base::OnceCallback<void(void)> preupload_cb_;
 };
 
-class BoxUploader_PreUploadTest : public BoxUploaderTestBase {
+class BoxUploaderTest : public BoxUploaderTestBase {
  public:
-  BoxUploader_PreUploadTest()
+  BoxUploaderTest()
       : BoxUploaderTestBase(
-            FILE_PATH_LITERAL("box_uploader_pre_upload_test.txt.crdownload")),
-        uploader_(std::make_unique<BoxUploaderForPreUploadTest>(
+            FILE_PATH_LITERAL("box_uploader_test.txt.crdownload")),
+        uploader_(std::make_unique<BoxUploaderForTest>(
             &test_item_,
-            base::BindOnce(&BoxUploader_PreUploadTest::InterceptedPreUpload,
+            base::BindOnce(&BoxUploaderTest::InterceptedPreUpload,
                            base::Unretained(this)))) {}
 
  protected:
@@ -73,10 +80,10 @@ class BoxUploader_PreUploadTest : public BoxUploaderTestBase {
   }
 
   bool upload_initiated_ = false;
-  std::unique_ptr<BoxUploaderForPreUploadTest> uploader_;
+  std::unique_ptr<BoxUploaderForTest> uploader_;
 };
 
-TEST_F(BoxUploader_PreUploadTest, HasExistingFolderOnBox) {
+TEST_F(BoxUploaderTest, HasExistingFolderOnBox) {
   AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
                  kFileSystemBoxFindFolderResponseBody);
   AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
@@ -91,7 +98,7 @@ TEST_F(BoxUploader_PreUploadTest, HasExistingFolderOnBox) {
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
 
-TEST_F(BoxUploader_PreUploadTest, NoExistingFolderOnBox_CreatFolder) {
+TEST_F(BoxUploaderTest, NoExistingFolderOnBox_CreatFolder) {
   AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
                  kFileSystemBoxFindFolderResponseEmptyEntriesList);
   AddFetchResult(kFileSystemBoxCreateFolderUrl, net::HTTP_CREATED,
@@ -109,7 +116,7 @@ TEST_F(BoxUploader_PreUploadTest, NoExistingFolderOnBox_CreatFolder) {
   EXPECT_FALSE(upload_success_);
 }
 
-TEST_F(BoxUploader_PreUploadTest, AuthenticationRetry) {
+TEST_F(BoxUploaderTest, AuthenticationRetry) {
   // Check that authentication was refreshed upon net::HTTP_UNAUTHORIZED.
   AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_UNAUTHORIZED);
 
@@ -137,7 +144,7 @@ TEST_F(BoxUploader_PreUploadTest, AuthenticationRetry) {
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
 
-TEST_F(BoxUploader_PreUploadTest, CreateFolder_UnexpectedFailure) {
+TEST_F(BoxUploaderTest, CreateFolder_UnexpectedFailure) {
   // Check that the API calls flow is terminated upon any other failure code
   // other than net::HTTP_UNAUTHORIZED.
   AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
@@ -158,13 +165,14 @@ TEST_F(BoxUploader_PreUploadTest, CreateFolder_UnexpectedFailure) {
 // BoxUploader: Preflight Check Test
 ////////////////////////////////////////////////////////////////////////////////
 
-class BoxUploader_PreflightCheckTest : public BoxUploader_PreUploadTest {
+class BoxUploader_PreflightCheckTest : public BoxUploaderTest {
  public:
   void SetUp() override {
     // Assume there is already a folder_id stored in prefs; will skip directly
     // to preflight check.
     InitFolderIdInPrefs(kFileSystemBoxFolderIdInPref);
-    BoxUploader_PreUploadTest::SetUp();
+    BoxUploaderTest::SetUp();
+    ASSERT_EQ(uploader_->GetFolderIdForTesting(), kFileSystemBoxFolderIdInPref);
   }
 };
 
@@ -290,9 +298,16 @@ TEST_F(BoxUploader_PreflightCheckTest, AuthenticationRetry) {
 
 class BoxUploaderForFileDeleteTest : public BoxUploader {
  public:
-  using BoxUploader::BoxUploader;
+  // using BoxUploader::BoxUploader() doesn't work.
+  explicit BoxUploaderForFileDeleteTest(download::DownloadItem* download_item)
+      : BoxUploader(download_item) {}
+
   using BoxUploader::OnApiCallFlowDone;
+
   // Overriding to skip API calls flow for this set of tests.
+  std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall() override {
+    return std::make_unique<MockApiCallFlow>();
+  }
   void StartCurrentApiCall() override { OnApiCallFlowDone(true); }
 };
 
@@ -350,15 +365,15 @@ TEST_F(BoxUploader_FileDeleteTest, OnApiCallFlowFailure) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// BoxUploader: Whole File Upload Test
+// BoxDirectUploaderTest
 ////////////////////////////////////////////////////////////////////////////////
 
-class BoxUploader_WholeFileTest : public BoxUploaderTestBase {
+class BoxDirectUploaderTest : public BoxUploaderTestBase {
  public:
-  BoxUploader_WholeFileTest()
+  BoxDirectUploaderTest()
       : BoxUploaderTestBase(
-            FILE_PATH_LITERAL("box_uploader_whole_file_test.txt.crdownload")),
-        uploader_(std::make_unique<BoxUploader>(&test_item_)) {}
+            FILE_PATH_LITERAL("box_direct_uploader_test.txt.crdownload")),
+        uploader_(std::make_unique<BoxDirectUploader>(&test_item_)) {}
 
   void SetUp() override {
     BoxUploaderTestBase::SetUp();
@@ -377,11 +392,11 @@ class BoxUploader_WholeFileTest : public BoxUploaderTestBase {
     EXPECT_FALSE(base::PathExists(GetFilePath()));  // Ensure file is deleted.
   }
 
-  std::unique_ptr<BoxUploader> uploader_;
+  std::unique_ptr<BoxDirectUploader> uploader_;
 };
 
-TEST_F(BoxUploader_WholeFileTest, SuccessfulUpload) {
-  AddFetchResult(kFileSystemBoxWholeFileUploadUrl, net::HTTP_CREATED);
+TEST_F(BoxDirectUploaderTest, SuccessfulUpload) {
+  AddFetchResult(kFileSystemBoxDirectUploadUrl, net::HTTP_CREATED);
 
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
@@ -391,10 +406,10 @@ TEST_F(BoxUploader_WholeFileTest, SuccessfulUpload) {
   EXPECT_TRUE(upload_success_);
 }
 
-TEST_F(BoxUploader_WholeFileTest, UnexpectedFailure) {
+TEST_F(BoxDirectUploaderTest, UnexpectedFailure) {
   // Check that the API calls flow is terminated upon any other failure code
   // other than net::HTTP_UNAUTHORIZED.
-  AddFetchResult(kFileSystemBoxWholeFileUploadUrl, net::HTTP_NOT_FOUND);
+  AddFetchResult(kFileSystemBoxDirectUploadUrl, net::HTTP_NOT_FOUND);
 
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();

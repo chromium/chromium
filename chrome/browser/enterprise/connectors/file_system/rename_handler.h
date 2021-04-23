@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item_rename_handler.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -24,6 +23,7 @@ class WebContents;
 namespace enterprise_connectors {
 
 class AccessTokenFetcher;
+class BoxUploader;
 
 // Experimental flag to enable or disable the file system connector.
 extern const base::Feature kFileSystemConnectorEnabled;
@@ -50,7 +50,7 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
                                 const std::string& refresh_token);
 
   // These methods are declared protected so that they can be used in tests.
-  BoxUploader* GetUploaderForTesting();
+  BoxUploader* GetUploaderForTesting() const;
   // Callback for PromptUserSignInForAuthorization().
   void OnAuthorization(const GoogleServiceAuthError& status,
                        const std::string& access_token,
@@ -100,7 +100,7 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
 
   std::unique_ptr<AccessTokenFetcher> token_fetcher_;
   // Main uploader that manages the entire API call flow of file upload.
-  BoxUploader uploader_;
+  std::unique_ptr<BoxUploader> uploader_;
   base::WeakPtrFactory<FileSystemRenameHandler> weak_factory_{this};
 };
 

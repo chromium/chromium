@@ -106,4 +106,10 @@ void BoxUploaderTestBase::UploaderFinished(bool success) {
   Quit();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// MockApiCallFlow
+////////////////////////////////////////////////////////////////////////////////
+MockApiCallFlow::MockApiCallFlow() = default;
+MockApiCallFlow::~MockApiCallFlow() = default;
+
 }  // namespace enterprise_connectors

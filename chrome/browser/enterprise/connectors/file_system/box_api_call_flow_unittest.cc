@@ -398,7 +398,7 @@ class BoxWholeFileUploadApiCallFlowTest
 };
 
 TEST_F(BoxWholeFileUploadApiCallFlowTest, CreateApiCallUrl) {
-  GURL url(kFileSystemBoxWholeFileUploadUrl);
+  GURL url(kFileSystemBoxDirectUploadUrl);
   ASSERT_EQ(flow_->CreateApiCallUrl(), url);
 }
 
@@ -470,7 +470,6 @@ TEST_F(BoxWholeFileUploadApiCallFlowTest, ProcessApiCallSuccess) {
 
 TEST_F(BoxWholeFileUploadApiCallFlowTest,
        ProcessApiCallSuccess_NoFileToDelete) {
-  std::string body;  // Empty placeholder since we don't read from body for now.
   auto http_head = network::CreateURLResponseHead(net::HTTP_CREATED);
   ASSERT_FALSE(base::PathExists(file_path_));  // Make sure file doesn't exist.
 
@@ -480,7 +479,8 @@ TEST_F(BoxWholeFileUploadApiCallFlowTest,
   quit_closure_ = run_loop.QuitClosure();
 
   flow_->ProcessApiCallSuccess(http_head.get(),
-                               std::make_unique<std::string>(body));
+                               std::make_unique<std::string>());
+  // Empty placeholder body since we don't read from body for now.
   run_loop.Run();
 
   ASSERT_EQ(response_code_, net::HTTP_CREATED);
@@ -490,13 +490,13 @@ TEST_F(BoxWholeFileUploadApiCallFlowTest,
 }
 
 TEST_F(BoxWholeFileUploadApiCallFlowTest, ProcessApiCallFailure) {
-  std::string body;  // Empty placeholder since we don't read from body here.
   auto http_head = network::CreateURLResponseHead(net::HTTP_CONFLICT);
 
   base::RunLoop run_loop;
   quit_closure_ = run_loop.QuitClosure();
   flow_->ProcessApiCallFailure(0, http_head.get(),
-                               std::make_unique<std::string>(body));
+                               std::make_unique<std::string>());
+  // Empty placeholder body since we don't read from body for now.
   run_loop.Run();
 
   ASSERT_EQ(response_code_, net::HTTP_CONFLICT);
@@ -521,10 +521,9 @@ TEST_F(BoxWholeFileUploadApiCallFlowFileReadTest, GoodUpload) {
       base::WriteFile(file_path_, "BoxWholeFileUploadApiCallFlowFileReadTest"))
       << file_path_;
 
-  test_url_loader_factory_.AddResponse(
-      kFileSystemBoxWholeFileUploadUrl,
-      std::string(),  // Empty placeholder since we are not reading from body.
-      net::HTTP_CREATED);
+  test_url_loader_factory_.AddResponse(kFileSystemBoxDirectUploadUrl,
+                                       std::string(), net::HTTP_CREATED);
+  // Empty placeholder body since we don't read from body for now.
 
   base::RunLoop run_loop;
   quit_closure_ = run_loop.QuitClosure();

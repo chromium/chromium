@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
-#include "chrome/browser/enterprise/connectors/file_system/box_api_call_flow.h"
 
 #include "base/files/file_util.h"
 #include "base/task/post_task.h"
@@ -30,10 +28,25 @@ bool DeleteIfExists(base::FilePath file_path) {
 
 namespace enterprise_connectors {
 
+////////////////////////////////////////////////////////////////////////////////
+// BoxUploader
+////////////////////////////////////////////////////////////////////////////////
+
+// static
+std::unique_ptr<BoxUploader> BoxUploader::Create(
+    download::DownloadItem* download_item) {
+  if (static_cast<size_t>(download_item->GetTotalBytes()) <
+      BoxApiCallFlow::kChunkFileUploadMinSize) {
+    return std::make_unique<BoxDirectUploader>(download_item);
+  } else {
+    // TODO(https://crbug.com/1192671) BoxChunkedUploader.
+    return nullptr;
+  }
+}
+
 BoxUploader::BoxUploader(download::DownloadItem* download_item)
     : local_file_path_(download_item->GetFullPath()),
-      target_file_name_(download_item->GetTargetFilePath().BaseName()),
-      file_size_(download_item->GetTotalBytes()) {}
+      target_file_name_(download_item->GetTargetFilePath().BaseName()) {}
 
 BoxUploader::~BoxUploader() = default;
 
@@ -41,16 +54,11 @@ void BoxUploader::Init(
     base::RepeatingCallback<void(void)> authentication_retry_callback,
     base::OnceCallback<void(bool)> download_callback,
     PrefService* prefs) {
+  prefs_ = prefs;
   authentication_retry_callback_ = authentication_retry_callback;
   download_callback_ = std::move(download_callback);
-  DCHECK(prefs);
-  prefs_ = prefs;
-  folder_id_ = prefs_->GetString(kFileSystemUploadFolderIdPref);
-  if (!folder_id_.empty()) {
-    current_api_call_ = MakePreflightCheckApiCall();
-  } else {
-    current_api_call_ = MakeFindUpstreamFolderApiCall();
-  }
+  SetCurrentApiCall(GetFolderId().empty() ? MakeFindUpstreamFolderApiCall()
+                                          : MakePreflightCheckApiCall());
 }
 
 void BoxUploader::TryTask(
@@ -73,39 +81,57 @@ void BoxUploader::TryCurrentApiCall() {
 }
 
 bool BoxUploader::EnsureSuccessResponse(bool success, int response_code) {
-  if (!success) {
-    if (response_code == net::HTTP_UNAUTHORIZED) {
-      // Authentication failure, so we need to redo authenticaction.
-      authentication_retry_callback_.Run();
-    } else {
-      // Unexpected error. Clean up, then notify failure to download thread.
-      OnApiCallFlowFailure();
-    }
-    return false;
+  if (success) {
+    return true;
   }
-  return true;
+
+  if (response_code == net::HTTP_UNAUTHORIZED) {
+    // Authentication failure, so we need to redo authenticaction.
+    authentication_retry_callback_.Run();
+  } else {
+    // Unexpected error. Clean up, then notify failure to download thread.
+    LOG(ERROR) << "Upload failed with code " << response_code;
+    OnApiCallFlowFailure();
+  }
+  return false;
 }
 
 void BoxUploader::StartCurrentApiCall() {
   current_api_call_->Start(url_loader_factory_, access_token_);
 }
 
+void BoxUploader::OnApiCallFlowFailure() {
+  OnApiCallFlowDone(false);
+}
+
+void BoxUploader::OnApiCallFlowDone(bool upload_success) {
+  if (!upload_success) {
+    DLOG(ERROR) << "Upload failed";
+    // TODO(https://crbug.com/1165972): on upload failure, decide whether to
+    // queue up the file to retry later, or also delete as usual. At this stage,
+    // for trusted testers (TT), deleting as usual for now. Need to determine
+    // how to communicate the failure/error to user.
+  }
+
+  PostDeleteFileTask(base::BindOnce(
+      &BoxUploader::OnFileDeleted, weak_factory_.GetWeakPtr(), upload_success));
+}
+
 void BoxUploader::OnFindUpstreamFolderResponse(bool success,
                                                int response_code,
                                                const std::string& folder_id) {
   if (!EnsureSuccessResponse(success, response_code)) {
-    current_api_call_ = MakeFindUpstreamFolderApiCall();
+    SetCurrentApiCall(MakeFindUpstreamFolderApiCall());
     return;
   }
 
   if (folder_id.empty()) {
     // Advance to create a new default download folder.
-    current_api_call_ = MakeCreateUpstreamFolderApiCall();
+    SetCurrentApiCall(MakeCreateUpstreamFolderApiCall());
   } else {
-    folder_id_ = folder_id;
-    prefs_->SetString(kFileSystemUploadFolderIdPref, folder_id);
+    SetFolderId(folder_id);
     // Advance to preflight check.
-    current_api_call_ = MakePreflightCheckApiCall();
+    SetCurrentApiCall(MakePreflightCheckApiCall());
   }
   TryCurrentApiCall();
 }
@@ -114,15 +140,14 @@ void BoxUploader::OnCreateUpstreamFolderResponse(bool success,
                                                  int response_code,
                                                  const std::string& folder_id) {
   if (!EnsureSuccessResponse(success, response_code)) {
-    current_api_call_ = MakeCreateUpstreamFolderApiCall();
+    SetCurrentApiCall(MakeCreateUpstreamFolderApiCall());
     return;
   }
 
   CHECK_EQ(folder_id.empty(), false);
-  folder_id_ = folder_id;
-  prefs_->SetString(kFileSystemUploadFolderIdPref, folder_id);
+  SetFolderId(folder_id);
   // Advance to preflight check.
-  current_api_call_ = MakePreflightCheckApiCall();
+  SetCurrentApiCall(MakePreflightCheckApiCall());
   TryCurrentApiCall();
 }
 
@@ -130,7 +155,7 @@ void BoxUploader::OnPreflightCheckResponse(bool success, int response_code) {
   if (success) {
     // Create an upload session with the same folder_id and name and continue
     CHECK_EQ(response_code, net::HTTP_OK);
-    current_api_call_ = MakeFileUploadApiCall();
+    SetCurrentApiCall(MakeFileUploadApiCall());
     TryCurrentApiCall();
     return;
   }
@@ -141,15 +166,14 @@ void BoxUploader::OnPreflightCheckResponse(bool success, int response_code) {
       break;
     case net::HTTP_UNAUTHORIZED:
       // Authentication failure, we need to reauth and redo the preflight check.
-      current_api_call_ = MakePreflightCheckApiCall();
+      SetCurrentApiCall(MakePreflightCheckApiCall());
       authentication_retry_callback_.Run();
       break;
     case net::HTTP_NOT_FOUND:
       // Probably because folder id has changed or been deleted. Restart
-      // from the top
-      prefs_->SetString(kFileSystemUploadFolderIdPref, std::string());
-      folder_id_ = std::string();
-      current_api_call_ = MakeFindUpstreamFolderApiCall();
+      // from the beginning.
+      SetFolderId(std::string());
+      SetCurrentApiCall(MakeFindUpstreamFolderApiCall());
       TryCurrentApiCall();
       break;
     default:
@@ -165,19 +189,6 @@ std::unique_ptr<OAuth2ApiCallFlow> BoxUploader::MakePreflightCheckApiCall() {
       target_file_name_, folder_id_);
 }
 
-std::unique_ptr<OAuth2ApiCallFlow> BoxUploader::MakeFileUploadApiCall() {
-  if (file_size_ > BoxApiCallFlow::kChunkFileUploadMinSize) {
-    return nullptr;
-    // TODO(https://crbug.com/1192671) Start an upload session to the chunked
-    // file upload endpoint instead.
-  } else {
-    return std::make_unique<BoxWholeFileUploadApiCallFlow>(
-        base::BindOnce(&BoxUploader::OnWholeFileUploadResponse,
-                       weak_factory_.GetWeakPtr()),
-        folder_id_, target_file_name_, local_file_path_);
-  }
-}
-
 std::unique_ptr<OAuth2ApiCallFlow>
 BoxUploader::MakeFindUpstreamFolderApiCall() {
   return std::make_unique<BoxFindUpstreamFolderApiCallFlow>(base::BindOnce(
@@ -191,29 +202,32 @@ BoxUploader::MakeCreateUpstreamFolderApiCall() {
                      weak_factory_.GetWeakPtr()));
 }
 
-void BoxUploader::OnWholeFileUploadResponse(bool success, int response_code) {
-  if (!EnsureSuccessResponse(success, response_code)) {
-    current_api_call_ = MakeFileUploadApiCall();
-    return;
-  }
-  OnApiCallFlowDone(success);
+// Getters & Setters ///////////////////////////////////////////////////////////
+
+const base::FilePath BoxUploader::GetLocalFilePath() const {
+  return local_file_path_;
 }
 
-void BoxUploader::OnApiCallFlowFailure() {
-  return OnApiCallFlowDone(false);
+const base::FilePath BoxUploader::GetTargetFileName() const {
+  return target_file_name_;
 }
 
-void BoxUploader::OnApiCallFlowDone(bool upload_success) {
-  if (!upload_success) {
-    DLOG(ERROR) << "Upload failed";
-    // TODO(https://crbug.com/1165972): on upload failure, decide whether to
-    // queue up the file to retry later, or also delete as usual. At this stage,
-    // for trusted testers (TT), deleting as usual for now. Need to determine
-    // how to communicate the failure/error to user.
+const std::string BoxUploader::GetFolderId() {
+  if (folder_id_.empty()) {
+    DCHECK(prefs_);
+    folder_id_ = prefs_->GetString(kFileSystemUploadFolderIdPref);
   }
+  return folder_id_;
+}
 
-  PostDeleteFileTask(base::BindOnce(
-      &BoxUploader::OnFileDeleted, weak_factory_.GetWeakPtr(), upload_success));
+void BoxUploader::SetFolderId(std::string folder_id) {
+  folder_id_ = folder_id;
+  prefs_->SetString(kFileSystemUploadFolderIdPref, folder_id);
+}
+
+void BoxUploader::SetCurrentApiCall(
+    std::unique_ptr<OAuth2ApiCallFlow> api_call) {
+  current_api_call_ = std::move(api_call);
 }
 
 // File Delete /////////////////////////////////////////////////////////////////
@@ -245,6 +259,33 @@ void BoxUploader::NotifyAuthenFailureForTesting() {
 
 void BoxUploader::NotifyResultForTesting(bool success) {
   std::move(download_callback_).Run(success);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// BoxDirectUploader
+////////////////////////////////////////////////////////////////////////////////
+
+BoxDirectUploader::BoxDirectUploader(download::DownloadItem* download_item)
+    : BoxUploader(download_item) {}
+
+BoxDirectUploader::~BoxDirectUploader() = default;
+
+std::unique_ptr<OAuth2ApiCallFlow> BoxDirectUploader::MakeFileUploadApiCall() {
+  return std::make_unique<BoxWholeFileUploadApiCallFlow>(
+      base::BindOnce(&BoxDirectUploader::OnWholeFileUploadResponse,
+                     weak_factory_.GetWeakPtr()),
+      GetFolderId(), GetTargetFileName(), GetLocalFilePath());
+}
+
+void BoxDirectUploader::OnWholeFileUploadResponse(bool success,
+                                                  int response_code) {
+  if (!EnsureSuccessResponse(success, response_code)) {
+    SetCurrentApiCall(MakeFileUploadApiCall());
+    return;
+  }
+
+  // Report upload success back to the download thread.
+  OnApiCallFlowDone(success);
 }
 
 }  // namespace enterprise_connectors

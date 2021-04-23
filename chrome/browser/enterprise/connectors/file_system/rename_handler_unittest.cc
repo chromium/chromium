@@ -4,14 +4,13 @@
 
 #include "chrome/browser/enterprise/connectors/file_system/rename_handler.h"
 
-#include <tuple>
-
 #include "base/json/json_reader.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
+#include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/os_crypt/os_crypt_mocker.h"
@@ -108,6 +107,7 @@ const char ATokenBySignIn[] = "ATokenBySignIn";
 const char RTokenBySignIn[] = "RTokenBySignIn";
 const char ATokenByFetcher[] = "ATokenByFetcher";
 const char RTokenForFetcher[] = "RTokenForFetcher";
+
 class FileSystemRenameHandlerForTest : public FileSystemRenameHandler {
  public:
   using FileSystemRenameHandler::FileSystemRenameHandler;
@@ -200,6 +200,7 @@ class FileSystemRenameHandlerTest : public testing::Test {
         content::DownloadItemUtils::GetBrowserContext(&item_));
     auto settings = service->GetFileSystemSettings(
         item_.GetURL(), FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
+    settings->service_provider = "box";
     handler_ = std::make_unique<FileSystemRenameHandlerForTest>(
         &item_, std::move(settings.value()));
   }
