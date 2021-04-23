@@ -4,8 +4,11 @@
 
 package org.chromium.components.messages;
 
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
+
+import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -17,6 +20,10 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  * Properties of message banner.
  */
 public class MessageBannerProperties {
+    /** A Color value indicating that the "natural" colors from the image should be used. */
+    @ColorInt
+    public static final int TINT_NONE = Color.TRANSPARENT;
+
     public static final WritableObjectPropertyKey<String> PRIMARY_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> ON_PRIMARY_ACTION =
@@ -30,6 +37,12 @@ public class MessageBannerProperties {
     public static final WritableObjectPropertyKey<Drawable> ICON =
             new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey ICON_RESOURCE_ID = new WritableIntPropertyKey();
+
+    /**
+     * If left unspecified, this will be default_icon_color_blue. {@link #TINT_NONE} can be used to
+     * completely remove the tint.
+     */
+    public static final WritableIntPropertyKey ICON_TINT_COLOR = new WritableIntPropertyKey();
     // Secondary icon is shown as a button, so content description should be always set.
     public static final WritableObjectPropertyKey<Drawable> SECONDARY_ICON =
             new WritableObjectPropertyKey<>();
@@ -59,7 +72,7 @@ public class MessageBannerProperties {
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {PRIMARY_BUTTON_TEXT,
             PRIMARY_BUTTON_CLICK_LISTENER, TITLE, DESCRIPTION, ICON, ICON_RESOURCE_ID,
-            SECONDARY_ICON, SECONDARY_ICON_RESOURCE_ID, SECONDARY_BUTTON_MENU_TEXT,
+            ICON_TINT_COLOR, SECONDARY_ICON, SECONDARY_ICON_RESOURCE_ID, SECONDARY_BUTTON_MENU_TEXT,
             SECONDARY_ICON_CONTENT_DESCRIPTION, TRANSLATION_X, TRANSLATION_Y, ALPHA,
             ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION, ON_SECONDARY_ACTION, ON_DISMISSED};
 }

@@ -8,6 +8,7 @@ import static org.chromium.components.messages.MessageBannerProperties.ALPHA;
 import static org.chromium.components.messages.MessageBannerProperties.DESCRIPTION;
 import static org.chromium.components.messages.MessageBannerProperties.ICON;
 import static org.chromium.components.messages.MessageBannerProperties.ICON_RESOURCE_ID;
+import static org.chromium.components.messages.MessageBannerProperties.ICON_TINT_COLOR;
 import static org.chromium.components.messages.MessageBannerProperties.ON_SECONDARY_ACTION;
 import static org.chromium.components.messages.MessageBannerProperties.ON_TOUCH_RUNNABLE;
 import static org.chromium.components.messages.MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER;
@@ -46,6 +47,8 @@ public class MessageBannerViewBinder {
         } else if (propertyKey == ICON_RESOURCE_ID) {
             view.setIcon(
                     AppCompatResources.getDrawable(view.getContext(), model.get(ICON_RESOURCE_ID)));
+        } else if (propertyKey == ICON_TINT_COLOR) {
+            view.setIconTint(model.get(ICON_TINT_COLOR));
         } else if (propertyKey == SECONDARY_ICON) {
             view.setSecondaryIcon(model.get(SECONDARY_ICON));
         } else if (propertyKey == SECONDARY_ICON_RESOURCE_ID) {
