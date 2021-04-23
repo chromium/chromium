@@ -82,6 +82,8 @@ void DevToolsFrontendImpl::DidClearWindowObject() {
     ScriptState* script_state = ToScriptStateForMainWorld(GetSupplementable());
     DCHECK(script_state);
     ScriptState::Scope scope(script_state);
+    v8::MicrotasksScope microtasks_scope(
+        isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
     if (devtools_host_)
       devtools_host_->DisconnectClient();
     devtools_host_ =
