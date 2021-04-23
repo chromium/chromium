@@ -395,9 +395,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   //    Keeps the process alive briefly to give subframe unload handlers a
   //    chance to execute after their parent frame navigates or is detached.
   //    See https://crbug.com/852204.
-  //  - Process reuse timer (experimental):
-  //    Keeps the process alive for a set period of time in case it can be
-  //    reused for the same site. See https://crbug.com/894253.
   virtual void IncrementKeepAliveRefCount() = 0;
   virtual void DecrementKeepAliveRefCount() = 0;
 
