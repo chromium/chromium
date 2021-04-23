@@ -3194,6 +3194,8 @@ enum WebFeature {
   kRequestedFileSystemPersistentThirdPartyContext = 3879,
   kPrefixedStorageInfoThirdPartyContext = 3880,
   kCrossOriginEmbedderPolicyCorsOrCredentialless = 3881,
+  kPostMessageFromSecureToSecure = 3882,
+  kPostMessageFromInsecureToInsecure = 3883,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
