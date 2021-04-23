@@ -407,3 +407,13 @@ export function sendBarcodeDetectedEvent({contentType}) {
     eventLabel: contentType,
   });
 }
+
+/**
+ * Sends the open ptz panel event.
+ */
+export function sendOpenPTZPanelEvent() {
+  sendEvent({
+    eventCategory: 'ptz',
+    eventAction: 'open-panel',
+  });
+}
