@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Consumer;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -24,6 +25,9 @@ import java.util.Map;
  *
  * This class is capable of doing multiple concurrent requests; this class should only be created
  * once for each unique profile.
+ *
+ * This class should be to be used in UI thread, as it is depending on a UrlLoading which expected
+ * to be used on UI thread in native.
  */
 @JNINamespace("survey")
 public class SurveyHttpClientBridge {
@@ -87,6 +91,7 @@ public class SurveyHttpClientBridge {
             Consumer<HttpResponse> responseConsumer) {
         assert mNativeBridge != 0;
         assert gurl.isValid();
+        ThreadUtils.assertOnUiThread();
 
         String[] headerKeys = headers.keySet().toArray(new String[headers.keySet().size()]);
         String[] headerValues = new String[headerKeys.length];

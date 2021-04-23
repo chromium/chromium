@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.survey;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,6 +20,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.JniMocker;
@@ -55,14 +57,19 @@ public class SurveyHttpClientBridgeUnitTest {
 
     @Before
     public void setUp() {
+        ThreadUtils.setThreadAssertsDisabledForTesting(true);
         mMocker.mock(SurveyHttpClientBridgeJni.TEST_HOOKS, mNativeMock);
-
         Mockito.when(mNativeMock.init(HttpClientType.SURVEY, mMockProfile))
                 .thenReturn(FAKE_NATIVE_POINTER);
 
         mSurveyHttpClientBridge = new SurveyHttpClientBridge(HttpClientType.SURVEY, mMockProfile);
 
         Mockito.verify(mNativeMock).init(HttpClientType.SURVEY, mMockProfile);
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.setThreadAssertsDisabledForTesting(false);
     }
 
     @Test
