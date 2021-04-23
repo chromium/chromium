@@ -163,6 +163,10 @@ void AssistantWebContainerView::RemoveContents() {
 
   SetFocusBehavior(FocusBehavior::NEVER);
 
+  // Remove back button.
+  web_container_view_delegate_->UpdateBackButtonVisibility(
+      GetWidget(),
+      /*can_go_back=*/false);
   RemoveChildViewT(contents_view_ptr_)->RemoveObserver(this);
   contents_view_ptr_ = nullptr;
 }

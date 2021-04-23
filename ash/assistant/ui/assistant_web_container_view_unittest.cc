@@ -158,4 +158,30 @@ TEST_F(AssistantWebContainerViewTest, BackButtonShouldPaintAsActive) {
   ASSERT_TRUE(back_button->GetPaintAsActive());
 }
 
+TEST_F(AssistantWebContainerViewTest, ShouldRemoveBackButton) {
+  // Show Assistant Settings UI.
+  OpenAssistantSettings();
+  ASSERT_TRUE(view());
+
+  views::FrameCaptionButton* back_button = nullptr;
+  back_button = GetBackButton(view()->GetWidget());
+  ASSERT_FALSE(back_button);
+
+  view()->OpenUrl(GURL("test1"));
+  view()->DidStopLoading();
+  back_button = GetBackButton(view()->GetWidget());
+  ASSERT_FALSE(back_button);
+
+  view()->SetCanGoBackForTesting(/*can_go_back=*/true);
+  back_button = GetBackButton(view()->GetWidget());
+  ASSERT_TRUE(back_button);
+  ASSERT_TRUE(back_button->GetVisible());
+
+  // Open another URL will remove the back button.
+  view()->OpenUrl(GURL("test2"));
+  view()->DidStopLoading();
+  back_button = GetBackButton(view()->GetWidget());
+  ASSERT_FALSE(back_button);
+}
+
 }  // namespace ash
