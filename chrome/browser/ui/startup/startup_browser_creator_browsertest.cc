@@ -131,6 +131,11 @@ using testing::Return;
 #include "chrome/browser/chrome_browser_application_mac.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#endif
+
 using testing::_;
 using extensions::Extension;
 
@@ -969,7 +974,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 // This tests that opening multiple profiles with session restore enabled,
 // shutting down, and then launching with kNoStartupWindow doesn't restore
 // the previously opened profiles.
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, RestoreWithNoStartupWindow) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(https://crbug.com/1196684): enable this test on Lacros.
+#define MAYBE_RestoreWithNoStartupWindow DISABLED_RestoreWithNoStartupWindow
+#else
+#define MAYBE_RestoreWithNoStartupWindow RestoreWithNoStartupWindow
+#endif
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
+                       MAYBE_RestoreWithNoStartupWindow) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -1718,8 +1730,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorExtensionsCheckupExperimentTest,
   AddExtension();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(https://crbug.com/1196684): enable this test on Lacros.
+#define MAYBE_ExtensionsCheckup DISABLED_ExtensionsCheckup
+#else
+#define MAYBE_ExtensionsCheckup ExtensionsCheckup
+#endif
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorExtensionsCheckupExperimentTest,
-                       ExtensionsCheckup) {
+                       MAYBE_ExtensionsCheckup) {
   // The new browser should have exactly two tabs (chrome://extensions page and
   // the NTP).
   TabStripModel* tab_strip = browser()->tab_strip_model();
@@ -1949,6 +1967,19 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, WelcomePages) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  const crosapi::mojom::BrowserInitParams* init_params =
+      chromeos::LacrosChromeServiceImpl::Get()->init_params();
+  if (init_params->use_new_account_manager) {
+    // Welcome page should not be shown for the first/main profile on Lacros.
+    // (about:blank or new tab page will be shown instead)
+    TabStripModel* tab_strip = browser()->tab_strip_model();
+    ASSERT_EQ(1, tab_strip->count());
+    EXPECT_NE(chrome::kChromeUIWelcomeURL,
+              tab_strip->GetWebContentsAt(0)->GetURL().possibly_invalid_spec());
+  }
+#endif
+
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
   // Open the two profiles.
@@ -1968,13 +1999,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, WelcomePages) {
   Browser* browser = OpenNewBrowser(profile1_ptr);
   ASSERT_TRUE(browser);
 
-  TabStripModel* tab_strip = browser->tab_strip_model();
+  TabStripModel* tab_strip1 = browser->tab_strip_model();
 
   // Ensure that the standard Welcome page appears on second run on Win 10, and
   // on first run on all other platforms.
-  ASSERT_EQ(1, tab_strip->count());
+  // On Lacros Welcome page appears in the new (non-main) profile.
+  ASSERT_EQ(1, tab_strip1->count());
   EXPECT_EQ(chrome::kChromeUIWelcomeURL,
-            tab_strip->GetWebContentsAt(0)->GetURL().possibly_invalid_spec());
+            tab_strip1->GetWebContentsAt(0)->GetURL().possibly_invalid_spec());
 
   // TODO(crbug.com/88586): Adapt this test for DestroyProfileOnBrowserClose.
   ScopedProfileKeepAlive profile1_keep_alive(
@@ -1982,12 +2014,12 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, WelcomePages) {
 
   browser = CloseBrowserAndOpenNew(browser, profile1_ptr);
   ASSERT_TRUE(browser);
-  tab_strip = browser->tab_strip_model();
+  tab_strip1 = browser->tab_strip_model();
 
   // Ensure that the new tab page appears on subsequent runs.
-  ASSERT_EQ(1, tab_strip->count());
+  ASSERT_EQ(1, tab_strip1->count());
   EXPECT_EQ(chrome::kChromeUINewTabURL,
-            tab_strip->GetWebContentsAt(0)->GetURL().possibly_invalid_spec());
+            tab_strip1->GetWebContentsAt(0)->GetURL().possibly_invalid_spec());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
