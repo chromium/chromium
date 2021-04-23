@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.permissions;
 
 import android.Manifest;
 
+import android.os.Build.VERSION_CODES;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -15,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.download.DownloadController;
 import org.chromium.chrome.browser.download.DownloadItem;
@@ -148,9 +150,12 @@ public class RuntimePermissionTest {
     }
 
     @Test
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.Q,
+            message = "Test has been very flaky crbug.com/1179099")
     @MediumTest
     @Feature({"RuntimePermissions", "Downloads"})
-    public void testDenyRuntimeDownload() throws Exception {
+    public void
+    testDenyRuntimeDownload() throws Exception {
         DownloadObserver observer = new DownloadObserver() {
             @Override
             public void onAllDownloadsRetrieved(
