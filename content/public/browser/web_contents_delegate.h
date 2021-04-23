@@ -686,6 +686,10 @@ class CONTENT_EXPORT WebContentsDelegate {
   // Returns true if lazy loading of images and frames should be enabled.
   virtual bool ShouldAllowLazyLoad();
 
+  // Return true if the back forward cache is supported. This is not an
+  // indication that the cache will be used.
+  virtual bool IsBackForwardCacheSupported();
+
   // Requests the delegate to replace |predecessor_contents| with
   // |portal_contents| in the container that holds |predecessor_contents|. If
   // the delegate successfully replaces |predecessor_contents|, the return

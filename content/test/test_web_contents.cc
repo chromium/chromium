@@ -145,6 +145,10 @@ void TestWebContents::OnWebPreferencesChanged() {
     ++*web_preferences_changed_counter_;
 }
 
+void TestWebContents::SetBackForwardCacheSupported(bool supported) {
+  back_forward_cache_supported_ = supported;
+}
+
 bool TestWebContents::IsPageFrozen() {
   return is_page_frozen_;
 }
@@ -401,6 +405,10 @@ WebContents* TestWebContents::GetPortalContents(
 
 void TestWebContents::SetPageFrozen(bool frozen) {
   is_page_frozen_ = frozen;
+}
+
+bool TestWebContents::IsBackForwardCacheSupported() {
+  return back_forward_cache_supported_;
 }
 
 }  // namespace content

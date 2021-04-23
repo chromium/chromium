@@ -590,6 +590,10 @@ void Shell::ActivateContents(WebContents* contents) {
 #endif
 }
 
+bool Shell::IsBackForwardCacheSupported() {
+  return true;
+}
+
 std::unique_ptr<WebContents> Shell::ActivatePortalWebContents(
     WebContents* predecessor_contents,
     std::unique_ptr<WebContents> portal_contents) {

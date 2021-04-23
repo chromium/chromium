@@ -1453,6 +1453,10 @@ void Browser::ExitPictureInPicture() {
   PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
 }
 
+bool Browser::IsBackForwardCacheSupported() {
+  return true;
+}
+
 std::unique_ptr<content::WebContents> Browser::ActivatePortalWebContents(
     content::WebContents* predecessor_contents,
     std::unique_ptr<content::WebContents> portal_contents) {

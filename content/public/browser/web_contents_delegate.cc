@@ -330,6 +330,10 @@ bool WebContentsDelegate::ShouldAllowLazyLoad() {
   return true;
 }
 
+bool WebContentsDelegate::IsBackForwardCacheSupported() {
+  return false;
+}
+
 std::unique_ptr<WebContents> WebContentsDelegate::ActivatePortalWebContents(
     WebContents* predecessor_contents,
     std::unique_ptr<WebContents> portal_contents) {

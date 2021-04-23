@@ -739,6 +739,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       blink::mojom::TextAutosizerPageInfoPtr page_info) override;
   bool HasSeenRecentScreenOrientationChange() override;
   bool IsTransientAllowFullscreenActive() const override;
+  bool IsBackForwardCacheSupported() override;
   RenderWidgetHostImpl* CreateNewPopupWidget(
       AgentSchedulingGroupHost& agent_scheduling_group,
       int32_t route_id,

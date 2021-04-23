@@ -1475,7 +1475,8 @@ TEST_F(MetricsWebContentsObserverTest, RecordFeatureUsageNoObserver) {
 }
 
 class MetricsWebContentsObserverBackForwardCacheTest
-    : public MetricsWebContentsObserverTest {
+    : public MetricsWebContentsObserverTest,
+      public content::WebContentsDelegate {
   class CreatedPageLoadTrackerObserver
       : public MetricsWebContentsObserver::TestingObserver {
    public:
@@ -1512,7 +1513,11 @@ class MetricsWebContentsObserverBackForwardCacheTest
     created_page_load_tracker_observer_ =
         std::make_unique<CreatedPageLoadTrackerObserver>(web_contents());
     observer()->AddTestingObserver(created_page_load_tracker_observer_.get());
+    web_contents()->SetDelegate(this);
   }
+
+  // content::WebContentsDelegate:
+  bool IsBackForwardCacheSupported() override { return true; }
 
  private:
   base::test::ScopedFeatureList feature_list_;

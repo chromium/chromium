@@ -16,6 +16,17 @@
 
 namespace content {
 
+namespace {
+
+class BackForwardCacheWebContentsDelegate : public WebContentsDelegate {
+ public:
+  BackForwardCacheWebContentsDelegate() = default;
+
+  bool IsBackForwardCacheSupported() override { return true; }
+};
+
+}  // namespace
+
 class BackForwardCacheMetricsTest : public RenderViewHostImplTestHarness,
                                     public WebContentsObserver {
  public:
@@ -27,6 +38,7 @@ class BackForwardCacheMetricsTest : public RenderViewHostImplTestHarness,
     WebContents* web_contents = RenderViewHostImplTestHarness::web_contents();
     ASSERT_TRUE(web_contents);  // The WebContents should be created by now.
     WebContentsObserver::Observe(web_contents);
+    web_contents->SetDelegate(&web_contents_delegate_);
 
     // Ensure that the time is non-null.
     clock_.Advance(base::TimeDelta::FromMilliseconds(5));
@@ -44,6 +56,8 @@ class BackForwardCacheMetricsTest : public RenderViewHostImplTestHarness,
 
  protected:
   ukm::TestAutoSetUkmRecorder recorder_;
+
+  BackForwardCacheWebContentsDelegate web_contents_delegate_;
 
   base::SimpleTestTickClock clock_;
 

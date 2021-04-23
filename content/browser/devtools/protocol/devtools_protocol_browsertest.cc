@@ -2196,6 +2196,9 @@ class DevToolsProtocolBackForwardCacheTest : public DevToolsProtocolTest {
   }
   ~DevToolsProtocolBackForwardCacheTest() override = default;
 
+  // content::WebContentsDelegate:
+  bool IsBackForwardCacheSupported() override { return true; }
+
   std::string Evaluate(std::string script, base::Location location) {
     std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
     params->SetString("expression", script);

@@ -10588,4 +10588,32 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithMediaSession,
                     {}, {}, {reason}, FROM_HERE);
 }
 
+// Test if the delegate doesn't support BFCache that the reason is
+// recorded correctly.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DelegateDoesNotSupportBackForwardCache) {
+  // Set the delegate to null to force the default behavior.
+  web_contents()->SetDelegate(nullptr);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  // BackForwardCache is empty.
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  // BackForwardCache contains only rfh_a.
+  RenderFrameHostImpl* rfh_b = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
+
+  web_contents()->GetController().GoToOffset(-1);
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                         kBackForwardCacheDisabledForDelegate},
+                    {}, {}, {}, FROM_HERE);
+}
+
 }  // namespace content

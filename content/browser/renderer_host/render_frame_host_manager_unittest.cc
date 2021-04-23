@@ -3269,7 +3269,8 @@ TEST_P(RenderFrameHostManagerTest,
 
 // Run tests with BackForwardCache.
 class RenderFrameHostManagerTestWithBackForwardCache
-    : public RenderFrameHostManagerTest {
+    : public RenderFrameHostManagerTest,
+      public WebContentsDelegate {
  public:
   RenderFrameHostManagerTestWithBackForwardCache() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -3281,6 +3282,8 @@ class RenderFrameHostManagerTestWithBackForwardCache
         // Allow BackForwardCache for all devices regardless of their memory.
         /*disabled_features=*/{features::kBackForwardCacheMemoryControls});
   }
+
+  bool IsBackForwardCacheSupported() override { return true; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -3296,6 +3299,7 @@ TEST_P(RenderFrameHostManagerTestWithBackForwardCache,
   const GURL kUrl2("http://www.chromium.org");
   const GURL kUrl3("http://foo.com");
 
+  contents()->SetDelegate(this);
   contents()->NavigateAndCommit(kUrl1);
 
   TestRenderFrameHost* initial_rfh = main_test_rfh();

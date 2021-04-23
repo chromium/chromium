@@ -6759,6 +6759,7 @@ others/histograms.xml -->
   <int value="45" label="Network request data pipe drained as byte consumer"/>
   <int value="46" label="Foreground cache limit"/>
   <int value="47" label="Browsing instance not swapped"/>
+  <int value="48" label="Disabled for delegate"/>
 </enum>
 
 <enum name="BackForwardCacheReloadsAfterHistoryNavigation">

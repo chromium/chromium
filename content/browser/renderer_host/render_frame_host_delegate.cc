@@ -171,6 +171,10 @@ bool RenderFrameHostDelegate::IsTransientAllowFullscreenActive() const {
   return false;
 }
 
+bool RenderFrameHostDelegate::IsBackForwardCacheSupported() {
+  return false;
+}
+
 RenderWidgetHostImpl* RenderFrameHostDelegate::CreateNewPopupWidget(
     AgentSchedulingGroupHost& agent_scheduling_group,
     int32_t route_id,

@@ -463,6 +463,10 @@ void TabWebContentsDelegateAndroid::ExitPictureInPicture() {
   PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
 }
 
+bool TabWebContentsDelegateAndroid::IsBackForwardCacheSupported() {
+  return true;
+}
+
 std::unique_ptr<content::WebContents>
 TabWebContentsDelegateAndroid::ActivatePortalWebContents(
     content::WebContents* predecessor_contents,

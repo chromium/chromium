@@ -156,6 +156,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Network requests' datapipe has been passed as bytes consumer";
     case Reason::kBrowsingInstanceNotSwapped:
       return "Browsing instance is not swapped";
+    case Reason::kBackForwardCacheDisabledForDelegate:
+      return "BackForwardCache is not supported by delegate";
   }
 }
 

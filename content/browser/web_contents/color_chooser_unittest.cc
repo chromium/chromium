@@ -49,6 +49,8 @@ class OpenColorChooserDelegate : public WebContentsDelegate {
     return std::move(mock_color_chooser_).release();
   }
 
+  bool IsBackForwardCacheSupported() override { return true; }
+
  private:
   std::unique_ptr<MockColorChooser> mock_color_chooser_;
 
@@ -63,9 +65,6 @@ TEST_F(ColorChooserUnitTest, ColorChooserCallsEndOnNavigatingAway) {
   GURL kUrl1("https://foo.com");
   GURL kUrl2("https://bar.com");
 
-  // Navigate to A.
-  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kUrl1);
-
   // End should be called at least once on navigating to a new URL.
   std::unique_ptr<MockColorChooser> mock_color_chooser =
       std::make_unique<MockColorChooser>();
@@ -75,6 +74,9 @@ TEST_F(ColorChooserUnitTest, ColorChooserCallsEndOnNavigatingAway) {
   std::unique_ptr<OpenColorChooserDelegate> delegate =
       std::make_unique<OpenColorChooserDelegate>(std::move(mock_color_chooser));
   contents()->SetDelegate(delegate.get());
+
+  // Navigate to A.
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kUrl1);
 
   mojo::PendingRemote<blink::mojom::ColorChooserClient> pending_client;
   mojo::Remote<blink::mojom::ColorChooser> pending_remote;
@@ -118,10 +120,6 @@ TEST_F(ColorChooserTestWithBackForwardCache,
   GURL kUrl1("https://foo.com");
   GURL kUrl2("https://bar.com");
 
-  // Navigate to A.
-  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kUrl1);
-  RenderFrameHostImpl* rfh_a = contents()->GetMainFrame();
-
   // End should be called at least once on navigating to a new URL.
   std::unique_ptr<MockColorChooser> mock_color_chooser =
       std::make_unique<MockColorChooser>();
@@ -131,6 +129,10 @@ TEST_F(ColorChooserTestWithBackForwardCache,
   std::unique_ptr<OpenColorChooserDelegate> delegate =
       std::make_unique<OpenColorChooserDelegate>(std::move(mock_color_chooser));
   contents()->SetDelegate(delegate.get());
+
+  // Navigate to A.
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kUrl1);
+  RenderFrameHostImpl* rfh_a = contents()->GetMainFrame();
 
   mojo::PendingRemote<blink::mojom::ColorChooserClient> pending_client;
   mojo::Remote<blink::mojom::ColorChooser> pending_remote;

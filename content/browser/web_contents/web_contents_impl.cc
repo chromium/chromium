@@ -8408,6 +8408,12 @@ bool WebContentsImpl::IsTransientAllowFullscreenActive() const {
   return transient_allow_fullscreen_.IsActive();
 }
 
+bool WebContentsImpl::IsBackForwardCacheSupported() {
+  if (!GetDelegate())
+    return false;
+  return GetDelegate()->IsBackForwardCacheSupported();
+}
+
 void WebContentsImpl::DidChangeScreenOrientation() {
   last_screen_orientation_change_time_ = ui::EventTimeForNow();
 }

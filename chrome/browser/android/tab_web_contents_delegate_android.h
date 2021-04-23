@@ -102,6 +102,7 @@ class TabWebContentsDelegateAndroid
       const viz::SurfaceId&,
       const gfx::Size&) override;
   void ExitPictureInPicture() override;
+  bool IsBackForwardCacheSupported() override;
   std::unique_ptr<content::WebContents> ActivatePortalWebContents(
       content::WebContents* predecessor_contents,
       std::unique_ptr<content::WebContents> portal_contents) override;

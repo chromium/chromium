@@ -138,6 +138,8 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
     web_preferences_changed_counter_ = counter;
   }
 
+  void SetBackForwardCacheSupported(bool supported);
+
   bool IsPageFrozen() override;
 
   TestRenderFrameHost* GetSpeculativePrimaryMainFrame();
@@ -178,6 +180,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
                             RenderFrameHost* rfh) override;
   void ReattachToOuterWebContentsFrame() override {}
   void SetPageFrozen(bool frozen) override;
+  bool IsBackForwardCacheSupported() override;
 
   RenderViewHostDelegateView* delegate_view_override_;
 
@@ -193,6 +196,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   bool pause_subresource_loading_called_;
   base::UnguessableToken audio_group_id_;
   bool is_page_frozen_;
+  bool back_forward_cache_supported_ = true;
 };
 
 }  // namespace content

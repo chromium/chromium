@@ -434,6 +434,12 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
   if (rfh->GetParent())
     result.No(BackForwardCacheMetrics::NotRestoredReason::kNotMainFrame);
 
+  // If the the delegate doesn't support back forward cache, disable it.
+  if (!rfh->delegate()->IsBackForwardCacheSupported()) {
+    result.No(BackForwardCacheMetrics::NotRestoredReason::
+                  kBackForwardCacheDisabledForDelegate);
+  }
+
   if (!IsBackForwardCacheEnabled() || is_disabled_for_testing_ ||
       // TODO(https://crbug.com/1176151): Replace with LifecycleState check once
       // it tracks prerender too.

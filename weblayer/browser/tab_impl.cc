@@ -1065,6 +1065,10 @@ bool TabImpl::OnlyExpandTopControlsAtPageTop() {
 #endif
 }
 
+bool TabImpl::IsBackForwardCacheSupported() {
+  return true;
+}
+
 void TabImpl::RequestMediaAccessPermission(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,

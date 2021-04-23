@@ -98,7 +98,8 @@ class BackForwardCacheMetrics
     kNetworkRequestDatapipeDrainedAsBytesConsumer = 45,
     kForegroundCacheLimit = 46,
     kBrowsingInstanceNotSwapped = 47,
-    kMaxValue = kBrowsingInstanceNotSwapped,
+    kBackForwardCacheDisabledForDelegate = 48,
+    kMaxValue = kBackForwardCacheDisabledForDelegate,
   };
 
   using NotRestoredReasons =
