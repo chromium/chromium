@@ -838,7 +838,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   using TaskQueueVoterMap = std::map<
       scoped_refptr<MainThreadTaskQueue>,
       std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>,
-      recordreplay::CompareRefptrByPointerId<MainThreadTaskQueue>>;
+      recordreplay::CompareRefptrByPointerId<scoped_refptr<MainThreadTaskQueue>>>;
 
   TaskQueueVoterMap task_runners_;
 

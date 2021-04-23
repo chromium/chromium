@@ -76,12 +76,10 @@ struct CompareByPointerId {
   }
 };
 
-template <typename T>
-class scoped_refptr;
-
+// For use with scoped_refptr and similar.
 template <typename T>
 struct CompareRefptrByPointerId {
-  bool operator()(const scoped_refptr<T>& a, const scoped_refptr<T>& b) const {
+  bool operator()(const T& a, const T& b) const {
     if (IsRecordingOrReplaying()) {
       int ida = PointerId(a.get());
       int idb = PointerId(b.get());
