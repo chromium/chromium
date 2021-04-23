@@ -7,7 +7,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/site_instance_impl.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/navigation_simulator_impl.h"
@@ -73,13 +72,6 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
     return web_contents;
   }
 
-  PrerenderHostRegistry* GetPrerenderHostRegistry() const {
-    return static_cast<StoragePartitionImpl*>(
-               BrowserContext::GetDefaultStoragePartition(
-                   browser_context_.get()))
-        ->GetPrerenderHostRegistry();
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -92,7 +84,7 @@ TEST_F(PrerenderHostTest, Activate) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
-  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
 
   // Start prerendering a page.
   const GURL kPrerenderingUrl("https://example.com/next");
@@ -117,7 +109,7 @@ TEST_F(PrerenderHostTest, DontActivate) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
-  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
 
   const GURL kPrerenderingUrl("https://example.com/next");
   auto attributes = blink::mojom::PrerenderAttributes::New();
@@ -138,7 +130,7 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
-  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
 
   // Start prerendering a page.
   const GURL kPrerenderingUrl("https://example.com/next");
@@ -186,7 +178,7 @@ TEST_F(PrerenderHostTest, SubframeNavigationForReservedHost) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
-  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
 
   // Start prerendering a page.
   const GURL kPrerenderingUrl("https://example.com/next");

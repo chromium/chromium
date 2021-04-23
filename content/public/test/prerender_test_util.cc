@@ -5,9 +5,10 @@
 #include "content/public/test/prerender_test_util.h"
 
 #include "base/callback_helpers.h"
+#include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/storage_partition_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -21,15 +22,13 @@ namespace content {
 namespace test {
 namespace {
 
-PrerenderHostRegistry& GetPrerenderHostRegistry(BrowserContext* context) {
+PrerenderHostRegistry& GetPrerenderHostRegistry(content::WebContents* tab) {
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-  auto* storage_partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(context));
-  return *storage_partition->GetPrerenderHostRegistry();
+  return *static_cast<WebContentsImpl*>(tab)->GetPrerenderHostRegistry();
 }
 
 PrerenderHost* GetPrerenderHostById(content::WebContents* tab, int host_id) {
-  auto& registry = GetPrerenderHostRegistry(tab->GetBrowserContext());
+  auto& registry = GetPrerenderHostRegistry(tab);
   return registry.FindNonReservedHostById(host_id);
 }
 
@@ -39,7 +38,7 @@ class PrerenderHostRegistryObserverImpl
     : public PrerenderHostRegistry::Observer {
  public:
   explicit PrerenderHostRegistryObserverImpl(content::WebContents* tab) {
-    observation_.Observe(&GetPrerenderHostRegistry(tab->GetBrowserContext()));
+    observation_.Observe(&GetPrerenderHostRegistry(tab));
   }
 
   // Returns immediately if `url` was ever triggered before.
@@ -173,8 +172,8 @@ void PrerenderTestHelper::SetUpOnMainThread(
 }
 
 int PrerenderTestHelper::GetHostForUrl(const GURL& gurl) {
-  auto* host = GetPrerenderHostRegistry(GetWebContents()->GetBrowserContext())
-                   .FindHostByUrlForTesting(gurl);
+  auto* host =
+      GetPrerenderHostRegistry(GetWebContents()).FindHostByUrlForTesting(gurl);
   return host ? host->frame_tree_node_id()
               : RenderFrameHost::kNoFrameTreeNodeId;
 }
@@ -186,8 +185,7 @@ void PrerenderTestHelper::WaitForPrerenderLoadCompletion(int host_id) {
 }
 
 void PrerenderTestHelper::WaitForPrerenderLoadCompletion(const GURL& gurl) {
-  PrerenderHostRegistry& registry =
-      GetPrerenderHostRegistry(GetWebContents()->GetBrowserContext());
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry(GetWebContents());
   PrerenderHost* host = registry.FindHostByUrlForTesting(gurl);
   // Wait for the host to be created if it hasn't yet.
   if (!host) {
@@ -261,8 +259,7 @@ void PrerenderTestHelper::NavigatePrimaryPage(const GURL& url) {
 
 ::testing::AssertionResult PrerenderTestHelper::VerifyPrerenderingState(
     const GURL& gurl) {
-  PrerenderHostRegistry& registry =
-      GetPrerenderHostRegistry(GetWebContents()->GetBrowserContext());
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry(GetWebContents());
   PrerenderHost* prerender_host = registry.FindHostByUrlForTesting(gurl);
   RenderFrameHostImpl* prerendered_render_frame_host =
       prerender_host->GetPrerenderedMainFrameHost();

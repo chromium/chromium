@@ -9,7 +9,7 @@
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
-#include "content/browser/storage_partition_impl.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -59,11 +59,10 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   DCHECK(frame_tree_node->IsMainFrame());
   DCHECK(frame_tree_node->frame_tree()->is_prerendering());
 
-  // Get the prerender host registry.
-  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-      frame_tree_node->current_frame_host()->GetStoragePartition());
   PrerenderHostRegistry* prerender_host_registry =
-      storage_partition_impl->GetPrerenderHostRegistry();
+      frame_tree_node->current_frame_host()
+          ->delegate()
+          ->GetPrerenderHostRegistry();
 
   // Disallow navigation from a prerendering page and cancel prerendering.
   RenderFrameHostImpl* initiator_render_frame_host_impl =

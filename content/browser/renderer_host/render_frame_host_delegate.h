@@ -88,6 +88,7 @@ class ClipboardFormatType;
 namespace content {
 class AgentSchedulingGroupHost;
 class FrameTreeNode;
+class PrerenderHostRegistry;
 class RenderFrameHostImpl;
 class RenderWidgetHostImpl;
 class SessionStorageNamespace;
@@ -641,6 +642,11 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual std::vector<RenderFrameHostImpl*>
   GetActiveTopLevelDocumentsInBrowsingContextGroup(
       RenderFrameHostImpl* render_frame_host);
+
+  // Returns the PrerenderHostRegistry to start/cancel prerendering. This
+  // doesn't return nullptr except for some tests. This should only be called
+  // when blink::features::IsPrerender2Enabled() is true.
+  virtual PrerenderHostRegistry* GetPrerenderHostRegistry();
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   virtual void OnPepperInstanceCreated(RenderFrameHostImpl* source,

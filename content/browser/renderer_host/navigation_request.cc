@@ -54,6 +54,7 @@
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/browser/renderer_host/origin_policy_throttle.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
@@ -1449,11 +1450,7 @@ NavigationRequest::~NavigationRequest() {
     // Abandon the prerender host reserved for activation if it exists.
     if (blink::features::IsPrerender2Enabled() &&
         IsPrerenderedPageActivation()) {
-      auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-          frame_tree_node_->current_frame_host()->GetStoragePartition());
-      PrerenderHostRegistry* prerender_host_registry =
-          storage_partition_impl->GetPrerenderHostRegistry();
-      prerender_host_registry->AbandonReservedHost(
+      GetPrerenderHostRegistry().AbandonReservedHost(
           prerender_frame_tree_node_id_);
     }
   }
@@ -1659,13 +1656,9 @@ void NavigationRequest::BeginNavigation() {
   // Find an available prerendered page for the request URL. If it's found,
   // this navigation will activate it instead of loading a page via network.
   if (blink::features::IsPrerender2Enabled()) {
-    auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-        frame_tree_node_->current_frame_host()->GetStoragePartition());
-    PrerenderHostRegistry* prerender_host_registry =
-        storage_partition_impl->GetPrerenderHostRegistry();
     prerender_frame_tree_node_id_ =
-        prerender_host_registry->ReserveHostToActivate(common_params_->url,
-                                                       *frame_tree_node_);
+        GetPrerenderHostRegistry().ReserveHostToActivate(common_params_->url,
+                                                         *frame_tree_node_);
     // If `prerender_frame_tree_node_id_` is not
     // RenderFrameHost::kNoFrameTreeNodeId, this navigation will activate the
     // prerendered page on navigation commit.
@@ -2874,20 +2867,11 @@ void NavigationRequest::OnResponseStarted(
     // BackForwardCache.
     CHECK(render_frame_host_);
   } else if (IsPrerenderedPageActivation()) {
-    RenderFrameHostImpl* current_frame_host =
-        frame_tree_node_->current_frame_host();
     // Prerendering requires changing pages starting at the root node.
     DCHECK(IsInMainFrame());
 
-    // TODO(https://crbug.com/1170619): Remove storage partition ownership of
-    // PrerenderHostRegistry and replace with ownership by WebContentsImpl after
-    // MPArch replaces multiple WebContentsImpl prerender implementation.
-    auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-        current_frame_host->GetStoragePartition());
-    PrerenderHostRegistry* prerender_host_registry =
-        storage_partition_impl->GetPrerenderHostRegistry();
     render_frame_host_ =
-        prerender_host_registry->GetRenderFrameHostForReservedHost(
+        GetPrerenderHostRegistry().GetRenderFrameHostForReservedHost(
             prerender_frame_tree_node_id_);
     // TODO(https://crbug.com/1181712): Handle the cases when the prerender is
     // cancelled and RFH is destroyed while NavigationRequest is alive.
@@ -3140,13 +3124,8 @@ void NavigationRequest::OnRequestFailedInternal(
     if (net_error_ == net::Error::ERR_BLOCKED_BY_CSP) {
       final_status = PrerenderHost::FinalStatus::kNavigationRequestBlockedByCsp;
     }
-
-    auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-        frame_tree_node_->current_frame_host()->GetStoragePartition());
-    PrerenderHostRegistry* prerender_host_registry =
-        storage_partition_impl->GetPrerenderHostRegistry();
-    prerender_host_registry->AbandonHostAsync(GetFrameTreeNodeId(),
-                                              final_status);
+    GetPrerenderHostRegistry().AbandonHostAsync(GetFrameTreeNodeId(),
+                                                final_status);
     return;
   }
 
@@ -4004,12 +3983,7 @@ void NavigationRequest::CommitPageActivation() {
     if (!activated_entry)
       return;
   } else {
-    auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-        frame_tree_node_->current_frame_host()->GetStoragePartition());
-    PrerenderHostRegistry* prerender_host_registry =
-        storage_partition_impl->GetPrerenderHostRegistry();
-
-    activated_entry = prerender_host_registry->ActivateReservedHost(
+    activated_entry = GetPrerenderHostRegistry().ActivateReservedHost(
         prerender_frame_tree_node_id_, *frame_tree_node_->current_frame_host(),
         *this);
 
@@ -6078,6 +6052,12 @@ std::string NavigationRequest::GetUserAgentOverride() {
 
 NavigationControllerImpl* NavigationRequest::GetNavigationController() {
   return &frame_tree_node_->navigator().controller();
+}
+
+PrerenderHostRegistry& NavigationRequest::GetPrerenderHostRegistry() {
+  return *frame_tree_node_->current_frame_host()
+              ->delegate()
+              ->GetPrerenderHostRegistry();
 }
 
 mojo::PendingRemote<network::mojom::CookieAccessObserver>

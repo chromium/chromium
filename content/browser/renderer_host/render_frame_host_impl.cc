@@ -8225,16 +8225,11 @@ void RenderFrameHostImpl::CancelPrerendering(
   // prerendering, as it could mean an interface request is never resolved for
   // an active page.
   DCHECK(frame_tree()->is_prerendering());
-  auto* storage_partition_impl =
-      static_cast<StoragePartitionImpl*>(GetStoragePartition());
-  PrerenderHostRegistry* prerender_host_registry =
-      storage_partition_impl->GetPrerenderHostRegistry();
-  DCHECK(prerender_host_registry);
-  const int frame_tree_node_id = frame_tree()->root()->frame_tree_node_id();
   // TODO(https://crbug.com/1126305): Pass a FinalStatus to CancelPrerendering()
   // method when MojoInterface control, or IsInactiveAndDisallowActivation are
   // called.
-  prerender_host_registry->AbandonHostAsync(frame_tree_node_id, status);
+  delegate_->GetPrerenderHostRegistry()->AbandonHostAsync(
+      frame_tree()->root()->frame_tree_node_id(), status);
 }
 
 void RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy(

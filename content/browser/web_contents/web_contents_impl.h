@@ -779,6 +779,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   std::vector<RenderFrameHostImpl*>
   GetActiveTopLevelDocumentsInBrowsingContextGroup(
       RenderFrameHostImpl* render_frame_host) override;
+  PrerenderHostRegistry* GetPrerenderHostRegistry() override;
 #if BUILDFLAG(ENABLE_PLUGINS)
   void OnPepperInstanceCreated(RenderFrameHostImpl* source,
                                int32_t pp_instance) override;
@@ -2154,6 +2155,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Indicates how many sources are currently suppressing the unresponsive
   // renderer dialog.
   int suppress_unresponsive_renderer_count_ = 0;
+
+  const std::unique_ptr<PrerenderHostRegistry> prerender_host_registry_;
 
   std::unique_ptr<power_scheduler::PowerModeVoter> audible_power_mode_voter_;
 

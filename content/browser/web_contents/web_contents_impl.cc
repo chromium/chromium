@@ -865,6 +865,9 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       is_overlay_content_(false),
       showing_context_menu_(false),
       text_autosizer_page_info_({0, 0, 1.f}),
+      prerender_host_registry_(blink::features::IsPrerender2Enabled()
+                                   ? std::make_unique<PrerenderHostRegistry>()
+                                   : nullptr),
       audible_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.Audible")) {
@@ -955,13 +958,8 @@ WebContentsImpl::~WebContentsImpl() {
   // TODO(https://crbug.com/1194865, https://crbug.com/1170619): Destroy the
   // PrerenderHostRegistry here once it becomes per-WebContentsImpl instance,
   // instead of calling AbandonAllHostsForWebContents() on it.
-  if (blink::features::IsPrerender2Enabled()) {
-    auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-        GetMainFrame()->GetStoragePartition());
-    PrerenderHostRegistry* prerender_host_registry =
-        storage_partition_impl->GetPrerenderHostRegistry();
-    prerender_host_registry->AbandonAllHostsForWebContents(*this);
-  }
+  if (blink::features::IsPrerender2Enabled())
+    prerender_host_registry_->AbandonAllHostsForWebContents(*this);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Call this before WebContentsDestroyed() is broadcasted since
@@ -6951,6 +6949,12 @@ WebContentsImpl::GetActiveTopLevelDocumentsInBrowsingContextGroup(
     out.push_back(other_render_frame_host);
   }
   return out;
+}
+
+PrerenderHostRegistry* WebContentsImpl::GetPrerenderHostRegistry() {
+  DCHECK(blink::features::IsPrerender2Enabled());
+  DCHECK(prerender_host_registry_);
+  return prerender_host_registry_.get();
 }
 
 void WebContentsImpl::DidStartLoading(FrameTreeNode* frame_tree_node,

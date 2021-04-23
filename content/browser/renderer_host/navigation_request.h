@@ -1257,6 +1257,10 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationRequest is in.
   NavigationControllerImpl* GetNavigationController();
 
+  // Convenience function to return the PrerenderHostRegistry this
+  // NavigationRequest can be associated with.
+  PrerenderHostRegistry& GetPrerenderHostRegistry();
+
   // Computes the PolicyContainerPolicies and the sandbox flags to use for
   // committing a regular document.
   // Called when the response to commit is known.

@@ -200,6 +200,10 @@ RenderFrameHostDelegate::GetActiveTopLevelDocumentsInBrowsingContextGroup(
   return std::vector<RenderFrameHostImpl*>();
 }
 
+PrerenderHostRegistry* RenderFrameHostDelegate::GetPrerenderHostRegistry() {
+  return nullptr;
+}
+
 bool RenderFrameHostDelegate::IsAllowedToGoToEntryAtOffset(int32_t offset) {
   return true;
 }

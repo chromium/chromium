@@ -10,7 +10,7 @@
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
-#include "content/browser/storage_partition_impl.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
@@ -91,10 +91,9 @@ PrerenderSubframeNavigationThrottle::WillStartOrRedirectRequest() {
   }
 
   // Look up the PrerenderHost.
-  auto* storage_partition = static_cast<StoragePartitionImpl*>(
-      frame_tree_node->current_frame_host()->GetStoragePartition());
-  PrerenderHostRegistry* registry =
-      storage_partition->GetPrerenderHostRegistry();
+  PrerenderHostRegistry* registry = frame_tree_node->current_frame_host()
+                                        ->delegate()
+                                        ->GetPrerenderHostRegistry();
   int id = frame_tree_node->frame_tree()->GetMainFrame()->GetFrameTreeNodeId();
   PrerenderHost* prerender_host = registry->FindNonReservedHostById(id);
   if (!prerender_host) {

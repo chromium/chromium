@@ -8,7 +8,6 @@
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_instance_impl.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/test_browser_context.h"
@@ -48,13 +47,6 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
     return web_contents;
   }
 
-  PrerenderHostRegistry* GetPrerenderHostRegistry() const {
-    return static_cast<StoragePartitionImpl*>(
-               BrowserContext::GetDefaultStoragePartition(
-                   browser_context_.get()))
-        ->GetPrerenderHostRegistry();
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -86,7 +78,7 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost) {
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = kPrerenderingUrl;
 
-  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id =
       registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
   ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
@@ -115,7 +107,7 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
   auto attributes2 = blink::mojom::PrerenderAttributes::New();
   attributes2->url = kPrerenderingUrl;
 
-  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int frame_tree_node_id1 =
       registry->CreateAndStartHost(std::move(attributes1), *render_frame_host);
   PrerenderHost* prerender_host1 =
@@ -151,7 +143,7 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForDifferentURLs) {
   auto attributes2 = blink::mojom::PrerenderAttributes::New();
   attributes2->url = kPrerenderingUrl2;
 
-  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int frame_tree_node_id1 =
       registry->CreateAndStartHost(std::move(attributes1), *render_frame_host);
   const int frame_tree_node_id2 =
@@ -194,7 +186,7 @@ TEST_F(PrerenderHostRegistryTest,
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = kPrerenderingUrl;
 
-  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id =
       registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
   ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
@@ -220,7 +212,7 @@ TEST_F(PrerenderHostRegistryTest, AbandonHost) {
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = kPrerenderingUrl;
 
-  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id =
       registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
   EXPECT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);

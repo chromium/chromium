@@ -8,9 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/site_instance_impl.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/back_forward_cache.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
@@ -64,10 +62,7 @@ class PrerenderProcessorTest : public RenderViewHostImplTestHarness {
   }
 
   PrerenderHostRegistry* GetPrerenderHostRegistry() const {
-    return static_cast<StoragePartitionImpl*>(
-               BrowserContext::GetDefaultStoragePartition(
-                   browser_context_.get()))
-        ->GetPrerenderHostRegistry();
+    return web_contents_->GetPrerenderHostRegistry();
   }
 
   void NavigateAndCommit(const GURL& url) {
