@@ -322,26 +322,37 @@ const CGFloat kResizeFactor = 4;
   // Make sure the dominant card animates on top.
   [dominantCard.superview bringSubviewToFront:dominantCard];
 
+  __weak CardSideSwipeView* weakSelf = self;
   [UIView animateWithDuration:kAnimationDuration
       animations:^{
-        _leftCard.transform = leftTransform;
-        _rightCard.transform = rightTransform;
+        [weakSelf animatePanWithLeftCardTransform:leftTransform
+                               rightCardTransform:rightTransform];
       }
       completion:^(BOOL finished) {
-        [_leftCard setImage:nil];
-        [_rightCard setImage:nil];
-        [_leftCard setTopToolbarImage:nil];
-        [_rightCard setTopToolbarImage:nil];
-        [_leftCard setBottomToolbarImage:nil];
-        [_rightCard setBottomToolbarImage:nil];
-        [_delegate sideSwipeViewDismissAnimationDidEnd:self];
-        // Changing the model even when the webstate is the same at the end of
-        // the animation allows the UI to recover.  This call must come last,
-        // because ActivateWebStateAt triggers behavior that depends on the view
-        // hierarchy being reassembled, which happens in
-        // sideSwipeViewDismissAnimationDidEnd.
-        _webStateList->ActivateWebStateAt(destinationWebStateIndex);
+        [weakSelf onAnimatePanComplete:destinationWebStateIndex];
       }];
+}
+
+- (void)animatePanWithLeftCardTransform:(CGAffineTransform)leftCardTransform
+                     rightCardTransform:(CGAffineTransform)rightCardTransform {
+  _leftCard.transform = leftCardTransform;
+  _rightCard.transform = rightCardTransform;
+}
+
+- (void)onAnimatePanComplete:(int)destinationWebStateIndex {
+  [_leftCard setImage:nil];
+  [_rightCard setImage:nil];
+  [_leftCard setTopToolbarImage:nil];
+  [_rightCard setTopToolbarImage:nil];
+  [_leftCard setBottomToolbarImage:nil];
+  [_rightCard setBottomToolbarImage:nil];
+  [_delegate sideSwipeViewDismissAnimationDidEnd:self];
+  // Changing the model even when the webstate is the same at the end of
+  // the animation allows the UI to recover.  This call must come last,
+  // because ActivateWebStateAt triggers behavior that depends on the view
+  // hierarchy being reassembled, which happens in
+  // sideSwipeViewDismissAnimationDidEnd.
+  _webStateList->ActivateWebStateAt(destinationWebStateIndex);
 }
 
 @end
