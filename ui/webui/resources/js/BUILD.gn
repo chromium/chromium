@@ -197,10 +197,7 @@ js_library("list_property_update_behavior") {
 }
 
 js_library("load_time_data") {
-  deps = [
-    ":assert",
-    "//third_party/jstemplate:jstemplate",
-  ]
+  deps = [ ":assert" ]
 }
 
 js_library("parse_html_subset") {
@@ -326,10 +323,7 @@ js_library("list_property_update_behavior.m") {
 
 js_library("load_time_data.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/load_time_data.m.js" ]
-  deps = [
-    ":assert.m",
-    "//third_party/jstemplate:jstemplate",
-  ]
+  deps = [ ":assert.m" ]
   extra_deps = [ ":modulize_local" ]
 }
 

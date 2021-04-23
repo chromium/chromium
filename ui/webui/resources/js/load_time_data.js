@@ -40,14 +40,6 @@ class LoadTimeData {
   }
 
   /**
-   * Returns a JsEvalContext for |data_|.
-   * @returns {JsEvalContext}
-   */
-  createJsEvalContext() {
-    return new JsEvalContext(this.data_);
-  }
-
-  /**
    * @param {string} id An ID of a value that might exist.
    * @return {boolean} True if |id| is a key in the dictionary.
    */
