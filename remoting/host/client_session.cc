@@ -29,6 +29,7 @@
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mouse_shape_pump.h"
+#include "remoting/host/remote_open_url_constants.h"
 #include "remoting/host/remote_open_url_message_handler.h"
 #include "remoting/host/screen_controls.h"
 #include "remoting/host/screen_resolution.h"
@@ -202,7 +203,7 @@ void ClientSession::SetCapabilities(
 
   if (HasCapability(capabilities_, protocol::kRemoteOpenUrlCapability)) {
     data_channel_manager_.RegisterCreateHandlerCallback(
-        RemoteOpenUrlMessageHandler::kChannelName,
+        kRemoteOpenUrlDataChannelName,
         base::BindRepeating(&ClientSession::CreateRemoteOpenUrlMessageHandler,
                             base::Unretained(this)));
   }

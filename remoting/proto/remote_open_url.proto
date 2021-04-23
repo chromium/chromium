@@ -16,7 +16,7 @@ message RemoteOpenUrl {
   // Next ID: 3
   message OpenUrlRequest {
     // An ID used to associate the request with the response.
-    optional uint32 id = 1;
+    optional uint64 id = 1;
 
     // The URL to be opened by the remote end.
     optional string url = 2;
@@ -26,9 +26,10 @@ message RemoteOpenUrl {
   // Next ID: 3
   message OpenUrlResponse {
     // An ID used to associate the request with the response.
-    optional uint32 id = 1;
+    optional uint64 id = 1;
 
     // The outcome of opening the URL remotely.
+    // Must be synced with remoting/host/mojom/remote_url_opener.mojom
     // Next ID: 4
     enum Result {
       UNSPECIFIED_OPEN_URL_RESULT = 0;

@@ -431,8 +431,9 @@ class HostProcess : public ConfigWatcher::Delegate,
   // Used to keep this HostProcess alive until it is shutdown.
   scoped_refptr<HostProcess> self_;
 
-#if defined(REMOTING_MULTI_PROCESS)
   std::unique_ptr<mojo::core::ScopedIPCSupport> ipc_support_;
+
+#if defined(REMOTING_MULTI_PROCESS)
 
   // Accessed on the UI thread.
   std::unique_ptr<IPC::ChannelProxy> daemon_channel_;
@@ -529,7 +530,6 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
   }
 #endif  // defined(OS_APPLE)
 
-#if defined(REMOTING_MULTI_PROCESS)
   // Mojo keeps the task runner passed to it alive forever, so an
   // AutoThreadTaskRunner should not be passed to it. Otherwise, the process may
   // never shut down cleanly.
@@ -537,6 +537,7 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
       context_->network_task_runner()->task_runner(),
       mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
 
+#if defined(REMOTING_MULTI_PROCESS)
   auto endpoint =
       mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(*cmd_line);
   auto invitation = mojo::IncomingInvitation::Accept(std::move(endpoint));
