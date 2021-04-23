@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_WIN_UTILS_H_
-#define SANDBOX_SRC_WIN_UTILS_H_
+#ifndef SANDBOX_WIN_SRC_WIN_UTILS_H_
+#define SANDBOX_WIN_SRC_WIN_UTILS_H_
 
 #include <stddef.h>
 #include <windows.h>
@@ -152,4 +152,4 @@ DWORD GetTokenInformation(HANDLE token,
 // is a pointer to the function pointer.
 void ResolveNTFunctionPtr(const char* name, void* ptr);
 
-#endif  // SANDBOX_SRC_WIN_UTILS_H_
+#endif  // SANDBOX_WIN_SRC_WIN_UTILS_H_

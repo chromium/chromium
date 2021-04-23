@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_TESTS_INTEGRATION_TESTS_HOOKING_WIN_PROC_H_
-#define SANDBOX_TESTS_INTEGRATION_TESTS_HOOKING_WIN_PROC_H_
+#ifndef SANDBOX_WIN_TESTS_INTEGRATION_TESTS_HOOKING_WIN_PROC_H_
+#define SANDBOX_WIN_TESTS_INTEGRATION_TESTS_HOOKING_WIN_PROC_H_
 
 #include <windows.h>
 
@@ -14,4 +14,4 @@ constexpr wchar_t g_winproc_event[] = L"ChromeExtensionTestWinProcEvent";
 
 }  // namespace hooking_win_proc
 
-#endif  // SANDBOX_TESTS_INTEGRATION_TESTS_HOOKING_WIN_PROC_H_
+#endif  // SANDBOX_WIN_TESTS_INTEGRATION_TESTS_HOOKING_WIN_PROC_H_

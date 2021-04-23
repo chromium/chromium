@@ -5,8 +5,8 @@
 // Several simple types used by the disassembler and some of the patching
 // mechanisms.
 
-#ifndef SANDBOX_SRC_SIDESTEP_MINI_DISASSEMBLER_TYPES_H__
-#define SANDBOX_SRC_SIDESTEP_MINI_DISASSEMBLER_TYPES_H__
+#ifndef SANDBOX_WIN_SRC_SIDESTEP_MINI_DISASSEMBLER_TYPES_H_
+#define SANDBOX_WIN_SRC_SIDESTEP_MINI_DISASSEMBLER_TYPES_H_
 
 namespace sidestep {
 
@@ -194,4 +194,4 @@ struct ModrmEntry {
 
 }  // namespace sidestep
 
-#endif  // SANDBOX_SRC_SIDESTEP_MINI_DISASSEMBLER_TYPES_H__
+#endif  // SANDBOX_WIN_SRC_SIDESTEP_MINI_DISASSEMBLER_TYPES_H_

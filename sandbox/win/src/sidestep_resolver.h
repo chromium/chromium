@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_SIDESTEP_RESOLVER_H__
-#define SANDBOX_SRC_SIDESTEP_RESOLVER_H__
+#ifndef SANDBOX_WIN_SRC_SIDESTEP_RESOLVER_H_
+#define SANDBOX_WIN_SRC_SIDESTEP_RESOLVER_H_
 
 #include <stddef.h>
 
@@ -71,4 +71,4 @@ class SmartSidestepResolverThunk : public SidestepResolverThunk {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_SIDESTEP_RESOLVER_H__
+#endif  // SANDBOX_WIN_SRC_SIDESTEP_RESOLVER_H_

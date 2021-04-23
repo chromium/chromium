@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_SID_H_
-#define SANDBOX_SRC_SID_H_
+#ifndef SANDBOX_WIN_SRC_SID_H_
+#define SANDBOX_WIN_SRC_SID_H_
 
 #include <windows.h>
 
@@ -72,4 +72,4 @@ class Sid {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_SID_H_
+#endif  // SANDBOX_WIN_SRC_SID_H_

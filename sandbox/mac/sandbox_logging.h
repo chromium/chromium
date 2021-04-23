@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SANDBOX_LOGGING_H_
-#define SANDBOX_SANDBOX_LOGGING_H_
+#ifndef SANDBOX_MAC_SANDBOX_LOGGING_H_
+#define SANDBOX_MAC_SANDBOX_LOGGING_H_
 
 namespace sandbox {
 
@@ -28,4 +28,4 @@ void PFatal(const char* fmt, ...);
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SANDBOX_LOGGING_H_
+#endif  // SANDBOX_MAC_SANDBOX_LOGGING_H_

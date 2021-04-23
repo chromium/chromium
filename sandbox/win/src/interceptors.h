@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_INTERCEPTORS_H_
-#define SANDBOX_SRC_INTERCEPTORS_H_
+#ifndef SANDBOX_WIN_SRC_INTERCEPTORS_H_
+#define SANDBOX_WIN_SRC_INTERCEPTORS_H_
 
 #if defined(_WIN64)
 #include "sandbox/win/src/interceptors_64.h"
@@ -55,4 +55,4 @@ typedef void* OriginalFunctions[INTERCEPTOR_MAX_ID];
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_INTERCEPTORS_H_
+#endif  // SANDBOX_WIN_SRC_INTERCEPTORS_H_

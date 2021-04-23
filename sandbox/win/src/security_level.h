@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_SECURITY_LEVEL_H_
-#define SANDBOX_SRC_SECURITY_LEVEL_H_
+#ifndef SANDBOX_WIN_SRC_SECURITY_LEVEL_H_
+#define SANDBOX_WIN_SRC_SECURITY_LEVEL_H_
 
 #include <stdint.h>
 
@@ -299,4 +299,4 @@ const MitigationFlags MITIGATION_KTM_COMPONENT = 0x00800000;
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_SECURITY_LEVEL_H_
+#endif  // SANDBOX_WIN_SRC_SECURITY_LEVEL_H_

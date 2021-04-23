@@ -6,8 +6,8 @@
 // from the inside of the sandboxed process. For more details see
 // http://dev.chromium.org/developers/design-documents/sandbox .
 
-#ifndef SANDBOX_SRC_INTERCEPTION_AGENT_H__
-#define SANDBOX_SRC_INTERCEPTION_AGENT_H__
+#ifndef SANDBOX_WIN_SRC_INTERCEPTION_AGENT_H_
+#define SANDBOX_WIN_SRC_INTERCEPTION_AGENT_H_
 
 #include "base/macros.h"
 #include "sandbox/win/src/nt_internals.h"
@@ -84,4 +84,4 @@ class InterceptionAgent {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_INTERCEPTION_AGENT_H__
+#endif  // SANDBOX_WIN_SRC_INTERCEPTION_AGENT_H_

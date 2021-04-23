@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_LINUX_SYSTEM_HEADERS_ANDROID_I386_UCONTEXT_H_
-#define SANDBOX_LINUX_SYSTEM_HEADERS_ANDROID_I386_UCONTEXT_H_
+#ifndef SANDBOX_LINUX_SYSTEM_HEADERS_I386_LINUX_UCONTEXT_H_
+#define SANDBOX_LINUX_SYSTEM_HEADERS_I386_LINUX_UCONTEXT_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -82,4 +82,4 @@ typedef struct ucontext {
   struct _libc_fpstate __fpregs_mem;
 } ucontext_t;
 
-#endif  // SANDBOX_LINUX_SYSTEM_HEADERS_ANDROID_I386_UCONTEXT_H_
+#endif  // SANDBOX_LINUX_SYSTEM_HEADERS_I386_LINUX_UCONTEXT_H_

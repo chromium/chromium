@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_CROSSCALL_SERVER_H_
-#define SANDBOX_SRC_CROSSCALL_SERVER_H_
+#ifndef SANDBOX_WIN_SRC_CROSSCALL_SERVER_H_
+#define SANDBOX_WIN_SRC_CROSSCALL_SERVER_H_
 
 #include <stdint.h>
 
@@ -218,4 +218,4 @@ class Dispatcher {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_CROSSCALL_SERVER_H_
+#endif  // SANDBOX_WIN_SRC_CROSSCALL_SERVER_H_

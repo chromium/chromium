@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SANDBOX_POC_POCDLL_UTILS_H__
-#define SANDBOX_SANDBOX_POC_POCDLL_UTILS_H__
+#ifndef SANDBOX_WIN_SANDBOX_POC_POCDLL_UTILS_H_
+#define SANDBOX_WIN_SANDBOX_POC_POCDLL_UTILS_H_
 
 #include <stdio.h>
 #include <io.h>
@@ -61,4 +61,4 @@ class HandleToFile {
   DISALLOW_COPY_AND_ASSIGN(HandleToFile);
 };
 
-#endif  // SANDBOX_SANDBOX_POC_POCDLL_UTILS_H__
+#endif  // SANDBOX_WIN_SANDBOX_POC_POCDLL_UTILS_H_

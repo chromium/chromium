@@ -23,4 +23,4 @@ class SandboxTestRunnerFunctionPointer : public SandboxTestRunner {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_LINUX_TESTS_SANDBOX_TEST_RUNNER__FUNCTION_POINTER_H_
+#endif  // SANDBOX_LINUX_TESTS_SANDBOX_TEST_RUNNER_FUNCTION_POINTER_H_

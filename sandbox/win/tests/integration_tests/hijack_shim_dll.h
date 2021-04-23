@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_TESTS_INTEGRATION_TESTS_HIJACK_SHIM_DLL_H_
-#define SANDBOX_TESTS_INTEGRATION_TESTS_HIJACK_SHIM_DLL_H_
+#ifndef SANDBOX_WIN_TESTS_INTEGRATION_TESTS_HIJACK_SHIM_DLL_H_
+#define SANDBOX_WIN_TESTS_INTEGRATION_TESTS_HIJACK_SHIM_DLL_H_
 
 // Hijack shim dll exported API defines for dynamic lookup.
 constexpr char g_hijack_shim_func[] = "CheckHijackResult";
@@ -12,4 +12,4 @@ constexpr char g_hijack_shim_func[] = "CheckHijackResult";
 // Returns a sandbox::SboxTestResult value.
 int CheckHijackResult(bool expect_system);
 
-#endif  // SANDBOX_TESTS_INTEGRATION_TESTS_HIJACK_SHIM_DLL_H_
+#endif  // SANDBOX_WIN_TESTS_INTEGRATION_TESTS_HIJACK_SHIM_DLL_H_

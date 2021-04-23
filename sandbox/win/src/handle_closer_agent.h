@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_HANDLE_CLOSER_AGENT_H_
-#define SANDBOX_SRC_HANDLE_CLOSER_AGENT_H_
+#ifndef SANDBOX_WIN_SRC_HANDLE_CLOSER_AGENT_H_
+#define SANDBOX_WIN_SRC_HANDLE_CLOSER_AGENT_H_
 
 #include <string>
 
@@ -43,4 +43,4 @@ class HandleCloserAgent {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_HANDLE_CLOSER_AGENT_H_
+#endif  // SANDBOX_WIN_SRC_HANDLE_CLOSER_AGENT_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_POLICY_BROKER_H_
-#define SANDBOX_SRC_POLICY_BROKER_H_
+#ifndef SANDBOX_WIN_SRC_POLICY_BROKER_H_
+#define SANDBOX_WIN_SRC_POLICY_BROKER_H_
 
 #include "sandbox/win/src/interception.h"
 
@@ -24,4 +24,4 @@ bool SetupNtdllImports(TargetProcess& child);
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_POLICY_BROKER_H_
+#endif  // SANDBOX_WIN_SRC_POLICY_BROKER_H_

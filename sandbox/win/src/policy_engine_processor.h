@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_POLICY_ENGINE_PROCESSOR_H__
-#define SANDBOX_SRC_POLICY_ENGINE_PROCESSOR_H__
+#ifndef SANDBOX_WIN_SRC_POLICY_ENGINE_PROCESSOR_H_
+#define SANDBOX_WIN_SRC_POLICY_ENGINE_PROCESSOR_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -140,4 +140,4 @@ class PolicyProcessor {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_POLICY_ENGINE_PROCESSOR_H__
+#endif  // SANDBOX_WIN_SRC_POLICY_ENGINE_PROCESSOR_H_

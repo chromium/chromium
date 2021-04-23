@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_RESTRICTED_TOKEN_UTILS_H__
-#define SANDBOX_SRC_RESTRICTED_TOKEN_UTILS_H__
+#ifndef SANDBOX_WIN_SRC_RESTRICTED_TOKEN_UTILS_H_
+#define SANDBOX_WIN_SRC_RESTRICTED_TOKEN_UTILS_H_
 
 #include <accctrl.h>
 #include <windows.h>
@@ -101,4 +101,4 @@ DWORD CreateLowBoxObjectDirectory(PSID lowbox_sid,
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_RESTRICTED_TOKEN_UTILS_H__
+#endif  // SANDBOX_WIN_SRC_RESTRICTED_TOKEN_UTILS_H_

@@ -6,8 +6,8 @@
 // for the sandboxed process. For more details see
 // http://dev.chromium.org/developers/design-documents/sandbox .
 
-#ifndef SANDBOX_SRC_INTERCEPTION_H_
-#define SANDBOX_SRC_INTERCEPTION_H_
+#ifndef SANDBOX_WIN_SRC_INTERCEPTION_H_
+#define SANDBOX_WIN_SRC_INTERCEPTION_H_
 
 #include <stddef.h>
 
@@ -253,4 +253,4 @@ class InterceptionManager {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_INTERCEPTION_H_
+#endif  // SANDBOX_WIN_SRC_INTERCEPTION_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_THREADPOOL_H_
-#define SANDBOX_SRC_THREADPOOL_H_
+#ifndef SANDBOX_WIN_SRC_THREADPOOL_H_
+#define SANDBOX_WIN_SRC_THREADPOOL_H_
 
 #include <stddef.h>
 
@@ -84,4 +84,4 @@ class ThreadPool {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_THREADPOOL_H_
+#endif  // SANDBOX_WIN_SRC_THREADPOOL_H_

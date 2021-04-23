@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_TESTS_INTEGRATION_TESTS_HOOKING_DLL_H_
-#define SANDBOX_TESTS_INTEGRATION_TESTS_HOOKING_DLL_H_
+#ifndef SANDBOX_WIN_TESTS_INTEGRATION_TESTS_HOOKING_DLL_H_
+#define SANDBOX_WIN_TESTS_INTEGRATION_TESTS_HOOKING_DLL_H_
 
 #include <windows.h>
 
@@ -28,4 +28,4 @@ DLL_EXPORT LRESULT HookProc(int code, WPARAM w_param, LPARAM l_param);
 
 }  // namespace hooking_dll
 
-#endif  // SANDBOX_TESTS_INTEGRATION_TESTS_HOOKING_DLL_H_
+#endif  // SANDBOX_WIN_TESTS_INTEGRATION_TESTS_HOOKING_DLL_H_

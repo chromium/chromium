@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_TESTS_INTEGRATION_TESTS_COMMON_H_
-#define SANDBOX_TESTS_INTEGRATION_TESTS_COMMON_H_
+#ifndef SANDBOX_WIN_TESTS_INTEGRATION_TESTS_INTEGRATION_TESTS_COMMON_H_
+#define SANDBOX_WIN_TESTS_INTEGRATION_TESTS_INTEGRATION_TESTS_COMMON_H_
 
 #include <windows.h>
 
@@ -60,4 +60,4 @@ private:
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_TESTS_INTEGRATION_TESTS_COMMON_H_
+#endif  // SANDBOX_WIN_TESTS_INTEGRATION_TESTS_INTEGRATION_TESTS_COMMON_H_

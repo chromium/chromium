@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_REGISTRY_POLICY_H__
-#define SANDBOX_SRC_REGISTRY_POLICY_H__
+#ifndef SANDBOX_WIN_SRC_REGISTRY_POLICY_H_
+#define SANDBOX_WIN_SRC_REGISTRY_POLICY_H_
 
 #include <stdint.h>
 
@@ -53,4 +53,4 @@ class RegistryPolicy {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_REGISTRY_POLICY_H__
+#endif  // SANDBOX_WIN_SRC_REGISTRY_POLICY_H_

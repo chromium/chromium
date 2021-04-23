@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_SANDBOX_NT_TYPES_H__
-#define SANDBOX_SRC_SANDBOX_NT_TYPES_H__
+#ifndef SANDBOX_WIN_SRC_SANDBOX_NT_TYPES_H_
+#define SANDBOX_WIN_SRC_SANDBOX_NT_TYPES_H_
 
 #include "sandbox/win/src/nt_internals.h"
 
@@ -44,4 +44,4 @@ enum AllocationType {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_SANDBOX_NT_TYPES_H__
+#endif  // SANDBOX_WIN_SRC_SANDBOX_NT_TYPES_H_

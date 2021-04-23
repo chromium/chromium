@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_CAPABILITY_H_
-#define SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_CAPABILITY_H_
+#ifndef SANDBOX_LINUX_SYSTEM_HEADERS_CAPABILITY_H_
+#define SANDBOX_LINUX_SYSTEM_HEADERS_CAPABILITY_H_
 
 #include <stdint.h>
 
@@ -39,4 +39,4 @@ struct cap_data {
   uint32_t inheritable;
 };
 
-#endif  // SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_CAPABILITY_H_
+#endif  // SANDBOX_LINUX_SYSTEM_HEADERS_CAPABILITY_H_

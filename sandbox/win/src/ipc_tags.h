@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_IPC_TAGS_H__
-#define SANDBOX_SRC_IPC_TAGS_H__
+#ifndef SANDBOX_WIN_SRC_IPC_TAGS_H_
+#define SANDBOX_WIN_SRC_IPC_TAGS_H_
 
 namespace sandbox {
 
@@ -42,4 +42,4 @@ static_assert(kMaxIpcTag <= kMaxServiceCount, "kMaxServiceCount is too low");
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_IPC_TAGS_H__
+#endif  // SANDBOX_WIN_SRC_IPC_TAGS_H_

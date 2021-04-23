@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_SANDBOX_NT_UTIL_H_
-#define SANDBOX_SRC_SANDBOX_NT_UTIL_H_
+#ifndef SANDBOX_WIN_SRC_SANDBOX_NT_UTIL_H_
+#define SANDBOX_WIN_SRC_SANDBOX_NT_UTIL_H_
 
 #include <intrin.h>
 #include <stddef.h>
@@ -214,4 +214,4 @@ bool IsSupportedRenameCall(FILE_RENAME_INFORMATION* file_info,
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_SANDBOX_NT_UTIL_H__
+#endif  // SANDBOX_WIN_SRC_SANDBOX_NT_UTIL_H_

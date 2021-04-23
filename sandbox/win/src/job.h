@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_JOB_H_
-#define SANDBOX_SRC_JOB_H_
+#ifndef SANDBOX_WIN_SRC_JOB_H_
+#define SANDBOX_WIN_SRC_JOB_H_
 
 #include <stddef.h>
 
@@ -67,4 +67,4 @@ class Job {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_JOB_H_
+#endif  // SANDBOX_WIN_SRC_JOB_H_

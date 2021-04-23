@@ -27,4 +27,4 @@ class SharingServiceProcessPolicy : public BPFBasePolicy {
 }  // namespace policy
 }  // namespace sandbox
 
-#endif  // SERVICES_SERVICE_MANAGER_SANDBOX_LINUX_BPF_UTILITY_POLICY_LINUX_H_
+#endif  // SANDBOX_POLICY_LINUX_BPF_SHARING_SERVICE_POLICY_LINUX_H_
