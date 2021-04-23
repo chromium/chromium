@@ -177,7 +177,7 @@ crbug.com/883500 [ android android-nexus-6 ] Pixel_BackgroundImage [ Skip ]
 crbug.com/1029389 [ android android-nexus-5 ] Pixel_PrecisionRoundedCorner [ Skip ]
 
 # Flakes on Nexus 5X.
-crbug.com/883500 [ android-chromium android-nexus-5x ] Pixel_BackgroundImage [ RetryOnFailure ]
+crbug.com/883500 [ android android-chromium android-nexus-5x ] Pixel_BackgroundImage [ RetryOnFailure ]
 crbug.com/1065514 [ android android-chromium android-nexus-5x ] Pixel_WebGLReadPixelsTabSwitch [ RetryOnFailure ]
 crbug.com/1121476 [ android android-chromium android-nexus-5x ] Pixel_Canvas2DTabSwitch [ RetryOnFailure ]
 
@@ -374,6 +374,9 @@ crbug.com/1021566 [ skia-renderer-dawn ] Pixel_WebGLGreenTriangle_NoAA_Alpha [ S
 crbug.com/1021566 [ skia-renderer-dawn ] Pixel_WebGLGreenTriangle_NoAA_NoAlpha [ Skip ]
 crbug.com/1170369 [ linux skia-renderer-dawn ] Pixel_WebGLPreservedAfterTabSwitch [ Failure ]
 crbug.com/1170369 [ win skia-renderer-dawn ] Pixel_WebGLPreservedAfterTabSwitch [ Failure ]
+
+# Flakes on Linux SkiaRenderer Dawn.
+crbug.com/1200898 [ linux skia-renderer-dawn ] Pixel_BackgroundImage [ RetryOnFailure ]
 
 # DirectComposition tests are not expected to work properly on Windows 7.
 crbug.com/1086758 [ win7 ] Pixel_DirectComposition* [ Skip ]
