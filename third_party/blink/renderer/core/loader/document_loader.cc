@@ -748,17 +748,23 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     redirect_chain_.push_back(old_url);
   redirect_chain_.push_back(new_url);
 
+  last_navigation_had_trusted_initiator_ =
+      initiator_origin ? initiator_origin->IsSameOriginWith(
+                             frame_->DomWindow()->GetSecurityOrigin()) &&
+                             Url().ProtocolIsInHTTPFamily()
+                       : true;
+
   // We want to allow same-document text fragment navigations if they're coming
-  // from the browser. Do this only on a standard navigation so that we don't
-  // clobber the token when this is called from e.g. history.back().
+  // from the browser or same-origin. Do this only on a standard navigation so
+  // that we don't unintentionally clear the token when we reach here from the
+  // history API.
   if (type == WebFrameLoadType::kStandard ||
       same_document_navigation_source == kSameDocumentNavigationDefault) {
     bool is_browser_initiated = !initiator_origin;
     DCHECK(!(is_browser_initiated && is_synchronously_committed));
     has_text_fragment_token_ =
         TextFragmentAnchor::GenerateNewTokenForSameDocument(
-            new_url.FragmentIdentifier(), type, is_browser_initiated,
-            same_document_navigation_source);
+            *this, type, same_document_navigation_source);
   }
 
   SetHistoryItemStateForCommit(history_item_.Get(), type,
@@ -2255,14 +2261,21 @@ void DocumentLoader::CommitNavigation() {
   // will use stale values from HTMLParserOption.
   DidCommitNavigation();
 
+  bool is_same_origin_initiator = false;
   if (requestor_origin_) {
     const scoped_refptr<const SecurityOrigin> url_origin =
         SecurityOrigin::Create(Url());
 
-    is_same_origin_navigation_ =
+    is_same_origin_initiator =
         requestor_origin_->IsSameOriginWith(url_origin.get()) &&
         Url().ProtocolIsInHTTPFamily();
   }
+
+  // No requestor origin means it's browser-initiated (which includes *all*
+  // history navigations, including those initiated from `window.history`
+  // API).
+  last_navigation_had_trusted_initiator_ =
+      !requestor_origin_ || is_same_origin_initiator;
 
   // The PaintHolding feature defers compositor commits until content has
   // been painted or 500ms have passed, whichever comes first. The additional
@@ -2273,7 +2286,7 @@ void DocumentLoader::CommitNavigation() {
   if (base::FeatureList::IsEnabled(blink::features::kPaintHolding) &&
       IsA<HTMLDocument>(document) && Url().ProtocolIsInHTTPFamily() &&
       history_commit_type != kWebBackForwardCommit &&
-      (is_same_origin_navigation_ ||
+      (is_same_origin_initiator ||
        base::FeatureList::IsEnabled(
            blink::features::kPaintHoldingCrossOrigin))) {
     document->SetDeferredCompositorCommitIsAllowed(true);

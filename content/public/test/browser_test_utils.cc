@@ -2008,7 +2008,7 @@ bool WaitForRenderFrameReady(RenderFrameHost* rfh) {
   // TODO(nick): This can't switch to EvalJs yet, because of hardcoded
   // dependencies on 'pageLoadComplete' in some interstitial implementations.
   std::string result;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
+  EXPECT_TRUE(ExecuteScriptWithoutUserGestureAndExtractString(
       rfh,
       "(async function() {"
       "  if (document.readyState != 'complete') {"

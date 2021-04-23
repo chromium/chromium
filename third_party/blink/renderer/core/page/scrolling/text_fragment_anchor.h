@@ -48,9 +48,8 @@ class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
   // In this case, we also avoid generating the token unless the new URL has a
   // text fragment in it (and thus it'll be consumed immediately).
   static bool GenerateNewTokenForSameDocument(
-      const String& fragment,
+      const DocumentLoader&,
       WebFrameLoadType load_type,
-      bool is_browser_initiated,
       SameDocumentNavigationSource source);
 
   static TextFragmentAnchor* TryCreateFragmentDirective(

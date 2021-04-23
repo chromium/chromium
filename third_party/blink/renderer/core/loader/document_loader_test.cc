@@ -428,8 +428,9 @@ TEST_F(DocumentLoaderTest, SameOriginNavigation) {
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
-  EXPECT_TRUE(
-      local_frame->Loader().GetDocumentLoader()->IsSameOriginNavigation());
+  EXPECT_TRUE(local_frame->Loader()
+                  .GetDocumentLoader()
+                  ->LastNavigationHadTrustedInitiator());
 }
 
 TEST_F(DocumentLoaderTest, CrossOriginNavigation) {
@@ -448,8 +449,9 @@ TEST_F(DocumentLoaderTest, CrossOriginNavigation) {
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
-  EXPECT_FALSE(
-      local_frame->Loader().GetDocumentLoader()->IsSameOriginNavigation());
+  EXPECT_FALSE(local_frame->Loader()
+                   .GetDocumentLoader()
+                   ->LastNavigationHadTrustedInitiator());
 }
 
 }  // namespace blink

@@ -315,7 +315,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // navigation was started using the history API in the renderer.
   bool IsBrowserInitiated() const { return is_browser_initiated_; }
 
-  bool IsSameOriginNavigation() const { return is_same_origin_navigation_; }
+  bool LastNavigationHadTrustedInitiator() const {
+    return last_navigation_had_trusted_initiator_;
+  }
 
   enum class HistoryNavigationType {
     kDifferentDocument,
@@ -559,6 +561,11 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // committed in this DocumentLoader had transient activation.
   bool last_navigation_had_transient_user_activation_ = false;
 
+  // Whether the last navigation (cross-document or same-document) that
+  // committed in this DocumentLoader was initiated from the same-origin as the
+  // current document or was browser-initiated.
+  bool last_navigation_had_trusted_initiator_ = false;
+
   // Whether this load request comes with a sitcky user activation.
   const bool had_sticky_activation_ = false;
 
@@ -567,9 +574,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // Whether this loader is working for a prerendering document.
   bool is_prerendering_ = false;
-
-  // Whether this load request was initiated by the same origin.
-  bool is_same_origin_navigation_ = false;
 
   // If true, the navigation loading this document should allow a text fragment
   // to invoke. This token may be instead consumed to pass this permission
