@@ -3394,9 +3394,10 @@
             ]
         }
     ],
-    "HappinessTrackingSurveysForDesktopSettings": [
+    "HappinessTrackingSurveysForDesktopSettingsPrivacy": [
         {
             "platforms": [
+                "linux",
                 "mac",
                 "windows"
             ],
@@ -3404,11 +3405,12 @@
                 {
                     "name": "Settings_Privacy",
                     "params": {
-                        "en_site_id": "gjhdonsbcw64p5i2sfhrdetucq",
+                        "en_site_id": "FJ8K567X60ugnJ3q1cK0WZ5aJGMC",
                         "probability": "1.0",
                         "survey": "settings-privacy"
                     },
                     "enable_features": [
+                        "HappinessTrackingSurveysForDesktopMigration",
                         "HappinessTrackingSurveysForDesktopSettingsPrivacy"
                     ],
                     "disable_features": [
