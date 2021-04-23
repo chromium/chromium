@@ -142,6 +142,7 @@ TEST_F(HelpAppSearchHandlerTest, SearchResultMetadata) {
   EXPECT_EQ(search_results[0]->title, u"Title 1");
   EXPECT_EQ(search_results[0]->main_category, u"Help");
   EXPECT_EQ(search_results[0]->locale, "");
+  EXPECT_GT(search_results[0]->relevance_score, 0.01);
 }
 
 }  // namespace help_app

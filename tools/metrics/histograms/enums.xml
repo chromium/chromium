@@ -38130,6 +38130,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   </int>
 </enum>
 
+<enum name="HelpAppProviderListSearchResultState">
+  <summary>Possible list search result states in the HelpAppProvider.</summary>
+  <int value="0" label="Search finished with no problems"/>
+  <int value="1" label="Search canceled because no help app icon"/>
+  <int value="2"
+      label="Search canceled because the search backend isn't available"/>
+</enum>
+
 <enum name="HIDContinueScenarioType">
   <summary>Possible detected devices combination on leaving dialog</summary>
   <int value="0" label="Pointing device only detected."/>

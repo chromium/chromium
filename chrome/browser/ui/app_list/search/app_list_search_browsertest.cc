@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+#include <vector>
+
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/callback_helpers.h"
@@ -23,12 +27,17 @@
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/components/help_app_ui/help_app_manager.h"
+#include "chromeos/components/help_app_ui/help_app_manager_factory.h"
+#include "chromeos/components/help_app_ui/search/search.mojom.h"
+#include "chromeos/components/help_app_ui/search/search_handler.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
@@ -44,7 +53,10 @@ class AppListSearchBrowserTest : public InProcessBrowserTest {
   using ResultType = ash::AppListSearchResultType;
   using DisplayType = ash::SearchResultDisplayType;
 
-  AppListSearchBrowserTest() {}
+  AppListSearchBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kHelpAppLauncherSearch}, {});
+  }
   ~AppListSearchBrowserTest() override = default;
 
   AppListSearchBrowserTest(const AppListSearchBrowserTest&) = delete;
@@ -129,6 +141,9 @@ class AppListSearchBrowserTest : public InProcessBrowserTest {
   //----------------
 
   Profile* GetProfile() { return browser()->profile(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Simply tests that neither zero-state nor query-based search cause a crash.
@@ -180,6 +195,53 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
   const int times_left_to_show = GetProfile()->GetPrefs()->GetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
   EXPECT_EQ(times_left_to_show, 2);
+}
+
+// Test that the help app provider provides list search results.
+IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
+                       HelpAppProviderProvidesListResults) {
+  // Need this because it sets up the icon.
+  web_app::WebAppProvider::Get(GetProfile())
+      ->system_web_app_manager()
+      .InstallSystemAppsForTesting();
+  // Add some searchable content to the help app search handler.
+  std::vector<chromeos::help_app::mojom::SearchConceptPtr> search_concepts;
+  auto concept = chromeos::help_app::mojom::SearchConcept::New(
+      /*id=*/"test-help-app-id",
+      /*title=*/u"Title of help app result",
+      /*main_category=*/u"Help",
+      /*tags=*/std::vector<std::u16string>{u"verycomplicatedsearchquery"},
+      /*url_path_with_parameters=*/"help/id/test",
+      /*locale=*/"");
+  search_concepts.push_back(std::move(concept));
+
+  base::RunLoop run_loop;
+  chromeos::help_app::HelpAppManagerFactory::GetForBrowserContext(GetProfile())
+      ->search_handler()
+      ->Update(std::move(search_concepts), base::BindLambdaForTesting([&]() {
+                 run_loop.QuitClosure().Run();
+               }));
+  // Wait until the update is complete.
+  run_loop.Run();
+
+  ChromeSearchResult* result = nullptr;
+  while (!result) {
+    // Search repeatedly until the desired result is found. Multiple searches
+    // are needed because it takes time for the icon to load.
+    SearchAndWaitForProviders("verycomplicatedsearchquery",
+                              {ResultType::kHelpApp});
+
+    // This gives a chance for the icon to load between searches.
+    web_app::FlushSystemWebAppLaunchesForTesting(GetProfile());
+
+    result = FindResult("chrome://help-app/help/id/test");
+  }
+
+  EXPECT_EQ(base::UTF16ToASCII(result->title()), "Title of help app result");
+  EXPECT_EQ(base::UTF16ToASCII(result->details()), "Help");
+  // No priority for position.
+  EXPECT_EQ(result->position_priority(), 0);
+  EXPECT_EQ(result->display_type(), DisplayType::kList);
 }
 
 // Test that Help App shows up normally even when suggestion chip should show.

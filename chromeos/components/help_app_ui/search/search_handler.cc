@@ -115,7 +115,8 @@ mojom::SearchResultPtr SearchHandler::ResultToSearchResult(
       /*title=*/metadata.title,
       /*main_category=*/metadata.main_category,
       /*url_path_with_parameters=*/metadata.url_path_with_parameters,
-      /*locale=*/"");
+      /*locale=*/"",
+      /*relevance_score=*/result.score);
 }
 
 }  // namespace help_app

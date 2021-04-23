@@ -26,6 +26,12 @@ struct SearchResult {
   // Locale code. Leave unset for the system configured locale. The format is
   // language[-country] (e.g., en-US).
   string locale;
+
+  // Relevance score from the local search service. Higher is more relevant. The
+  // minimum is relevance 0. Most results should have a score less than 1, but
+  // greater than 1 is possible. Can use this to filter the list of search
+  // results if needed.
+  double relevance_score;
 };
 
 // The info needed to add one potential search result to the index.
