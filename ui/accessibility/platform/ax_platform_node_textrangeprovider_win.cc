@@ -1416,7 +1416,8 @@ bool AXPlatformNodeTextRangeProviderWin::HasCaretOrSelectionInPlainTextField(
 bool AXPlatformNodeTextRangeProviderWin::TextAttributeIsArrayType(
     TEXTATTRIBUTEID attribute_id) {
   // https://docs.microsoft.com/en-us/windows/win32/winauto/uiauto-textattribute-ids
-  return attribute_id == UIA_AnnotationTypesAttributeId ||
+  return attribute_id == UIA_AnnotationObjectsAttributeId ||
+         attribute_id == UIA_AnnotationTypesAttributeId ||
          attribute_id == UIA_TabsAttributeId;
 }
 

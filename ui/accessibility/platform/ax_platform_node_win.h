@@ -1389,6 +1389,8 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
   // Getters for UIA GetTextAttributeValue
   //
 
+  // Computes the AnnotationObjects Attribute for the current node.
+  void GetAnnotationObjectsAttribute(base::win::VariantVector* result);
   // Computes the AnnotationTypes Attribute for the current node.
   HRESULT GetAnnotationTypesAttribute(const base::Optional<int>& start_offset,
                                       const base::Optional<int>& end_offset,

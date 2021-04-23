@@ -39,6 +39,44 @@ namespace ui {
 #define ASSERT_UIA_NOTSUPPORTED(expr) \
   ASSERT_EQ(static_cast<HRESULT>(UIA_E_NOTSUPPORTED), (expr))
 
+#define EXPECT_UIA_GETPROPERTYVALUE_EQ(node, property_id, expected)      \
+  {                                                                      \
+    base::win::ScopedVariant expectedVariant(expected);                  \
+    ASSERT_EQ(VT_BSTR, expectedVariant.type());                          \
+    ASSERT_NE(nullptr, expectedVariant.ptr()->bstrVal);                  \
+    base::win::ScopedVariant actual;                                     \
+    ASSERT_HRESULT_SUCCEEDED(                                            \
+        node->GetPropertyValue(property_id, actual.Receive()));          \
+    ASSERT_EQ(VT_BSTR, actual.type());                                   \
+    ASSERT_NE(nullptr, actual.ptr()->bstrVal);                           \
+    EXPECT_STREQ(expectedVariant.ptr()->bstrVal, actual.ptr()->bstrVal); \
+  }
+
+#define EXPECT_UIA_ELEMENT_ARRAY_BSTR_EQ(array, element_test_property_id,     \
+                                         expected_property_values)            \
+  {                                                                           \
+    ASSERT_EQ(1u, SafeArrayGetDim(array));                                    \
+    LONG array_lower_bound;                                                   \
+    ASSERT_HRESULT_SUCCEEDED(                                                 \
+        SafeArrayGetLBound(array, 1, &array_lower_bound));                    \
+    LONG array_upper_bound;                                                   \
+    ASSERT_HRESULT_SUCCEEDED(                                                 \
+        SafeArrayGetUBound(array, 1, &array_upper_bound));                    \
+    IUnknown** array_data;                                                    \
+    ASSERT_HRESULT_SUCCEEDED(                                                 \
+        ::SafeArrayAccessData(array, reinterpret_cast<void**>(&array_data))); \
+    size_t count = array_upper_bound - array_lower_bound + 1;                 \
+    ASSERT_EQ(expected_property_values.size(), count);                        \
+    for (size_t i = 0; i < count; ++i) {                                      \
+      ComPtr<IRawElementProviderSimple> element;                              \
+      ASSERT_HRESULT_SUCCEEDED(                                               \
+          array_data[i]->QueryInterface(IID_PPV_ARGS(&element)));             \
+      EXPECT_UIA_GETPROPERTYVALUE_EQ(element, element_test_property_id,       \
+                                     expected_property_values[i].c_str());    \
+    }                                                                         \
+    ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(array));                 \
+  }
+
 #define EXPECT_UIA_SAFEARRAY_EQ(safearray, expected_property_values)   \
   {                                                                    \
     using T = typename decltype(expected_property_values)::value_type; \
@@ -4352,6 +4390,289 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestITextRangeProviderGetAttributeValueAnnotationObjects) {
+  // rootWebArea id=1
+  // ++mark id=2 detailsIds=comment1 comment2 highlighted
+  // ++++staticText id=3 name="some text"
+  // ++comment id=4 name="comment 1"
+  // ++++staticText id=5 name="comment 1"
+  // ++comment id=6 name="comment 2"
+  // ++++staticText id=7 name="comment 2"
+  // ++mark id=8 name="highlighted"
+  // ++++staticText id=9 name="highlighted"
+
+  AXNodeData root;
+  AXNodeData annotation_target;
+  AXNodeData some_text;
+  AXNodeData comment1;
+  AXNodeData comment1_text;
+  AXNodeData comment2;
+  AXNodeData comment2_text;
+  AXNodeData highlighted;
+  AXNodeData highlighted_text;
+
+  root.id = 1;
+  annotation_target.id = 2;
+  some_text.id = 3;
+  comment1.id = 4;
+  comment1_text.id = 5;
+  comment2.id = 6;
+  comment2_text.id = 7;
+  highlighted.id = 8;
+  highlighted_text.id = 9;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.SetName("root");
+  root.child_ids = {annotation_target.id, comment1.id, comment2.id,
+                    highlighted.id};
+
+  annotation_target.role = ax::mojom::Role::kMark;
+  annotation_target.child_ids = {some_text.id};
+  annotation_target.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kDetailsIds,
+      {comment1.id, comment2.id, highlighted.id});
+
+  some_text.role = ax::mojom::Role::kStaticText;
+  some_text.SetName("some text");
+
+  comment1.role = ax::mojom::Role::kComment;
+  comment1.SetName("comment 1");
+  comment1.child_ids = {comment1_text.id};
+
+  comment1_text.role = ax::mojom::Role::kStaticText;
+  comment1_text.SetName("comment 1");
+
+  comment2.role = ax::mojom::Role::kComment;
+  comment2.SetName("comment 2");
+  comment2.child_ids = {comment2_text.id};
+
+  comment2_text.role = ax::mojom::Role::kStaticText;
+  comment2_text.SetName("comment 2");
+
+  highlighted.role = ax::mojom::Role::kMark;
+  highlighted.SetName("highlighted");
+  highlighted.child_ids = {highlighted_text.id};
+
+  highlighted_text.role = ax::mojom::Role::kStaticText;
+  highlighted_text.SetName("highlighted");
+
+  ui::AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.root_id = root.id;
+  update.nodes = {root,          annotation_target, some_text,
+                  comment1,      comment1_text,     comment2,
+                  comment2_text, highlighted,       highlighted_text};
+  update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  Init(update);
+
+  AXNode* root_node = GetRootAsAXNode();
+  AXNode* annotation_target_node = root_node->children()[0];
+  AXNode* comment1_node = root_node->children()[1];
+  AXNode* comment2_node = root_node->children()[2];
+  AXNode* highlighted_node = root_node->children()[3];
+
+  ComPtr<AXPlatformNodeTextRangeProviderWin> some_text_range_provider;
+
+  // Create a text range encapsulates |annotation_target_node| with content
+  // "some text".
+  // start: TextPosition, anchor_id=2, text_offset=0, annotated_text=<s>ome text
+  // end  : TextPosition, anchor_id=2, text_offset=9, annotated_text=some text<>
+  AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
+      AXPlatformNodeFromNode(annotation_target_node));
+  CreateTextRangeProviderWin(
+      some_text_range_provider, owner, update.tree_data.tree_id,
+      /*start_anchor_id=*/annotation_target.id, /*start_offset=*/0,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor_id=*/annotation_target.id, /*end_offset=*/9,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, some_text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(some_text_range_provider, L"some text");
+
+  ComPtr<IRawElementProviderSimple> comment1_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(comment1_node);
+  ASSERT_NE(nullptr, comment1_provider.Get());
+  ComPtr<IRawElementProviderSimple> comment2_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(comment2_node);
+  ASSERT_NE(nullptr, comment2_provider.Get());
+  ComPtr<IRawElementProviderSimple> highlighted_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(highlighted_node);
+  ASSERT_NE(nullptr, highlighted_provider.Get());
+
+  ComPtr<IAnnotationProvider> annotation_provider;
+  int annotation_type;
+
+  // Validate |comment1_node| with Role::kComment supports IAnnotationProvider.
+  EXPECT_HRESULT_SUCCEEDED(comment1_provider->GetPatternProvider(
+      UIA_AnnotationPatternId, &annotation_provider));
+  ASSERT_NE(nullptr, annotation_provider.Get());
+  EXPECT_HRESULT_SUCCEEDED(
+      annotation_provider->get_AnnotationTypeId(&annotation_type));
+  EXPECT_EQ(AnnotationType_Comment, annotation_type);
+  annotation_provider.Reset();
+
+  // Validate |comment2_node| with Role::kComment supports IAnnotationProvider.
+  EXPECT_HRESULT_SUCCEEDED(comment2_provider->GetPatternProvider(
+      UIA_AnnotationPatternId, &annotation_provider));
+  ASSERT_NE(nullptr, annotation_provider.Get());
+  EXPECT_HRESULT_SUCCEEDED(
+      annotation_provider->get_AnnotationTypeId(&annotation_type));
+  EXPECT_EQ(AnnotationType_Comment, annotation_type);
+  annotation_provider.Reset();
+
+  // Validate |highlighted_node| with Role::kMark supports
+  // IAnnotationProvider.
+  EXPECT_HRESULT_SUCCEEDED(highlighted_provider->GetPatternProvider(
+      UIA_AnnotationPatternId, &annotation_provider));
+  ASSERT_NE(nullptr, annotation_provider.Get());
+  EXPECT_HRESULT_SUCCEEDED(
+      annotation_provider->get_AnnotationTypeId(&annotation_type));
+  EXPECT_EQ(AnnotationType_Highlighted, annotation_type);
+  annotation_provider.Reset();
+
+  base::win::ScopedVariant annotation_objects_variant;
+  EXPECT_HRESULT_SUCCEEDED(some_text_range_provider->GetAttributeValue(
+      UIA_AnnotationObjectsAttributeId, annotation_objects_variant.Receive()));
+  EXPECT_EQ(VT_UNKNOWN | VT_ARRAY, annotation_objects_variant.type());
+
+  std::vector<std::wstring> expected_names = {L"comment 1", L"comment 2",
+                                              L"highlighted"};
+  EXPECT_UIA_ELEMENT_ARRAY_BSTR_EQ(V_ARRAY(annotation_objects_variant.ptr()),
+                                   UIA_NamePropertyId, expected_names);
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestITextRangeProviderGetAttributeValueAnnotationObjectsMixed) {
+  // rootWebArea id=1
+  // ++mark id=2 detailsIds=comment
+  // ++++staticText id=3 name="some text"
+  // ++staticText id=4 name="read only" restriction=readOnly
+  // ++comment id=5 name="comment 1"
+  // ++++staticText id=6 name="comment 1"
+
+  AXNodeData root;
+  AXNodeData highlighted;
+  AXNodeData some_text;
+  AXNodeData readonly_text;
+  AXNodeData comment1;
+  AXNodeData comment1_text;
+
+  root.id = 1;
+  highlighted.id = 2;
+  some_text.id = 3;
+  readonly_text.id = 4;
+  comment1.id = 5;
+  comment1_text.id = 6;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.SetName("root");
+  root.child_ids = {highlighted.id, readonly_text.id, comment1.id};
+
+  highlighted.role = ax::mojom::Role::kMark;
+  highlighted.child_ids = {some_text.id};
+  highlighted.AddIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds,
+                                  {comment1.id});
+
+  some_text.role = ax::mojom::Role::kStaticText;
+  some_text.SetName("some text");
+
+  readonly_text.role = ax::mojom::Role::kStaticText;
+  readonly_text.SetRestriction(ax::mojom::Restriction::kReadOnly);
+  readonly_text.SetName("read only");
+
+  comment1.role = ax::mojom::Role::kComment;
+  comment1.SetName("comment 1");
+  comment1.child_ids = {comment1_text.id};
+
+  comment1_text.role = ax::mojom::Role::kStaticText;
+  comment1_text.SetName("comment 1");
+
+  ui::AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.root_id = root.id;
+  update.nodes = {root,          highlighted, some_text,
+                  readonly_text, comment1,    comment1_text};
+  update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  Init(update);
+
+  AXNode* root_node = GetRootAsAXNode();
+  AXNode* highlighted_node = root_node->children()[0];
+  AXNode* readonly_text_node = root_node->children()[1];
+  AXNode* comment1_node = root_node->children()[2];
+
+  // Create a text range encapsulates |highlighted_node| with content
+  // "some text".
+  // start: TextPosition, anchor_id=2, text_offset=0, annotated_text=<s>ome text
+  // end  : TextPosition, anchor_id=2, text_offset=9, annotated_text=some text<>
+  ComPtr<AXPlatformNodeTextRangeProviderWin> some_text_range_provider;
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(highlighted_node));
+  CreateTextRangeProviderWin(
+      some_text_range_provider, owner, update.tree_data.tree_id,
+      /*start_anchor_id=*/highlighted.id, /*start_offset=*/0,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor_id=*/highlighted.id, /*end_offset=*/9,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, some_text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(some_text_range_provider, L"some text");
+
+  ComPtr<ITextRangeProvider> readonly_text_range_provider;
+  GetTextRangeProviderFromTextNode(readonly_text_range_provider,
+                                   readonly_text_node);
+  ASSERT_NE(nullptr, readonly_text_range_provider.Get());
+
+  ComPtr<IRawElementProviderSimple> comment1_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(comment1_node);
+  ASSERT_NE(nullptr, comment1_provider.Get());
+
+  ComPtr<IAnnotationProvider> annotation_provider;
+  int annotation_type;
+  base::win::ScopedVariant expected_variant;
+
+  // Validate |comment1_node| with Role::kComment supports IAnnotationProvider.
+  EXPECT_HRESULT_SUCCEEDED(comment1_provider->GetPatternProvider(
+      UIA_AnnotationPatternId, &annotation_provider));
+  ASSERT_NE(nullptr, annotation_provider.Get());
+  EXPECT_HRESULT_SUCCEEDED(
+      annotation_provider->get_AnnotationTypeId(&annotation_type));
+  EXPECT_EQ(AnnotationType_Comment, annotation_type);
+  annotation_provider.Reset();
+
+  // Validate text range "some text" supports AnnotationObjectsAttribute.
+  EXPECT_HRESULT_SUCCEEDED(some_text_range_provider->GetAttributeValue(
+      UIA_AnnotationObjectsAttributeId, expected_variant.Receive()));
+  EXPECT_EQ(VT_UNKNOWN | VT_ARRAY, expected_variant.type());
+
+  std::vector<std::wstring> expected_names = {L"comment 1"};
+  EXPECT_UIA_ELEMENT_ARRAY_BSTR_EQ(V_ARRAY(expected_variant.ptr()),
+                                   UIA_NamePropertyId, expected_names);
+  expected_variant.Reset();
+
+  // Validate text range "read only" supports IsReadOnlyAttribute.
+  // Use IsReadOnly on text range "read only" as a second property in order to
+  // test the "mixed" property in the following section.
+  expected_variant.Set(true);
+  EXPECT_UIA_TEXTATTRIBUTE_EQ(readonly_text_range_provider,
+                              UIA_IsReadOnlyAttributeId, expected_variant);
+
+  // Validate text range "some textread only" returns mixed attribute.
+  // start: TextPosition, anchor_id=2, text_offset=0, annotated_text=<s>ome text
+  // end  : TextPosition, anchor_id=3, text_offset=9, annotated_text=read only<>
+  ComPtr<AXPlatformNodeTextRangeProviderWin> mixed_text_range_provider;
+  CreateTextRangeProviderWin(
+      mixed_text_range_provider, owner, update.tree_data.tree_id,
+      /*start_anchor_id=*/some_text.id, /*start_offset=*/0,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor_id=*/readonly_text.id, /*end_offset=*/9,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  EXPECT_UIA_TEXTRANGE_EQ(mixed_text_range_provider, L"some textread only");
+  EXPECT_UIA_TEXTATTRIBUTE_MIXED(mixed_text_range_provider,
+                                 UIA_AnnotationObjectsAttributeId);
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderGetAttributeValueNotSupported) {
   ui::AXNodeData root_data;
   root_data.id = 1;
@@ -4388,8 +4709,6 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
                                         UIA_AfterParagraphSpacingAttributeId);
   EXPECT_UIA_TEXTATTRIBUTE_NOTSUPPORTED(document_range_provider,
                                         UIA_AnimationStyleAttributeId);
-  EXPECT_UIA_TEXTATTRIBUTE_NOTSUPPORTED(document_range_provider,
-                                        UIA_AnnotationObjectsAttributeId);
   EXPECT_UIA_TEXTATTRIBUTE_NOTSUPPORTED(document_range_provider,
                                         UIA_BeforeParagraphSpacingAttributeId);
   EXPECT_UIA_TEXTATTRIBUTE_NOTSUPPORTED(document_range_provider,

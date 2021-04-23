@@ -4821,8 +4821,10 @@ HRESULT AXPlatformNodeWin::GetTextAttributeValue(
     base::win::VariantVector* result) {
   DCHECK(!start_offset || start_offset.value() >= 0);
   DCHECK(!end_offset || end_offset.value() >= 0);
-
   switch (attribute_id) {
+    case UIA_AnnotationObjectsAttributeId:
+      GetAnnotationObjectsAttribute(result);
+      break;
     case UIA_AnnotationTypesAttributeId:
       return GetAnnotationTypesAttribute(start_offset, end_offset, result);
     case UIA_BackgroundColorAttributeId:
@@ -4922,6 +4924,34 @@ HRESULT AXPlatformNodeWin::GetTextAttributeValue(
   }
 
   return S_OK;
+}
+
+void AXPlatformNodeWin::GetAnnotationObjectsAttribute(
+    base::win::VariantVector* result) {
+  // Most times AnnotationObject attribute is set on the container (immediate
+  // parent) of the text node, but it can be on any ancestor of the text node.
+  // TODO(vicfei): Need to find an efficient algorithm to walk up current node's
+  // ancestors to find the attribute. https://crbug.com/1201327
+  AXPlatformNodeWin* parent_platform_node =
+      static_cast<AXPlatformNodeWin*>(FromNativeViewAccessible(GetParent()));
+
+  if (!parent_platform_node || !IsText())
+    return;
+
+  std::vector<int32_t> relation_id_list =
+      parent_platform_node->GetIntListAttribute(
+          ax::mojom::IntListAttribute::kDetailsIds);
+
+  std::vector<AXPlatformNodeWin*> platform_node_list =
+      CreatePlatformNodeVectorFromRelationIdVector(relation_id_list);
+
+  for (AXPlatformNodeWin* platform_node : platform_node_list) {
+    Microsoft::WRL::ComPtr<IUnknown> annotation_object;
+    if (SUCCEEDED(
+            platform_node->QueryInterface(IID_PPV_ARGS(&annotation_object)))) {
+      result->Insert<VT_UNKNOWN>(annotation_object.Get());
+    }
+  }
 }
 
 HRESULT AXPlatformNodeWin::GetAnnotationTypesAttribute(
