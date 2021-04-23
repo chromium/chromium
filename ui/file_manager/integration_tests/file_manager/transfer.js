@@ -136,7 +136,10 @@ async function transferBetweenVolumes(transferInfo) {
   const driveFiles = (transferInfo.source.isTeamDrive ||
                       transferInfo.destination.isTeamDrive) ?
       SHARED_DRIVE_ENTRY_SET :
-      BASIC_DRIVE_ENTRY_SET;
+      BASIC_DRIVE_ENTRY_SET.concat([
+        ENTRIES.sharedDirectory,
+        ENTRIES.sharedDirectoryFile,
+      ]);
 
   // Open files app.
   const appId =
@@ -235,13 +238,21 @@ const TRANSFER_LOCATIONS = {
   drive: new TransferLocationInfo({
     breadcrumbsPath: '/My Drive',
     volumeName: 'drive',
-    initialEntries: BASIC_DRIVE_ENTRY_SET
+    initialEntries: BASIC_DRIVE_ENTRY_SET.concat([
+      ENTRIES.sharedDirectory,
+    ])
   }),
 
   driveWithTeamDriveEntries: new TransferLocationInfo({
     breadcrumbsPath: '/My Drive',
     volumeName: 'drive',
     initialEntries: SHARED_DRIVE_ENTRY_SET
+  }),
+
+  driveSharedDirectory: new TransferLocationInfo({
+    breadcrumbsPath: '/My Drive/Shared',
+    volumeName: 'drive',
+    initialEntries: [ENTRIES.sharedDirectoryFile]
   }),
 
   downloads: new TransferLocationInfo({
@@ -253,7 +264,10 @@ const TRANSFER_LOCATIONS = {
   sharedWithMe: new TransferLocationInfo({
     breadcrumbsPath: '/Shared with me',
     volumeName: 'drive_shared_with_me',
-    initialEntries: SHARED_WITH_ME_ENTRY_SET
+    initialEntries: SHARED_WITH_ME_ENTRY_SET.concat([
+      ENTRIES.sharedDirectory,
+      ENTRIES.sharedDirectoryFile,
+    ])
   }),
 
   driveOffline: new TransferLocationInfo({
@@ -372,9 +386,9 @@ testcase.transferFromDownloadsToDrive = () => {
 };
 
 /**
- * Tests copying from Drive shared with me to Downloads.
+ * Tests copying from Drive "Shared with me" to Downloads.
  */
-testcase.transferFromSharedToDownloads = () => {
+testcase.transferFromSharedWithMeToDownloads = () => {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.testSharedFile,
     source: TRANSFER_LOCATIONS.sharedWithMe,
@@ -383,13 +397,54 @@ testcase.transferFromSharedToDownloads = () => {
 };
 
 /**
- * Tests copying from Drive shared with me to Drive.
+ * Tests copying from Drive "Shared with me" to Drive.
  */
-testcase.transferFromSharedToDrive = () => {
+testcase.transferFromSharedWithMeToDrive = () => {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.testSharedDocument,
     source: TRANSFER_LOCATIONS.sharedWithMe,
     destination: TRANSFER_LOCATIONS.drive,
+  }));
+};
+
+
+/**
+ * Tests copying from Downloads to a shared folder on Drive.
+ */
+testcase.transferFromDownloadsToSharedFolder = () => {
+  return transferBetweenVolumes(new TransferInfo({
+    fileToTransfer: ENTRIES.hello,
+    source: TRANSFER_LOCATIONS.downloads,
+    destination: TRANSFER_LOCATIONS.driveSharedDirectory,
+    expectedDialogText:
+        'Copying this item will share it with everyone who can see the ' +
+        'shared folder \'Shared\'.CopyCancel',
+  }));
+};
+
+/**
+ * Tests moving from Downloads to a shared folder on Drive.
+ */
+testcase.transferFromDownloadsToSharedFolderMove = () => {
+  return transferBetweenVolumes(new TransferInfo({
+    fileToTransfer: ENTRIES.hello,
+    source: TRANSFER_LOCATIONS.downloads,
+    destination: TRANSFER_LOCATIONS.driveSharedDirectory,
+    expectedDialogText:
+        'Moving this item will share it with everyone who can see the ' +
+        'shared folder \'Shared\'.MoveCancel',
+    isMove: true,
+  }));
+};
+
+/**
+ * Tests copying from a shared folder on Drive to Downloads.
+ */
+testcase.transferFromSharedFolderToDownloads = () => {
+  return transferBetweenVolumes(new TransferInfo({
+    fileToTransfer: ENTRIES.sharedDirectoryFile,
+    source: TRANSFER_LOCATIONS.driveSharedDirectory,
+    destination: TRANSFER_LOCATIONS.downloads,
   }));
 };
 

@@ -146,8 +146,8 @@ testcase.driveOpenSidebarSharedWithMe = async () => {
   // Open Files app on Drive containing "Shared with me" file entries.
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat([
-        ENTRIES.sharedDirectory,
-        ENTRIES.sharedDirectoryFile,
+        ENTRIES.sharedWithMeDirectory,
+        ENTRIES.sharedWithMeDirectoryFile,
       ]));
 
   // Click the icon of the Shared With Me volume.
@@ -162,7 +162,7 @@ testcase.driveOpenSidebarSharedWithMe = async () => {
   await remoteCall.waitForFiles(
       appId,
       TestEntryInfo.getExpectedRows(
-          SHARED_WITH_ME_ENTRY_SET.concat([ENTRIES.sharedDirectory])));
+          SHARED_WITH_ME_ENTRY_SET.concat([ENTRIES.sharedWithMeDirectory])));
 
   // Navigate to the directory within Shared with me.
   chrome.test.assertFalse(!await remoteCall.callRemoteTestUtil(
@@ -174,7 +174,8 @@ testcase.driveOpenSidebarSharedWithMe = async () => {
 
   // Verify the file list.
   await remoteCall.waitForFiles(
-      appId, TestEntryInfo.getExpectedRows([ENTRIES.sharedDirectoryFile]));
+      appId,
+      TestEntryInfo.getExpectedRows([ENTRIES.sharedWithMeDirectoryFile]));
 };
 
 /**
