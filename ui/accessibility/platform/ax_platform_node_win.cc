@@ -1851,7 +1851,13 @@ IFACEMETHODIMP AXPlatformNodeWin::get_ExpandCollapseState(
 IFACEMETHODIMP AXPlatformNodeWin::get_Column(int* result) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GRIDITEM_GET_COLUMN);
   UIA_VALIDATE_CALL_1_ARG(result);
-  base::Optional<int> column = GetTableColumn();
+
+  base::Optional<int> column;
+  if (HasIntAttribute(ax::mojom::IntAttribute::kAriaCellColumnIndex))
+    column = GetDelegate()->GetTableCellAriaColIndex();
+  else
+    column = GetTableColumn();
+
   if (!column)
     return E_FAIL;
   *result = *column;
@@ -1886,7 +1892,13 @@ IFACEMETHODIMP AXPlatformNodeWin::get_ContainingGrid(
 IFACEMETHODIMP AXPlatformNodeWin::get_Row(int* result) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GRIDITEM_GET_ROW);
   UIA_VALIDATE_CALL_1_ARG(result);
-  base::Optional<int> row = GetTableRow();
+
+  base::Optional<int> row;
+  if (HasIntAttribute(ax::mojom::IntAttribute::kAriaCellRowIndex))
+    row = GetDelegate()->GetTableCellAriaRowIndex();
+  else
+    row = GetTableRow();
+
   if (!row)
     return E_FAIL;
   *result = *row;
