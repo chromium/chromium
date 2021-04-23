@@ -2586,6 +2586,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.ComponentUpdater.UnexpectedExit"
+    enum="Boolean" expires_after="2021-10-08">
+  <owner>laisminchillo@chromium.org</owner>
+  <owner>nator@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Whether AwComponentUpdateService quit unexpectedly on the previous run. This
+    might indicate a crash occurred during the previous job. This is logged once
+    per run of AwComponentUpdateService.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ConnectedToVariationService" enum="Boolean"
     expires_after="M93">
   <owner>hazems@chromium.org</owner>

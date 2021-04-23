@@ -5,12 +5,15 @@ package org.chromium.android_webview.nonembedded;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.content.Context;
+import android.content.SharedPreferences;
 
 import org.chromium.android_webview.services.ComponentsProviderPathUtil;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 
 import java.io.File;
@@ -29,20 +32,28 @@ public class AwComponentUpdateService extends JobService {
             "Android.WebView.ComponentUpdater.CPSDirectorySize";
     public static final String HISTOGRAM_COMPONENT_UPDATER_CUS_DIRECTORY_SIZE =
             "Android.WebView.ComponentUpdater.CUSDirectorySize";
+    public static final String HISTOGRAM_COMPONENT_UPDATER_UNEXPECTED_EXIT =
+            "Android.WebView.ComponentUpdater.UnexpectedExit";
 
     private static final int BYTES_PER_KILOBYTE = 1024;
     private static final int DIRECTORY_SIZE_MIN_BUCKET = 100;
     private static final int DIRECTORY_SIZE_MAX_BUCKET = 500000;
     private static final int DIRECTORY_SIZE_NUM_BUCKETS = 50;
+    private static final String SHARED_PREFERENCES_NAME = "AwComponentUpdateServicePreferences";
+    private static final String KEY_UNEXPECTED_EXIT = "UnexpectedExit";
 
     @Override
     public boolean onStartJob(JobParameters params) {
+        maybeRecordUnexpectedExit();
+
         // TODO(http://crbug.com/1179297) look at doing this in a task on a background thread
         // instead of the main thread.
         if (WebViewApkApplication.initializeNative()) {
+            setUnexpectedExit(true);
             AwComponentUpdateServiceJni.get().startComponentUpdateService(() -> {
                 recordDirectorySize();
                 jobFinished(params, /* needReschedule= */ false);
+                setUnexpectedExit(false);
             });
             return true;
         }
@@ -52,6 +63,8 @@ public class AwComponentUpdateService extends JobService {
 
     @Override
     public boolean onStopJob(JobParameters params) {
+        setUnexpectedExit(false);
+
         // This should only be called if the service needs to be shut down before we've called
         // jobFinished. Request reschedule so we can finish downloading component updates.
         return /*reschedule= */ true;
@@ -70,6 +83,21 @@ public class AwComponentUpdateService extends JobService {
         UmaRecorderHolder.get().recordExponentialHistogram(histogramName,
                 (int) (sizeBytes / BYTES_PER_KILOBYTE), DIRECTORY_SIZE_MIN_BUCKET,
                 DIRECTORY_SIZE_MAX_BUCKET, DIRECTORY_SIZE_NUM_BUCKETS);
+    }
+
+    private void maybeRecordUnexpectedExit() {
+        final SharedPreferences sharedPreferences =
+                getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        if (sharedPreferences.contains(KEY_UNEXPECTED_EXIT)) {
+            RecordHistogram.recordBooleanHistogram(HISTOGRAM_COMPONENT_UPDATER_UNEXPECTED_EXIT,
+                    sharedPreferences.getBoolean(KEY_UNEXPECTED_EXIT, false));
+        }
+    }
+
+    private void setUnexpectedExit(boolean unfinished) {
+        final SharedPreferences sharedPreferences =
+                getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        sharedPreferences.edit().putBoolean(KEY_UNEXPECTED_EXIT, unfinished).apply();
     }
 
     @NativeMethods
