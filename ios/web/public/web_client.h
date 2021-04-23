@@ -37,7 +37,6 @@ namespace web {
 class BrowserState;
 class BrowserURLRewriter;
 class JavaScriptFeature;
-class SerializableUserDataManager;
 class WebClient;
 class WebMainParts;
 class WebState;
@@ -85,10 +84,6 @@ class WebClient {
   // browser would return true for "chrome://about" URL.
   virtual bool IsAppSpecificURL(const GURL& url) const;
 
-  // Allow embedder to inject data.
-  virtual void AddSerializableData(
-      web::SerializableUserDataManager* user_data_manager,
-      web::WebState* web_state);
   // Returns text to be displayed for an unsupported plugin.
   virtual std::u16string GetPluginNotSupportedText() const;
 
@@ -192,6 +187,8 @@ class WebClient {
   // content, based on the size class of |web_view| and the |url|.
   virtual UserAgentType GetDefaultUserAgent(id<UITraitEnvironment> web_view,
                                             const GURL& url);
+
+  virtual bool RestoreSessionFromCache(web::WebState* web_state) const;
 };
 
 }  // namespace web

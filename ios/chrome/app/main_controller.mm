@@ -102,6 +102,8 @@
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/webui/chrome_web_ui_ios_controller_factory.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
+#import "ios/chrome/browser/web/session_state/web_session_state_cache_factory.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/common/app_group/app_group_utils.h"
@@ -172,6 +174,9 @@ NSString* const kStartSpotlightBookmarksIndexing =
 
 // Constants for deferring the enterprise managed device check.
 NSString* const kEnterpriseManagedDeviceCheck = @"EnterpriseManagedDeviceCheck";
+
+// Constants for deferred deletion of leftover session state files.
+NSString* const kPurgeWebSessionStates = @"PurgeWebSessionStates";
 
 // Adapted from chrome/browser/ui/browser_init.cc.
 void RegisterComponentsForUpdate() {
@@ -842,6 +847,17 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                   }];
 }
 
+- (void)scheduleSessionStateCacheCleanup {
+  [[DeferredInitializationRunner sharedInstance]
+      enqueueBlockNamed:kPurgeWebSessionStates
+                  block:^{
+                    WebSessionStateCache* cache =
+                        WebSessionStateCacheFactory::GetForBrowserState(
+                            self.appState.mainBrowserState);
+                    [cache purgeUnassociatedData];
+                  }];
+}
+
 - (void)scheduleStartupCleanupTasks {
   [self scheduleCrashReportCleanup];
 
@@ -858,10 +874,12 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // Remove all discarded sessions from disk.
   [self scheduleDiscardedSessionsCleanup];
 
-  // If the user chooses to restore their session, some cached snapshots may
-  // be needed. Otherwise, cleanup the snapshots.
+  // If the user chooses to restore their session, some cached snapshots and
+  // session states may be needed. Otherwise, cleanup the snapshots and session
+  // states
   if (![self mustShowRestoreInfobar]) {
     [self scheduleSnapshotsCleanup];
+    [self scheduleSessionStateCacheCleanup];
   }
 }
 

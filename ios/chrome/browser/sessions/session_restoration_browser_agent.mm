@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
+#import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_serialization.h"
@@ -201,6 +202,12 @@ void SessionRestorationBrowserAgent::SaveSession(bool immediately) {
                       sessionID:session_identifier_
                       directory:browser_state_->GetStatePath()
                     immediately:immediately];
+
+  for (int i = 0; i < web_state_list_->count(); ++i) {
+    web::WebState* web_state = web_state_list_->GetWebStateAt(i);
+    WebSessionStateTabHelper::FromWebState(web_state)
+        ->SaveSessionStateIfStale();
+  }
 }
 
 bool SessionRestorationBrowserAgent::CanSaveSession() {

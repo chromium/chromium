@@ -381,6 +381,10 @@ class WebState : public base::SupportsUserData {
   // wants to close self by calling window.close() JavaScript API.
   virtual void CloseWebState() = 0;
 
+  // Injects an opaque NSData block into a WKWebView to restore or serialize.
+  virtual void SetSessionStateData(NSData* data) = 0;
+  virtual NSData* SessionStateData() = 0;
+
  protected:
   friend class WebStatePolicyDecider;
 

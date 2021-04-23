@@ -16,6 +16,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
+#import "build/branding_buildflags.h"
 #import "ios/web/browsing_data/browsing_data_remover.h"
 #import "ios/web/common/crw_input_view_provider.h"
 #import "ios/web/common/crw_web_view_content_view.h"
@@ -58,6 +59,7 @@
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
 #import "ios/web/web_state/ui/crw_wk_ui_handler.h"
 #import "ios/web/web_state/ui/crw_wk_ui_handler_delegate.h"
+#import "ios/web/web_state/ui/webkit_session_restore_buildflags.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/web_state/user_interaction_state.h"
 #import "ios/web/web_state/web_state_impl.h"
@@ -902,6 +904,75 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 - (void)addWebViewToViewHierarchy {
   [self displayWebView];
+}
+
+// TODO(crbug.com/1174560) This depends on iOS TBA logic landed in WebKit's
+// opensource repository, and currently includes not-to-be-shipped logic to use
+// private APIs, so the rest of the Chromium logic can be tested. When iOS TBA
+// is released with the necessary logic, the private implementation can be
+// removed. See https://bugs.webkit.org/show_bug.cgi?id=220958 for details.
+- (void)setSessionStateData:(NSData*)data {
+#if BUILDFLAG(CHROMIUM_BRANDING)
+  [self ensureWebViewCreated];
+  self.navigationHandler.blockUniversalLinksOnNextDecidePolicy = true;
+#if BUILDFLAG(WEBKIT_SESSION_RESTORE)
+  if (@available(iOS TBA, *)) {
+    NSError* error = nil;
+    id interactionState = [NSKeyedUnarchiver
+        unarchivedObjectOfClass:[(id)[self.webView interactionState] class]
+                       fromData:data
+                          error:&error];
+    [self.webView setInteractionState:interactionState];
+    [self.webView
+        goToBackForwardListItem:[[self.webView backForwardList] currentItem]];
+    return;
+  }
+#else  // BUILDFLAG(WEBKIT_SESSION_RESTORE)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+  Class SessionStateClass = NSClassFromString(@"_WKSessionState");
+  id sessionState = [[SessionStateClass alloc] initWithData:data];
+  SEL selector = @selector(_restoreSessionState:andNavigate:);
+  NSMethodSignature* method_signature =
+      [self.webView methodSignatureForSelector:selector];
+  NSInvocation* invocation =
+      [NSInvocation invocationWithMethodSignature:method_signature];
+  invocation.target = self.webView;
+  invocation.selector = selector;
+  [invocation setArgument:&sessionState atIndex:2];
+  BOOL navigate = YES;
+  [invocation setArgument:&navigate atIndex:3];
+  [invocation invoke];
+#pragma clang diagnostic pop
+#endif  // BUILDFLAG(WEBKIT_SESSION_RESTORE)
+#endif  // BUILDFLAG(CHROMIUM_BRANDING)
+}
+
+// TODO(crbug.com/1174560) This depends on iOS TBA logic landed in WebKit's
+// opensource repository, and currently includes not-to-be-shipped logic to use
+// private APIs, so the rest of the Chromium logic can be tested. When iOS TBA
+// is released with the necessary logic, the private implementation can be
+// removed. See https://bugs.webkit.org/show_bug.cgi?id=220958 for details.
+- (NSData*)sessionStateData {
+#if BUILDFLAG(CHROMIUM_BRANDING)
+#if BUILDFLAG(WEBKIT_SESSION_RESTORE)
+  if (@available(iOS TBA, *)) {
+    NSError* error = nil;
+    return [NSKeyedArchiver
+        archivedDataWithRootObject:self.webView.interactionState
+             requiringSecureCoding:YES
+                             error:&error];
+  }
+  return nil;
+#else  // #BUILDFLAG(WEBKIT_SESSION_RESTORE)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+  return [[self.webView performSelector:@selector(_sessionState)] data];
+#pragma clang diagnostic pop
+#endif  // BUILDFLAG(WEBKIT_SESSION_RESTORE)
+#else
+  return nil;
+#endif  // BUILDFLAG(CHROMIUM_BRANDING)
 }
 
 #pragma mark - CRWTouchTrackingDelegate (Public)

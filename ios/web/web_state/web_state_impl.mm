@@ -923,4 +923,21 @@ void WebStateImpl::RestoreSessionStorage(CRWSessionStorage* session_storage) {
   session_storage_builder.ExtractSessionState(this, session_storage);
 }
 
+void WebStateImpl::SetSessionStateData(NSData* data) {
+  return [web_controller_ setSessionStateData:data];
+}
+
+NSData* WebStateImpl::SessionStateData() {
+  // Don't mix safe and unsafe session restoration -- if a webState still
+  // has unrestored targetUrl pages, leave it that way.
+  for (int i = 0; i < navigation_manager_->GetItemCount(); i++) {
+    web::NavigationItem* item = navigation_manager_->GetItemAtIndex(i);
+    if (web::wk_navigation_util::IsRestoreSessionUrl(item->GetURL())) {
+      return nullptr;
+    }
+  }
+
+  return [web_controller_ sessionStateData];
+}
+
 }  // namespace web

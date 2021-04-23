@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
+#import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -236,6 +237,7 @@ class TabHelperFakeWebStateListDelegate : public FakeWebStateListDelegate {
     PagePlaceholderTabHelper::CreateForWebState(web_state);
     NSString* identifier = TabIdTabHelper::FromWebState(web_state)->tab_id();
     SnapshotTabHelper::CreateForWebState(web_state, identifier);
+    WebSessionStateTabHelper::CreateForWebState(web_state);
   }
 };
 

@@ -1125,4 +1125,48 @@ TEST_F(WebStateImplTest, VisibilitychangeEventFired) {
   [web_state_->GetView() removeFromSuperview];
 }
 
+// Tests that WebState sessionState data doesn't load things with unsafe
+// restore.
+TEST_F(WebStateImplTest, DISABLED_MixedSafeUnsafeRestore) {
+  GURL urls[3] = {GURL("https://chromium.test/1"),
+                  GURL("https://chromium.test/2"),
+                  GURL("https://chromium.test/3")};
+  std::vector<std::unique_ptr<NavigationItem>> items;
+  for (size_t index = 0; index < base::size(urls); ++index) {
+    items.push_back(NavigationItem::Create());
+    items.back()->SetURL(urls[index]);
+  }
+  // Force generation of child views; necessary for some tests.
+  web_state_->GetView();
+  web_state_->SetKeepRenderProcessAlive(true);
+  web_state_->GetNavigationManager()->Restore(0, std::move(items));
+  __block bool restore_done = false;
+  web_state_->GetNavigationManager()->AddRestoreCompletionCallback(
+      base::BindOnce(^{
+        restore_done = true;
+      }));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return restore_done;
+  }));
+
+  NSData* data = web_state_->SessionStateData();
+  EXPECT_EQ(nullptr, data);
+}
+
+// Tests that WebState sessionState data can be read and writen.
+TEST_F(WebStateImplTest, DISABLED_ReadAndWriteSessionStateData) {
+  web::WebState::CreateParams params(GetBrowserState());
+  __block auto web_state = std::make_unique<web::WebStateImpl>(params);
+  CRWWebController* web_controller = web_state->GetWebController();
+  NSString* html_content = @"<html><body>Hello world</body></html>";
+  [web_controller loadHTML:html_content forURL:GURL("http://example.org")];
+
+  NSData* data = web_state->SessionStateData();
+  EXPECT_NE(nullptr, data);
+
+  web_state_->SetSessionStateData(data);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return web_state_->GetVisibleURL() == web_state->GetVisibleURL();
+  }));
+}
 }  // namespace web

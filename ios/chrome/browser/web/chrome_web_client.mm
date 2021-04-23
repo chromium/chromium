@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_factory.h"
 #include "ios/chrome/browser/web/print/print_java_script_feature.h"
+#import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/components/security_interstitials/legacy_tls/legacy_tls_blocking_page.h"
 #import "ios/components/security_interstitials/legacy_tls/legacy_tls_controller_client.h"
@@ -219,13 +220,6 @@ std::string ChromeWebClient::GetApplicationLocale() const {
 
 bool ChromeWebClient::IsAppSpecificURL(const GURL& url) const {
   return url.SchemeIs(kChromeUIScheme);
-}
-
-void ChromeWebClient::AddSerializableData(
-    web::SerializableUserDataManager* user_data_manager,
-    web::WebState* web_state) {
-  return ios::GetChromeBrowserProvider()->AddSerializableData(user_data_manager,
-                                                              web_state);
 }
 
 std::u16string ChromeWebClient::GetPluginNotSupportedText() const {
@@ -432,4 +426,9 @@ web::UserAgentType ChromeWebClient::GetDefaultUserAgent(
                               UIUserInterfaceSizeClassRegular;
   return isRegularRegular ? web::UserAgentType::DESKTOP
                           : web::UserAgentType::MOBILE;
+}
+
+bool ChromeWebClient::RestoreSessionFromCache(web::WebState* web_state) const {
+  return WebSessionStateTabHelper::FromWebState(web_state)
+      ->RestoreSessionFromCache();
 }

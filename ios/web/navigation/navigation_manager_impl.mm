@@ -457,8 +457,28 @@ void NavigationManagerImpl::SetWKWebViewNextPendingUrlNotSerializable(
 bool NavigationManagerImpl::RestoreSessionFromCache(const GURL& url) {
   DCHECK(is_restore_session_in_progress_);
 
-  // TODO(crbug.com/1174560): Bring up native session restoration.
-  return false;
+  GURL targetURL;
+  if (!web::wk_navigation_util::IsRestoreSessionUrl(url) ||
+      web::wk_navigation_util::ExtractTargetURL(url, &targetURL)) {
+    return false;
+  }
+
+  if (!web::GetWebClient()->RestoreSessionFromCache(GetWebState()))
+    return false;
+
+  // Native restore worked, abort unsafe restore.
+  DiscardNonCommittedItems();
+  last_committed_item_index_ = web_view_cache_.GetCurrentItemIndex();
+  if (restored_visible_item_ &&
+      restored_visible_item_->GetUserAgentType() != UserAgentType::NONE) {
+    NavigationItem* last_committed_item =
+        GetLastCommittedItemInCurrentOrRestoredSession();
+    last_committed_item->SetUserAgentType(
+        restored_visible_item_->GetUserAgentType());
+  }
+  restored_visible_item_.reset();
+  FinalizeSessionRestore();
+  return true;
 }
 
 void NavigationManagerImpl::RemoveTransientURLRewriters() {

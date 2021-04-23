@@ -92,6 +92,11 @@ class WKBackForwardListItemHolder;
 // Indicates if the webview reported a crash.
 @property(nonatomic, assign, readonly) BOOL webProcessCrashed;
 
+// Indicates if the next call to decidePolicyForNavigationAction will block
+// universal links.  This is useful for native session restore's navigation.
+@property(nonatomic, assign, readwrite)
+    BOOL blockUniversalLinksOnNextDecidePolicy;
+
 // Pending information for an in-progress page navigation. The lifetime of
 // this object starts at |decidePolicyForNavigationAction| where the info is
 // extracted from the request, and ends at either |didCommitNavigation| or

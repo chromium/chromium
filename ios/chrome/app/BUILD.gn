@@ -304,6 +304,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:tab_id_tab_helper",
     "//ios/chrome/browser/web:web_internal",
+    "//ios/chrome/browser/web/session_state",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/app_group:main_app",

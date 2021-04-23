@@ -36,10 +36,6 @@ bool FakeWebClient::IsAppSpecificURL(const GURL& url) const {
   return url.SchemeIs(kTestWebUIScheme) || url.SchemeIs(kTestAppSpecificScheme);
 }
 
-void FakeWebClient::AddSerializableData(
-    web::SerializableUserDataManager* user_data_manager,
-    web::WebState* web_state) {}
-
 std::u16string FakeWebClient::GetPluginNotSupportedText() const {
   return plugin_not_supported_text_;
 }

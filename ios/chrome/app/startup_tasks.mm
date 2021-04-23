@@ -59,9 +59,6 @@ NSString* const kStartProfileStartupTaskRunners =
                     [self performDeferredInitializationForBrowserState:
                               browserState];
                   }];
-
-  // Allow the embedder to schedule tasks.
-  ios::GetChromeBrowserProvider()->ScheduleDeferredStartupTasks(browserState);
 }
 
 - (void)initializeOmaha {

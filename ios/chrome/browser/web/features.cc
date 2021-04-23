@@ -18,4 +18,7 @@ const base::Feature kWebPageAlternativeTextZoom{
 const base::Feature kMobileGoogleSRP{"MobileGoogleSRP",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kRestoreSessionFromCache{"RestoreSessionFromCache",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace web

@@ -44,10 +44,6 @@ bool WebClient::IsAppSpecificURL(const GURL& url) const {
   return false;
 }
 
-void WebClient::AddSerializableData(
-    web::SerializableUserDataManager* user_data_manager,
-    web::WebState* web_state) {}
-
 std::u16string WebClient::GetPluginNotSupportedText() const {
   return std::u16string();
 }
@@ -115,6 +111,10 @@ bool WebClient::EnableLongPressUIContextMenu() const {
 }
 
 bool WebClient::ForceMobileVersionByDefault(const GURL&) {
+  return false;
+}
+
+bool WebClient::RestoreSessionFromCache(web::WebState* web_state) const {
   return false;
 }
 

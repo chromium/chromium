@@ -24,6 +24,9 @@ extern const base::Feature kWebPageAlternativeTextZoom;
 // the desktop version is requested by default.
 extern const base::Feature kMobileGoogleSRP;
 
+// Feature flag for to use native session restoration.
+extern const base::Feature kRestoreSessionFromCache;
+
 }  // namespace web
 
 #endif  // IOS_CHROME_BROWSER_WEB_FEATURES_H_

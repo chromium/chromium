@@ -47,9 +47,6 @@ const base::Feature kIOSLegacyTLSInterstitial{"IOSLegacyTLSInterstitial",
 const base::Feature kRecordSnapshotSize{"RecordSnapshotSize",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kRestoreSessionFromCache{"RestoreSessionFromCache",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kWebViewNativeContextMenu{
     "WebViewNativeContextMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 

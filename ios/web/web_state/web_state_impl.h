@@ -231,6 +231,8 @@ class WebStateImpl : public WebState,
   void AddObserver(WebStateObserver* observer) override;
   void RemoveObserver(WebStateObserver* observer) override;
   void CloseWebState() override;
+  void SetSessionStateData(NSData* data) override;
+  NSData* SessionStateData() override;
 
   // Returns the UserAgent that should be used to load the |url| if it is a new
   // navigation. This will be Mobile or Desktop.

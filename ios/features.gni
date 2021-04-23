@@ -15,4 +15,7 @@ declare_args() {
   # Controls whether universal links are blocked from opening native apps
   # when the user is browsing in off the record mode.
   block_universal_links_in_off_the_record_mode = true
+
+  # Controls whether unreleased WebKit native session restore is built.
+  webkit_session_restore = false
 }

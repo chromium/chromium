@@ -470,4 +470,10 @@ void FakeWebState::CreateFullPagePdf(
   std::move(callback).Run([[NSData alloc] init]);
 }
 
+void FakeWebState::SetSessionStateData(NSData* data) {}
+
+NSData* FakeWebState::SessionStateData() {
+  return nil;
+}
+
 }  // namespace web

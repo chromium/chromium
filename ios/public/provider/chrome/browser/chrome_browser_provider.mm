@@ -70,24 +70,11 @@ std::string ChromeBrowserProvider::GetRiskData() {
   return std::string();
 }
 
-void ChromeBrowserProvider::AddSerializableData(
-    web::SerializableUserDataManager* user_data_manager,
-    web::WebState* web_state) {}
-
-bool ChromeBrowserProvider::MightBlockUrlDuringRestore() {
-  return false;
-}
-
 UITextField* ChromeBrowserProvider::CreateStyledTextField() const {
   return nil;
 }
 
-void ChromeBrowserProvider::AttachTabHelpers(web::WebState* web_state) const {}
-
 void ChromeBrowserProvider::AttachBrowserAgents(Browser* browser) const {}
-
-void ChromeBrowserProvider::ScheduleDeferredStartupTasks(
-    ChromeBrowserState* browser_state) const {}
 
 VoiceSearchProvider* ChromeBrowserProvider::GetVoiceSearchProvider() const {
   return nullptr;

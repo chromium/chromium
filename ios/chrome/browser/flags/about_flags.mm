@@ -486,7 +486,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"restore-session-from-cache",
      flag_descriptions::kRestoreSessionFromCacheName,
      flag_descriptions::kRestoreSessionFromCacheDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(web::features::kRestoreSessionFromCache)},
+     FEATURE_VALUE_TYPE(web::kRestoreSessionFromCache)},
     {"autofill-save-card-dismiss-on-navigation",
      flag_descriptions::kAutofillSaveCardDismissOnNavigationName,
      flag_descriptions::kAutofillSaveCardDismissOnNavigationDescription,

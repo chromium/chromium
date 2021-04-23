@@ -193,6 +193,9 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
                         (void (^)(WKNavigationActionPolicy))decisionHandler {
   [self didReceiveWKNavigationDelegateCallback];
 
+  BOOL forceBlockUniversalLinks = self.blockUniversalLinksOnNextDecidePolicy;
+  self.blockUniversalLinksOnNextDecidePolicy = NO;
+
   if (@available(iOS 13, *)) {
   } else {
     // As webView:decidePolicyForNavigationAction:preferences:decisionHandler:
@@ -497,7 +500,8 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     return;
   }
   BOOL isOffTheRecord = self.webStateImpl->GetBrowserState()->IsOffTheRecord();
-  decisionHandler(web::GetAllowNavigationActionPolicy(isOffTheRecord));
+  decisionHandler(web::GetAllowNavigationActionPolicy(
+      isOffTheRecord || forceBlockUniversalLinks));
 }
 
 - (void)webView:(WKWebView*)webView

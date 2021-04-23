@@ -19,7 +19,6 @@
 class AppDistributionProvider;
 class BrandedImageProvider;
 class BrowserURLRewriterProvider;
-class ChromeBrowserState;
 class DiscoverFeedProvider;
 class FullscreenProvider;
 class MailtoHandlerProvider;
@@ -35,7 +34,6 @@ class CommandLine;
 }
 
 namespace web {
-class SerializableUserDataManager;
 class WebState;
 }
 
@@ -111,23 +109,9 @@ class ChromeBrowserProvider {
   virtual std::string GetRiskData();
   // Creates and returns a new styled text field.
   virtual UITextField* CreateStyledTextField() const NS_RETURNS_RETAINED;
-  // Allow embedders to inject data.
-  virtual void AddSerializableData(
-      web::SerializableUserDataManager* user_data_manager,
-      web::WebState* web_state);
-
-  // Whether the embedder might block specific URL.
-  virtual bool MightBlockUrlDuringRestore();
-
-  // Attaches any embedder-specific tab helpers to the given |web_state|.
-  virtual void AttachTabHelpers(web::WebState* web_state) const;
 
   // Attaches any embedder-specific browser agents to the given |browser|.
   virtual void AttachBrowserAgents(Browser* browser) const;
-
-  // Schedule any embedder-specific startup tasks.
-  virtual void ScheduleDeferredStartupTasks(
-      ChromeBrowserState* browser_state) const;
 
   // Returns an instance of the voice search provider, if one exists.
   virtual VoiceSearchProvider* GetVoiceSearchProvider() const;
