@@ -34,16 +34,24 @@ void MojoBinderPolicyApplier::ApplyPolicyToBinder(
   }
   const MojoBinderPolicy policy = GetMojoBinderPolicy(interface_name);
 
-  // Running in kPrepareToGrantAll mode means that the page will be activated
-  // soon, so the restrictions should be relaxed.
+  // Run in the kPrepareToGrantAll mode before the renderer sends back a
+  // DidCommitActivation. In this mode, MojoBinderPolicyApplier loosens
+  // policies, but still defers binders to ensure that the renderer does not
+  // receive unexpected messages before CommitActivation arrives.
   if (mode_ == Mode::kPrepareToGrantAll) {
     switch (policy) {
       case MojoBinderPolicy::kGrant:
+      // Grant these two kinds of interfaces because:
+      // - kCancel and kUnexpected interfaces may have sync methods, so grant
+      // them to avoid deadlocks.
+      // - Renderer might request these interfaces during the prerenderingchange
+      // event, because from the page's point of view it is no longer
+      // prerendering.
+      case MojoBinderPolicy::kCancel:
+      case MojoBinderPolicy::kUnexpected:
         std::move(binder_callback).Run();
         break;
-      case MojoBinderPolicy::kCancel:
       case MojoBinderPolicy::kDefer:
-      case MojoBinderPolicy::kUnexpected:
         deferred_binders_.push_back(std::move(binder_callback));
         break;
     }
