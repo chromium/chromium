@@ -15,6 +15,7 @@
 -BookmarkBarViewTest21.ContextMenusForEmptyFolder
 -BookmarkBarViewTest22.CloseSourceBrowserDuringDrag
 -BookmarkBarViewTest23.ContextMenusKeyboard
+-BookmarkBarViewTest3.Submenus
 -BookmarkBarViewTest4.ContextMenus
 -BookmarkBarViewTest5.DND
 -BookmarkBarViewTest6.OpenMenuOnClickAndHold
