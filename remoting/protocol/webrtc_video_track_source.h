@@ -5,6 +5,8 @@
 #ifndef REMOTING_PROTOCOL_WEBRTC_VIDEO_TRACK_SOURCE_H_
 #define REMOTING_PROTOCOL_WEBRTC_VIDEO_TRACK_SOURCE_H_
 
+#include "base/callback.h"
+#include "base/sequenced_task_runner.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/api/notifier.h"
 
@@ -14,7 +16,9 @@ namespace protocol {
 class WebrtcVideoTrackSource
     : public webrtc::Notifier<webrtc::VideoTrackSourceInterface> {
  public:
-  WebrtcVideoTrackSource();
+  // |add_sink_callback| is notified on the main thread whenever a sink is
+  // added or updated.
+  explicit WebrtcVideoTrackSource(base::RepeatingClosure add_sink_callback);
   ~WebrtcVideoTrackSource() override;
   WebrtcVideoTrackSource(const WebrtcVideoTrackSource&) = delete;
   WebrtcVideoTrackSource& operator=(const WebrtcVideoTrackSource&) = delete;
@@ -34,6 +38,10 @@ class WebrtcVideoTrackSource
       rtc::VideoSinkInterface<webrtc::RecordableEncodedFrame>* sink) override;
   void RemoveEncodedSink(
       rtc::VideoSinkInterface<webrtc::RecordableEncodedFrame>* sink) override;
+
+ private:
+  base::RepeatingClosure add_sink_callback_;
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 };
 
 }  // namespace protocol

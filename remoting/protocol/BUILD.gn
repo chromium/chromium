@@ -391,6 +391,7 @@ source_set("unit_tests") {
       "webrtc_audio_source_adapter_unittest.cc",
       "webrtc_frame_scheduler_unittest.cc",
       "webrtc_video_frame_adapter_unittest.cc",
+      "webrtc_video_track_source_unittest.cc",
     ]
   }
 

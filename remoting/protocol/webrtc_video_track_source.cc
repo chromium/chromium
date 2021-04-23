@@ -4,10 +4,15 @@
 
 #include "remoting/protocol/webrtc_video_track_source.h"
 
+#include "base/threading/sequenced_task_runner_handle.h"
+
 namespace remoting {
 namespace protocol {
 
-WebrtcVideoTrackSource::WebrtcVideoTrackSource() = default;
+WebrtcVideoTrackSource::WebrtcVideoTrackSource(
+    base::RepeatingClosure add_sink_callback)
+    : add_sink_callback_(add_sink_callback),
+      main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 WebrtcVideoTrackSource::~WebrtcVideoTrackSource() = default;
 
 webrtc::MediaSourceInterface::SourceState WebrtcVideoTrackSource::state()
@@ -34,7 +39,9 @@ bool WebrtcVideoTrackSource::GetStats(
 
 void WebrtcVideoTrackSource::AddOrUpdateSink(
     rtc::VideoSinkInterface<webrtc::VideoFrame>* sink,
-    const rtc::VideoSinkWants& wants) {}
+    const rtc::VideoSinkWants& wants) {
+  main_task_runner_->PostTask(FROM_HERE, add_sink_callback_);
+}
 
 void WebrtcVideoTrackSource::RemoveSink(
     rtc::VideoSinkInterface<webrtc::VideoFrame>* sink) {}

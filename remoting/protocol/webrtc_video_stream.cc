@@ -124,7 +124,8 @@ void WebrtcVideoStream::Start(
   capturer_->Start(this);
 
   rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> src =
-      new rtc::RefCountedObject<WebrtcVideoTrackSource>();
+      new rtc::RefCountedObject<WebrtcVideoTrackSource>(base::BindRepeating(
+          &WebrtcVideoStream::OnEncoderReady, weak_factory_.GetWeakPtr()));
   rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
       peer_connection_factory->CreateVideoTrack(kVideoLabel, src);
 
