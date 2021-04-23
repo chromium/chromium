@@ -4643,7 +4643,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, AutoResizeMessages) {
 // Test that a guest sees the synthetic wheel events of a touchpad pinch.
 //
 // Test is flaky on Linux Ozone. See crbug.com/1201372
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_TouchpadPinchSyntheticWheelEvents \
   DISABLED_TouchpadPinchSyntheticWheelEvents
 #else
