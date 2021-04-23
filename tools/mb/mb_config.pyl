@@ -546,6 +546,8 @@
       'Linux Chromium OS ASan LSan Builder': 'asan_lsan_chromeos_release_trybot',
       'Linux ChromiumOS MSan Builder': 'chromeos_msan_release_bot',
       'Linux MSan Builder': 'msan_release_bot',
+      # TODO(crbug.com/1200904): Remove after migration
+      'Linux TSan (bionic)': 'tsan_disable_nacl_release_bot',
       'Linux TSan Builder': 'tsan_disable_nacl_release_bot',
       'Mac ASan 64 Builder': 'asan_minimal_symbols_disable_nacl_release_bot_dcheck_always_on',
       'WebKit Linux ASAN': 'asan_lsan_release_bot_blink',
@@ -1025,6 +1027,8 @@
       'linux_chromium_asan_rel_ng': 'asan_lsan_release_trybot',
       # TODO(crbug.com/1200574): Remove after migration.
       'linux_chromium_asan_rel_ng_bionic': 'asan_lsan_release_trybot',
+      # TODO(crbug.com/1200904): Remove after migration
+      'linux_chromium_tsan_rel_ng_bionic': 'asan_lsan_release_trybot',
       'linux_chromium_cfi_rel_ng': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_goma',
       'linux_chromium_chromeos_asan_rel_ng': 'asan_lsan_chromeos_release_trybot',
       'linux_chromium_chromeos_msan_rel_ng': 'chromeos_msan_release_bot',
