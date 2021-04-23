@@ -741,6 +741,7 @@ namespace {
 base::Optional<LogicalSize> ComputeNormalizedNaturalSize(
     const NGBlockNode& node,
     const NGBoxStrut& border_padding,
+    const EBoxSizing box_sizing,
     const LogicalSize& aspect_ratio) {
   // Returns the default natural size (if we have no aspect-ratio).
   auto NaturalSize = [&]() -> LogicalSize {
@@ -770,15 +771,13 @@ base::Optional<LogicalSize> ComputeNormalizedNaturalSize(
   // If we have one natural size reflect via. the aspect-ratio.
   if (!intrinsic_inline && intrinsic_block) {
     DCHECK(!aspect_ratio.IsEmpty());
-    intrinsic_inline =
-        InlineSizeFromAspectRatio(border_padding, aspect_ratio,
-                                  EBoxSizing::kContentBox, *intrinsic_block);
+    intrinsic_inline = InlineSizeFromAspectRatio(border_padding, aspect_ratio,
+                                                 box_sizing, *intrinsic_block);
   }
   if (intrinsic_inline && !intrinsic_block) {
     DCHECK(!aspect_ratio.IsEmpty());
-    intrinsic_block =
-        BlockSizeFromAspectRatio(border_padding, aspect_ratio,
-                                 EBoxSizing::kContentBox, *intrinsic_inline);
+    intrinsic_block = BlockSizeFromAspectRatio(border_padding, aspect_ratio,
+                                               box_sizing, *intrinsic_inline);
   }
 
   DCHECK(intrinsic_inline.has_value() == intrinsic_block.has_value());
@@ -798,6 +797,7 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
   const ComputedStyle& style = node.Style();
   const NGBoxStrut border_padding =
       ComputeBorders(space, node) + ComputePadding(space, style);
+  const EBoxSizing box_sizing = style.BoxSizingForAspectRatio();
 
   // Replaced elements in quirks-mode resolve their min/max block-sizes against
   // a different size than the main size. See:
@@ -861,8 +861,8 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
   }
 
   const LogicalSize aspect_ratio = node.GetAspectRatio();
-  const base::Optional<LogicalSize> natural_size =
-      ComputeNormalizedNaturalSize(node, border_padding, aspect_ratio);
+  const base::Optional<LogicalSize> natural_size = ComputeNormalizedNaturalSize(
+      node, border_padding, box_sizing, aspect_ratio);
 
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
     LayoutUnit size;
@@ -870,9 +870,8 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
       DCHECK(natural_size);
       size = natural_size->inline_size;
     } else if (replaced_block) {
-      size =
-          InlineSizeFromAspectRatio(border_padding, aspect_ratio,
-                                    EBoxSizing::kContentBox, *replaced_block);
+      size = InlineSizeFromAspectRatio(border_padding, aspect_ratio, box_sizing,
+                                       *replaced_block);
     } else if (natural_size) {
       size = natural_size->inline_size;
     } else {
@@ -939,23 +938,21 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
 
   // We only know one size, the other gets computed via the aspect-ratio (if
   // present), or by the natural-size.
-  auto ComputeBlockFromInline = [&replaced_inline, &aspect_ratio,
-                                 &border_padding](LayoutUnit default_block) {
+  auto ComputeBlockFromInline = [&](LayoutUnit default_block) {
     if (aspect_ratio.IsEmpty()) {
       DCHECK_GE(default_block, border_padding.BlockSum());
       return default_block;
     }
-    return BlockSizeFromAspectRatio(border_padding, aspect_ratio,
-                                    EBoxSizing::kContentBox, *replaced_inline);
+    return BlockSizeFromAspectRatio(border_padding, aspect_ratio, box_sizing,
+                                    *replaced_inline);
   };
-  auto ComputeInlineFromBlock = [&replaced_block, &aspect_ratio,
-                                 &border_padding](LayoutUnit default_inline) {
+  auto ComputeInlineFromBlock = [&](LayoutUnit default_inline) {
     if (aspect_ratio.IsEmpty()) {
       DCHECK_GE(default_inline, border_padding.InlineSum());
       return default_inline;
     }
-    return InlineSizeFromAspectRatio(border_padding, aspect_ratio,
-                                     EBoxSizing::kContentBox, *replaced_block);
+    return InlineSizeFromAspectRatio(border_padding, aspect_ratio, box_sizing,
+                                     *replaced_block);
   };
 
   if (replaced_inline) {

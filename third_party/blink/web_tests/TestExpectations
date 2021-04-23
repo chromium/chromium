@@ -571,6 +571,7 @@ crbug.com/664246 external/wpt/css/css-position/sticky/position-sticky-scrollInto
 #### external/wpt/css/css-sizing
 crbug.com/1164135 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-025.html [ Failure ]
 crbug.com/1164135 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-026.html [ Failure ]
+crbug.com/1114280 external/wpt/css/css-sizing/aspect-ratio/replaced-element-034.html [ Failure ]
 crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-001.html [ Failure ]
 crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-002.html [ Failure ]
 crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-003.html [ Failure ]

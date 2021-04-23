@@ -2632,9 +2632,9 @@ class ComputedStyle final : public GarbageCollected<ComputedStyle>,
   }
 
   EBoxSizing BoxSizingForAspectRatio() const {
-    if (AspectRatio().GetType() == EAspectRatioType::kAutoAndRatio)
-      return EBoxSizing::kContentBox;
-    return BoxSizing();
+    if (AspectRatio().GetType() == EAspectRatioType::kRatio)
+      return BoxSizing();
+    return EBoxSizing::kContentBox;
   }
 
  private:
