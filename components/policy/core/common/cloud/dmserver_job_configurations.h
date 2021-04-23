@@ -39,7 +39,7 @@ class POLICY_EXPORT DMServerJobConfiguration : public JobConfigurationBase {
   DMServerJobConfiguration(
       DeviceManagementService* service,
       JobType type,
-      const std::string& cliend_id,
+      const std::string& client_id,
       bool critical,
       DMAuth auth_data,
       base::Optional<std::string> oauth_token,
