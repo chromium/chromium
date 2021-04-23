@@ -82,8 +82,6 @@ WebAppInstallManager::~WebAppInstallManager() = default;
 void WebAppInstallManager::Start() {
   DCHECK(!started_);
   started_ = true;
-
-  MaybeEnqueueExternallyManagedAppSyncInstalls();
 }
 
 void WebAppInstallManager::Shutdown() {
@@ -350,16 +348,6 @@ void WebAppInstallManager::SetUrlLoaderForTesting(
   url_loader_ = std::move(url_loader);
 }
 
-void WebAppInstallManager::MaybeEnqueueExternallyManagedAppSyncInstalls() {
-  for (AppSyncInstallRequest& request : externally_managed_app_sync_installs_) {
-    EnqueueInstallAppFromSync(request.sync_app_id,
-                              std::move(request.web_application_info),
-                              std::move(request.callback));
-  }
-
-  externally_managed_app_sync_installs_.clear();
-}
-
 void WebAppInstallManager::
     LoadAndInstallWebAppFromManifestWithFallbackCompleted_ForAppSync(
         const AppId& sync_app_id,
@@ -514,12 +502,5 @@ WebAppInstallManager::PendingTask::PendingTask() = default;
 WebAppInstallManager::PendingTask::PendingTask(PendingTask&&) = default;
 
 WebAppInstallManager::PendingTask::~PendingTask() = default;
-
-WebAppInstallManager::AppSyncInstallRequest::AppSyncInstallRequest() = default;
-
-WebAppInstallManager::AppSyncInstallRequest::AppSyncInstallRequest(
-    AppSyncInstallRequest&&) = default;
-
-WebAppInstallManager::AppSyncInstallRequest::~AppSyncInstallRequest() = default;
 
 }  // namespace web_app
