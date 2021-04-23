@@ -204,7 +204,8 @@ void OcclusionTracker::FinishedRenderTarget(
       finished_target_surface->draw_opacity() < 1 ||
       !IsOccludingBlendMode(finished_target_surface->BlendMode()) ||
       target_is_only_for_copy_request_or_force_render_surface ||
-      finished_target_surface->Filters().HasFilterThatAffectsOpacity()) {
+      finished_target_surface->Filters().HasFilterThatAffectsOpacity() ||
+      finished_target_surface->GetDocumentTransitionSharedElementId().valid()) {
     stack_.back().occlusion_from_outside_target.Clear();
     stack_.back().occlusion_from_inside_target.Clear();
   }

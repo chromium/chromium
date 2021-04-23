@@ -468,9 +468,6 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
     const gfx::Transform& transform = animation.src_transform().Apply();
     float opacity = animation.src_opacity();
 
-    // TODO(vmpstr): If we don't have a src_texture, we should append a solid
-    // color quad, but we need to plumb a safe opaque color here so we know what
-    // color to use. See crbug.com/1200646.
     if (src_texture.has_value()) {
       CreateAndAppendSrcTextureQuad(animation_pass, rect, transform, opacity,
                                     src_texture->resource.id);
@@ -543,9 +540,6 @@ SurfaceAnimationManager::CopyPassWithoutSharedElementQuads(
       auto shared_it = shared_draw_data.find(pass_quad->render_pass_id);
       // If the quad is shared, then add it to the `shared_draw_data`.
       // Otherwise, add it to the copy pass directly.
-      // TODO(vmpstr): If we're removing an opaque render pass, then we need to
-      // replace it with a solid color quad. However, we need to plumb safe
-      // opaque color here first. See crbug.com/1200646.
       if (shared_it != shared_draw_data.end()) {
         shared_it->second.draw_quad = *pass_quad;
       } else {
