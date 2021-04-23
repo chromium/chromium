@@ -24,6 +24,7 @@ import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestParser;
+import org.chromium.components.payments.PaymentManifestWebDataService;
 import org.chromium.components.payments.PaymentOptionsUtils;
 import org.chromium.components.payments.SupportedDelegations;
 import org.chromium.components.payments.UrlUtil;

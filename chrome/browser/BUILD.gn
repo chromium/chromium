@@ -3104,8 +3104,6 @@ static_library("browser") {
       "password_manager/password_scripts_fetcher_factory.h",
       "payments/android/payment_app_service_bridge.cc",
       "payments/android/payment_app_service_bridge.h",
-      "payments/android/payment_manifest_web_data_service_android.cc",
-      "payments/android/payment_manifest_web_data_service_android.h",
       "payments/android/service_worker_payment_app_bridge.cc",
       "permissions/grouped_permission_infobar_delegate_android.cc",
       "permissions/grouped_permission_infobar_delegate_android.h",

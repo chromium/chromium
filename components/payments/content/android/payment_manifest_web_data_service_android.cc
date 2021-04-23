@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/payments/android/payment_manifest_web_data_service_android.h"
+#include "components/payments/content/android/payment_manifest_web_data_service_android.h"
 
 #include <string>
 
@@ -11,8 +11,8 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "chrome/browser/payments/android/jni_headers/PaymentManifestWebDataService_jni.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/payments/content/android/jni_headers/PaymentManifestWebDataService_jni.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
 #include "content/public/browser/web_contents.h"

@@ -1096,7 +1096,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/payments/ContactEditor.java",
   "java/src/org/chromium/chrome/browser/payments/PaymentAppServiceBridge.java",
   "java/src/org/chromium/chrome/browser/payments/PaymentManifestVerifier.java",
-  "java/src/org/chromium/chrome/browser/payments/PaymentManifestWebDataService.java",
   "java/src/org/chromium/chrome/browser/payments/PaymentPreferencesUtil.java",
   "java/src/org/chromium/chrome/browser/payments/ServiceWorkerPaymentAppBridge.java",
   "java/src/org/chromium/chrome/browser/payments/SettingsAutofillAndPaymentsObserver.java",
