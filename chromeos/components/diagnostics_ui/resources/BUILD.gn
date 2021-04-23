@@ -21,6 +21,7 @@ js_type_check("closure_compile_module") {
     ":diagnostics_utils",
     ":fake_data",
     ":fake_method_resolver",
+    ":fake_network_health_provider",
     ":fake_observables",
     ":fake_system_data_provider",
     ":fake_system_routine_controller",
@@ -118,6 +119,10 @@ js_library("fake_method_resolver") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
+js_library("fake_network_health_provider") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
 js_library("fake_observables") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
@@ -151,6 +156,7 @@ js_library("mojo_interface_provider") {
   deps = [
     ":diagnostics_types",
     ":fake_data",
+    ":fake_network_health_provider",
     ":fake_system_data_provider",
     ":fake_system_routine_controller",
     "//chromeos/components/diagnostics_ui/mojom:mojom_js_library_for_compile",

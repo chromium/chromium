@@ -138,3 +138,34 @@ export let RoutineRunner;
  * @typedef {chromeos.diagnostics.mojom.SystemRoutineControllerInterface}
  */
 export let SystemRoutineControllerInterface;
+
+/**
+ * @typedef {{
+ *   networkGuids: !Array<string>,
+ *   activeGuid: ?string,
+ * }}
+ */
+export let NetworkGuidInfo;
+
+/**
+ * Type alias for NetworkListObserver.
+ * @typedef {{
+ *   onNetworkListChanged: !function(!NetworkGuidInfo)
+ * }}
+ */
+export let NetworkListObserver;
+
+/**
+ * Type of NetworkHealthProviderInterface.ObserveNetworkListFunction function.
+ * @typedef {!function(!NetworkListObserver): !Promise}
+ */
+export let ObserveNetworkListFunction;
+
+/**
+ * Type alias for the NetworkHealthProviderInterface.
+ * TODO(michaelcheco): Replace with a real mojo type when implemented.
+ * @typedef {{
+ *   observeNetworkList: !ObserveNetworkListFunction,
+ * }}
+ */
+export let NetworkHealthProviderInterface;

@@ -53,6 +53,7 @@ const debug_suites_list = [
   'DiagnosticsUtils',
   'FakeMethodProvider',
   'FakeMojoInterface',
+  'FakeNetworkHealthProvider',
   'FakeObservables',
   'FakeSystemDataProvider',
   'FakeSystemRoutineContoller',

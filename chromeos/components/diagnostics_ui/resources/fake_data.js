@@ -252,3 +252,18 @@ export const fakePowerRoutineResults = new Map([
     }
   ],
 ]);
+
+export const fakeNetworkGuids = [
+  {
+    networkGuids: ['guid_1', 'guid_2'],
+    activeGuid: 'active_guid',
+  },
+  {
+    networkGuids: ['guid_1'],
+    activeGuid: 'active_guid',
+  },
+  {
+    networkGuids: ['guid_1', 'guid_3'],
+    activeGuid: '',
+  },
+]

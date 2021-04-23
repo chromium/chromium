@@ -21,6 +21,7 @@ js_type_check("closure_compile") {
     ":diagnostics_test_utils",
     ":diagnostics_utils_test",
     ":fake_method_provider_test",
+    ":fake_network_health_provider_test",
     ":fake_observables_test",
     ":fake_system_data_provider_test",
     ":fake_system_routine_controller_test",
@@ -131,6 +132,15 @@ js_library("fake_method_provider_test") {
   deps = [
     "../..:chai_assert",
     "//chromeos/components/diagnostics_ui/resources:fake_method_resolver",
+  ]
+}
+
+js_library("fake_network_health_provider_test") {
+  deps = [
+    "../..:chai_assert",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
+    "//chromeos/components/diagnostics_ui/resources:fake_data",
+    "//chromeos/components/diagnostics_ui/resources:fake_network_health_provider",
   ]
 }
 
