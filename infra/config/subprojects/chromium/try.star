@@ -1096,6 +1096,7 @@ try_.chromium_linux_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
     goma_jobs = goma.jobs.J150,
+    os = os.LINUX_BIONIC,
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 10,
