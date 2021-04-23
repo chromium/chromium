@@ -116,3 +116,25 @@ message SelectOptionElementProto {
   optional ClientIdProto select_id = 1;
   optional ClientIdProto option_id = 2;
 }
+
+// Checks if any of the tags matches the element tag of the element in
+// |client_id|. Returns |ACTION_APPLIED| if there is a match and
+// |ELEMENT_MISMATCH| otherwise.
+message CheckElementTagProto {
+  optional ClientIdProto client_id = 1;
+  repeated string any_of_tag = 2;
+}
+
+// Check whether the element in |option_d| is selected in the element in
+// |select_id|.
+message CheckOptionElementProto {
+  optional ClientIdProto select_id = 1;
+  optional ClientIdProto option_id = 2;
+
+  // If set and a mismatch happens, the action will report a failure status
+  // with |ELEMENT_MISMATCH|. If this flag is set to false, the action will not
+  // fail and simply report the result.
+  optional bool mismatch_should_fail = 3;
+
+  message Result { optional bool match = 1; }
+}

@@ -119,6 +119,14 @@ const char* const kSelectOptionElementScript =
       return false;
     })";
 
+// Javascript to check the option element in a select element against an
+// expected match.
+const char* const kCheckOptionElementScript =
+    R"(function(option) {
+      if (this.options == null) return false;
+      return this.options[this.options.selectedIndex] === option;
+    })";
+
 // Javascript to highlight an element.
 const char* const kHighlightElementScript =
     R"(function() {
@@ -954,11 +962,12 @@ void WebController::SelectOption(
           .SetReturnByValue(true)
           .Build(),
       element.node_frame_id(),
-      base::BindOnce(&WebController::OnSelectOption,
+      base::BindOnce(&WebController::OnJavascriptResultExpectingTrue,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::BindOnce(&DecorateWebControllerStatus,
                                     WebControllerErrorInfoProto::SELECT_OPTION,
-                                    std::move(callback))));
+                                    std::move(callback)),
+                     /* status_if_false= */ OPTION_VALUE_NOT_FOUND));
 }
 
 void WebController::SelectOptionElement(
@@ -976,32 +985,56 @@ void WebController::SelectOptionElement(
           .Build(),
       element.node_frame_id(),
       base::BindOnce(
-          &WebController::OnSelectOption, weak_ptr_factory_.GetWeakPtr(),
+          &WebController::OnJavascriptResultExpectingTrue,
+          weak_ptr_factory_.GetWeakPtr(),
           base::BindOnce(&DecorateWebControllerStatus,
                          WebControllerErrorInfoProto::SELECT_OPTION_ELEMENT,
-                         std::move(callback))));
+                         std::move(callback)),
+          /* status_if_false= */ OPTION_VALUE_NOT_FOUND));
 }
 
-void WebController::OnSelectOption(
+void WebController::CheckSelectedOptionElement(
+    const ElementFinder::Result& option,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  std::vector<std::unique_ptr<runtime::CallArgument>> argument;
+  AddRuntimeCallArgumentObjectId(option.object_id(), &argument);
+  devtools_client_->GetRuntime()->CallFunctionOn(
+      runtime::CallFunctionOnParams::Builder()
+          .SetObjectId(element.object_id())
+          .SetArguments(std::move(argument))
+          .SetFunctionDeclaration(std::string(kCheckOptionElementScript))
+          .SetReturnByValue(true)
+          .Build(),
+      element.node_frame_id(),
+      base::BindOnce(
+          &WebController::OnJavascriptResultExpectingTrue,
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&DecorateWebControllerStatus,
+                         WebControllerErrorInfoProto::CHECK_OPTION_ELEMENT,
+                         std::move(callback)),
+          /* status_if_false= */ ELEMENT_MISMATCH));
+}
+
+void WebController::OnJavascriptResultExpectingTrue(
     base::OnceCallback<void(const ClientStatus&)> callback,
+    ProcessedActionStatusProto status_if_false,
     const DevtoolsClient::ReplyStatus& reply_status,
     std::unique_ptr<runtime::CallFunctionOnResult> result) {
   ClientStatus status =
       CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
   if (!status.ok()) {
-    VLOG(1) << __func__ << " Failed to select option.";
     std::move(callback).Run(status);
     return;
   }
-  bool found;
-  if (!SafeGetBool(result->GetResult(), &found)) {
+  bool bool_result;
+  if (!SafeGetBool(result->GetResult(), &bool_result)) {
     std::move(callback).Run(
         UnexpectedDevtoolsErrorStatus(reply_status, __FILE__, __LINE__));
     return;
   }
-  if (!found) {
-    VLOG(1) << __func__ << " Failed to find option.";
-    std::move(callback).Run(ClientStatus(OPTION_VALUE_NOT_FOUND));
+  if (!bool_result) {
+    std::move(callback).Run(ClientStatus(status_if_false));
     return;
   }
   std::move(callback).Run(OkClientStatus());

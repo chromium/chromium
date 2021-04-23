@@ -753,6 +753,8 @@ message ActionProto {
     DispatchJsEventProto dispatch_js_event = 72;
     SendKeyEventProto send_key_event = 73;
     SelectOptionElementProto select_option_element = 74;
+    CheckElementTagProto check_element_tag = 75;
+    CheckOptionElementProto check_option_element = 76;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -856,6 +858,8 @@ message ProcessedActionProto {
     GetElementStatusProto.Result get_element_status_result = 31;
     // Should be set as a result of UploadDomProto.
     UploadDomProto.Result upload_dom_result = 33;
+    // Should be set as a result of CheckOptionElementProto.
+    CheckOptionElementProto.Result check_option_element_result = 35;
   }
 
   // Reports information about navigation that happened while
@@ -1112,11 +1116,14 @@ message WebControllerErrorInfoProto {
     // Send a single key event.
     SEND_KEY_EVENT = 21;
 
-    // Set the selected option index of an element.
+    // Set the selected option of an element.
     SELECT_OPTION_ELEMENT = 22;
 
     // Send a JS click to the element.
     JS_CLICK_ELEMENT = 23;
+
+    // Check the selected option of an element.
+    CHECK_OPTION_ELEMENT = 24;
   }
 
   // The web-action that failed. This is usually a step in an execution chain
@@ -2873,7 +2880,7 @@ message GetElementStatusProto {
   optional ValueMatch expected_value_match = 2;
   optional ValueSource value_source = 4;
 
-  // If set and a mismatch happens, the action will report an failure status
+  // If set and a mismatch happens, the action will report a failure status
   // with |ELEMENT_MISMATCH|. If this flag is set to false, the action will not
   // fail and simply report the result.
   optional bool mismatch_should_fail = 3;

@@ -160,6 +160,12 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
+  // Check if the selected option of the |element| is the expected |option|.
+  virtual void CheckSelectedOptionElement(
+      const ElementFinder::Result& option,
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback);
+
   // Highlight an |element|.
   virtual void HighlightElement(
       const ElementFinder::Result& element,
@@ -459,9 +465,11 @@ class WebController {
       autofill::ContentAutofillDriver* driver,
       const autofill::FormData& form_data,
       const autofill::FormFieldData& form_field);
-  void OnSelectOption(base::OnceCallback<void(const ClientStatus&)> callback,
-                      const DevtoolsClient::ReplyStatus& reply_status,
-                      std::unique_ptr<runtime::CallFunctionOnResult> result);
+  void OnJavascriptResultExpectingTrue(
+      base::OnceCallback<void(const ClientStatus&)> callback,
+      ProcessedActionStatusProto status_if_false,
+      const DevtoolsClient::ReplyStatus& reply_status,
+      std::unique_ptr<runtime::CallFunctionOnResult> result);
 
   void OnSendKeyboardInputDone(
       SendKeyboardInputWorker* worker_to_release,

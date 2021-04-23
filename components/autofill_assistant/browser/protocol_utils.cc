@@ -9,6 +9,8 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
+#include "components/autofill_assistant/browser/actions/check_element_tag_action.h"
+#include "components/autofill_assistant/browser/actions/check_option_element_action.h"
 #include "components/autofill_assistant/browser/actions/click_action.h"
 #include "components/autofill_assistant/browser/actions/collect_user_data_action.h"
 #include "components/autofill_assistant/browser/actions/configure_bottom_sheet_action.h"
@@ -344,6 +346,10 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
               action.select_option_element().option_id(),
               base::BindOnce(&WebController::SelectOptionElement,
                              delegate->GetWebController()->GetWeakPtr())));
+    case ActionProto::ActionInfoCase::kCheckElementTag:
+      return std::make_unique<CheckElementTagAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kCheckOptionElement:
+      return std::make_unique<CheckOptionElementAction>(delegate, action);
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
       VLOG(1) << "Encountered action with ACTION_INFO_NOT_SET";
       return std::make_unique<UnsupportedAction>(delegate, action);

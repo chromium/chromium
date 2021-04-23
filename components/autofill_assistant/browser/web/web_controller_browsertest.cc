@@ -394,6 +394,21 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
                        std::move(done_callback), result_output));
   }
 
+  ClientStatus CheckSelectedOptionElement(const ElementFinder::Result& select,
+                                          const ElementFinder::Result& option) {
+    base::RunLoop run_loop;
+    ClientStatus result;
+
+    web_controller_->CheckSelectedOptionElement(
+        option, select,
+        base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                       base::Unretained(this), run_loop.QuitClosure(),
+                       &result));
+
+    run_loop.Run();
+    return result;
+  }
+
   void OnClientStatus(base::OnceClosure done_callback,
                       ClientStatus* result_output,
                       const ClientStatus& status) {
@@ -2909,6 +2924,38 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SelectOptionElement) {
   ASSERT_EQ(ACTION_APPLIED, option_status.proto_status());
   EXPECT_EQ(OPTION_VALUE_NOT_FOUND,
             SelectOptionElement(selector, option).proto_status());
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, CheckSelectedOptionElement) {
+  ClientStatus status;
+
+  ElementFinder::Result input;
+  FindElement(Selector({"#input1"}), &status, &input);
+  ASSERT_EQ(ACTION_APPLIED, status.proto_status());
+
+  ElementFinder::Result select;
+  FindElement(Selector({"#select"}), &status, &select);
+  ASSERT_EQ(ACTION_APPLIED, status.proto_status());
+
+  ElementFinder::Result selected_option;
+  FindElement(Selector({"#select option:nth-child(1)"}), &status,
+              &selected_option);
+  ASSERT_EQ(ACTION_APPLIED, status.proto_status());
+
+  ElementFinder::Result not_selected_option;
+  FindElement(Selector({"#select option:nth-child(2)"}), &status,
+              &not_selected_option);
+  ASSERT_EQ(ACTION_APPLIED, status.proto_status());
+
+  EXPECT_EQ(ACTION_APPLIED,
+            CheckSelectedOptionElement(select, selected_option).proto_status());
+  EXPECT_EQ(
+      ELEMENT_MISMATCH,
+      CheckSelectedOptionElement(select, not_selected_option).proto_status());
+
+  // Using on a non-<select> element.
+  EXPECT_EQ(ELEMENT_MISMATCH,
+            CheckSelectedOptionElement(input, selected_option).proto_status());
 }
 
 }  // namespace autofill_assistant

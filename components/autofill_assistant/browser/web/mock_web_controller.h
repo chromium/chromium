@@ -49,6 +49,10 @@ class MockWebController : public WebController {
                         option_comparison_attribute,
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
+  MOCK_METHOD3(CheckSelectedOptionElement,
+               void(const ElementFinder::Result& option,
+                    const ElementFinder::Result& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
   MOCK_METHOD2(HighlightElement,
                void(const ElementFinder::Result&,
                     base::OnceCallback<void(const ClientStatus&)>));
