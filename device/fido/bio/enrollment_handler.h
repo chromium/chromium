@@ -21,16 +21,6 @@
 
 namespace device {
 
-enum class BioEnrollmentStatus {
-  kSuccess,
-  kAuthenticatorResponseInvalid,
-  kSoftPINBlock,
-  kHardPINBlock,
-  kNoPINSet,
-  kAuthenticatorMissingBioEnrollment,
-  kForcePINChange,
-};
-
 // BioEnrollmentHandler exercises the CTAP2.1 authenticatorBioEnrollment
 // sub-protocol for enrolling biometric templates on external authenticators
 // supporting internal UV.
@@ -38,6 +28,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentHandler
     : public FidoRequestHandlerBase,
       public BioEnroller::Delegate {
  public:
+  enum class Error {
+    kAuthenticatorRemoved,
+    kAuthenticatorResponseInvalid,
+    kSoftPINBlock,
+    kHardPINBlock,
+    kNoPINSet,
+    kAuthenticatorMissingBioEnrollment,
+    kForcePINChange,
+  };
+
   struct COMPONENT_EXPORT(DEVICE_FIDO) SensorInfo {
     SensorInfo();
     SensorInfo(const SensorInfo&) = delete;
@@ -51,19 +51,38 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentHandler
 
   using TemplateId = std::vector<uint8_t>;
 
+  // ReadyCallback is invoked once the handler has completed initialization for
+  // the authenticator, i.e. obtained a PIN/UV token and read |SensorInfo|.
+  // Methods on the handler may be invoked at that point.
   using ReadyCallback = base::OnceCallback<void(SensorInfo)>;
-  using ErrorCallback = base::OnceCallback<void(BioEnrollmentStatus)>;
+
+  // ErrorCallback is invoked if the handler has encountered an error. No
+  // further methods may be called on the handler be made at that point.
+  using ErrorCallback = base::OnceCallback<void(Error)>;
+
+  // GetPINCallback is invoked to obtain a PIN for the authenticator.
   using GetPINCallback =
       base::RepeatingCallback<void(uint32_t min_pin_length,
                                    int64_t retries,
                                    base::OnceCallback<void(std::string)>)>;
+
+  // StatusCallback provides the CTAP response code for an operation.
   using StatusCallback = base::OnceCallback<void(CtapDeviceResponseCode)>;
+
+  // EnumerationCallback is invoked upon the completion of EnumerateTemplates.
   using EnumerationCallback = base::OnceCallback<void(
       CtapDeviceResponseCode,
       base::Optional<std::map<TemplateId, std::string>>)>;
+
+  // SampleCallback is invoked repeatedly during an ongoing EnrollTemplate()
+  // operation to indicate the status of a single sample collection (i.e. user
+  // touched the sensor). It receives a status value and the number of remaining
+  // samples to be collected.
   using SampleCallback =
       base::RepeatingCallback<void(BioEnrollmentSampleStatus, uint8_t)>;
-  using CompletionCallback =
+
+  // EnrollmentCallback is invoked upon completion of EnrollTemplate().
+  using EnrollmentCallback =
       base::OnceCallback<void(CtapDeviceResponseCode, TemplateId)>;
 
   BioEnrollmentHandler(
@@ -80,10 +99,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentHandler
   // number of samples by touching the authenticator's sensor repeatedly. For
   // each sample, |sample_callback| is invoked with a status and the remaining
   // number of samples. Once all samples have been collected or the operation
-  // has been cancelled, |completion_callback| is invoked with the operation
-  // status.
+  // has been cancelled, |enrollment_callback| is invoked with the result.
   void EnrollTemplate(SampleCallback sample_callback,
-                      CompletionCallback completion_callback);
+                      EnrollmentCallback enrollment_callback);
 
   // Cancels an ongoing enrollment, if any, and invokes the
   // |completion_callback| passed to EnrollTemplate() with
@@ -148,7 +166,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentHandler
                         CtapDeviceResponseCode,
                         base::Optional<BioEnrollmentResponse>);
 
-  void Finish(BioEnrollmentStatus status);
+  void RunErrorCallback(Error error);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -159,7 +177,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentHandler
   ReadyCallback ready_callback_;
   ErrorCallback error_callback_;
   GetPINCallback get_pin_callback_;
-  CompletionCallback enrollment_callback_;
+  EnrollmentCallback enrollment_callback_;
   SampleCallback sample_callback_;
   base::Optional<pin::TokenResponse> pin_token_response_;
   base::WeakPtrFactory<BioEnrollmentHandler> weak_factory_{this};

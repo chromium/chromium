@@ -38,12 +38,12 @@ BioEnrollmentHandler::~BioEnrollmentHandler() {
 
 void BioEnrollmentHandler::EnrollTemplate(
     SampleCallback sample_callback,
-    CompletionCallback completion_callback) {
+    EnrollmentCallback enrollment_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kReady);
   state_ = State::kEnrolling;
   sample_callback_ = std::move(sample_callback);
-  enrollment_callback_ = std::move(completion_callback);
+  enrollment_callback_ = std::move(enrollment_callback);
   bio_enroller_ =
       std::make_unique<BioEnroller>(this, authenticator_, *pin_token_response_);
 }
@@ -109,7 +109,7 @@ void BioEnrollmentHandler::AuthenticatorRemoved(
   }
 
   authenticator_ = nullptr;
-  Finish(BioEnrollmentStatus::kSuccess);
+  RunErrorCallback(Error::kAuthenticatorRemoved);
 }
 
 void BioEnrollmentHandler::OnSampleCollected(BioEnrollmentSampleStatus status,
@@ -160,19 +160,19 @@ void BioEnrollmentHandler::OnTouch(FidoAuthenticator* authenticator) {
        authenticator->Options()->bio_enrollment_availability_preview ==
            AuthenticatorSupportedOptions::BioEnrollmentAvailability::
                kNotSupported)) {
-    Finish(BioEnrollmentStatus::kAuthenticatorMissingBioEnrollment);
+    RunErrorCallback(Error::kAuthenticatorMissingBioEnrollment);
     return;
   }
 
   if (authenticator->Options()->client_pin_availability !=
       AuthenticatorSupportedOptions::ClientPinAvailability::
           kSupportedAndPinSet) {
-    Finish(BioEnrollmentStatus::kNoPINSet);
+    RunErrorCallback(Error::kNoPINSet);
     return;
   }
 
   if (authenticator->ForcePINChange()) {
-    Finish(BioEnrollmentStatus::kForcePINChange);
+    RunErrorCallback(Error::kForcePINChange);
     return;
   }
 
@@ -188,12 +188,12 @@ void BioEnrollmentHandler::OnRetriesResponse(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kGettingRetries);
   if (!response || status != CtapDeviceResponseCode::kSuccess) {
-    Finish(BioEnrollmentStatus::kAuthenticatorResponseInvalid);
+    RunErrorCallback(Error::kAuthenticatorResponseInvalid);
     return;
   }
 
   if (response->retries == 0) {
-    Finish(BioEnrollmentStatus::kHardPINBlock);
+    RunErrorCallback(Error::kHardPINBlock);
     return;
   }
 
@@ -230,13 +230,13 @@ void BioEnrollmentHandler::OnHavePINToken(
                            weak_factory_.GetWeakPtr()));
         return;
       case CtapDeviceResponseCode::kCtap2ErrPinAuthBlocked:
-        Finish(BioEnrollmentStatus::kSoftPINBlock);
+        RunErrorCallback(Error::kSoftPINBlock);
         return;
       case CtapDeviceResponseCode::kCtap2ErrPinBlocked:
-        Finish(BioEnrollmentStatus::kHardPINBlock);
+        RunErrorCallback(Error::kHardPINBlock);
         return;
       default:
-        Finish(BioEnrollmentStatus::kAuthenticatorResponseInvalid);
+        RunErrorCallback(Error::kAuthenticatorResponseInvalid);
         return;
     }
   }
@@ -253,7 +253,7 @@ void BioEnrollmentHandler::OnGetSensorInfo(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kGettingSensorInfo);
   if (status != CtapDeviceResponseCode::kSuccess) {
-    Finish(BioEnrollmentStatus::kAuthenticatorResponseInvalid);
+    RunErrorCallback(Error::kAuthenticatorResponseInvalid);
     return;
   }
   state_ = State::kReady;
@@ -280,7 +280,7 @@ void BioEnrollmentHandler::OnEnumerateTemplates(
   }
 
   if (!response || !response->template_infos) {
-    Finish(BioEnrollmentStatus::kAuthenticatorResponseInvalid);
+    RunErrorCallback(Error::kAuthenticatorResponseInvalid);
     return;
   }
 
@@ -307,11 +307,11 @@ void BioEnrollmentHandler::OnDeleteTemplate(
   std::move(callback).Run(status);
 }
 
-void BioEnrollmentHandler::Finish(BioEnrollmentStatus status) {
+void BioEnrollmentHandler::RunErrorCallback(Error error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(state_, State::kFinished);
   state_ = State::kFinished;
-  std::move(error_callback_).Run(status);
+  std::move(error_callback_).Run(error);
 }
 
 }  // namespace device

@@ -27,8 +27,6 @@ class CredentialManagementHandler;
 enum class CredentialManagementStatus;
 class SetPINRequestHandler;
 class ResetRequestHandler;
-class BioEnrollmentHandler;
-enum class BioEnrollmentStatus;
 }  // namespace device
 
 namespace settings {
@@ -215,7 +213,7 @@ class SecurityKeysBioEnrollmentHandler : public SecurityKeysHandlerBase {
   void Close() override;
 
   void OnReady(device::BioEnrollmentHandler::SensorInfo sensor_info);
-  void OnError(device::BioEnrollmentStatus status);
+  void OnError(device::BioEnrollmentHandler::Error error);
   void OnGatherPIN(uint32_t min_pin_length,
                    int64_t retries,
                    base::OnceCallback<void(std::string)>);

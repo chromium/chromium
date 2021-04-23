@@ -636,40 +636,41 @@ void SecurityKeysBioEnrollmentHandler::OnReady(
 }
 
 void SecurityKeysBioEnrollmentHandler::OnError(
-    device::BioEnrollmentStatus status) {
+    device::BioEnrollmentHandler::Error error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   state_ = State::kNone;
 
-  int error;
+  int error_message;
   bool requires_pin_change = false;
-  switch (status) {
-    case device::BioEnrollmentStatus::kSoftPINBlock:
-      error = IDS_SETTINGS_SECURITY_KEYS_PIN_SOFT_LOCK;
+  using Error = device::BioEnrollmentHandler::Error;
+  switch (error) {
+    case Error::kAuthenticatorRemoved:
+      error_message = IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_REMOVED;
       break;
-    case device::BioEnrollmentStatus::kHardPINBlock:
-      error = IDS_SETTINGS_SECURITY_KEYS_PIN_HARD_LOCK;
+    case Error::kSoftPINBlock:
+      error_message = IDS_SETTINGS_SECURITY_KEYS_PIN_SOFT_LOCK;
       break;
-    case device::BioEnrollmentStatus::kAuthenticatorMissingBioEnrollment:
-      error = IDS_SETTINGS_SECURITY_KEYS_NO_BIOMETRIC_ENROLLMENT;
+    case Error::kHardPINBlock:
+      error_message = IDS_SETTINGS_SECURITY_KEYS_PIN_HARD_LOCK;
       break;
-    case device::BioEnrollmentStatus::kNoPINSet:
+    case Error::kAuthenticatorMissingBioEnrollment:
+      error_message = IDS_SETTINGS_SECURITY_KEYS_NO_BIOMETRIC_ENROLLMENT;
+      break;
+    case Error::kNoPINSet:
       requires_pin_change = true;
-      error = IDS_SETTINGS_SECURITY_KEYS_BIO_NO_PIN;
+      error_message = IDS_SETTINGS_SECURITY_KEYS_BIO_NO_PIN;
       break;
-    case device::BioEnrollmentStatus::kAuthenticatorResponseInvalid:
-      error = IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_ERROR;
+    case Error::kAuthenticatorResponseInvalid:
+      error_message = IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_ERROR;
       break;
-    case device::BioEnrollmentStatus::kForcePINChange:
+    case Error::kForcePINChange:
       requires_pin_change = true;
-      error = IDS_SETTINGS_SECURITY_KEYS_FORCE_PIN_CHANGE;
-      break;
-    case device::BioEnrollmentStatus::kSuccess:
-      error = IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_REMOVED;
+      error_message = IDS_SETTINGS_SECURITY_KEYS_FORCE_PIN_CHANGE;
       break;
   }
 
   FireWebUIListener("security-keys-bio-enroll-error",
-                    base::Value(l10n_util::GetStringUTF8(error)),
+                    base::Value(l10n_util::GetStringUTF8(error_message)),
                     base::Value(requires_pin_change));
 
   // If |callback_id_| is not empty, there is an ongoing operation,
@@ -799,7 +800,7 @@ void SecurityKeysBioEnrollmentHandler::OnEnrollmentFinished(
     return;
   }
   if (code != device::CtapDeviceResponseCode::kSuccess) {
-    OnError(device::BioEnrollmentStatus::kAuthenticatorResponseInvalid);
+    OnError(device::BioEnrollmentHandler::Error::kAuthenticatorResponseInvalid);
     return;
   }
   bio_->EnumerateTemplates(base::BindOnce(
@@ -816,7 +817,7 @@ void SecurityKeysBioEnrollmentHandler::OnHavePostEnrollmentEnumeration(
   state_ = State::kReady;
   if (code != device::CtapDeviceResponseCode::kSuccess || !enrollments ||
       !base::Contains(*enrollments, enrolled_template_id)) {
-    OnError(device::BioEnrollmentStatus::kAuthenticatorResponseInvalid);
+    OnError(device::BioEnrollmentHandler::Error::kAuthenticatorResponseInvalid);
     return;
   }
 
