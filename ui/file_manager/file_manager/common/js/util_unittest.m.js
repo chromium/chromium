@@ -27,14 +27,15 @@ export function setUp() {
   ];
   fileSystem.populate(filenames);
 
-  window.loadTimeData.data = {
+  window.loadTimeData.resetForTesting();
+  window.loadTimeData.overrideValues({
     SIZE_BYTES: '$1 bytes',
     SIZE_KB: '$1 KB',
     SIZE_MB: '$1 MB',
     SIZE_GB: '$1 GB',
     SIZE_TB: '$1 TB',
     SIZE_PB: '$1 PB',
-  };
+  });
 
   window.loadTimeData.getString = id => {
     return window.loadTimeData.data_[id] || id;

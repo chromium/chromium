@@ -32,7 +32,8 @@ let initialWindowHeight;
 export function setUp() {
   // Internals of WebUI reference this property when processing
   // keyboard events, so we need to prepare it to stop asserts.
-  loadTimeData.data = {'SHORTCUT_ENTER': 'Enter'};
+  loadTimeData.resetForTesting();
+  loadTimeData.overrideValues({'SHORTCUT_ENTER': 'Enter'});
 
   // Multiple tests rely on the window height, reset between tests to avoid
   // interference.

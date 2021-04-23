@@ -139,7 +139,7 @@ window.webkitResolveLocalFileSystemURL =
 // Set up the test components.
 export function setUp() {
   // Mock LoadTimeData strings.
-  loadTimeData.data = {};
+  loadTimeData.resetForTesting();
   loadTimeData.getString = id => id;
 
   // Install mock chrome APIs.

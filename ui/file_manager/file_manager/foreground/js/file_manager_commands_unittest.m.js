@@ -55,10 +55,14 @@ export function testToggleHoldingSpaceCommand() {
   assertNotEquals(command, undefined);
 
   // Enable the holding space feature and provide strings.
-  loadTimeData.data = {
+  loadTimeData.resetForTesting();
+  loadTimeData.overrideValues({
     HOLDING_SPACE_ENABLED: true,
     HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL: 'Pin to shelf',
     HOLDING_SPACE_UNPIN_TO_SHELF_COMMAND_LABEL: 'Unpin to shelf',
+  });
+  loadTimeData.getString = id => {
+    return loadTimeData.data_[id] || id;
   };
 
   /**

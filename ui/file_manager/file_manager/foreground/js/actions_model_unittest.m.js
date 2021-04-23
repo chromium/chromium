@@ -99,7 +99,7 @@ let ui;
 export function setUp() {
   // Mock loadTimeData strings.
   window.loadTimeData.getString = id => id;
-  window.loadTimeData.data = {};
+  window.loadTimeData.resetForTesting();
 
   // Mock Chrome APIs.
   const mockChrome = {

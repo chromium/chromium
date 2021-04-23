@@ -59,7 +59,7 @@ window.metrics = {
 // Set up the test components.
 export function setUp() {
   window.loadTimeData.getString = id => id;
-  window.loadTimeData.data = {};
+  window.loadTimeData.resetForTesting();
 
   new MockChromeStorageAPI();
   new MockCommandLinePrivate();

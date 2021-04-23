@@ -41,11 +41,12 @@ let fileTypeFiltersController;
 
 export function setUp() {
   // Mock loadTimeData strings.
-  loadTimeData.data = {
+  loadTimeData.resetForTesting();
+  loadTimeData.overrideValues({
     MEDIA_VIEW_AUDIO_ROOT_LABEL: 'Audio',
     MEDIA_VIEW_IMAGES_ROOT_LABEL: 'Images',
     MEDIA_VIEW_VIDEOS_ROOT_LABEL: 'Videos',
-  };
+  });
 
   /**
    * Mock chrome APIs.

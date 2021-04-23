@@ -57,12 +57,16 @@ let hoge;
 // Setup the test components.
 export function setUp() {
   // Mock LoadTimeData strings.
-  window.loadTimeData.data = {
+  window.loadTimeData.resetForTesting();
+  window.loadTimeData.overrideValues({
     MY_FILES_ROOT_LABEL: 'My files',
     DOWNLOADS_DIRECTORY_LABEL: 'Downloads',
     DRIVE_DIRECTORY_LABEL: 'My Drive',
+    FILES_SINGLE_PARTITION_FORMAT_ENABLED: false,
     FILES_TRASH_ENABLED: false,
-  };
+    FILTERS_IN_RECENTS_ENABLED: false,
+    UNIFIED_MEDIA_VIEW_ENABLED: false,
+  });
   window.loadTimeData.getString = id => {
     return window.loadTimeData.data_[id] || id;
   };

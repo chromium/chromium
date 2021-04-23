@@ -299,9 +299,10 @@ let fileOperationManager;
  */
 export function setUp() {
   // Mock LoadTimeData strings.
-  loadTimeData.data = {
+  loadTimeData.resetForTesting();
+  loadTimeData.overrideValues({
     'FILES_TRASH_ENABLED': true,
-  };
+  });
   loadTimeData.getBoolean = function(key) {
     return loadTimeData.data_[key];
   };

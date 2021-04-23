@@ -72,7 +72,11 @@ let mockChrome;
 export function setUp() {
   // Mock LoadTimeData strings.
   window.loadTimeData.getString = id => id;
-  window.loadTimeData.data = {};
+  window.loadTimeData.resetForTesting();
+  window.loadTimeData.overrideValues({
+    FILES_TRASH_ENABLED: false,
+    UNIFIED_MEDIA_VIEW_ENABLED: false,
+  });
 
   // Setup mock chrome APIs.
   directoryChangedListeners = [];

@@ -183,16 +183,21 @@ class LoadTimeData {
       this.data_[key] = replacements[key];
     }
   }
+
+  /** Reset loadTimeData's data to empty. Should only be used in tests. */
+  resetForTesting() {
+    this.data_ = {};
+  }
 }
 
   /**
-   * Checks condition, displays error message if expectation fails.
+   * Checks condition, throws error message if expectation fails.
    * @param {*} condition The condition to check for truthiness.
    * @param {string} message The message to display if the check fails.
    */
   function expect(condition, message) {
     if (!condition) {
-      console.error(
+      throw new Error(
           'Unexpected condition on ' + document.location.href + ': ' + message);
     }
   }

@@ -40,14 +40,15 @@ metrics.recordEnum = function(name, value, opt_validValues) {};
 // Set up the test components.
 export function setUp() {
   // Set up string assets.
-  loadTimeData.data = {
+  loadTimeData.resetForTesting();
+  loadTimeData.overrideValues({
     DEVICE_UNSUPPORTED_MESSAGE: 'DEVICE_UNSUPPORTED: $1',
     DEVICE_UNKNOWN_MESSAGE: 'DEVICE_UNKNOWN: $1',
     MULTIPART_DEVICE_UNSUPPORTED_MESSAGE: 'MULTIPART_DEVICE_UNSUPPORTED: $1',
     FORMAT_PROGRESS_MESSAGE: 'FORMAT_PROGRESS_MESSAGE: $1',
     FORMAT_SUCCESS_MESSAGE: 'FORMAT_SUCCESS_MESSAGE: $1',
     FORMAT_FAILURE_MESSAGE: 'FORMAT_FAILURE_MESSAGE: $1',
-  };
+  });
   loadTimeData.getString = id => {
     return loadTimeData.data_[id] || id;
   };
