@@ -34,6 +34,9 @@ extern NSString* const
 // Text style for the title. If nil, will default to UIFontTextStyleTitle1.
 @property(nonatomic, copy) NSString* titleTextStyle;
 
+// Whether to capitalize or not the title string. Defaults to YES.
+@property(nonatomic, assign) BOOL capitalizeTitle;
+
 // The subtitle below the title. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* subtitleString;
 
