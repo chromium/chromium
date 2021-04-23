@@ -76346,6 +76346,7 @@ would be helpful to identify which type is being sent.
   <int value="13" label="Announcement notification ack button."/>
   <int value="14" label="Announcement notification open button."/>
   <int value="15" label="TWA notification 'Got it' button."/>
+  <int value="16" label="Auto fetch offline page cancel button."/>
 </enum>
 
 <enum name="SystemNotificationType">

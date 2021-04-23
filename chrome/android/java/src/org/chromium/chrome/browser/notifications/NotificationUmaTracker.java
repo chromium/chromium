@@ -144,8 +144,10 @@ public class NotificationUmaTracker {
         int ANNOUNCEMENT_OPEN = 14;
         // "Got it" button on the TWA "Running in Chrome" notification.
         int TWA_NOTIFICATION_ACCEPTANCE = 15;
+        // "Cancel" button in auto fetch offline page notification.
+        int AUTO_FETCH_CANCEL = 16;
 
-        int NUM_ENTRIES = 16;
+        int NUM_ENTRIES = 17;
     }
 
     private static class LazyHolder {
