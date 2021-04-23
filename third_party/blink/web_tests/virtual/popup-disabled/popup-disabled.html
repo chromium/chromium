@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src='../../resources/testharness.js'></script>
+
+<popup>This content should be visible, if HTMLPopupElement is disabled</popup>
+
+<script>
+  if (window.testRunner)
+    testRunner.dumpAsText();
+
+  function popupVisible(popup) {
+    return !!(popup.offsetWidth || popup.offsetHeight || popup.getClientRects().length);
+  }
+  test(() => {
+    const popup = document.querySelector('popup');
+    assert_true(!!popup);
+    assert_true(popup instanceof HTMLUnknownElement, 'popup should be an instance of HTMLUnknownElement');
+    assert_true(popupVisible(popup), 'popup should be visible');
+  },'<popup> should be HTMLUnknownElement and should be stylable/visible');
+</script>

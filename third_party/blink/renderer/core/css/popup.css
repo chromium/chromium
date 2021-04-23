@@ -1,0 +1,31 @@
+/*
+ * The default style sheet used to render <popup> elements
+ * (HTMLPopupElement enabled).
+ *
+ * Copyright 2021 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+@namespace "http://www.w3.org/1999/xhtml";
+
+popup:not(:-internal-popup-open) {
+  display: none !important;
+}
+
+popup {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* The rest here is copied from dialog, perhaps these shouldn't
+     apply to popup. At least the background color is nice, because
+     it obscures the backdrop. And the foreground color/border
+     help to set off the popup from the rest of the page. */
+  width: fit-content;
+  height: fit-content;
+  border: 1px solid;
+  padding: 1em;
+  background: -internal-light-dark(white, black);
+  color: -internal-light-dark(black, white);
+}

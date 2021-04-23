@@ -1032,5 +1032,10 @@
     "args": ["--enable-features=DocumentTransition",
              "--enable-threaded-compositing",
              "--enable-gpu-rasterization"]
+  },
+  {
+    "prefix": "popup-disabled",
+    "bases": [],
+    "args": ["--stable-release-mode"]
   }
 ]

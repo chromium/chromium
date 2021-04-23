@@ -129,6 +129,7 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   text_track_style_sheet_.Clear();
   forced_colors_style_sheet_.Clear();
   fullscreen_style_sheet_.Clear();
+  popup_style_sheet_.Clear();
   webxr_overlay_style_sheet_.Clear();
   marker_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
@@ -284,6 +285,24 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     }
   }
 
+  if (!popup_style_sheet_ && IsA<HTMLPopupElement>(element)) {
+    // TODO: We should assert that this sheet only contains rules for <popup>.
+    String popup_rules =
+        RuntimeEnabledFeatures::HTMLPopupElementEnabled()
+            ? UncompressResourceAsASCIIString(IDR_UASTYLE_POPUP_CSS)
+            : String();
+    popup_style_sheet_ = ParseUASheet(popup_rules);
+    // TODO(crbug.com/1201360): refactor this into a separate function.
+    default_style_->AddRulesFromSheet(PopupStyleSheet(), ScreenEval());
+    default_print_style_->AddRulesFromSheet(PopupStyleSheet(), PrintEval());
+    default_quirks_style_->AddRulesFromSheet(PopupStyleSheet(), ScreenEval());
+    if (default_forced_color_style_) {
+      default_forced_color_style_->AddRulesFromSheet(PopupStyleSheet(),
+                                                     ForcedColorsEval());
+    }
+    changed_default_style = true;
+  }
+
   DCHECK(!default_style_->Features().HasIdsInSelectors());
   return changed_default_style;
 }
@@ -406,6 +425,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(text_track_style_sheet_);
   visitor->Trace(forced_colors_style_sheet_);
   visitor->Trace(fullscreen_style_sheet_);
+  visitor->Trace(popup_style_sheet_);
   visitor->Trace(webxr_overlay_style_sheet_);
   visitor->Trace(marker_style_sheet_);
 }
