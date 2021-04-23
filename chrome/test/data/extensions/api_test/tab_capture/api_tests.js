@@ -19,21 +19,35 @@ function assertIsSameSetOfTabs(list_a, list_b, id_field_name) {
   }
 }
 
-// We can't actually unsubscribe from onStatusChanged, so make sure it
-// only fires once per test.
-let g_test_index = 0;
-function testSucceedOnCaptureEnd() {
-  g_test_index += 1;
-  const my_test_index = g_test_index;
-  var tabCaptureListener = function(info) {
-    console.log(
-        my_test_index + ' tabCapture.onStatusChanged to: ' + info.status);
-    if (info.status == 'stopped' && my_test_index == g_test_index) {
-      chrome.test.succeed();
-      return;
-    }
-  };
-  tabCapture.onStatusChanged.addListener(tabCaptureListener);
+// Since all of these tests run in the same tab with limited teardown between
+// tests, we have to be extra-careful to not pollute state between tests. Tests
+// should be completely sure that capture state is as expected before exiting,
+// otherwise the next test in the suite will fail. For context, see
+// https://crbug.com/764464 for some of the motivation here.
+const CaptureState = {
+  kPending: 'pending',
+  kActive: 'active',
+  kStopped: 'stopped'
+};
+let g_state = CaptureState.kStopped;
+let g_should_call_succeed = false;
+
+tabCapture.onStatusChanged.addListener(function(info) {
+  g_state = info.status;
+  if (g_should_call_succeed) {
+    chrome.test.succeed();
+    g_should_call_succeed = false;
+  }
+});
+
+// Since if capture is already stopped this method immediately calls succeed,
+// tests should use it directly in place of a chrome.test.succeed call.
+function succeedOnCaptureStopped() {
+  if (g_state == CaptureState.kStopped) {
+    chrome.test.succeed();
+  } else {
+    g_should_call_succeed = true;
+  }
 }
 
 function assertIsValidStreamId(streamId) {
@@ -48,8 +62,8 @@ function assertIsValidStreamId(streamId) {
     }
   }, function(stream) {
     chrome.test.assertTrue(!!stream);
-    testSucceedOnCaptureEnd();
     stream.getVideoTracks()[0].stop();
+    succeedOnCaptureStopped();
   }, function(error) {
     chrome.test.fail(error);
   });
@@ -57,21 +71,21 @@ function assertIsValidStreamId(streamId) {
 
 function assertGetUserMediaError(streamId) {
   chrome.test.assertTrue(typeof streamId == 'string');
-  navigator.webkitGetUserMedia({
-    audio: false,
-    video: {
-      mandatory: {
-        chromeMediaSource: 'tab',
-        chromeMediaSourceId: streamId
-      }
-    }
-  }, function(stream) {
-    chrome.test.assertTrue(!!stream);
-    stream.getVideoTracks()[0].stop();
-    chrome.test.fail('Should not get stream.');
-  }, function(error) {
-    chrome.test.succeed();
-  });
+  navigator.webkitGetUserMedia(
+      {
+        audio: false,
+        video: {
+          mandatory: {chromeMediaSource: 'tab', chromeMediaSourceId: streamId}
+        }
+      },
+      function(stream) {
+        chrome.test.assertTrue(!!stream);
+        stream.getVideoTracks()[0].stop();
+        chrome.test.fail('Should not get stream.');
+      },
+      function(error) {
+        succeedOnCaptureStopped();
+      });
 }
 
 var testsToRun = [
@@ -80,7 +94,6 @@ var testsToRun = [
     var tabCaptureEvents = [];
 
     var tabCaptureListener = function(info) {
-      console.log(info.status);
       if (info.status == 'stopped') {
         chrome.test.assertEq('active', tabCaptureEvents.pop());
         chrome.test.assertEq('pending', tabCaptureEvents.pop());
@@ -160,7 +173,7 @@ var testsToRun = [
       chrome.test.assertTrue(!stream);
       stream1.getVideoTracks()[0].stop();
       stream1.getAudioTracks()[0].stop();
-      chrome.test.succeed();
+      succeedOnCaptureStopped();
     };
 
     tabCapture.capture({audio: true, video: true}, function(stream) {
@@ -173,16 +186,16 @@ var testsToRun = [
   function onlyVideo() {
     tabCapture.capture({video: true}, function(stream) {
       chrome.test.assertTrue(!!stream);
-      testSucceedOnCaptureEnd();
       stream.getVideoTracks()[0].stop();
+      succeedOnCaptureStopped();
     });
   },
 
   function onlyAudio() {
     tabCapture.capture({audio: true}, function(stream) {
       chrome.test.assertTrue(!!stream);
-      testSucceedOnCaptureEnd();
       stream.getAudioTracks()[0].stop();
+      succeedOnCaptureStopped();
     });
   },
 
@@ -192,7 +205,7 @@ var testsToRun = [
       chrome.test.assertLastError(
           'Capture failed. No audio or video requested.');
       chrome.test.assertTrue(!stream);
-      chrome.test.succeed();
+      succeedOnCaptureStopped();
     });
   },
 
@@ -206,7 +219,7 @@ var testsToRun = [
             tabCapture.getCapturedTabs(function(tab_list_after) {
               assertIsSameSetOfTabs(tab_list_before, tab_list_after, 'tabId');
               stream.getVideoTracks()[0].stop();
-              chrome.test.succeed();
+              succeedOnCaptureStopped();
             });
           });
     });
@@ -222,7 +235,7 @@ var testsToRun = [
             chrome.tabs.query({/* all tabs */}, function(tab_list_after) {
               assertIsSameSetOfTabs(tab_list_before, tab_list_after, 'id');
               stream.getVideoTracks()[0].stop();
-              chrome.test.succeed();
+              succeedOnCaptureStopped();
             });
           });
     });
@@ -250,7 +263,7 @@ var testsToRun = [
     });
   },
 
-  // Test that if calling getMediaStreamId() with consumber tab specified,
+  // Test that if calling getMediaStreamId() with consumer tab specified and
   // then calling getUserMedia() on another tab will fail to get the stream.
   function getMediaStreamIdAndGetUserMediaOnDifferentTabs() {
     var currentTabId;
