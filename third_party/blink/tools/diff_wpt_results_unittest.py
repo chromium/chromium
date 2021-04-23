@@ -78,7 +78,9 @@ class CreateCsvTest(unittest.TestCase):
             csv_out.seek(0)
             content = csv_out.read()
             self.assertEquals(content, CSV_HEADING +
-                              '"test, name.html",PASS,PASS,SAME RESULTS,{},{},No\n')
+                              ('"test, name.html",PASS,PASS,'
+                               'SAME RESULTS,"{FAIL, TIMEOUT, PASS}",'
+                               '"{CRASH, PASS}",Yes\n'))
 
     def test_create_csv_with_same_result(self):
         actual_mp = {'test.html': {'actual': 'PASS'}}
@@ -87,7 +89,8 @@ class CreateCsvTest(unittest.TestCase):
             csv_out.seek(0)
             content = csv_out.read()
             self.assertEquals(content, CSV_HEADING +
-                              'test.html,PASS,PASS,SAME RESULTS,{},{},No\n')
+                              ('test.html,PASS,PASS,SAME RESULTS,'
+                               '"{FAIL, TIMEOUT, PASS}","{CRASH, PASS}",Yes\n'))
 
     def test_create_csv_with_reliable_different_result(self):
         actual_mp = {'test.html': {'actual': 'PASS'}}

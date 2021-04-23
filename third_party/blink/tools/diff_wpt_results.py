@@ -107,7 +107,7 @@ class WPTResultsDiffer(object):
             else:
                 line.append('DIFFERENT RESULTS')
 
-            if line[-1] == 'DIFFERENT RESULTS':
+            if line[-1] != 'MISSING RESULTS':
                 test_flaky_results = self.flaky_results(
                     test, self._test_flaky_results)
 
@@ -116,10 +116,12 @@ class WPTResultsDiffer(object):
 
                 test_flaky_results.update([line[1]])
                 baseline_flaky_results.update([line[2]])
+                is_flaky = (len(test_flaky_results) > 1 or
+                            len(baseline_flaky_results) > 1)
                 line.extend(['"{%s}"' % ', '.join(test_flaky_results),
                              '"{%s}"' % ', '.join(baseline_flaky_results)])
 
-                if (line[1] in baseline_flaky_results and
+                if (is_flaky and line[1] in baseline_flaky_results and
                         line[2] in test_flaky_results):
                     line.append(YES)
                 else:
