@@ -3923,10 +3923,6 @@ _FUNCTION_INFO = {
     'type': 'NoCommand',
     'extension': 'CHROMIUM_ordering_barrier',
   },
-  'ShallowFlushCHROMIUM': {
-    'type': 'NoCommand',
-    'extension': 'CHROMIUM_ordering_barrier',
-  },
   'OrderingBarrierCHROMIUM': {
     'type': 'NoCommand',
     'extension': 'CHROMIUM_ordering_barrier',

@@ -154,6 +154,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   void GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) override;
   void VerifySyncTokensCHROMIUM(GLbyte** sync_tokens, GLsizei count) override;
   void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) override;
+  void ShallowFlushCHROMIUM() override;
 
   void GetProgramInfoCHROMIUMHelper(GLuint program,
                                     std::vector<int8_t>* result);

@@ -281,9 +281,6 @@ _FUNCTION_INFO = {
     'type': 'NoCommand',
     'gl_test_func': 'glGetQueryObjectui64v',
   },
-  'ShallowFlushCHROMIUM': {
-    'type': 'NoCommand',
-  },
   'OrderingBarrierCHROMIUM': {
     'type': 'NoCommand',
   },

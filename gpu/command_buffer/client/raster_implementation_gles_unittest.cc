@@ -45,7 +45,6 @@ class RasterMockGLES2Interface : public gles2::GLES2InterfaceStub {
   // Command buffer Flush / Finish.
   MOCK_METHOD0(Finish, void());
   MOCK_METHOD0(Flush, void());
-  MOCK_METHOD0(ShallowFlushCHROMIUM, void());
   MOCK_METHOD0(OrderingBarrierCHROMIUM, void());
 
   // SyncTokens.
@@ -54,6 +53,7 @@ class RasterMockGLES2Interface : public gles2::GLES2InterfaceStub {
   MOCK_METHOD2(VerifySyncTokensCHROMIUM,
                void(GLbyte** sync_tokens, GLsizei count));
   MOCK_METHOD1(WaitSyncTokenCHROMIUM, void(const GLbyte* sync_token));
+  MOCK_METHOD0(ShallowFlushCHROMIUM, void());
 
   // Command buffer state.
   MOCK_METHOD0(GetError, GLenum());

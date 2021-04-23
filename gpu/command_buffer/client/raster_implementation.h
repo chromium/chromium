@@ -245,6 +245,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   void GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) override;
   void VerifySyncTokensCHROMIUM(GLbyte** sync_tokens, GLsizei count) override;
   void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) override;
+  void ShallowFlushCHROMIUM() override;
 
   bool GetQueryObjectValueHelper(const char* function_name,
                                  GLuint id,

@@ -1062,11 +1062,6 @@ void GLES2TraceImplementation::ShallowFinishCHROMIUM() {
   gl_->ShallowFinishCHROMIUM();
 }
 
-void GLES2TraceImplementation::ShallowFlushCHROMIUM() {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::ShallowFlushCHROMIUM");
-  gl_->ShallowFlushCHROMIUM();
-}
-
 void GLES2TraceImplementation::OrderingBarrierCHROMIUM() {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::OrderingBarrierCHROMIUM");
   gl_->OrderingBarrierCHROMIUM();

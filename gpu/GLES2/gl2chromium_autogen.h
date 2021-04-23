@@ -167,7 +167,6 @@
 #define glShaderBinary GLES2_GET_FUN(ShaderBinary)
 #define glShaderSource GLES2_GET_FUN(ShaderSource)
 #define glShallowFinishCHROMIUM GLES2_GET_FUN(ShallowFinishCHROMIUM)
-#define glShallowFlushCHROMIUM GLES2_GET_FUN(ShallowFlushCHROMIUM)
 #define glOrderingBarrierCHROMIUM GLES2_GET_FUN(OrderingBarrierCHROMIUM)
 #define glMultiDrawArraysWEBGL GLES2_GET_FUN(MultiDrawArraysWEBGL)
 #define glMultiDrawArraysInstancedWEBGL \

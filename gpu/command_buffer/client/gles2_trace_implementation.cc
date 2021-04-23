@@ -29,6 +29,9 @@ void GLES2TraceImplementation::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
 void GLES2TraceImplementation::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
   gl_->WaitSyncTokenCHROMIUM(sync_token);
 }
+void GLES2TraceImplementation::ShallowFlushCHROMIUM() {
+  gl_->ShallowFlushCHROMIUM();
+}
 
 // Include the auto-generated part of this file. We split this because it means
 // we can easily edit the non-auto generated parts right here in this file

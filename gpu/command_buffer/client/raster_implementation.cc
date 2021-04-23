@@ -832,6 +832,9 @@ void RasterImplementation::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
 void RasterImplementation::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
   ImplementationBase::WaitSyncToken(sync_token);
 }
+void RasterImplementation::ShallowFlushCHROMIUM() {
+  IssueShallowFlush();
+}
 
 // ImplementationBase implementation.
 void RasterImplementation::IssueShallowFlush() {
@@ -840,9 +843,6 @@ void RasterImplementation::IssueShallowFlush() {
   FlushHelper();
 }
 
-void RasterImplementation::ShallowFlushCHROMIUM() {
-  IssueShallowFlush();
-}
 
 void RasterImplementation::FlushHelper() {
   // Flush our command buffer

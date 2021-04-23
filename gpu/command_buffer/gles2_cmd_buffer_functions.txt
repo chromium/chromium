@@ -157,7 +157,6 @@ GL_APICALL void         GL_APIENTRY glScissor (GLint x, GLint y, GLsizei width, 
 GL_APICALL void         GL_APIENTRY glShaderBinary (GLsizeiNotNegative n, const GLuint* shaders, GLenumShaderBinaryFormat binaryformat, const void* binary, GLsizeiNotNegative length);
 GL_APICALL void         GL_APIENTRY glShaderSource (GLidShader shader, GLsizeiNotNegative count, const GLchar* const* str, const GLint* length);
 GL_APICALL void         GL_APIENTRY glShallowFinishCHROMIUM (void);
-GL_APICALL void         GL_APIENTRY glShallowFlushCHROMIUM (void);
 GL_APICALL void         GL_APIENTRY glOrderingBarrierCHROMIUM (void);
 
 // Extensions WEBGL_multi_draw

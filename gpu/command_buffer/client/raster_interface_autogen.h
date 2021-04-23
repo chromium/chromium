@@ -16,7 +16,6 @@
 virtual void Finish() = 0;
 virtual void Flush() = 0;
 virtual GLenum GetError() = 0;
-virtual void ShallowFlushCHROMIUM() = 0;
 virtual void OrderingBarrierCHROMIUM() = 0;
 virtual void GenQueriesEXT(GLsizei n, GLuint* queries) = 0;
 virtual void DeleteQueriesEXT(GLsizei n, const GLuint* queries) = 0;

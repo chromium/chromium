@@ -204,6 +204,9 @@ void WebGPUImplementation::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
   FlushCommands();
   ImplementationBase::WaitSyncToken(sync_token);
 }
+void WebGPUImplementation::ShallowFlushCHROMIUM() {
+  FlushCommands();
+}
 
 bool WebGPUImplementation::HasGrContextSupport() const {
   return true;

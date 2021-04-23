@@ -16,6 +16,7 @@ class InterfaceBase {
   virtual void VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
                                         GLsizei count) = 0;
   virtual void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) = 0;
+  virtual void ShallowFlushCHROMIUM() = 0;
 };
 
 }  // namespace gpu

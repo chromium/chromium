@@ -17,6 +17,7 @@ void WebGPUInterfaceStub::GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) {}
 void WebGPUInterfaceStub::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
                                                    GLsizei count) {}
 void WebGPUInterfaceStub::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {}
+void WebGPUInterfaceStub::ShallowFlushCHROMIUM() {}
 
 // WebGPUInterface implementation
 const DawnProcTable& WebGPUInterfaceStub::GetProcs() const {

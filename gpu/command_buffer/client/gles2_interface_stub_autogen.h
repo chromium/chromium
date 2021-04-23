@@ -372,7 +372,6 @@ void ShaderSource(GLuint shader,
                   const GLchar* const* str,
                   const GLint* length) override;
 void ShallowFinishCHROMIUM() override;
-void ShallowFlushCHROMIUM() override;
 void OrderingBarrierCHROMIUM() override;
 void MultiDrawArraysWEBGL(GLenum mode,
                           const GLint* firsts,

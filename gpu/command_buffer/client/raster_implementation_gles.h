@@ -34,7 +34,6 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
   // Command buffer Flush / Finish.
   void Finish() override;
   void Flush() override;
-  void ShallowFlushCHROMIUM() override;
   void OrderingBarrierCHROMIUM() override;
 
   // Command buffer state.
@@ -164,6 +163,7 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
   void GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) override;
   void VerifySyncTokensCHROMIUM(GLbyte** sync_tokens, GLsizei count) override;
   void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) override;
+  void ShallowFlushCHROMIUM() override;
 
  private:
   GLHelper* GetGLHelper();

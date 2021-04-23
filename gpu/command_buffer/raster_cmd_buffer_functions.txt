@@ -7,7 +7,6 @@
 GL_APICALL void         GL_APIENTRY glFinish (void);
 GL_APICALL void         GL_APIENTRY glFlush (void);
 GL_APICALL GLenum       GL_APIENTRY glGetError (void);
-GL_APICALL void         GL_APIENTRY glShallowFlushCHROMIUM (void);
 GL_APICALL void         GL_APIENTRY glOrderingBarrierCHROMIUM (void);
 GL_APICALL void         GL_APIENTRY glGenQueriesEXT (GLsizeiNotNegative n, GLuint* queries);
 GL_APICALL void         GL_APIENTRY glDeleteQueriesEXT (GLsizeiNotNegative n, const GLuint* queries);

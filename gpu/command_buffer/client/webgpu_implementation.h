@@ -94,6 +94,7 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   void GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) override;
   void VerifySyncTokensCHROMIUM(GLbyte** sync_tokens, GLsizei count) override;
   void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) override;
+  void ShallowFlushCHROMIUM() override;
   bool HasGrContextSupport() const override;
 
   // ImplementationBase implementation.

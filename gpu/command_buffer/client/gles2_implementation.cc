@@ -1531,6 +1531,9 @@ void GLES2Implementation::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
 void GLES2Implementation::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
   ImplementationBase::WaitSyncToken(sync_token);
 }
+void GLES2Implementation::ShallowFlushCHROMIUM() {
+  IssueShallowFlush();
+}
 
 // ImplementationBase implementation.
 void GLES2Implementation::IssueShallowFlush() {
@@ -1540,9 +1543,6 @@ void GLES2Implementation::IssueShallowFlush() {
   FlushHelper();
 }
 
-void GLES2Implementation::ShallowFlushCHROMIUM() {
-  IssueShallowFlush();
-}
 
 void GLES2Implementation::FlushHelper() {
   // Flush our command buffer

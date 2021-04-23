@@ -526,8 +526,6 @@ void ShaderSource(GLuint shader,
 
 void ShallowFinishCHROMIUM() override;
 
-void ShallowFlushCHROMIUM() override;
-
 void OrderingBarrierCHROMIUM() override;
 
 void MultiDrawArraysWEBGL(GLenum mode,

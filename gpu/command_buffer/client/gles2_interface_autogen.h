@@ -381,7 +381,6 @@ virtual void ShaderSource(GLuint shader,
                           const GLchar* const* str,
                           const GLint* length) = 0;
 virtual void ShallowFinishCHROMIUM() = 0;
-virtual void ShallowFlushCHROMIUM() = 0;
 virtual void OrderingBarrierCHROMIUM() = 0;
 virtual void MultiDrawArraysWEBGL(GLenum mode,
                                   const GLint* firsts,
