@@ -215,7 +215,7 @@ void SyncManagerImpl::NotifyInitializationSuccess() {
   for (auto& observer : observers_) {
     observer.OnInitializationComplete(
         MakeWeakHandle(weak_ptr_factory_.GetWeakPtr()),
-        MakeWeakHandle(debug_info_event_listener_.GetWeakPtr()), true);
+        MakeWeakHandle(debug_info_event_listener_.GetWeakPtr()));
   }
 }
 

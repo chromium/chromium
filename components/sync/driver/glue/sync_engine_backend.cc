@@ -117,16 +117,8 @@ void SyncEngineBackend::DoRefreshTypes(ModelTypeSet types) {
 
 void SyncEngineBackend::OnInitializationComplete(
     const WeakHandle<JsBackend>& js_backend,
-    const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
-    bool success) {
+    const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!success) {
-    DoDestroySyncManager();
-    host_.Call(FROM_HERE,
-               &SyncEngineImpl::HandleInitializationFailureOnFrontendLoop);
-    return;
-  }
 
   // Hang on to these for a while longer.  We're not ready to hand them back to
   // the UI thread yet.
@@ -384,15 +376,18 @@ void SyncEngineBackend::ShutdownOnUIThread() {
 void SyncEngineBackend::DoShutdown(ShutdownReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Having no |sync_manager_| means that initialization was failed and NIGORI
-  // wasn't connected and started.
-  // TODO(crbug.com/922900): this logic seems fragile, maybe initialization and
-  // connecting of NIGORI needs refactoring.
-  if (nigori_controller_ && sync_manager_) {
+  // |nigori_controller_| and |sync_manager_| might be null if DoInitialize()
+  // wasn't called.
+  if (nigori_controller_) {
+    DCHECK(sync_manager_);
     sync_manager_->GetModelTypeConnector()->DisconnectDataType(NIGORI);
     nigori_controller_->Stop(reason, base::DoNothing());
   }
-  DoDestroySyncManager();
+  if (sync_manager_) {
+    sync_manager_->RemoveObserver(this);
+    sync_manager_->ShutdownOnSyncThread();
+    sync_manager_.reset();
+  }
 
   if (reason == DISABLE_SYNC) {
     DeleteLegacyDirectoryFilesAndNigoriStorage(sync_data_folder_);
@@ -400,16 +395,6 @@ void SyncEngineBackend::DoShutdown(ShutdownReason reason) {
 
   host_.Reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
-}
-
-void SyncEngineBackend::DoDestroySyncManager() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (sync_manager_) {
-    sync_manager_->RemoveObserver(this);
-    sync_manager_->ShutdownOnSyncThread();
-    sync_manager_.reset();
-  }
 }
 
 void SyncEngineBackend::DoPurgeDisabledTypes(const ModelTypeSet& to_purge) {

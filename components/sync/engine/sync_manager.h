@@ -71,11 +71,10 @@ class SyncManager {
     // message, unless otherwise specified, produces undefined behavior.
 
     // TODO(crbug.com/1198986): Remove this - it's always called synchronously
-    // from Init(), and always with success=true.
+    // from Init().
     virtual void OnInitializationComplete(
         const WeakHandle<JsBackend>& js_backend,
-        const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
-        bool success) = 0;
+        const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener) = 0;
 
     virtual void OnActionableError(
         const SyncProtocolError& sync_protocol_error) = 0;

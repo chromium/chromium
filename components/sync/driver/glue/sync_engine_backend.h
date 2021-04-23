@@ -72,10 +72,9 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // traffic controller here, forwarding incoming messages to appropriate
   // landing threads.
   void OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) override;
-  void OnInitializationComplete(
-      const WeakHandle<JsBackend>& js_backend,
-      const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
-      bool success) override;
+  void OnInitializationComplete(const WeakHandle<JsBackend>& js_backend,
+                                const WeakHandle<DataTypeDebugInfoListener>&
+                                    debug_info_listener) override;
   void OnConnectionStatusChange(ConnectionStatus status) override;
   void OnActionableError(const SyncProtocolError& sync_error) override;
   void OnMigrationRequested(ModelTypeSet types) override;
@@ -143,7 +142,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   //    sync manager.
   void ShutdownOnUIThread();
   void DoShutdown(ShutdownReason reason);
-  void DoDestroySyncManager();
 
   // Configuration methods that must execute on sync loop.
   void DoPurgeDisabledTypes(const ModelTypeSet& to_purge);

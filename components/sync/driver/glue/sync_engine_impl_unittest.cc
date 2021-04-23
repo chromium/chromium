@@ -101,7 +101,6 @@ class FakeSyncManagerFactory : public SyncManagerFactory {
       FakeSyncManager** fake_manager,
       network::NetworkConnectionTracker* network_connection_tracker)
       : SyncManagerFactory(network_connection_tracker),
-        should_fail_on_init_(false),
         fake_manager_(fake_manager) {
     *fake_manager_ = nullptr;
   }
@@ -112,7 +111,7 @@ class FakeSyncManagerFactory : public SyncManagerFactory {
       const std::string& /* name */) override {
     *fake_manager_ =
         new FakeSyncManager(initial_sync_ended_types_, progress_marker_types_,
-                            configure_fail_types_, should_fail_on_init_);
+                            configure_fail_types_);
     return std::unique_ptr<SyncManager>(*fake_manager_);
   }
 
@@ -128,15 +127,10 @@ class FakeSyncManagerFactory : public SyncManagerFactory {
     configure_fail_types_ = types;
   }
 
-  void set_should_fail_on_init(bool should_fail_on_init) {
-    should_fail_on_init_ = should_fail_on_init;
-  }
-
  private:
   ModelTypeSet initial_sync_ended_types_;
   ModelTypeSet progress_marker_types_;
   ModelTypeSet configure_fail_types_;
-  bool should_fail_on_init_;
   FakeSyncManager** fake_manager_;
 };
 
@@ -688,22 +682,6 @@ TEST_F(SyncEngineImplTest,
   EXPECT_CALL(invalidator_,
               UpdateInterestedTopics(backend_.get(), invalidation::TopicSet()));
   ShutdownBackend(STOP_SYNC);
-}
-
-// Regression test for crbug.com/1019956.
-TEST_F(SyncEngineImplTest, ShouldDestroyAfterInitFailure) {
-  fake_manager_factory_->set_should_fail_on_init(true);
-  // Sync manager will report initialization failure and gets destroyed during
-  // the error handling.
-  InitializeBackend(/*expect_success=*/false);
-
-  backend_->StopSyncingForShutdown();
-  // This line would post the task causing the crash before the fix, because
-  // sync manager was used during the shutdown handling.
-  backend_->Shutdown(STOP_SYNC);
-  backend_.reset();
-
-  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(SyncEngineImplWithSyncInvalidationsTest,

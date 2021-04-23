@@ -43,8 +43,7 @@ class FakeSyncManager : public SyncManager {
   // to include those types that didn't fail.
   FakeSyncManager(ModelTypeSet initial_sync_ended_types,
                   ModelTypeSet progress_marker_types,
-                  ModelTypeSet configure_fail_types,
-                  bool should_fail_on_init);
+                  ModelTypeSet configure_fail_types);
   ~FakeSyncManager() override;
 
   // Returns those types that have been downloaded since the last call to
@@ -110,7 +109,6 @@ class FakeSyncManager : public SyncManager {
   std::string birthday_;
   std::string bag_of_chips_;
 
-  bool should_fail_on_init_;
   // Faked data state.
   ModelTypeSet initial_sync_ended_types_;
   ModelTypeSet progress_marker_types_;

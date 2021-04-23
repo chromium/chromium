@@ -63,8 +63,7 @@ void JsSyncManagerObserver::OnMigrationRequested(ModelTypeSet types) {}
 
 void JsSyncManagerObserver::OnInitializationComplete(
     const WeakHandle<JsBackend>& js_backend,
-    const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
-    bool success) {
+    const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener) {
   if (!event_handler_.IsInitialized()) {
     return;
   }

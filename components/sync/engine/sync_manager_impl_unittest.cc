@@ -105,8 +105,7 @@ class SyncManagerObserverMock : public SyncManager::Observer {
   MOCK_METHOD(void,
               OnInitializationComplete,
               (const WeakHandle<JsBackend>&,
-               const WeakHandle<DataTypeDebugInfoListener>&,
-               bool),
+               const WeakHandle<DataTypeDebugInfoListener>&),
               (override));
   // NOLINT
   MOCK_METHOD(void, OnConnectionStatusChange, (ConnectionStatus), (override));
@@ -169,8 +168,7 @@ class SyncManagerTest : public testing::Test {
 
     sync_manager_.AddObserver(&manager_observer_);
     EXPECT_CALL(manager_observer_, OnInitializationComplete)
-        .WillOnce(DoAll(SaveArg<0>(&js_backend_),
-                        SaveArg<2>(&initialization_succeeded_)));
+        .WillOnce(DoAll(SaveArg<0>(&js_backend_)));
 
     EXPECT_FALSE(js_backend_.IsInitialized());
 
@@ -244,7 +242,6 @@ class SyncManagerTest : public testing::Test {
   SyncManagerImpl sync_manager_;
   CancelationSignal cancelation_signal_;
   WeakHandle<JsBackend> js_backend_;
-  bool initialization_succeeded_;
   StrictMock<SyncManagerObserverMock> manager_observer_;
   // Owned by |sync_manager_|.
   StrictMock<SyncEncryptionHandlerObserverMock>* encryption_observer_;
