@@ -1,8 +1,13 @@
 Test that ObjectPropertiesSection expands recursively.
 
-PROMISE FAILURE: TypeError: Cannot read property '_loadPromise' of undefined
-    at Runtime.loadModulePromise (http://localhost:8000/inspector-sources/core/root/Runtime.js:178:45)
-    at Object.loadModule (http://localhost:8000/inspector-sources/legacy_test_runner/test_runner/TestRunner.js:217:24)
-    at http://127.0.0.1:8000/devtools/unit/object-properties-expand-recursively.js:7:20
-    at http://127.0.0.1:8000/devtools/unit/object-properties-expand-recursively.js:35:3
+JSON
+    foo: {bar: {baz: {quux: {corge: "plugh"}}}, quuz: {garply: "xyzzy", thud: {wibble: "wobble"}}}
+        bar: {baz: {quux: {corge: "plugh"}}}
+            baz: {quux: {corge: "plugh"}}
+                quux: {corge: "plugh"}
+                    corge: "plugh"
+        quuz: {garply: "xyzzy", thud: {wibble: "wobble"}}
+            garply: "xyzzy"
+            thud: {wibble: "wobble"}
+                wibble: "wobble"
 

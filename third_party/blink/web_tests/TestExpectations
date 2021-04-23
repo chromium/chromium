@@ -5083,10 +5083,6 @@ crbug.com/1194557 virtual/shared_array_buffer_on_desktop/http/tests/devtools/sou
 crbug.com/1194557 external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-subdomain-yes-2-subdomain2-no.sub.https.html [ Timeout ]
 crbug.com/1194557 virtual/shared_array_buffer_on_desktop/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-subdomain-yes-2-subdomain2-no.sub.https.html [ Failure Pass ]
 
-# Failing devtool tests. Independently of SharedArrayBuffer enabled or not.
-crbug.com/1194557 http/tests/devtools/local-object-properties-section.js [ Failure ]
-crbug.com/1194557 http/tests/devtools/unit/object-properties-expand-recursively.js [ Failure ]
-
 # Test output varies depending on the bot. A single expectation file doesn't
 # work.
 crbug.com/1194557 fast/beacon/beacon-basic.html [ Failure Pass ]
