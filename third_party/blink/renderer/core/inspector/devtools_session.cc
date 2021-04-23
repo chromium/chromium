@@ -314,9 +314,7 @@ void DevToolsSession::SendProtocolNotification(
     return;
   notification_queue_.push_back(WTF::Bind(
       [](std::unique_ptr<protocol::Serializable> notification) {
-        std::vector<uint8_t> rv = notification->Serialize();
-        recordreplay::Assert("DevToolsSession::SendProtocolNotification callback %lu", rv.size());
-        return rv;
+        return notification->Serialize();
       },
       std::move(notification)));
 }
@@ -327,9 +325,7 @@ void DevToolsSession::sendNotification(
     return;
   notification_queue_.push_back(WTF::Bind(
       [](std::unique_ptr<v8_inspector::StringBuffer> notification) {
-        std::vector<uint8_t> rv = Get8BitStringFrom(notification.get());
-        recordreplay::Assert("DevToolsSession::sendNotification callback %lu", rv.size());
-        return rv;
+        return Get8BitStringFrom(notification.get());
       },
       std::move(notification)));
 }
