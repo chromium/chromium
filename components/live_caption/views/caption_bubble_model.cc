@@ -5,7 +5,6 @@
 #include "components/live_caption/views/caption_bubble_model.h"
 
 #include "components/live_caption/views/caption_bubble.h"
-#include "ui/views/widget/widget.h"
 
 namespace {
 // The caption bubble contains 2 lines of text in its normal size and 8 lines
@@ -15,8 +14,9 @@ constexpr int kMaxLines = 9;
 
 namespace captions {
 
-CaptionBubbleModel::CaptionBubbleModel(views::Widget* context)
-    : context_(context) {}
+CaptionBubbleModel::CaptionBubbleModel(
+    const base::Optional<gfx::Rect>& context_bound_in_screen)
+    : context_bound_in_screen_(context_bound_in_screen) {}
 
 CaptionBubbleModel::~CaptionBubbleModel() {
   if (observer_)
@@ -55,6 +55,11 @@ void CaptionBubbleModel::SetPartialText(const std::string& partial_text) {
 void CaptionBubbleModel::Close() {
   is_closed_ = true;
   ClearText();
+}
+
+void CaptionBubbleModel::Open() {
+  is_closed_ = false;
+  OnTextChanged();
 }
 
 void CaptionBubbleModel::OnError() {

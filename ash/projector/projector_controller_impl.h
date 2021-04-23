@@ -42,8 +42,13 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   void SetProjectorToolsVisible(bool is_visible) override;
   void StartProjectorSession(SourceType scope, aura::Window* window) override;
   bool IsEligible() const override;
-  // Set caption on/off state.
-  void SetCaptionState(bool is_on);
+
+  // Sets Caption bubble state to become opened/closed.
+  void SetCaptionBubbleState(bool is_on);
+
+  // Callback on when the caption bubble model state changes.
+  void OnCaptionBubbleModelStateChanged(bool is_on);
+
   // Mark a key idea.
   void MarkKeyIdea();
 

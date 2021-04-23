@@ -25,7 +25,8 @@ std::unique_ptr<CaptionBubbleController> CaptionBubbleController::Create() {
 CaptionBubbleControllerViews::CaptionBubbleControllerViews() {
   caption_bubble_ = new CaptionBubble(
       base::BindOnce(&CaptionBubbleControllerViews::OnCaptionBubbleDestroyed,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      /* hide_on_inactivity= */ true);
   caption_widget_ =
       views::BubbleDialogDelegateView::CreateBubble(caption_bubble_);
 }
@@ -100,8 +101,14 @@ void CaptionBubbleControllerViews::SetActiveModel(
         web_contents ? views::Widget::GetTopLevelWidgetForNativeView(
                            web_contents->GetNativeView())
                      : nullptr;
+
+    base::Optional<gfx::Rect> context_bounds = base::nullopt;
+    if (context)
+      context_bounds = context->GetClientAreaBoundsInScreen();
+
     caption_bubble_models_.emplace(
-        caption_host_impl, std::make_unique<CaptionBubbleModel>(context));
+        caption_host_impl,
+        std::make_unique<CaptionBubbleModel>(context_bounds));
   }
 
   CaptionBubbleModel* caption_bubble_model =

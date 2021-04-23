@@ -5,6 +5,7 @@
 #ifndef ASH_PROJECTOR_PROJECTOR_UI_CONTROLLER_H_
 #define ASH_PROJECTOR_PROJECTOR_UI_CONTROLLER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -35,6 +36,8 @@ class ASH_EXPORT ProjectorUiController : public LaserPointerObserver,
   virtual void ShowToolbar();
   // Close Projector toolbar. Virtual for testing.
   virtual void CloseToolbar();
+  // Invoked when closed caption button is pressed. Virtual for testing.
+  virtual void SetCaptionBubbleState(bool enabled);
   // Invoked when key idea is marked to show a toast. Virtual for testing.
   virtual void OnKeyIdeaMarked();
   // Invoked when laser pointer button is pressed. Virtual for testing.
@@ -49,14 +52,21 @@ class ASH_EXPORT ProjectorUiController : public LaserPointerObserver,
   virtual void OnSelfieCamPressed(bool enabled);
   // Called when the recording started or stopped. Virtual for testing.
   virtual void OnRecordingStateChanged(bool started);
+  // Notifies the ProjectorControllerImpl and ProjectorBarView when the caption
+  // bubble model's state changes.
+  void OnCaptionBubbleModelStateChanged(bool visible);
 
   bool IsToolbarVisible() const;
+
+  bool IsCaptionBubbleModelOpen() const;
 
   ProjectorUiModel* model() { return &model_; }
 
   ProjectorBarView* projector_bar_view() { return projector_bar_view_; }
 
  private:
+  class CaptionBubbleController;
+
   // Reset tools, including resetting the state in model, closing the sub
   // widgets, etc.
   void ResetTools();
@@ -73,6 +83,8 @@ class ASH_EXPORT ProjectorUiController : public LaserPointerObserver,
   ProjectorUiModel model_;
   views::UniqueWidgetPtr projector_bar_widget_;
   ProjectorBarView* projector_bar_view_ = nullptr;
+
+  std::unique_ptr<CaptionBubbleController> caption_bubble_;
 
   ProjectorControllerImpl* projector_controller_ = nullptr;
 

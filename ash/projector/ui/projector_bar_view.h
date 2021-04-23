@@ -5,6 +5,7 @@
 #ifndef ASH_PROJECTOR_UI_PROJECTOR_BAR_VIEW_H_
 #define ASH_PROJECTOR_UI_PROJECTOR_BAR_VIEW_H_
 
+#include "ash/ash_export.h"
 #include "ash/projector/model/projector_ui_model.h"
 #include "ash/projector/ui/projector_color_button.h"
 #include "ash/projector/ui/projector_image_button.h"
@@ -35,6 +36,8 @@ class ASH_EXPORT ProjectorBarView : public views::View {
   void OnRecordingStateChanged(bool started);
   // Invoke when selfie cam activation state changed.
   void OnSelfieCamStateChanged(bool enabled);
+  // Invoked when the caption bubble state is changed.
+  void OnCaptionBubbleModelStateChanged(bool opened);
   // Invoke when laser pointer activation state changed.
   void OnLaserPointerStateChanged(bool enabled);
   // Invoke when marker activation state changed.
@@ -45,6 +48,7 @@ class ASH_EXPORT ProjectorBarView : public views::View {
 
   bool IsRecordButtonVisible() const;
   bool IsKeyIdeaButtonEnabled() const;
+  bool IsClosedCaptionEnabled() const;
 
  private:
   void InitLayout();
@@ -59,6 +63,7 @@ class ASH_EXPORT ProjectorBarView : public views::View {
   void OnMarkerPressed();
   void OnClearAllMarkersPressed();
   void OnSelfieCamPressed(bool enabled);
+  void SetCaptionState(bool opened);
 
   views::ImageView* drag_handle_ = nullptr;
   ProjectorColorButton* record_button_ = nullptr;
@@ -69,6 +74,8 @@ class ASH_EXPORT ProjectorBarView : public views::View {
   ProjectorButton* clear_all_markers_button_ = nullptr;
   ProjectorButton* selfie_cam_on_button_ = nullptr;
   ProjectorButton* selfie_cam_off_button_ = nullptr;
+  ProjectorButton* closed_caption_show_button_ = nullptr;
+  ProjectorButton* closed_caption_hide_button_ = nullptr;
 
   ProjectorControllerImpl* projector_controller_ = nullptr;
 };

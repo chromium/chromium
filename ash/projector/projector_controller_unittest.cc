@@ -153,7 +153,7 @@ TEST_F(ProjectorControllerTest, OnTranscriptionCaptionOn) {
   // capton is on.
   EXPECT_CALL(*mock_ui_controller_, OnTranscription("transcript text 1", true))
       .Times(1);
-  controller_->SetCaptionState(true);
+  controller_->OnCaptionBubbleModelStateChanged(true);
   NotifyControllerForFinalSpeechResult(controller_);
 }
 
@@ -167,7 +167,7 @@ TEST_F(ProjectorControllerTest, OnTranscriptionCaptionOnPartialResult) {
   EXPECT_CALL(*mock_ui_controller_,
               OnTranscription("transcript partial text 1", false))
       .Times(1);
-  controller_->SetCaptionState(true);
+  controller_->OnCaptionBubbleModelStateChanged(true);
   NotifyControllerForPartialSpeechResult(controller_);
 }
 
@@ -205,6 +205,11 @@ TEST_F(ProjectorControllerTest, OnSelfieCamPressed) {
 
   EXPECT_CALL(*mock_ui_controller_, OnSelfieCamPressed(false));
   controller_->OnSelfieCamPressed(false);
+}
+
+TEST_F(ProjectorControllerTest, SetCaptionBubbleState) {
+  EXPECT_CALL(*mock_ui_controller_, SetCaptionBubbleState(true));
+  controller_->SetCaptionBubbleState(true);
 }
 
 }  // namespace ash

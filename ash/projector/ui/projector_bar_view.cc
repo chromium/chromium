@@ -77,15 +77,32 @@ void ProjectorBarView::OnRecordingStateChanged(bool started) {
   record_button_->SetVisible(!started);
   stop_button_->SetVisible(started);
 
-  if (started)
-    key_idea_button_->SetState(views::Button::ButtonState::STATE_NORMAL);
-  else
-    key_idea_button_->SetState(views::Button::ButtonState::STATE_DISABLED);
+  // Closed caption and key idea buttons states are dependent on the recording
+  // state.
+  auto recording_related_buttons_state =
+      started ? views::Button::ButtonState::STATE_NORMAL
+              : views::Button::ButtonState::STATE_DISABLED;
+
+  closed_caption_hide_button_->SetState(recording_related_buttons_state);
+  closed_caption_show_button_->SetState(recording_related_buttons_state);
+  key_idea_button_->SetState(recording_related_buttons_state);
+
+  // If recording just got turned off, make the `closed_caption_show_button`
+  // visible.
+  if (!started) {
+    closed_caption_show_button_->SetVisible(true);
+    closed_caption_hide_button_->SetVisible(false);
+  }
 }
 
 void ProjectorBarView::OnSelfieCamStateChanged(bool enabled) {
   selfie_cam_on_button_->SetVisible(!enabled);
   selfie_cam_off_button_->SetVisible(enabled);
+}
+
+void ProjectorBarView::OnCaptionBubbleModelStateChanged(bool opened) {
+  closed_caption_show_button_->SetVisible(!opened);
+  closed_caption_hide_button_->SetVisible(opened);
 }
 
 void ProjectorBarView::OnLaserPointerStateChanged(bool enabled) {
@@ -110,8 +127,14 @@ void ProjectorBarView::OnThemeChanged() {
 bool ProjectorBarView::IsRecordButtonVisible() const {
   return record_button_->GetVisible();
 }
+
 bool ProjectorBarView::IsKeyIdeaButtonEnabled() const {
   return key_idea_button_->GetState() ==
+         views::Button::ButtonState::STATE_NORMAL;
+}
+
+bool ProjectorBarView::IsClosedCaptionEnabled() const {
+  return closed_caption_show_button_->GetState() ==
          views::Button::ButtonState::STATE_NORMAL;
 }
 
@@ -185,6 +208,25 @@ void ProjectorBarView::InitLayout() {
                           base::Unretained(this), /*enabled=*/false),
       kProjectorSelfieCamOffIcon));
   selfie_cam_off_button_->SetVisible(false);
+
+  // Add closed caption show/hide buttons.
+  closed_caption_hide_button_ =
+      AddChildView(std::make_unique<ProjectorImageButton>(
+          base::BindRepeating(&ProjectorBarView::SetCaptionState,
+                              base::Unretained(this), false),
+          kHideClosedCaptionIcon));
+  closed_caption_hide_button_->SetVisible(false);
+  closed_caption_hide_button_->SetState(
+      views::Button::ButtonState::STATE_DISABLED);
+
+  closed_caption_show_button_ =
+      AddChildView(std::make_unique<ProjectorImageButton>(
+          base::BindRepeating(&ProjectorBarView::SetCaptionState,
+                              base::Unretained(this), true),
+          kShowClosedCaptionIcon));
+  closed_caption_show_button_->SetVisible(true);
+  closed_caption_show_button_->SetState(
+      views::Button::ButtonState::STATE_DISABLED);
 }
 
 void ProjectorBarView::UpdateVectorIcon() {
@@ -222,6 +264,10 @@ void ProjectorBarView::OnClearAllMarkersPressed() {
 
 void ProjectorBarView::OnSelfieCamPressed(bool enabled) {
   projector_controller_->OnSelfieCamPressed(enabled);
+}
+
+void ProjectorBarView::SetCaptionState(bool opened) {
+  projector_controller_->SetCaptionBubbleState(opened);
 }
 
 BEGIN_METADATA(ProjectorBarView, views::View)

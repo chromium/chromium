@@ -72,10 +72,11 @@ bool ProjectorControllerImpl::IsEligible() const {
   return is_speech_recognition_available_;
 }
 
-void ProjectorControllerImpl::SetCaptionState(bool is_on) {
-  if (is_on == is_caption_on_)
-    return;
+void ProjectorControllerImpl::SetCaptionBubbleState(bool is_on) {
+  ui_controller_->SetCaptionBubbleState(is_on);
+}
 
+void ProjectorControllerImpl::OnCaptionBubbleModelStateChanged(bool is_on) {
   is_caption_on_ = is_on;
 }
 

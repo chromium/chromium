@@ -287,8 +287,10 @@ class CaptionBubbleLabel : public views::Label {
 BEGIN_METADATA(CaptionBubbleLabel, views::Label)
 END_METADATA
 
-CaptionBubble::CaptionBubble(base::OnceClosure destroyed_callback)
+CaptionBubble::CaptionBubble(base::OnceClosure destroyed_callback,
+                             bool hide_on_inactivity)
     : destroyed_callback_(std::move(destroyed_callback)),
+      hide_on_inactivity_(hide_on_inactivity),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
@@ -299,6 +301,10 @@ CaptionBubble::CaptionBubble(base::OnceClosure destroyed_callback)
   SetShowTitle(false);
   SetTitle(IDS_LIVE_CAPTION_BUBBLE_TITLE);
   set_has_parent(false);
+
+  // No need to set up timer if the bubble is not hidden on inactivity.
+  if (!hide_on_inactivity_)
+    return;
 
   inactivity_timer_ = std::make_unique<base::RetainingOneShotTimer>(
       FROM_HERE, base::TimeDelta::FromSeconds(kNoActivityIntervalSeconds),
@@ -440,6 +446,9 @@ CaptionBubble::CreateNonClientFrameView(views::Widget* widget) {
 void CaptionBubble::OnWidgetBoundsChanged(views::Widget* widget,
                                           const gfx::Rect& new_bounds) {
   DCHECK_EQ(widget, GetWidget());
+  if (!hide_on_inactivity_)
+    return;
+
   // If the widget is visible and unfocused, probably due to a mouse drag, reset
   // the inactivity timer.
   if (GetWidget()->IsVisible() && !HasFocus())
@@ -449,6 +458,9 @@ void CaptionBubble::OnWidgetBoundsChanged(views::Widget* widget,
 void CaptionBubble::OnWidgetActivationChanged(views::Widget* widget,
                                               bool active) {
   DCHECK_EQ(widget, GetWidget());
+  if (!hide_on_inactivity_)
+    return;
+
   if (active) {
     inactivity_timer_->Stop();
   } else {
@@ -483,7 +495,9 @@ void CaptionBubble::ExpandOrCollapseButtonPressed() {
   // TODO(crbug.com/1055150): Ensure that the button keeps focus on mac.
   if (button_had_focus)
     new_button->RequestFocus();
-  inactivity_timer_->Reset();
+
+  if (hide_on_inactivity_)
+    inactivity_timer_->Reset();
 }
 
 void CaptionBubble::SetModel(CaptionBubbleModel* model) {
@@ -502,7 +516,8 @@ void CaptionBubble::OnTextChanged() {
   std::string text = model_->GetFullText();
   label_->SetText(base::UTF8ToUTF16(text));
   UpdateBubbleAndTitleVisibility();
-  if (GetWidget()->IsVisible())
+
+  if (hide_on_inactivity_ && GetWidget()->IsVisible())
     inactivity_timer_->Reset();
 }
 
@@ -713,9 +728,10 @@ void CaptionBubble::ShowInactive() {
   // up in the bottom center of the second window, which is where the user is
   // already looking. It also ensures that the caption bubble will appear in the
   // right workspace if a user has Chrome windows open on multiple workspaces.
-  if (!model_->GetContext())
+  if (!model_->GetContextBoundsInScreen().has_value())
     return;
-  gfx::Rect context_rect = model_->GetContext()->GetClientAreaBoundsInScreen();
+  gfx::Rect context_rect = model_->GetContextBoundsInScreen().value();
+
   context_rect.Inset(gfx::Insets(kMinAnchorMarginDip));
   gfx::Rect bubble_bounds = GetBubbleBounds();
 
@@ -759,8 +775,9 @@ void CaptionBubble::OnInactivityTimeout() {
 }
 
 bool CaptionBubble::HasActivity() {
-  return model_ && (inactivity_timer_->IsRunning() || HasFocus() ||
-                    !model_->GetFullText().empty() || model_->HasError());
+  return model_ &&
+         ((inactivity_timer_ && inactivity_timer_->IsRunning()) || HasFocus() ||
+          !model_->GetFullText().empty() || model_->HasError());
 }
 
 views::Label* CaptionBubble::GetLabelForTesting() {

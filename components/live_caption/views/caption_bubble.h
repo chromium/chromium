@@ -46,7 +46,7 @@ class CaptionBubbleLabel;
 class CaptionBubble : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(CaptionBubble);
-  explicit CaptionBubble(base::OnceClosure destroyed_callback);
+  CaptionBubble(base::OnceClosure destroyed_callback, bool hide_on_inactivity);
   CaptionBubble(const CaptionBubble&) = delete;
   CaptionBubble& operator=(const CaptionBubble&) = delete;
   ~CaptionBubble() override;
@@ -163,6 +163,9 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   bool is_expanded_ = false;
 
   bool has_been_shown_ = false;
+
+  // Whether we should hide the caption bubble on inactivity.
+  bool const hide_on_inactivity_;
 
   // A timer which causes the bubble to hide if there is no activity after a
   // specified interval.

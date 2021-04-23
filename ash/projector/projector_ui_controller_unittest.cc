@@ -157,7 +157,7 @@ TEST_F(ProjectorUiControllerTest, ClearAllMarkers) {
   EXPECT_FALSE(marker_controller_test_api_->IsShowingMarker());
 }
 
-// Verifies that the bar view buttons are
+// Verifies that the bar view buttons are enabled/disabled with recording state.
 TEST_F(ProjectorUiControllerTest, RecordingState) {
   controller_->ShowToolbar();
   ProjectorBarView* bar_view_ = controller_->projector_bar_view();
@@ -167,10 +167,21 @@ TEST_F(ProjectorUiControllerTest, RecordingState) {
   controller_->OnRecordingStateChanged(/* started = */ true);
   EXPECT_FALSE(bar_view_->IsRecordButtonVisible());
   EXPECT_TRUE(bar_view_->IsKeyIdeaButtonEnabled());
+  EXPECT_TRUE(bar_view_->IsClosedCaptionEnabled());
 
   controller_->OnRecordingStateChanged(/* started = */ false);
   EXPECT_TRUE(bar_view_->IsRecordButtonVisible());
   EXPECT_FALSE(bar_view_->IsKeyIdeaButtonEnabled());
+  EXPECT_FALSE(bar_view_->IsClosedCaptionEnabled());
+}
+
+TEST_F(ProjectorUiControllerTest, CaptionBubbleVisible) {
+  controller_->ShowToolbar();
+  controller_->SetCaptionBubbleState(true);
+  EXPECT_TRUE(controller_->IsCaptionBubbleModelOpen());
+
+  controller_->SetCaptionBubbleState(false);
+  EXPECT_FALSE(controller_->IsCaptionBubbleModelOpen());
 }
 
 }  // namespace ash

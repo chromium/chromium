@@ -7,9 +7,8 @@
 
 #include <string>
 
-namespace views {
-class Widget;
-}
+#include "base/optional.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace captions {
 
@@ -39,7 +38,8 @@ class CaptionBubble;
 //
 class CaptionBubbleModel {
  public:
-  explicit CaptionBubbleModel(views::Widget* context);
+  explicit CaptionBubbleModel(
+      const base::Optional<gfx::Rect>& context_bound_in_screen);
   ~CaptionBubbleModel();
   CaptionBubbleModel(const CaptionBubbleModel&) = delete;
   CaptionBubbleModel& operator=(const CaptionBubbleModel&) = delete;
@@ -60,13 +60,18 @@ class CaptionBubbleModel {
   // observer.
   void Close();
 
+  // Marks the bubble as open.
+  void Open();
+
   // Clears the partial and final text and alerts the observer.
   void ClearText();
 
   bool IsClosed() const { return is_closed_; }
   bool HasError() const { return has_error_; }
   std::string GetFullText() const { return final_text_ + partial_text_; }
-  views::Widget* GetContext() const { return context_; }
+  const base::Optional<gfx::Rect>& GetContextBoundsInScreen() const {
+    return context_bound_in_screen_;
+  }
 
  private:
   // Alert the observer that a change has occurred to the model text.
@@ -81,10 +86,11 @@ class CaptionBubbleModel {
   // Whether an error should be displayed one the bubble.
   bool has_error_ = false;
 
-  // The context widget for this caption bubble. On Chrome browser, this is the
-  // top level widget of the browser window. When this feature is implemented
-  // in ash, this will be the top level widget of the ash window.
-  views::Widget* context_ = nullptr;
+  // The bounds of context widget for this caption bubble. On Chrome browser,
+  // this is the bounds in screen of the top level widget of the browser window.
+  // When this feature is implemented in ash, this will be bounds of the top
+  // level widget of the ash window.
+  base::Optional<gfx::Rect> context_bound_in_screen_;
 
   // The CaptionBubble observing changes to this model.
   CaptionBubble* observer_ = nullptr;
