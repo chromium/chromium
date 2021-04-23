@@ -153,6 +153,7 @@ class WorkerThread::InterruptData {
 };
 
 WorkerThread::~WorkerThread() {
+  recordreplay::UnregisterPointer(this);
   DCHECK_CALLED_ON_VALID_THREAD(parent_thread_checker_);
   MutexLocker lock(ThreadSetMutex());
   DCHECK(InitializingWorkerThreads().Contains(this) ||
@@ -472,6 +473,7 @@ WorkerThread::WorkerThread(WorkerReportingProxy& worker_reporting_proxy,
       parent_thread_default_task_runner_(
           std::move(parent_thread_default_task_runner)),
       shutdown_event_(RefCountedWaitableEvent::Create()) {
+  recordreplay::RegisterPointer(this);
   DCHECK_CALLED_ON_VALID_THREAD(parent_thread_checker_);
   MutexLocker lock(ThreadSetMutex());
   InitializingWorkerThreads().insert(this);
@@ -859,6 +861,9 @@ void WorkerThread::PauseOrFreeze(mojom::FrameLifecycleState state) {
 
 void WorkerThread::PauseOrFreezeOnWorkerThread(
     mojom::FrameLifecycleState state) {
+  recordreplay::Assert("WorkerThread::PauseOrFreezeOnWorkerThread %lu",
+                       recordreplay::PointerId(this));
+
   DCHECK(IsCurrentThread());
   DCHECK(state == mojom::FrameLifecycleState::kFrozen ||
          state == mojom::FrameLifecycleState::kPaused);
