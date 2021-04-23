@@ -355,7 +355,15 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardEmptyFolder) {
   EXPECT_EQ(u"g1", clipboard_result);
 }
 
-TEST_F(BookmarkNodeDataTest, WriteToClipboardFolderWithChildren) {
+// Test is flaky on LaCrOS: crbug.com/1010353
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_WriteToClipboardFolderWithChildren \
+  DISABLED_WriteToClipboardFolderWithChildren
+#else
+#define MAYBE_WriteToClipboardFolderWithChildren \
+  WriteToClipboardFolderWithChildren
+#endif
+TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderWithChildren) {
   BookmarkNodeData data;
   const BookmarkNode* root = model()->bookmark_bar_node();
   const BookmarkNode* folder = model()->AddFolder(root, 0, u"g1");
