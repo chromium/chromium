@@ -27,6 +27,7 @@ TEST(WaylandConnectionTest, Ping) {
   ASSERT_TRUE(server.Start(kXdgVersionStable));
   WaylandConnection connection;
   ASSERT_TRUE(connection.Initialize());
+  connection.event_source()->UseSingleThreadedPollingForTesting();
   connection.event_source()->StartProcessingEvents();
 
   base::RunLoop().RunUntilIdle();

@@ -16,6 +16,7 @@
 #include <primary-selection-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
+#include <wayland-client-core.h>
 #include <wayland-cursor.h>
 #include <wayland-drm-client-protocol.h>
 #include <xdg-decoration-unstable-v1-client-protocol.h>
@@ -167,6 +168,10 @@ void (*ObjectTraits<wl_data_source>::deleter)(wl_data_source*) =
 const wl_interface* ObjectTraits<wl_drm>::interface = &wl_drm_interface;
 void (*ObjectTraits<wl_drm>::deleter)(wl_drm*) = &wl_drm_destroy;
 
+const wl_interface* ObjectTraits<wl_event_queue>::interface = nullptr;
+void (*ObjectTraits<wl_event_queue>::deleter)(wl_event_queue*) =
+    &wl_event_queue_destroy;
+
 const wl_interface* ObjectTraits<wl_display>::interface = &wl_display_interface;
 void (*ObjectTraits<wl_display>::deleter)(wl_display*) = &wl_display_disconnect;
 
@@ -222,6 +227,9 @@ const wl_interface* ObjectTraits<struct wp_presentation_feedback>::interface =
     &wp_presentation_feedback_interface;
 void (*ObjectTraits<struct wp_presentation_feedback>::deleter)(
     struct wp_presentation_feedback*) = &wp_presentation_feedback_destroy;
+
+const wl_interface* ObjectTraits<struct wl_proxy>::interface = nullptr;
+void (*ObjectTraits<wl_proxy>::deleter)(void*) = &wl_proxy_wrapper_destroy;
 
 const wl_interface* ObjectTraits<wp_viewport>::interface =
     &wp_viewport_interface;

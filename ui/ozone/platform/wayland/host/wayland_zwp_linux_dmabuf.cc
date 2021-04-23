@@ -25,7 +25,7 @@ WaylandZwpLinuxDmabuf::WaylandZwpLinuxDmabuf(
 
   // A roundtrip after binding guarantees that the client has received all
   // supported formats.
-  wl_display_roundtrip(connection_->display());
+  connection_->RoundTripQueue();
 }
 
 WaylandZwpLinuxDmabuf::~WaylandZwpLinuxDmabuf() = default;

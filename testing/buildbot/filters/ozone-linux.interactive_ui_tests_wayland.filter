@@ -68,3 +68,6 @@
 
 # TODO(crbug.com/1195324): flaky fullscreen notification test
 -NotificationsTest.TestShouldDisplayMultiFullscreen
+
+# TODO(crbug.com/1192997): Flaky on the bot. Locally runs fine.
+-BrowserActionInteractiveTest.TestOpenPopup

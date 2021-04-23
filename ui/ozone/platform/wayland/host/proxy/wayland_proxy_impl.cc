@@ -34,6 +34,14 @@ wl_display* WaylandProxyImpl::GetDisplay() {
   return connection_->display();
 }
 
+wl_display* WaylandProxyImpl::GetDisplayWrapper() {
+  return connection_->display_wrapper();
+}
+
+void WaylandProxyImpl::RoundTripQueue() {
+  connection_->RoundTripQueue();
+}
+
 wl_surface* WaylandProxyImpl::GetWlSurfaceForAcceleratedWidget(
     gfx::AcceleratedWidget widget) {
   auto* window = connection_->wayland_window_manager()->GetWindow(widget);

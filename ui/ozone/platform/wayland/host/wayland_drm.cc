@@ -29,7 +29,7 @@ WaylandDrm::WaylandDrm(wl_drm* drm, WaylandConnection* connection)
 
   // A roundtrip after binding guarantees that the client has received all
   // supported formats and capabilities of the device.
-  wl_display_roundtrip(connection_->display());
+  connection_->RoundTripQueue();
 }
 
 WaylandDrm::~WaylandDrm() = default;
@@ -106,7 +106,7 @@ void WaylandDrm::Authenticate(const char* drm_device_path) {
 
   // Do the roundtrip to make sure the server processes this request and
   // authenticates us.
-  wl_display_roundtrip(connection_->display());
+  connection_->RoundTripQueue();
 }
 
 void WaylandDrm::DrmDeviceAuthenticated(struct wl_drm* wl_drm) {
