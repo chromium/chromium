@@ -166,7 +166,7 @@ public class CredentialEditFragmentView extends CredentialEntryFragmentViewBase 
                 visible ? R.drawable.ic_visibility_off_black : R.drawable.ic_visibility_black);
         passwordVisibilityButton.setContentDescription(visible
                         ? getString(R.string.password_entry_viewer_hide_stored_password)
-                        : getString(R.string.password_entry_viewer_view_stored_password));
+                        : getString(R.string.password_entry_viewer_show_stored_password));
     }
 
     void changeDoneButtonState(boolean hasError) {
