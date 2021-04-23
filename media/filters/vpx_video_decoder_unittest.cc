@@ -196,6 +196,14 @@ TEST_F(VpxVideoDecoderTest, DecodeFrame_Normal) {
   ASSERT_EQ(1U, output_frames_.size());
 }
 
+TEST_F(VpxVideoDecoderTest, DecodeFrame_OOM) {
+  Initialize();
+  static_cast<VpxVideoDecoder*>(decoder_.get())
+      ->force_allocation_error_for_testing();
+  EXPECT_FALSE(DecodeSingleFrame(i_frame_buffer_).is_ok());
+  EXPECT_TRUE(output_frames_.empty());
+}
+
 // Decode |i_frame_buffer_| and then a frame with a larger width and verify
 // the output size was adjusted.
 TEST_F(VpxVideoDecoderTest, DecodeFrame_LargerWidth) {

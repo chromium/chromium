@@ -9,6 +9,8 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/free_deleter.h"
+#include "base/process/memory.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -21,9 +23,9 @@ namespace media {
 struct FrameBufferPool::FrameBuffer {
   // Not using std::vector<uint8_t> as resize() calls take a really long time
   // for large buffers.
-  std::unique_ptr<uint8_t[]> data;
+  std::unique_ptr<uint8_t, base::FreeDeleter> data;
   size_t data_size = 0u;
-  std::unique_ptr<uint8_t[]> alpha_data;
+  std::unique_ptr<uint8_t, base::FreeDeleter> alpha_data;
   size_t alpha_data_size = 0u;
   bool held_by_library = false;
   // Needs to be a counter since a frame buffer might be used multiple times.
@@ -71,7 +73,16 @@ uint8_t* FrameBufferPool::GetFrameBuffer(size_t min_size, void** fb_priv) {
     // Free the existing |data| first so that the memory can be reused,
     // if possible. Note that the new array is purposely not initialized.
     frame_buffer->data.reset();
-    frame_buffer->data.reset(new uint8_t[min_size]);
+
+    uint8_t* data = nullptr;
+    if (force_allocation_error_ ||
+        !base::UncheckedMalloc(min_size, reinterpret_cast<void**>(&data)) ||
+        !data) {
+      frame_buffers_.erase(it);
+      return nullptr;
+    }
+
+    frame_buffer->data.reset(data);
     frame_buffer->data_size = min_size;
   }
 
@@ -102,7 +113,13 @@ uint8_t* FrameBufferPool::AllocateAlphaPlaneForFrameBuffer(size_t min_size,
     // Free the existing |alpha_data| first so that the memory can be reused,
     // if possible. Note that the new array is purposely not initialized.
     frame_buffer->alpha_data.reset();
-    frame_buffer->alpha_data.reset(new uint8_t[min_size]);
+    uint8_t* data = nullptr;
+    if (force_allocation_error_ ||
+        !base::UncheckedMalloc(min_size, reinterpret_cast<void**>(&data)) ||
+        !data) {
+      return nullptr;
+    }
+    frame_buffer->alpha_data.reset(data);
     frame_buffer->alpha_data_size = min_size;
   }
   return frame_buffer->alpha_data.get();

@@ -260,6 +260,14 @@ TEST_F(FFmpegVideoDecoderTest, DecodeFrame_Normal) {
   ASSERT_EQ(1U, output_frames_.size());
 }
 
+TEST_F(FFmpegVideoDecoderTest, DecodeFrame_OOM) {
+  Initialize();
+  decoder_->force_allocation_error_for_testing();
+  EXPECT_MEDIA_LOG(_);
+  EXPECT_FALSE(DecodeSingleFrame(i_frame_buffer_).is_ok());
+  EXPECT_TRUE(output_frames_.empty());
+}
+
 TEST_F(FFmpegVideoDecoderTest, DecodeFrame_DecodeError) {
   Initialize();
 

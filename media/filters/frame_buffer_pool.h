@@ -55,6 +55,8 @@ class MEDIA_EXPORT FrameBufferPool
     tick_clock_ = tick_clock;
   }
 
+  void force_allocation_error_for_testing() { force_allocation_error_ = true; }
+
   // Called when no more GetFrameBuffer() calls are expected. All unused memory
   // is released at this time. As frames are returned their memory is released.
   // This should not be called until anything that might call GetFrameBuffer()
@@ -91,6 +93,8 @@ class MEDIA_EXPORT FrameBufferPool
   bool in_shutdown_ = false;
 
   bool registered_dump_provider_ = false;
+
+  bool force_allocation_error_ = false;
 
   // |tick_clock_| is always a DefaultTickClock outside of testing.
   const base::TickClock* tick_clock_;

@@ -57,6 +57,18 @@ TEST(FrameBufferPool, BasicFunctionality) {
   EXPECT_EQ(0u, pool->get_pool_size_for_testing());
 }
 
+TEST(FrameBufferPool, ForceAllocationError) {
+  base::TestMessageLoop message_loop;
+  scoped_refptr<FrameBufferPool> pool = new FrameBufferPool();
+  pool->force_allocation_error_for_testing();
+
+  void* priv1 = nullptr;
+  uint8_t* buf1 = pool->GetFrameBuffer(kBufferSize, &priv1);
+  ASSERT_FALSE(priv1);
+  ASSERT_FALSE(buf1);
+  pool->Shutdown();
+}
+
 TEST(FrameBufferPool, DeferredDestruction) {
   base::TestMessageLoop message_loop;
   scoped_refptr<FrameBufferPool> pool = new FrameBufferPool();

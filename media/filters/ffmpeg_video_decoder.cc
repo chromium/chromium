@@ -109,7 +109,7 @@ SupportedVideoDecoderConfigs FFmpegVideoDecoder::SupportedConfigsForWebRTC() {
 }
 
 FFmpegVideoDecoder::FFmpegVideoDecoder(MediaLog* media_log)
-    : media_log_(media_log), state_(kUninitialized), decode_nalus_(false) {
+    : media_log_(media_log) {
   DVLOG(1) << __func__;
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -158,6 +158,9 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
   DCHECK_EQ(codec_context->lowres, 0);
   gfx::Size coded_size(std::max(size.width(), codec_context->coded_width),
                        std::max(size.height(), codec_context->coded_height));
+
+  if (force_allocation_error_)
+    return AVERROR(EINVAL);
 
   // FFmpeg expects the initial allocation to be zero-initialized.  Failure to
   // do so can lead to uninitialized value usage.  See http://crbug.com/390941

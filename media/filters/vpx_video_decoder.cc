@@ -83,7 +83,7 @@ static int32_t GetVP9FrameBuffer(void* user_priv,
   FrameBufferPool* pool = static_cast<FrameBufferPool*>(user_priv);
   fb->data = pool->GetFrameBuffer(min_size, &fb->priv);
   fb->size = min_size;
-  return 0;
+  return fb->data ? 0 : VPX_CODEC_MEM_ERROR;
 }
 
 static int32_t ReleaseVP9FrameBuffer(void* user_priv,
@@ -556,6 +556,8 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
           vpx_image_alpha->stride[VPX_PLANE_Y] * vpx_image_alpha->d_h;
       uint8_t* alpha_plane = memory_pool_->AllocateAlphaPlaneForFrameBuffer(
           alpha_plane_size, vpx_image->fb_priv);
+      if (!alpha_plane)  // In case of OOM, abort copy.
+        return false;
       libyuv::CopyPlane(vpx_image_alpha->planes[VPX_PLANE_Y],
                         vpx_image_alpha->stride[VPX_PLANE_Y], alpha_plane,
                         vpx_image_alpha->stride[VPX_PLANE_Y],
