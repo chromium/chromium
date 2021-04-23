@@ -23,3 +23,10 @@ static_library("live_caption") {
     "//ui/views",
   ]
 }
+
+source_set("constants") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+}

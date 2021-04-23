@@ -44,6 +44,7 @@ source_set("chromeos") {
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/strings",
+    "//components/live_caption:constants",
     "//components/policy/proto",
     "//components/signin/core/browser",
     "//components/startup_metric_utils/browser:browser",

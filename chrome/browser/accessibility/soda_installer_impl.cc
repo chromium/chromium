@@ -20,7 +20,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_component_installer.h"
 #include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
 #include "components/update_client/crx_update_item.h"

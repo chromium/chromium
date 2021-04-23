@@ -8,7 +8,7 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/feature_list.h"
-#include "chrome/common/pref_names.h"
+#include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/pref_names.h"
 #include "media/base/media_switches.h"

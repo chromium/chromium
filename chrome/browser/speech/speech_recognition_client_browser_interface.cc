@@ -8,7 +8,7 @@
 
 #include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
+#include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "media/base/media_switches.h"

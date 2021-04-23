@@ -4186,6 +4186,7 @@ static_library("browser") {
       "//components/feedback/content:factory",
       "//components/image_fetcher/core",
       "//components/keep_alive_registry",
+      "//components/live_caption:constants",
       "//components/pref_registry",
       "//components/printing/common:mojo_interfaces",
       "//components/services/app_service:lib",

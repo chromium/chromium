@@ -1,5 +1,6 @@
 include_rules = [
   "+apps",
+  "+components/live_caption",
   "+services/device/public",
 
    # Enable remote assistance on Chrome OS

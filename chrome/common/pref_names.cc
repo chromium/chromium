@@ -1244,16 +1244,6 @@ const char kAccessibilityFocusHighlightEnabled[] =
     "settings.a11y.focus_highlight";
 #endif
 
-#if !defined(OS_ANDROID)
-// Whether the Live Caption feature is enabled.
-const char kLiveCaptionEnabled[] =
-    "accessibility.captions.live_caption_enabled";
-
-// The language to use with the Live Caption feature.
-const char kLiveCaptionLanguageCode[] =
-    "accessibility.captions.live_caption_language";
-#endif
-
 #if defined(OS_MAC)
 // Boolean that indicates whether the application should show the info bar
 // asking the user to set up automatic updates when Keystone promotion is
