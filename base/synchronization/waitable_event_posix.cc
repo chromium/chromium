@@ -225,6 +225,7 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
       sw.cv()->Wait();
     else
       sw.cv()->TimedWait(remaining);
+    recordreplay::Assert("WaitableEvent::TimedWait #2.1 %d", sw.fired());
   }
 
   recordreplay::Assert("WaitableEvent::TimedWait #3");
