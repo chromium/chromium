@@ -469,8 +469,9 @@ class RendererSandboxedProcessLauncherDelegateWin
 
   bool CetCompatible() override {
     // Disable CET for renderer because v8 deoptimization swaps stacks in a
-    // non-compliant way.
-    return false;
+    // non-compliant way. CET can be enabled where the renderer is known to
+    // be jitless.
+    return dynamic_code_can_be_disabled_;
   }
 
  private:
