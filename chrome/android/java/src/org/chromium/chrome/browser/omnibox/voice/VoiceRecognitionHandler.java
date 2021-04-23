@@ -729,7 +729,7 @@ public class VoiceRecognitionHandler {
         }
 
         if (mAssistantVoiceSearchServiceSupplier.hasValue()) {
-            mAssistantVoiceSearchServiceSupplier.get().reportUserEligibility();
+            mAssistantVoiceSearchServiceSupplier.get().reportMicPressUserEligibility();
             if (startAGSAForAssistantVoiceSearch(activity, windowAndroid, source)) return;
         }
 

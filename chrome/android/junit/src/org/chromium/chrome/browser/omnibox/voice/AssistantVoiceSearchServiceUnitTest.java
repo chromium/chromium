@@ -319,7 +319,7 @@ public class AssistantVoiceSearchServiceUnitTest {
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
     public void testReportUserEligibility() {
-        mAssistantVoiceSearchService.reportUserEligibility();
+        mAssistantVoiceSearchService.reportMicPressUserEligibility();
         Assert.assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
                         AssistantVoiceSearchService.USER_ELIGIBILITY_HISTOGRAM, /* eligible= */ 1));
@@ -329,7 +329,7 @@ public class AssistantVoiceSearchServiceUnitTest {
 
         doReturn(true).when(mGsaState).isAgsaVersionBelowMinimum(any(), any());
         doReturn(false).when(mIdentityManager).hasPrimaryAccount();
-        mAssistantVoiceSearchService.reportUserEligibility();
+        mAssistantVoiceSearchService.reportMicPressUserEligibility();
         Assert.assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
                         AssistantVoiceSearchService.USER_ELIGIBILITY_HISTOGRAM, /* eligible= */ 0));
