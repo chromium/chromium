@@ -8,6 +8,7 @@
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/core/app_history/app_history.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -17,7 +18,6 @@
 
 namespace blink {
 
-class AppHistory;
 class AppHistoryNavigateEventInit;
 class ExceptionState;
 class FormData;
@@ -38,7 +38,16 @@ class AppHistoryNavigateEvent final : public Event,
                           const AtomicString& type,
                           AppHistoryNavigateEventInit* init);
 
-  bool Fire(AppHistory*, bool same_document);
+  struct FireResult {
+    STACK_ALLOCATED();
+
+   public:
+    FireResult(bool proceed, ScriptPromise p)
+        : should_proceed(proceed), promise(p) {}
+    bool should_proceed;
+    ScriptPromise promise;
+  };
+  FireResult Fire(AppHistory*, NavigateEventType);
 
   void SetUrl(const KURL& url) { url_ = url; }
   void SetFrameLoadType(WebFrameLoadType type) { frame_load_type_ = type; }
@@ -48,10 +57,13 @@ class AppHistoryNavigateEvent final : public Event,
   bool userInitiated() const { return user_initiated_; }
   bool hashChange() const { return hash_change_; }
   FormData* formData() const { return form_data_; }
+  ScriptValue info() const { return info_; }
 
   void respondWith(ScriptState*,
                    ScriptPromise newNavigationAction,
                    ExceptionState&);
+
+  ScriptPromise GetCompletionPromise() { return completion_promise_; }
 
   const AtomicString& InterfaceName() const final;
   void Trace(Visitor*) const final;
@@ -61,6 +73,7 @@ class AppHistoryNavigateEvent final : public Event,
   bool user_initiated_;
   bool hash_change_;
   Member<FormData> form_data_;
+  ScriptValue info_;
 
   KURL url_;
   WebFrameLoadType frame_load_type_ = WebFrameLoadType::kStandard;

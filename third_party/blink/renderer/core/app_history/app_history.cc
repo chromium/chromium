@@ -4,11 +4,15 @@
 
 #include "third_party/blink/renderer/core/app_history/app_history.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/core/app_history/app_history_entry.h"
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_event.h"
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_event_init.h"
+#include "third_party/blink/renderer/core/app_history/app_history_navigate_options.h"
 #include "third_party/blink/renderer/core/frame/history_util.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/loader/frame_load_request.h"
 
 namespace blink {
 
@@ -120,12 +124,51 @@ HeapVector<Member<AppHistoryEntry>> AppHistory::entries() {
              : HeapVector<Member<AppHistoryEntry>>();
 }
 
+ScriptPromise AppHistory::navigate(ScriptState* script_state,
+                                   const String& url,
+                                   AppHistoryNavigateOptions* options,
+                                   ExceptionState& exception_state) {
+  KURL completed_url(GetSupplementable()->Url(), url);
+  if (!completed_url.IsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      "Invalid url");
+    return ScriptPromise();
+  }
+  navigate_method_call_promise_ = ScriptPromise();
+  base::AutoReset<ScriptValue> event_info(&navigate_event_info_,
+                                          options->navigateInfo());
+  WebFrameLoadType frame_load_type = options->replace()
+                                         ? WebFrameLoadType::kReplaceCurrentItem
+                                         : WebFrameLoadType::kStandard;
+  GetSupplementable()->GetFrame()->MaybeLogAdClickNavigation();
+
+  FrameLoadRequest request(GetSupplementable(), ResourceRequest(completed_url));
+  request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
+  GetSupplementable()->GetFrame()->Navigate(request, frame_load_type);
+  return navigate_method_call_promise_;
+}
+
+ScriptPromise AppHistory::navigate(ScriptState* script_state,
+                                   AppHistoryNavigateOptions* options,
+                                   ExceptionState& exception_state) {
+  if (!options->hasState() && !options->hasNavigateInfo()) {
+    exception_state.ThrowTypeError(
+        "Must pass at least one of url, state, or navigateInfo to navigate()");
+    return ScriptPromise();
+  }
+  return navigate(script_state, GetSupplementable()->Url(), options,
+                  exception_state);
+}
+
 bool AppHistory::DispatchNavigateEvent(const KURL& url,
                                        HTMLFormElement* form,
-                                       bool same_document,
+                                       NavigateEventType event_type,
                                        WebFrameLoadType type,
                                        UserNavigationInvolvement involvement,
                                        SerializedScriptValue* state_object) {
+  if (GetSupplementable()->document()->IsInitialEmptyDocument())
+    return true;
+
   const KURL& current_url = GetSupplementable()->Url();
 
   auto* init = AppHistoryNavigateEventInit::Create();
@@ -134,18 +177,32 @@ bool AppHistory::DispatchNavigateEvent(const KURL& url,
   init->setCanRespond(
       CanChangeToUrlForHistoryApi(url, GetSupplementable()->GetSecurityOrigin(),
                                   current_url) &&
-      (same_document || type != WebFrameLoadType::kBackForward));
-  init->setHashChange(same_document && url != current_url &&
+      (event_type == NavigateEventType::kFragment ||
+       type != WebFrameLoadType::kBackForward));
+  init->setHashChange(event_type == NavigateEventType::kFragment &&
+                      url != current_url &&
                       EqualIgnoringFragmentIdentifier(url, current_url));
   init->setUserInitiated(involvement != UserNavigationInvolvement::kNone);
   init->setFormData(form ? FormData::Create(form, ASSERT_NO_EXCEPTION)
                          : nullptr);
+  init->setInfo(navigate_event_info_);
   auto* navigate_event = AppHistoryNavigateEvent::Create(
       GetSupplementable(), event_type_names::kNavigate, init);
   navigate_event->SetUrl(url);
   navigate_event->SetFrameLoadType(type);
   navigate_event->SetStateObject(state_object);
-  return navigate_event->Fire(this, same_document);
+
+  auto result = navigate_event->Fire(this, event_type);
+  navigate_method_call_promise_ = result.promise;
+  return result.should_proceed;
+}
+
+ScriptPromise AppHistory::GetUnresolvingPromise(ScriptState* script_state) {
+  if (!hung_promise_resolver_) {
+    hung_promise_resolver_ =
+        MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  }
+  return hung_promise_resolver_->Promise();
 }
 
 const AtomicString& AppHistory::InterfaceName() const {
@@ -156,6 +213,9 @@ void AppHistory::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
   visitor->Trace(entries_);
+  visitor->Trace(navigate_event_info_);
+  visitor->Trace(navigate_method_call_promise_);
+  visitor->Trace(hung_promise_resolver_);
 }
 
 }  // namespace blink

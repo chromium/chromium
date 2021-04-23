@@ -1,0 +1,13 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+promise_test(async () => {
+  let promise_value = { abc: 'def' };
+  let promise = Promise.resolve(promise_value);
+  appHistory.onnavigate = e => e.respondWith(promise);
+  let returned_promise = appHistory.navigate("#1");
+  assert_not_equals(promise, returned_promise);
+  assert_equals(promise_value, await returned_promise);
+}, "navigate() and respondWith");
+</script>

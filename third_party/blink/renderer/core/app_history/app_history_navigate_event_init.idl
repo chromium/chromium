@@ -7,8 +7,8 @@ dictionary AppHistoryNavigateEventInit : EventInit {
   boolean canRespond = false;
   boolean userInitiated = false;
   boolean hashChange = false;
-  // readonly attribute AppHistoryEntry destination;
-  // readonly attribute AbortSignal signal;
+  // AppHistoryEntry destination;
+  // AbortSignal signal;
   FormData? formData = null;
-  // readonly attribute any info;
+  any info;
 };

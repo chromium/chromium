@@ -15,7 +15,7 @@
   // readonly attribute AppHistoryEntry destination;
   // readonly attribute AbortSignal signal;
   readonly attribute FormData? formData;
-  // readonly attribute any info;
+  readonly attribute any info;
 
   [CallWith=ScriptState, RaisesException] void respondWith(Promise<any> newNavigationAction);
 };

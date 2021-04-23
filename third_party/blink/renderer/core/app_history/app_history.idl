@@ -8,8 +8,10 @@
   RuntimeEnabled=AppHistory
 ] interface AppHistory : EventTarget {
   readonly attribute AppHistoryEntry current;
-
   sequence<AppHistoryEntry> entries();
+
+  [CallWith=ScriptState, RaisesException] Promise<void> navigate(USVString url, optional AppHistoryNavigateOptions options = {});
+  [CallWith=ScriptState, RaisesException] Promise<void> navigate(AppHistoryNavigateOptions options);
 
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;

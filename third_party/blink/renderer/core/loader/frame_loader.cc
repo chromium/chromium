@@ -670,7 +670,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
     if (request.GetNavigationPolicy() == kNavigationPolicyCurrentTab) {
       if (!app_history->DispatchNavigateEvent(
-              url, request.Form(), false, frame_load_type,
+              url, request.Form(), NavigateEventType::kCrossDocument,
+              frame_load_type,
               request.GetTriggeringEventInfo() ==
                       mojom::blink::TriggeringEventInfo::kFromTrustedEvent
                   ? UserNavigationInvolvement::kActivation
@@ -951,17 +952,6 @@ void FrameLoader::CommitNavigation(
     // TODO(https://crbug.com/862088): we should probably ignore print()
     // call in this case instead.
     return;
-  }
-
-  if (!navigation_params->is_browser_initiated) {
-    if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
-      app_history->DispatchNavigateEvent(
-          navigation_params->url, nullptr, false,
-          navigation_params->frame_load_type,
-          navigation_params->is_browser_initiated
-              ? UserNavigationInvolvement::kBrowserUI
-              : UserNavigationInvolvement::kNone);
-    }
   }
 
   // TODO(dgozman): figure out the better place for this check

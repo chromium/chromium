@@ -16,14 +16,17 @@
 namespace blink {
 
 class AppHistoryEntry;
+class AppHistoryNavigateOptions;
 class HTMLFormElement;
 class HistoryItem;
 class KURL;
+class ScriptPromise;
 class SerializedScriptValue;
 
 // TODO(japhet): This should probably move to frame_loader_types.h and possibly
 // be used more broadly once it is in the HTML spec.
 enum class UserNavigationInvolvement { kBrowserUI, kActivation, kNone };
+enum class NavigateEventType { kFragment, kHistoryApi, kCrossDocument };
 
 class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
                                      public Supplement<LocalDOMWindow> {
@@ -46,6 +49,14 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   AppHistoryEntry* current() const;
   HeapVector<Member<AppHistoryEntry>> entries();
 
+  ScriptPromise navigate(ScriptState*,
+                         const String& url,
+                         AppHistoryNavigateOptions*,
+                         ExceptionState&);
+  ScriptPromise navigate(ScriptState*,
+                         AppHistoryNavigateOptions*,
+                         ExceptionState&);
+
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigate, kNavigate)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigatesuccess, kNavigatesuccess)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigateerror, kNavigateerror)
@@ -53,10 +64,12 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   // Returns true if the navigation should continue.
   bool DispatchNavigateEvent(const KURL& url,
                              HTMLFormElement* form,
-                             bool same_document,
+                             NavigateEventType,
                              WebFrameLoadType,
                              UserNavigationInvolvement,
                              SerializedScriptValue* = nullptr);
+
+  ScriptPromise GetUnresolvingPromise(ScriptState*);
 
   // EventTargetWithInlineData overrides:
   const AtomicString& InterfaceName() const final;
@@ -69,6 +82,18 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
  private:
   HeapVector<Member<AppHistoryEntry>> entries_;
   int current_index_ = -1;
+
+  ScriptValue navigate_event_info_;
+  ScriptPromise navigate_method_call_promise_;
+
+  // When navigate() is called and a cross-document navigation is pending, we
+  // want to return an unresolved promise. But the promise will never resolve,
+  // because the navigation won't be "done" until the navigaton commits and this
+  // context is detached. Therefore, use this resolver to create a promise that
+  // never resolves. The resolver needs to be per-AppHistory so that it isn't
+  // GCed until window detach, because ScriptPromiseResolver DCHECKs if it is
+  // GCed without resolving unless the window is detached.
+  Member<ScriptPromiseResolver> hung_promise_resolver_;
 };
 
 }  // namespace blink
