@@ -7164,3 +7164,6 @@ crbug.com/1201365 virtual/portals/http/tests/inspector-protocol/portals/device-e
 crbug.com/1191990 [ Linux ] http/tests/serviceworker/clients-openwindow.html [ Pass Failure ]
 crbug.com/1198443 [ Win ] virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/none.https.html [ Pass Failure ]
 crbug.com/1201879 [ Linux ] http/tests/inspector-protocol/issues/mixed-content-issue-creation-js-within-oopif.js [ Pass Timeout ]
+
+# Sheriff 2021-04-23
+crbug.com/1202040 [ Win ] virtual/plz-service-worker/external/wpt/html/cross-origin-embedder-policy/none.https.html [ Pass Failure ]
