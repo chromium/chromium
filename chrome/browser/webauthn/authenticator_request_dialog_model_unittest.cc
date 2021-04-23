@@ -21,6 +21,7 @@
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,7 +29,7 @@
 namespace {
 
 using testing::ElementsAre;
-using RequestType = device::FidoRequestHandlerBase::RequestType;
+using RequestType = device::FidoRequestType;
 
 const base::flat_set<AuthenticatorTransport> kAllTransports = {
     AuthenticatorTransport::kUsbHumanInterfaceDevice,
@@ -505,8 +506,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
 TEST_F(AuthenticatorRequestDialogModelTest,
        RequestCallbackOnlyCalledOncePerAuthenticator) {
   ::device::FidoRequestHandlerBase::TransportAvailabilityInfo transports_info;
-  transports_info.request_type =
-      device::FidoRequestHandlerBase::RequestType::kMakeCredential;
+  transports_info.request_type = RequestType::kMakeCredential;
   transports_info.available_transports = {
       AuthenticatorTransport::kInternal,
       AuthenticatorTransport::kUsbHumanInterfaceDevice};
@@ -548,8 +548,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   constexpr char kWinAuthenticatorId[] = "some_authenticator_id";
 
   ::device::FidoRequestHandlerBase::TransportAvailabilityInfo transports_info;
-  transports_info.request_type =
-      device::FidoRequestHandlerBase::RequestType::kMakeCredential;
+  transports_info.request_type = RequestType::kMakeCredential;
   transports_info.available_transports = {};
   transports_info.has_win_native_api_authenticator = true;
   transports_info.win_native_api_authenticator_id = kWinAuthenticatorId;

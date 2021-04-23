@@ -33,11 +33,6 @@ namespace {
 // caBLEv2 tunnel server.
 class TestNetworkContext : public network::TestNetworkContext {
  public:
-  using ContactCallback = base::RepeatingCallback<void(
-      base::span<const uint8_t, kTunnelIdSize> tunnel_id,
-      base::span<const uint8_t, kPairingIDSize> pairing_id,
-      base::span<const uint8_t, kClientNonceSize> client_nonce)>;
-
   explicit TestNetworkContext(base::Optional<ContactCallback> contact_callback)
       : contact_callback_(std::move(contact_callback)) {}
 
@@ -124,7 +119,11 @@ class TestNetworkContext : public network::TestNetworkContext {
       base::span<const uint8_t, kClientNonceSize> client_nonce(
           client_nonce_vec.data(), client_nonce_vec.size());
 
-      contact_callback_->Run(tunnel_id, pairing_id, client_nonce);
+      const std::string& request_type_hint =
+          map.find(cbor::Value(3))->second.GetString();
+
+      contact_callback_->Run(tunnel_id, pairing_id, client_nonce,
+                             request_type_hint);
     } else {
       CHECK(false) << "unexpected path: " << path;
     }

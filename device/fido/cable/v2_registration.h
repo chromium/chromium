@@ -14,6 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/optional.h"
 #include "device/fido/cable/v2_constants.h"
+#include "device/fido/fido_constants.h"
 
 namespace instance_id {
 class InstanceIDDriver;
@@ -48,6 +49,7 @@ class Registration {
     Event& operator=(const Event&) = delete;
 
     Type source;
+    FidoRequestType request_type;
     std::array<uint8_t, kTunnelIdSize> tunnel_id;
     std::array<uint8_t, kRoutingIdSize> routing_id;
     std::array<uint8_t, kPairingIDSize> pairing_id;

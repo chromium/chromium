@@ -114,6 +114,7 @@ void AuthenticatorRequestClientDelegate::ShouldReturnAttestation(
 
 void AuthenticatorRequestClientDelegate::ConfigureCable(
     const url::Origin& origin,
+    device::FidoRequestType request_type,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
     device::FidoDiscoveryFactory* fido_discovery_factory) {}
 

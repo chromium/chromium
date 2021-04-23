@@ -216,6 +216,19 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
       return base::nullopt;
     }
 
+    cbor_it = map.find(cbor::Value(3));
+    if (cbor_it == map.end() || !cbor_it->second.is_string()) {
+      return base::nullopt;
+    }
+    const std::string& request_type_str = cbor_it->second.GetString();
+    if (request_type_str == "mc") {
+      event->request_type = FidoRequestType::kMakeCredential;
+    } else if (request_type_str == "ga") {
+      event->request_type = FidoRequestType::kGetAssertion;
+    } else {
+      return base::nullopt;
+    }
+
     return event;
   }
 

@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -6797,9 +6798,10 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
   void OnContact(
       base::span<const uint8_t, device::cablev2::kTunnelIdSize> tunnel_id,
       base::span<const uint8_t, device::cablev2::kPairingIDSize> pairing_id,
-      base::span<const uint8_t, device::cablev2::kClientNonceSize>
-          client_nonce) {
-    std::move(contact_callback_).Run(tunnel_id, pairing_id, client_nonce);
+      base::span<const uint8_t, device::cablev2::kClientNonceSize> client_nonce,
+      const std::string& request_type_hint) {
+    std::move(contact_callback_)
+        .Run(tunnel_id, pairing_id, client_nonce, request_type_hint);
   }
 
   void OnPairingEvent(device::cablev2::PairingEvent event) {
@@ -6832,8 +6834,8 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
   base::OnceCallback<void(
       base::span<const uint8_t, device::cablev2::kTunnelIdSize> tunnel_id,
       base::span<const uint8_t, device::cablev2::kPairingIDSize> pairing_id,
-      base::span<const uint8_t, device::cablev2::kClientNonceSize>
-          client_nonce)>
+      base::span<const uint8_t, device::cablev2::kClientNonceSize> client_nonce,
+      const std::string& request_type_hint)>
       contact_callback_;
 
   std::unique_ptr<device::cablev2::Discovery::AdvertEventStream>
@@ -6847,7 +6849,8 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
 
 TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairing) {
   auto discovery = std::make_unique<device::cablev2::Discovery>(
-      network_context_.get(), qr_generator_key_, std::move(ble_advert_events_),
+      device::FidoRequestType::kGetAssertion, network_context_.get(),
+      qr_generator_key_, std::move(ble_advert_events_),
       /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
       /*contact_device_stream=*/nullptr,
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
@@ -6872,7 +6875,8 @@ TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairing) {
 TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
   // First do unpaired exchange to get pairing data.
   auto discovery = std::make_unique<device::cablev2::Discovery>(
-      network_context_.get(), qr_generator_key_, std::move(ble_advert_events_),
+      device::FidoRequestType::kGetAssertion, network_context_.get(),
+      qr_generator_key_, std::move(ble_advert_events_),
       /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
       /*contact_device_stream=*/nullptr,
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
@@ -6893,15 +6897,25 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(pairings_.size(), 1u);
 
-  // Now do a pairing-based exchange.
+  // Now do a pairing-based exchange. Generate a random request type hint to
+  // ensure that all values work.
+  device::FidoRequestType request_type =
+      device::FidoRequestType::kMakeCredential;
+  std::string expected_request_type_string = "mc";
+  if (base::RandDouble() < 0.5) {
+    request_type = device::FidoRequestType::kGetAssertion;
+    expected_request_type_string = "ga";
+  }
+
   std::tie(ble_advert_callback_, ble_advert_events_) =
       device::cablev2::Discovery::EventStream<
           base::span<const uint8_t, device::cablev2::kAdvertSize>>::New();
   auto callback_and_event_stream =
       device::cablev2::Discovery::EventStream<size_t>::New();
   discovery = std::make_unique<device::cablev2::Discovery>(
-      network_context_.get(), qr_generator_key_, std::move(ble_advert_events_),
-      std::move(pairings_), std::move(callback_and_event_stream.second),
+      request_type, network_context_.get(), qr_generator_key_,
+      std::move(ble_advert_events_), std::move(pairings_),
+      std::move(callback_and_event_stream.second),
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback());
 
@@ -6918,13 +6932,15 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
   // This simulates the tunnel server sending a cloud message to a phone. Given
   // the information from the connection, a transaction can be created.
   contact_callback_ = base::BindLambdaForTesting(
-      [this, &transaction, routing_id, contact_id,
-       &contact_callback_was_called](
+      [this, &transaction, routing_id, contact_id, &contact_callback_was_called,
+       &expected_request_type_string](
           base::span<const uint8_t, device::cablev2::kTunnelIdSize> tunnel_id,
           base::span<const uint8_t, device::cablev2::kPairingIDSize> pairing_id,
           base::span<const uint8_t, device::cablev2::kClientNonceSize>
-              client_nonce) -> void {
+              client_nonce,
+          const std::string& request_type_hint) -> void {
         contact_callback_was_called = true;
+        CHECK_EQ(request_type_hint, expected_request_type_string);
         transaction = device::cablev2::authenticator::TransactFromFCM(
             device::cablev2::authenticator::NewMockPlatform(
                 std::move(ble_advert_callback_), &virtual_device_),
@@ -6962,8 +6978,9 @@ TEST_F(CableV2AuthenticatorImplTest, ContactIDDisabled) {
   auto callback_and_event_stream =
       device::cablev2::Discovery::EventStream<size_t>::New();
   auto discovery = std::make_unique<device::cablev2::Discovery>(
-      network_context.get(), qr_generator_key_, std::move(ble_advert_events_),
-      std::move(pairings), std::move(callback_and_event_stream.second),
+      device::FidoRequestType::kGetAssertion, network_context.get(),
+      qr_generator_key_, std::move(ble_advert_events_), std::move(pairings),
+      std::move(callback_and_event_stream.second),
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback());
 

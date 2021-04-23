@@ -46,7 +46,7 @@ base::Optional<device::FidoTransportProtocol> SelectMostLikelyTransport(
   // The remaining decisions apply to GetAssertion requests only. For
   // MakeCredential, the user needs to choose from transport selection.
   if (transport_availability.request_type !=
-      device::FidoRequestHandlerBase::RequestType::kGetAssertion) {
+      device::FidoRequestType::kGetAssertion) {
     return base::nullopt;
   }
 
@@ -328,7 +328,7 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
   // Never try the platform authenticator if the request is known in advance to
   // fail. Proceed to a special error screen instead.
   if (transport_availability_.request_type ==
-      device::FidoRequestHandlerBase::RequestType::kGetAssertion) {
+      device::FidoRequestType::kGetAssertion) {
     DCHECK(transport_availability_
                .has_recognized_platform_authenticator_credential);
     if (!*transport_availability_
@@ -339,7 +339,7 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
   }
 
   if (transport_availability_.request_type ==
-          device::FidoRequestHandlerBase::RequestType::kMakeCredential &&
+          device::FidoRequestType::kMakeCredential &&
       transport_availability_.is_off_the_record_context) {
     SetCurrentStep(Step::kPlatformAuthenticatorOffTheRecordInterstitial);
     return;

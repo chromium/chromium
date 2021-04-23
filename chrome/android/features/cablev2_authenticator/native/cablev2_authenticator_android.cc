@@ -612,8 +612,8 @@ static void JNI_CableAuthenticator_Stop(JNIEnv* env, jlong instance_num) {
   }
 }
 
-static void JNI_CableAuthenticator_OnCloudMessage(JNIEnv* env,
-                                                  jlong event_long) {
+static jboolean JNI_CableAuthenticator_OnCloudMessage(JNIEnv* env,
+                                                      jlong event_long) {
   static_assert(sizeof(jlong) >= sizeof(void*), "");
   std::unique_ptr<device::cablev2::authenticator::Registration::Event> event(
       reinterpret_cast<device::cablev2::authenticator::Registration::Event*>(
@@ -622,8 +622,21 @@ static void JNI_CableAuthenticator_OnCloudMessage(JNIEnv* env,
              device::cablev2::authenticator::Registration::Type::SYNC ||
          base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport));
 
+  bool ret;
+  switch (event->request_type) {
+    case device::FidoRequestType::kMakeCredential:
+      ret = true;
+      break;
+
+    case device::FidoRequestType::kGetAssertion:
+      ret = false;
+      break;
+  }
+
   GlobalData& global_data = GetGlobalData();
   global_data.pending_event = std::move(event);
+
+  return ret;
 }
 
 static int JNI_CableAuthenticator_ValidateServerLinkData(

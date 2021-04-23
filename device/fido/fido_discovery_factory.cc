@@ -60,7 +60,7 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
                         });
         if (qr_generator_key_.has_value() || have_v2_discovery_data) {
           ret.emplace_back(std::make_unique<cablev2::Discovery>(
-              network_context_, qr_generator_key_,
+              request_type_.value(), network_context_, qr_generator_key_,
               v1_discovery->GetV2AdvertStream(), std::move(v2_pairings_),
               std::move(contact_device_stream_),
               cable_data_.value_or(std::vector<CableDiscoveryData>()),
@@ -105,10 +105,12 @@ bool FidoDiscoveryFactory::IsTestOverride() {
 }
 
 void FidoDiscoveryFactory::set_cable_data(
+    FidoRequestType request_type,
     std::vector<CableDiscoveryData> cable_data,
     const base::Optional<std::array<uint8_t, cablev2::kQRKeySize>>&
         qr_generator_key,
     std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings) {
+  request_type_ = request_type;
   cable_data_ = std::move(cable_data);
   qr_generator_key_ = std::move(qr_generator_key);
   v2_pairings_ = std::move(v2_pairings);

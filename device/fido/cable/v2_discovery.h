@@ -17,6 +17,7 @@
 #include "base/optional.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_constants.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device_discovery.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
@@ -34,6 +35,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
   using AdvertEventStream = EventStream<base::span<const uint8_t, kAdvertSize>>;
 
   Discovery(
+      FidoRequestType request_type,
       network::mojom::NetworkContext* network_context,
       base::Optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
       std::unique_ptr<AdvertEventStream> advert_stream,
@@ -73,6 +75,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
   static base::Optional<UnpairedKeys> KeysFromExtension(
       const std::vector<CableDiscoveryData>& extension_contents);
 
+  const FidoRequestType request_type_;
   network::mojom::NetworkContext* const network_context_;
   const base::Optional<UnpairedKeys> qr_keys_;
   const base::Optional<UnpairedKeys> extension_keys_;

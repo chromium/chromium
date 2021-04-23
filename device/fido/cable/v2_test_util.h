@@ -26,7 +26,8 @@ namespace cablev2 {
 using ContactCallback = base::RepeatingCallback<void(
     base::span<const uint8_t, kTunnelIdSize> tunnel_id,
     base::span<const uint8_t, kPairingIDSize> pairing_id,
-    base::span<const uint8_t, kClientNonceSize> client_nonce)>;
+    base::span<const uint8_t, kClientNonceSize> client_nonce,
+    const std::string& request_type_hint)>;
 
 // NewMockTunnelServer returns a |NetworkContext| that implements WebSocket
 // requests and simulates a tunnel server. If the given |contact_callback| is

@@ -12,6 +12,7 @@
 #include "base/sequence_checker.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/websocket_adapter.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -42,7 +43,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   // |Pairing| is reported by the tunnel server to be invalid (which can happen
   // if the user opts to unlink all devices) then |pairing_is_invalid| is
   // run.
-  FidoTunnelDevice(network::mojom::NetworkContext* network_context,
+  FidoTunnelDevice(FidoRequestType request_type,
+                   network::mojom::NetworkContext* network_context,
                    std::unique_ptr<Pairing> pairing,
                    base::OnceClosure pairing_is_invalid);
 

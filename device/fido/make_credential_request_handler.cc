@@ -383,8 +383,7 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
   DCHECK(!request_.cred_protect);
   DCHECK(!request_.cred_protect_enforce);
 
-  transport_availability_info().request_type =
-      FidoRequestHandlerBase::RequestType::kMakeCredential;
+  transport_availability_info().request_type = FidoRequestType::kMakeCredential;
   transport_availability_info().is_off_the_record_context =
       request_.is_off_the_record_context;
   transport_availability_info().resident_key_requirement =

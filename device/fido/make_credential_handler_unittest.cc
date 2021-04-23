@@ -151,7 +151,7 @@ TEST_F(FidoMakeCredentialHandlerTest, TransportAvailabilityInfo) {
   auto request_handler = CreateMakeCredentialHandler();
 
   EXPECT_EQ(request_handler->transport_availability_info().request_type,
-            FidoRequestHandlerBase::RequestType::kMakeCredential);
+            FidoRequestType::kMakeCredential);
 }
 
 TEST_F(FidoMakeCredentialHandlerTest, TransportAvailabilityInfoRk) {

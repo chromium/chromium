@@ -284,8 +284,7 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
       request_(std::move(request)),
       options_(std::move(options)),
       allow_skipping_pin_touch_(allow_skipping_pin_touch) {
-  transport_availability_info().request_type =
-      FidoRequestHandlerBase::RequestType::kGetAssertion;
+  transport_availability_info().request_type = FidoRequestType::kGetAssertion;
   transport_availability_info().has_empty_allow_list =
       request_.allow_list.empty();
   transport_availability_info().is_off_the_record_context =

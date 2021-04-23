@@ -202,7 +202,7 @@ TEST_F(FidoGetAssertionHandlerTest, TransportAvailabilityInfo) {
       CreateGetAssertionHandlerWithRequest(CtapGetAssertionRequest(
           test_data::kRelyingPartyId, test_data::kClientDataJson));
 
-  EXPECT_EQ(FidoRequestHandlerBase::RequestType::kGetAssertion,
+  EXPECT_EQ(FidoRequestType::kGetAssertion,
             request_handler->transport_availability_info().request_type);
 }
 

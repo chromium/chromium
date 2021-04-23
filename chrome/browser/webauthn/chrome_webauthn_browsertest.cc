@@ -185,6 +185,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
     }
 
     void set_cable_data(
+        device::FidoRequestType request_type,
         std::vector<device::CableDiscoveryData> cable_data,
         const base::Optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
             qr_generator_key,

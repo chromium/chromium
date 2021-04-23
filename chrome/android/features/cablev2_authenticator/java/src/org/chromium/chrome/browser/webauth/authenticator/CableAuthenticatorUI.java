@@ -515,7 +515,8 @@ public class CableAuthenticatorUI
     @SuppressLint("SetTextI18n")
     public static void onCloudMessage(long event, long systemNetworkContext, long registration,
             String activityClassName, byte[] secret) {
-        CableAuthenticator.onCloudMessage(event, systemNetworkContext, registration, secret);
+        CableAuthenticator.RequestType requestType = CableAuthenticator.onCloudMessage(
+                event, systemNetworkContext, registration, secret);
 
         // Show a notification to the user. If tapped then an instance of this
         // class will be created in FCM mode.
@@ -552,12 +553,26 @@ public class CableAuthenticatorUI
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(context, ID, intent, PendingIntent.FLAG_IMMUTABLE);
 
+        String title = null;
+        String body = null;
+        // TODO: finalise string and translate.
+        switch (requestType) {
+            case MAKE_CREDENTIAL:
+                title = "Register this device";
+                body = "A paired device is trying to register this device as a security key";
+                break;
+
+            case GET_ASSERTION:
+                title = "Sign-in using this device";
+                body = "A paired device is trying to sign-in using this device";
+                break;
+        }
+
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
                         .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                        // TODO: finalise string and translate.
-                        .setContentTitle("Press to log in")
-                        .setContentText("A paired device is attempting to log in")
+                        .setContentTitle(title)
+                        .setContentText(body)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setAutoCancel(true)
                         .setContentIntent(pendingIntent)

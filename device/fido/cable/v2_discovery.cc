@@ -44,6 +44,7 @@ void RecordEvent(CableV2DiscoveryEvent event) {
 }  // namespace
 
 Discovery::Discovery(
+    FidoRequestType request_type,
     network::mojom::NetworkContext* network_context,
     base::Optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
     std::unique_ptr<AdvertEventStream> advert_stream,
@@ -54,6 +55,7 @@ Discovery::Discovery(
         pairing_callback)
     : FidoDeviceDiscovery(
           FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy),
+      request_type_(request_type),
       network_context_(network_context),
       qr_keys_(KeysFromQRGeneratorKey(qr_generator_key)),
       extension_keys_(KeysFromExtension(extension_contents)),
@@ -172,7 +174,7 @@ void Discovery::OnContactDevice(size_t pairing_index) {
   }
 
   tunnels_pending_advert_.emplace_back(std::make_unique<FidoTunnelDevice>(
-      network_context_, std::move(pairings_[pairing_index]),
+      request_type_, network_context_, std::move(pairings_[pairing_index]),
       base::BindOnce(&Discovery::PairingIsInvalid, weak_factory_.GetWeakPtr(),
                      pairing_index)));
 }

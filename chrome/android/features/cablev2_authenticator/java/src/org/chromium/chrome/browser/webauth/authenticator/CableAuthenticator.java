@@ -79,6 +79,11 @@ class CableAuthenticator {
         OTHER,
     }
 
+    public enum RequestType {
+        GET_ASSERTION,
+        MAKE_CREDENTIAL,
+    }
+
     public CableAuthenticator(Context context, CableAuthenticatorUI ui, long networkContext,
             long registration, byte[] secret, boolean isFcmNotification, UsbAccessory accessory,
             byte[] serverLink) {
@@ -444,11 +449,16 @@ class CableAuthenticator {
 
     /**
      * onCloudMessage is called by {@link CableAuthenticatorUI} when a GCM message is received.
+     * It takes ownership of |event| and returns the request-type hint contained.
      */
-    static void onCloudMessage(
+    static RequestType onCloudMessage(
             long event, long systemNetworkContext, long registration, byte[] secret) {
         CableAuthenticatorJni.get().setup(registration, systemNetworkContext, secret);
-        CableAuthenticatorJni.get().onCloudMessage(event);
+        if (CableAuthenticatorJni.get().onCloudMessage(event)) {
+            return RequestType.MAKE_CREDENTIAL;
+        } else {
+            return RequestType.GET_ASSERTION;
+        }
     }
 
     /**
@@ -515,9 +525,10 @@ class CableAuthenticator {
          * the user taps on a notification then |startCloudMessage| will be called to implicitly
          * start processing this event. The |event| argument is a pointer to a
          * |device::cablev2::authenticator::Registration::Event| object that the native code takes
-         * ownership of.
+         * ownership of. It returns true if the event hints that it's for registering a credential
+         * or false if its for getting an assertion.
          */
-        void onCloudMessage(long event);
+        boolean onCloudMessage(long event);
 
         /**
          * validateServerLinkData returns zero if |serverLink| is a valid argument for

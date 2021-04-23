@@ -45,8 +45,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
  public:
   using RequestCallback = base::RepeatingCallback<void(const std::string&)>;
 
-  enum class RequestType { kMakeCredential, kGetAssertion };
-
   using AuthenticatorMap =
       std::map<std::string, FidoAuthenticator*, std::less<>>;
 
@@ -60,9 +58,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
         const TransportAvailabilityInfo& other);
     ~TransportAvailabilityInfo();
 
-    // TODO(hongjunchoi): Factor |request_type| from TransportAvailabilityInfo.
-    // See: https://crbug.com/875011
-    RequestType request_type = RequestType::kMakeCredential;
+    FidoRequestType request_type = FidoRequestType::kMakeCredential;
 
     // Indicates whether this is a GetAssertion request with an empty allow
     // list.

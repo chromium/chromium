@@ -449,6 +449,7 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
 
 void ChromeAuthenticatorRequestDelegate::ConfigureCable(
     const url::Origin& origin,
+    device::FidoRequestType request_type,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
     device::FidoDiscoveryFactory* discovery_factory) {
   const bool cable_extension_permitted = ShouldPermitCableExtension(origin);
@@ -533,7 +534,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
     weak_dialog_model_->set_cable_transport_info(
         cable_extension_provided, std::move(paired_phone_entries),
         std::move(contact_phone_callback), qr_string);
-    discovery_factory->set_cable_data(std::move(pairings), qr_generator_key,
+    discovery_factory->set_cable_data(request_type, std::move(pairings),
+                                      qr_generator_key,
                                       std::move(paired_phones));
   }
 }

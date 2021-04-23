@@ -802,8 +802,8 @@ void AuthenticatorCommon::StartMakeCredentialRequest(
   InitDiscoveryFactory();
 
   request_delegate_->ConfigureCable(
-      caller_origin_, base::span<const device::CableDiscoveryData>(),
-      discovery_factory());
+      caller_origin_, device::FidoRequestType::kMakeCredential,
+      base::span<const device::CableDiscoveryData>(), discovery_factory());
 
   make_credential_options_->allow_skipping_pin_touch = allow_skipping_pin_touch;
 
@@ -839,8 +839,9 @@ void AuthenticatorCommon::StartGetAssertionRequest(
   if (ctap_get_assertion_request_->cable_extension && IsFocused()) {
     cable_pairings = *ctap_get_assertion_request_->cable_extension;
   }
-  request_delegate_->ConfigureCable(caller_origin_, cable_pairings,
-                                    discovery_factory());
+  request_delegate_->ConfigureCable(caller_origin_,
+                                    device::FidoRequestType::kGetAssertion,
+                                    cable_pairings, discovery_factory());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   discovery_factory()->set_get_assertion_request_for_legacy_credential_check(
       *ctap_get_assertion_request_);
