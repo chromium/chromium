@@ -100,15 +100,14 @@ TEST_F(ImageDecoderTest, IsTypeSupported) {
 
   EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/webp"));
 
-  EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/x-icon"));
-  EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/vnd.microsoft.icon"));
-
   EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/bmp"));
   EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/x-xbitmap"));
 
   EXPECT_EQ(IsTypeSupported(&v8_scope, "image/avif"),
             BUILDFLAG(ENABLE_AV1_DECODER));
 
+  EXPECT_FALSE(IsTypeSupported(&v8_scope, "image/x-icon"));
+  EXPECT_FALSE(IsTypeSupported(&v8_scope, "image/vnd.microsoft.icon"));
   EXPECT_FALSE(IsTypeSupported(&v8_scope, "image/svg+xml"));
   EXPECT_FALSE(IsTypeSupported(&v8_scope, "image/heif"));
   EXPECT_FALSE(IsTypeSupported(&v8_scope, "image/pcx"));

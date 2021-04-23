@@ -28,8 +28,27 @@ namespace blink {
 namespace {
 
 bool IsTypeSupportedInternal(String type) {
-  return type.ContainsOnlyASCIIOrEmpty() &&
-         IsSupportedImageMimeType(type.Ascii());
+  if (!type.ContainsOnlyASCIIOrEmpty())
+    return false;
+
+  // Disable ICO/CUR decoding since the underlying decoder does not operate like
+  // the rest of our blink::ImageDecoders. Each frame is a different sized
+  // version of a single image in a BMP or PNG format. CUR files additionally
+  // use the mouse position to determine which image to use.
+  //
+  // While we could expose each frame as a different track or use the desired
+  // size provided at construction to choose a frame, the mouse position signal
+  // would need further JS exposed API considerations. As such, given the
+  // ancient nature of the format, it is not worth implementing at this time.
+  //
+  // Additionally, since the ICO/CUR formats are simple, it seems fine to allow
+  // the parsing to happen in JS while decoding for the individual BMP or PNG
+  // files can be done using this API.
+  const auto type_lower = type.LowerASCII();
+  if (type_lower == "image/x-icon" || type_lower == "image/vnd.microsoft.icon")
+    return false;
+
+  return IsSupportedImageMimeType(type.Ascii());
 }
 
 ImageDecoder::AnimationOption AnimationOptionFromIsAnimated(bool is_animated) {
