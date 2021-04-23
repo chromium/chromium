@@ -49,6 +49,7 @@ public class DeprecatedChromePreferenceKeys {
                 "chrome_home_enabled_date",
                 "chrome_home_info_promo_shown",
                 "chrome_home_opt_out_snackbar_shown",
+                "chrome_home_survey_info_bar_displayed",
                 "chrome_home_user_enabled",
                 "chrome_modern_design_enabled",
                 "chromium.invalidations.uuid",
