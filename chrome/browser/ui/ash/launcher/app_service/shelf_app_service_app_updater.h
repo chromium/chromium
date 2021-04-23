@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SERVICE_LAUNCHER_APP_SERVICE_APP_UPDATER_H_
-#define CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SERVICE_LAUNCHER_APP_SERVICE_APP_UPDATER_H_
+#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SERVICE_SHELF_APP_SERVICE_APP_UPDATER_H_
+#define CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SERVICE_SHELF_APP_SERVICE_APP_UPDATER_H_
 
 #include <set>
 #include <string>
@@ -16,13 +16,13 @@ namespace apps {
 class AppUpdate;
 }  // namespace apps
 
-// LauncherAppServiceAppUpdater handles life cycle events for AppService Apps.
-class LauncherAppServiceAppUpdater : public ShelfAppUpdater,
-                                     public apps::AppRegistryCache::Observer {
+// ShelfAppServiceAppUpdater handles life cycle events for AppService Apps.
+class ShelfAppServiceAppUpdater : public ShelfAppUpdater,
+                                  public apps::AppRegistryCache::Observer {
  public:
-  LauncherAppServiceAppUpdater(Delegate* delegate,
-                               content::BrowserContext* browser_context);
-  ~LauncherAppServiceAppUpdater() override;
+  ShelfAppServiceAppUpdater(Delegate* delegate,
+                            content::BrowserContext* browser_context);
+  ~ShelfAppServiceAppUpdater() override;
 
   // apps::AppRegistryCache::Observer overrides:
   void OnAppUpdate(const apps::AppUpdate& update) override;
@@ -33,7 +33,7 @@ class LauncherAppServiceAppUpdater : public ShelfAppUpdater,
   void OnShowInShelfChanged(const std::string& app_id, bool show_in_shelf);
   std::set<std::string> installed_apps_;
 
-  DISALLOW_COPY_AND_ASSIGN(LauncherAppServiceAppUpdater);
+  DISALLOW_COPY_AND_ASSIGN(ShelfAppServiceAppUpdater);
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SERVICE_LAUNCHER_APP_SERVICE_APP_UPDATER_H_
+#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SERVICE_SHELF_APP_SERVICE_APP_UPDATER_H_

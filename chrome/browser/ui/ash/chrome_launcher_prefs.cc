@@ -26,7 +26,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/default_pinned_apps.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
-#include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
+#include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -224,8 +224,7 @@ void InitLocalPref(PrefService* prefs, const char* local, const char* synced) {
 }
 
 // Helper that extracts app list from policy preferences.
-std::vector<std::string> GetAppsPinnedByPolicy(
-    LauncherControllerHelper* helper) {
+std::vector<std::string> GetAppsPinnedByPolicy(ShelfControllerHelper* helper) {
   const PrefService* prefs = helper->profile()->GetPrefs();
   std::vector<std::string> result;
   const base::Value* policy_apps =
@@ -349,7 +348,7 @@ syncer::StringOrdinal CreateLastPinPosition(Profile* profile) {
 // If Chrome is not the first pinned app then apps are pinned before any other
 // app.
 void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
-    LauncherControllerHelper* helper,
+    ShelfControllerHelper* helper,
     app_list::AppListSyncableService* syncable_service,
     const std::vector<std::string>& app_ids,
     std::vector<PinInfo>* pin_infos) {
@@ -400,8 +399,7 @@ void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
   }
 }
 
-std::vector<ash::ShelfID> GetPinnedAppsFromSync(
-    LauncherControllerHelper* helper) {
+std::vector<ash::ShelfID> GetPinnedAppsFromSync(ShelfControllerHelper* helper) {
   const PrefService* prefs = helper->profile()->GetPrefs();
   app_list::AppListSyncableService* const syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(helper->profile());

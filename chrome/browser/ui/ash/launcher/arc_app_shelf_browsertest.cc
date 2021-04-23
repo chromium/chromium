@@ -188,10 +188,10 @@ ash::ShelfItemDelegate::AppMenuItems GetAppMenuItems(
 
 }  // namespace
 
-class ArcAppLauncherBrowserTest : public extensions::ExtensionBrowserTest {
+class ArcAppShelfBrowserTest : public extensions::ExtensionBrowserTest {
  public:
-  ArcAppLauncherBrowserTest() {}
-  ~ArcAppLauncherBrowserTest() override {}
+  ArcAppShelfBrowserTest() = default;
+  ~ArcAppShelfBrowserTest() override = default;
 
  protected:
   // content::BrowserTestBase:
@@ -217,9 +217,7 @@ class ArcAppLauncherBrowserTest : public extensions::ExtensionBrowserTest {
     wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
   }
 
-  void TearDownOnMainThread() override {
-    wm_helper_.reset();
-  }
+  void TearDownOnMainThread() override { wm_helper_.reset(); }
 
   void InstallTestApps(const std::string& package_name, bool multi_app) {
     app_host()->OnAppListRefreshed(GetTestAppsList(package_name, multi_app));
@@ -353,19 +351,19 @@ class ArcAppLauncherBrowserTest : public extensions::ExtensionBrowserTest {
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
   std::unique_ptr<exo::WMHelper> wm_helper_;
 
-  DISALLOW_COPY_AND_ASSIGN(ArcAppLauncherBrowserTest);
+  DISALLOW_COPY_AND_ASSIGN(ArcAppShelfBrowserTest);
 };
 
-class ArcAppDeferredLauncherBrowserTest : public ArcAppLauncherBrowserTest {
+class ArcAppDeferredShelfBrowserTest : public ArcAppShelfBrowserTest {
  public:
-  ArcAppDeferredLauncherBrowserTest() = default;
-  ~ArcAppDeferredLauncherBrowserTest() override = default;
+  ArcAppDeferredShelfBrowserTest() = default;
+  ~ArcAppDeferredShelfBrowserTest() override = default;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppDeferredLauncherBrowserTest);
+  DISALLOW_COPY_AND_ASSIGN(ArcAppDeferredShelfBrowserTest);
 };
 
-IN_PROC_BROWSER_TEST_F(ArcAppDeferredLauncherBrowserTest,
+IN_PROC_BROWSER_TEST_F(ArcAppDeferredShelfBrowserTest,
                        StartAppDeferredFromShelfButton) {
   StartInstance();
   InstallTestApps(kTestAppPackage, false);
@@ -413,12 +411,12 @@ IN_PROC_BROWSER_TEST_F(ArcAppDeferredLauncherBrowserTest,
             ink_drop->GetTargetInkDropState());
 }
 
-class ArcAppDeferredLauncherWithParamsBrowserTest
-    : public ArcAppDeferredLauncherBrowserTest,
+class ArcAppDeferredShelfWithParamsBrowserTest
+    : public ArcAppDeferredShelfBrowserTest,
       public testing::WithParamInterface<TestParameter> {
  public:
-  ArcAppDeferredLauncherWithParamsBrowserTest() = default;
-  ~ArcAppDeferredLauncherWithParamsBrowserTest() override = default;
+  ArcAppDeferredShelfWithParamsBrowserTest() = default;
+  ~ArcAppDeferredShelfWithParamsBrowserTest() override = default;
 
  protected:
   bool is_pinned() const { return std::get<1>(GetParam()); }
@@ -426,11 +424,11 @@ class ArcAppDeferredLauncherWithParamsBrowserTest
   TestAction test_action() const { return std::get<0>(GetParam()); }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppDeferredLauncherWithParamsBrowserTest);
+  DISALLOW_COPY_AND_ASSIGN(ArcAppDeferredShelfWithParamsBrowserTest);
 };
 
 // This tests simulates normal workflow for starting ARC app in deferred mode.
-IN_PROC_BROWSER_TEST_P(ArcAppDeferredLauncherWithParamsBrowserTest,
+IN_PROC_BROWSER_TEST_P(ArcAppDeferredShelfWithParamsBrowserTest,
                        StartAppDeferred) {
   // Install app to remember existing apps.
   StartInstance();
@@ -504,12 +502,12 @@ IN_PROC_BROWSER_TEST_P(ArcAppDeferredLauncherWithParamsBrowserTest,
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(ArcAppDeferredLauncherWithParamsBrowserTestInstance,
-                         ArcAppDeferredLauncherWithParamsBrowserTest,
+INSTANTIATE_TEST_SUITE_P(ArcAppDeferredShelfWithParamsBrowserTestInstance,
+                         ArcAppDeferredShelfWithParamsBrowserTest,
                          ::testing::ValuesIn(build_test_parameter));
 
 // This tests validates pin state on package update and remove.
-IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, PinOnPackageUpdateAndRemove) {
+IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, PinOnPackageUpdateAndRemove) {
   StartInstance();
 
   // Make use app list sync service is started. Normally it is started when
@@ -548,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, PinOnPackageUpdateAndRemove) {
 }
 
 // Test AppListControllerDelegate::IsAppOpen for ARC apps.
-IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, IsAppOpen) {
+IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, IsAppOpen) {
   StartInstance();
   InstallTestApps(kTestAppPackage, false);
   SendPackageAdded(kTestAppPackage, true);
@@ -568,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, IsAppOpen) {
 }
 
 // Test Shelf Groups
-IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, ShelfGroup) {
+IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, ShelfGroup) {
   StartInstance();
   InstallTestApps(kTestAppPackage, false);
   SendPackageAdded(kTestAppPackage, true);
@@ -654,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, ShelfGroup) {
 // and logical window ID, only one should be represented in the shelf at any
 // time. If that window is closed, a different window of the logical window
 // should be shown instead.
-IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, LogicalWindow) {
+IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, LogicalWindow) {
   StartInstance();
   InstallTestApps(kTestAppPackage, false);
   SendPackageAdded(kTestAppPackage, true);
@@ -710,9 +708,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, LogicalWindow) {
                                .SetCentered()
                                .BuildShellSurface());
 
-    aura::Window* aura_window = test_windows[task_id - 1]
-                                    ->GetWidget()
-                                    ->GetNativeWindow();
+    aura::Window* aura_window =
+        test_windows[task_id - 1]->GetWidget()->GetNativeWindow();
     ASSERT_TRUE(aura_window);
     exo::SetShellApplicationId(
         aura_window, base::StringPrintf("org.chromium.arc.%d", task_id));

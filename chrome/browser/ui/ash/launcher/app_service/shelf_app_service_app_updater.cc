@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/launcher/app_service/launcher_app_service_app_updater.h"
+#include "chrome/browser/ui/ash/launcher/app_service/shelf_app_service_app_updater.h"
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -10,7 +10,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
-LauncherAppServiceAppUpdater::LauncherAppServiceAppUpdater(
+ShelfAppServiceAppUpdater::ShelfAppServiceAppUpdater(
     Delegate* delegate,
     content::BrowserContext* browser_context)
     : ShelfAppUpdater(delegate, browser_context) {
@@ -25,9 +25,9 @@ LauncherAppServiceAppUpdater::LauncherAppServiceAppUpdater(
   Observe(&proxy->AppRegistryCache());
 }
 
-LauncherAppServiceAppUpdater::~LauncherAppServiceAppUpdater() = default;
+ShelfAppServiceAppUpdater::~ShelfAppServiceAppUpdater() = default;
 
-void LauncherAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
+void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
   if (!update.ReadinessChanged() && !update.PausedChanged() &&
       !update.ShowInShelfChanged()) {
     return;
@@ -76,14 +76,13 @@ void LauncherAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
   }
 }
 
-void LauncherAppServiceAppUpdater::OnAppRegistryCacheWillBeDestroyed(
+void ShelfAppServiceAppUpdater::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   Observe(nullptr);
 }
 
-void LauncherAppServiceAppUpdater::OnShowInShelfChanged(
-    const std::string& app_id,
-    bool show_in_shelf) {
+void ShelfAppServiceAppUpdater::OnShowInShelfChanged(const std::string& app_id,
+                                                     bool show_in_shelf) {
   std::set<std::string>::const_iterator it = installed_apps_.find(app_id);
   if (show_in_shelf) {
     if (it == installed_apps_.end()) {

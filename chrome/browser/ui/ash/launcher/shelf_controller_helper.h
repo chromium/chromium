@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_LAUNCHER_CONTROLLER_HELPER_H_
-#define CHROME_BROWSER_UI_ASH_LAUNCHER_LAUNCHER_CONTROLLER_HELPER_H_
+#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_SHELF_CONTROLLER_HELPER_H_
+#define CHROME_BROWSER_UI_ASH_LAUNCHER_SHELF_CONTROLLER_HELPER_H_
 
 #include <memory>
 #include <string>
@@ -21,10 +21,10 @@ class WebContents;
 }
 
 // Assists the LauncherController with ExtensionService interaction.
-class LauncherControllerHelper : public ExtensionEnableFlowDelegate {
+class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
  public:
-  explicit LauncherControllerHelper(Profile* profile);
-  ~LauncherControllerHelper() override;
+  explicit ShelfControllerHelper(Profile* profile);
+  ~ShelfControllerHelper() override;
 
   // Helper function to return the title associated with |app_id|.
   // Returns an empty title if no matching extension can be found.
@@ -73,7 +73,7 @@ class LauncherControllerHelper : public ExtensionEnableFlowDelegate {
   Profile* profile_;
   std::unique_ptr<ExtensionEnableFlow> extension_enable_flow_;
 
-  DISALLOW_COPY_AND_ASSIGN(LauncherControllerHelper);
+  DISALLOW_COPY_AND_ASSIGN(ShelfControllerHelper);
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_LAUNCHER_CONTROLLER_HELPER_H_
+#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_SHELF_CONTROLLER_HELPER_H_

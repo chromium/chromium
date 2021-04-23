@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
+#include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
 
 #include <vector>
 
@@ -141,15 +141,14 @@ std::string GetSourceFromAppListSource(ash::ShelfLaunchSource source) {
 
 }  // namespace
 
-LauncherControllerHelper::LauncherControllerHelper(Profile* profile)
+ShelfControllerHelper::ShelfControllerHelper(Profile* profile)
     : profile_(profile) {}
 
-LauncherControllerHelper::~LauncherControllerHelper() {}
+ShelfControllerHelper::~ShelfControllerHelper() {}
 
 // static
-std::u16string LauncherControllerHelper::GetAppTitle(
-    Profile* profile,
-    const std::string& app_id) {
+std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
+                                                  const std::string& app_id) {
   if (app_id.empty())
     return std::u16string();
 
@@ -191,9 +190,8 @@ std::u16string LauncherControllerHelper::GetAppTitle(
 }
 
 // static
-ash::AppStatus LauncherControllerHelper::GetAppStatus(
-    Profile* profile,
-    const std::string& app_id) {
+ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
+                                                   const std::string& app_id) {
   ash::AppStatus status = ash::AppStatus::kReady;
 
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
@@ -211,14 +209,14 @@ ash::AppStatus LauncherControllerHelper::GetAppStatus(
   return status;
 }
 
-std::string LauncherControllerHelper::GetAppID(content::WebContents* tab) {
+std::string ShelfControllerHelper::GetAppID(content::WebContents* tab) {
   DCHECK(tab);
   base::Optional<std::string> app_id = GetAppIdForTab(
       Profile::FromBrowserContext(tab->GetBrowserContext()), tab);
   return app_id.value_or(std::string());
 }
 
-bool LauncherControllerHelper::IsValidIDForCurrentUser(
+bool ShelfControllerHelper::IsValidIDForCurrentUser(
     const std::string& app_id) const {
   if (IsValidIDForArcApp(app_id))
     return true;
@@ -226,10 +224,10 @@ bool LauncherControllerHelper::IsValidIDForCurrentUser(
   return IsValidIDFromAppService(app_id);
 }
 
-void LauncherControllerHelper::LaunchApp(const ash::ShelfID& id,
-                                         ash::ShelfLaunchSource source,
-                                         int event_flags,
-                                         int64_t display_id) {
+void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
+                                      ash::ShelfLaunchSource source,
+                                      int event_flags,
+                                      int64_t display_id) {
   // Handle recording app launch source from the Shelf in Demo Mode.
   if (source == ash::ShelfLaunchSource::LAUNCH_FROM_SHELF) {
     chromeos::DemoSession::RecordAppLaunchSourceIfInDemoMode(
@@ -287,21 +285,21 @@ void LauncherControllerHelper::LaunchApp(const ash::ShelfID& id,
   proxy->BrowserAppLauncher()->LaunchAppWithParams(std::move(params));
 }
 
-ArcAppListPrefs* LauncherControllerHelper::GetArcAppListPrefs() const {
+ArcAppListPrefs* ShelfControllerHelper::GetArcAppListPrefs() const {
   return ArcAppListPrefs::Get(profile_);
 }
 
-void LauncherControllerHelper::ExtensionEnableFlowFinished() {
+void ShelfControllerHelper::ExtensionEnableFlowFinished() {
   LaunchApp(ash::ShelfID(extension_enable_flow_->extension_id()),
             ash::LAUNCH_FROM_UNKNOWN, ui::EF_NONE, display::kInvalidDisplayId);
   extension_enable_flow_.reset();
 }
 
-void LauncherControllerHelper::ExtensionEnableFlowAborted(bool user_initiated) {
+void ShelfControllerHelper::ExtensionEnableFlowAborted(bool user_initiated) {
   extension_enable_flow_.reset();
 }
 
-bool LauncherControllerHelper::IsValidIDForArcApp(
+bool ShelfControllerHelper::IsValidIDForArcApp(
     const std::string& app_id) const {
   const ArcAppListPrefs* arc_prefs = GetArcAppListPrefs();
   if (arc_prefs && arc_prefs->IsRegistered(app_id)) {
@@ -329,7 +327,7 @@ bool LauncherControllerHelper::IsValidIDForArcApp(
   return false;
 }
 
-bool LauncherControllerHelper::IsValidIDFromAppService(
+bool ShelfControllerHelper::IsValidIDFromAppService(
     const std::string& app_id) const {
   if (crostini::IsUnmatchedCrostiniShelfAppId(app_id)) {
     return true;

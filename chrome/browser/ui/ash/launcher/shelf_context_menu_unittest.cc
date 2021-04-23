@@ -39,7 +39,7 @@
 #include "chrome/browser/ui/ash/launcher/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/extension_shelf_context_menu.h"
-#include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
+#include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
@@ -124,8 +124,8 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
     launcher_controller_ =
         std::make_unique<ChromeLauncherController>(profile(), model_.get());
     launcher_controller_->SetProfileForTest(profile());
-    launcher_controller_->SetLauncherControllerHelperForTest(
-        std::make_unique<LauncherControllerHelper>(profile()));
+    launcher_controller_->SetShelfControllerHelperForTest(
+        std::make_unique<ShelfControllerHelper>(profile()));
     launcher_controller_->Init();
 
     // Disable safe icon decoding to ensure ArcAppShortcutRequests returns in

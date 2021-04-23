@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
-#include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
+#include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -32,7 +32,7 @@ AppManagementShelfDelegate::AppManagementShelfDelegate(
   if (!shelf_model) {
     return;
   }
-  launcher_controller_helper_ = new LauncherControllerHelper(profile);
+  launcher_controller_helper_ = new ShelfControllerHelper(profile);
 
   shelf_model->AddObserver(this);
 }

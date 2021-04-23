@@ -34,7 +34,7 @@ AppServiceInstanceRegistryHelper::AppServiceInstanceRegistryHelper(
     : controller_(controller),
       proxy_(apps::AppServiceProxyFactory::GetForProfile(
           controller->owner()->profile())),
-      launcher_controller_helper_(std::make_unique<LauncherControllerHelper>(
+      launcher_controller_helper_(std::make_unique<ShelfControllerHelper>(
           controller->owner()->profile())) {
   DCHECK(controller_);
 }

@@ -32,7 +32,7 @@ class BrowserStatusMonitor;
 class ChromeLauncherControllerUserSwitchObserver;
 class GURL;
 class Profile;
-class LauncherControllerHelper;
+class ShelfControllerHelper;
 class ShelfSpinnerController;
 
 namespace ash {
@@ -238,9 +238,9 @@ class ChromeLauncherController
     return app_window_controllers_;
   }
 
-  // Sets LauncherControllerHelper or AppIconLoader for test, taking ownership.
-  void SetLauncherControllerHelperForTest(
-      std::unique_ptr<LauncherControllerHelper> helper);
+  // Sets ShelfControllerHelper or AppIconLoader for test, taking ownership.
+  void SetShelfControllerHelperForTest(
+      std::unique_ptr<ShelfControllerHelper> helper);
   void SetAppIconLoadersForTest(
       std::vector<std::unique_ptr<AppIconLoader>>& loaders);
 
@@ -409,7 +409,7 @@ class ChromeLauncherController
   bool should_sync_pin_changes_ = true;
 
   // Used to get app info for tabs.
-  std::unique_ptr<LauncherControllerHelper> launcher_controller_helper_;
+  std::unique_ptr<ShelfControllerHelper> launcher_controller_helper_;
 
   // TODO(crbug.com/836128): Remove this once SystemWebApps are enabled by
   // default.

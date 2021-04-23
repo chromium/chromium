@@ -73,7 +73,7 @@
 #include "chrome/browser/ui/ash/launcher/arc_app_window.h"
 #include "chrome/browser/ui/ash/launcher/browser_status_monitor.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
-#include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
+#include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/ash/multi_user/multi_profile_support.h"
@@ -218,16 +218,16 @@ class TestAppIconLoaderImpl : public AppIconLoader {
   std::set<std::string> supported_apps_;
 };
 
-// Test implementation of LauncherControllerHelper.
-class TestLauncherControllerHelper : public LauncherControllerHelper {
+// Test implementation of ShelfControllerHelper.
+class TestShelfControllerHelper : public ShelfControllerHelper {
  public:
-  TestLauncherControllerHelper() : LauncherControllerHelper(nullptr) {}
-  explicit TestLauncherControllerHelper(Profile* profile)
-      : LauncherControllerHelper(profile) {}
-  TestLauncherControllerHelper(const TestLauncherControllerHelper&) = delete;
-  TestLauncherControllerHelper& operator=(const TestLauncherControllerHelper&) =
+  TestShelfControllerHelper() : ShelfControllerHelper(nullptr) {}
+  explicit TestShelfControllerHelper(Profile* profile)
+      : ShelfControllerHelper(profile) {}
+  TestShelfControllerHelper(const TestShelfControllerHelper&) = delete;
+  TestShelfControllerHelper& operator=(const TestShelfControllerHelper&) =
       delete;
-  ~TestLauncherControllerHelper() override = default;
+  ~TestShelfControllerHelper() override = default;
 
   // Sets the id for the specified tab.
   void SetAppID(content::WebContents* tab, const std::string& id) {
@@ -239,7 +239,7 @@ class TestLauncherControllerHelper : public LauncherControllerHelper {
     return tab_id_map_.find(tab) != tab_id_map_.end();
   }
 
-  // LauncherControllerHelper:
+  // ShelfControllerHelper:
   std::string GetAppID(content::WebContents* tab) override {
     return tab_id_map_.find(tab) != tab_id_map_.end() ? tab_id_map_[tab]
                                                       : std::string();
@@ -555,8 +555,8 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
     launcher_controller_ =
         std::make_unique<ChromeLauncherController>(profile(), model_.get());
     launcher_controller_->SetProfileForTest(profile());
-    launcher_controller_->SetLauncherControllerHelperForTest(
-        std::make_unique<LauncherControllerHelper>(profile()));
+    launcher_controller_->SetShelfControllerHelperForTest(
+        std::make_unique<ShelfControllerHelper>(profile()));
     return launcher_controller_.get();
   }
 
@@ -640,9 +640,9 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
     launcher_controller_->SetAppIconLoadersForTest(loaders);
   }
 
-  void SetLauncherControllerHelper(LauncherControllerHelper* helper) {
-    launcher_controller_->SetLauncherControllerHelperForTest(
-        base::WrapUnique<LauncherControllerHelper>(helper));
+  void SetShelfControllerHelper(ShelfControllerHelper* helper) {
+    launcher_controller_->SetShelfControllerHelperForTest(
+        base::WrapUnique<ShelfControllerHelper>(helper));
   }
 
   void AppendPrefValue(base::ListValue* pref_value,
@@ -2171,7 +2171,7 @@ TEST_F(ChromeLauncherControllerMultiProfileWithArcTest, DISABLED_ArcMultiUser) {
 
   InitLauncherController();
 
-  SetLauncherControllerHelper(new TestLauncherControllerHelper);
+  SetShelfControllerHelper(new TestShelfControllerHelper);
 
   // App1 exists all the time.
   // App2 is created when primary user is active and destroyed when secondary
@@ -3921,8 +3921,8 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuDeletionExecution) {
 TEST_F(ChromeLauncherControllerTest, PersistLauncherItemPositions) {
   InitLauncherController();
 
-  TestLauncherControllerHelper* helper = new TestLauncherControllerHelper;
-  SetLauncherControllerHelper(helper);
+  TestShelfControllerHelper* helper = new TestShelfControllerHelper;
+  SetShelfControllerHelper(helper);
 
   EXPECT_EQ(ash::TYPE_BROWSER_SHORTCUT, model_->items()[0].type);
 
@@ -3950,10 +3950,10 @@ TEST_F(ChromeLauncherControllerTest, PersistLauncherItemPositions) {
   EXPECT_EQ(ash::TYPE_BROWSER_SHORTCUT, model_->items()[2].type);
 
   RecreateLauncherController();
-  helper = new TestLauncherControllerHelper(profile());
+  helper = new TestShelfControllerHelper(profile());
   helper->SetAppID(tab_strip_model->GetWebContentsAt(0), "1");
   helper->SetAppID(tab_strip_model->GetWebContentsAt(1), "2");
-  SetLauncherControllerHelper(helper);
+  SetShelfControllerHelper(helper);
   launcher_controller_->Init();
 
   // Check ShelfItems are restored after resetting ChromeLauncherController.
@@ -3970,9 +3970,9 @@ TEST_F(ChromeLauncherControllerTest, PersistPinned) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip_model->count());
 
-  TestLauncherControllerHelper* helper = new TestLauncherControllerHelper;
+  TestShelfControllerHelper* helper = new TestShelfControllerHelper;
   helper->SetAppID(tab_strip_model->GetWebContentsAt(0), "1");
-  SetLauncherControllerHelper(helper);
+  SetShelfControllerHelper(helper);
 
   // app_icon_loader is owned by ChromeLauncherController.
   TestAppIconLoaderImpl* app_icon_loader = new TestAppIconLoaderImpl;
@@ -3989,9 +3989,9 @@ TEST_F(ChromeLauncherControllerTest, PersistPinned) {
   EXPECT_EQ(initial_size + 1, model_->items().size());
 
   RecreateLauncherController();
-  helper = new TestLauncherControllerHelper(profile());
+  helper = new TestShelfControllerHelper(profile());
   helper->SetAppID(tab_strip_model->GetWebContentsAt(0), "1");
-  SetLauncherControllerHelper(helper);
+  SetShelfControllerHelper(helper);
   // app_icon_loader is owned by ChromeLauncherController.
   app_icon_loader = new TestAppIconLoaderImpl;
   app_icon_loader->AddSupportedApp("1");
@@ -4020,14 +4020,14 @@ TEST_F(ChromeLauncherControllerTest, ExistingBrowserWindowShelfIDSet) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   ASSERT_EQ(1, tab_strip_model->count());
 
-  TestLauncherControllerHelper* helper = new TestLauncherControllerHelper;
+  TestShelfControllerHelper* helper = new TestShelfControllerHelper;
   helper->SetAppID(tab_strip_model->GetWebContentsAt(0), "0");
-  SetLauncherControllerHelper(helper);
+  SetShelfControllerHelper(helper);
 
   RecreateLauncherController();
-  helper = new TestLauncherControllerHelper(profile());
+  helper = new TestShelfControllerHelper(profile());
   helper->SetAppID(tab_strip_model->GetWebContentsAt(0), "1");
-  SetLauncherControllerHelper(helper);
+  SetShelfControllerHelper(helper);
   launcher_controller_->Init();
 
   EXPECT_TRUE(launcher_controller_->GetItem(ash::ShelfID("1")));

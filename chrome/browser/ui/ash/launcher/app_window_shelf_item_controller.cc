@@ -13,8 +13,8 @@
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
 #include "chrome/browser/ui/ash/launcher/shelf_context_menu.h"
+#include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/wm/core/window_util.h"
 
@@ -190,7 +190,7 @@ AppWindowShelfItemController::GetAppMenuItems(
     int event_flags,
     const ItemFilterPredicate& filter_predicate) {
   AppMenuItems items;
-  std::u16string app_title = LauncherControllerHelper::GetAppTitle(
+  std::u16string app_title = ShelfControllerHelper::GetAppTitle(
       ChromeLauncherController::instance()->profile(), app_id());
   int command_id = -1;
   for (const auto* it : windows()) {

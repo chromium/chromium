@@ -11,7 +11,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-class LauncherControllerHelper;
+class ShelfControllerHelper;
 class PrefService;
 class Profile;
 
@@ -43,12 +43,10 @@ void InitLocalPref(PrefService* prefs, const char* local, const char* synced);
 
 // Gets the ordered list of pinned apps that exist on device from the app sync
 // service.
-std::vector<ash::ShelfID> GetPinnedAppsFromSync(
-    LauncherControllerHelper* helper);
+std::vector<ash::ShelfID> GetPinnedAppsFromSync(ShelfControllerHelper* helper);
 
 // Gets the ordered list of apps that have been pinned by policy.
-std::vector<std::string> GetAppsPinnedByPolicy(
-    LauncherControllerHelper* helper);
+std::vector<std::string> GetAppsPinnedByPolicy(ShelfControllerHelper* helper);
 
 // Removes information about pin position from sync model for the app.
 // Note, |shelf_id| with non-empty launch_id is not supported.

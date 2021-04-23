@@ -50,15 +50,15 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_arc_tracker.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_controller.h"
-#include "chrome/browser/ui/ash/launcher/app_service/launcher_app_service_app_updater.h"
+#include "chrome/browser/ui/ash/launcher/app_service/shelf_app_service_app_updater.h"
 #include "chrome/browser/ui/ash/launcher/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/browser_status_monitor.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
-#include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
 #include "chrome/browser/ui/ash/launcher/multi_profile_browser_status_monitor.h"
+#include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/launcher/shelf_extension_app_updater.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -779,8 +779,8 @@ ChromeLauncherController::GetScopedPinSyncDisabler() {
                                                  false);
 }
 
-void ChromeLauncherController::SetLauncherControllerHelperForTest(
-    std::unique_ptr<LauncherControllerHelper> helper) {
+void ChromeLauncherController::SetShelfControllerHelperForTest(
+    std::unique_ptr<ShelfControllerHelper> helper) {
   launcher_controller_helper_ = std::move(helper);
 }
 
@@ -911,12 +911,12 @@ void ChromeLauncherController::OnAppInstalled(
       bool needs_update = false;
       if (item.title.empty()) {
         needs_update = true;
-        item.title = LauncherControllerHelper::GetAppTitle(
-            latest_active_profile_, app_id);
+        item.title =
+            ShelfControllerHelper::GetAppTitle(latest_active_profile_, app_id);
       }
 
-      ash::AppStatus app_status = LauncherControllerHelper::GetAppStatus(
-          latest_active_profile_, app_id);
+      ash::AppStatus app_status =
+          ShelfControllerHelper::GetAppStatus(latest_active_profile_, app_id);
       if (app_status != item.app_status) {
         needs_update = true;
         item.app_status = app_status;
@@ -946,8 +946,8 @@ void ChromeLauncherController::OnAppUpdated(
         app_icon_loader->FetchImage(app_id);
 
       bool needs_update = false;
-      ash::AppStatus app_status = LauncherControllerHelper::GetAppStatus(
-          latest_active_profile_, app_id);
+      ash::AppStatus app_status =
+          ShelfControllerHelper::GetAppStatus(latest_active_profile_, app_id);
       if (app_status != item.app_status) {
         needs_update = true;
         item.app_status = app_status;
@@ -1281,7 +1281,7 @@ ash::ShelfID ChromeLauncherController::InsertAppLauncherItem(
   item.type = shelf_item_type;
   item.id = item_delegate->shelf_id();
   item.title = title;
-  item.app_status = LauncherControllerHelper::GetAppStatus(
+  item.app_status = ShelfControllerHelper::GetAppStatus(
       latest_active_profile_, item_delegate->shelf_id().app_id);
   // Set the delegate first to avoid constructing one in ShelfItemAdded.
   model_->SetShelfItemDelegate(item.id, std::move(item_delegate));
@@ -1358,11 +1358,11 @@ void ChromeLauncherController::AddAppUpdaterAndIconLoader(Profile* profile) {
   // startup phase, but we should not run the switch user process.
   if (profile == latest_active_profile_) {
     // Either add the profile to the list of known profiles and make it the
-    // active one for some functions of LauncherControllerHelper or create a new
+    // active one for some functions of ShelfControllerHelper or create a new
     // one.
     if (!launcher_controller_helper_.get()) {
       launcher_controller_helper_ =
-          std::make_unique<LauncherControllerHelper>(profile);
+          std::make_unique<ShelfControllerHelper>(profile);
     } else {
       launcher_controller_helper_->set_profile(profile);
     }
@@ -1370,7 +1370,7 @@ void ChromeLauncherController::AddAppUpdaterAndIconLoader(Profile* profile) {
 
   if (!base::Contains(app_updaters_, profile)) {
     std::unique_ptr<ShelfAppUpdater> app_service_app_updater(
-        new LauncherAppServiceAppUpdater(this, profile));
+        new ShelfAppServiceAppUpdater(this, profile));
     app_updaters_[profile].push_back(std::move(app_service_app_updater));
 
     // Some special extensions open new windows, and on Chrome OS, those windows
@@ -1467,8 +1467,8 @@ void ChromeLauncherController::ShelfItemAdded(int index) {
     bool needs_update = false;
     if (item.title.empty()) {
       needs_update = true;
-      item.title = LauncherControllerHelper::GetAppTitle(latest_active_profile_,
-                                                         id.app_id);
+      item.title =
+          ShelfControllerHelper::GetAppTitle(latest_active_profile_, id.app_id);
     }
     ash::ShelfItemStatus status = GetAppState(id.app_id);
     if (status != item.status && status != ash::STATUS_CLOSED) {
@@ -1476,8 +1476,8 @@ void ChromeLauncherController::ShelfItemAdded(int index) {
       item.status = status;
     }
 
-    ash::AppStatus app_status = LauncherControllerHelper::GetAppStatus(
-        latest_active_profile_, id.app_id);
+    ash::AppStatus app_status =
+        ShelfControllerHelper::GetAppStatus(latest_active_profile_, id.app_id);
     if (app_status != item.app_status) {
       needs_update = true;
       item.app_status = app_status;
