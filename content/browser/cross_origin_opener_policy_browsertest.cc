@@ -3031,6 +3031,66 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
 #endif  // defined(OS_ANDROID)
 }
 
+// Enable the reverse OriginTrial via a <meta> tag. Then send a Webassembly's
+// SharedArrayBuffer toward the iframe.
+// TODO(https://crbug.com/1201589) This currently crash.
+#if !defined(OS_ANDROID) // The SAB reverse origin trial only work on Desktop.
+IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
+                       CrashForBug1201589) {
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        DCHECK_EQ(params->url_request.url, OriginTrialURL());
+        URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: text/html\n",
+            "<meta http-equiv=\"origin-trial\" content=\"" +
+                OriginTrialToken() + "\">",
+            params->client.get());
+        return true;
+      }));
+  EXPECT_TRUE(NavigateToURL(shell(), OriginTrialURL()));
+
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     "g_iframe = document.createElement('iframe');"
+                     "g_iframe.src = location.href;"
+                     "document.body.appendChild(g_iframe);"));
+  WaitForLoadStop(web_contents());
+
+  RenderFrameHostImpl* main_document = current_frame_host();
+  RenderFrameHostImpl* sub_document =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  EXPECT_EQ(false, EvalJs(main_document, "self.crossOriginIsolated"));
+  EXPECT_EQ(false, EvalJs(sub_document, "self.crossOriginIsolated"));
+
+  // Despite the origin trial, no documents get access to the SharedArrayBuffer
+  // constructor.
+  EXPECT_EQ(false, EvalJs(main_document, "'SharedArrayBuffer' in globalThis"));
+  EXPECT_EQ(false, EvalJs(sub_document, "'SharedArrayBuffer' in globalThis"));
+
+  RenderProcessHost* renderer_process = main_document->GetProcess();
+  RenderProcessHostWatcher crash_observer(
+      renderer_process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+  EXPECT_TRUE(ExecJs(sub_document, R"(
+    g_sab_size = new Promise(resolve => {
+      addEventListener("message", event => resolve(event.data.byteLength));
+    });
+  )",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  EXPECT_TRUE(ExecJs(main_document, R"(
+    let wasm_shared_memory = new WebAssembly.Memory({
+      shared:true, initial:0, maximum:0 });
+    g_iframe.contentWindow.postMessage(wasm_shared_memory.buffer, "*");
+  )"));
+
+  // TODO(https://crbug.com/1201589) The renderer process currently crash. This
+  // shouldn't happen.
+  crash_observer.Wait();
+}
+#endif
+
 // Ensure the SharedArrayBufferOnDesktop kill switch is correctly implemented.
 class SharedArrayBufferOnDesktopBrowserTest
     : public CrossOriginOpenerPolicyBrowserTest {
