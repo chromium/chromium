@@ -924,6 +924,17 @@ constexpr bool equal(ForwardIterator1 first1,
                      Pred pred = {},
                      Proj1 proj1 = {},
                      Proj2 proj2 = {}) {
+  if (base::is_constant_evaluated()) {
+    for (; first1 != last1 && first2 != last2; ++first1, ++first2) {
+      if (!base::invoke(pred, base::invoke(proj1, *first1),
+                        base::invoke(proj2, *first2))) {
+        return false;
+      }
+    }
+
+    return first1 == last1 && first2 == last2;
+  }
+
   return std::equal(first1, last1, first2, last2,
                     internal::ProjectedBinaryPredicate(pred, proj1, proj2));
 }
