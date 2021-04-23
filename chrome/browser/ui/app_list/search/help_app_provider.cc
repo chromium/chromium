@@ -146,7 +146,8 @@ void HelpAppResult::Open(int event_flags) {
       apps::MakeWindowInfo(display::kDefaultDisplayId));
 }
 
-HelpAppProvider::HelpAppProvider(Profile* profile) : profile_(profile) {
+HelpAppProvider::HelpAppProvider(Profile* profile)
+    : profile_(profile), search_handler_(nullptr) {
   DCHECK(profile_);
 
   app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile_);
