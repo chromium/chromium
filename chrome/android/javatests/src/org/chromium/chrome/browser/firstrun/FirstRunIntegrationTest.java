@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.firstrun;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 
+import android.accounts.Account;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
@@ -29,6 +30,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -38,6 +41,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
@@ -62,10 +66,13 @@ import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.policy.AbstractAppRestrictionsProvider;
 import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +99,11 @@ public class FirstRunIntegrationTest {
     public FirstRunAppRestrictionInfo mMockAppRestrictionInfo;
     @Mock
     public EnterpriseInfo mEnterpriseInfo;
+    @Mock
+    private AccountManagerFacade mAccountManagerFacade;
+
+    @Captor
+    private ArgumentCaptor<Callback<List<Account>>> mGetGoogleAccountsCaptor;
 
     private final Set<Class> mSupportedActivities =
             CollectionUtil.newHashSet(ChromeLauncherActivity.class, FirstRunActivity.class,
@@ -574,6 +586,39 @@ public class FirstRunIntegrationTest {
                 "Second FirstRunActivity didn't abort", 0);
         CriteriaHelper.pollInstrumentationThread(
                 () -> secondFreActivity.isFinishing(), "Second FRE should be finishing now.");
+    }
+
+    @Test
+    @MediumTest
+    public void testInitialDrawBlocked() throws Exception {
+        // This should block the FRE from showing any UI, as #onFlowIsKnown will not be called.
+        AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
+
+        launchViewIntent(TEST_URL);
+        FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
+
+        // Wait for the activity to initialize views or else later find call will NPE.
+        CriteriaHelper.pollUiThread(() -> firstRunActivity.findViewById(R.id.fre_pager) != null);
+
+        CallbackHelper onDrawCallbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            View frePager = firstRunActivity.findViewById(R.id.fre_pager);
+            Assert.assertNotNull(frePager);
+            frePager.getViewTreeObserver().addOnDrawListener(onDrawCallbackHelper::notifyCalled);
+        });
+
+        // Wait for a second to ensure Android would have had time to do a draw pass if it was ever
+        // going to.
+        Thread.sleep(1000);
+        Assert.assertEquals(0, onDrawCallbackHelper.getCallCount());
+
+        // Now return account status which should result in both the first fragment being generated,
+        // and the first draw call being let happen.
+        Mockito.verify(mAccountManagerFacade)
+                .tryGetGoogleAccounts(mGetGoogleAccountsCaptor.capture());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mGetGoogleAccountsCaptor.getValue().onResult(Collections.emptyList()));
+        onDrawCallbackHelper.waitForCallback(0);
     }
 
     private void clickButton(final Activity activity, final int id, final String message) {
