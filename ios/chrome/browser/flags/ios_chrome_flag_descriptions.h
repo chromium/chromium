@@ -37,11 +37,6 @@ extern const char kAutofillPruneSuggestionsDescription[];
 extern const char kAutofillSaveCardDismissOnNavigationName[];
 extern const char kAutofillSaveCardDismissOnNavigationDescription[];
 
-// Title and description for the flag that enables editing on the Messages UI
-// for SaveCard Infobars.
-extern const char kAutofillSaveCardInfobarEditSupportName[];
-extern const char kAutofillSaveCardInfobarEditSupportDescription[];
-
 // Title and description for the flag that controls whether Autofill's
 // suggestions' labels are formatting with a mobile-friendly approach.
 extern const char kAutofillUseMobileLabelDisambiguationName[];

@@ -195,10 +195,7 @@
   // Only allow editing if the card will be uploaded and it hasn't been
   // previously saved.
   BOOL supportsEditing =
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillSaveCardInfobarEditSupport)
-          ? self.saveCardInfoBarDelegate->upload() && !self.infobarAccepted
-          : NO;
+      self.saveCardInfoBarDelegate->upload() && !self.infobarAccepted;
 
   NSDictionary* prefs = @{
     kCardholderNamePrefKey : self.cardholderName,

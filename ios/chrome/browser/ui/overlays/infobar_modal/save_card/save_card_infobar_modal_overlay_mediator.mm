@@ -51,10 +51,7 @@ using save_card_infobar_overlays::SaveCardMainAction;
   // Only allow editing if the card will be uploaded and it hasn't been
   // previously saved.
   BOOL supportsEditing =
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillSaveCardInfobarEditSupport)
-          ? config->should_upload_credentials() && !config->current_card_saved()
-          : NO;
+      config->should_upload_credentials() && !config->current_card_saved();
 
   NSDictionary* prefs = @{
     kCardholderNamePrefKey :
