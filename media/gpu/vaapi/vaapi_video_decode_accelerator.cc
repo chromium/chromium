@@ -151,7 +151,6 @@ VaapiVideoDecodeAccelerator::VaapiVideoDecodeAccelerator(
     const BindGLImageCallback& bind_image_cb)
     : state_(kUninitialized),
       input_ready_(&lock_),
-      vaapi_picture_factory_(new VaapiPictureFactory()),
       buffer_allocation_mode_(BufferAllocationMode::kNormal),
       surfaces_available_(&lock_),
       va_surface_format_(VA_INVALID_ID),
@@ -189,6 +188,8 @@ bool VaapiVideoDecodeAccelerator::Initialize(const Config& config,
   if (features::IsUsingOzonePlatform())
     return false;
 #endif
+
+  vaapi_picture_factory_ = std::make_unique<VaapiPictureFactory>();
 
   if (config.is_encrypted()) {
     NOTREACHED() << "Encrypted streams are not supported for this VDA";
