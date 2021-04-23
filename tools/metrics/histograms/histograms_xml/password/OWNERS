@@ -2,3 +2,6 @@ per-file OWNERS=file://tools/metrics/histograms/histograms_xml/METRIC_REVIEWER_O
 
 # Use either chromium-metrics-reviews@google.com or the below owners.
 vsemeniuk@google.com
+
+# For PasswordProtection* metrics
+xinghuilu@chromium.org
