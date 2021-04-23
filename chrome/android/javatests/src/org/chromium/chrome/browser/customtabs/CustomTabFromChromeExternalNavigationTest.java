@@ -100,6 +100,7 @@ public class CustomTabFromChromeExternalNavigationTest {
     @Test
     @Feature("CustomTabFromChrome")
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/1197727")
     public void testIntentWithRedirectToApp() {
         final String redirectUrl = "https://maps.google.com/maps?q=1600+amphitheatre+parkway";
         final String initialUrl =
