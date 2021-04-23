@@ -943,8 +943,10 @@ void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
          RuntimeEnabledFeatures::EventTimingEnabled(GetExecutionContext()));
   bool observer_found = false;
   for (auto& observer : observers_) {
+    recordreplay::Assert("Performance::NotifyObserversOfEntry #1");
     if (observer->FilterOptions() & entry.EntryTypeEnum() &&
         observer->CanObserve(entry)) {
+      recordreplay::Assert("Performance::NotifyObserversOfEntry #2");
       observer->EnqueuePerformanceEntry(entry);
       observer_found = true;
     }
@@ -960,6 +962,7 @@ bool Performance::HasObserverFor(
 }
 
 void Performance::ActivateObserver(PerformanceObserver& observer) {
+  recordreplay::Assert("Performance::ActivateObserver %d", active_observers_.IsEmpty());
   if (active_observers_.IsEmpty())
     deliver_observations_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 
