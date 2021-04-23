@@ -114,7 +114,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
                     'is_regression': True,
                 },
             },
-            'path_delimiter': '/',
+            'path_delimiter': os.path.sep,
         }
         self._create_json_output(json_dict)
         self.wpt_adapter.do_post_test_run_tasks()
@@ -157,7 +157,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
                     },
                 },
             },
-            'path_delimiter': '/',
+            'path_delimiter': os.path.sep,
         }
         self._create_json_output(json_dict)
         self.wpt_adapter.do_post_test_run_tasks()
@@ -222,7 +222,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
                     },
                 },
             },
-            'path_delimiter': '/',
+            'path_delimiter': os.path.sep,
         }
         self._create_json_output(json_dict)
         self.wpt_adapter.do_post_test_run_tasks()
@@ -257,7 +257,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
                     },
                 },
             },
-            'path_delimiter': '/',
+            'path_delimiter': os.path.sep,
         }
         self._create_json_output(json_dict)
         self.wpt_adapter.do_post_test_run_tasks()
@@ -294,7 +294,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
                     },
                 },
             },
-            'path_delimiter': '/',
+            'path_delimiter': os.path.sep,
         }
         self._create_json_output(json_dict)
         self.wpt_adapter.do_post_test_run_tasks()
@@ -347,7 +347,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
                     },
                 },
             },
-            'path_delimiter': '/',
+            'path_delimiter': os.path.sep,
         }
         self._create_json_output(json_dict)
         # Also create a checked-in metadata file for this test
@@ -420,7 +420,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
                     },
                 },
             },
-            'path_delimiter': '/',
+            'path_delimiter': os.path.sep,
         }
         self._create_json_output(json_dict)
         # Also create a checked-in metadata file for this test. This filename
@@ -478,7 +478,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
                     },
                 },
             },
-            'path_delimiter': '/',
+            'path_delimiter': os.path.sep,
         }
         self._create_json_output(json_dict)
         # Also create a checked-in metadata file for this test. This filename

@@ -257,7 +257,8 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         """
         # When looking into the WPT manifest, we omit "external/wpt" from the
         # test name, since that part of the path is only in Chromium.
-        wpt_test_name = test_name.replace("external/wpt/", "")
+        wpt_test_name = test_name.replace(
+            os.path.join("external", "wpt", ""), "")
         test_file_subpath = self.wpt_manifest.file_path_for_test_url(
             wpt_test_name)
         if not test_file_subpath:
@@ -382,7 +383,8 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             # When comparing the test name to the image URL, we omit
             # "external/wpt" from the test name, since that part of the path is
             # only in Chromium.
-            wpt_test_name = test_name.replace("external/wpt/", "")
+            wpt_test_name = test_name.replace(
+                os.path.join("external", "wpt", ""), "")
             if wpt_test_name == url:
                 screenshot_key = "actual_image"
                 file_suffix = test_failures.FILENAME_SUFFIX_ACTUAL
