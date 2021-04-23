@@ -261,10 +261,14 @@ const gfx::ShadowValues& BubbleBorder::GetShadowValues(
   } else {
     constexpr int kSmallShadowVerticalOffset = 2;
     constexpr int kSmallShadowBlur = 4;
-    SkColor kSmallShadowColor = theme->GetSystemColor(
-        ui::NativeTheme::kColorId_BubbleBorderShadowSmall);
-    SkColor kLargeShadowColor = theme->GetSystemColor(
-        ui::NativeTheme::kColorId_BubbleBorderShadowLarge);
+    SkColor kSmallShadowColor =
+        theme ? theme->GetSystemColor(
+                    ui::NativeTheme::kColorId_BubbleBorderShadowSmall)
+              : gfx::kPlaceholderColor;
+    SkColor kLargeShadowColor =
+        theme ? theme->GetSystemColor(
+                    ui::NativeTheme::kColorId_BubbleBorderShadowLarge)
+              : gfx::kPlaceholderColor;
     // gfx::ShadowValue counts blur pixels both inside and outside the shape,
     // whereas these blur values only describe the outside portion, hence they
     // must be doubled.
