@@ -320,14 +320,6 @@ suite('InternetPage', function() {
           updatedCellularActivationUi: true,
         });
         eSimManagerRemote.addEuiccForTest(1);
-
-        const mojom = chromeos.networkConfig.mojom;
-        mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
-        const cellularNetwork = OncMojo.getDefaultManagedProperties(
-            mojom.NetworkType.kCellular, 'cellular_guid');
-        cellularNetwork.connectable = false;
-        mojoApi_.setManagedPropertiesForTest(cellularNetwork);
-
         await flushAsync();
 
         let cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
@@ -349,6 +341,68 @@ suite('InternetPage', function() {
             cellularSetupDialog.shadowRoot.querySelector('cellular-setup')
                 .shadowRoot.querySelector('#psim-flow-ui');
         assertTrue(!!psimFlow);
+      });
+
+  test(
+      'Show eSIM flow cellular setup dialog if route params' +
+          'contains showCellularSetup, does not contain showPsimFlow, and' +
+          'connected to a non-cellular network',
+      async function() {
+        loadTimeData.overrideValues({
+          updatedCellularActivationUi: true,
+        });
+        eSimManagerRemote.addEuiccForTest(1);
+
+        const mojom = chromeos.networkConfig.mojom;
+        const wifiNetwork =
+            OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi');
+        wifiNetwork.connectionState = mojom.ConnectionStateType.kOnline;
+        mojoApi_.addNetworksForTest([wifiNetwork]);
+        await flushAsync();
+
+        let cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
+        assertFalse(!!cellularSetupDialog);
+
+        const params = new URLSearchParams;
+        params.append('guid', 'cellular_guid');
+        params.append('type', 'Cellular');
+        params.append('name', 'cellular');
+        params.append('showCellularSetup', 'true');
+        settings.Router.getInstance().navigateTo(
+            settings.routes.INTERNET_NETWORKS, params);
+
+        await flushAsync();
+        cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
+        assertTrue(!!cellularSetupDialog);
+        const esimFlow =
+            cellularSetupDialog.shadowRoot.querySelector('cellular-setup')
+                .shadowRoot.querySelector('#esim-flow-ui');
+        assertTrue(!!esimFlow);
+      });
+
+  test(
+      'Show no connection toast if route params' +
+          'contain showCellularSetup, does not contain showPsimFlow,' +
+          'but not connected to a non-cellular network',
+      async function() {
+        loadTimeData.overrideValues({
+          updatedCellularActivationUi: true,
+        });
+        eSimManagerRemote.addEuiccForTest(1);
+
+        assertFalse(!!internetPage.$$('#cellularSetupDialog'));
+
+        const params = new URLSearchParams;
+        params.append('guid', 'cellular_guid');
+        params.append('type', 'Cellular');
+        params.append('name', 'cellular');
+        params.append('showCellularSetup', 'true');
+        settings.Router.getInstance().navigateTo(
+            settings.routes.INTERNET_NETWORKS, params);
+
+        await flushAsync();
+        assertTrue(internetPage.$.errorToast.open);
+        assertFalse(!!internetPage.$$('#cellularSetupDialog'));
       });
 
   test('Show sim lock dialog through URL parameters', async () => {

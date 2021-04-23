@@ -281,12 +281,11 @@ Polymer({
         this.subpageType_ = OncMojo.getNetworkTypeFromString(type);
       }
 
-      this.showCellularSetupDialog_ =
-          queryParams.get('showCellularSetup') === 'true';
-      const showPSimFlow = queryParams.get('showPsimFlow') === 'true';
-      if (showPSimFlow && this.showCellularSetupDialog_) {
-        this.cellularSetupDialogPageName_ =
-            cellularSetup.CellularSetupPageName.PSIM_FLOW_UI;
+      if (queryParams.get('showCellularSetup') === 'true') {
+        const pageName = queryParams.get('showPsimFlow') === 'true' ?
+            cellularSetup.CellularSetupPageName.PSIM_FLOW_UI :
+            cellularSetup.CellularSetupPageName.ESIM_FLOW_UI;
+        this.attemptShowCellularSetupDialog_(pageName);
       }
 
       this.showSimLockDialog_ = !!queryParams.get('showSimLockDialog') &&
@@ -346,9 +345,7 @@ Polymer({
     hasActivePSimNetwork().then((hasActive) => {
       this.hasActivePSimNetwork_ = hasActive;
     });
-    isConnectedToNonCellularNetwork().then((isConnected) => {
-      this.isConnectedToNonCellularNetwork_ = isConnected;
-    });
+    this.updateIsConnectedToNonCellularNetwork_();
   },
 
   onVpnProvidersChanged() {
@@ -356,6 +353,17 @@ Polymer({
       const providers = response.providers;
       providers.sort(this.compareVpnProviders_);
       this.vpnProviders_ = providers;
+    });
+  },
+
+  /**
+   * @return {!Promise<boolean>}
+   * @private
+   */
+  updateIsConnectedToNonCellularNetwork_() {
+    return isConnectedToNonCellularNetwork().then((isConnected) => {
+      this.isConnectedToNonCellularNetwork_ = isConnected;
+      return isConnected;
     });
   },
 
@@ -394,11 +402,32 @@ Polymer({
    * @private
    */
   onShowCellularSetupDialog_(event) {
-    if (this.isConnectedToNonCellularNetwork_) {
+    this.attemptShowCellularSetupDialog_(event.detail.pageName);
+  },
+
+  /**
+   * Opens the cellular setup dialog if pageName is PSIM_FLOW_UI, or if pageName
+   * is ESIM_FLOW_UI and isConnectedToNonCellularNetwork_ is true. If
+   * isConnectedToNonCellularNetwork_ is false, shows an error toast.
+   * @param {cellularSetup.CellularSetupPageName} pageName
+   * @private
+   */
+  attemptShowCellularSetupDialog_(pageName) {
+    if (pageName === cellularSetup.CellularSetupPageName.PSIM_FLOW_UI) {
       this.showCellularSetupDialog_ = true;
-      this.cellularSetupDialogPageName_ = event.detail.pageName;
+      this.cellularSetupDialogPageName_ = pageName;
     } else {
-      this.showErrorToast_(this.i18n('eSimNoConnectionErrorToast'));
+      // isConnectedToNonCellularNetwork_ may
+      // not be fetched yet if the page just opened, fetch it explicitly.
+      this.updateIsConnectedToNonCellularNetwork_().then(
+          ((isConnected) => {
+            this.showCellularSetupDialog_ = isConnected;
+            if (!isConnected) {
+              this.showErrorToast_(this.i18n('eSimNoConnectionErrorToast'));
+              return;
+            }
+            this.cellularSetupDialogPageName_ = pageName;
+          }).bind(this));
     }
   },
 
