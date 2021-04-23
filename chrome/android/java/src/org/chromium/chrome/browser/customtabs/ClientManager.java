@@ -812,7 +812,7 @@ class ClientManager {
      * @param session The session with invalid callback.
      */
     public synchronized void cleanupSession(CustomTabsSessionToken session) {
-        if (session.hasId()) {
+        if (session.hasId() && mSessionParams.containsKey(session)) {
             // Leave session parameters, so client might update callback later.
             // The session will be completely removed when system runs low on memory.
             // {@see #cleanupUnusedSessions}
