@@ -557,7 +557,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
 }
 
 // Failing on Mac. https://crbug.com/1176703
-#if defined(OS_MAC)
+// Flaky on Linux. https://crbug.com/1202112
+#if defined(OS_MAC) || defined(OS_LINUX)
 #define MAYBE_PinningDisabledInIncognito DISABLED_PinningDisabledInIncognito
 #else
 #define MAYBE_PinningDisabledInIncognito PinningDisabledInIncognito
