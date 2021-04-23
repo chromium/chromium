@@ -20,21 +20,14 @@ namespace blink {
 
 class FrameCaretTest : public EditingTestBase {
  public:
-  FrameCaretTest() : was_running_web_test_(WebTestSupport::IsRunningWebTest()) {
-    // The caret blink timer doesn't work if IsRunningWebTest() because
-    // LayoutTheme::CaretBlinkInterval() returns 0.
-    WebTestSupport::SetIsRunningWebTest(false);
-  }
-  ~FrameCaretTest() override {
-    WebTestSupport::SetIsRunningWebTest(was_running_web_test_);
-  }
-
   static bool ShouldShowCaret(const FrameCaret& caret) {
     return caret.ShouldShowCaret();
   }
 
  private:
-  const bool was_running_web_test_;
+  // The caret blink timer doesn't work if IsRunningWebTest() because
+  // LayoutTheme::CaretBlinkInterval() returns 0.
+  ScopedWebTestMode web_test_mode_{false};
 };
 
 TEST_F(FrameCaretTest, BlinkAfterTyping) {

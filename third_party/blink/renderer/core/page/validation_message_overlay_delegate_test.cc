@@ -49,8 +49,7 @@ TEST_P(ValidationMessageOverlayDelegateTest,
   // When WebTestSupport::IsRunningWebTest is set, the animations in
   // ValidationMessageOverlayDelegate are disabled. We are specifically testing
   // animations, so make sure that doesn't happen.
-  bool was_running_web_test = WebTestSupport::IsRunningWebTest();
-  WebTestSupport::SetIsRunningWebTest(false);
+  ScopedWebTestMode web_test_mode(false);
 
   SetBodyInnerHTML("<div id='anchor'></div>");
   Element* anchor = GetElementById("anchor");
@@ -85,8 +84,6 @@ TEST_P(ValidationMessageOverlayDelegateTest,
   for (const auto& animation : animations) {
     EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
   }
-
-  WebTestSupport::SetIsRunningWebTest(was_running_web_test);
 }
 
 // Regression test for https://crbug.com/990680, where we found we were not

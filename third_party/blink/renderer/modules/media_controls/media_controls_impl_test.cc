@@ -1036,7 +1036,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   SetHasAudio(true);
   SimulateLoadedMetadata();
 
-  WebTestSupport::SetIsRunningWebTest(false);
+  ScopedWebTestMode web_test_mode(false);
 
   Element* volume_slider = VolumeSliderElement();
   Element* mute_btn = MuteButtonElement();
@@ -1079,7 +1079,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   platform()->RunForPeriodSeconds(1);
   SetHasAudio(true);
 
-  WebTestSupport::SetIsRunningWebTest(false);
+  ScopedWebTestMode web_test_mode(false);
 
   Element* volume_slider = VolumeSliderElement();
 

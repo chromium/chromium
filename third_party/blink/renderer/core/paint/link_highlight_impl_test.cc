@@ -232,8 +232,9 @@ TEST_P(LinkHighlightImplTest, resetLayerTreeView) {
 }
 
 TEST_P(LinkHighlightImplTest, HighlightLayerEffectNode) {
-  bool was_running_web_test = WebTestSupport::IsRunningWebTest();
-  WebTestSupport::SetIsRunningWebTest(false);
+  // We need to test highlight animation which is disabled in web test mode.
+  ScopedWebTestMode web_test_mode(false);
+
   int page_width = 640;
   int page_height = 480;
   WebViewImpl* web_view_impl = web_view_helper_.GetWebView();
@@ -292,8 +293,6 @@ TEST_P(LinkHighlightImplTest, HighlightLayerEffectNode) {
   UpdateAllLifecyclePhases();
   // Removing the highlight layer should drop the cc layer count by one.
   EXPECT_EQ(layer_count_before_highlight, LayerCount());
-
-  WebTestSupport::SetIsRunningWebTest(was_running_web_test);
 }
 
 TEST_P(LinkHighlightImplTest, MultiColumn) {
