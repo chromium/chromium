@@ -58,8 +58,10 @@ WebVector<base::Optional<std::u16string>> ToOptionalString16Vector(
     const WebVector<WebString>& input,
     WebVector<base::Optional<std::u16string>> output) {
   output.reserve(output.size() + input.size());
-  for (const auto& i : input)
+  for (const auto& i : input) {
+    recordreplay::Assert("ToOptionalString16Vector %d %lu", i.IsNull(), i.length());
     output.emplace_back(WebString::ToOptionalString16(i));
+  }
   return output;
 }
 
