@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
+#include "base/record_replay.h"
 #include "build/build_config.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
@@ -17,6 +18,8 @@
 namespace content {
 
 void InitializeFieldTrialAndFeatureList() {
+  recordreplay::Assert("InitializeFieldTrialAndFeatureList Start");
+
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
@@ -59,6 +62,8 @@ void InitializeFieldTrialAndFeatureList() {
   feature_list->RegisterExtraFeatureOverrides(
       GetSwitchDependentFeatureOverrides(command_line));
   base::FeatureList::SetInstance(std::move(feature_list));
+
+  recordreplay::Assert("InitializeFieldTrialAndFeatureList Done");
 }
 
 }  // namespace content
