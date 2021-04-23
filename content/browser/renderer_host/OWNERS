@@ -10,10 +10,13 @@ sadrul@chromium.org
 # via DelegatedFrame*.
 jonross@chromium.org
 
-# RenderFrame/Frame related code.
+# RenderFrameHost and navigation-related code.
 acolwell@chromium.org
+alexmos@chromium.org
 altimin@chromium.org
 arthursonzogni@chromium.org
+creis@chromium.org
+nasko@chromium.org
 
 # Aura platform code.
 per-file *aura*=sadrul@chromium.org
