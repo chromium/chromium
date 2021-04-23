@@ -380,7 +380,7 @@ void HandleDeviceSelection(
   auto* device = it->get();
 
   ClickToCallUiController::GetOrCreateFromWebContents(web_contents)
-      ->OnDeviceSelected(GetUnescapedURLContent(url), *device,
+      ->OnDeviceSelected(url.GetContent(), *device,
                          SharingClickToCallEntryPoint::kLeftClickLink);
 }
 

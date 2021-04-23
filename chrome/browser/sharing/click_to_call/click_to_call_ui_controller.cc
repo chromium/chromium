@@ -119,7 +119,7 @@ void ClickToCallUiController::OnDeviceChosen(const syncer::DeviceInfo& device) {
   if (ukm_recorder_)
     std::move(ukm_recorder_).Run(SharingClickToCallSelection::kDevice);
 
-  SendNumberToDevice(device, GetUnescapedURLContent(phone_url_),
+  SendNumberToDevice(device, phone_url_.GetContent(),
                      SharingClickToCallEntryPoint::kLeftClickLink);
 }
 

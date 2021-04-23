@@ -9,6 +9,8 @@
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
+#include "chrome/browser/sharing/proto/click_to_call_message.pb.h"
+#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -993,6 +995,13 @@ TEST(ArcExternalProtocolDialogTest,
   EXPECT_TRUE(in_out_safe_to_bypass_ui);
 }
 
+MATCHER_P(ProtoEquals, message, "") {
+  std::string expected_serialized, actual_serialized;
+  message.SerializeToString(&expected_serialized);
+  arg.SerializeToString(&actual_serialized);
+  return expected_serialized == actual_serialized;
+}
+
 // Tests that clicking on a device calls through to SharingService.
 TEST_F(ArcExternalProtocolDialogTestUtils, TestSelectDeviceForTelLink) {
   CreateTab(/*started_from_arc=*/false);
@@ -1004,13 +1013,18 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestSelectDeviceForTelLink) {
   std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
   devices.push_back(CreateFakeDeviceInfo(device_guid));
 
-  EXPECT_CALL(
-      *sharing_service,
-      SendMessageToDevice(Property(&syncer::DeviceInfo::guid, device_guid),
-                          testing::_, testing::_, testing::_));
+  GURL phone_number("tel:073%2099%209999%2099");
+
+  chrome_browser_sharing::SharingMessage sharing_message;
+  sharing_message.mutable_click_to_call_message()->set_phone_number(
+      phone_number.GetContent());
+  EXPECT_CALL(*sharing_service,
+              SendMessageToDevice(
+                  Property(&syncer::DeviceInfo::guid, device_guid), testing::_,
+                  ProtoEquals(sharing_message), testing::_));
 
   OnIntentPickerClosedForTesting(
-      rvh->GetProcess()->GetID(), rvh->GetRoutingID(), GURL("tel:0123456789"),
+      rvh->GetProcess()->GetID(), rvh->GetRoutingID(), phone_number,
       /*safe_to_bypass_ui=*/true, std::move(handlers), std::move(devices),
       /*selected_app_package=*/device_guid, apps::PickerEntryType::kDevice,
       apps::IntentPickerCloseReason::OPEN_APP, /*should_persist=*/false);

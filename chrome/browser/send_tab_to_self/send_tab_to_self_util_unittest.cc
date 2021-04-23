@@ -110,7 +110,7 @@ TEST_F(SendTabToSelfUtilTest, IncognitoMode) {
 }
 
 TEST_F(SendTabToSelfUtilTest, ShouldNotOfferFeatureForTelephoneLink) {
-  url_ = GURL("tel:07387252578");
+  url_ = GURL("tel:07399999999");
 
   AddTab(browser(), url_);
   SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(

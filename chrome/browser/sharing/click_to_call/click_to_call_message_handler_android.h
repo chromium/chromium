@@ -18,6 +18,10 @@ class ClickToCallMessageHandler : public SharingMessageHandler {
   void OnMessage(chrome_browser_sharing::SharingMessage message,
                  SharingMessageHandler::DoneCallback done_callback) override;
 
+ protected:
+  // Calls into Java to handle a |phone_number|. Virtual for testing.
+  virtual void HandlePhoneNumber(const std::string& phone_number);
+
  private:
   DISALLOW_COPY_AND_ASSIGN(ClickToCallMessageHandler);
 };

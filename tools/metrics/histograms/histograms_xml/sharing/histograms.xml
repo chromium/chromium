@@ -79,6 +79,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Sharing.ClickToCallPhoneNumberValid" units="BooleanValid"
+    expires_after="M95">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records if a received phone number is valid. Invalid numbers might suggest
+    that the remote device tried to send malicious data. Logged when handling a
+    Click to Call message on Android received from a Chrome desktop instance.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.ClickToCallSelectedAppIndex" units="index"
     expires_after="2021-08-22">
 <!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->

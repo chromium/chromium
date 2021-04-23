@@ -33,8 +33,7 @@ using ::testing::Property;
 
 namespace {
 
-const char kPhoneNumber[] = "073%2087%202525%2078";
-const char kExpectedPhoneNumber[] = "073 87 2525 78";
+const char kPhoneNumber[] = "073%2099%209999%2099";
 const char kReceiverGuid[] = "test_receiver_guid";
 const char kReceiverName[] = "test_receiver_name";
 
@@ -85,7 +84,7 @@ TEST_F(ClickToCallUiControllerTest, OnDeviceChosen) {
 
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_click_to_call_message()->set_phone_number(
-      kExpectedPhoneNumber);
+      kPhoneNumber);
   EXPECT_CALL(
       *service(),
       SendMessageToDevice(

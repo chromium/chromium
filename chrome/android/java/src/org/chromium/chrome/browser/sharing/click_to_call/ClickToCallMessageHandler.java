@@ -103,11 +103,12 @@ public class ClickToCallMessageHandler {
      */
     private static void displayNotification(String phoneNumber) {
         Context context = ContextUtils.getApplicationContext();
+        String contentTitle = Uri.decode(phoneNumber);
         SharingNotificationUtil.showNotification(
                 NotificationUmaTracker.SystemNotificationType.CLICK_TO_CALL,
                 NotificationConstants.GROUP_CLICK_TO_CALL,
                 NotificationConstants.NOTIFICATION_ID_CLICK_TO_CALL,
-                getContentIntentProvider(phoneNumber), /*deleteIntent=*/null, phoneNumber,
+                getContentIntentProvider(phoneNumber), /*deleteIntent=*/null, contentTitle,
                 context.getResources().getString(R.string.click_to_call_notification_text),
                 R.drawable.ic_devices_16dp, R.drawable.ic_dialer_icon_blue_40dp,
                 R.color.default_icon_color_blue, /*startsActivity=*/true);

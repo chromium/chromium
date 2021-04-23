@@ -112,6 +112,26 @@ TEST_F(ClickToCallUtilsTest, NonTelLink_DoNotOfferForLink) {
   EXPECT_FALSE(ShouldOfferClickToCallForURL(&profile_, GURL(kNonTelUrl)));
 }
 
+TEST_F(ClickToCallUtilsTest, TelLinkWithFragment) {
+  GURL fragment("tel:123#456");
+  EXPECT_TRUE(ShouldOfferClickToCallForURL(&profile_, fragment));
+  EXPECT_EQ("123", fragment.GetContent());
+}
+
+TEST_F(ClickToCallUtilsTest, TelLinkWithEncodedCharacters) {
+  // %23 == '#'
+  EXPECT_FALSE(ShouldOfferClickToCallForURL(&profile_, GURL("tel:123%23456")));
+  // %2A == '*'
+  EXPECT_FALSE(ShouldOfferClickToCallForURL(&profile_, GURL("tel:123%2A456")));
+  EXPECT_FALSE(ShouldOfferClickToCallForURL(&profile_, GURL("tel:123*456")));
+  // %25 == '%'
+  EXPECT_FALSE(ShouldOfferClickToCallForURL(&profile_, GURL("tel:123%25456")));
+
+  // %2B == '+'
+  EXPECT_TRUE(ShouldOfferClickToCallForURL(&profile_, GURL("tel:%2B44123")));
+  EXPECT_TRUE(ShouldOfferClickToCallForURL(&profile_, GURL("tel:+44123")));
+}
+
 TEST_F(ClickToCallUtilsTest,
        SelectionText_ValidPhoneNumberRegex_OfferForSelection) {
   // Stores a mapping of selected text to expected phone number parsed.
@@ -186,4 +206,14 @@ TEST_F(ClickToCallUtilsTest, SelectionText_Digits) {
   // Expect text with 16 digits to fail.
   EXPECT_EQ(base::nullopt,
             ExtractPhoneNumberForClickToCall(&profile_, "+1234567890123456"));
+}
+
+TEST_F(ClickToCallUtilsTest, IsUrlSafeForClickToCall) {
+  EXPECT_FALSE(IsUrlSafeForClickToCall(GURL("tel:123%23456")));
+  EXPECT_FALSE(IsUrlSafeForClickToCall(GURL("tel:123%2A456")));
+  EXPECT_FALSE(IsUrlSafeForClickToCall(GURL("tel:123*456")));
+  EXPECT_FALSE(IsUrlSafeForClickToCall(GURL("tel:123%25456")));
+
+  EXPECT_TRUE(IsUrlSafeForClickToCall(GURL("tel:%2B44123")));
+  EXPECT_TRUE(IsUrlSafeForClickToCall(GURL("tel:+44123")));
 }

@@ -1927,7 +1927,7 @@ void RenderViewContextMenu::AppendClickToCallItem() {
   std::string selection_text;
   if (ShouldOfferClickToCallForURL(browser_context_, params_.link_url)) {
     entry_point = SharingClickToCallEntryPoint::kRightClickLink;
-    phone_number = GetUnescapedURLContent(params_.link_url);
+    phone_number = params_.link_url.GetContent();
   } else if (!params_.selection_text.empty()) {
     entry_point = SharingClickToCallEntryPoint::kRightClickSelection;
     selection_text = base::UTF16ToUTF8(params_.selection_text);

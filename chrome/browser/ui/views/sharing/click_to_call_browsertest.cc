@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE,
                        0);
   CheckLastReceiver(*devices[0]);
-  CheckLastSharingMessageSent(GetUnescapedURLContent(GURL(kTelUrl)));
+  CheckLastSharingMessageSent(GURL(kTelUrl).GetContent());
 }
 
 IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, ContextMenu_NoDevicesAvailable) {
@@ -125,6 +125,42 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, ContextMenu_NoDevicesAvailable) {
       IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE));
   EXPECT_FALSE(menu->IsItemPresent(
       IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES));
+}
+
+IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, ContextMenu_UnsafeTelLink) {
+  Init(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
+       sync_pb::SharingSpecificFields::UNKNOWN);
+  auto devices = sharing_service()->GetDeviceCandidates(
+      sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+  ASSERT_EQ(1u, devices.size());
+
+  std::unique_ptr<TestRenderViewContextMenu> menu = InitContextMenu(
+      GURL("tel:%23*999%23"), kLinkText, kTextWithoutPhoneNumber);
+  EXPECT_FALSE(menu->IsItemPresent(
+      IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE));
+  EXPECT_FALSE(menu->IsItemPresent(
+      IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES));
+}
+
+IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, ContextMenu_EscapedCharacters) {
+  Init(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
+       sync_pb::SharingSpecificFields::UNKNOWN);
+  auto devices = sharing_service()->GetDeviceCandidates(
+      sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
+  ASSERT_EQ(1u, devices.size());
+
+  GURL phone_number("tel:%2B44%20123");
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      InitContextMenu(phone_number, kLinkText, kTextWithoutPhoneNumber);
+  ASSERT_TRUE(menu->IsItemPresent(
+      IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE));
+  EXPECT_FALSE(menu->IsItemPresent(
+      IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES));
+
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE,
+                       0);
+  CheckLastReceiver(*devices[0]);
+  CheckLastSharingMessageSent(phone_number.GetContent());
 }
 
 IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
@@ -181,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
     sub_menu_model->ActivatedAt(device_id);
 
     CheckLastReceiver(*device);
-    CheckLastSharingMessageSent(GetUnescapedURLContent(GURL(kTelUrl)));
+    CheckLastSharingMessageSent(GURL(kTelUrl).GetContent());
     device_id++;
   }
 }
