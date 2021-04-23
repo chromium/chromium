@@ -5,6 +5,9 @@
 export {CrContainerShadowBehavior};
 
 interface CrContainerShadowBehavior {
+  ready(): void;
+  attached(): void;
+  detached(): void;
   enableShadowBehavior(enable: boolean): void;
   showDropShadows(): void;
 }
