@@ -68,7 +68,8 @@ struct CheckedPtrNoOpImpl {
                   "From must be convertible to To.");
     // The outer static_cast may change the address if upcasting to base that
     // lies in the middle of the derived object.
-    return static_cast<To*>(static_cast<From*>(wrapped_ptr));
+    return const_cast<typename std::remove_cv<To>::type*>(
+        static_cast<To*>(static_cast<From*>(wrapped_ptr)));
   }
 
   // Advance the wrapped pointer by |delta| bytes.

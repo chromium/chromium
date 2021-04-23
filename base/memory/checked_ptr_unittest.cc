@@ -485,6 +485,21 @@ TEST_F(CheckedPtrTest, Cast) {
   EXPECT_EQ(checked_const_derived_ptr->b2, 84);
   EXPECT_EQ(checked_const_derived_ptr->d, 1024);
 
+  const Derived* raw_const_derived_ptr2 = checked_const_derived_ptr;
+  EXPECT_EQ(raw_const_derived_ptr2->b1, 42);
+  EXPECT_EQ(raw_const_derived_ptr2->b2, 84);
+  EXPECT_EQ(raw_const_derived_ptr2->d, 1024);
+
+  CheckedPtr<const Derived> checked_const_derived_ptr2 = raw_derived_ptr;
+  EXPECT_EQ(checked_const_derived_ptr2->b1, 42);
+  EXPECT_EQ(checked_const_derived_ptr2->b2, 84);
+  EXPECT_EQ(checked_const_derived_ptr2->d, 1024);
+
+  CheckedPtr<const Derived> checked_const_derived_ptr3 = checked_derived_ptr2;
+  EXPECT_EQ(checked_const_derived_ptr3->b1, 42);
+  EXPECT_EQ(checked_const_derived_ptr3->b2, 84);
+  EXPECT_EQ(checked_const_derived_ptr3->d, 1024);
+
   volatile Derived* raw_volatile_derived_ptr = checked_derived_ptr2;
   EXPECT_EQ(raw_volatile_derived_ptr->b1, 42);
   EXPECT_EQ(raw_volatile_derived_ptr->b2, 84);
