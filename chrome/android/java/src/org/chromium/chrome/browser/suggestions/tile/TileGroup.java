@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsOfflineModelObserver;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
+import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -122,6 +123,12 @@ public class TileGroup implements MostVisitedSites.Observer {
          * be responsible for updating the tile data and triggering the visual refresh.
          */
         LargeIconBridge.LargeIconCallback createIconLoadCallback(Tile tile);
+
+        /**
+         * Updates the layout of the TileView if it isn't null. This method is called when a tile is
+         * build.
+         */
+        default void updateTileViewLayout(TileView tileView) {}
     }
 
     /**

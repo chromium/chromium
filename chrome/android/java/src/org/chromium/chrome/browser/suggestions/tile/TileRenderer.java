@@ -172,6 +172,7 @@ public class TileRenderer {
         }
 
         tileView.initialize(tile, mTitleLinesCount);
+        setupDelegate.updateTileViewLayout(tileView);
 
         if (!LibraryLoader.getInstance().isInitialized()) {
             return tileView;

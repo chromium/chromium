@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -53,7 +54,7 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
     // There's a limit of 12 in {@link MostVisitedSitesBridge#setObserver}.
     private static final int MAX_RESULTS = 12;
     private final Activity mActivity;
-    private final ViewGroup mParent;
+    private final MvTilesLayout mMvTilesLayout;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
     private final Supplier<Tab> mParentTabSupplier;
     private final SnackbarManager mSnackbarManager;
@@ -62,13 +63,13 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
     private SuggestionsUiDelegate mSuggestionsUiDelegate;
     private boolean mInitializationComplete;
 
-    public MostVisitedListCoordinator(Activity activity, ViewGroup parent,
+    public MostVisitedListCoordinator(Activity activity, MvTilesLayout mvTilesLayout,
             PropertyModel propertyModel, Supplier<Tab> parentTabSupplier,
             SnackbarManager snackbarManager) {
         mActivity = activity;
-        mParent = parent;
+        mMvTilesLayout = mvTilesLayout;
         mModelChangeProcessor = PropertyModelChangeProcessor.create(
-                propertyModel, mParent, MostVisitedListViewBinder::bind);
+                propertyModel, mMvTilesLayout, MostVisitedListViewBinder::bind);
         mParentTabSupplier = parentTabSupplier;
         mSnackbarManager = snackbarManager;
     }
@@ -86,7 +87,7 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
                 List<Tile> tiles =
                         MostVisitedSitesMetadataUtils.restoreFileToSuggestionListsOnUiThread();
                 if (tiles != null) {
-                    mRenderer.renderTileSection(tiles, mParent, this);
+                    mRenderer.renderTileSection(tiles, mMvTilesLayout, this);
                 }
             } catch (IOException e) {
                 Log.i(TAG, "No cached MV tiles file.");
@@ -121,7 +122,10 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
 
     private void updateTileIcon(Tile tile) {
         SuggestionsTileView tileView = findTileView(tile);
-        if (tileView != null) tileView.renderIcon(tile);
+        if (tileView != null) {
+            tileView.renderIcon(tile);
+            mMvTilesLayout.updateSingleTileViewLayout(tileView);
+        }
     }
 
     private void updateOfflineBadge(Tile tile) {
@@ -130,8 +134,8 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
     }
 
     private SuggestionsTileView findTileView(Tile tile) {
-        for (int i = 0; i < mParent.getChildCount(); i++) {
-            View tileView = mParent.getChildAt(i);
+        for (int i = 0; i < mMvTilesLayout.getChildCount(); i++) {
+            View tileView = mMvTilesLayout.getChildAt(i);
 
             assert tileView instanceof SuggestionsTileView : "Tiles must be SuggestionsTileView";
 
@@ -149,8 +153,8 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
     public void onTileDataChanged() {
         if (mTileGroup.getTileSections().size() < 1) return;
 
-        mRenderer.renderTileSection(
-                mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED), mParent, this);
+        mRenderer.renderTileSection(mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED),
+                mMvTilesLayout, this);
 
         MostVisitedSitesMetadataUtils.getInstance().saveSuggestionListsToFile(
                 mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED));
@@ -192,6 +196,11 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
         };
 
         return callback;
+    }
+
+    @Override
+    public void updateTileViewLayout(TileView tileView) {
+        mMvTilesLayout.updateSingleTileViewLayout(tileView);
     }
 
     /** Handle interactions with the Most Visited tiles. */
