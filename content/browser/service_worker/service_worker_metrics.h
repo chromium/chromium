@@ -6,8 +6,6 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_METRICS_H_
 
 #include <stddef.h>
-#include <map>
-#include <set>
 
 #include "base/macros.h"
 #include "base/time/time.h"

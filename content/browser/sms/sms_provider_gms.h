@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_SMS_SMS_PROVIDER_GMS_H_
 #define CONTENT_BROWSER_SMS_SMS_PROVIDER_GMS_H_
 
-#include <utility>
-
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"

@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"

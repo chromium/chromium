@@ -6,10 +6,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-#include <set>
-#include <string>
-
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/process/process.h"

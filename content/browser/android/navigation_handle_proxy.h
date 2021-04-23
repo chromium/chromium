@@ -9,9 +9,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "net/http/http_request_headers.h"
 
-#include <string>
-#include <vector>
-
 namespace content {
 
 class NavigationHandle;

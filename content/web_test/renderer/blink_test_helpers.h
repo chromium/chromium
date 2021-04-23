@@ -8,8 +8,6 @@
 #include "base/strings/string_piece.h"
 #include "third_party/blink/public/platform/web_url.h"
 
-#include <string>
-
 namespace blink {
 namespace web_pref {
 struct WebPreferences;

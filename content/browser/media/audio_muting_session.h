@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_MEDIA_AUDIO_MUTING_SESSION_H_
 #define CONTENT_BROWSER_MEDIA_AUDIO_MUTING_SESSION_H_
 
-#include <utility>
-
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"

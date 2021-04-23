@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"

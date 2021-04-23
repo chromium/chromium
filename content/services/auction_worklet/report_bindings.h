@@ -5,10 +5,6 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_REPORT_BINDINGS_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_REPORT_BINDINGS_H_
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "base/callback.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "url/gurl.h"

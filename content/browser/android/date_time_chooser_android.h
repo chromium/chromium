@@ -5,10 +5,6 @@
 #ifndef CONTENT_BROWSER_ANDROID_DATE_TIME_CHOOSER_ANDROID_H_
 #define CONTENT_BROWSER_ANDROID_DATE_TIME_CHOOSER_ANDROID_H_
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
 #include "content/public/browser/web_contents_user_data.h"

@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_PEPPER_PEPPER_SOCKET_UTILS_H_
 #define CONTENT_BROWSER_RENDERER_HOST_PEPPER_PEPPER_SOCKET_UTILS_H_
 
-#include <memory>
-
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/common/socket_permission_request.h"

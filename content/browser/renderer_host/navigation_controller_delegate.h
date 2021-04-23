@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"

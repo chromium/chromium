@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_DIRECT_SOCKETS_DIRECT_SOCKETS_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_DIRECT_SOCKETS_DIRECT_SOCKETS_SERVICE_IMPL_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host.h"

@@ -5,9 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_WEB_DRAG_DEST_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_WEB_DRAG_DEST_DELEGATE_H_
 
-#include <string>
-
-
 namespace ui {
 class OSExchangeData;
 }

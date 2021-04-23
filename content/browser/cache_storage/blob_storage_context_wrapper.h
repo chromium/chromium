@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_CACHE_STORAGE_BLOB_STORAGE_CONTEXT_WRAPPER_H_
 #define CONTENT_BROWSER_CACHE_STORAGE_BLOB_STORAGE_CONTEXT_WRAPPER_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/common/content_export.h"

@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_IDLE_IDLE_MONITOR_H_
 #define CONTENT_BROWSER_IDLE_IDLE_MONITOR_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/containers/linked_list.h"
 #include "base/sequence_checker.h"

@@ -5,8 +5,6 @@
 #ifndef CONTENT_COMMON_INPUT_SYNTHETIC_GESTURE_PARAMS_H_
 #define CONTENT_COMMON_INPUT_SYNTHETIC_GESTURE_PARAMS_H_
 
-#include <memory>
-
 #include "content/common/content_export.h"
 #include "content/common/input/input_injector.mojom-shared.h"
 

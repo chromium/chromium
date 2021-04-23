@@ -5,8 +5,6 @@
 #ifndef CONTENT_PUBLIC_COMMON_CHILD_PROCESS_HOST_DELEGATE_H_
 #define CONTENT_PUBLIC_COMMON_CHILD_PROCESS_HOST_DELEGATE_H_
 
-#include <string>
-
 #include "base/process/process.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_listener.h"

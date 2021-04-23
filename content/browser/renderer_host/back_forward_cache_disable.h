@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_BACK_FORWARD_CACHE_DISABLE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_BACK_FORWARD_CACHE_DISABLE_H_
 
-#include <string>
-
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/global_routing_id.h"

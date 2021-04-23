@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_COMPOSITOR_SURFACE_UTILS_H_
 #define CONTENT_BROWSER_COMPOSITOR_SURFACE_UTILS_H_
 
-#include <memory>
-
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/common/content_export.h"
 

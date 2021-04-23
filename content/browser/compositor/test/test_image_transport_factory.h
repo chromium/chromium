@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_COMPOSITOR_TEST_TEST_IMAGE_TRANSPORT_FACTORY_H_
 #define CONTENT_BROWSER_COMPOSITOR_TEST_TEST_IMAGE_TRANSPORT_FACTORY_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"

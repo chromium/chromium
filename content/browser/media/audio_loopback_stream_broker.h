@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_MEDIA_AUDIO_LOOPBACK_STREAM_BROKER_H_
 
 #include <cstdint>
-#include <string>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

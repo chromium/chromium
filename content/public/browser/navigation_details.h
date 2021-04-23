@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_NAVIGATION_DETAILS_H_
 #define CONTENT_PUBLIC_BROWSER_NAVIGATION_DETAILS_H_
 
-#include <string>
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_type.h"
 #include "url/gurl.h"

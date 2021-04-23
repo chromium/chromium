@@ -12,9 +12,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_MEDIA_STREAM_PROVIDER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_MEDIA_STREAM_PROVIDER_H_
 
-#include <list>
-#include <string>
-
 #include "base/memory/ref_counted.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"

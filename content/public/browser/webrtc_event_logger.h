@@ -5,8 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_WEBRTC_EVENT_LOGGER_H_
 #define CONTENT_PUBLIC_BROWSER_WEBRTC_EVENT_LOGGER_H_
 
-#include <string>
-
 #include "base/files/file_path.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"

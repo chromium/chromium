@@ -5,9 +5,6 @@
 #ifndef CONTENT_TEST_TEST_CONTENT_CLIENT_H_
 #define CONTENT_TEST_TEST_CONTENT_CLIENT_H_
 
-#include <string>
-#include <vector>
-
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "content/public/common/content_client.h"

@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_EVENT_DISPATCHER_H_
 
 #include <stdint.h>
-#include <string>
 
 #include "base/callback_forward.h"
 #include "base/macros.h"

@@ -5,9 +5,6 @@
 #ifndef CONTENT_PUBLIC_GPU_CONTENT_GPU_CLIENT_H_
 #define CONTENT_PUBLIC_GPU_CONTENT_GPU_CLIENT_H_
 
-#include <memory>
-#include <string>
-
 #include "base/metrics/field_trial.h"
 #include "base/single_thread_task_runner.h"
 #include "content/public/common/content_client.h"

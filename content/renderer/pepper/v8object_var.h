@@ -5,8 +5,6 @@
 #ifndef CONTENT_RENDERER_PEPPER_V8OBJECT_VAR_H_
 #define CONTENT_RENDERER_PEPPER_V8OBJECT_VAR_H_
 
-#include <string>
-
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "content/common/content_export.h"

@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <memory>
-
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/discardable_memory.h"

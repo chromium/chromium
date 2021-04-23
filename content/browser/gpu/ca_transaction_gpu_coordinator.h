@@ -9,8 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 
-#include <memory>
-
 namespace content {
 
 class GpuProcessHost;

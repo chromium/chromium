@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_LEVELDB_ENV_H_
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_LEVELDB_ENV_H_
 
-#include <memory>
 #include <tuple>
 
 #include "base/no_destructor.h"

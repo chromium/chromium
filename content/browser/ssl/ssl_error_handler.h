@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_SSL_SSL_ERROR_HANDLER_H_
 #define CONTENT_BROWSER_SSL_SSL_ERROR_HANDLER_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"

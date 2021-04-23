@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_APPCACHE_APPCACHE_BACKEND_IMPL_H_
 
 #include <stdint.h>
-#include <memory>
 
 #include "content/browser/appcache/appcache_host.h"
 #include "content/browser/child_process_security_policy_impl.h"

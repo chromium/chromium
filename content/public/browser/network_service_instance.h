@@ -5,8 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_NETWORK_SERVICE_INSTANCE_H_
 #define CONTENT_PUBLIC_BROWSER_NETWORK_SERVICE_INSTANCE_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "build/build_config.h"

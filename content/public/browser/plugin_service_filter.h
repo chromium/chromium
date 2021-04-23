@@ -5,8 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PLUGIN_SERVICE_FILTER_H_
 #define CONTENT_PUBLIC_BROWSER_PLUGIN_SERVICE_FILTER_H_
 
-#include <string>
-
 class GURL;
 
 namespace base {

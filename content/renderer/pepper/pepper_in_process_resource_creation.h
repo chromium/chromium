@@ -5,8 +5,6 @@
 #ifndef CONTENT_RENDERER_PEPPER_PEPPER_IN_PROCESS_RESOURCE_CREATION_H_
 #define CONTENT_RENDERER_PEPPER_PEPPER_IN_PROCESS_RESOURCE_CREATION_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "content/renderer/pepper/resource_creation_impl.h"
 #include "ppapi/proxy/connection.h"

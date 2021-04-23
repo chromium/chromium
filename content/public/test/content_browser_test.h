@@ -5,8 +5,6 @@
 #ifndef CONTENT_PUBLIC_TEST_CONTENT_BROWSER_TEST_H_
 #define CONTENT_PUBLIC_TEST_CONTENT_BROWSER_TEST_H_
 
-#include <memory>
-
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "content/public/test/browser_test_base.h"

@@ -5,8 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_EYE_DROPPER_LISTENER_H_
 #define CONTENT_PUBLIC_BROWSER_EYE_DROPPER_LISTENER_H_
 
-#include <memory>
-
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace content {

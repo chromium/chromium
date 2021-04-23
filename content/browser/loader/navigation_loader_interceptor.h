@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_LOADER_NAVIGATION_LOADER_INTERCEPTOR_H_
 #define CONTENT_BROWSER_LOADER_NAVIGATION_LOADER_INTERCEPTOR_H_
 
-#include <memory>
-
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/optional.h"

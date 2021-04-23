@@ -5,10 +5,6 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_MAC_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_MAC_H_
 
-#include <map>
-#include <utility>
-#include <vector>
-
 #include "base/macros.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/common/content_export.h"

@@ -5,8 +5,6 @@
 #ifndef CONTENT_COMMON_CURSORS_WEBCURSOR_H_
 #define CONTENT_COMMON_CURSORS_WEBCURSOR_H_
 
-#include <vector>
-
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "ui/base/cursor/cursor.h"

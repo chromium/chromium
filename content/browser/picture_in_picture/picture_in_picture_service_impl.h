@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_SERVICE_IMPL_H_
 
-#include <memory>
-
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_service_base.h"
 #include "media/mojo/mojom/media_player.mojom.h"

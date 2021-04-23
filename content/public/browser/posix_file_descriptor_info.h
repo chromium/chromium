@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <memory>
-
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/process/launch.h"

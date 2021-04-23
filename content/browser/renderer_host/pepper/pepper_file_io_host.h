@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/callback_forward.h"
 #include "base/files/file.h"
 #include "base/files/file_proxy.h"

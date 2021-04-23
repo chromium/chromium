@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_ERROR_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_ERROR_H_
 
-#include <string>
-
 #include "base/files/file.h"
 #include "base/strings/string_piece.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
