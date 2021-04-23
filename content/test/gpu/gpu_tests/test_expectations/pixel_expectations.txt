@@ -409,6 +409,7 @@ crbug.com/1175753 [ mac release apple-apple-m1 ] Pixel_Video_BackdropFilter [ Sk
 
 # Flakes on Mac AMD, Intel and nVidia
 crbug.com/1198890 [ mac ] Pixel_CSSFilterEffects_NoOverlays [ Failure ]
+crbug.com/1201977 [ mac ] Pixel_CSSFilterEffects [ Failure ]
 
 # Long-standing flake on Kevin devices due to disappearing mailbox.
 crbug.com/1200504 [ chromeos chromeos-board-kevin ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
