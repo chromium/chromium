@@ -227,12 +227,12 @@ body.has-pan-support.has-tilt-support.has-zoom-support #panel-container {
 
 /* TODO(b/172881094): Polish active visual look of clipped button. */
 
-body.has-pan-support.has-tilt-support.has-zoom-support #panel-container button {
+body.has-pan-support.has-tilt-support.has-zoom-support :is(#tilt-down, #tilt-up, #pan-left, #pan-right) {
   height: 100%;
   width: 100%;
 }
 
-body.has-pan-support.has-tilt-support.has-zoom-support #panel-container button::before {
+body.has-pan-support.has-tilt-support.has-zoom-support :is(#tilt-down, #tilt-up, #pan-left, #pan-right)::before {
   left: var(--x);
   top: var(--y);
 }
@@ -266,27 +266,28 @@ body.has-pan-support.has-tilt-support.has-zoom-support #pan-right {
 }
 
 body.has-pan-support.has-tilt-support.has-zoom-support :is(#zoom-in, #zoom-out) {
-  z-index: 1;
+  --radius: 38px;
+
+  height: calc(var(--radius) * 2);
+  width: var(--radius);
 }
 
 body.has-pan-support.has-tilt-support.has-zoom-support #zoom-in {
-  --x: calc(48px * 2 + 16px);
-  --y: calc(calc(192px - var(--svg-height)) / 2);
-
-  clip-path: path('M 96 134 L 96 58 A 38 38 0 0 1 96 134 Z');
+  border-radius: 0 var(--radius) var(--radius) 0;
+  left: 50%;
+  top: calc(50% - var(--radius));
 }
 
 body.has-pan-support.has-tilt-support.has-zoom-support #zoom-out {
-  --x: calc(48px * 2 - 16px - var(--svg-width));
-  --y: calc(calc(192px - var(--svg-height)) / 2);
-
-  clip-path: path('M 96 134 L 96 58 A 38 38 0 0 0 96 134 Z');
+  border-radius: var(--radius) 0 0 var(--radius);
+  left: calc(50% - var(--radius));
+  top: calc(50% - var(--radius));
 }
 
 /* Focus ring. */
 
 #panel-container button:focus::after {
-  --ring-radius: calc(max(var(--svg-width), var(--svg-height)) / 2 + 4px);
+  --ring-radius: calc(max(var(--svg-width), var(--svg-height)) / 2 + 8px);
 
   border-radius: 50%;
   height: calc(var(--ring-radius) * 2);
@@ -296,7 +297,7 @@ body.has-pan-support.has-tilt-support.has-zoom-support #zoom-out {
   width: calc(var(--ring-radius) * 2);
 }
 
-body.has-pan-support.has-tilt-support.has-zoom-support #panel-container button:focus::after {
+body.has-pan-support.has-tilt-support.has-zoom-support #panel-container :is(#tilt-down, #tilt-up, #pan-left, #pan-right):focus::after {
   left: calc(var(--x) + var(--svg-width) / 2);
   top: calc(var(--y) + var(--svg-height) / 2);
 }
