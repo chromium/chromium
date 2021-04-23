@@ -480,7 +480,15 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "SyncDisabled": true },
-        "prefs": { "sync.managed": {} }
+        "prefs": { "sync.managed": { "value": true } }
+      },
+      {
+        "policies": { "SyncDisabled": false },
+        "prefs": { "sync.managed": { "value": false, "expect_default": true } }
+      },
+      {
+        "policies": { },
+        "prefs": { "sync.managed": { "value": false, "expect_default": true } }
       }
     ]
   },
