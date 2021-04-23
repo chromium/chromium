@@ -4230,6 +4230,12 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
 
   // Default UIA Property Ids.
   switch (property_id) {
+    case UIA_AnnotationObjectsPropertyId: {
+      result->vt = VT_ARRAY | VT_UNKNOWN;
+      result->parray = CreateUIAElementsArrayForRelation(
+          ax::mojom::IntListAttribute::kDetailsIds);
+      break;
+    }
     case UIA_AriaPropertiesPropertyId:
       result->vt = VT_BSTR;
       result->bstrVal = SysAllocString(ComputeUIAProperties().c_str());
@@ -4582,7 +4588,6 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
       break;
 
     // Not currently implemented.
-    case UIA_AnnotationObjectsPropertyId:
     case UIA_AnnotationTypesPropertyId:
     case UIA_CenterPointPropertyId:
     case UIA_FillColorPropertyId:

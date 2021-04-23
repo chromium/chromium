@@ -4149,6 +4149,38 @@ TEST_F(AXPlatformNodeWinTest,
                      UIA_IsControlElementPropertyId, false);
 }
 
+TEST_F(AXPlatformNodeWinTest, UIAGetAnnotationObjectsPropertyId) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.SetName("root");
+  root.AddIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds, {2, 3});
+
+  AXNodeData highlighted;
+  highlighted.id = 2;
+  highlighted.role = ax::mojom::Role::kMark;
+  highlighted.SetName("highlighted");
+  root.child_ids.push_back(highlighted.id);
+
+  AXNodeData comment;
+  comment.id = 3;
+  comment.role = ax::mojom::Role::kComment;
+  comment.SetName("comment");
+  root.child_ids.push_back(comment.id);
+
+  Init(root, highlighted, comment);
+  ComPtr<IRawElementProviderSimple> root_node =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(GetRootAsAXNode());
+
+  ScopedVariant array;
+  ASSERT_HRESULT_SUCCEEDED(root_node->GetPropertyValue(
+      UIA_AnnotationObjectsPropertyId, array.Receive()));
+  ASSERT_EQ(VT_ARRAY | VT_UNKNOWN, array.type());
+  std::vector<std::wstring> expected_names = {L"highlighted", L"comment"};
+  EXPECT_UIA_ELEMENT_ARRAY_BSTR_EQ(array.ptr()->parray, UIA_NamePropertyId,
+                                   expected_names);
+}
+
 TEST_F(AXPlatformNodeWinTest, UIAGetControllerForPropertyId) {
   AXNodeData root;
   root.id = 1;
