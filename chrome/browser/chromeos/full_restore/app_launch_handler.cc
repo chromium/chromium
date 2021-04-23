@@ -17,7 +17,8 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/full_restore/arc_window_handler.h"
+#include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/full_restore/app_launch_info.h"
@@ -253,6 +254,7 @@ void AppLaunchHandler::LaunchArcApp(
     const ::full_restore::RestoreData::LaunchList& launch_list) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   DCHECK(proxy);
+  auto* arc_handler = FullRestoreArcTaskHandler::GetForProfile(profile_);
 
   for (const auto& it : launch_list) {
     DCHECK(it.second->event_flag.has_value());
@@ -268,6 +270,14 @@ void AppLaunchHandler::LaunchArcApp(
     window_info->window_id = arc_session_id;
     ::full_restore::FullRestoreReadHandler::GetInstance()
         ->SetArcSessionIdForWindowId(arc_session_id, it.first);
+
+#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
+    if (!window_info->bounds.is_null() && arc_handler &&
+        arc_handler->window_handler()) {
+      arc_handler->window_handler()->LaunchArcGhostWindow(
+          app_id, arc_session_id, it.second.get());
+    }
+#endif
 
     if (it.second->intent.has_value()) {
       proxy->LaunchAppWithIntent(app_id, it.second->event_flag.value(),

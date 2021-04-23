@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 
+#include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/full_restore/full_restore_utils.h"

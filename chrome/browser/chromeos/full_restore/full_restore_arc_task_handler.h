@@ -36,6 +36,10 @@ class FullRestoreArcTaskHandler : public KeyedService,
 
   ~FullRestoreArcTaskHandler() override;
 
+#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
+  ArcWindowHandler* window_handler() { return window_handler_.get(); }
+#endif
+
   // ArcAppListPrefs::Observer.
   void OnTaskCreated(int32_t task_id,
                      const std::string& package_name,

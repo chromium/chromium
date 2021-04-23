@@ -4,63 +4,16 @@
 
 #include "chrome/browser/chromeos/full_restore/arc_window_handler.h"
 
-#include "ash/public/cpp/ash_features.h"
-#include "components/arc/arc_util.h"
+#include "chrome/browser/chromeos/full_restore/arc_ghost_window_shell_surface.h"
+#include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
 #include "components/exo/shell_surface_util.h"
-#include "ui/display/display.h"
-#include "ui/display/screen.h"
+#include "components/exo/wm_helper.h"
+#include "components/full_restore/app_restore_data.h"
 #include "ui/gfx/geometry/rect.h"
-
-namespace {
-
-base::Optional<double> GetDisplayScaleFactor(int64_t display_id) {
-  display::Display display;
-  if (display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
-                                                            &display)) {
-    return display.device_scale_factor();
-  }
-  return base::nullopt;
-}
-
-void ScaleToRoundedRect(apps::mojom::Rect* rect, double scale_factor) {
-  if (rect == nullptr)
-    return;
-  auto res_rect = gfx::ScaleToRoundedRect(
-      gfx::Rect(rect->x, rect->y, rect->width, rect->height), scale_factor);
-  rect->x = res_rect.x();
-  rect->y = res_rect.y();
-  rect->width = res_rect.width();
-  rect->height = res_rect.height();
-}
-
-}  // namespace
+#include "ui/views/background.h"
 
 namespace chromeos {
 namespace full_restore {
-
-bool IsArcGhostWindowEnabled() {
-  return ash::features::IsFullRestoreEnabled() &&
-         ash::features::IsArcGhostWindowEnabled() && arc::IsArcVmEnabled();
-}
-
-apps::mojom::WindowInfoPtr HandleArcWindowInfo(
-    apps::mojom::WindowInfoPtr window_info) {
-  // Remove ARC bounds info if the ghost window disabled. The bounds will
-  // be controlled by ARC.
-  if (!IsArcGhostWindowEnabled()) {
-    window_info->bounds.reset();
-    return window_info;
-  }
-  auto scale_factor = GetDisplayScaleFactor(window_info->display_id);
-  // Remove ARC bounds info if the the display doesn't exist. The bounds will
-  // be controlled by ARC.
-  if (!scale_factor.has_value()) {
-    window_info->bounds.reset();
-    return window_info;
-  }
-  ScaleToRoundedRect(window_info->bounds.get(), scale_factor.value());
-  return window_info;
-}
 
 ArcWindowHandler::WindowSessionResolver::WindowSessionResolver(
     ShellSurfaceMap* session_id_map)
@@ -87,6 +40,24 @@ ArcWindowHandler::ArcWindowHandler() {
 }
 
 ArcWindowHandler::~ArcWindowHandler() = default;
+
+void ArcWindowHandler::LaunchArcGhostWindow(
+    const std::string& app_id,
+    int32_t session_id,
+    ::full_restore::AppRestoreData* restore_data) {
+  DCHECK(restore_data);
+  DCHECK(restore_data->current_bounds.has_value());
+  DCHECK(restore_data->display_id.has_value());
+
+  auto container = std::make_unique<views::View>();
+  container->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+
+  session_id_to_shell_surface_.emplace(
+      session_id, InitArcGhostWindow(this, app_id, session_id,
+                                     restore_data->display_id.value(),
+                                     restore_data->current_bounds.value(),
+                                     std::move(container)));
+}
 
 void ArcWindowHandler::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);

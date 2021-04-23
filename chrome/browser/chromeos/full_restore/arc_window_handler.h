@@ -9,28 +9,13 @@
 #include "base/observer_list_types.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/wm_helper.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 
-namespace exo {
-class ClientControlledShellSurface;
+namespace full_restore {
+struct AppRestoreData;
 }
 
 namespace chromeos {
 namespace full_restore {
-
-// Returns true if the ARC supports ghost window.
-bool IsArcGhostWindowEnabled();
-
-// Returns window info compatible with ARC. If the window bounds is not
-// appropriate for the display, it will be removed.
-//
-// The app window bounds can be decided if and only if it matches the
-// conditions:
-//   1. The |display_id| still exists on system.
-//   2. Previous ARC app window bounds on display is recorded.
-// Otherwise returns null.
-apps::mojom::WindowInfoPtr HandleArcWindowInfo(
-    apps::mojom::WindowInfoPtr window_info);
 
 // The ArcWindowHandler class provides control for ARC ghost window.
 class ArcWindowHandler {
@@ -56,6 +41,7 @@ class ArcWindowHandler {
     ShellSurfaceMap* session_id_map_;
   };
 
+ public:
   // This class is used to notify observers that AppInstance is connected.
   class Observer : public base::CheckedObserver {
    public:
@@ -66,11 +52,14 @@ class ArcWindowHandler {
     ~Observer() override = default;
   };
 
- public:
   ArcWindowHandler();
   ArcWindowHandler(const ArcWindowHandler&) = delete;
   ArcWindowHandler& operator=(const ArcWindowHandler&) = delete;
   ~ArcWindowHandler();
+
+  void LaunchArcGhostWindow(const std::string& app_id,
+                            int32_t session_id,
+                            ::full_restore::AppRestoreData* restore_data);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

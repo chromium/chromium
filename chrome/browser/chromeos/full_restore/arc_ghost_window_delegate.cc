@@ -1,0 +1,142 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/chromeos/full_restore/arc_ghost_window_delegate.h"
+
+#include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+
+namespace chromeos {
+namespace full_restore {
+
+ArcGhostWindowDelegate::ArcGhostWindowDelegate(
+    exo::ClientControlledShellSurface* shell_surface,
+    chromeos::full_restore::ArcWindowHandler* handler,
+    int window_id,
+    int64_t display_id,
+    gfx::Rect bounds)
+    : window_id_(window_id),
+      bounds_(gfx::Rect(bounds)),
+      window_state_(chromeos::WindowStateType::kDefault),
+      shell_surface_(shell_surface) {
+  DCHECK(shell_surface);
+  observation_.Observe(handler);
+  SetDisplayId(display_id);
+}
+ArcGhostWindowDelegate::~ArcGhostWindowDelegate() = default;
+
+void ArcGhostWindowDelegate::OnGeometryChanged(const gfx::Rect& geometry) {}
+
+void ArcGhostWindowDelegate::OnStateChanged(
+    chromeos::WindowStateType old_state_type,
+    chromeos::WindowStateType new_state) {
+  switch (new_state) {
+    case chromeos::WindowStateType::kNormal:
+    case chromeos::WindowStateType::kDefault:
+      shell_surface_->SetRestored();
+      break;
+    case chromeos::WindowStateType::kMinimized:
+      shell_surface_->SetMinimized();
+      break;
+    case chromeos::WindowStateType::kMaximized:
+      shell_surface_->SetMaximized();
+      break;
+    case chromeos::WindowStateType::kFullscreen:
+      shell_surface_->SetFullscreen(true);
+      break;
+    default:
+      NOTIMPLEMENTED();
+      break;
+  }
+  shell_surface_->OnSurfaceCommit();
+  window_state_ = new_state;
+}
+
+void ArcGhostWindowDelegate::OnBoundsChanged(
+    chromeos::WindowStateType current_state,
+    chromeos::WindowStateType requested_state,
+    int64_t display_id,
+    const gfx::Rect& bounds_in_screen,
+    bool is_resize,
+    int bounds_change) {
+  auto* window_state =
+      ash::WindowState::Get(shell_surface_->GetWidget()->GetNativeWindow());
+
+  if (!window_state || !shell_surface_->host_window()->GetRootWindow())
+    return;
+
+  display::Display target_display;
+  const display::Screen* screen = display::Screen::GetScreen();
+
+  if (!screen->GetDisplayWithDisplayId(display_id, &target_display))
+    return;
+
+  if (display_id_ != display_id) {
+    if (!SetDisplayId(display_id))
+      return;
+  }
+
+  // Don't change the bounds in maximize/fullscreen/pinned state.
+  if (window_state->IsMaximizedOrFullscreenOrPinned() &&
+      requested_state == window_state->GetStateType()) {
+    return;
+  }
+
+  gfx::Rect bounds_in_display(bounds_in_screen);
+  bounds_in_display.Offset(-target_display.bounds().OffsetFromOrigin());
+  shell_surface_->SetBounds(display_id, bounds_in_display);
+
+  if (requested_state != window_state->GetStateType()) {
+    DCHECK(requested_state == chromeos::WindowStateType::kLeftSnapped ||
+           requested_state == chromeos::WindowStateType::kRightSnapped);
+
+    if (requested_state == chromeos::WindowStateType::kLeftSnapped)
+      shell_surface_->SetSnappedToLeft();
+    else
+      shell_surface_->SetSnappedToRight();
+    // TODO(sstan): Currently the snap state will be ignored. Sync it to ARC.
+  }
+  shell_surface_->OnSurfaceCommit();
+  bounds_ = gfx::Rect(bounds_in_display);
+  UpdateWindowInfoToArc();
+}
+
+void ArcGhostWindowDelegate::OnDragStarted(int component) {}
+
+void ArcGhostWindowDelegate::OnDragFinished(int x, int y, bool canceled) {}
+
+void ArcGhostWindowDelegate::OnZoomLevelChanged(exo::ZoomChange zoom_change) {}
+
+// ArcWindowHandler::Observer
+void ArcGhostWindowDelegate::OnAppInstanceConnected() {
+  // Update window info to ARC when app instance connected, since the previous
+  // window info may not be delivered.
+  UpdateWindowInfoToArc();
+}
+
+bool ArcGhostWindowDelegate::SetDisplayId(int64_t display_id) {
+  base::Optional<double> scale_factor = GetDisplayScaleFactor(display_id);
+  if (!scale_factor.has_value()) {
+    LOG(ERROR) << "Invalid display id for ARC Ghost Window";
+    scale_factor_ = 1.;
+    return false;
+  }
+  scale_factor_ = scale_factor.value();
+  display_id_ = display_id;
+  return true;
+}
+
+void ArcGhostWindowDelegate::UpdateWindowInfoToArc() {
+  auto window_info = arc::mojom::WindowInfo::New();
+  window_info->window_id = window_id_;
+  window_info->display_id = display_id_;
+  window_info->bounds = gfx::ScaleToRoundedRect(bounds_, scale_factor_);
+  window_info->state = (int)window_state_;
+  arc::UpdateWindowInfo(std::move(window_info));
+}
+
+}  // namespace full_restore
+}  // namespace chromeos
