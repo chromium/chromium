@@ -20,7 +20,7 @@
   <div id="range-div"></div>
 </div>
 <script>
-  var scroller = document.querySelector("#scroll-div");
+  const scroller = document.querySelector("#scroll-div");
   // Scroll div to some large offset that is > 0.5*4194410
   const LARGE_SCROLL_OFFSET = 2097206;
   scroller.scrollTop = LARGE_SCROLL_OFFSET;
@@ -28,30 +28,30 @@
   const SCROLL_PERCENTAGE = 0.1;
   promise_test(async () => {
     // Scroll the inner scroller by the SCROLL_PERCENTAGE.
-    var originalTopOffset = scroller.scrollTop;
-    var originalLeftOffset = scroller.scrollLeft;
+    const originalTopOffset = scroller.scrollTop;
+    const originalLeftOffset = scroller.scrollLeft;
+
+    const x = 50;
+    const y = 50;
+    await mouseMoveTo(x, y);
 
     // Use negative scroll percentages because we want to scroll up and left
-    await percentScroll(-SCROLL_PERCENTAGE,
-                        -SCROLL_PERCENTAGE,
-                        50,
-                        50,
-                        GestureSourceType.MOUSE_INPUT);
+    await percentScroll(-SCROLL_PERCENTAGE, -SCROLL_PERCENTAGE,
+                        x, y, GestureSourceType.MOUSE_INPUT);
 
     function isCorrectOffset() {
       return scroller.scrollTop <=
           Math.round(originalTopOffset - scroller.clientHeight * SCROLL_PERCENTAGE);
     }
-    await waitFor(isCorrectOffset,
-                  "Scrolling by 10% must scroll the correct amount.");
+    await waitForScrollEnd(
+              scroller, isCorrectOffset, true,
+              "Scrolling by 10% must scroll the correct amount.");
 
     assert_less_than(scroller.scrollTop, originalTopOffset,
-        "Must be able to scroll vertically by percentage even when at large offset");
+        "Must be able to scroll vertically by percentage even when at large " +
+        "offset");
     assert_less_than(scroller.scrollLeft, originalLeftOffset,
-        "Must be able to scroll horizontally by percentage even when at large offset");
-
-
+        "Must be able to scroll horizontally by percentage even when at " +
+        "large offset");
   }, "Can scroll by percentage at large offset");
-
-
 </script>
