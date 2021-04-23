@@ -1,6 +1,9 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
+++++++heading name='Chapter 1'
+++++++++staticText name='Chapter 1'
+++++++++++inlineTextBox name='Chapter 1'
 ++++++paragraph
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored

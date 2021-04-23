@@ -293,19 +293,7 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
     // Anonymous means there is no DOM node, and it's been inserted by the
     // layout engine within the tree. An example is an anonymous block that is
     // inserted as a parent of an inline where there are block siblings.
-
-    // Visible anonymous content (text, image, layout quotes) is relevant.
-    if (!layout_object.CanHaveChildren()) {
-      if (layout_object.IsText())
-        return !To<LayoutText>(layout_object).HasEmptyText();
-      return true;
-    }
-
-    // Anonymous containers are not relevant, unless inside a pseudo element.
-    // Allowing anonymous pseudo elements ensures that all visible descendant
-    // pseudo content will be reached, despite only being able to walk layout
-    // inside of pseudo content.
-    return AXObjectCacheImpl::IsPseudoElementDescendant(layout_object);
+    return AXObjectCacheImpl::IsRelevantPseudoElementDescendant(layout_object);
   }
 
   if (layout_object.IsText())
@@ -318,13 +306,20 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
       !IsShadowContentRelevantForAccessibility(node)) {
     return false;
   }
+
   // Menu list option and HTML area elements are indexed by DOM node, never by
   // layout object.
   if (AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(node))
     return false;
 
+  // TODO(accessibility) Refactor so that the following rules are not repeated
+  // in IsNodeRelevantForAccessibility().
+
   if (IsA<HTMLAreaElement>(node))
     return false;
+
+  if (node->IsPseudoElement())
+    return AXObjectCacheImpl::IsRelevantPseudoElement(*node);
 
   // <optgroup> is irrelevant inside of a <select> menulist.
   if (auto* opt_group = DynamicTo<HTMLOptGroupElement>(node)) {
@@ -405,6 +400,9 @@ bool IsNodeRelevantForAccessibility(const Node* node,
 
   if (IsA<HTMLMapElement>(node))
     return false;  // Contains children for an img, but is not its own object.
+
+  if (node->IsPseudoElement())
+    return AXObjectCacheImpl::IsRelevantPseudoElement(*node);
 
   // <optgroup> is irrelevant inside of a <select> menulist.
   if (auto* opt_group = DynamicTo<HTMLOptGroupElement>(node)) {
@@ -815,15 +813,48 @@ bool AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(const Node* node) {
 }
 
 // static
-bool AXObjectCacheImpl::IsPseudoElementDescendant(
+bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
+  DCHECK(node.IsPseudoElement());
+  if (!node.GetLayoutObject())
+    return false;
+
+  // ::before, ::after and ::marker are relevant.
+  // Allowing these pseudo elements ensures that all visible descendant
+  // pseudo content will be reached, despite only being able to walk layout
+  // inside of pseudo content.
+  // However, AXObjects aren't created for ::first-letter subtrees. The text
+  // of ::first-letter is already available in the child text node of the
+  // element that the CSS ::first letter applied to.
+  if (node.IsMarkerPseudoElement() || node.IsBeforePseudoElement() ||
+      node.IsAfterPseudoElement()) {
+    return true;
+  }
+
+  DCHECK(node.IsFirstLetterPseudoElement())
+      << "The only remaining type that should reach here.";
+
+  if (LayoutObject* layout_parent = node.GetLayoutObject()->Parent()) {
+    if (Node* layout_parent_node = layout_parent->GetNode()) {
+      if (layout_parent_node->IsPseudoElement())
+        return IsRelevantPseudoElement(*layout_parent_node);
+    }
+  }
+
+  return false;
+}
+
+// static
+bool AXObjectCacheImpl::IsRelevantPseudoElementDescendant(
     const LayoutObject& layout_object) {
+  if (layout_object.IsText() && To<LayoutText>(layout_object).HasEmptyText())
+    return false;
   const LayoutObject* ancestor = &layout_object;
   while (true) {
     ancestor = ancestor->Parent();
     if (!ancestor)
       return false;
     if (ancestor->IsPseudoElement())
-      return true;
+      return IsRelevantPseudoElement(*ancestor->GetNode());
     if (!ancestor->IsAnonymous())
       return false;
   }

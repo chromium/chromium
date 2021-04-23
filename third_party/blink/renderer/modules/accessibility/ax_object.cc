@@ -521,14 +521,15 @@ void AXObject::Init(AXObject* parent) {
 }
 
 void AXObject::Detach() {
-#if DCHECK_IS_ON()
-  // Only mock objects can end up being detached twice, because their owner
-  // may have needed to detach them when they were detached, but couldn't
-  // remove them from the object cache yet.
   if (IsDetached()) {
+    // Only mock objects can end up being detached twice, because their owner
+    // may have needed to detach them when they were detached, but couldn't
+    // remove them from the object cache yet.
     DCHECK(IsMockObject()) << "Object detached twice: " << RoleValue();
     return;
   }
+
+#if DCHECK_IS_ON()
   DCHECK(!is_adding_children_) << ToString(true, true);
   DCHECK(ax_object_cache_);
   DCHECK(!ax_object_cache_->IsFrozen())
@@ -646,10 +647,15 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
     return cache.GetOrCreate(frame->PagePopupOwner());
   }
 
-  // If no node, or a pseudo element, use the layout parent.
+  // If no node, use the layout parent.
   if (!current_node) {
-    // If no DOM node and no parent, this must be an anonymous layout object.
+    // If no DOM node, this is an anonymous layout object.
     DCHECK(current_layout_obj->IsAnonymous());
+    // In accessibility, this only occurs for descendants of pseudo elements.
+    DCHECK(AXObjectCacheImpl::IsRelevantPseudoElementDescendant(
+        *current_layout_obj))
+        << "Attempt to get AX parent for irrelevant anonymous layout object: "
+        << current_layout_obj;
     LayoutObject* parent_layout_obj = current_layout_obj->Parent();
     if (!parent_layout_obj)
       return nullptr;
@@ -658,18 +664,11 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
       return nullptr;
     if (AXObject* ax_parent = cache.GetOrCreate(parent_layout_obj)) {
       DCHECK(!ax_parent->IsDetached());
-      if (!ax_parent->ShouldUseLayoutObjectTraversalForChildren())
-        return nullptr;
+      DCHECK(ax_parent->ShouldUseLayoutObjectTraversalForChildren())
+          << "Do not compute a parent that cannot have this as a child.";
       return ax_parent->CanHaveChildren() ? ax_parent : nullptr;
     }
-    // Switch to using DOM nodes. The only cases that should occur do not have
-    // chains of multiple parents without DOM nodes.
-    DCHECK(parent_node) << "Computing an accessible parent from the layout "
-                           "parent did not yield an accessible object nor a "
-                           "DOM node to walk up from, current_layout_obj = "
-                        << current_layout_obj;
-    if (!parent_node)
-      return nullptr;
+    return nullptr;
   }
 
   DCHECK(current_node->isConnected())
@@ -2355,11 +2354,15 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   if (element->IsPseudoElement())
     return true;
 
-  // Include all parents of ::before/::pseudo pseudo elements.
-  // It is unnecessary to include a rule for ::marker, because these only
-  // apply to display::list-item, which are always unignored.
+  // Include all parents of ::before/::after/::marker pseudo elements to help
+  // ClearChildren() find all children, and assist naming computation.
+  // It is unnecessary to include a rule for other types of pseudo elements:
+  // Specifically, ::first-letter/::backdrop are not visited by
+  // LayoutTreeBuilderTraversal, and cannot be in the tree, therefore do not add
+  // a special rule to include their parents.
   if (element->GetPseudoElement(kPseudoIdBefore) ||
-      element->GetPseudoElement(kPseudoIdAfter)) {
+      element->GetPseudoElement(kPseudoIdAfter) ||
+      element->GetPseudoElement(kPseudoIdMarker)) {
     return true;
   }
 
@@ -2392,6 +2395,12 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   if (IsA<HTMLTableElement>(element) || IsA<HTMLTableSectionElement>(element) ||
       IsA<HTMLTableRowElement>(element) || IsA<HTMLTableCellElement>(element)) {
     return true;
+  }
+
+  // Ensure clean teardown of AXMenuList.
+  if (auto* option = DynamicTo<HTMLOptionElement>(element)) {
+    if (option->OwnerSelectElement())
+      return true;
   }
 
   // Preserve nodes with language attributes.
@@ -3986,11 +3995,10 @@ AXObject* AXObject::ParentObject() const {
       // All/DumpAccessibilityTreeTest.IgnoredCrash/blink, meaning that when
       // ClearChildren() was called, the parent did not find this as a child,
       // and could not DetachFromParent() on the child.
-      // NOTREACHED()
-      //     << "Cached parent should never be detached:"
-      //     << "\n* Child: " << RoleValue() << " " << GetNode() << " "
-      //     << GetLayoutObject() << "\n* Parent: " << parent_->ToString(true,
-      //     true);
+      NOTREACHED() << "Cached parent should never be detached:"
+                   << "\n* Child: " << RoleValue() << " " << GetNode() << " "
+                   << GetLayoutObject()
+                   << "\n* Parent: " << parent_->ToString(true, true);
       return nullptr;
     }
   }
@@ -4040,7 +4048,8 @@ bool AXObject::ShouldUseLayoutObjectTraversalForChildren() const {
   // reached is inside a pseudo element subtree.
   if (!GetNode()) {
     DCHECK(GetLayoutObject()->IsAnonymous());
-    DCHECK(AXObjectCacheImpl::IsPseudoElementDescendant(*GetLayoutObject()));
+    DCHECK(AXObjectCacheImpl::IsRelevantPseudoElementDescendant(
+        *GetLayoutObject()));
     return true;
   }
 

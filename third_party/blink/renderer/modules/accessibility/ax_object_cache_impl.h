@@ -313,7 +313,9 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   static bool UseAXMenuList() { return use_ax_menu_list_; }
   static bool ShouldCreateAXMenuListOptionFor(const Node*);
-  static bool IsPseudoElementDescendant(const LayoutObject& layout_object);
+  static bool IsRelevantPseudoElement(const Node& node);
+  static bool IsRelevantPseudoElementDescendant(
+      const LayoutObject& layout_object);
 
 #if DCHECK_IS_ON()
   bool HasBeenDisposed() { return has_been_disposed_; }

@@ -10,7 +10,8 @@ rootWebArea
 ++++++++++++staticText name='List'
 ++++++++++++++inlineTextBox name='List'
 ++++++++none ignored
-++++++++++staticText name='1. '
-++++++++++++inlineTextBox name='1. '
-++++++++staticText name='Presentational list item'
-++++++++++inlineTextBox name='Presentational list item'
+++++++++++none ignored
+++++++++++++staticText name='1. '
+++++++++++++++inlineTextBox name='1. '
+++++++++++staticText name='Presentational list item'
+++++++++++++inlineTextBox name='Presentational list item'

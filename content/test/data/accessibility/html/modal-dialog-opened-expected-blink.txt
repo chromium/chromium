@@ -10,6 +10,7 @@ rootWebArea
 ++++++++++++++inlineTextBox name='Link inside the dialog.'
 ++++++++popUpButton ignored invisible
 ++++++++++menuListPopup ignored invisible
+++++++++++++menuListOption ignored
 ++++++button ignored invisible
 ++++++++button ignored invisible
 ++++++++genericContainer ignored invisible

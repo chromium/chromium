@@ -116,6 +116,9 @@ void AXMenuList::AddChildren() {
 }
 
 AXObject* AXMenuList::GetOrCreateMockPopupChild() {
+  if (IsDetached())
+    return nullptr;
+
   // Ensure mock AXMenuListPopup exists as first and only child.
   if (children_.IsEmpty()) {
     AXObjectCacheImpl& cache = AXObjectCache();

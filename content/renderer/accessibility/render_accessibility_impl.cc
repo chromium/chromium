@@ -851,7 +851,8 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
       // possibly nodes attached to a different document.
       // TODO(accessibility) Remove once it's clear this never triggers.
 #if defined(AX_FAIL_FAST_BUILD)
-    SANITIZER_CHECK(tree_source_->IsInTree(obj));
+    SANITIZER_CHECK(tree_source_->IsInTree(obj))
+        << "\n* Object not in tree: " << obj.ToString(true).Utf8();
 #endif
 
     // If it's ignored, find the first ancestor that's not ignored.

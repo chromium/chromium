@@ -1105,9 +1105,9 @@ void AXNodeObject::Init(AXObject* parent) {
       << "\n* Final role: " << role_ << "\n* Native role: " << native_role_
       << "\n* Aria role: " << aria_role_ << "\n* Node: " << GetNode();
 
-  DCHECK(node_ ||
-         (GetLayoutObject() &&
-          AXObjectCacheImpl::IsPseudoElementDescendant(*GetLayoutObject())))
+  DCHECK(node_ || (GetLayoutObject() &&
+                   AXObjectCacheImpl::IsRelevantPseudoElementDescendant(
+                       *GetLayoutObject())))
       << "Nodeless AXNodeObject can only exist inside a pseudo element: "
       << GetLayoutObject();
 }
@@ -3556,11 +3556,13 @@ void AXNodeObject::AddLayoutChildren() {
   DCHECK(GetLayoutObject());
   LayoutObject* child = GetLayoutObject()->SlowFirstChild();
   while (child) {
-    DCHECK(AXObjectCacheImpl::IsPseudoElementDescendant(*child));
     if (CanAddLayoutChild(*child)) {
       CHECK_NO_OTHER_PARENT_FOR(child);
       // All added pseudo element desecendants are included in the tree.
-      AddChildAndCheckIncluded(AXObjectCache().GetOrCreate(child, this));
+      if (AXObject* ax_child = AXObjectCache().GetOrCreate(child, this)) {
+        DCHECK(AXObjectCacheImpl::IsRelevantPseudoElementDescendant(*child));
+        AddChildAndCheckIncluded(ax_child);
+      }
     }
     child = child->NextSibling();
   }

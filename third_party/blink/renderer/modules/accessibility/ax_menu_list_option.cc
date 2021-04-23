@@ -44,6 +44,7 @@ Element* AXMenuListOption::ActionElement() const {
 }
 
 // Return a parent if this is an <option> for an AXMenuList, otherwise null.
+// Returns null means that a parent will be computed from the DOM.
 // static
 AXObject* AXMenuListOption::ComputeParentAXMenuPopupFor(
     AXObjectCacheImpl& cache,

@@ -5,6 +5,7 @@ rootWebArea
 ++++++++dialog ignored invisible
 ++++++++popUpButton ignored invisible
 ++++++++++menuListPopup ignored invisible
+++++++++++++menuListOption ignored
 ++++++button ignored invisible
 ++++++dialog ignored invisible
 ++++++dialog
