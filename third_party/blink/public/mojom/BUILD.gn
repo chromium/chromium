@@ -187,6 +187,7 @@ mojom("mojom_platform") {
     "timing/performance_mark_or_measure.mojom",
     "timing/resource_timing.mojom",
     "timing/worker_timing_container.mojom",
+    "use_counter/use_counter_feature.mojom",
     "user_agent/user_agent_metadata.mojom",
     "v8_cache_options.mojom",
     "wake_lock/wake_lock.mojom",
@@ -628,6 +629,16 @@ mojom("mojom_platform") {
       ]
       traits_headers = [ "//third_party/blink/common/permissions_policy/policy_value_mojom_traits.h" ]
       traits_sources = [ "//third_party/blink/common/permissions_policy/policy_value_mojom_traits.cc" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.UseCounterFeature"
+          cpp = "::blink::UseCounterFeature"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/common/use_counter/use_counter_feature_mojom_traits.h" ]
+      traits_sources = [ "//third_party/blink/common/use_counter/use_counter_feature_mojom_traits.cc" ]
     },
     {
       types = [
@@ -1290,7 +1301,6 @@ mojom_component("web_feature_mojo_bindings") {
   generate_java = true
   sources = [
     "use_counter/css_property_id.mojom",
-    "use_counter/use_counter_feature.mojom",
     "web_feature/web_feature.mojom",
   ]
 
