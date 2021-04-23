@@ -34,7 +34,7 @@
 
   #clearRecents {
     background-color: var(--cr-menu-background-color);
-    border: none;
+    border: 2px solid transparent;
     border-radius: 4px;
     box-shadow: var(--cr-elevation-3);
     color: var(--cr-secondary-text-color);
@@ -43,13 +43,20 @@
     font-family: 'Roboto', sans-serif;
     font-size: 12px;
     margin: auto 0 auto auto;
+    outline: none;
     padding: 4px 8px 4px 8px;
     position: absolute;
     right: var(--emoji-picker-side-padding);
     width: fit-content;
   }
+
   #clearRecents:hover {
-        background-color: var(--cr-menu-background-focus-color);
+    background-color: rgba(var(--google-blue-refresh-500-rgb), .04);
+  }
+
+  #clearRecents:focus,
+  #clearRecents:active {
+    border: 2px solid var(--cr-toggle-color);
   }
 
 </style>
