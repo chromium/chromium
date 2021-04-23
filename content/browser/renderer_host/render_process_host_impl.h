@@ -531,10 +531,17 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   bool is_initialized() const { return is_initialized_; }
 
-  // Ensures that this process is kept alive for the specified amount of time.
-  // This is used to ensure that unload handlers have a chance to execute
-  // before the process shuts down.
-  void DelayProcessShutdownForUnload(const base::TimeDelta& timeout);
+  // Ensures that this process is kept alive for the specified timeouts. This
+  // delays by |unload_handler_timeout| to ensure that unload handlers have a
+  // chance to execute before the process shuts down, and by
+  // |subframe_shutdown_timeout| to experimentally delay subframe process
+  // shutdown for potential reuse (see https://crbug.com/894253). The total
+  // shutdown delay is the sum of the two timeouts. |site_info| should
+  // correspond to the frame that triggered this shutdown delay.
+  void DelayProcessShutdown(const base::TimeDelta& subframe_shutdown_timeout,
+                            const base::TimeDelta& unload_handler_timeout,
+                            const SiteInfo& site_info);
+  bool IsProcessShutdownDelayedForTesting() { return is_shutdown_delayed_; }
 
   // Binds |receiver| to the FileSystemManager instance owned by the render
   // process host, and is used by workers via BrowserInterfaceBroker.
@@ -896,9 +903,14 @@ class CONTENT_EXPORT RenderProcessHostImpl
         GetUIThreadTaskRunner({}));
   }
 
-  // Callback to unblock process shutdown after waiting for unload handlers to
-  // execute.
-  void CancelProcessShutdownDelayForUnload();
+  // Callback to unblock process shutdown after waiting for the delay timeout to
+  // complete.
+  void CancelProcessShutdownDelay(const SiteInfo& site_info);
+
+  // Cancel any current process-shutdown delays for this host. Used to interrupt
+  // delayed shutdown, e.g., when the browser shuts down, or when this host is
+  // no longer shutting down due to reuse.
+  void CancelAllProcessShutdownDelays();
 
   // Binds a TracedProcess interface in the renderer process. This is used to
   // communicate with the Tracing service.
@@ -1114,7 +1126,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Stores the amount of time that this RenderProcessHost's shutdown has been
   // delayed to run unload handlers, or zero if the process shutdown was not
   // delayed due to unload handlers.
-  base::TimeDelta time_spent_in_delayed_shutdown_;
+  base::TimeDelta time_spent_running_unload_handlers_;
+
+  // If true, this RenderProcessHost's shutdown has been delayed by
+  // DelayProcessShutdown().
+  bool is_shutdown_delayed_ = false;
 
   // If the RenderProcessHost is being shutdown via Shutdown(), this records the
   // exit code.

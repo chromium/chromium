@@ -686,6 +686,22 @@ const base::Feature kSignedHTTPExchange{"SignedHTTPExchange",
 const base::Feature kSignedHTTPExchangePingValidity{
     "SignedHTTPExchangePingValidity", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Delays RenderProcessHost shutdown by a few seconds to allow the subframe's
+// process to be potentially reused. This aims to reduce process churn in
+// navigations where the source and destination share subframes.
+const base::Feature kSubframeShutdownDelay{"SubframeShutdownDelay",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<SubframeShutdownDelayType>::Option delay_types[] = {
+    {SubframeShutdownDelayType::kConstant, "constant"},
+    {SubframeShutdownDelayType::kConstantLong, "constant-long"},
+    {SubframeShutdownDelayType::kHistoryBased, "history-based"},
+    {SubframeShutdownDelayType::kHistoryBasedLong, "history-based-long"},
+    {SubframeShutdownDelayType::kMemoryBased, "memory-based"}};
+const base::FeatureParam<SubframeShutdownDelayType>
+    kSubframeShutdownDelayTypeParam{&kSubframeShutdownDelay, "type",
+                                    SubframeShutdownDelayType::kConstant,
+                                    &delay_types};
+
 // This is intended as a kill switch for the WebOTP Service feature. To enable
 // this feature, the experimental web platform features flag should be set.
 const base::Feature kWebOTP{"WebOTP", base::FEATURE_ENABLED_BY_DEFAULT};

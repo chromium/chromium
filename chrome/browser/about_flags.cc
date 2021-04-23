@@ -7159,6 +7159,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kUseOzonePlatform)},
 #endif
 
+    {"subframe-shutdown-delay", flag_descriptions::kSubframeShutdownDelayName,
+     flag_descriptions::kSubframeShutdownDelayDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSubframeShutdownDelay)},
+
     {"composite-after-paint", flag_descriptions::kCompositeAfterPaintName,
      flag_descriptions::kCompositeAfterPaintDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCompositeAfterPaint)},

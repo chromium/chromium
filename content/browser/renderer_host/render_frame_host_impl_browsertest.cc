@@ -5228,4 +5228,70 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   }
 }
 
+class RenderFrameHostImplSubframeReuseBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  RenderFrameHostImplSubframeReuseBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kSubframeShutdownDelay, {{"type", "constant-long"}});
+    EXPECT_EQ(features::kSubframeShutdownDelayTypeParam.Get(),
+              features::SubframeShutdownDelayType::kConstantLong);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplSubframeReuseBrowserTest,
+                       SubframeShutdownDelay) {
+  // This test exercises a scenario that's only possible with
+  // --site-per-process.
+  if (!AreAllSitesIsolatedForTesting())
+    return;
+
+  // Navigate to a site with a subframe.
+  GURL url_1(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  RenderFrameHostImpl* rfh_b =
+      root_frame_host()->child_at(0)->current_frame_host();
+  int subframe_process_id = rfh_b->GetProcess()->GetID();
+  RenderFrameDeletedObserver delete_rfh_b(rfh_b);
+  TestFrameNavigationObserver commit_observer(
+      web_contents()->GetFrameTree()->root());
+
+  // Navigate to another page on the same site with the same subframe.
+  GURL url_2(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  shell()->LoadURL(url_2);
+
+  // Wait for site |url_2| to commit, but not fully load so that its subframe is
+  // not yet loaded.
+  commit_observer.WaitForCommit();
+
+  // Wait for the subframe RenderFrameHost in |url_1| to shut down.
+  delete_rfh_b.WaitUntilDeleted();
+
+  // The process hosting the subframe should have its shutdown delayed and be
+  // tracked in the pending-delete tracker.
+  ASSERT_TRUE(static_cast<RenderProcessHostImpl*>(
+                  content::RenderProcessHost::FromID(subframe_process_id))
+                  ->IsProcessShutdownDelayedForTesting());
+
+  // Wait for |url_2| to fully load so that its subframe loads.
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  // The process for the just-deleted subframe should be reused for the new
+  // subframe, because they share the same site.
+  RenderFrameHostImpl* new_rfh_b =
+      root_frame_host()->child_at(0)->current_frame_host();
+  ASSERT_EQ(subframe_process_id, new_rfh_b->GetProcess()->GetID());
+
+  // The process should no longer be in the pending-delete tracker, as it has
+  // been reused.
+  ASSERT_FALSE(static_cast<RenderProcessHostImpl*>(
+                   content::RenderProcessHost::FromID(subframe_process_id))
+                   ->IsProcessShutdownDelayedForTesting());
+}
+
 }  // namespace content

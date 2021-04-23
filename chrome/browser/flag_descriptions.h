@@ -1359,6 +1359,9 @@ extern const char kStrictOriginIsolationDescription[];
 extern const char kStylusBatteryStatusName[];
 extern const char kStylusBatteryStatusDescription[];
 
+extern const char kSubframeShutdownDelayName[];
+extern const char kSubframeShutdownDelayDescription[];
+
 extern const char kSystemKeyboardLockName[];
 extern const char kSystemKeyboardLockDescription[];
 
