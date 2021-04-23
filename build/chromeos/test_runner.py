@@ -24,6 +24,8 @@ import jsonlines  # pylint: disable=import-error
 import psutil  # pylint: disable=import-error
 import six
 
+assert not six.PY2, 'Use of this test runner with python 2 is not supported.'
+
 CHROMIUM_SRC_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
 
