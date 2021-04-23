@@ -9702,6 +9702,17 @@ Called by update_bad_message_reasons.py.-->
   <int value="31" label="Chooser Permissions Bubble"/>
 </enum>
 
+<enum name="CableSpeedMetric">
+  <int value="0" label="Other"/>
+  <int value="1" label="USB 2.0"/>
+  <int value="2" label="USB 3.2 - Gen1"/>
+  <int value="3" label="USB 3.2 / USB4 - Gen2"/>
+  <int value="4" label="USB 3.1 - Gen1"/>
+  <int value="5" label="USB 3.1 - Gen1,Gen2"/>
+  <int value="6" label="USB4 - Gen3"/>
+  <int value="7" label="Thunderbolt Only - 10G,20G"/>
+</enum>
+
 <enum name="CachedMetadataHandlerState">
   <int value="0" label="Present"/>
   <int value="1" label="DataType mismatch"/>
