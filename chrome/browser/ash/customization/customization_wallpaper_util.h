@@ -9,9 +9,9 @@ class GURL;
 
 namespace base {
 class FilePath;
-}
+}  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace customization_wallpaper_util {
 
 // First checks if the file paths exist for both large and small sizes, then
@@ -29,6 +29,6 @@ bool GetCustomizedDefaultWallpaperPaths(base::FilePath* small_path_out,
 bool ShouldUseCustomizedDefaultWallpaper();
 
 }  // namespace customization_wallpaper_util
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CUSTOMIZATION_CUSTOMIZATION_WALLPAPER_UTIL_H_

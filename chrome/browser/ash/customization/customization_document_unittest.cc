@@ -110,7 +110,7 @@ const char kDummyCustomizationID[] = "test-dummy";
 
 }  // anonymous namespace
 
-namespace chromeos {
+namespace ash {
 
 using ::testing::DoAll;
 using ::testing::NotNull;
@@ -119,7 +119,7 @@ using ::testing::SetArgPointee;
 using ::testing::_;
 
 TEST(StartupCustomizationDocumentTest, Basic) {
-  system::ScopedFakeStatisticsProvider fake_statistics_provider;
+  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider;
 
   // hardware_class selects the appropriate entry in hwid_map in the manifest.
   fake_statistics_provider.SetMachineStatistic("hardware_class", "Mario 12345");
@@ -138,7 +138,7 @@ TEST(StartupCustomizationDocumentTest, Basic) {
 }
 
 TEST(StartupCustomizationDocumentTest, VPD) {
-  system::ScopedFakeStatisticsProvider fake_statistics_provider;
+  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider;
 
   // hardware_class selects the appropriate entry in hwid_map in the manifest.
   fake_statistics_provider.SetMachineStatistic("hardware_class", "Mario 12345");
@@ -155,7 +155,7 @@ TEST(StartupCustomizationDocumentTest, VPD) {
 }
 
 TEST(StartupCustomizationDocumentTest, BadManifest) {
-  system::ScopedFakeStatisticsProvider fake_statistics_provider;
+  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider;
   StartupCustomizationDocument customization(&fake_statistics_provider,
                                              kBadManifest);
   EXPECT_FALSE(customization.IsReady());
@@ -239,8 +239,8 @@ class ServicesCustomizationDocumentTest : public testing::Test {
   }
 
   void AddCustomizationIdToVp(const std::string& id) {
-    fake_statistics_provider_.SetMachineStatistic(system::kCustomizationIdKey,
-                                                  id);
+    fake_statistics_provider_.SetMachineStatistic(
+        chromeos::system::kCustomizationIdKey, id);
   }
 
   void AddExpectedManifest(const std::string& id,
@@ -286,7 +286,7 @@ class ServicesCustomizationDocumentTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
   TestingPrefServiceSimple local_state_;
   network::TestURLLoaderFactory loader_factory_;
@@ -455,4 +455,4 @@ TEST_F(ServicesCustomizationDocumentTest, CustomizationManifestNotFound) {
   EXPECT_TRUE(doc->IsReady());
 }
 
-}  // namespace chromeos
+}  // namespace ash

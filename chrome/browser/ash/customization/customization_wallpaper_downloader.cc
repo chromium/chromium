@@ -19,7 +19,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 // This is temporary file suffix (for downloading or resizing).
 const char kTemporarySuffix[] = ".tmp";
@@ -183,4 +183,4 @@ void CustomizationWallpaperDownloader::OnTemporaryFileRenamed(
   std::move(on_wallpaper_fetch_completed_).Run(*success, wallpaper_url_);
 }
 
-}  //   namespace chromeos
+}  // namespace ash

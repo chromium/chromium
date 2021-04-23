@@ -18,7 +18,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 // Download customized wallpaper.
 // Owner of this class must provide callback, which will be called on
@@ -107,6 +107,6 @@ class CustomizationWallpaperDownloader {
   DISALLOW_COPY_AND_ASSIGN(CustomizationWallpaperDownloader);
 };
 
-}  //   namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CUSTOMIZATION_CUSTOMIZATION_WALLPAPER_DOWNLOADER_H_

@@ -54,7 +54,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
   // Manifest attributes names.
@@ -289,11 +289,11 @@ StartupCustomizationDocument::StartupCustomizationDocument()
                            &startup_customization_manifest);
     LoadManifestFromFile(startup_customization_manifest);
   }
-  Init(system::StatisticsProvider::GetInstance());
+  Init(chromeos::system::StatisticsProvider::GetInstance());
 }
 
 StartupCustomizationDocument::StartupCustomizationDocument(
-    system::StatisticsProvider* statistics_provider,
+    chromeos::system::StatisticsProvider* statistics_provider,
     const std::string& manifest)
     : CustomizationDocument(kAcceptedManifestVersion) {
   LoadManifestFromString(manifest);
@@ -309,7 +309,7 @@ StartupCustomizationDocument* StartupCustomizationDocument::GetInstance() {
 }
 
 void StartupCustomizationDocument::Init(
-    system::StatisticsProvider* statistics_provider) {
+    chromeos::system::StatisticsProvider* statistics_provider) {
   if (IsReady()) {
     root_->GetString(kInitialLocaleAttr, &initial_locale_);
     root_->GetString(kInitialTimezoneAttr, &initial_timezone_);
@@ -317,7 +317,7 @@ void StartupCustomizationDocument::Init(
 
     std::string hwid;
     if (statistics_provider->GetMachineStatistic(
-            system::kHardwareClassKey, &hwid)) {
+            chromeos::system::kHardwareClassKey, &hwid)) {
       base::ListValue* hwid_list = NULL;
       if (root_->GetList(kHwidMapAttr, &hwid_list)) {
         for (size_t i = 0; i < hwid_list->GetSize(); ++i) {
@@ -350,11 +350,11 @@ void StartupCustomizationDocument::Init(
   }
 
   // If manifest doesn't exist still apply values from VPD.
-  statistics_provider->GetMachineStatistic(system::kInitialLocaleKey,
+  statistics_provider->GetMachineStatistic(chromeos::system::kInitialLocaleKey,
                                            &initial_locale_);
-  statistics_provider->GetMachineStatistic(system::kInitialTimezoneKey,
-                                           &initial_timezone_);
-  statistics_provider->GetMachineStatistic(system::kKeyboardLayoutKey,
+  statistics_provider->GetMachineStatistic(
+      chromeos::system::kInitialTimezoneKey, &initial_timezone_);
+  statistics_provider->GetMachineStatistic(chromeos::system::kKeyboardLayoutKey,
                                            &keyboard_layout_);
   configured_locales_ = base::SplitString(
       initial_locale_, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -536,7 +536,7 @@ void ServicesCustomizationDocument::StartFetching() {
     std::string customization_id;
     chromeos::system::StatisticsProvider* provider =
         chromeos::system::StatisticsProvider::GetInstance();
-    if (provider->GetMachineStatistic(system::kCustomizationIdKey,
+    if (provider->GetMachineStatistic(chromeos::system::kCustomizationIdKey,
                                       &customization_id) &&
         !customization_id.empty()) {
       url_ = GURL(base::StringPrintf(
@@ -775,7 +775,7 @@ void ServicesCustomizationDocument::SetOemFolderName(
   std::string locale = g_browser_process->GetApplicationLocale();
   std::string name = GetOemAppsFolderNameImpl(locale, root);
   if (name.empty())
-    name = default_app_order::GetOemAppsFolderName();
+    name = chromeos::default_app_order::GetOemAppsFolderName();
   if (!name.empty()) {
     app_list::AppListSyncableService* service =
         app_list::AppListSyncableServiceFactory::GetForProfile(profile);
@@ -969,4 +969,4 @@ void ServicesCustomizationDocument::ApplyingTaskFinished(bool success) {
     SetApplied(true);
 }
 
-}  // namespace chromeos
+}  // namespace ash

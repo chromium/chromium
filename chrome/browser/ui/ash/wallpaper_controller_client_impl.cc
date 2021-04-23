@@ -160,7 +160,7 @@ void WallpaperControllerClientImpl::InitForTesting(
 
 void WallpaperControllerClientImpl::SetInitialWallpaper() {
   // Apply device customization.
-  namespace customization_util = chromeos::customization_wallpaper_util;
+  namespace customization_util = ash::customization_wallpaper_util;
   if (customization_util::ShouldUseCustomizedDefaultWallpaper()) {
     base::FilePath customized_default_small_path;
     base::FilePath customized_default_large_path;

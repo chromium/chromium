@@ -27,7 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -187,8 +187,8 @@ class CustomizationWallpaperDownloaderBrowserTest
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    chromeos::ServicesCustomizationDocument* customization =
-        chromeos::ServicesCustomizationDocument::GetInstance();
+    ServicesCustomizationDocument* customization =
+        ServicesCustomizationDocument::GetInstance();
     customization->wallpaper_downloader_for_testing()
         ->set_retry_delay_for_testing(
             base::TimeDelta::FromMilliseconds(kDownloadRetryIntervalMS));
@@ -244,8 +244,8 @@ IN_PROC_BROWSER_TEST_F(CustomizationWallpaperDownloaderBrowserTest,
 
   // Start fetching the customized default wallpaper.
   GURL url = embedded_test_server()->GetURL(kOEMWallpaperRelativeURL);
-  chromeos::ServicesCustomizationDocument* customization =
-      chromeos::ServicesCustomizationDocument::GetInstance();
+  ServicesCustomizationDocument* customization =
+      ServicesCustomizationDocument::GetInstance();
   EXPECT_TRUE(
       customization->LoadManifestFromString(ManifestForURL(url.spec())));
   observer.WaitForWallpaperChanged();
@@ -272,8 +272,8 @@ IN_PROC_BROWSER_TEST_F(CustomizationWallpaperDownloaderBrowserTest,
 
   // Start fetching the customized default wallpaper.
   GURL url = embedded_test_server()->GetURL(kOEMWallpaperRelativeURL);
-  chromeos::ServicesCustomizationDocument* customization =
-      chromeos::ServicesCustomizationDocument::GetInstance();
+  ServicesCustomizationDocument* customization =
+      ServicesCustomizationDocument::GetInstance();
   EXPECT_TRUE(
       customization->LoadManifestFromString(ManifestForURL(url.spec())));
   observer.WaitForWallpaperChanged();
@@ -287,4 +287,4 @@ IN_PROC_BROWSER_TEST_F(CustomizationWallpaperDownloaderBrowserTest,
   EXPECT_EQ(2U, num_attempts());
 }
 
-}  // namespace chromeos
+}  // namespace ash

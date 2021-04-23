@@ -22,10 +22,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using chromeos::locale_util::SwitchLanguageCallback;
-using chromeos::locale_util::LanguageSwitchResult;
+using ash::locale_util::LanguageSwitchResult;
+using ash::locale_util::SwitchLanguageCallback;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -207,15 +207,17 @@ class CustomizationVPDTest : public InProcessBrowserTest,
                              public testing::WithParamInterface<const char*> {
  public:
   CustomizationVPDTest()
-      : statistics_provider_(new system::FakeStatisticsProvider()) {
+      : statistics_provider_(new chromeos::system::FakeStatisticsProvider()) {
     // Set the instance returned by GetInstance() for testing.
-    system::StatisticsProvider::SetTestProvider(statistics_provider_.get());
+    chromeos::system::StatisticsProvider::SetTestProvider(
+        statistics_provider_.get());
     statistics_provider_->SetMachineStatistic("initial_locale", GetParam());
     statistics_provider_->SetMachineStatistic("keyboard_layout", "");
   }
 
  private:
-  std::unique_ptr<system::FakeStatisticsProvider> statistics_provider_;
+  std::unique_ptr<chromeos::system::FakeStatisticsProvider>
+      statistics_provider_;
 };
 
 IN_PROC_BROWSER_TEST_P(CustomizationVPDTest, GetUILanguageList) {
@@ -259,4 +261,4 @@ INSTANTIATE_TEST_SUITE_P(StringSequence,
                          CustomizationVPDTest,
                          testing::ValuesIn(kVPDInitialLocales));
 
-}  // namespace chromeos
+}  // namespace ash

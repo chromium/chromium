@@ -22,7 +22,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -202,4 +202,4 @@ bool ShouldUseCustomizedDefaultWallpaper() {
 }
 
 }  // namespace customization_wallpaper_util
-}  // namespace chromeos
+}  // namespace ash

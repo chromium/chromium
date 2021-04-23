@@ -237,8 +237,8 @@ class ChromeOSTermsHandler
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
 
-    const chromeos::StartupCustomizationDocument* customization =
-        chromeos::StartupCustomizationDocument::GetInstance();
+    const ash::StartupCustomizationDocument* customization =
+        ash::StartupCustomizationDocument::GetInstance();
     if (!customization->IsReady())
       return;
 
