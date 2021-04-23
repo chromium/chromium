@@ -9,13 +9,16 @@
 
 #include "ios/chrome/browser/first_run/first_run_metrics.h"
 
-class ChromeBrowserState;
-@class FirstRunConfiguration;
-@protocol SyncPresenter;
-
+namespace signin {
+class IdentityManager;
+}
 namespace web {
 class WebState;
 }
+
+class ChromeBrowserState;
+@class FirstRunConfiguration;
+@protocol SyncPresenter;
 
 // Notification sent when the first run ends, right before dimissing the Terms
 // of Service modal view.
@@ -24,6 +27,12 @@ extern NSString* const kChromeFirstRunUIWillFinishNotification;
 // Notification sent when the first run has finished and has dismissed the Terms
 // of Service modal view.
 extern NSString* const kChromeFirstRunUIDidFinishNotification;
+
+// Records the result of the sign in steps for the First Run.
+void RecordFirstRunSignInMetrics(
+    signin::IdentityManager* identity_manager,
+    first_run::SignInAttemptStatus sign_in_attempt_status,
+    BOOL has_sso_accounts);
 
 // Creates the First Run sentinel file so that the user will not be shown First
 // Run on subsequent cold starts. The user is considered done with First Run

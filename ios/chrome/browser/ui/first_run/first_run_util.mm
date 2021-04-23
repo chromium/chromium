@@ -22,6 +22,7 @@
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
@@ -50,14 +51,17 @@ void CreateSentinel() {
                               -base::File::FILE_ERROR_MAX);
 }
 
-// Helper function for recording first run metrics.
-void RecordFirstRunMetricsInternal(
-    ChromeBrowserState* browserState,
+bool kFirstRunSentinelCreated = false;
+
+}  // namespace
+
+void RecordFirstRunSignInMetrics(
+    signin::IdentityManager* identity_manager,
     first_run::SignInAttemptStatus sign_in_attempt_status,
-    bool has_sso_accounts) {
+    BOOL has_sso_accounts) {
+  bool user_signed_in =
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   first_run::SignInStatus sign_in_status;
-  bool user_signed_in = IdentityManagerFactory::GetForBrowserState(browserState)
-                            ->HasPrimaryAccount(signin::ConsentLevel::kSync);
   if (user_signed_in) {
     sign_in_status = has_sso_accounts
                          ? first_run::HAS_SSO_ACCOUNT_SIGNIN_SUCCESSFUL
@@ -83,20 +87,18 @@ void RecordFirstRunMetricsInternal(
                             first_run::SIGNIN_SIZE);
 }
 
-bool kFirstRunSentinelCreated = false;
-
-}  // namespace
-
 void WriteFirstRunSentinelAndRecordMetrics(
     ChromeBrowserState* browserState,
     first_run::SignInAttemptStatus sign_in_attempt_status,
     BOOL has_sso_account) {
+  DCHECK(!base::FeatureList::IsEnabled(kEnableFREUIModuleIOS));
   kFirstRunSentinelCreated = true;
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&CreateSentinel));
-  RecordFirstRunMetricsInternal(browserState, sign_in_attempt_status,
-                                has_sso_account);
+  RecordFirstRunSignInMetrics(
+      IdentityManagerFactory::GetForBrowserState(browserState),
+      sign_in_attempt_status, has_sso_account);
 }
 
 void FinishFirstRun(ChromeBrowserState* browserState,
