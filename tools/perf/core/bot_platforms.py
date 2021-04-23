@@ -471,10 +471,8 @@ _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('rendering.desktop'),
     _GetBenchmarkConfig('system_health.common_desktop')
 ])
-_FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('system_health.memory_desktop'),
-    _GetBenchmarkConfig('media.desktop')
-])
+_FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite(
+    [_GetBenchmarkConfig('system_health.memory_desktop')])
 _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('blink_perf.shadow_dom'),
