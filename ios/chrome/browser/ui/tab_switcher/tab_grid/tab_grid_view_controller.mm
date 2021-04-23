@@ -273,16 +273,22 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
        withTransitionCoordinator:
            (id<UIViewControllerTransitionCoordinator>)coordinator {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+  __weak TabGridViewController* weakSelf = self;
   auto animate = ^(id<UIViewControllerTransitionCoordinatorContext> context) {
-    // Sync the scroll view offset to the  current page value. SInce this is
-    // already inside an animation block, the scrolling doesn't need to be
-    // animated.
-    [self scrollToPage:_currentPage animated:NO];
-    [self configureViewControllerForCurrentSizeClassesAndPage];
-    [self setInsetForRemoteTabs];
-    [self setInsetForGridViews];
+    [weakSelf animateTransition:context];
   };
   [coordinator animateAlongsideTransition:animate completion:nil];
+}
+
+- (void)animateTransition:
+    (id<UIViewControllerTransitionCoordinatorContext>)context {
+  // Sync the scroll view offset to the current page value. Since this is
+  // invoked inside an animation block, the scrolling doesn't need to be
+  // animated.
+  [self scrollToPage:_currentPage animated:NO];
+  [self configureViewControllerForCurrentSizeClassesAndPage];
+  [self setInsetForRemoteTabs];
+  [self setInsetForGridViews];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {

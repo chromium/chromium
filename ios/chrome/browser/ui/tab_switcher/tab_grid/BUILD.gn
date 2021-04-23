@@ -105,10 +105,7 @@ source_set("tab_grid_ui") {
     "thumb_strip_plus_sign_button.mm",
   ]
 
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:disable_implicit_retain_self_warning",
-  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":features",
