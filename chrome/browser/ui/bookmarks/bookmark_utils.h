@@ -41,8 +41,10 @@ namespace chrome {
 // means "NTP" instead of the current URL.
 GURL GetURLToBookmark(content::WebContents* web_contents);
 
-// Fills in the URL and title for a bookmark of |web_contents|.
-void GetURLAndTitleToBookmark(content::WebContents* web_contents,
+// Fills in the URL and title for a bookmark of |web_contents|. If this function
+// returns false, there was no valid URL and neither |url| nor |title| have been
+// modified.
+bool GetURLAndTitleToBookmark(content::WebContents* web_contents,
                               GURL* url,
                               std::u16string* title);
 

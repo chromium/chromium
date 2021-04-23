@@ -98,10 +98,13 @@ GURL GetURLToBookmark(content::WebContents* web_contents) {
   return web_contents->GetURL();
 }
 
-void GetURLAndTitleToBookmark(content::WebContents* web_contents,
+bool GetURLAndTitleToBookmark(content::WebContents* web_contents,
                               GURL* url,
                               std::u16string* title) {
-  *url = GetURLToBookmark(web_contents);
+  GURL u = GetURLToBookmark(web_contents);
+  if (!u.is_valid())
+    return false;
+  *url = u;
   if (dom_distiller::url_utils::IsDistilledPage(web_contents->GetURL())) {
     // Users cannot bookmark Reader Mode pages directly. Instead, a bookmark
     // is added for the original page and original title.
@@ -111,6 +114,7 @@ void GetURLAndTitleToBookmark(content::WebContents* web_contents,
   } else {
     *title = web_contents->GetTitle();
   }
+  return true;
 }
 
 void ToggleBookmarkBarWhenVisible(content::BrowserContext* browser_context) {

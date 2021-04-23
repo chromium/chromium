@@ -232,8 +232,7 @@ bool GetTabURLAndTitleToSave(content::WebContents* web_contents,
   // but the browser wasn't closed yet. https://crbug.com/799668
   if (!web_contents)
     return false;
-  chrome::GetURLAndTitleToBookmark(web_contents, url, title);
-  return true;
+  return chrome::GetURLAndTitleToBookmark(web_contents, url, title);
 }
 
 ReadingListModel* GetReadingListModel(Browser* browser) {
@@ -1044,7 +1043,8 @@ void BookmarkCurrentTab(Browser* browser) {
   // but the browser wasn't closed yet. https://crbug.com/799668
   if (!web_contents)
     return;
-  GetURLAndTitleToBookmark(web_contents, &url, &title);
+  if (!GetURLAndTitleToBookmark(web_contents, &url, &title))
+    return;
   bool is_bookmarked_by_any = model->IsBookmarked(url);
   if (!is_bookmarked_by_any &&
       web_contents->GetBrowserContext()->IsOffTheRecord()) {

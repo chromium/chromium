@@ -81,9 +81,9 @@ void GetURLsForOpenTabs(Browser* browser,
                         std::vector<std::pair<GURL, std::u16string>>* urls) {
   for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
     std::pair<GURL, std::u16string> entry;
-    GetURLAndTitleToBookmark(browser->tab_strip_model()->GetWebContentsAt(i),
-                             &(entry.first), &(entry.second));
-    urls->push_back(entry);
+    auto* contents = browser->tab_strip_model()->GetWebContentsAt(i);
+    if (GetURLAndTitleToBookmark(contents, &(entry.first), &(entry.second)))
+      urls->push_back(entry);
   }
 }
 #endif

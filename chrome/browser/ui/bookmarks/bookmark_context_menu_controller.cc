@@ -293,9 +293,11 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
           bookmarks::GetParentForNewNodes(parent_, selection_, &index);
       GURL url;
       std::u16string title;
-      chrome::GetURLAndTitleToBookmark(
-          browser_->tab_strip_model()->GetActiveWebContents(),
-          &url, &title);
+      if (!chrome::GetURLAndTitleToBookmark(
+              browser_->tab_strip_model()->GetActiveWebContents(), &url,
+              &title)) {
+        break;
+      }
       BookmarkEditor::Show(parent_window_,
                            profile_,
                            BookmarkEditor::EditDetails::AddNodeInFolder(
