@@ -147,9 +147,9 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
     browser_context_.SetPermissionControllerDelegate(
         std::make_unique<testing::NiceMock<MockPermissionManager>>());
 
-    mojo::SetDefaultProcessErrorHandler(base::AdaptCallbackForRepeating(
-        base::BindOnce(&BlinkNotificationServiceImplTest::OnMojoError,
-                       base::Unretained(this))));
+    mojo::SetDefaultProcessErrorHandler(
+        base::BindRepeating(&BlinkNotificationServiceImplTest::OnMojoError,
+                            base::Unretained(this)));
   }
 
   void TearDown() override {
@@ -360,10 +360,9 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
     base::RunLoop run_loop;
     notification_context_->ReadAllNotificationDataForServiceWorkerRegistration(
         GURL(kTestOrigin), service_worker_registration_id,
-        base::AdaptCallbackForRepeating(
-            base::BindOnce(&BlinkNotificationServiceImplTest::
-                               DidGetNotificationDataFromContext,
-                           base::Unretained(this), run_loop.QuitClosure())));
+        base::BindOnce(&BlinkNotificationServiceImplTest::
+                           DidGetNotificationDataFromContext,
+                       base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
     return get_notifications_data_;
   }
@@ -373,10 +372,9 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
     base::RunLoop run_loop;
     notification_context_->ReadNotificationResources(
         notification_id, GURL(kTestOrigin),
-        base::AdaptCallbackForRepeating(
-            base::BindOnce(&BlinkNotificationServiceImplTest::
-                               DidGetNotificationResourcesFromContext,
-                           base::Unretained(this), run_loop.QuitClosure())));
+        base::BindOnce(&BlinkNotificationServiceImplTest::
+                           DidGetNotificationResourcesFromContext,
+                       base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
     return get_notification_resources_;
   }
@@ -400,9 +398,9 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
     notification_context_->ReadNotificationDataAndRecordInteraction(
         notification_id, GURL(kTestOrigin),
         PlatformNotificationContext::Interaction::NONE,
-        base::AdaptCallbackForRepeating(base::BindOnce(
+        base::BindOnce(
             &BlinkNotificationServiceImplTest::DidReadNotificationData,
-            base::Unretained(this), run_loop.QuitClosure())));
+            base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
     return read_notification_data_callback_result_;
   }
