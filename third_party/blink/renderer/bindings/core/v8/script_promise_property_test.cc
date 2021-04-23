@@ -554,6 +554,8 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
   v8::Local<v8::Object> other_v8_resolution;
   {
     ScriptState::Scope scope(MainScriptState());
+    v8::MicrotasksScope microtasks_scope(
+        GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
     main_v8_resolution = ToV8(resolution, MainScriptState()).As<v8::Object>();
     v8::PropertyDescriptor descriptor(
         ScriptPromisePropertyResetter::CreateFunction(MainScriptState(),
@@ -567,6 +569,8 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
   }
   {
     ScriptState::Scope scope(OtherScriptState());
+    v8::MicrotasksScope microtasks_scope(
+        GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
     other_v8_resolution = ToV8(resolution, OtherScriptState()).As<v8::Object>();
     v8::PropertyDescriptor descriptor(
         ScriptPromisePropertyResetter::CreateFunction(OtherScriptState(),
