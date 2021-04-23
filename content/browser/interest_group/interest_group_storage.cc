@@ -14,6 +14,8 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/util/values/values_util.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -37,6 +39,8 @@ using blink::mojom::InterestGroupPtr;
 
 const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("InterestGroups");
+
+constexpr base::TimeDelta kIdlePeriod = base::TimeDelta::FromSeconds(30);
 
 // Version number of the database.
 //
@@ -268,14 +272,16 @@ bool CreateV1Schema(sql::Database& db) {
   return true;
 }
 
-bool DoJoinInterestGroup(sql::Database& db, const InterestGroupPtr& data) {
+bool DoJoinInterestGroup(sql::Database& db,
+                         const InterestGroupPtr& data,
+                         base::Time last_updated) {
   sql::Transaction transaction(&db);
   if (!transaction.Begin())
     return false;
 
+  // clang-format off
   sql::Statement join_group(
       db.GetCachedStatement(SQL_FROM_HERE,
-                            // clang-format off
           "INSERT OR REPLACE INTO interest_groups("
             "expiration,"
             "last_updated,"
@@ -292,7 +298,6 @@ bool DoJoinInterestGroup(sql::Database& db, const InterestGroupPtr& data) {
   if (!join_group.is_valid())
     return false;
 
-  base::Time last_updated = base::Time::Now();
   join_group.Reset(true);
   join_group.BindTime(0, data->expiry);
   join_group.BindTime(1, last_updated);
@@ -333,10 +338,12 @@ bool DoJoinInterestGroup(sql::Database& db, const InterestGroupPtr& data) {
   return transaction.Commit();
 }
 
-bool DoUpdateInterestGroup(sql::Database& db, const InterestGroupPtr& data) {
+bool DoUpdateInterestGroup(sql::Database& db,
+                           const InterestGroupPtr& data,
+                           base::Time now) {
+  // clang-format off
   sql::Statement update_group(
       db.GetCachedStatement(SQL_FROM_HERE,
-                            // clang-format off
           "UPDATE interest_groups SET "
             "last_updated=?,"
             "bidding_url=?,"
@@ -350,7 +357,7 @@ bool DoUpdateInterestGroup(sql::Database& db, const InterestGroupPtr& data) {
     return false;
 
   update_group.Reset(true);
-  update_group.BindTime(0, base::Time::Now());
+  update_group.BindTime(0, now);
   update_group.BindString(1, Serialize(data->bidding_url));
   update_group.BindString(2, Serialize(data->update_url));
   update_group.BindString(3, Serialize(data->trusted_bidding_signals_url));
@@ -440,14 +447,15 @@ bool DoLeaveInterestGroup(sql::Database& db,
 
 bool DoRecordInterestGroupBid(sql::Database& db,
                               const url::Origin& owner,
-                              const std::string& name) {
+                              const std::string& name,
+                              base::Time bid_time) {
   // Record the bid. It should be unique since auctions should be serialized.
   // If it is not unique we should just keep the first one.
+  // clang-format off
   sql::Statement bid_hist(
       db.GetCachedStatement(SQL_FROM_HERE,
-                            // clang-format off
       "INSERT INTO bid_history(owner,name,bid_time) "
-      "VALUES(?,?,?);"));
+      "VALUES(?,?,?)"));
   // clang-format on
   if (!bid_hist.is_valid())
     return false;
@@ -455,21 +463,22 @@ bool DoRecordInterestGroupBid(sql::Database& db,
   bid_hist.Reset(true);
   bid_hist.BindString(0, Serialize(owner));
   bid_hist.BindString(1, name);
-  bid_hist.BindTime(2, base::Time::Now());
+  bid_hist.BindTime(2, bid_time);
   return bid_hist.Run();
 }
 
 bool DoRecordInterestGroupWin(sql::Database& db,
                               const url::Origin& owner,
                               const std::string& name,
-                              const std::string& ad_json) {
+                              const std::string& ad_json,
+                              base::Time win_time) {
   // Record the win. It should be unique since auctions should be serialized.
   // If it is not unique we should just keep the first one.
+  // clang-format off
   sql::Statement win_hist(
       db.GetCachedStatement(SQL_FROM_HERE,
-                            // clang-format off
       "INSERT INTO win_history(owner,name,win_time,ad) "
-      "VALUES(?,?,?,?);"));
+      "VALUES(?,?,?,?)"));
   // clang-format on
   if (!win_hist.is_valid())
     return false;
@@ -477,19 +486,21 @@ bool DoRecordInterestGroupWin(sql::Database& db,
   win_hist.Reset(true);
   win_hist.BindString(0, Serialize(owner));
   win_hist.BindString(1, name);
-  win_hist.BindTime(2, base::Time::Now());
+  win_hist.BindTime(2, win_time);
   win_hist.BindString(3, ad_json);
   return win_hist.Run();
 }
 
 base::Optional<std::vector<url::Origin>> DoGetAllInterestGroupOwners(
-    sql::Database& db) {
+    sql::Database& db,
+    base::Time expiring_after) {
   std::vector<url::Origin> result;
   // TODO(crbug.com/1197209): Adjust the limits on this query in response to
   // usage.
   sql::Statement load(db.GetCachedStatement(SQL_FROM_HERE,
                                             "SELECT DISTINCT owner "
                                             "FROM interest_groups "
+                                            "WHERE expiration >= ?"
                                             "LIMIT 1000"));
   if (!load.is_valid()) {
     DLOG(ERROR) << "LoadAllInterestGroups SQL statement did not compile: "
@@ -497,6 +508,7 @@ base::Optional<std::vector<url::Origin>> DoGetAllInterestGroupOwners(
     return base::nullopt;
   }
   load.Reset(true);
+  load.BindTime(0, expiring_after);
   while (load.Step()) {
     result.push_back(DeserializeOrigin(load.ColumnString(0)));
   }
@@ -508,13 +520,15 @@ base::Optional<std::vector<url::Origin>> DoGetAllInterestGroupOwners(
 bool GetPreviousWins(sql::Database& db,
                      const url::Origin& owner,
                      const std::string& name,
+                     base::Time win_time_after,
                      BiddingInterestGroupPtr& output) {
-  sql::Statement prev_wins(db.GetCachedStatement(SQL_FROM_HERE,
-                                                 // clang-format off
-      "SELECT win_time, ad "
-      "FROM win_history "
-      "WHERE owner = ? AND name = ? "
-      "ORDER BY win_time DESC"));
+  // clang-format off
+  sql::Statement prev_wins(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "SELECT win_time, ad "
+                            "FROM win_history "
+                            "WHERE owner = ? AND name = ? AND win_time >= ? "
+                            "ORDER BY win_time DESC"));
   // clang-format on
   if (!prev_wins.is_valid()) {
     DLOG(ERROR) << "GetInterestGroupsForOwner win_history SQL statement did "
@@ -525,6 +539,7 @@ bool GetPreviousWins(sql::Database& db,
   prev_wins.Reset(true);
   prev_wins.BindString(0, Serialize(owner));
   prev_wins.BindString(1, name);
+  prev_wins.BindTime(2, win_time_after);
   while (prev_wins.Step()) {
     PreviousWinPtr prev_win = auction_worklet::mojom::PreviousWin::New();
     prev_win->time = prev_wins.ColumnTime(0);
@@ -537,10 +552,15 @@ bool GetPreviousWins(sql::Database& db,
 bool GetJoinCount(sql::Database& db,
                   const url::Origin& owner,
                   const std::string& name,
+                  base::Time joined_after,
                   BiddingInterestGroupPtr& output) {
-  sql::Statement join_count(db.GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT COUNT(1) FROM join_history WHERE owner = ? AND name = ?"));
+  // clang-format off
+  sql::Statement join_count(
+      db.GetCachedStatement(SQL_FROM_HERE,
+    "SELECT COUNT(1) "
+    "FROM join_history "
+    "WHERE owner = ? AND name = ? AND join_time >=?"));
+  // clang-format on
   if (!join_count.is_valid()) {
     DLOG(ERROR) << "GetJoinCount SQL statement did not compile: "
                 << db.GetErrorMessage();
@@ -549,6 +569,7 @@ bool GetJoinCount(sql::Database& db,
   join_count.Reset(true);
   join_count.BindString(0, Serialize(owner));
   join_count.BindString(1, name);
+  join_count.BindTime(2, joined_after);
   while (join_count.Step()) {
     output->signals->join_count = join_count.ColumnInt64(0);
   }
@@ -558,10 +579,15 @@ bool GetJoinCount(sql::Database& db,
 bool GetBidCount(sql::Database& db,
                  const url::Origin& owner,
                  const std::string& name,
+                 base::Time now,
                  BiddingInterestGroupPtr& output) {
-  sql::Statement bid_count(db.GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT COUNT(1) FROM bid_history WHERE owner = ? AND name = ?"));
+  // clang-format off
+  sql::Statement bid_count(
+      db.GetCachedStatement(SQL_FROM_HERE,
+    "SELECT COUNT(1) "
+    "FROM bid_history "
+    "WHERE owner = ? AND name = ? AND bid_time >= ?"));
+  // clang-format on
   if (!bid_count.is_valid()) {
     DLOG(ERROR) << "GetBidCount SQL statement did not compile: "
                 << db.GetErrorMessage();
@@ -570,6 +596,7 @@ bool GetBidCount(sql::Database& db,
   bid_count.Reset(true);
   bid_count.BindString(0, Serialize(owner));
   bid_count.BindString(1, name);
+  bid_count.BindTime(2, now - InterestGroupStorage::kHistoryLength);
   while (bid_count.Step()) {
     output->signals->bid_count = bid_count.ColumnInt64(0);
   }
@@ -577,13 +604,15 @@ bool GetBidCount(sql::Database& db,
 }
 
 base::Optional<std::vector<BiddingInterestGroupPtr>>
-DoGetInterestGroupsForOwner(sql::Database& db, const url::Origin& owner) {
+DoGetInterestGroupsForOwner(sql::Database& db,
+                            const url::Origin& owner,
+                            base::Time now) {
   std::vector<BiddingInterestGroupPtr> result;
   // TODO(crbug.com/1197209): Adjust the limits on this query in response to
   // usage.
+  // clang-format off
   sql::Statement load(
       db.GetCachedStatement(SQL_FROM_HERE,
-                            // clang-format off
         "SELECT expiration,"
           "last_updated,"
           "owner,"
@@ -595,7 +624,7 @@ DoGetInterestGroupsForOwner(sql::Database& db, const url::Origin& owner) {
           "user_bidding_signals,"  // opaque data
           "ads "
         "FROM interest_groups "
-        "WHERE owner = ? "
+        "WHERE owner = ? AND expiration >=? "
         "ORDER BY expiration ASC "
         "LIMIT 1000"));
   // clang-format on
@@ -608,6 +637,7 @@ DoGetInterestGroupsForOwner(sql::Database& db, const url::Origin& owner) {
 
   load.Reset(true);
   load.BindString(0, Serialize(owner));
+  load.BindTime(1, now);
   sql::Transaction transaction(&db);
 
   if (!transaction.Begin())
@@ -643,18 +673,21 @@ DoGetInterestGroupsForOwner(sql::Database& db, const url::Origin& owner) {
   // access.
   for (auto& bidding_interest_group : result) {
     if (!GetJoinCount(db, owner, bidding_interest_group->group->name,
+                      now - InterestGroupStorage::kHistoryLength,
                       bidding_interest_group)) {
       return base::nullopt;
     }
   }
   for (auto& bidding_interest_group : result) {
     if (!GetBidCount(db, owner, bidding_interest_group->group->name,
+                     now - InterestGroupStorage::kHistoryLength,
                      bidding_interest_group)) {
       return base::nullopt;
     }
   }
   for (auto& bidding_interest_group : result) {
     if (!GetPreviousWins(db, owner, bidding_interest_group->group->name,
+                         now - InterestGroupStorage::kHistoryLength,
                          bidding_interest_group)) {
       return base::nullopt;
     }
@@ -665,6 +698,7 @@ DoGetInterestGroupsForOwner(sql::Database& db, const url::Origin& owner) {
 }
 
 bool DoDeleteInterestGroupData(sql::Database& db, const url::Origin& owner) {
+  base::Time infinite_past = base::Time::Min();
   sql::Transaction transaction(&db);
 
   if (!transaction.Begin())
@@ -673,7 +707,7 @@ bool DoDeleteInterestGroupData(sql::Database& db, const url::Origin& owner) {
   std::vector<url::Origin> affected_origins;
   if (owner.opaque()) {
     base::Optional<std::vector<url::Origin>> maybe_affected_origins =
-        DoGetAllInterestGroupOwners(db);
+        DoGetAllInterestGroupOwners(db, infinite_past);
     if (!maybe_affected_origins)
       return false;
     affected_origins = std::move(maybe_affected_origins.value());
@@ -683,7 +717,7 @@ bool DoDeleteInterestGroupData(sql::Database& db, const url::Origin& owner) {
 
   for (const auto& affected_origin : affected_origins) {
     base::Optional<std::vector<BiddingInterestGroupPtr>> maybe_interest_groups =
-        DoGetInterestGroupsForOwner(db, affected_origin);
+        DoGetInterestGroupsForOwner(db, affected_origin, infinite_past);
     if (!maybe_interest_groups)
       return false;
     for (const auto& bidding_interest_group : maybe_interest_groups.value()) {
@@ -695,6 +729,104 @@ bool DoDeleteInterestGroupData(sql::Database& db, const url::Origin& owner) {
   return transaction.Commit();
 }
 
+bool DeleteOldJoins(sql::Database& db, base::Time cutoff) {
+  sql::Statement del_join_history(db.GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM join_history WHERE join_time <= ?"));
+  if (!del_join_history.is_valid()) {
+    DLOG(ERROR) << "DeleteOldJoins SQL statement did not compile.";
+    return false;
+  }
+  del_join_history.Reset(true);
+  del_join_history.BindTime(0, cutoff);
+  if (!del_join_history.Run()) {
+    DLOG(ERROR) << "Could not delete old join_history.";
+    return false;
+  }
+  return true;
+}
+
+bool DeleteOldBids(sql::Database& db, base::Time cutoff) {
+  sql::Statement del_bid_history(db.GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM bid_history WHERE bid_time <= ?"));
+  if (!del_bid_history.is_valid()) {
+    DLOG(ERROR) << "DeleteOldBids SQL statement did not compile.";
+    return false;
+  }
+  del_bid_history.Reset(true);
+  del_bid_history.BindTime(0, cutoff);
+  if (!del_bid_history.Run()) {
+    DLOG(ERROR) << "Could not delete old bid_history.";
+    return false;
+  }
+  return true;
+}
+
+bool DeleteOldWins(sql::Database& db, base::Time cutoff) {
+  sql::Statement del_win_history(db.GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM win_history WHERE win_time <= ?"));
+  if (!del_win_history.is_valid()) {
+    DLOG(ERROR) << "DeleteOldWins SQL statement did not compile.";
+    return false;
+  }
+  del_win_history.Reset(true);
+  del_win_history.BindTime(0, cutoff);
+  if (!del_win_history.Run()) {
+    DLOG(ERROR) << "Could not delete old win_history.";
+    return false;
+  }
+  return true;
+}
+
+bool ClearExpiredInterestGroups(sql::Database& db,
+                                base::Time expiration_before) {
+  sql::Transaction transaction(&db);
+  if (!transaction.Begin())
+    return false;
+
+  sql::Statement expired_interest_group(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "SELECT owner, name "
+                            "FROM interest_groups "
+                            "WHERE expiration <= ?"));
+  if (!expired_interest_group.is_valid()) {
+    DLOG(ERROR) << "ClearExpiredInterestGroups SQL statement did not compile.";
+    return false;
+  }
+
+  expired_interest_group.Reset(true);
+  expired_interest_group.BindTime(0, expiration_before);
+  std::vector<std::pair<url::Origin, std::string>> expired_groups;
+  while (expired_interest_group.Step()) {
+    expired_groups.emplace_back(
+        DeserializeOrigin(expired_interest_group.ColumnString(0)),
+        expired_interest_group.ColumnString(1));
+  }
+  if (!expired_interest_group.Succeeded()) {
+    DLOG(ERROR) << "ClearExpiredInterestGroups could not get expired groups.";
+    // Keep going so we can clear any groups that we did get.
+  }
+  for (const auto& interest_group : expired_groups) {
+    if (!DoLeaveInterestGroup(db, interest_group.first, interest_group.second))
+      return false;
+  }
+  return transaction.Commit();
+}
+
+bool DoPerformDatabaseMaintenance(sql::Database& db, base::Time now) {
+  sql::Transaction transaction(&db);
+  if (!transaction.Begin())
+    return false;
+  if (!ClearExpiredInterestGroups(db, now))
+    return false;
+  if (!DeleteOldJoins(db, now - InterestGroupStorage::kHistoryLength))
+    return false;
+  if (!DeleteOldBids(db, now - InterestGroupStorage::kHistoryLength))
+    return false;
+  if (!DeleteOldWins(db, now - InterestGroupStorage::kHistoryLength))
+    return false;
+  return transaction.Commit();
+}
+
 base::FilePath DBPath(const base::FilePath& base) {
   if (base.empty())
     return base;
@@ -702,6 +834,9 @@ base::FilePath DBPath(const base::FilePath& base) {
 }
 
 }  // namespace
+
+constexpr base::TimeDelta InterestGroupStorage::kHistoryLength;
+constexpr base::TimeDelta InterestGroupStorage::kMaintenanceInterval;
 
 InterestGroupStorage::InterestGroupStorage(const base::FilePath& path)
     : db_(std::make_unique<sql::Database>(sql::DatabaseOptions{})),
@@ -715,6 +850,7 @@ InterestGroupStorage::~InterestGroupStorage() {
 
 bool InterestGroupStorage::EnsureDBInitialized() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  last_access_time_ = base::Time::Now();
   if (db_ && db_->is_open())
     return true;
   return InitializeDB();
@@ -752,6 +888,7 @@ bool InterestGroupStorage::InitializeDB() {
     return false;
   }
 
+  PerformDBMaintenance();
   return true;
 }
 
@@ -810,7 +947,7 @@ void InterestGroupStorage::JoinInterestGroup(const InterestGroupPtr group) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
     return;
-  if (!DoJoinInterestGroup(*db_, group))
+  if (!DoJoinInterestGroup(*db_, group, base::Time::Now()))
     DLOG(ERROR) << "Could not join interest group: " << db_->GetErrorMessage();
 }
 
@@ -828,7 +965,7 @@ void InterestGroupStorage::UpdateInterestGroup(const InterestGroupPtr group) {
   if (!EnsureDBInitialized())
     return;
 
-  if (!DoUpdateInterestGroup(*db_, group)) {
+  if (!DoUpdateInterestGroup(*db_, group, base::Time::Now())) {
     DLOG(ERROR) << "Could not update interest group: "
                 << db_->GetErrorMessage();
   }
@@ -840,7 +977,7 @@ void InterestGroupStorage::RecordInterestGroupBid(const url::Origin& owner,
   if (!EnsureDBInitialized())
     return;
 
-  if (!DoRecordInterestGroupBid(*db_, owner, name)) {
+  if (!DoRecordInterestGroupBid(*db_, owner, name, base::Time::Now())) {
     DLOG(ERROR) << "Could not record win for interest group: "
                 << db_->GetErrorMessage();
   }
@@ -853,7 +990,8 @@ void InterestGroupStorage::RecordInterestGroupWin(const url::Origin& owner,
   if (!EnsureDBInitialized())
     return;
 
-  if (!DoRecordInterestGroupWin(*db_, owner, name, ad_json)) {
+  if (!DoRecordInterestGroupWin(*db_, owner, name, ad_json,
+                                base::Time::Now())) {
     DLOG(ERROR) << "Could not record bid for interest group: "
                 << db_->GetErrorMessage();
   }
@@ -865,10 +1003,10 @@ std::vector<url::Origin> InterestGroupStorage::GetAllInterestGroupOwners() {
     return {};
 
   base::Optional<std::vector<url::Origin>> maybe_result =
-      DoGetAllInterestGroupOwners(*db_);
+      DoGetAllInterestGroupOwners(*db_, base::Time::Now());
   if (!maybe_result)
     return {};
-  return maybe_result.value();
+  return std::move(maybe_result.value());
 }
 
 std::vector<BiddingInterestGroupPtr>
@@ -878,7 +1016,7 @@ InterestGroupStorage::GetInterestGroupsForOwner(const url::Origin& owner) {
     return {};
 
   base::Optional<std::vector<BiddingInterestGroupPtr>> maybe_result =
-      DoGetInterestGroupsForOwner(*db_, owner);
+      DoGetInterestGroupsForOwner(*db_, owner, base::Time::Now());
   if (!maybe_result)
     return {};
   return std::move(maybe_result.value());
@@ -893,6 +1031,51 @@ void InterestGroupStorage::DeleteInterestGroupData(const url::Origin& owner) {
     DLOG(ERROR) << "Could not delete interest group data: "
                 << db_->GetErrorMessage();
   }
+}
+
+void InterestGroupStorage::PerformDBMaintenance() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // We can use base::Unretained(this) in the timer's closure because the timer
+  // takes ownership of the callback we create here. The timer is guaranteed to
+  // last the lifetime of this.
+  base::Time now = base::Time::Now();
+  if (now - last_access_time_ < kIdlePeriod) {
+    // We're probably still in use. Let's try again in a bit.
+    db_maintenance_timer_.Start(
+        FROM_HERE, kIdlePeriod,
+        base::BindOnce(&InterestGroupStorage::PerformDBMaintenance,
+                       base::Unretained(this)));
+    return;
+  }
+
+  // Schedule next run
+  db_maintenance_timer_.Start(
+      FROM_HERE, kMaintenanceInterval,
+      base::BindOnce(&InterestGroupStorage::PerformDBMaintenance,
+                     base::Unretained(this)));
+
+  if (EnsureDBInitialized()) {
+    DoPerformDatabaseMaintenance(*db_, now);
+  }
+}
+
+std::vector<BiddingInterestGroupPtr>
+InterestGroupStorage::GetAllInterestGroupsUnfilteredForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::Time infinite_past = base::Time::Min();
+  std::vector<BiddingInterestGroupPtr> result;
+  base::Optional<std::vector<url::Origin>> maybe_owners =
+      DoGetAllInterestGroupOwners(*db_, infinite_past);
+  if (!maybe_owners)
+    return {};
+  for (const auto& owner : *maybe_owners) {
+    base::Optional<std::vector<BiddingInterestGroupPtr>> maybe_owner_results =
+        DoGetInterestGroupsForOwner(*db_, owner, infinite_past);
+    DCHECK(maybe_owner_results);
+    std::move(maybe_owner_results->begin(), maybe_owner_results->end(),
+              std::back_inserter(result));
+  }
+  return result;
 }
 
 void InterestGroupStorage::DatabaseErrorCallback(int extended_error,
