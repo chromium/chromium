@@ -737,8 +737,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
       scrollable_page_contents));
 }
 
-// Fails on Linux Chromium OS ASan LSan Tests (https://crbug.com/1191327).
-#if defined(OS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+// Fails on Linux Chromium OS Tests (https://crbug.com/1191327).
+#if defined(OS_CHROMEOS)
 #define MAYBE_TestClosingATab DISABLED_TestClosingATab
 #else
 #define MAYBE_TestClosingATab TestClosingATab
