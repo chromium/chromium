@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "remoting/host/chromeos/point_transformer.h"
 #include "remoting/host/clipboard.h"
 #include "remoting/proto/internal.pb.h"
@@ -82,6 +83,25 @@ void SetCapsLockState(bool caps_lock) {
       chromeos::input_method::InputMethodManager::Get();
   ime->GetImeKeyboard()->SetCapsLockEnabled(caps_lock);
 }
+
+class SystemInputInjectorStub : public ui::SystemInputInjector {
+ public:
+  SystemInputInjectorStub() {
+    LOG(WARNING)
+        << "Using stubbed input injector; All CRD user input will be ignored.";
+  }
+  SystemInputInjectorStub(const SystemInputInjectorStub&) = delete;
+  SystemInputInjectorStub& operator=(const SystemInputInjectorStub&) = delete;
+  ~SystemInputInjectorStub() override = default;
+
+  // SystemInputInjector implementation:
+  void MoveCursorTo(const gfx::PointF& location) override {}
+  void InjectMouseButton(ui::EventFlags button, bool down) override {}
+  void InjectMouseWheel(int delta_x, int delta_y) override {}
+  void InjectKeyEvent(ui::DomCode physical_key,
+                      bool down,
+                      bool suppress_auto_repeat) override {}
+};
 
 }  // namespace
 
@@ -202,6 +222,14 @@ void InputInjectorChromeos::Core::InjectMouseEvent(const MouseEvent& event) {
 void InputInjectorChromeos::Core::Start(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
   delegate_ = ui::OzonePlatform::GetInstance()->CreateSystemInputInjector();
+  if (!delegate_ && !base::SysInfo::IsRunningOnChromeOS()) {
+    // This happens when directly running the Chrome binary on linux.
+    // We'll simply ignore all input there (instead of crashing).
+    // Note: it would be nicer to swap this out with input_injector_x11.cc
+    // on linux instead (and properly handle the input), but that runs into
+    // dependency issues.
+    delegate_ = std::make_unique<SystemInputInjectorStub>();
+  }
   DCHECK(delegate_);
 
   // Implemented by remoting::ClipboardAura.
