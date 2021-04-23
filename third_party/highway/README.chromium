@@ -1,4 +1,4 @@
-Name: Descriptive name of the package
+Name: Highway: C++ library for SIMD
 Short Name: highway
 URL: https://github.com/google/highway
 Version: 0.11.x
