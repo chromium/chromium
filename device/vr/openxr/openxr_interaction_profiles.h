@@ -133,7 +133,7 @@ constexpr OpenXrSystemInputProfiles kOculusTouchInputProfiles[] = {
       "generic-trigger-squeeze-thumbstick"},
      4},
     // Oculus says this will soon be the name OpenXR reports
-    {"Quest 2",
+    {"Oculus Quest2",
      {"oculus-touch-v3", "oculus-touch-v2", "oculus-touch",
       "generic-trigger-squeeze-thumbstick"},
      4}};
