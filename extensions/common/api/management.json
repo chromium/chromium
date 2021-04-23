@@ -295,7 +295,7 @@
       },
       {
         "name": "uninstall",
-        "description": "Uninstalls a currently installed app or extension.",
+        "description": "Uninstalls a currently installed app or extension. Note: This function does not work in managed environments when the user is not allowed to uninstall the specified extension/app.",
         "parameters": [
           {
             "name": "id",
@@ -316,7 +316,7 @@
       },
       {
         "name": "uninstallSelf",
-        "description": "Uninstalls the calling extension. Note: This function can be used without requesting the 'management' permission in the manifest.",
+        "description": "Uninstalls the calling extension. Note: This function can be used without requesting the 'management' permission in the manifest. This function does not work in managed environments when the user is not allowed to uninstall the specified extension/app.",
         "parameters": [
           {
             "name": "options",

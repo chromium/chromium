@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -167,7 +167,9 @@ chrome.management.getPermissionWarningsByManifest = function(manifestStr, callba
 chrome.management.setEnabled = function(id, enabled, callback) {};
 
 /**
- * Uninstalls a currently installed app or extension.
+ * Uninstalls a currently installed app or extension. Note: This function does
+ * not work in managed environments when the user is not allowed to uninstall
+ * the specified extension/app.
  * @param {string} id This should be the id from an item of
  *     $(ref:management.ExtensionInfo).
  * @param {!chrome.management.UninstallOptions=} options
@@ -178,7 +180,9 @@ chrome.management.uninstall = function(id, options, callback) {};
 
 /**
  * Uninstalls the calling extension. Note: This function can be used without
- * requesting the 'management' permission in the manifest.
+ * requesting the 'management' permission in the manifest. This function does
+ * not work in managed environments when the user is not allowed to uninstall
+ * the specified extension/app.
  * @param {!chrome.management.UninstallOptions=} options
  * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-uninstallSelf
