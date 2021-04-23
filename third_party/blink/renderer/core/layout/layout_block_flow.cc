@@ -539,6 +539,7 @@ void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
 DISABLE_CFI_PERF
 void LayoutBlockFlow::ResetLayout() {
   NOT_DESTROYED();
+  DCHECK(!IsLayoutNGObject()) << this;
   if (!FirstChild() && !IsAnonymousBlock())
     SetChildrenInline(true);
   SetContainsInlineWithOutlineAndContinuation(false);
@@ -3205,18 +3206,31 @@ void LayoutBlockFlow::ChildBecameFloatingOrOutOfFlow(LayoutBox* child) {
   }
 }
 
-void LayoutBlockFlow::CollapseAnonymousBlockChild(LayoutBlockFlow* child) {
-  NOT_DESTROYED();
+static bool AllowsCollapseAnonymousBlockChild(const LayoutBlockFlow& parent,
+                                              const LayoutBlockFlow& child) {
   // It's possible that this block's destruction may have been triggered by the
   // child's removal. Just bail if the anonymous child block is already being
   // destroyed. See crbug.com/282088
-  if (child->BeingDestroyed())
-    return;
-  if (child->Continuation())
-    return;
+  if (child.BeingDestroyed())
+    return false;
+  if (child.Continuation())
+    return false;
   // Ruby elements use anonymous wrappers for ruby runs and ruby bases by
   // design, so we don't remove them.
-  if (child->IsRubyRun() || child->IsRubyBase())
+  if (child.IsRubyRun() || child.IsRubyBase())
+    return false;
+  if (IsA<LayoutMultiColumnFlowThread>(parent) &&
+      parent.Parent()->IsLayoutNGObject() && child.ChildrenInline()) {
+    // The test[1] reaches here.
+    // [1] "fast/multicol/dynamic/remove-spanner-in-content.html"
+    return false;
+  }
+  return true;
+}
+
+void LayoutBlockFlow::CollapseAnonymousBlockChild(LayoutBlockFlow* child) {
+  NOT_DESTROYED();
+  if (!AllowsCollapseAnonymousBlockChild(*this, *child))
     return;
   SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kChildAnonymousBlockChanged);
@@ -3297,11 +3311,20 @@ void LayoutBlockFlow::ReparentPrecedingFloatingOrOutOfFlowSiblings() {
   }
 }
 
-void LayoutBlockFlow::MakeChildrenInlineIfPossible() {
-  NOT_DESTROYED();
+static bool AllowsInlineChildren(const LayoutBlockFlow& block_flow) {
   // Collapsing away anonymous wrappers isn't relevant for the children of
   // anonymous blocks, unless they are ruby bases.
-  if (IsAnonymousBlock() && !IsRubyBase())
+  if (block_flow.IsAnonymousBlock() && !block_flow.IsRubyBase())
+    return false;
+  if (IsA<LayoutMultiColumnFlowThread>(block_flow) &&
+      block_flow.Parent()->IsLayoutNGObject())
+    return false;
+  return true;
+}
+
+void LayoutBlockFlow::MakeChildrenInlineIfPossible() {
+  NOT_DESTROYED();
+  if (!AllowsInlineChildren(*this))
     return;
 
   HeapVector<Member<LayoutBlockFlow>, 3> blocks_to_remove;
@@ -4475,6 +4498,14 @@ void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
       GetDocument(), StyleRef(), !CanTraversePhysicalFragments());
   AddChild(flow_thread);
   pagination_state_changed_ = true;
+  if (IsLayoutNGObject()) {
+    // For simplicity of layout algorithm, we assume flow thread having block
+    // level children only.
+    // For example, we can handle them in same way:
+    //   <div style="columns:3">abc<br>def<br>ghi<br></div>
+    //   <div style="columns:3"><div>abc<br>def<br>ghi<br></div></div>
+    flow_thread->SetChildrenInline(false);
+  }
 
   // Check that addChild() put the flow thread as a direct child, and didn't do
   // fancy things.

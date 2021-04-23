@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
@@ -40,23 +41,45 @@ namespace blink {
 namespace {
 
 bool HasLineEvenIfEmpty(LayoutBox* box) {
+  // Note: We should reduce calling |LayoutBlock::HasLineIfEmpty()|, because
+  // it calls slow function |IsRootEditableElement()|.
   LayoutBlockFlow* const block_flow = DynamicTo<LayoutBlockFlow>(box);
   if (!block_flow)
     return false;
   // Note: |block_flow->NeedsCollectInline()| is true after removing all
   // children from block[1].
   // [1] editing/inserting/insert_after_delete.html
-  LayoutObject* const child = GetLayoutObjectForFirstChildNode(block_flow);
-  if (!child) {
+  if (!GetLayoutObjectForFirstChildNode(block_flow)) {
     // Note: |block_flow->ChildrenInline()| can be both true or false:
     //  - true: just after construction, <div></div>
     //  - true: one of child is inline them remove all, <div>abc</div>
     //  - false: all children are block then remove all, <div><p></p></div>
     return block_flow->HasLineIfEmpty();
   }
-  if (!AreNGBlockFlowChildrenInline(block_flow))
-    return false;
-  return NGInlineNode(block_flow).HasLineEvenIfEmpty();
+  if (AreNGBlockFlowChildrenInline(block_flow))
+    return NGInlineNode(block_flow).HasLineEvenIfEmpty();
+  if (const auto* const flow_thread = block_flow->MultiColumnFlowThread()) {
+    DCHECK(!flow_thread->ChildrenInline());
+    for (const auto* child = flow_thread->FirstChild(); child;
+         child = child->NextSibling()) {
+      if (child->IsInline()) {
+        // Note: |LayoutNGOutsideListMarker| is out-of-flow for the tree
+        // building purpose in |LayoutBlockFlow::AddChild()|.
+        // |MultiColumnRenderingTest.ListItem| reaches here.
+        DCHECK(child->IsLayoutNGOutsideListMarker()) << child;
+        return false;
+      }
+      if (!child->IsFloatingOrOutOfFlowPositioned()) {
+        // We reach here when we have in-flow child.
+        // <div style="columns: 3"><div style="float:left"><div></div></div>
+        return false;
+      }
+    }
+    // There are no children or all children are floating or out of flow
+    // positioned.
+    return block_flow->HasLineIfEmpty();
+  }
+  return false;
 }
 
 LogicalOffset CenterBlockChild(LogicalOffset offset,

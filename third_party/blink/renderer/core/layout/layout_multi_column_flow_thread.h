@@ -325,6 +325,8 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
     return "LayoutMultiColumnFlowThread";
   }
 
+  // Note: We call this constructor only in |CreateAnonymous()|, but mark this
+  // "public" for |MakeGarbageCollected<T>|.
   explicit LayoutMultiColumnFlowThread(bool needs_paint_layer);
 
  private:
