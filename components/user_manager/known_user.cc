@@ -28,7 +28,7 @@ namespace {
 const char kKnownUsers[] = "KnownUsers";
 
 // Known user preferences keys (stored in Local State). All keys should be
-// listed in kReservedKeys below.
+// listed in kReservedKeys or kObsoleteKeys below.
 
 // Key of canonical e-mail value.
 const char kCanonicalEmail[] = "email";
@@ -61,8 +61,9 @@ const char kReauthReasonKey[] = "reauth_reason";
 const char kGaiaIdMigration[] = "gaia_id_migration";
 
 // Key of the boolean flag telling if a minimal user home migration has been
-// attempted.
-const char kMinimalMigrationAttempted[] = "minimal_migration_attempted";
+// attempted. This flag is not used since M88 and is only kept here to be able
+// to remove it from existing entries.
+const char kMinimalMigrationAttemptedObsolete[] = "minimal_migration_attempted";
 
 // Key of the boolean flag telling if user session requires policy.
 const char kProfileRequiresPolicy[] = "profile_requires_policy";
@@ -108,7 +109,6 @@ const char* kReservedKeys[] = {kCanonicalEmail,
                                kGAPSCookie,
                                kReauthReasonKey,
                                kGaiaIdMigration,
-                               kMinimalMigrationAttempted,
                                kProfileRequiresPolicy,
                                kIsEphemeral,
                                kChallengeResponseKeys,
@@ -120,6 +120,12 @@ const char* kReservedKeys[] = {kCanonicalEmail,
                                kPinAutosubmitLength,
                                kPinAutosubmitBackfillNeeded,
                                kPasswordSyncToken};
+
+// List containing all known user preference keys that used to be reserved and
+// are now obsolete.
+const char* kObsoleteKeys[] = {
+    kMinimalMigrationAttemptedObsolete,
+};
 
 PrefService* GetLocalStateLegacy() {
   if (!UserManager::IsInitialized())
@@ -596,26 +602,6 @@ bool KnownUser::FindReauthReason(const AccountId& account_id, int* out_value) {
   return GetIntegerPref(account_id, kReauthReasonKey, out_value);
 }
 
-bool KnownUser::WasUserHomeMinimalMigrationAttempted(
-    const AccountId& account_id) {
-  bool minimal_migration_attempted;
-  const bool pref_set = GetBooleanPref(account_id, kMinimalMigrationAttempted,
-                                       &minimal_migration_attempted);
-  if (pref_set)
-    return minimal_migration_attempted;
-
-  // If we haven't recorded that a minimal migration has been attempted, assume
-  // no.
-  return false;
-}
-
-void KnownUser::SetUserHomeMinimalMigrationAttempted(
-    const AccountId& account_id,
-    bool minimal_migration_attempted) {
-  SetBooleanPref(account_id, kMinimalMigrationAttempted,
-                 minimal_migration_attempted);
-}
-
 void KnownUser::SetChallengeResponseKeys(const AccountId& account_id,
                                          base::Value value) {
   DCHECK(value.is_list());
@@ -777,6 +763,16 @@ void KnownUser::CleanEphemeralUsers() {
     base::Optional<bool> is_ephemeral = value.FindBoolKey(kIsEphemeral);
     return is_ephemeral && *is_ephemeral;
   });
+}
+
+void KnownUser::CleanObsoletePrefs() {
+  ListPrefUpdate update(local_state_, kKnownUsers);
+  for (base::Value& user_entry : update.Get()->GetList()) {
+    if (!user_entry.is_dict())
+      continue;
+    for (const std::string& key : kObsoleteKeys)
+      user_entry.RemoveKey(key);
+  }
 }
 
 // static
@@ -1105,26 +1101,6 @@ bool FindReauthReason(const AccountId& account_id, int* out_value) {
   if (!local_state)
     return false;
   return KnownUser(local_state).FindReauthReason(account_id, out_value);
-}
-
-bool WasUserHomeMinimalMigrationAttempted(const AccountId& account_id) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return false;
-  return KnownUser(local_state)
-      .WasUserHomeMinimalMigrationAttempted(account_id);
-}
-
-void SetUserHomeMinimalMigrationAttempted(const AccountId& account_id,
-                                          bool minimal_migration_attempted) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state)
-      .SetUserHomeMinimalMigrationAttempted(account_id,
-                                            minimal_migration_attempted);
 }
 
 void SetChallengeResponseKeys(const AccountId& account_id, base::Value value) {

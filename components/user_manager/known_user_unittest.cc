@@ -662,6 +662,32 @@ TEST_F(KnownUserTest, CleanEphemeralUsersRemovesEphemeralAdOnly) {
                                             kAccountIdNonEphemeralAd));
 }
 
+TEST_F(KnownUserTest, CleanObsoletePrefs) {
+  KnownUser known_user(local_state());
+  const std::string kObsoletePrefName = "minimal_migration_attempted";
+  const std::string kCustomPrefName = "custom_pref";
+
+  // Set an obsolete pref.
+  known_user.SetBooleanPref(kDefaultAccountId, kObsoletePrefName, true);
+  // Set a custom pref.
+  known_user.SetBooleanPref(kDefaultAccountId, kCustomPrefName, true);
+  // Set a reserved, non-obsolete pref.
+  known_user.SetIsEnterpriseManaged(kDefaultAccountId, true);
+
+  known_user.CleanObsoletePrefs();
+
+  // Verify that only the obsolete pref has been removed.
+  EXPECT_FALSE(known_user.GetBooleanPref(kDefaultAccountId, kObsoletePrefName,
+                                         /*out_value=*/nullptr));
+
+  bool custom_pref_value = false;
+  EXPECT_TRUE(known_user.GetBooleanPref(kDefaultAccountId, kCustomPrefName,
+                                        &custom_pref_value));
+  EXPECT_TRUE(custom_pref_value);
+
+  EXPECT_TRUE(known_user.GetIsEnterpriseManaged(kDefaultAccountId));
+}
+
 //
 // =============================================================================
 // Type-parametrized unittests for Set{String,Boolean,Integer,}Pref and

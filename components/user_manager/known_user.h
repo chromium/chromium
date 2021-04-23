@@ -196,13 +196,6 @@ class USER_MANAGER_EXPORT KnownUser final {
   // otherwise.
   bool FindReauthReason(const AccountId& account_id, int* out_value);
 
-  // Saves that a minimal migration was attempted for this user's cryptohome.
-  void SetUserHomeMinimalMigrationAttempted(const AccountId& account_id,
-                                            bool minimal_migration_attempted);
-
-  // Returns true if minimal migration was attempted for this user's cryptohome.
-  bool WasUserHomeMinimalMigrationAttempted(const AccountId& account_id);
-
   // Setter and getter for the information about challenge-response keys that
   // can be used by this user to authenticate. The getter returns a null value
   // when the property isn't present. For the format of the value, refer to
@@ -264,6 +257,7 @@ class USER_MANAGER_EXPORT KnownUser final {
 
   FRIEND_TEST_ALL_PREFIXES(KnownUserTest,
                            CleanEphemeralUsersRemovesEphemeralAdOnly);
+  FRIEND_TEST_ALL_PREFIXES(KnownUserTest, CleanObsoletePrefs);
 
   // Removes |path| from account_id's known user dictionary.
   void ClearPref(const AccountId& account_id, const std::string& path);
@@ -277,6 +271,9 @@ class USER_MANAGER_EXPORT KnownUser final {
 
   // Marks if user is ephemeral and should be removed on log out.
   void SetIsEphemeralUser(const AccountId& account_id, bool is_ephemeral);
+
+  // Removes all obsolete prefs from all users.
+  void CleanObsoletePrefs();
 
   PrefService* const local_state_;
 };
@@ -505,19 +502,6 @@ void USER_MANAGER_EXPORT UpdateReauthReason(const AccountId& account_id,
 // instead.
 bool USER_MANAGER_EXPORT FindReauthReason(const AccountId& account_id,
                                           int* out_value);
-
-// Saves that a minimal migration was attempted for this user's cryptohome.
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::SetUserHomeMinimalMigrationAttempted instead.
-void USER_MANAGER_EXPORT
-SetUserHomeMinimalMigrationAttempted(const AccountId& account_id,
-                                     bool minimal_migration_attempted);
-
-// Returns true if minimal migration was attempted for this user's cryptohome.
-bool USER_MANAGER_EXPORT
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::WasUserHomeMinimalMigrationAttempted instead.
-WasUserHomeMinimalMigrationAttempted(const AccountId& account_id);
 
 // Setter and getter for the information about challenge-response keys that can
 // be used by this user to authenticate.

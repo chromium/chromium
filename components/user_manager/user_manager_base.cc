@@ -1047,8 +1047,11 @@ void UserManagerBase::Initialize() {
   if (!HasBrowserRestarted()) {
     PrefService* local_state = GetLocalState();
     // local_state may be null in unit tests.
-    if (local_state)
-      KnownUser(local_state).CleanEphemeralUsers();
+    if (local_state) {
+      KnownUser known_user(local_state);
+      known_user.CleanEphemeralUsers();
+      known_user.CleanObsoletePrefs();
+    }
   }
   CallUpdateLoginState();
 }
