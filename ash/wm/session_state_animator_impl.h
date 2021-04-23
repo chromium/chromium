@@ -58,7 +58,7 @@ class ASH_EXPORT SessionStateAnimatorImpl : public SessionStateAnimator {
                                   AnimationSpeed speed,
                                   base::OnceClosure callback) override;
   AnimationSequence* BeginAnimationSequence(
-      base::OnceClosure callback) override;
+      AnimationCallback callback) override;
   bool IsWallpaperHidden() const override;
   void ShowWallpaper() override;
   void HideWallpaper() override;

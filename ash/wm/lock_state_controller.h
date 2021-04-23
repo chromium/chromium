@@ -141,10 +141,10 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   void StartUnlockAnimationAfterUIDestroyed();
 
   // These methods are called when corresponding animation completes.
-  void LockAnimationCancelled();
-  void PreLockAnimationFinished(bool request_lock);
-  void PostLockAnimationFinished();
-  void UnlockAnimationAfterUIDestroyedFinished();
+  void LockAnimationCancelled(bool aborted);
+  void PreLockAnimationFinished(bool request_lock, bool aborted);
+  void PostLockAnimationFinished(bool aborted);
+  void UnlockAnimationAfterUIDestroyedFinished(bool aborted);
 
   // Stores properties of UI that have to be temporarily modified while locking.
   void StoreUnlockedProperties();

@@ -76,7 +76,7 @@ class ASH_EXPORT SessionStateAnimator {
     // The primary root window.
     ROOT_CONTAINER = 1 << 6,
   };
-
+  using AnimationCallback = base::OnceCallback<void(bool)>;
   // A bitfield mask including LOCK_SCREEN_WALLPAPER,
   // LOCK_SCREEN_CONTAINERS, and LOCK_SCREEN_RELATED_CONTAINERS.
   static const int kAllLockScreenContainersMask;
@@ -128,7 +128,7 @@ class ASH_EXPORT SessionStateAnimator {
    protected:
     // AnimationSequence should not be instantiated directly, only through
     // subclasses.
-    explicit AnimationSequence(base::OnceClosure callback);
+    explicit AnimationSequence(AnimationCallback callback);
 
     // Subclasses should call this when the contained animations completed
     // successfully.
@@ -148,18 +148,18 @@ class ASH_EXPORT SessionStateAnimator {
     void CleanupIfSequenceCompleted();
 
     // Tracks whether the sequence has ended.
-    bool sequence_ended_;
+    bool sequence_ended_ = false;
 
     // Track whether the contained animations have completed or not, both
     // successfully and unsuccessfully.
-    bool animation_completed_;
+    bool animation_finished_ = false;
 
     // Flag to specify whether the callback should be invoked once the sequence
     // has completed.
-    bool invoke_callback_;
+    bool animation_aborted_ = false;
 
-    // Callback to be called.
-    base::OnceClosure callback_;
+    // Callback to be called when the aniamtion is finished or aborted.
+    AnimationCallback callback_;
 
     DISALLOW_COPY_AND_ASSIGN(AnimationSequence);
   };
@@ -188,7 +188,7 @@ class ASH_EXPORT SessionStateAnimator {
   // a group of animations are completed.  See AnimationSequence documentation
   // for more details.
   virtual AnimationSequence* BeginAnimationSequence(
-      base::OnceClosure callback) = 0;
+      AnimationCallback callback) = 0;
 
   // Retruns true if the wallpaper is hidden.
   virtual bool IsWallpaperHidden() const = 0;

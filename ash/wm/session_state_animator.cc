@@ -40,11 +40,8 @@ const int SessionStateAnimator::kAllNonRootContainersMask =
     SessionStateAnimator::NON_LOCK_SCREEN_CONTAINERS;
 
 SessionStateAnimator::AnimationSequence::AnimationSequence(
-    base::OnceClosure callback)
-    : sequence_ended_(false),
-      animation_completed_(false),
-      invoke_callback_(false),
-      callback_(std::move(callback)) {}
+    AnimationCallback callback)
+    : callback_(std::move(callback)) {}
 
 SessionStateAnimator::AnimationSequence::~AnimationSequence() = default;
 
@@ -54,21 +51,19 @@ void SessionStateAnimator::AnimationSequence::EndSequence() {
 }
 
 void SessionStateAnimator::AnimationSequence::OnAnimationCompleted() {
-  animation_completed_ = true;
-  invoke_callback_ = true;
+  animation_finished_ = true;
   CleanupIfSequenceCompleted();
 }
 
 void SessionStateAnimator::AnimationSequence::OnAnimationAborted() {
-  animation_completed_ = true;
-  invoke_callback_ = false;
+  animation_finished_ = true;
+  animation_aborted_ = true;
   CleanupIfSequenceCompleted();
 }
 
 void SessionStateAnimator::AnimationSequence::CleanupIfSequenceCompleted() {
-  if (sequence_ended_ && animation_completed_) {
-    if (invoke_callback_)
-      std::move(callback_).Run();
+  if (sequence_ended_ && animation_finished_) {
+    std::move(callback_).Run(animation_aborted_);
     delete this;
   }
 }

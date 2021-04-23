@@ -30,7 +30,7 @@ const SessionStateAnimator::Container
 class TestSessionStateAnimator::AnimationSequence
     : public SessionStateAnimator::AnimationSequence {
  public:
-  AnimationSequence(base::OnceClosure callback,
+  AnimationSequence(AnimationCallback callback,
                     TestSessionStateAnimator* animator)
       : SessionStateAnimator::AnimationSequence(std::move(callback)),
         sequence_count_(0),
@@ -232,7 +232,7 @@ void TestSessionStateAnimator::StartAnimationWithCallback(
 }
 
 SessionStateAnimator::AnimationSequence*
-TestSessionStateAnimator::BeginAnimationSequence(base::OnceClosure callback) {
+TestSessionStateAnimator::BeginAnimationSequence(AnimationCallback callback) {
   return new AnimationSequence(std::move(callback), this);
 }
 
@@ -246,6 +246,13 @@ void TestSessionStateAnimator::ShowWallpaper() {
 
 void TestSessionStateAnimator::HideWallpaper() {
   is_wallpaper_hidden_ = true;
+}
+
+void TestSessionStateAnimator::AbortAnimations(int container_mask) {
+  for (size_t i = 0; i < base::size(kAllContainers); ++i) {
+    if (container_mask & kAllContainers[i])
+      AbortAnimation(kAllContainers[i]);
+  }
 }
 
 void TestSessionStateAnimator::StartAnimationInSequence(

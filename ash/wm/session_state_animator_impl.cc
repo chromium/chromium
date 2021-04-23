@@ -331,7 +331,7 @@ class SessionStateAnimatorImpl::AnimationSequence
       public ui::LayerAnimationObserver {
  public:
   explicit AnimationSequence(SessionStateAnimatorImpl* animator,
-                             base::OnceClosure callback)
+                             AnimationCallback callback)
       : SessionStateAnimator::AnimationSequence(std::move(callback)),
         animator_(animator),
         sequences_attached_(0),
@@ -449,7 +449,7 @@ void SessionStateAnimatorImpl::StartAnimationWithCallback(
 }
 
 SessionStateAnimator::AnimationSequence*
-SessionStateAnimatorImpl::BeginAnimationSequence(base::OnceClosure callback) {
+SessionStateAnimatorImpl::BeginAnimationSequence(AnimationCallback callback) {
   return new AnimationSequence(this, std::move(callback));
 }
 
