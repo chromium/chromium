@@ -93,7 +93,8 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
   WorkerThreadDelegate(const std::string& thread_name,
                        WorkerThread::ThreadLabel thread_label,
                        TrackedRef<TaskTracker> task_tracker)
-      : task_tracker_(std::move(task_tracker)),
+      : lock_("WorkerThreadDelegate.lock_"),
+        task_tracker_(std::move(task_tracker)),
         thread_name_(thread_name),
         thread_label_(thread_label) {}
   WorkerThreadDelegate(const WorkerThreadDelegate&) = delete;
