@@ -294,14 +294,14 @@ void OptimizationGuideKeyedService::AddObserverForOptimizationTargetModel(
 void OptimizationGuideKeyedService::RemoveObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
     optimization_guide::OptimizationTargetModelObserver* observer) {
-  prediction_manager_->RemoveObserverForOptimizationTargetModel(
-      optimization_target, observer);
+    prediction_manager_->RemoveObserverForOptimizationTargetModel(
+        optimization_target, observer);
 }
 
 void OptimizationGuideKeyedService::RegisterOptimizationTypes(
     const std::vector<optimization_guide::proto::OptimizationType>&
         optimization_types) {
-  hints_manager_->RegisterOptimizationTypes(optimization_types);
+    hints_manager_->RegisterOptimizationTypes(optimization_types);
 }
 
 optimization_guide::OptimizationGuideDecision
@@ -351,7 +351,6 @@ void OptimizationGuideKeyedService::ClearData() {
 
 void OptimizationGuideKeyedService::Shutdown() {
   hints_manager_->Shutdown();
-  prediction_manager_->NotifyObserversOfShutdown();
 }
 
 void OptimizationGuideKeyedService::OverrideTargetModelFileForTesting(
