@@ -31,10 +31,8 @@ import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
-import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -69,7 +67,7 @@ public class PageInfoViewDarkModeTest {
 
     @Rule
     public RenderTestRule mRenderTestRule =
-            RenderTestRule.Builder.withPublicCorpus().setRevision(4).build();
+            RenderTestRule.Builder.withPublicCorpus().setRevision(5).build();
 
     private void loadUrlAndOpenPageInfo(String url) {
         mActivityTestRule.loadUrl(url);
@@ -84,12 +82,7 @@ public class PageInfoViewDarkModeTest {
                     activity.getModalDialogManagerSupplier(), null, OpenedFromSource.TOOLBAR)
                     .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
         });
-
-        if (PageInfoFeatures.PAGE_INFO_V2.isEnabled()) {
-            onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
-        } else {
-            onViewWaiting(allOf(withId(R.id.page_info_url), isDisplayed()));
-        }
+        onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
     }
 
     private View getPageInfoView() {
@@ -108,20 +101,19 @@ public class PageInfoViewDarkModeTest {
     }
 
     /**
-     * Tests the new PageInfo UI on a secure website in dark mode.
+     * Tests the PageInfo UI on a secure website in dark mode.
      */
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
-    public void testShowOnSecureWebsiteDarkV2() throws IOException {
+    public void testShowOnSecureWebsiteDark() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeNightModeTestUtils.setUpNightModeForChromeActivity(/*nightModeEnabled=*/true);
         });
 
         mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_SecureWebsiteDarkV2");
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_SecureWebsiteDark");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeNightModeTestUtils.setUpNightModeForChromeActivity(/*nightModeEnabled=*/false);
