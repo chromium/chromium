@@ -32,6 +32,7 @@ import java.util.Queue;
  * A MediaCodec wrapper for adapting the API and catching exceptions.
  */
 @JNINamespace("media")
+@MainDex
 class MediaCodecBridge {
     private static final String TAG = "MediaCodecBridge";
 
@@ -80,7 +81,6 @@ class MediaCodecBridge {
     private static HandlerThread sCallbackHandlerThread;
     private static Handler sCallbackHandler;
 
-    @MainDex
     private static class DequeueInputResult {
         private final int mStatus;
         private final int mIndex;
@@ -101,7 +101,6 @@ class MediaCodecBridge {
         }
     }
 
-    @MainDex
     private static class DequeueOutputResult {
         private final int mStatus;
         private final int mIndex;
@@ -152,7 +151,6 @@ class MediaCodecBridge {
     }
 
     /** A wrapper around a MediaFormat. */
-    @MainDex
     private static class GetOutputFormatResult {
         private final int mStatus;
         // May be null if mStatus is not MediaCodecStatus.OK.
@@ -201,7 +199,6 @@ class MediaCodecBridge {
     // Warning: This class may execute on an arbitrary thread for the lifetime
     // of the MediaCodec. The MediaCodecBridge methods it calls are synchronized
     // to avoid race conditions.
-    @MainDex
     @TargetApi(Build.VERSION_CODES.M)
     class MediaCodecCallback extends MediaCodec.Callback {
         private MediaCodecBridge mMediaCodecBridge;

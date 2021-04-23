@@ -12,7 +12,6 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
@@ -82,7 +81,6 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
         }
     }
 
-    @MainDex
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);

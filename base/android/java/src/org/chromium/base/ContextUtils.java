@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.build.BuildConfig;
 
@@ -62,7 +61,6 @@ public class ContextUtils {
      *
      * @param appContext The application context.
      */
-    @MainDex // TODO(agrieve): Could add to whole class if not for ApplicationStatus.initialize().
     public static void initApplicationContext(Context appContext) {
         // Conceding that occasionally in tests, native is loaded before the browser process is
         // started, in which case the browser process re-sets the application context.
