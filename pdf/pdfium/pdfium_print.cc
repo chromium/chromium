@@ -39,7 +39,7 @@ namespace chrome_pdf {
 namespace {
 
 // UI should have done parameter sanity check, when execution
-// reaches here, |pages_per_sheet| should be a positive integer.
+// reaches here, `pages_per_sheet` should be a positive integer.
 bool ShouldDoNup(int pages_per_sheet) {
   return pages_per_sheet > 1;
 }
@@ -52,10 +52,10 @@ int GetDocumentPageCount(FPDF_DOCUMENT doc) {
 // Set the destination page size and content area in points based on source
 // page rotation and orientation.
 //
-// |rotated| True if source page is rotated 90 degree or 270 degree.
-// |is_src_page_landscape| is true if the source page orientation is landscape.
-// |page_size| has the actual destination page size in points.
-// |content_rect| has the actual destination page printable area values in
+// `rotated` True if source page is rotated 90 degree or 270 degree.
+// `is_src_page_landscape` is true if the source page orientation is landscape.
+// `page_size` has the actual destination page size in points.
+// `content_rect` has the actual destination page printable area values in
 // points.
 void SetPageSizeAndContentRect(bool rotated,
                                bool is_src_page_landscape,
@@ -72,7 +72,7 @@ void SetPageSizeAndContentRect(bool rotated,
   }
 }
 
-// Transform |page| contents to fit in the selected printer paper size.
+// Transform `page` contents to fit in the selected printer paper size.
 void TransformPDFPageForPrinting(FPDF_PAGE page,
                                  float scale_factor,
                                  PP_PrintScalingOption_Dev scaling_option,
@@ -186,7 +186,7 @@ void FitContentsToPrintableAreaIfRequired(
 }
 
 // Takes the same parameters as PDFiumPrint::CreateNupPdf().
-// On success, returns the N-up version of |doc|. On failure, returns nullptr.
+// On success, returns the N-up version of `doc`. On failure, returns nullptr.
 ScopedFPDFDocument CreateNupPdfDocument(ScopedFPDFDocument doc,
                                         size_t pages_per_sheet,
                                         const gfx::Size& page_size,

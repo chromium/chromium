@@ -48,7 +48,7 @@ bool PDFiumPermissions::HasPermission(
     }
   } else {
     // Security handler revision 3+ have different rules for interpreting the
-    // bits in |permission_bits_|.
+    // bits in `permission_bits_`.
     switch (permission) {
       case PDFEngine::PERMISSION_COPY:
         return (permission_bits_ & kPDFPermissionCopyMask) != 0;

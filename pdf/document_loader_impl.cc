@@ -32,7 +32,7 @@ namespace {
 // Experimentally chosen value.
 constexpr int kChunkCloseDistance = 10;
 
-// Return true if the HTTP response of |loader| is a successful one and loading
+// Return true if the HTTP response of `loader` is a successful one and loading
 // should continue. 4xx error indicate subsequent requests will fail too.
 // e.g. resource has been removed from the server while loading it. 301
 // indicates a redirect was returned which won't be successful because we
@@ -379,7 +379,7 @@ uint32_t DocumentLoaderImpl::EndOfCurrentChunk() const {
 
 void DocumentLoaderImpl::ReadComplete() {
   if (GetDocumentSize() != 0) {
-    // If there is remaining data in |chunk_|, then save whatever can be saved.
+    // If there is remaining data in `chunk_`, then save whatever can be saved.
     // e.g. In the underrun case.
     if (chunk_.data_size != 0)
       SaveChunkData();

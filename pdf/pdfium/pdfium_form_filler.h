@@ -22,7 +22,7 @@ class PDFiumFormFiller : public FPDF_FORMFILLINFO, public IPDF_JSPLATFORM {
   enum class ScriptOption { kNoJavaScript, kJavaScript, kJavaScriptAndXFA };
   static PDFiumFormFiller::ScriptOption DefaultScriptOption();
 
-  // NOTE: |script_option| is ignored when PDF_ENABLE_V8 is not defined.
+  // NOTE: `script_option` is ignored when PDF_ENABLE_V8 is not defined.
   PDFiumFormFiller(PDFiumEngine* engine, ScriptOption script_option);
   PDFiumFormFiller(const PDFiumFormFiller&) = delete;
   PDFiumFormFiller& operator=(const PDFiumFormFiller&) = delete;

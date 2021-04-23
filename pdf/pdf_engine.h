@@ -76,7 +76,7 @@ struct DocumentMetadata;
 using SendThumbnailCallback = base::OnceCallback<void(Thumbnail)>;
 
 // Do one time initialization of the SDK.
-// If |enable_v8| is false, then the PDFEngine will not be able to run
+// If `enable_v8` is false, then the PDFEngine will not be able to run
 // JavaScript.
 void InitializeSDK(bool enable_v8);
 // Tells the SDK that we're shutting down.
@@ -107,8 +107,8 @@ class PDFEngine {
     // Number of parameters for the view.
     unsigned long num_params;
 
-    // Parameters for the view. Their meaning depends on the |view| and their
-    // number is defined by |num_params| but is at most |kMaxViewParams|. Note:
+    // Parameters for the view. Their meaning depends on the `view` and their
+    // number is defined by `num_params` but is at most `kMaxViewParams`. Note:
     // If a parameter stands for the x/y coordinates, it should be transformed
     // into the corresponding in-screen coordinates before it's sent to the
     // viewport.
@@ -147,15 +147,15 @@ class PDFEngine {
     // Scroll by a given delta relative to the current position.
     virtual void ScrollBy(const gfx::Vector2d& delta) {}
 
-    // Scroll to zero-based |page|.
+    // Scroll to zero-based `page`.
     virtual void ScrollToPage(int page) {}
 
     // Navigate to the given url.
     virtual void NavigateTo(const std::string& url,
                             WindowOpenDisposition disposition) {}
 
-    // Navigate to the given destination. Zero-based |page| index. |x|, |y| and
-    // |zoom| are optional and can be nullptr.
+    // Navigate to the given destination. Zero-based `page` index. `x`, `y` and
+    // `zoom` are optional and can be nullptr.
     virtual void NavigateToDestination(int page,
                                        const float* x,
                                        const float* y,
@@ -359,13 +359,13 @@ class PDFEngine {
   // Gets the list of DocumentAttachmentInfo from the document.
   virtual const std::vector<DocumentAttachmentInfo>&
   GetDocumentAttachmentInfoList() const = 0;
-  // Gets the content of an attachment by the attachment's |index|. |index|
-  // must be in the range of [0, attachment_count-1), where |attachment_count|
+  // Gets the content of an attachment by the attachment's `index`. `index`
+  // must be in the range of [0, attachment_count-1), where `attachment_count`
   // is the number of attachments embedded in the document.
   // The caller of this method is responsible for checking whether the
   // attachment is readable, attachment size is not 0 byte, and the return
   // value's size matches the corresponding DocumentAttachmentInfo's
-  // |size_bytes|.
+  // `size_bytes`.
   virtual std::vector<uint8_t> GetAttachmentData(size_t index) = 0;
   // Gets metadata about the document.
   virtual const DocumentMetadata& GetDocumentMetadata() const = 0;
@@ -397,26 +397,26 @@ class PDFEngine {
   // Given a start char index, find the longest continuous run of text that's
   // in a single direction and with the same text style. Return a filled out
   // AccessibilityTextRunInfo on success or base::nullopt on failure. e.g. When
-  // |start_char_index| is out of bounds.
+  // `start_char_index` is out of bounds.
   virtual base::Optional<AccessibilityTextRunInfo> GetTextRunInfo(
       int page_index,
       int start_char_index) = 0;
-  // For all the links on page |page_index|, get their urls, underlying text
+  // For all the links on page `page_index`, get their urls, underlying text
   // ranges and bounding boxes.
   virtual std::vector<AccessibilityLinkInfo> GetLinkInfo(
       int page_index,
       const std::vector<AccessibilityTextRunInfo>& text_runs) = 0;
-  // For all the images in page |page_index|, get their alt texts and bounding
+  // For all the images in page `page_index`, get their alt texts and bounding
   // boxes.
   virtual std::vector<AccessibilityImageInfo> GetImageInfo(
       int page_index,
       uint32_t text_run_count) = 0;
-  // For all the highlights in page |page_index|, get their underlying text
+  // For all the highlights in page `page_index`, get their underlying text
   // ranges and bounding boxes.
   virtual std::vector<AccessibilityHighlightInfo> GetHighlightInfo(
       int page_index,
       const std::vector<AccessibilityTextRunInfo>& text_runs) = 0;
-  // For all the text fields in page |page_index|, get their properties like
+  // For all the text fields in page `page_index`, get their properties like
   // name, value, bounding boxes etc.
   virtual std::vector<AccessibilityTextFieldInfo> GetTextFieldInfo(
       int page_index,
@@ -441,11 +441,11 @@ class PDFEngine {
   //   a dictionary Value of the same structure.
   virtual base::Value GetBookmarks() = 0;
 
-  // Append blank pages to make a 1-page document to a |num_pages| document.
+  // Append blank pages to make a 1-page document to a `num_pages` document.
   // Always retain the first page data.
   virtual void AppendBlankPages(size_t num_pages) = 0;
-  // Append the first page of the document loaded with the |engine| to this
-  // document at page |index|.
+  // Append the first page of the document loaded with the `engine` to this
+  // document at page `index`.
   virtual void AppendPage(PDFEngine* engine, int index) = 0;
 
   virtual std::vector<uint8_t> GetSaveData() = 0;
@@ -472,7 +472,7 @@ class PDFEngine {
   virtual bool ReadLoadedBytes(uint32_t length, void* buffer) = 0;
 
   // Requests for a thumbnail to be sent using a callback when the page is ready
-  // to be rendered. |send_callback| is run with the thumbnail data when ready.
+  // to be rendered. `send_callback` is run with the thumbnail data when ready.
   virtual void RequestThumbnail(int page_index,
                                 float device_pixel_ratio,
                                 SendThumbnailCallback send_callback) = 0;

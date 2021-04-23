@@ -178,14 +178,14 @@ class OutOfProcessInstance : public PdfViewPluginBase,
     kEdited = 2,
   };
 
-  // Reduces the document to 1 page and appends |print_preview_page_count_| - 1
+  // Reduces the document to 1 page and appends `print_preview_page_count_` - 1
   // blank pages to the document for print preview.
   void AppendBlankPrintPreviewPages();
 
-  // Process the preview page data information. |src_url| specifies the preview
-  // page data location. The |src_url| is in the format:
+  // Process the preview page data information. `src_url` specifies the preview
+  // page data location. The `src_url` is in the format:
   // chrome://print/id/page_number/print.pdf
-  // |dest_page_index| specifies the blank page index that needs to be replaced
+  // `dest_page_index` specifies the blank page index that needs to be replaced
   // with the new page data.
   void ProcessPreviewPageInfo(const std::string& src_url, int dest_page_index);
   // Load the next available preview page into the blank page.
@@ -223,11 +223,11 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   PrintSettings print_settings_;
 
   // The PreviewModeClient used for print preview. Will be passed to
-  // |preview_engine_|.
+  // `preview_engine_`.
   std::unique_ptr<PreviewModeClient> preview_client_;
 
   // This engine is used to render the individual preview page data. This is
-  // used only in print preview mode. This will use |PreviewModeClient|
+  // used only in print preview mode. This will use `PreviewModeClient`
   // interface which has very limited access to the pp::Instance.
   std::unique_ptr<PDFiumEngine> preview_engine_;
 
@@ -252,10 +252,10 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   int print_preview_page_count_ = -1;
 
   // Number of pages loaded in print preview mode for non-PDF source. Always
-  // less than or equal to |print_preview_page_count_|.
+  // less than or equal to `print_preview_page_count_`.
   int print_preview_loaded_page_count_ = -1;
 
-  // Used to manage loaded print preview page information. A |PreviewPageInfo|
+  // Used to manage loaded print preview page information. A `PreviewPageInfo`
   // consists of data source URL string and the page index in the destination
   // document.
   // The URL string embeds a page number that can be found with
@@ -270,7 +270,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   std::unique_ptr<pp::TextInput_Dev> text_input_;
 
   // Whether an update to the number of find results found was sent less than
-  // |kFindResultCooldownMs| milliseconds ago.
+  // `kFindResultCooldownMs` milliseconds ago.
   bool recently_sent_find_update_ = false;
 
   // The tickmarks.

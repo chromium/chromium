@@ -57,11 +57,11 @@ class PDFiumDocument {
   ScopedFPDFAvail fpdf_availability_;
 
   // The PDFium wrapper object for the document. Must come after
-  // |fpdf_availability_| to prevent outliving it.
+  // `fpdf_availability_` to prevent outliving it.
   ScopedFPDFDocument doc_handle_;
 
   // The PDFium wrapper for form data.  Used even if there are no form controls
-  // on the page. Must come after |doc_handle_| to prevent outliving it.
+  // on the page. Must come after `doc_handle_` to prevent outliving it.
   ScopedFPDFFormHandle form_handle_;
 
   // Current form availability status.

@@ -642,7 +642,7 @@ void PDFiumFormFiller::Form_Mail(IPDF_JSPLATFORM* param,
                                  FPDF_WIDESTRING cc,
                                  FPDF_WIDESTRING bcc,
                                  FPDF_WIDESTRING message) {
-  // Note: |mail_data| and |length| are ignored. We don't handle attachments;
+  // Note: `mail_data` and `length` are ignored. We don't handle attachments;
   // there is no way with mailto.
   std::string to_str = WideStringToString(to);
   std::string cc_str = WideStringToString(cc);

@@ -185,7 +185,7 @@ void PaintManager::DoPaint() {
   // have an unpainted device bound. The needs_binding flag tells us whether to
   // do this later.
   //
-  // Note that |has_pending_resize_| will always be set on the first DoPaint().
+  // Note that `has_pending_resize_` will always be set on the first DoPaint().
   DCHECK(graphics_ || has_pending_resize_);
   if (has_pending_resize_) {
     plugin_size_ = pending_size_;

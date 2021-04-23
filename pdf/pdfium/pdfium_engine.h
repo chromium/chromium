@@ -69,7 +69,7 @@ class PDFiumEngine : public PDFEngine,
   // Exposed for testing.
   enum class FocusElementType { kNone, kDocument, kPage };
 
-  // NOTE: |script_option| is ignored when PDF_ENABLE_V8 is not defined.
+  // NOTE: `script_option` is ignored when PDF_ENABLE_V8 is not defined.
   PDFiumEngine(PDFEngine::Client* client,
                PDFiumFormFiller::ScriptOption script_option);
   PDFiumEngine(const PDFiumEngine&) = delete;
@@ -218,7 +218,7 @@ class PDFiumEngine : public PDFEngine,
     // coordinates.
     std::vector<gfx::Rect> GetVisibleSelections() const;
 
-    // Invalidates |selection|, but with |selection| slightly expanded to
+    // Invalidates `selection`, but with `selection` slightly expanded to
     // compensate for any rounding errors.
     void Invalidate(const gfx::Rect& selection);
 
@@ -261,8 +261,8 @@ class PDFiumEngine : public PDFEngine,
 
   // Try loading the document. Returns true if the document is successfully
   // loaded or is already loaded otherwise it will return false. If there is a
-  // password, then |password| is non-empty. If the document could not be loaded
-  // and needs a password, |needs_password| will be set to true.
+  // password, then `password` is non-empty. If the document could not be loaded
+  // and needs a password, `needs_password` will be set to true.
   bool TryLoadingDoc(const std::string& password, bool* needs_password);
 
   // Asks the user for the document password and then continue loading the
@@ -273,13 +273,13 @@ class PDFiumEngine : public PDFEngine,
   void OnGetPasswordComplete(const std::string& password);
 
   // Continues loading the document when the password has been retrieved, or if
-  // there is no password. If there is no password, then |password| is empty.
+  // there is no password. If there is no password, then `password` is empty.
   void ContinueLoadingDocument(const std::string& password);
 
   // Finishes loading the document. Recalculate the document size if there were
   // pages that were not previously available.
   // Also notifies the client that the document has been loaded.
-  // This should only be called after |doc_| has been loaded and the document is
+  // This should only be called after `doc_` has been loaded and the document is
   // fully downloaded.
   // If this has been run once, it will not notify the client again.
   void FinishLoadingDocument();
@@ -291,10 +291,10 @@ class PDFiumEngine : public PDFEngine,
   void RefreshCurrentDocumentLayout();
 
   // Proposes the next document layout using the current pages and
-  // |desired_layout_options_|.
+  // `desired_layout_options_`.
   void ProposeNextDocumentLayout();
 
-  // Updates |layout| using the current page sizes.
+  // Updates `layout` using the current page sizes.
   void UpdateDocumentLayout(DocumentLayout* layout);
 
   // Loads information about the pages in the document, calculating and
@@ -342,23 +342,23 @@ class PDFiumEngine : public PDFEngine,
 
   // Helper function for getting the inset sizes for the current layout. If
   // two-up view is enabled, the configuration of inset sizes depends on
-  // the position of the page, specified by |page_index| and |num_of_pages|.
+  // the position of the page, specified by `page_index` and `num_of_pages`.
   draw_utils::PageInsetSizes GetInsetSizes(
       const DocumentLayout::Options& layout_options,
       size_t page_index,
       size_t num_of_pages) const;
 
-  // If two-up view is disabled, enlarges |page_size| with inset sizes for
+  // If two-up view is disabled, enlarges `page_size` with inset sizes for
   // single-view. If two-up view is enabled, calls GetInsetSizes() with
-  // |page_index| and |num_of_pages|, and uses the returned inset sizes to
-  // enlarge |page_size|.
+  // `page_index` and `num_of_pages`, and uses the returned inset sizes to
+  // enlarge `page_size`.
   void EnlargePage(const DocumentLayout::Options& layout_options,
                    size_t page_index,
                    size_t num_of_pages,
                    gfx::Size* page_size) const;
 
-  // Similar to EnlargePage(), but insets a |rect|. Also multiplies the inset
-  // sizes by |multiplier|, using the ceiling of the result.
+  // Similar to EnlargePage(), but insets a `rect`. Also multiplies the inset
+  // sizes by `multiplier`, using the ceiling of the result.
   void InsetPage(const DocumentLayout::Options& layout_options,
                  size_t page_index,
                  size_t num_of_pages,
@@ -366,7 +366,7 @@ class PDFiumEngine : public PDFEngine,
                  gfx::Rect& rect) const;
 
   // If two-up view is enabled, returns the index of the page beside
-  // |page_index| page. Returns base::nullopt if there is no adjacent page or
+  // `page_index` page. Returns base::nullopt if there is no adjacent page or
   // if two-up view is disabled.
   base::Optional<size_t> GetAdjacentPageIndexForTwoUpView(
       size_t page_index,
@@ -381,7 +381,7 @@ class PDFiumEngine : public PDFEngine,
   // Called to continue searching so we don't block the main thread.
   void ContinueFind(int32_t result);
 
-  // Inserts a find result into |find_results_|, which is sorted.
+  // Inserts a find result into `find_results_`, which is sorted.
   void AddFindResult(const PDFiumRange& result);
 
   // Search a page using PDFium's methods.  Doesn't work with unicode.  This
@@ -428,11 +428,11 @@ class PDFiumEngine : public PDFEngine,
 
   pp::Buffer_Dev ConvertPdfToBufferDev(const std::vector<uint8_t>& pdf_data);
 
-  // Checks if |page| has selected text in a form element. If so, sets that as
+  // Checks if `page` has selected text in a form element. If so, sets that as
   // the plugin's text selection.
   void SetFormSelectedText(FPDF_FORMHANDLE form_handle, FPDF_PAGE page);
 
-  // Given |point|, returns which page and character location it's closest to,
+  // Given `point`, returns which page and character location it's closest to,
   // as well as extra information about objects at that point.
   PDFiumPage::Area GetCharIndex(const gfx::Point& point,
                                 int* page_index,
@@ -502,13 +502,13 @@ class PDFiumEngine : public PDFEngine,
   // Returns the currently visible rectangle in document coordinates.
   gfx::Rect GetVisibleRect() const;
 
-  // Given |rect| in document coordinates, returns the rectangle in screen
+  // Given `rect` in document coordinates, returns the rectangle in screen
   // coordinates. (i.e. 0,0 is top left corner of plugin area)
   gfx::Rect GetScreenRect(const gfx::Rect& rect) const;
 
-  // Given an image |buffer| with |stride|, highlights |rect|.
-  // |highlighted_rects| contains the already highlighted rectangles and will be
-  // updated to include |rect| if |rect| has not already been highlighted.
+  // Given an image `buffer` with `stride`, highlights `rect`.
+  // `highlighted_rects` contains the already highlighted rectangles and will be
+  // updated to include `rect` if `rect` has not already been highlighted.
   void Highlight(void* buffer,
                  int stride,
                  const gfx::Rect& rect,
@@ -518,7 +518,7 @@ class PDFiumEngine : public PDFEngine,
                  std::vector<gfx::Rect>& highlighted_rects) const;
 
   // Helper function to convert a device to page coordinates.  If the page is
-  // not yet loaded, |page_x| and |page_y| will be set to 0.
+  // not yet loaded, `page_x` and `page_y` will be set to 0.
   void DeviceToPage(int page_index,
                     const gfx::Point& device_point,
                     double* page_x,
@@ -557,7 +557,7 @@ class PDFiumEngine : public PDFEngine,
   // Sets whether or not left mouse button is currently being held down.
   void SetMouseLeftButtonDown(bool is_mouse_left_button_down);
 
-  // Given an annotation which is a form of |form_type| which is known to be a
+  // Given an annotation which is a form of `form_type` which is known to be a
   // form text area, check if it is an editable form text area.
   bool IsAnnotationAnEditableFormTextArea(FPDF_ANNOTATION annot,
                                           int form_type) const;
@@ -580,7 +580,7 @@ class PDFiumEngine : public PDFEngine,
       const AccessibilityScrollAlignment& horizontal_scroll_alignment,
       const AccessibilityScrollAlignment& vertical_scroll_alignment);
 
-  // Scrolls top left of a rect in page |target_rect| to |global_point|.
+  // Scrolls top left of a rect in page `target_rect` to `global_point`.
   // Global point is point relative to viewport in screen.
   void ScrollToGlobalPoint(const gfx::Rect& target_rect,
                            const gfx::Point& global_point);
@@ -589,7 +589,7 @@ class PDFiumEngine : public PDFEngine,
   void EnteredEditMode();
 
   // Navigates to a link destination depending on the type of destination.
-  // Returns false if |area| is not a link.
+  // Returns false if `area` is not a link.
   bool NavigateToLinkDestination(PDFiumPage::Area area,
                                  const PDFiumPage::LinkTarget& target,
                                  WindowOpenDisposition disposition);
@@ -598,27 +598,27 @@ class PDFiumEngine : public PDFEngine,
   static FPDF_BOOL Pause_NeedToPauseNow(IFSDK_PAUSE* param);
 
   // Used for text selection. Given the start and end of selection, sets the
-  // text range in |selection_|.
+  // text range in `selection_`.
   void SetSelection(const PageCharacterIndex& selection_start_index,
                     const PageCharacterIndex& selection_end_index);
 
   // Scroll the current focused annotation into view if not already in view.
   void ScrollFocusedAnnotationIntoView();
 
-  // Given |annot|, scroll the |annot| into view if not already in view.
+  // Given `annot`, scroll the `annot` into view if not already in view.
   void ScrollAnnotationIntoView(FPDF_ANNOTATION annot, int page_index);
 
   void OnFocusedAnnotationUpdated(FPDF_ANNOTATION annot, int page_index);
 
   // Read the attachments' information inside the PDF document, and set
-  // |doc_attachment_info_list_|. To be called after the document is loaded.
+  // `doc_attachment_info_list_`. To be called after the document is loaded.
   void LoadDocumentAttachmentInfoList();
 
-  // Fetches and populates the fields of |doc_metadata_|. To be called after the
+  // Fetches and populates the fields of `doc_metadata_`. To be called after the
   // document is loaded.
   void LoadDocumentMetadata();
 
-  // Retrieves the value of |field| in the document information dictionary.
+  // Retrieves the value of `field` in the document information dictionary.
   // Trims whitespace characters from the retrieved value.
   std::string GetTrimmedMetadataByField(FPDF_BYTESTRING field) const;
 
@@ -634,8 +634,8 @@ class PDFiumEngine : public PDFEngine,
   bool HandleTabForward(int modifiers);
   bool HandleTabBackward(int modifiers);
 
-  // Updates the currently focused object stored in |focus_item_type_|. Notifies
-  // |client_| about document focus change, if any.
+  // Updates the currently focused object stored in `focus_item_type_`. Notifies
+  // `client_` about document focus change, if any.
   void UpdateFocusItemType(FocusElementType focus_item_type);
 
   void UpdateLinkUnderCursor(const std::string& target_url);
@@ -850,7 +850,7 @@ class PDFiumEngine : public PDFEngine,
 
   // Weak pointers from this factory are used to bind the ContinueFind()
   // function. This allows those weak pointers to be invalidated during
-  // StopFind(), and keeps the invalidation separated from |weak_factory_|.
+  // StopFind(), and keeps the invalidation separated from `weak_factory_`.
   base::WeakPtrFactory<PDFiumEngine> find_weak_factory_{this};
 };
 

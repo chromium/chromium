@@ -42,7 +42,7 @@ class PaintManager {
   class Client {
    public:
     // Creates a new, unbound `Graphics` for the paint manager, with the given
-    // |size| and always-opaque rendering.
+    // `size` and always-opaque rendering.
     virtual std::unique_ptr<Graphics> CreatePaintGraphics(
         const gfx::Size& size) = 0;
 
@@ -134,8 +134,8 @@ class PaintManager {
   float GetEffectiveDeviceScale() const;
 
   // Set the transform for the graphics layer.
-  // If |schedule_flush| is true, it ensures a flush will be scheduled for
-  // this change. If |schedule_flush| is false, then the change will not take
+  // If `schedule_flush` is true, it ensures a flush will be scheduled for
+  // this change. If `schedule_flush` is false, then the change will not take
   // effect until another change causes a flush.
   void SetTransform(float scale,
                     const gfx::Point& origin,

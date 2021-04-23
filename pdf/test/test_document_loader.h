@@ -19,12 +19,12 @@ namespace chrome_pdf {
 // Loads test PDFs from pdf/test/data.
 class TestDocumentLoader : public DocumentLoader {
  public:
-  // |pdf_name| is the base name for a PDF file.
+  // `pdf_name` is the base name for a PDF file.
   TestDocumentLoader(Client* client,
                      const base::FilePath::StringType& pdf_name);
   ~TestDocumentLoader() override;
 
-  // Simulates loading up to |max_bytes| more data, returning `true` if there is
+  // Simulates loading up to `max_bytes` more data, returning `true` if there is
   // more data to load (that is, IsDocumentComplete() returns `false`).
   bool SimulateLoadData(uint32_t max_bytes);
 

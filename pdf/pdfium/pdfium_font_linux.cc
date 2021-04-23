@@ -142,7 +142,7 @@ void* MapFont(FPDF_SYSFONTINFO*,
     } else {
       std::string encoding;
       if (base::DetectEncoding(face, &encoding)) {
-        // ConvertToUtf8AndNormalize() clears |face_utf8| on failure.
+        // ConvertToUtf8AndNormalize() clears `face_utf8` on failure.
         base::ConvertToUtf8AndNormalize(face, encoding, &face_utf8);
       }
     }

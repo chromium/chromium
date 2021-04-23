@@ -31,7 +31,7 @@ PageOrientation RotateClockwise(PageOrientation orientation) {
 }
 
 PageOrientation RotateCounterclockwise(PageOrientation orientation) {
-  // Adding |kLast| is equivalent to rotating one step counterclockwise.
+  // Adding `kLast` is equivalent to rotating one step counterclockwise.
   return AddOrientations(orientation, PageOrientation::kLast);
 }
 

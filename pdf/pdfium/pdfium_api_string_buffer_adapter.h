@@ -24,11 +24,11 @@ namespace internal {
 template <class StringType>
 class PDFiumAPIStringBufferAdapter {
  public:
-  // |str| is the string to write into.
-  // |expected_size| is the number of characters the PDFium API will write,
+  // `str` is the string to write into.
+  // `expected_size` is the number of characters the PDFium API will write,
   // including the null-terminator. It should be at least 1.
-  // |check_expected_size| whether to check the actual number of characters
-  // written into |str| against |expected_size| when calling Close().
+  // `check_expected_size` whether to check the actual number of characters
+  // written into `str` against `expected_size` when calling Close().
   PDFiumAPIStringBufferAdapter(StringType* str,
                                size_t expected_size,
                                bool check_expected_size);
@@ -37,12 +37,12 @@ class PDFiumAPIStringBufferAdapter {
       delete;
   ~PDFiumAPIStringBufferAdapter();
 
-  // Returns a pointer to |str_|'s buffer. The buffer's size is large enough to
-  // hold |expected_size_| + 1 characters, so the PDFium API that uses the
+  // Returns a pointer to `str_`'s buffer. The buffer's size is large enough to
+  // hold `expected_size_` + 1 characters, so the PDFium API that uses the
   // pointer has space to write a null-terminator.
   void* GetData();
 
-  // Resizes |str_| to |actual_size| - 1 characters, thereby removing the extra
+  // Resizes `str_` to `actual_size` - 1 characters, thereby removing the extra
   // null-terminator. This must be called prior to the adapter's destruction.
   // The pointer returned by GetData() should be considered invalid.
   void Close(size_t actual_size);
@@ -68,23 +68,23 @@ class PDFiumAPIStringBufferAdapter {
 // for std::strings, PDFiumAPIStringBufferAdapter is equivalent.
 class PDFiumAPIStringBufferSizeInBytesAdapter {
  public:
-  // |str| is the string to write into.
-  // |expected_size| is the number of bytes the PDFium API will write,
+  // `str` is the string to write into.
+  // `expected_size` is the number of bytes the PDFium API will write,
   // including the null-terminator. It should be at least the size of a
   // character in bytes.
-  // |check_expected_size| whether to check the actual number of bytes
-  // written into |str| against |expected_size| when calling Close().
+  // `check_expected_size` whether to check the actual number of bytes
+  // written into `str` against `expected_size` when calling Close().
   PDFiumAPIStringBufferSizeInBytesAdapter(std::u16string* str,
                                           size_t expected_size,
                                           bool check_expected_size);
   ~PDFiumAPIStringBufferSizeInBytesAdapter();
 
-  // Returns a pointer to |str_|'s buffer. The buffer's size is large enough to
-  // hold |expected_size_| + sizeof(char16_t) bytes, so the PDFium API that
+  // Returns a pointer to `str_`'s buffer. The buffer's size is large enough to
+  // hold `expected_size_` + sizeof(char16_t) bytes, so the PDFium API that
   // uses the pointer has space to write a null-terminator.
   void* GetData();
 
-  // Resizes |str_| to |actual_size| - sizeof(char16_t) bytes, thereby
+  // Resizes `str_` to `actual_size` - sizeof(char16_t) bytes, thereby
   // removing the extra null-terminator. This must be called prior to the
   // adapter's destruction. The pointer returned by GetData() should be
   // considered invalid.

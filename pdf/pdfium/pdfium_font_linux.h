@@ -17,7 +17,7 @@ namespace chrome_pdf {
 void InitializeLinuxFontMapper();
 
 // Keeps track of the most recently used plugin instance. This is a no-op of
-// |last_instance| is null.
+// `last_instance` is null.
 void SetLastInstance(pp::Instance* last_instance);
 
 }  // namespace chrome_pdf

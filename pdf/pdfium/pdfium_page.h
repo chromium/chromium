@@ -108,9 +108,9 @@ class PDFiumPage {
     base::Optional<float> zoom;
   };
 
-  // Given a |link_index|, returns the type of underlying area and the link
-  // target. |target| must be valid. Returns NONSELECTABLE_AREA if
-  // |link_index| is invalid.
+  // Given a `link_index`, returns the type of underlying area and the link
+  // target. `target` must be valid. Returns NONSELECTABLE_AREA if
+  // `link_index` is invalid.
   Area GetLinkTargetAtIndex(int link_index, LinkTarget* target);
 
   // Returns link type and fills target associated with a link. Returns
@@ -158,7 +158,7 @@ class PDFiumPage {
   // Gets the number of characters in the page.
   int GetCharCount();
 
-  // Returns true if the given |char_index| lies within the character range
+  // Returns true if the given `char_index` lies within the character range
   // of the page.
   bool IsCharIndexInBounds(int char_index);
 
@@ -182,7 +182,7 @@ class PDFiumPage {
   void RequestThumbnail(float device_pixel_ratio,
                         SendThumbnailCallback send_callback);
 
-  // Generates a page thumbnail accommodating a specific |device_pixel_ratio|.
+  // Generates a page thumbnail accommodating a specific `device_pixel_ratio`.
   Thumbnail GenerateThumbnail(float device_pixel_ratio);
 
   int index() const { return index_; }
@@ -331,7 +331,7 @@ class PDFiumPage {
     // Represents index of the control in the control group. A group of
     // interactive form annotations is collectively called a form control
     // group. Here an interactive form annotation should be either a radio
-    // button or a checkbox. Value of |control_index| is -1 for push button.
+    // button or a checkbox. Value of `control_index` is -1 for push button.
     int control_index = -1;
   };
 
@@ -348,13 +348,13 @@ class PDFiumPage {
   void CalculateImages();
   // Populate annotations like highlight and text field on the page.
   void PopulateAnnotations();
-  // Populate |highlights_| with |annot|.
+  // Populate `highlights_` with `annot`.
   void PopulateHighlight(FPDF_ANNOTATION annot);
-  // Populate |text_fields_| with |annot|.
+  // Populate `text_fields_` with `annot`.
   void PopulateTextField(FPDF_ANNOTATION annot);
-  // Populate |choice_fields_| with |annot|.
+  // Populate `choice_fields_` with `annot`.
   void PopulateChoiceField(FPDF_ANNOTATION annot);
-  // Populate |buttons_| with |annot|.
+  // Populate `buttons_` with `annot`.
   void PopulateButton(FPDF_ANNOTATION annot);
   // Populate form fields like text field, choice field and button on the page.
   void PopulateFormField(FPDF_ANNOTATION annot);
@@ -370,23 +370,23 @@ class PDFiumPage {
   // Set text run style information based on a character of the text run.
   void CalculateTextRunStyleInfo(int char_index,
                                  AccessibilityTextStyleInfo& style_info);
-  // Returns a boolean indicating if the character at index |char_index| has the
+  // Returns a boolean indicating if the character at index `char_index` has the
   // same text style as the text run.
   bool AreTextStyleEqual(int char_index,
                          const AccessibilityTextStyleInfo& style);
 
   // Key    :  Marked content id for the image element as specified in the
   //           struct tree.
-  // Value  :  Index of image in the |images_| vector.
+  // Value  :  Index of image in the `images_` vector.
   using MarkedContentIdToImageMap = std::map<int, size_t>;
   // Traverses the entire struct tree of the page recursively and extracts the
   // alt text from struct tree elements corresponding to the marked content IDs
-  // present in |marked_content_id_image_map|.
+  // present in `marked_content_id_image_map`.
   void PopulateImageAltText(
       const MarkedContentIdToImageMap& marked_content_id_image_map);
   // Traverses a struct element and its sub-tree recursively and extracts the
   // alt text from struct elements corresponding to the marked content IDs
-  // present in |marked_content_id_image_map|. Uses |visited_elements| to guard
+  // present in `marked_content_id_image_map`. Uses `visited_elements` to guard
   // against malformed struct trees.
   void PopulateImageAltTextForStructElement(
       const MarkedContentIdToImageMap& marked_content_id_image_map,
@@ -397,7 +397,7 @@ class PDFiumPage {
       const std::vector<Highlight>& highlights);
   bool PopulateFormFieldProperties(FPDF_ANNOTATION annot,
                                    FormField* form_field);
-  // Generates and sends the thumbnail using |send_callback|.
+  // Generates and sends the thumbnail using `send_callback`.
   void GenerateAndSendThumbnail(float device_pixel_ratio,
                                 SendThumbnailCallback send_callback);
 

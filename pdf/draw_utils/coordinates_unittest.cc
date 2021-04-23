@@ -90,7 +90,7 @@ TEST(CoordinateTest, GetBottomGapBetweenRects) {
   EXPECT_EQ(gfx::Rect(150, -100, 400, 150),
             GetBottomGapBetweenRects(-100, {150, 0, 400, 50}));
 
-  // Test case where |page_rect_bottom| >= |dirty_rect.bottom()|.
+  // Test case where `page_rect_bottom` >= `dirty_rect.bottom()`.
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0),
             GetBottomGapBetweenRects(1400, {0, 10, 300, 500}));
 }

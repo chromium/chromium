@@ -33,8 +33,8 @@ class PDFiumPrint {
   ~PDFiumPrint();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Flattens the |doc|.
-  // On success, returns the flattened version of |doc| as a vector.
+  // Flattens the `doc`.
+  // On success, returns the flattened version of `doc` as a vector.
   // On failure, returns an empty vector.
   static std::vector<uint8_t> CreateFlattenedPdf(ScopedFPDFDocument doc);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -43,9 +43,9 @@ class PDFiumPrint {
       const PP_PrintPageNumberRange_Dev* page_ranges,
       uint32_t page_range_count);
 
-  // Performs N-up PDF generation for |doc| based on |pages_per_sheet|,
-  // |page_size|, and |printable_area|.
-  // On success, returns the N-up version of |doc| as a vector.
+  // Performs N-up PDF generation for `doc` based on `pages_per_sheet`,
+  // `page_size`, and `printable_area`.
+  // On success, returns the N-up version of `doc` as a vector.
   // On failure, returns an empty vector.
   static std::vector<uint8_t> CreateNupPdf(ScopedFPDFDocument doc,
                                            size_t pages_per_sheet,

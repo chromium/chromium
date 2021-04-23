@@ -76,8 +76,8 @@ PdfRectangle CalculateClipBoxBoundary(const PdfRectangle& media_box,
                                       const PdfRectangle& crop_box) {
   PdfRectangle clip_box;
 
-  // Clip |media_box| to the size of |crop_box|, but ignore |crop_box| if it is
-  // bigger than |media_box|.
+  // Clip `media_box` to the size of `crop_box`, but ignore `crop_box` if it is
+  // bigger than `media_box`.
   clip_box.left = std::max(crop_box.left, media_box.left);
   clip_box.bottom = std::max(crop_box.bottom, media_box.bottom);
   clip_box.right = std::min(crop_box.right, media_box.right);

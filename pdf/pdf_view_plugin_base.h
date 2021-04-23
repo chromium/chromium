@@ -387,7 +387,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   std::vector<BackgroundPart> background_parts_;
 
-  // Deferred invalidates while |in_paint_| is true.
+  // Deferred invalidates while `in_paint_` is true.
   std::vector<gfx::Rect> deferred_invalidates_;
 
   // Remaining area, in pixels, to render the pdf in after accounting for

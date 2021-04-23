@@ -90,8 +90,8 @@ class PaintAggregator {
     InternalPaintUpdate();
     ~InternalPaintUpdate();
 
-    // Computes the rect damaged by scrolling within |scroll_rect| by
-    // |scroll_delta|. This rect must be repainted. It is not included in
+    // Computes the rect damaged by scrolling within `scroll_rect` by
+    // `scroll_delta`. This rect must be repainted. It is not included in
     // paint_rects.
     gfx::Rect GetScrollDamage() const;
 
@@ -113,8 +113,8 @@ class PaintAggregator {
                             const gfx::Vector2d& amount) const;
   void InvalidateScrollRect();
 
-  // Internal method used by InvalidateRect. If |check_scroll| is true, then the
-  // method checks if there's a pending scroll and if so also invalidates |rect|
+  // Internal method used by InvalidateRect. If `check_scroll` is true, then the
+  // method checks if there's a pending scroll and if so also invalidates `rect`
   // in the new scroll position.
   void InvalidateRectInternal(const gfx::Rect& rect, bool check_scroll);
 

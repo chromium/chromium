@@ -297,13 +297,13 @@ struct AccessibilityButtonInfo {
   // Represents count of controls in the control group. A group of interactive
   // form annotations is collectively called a form control group. Here, an
   // interactive form annotation, should be either a radio button or a
-  // checkbox. Value of |control_count| is >= 1.
+  // checkbox. Value of `control_count` is >= 1.
   uint32_t control_count = 0;
   // Represents index of the control in the control group. A group of
   // interactive form annotations is collectively called a form control group.
   // Here, an interactive form annotation, should be either a radio button or
-  // a checkbox. Value of |control_index| should always be less than
-  // |control_count|.
+  // a checkbox. Value of `control_index` should always be less than
+  // `control_count`.
   uint32_t control_index = 0;
   // Index of this button in the collection of buttons in the page.
   uint32_t index_in_page = 0;

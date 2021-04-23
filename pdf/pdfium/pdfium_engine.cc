@@ -216,7 +216,7 @@ void FormatStringForOS(std::u16string* text) {
 #endif
 }
 
-// Returns true if |cur| is a character to break on.
+// Returns true if `cur` is a character to break on.
 // For double clicks, look for work breaks.
 // For triple clicks, look for line breaks.
 // The actual algorithm used in Blink is much more complicated, so do a simple
@@ -271,7 +271,7 @@ void TearDownV8() {
 }
 #endif  // defined(PDF_ENABLE_V8)
 
-// Returns true if the given |area| and |form_type| combination from
+// Returns true if the given `area` and `form_type` combination from
 // PDFiumEngine::GetCharIndex() indicates it is a form text area.
 bool IsFormTextArea(PDFiumPage::Area area, int form_type) {
   if (form_type == FPDF_FORMFIELD_UNKNOWN)
@@ -632,8 +632,8 @@ void PDFiumEngine::Paint(const gfx::Rect& rect,
     // Compute the leftover dirty region. The first page may have blank space
     // above it, in which case we also need to subtract that space from the
     // dirty region.
-    // If two-up view is enabled, we don't need to recompute |leftover| since
-    // subtracting |leftover| with a two-up view page won't result in a
+    // If two-up view is enabled, we don't need to recompute `leftover` since
+    // subtracting `leftover` with a two-up view page won't result in a
     // rectangle.
     if (layout_.options().page_spread() == DocumentLayout::PageSpread::kOneUp) {
       if (i == 0) {
@@ -781,7 +781,7 @@ void PDFiumEngine::OnPendingRequestComplete() {
     return;
   }
 
-  // LoadDocument() will result in |pending_pages_| being reset so there's no
+  // LoadDocument() will result in `pending_pages_` being reset so there's no
   // need to run the code below in that case.
   bool update_pages = false;
   std::vector<int> still_pending;
@@ -844,7 +844,7 @@ void PDFiumEngine::FinishLoadingDocument() {
       client_->Invalidate(GetPageScreenRect(i));
   }
 
-  // Transition |document_loaded_| to true after finishing any calls to
+  // Transition `document_loaded_` to true after finishing any calls to
   // FPDFAvail_IsPageAvail(), since we no longer need to defer calls to this
   // function from LoadPageInfo(). Note that LoadBody() calls LoadPageInfo()
   // indirectly, so we cannot make this transition earlier.
@@ -1504,7 +1504,7 @@ bool PDFiumEngine::OnMouseMove(const blink::WebMouseEvent& event) {
   PDFiumPage::Area area =
       GetCharIndex(point, &page_index, &char_index, &form_type, &target);
 
-  // Clear |mouse_down_state_| if mouse moves away from where the mouse down
+  // Clear `mouse_down_state_` if mouse moves away from where the mouse down
   // happened.
   if (!mouse_down_state_.Matches(area, target))
     mouse_down_state_.Reset();
@@ -1613,7 +1613,7 @@ void PDFiumEngine::OnMouseEnter(const blink::WebMouseEvent& event) {
 
 bool PDFiumEngine::ExtendSelection(int page_index, int char_index) {
   // Check if the user has decreased their selection area and we need to remove
-  // pages from |selection_|.
+  // pages from `selection_`.
   for (size_t i = 0; i < selection_.size(); ++i) {
     if (selection_[i].page_index() == page_index) {
       // There should be no other pages after this.
@@ -1640,8 +1640,8 @@ bool PDFiumEngine::ExtendSelection(int page_index, int char_index) {
     // Selecting into the next page.
 
     // Save the current last selection for use below.
-    // Warning: Do not use references / pointers into |selection_|, as the code
-    // below can modify |selection_| and invalidate those references / pointers.
+    // Warning: Do not use references / pointers into `selection_`, as the code
+    // below can modify `selection_` and invalidate those references / pointers.
     const size_t last_selection_index = selection_.size() - 1;
 
     // First make sure that there are no gaps in selection, i.e. if mousedown on
@@ -1907,7 +1907,7 @@ void PDFiumEngine::SearchUsingICU(const std::u16string& term,
 
   std::u16string adjusted_page_text;
   adjusted_page_text.reserve(page_text.size());
-  // Values in |removed_indices| are in the adjusted text index space and
+  // Values in `removed_indices` are in the adjusted text index space and
   // indicate a character was removed from the page text before the given
   // index. If multiple characters are removed in a row then there will be
   // multiple entries with the same value.
@@ -1977,7 +1977,7 @@ void PDFiumEngine::SearchUsingICU(const std::u16string& term,
         pages_[current_page]->GetTextPage(),
         temp_start + page_text_result_length);
 
-    // If |term| occurs at the end of a page, then |end| will be -1 due to the
+    // If `term` occurs at the end of a page, then `end` will be -1 due to the
     // index being out of bounds. Compensate for this case so the range
     // character count calculation below works out.
     if (temp_start + page_text_result_length == original_text_length) {
@@ -2059,7 +2059,7 @@ bool PDFiumEngine::SelectFindResult(bool forward) {
   size_t current_find_index_value = current_find_index_.value();
   base::debug::Alias(&current_find_index_value);
 
-  // Use zoom of 1.0 since |visible_rect| is without zoom.
+  // Use zoom of 1.0 since `visible_rect` is without zoom.
   const std::vector<gfx::Rect>& rects =
       find_results_[current_find_index_.value()].GetScreenRects(
           gfx::Point(), 1.0, layout_.options().default_page_orientation());
@@ -2316,7 +2316,7 @@ std::string PDFiumEngine::GetLinkAtPosition(const gfx::Point& point) {
 }
 
 bool PDFiumEngine::HasPermission(DocumentPermission permission) const {
-  // No |permissions_| means no restrictions.
+  // No `permissions_` means no restrictions.
   if (!permissions_)
     return true;
   return permissions_->HasPermission(permission);
@@ -2663,7 +2663,7 @@ base::Optional<gfx::Size> PDFiumEngine::GetUniformPageSizePoints() {
       return base::nullopt;
   }
 
-  // Convert |page_size| back to points.
+  // Convert `page_size` back to points.
   return gfx::Size(
       ConvertUnit(page_size.width(), kPixelsPerInch, kPointsPerInch),
       ConvertUnit(page_size.height(), kPixelsPerInch, kPointsPerInch));
@@ -2737,7 +2737,7 @@ bool PDFiumEngine::TryLoadingDoc(const std::string& password,
   *needs_password = false;
   if (doc()) {
     // This is probably not necessary, because it should have already been
-    // called below in the |doc_| initialization path. However, the previous
+    // called below in the `doc_` initialization path. However, the previous
     // call may have failed, so call it again for good measure.
     FX_DOWNLOADHINTS& download_hints = document_->download_hints();
     FPDFAvail_IsDocAvail(fpdf_availability(), &download_hints);
@@ -2819,7 +2819,7 @@ void PDFiumEngine::RefreshCurrentDocumentLayout() {
 
   DCHECK_EQ(pages_.size(), layout_.page_count());
   for (size_t i = 0; i < layout_.page_count(); ++i) {
-    // TODO(kmoon): This should be the only place that sets |PDFiumPage::rect_|.
+    // TODO(kmoon): This should be the only place that sets `PDFiumPage::rect_`.
     pages_[i]->set_rect(layout_.page_bounds_rect(i));
   }
 
@@ -2860,9 +2860,9 @@ std::vector<gfx::Size> PDFiumEngine::LoadPageSizes(
   const bool doc_complete = doc_loader_->IsDocumentComplete();
   const bool is_linear = IsLinearized();
   for (size_t i = 0; i < new_page_count; ++i) {
-    // Get page availability. If |document_loaded_| == true and the page is not
+    // Get page availability. If `document_loaded_` == true and the page is not
     // new, then the page has been constructed already. Get page availability
-    // flag from already existing PDFiumPage object. If |document_loaded_| ==
+    // flag from already existing PDFiumPage object. If `document_loaded_` ==
     // false or the page is new, then the page may not be fully loaded yet.
     bool page_available;
     if (document_loaded_ && i < pages_.size()) {
@@ -2884,8 +2884,8 @@ std::vector<gfx::Size> PDFiumEngine::LoadPageSizes(
     page_sizes.push_back(size);
   }
 
-  // Add new pages. If |document_loaded_| == false, do not mark page as
-  // available even if |doc_complete| is true because FPDFAvail_IsPageAvail()
+  // Add new pages. If `document_loaded_` == false, do not mark page as
+  // available even if `doc_complete` is true because FPDFAvail_IsPageAvail()
   // still has to be called for this page, which will be done in
   // FinishLoadingDocument().
   for (size_t i = pages_.size(); i < new_page_count; ++i) {
@@ -3624,7 +3624,7 @@ void PDFiumEngine::DeviceToPage(int page_index,
 }
 
 int PDFiumEngine::GetVisiblePageIndex(FPDF_PAGE page) {
-  // Copy |visible_pages_| since it can change as a result of loading the page
+  // Copy `visible_pages_` since it can change as a result of loading the page
   // in GetPage(). See https://crbug.com/822091.
   std::vector<int> visible_pages_copy(visible_pages_);
   for (int page_index : visible_pages_copy) {
@@ -3800,7 +3800,7 @@ void PDFiumEngine::EnteredEditMode() {
 void PDFiumEngine::SetInFormTextArea(bool in_form_text_area) {
   // If focus was previously in form text area, clear form text selection.
   // Clearing needs to be done before changing focus to ensure the correct
-  // observer is notified of the change in selection. When |in_form_text_area_|
+  // observer is notified of the change in selection. When `in_form_text_area_`
   // is true, this is the Renderer. After it flips, the MimeHandler is notified.
   if (in_form_text_area_) {
     client_->SetSelectedText("");
@@ -3809,7 +3809,7 @@ void PDFiumEngine::SetInFormTextArea(bool in_form_text_area) {
   client_->FormTextFieldFocusChange(in_form_text_area);
   in_form_text_area_ = in_form_text_area;
 
-  // Clear |editable_form_text_area_| when focus no longer in form text area.
+  // Clear `editable_form_text_area_` when focus no longer in form text area.
   if (!in_form_text_area_)
     editable_form_text_area_ = false;
 }
@@ -4013,7 +4013,7 @@ void PDFiumEngine::GetSelection(uint32_t* selection_start_page_index,
   // If the selection is all within one page, the end index is the
   // start index plus the char count. But if the selection spans
   // multiple pages, the selection starts at the beginning of the
-  // last page in |selection_| and goes to the char count.
+  // last page in `selection_` and goes to the char count.
   if (len == 1) {
     *selection_end_char_index =
         selection_[0].char_index() + selection_[0].char_count();
@@ -4198,11 +4198,11 @@ bool PDFiumEngine::HandleTabBackward(int modifiers) {
     UpdateFocusItemType(FocusElementType::kPage);
   } else {
     // No focusable annotation found in pages. Possible scenarios:
-    // Case 1: |focus_item_type_| is None. Since no object in any page can take
+    // Case 1: `focus_item_type_` is None. Since no object in any page can take
     // the focus, the document should take focus.
-    // Case 2: |focus_item_type_| is Page. Since there aren't any objects that
+    // Case 2: `focus_item_type_` is Page. Since there aren't any objects that
     // could take focus, the document should take focus.
-    // Case 3: |focus_item_type_| is Document. Move focus_item_type_ to None.
+    // Case 3: `focus_item_type_` is Document. Move focus_item_type_ to None.
     switch (focus_item_type_) {
       case FocusElementType::kPage:
       case FocusElementType::kNone:

@@ -38,8 +38,8 @@ class URLLoaderWrapper {
   // Returns if the response contains multi parts.
   virtual bool IsMultipart() const = 0;
 
-  // If true, |start| contains the start of the byte range.
-  // If false, response contains full document and |start| will be undefined.
+  // If true, `start` contains the start of the byte range.
+  // If false, response contains full document and `start` will be undefined.
   virtual bool GetByteRangeStart(int* start) const = 0;
 
   // Close connection.

@@ -78,7 +78,7 @@ gfx::RectF FloatPageRectToPixelRect(FPDF_PAGE page, const gfx::RectF& input) {
   if (max_y < min_y)
     std::swap(min_y, max_y);
 
-  // Make sure small but non-zero dimensions for |input| does not get rounded
+  // Make sure small but non-zero dimensions for `input` does not get rounded
   // down to 0.
   int width = max_x - min_x;
   int height = max_y - min_y;
@@ -198,9 +198,9 @@ bool FloatEquals(float f1, float f2) {
 template <typename T, typename U>
 uint32_t CountOverlaps(const std::vector<T>& first_set,
                        const std::vector<U>& second_set) {
-  // This method assumes vectors passed are sorted by |start_char_index|.
+  // This method assumes vectors passed are sorted by `start_char_index`.
   uint32_t overlaps = 0;
-  // Count overlaps between |first_set| and |second_set|.
+  // Count overlaps between `first_set` and `second_set`.
   for (const auto& first_set_object : first_set) {
     gfx::Range first_range(
         first_set_object.start_char_index,
@@ -212,10 +212,10 @@ uint32_t CountOverlaps(const std::vector<T>& first_set,
       if (first_range.Intersects(second_range)) {
         overlaps++;
       } else if (first_range.start() < second_range.start()) {
-        // Both range vectors are sorted by |start_char_index|. In case they
-        // don't overlap, and the |second_range| starts after the |first_range|,
-        // then all successive |second_set_object| will not overlap with
-        // |first_range|.
+        // Both range vectors are sorted by `start_char_index`. In case they
+        // don't overlap, and the `second_range` starts after the `first_range`,
+        // then all successive `second_set_object` will not overlap with
+        // `first_range`.
         break;
       }
     }
@@ -226,7 +226,7 @@ uint32_t CountOverlaps(const std::vector<T>& first_set,
 // Count overlaps within text annotations.
 template <typename T>
 uint32_t CountInternalTextOverlaps(const std::vector<T>& text_objects) {
-  // This method assumes text_objects is sorted by |start_char_index|.
+  // This method assumes text_objects is sorted by `start_char_index`.
   uint32_t overlaps = 0;
   for (size_t i = 0; i < text_objects.size(); ++i) {
     gfx::Range range1(
@@ -241,10 +241,10 @@ uint32_t CountInternalTextOverlaps(const std::vector<T>& text_objects) {
       if (range1.Intersects(range2)) {
         overlaps++;
       } else {
-        // The input is sorted by |start_char_index|. In case |range1| and
-        // |range2| do not overlap, and |range2| starts after |range1|, then
+        // The input is sorted by `start_char_index`. In case `range1` and
+        // `range2` do not overlap, and `range2` starts after `range1`, then
         // successive ranges in the inner loop will also not overlap with
-        // |range1|.
+        // `range1`.
         break;
       }
     }
@@ -448,7 +448,7 @@ base::Optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(
   FPDF_PAGE page = GetPage();
   FPDF_TEXTPAGE text_page = GetTextPage();
   int chars_count = FPDFText_CountChars(text_page);
-  // Check to make sure |start_char_index| is within bounds.
+  // Check to make sure `start_char_index` is within bounds.
   if (start_char_index < 0 || start_char_index >= chars_count)
     return base::nullopt;
 
@@ -457,7 +457,7 @@ base::Optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(
   // Check to see if GetFirstNonUnicodeWhiteSpaceCharIndex() iterated through
   // all the characters.
   if (actual_start_char_index >= chars_count) {
-    // If so, |info.len| needs to take the number of characters
+    // If so, `info.len` needs to take the number of characters
     // iterated into account.
     DCHECK_GT(actual_start_char_index, start_char_index);
     AccessibilityTextRunInfo info;
@@ -466,7 +466,7 @@ base::Optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(
   }
 
   // If the first character in a text run is a space, we need to start
-  // |text_run_bounds| from the space character instead of the first
+  // `text_run_bounds` from the space character instead of the first
   // non-space unicode character.
   gfx::RectF text_run_bounds =
       actual_start_char_index > start_char_index
@@ -1084,7 +1084,7 @@ void PDFiumPage::PopulateAnnotationLinks() {
     int quad_point_count = FPDFLink_CountQuadPoints(link_annot);
     // Calculate the bounds of link using the quad points data.
     // If quad points for link is not present then use
-    // |link_rect| to calculate the bounds instead.
+    // `link_rect` to calculate the bounds instead.
     if (quad_point_count > 0) {
       for (int i = 0; i < quad_point_count; ++i) {
         FS_QUADPOINTSF point;
@@ -1143,7 +1143,7 @@ void PDFiumPage::CalculateImages() {
       if (FPDFImageObj_GetImageMetadata(page_object, page, &image_metadata)) {
         int marked_content_id = image_metadata.marked_content_id;
         if (marked_content_id >= 0) {
-          // If |marked_content_id| is already present, ignore the one being
+          // If `marked_content_id` is already present, ignore the one being
           // inserted.
           marked_content_id_image_map.insert(
               {marked_content_id, images_.size()});
@@ -1513,7 +1513,7 @@ void PDFiumPage::RequestThumbnail(float device_pixel_ratio,
   }
 
   // It is safe to use base::Unretained(this) because the callback is only used
-  // by |this|.
+  // by `this`.
   thumbnail_callback_ = base::BindOnce(
       &PDFiumPage::GenerateAndSendThumbnail, base::Unretained(this),
       device_pixel_ratio, std::move(send_callback));
@@ -1537,8 +1537,8 @@ Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
                       sk_bitmap.width(), sk_bitmap.height(),
                       /*color=*/0xFFFFFFFF);
 
-  // The combination of the |FPDF_REVERSE_BYTE_ORDER| rendering flag and the
-  // |FPDFBitmap_BGRA| format when initializing |fpdf_bitmap| results in an RGBA
+  // The combination of the `FPDF_REVERSE_BYTE_ORDER` rendering flag and the
+  // `FPDFBitmap_BGRA` format when initializing `fpdf_bitmap` results in an RGBA
   // rendering, which is the format required by HTML <canvas>.
   FPDF_RenderPageBitmap(fpdf_bitmap.get(), GetPage(), /*start_x=*/0,
                         /*start_y=*/0, sk_bitmap.width(), sk_bitmap.height(),

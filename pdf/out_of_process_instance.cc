@@ -110,7 +110,7 @@ constexpr base::TimeDelta kFindResultCooldown =
 
 // Same value as printing::COMPLETE_PREVIEW_DOCUMENT_INDEX.
 constexpr int kCompletePDFIndex = -1;
-// A different negative value to differentiate itself from |kCompletePDFIndex|.
+// A different negative value to differentiate itself from `kCompletePDFIndex`.
 constexpr int kInvalidPDFIndex = -2;
 
 constexpr char kPPPPdfInterface[] = PPP_PDF_INTERFACE_1;
@@ -319,7 +319,7 @@ const PPP_Pdf ppp_private = {
 };
 
 int ExtractPrintPreviewPageIndex(base::StringPiece src_url) {
-  // Sample |src_url| format: chrome://print/id/page_index/print.pdf
+  // Sample `src_url` format: chrome://print/id/page_index/print.pdf
   // The page_index is zero-based, but can be negative with special meanings.
   std::vector<base::StringPiece> url_substr =
       base::SplitStringPiece(src_url.substr(strlen(kChromePrint)), "/",
@@ -555,7 +555,7 @@ bool OutOfProcessInstance::Init(uint32_t argc,
   InitializeEngine(script_option);
 
   // If we're in print preview mode we don't need to load the document yet.
-  // A |kJSResetPrintPreviewModeType| message will be sent to the plugin letting
+  // A `kJSResetPrintPreviewModeType` message will be sent to the plugin letting
   // it know the url to load. By not loading here we avoid loading the same
   // document twice.
   if (IsPrintPreview())
@@ -1018,9 +1018,9 @@ void OutOfProcessInstance::HandleResetPrintPreviewModeMessage(
   }
 
   // The page count is zero if the print preview source is a PDF. In which
-  // case, the page index for |url| should be at |kCompletePDFIndex|.
+  // case, the page index for `url` should be at `kCompletePDFIndex`.
   // When the page count is not zero, then the source is not PDF. In which
-  // case, the page index for |url| should be non-negative.
+  // case, the page index for `url` should be non-negative.
   bool is_previewing_pdf = IsPreviewingPDF(print_preview_page_count);
   int page_index = ExtractPrintPreviewPageIndex(url);
   if ((is_previewing_pdf && page_index != kCompletePDFIndex) ||

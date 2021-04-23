@@ -59,8 +59,8 @@ gfx::Size LimitAspectRatio(gfx::Size page_size) {
   return page_size;
 }
 
-// Calculate the size of a thumbnail image in device pixels using |page_size| in
-// any units and |device_pixel_ratio|.
+// Calculate the size of a thumbnail image in device pixels using `page_size` in
+// any units and `device_pixel_ratio`.
 gfx::Size CalculateBestFitSize(const gfx::Size& page_size,
                                float device_pixel_ratio) {
   gfx::Size safe_page_size = LimitAspectRatio(page_size);

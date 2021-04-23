@@ -41,11 +41,11 @@ class Graphics {
   // `true` if the callback is still pending.
   virtual bool Flush(ResultCallback callback) = 0;
 
-  // Paints the |src_rect| region of |image| to the graphics device. The image
+  // Paints the `src_rect` region of `image` to the graphics device. The image
   // must be compatible with the concrete `Graphics` implementation.
   virtual void PaintImage(const Image& image, const gfx::Rect& src_rect) = 0;
 
-  // Shifts the |clip| region of the graphics device by |amount|.
+  // Shifts the `clip` region of the graphics device by `amount`.
   virtual void Scroll(const gfx::Rect& clip, const gfx::Vector2d& amount) = 0;
 
   // Sets the output scale factor. Must be greater than 0.
