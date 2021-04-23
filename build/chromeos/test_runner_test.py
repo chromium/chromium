@@ -290,5 +290,63 @@ class GTestTest(TestRunnerTest):
     gtest.build_test_command()
 
 
+class HostCmdTests(TestRunnerTest):
+
+  @parameterized.expand([
+      [True],
+      [False],
+  ])
+  def test_host_cmd(self, is_lacros):
+    args = [
+        'script_name',
+        'host-cmd',
+        '--board=eve',
+        '--flash',
+        '--path-to-outdir=out/Release',
+        '--device=localhost:2222',
+    ]
+    if is_lacros:
+      args += ['--deploy-lacros']
+    else:
+      args += ['--deploy-chrome']
+    args += [
+        '--',
+        'fake_cmd',
+    ]
+    with mock.patch.object(sys, 'argv', args),\
+         mock.patch.object(test_runner.subprocess, 'Popen') as mock_popen:
+      mock_popen.return_value.returncode = 0
+
+      test_runner.main()
+      expected_cmd = [
+          test_runner.CROS_RUN_TEST_PATH,
+          '--board',
+          'eve',
+          '--cache-dir',
+          test_runner.DEFAULT_CROS_CACHE,
+          '--flash',
+          '--device',
+          'localhost:2222',
+          '--build-dir',
+          os.path.join(test_runner.CHROMIUM_SRC_PATH, 'out/Release'),
+          '--host-cmd',
+      ]
+      if is_lacros:
+        expected_cmd += [
+            '--deploy-lacros',
+            '--lacros-launcher-script',
+            test_runner.LACROS_LAUNCHER_SCRIPT_PATH,
+        ]
+      else:
+        expected_cmd += ['--mount', '--nostrip', '--deploy']
+
+      expected_cmd += [
+          '--',
+          'fake_cmd',
+      ]
+
+      self.safeAssertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
+
+
 if __name__ == '__main__':
   unittest.main()

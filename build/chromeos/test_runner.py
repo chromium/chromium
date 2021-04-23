@@ -751,10 +751,12 @@ def host_cmd(args, cmd_args):
     ]
 
   test_env = setup_env()
-  if args.deploy_chrome:
+  if args.deploy_chrome or args.deploy_lacros:
     # Mounting ash-chrome gives it enough disk space to not need stripping.
-    cros_run_test_cmd.extend(['--deploy-lacros'] if args.deploy_lacros else
-                             ['--deploy', '--mount', '--nostrip'])
+    cros_run_test_cmd.extend([
+        '--deploy-lacros', '--lacros-launcher-script',
+        LACROS_LAUNCHER_SCRIPT_PATH
+    ] if args.deploy_lacros else ['--deploy', '--mount', '--nostrip'])
 
     cros_run_test_cmd += [
         '--build-dir',
