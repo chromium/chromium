@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/sab-polyfill.js"></script>
 <script src="./resources/geometry-interfaces-test-helpers.js"></script>
 <script>
 test(() => {
@@ -120,14 +121,12 @@ test(() => {
     "fromFloat64Array function only accepts 1 Float64Array with 6 or 16 elements");
 }, "DOMMatrix fromFloat*Array - invalid array size");
 
-if (window.SharedArrayBuffer) {
-  test(() => {
-    assert_throws_js(TypeError, () => { DOMMatrix.fromFloat32Array(new Float32Array(new SharedArrayBuffer(24))); },
-      "");
-    assert_throws_js(TypeError, () => { DOMMatrix.fromFloat64Array(new Float64Array(new SharedArrayBuffer(32))); },
-      "");
-  }, "DOMMatrix fromFloat*Array - can't use SharedArrayBuffer view");
-}
+test(() => {
+  assert_throws_js(TypeError, () => { DOMMatrix.fromFloat32Array(new Float32Array(new SharedArrayBuffer(24))); },
+    "");
+  assert_throws_js(TypeError, () => { DOMMatrix.fromFloat64Array(new Float64Array(new SharedArrayBuffer(32))); },
+    "");
+}, "DOMMatrix fromFloat*Array - can't use SharedArrayBuffer view");
 
 test(() => {
   assert_identity_2d_matrix(DOMMatrix.fromMatrix());
