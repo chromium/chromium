@@ -307,11 +307,12 @@ template("apple_toolchain") {
       # search path in /usr/bin are thin wrappers around xcrun, which requires a
       # full CommandLineTools or Xcode install, and still may not choose the
       # appropriate binary if there are multiple installs.
-      otool = invoker.bin_path + "otool"
       if (host_os == "mac") {
         nm = invoker.bin_path + "nm"
+        otool = invoker.bin_path + "otool"
       } else {
         nm = "${prefix}llvm-nm"
+        otool = "${prefix}llvm-otool"
       }
 
       does_reexport_command = "[ ! -e \"$dylib\" -o ! -e \"$tocname\" ] || $otool -l \"$dylib\" | grep -q LC_REEXPORT_DYLIB"
