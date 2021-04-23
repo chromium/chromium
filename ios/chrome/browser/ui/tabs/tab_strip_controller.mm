@@ -670,29 +670,40 @@ UIColor* BackgroundColor() {
   [_tabStripView addSubview:_dimmingView];
 
   CGFloat duration = animate ? kTabStripFadeAnimationDuration : 0;
+  __weak TabStripController* weakSelf = self;
   [UIView animateWithDuration:duration
                    animations:^{
-                     [_dimmingView
-                         setBackgroundColor:[BackgroundColor()
-                                                colorWithAlphaComponent:0.6]];
+                     [weakSelf animateDimmingViewBackgroundColorWithAlpha:0.6];
                    }];
+}
+
+// Animation helper function to set the _dimmingView background color with
+// alpha.
+- (void)animateDimmingViewBackgroundColorWithAlpha:(CGFloat)alphaComponent {
+  [_dimmingView setBackgroundColor:[BackgroundColor()
+                                       colorWithAlphaComponent:alphaComponent]];
 }
 
 - (void)removeDimmingViewWithAnimation:(BOOL)animate {
   if (_dimmingView) {
+    __weak TabStripController* weakSelf = self;
     CGFloat duration = animate ? kTabStripFadeAnimationDuration : 0;
     [UIView animateWithDuration:duration
         animations:^{
-          [_dimmingView
-              setBackgroundColor:[BackgroundColor() colorWithAlphaComponent:0]];
+          [weakSelf animateDimmingViewBackgroundColorWithAlpha:0];
         }
         completion:^(BOOL finished) {
-          // Do not remove the dimming view if the animation was aborted.
-          if (finished) {
-            [_dimmingView removeFromSuperview];
-            _dimmingView = nil;
-          }
+          [weakSelf onDimmingViewAnimationFinished:finished];
         }];
+  }
+}
+
+// Completion function/helper for -removeDimmingViewWithAnimation
+- (void)onDimmingViewAnimationFinished:(BOOL)finished {
+  // Do not remove the dimming view if the animation was aborted.
+  if (finished) {
+    [_dimmingView removeFromSuperview];
+    _dimmingView = nil;
   }
 }
 
@@ -1163,17 +1174,22 @@ UIColor* BackgroundColor() {
   // sight.
   CGRect frame = [view frame];
   frame = CGRectOffset(frame, 0, CGRectGetHeight(frame));
+  __weak TabStripController* weakSelf = self;
   [UIView animateWithDuration:kTabAnimationDuration
       animations:^{
         [view setFrame:frame];
       }
       completion:^(BOOL finished) {
-        [view removeFromSuperview];
-        [_tabArray removeObject:view];
-        [_closingTabs removeObject:view];
+        [weakSelf tabViewAnimationCompletion:view];
       }];
 
   [self setNeedsLayoutWithAnimation];
+}
+
+- (void)tabViewAnimationCompletion:(UIView*)view {
+  [view removeFromSuperview];
+  [_tabArray removeObject:view];
+  [_closingTabs removeObject:view];
 }
 
 // Observer method. |webState| inserted on |webStateList|.
@@ -1685,19 +1701,28 @@ UIColor* BackgroundColor() {
                         object:nil];
     }
 
+    __weak TabStripController* weakSelf = self;
     [UIView animateWithDuration:kTabAnimationDuration
                           delay:delay
                         options:UIViewAnimationOptionAllowUserInteraction
                      animations:^{
-                       for (TabView* view in tabsNeedingAnimation) {
-                         DCHECK(_targetFrames.HasFrame(view));
-                         [view setFrame:_targetFrames.GetFrame(view)];
-                       }
-                       if (moveNewTab)
-                         [_buttonNewTab setFrame:newTabFrame];
+                       [weakSelf animateTabStripSubviews:tabsNeedingAnimation
+                                             newTabFrame:newTabFrame
+                                              moveNewTab:moveNewTab];
                      }
                      completion:nil];
   }
+}
+
+- (void)animateTabStripSubviews:(NSMutableArray*)tabsNeedingAnimation
+                    newTabFrame:(CGRect)newTabFrame
+                     moveNewTab:(BOOL)moveNewTab {
+  for (TabView* view in tabsNeedingAnimation) {
+    DCHECK(_targetFrames.HasFrame(view));
+    [view setFrame:_targetFrames.GetFrame(view)];
+  }
+  if (moveNewTab)
+    [_buttonNewTab setFrame:newTabFrame];
 }
 
 - (void)setNeedsLayoutWithAnimation {
