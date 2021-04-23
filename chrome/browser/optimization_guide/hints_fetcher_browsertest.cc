@@ -169,10 +169,8 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(hints_server_->Start());
 
-    std::map<std::string, std::string> params;
-    params["random_anchor_sampling_period"] = "1";
-    param_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kNavigationPredictor, params);
+    param_feature_list_.InitWithFeatures(
+        {blink::features::kNavigationPredictor}, {});
 
     InProcessBrowserTest::SetUp();
   }
@@ -1596,6 +1594,10 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageBrowserTest,
   // should be recorded as not covered by the hints fetcher.
   ResetCountHintsRequestsReceived();
   ui_test_utils::NavigateToURL(browser(), search_results_page_url());
+
+  RetryForHistogramUntilCountReached(
+      histogram_tester,
+      "AnchorElementMetrics.Visible.NumberOfAnchorElementsAfterMerge", 1);
 
   WaitUntilHintsFetcherRequestReceived();
   EXPECT_EQ(1u, count_hints_requests_received());

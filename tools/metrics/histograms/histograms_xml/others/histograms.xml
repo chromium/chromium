@@ -437,9 +437,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="AnchorElementMetrics.Clicked.OnDSE.SameHost"
     enum="BooleanAnchorElementSameHost" expires_after="2021-08-09">
-  <obsolete>
-    Removed 04/2020.
-  </obsolete>
   <owner>tbansal@chromium.org</owner>
   <summary>
     True if the target link of the anchor element has the same host as the root
@@ -449,9 +446,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="AnchorElementMetrics.Clicked.OnNonDSE.SameHost"
     enum="BooleanAnchorElementSameHost" expires_after="2021-08-22">
-  <obsolete>
-    Removed 04/2020.
-  </obsolete>
   <owner>tbansal@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>src/chrome/browser/navigation_predictor/OWNERS</owner>
@@ -464,9 +458,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="AnchorElementMetrics.IsSameHost" enum="Boolean"
     expires_after="2021-05-21">
-  <obsolete>
-    Removed 04/2020.
-  </obsolete>
   <owner>chelu@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -477,9 +468,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="AnchorElementMetrics.Visible.NumberOfAnchorElementsAfterMerge"
     units="count" expires_after="2021-04-26">
-  <obsolete>
-    Removed 04/2020.
-  </obsolete>
   <owner>chelu@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>

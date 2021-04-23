@@ -476,7 +476,6 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent() {
       CASE_FOR_ID(JavascriptIntersectionObserver);
       CASE_FOR_ID(LazyLoadIntersectionObserver);
       CASE_FOR_ID(MediaIntersectionObserver);
-      CASE_FOR_ID(AnchorElementMetricsIntersectionObserver);
       CASE_FOR_ID(UpdateViewportIntersection);
       CASE_FOR_ID(UserDrivenDocumentUpdate);
       CASE_FOR_ID(ServiceDocumentUpdate);
@@ -533,7 +532,6 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
       CASE_FOR_ID(JavascriptIntersectionObserver, i);
       CASE_FOR_ID(LazyLoadIntersectionObserver, i);
       CASE_FOR_ID(MediaIntersectionObserver, i);
-      CASE_FOR_ID(AnchorElementMetricsIntersectionObserver, i);
       CASE_FOR_ID(UpdateViewportIntersection, i);
       CASE_FOR_ID(UserDrivenDocumentUpdate, i);
       CASE_FOR_ID(ServiceDocumentUpdate, i);
