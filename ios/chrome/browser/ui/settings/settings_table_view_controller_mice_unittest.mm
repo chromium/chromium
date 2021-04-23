@@ -146,8 +146,7 @@ class SettingsTableViewControllerMICETest
   AuthenticationServiceFake* auth_service_ = nullptr;
   syncer::MockSyncService* sync_service_mock_ = nullptr;
   SyncSetupServiceMock* sync_setup_service_mock_ = nullptr;
-  scoped_refptr<password_manager::TestPasswordStore> password_store_mock_ =
-      nullptr;
+  scoped_refptr<password_manager::TestPasswordStore> password_store_mock_;
 
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<TestBrowser> browser_;
