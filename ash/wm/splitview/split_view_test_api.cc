@@ -43,4 +43,12 @@ void SplitViewTestApi::SwapWindows() {
   split_view_controller()->SwapWindows();
 }
 
+aura::Window* SplitViewTestApi::GetLeftWindow() const {
+  return split_view_controller()->left_window();
+}
+
+aura::Window* SplitViewTestApi::GetRightWindow() const {
+  return split_view_controller()->right_window();
+}
+
 }  // namespace ash

@@ -564,7 +564,8 @@ TEST_F(FullRestoreControllerTest, StackingMultiDisplay) {
                       {window_3_3, window_3_2, window_3_1});
 }
 
-// Tests snapped window functionality when creating a window from full restore.
+// Tests clamshell snapped window functionality when creating a window from full
+// restore.
 TEST_F(FullRestoreControllerTest, ClamshellSnapWindow) {
   UpdateDisplay("800x800");
 
@@ -674,6 +675,54 @@ TEST_F(FullRestoreControllerTest, DisconnectedDisplay) {
           ->GetNativeWindow();
   VerifyStackingOrder(desk_container, {window_6, window_5, window_4, window_3,
                                        window_2, window_1});
+}
+
+// Tests tablet snapped window functionality when creating a window from full
+// restore.
+TEST_F(FullRestoreControllerTest, TabletSnapWindow) {
+  UpdateDisplay("800x800");
+
+  // Add two entries to our fake full restore file, one snapped left and the
+  // other snapped right.
+  const gfx::Rect restored_bounds(200, 200);
+  AddEntryToFakeFile(/*restore_window_id=*/2, restored_bounds,
+                     chromeos::WindowStateType::kLeftSnapped);
+  AddEntryToFakeFile(/*restore_window_id=*/3, restored_bounds,
+                     chromeos::WindowStateType::kRightSnapped);
+
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  // Create two full restore windows with the same restore window ids as the
+  // entries we added. Test they are snapped and have snapped bounds.
+  aura::Window* left_window =
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/2)
+          ->GetNativeWindow();
+  aura::Window* right_window =
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/3)
+          ->GetNativeWindow();
+  auto* left_window_state = WindowState::Get(left_window);
+  auto* right_window_state = WindowState::Get(right_window);
+  EXPECT_TRUE(left_window_state->IsSnapped());
+  EXPECT_TRUE(right_window_state->IsSnapped());
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
+                SplitViewController::LEFT, nullptr),
+            left_window->GetBoundsInScreen());
+  EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
+                SplitViewController::RIGHT, nullptr),
+            right_window->GetBoundsInScreen());
+  EXPECT_EQ(left_window, split_view_controller->left_window());
+  EXPECT_EQ(right_window, split_view_controller->right_window());
+
+  TabletModeControllerTestApi().LeaveTabletMode();
+
+  // Test that after restoring the snapped windows, they have the bounds we
+  // saved into the fake file.
+  left_window_state->Restore();
+  right_window_state->Restore();
+  EXPECT_EQ(restored_bounds, left_window->GetBoundsInScreen());
+  EXPECT_EQ(restored_bounds, right_window->GetBoundsInScreen());
 }
 
 }  // namespace ash

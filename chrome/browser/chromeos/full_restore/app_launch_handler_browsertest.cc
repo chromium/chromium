@@ -10,6 +10,8 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/autotest_desks_api.h"
+#include "ash/public/cpp/split_view_test_api.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -145,7 +147,7 @@ void SaveWindowInfo(aura::Window* window) {
   window_info.desk_id = kDeskId;
   window_info.restore_bounds = kRestoreBounds;
   window_info.current_bounds = kCurrentBounds;
-  window_info.window_state_type = kWindowStateType;
+  window_info.window_state_type = ash::WindowState::Get(window)->GetStateType();
   ::full_restore::SaveWindowInfo(window_info);
 }
 
@@ -812,7 +814,11 @@ class AppLaunchHandlerArcAppBrowserTest : public AppLaunchHandlerBrowserTest {
 
     EXPECT_FALSE(window_info->current_bounds.has_value());
 
-    if (window_state_type == chromeos::WindowStateType::kDefault) {
+    // For ARC windows, Android can restore window minimized or maximized
+    // status, so the WindowStateType from the window info for the minimized and
+    // maximized state will be removed.
+    if (window_state_type == chromeos::WindowStateType::kMaximized ||
+        window_state_type == chromeos::WindowStateType::kMinimized) {
       EXPECT_FALSE(window_info->window_state_type.has_value());
     } else {
       EXPECT_TRUE(window_info->window_state_type.has_value());
@@ -917,7 +923,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, RestoreArcApp) {
 
   VerifyObserver(window, /*launch_count=*/1, /*init_count=*/2);
   VerifyWindowProperty(window, kTaskId2, kTaskId1, /*hidden=*/false);
-  VerifyWindowInfo(window, kActivationIndex, kWindowStateType);
+  VerifyWindowInfo(window, kActivationIndex);
 
   // Destroy the task and close the window.
   app_host()->OnTaskDestroyed(kTaskId2);
@@ -1021,8 +1027,10 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
   VerifyObserver(window2, /*launch_count=*/1, /*init_count=*/1);
   VerifyWindowProperty(window1, kTaskId3, kTaskId1, /*hidden=*/false);
   VerifyWindowProperty(window2, kTaskId4, kTaskId2, /*hidden=*/false);
-  VerifyWindowInfo(window1, activation_index1);
-  VerifyWindowInfo(window2, activation_index2);
+  VerifyWindowInfo(window1, activation_index1,
+                   chromeos::WindowStateType::kMaximized);
+  VerifyWindowInfo(window2, activation_index2,
+                   chromeos::WindowStateType::kMinimized);
 
   // destroy tasks and close windows.
   widget1->CloseNow();
@@ -1063,22 +1071,34 @@ class AppLaunchHandlerSystemWebAppsBrowserTest
   }
   ~AppLaunchHandlerSystemWebAppsBrowserTest() override = default;
 
-  Browser* LaunchSystemWebApp() {
+  Browser* LaunchSystemWebApp(const GURL& gurl,
+                              web_app::SystemAppType system_app_type) {
     WaitForTestSystemAppInstall();
 
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-    content::TestNavigationObserver navigation_observer(
-        GURL("chrome://help-app/"));
+    content::TestNavigationObserver navigation_observer(gurl);
     navigation_observer.StartWatchingNewWebContents();
 
-    proxy->Launch(
-        *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::HELP),
-        ui::EventFlags::EF_NONE, apps::mojom::LaunchSource::kFromChromeInternal,
-        apps::MakeWindowInfo(display::kDefaultDisplayId));
+    proxy->Launch(*GetManager().GetAppIdForSystemApp(system_app_type),
+                  ui::EventFlags::EF_NONE,
+                  apps::mojom::LaunchSource::kFromChromeInternal,
+                  apps::MakeWindowInfo(display::kDefaultDisplayId));
 
     navigation_observer.Wait();
 
     return BrowserList::GetInstance()->GetLastActive();
+  }
+
+  Browser* LaunchSystemWebApp() {
+    return LaunchSystemWebApp(GURL("chrome://help-app/"),
+                              web_app::SystemAppType::HELP);
+  }
+
+  // Launches the media system web app. Used when a test needs to use a
+  // different system web app.
+  Browser* LaunchMediaSystemWebApp() {
+    return LaunchSystemWebApp(GURL("chrome://media-app/"),
+                              web_app::SystemAppType::MEDIA);
   }
 
  private:
@@ -1176,6 +1196,70 @@ IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest,
   // wants to return to normal window show state. Regression test for
   // https://crbug.com/1188986.
   EXPECT_TRUE(window_state->HasRestoreBounds());
+}
+
+// Tests that apps maintain splitview snap status after being relaunched with
+// full restore.
+IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest,
+                       TabletSplitView) {
+  ash::TabletMode::Get()->SetEnabledForTest(true);
+
+  Browser* app1_browser = LaunchSystemWebApp();
+  Browser* app2_browser = LaunchMediaSystemWebApp();
+
+  aura::Window* app1_window = app1_browser->window()->GetNativeWindow();
+  aura::Window* app2_window = app2_browser->window()->GetNativeWindow();
+
+  ash::SplitViewTestApi split_view_test_api;
+  split_view_test_api.SnapWindow(app1_window,
+                                 ash::SplitViewTestApi::SnapPosition::LEFT);
+  split_view_test_api.SnapWindow(app2_window,
+                                 ash::SplitViewTestApi::SnapPosition::RIGHT);
+  ASSERT_EQ(app1_window, split_view_test_api.GetLeftWindow());
+  ASSERT_EQ(app2_window, split_view_test_api.GetRightWindow());
+
+  const int32_t app1_id =
+      app1_window->GetProperty(::full_restore::kWindowIdKey);
+  const int32_t app2_id =
+      app2_window->GetProperty(::full_restore::kWindowIdKey);
+
+  SaveWindowInfo(app1_window);
+  SaveWindowInfo(app2_window);
+  WaitForAppLaunchInfoSaved();
+
+  // Create AppLaunchHandler.
+  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+
+  // Close `app1_browser` and `app2_browser` so that the SWA can be relaunched.
+  web_app::CloseAndWait(app1_browser);
+  web_app::CloseAndWait(app2_browser);
+
+  // Set should restore.
+  app_launch_handler->SetShouldRestore();
+
+  // Wait for the restoration.
+  content::RunAllTasksUntilIdle();
+
+  aura::Window* restore_app1_window = nullptr;
+  aura::Window* restore_app2_window = nullptr;
+
+  // Find the restored app windows in the browser list.
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    aura::Window* native_window = browser->window()->GetNativeWindow();
+    if (native_window->GetProperty(::full_restore::kRestoreWindowIdKey) ==
+        app1_id) {
+      restore_app1_window = native_window;
+    }
+    if (native_window->GetProperty(::full_restore::kRestoreWindowIdKey) ==
+        app2_id) {
+      restore_app2_window = native_window;
+    }
+  }
+
+  ASSERT_TRUE(restore_app1_window);
+  ASSERT_TRUE(restore_app2_window);
+  EXPECT_EQ(restore_app1_window, split_view_test_api.GetLeftWindow());
+  EXPECT_EQ(restore_app2_window, split_view_test_api.GetRightWindow());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

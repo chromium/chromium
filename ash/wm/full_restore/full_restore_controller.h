@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/window_info.h"
+#include "ui/aura/window_observer.h"
 
 class PrefService;
 
@@ -31,7 +32,8 @@ class WindowState;
 class ASH_EXPORT FullRestoreController
     : public SessionObserver,
       public TabletModeObserver,
-      public full_restore::FullRestoreInfo::Observer {
+      public full_restore::FullRestoreInfo::Observer,
+      public aura::WindowObserver {
  public:
   using ReadWindowCallback =
       base::RepeatingCallback<std::unique_ptr<full_restore::WindowInfo>(
@@ -69,6 +71,12 @@ class ASH_EXPORT FullRestoreController
   void OnAppLaunched(aura::Window* window) override;
   void OnWidgetInitialized(views::Widget* widget) override;
 
+  // aura::WindowObserver:
+  void OnWindowStackingChanged(aura::Window* window) override;
+  void OnWindowDestroying(aura::Window* window) override;
+
+  bool is_restoring_snap_state() const { return is_restoring_snap_state_; }
+
  private:
   friend class FullRestoreControllerTest;
 
@@ -94,6 +102,12 @@ class ASH_EXPORT FullRestoreController
   // write to file.
   void SetSaveWindowCallbackForTesting(SaveWindowCallback callback);
 
+  // True whenever we are attempting to restore snap state.
+  bool is_restoring_snap_state_ = false;
+
+  // True whenever we are stacking windows to match saved activation order.
+  bool is_stacking_ = false;
+
   ScopedSessionObserver scoped_session_observer_{this};
 
   base::ScopedObservation<TabletModeController, TabletModeObserver>
@@ -102,6 +116,10 @@ class ASH_EXPORT FullRestoreController
   base::ScopedObservation<full_restore::FullRestoreInfo,
                           full_restore::FullRestoreInfo::Observer>
       full_restore_info_observation_{this};
+
+  // Observes windows launched by full restore.
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      windows_observation_{this};
 };
 
 }  // namespace ash

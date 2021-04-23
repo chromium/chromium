@@ -10,8 +10,10 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/full_restore/full_restore_utils.h"
@@ -164,6 +166,7 @@ void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
 
   aura::Window* window = widget->GetNativeWindow();
   DCHECK(window->parent());
+  windows_observation_.AddObservation(window);
 
   std::unique_ptr<full_restore::WindowInfo> window_info =
       g_read_window_callback_for_testing
@@ -173,8 +176,21 @@ void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
     // Snap the window if necessary.
     auto state_type = window_info->window_state_type;
     if (state_type) {
+      // Add the window to be tracked by the tablet mode window manager
+      // manually. It is normally tracked when it becomes visible, but in snap
+      // case we want to track it before it becomes visible. This will allow us
+      // to snap the window before it is shown and skip first showing the window
+      // in normal or maximized state.
+      // TODO(crbug.com/1164472): Investigate splitview for ARC apps, which
+      // are not managed by TabletModeWindowManager.
+      LOG(ERROR) << static_cast<int>(state_type.value());
+      if (Shell::Get()->tablet_mode_controller()->InTabletMode())
+        Shell::Get()->tablet_mode_controller()->AddWindow(window);
+
       if (*state_type == chromeos::WindowStateType::kLeftSnapped ||
           *state_type == chromeos::WindowStateType::kRightSnapped) {
+        base::AutoReset<bool> auto_reset_is_restoring_snap_state(
+            &is_restoring_snap_state_, true);
         const WMEvent snap_event(*state_type ==
                                          chromeos::WindowStateType::kLeftSnapped
                                      ? WM_EVENT_SNAP_LEFT
@@ -207,8 +223,28 @@ void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
 
   // Stack the window.
   auto* target_sibling = GetSiblingToStackBelow(window);
-  if (target_sibling)
+  if (target_sibling) {
+    base::AutoReset<bool> auto_reset_is_stacking(&is_stacking_, true);
     window->parent()->StackChildBelow(window, target_sibling);
+  }
+}
+
+void FullRestoreController::OnWindowStackingChanged(aura::Window* window) {
+  DCHECK(windows_observation_.IsObservingSource(window));
+
+  // Do nothing if stacking was triggered by us.
+  if (is_stacking_)
+    return;
+
+  // Once a window has its stacking changed, possibly by another window
+  // management feature, it can be cleared of its activation index
+  // key since it is no longer used in the stacking algorithm.
+  window->ClearProperty(full_restore::kActivationIndexKey);
+}
+
+void FullRestoreController::OnWindowDestroying(aura::Window* window) {
+  DCHECK(windows_observation_.IsObservingSource(window));
+  windows_observation_.RemoveObservation(window);
 }
 
 void FullRestoreController::SaveAllWindows() {
