@@ -169,8 +169,8 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayWhitelist_Missing) {
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 }
 
-// Flaky on Linux. See: crbug.com/1172978.
-#if defined(OS_LINUX)
+// Flaky on Linux and ChromeOS. See: crbug.com/1172978.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_AutoplayDeniedByPolicy DISABLED_AutoplayDeniedByPolicy
 #else
 #define MAYBE_AutoplayDeniedByPolicy AutoplayDeniedByPolicy
