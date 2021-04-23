@@ -3002,6 +3002,22 @@
             ]
         }
     ],
+    "EnableDynamicUpdate": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GPayAppDynamicUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableSuggestedFiles": [
         {
             "platforms": [
