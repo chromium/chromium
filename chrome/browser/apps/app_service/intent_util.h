@@ -8,21 +8,35 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "components/arc/mojom/intent_common.mojom.h"
-#include "components/arc/mojom/intent_helper.mojom-forward.h"
+#include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
-class Profile;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/arc/mojom/intent_common.mojom.h"
+#include "components/arc/mojom/intent_helper.mojom-forward.h"
 
 namespace arc {
 class IntentFilter;
 }
+#endif
+
+class Profile;
 
 namespace base {
 class FilePath;
-}
+}  // namespace base
+
+namespace web_app {
+class WebApp;
+}  // namespace web_app
 
 namespace apps_util {
+// Create intent filters for |web_app| and append them to |target|.
+void PopulateWebAppIntentFilters(
+    const web_app::WebApp& web_app,
+    std::vector<apps::mojom::IntentFilterPtr>& target);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Create an intent struct from the file paths and mime types
 // of a list of files.
 // This util has to live under chrome/ because it uses fileapis
@@ -67,6 +81,7 @@ arc::IntentFilter CreateArcIntentFilter(
     const apps::mojom::IntentFilterPtr& intent_filter);
 apps::mojom::IntentFilterPtr ConvertArcIntentFilter(
     const arc::IntentFilter& arc_intent_filter);
+#endif
 
 }  // namespace apps_util
 

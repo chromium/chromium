@@ -1782,6 +1782,7 @@ if (!is_android) {
       ]
 
       sources += [
+        "../browser/apps/app_service/intent_util_browsertest.cc",
         "../browser/apps/app_service/media_access_browsertest.cc",
         "../browser/apps/app_service/notifications_browsertest.cc",
         "../browser/apps/app_service/publishers/web_apps_base_browsertest.cc",

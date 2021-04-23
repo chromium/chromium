@@ -4,19 +4,63 @@
 
 #include "chrome/browser/apps/app_service/intent_util.h"
 
+#include <algorithm>
+#include <string>
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/common/chrome_features.h"
-#include "components/arc/intent_helper/intent_constants.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "components/arc/intent_helper/intent_constants.h"
+#include "components/arc/mojom/intent_helper.mojom.h"
+#endif
+
 namespace {
 
+constexpr char kTextPlain[] = "text/plain";
+
+apps::mojom::IntentFilterPtr CreateShareFileFilter(
+    const std::vector<std::string>& intent_actions,
+    const std::vector<std::string>& content_types) {
+  DCHECK(!content_types.empty());
+  auto intent_filter = apps::mojom::IntentFilter::New();
+
+  std::vector<apps::mojom::ConditionValuePtr> action_condition_values;
+  for (auto& action : intent_actions) {
+    action_condition_values.push_back(apps_util::MakeConditionValue(
+        action, apps::mojom::PatternMatchType::kNone));
+  }
+  if (!action_condition_values.empty()) {
+    auto action_condition =
+        apps_util::MakeCondition(apps::mojom::ConditionType::kAction,
+                                 std::move(action_condition_values));
+    intent_filter->conditions.push_back(std::move(action_condition));
+  }
+
+  std::vector<apps::mojom::ConditionValuePtr> mime_type_condition_values;
+  for (auto& mime_type : content_types) {
+    mime_type_condition_values.push_back(apps_util::MakeConditionValue(
+        mime_type, apps::mojom::PatternMatchType::kMimeType));
+  }
+  if (!mime_type_condition_values.empty()) {
+    auto mime_type_condition =
+        apps_util::MakeCondition(apps::mojom::ConditionType::kMimeType,
+                                 std::move(mime_type_condition_values));
+    intent_filter->conditions.push_back(std::move(mime_type_condition));
+  }
+
+  return intent_filter;
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kIntentExtraText[] = "S.android.intent.extra.TEXT";
 constexpr char kIntentExtraSubject[] = "S.android.intent.extra.SUBJECT";
 constexpr char kIntentExtraStartType[] = "S.org.chromium.arc.start_type";
@@ -41,11 +85,56 @@ const char* GetArcIntentAction(const std::string& action) {
     return arc::kIntentActionView;
   }
 }
+#endif
 
 }  // namespace
 
 namespace apps_util {
 
+void PopulateWebAppIntentFilters(
+    const web_app::WebApp& web_app,
+    std::vector<apps::mojom::IntentFilterPtr>& target) {
+  if (web_app.scope().is_empty())
+    return;
+
+  target.push_back(apps_util::CreateIntentFilterForUrlScope(
+      web_app.scope(),
+      base::FeatureList::IsEnabled(features::kIntentHandlingSharing)));
+
+  if (!base::FeatureList::IsEnabled(features::kIntentHandlingSharing) ||
+      !web_app.share_target().has_value()) {
+    return;
+  }
+
+  const apps::ShareTarget& share_target = web_app.share_target().value();
+
+  if (!share_target.params.text.empty()) {
+    // The share target accepts navigator.share() calls with text.
+    target.push_back(
+        CreateShareFileFilter({apps_util::kIntentActionSend}, {kTextPlain}));
+  }
+
+  std::vector<std::string> content_types;
+  for (const auto& files_entry : share_target.params.files) {
+    for (const auto& file_type : files_entry.accept) {
+      // Skip any file_type that is not a MIME type.
+      if (file_type.empty() || file_type[0] == '.' ||
+          std::count(file_type.begin(), file_type.end(), '/') != 1) {
+        continue;
+      }
+
+      content_types.push_back(file_type);
+    }
+  }
+
+  if (!content_types.empty()) {
+    const std::vector<std::string> intent_actions(
+        {apps_util::kIntentActionSend, apps_util::kIntentActionSendMultiple});
+    target.push_back(CreateShareFileFilter(intent_actions, content_types));
+  }
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(crbug.com/853604): Make this not link to file manager extension if
 // possible.
 apps::mojom::IntentPtr CreateShareIntentFromFiles(
@@ -384,5 +473,6 @@ apps::mojom::IntentFilterPtr ConvertArcIntentFilter(
 
   return intent_filter;
 }
+#endif
 
 }  // namespace apps_util

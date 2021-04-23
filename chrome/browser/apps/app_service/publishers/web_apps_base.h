@@ -175,9 +175,6 @@ class WebAppsBase : public apps::PublisherBase,
   apps::mojom::AppType app_type_;
 };
 
-void PopulateIntentFilters(const web_app::WebApp& web_app,
-                           std::vector<mojom::IntentFilterPtr>& target);
-
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_BASE_H_
