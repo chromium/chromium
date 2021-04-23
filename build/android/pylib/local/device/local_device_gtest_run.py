@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import absolute_import
 import contextlib
 import collections
 import itertools
@@ -13,6 +14,7 @@ import subprocess
 import shutil
 import time
 
+from six.moves import range  # pylint: disable=redefined-builtin
 from devil import base_error
 from devil.android import crash_handler
 from devil.android import device_errors

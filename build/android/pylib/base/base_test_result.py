@@ -4,7 +4,9 @@
 
 """Module containing base test results classes."""
 
+from __future__ import absolute_import
 import threading
+import six
 
 
 class ResultType(object):
@@ -139,7 +141,7 @@ class TestRunResults(object):
             log = t.GetLog()
             if log:
               s.append('[%s] %s:' % (test_type, t))
-              s.append(unicode(log, 'utf-8'))
+              s.append(six.text_type(log, 'utf-8'))
       return '\n'.join(s)
 
   def GetGtestForm(self):

@@ -6,6 +6,7 @@
 
 """Runs all types of tests from one unified interface."""
 
+from __future__ import absolute_import
 import argparse
 import collections
 import contextlib
@@ -26,6 +27,8 @@ import unittest
 # See http://crbug.com/724524 and https://bugs.python.org/issue7980.
 import _strptime  # pylint: disable=unused-import
 
+# pylint: disable=redefined-builtin
+from six.moves import range  # Needed for python 3 compatibility.
 # pylint: disable=ungrouped-imports
 from pylib.constants import host_paths
 
@@ -700,10 +703,11 @@ def AddMonkeyTestOptions(parser):
 
   parser = parser.add_argument_group('monkey arguments')
 
-  parser.add_argument(
-      '--browser',
-      required=True, choices=constants.PACKAGE_INFO.keys(),
-      metavar='BROWSER', help='Browser under test.')
+  parser.add_argument('--browser',
+                      required=True,
+                      choices=list(constants.PACKAGE_INFO.keys()),
+                      metavar='BROWSER',
+                      help='Browser under test.')
   parser.add_argument(
       '--category',
       nargs='*', dest='categories', default=[],
@@ -728,11 +732,12 @@ def AddPythonTestOptions(parser):
 
   parser = parser.add_argument_group('python arguments')
 
-  parser.add_argument(
-      '-s', '--suite',
-      dest='suite_name', metavar='SUITE_NAME',
-      choices=constants.PYTHON_UNIT_TEST_SUITES.keys(),
-      help='Name of the test suite to run.')
+  parser.add_argument('-s',
+                      '--suite',
+                      dest='suite_name',
+                      metavar='SUITE_NAME',
+                      choices=list(constants.PYTHON_UNIT_TEST_SUITES.keys()),
+                      help='Name of the test suite to run.')
 
 
 def _CreateClassToFileNameDict(test_apk):
@@ -963,8 +968,8 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
   with out_manager, json_finalizer():
     with json_writer(), logcats_uploader, env, test_instance, test_run:
 
-      repetitions = (xrange(args.repeat + 1) if args.repeat >= 0
-                     else itertools.count())
+      repetitions = (range(args.repeat +
+                           1) if args.repeat >= 0 else itertools.count())
       result_counts = collections.defaultdict(
           lambda: collections.defaultdict(int))
       iteration_count = 0

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import absolute_import
 import collections
 import json
 import logging
@@ -12,6 +13,7 @@ import subprocess
 import sys
 import zipfile
 
+from six.moves import range  # pylint: disable=redefined-builtin
 from pylib import constants
 from pylib.base import base_test_result
 from pylib.base import test_run

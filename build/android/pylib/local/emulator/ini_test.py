@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """Tests for ini.py."""
 
+from __future__ import absolute_import
 import textwrap
 import unittest
 

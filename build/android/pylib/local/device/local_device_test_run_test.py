@@ -5,6 +5,7 @@
 
 # pylint: disable=protected-access
 
+from __future__ import absolute_import
 import unittest
 
 from pylib.base import base_test_result

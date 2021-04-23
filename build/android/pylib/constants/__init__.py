@@ -8,6 +8,7 @@
 
 # pylint: disable=W0212
 
+from __future__ import absolute_import
 import collections
 import glob
 import logging
