@@ -12,8 +12,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pass_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_buffer.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_color_attachment_descriptor.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_depth_stencil_attachment_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_color_attachment.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_depth_stencil_attachment.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_descriptor.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
@@ -28,11 +28,11 @@
 
 namespace blink {
 
-WGPURenderPassColorAttachmentDescriptor AsDawnType(
-    const GPURenderPassColorAttachmentDescriptor* webgpu_desc) {
+WGPURenderPassColorAttachment AsDawnType(
+    const GPURenderPassColorAttachment* webgpu_desc) {
   DCHECK(webgpu_desc);
 
-  WGPURenderPassColorAttachmentDescriptor dawn_desc = {};
+  WGPURenderPassColorAttachment dawn_desc = {};
   if (webgpu_desc->hasView()) {
     dawn_desc.view = webgpu_desc->view()->GetHandle();
   } else if (webgpu_desc->hasAttachment()) {
@@ -69,11 +69,11 @@ WGPURenderPassColorAttachmentDescriptor AsDawnType(
 
 namespace {
 
-WGPURenderPassDepthStencilAttachmentDescriptor AsDawnType(
-    const GPURenderPassDepthStencilAttachmentDescriptor* webgpu_desc) {
+WGPURenderPassDepthStencilAttachment AsDawnType(
+    const GPURenderPassDepthStencilAttachment* webgpu_desc) {
   DCHECK(webgpu_desc);
 
-  WGPURenderPassDepthStencilAttachmentDescriptor dawn_desc = {};
+  WGPURenderPassDepthStencilAttachment dawn_desc = {};
   if (webgpu_desc->hasView()) {
     dawn_desc.view = webgpu_desc->view()->GetHandle();
   } else if (webgpu_desc->hasAttachment()) {
@@ -190,7 +190,7 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
 
   // Check loadValue color is correctly formatted before further processing.
   for (wtf_size_t i = 0; i < color_attachment_count; ++i) {
-    const GPURenderPassColorAttachmentDescriptor* color_attachment =
+    const GPURenderPassColorAttachment* color_attachment =
         descriptor->colorAttachments()[i];
 
     if (color_attachment->hasAttachment()) {
@@ -221,14 +221,14 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     dawn_desc.label = label.c_str();
   }
 
-  std::unique_ptr<WGPURenderPassColorAttachmentDescriptor[]> color_attachments;
+  std::unique_ptr<WGPURenderPassColorAttachment[]> color_attachments;
 
   if (color_attachment_count > 0) {
     color_attachments = AsDawnType(descriptor->colorAttachments());
     dawn_desc.colorAttachments = color_attachments.get();
   }
 
-  WGPURenderPassDepthStencilAttachmentDescriptor depthStencilAttachment = {};
+  WGPURenderPassDepthStencilAttachment depthStencilAttachment = {};
   if (descriptor->hasDepthStencilAttachment()) {
     if (descriptor->depthStencilAttachment()->hasAttachment()) {
       device_->AddConsoleWarning(
