@@ -1209,12 +1209,6 @@ void ClientTagBasedModelTypeProcessor::
     return;
   }
 
-  // TODO(crbug.com/1079314): add UMA for each case of inconsistent data.
-  if (!valid_data_type_id) {
-    UMA_HISTOGRAM_ENUMERATION("Sync.PersistedModelTypeIdMismatch",
-                              ModelTypeHistogramValue(type_));
-  }
-
   ClearAllTrackedMetadataAndResetState();
   // Not having `entity_tracker_` results in doing the initial sync again.
   DCHECK(!entity_tracker_);

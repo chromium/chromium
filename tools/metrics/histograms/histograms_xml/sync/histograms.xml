@@ -867,7 +867,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.PersistedModelTypeIdMismatch" enum="SyncModelTypes"
-    expires_after="M90">
+    expires_after="2021-04-23">
+  <obsolete>
+    Removed 2021-04.
+  </obsolete>
   <owner>mastiz@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>

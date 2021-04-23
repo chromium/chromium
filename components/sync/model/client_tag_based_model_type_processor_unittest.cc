@@ -2383,11 +2383,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
   ASSERT_TRUE(type_processor()->IsModelReadyToSyncForTest());
 
-  base::HistogramTester histogram_tester;
   OnSyncStarting();
-  histogram_tester.ExpectBucketCount(
-      "Sync.PersistedModelTypeIdMismatch",
-      /*bucket=*/ModelTypeHistogramValue(GetModelType()), /*count=*/1);
 
   // Model should still be ready to sync.
   ASSERT_TRUE(type_processor()->IsModelReadyToSyncForTest());
@@ -2789,7 +2785,6 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldResetOnInvalidDataTypeId) {
 
   ResetStateWriteItem(kKey1, kValue1);
 
-  base::HistogramTester histogram_tester;
   OnSyncStarting();
   // Set different data type id.
   sync_pb::ModelTypeState model_type_state = db()->model_type_state();
@@ -2802,8 +2797,6 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldResetOnInvalidDataTypeId) {
 
   ModelReadyToSync();
   EXPECT_EQ(0U, ProcessorEntityCount());
-  histogram_tester.ExpectUniqueSample("Sync.PersistedModelTypeIdMismatch",
-                                      ModelTypeForHistograms::kPreferences, 1);
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
