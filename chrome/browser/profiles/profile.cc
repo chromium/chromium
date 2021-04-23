@@ -399,11 +399,9 @@ bool Profile::IsGuestSession() const {
 #else
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   DCHECK(chromeos::LacrosChromeServiceImpl::Get());
-  if (chromeos::LacrosChromeServiceImpl::Get()->init_params()->session_type !=
-      crosapi::mojom::SessionType::kUnknown) {
-    return chromeos::LacrosChromeServiceImpl::Get()
-               ->init_params()
-               ->session_type == crosapi::mojom::SessionType::kGuestSession;
+  if (chromeos::LacrosChromeServiceImpl::Get()->init_params()->session_type ==
+      crosapi::mojom::SessionType::kGuestSession) {
+    return true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return profile_metrics::GetBrowserProfileType(this) ==
