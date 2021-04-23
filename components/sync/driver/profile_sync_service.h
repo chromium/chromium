@@ -63,6 +63,7 @@ class ProfileSyncService : public SyncService,
                            public SyncEngineHost,
                            public SyncPrefObserver,
                            public DataTypeManagerObserver,
+                           public SyncServiceCrypto::Delegate,
                            public signin::IdentityManager::Observer {
  public:
   // If AUTO_START, sync will set IsFirstSetupComplete() automatically and sync
@@ -174,6 +175,11 @@ class ProfileSyncService : public SyncService,
   // DataTypeManagerObserver implementation.
   void OnConfigureDone(const DataTypeManager::ConfigureResult& result) override;
   void OnConfigureStart() override;
+
+  // SyncServiceCrypto::Delegate implementation.
+  void CryptoStateChanged() override;
+  void CryptoRequiredUserActionChanged() override;
+  void ReconfigureDataTypesDueToCrypto() override;
 
   // IdentityManager::Observer implementation.
   void OnAccountsInCookieUpdated(
@@ -355,12 +361,6 @@ class ProfileSyncService : public SyncService,
 
   // Called when a SetupInProgressHandle issued by this instance is destroyed.
   void OnSetupInProgressHandleDestroyed();
-
-  // Called by SyncServiceCrypto when a passphrase is required or accepted.
-  void ReconfigureDueToPassphrase(ConfigureReason reason);
-
-  // Called by SyncServiceCrypto when its required user action changes.
-  void OnRequiredUserActionChanged();
 
   // This profile's SyncClient, which abstracts away non-Sync dependencies and
   // the Sync API component factory.

@@ -146,14 +146,7 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
       debug_identifier_(init_params.debug_identifier),
       sync_service_url_(
           GetSyncServiceURL(*base::CommandLine::ForCurrentProcess(), channel_)),
-      crypto_(
-          base::BindRepeating(&ProfileSyncService::NotifyObservers,
-                              base::Unretained(this)),
-          base::BindRepeating(&ProfileSyncService::OnRequiredUserActionChanged,
-                              base::Unretained(this)),
-          base::BindRepeating(&ProfileSyncService::ReconfigureDueToPassphrase,
-                              base::Unretained(this)),
-          sync_client_->GetTrustedVaultClient()),
+      crypto_(this, sync_client_->GetTrustedVaultClient()),
       network_time_update_callback_(
           std::move(init_params.network_time_update_callback)),
       url_loader_factory_(std::move(init_params.url_loader_factory)),
@@ -972,6 +965,40 @@ void ProfileSyncService::OnConfigureDone(
 void ProfileSyncService::OnConfigureStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   engine_->StartConfiguration();
+  NotifyObservers();
+}
+
+void ProfileSyncService::CryptoStateChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NotifyObservers();
+}
+
+void ProfileSyncService::CryptoRequiredUserActionChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (should_record_trusted_vault_error_shown_on_startup_ &&
+      crypto_.IsTrustedVaultKeyRequiredStateKnown() && IsSyncFeatureEnabled()) {
+    should_record_trusted_vault_error_shown_on_startup_ = false;
+    if (crypto_.GetPassphraseType() ==
+        PassphraseType::kTrustedVaultPassphrase) {
+      base::UmaHistogramBoolean(
+          "Sync.TrustedVaultErrorShownOnStartup",
+          user_settings_->IsTrustedVaultKeyRequiredForPreferredDataTypes());
+    }
+  }
+}
+
+void ProfileSyncService::ReconfigureDataTypesDueToCrypto() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (CanConfigureDataTypes(/*bypass_setup_in_progress_check=*/false)) {
+    ConfigureDataTypeManager(CONFIGURE_REASON_CRYPTO);
+  }
+
+  // Notify observers that the passphrase status may have changed, regardless of
+  // whether we triggered configuration or not. This is needed for the
+  // IsSetupInProgress() case where the UI needs to be updated to reflect that
+  // the passphrase was accepted (https://crbug.com/870256).
   NotifyObservers();
 }
 
@@ -1833,30 +1860,6 @@ void ProfileSyncService::OnSetupInProgressHandleDestroyed() {
   }
 
   NotifyObservers();
-}
-
-void ProfileSyncService::ReconfigureDueToPassphrase(ConfigureReason reason) {
-  if (CanConfigureDataTypes(/*bypass_setup_in_progress_check=*/false)) {
-    ConfigureDataTypeManager(reason);
-  }
-  // Notify observers that the passphrase status may have changed, regardless of
-  // whether we triggered configuration or not. This is needed for the
-  // IsSetupInProgress() case where the UI needs to be updated to reflect that
-  // the passphrase was accepted (https://crbug.com/870256).
-  NotifyObservers();
-}
-
-void ProfileSyncService::OnRequiredUserActionChanged() {
-  if (should_record_trusted_vault_error_shown_on_startup_ &&
-      crypto_.IsTrustedVaultKeyRequiredStateKnown() && IsSyncFeatureEnabled()) {
-    should_record_trusted_vault_error_shown_on_startup_ = false;
-    if (crypto_.GetPassphraseType() ==
-        PassphraseType::kTrustedVaultPassphrase) {
-      base::UmaHistogramBoolean(
-          "Sync.TrustedVaultErrorShownOnStartup",
-          user_settings_->IsTrustedVaultKeyRequiredForPreferredDataTypes());
-    }
-  }
 }
 
 }  // namespace syncer

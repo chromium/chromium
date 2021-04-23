@@ -201,17 +201,11 @@ SyncServiceCrypto::State::State()
 
 SyncServiceCrypto::State::~State() = default;
 
-SyncServiceCrypto::SyncServiceCrypto(
-    const base::RepeatingClosure& notify_observers,
-    const base::RepeatingClosure& notify_required_user_action_changed,
-    const base::RepeatingCallback<void(ConfigureReason)>& reconfigure,
-    TrustedVaultClient* trusted_vault_client)
-    : notify_observers_(notify_observers),
-      notify_required_user_action_changed_(notify_required_user_action_changed),
-      reconfigure_(reconfigure),
+SyncServiceCrypto::SyncServiceCrypto(Delegate* delegate,
+                                     TrustedVaultClient* trusted_vault_client)
+    : delegate_(delegate),
       trusted_vault_client_(ResoveNullClient(trusted_vault_client)) {
-  DCHECK(notify_observers_);
-  DCHECK(reconfigure_);
+  DCHECK(delegate_);
   DCHECK(trusted_vault_client_);
 
   trusted_vault_client_->AddObserver(this);
@@ -445,7 +439,7 @@ void SyncServiceCrypto::OnPassphraseRequired(
 
   // Reconfigure without the encrypted types (excluded implicitly via the
   // failed datatypes handler).
-  reconfigure_.Run(CONFIGURE_REASON_CRYPTO);
+  delegate_->ReconfigureDataTypesDueToCrypto();
 }
 
 void SyncServiceCrypto::OnPassphraseAccepted() {
@@ -460,7 +454,7 @@ void SyncServiceCrypto::OnPassphraseAccepted() {
 
   // Make sure the data types that depend on the passphrase are started at
   // this time.
-  reconfigure_.Run(CONFIGURE_REASON_CRYPTO);
+  delegate_->ReconfigureDataTypesDueToCrypto();
 }
 
 void SyncServiceCrypto::OnTrustedVaultKeyRequired() {
@@ -508,7 +502,7 @@ void SyncServiceCrypto::OnTrustedVaultKeyAccepted() {
 
   // Make sure the data types that depend on the decryption key are started at
   // this time.
-  reconfigure_.Run(CONFIGURE_REASON_CRYPTO);
+  delegate_->ReconfigureDataTypesDueToCrypto();
 }
 
 void SyncServiceCrypto::OnBootstrapTokenUpdated(
@@ -535,7 +529,7 @@ void SyncServiceCrypto::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
   DCHECK(state_.encrypted_types.Has(PASSWORDS));
   DCHECK(state_.encrypted_types.Has(WIFI_CONFIGURATIONS));
 
-  notify_observers_.Run();
+  delegate_->CryptoStateChanged();
 }
 
 void SyncServiceCrypto::OnCryptographerStateChanged(
@@ -561,7 +555,7 @@ void SyncServiceCrypto::OnPassphraseTypeChanged(PassphraseType type,
     UpdateRequiredUserActionAndNotify(RequiredUserAction::kNone);
   }
 
-  notify_observers_.Run();
+  delegate_->CryptoStateChanged();
 }
 
 void SyncServiceCrypto::OnTrustedVaultKeysChanged() {
@@ -709,7 +703,7 @@ void SyncServiceCrypto::FetchTrustedVaultKeysCompletedButInsufficient() {
 
   // Reconfigure without the encrypted types (excluded implicitly via the failed
   // datatypes handler).
-  reconfigure_.Run(CONFIGURE_REASON_CRYPTO);
+  delegate_->ReconfigureDataTypesDueToCrypto();
 }
 
 void SyncServiceCrypto::UpdateRequiredUserActionAndNotify(
@@ -722,7 +716,7 @@ void SyncServiceCrypto::UpdateRequiredUserActionAndNotify(
   }
 
   state_.required_user_action = new_required_user_action;
-  notify_required_user_action_changed_.Run();
+  delegate_->CryptoRequiredUserActionChanged();
 
   RefreshIsRecoverabilityDegraded();
 }
@@ -766,7 +760,7 @@ void SyncServiceCrypto::GetIsRecoverabilityDegradedCompleted(
       state_.required_user_action == RequiredUserAction::kNone) {
     UpdateRequiredUserActionAndNotify(
         RequiredUserAction::kTrustedVaultRecoverabilityDegraded);
-    notify_observers_.Run();
+    delegate_->CryptoStateChanged();
   }
 
   // Transition from degraded to non-degraded recoverability.
@@ -774,7 +768,7 @@ void SyncServiceCrypto::GetIsRecoverabilityDegradedCompleted(
       state_.required_user_action ==
           RequiredUserAction::kTrustedVaultRecoverabilityDegraded) {
     UpdateRequiredUserActionAndNotify(RequiredUserAction::kNone);
-    notify_observers_.Run();
+    delegate_->CryptoStateChanged();
   }
 }
 

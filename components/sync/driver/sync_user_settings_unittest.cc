@@ -17,6 +17,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service_crypto.h"
 #include "components/sync/engine/configure_reason.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -50,17 +51,25 @@ ModelTypeSet GetPreferredUserTypes(
   return Intersection(UserTypes(), sync_user_settings.GetPreferredDataTypes());
 }
 
+class MockSyncServiceCryptoDelegate : public SyncServiceCrypto::Delegate {
+ public:
+  MockSyncServiceCryptoDelegate() = default;
+  ~MockSyncServiceCryptoDelegate() override = default;
+
+  MOCK_METHOD(void, CryptoStateChanged, (), (override));
+  MOCK_METHOD(void, CryptoRequiredUserActionChanged, (), (override));
+  MOCK_METHOD(void, ReconfigureDataTypesDueToCrypto, (), (override));
+};
+
 class SyncUserSettingsTest : public testing::Test {
  protected:
   SyncUserSettingsTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
     sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
 
-    sync_service_crypto_ = std::make_unique<SyncServiceCrypto>(
-        /*notify_observers=*/base::DoNothing(),
-        /*notify_required_user_action_changed=*/base::DoNothing(),
-        /*reconfigure=*/base::DoNothing(),
-        /*trusted_vault_client=*/nullptr);
+    sync_service_crypto_ =
+        std::make_unique<SyncServiceCrypto>(&sync_service_crypto_delegate_,
+                                            /*trusted_vault_client=*/nullptr);
   }
 
   std::unique_ptr<SyncUserSettingsImpl> MakeSyncUserSettings(
@@ -74,6 +83,8 @@ class SyncUserSettingsTest : public testing::Test {
   // fields are dependent.
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<SyncPrefs> sync_prefs_;
+  testing::NiceMock<MockSyncServiceCryptoDelegate>
+      sync_service_crypto_delegate_;
   std::unique_ptr<SyncServiceCrypto> sync_service_crypto_;
 };
 
