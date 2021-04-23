@@ -1760,7 +1760,7 @@ config("no_chromium_code") {
     ]
     if (!is_nacl && (current_toolchain == host_toolchain || !use_xcode_clang)) {
       cflags += [
-        # TODO(https://crbug.com/1031169): Clean up and enable.
+        # TODO(https://crbug.com/1202159): Clean up and enable.
         "-Wno-misleading-indentation",
       ]
     }
