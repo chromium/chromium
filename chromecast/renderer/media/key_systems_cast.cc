@@ -107,7 +107,7 @@ class PlayReadyKeySystemProperties : public ::media::KeySystemProperties {
 };
 #endif  // BUILDFLAG(ENABLE_PLAYREADY)
 
-#if BUILDFLAG(USE_CHROMECAST_CDMS)
+#if BUILDFLAG(USE_CHROMECAST_CDMS) || BUILDFLAG(ENABLE_WIDEVINE)
 SupportedCodecs GetCastEmeSupportedCodecs() {
   SupportedCodecs codecs = ::media::EME_CODEC_AAC | ::media::EME_CODEC_AVC1 |
                            ::media::EME_CODEC_VP9_PROFILE0 |
