@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_TEST_HELPER_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_TEST_HELPER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -62,7 +63,7 @@ class MockMediaDialogDelegate : public MediaDialogDelegate {
   void HideMediaDialog() override;
 
  private:
-  MediaNotificationService* service_;
+  CheckedPtr<MediaNotificationService> service_;
 
   DISALLOW_COPY_AND_ASSIGN(MockMediaDialogDelegate);
 };

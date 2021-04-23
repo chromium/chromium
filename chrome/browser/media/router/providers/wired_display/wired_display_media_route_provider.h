@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/router/discovery/media_sink_discovery_metrics.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver.h"
 #include "components/media_router/common/media_route_provider_helper.h"
@@ -193,7 +194,7 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
 
   // Presentation profiles are created based on this original profile. This
   // profile is not owned by |this|.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // Map from presentation IDs to active presentations managed by this provider.
   std::map<std::string, Presentation> presentations_;

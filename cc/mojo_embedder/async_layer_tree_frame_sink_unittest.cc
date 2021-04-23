@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -55,8 +56,8 @@ class ThreadTrackingLayerTreeFrameSinkClient
   }
 
  private:
-  base::PlatformThreadId* called_thread_id_;
-  base::RunLoop* run_loop_;
+  CheckedPtr<base::PlatformThreadId> called_thread_id_;
+  CheckedPtr<base::RunLoop> run_loop_;
 };
 
 TEST(AsyncLayerTreeFrameSinkTest,

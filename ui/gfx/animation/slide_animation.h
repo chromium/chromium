@@ -6,6 +6,7 @@
 #define UI_GFX_ANIMATION_SLIDE_ANIMATION_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
@@ -104,7 +105,7 @@ class ANIMATION_EXPORT SlideAnimation : public LinearAnimation {
   // Overridden from Animation.
   void AnimateToState(double state) override;
 
-  AnimationDelegate* target_;
+  CheckedPtr<AnimationDelegate> target_;
 
   Tween::Type tween_type_ = Tween::EASE_OUT;
 

@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -89,7 +90,7 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   scoped_refptr<testing::NiceMock<MockPasswordStore>> password_store_ =
       new testing::NiceMock<MockPasswordStore>;
   bool is_incognito_ = false;
-  signin::IdentityManager* identity_manager_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
 
   DISALLOW_COPY_AND_ASSIGN(FakePasswordManagerClient);

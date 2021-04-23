@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
@@ -154,7 +155,7 @@ class MockECSignatureCreator : public crypto::ECSignatureCreator {
                        std::vector<uint8_t>* out_raw_sig) override;
 
  private:
-  crypto::ECPrivateKey* key_;
+  CheckedPtr<crypto::ECPrivateKey> key_;
 
   DISALLOW_COPY_AND_ASSIGN(MockECSignatureCreator);
 };
@@ -234,7 +235,7 @@ struct SpdySessionDependencies {
   bool enable_websocket_over_http2;
   base::Optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
   bool http2_end_stream_with_data_frame;
-  NetLog* net_log;
+  CheckedPtr<NetLog> net_log;
   bool disable_idle_sockets_close_on_memory_pressure;
   bool enable_early_data;
   bool key_auth_cache_server_entries_by_network_isolation_key;
@@ -292,7 +293,7 @@ class SpdySessionPoolPeer {
   void SetEnableSendingInitialData(bool enabled);
 
  private:
-  SpdySessionPool* const pool_;
+  const CheckedPtr<SpdySessionPool> pool_;
 
   DISALLOW_COPY_AND_ASSIGN(SpdySessionPoolPeer);
 };

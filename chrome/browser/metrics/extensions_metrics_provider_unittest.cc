@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -171,7 +172,7 @@ class ExtensionMetricsProviderInstallsTest
   }
 
  private:
-  extensions::ExtensionPrefs* prefs_ = nullptr;
+  CheckedPtr<extensions::ExtensionPrefs> prefs_ = nullptr;
   base::Time last_sample_time_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionMetricsProviderInstallsTest);

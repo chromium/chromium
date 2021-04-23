@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/memory/checked_ptr.h"
 
 namespace device {
 
@@ -167,9 +168,9 @@ class HidReportDescriptorItem {
  private:
   size_t GetHeaderSize() const;
 
-  HidReportDescriptorItem* previous_;
-  HidReportDescriptorItem* next_;
-  HidReportDescriptorItem* parent_;
+  CheckedPtr<HidReportDescriptorItem> previous_;
+  CheckedPtr<HidReportDescriptorItem> next_;
+  CheckedPtr<HidReportDescriptorItem> parent_;
   Tag tag_;
   uint32_t shortData_;
   size_t payload_size_;

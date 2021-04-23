@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FEATURE_MANAGER_IMPL_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 
 namespace syncer {
@@ -44,8 +45,8 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
   int GetMoveOfferedToNonOptedInUserCount() const override;
 
  private:
-  PrefService* const pref_service_;
-  const syncer::SyncService* const sync_service_;
+  const CheckedPtr<PrefService> pref_service_;
+  const CheckedPtr<const syncer::SyncService> sync_service_;
   DISALLOW_COPY_AND_ASSIGN(PasswordFeatureManagerImpl);
 };
 

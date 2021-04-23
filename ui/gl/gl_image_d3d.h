@@ -10,6 +10,7 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
 

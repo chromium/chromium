@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/base/test/skia_gold_pixel_diff.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -69,7 +70,7 @@ class BrowserSkiaGoldPixelDiff : public ui::test::SkiaGoldPixelDiff {
                                           gfx::Image* image) const;
 
  private:
-  views::Widget* widget_ = nullptr;
+  CheckedPtr<views::Widget> widget_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserSkiaGoldPixelDiff);
 };

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -38,8 +39,8 @@ class FaviconTabHelper : public content::WebContentsUserData<FaviconTabHelper>,
     ObserverSubscription(FaviconTabHelper* helper,
                          FaviconFetcherDelegate* delegate);
 
-    FaviconTabHelper* helper_;
-    FaviconFetcherDelegate* delegate_;
+    CheckedPtr<FaviconTabHelper> helper_;
+    CheckedPtr<FaviconFetcherDelegate> delegate_;
   };
 
   FaviconTabHelper(const FaviconTabHelper&) = delete;
@@ -73,7 +74,7 @@ class FaviconTabHelper : public content::WebContentsUserData<FaviconTabHelper>,
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   // Number of observers attached.
   int observer_count_ = 0;
   base::ObserverList<FaviconFetcherDelegate> delegates_;

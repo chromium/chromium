@@ -6,6 +6,7 @@
 #define BASE_TRACING_TRACING_TLS_H_
 
 #include "base/base_export.h"
+#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_local.h"
 
 namespace base {
@@ -30,7 +31,7 @@ class BASE_EXPORT AutoThreadLocalBoolean {
   AutoThreadLocalBoolean& operator=(const AutoThreadLocalBoolean&) = delete;
 
  private:
-  base::ThreadLocalBoolean* thread_local_boolean_;
+  CheckedPtr<base::ThreadLocalBoolean> thread_local_boolean_;
 };
 
 }  // namespace tracing

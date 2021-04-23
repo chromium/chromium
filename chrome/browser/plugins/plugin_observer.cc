@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/debug/crash_logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -62,7 +63,7 @@ class PluginObserver::PluginPlaceholderHost : public PluginInstallerObserver {
         plugin_renderer_remote_(std::move(plugin_renderer_remote)) {
     plugin_renderer_remote_.set_disconnect_handler(
         base::BindOnce(&PluginObserver::RemovePluginPlaceholderHost,
-                       base::Unretained(observer_), this));
+                       base::Unretained(observer_.get()), this));
     DCHECK(installer);
   }
 
@@ -71,7 +72,7 @@ class PluginObserver::PluginPlaceholderHost : public PluginInstallerObserver {
   }
 
  private:
-  PluginObserver* observer_;
+  CheckedPtr<PluginObserver> observer_;
   mojo::Remote<chrome::mojom::PluginRenderer> plugin_renderer_remote_;
 };
 

@@ -117,7 +117,7 @@ BackgroundModeManager::BackgroundModeData::BackgroundModeData(
       applications_(std::make_unique<BackgroundApplicationListModel>(profile)),
       profile_(profile),
       command_id_handler_vector_(command_id_handler_vector) {
-  profile_observer_.Add(profile_);
+  profile_observer_.Add(profile_.get());
 }
 
 BackgroundModeManager::BackgroundModeData::~BackgroundModeData() = default;

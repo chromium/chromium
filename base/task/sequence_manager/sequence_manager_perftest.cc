@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 
 #include <stddef.h>
@@ -237,7 +238,7 @@ class TestCase {
   virtual void Start() = 0;
 
  protected:
-  PerfTestDelegate* const delegate_;  // NOT OWNED
+  const CheckedPtr<PerfTestDelegate> delegate_;  // NOT OWNED
 };
 
 class TaskSource {
@@ -399,7 +400,7 @@ class SingleThreadImmediateTestCase : public TestCase {
 
     void SignalDone() override { delegate_->SignalDone(); }
 
-    PerfTestDelegate* delegate_;  // NOT OWNED.
+    CheckedPtr<PerfTestDelegate> delegate_;  // NOT OWNED.
   };
 
   const std::unique_ptr<TaskSource> task_source_;
@@ -439,7 +440,7 @@ class SingleThreadDelayedTestCase : public TestCase {
 
     void SignalDone() override { delegate_->SignalDone(); }
 
-    PerfTestDelegate* delegate_;  // NOT OWNED.
+    CheckedPtr<PerfTestDelegate> delegate_;  // NOT OWNED.
   };
 
   const std::unique_ptr<TaskSource> task_source_;
@@ -492,7 +493,7 @@ class TwoThreadTestCase : public TestCase {
     // Will be called on the main thread.
     void SignalDone() override { two_thread_test_case_->SignalDone(); }
 
-    TwoThreadTestCase* two_thread_test_case_;  // NOT OWNED.
+    CheckedPtr<TwoThreadTestCase> two_thread_test_case_;  // NOT OWNED.
   };
 
   class CrossThreadImmediateTaskSource : public CrossThreadTaskSource {
@@ -513,7 +514,7 @@ class TwoThreadTestCase : public TestCase {
     // Will be called on the main thread.
     void SignalDone() override { two_thread_test_case_->SignalDone(); }
 
-    TwoThreadTestCase* two_thread_test_case_;  // NOT OWNED.
+    CheckedPtr<TwoThreadTestCase> two_thread_test_case_;  // NOT OWNED.
   };
 
   void SignalDone() {

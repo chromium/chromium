@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/base/completion_event.h"
 #include "cc/base/delayed_unique_notifier.h"
@@ -85,7 +86,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   struct BlockedMainCommitOnly {
     BlockedMainCommitOnly();
     ~BlockedMainCommitOnly();
-    LayerTreeHost* layer_tree_host;
+    CheckedPtr<LayerTreeHost> layer_tree_host;
   };
 
   // LayerTreeHostImplClient implementation
@@ -186,7 +187,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
 
   TreePriority last_raster_priority_;
 
-  TaskRunnerProvider* task_runner_provider_;
+  CheckedPtr<TaskRunnerProvider> task_runner_provider_;
 
   DelayedUniqueNotifier smoothness_priority_expiration_notifier_;
 

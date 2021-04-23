@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -63,7 +64,7 @@ class RequestSenderTest : public testing::Test {
  protected:
   RequestSenderTest()
       : auth_service_(new TestAuthService),
-        request_sender_(base::WrapUnique(auth_service_),
+        request_sender_(base::WrapUnique(auth_service_.get()),
                         nullptr,
                         nullptr,
                         "dummy-user-agent",
@@ -72,7 +73,7 @@ class RequestSenderTest : public testing::Test {
     auth_service_->set_access_token(kTestAccessToken);
   }
 
-  TestAuthService* auth_service_;  // Owned by |request_sender_|.
+  CheckedPtr<TestAuthService> auth_service_;  // Owned by |request_sender_|.
   RequestSender request_sender_;
 };
 

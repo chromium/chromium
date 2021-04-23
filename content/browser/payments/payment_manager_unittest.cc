@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "content/browser/payments/payment_app_content_unittest_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -119,7 +120,7 @@ class PaymentManagerTest : public PaymentAppContentUnitTestBase {
 
  private:
   // Owned by payment_app_context_.
-  PaymentManager* manager_;
+  CheckedPtr<PaymentManager> manager_;
 
   DISALLOW_COPY_AND_ASSIGN(PaymentManagerTest);
 };

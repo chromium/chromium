@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -60,7 +61,7 @@ class TestPasswordManagerClient
   }
 
  private:
-  signin::IdentityManager* identity_manager_ = nullptr;
+  CheckedPtr<signin::IdentityManager> identity_manager_ = nullptr;
 };
 
 }  // namespace

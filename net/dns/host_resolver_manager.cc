@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "net/dns/host_resolver_manager.h"
+#include "base/memory/checked_ptr.h"
 #include "base/task/thread_pool.h"
 
 #if defined(OS_WIN)
@@ -765,14 +766,14 @@ class HostResolverManager::RequestImpl
   const NetworkIsolationKey network_isolation_key_;
   ResolveHostParameters parameters_;
   // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
-  ResolveContext* const resolve_context_;
-  HostCache* const host_cache_;
+  const CheckedPtr<ResolveContext> resolve_context_;
+  const CheckedPtr<HostCache> host_cache_;
   const HostResolverFlags host_resolver_flags_;
 
   RequestPriority priority_;
 
   // The resolve job that this request is dependent on.
-  Job* job_;
+  CheckedPtr<Job> job_;
   base::WeakPtr<HostResolverManager> resolver_;
 
   // The user's callback to invoke when the request completes.
@@ -784,7 +785,7 @@ class HostResolverManager::RequestImpl
   base::Optional<std::vector<std::string>> sanitized_dns_alias_results_;
   ResolveErrorInfo error_info_;
 
-  const base::TickClock* const tick_clock_;
+  const CheckedPtr<const base::TickClock> tick_clock_;
   base::TimeTicks request_time_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -1583,7 +1584,7 @@ struct HostResolverManager::JobKey {
   HostResolverSource source;
   SecureDnsMode secure_dns_mode;
   // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
-  ResolveContext* resolve_context;
+  CheckedPtr<ResolveContext> resolve_context;
 };
 
 // Aggregates all Requests for the same Key. Dispatched via

@@ -20,6 +20,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -137,7 +138,7 @@ class DenyOpenPolicy : public bpf_dsl::Policy {
   }
 
  private:
-  InitializedOpenBroker* iob_;
+  CheckedPtr<InitializedOpenBroker> iob_;
 
   DISALLOW_COPY_AND_ASSIGN(DenyOpenPolicy);
 };
@@ -268,7 +269,7 @@ class IPCSyscaller : public Syscaller {
   }
 
  private:
-  BrokerProcess* broker_;
+  CheckedPtr<BrokerProcess> broker_;
 };
 
 // Only use syscall(...) on x64 to avoid having to reimplement a libc-like
@@ -482,7 +483,7 @@ class HandleFilesystemViaBrokerPolicy : public bpf_dsl::Policy {
   }
 
  private:
-  BrokerProcess* broker_process_;
+  CheckedPtr<BrokerProcess> broker_process_;
   int denied_errno_;
 
   DISALLOW_COPY_AND_ASSIGN(HandleFilesystemViaBrokerPolicy);
@@ -548,7 +549,7 @@ class BPFTesterBrokerDelegate : public BPFTesterDelegate {
 
  private:
   bool fast_check_in_client_;
-  BrokerTestDelegate* broker_test_delegate_;
+  CheckedPtr<BrokerTestDelegate> broker_test_delegate_;
   SyscallerType syscaller_type_;
   BrokerType broker_type_;
 

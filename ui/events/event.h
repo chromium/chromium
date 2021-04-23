@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_event_details.h"
@@ -68,7 +69,7 @@ class EVENTS_EXPORT Event {
     void set_time_stamp(base::TimeTicks time) { event_->time_stamp_ = time; }
 
    private:
-    Event* event_;
+    CheckedPtr<Event> event_;
 
     DISALLOW_COPY_AND_ASSIGN(DispatcherApi);
   };
@@ -313,7 +314,7 @@ class EVENTS_EXPORT Event {
   PlatformEvent native_event_;
   bool delete_native_event_ = false;
   bool cancelable_ = true;
-  EventTarget* target_ = nullptr;
+  CheckedPtr<EventTarget> target_ = nullptr;
   EventPhase phase_ = EP_PREDISPATCH;
   EventResult result_ = ER_UNHANDLED;
 
@@ -485,7 +486,7 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
     }
 
    private:
-    MouseEvent* event_;
+    CheckedPtr<MouseEvent> event_;
 
     DISALLOW_COPY_AND_ASSIGN(DispatcherApi);
   };

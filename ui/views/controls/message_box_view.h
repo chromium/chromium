@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/view.h"
@@ -100,16 +101,16 @@ class VIEWS_EXPORT MessageBoxView : public View {
   std::vector<Label*> message_labels_;
 
   // Scrolling view containing the message labels.
-  ScrollView* scroll_view_ = nullptr;
+  CheckedPtr<ScrollView> scroll_view_ = nullptr;
 
   // Input text field for the message box.
-  Textfield* prompt_field_ = nullptr;
+  CheckedPtr<Textfield> prompt_field_ = nullptr;
 
   // Checkbox for the message box.
-  Checkbox* checkbox_ = nullptr;
+  CheckedPtr<Checkbox> checkbox_ = nullptr;
 
   // Link displayed at the bottom of the view.
-  Link* link_ = nullptr;
+  CheckedPtr<Link> link_ = nullptr;
 
   // Spacing between rows in the grid layout.
   int inter_row_vertical_spacing_ = 0;

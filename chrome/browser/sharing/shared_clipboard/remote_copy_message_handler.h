@@ -10,6 +10,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
@@ -62,7 +63,7 @@ class RemoteCopyMessageHandler : public SharingMessageHandler,
   void Finish(RemoteCopyHandleMessageResult result);
   void CancelAsyncTasks();
 
-  Profile* profile_ = nullptr;
+  CheckedPtr<Profile> profile_ = nullptr;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   base::CancelableOnceCallback<void(const SkBitmap&)> resize_callback_;
   std::string device_name_;

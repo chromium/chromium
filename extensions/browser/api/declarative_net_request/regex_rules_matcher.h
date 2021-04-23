@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/url_matcher/substring_set_matcher.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher_base.h"
 #include "third_party/re2/src/re2/filtered_re2.h"
@@ -21,8 +22,8 @@ struct RegexRuleInfo {
   RegexRuleInfo(const flat::RegexRule* regex_rule, const re2::RE2* regex);
   RegexRuleInfo(const RegexRuleInfo& info);
   RegexRuleInfo& operator=(const RegexRuleInfo& info);
-  const flat::RegexRule* regex_rule;
-  const re2::RE2* regex;
+  CheckedPtr<const flat::RegexRule> regex_rule;
+  CheckedPtr<const re2::RE2> regex;
 };
 
 // RegexRulesMatcher deals with matching of regular expression rules. It is an
@@ -92,8 +93,8 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
 
   // Pointers to flatbuffer indexed data. Guaranteed to be valid through the
   // lifetime of the object.
-  const RegexRulesList* const regex_list_;
-  const ExtensionMetadataList* const metadata_list_;
+  const CheckedPtr<const RegexRulesList> regex_list_;
+  const CheckedPtr<const ExtensionMetadataList> metadata_list_;
 
   const bool is_extra_headers_matcher_;
 

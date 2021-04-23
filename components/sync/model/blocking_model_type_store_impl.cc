@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
@@ -87,7 +88,7 @@ class LevelDbMetadataChangeList : public MetadataChangeList {
     return metadata_prefix_ + id;
   }
 
-  leveldb::WriteBatch* const leveldb_write_batch_;
+  const CheckedPtr<leveldb::WriteBatch> leveldb_write_batch_;
 
   // Key for this type's metadata records.
   const std::string metadata_prefix_;

@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -232,8 +233,8 @@ class VideoCaptureBrowserTest : public ContentBrowserTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 
   TestParams params_;
-  MediaStreamManager* media_stream_manager_ = nullptr;
-  VideoCaptureManager* video_capture_manager_ = nullptr;
+  CheckedPtr<MediaStreamManager> media_stream_manager_ = nullptr;
+  CheckedPtr<VideoCaptureManager> video_capture_manager_ = nullptr;
   base::UnguessableToken session_id_;
   const VideoCaptureControllerID stub_client_id_ =
       base::UnguessableToken::Create();

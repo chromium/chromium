@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_LOADING_INDICATOR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_LOADING_INDICATOR_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/throb_animation.h"
@@ -47,7 +48,7 @@ class PageActionIconLoadingIndicatorView : public views::View,
 
   gfx::ThrobAnimation animation_{this};
 
-  PageActionIconView* const parent_;
+  const CheckedPtr<PageActionIconView> parent_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_LOADING_INDICATOR_VIEW_H_

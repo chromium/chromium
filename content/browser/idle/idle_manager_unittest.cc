@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -76,10 +77,10 @@ class IdleManagerTest : public testing::Test {
     permission_manager_ = new NiceMock<MockPermissionManager>();
     idle_time_provider_ = new NiceMock<MockIdleTimeProvider>();
     browser_context_->SetPermissionControllerDelegate(
-        base::WrapUnique(permission_manager_));
+        base::WrapUnique(permission_manager_.get()));
     idle_manager_ = std::make_unique<IdleManagerImpl>(browser_context_.get());
     idle_manager_->SetIdleTimeProviderForTest(
-        base::WrapUnique(idle_time_provider_));
+        base::WrapUnique(idle_time_provider_.get()));
     idle_manager_->CreateService(service_remote_.BindNewPipeAndPassReceiver(),
                                  Origin::Create(url_));
   }
@@ -158,8 +159,8 @@ class IdleManagerTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<IdleManagerImpl> idle_manager_;
-  MockPermissionManager* permission_manager_;
-  MockIdleTimeProvider* idle_time_provider_;
+  CheckedPtr<MockPermissionManager> permission_manager_;
+  CheckedPtr<MockIdleTimeProvider> idle_time_provider_;
   NiceMock<MockIdleMonitor> idle_monitor_;
   mojo::Receiver<blink::mojom::IdleMonitor> monitor_receiver_{&idle_monitor_};
   GURL url_ = GURL(kTestUrl);

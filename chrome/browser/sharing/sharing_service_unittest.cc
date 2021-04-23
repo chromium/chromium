@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/guid.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
@@ -127,7 +128,7 @@ class FakeSharingDeviceRegistration : public SharingDeviceRegistration {
   int unregistration_attempts() { return unregistration_attempts_; }
 
  private:
-  VapidKeyManager* vapid_key_manager_;
+  CheckedPtr<VapidKeyManager> vapid_key_manager_;
   SharingDeviceRegistrationResult result_ =
       SharingDeviceRegistrationResult::kSuccess;
   int registration_attempts_ = 0;
@@ -190,11 +191,13 @@ class SharingServiceTest : public testing::Test {
   SharingService* GetSharingService() {
     if (!sharing_service_) {
       sharing_service_ = std::make_unique<SharingService>(
-          base::WrapUnique(sync_prefs_), base::WrapUnique(vapid_key_manager_),
-          base::WrapUnique(sharing_device_registration_),
-          base::WrapUnique(sharing_message_sender_),
-          base::WrapUnique(device_source_), base::WrapUnique(handler_registry_),
-          base::WrapUnique(fcm_handler_), &test_sync_service_);
+          base::WrapUnique(sync_prefs_.get()),
+          base::WrapUnique(vapid_key_manager_.get()),
+          base::WrapUnique(sharing_device_registration_.get()),
+          base::WrapUnique(sharing_message_sender_.get()),
+          base::WrapUnique(device_source_.get()),
+          base::WrapUnique(handler_registry_.get()),
+          base::WrapUnique(fcm_handler_.get()), &test_sync_service_);
     }
     task_environment_.RunUntilIdle();
     return sharing_service_.get();
@@ -209,14 +212,15 @@ class SharingServiceTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable prefs_;
 
   testing::NiceMock<MockInstanceIDDriver> mock_instance_id_driver_;
-  testing::NiceMock<MockSharingHandlerRegistry>* handler_registry_;
-  testing::NiceMock<MockSharingFCMHandler>* fcm_handler_;
-  testing::NiceMock<MockSharingDeviceSource>* device_source_;
+  CheckedPtr<testing::NiceMock<MockSharingHandlerRegistry>> handler_registry_;
+  CheckedPtr<testing::NiceMock<MockSharingFCMHandler>> fcm_handler_;
+  CheckedPtr<testing::NiceMock<MockSharingDeviceSource>> device_source_;
 
-  SharingSyncPreference* sync_prefs_;
-  VapidKeyManager* vapid_key_manager_;
-  FakeSharingDeviceRegistration* sharing_device_registration_;
-  testing::NiceMock<MockSharingMessageSender>* sharing_message_sender_;
+  CheckedPtr<SharingSyncPreference> sync_prefs_;
+  CheckedPtr<VapidKeyManager> vapid_key_manager_;
+  CheckedPtr<FakeSharingDeviceRegistration> sharing_device_registration_;
+  CheckedPtr<testing::NiceMock<MockSharingMessageSender>>
+      sharing_message_sender_;
   bool device_candidates_initialized_ = false;
 
  private:

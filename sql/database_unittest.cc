@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -55,7 +56,7 @@ class RefCounter {
   ~RefCounter() { (*counter_)--; }
 
  private:
-  size_t* counter_;
+  CheckedPtr<size_t> counter_;
 
   DISALLOW_ASSIGN(RefCounter);
 };
