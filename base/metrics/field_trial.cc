@@ -17,6 +17,7 @@
 #include "base/process/process_handle.h"
 #include "base/process/process_info.h"
 #include "base/rand_util.h"
+#include "base/record_replay.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -692,6 +693,13 @@ void FieldTrialList::GetActiveFieldTrialGroupsFromString(
 void FieldTrialList::GetInitiallyActiveFieldTrials(
     const CommandLine& command_line,
     FieldTrial::ActiveGroups* active_groups) {
+  // Field trials are disabled when recording/replaying. The set of trials are
+  // read from shared memory and won't be consistent when replaying, and there
+  // isn't much point getting them working.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    return;
+  }
+
   DCHECK(global_);
   DCHECK(global_->create_trials_from_command_line_called_);
 
