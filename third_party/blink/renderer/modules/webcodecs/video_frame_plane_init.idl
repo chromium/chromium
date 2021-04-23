@@ -11,7 +11,7 @@ dictionary VideoFramePlaneInit {
   required [EnforceRange] unsigned long codedWidth;
   required [EnforceRange] unsigned long codedHeight;
 
-  VideoRegion visibleRegion;
+  VideoFrameRegion visibleRegion;
 
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;

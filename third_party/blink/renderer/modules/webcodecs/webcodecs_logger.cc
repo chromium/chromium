@@ -63,6 +63,11 @@ void WebCodecsLogger::LogCropDeprecation() {
       "use visibleRegion.");
 }
 
+void WebCodecsLogger::LogPlaneInitSrcDeprecation() {
+  LogDeprecation(Deprecation::kPlaneInitSrc,
+                 "PlaneInit.src is deprecated, please use PlaneInit.data.");
+}
+
 void WebCodecsLogger::LogCloseErrors(TimerBase*) {
   // If it's been a while since this class was used and there are not other
   // references to |leak_status_|, stop the timer.

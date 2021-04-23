@@ -9057,9 +9057,11 @@ interface VideoFrame
     getter planes
     getter timestamp
     getter visibleRegion
+    method allocationSize
     method clone
     method close
     method constructor
+    method readInto
 interface VideoPlaybackQuality
     attribute @@toStringTag
     getter corruptedVideoFrames

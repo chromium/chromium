@@ -1791,9 +1791,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter planes
 [Worker]     getter timestamp
 [Worker]     getter visibleRegion
+[Worker]     method allocationSize
 [Worker]     method clone
 [Worker]     method close
 [Worker]     method constructor
+[Worker]     method readInto
 [Worker] interface WakeLock
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor

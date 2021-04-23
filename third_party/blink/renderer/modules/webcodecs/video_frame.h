@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/plane.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
-#include "third_party/blink/renderer/modules/webcodecs/video_region.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame_region.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -29,6 +29,7 @@ class VideoFrame;
 
 namespace blink {
 
+class ArrayBufferOrArrayBufferView;
 class CanvasImageSource;
 class ExceptionState;
 class ExecutionContext;
@@ -37,6 +38,7 @@ class ScriptPromise;
 class ScriptState;
 class VideoFrameInit;
 class VideoFramePlaneInit;
+class VideoFrameReadIntoOptions;
 
 class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                         public CanvasImageSource,
@@ -69,8 +71,8 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   uint32_t codedWidth() const;
   uint32_t codedHeight() const;
 
-  VideoRegion* codedRegion() const;
-  VideoRegion* visibleRegion() const;
+  VideoFrameRegion* codedRegion() const;
+  VideoFrameRegion* visibleRegion() const;
 
   uint32_t cropLeft(ExecutionContext*) const;
   uint32_t cropTop(ExecutionContext*) const;
@@ -82,6 +84,13 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
   base::Optional<uint64_t> timestamp() const;
   base::Optional<uint64_t> duration() const;
+
+  uint32_t allocationSize(VideoFrameReadIntoOptions* options, ExceptionState&);
+
+  ScriptPromise readInto(ScriptState*,
+                         const ArrayBufferOrArrayBufferView& destination,
+                         VideoFrameReadIntoOptions* options,
+                         ExceptionState&);
 
   // Invalidates |handle_|, releasing underlying media::VideoFrame references.
   // This effectively "destroys" all frames sharing the same Handle.

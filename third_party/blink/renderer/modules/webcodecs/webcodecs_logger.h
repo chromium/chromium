@@ -63,12 +63,14 @@ class MODULES_EXPORT WebCodecsLogger : public GarbageCollected<WebCodecsLogger>,
   scoped_refptr<VideoFrameCloseAuditor> GetCloseAuditor();
 
   void LogCropDeprecation();
+  void LogPlaneInitSrcDeprecation();
 
   void Trace(Visitor*) const override;
 
  private:
   enum class Deprecation {
     kCrop = 1 << 0,
+    kPlaneInitSrc = 1 << 1,
   };
 
   void LogCloseErrors(TimerBase*);

@@ -42,6 +42,7 @@ modules_dictionary_idl_files = [
   "image_decode_result.idl",
   "image_decoder_init.idl",
   "plane_init.idl",
+  "plane_layout.idl",
   "video_color_space.idl",
   "video_decoder_config.idl",
   "video_decoder_init.idl",
@@ -52,7 +53,8 @@ modules_dictionary_idl_files = [
   "video_encoder_init.idl",
   "video_frame_init.idl",
   "video_frame_plane_init.idl",
-  "video_region.idl",
+  "video_frame_read_into_options.idl",
+  "video_frame_region.idl",
 ]
 
 modules_typedefs_enums_only_idl_files = [

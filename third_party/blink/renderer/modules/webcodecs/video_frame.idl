@@ -33,14 +33,26 @@
   readonly attribute unsigned long codedHeight;
 
   // Convenience accessor, origin is always (0, 0).
-  readonly attribute VideoRegion codedRegion;
+  readonly attribute VideoFrameRegion codedRegion;
 
   // Region of this frame's pixel data that is not padding.
-  readonly attribute VideoRegion visibleRegion;
+  readonly attribute VideoFrameRegion visibleRegion;
 
   // Display aspect ratio of visible region.
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
+
+  // Returns the minimum size (in bytes) of a buffer that readInto() could
+  // read this frame into with the given options.
+  [RaisesException] unsigned long allocationSize(
+      optional VideoFrameReadIntoOptions options = {});
+
+  // Read the planes of this frame into |destination| according to |options|.
+  // The format of the data is the same as this frame's |format|.
+  [CallWith=ScriptState, RaisesException]
+  Promise<sequence<PlaneLayout>> readInto(
+      BufferSource destination,
+      optional VideoFrameReadIntoOptions options = {});
 
   // Creates of the copy of this VideoFrame, which needs to be independently
   // destroyed.

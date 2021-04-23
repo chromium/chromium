@@ -28,7 +28,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder_broker.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
-#include "third_party/blink/renderer/modules/webcodecs/video_region.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame_region.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -270,7 +270,7 @@ VideoDecoderConfig* CopyConfig(const VideoDecoderConfig& config) {
     copy->setCodedHeight(config.codedHeight());
 
   if (config.hasVisibleRegion()) {
-    auto* region = MakeGarbageCollected<VideoRegion>();
+    auto* region = MakeGarbageCollected<VideoFrameRegion>();
     region->setLeft(config.visibleRegion()->left());
     region->setTop(config.visibleRegion()->top());
     region->setWidth(config.visibleRegion()->width());

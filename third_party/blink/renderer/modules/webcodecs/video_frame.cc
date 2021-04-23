@@ -17,6 +17,7 @@
 #include "media/base/video_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
+#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_plane_init.h"
@@ -536,7 +537,21 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   }
 
   for (wtf_size_t i = 0; i < planes.size(); ++i) {
-    DOMArrayPiece buffer(planes[i]->src());
+    if (!planes[i]->hasData()) {
+      if (planes[i]->hasSrc()) {
+        WebCodecsLogger::From(*execution_context).LogPlaneInitSrcDeprecation();
+      } else {
+        // TODO(sandersd): Make |data| an actual required member.
+        exception_state.ThrowTypeError(String::Format(
+            "Required member 'data' is missing for plane %u.", i));
+        return nullptr;
+      }
+    }
+  }
+
+  for (wtf_size_t i = 0; i < planes.size(); ++i) {
+    DOMArrayPiece buffer(planes[i]->hasData() ? planes[i]->data()
+                                              : planes[i]->src());
 
     size_t offset = 0;
     if (planes[i]->hasOffset())
@@ -596,7 +611,8 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
   // Copy data.
   for (wtf_size_t i = 0; i < planes.size(); ++i) {
-    DOMArrayPiece buffer(planes[i]->src());
+    DOMArrayPiece buffer(planes[i]->hasData() ? planes[i]->data()
+                                              : planes[i]->src());
     size_t offset = 0;
     if (planes[i]->hasOffset())
       offset = planes[i]->offset();
@@ -681,9 +697,9 @@ uint32_t VideoFrame::codedHeight() const {
   return local_frame->coded_size().height();
 }
 
-VideoRegion* VideoFrame::codedRegion() const {
+VideoFrameRegion* VideoFrame::codedRegion() const {
   auto local_frame = handle_->frame();
-  auto* region = MakeGarbageCollected<VideoRegion>();
+  auto* region = MakeGarbageCollected<VideoFrameRegion>();
   region->setLeft(0);
   region->setTop(0);
   if (local_frame) {
@@ -696,9 +712,9 @@ VideoRegion* VideoFrame::codedRegion() const {
   return region;
 }
 
-VideoRegion* VideoFrame::visibleRegion() const {
+VideoFrameRegion* VideoFrame::visibleRegion() const {
   auto local_frame = handle_->frame();
-  auto* region = MakeGarbageCollected<VideoRegion>();
+  auto* region = MakeGarbageCollected<VideoFrameRegion>();
   if (local_frame) {
     region->setLeft(local_frame->visible_rect().x());
     region->setTop(local_frame->visible_rect().y());
@@ -787,6 +803,23 @@ base::Optional<uint64_t> VideoFrame::duration() const {
   if (!local_frame || !local_frame->metadata().frame_duration.has_value())
     return base::nullopt;
   return local_frame->metadata().frame_duration->InMicroseconds();
+}
+
+uint32_t VideoFrame::allocationSize(VideoFrameReadIntoOptions* options,
+                                    ExceptionState& exception_state) {
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "allocationSize() is not implemented.");
+  return 0;
+}
+
+ScriptPromise VideoFrame::readInto(
+    ScriptState* script_state,
+    const ArrayBufferOrArrayBufferView& destination,
+    VideoFrameReadIntoOptions* options,
+    ExceptionState& exception_state) {
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "readInto() is not implemented.");
+  return ScriptPromise();
 }
 
 void VideoFrame::close() {

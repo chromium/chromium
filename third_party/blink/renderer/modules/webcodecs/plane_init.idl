@@ -5,7 +5,11 @@
 // https://github.com/WICG/web-codecs
 
 dictionary PlaneInit {
-  required BufferSource src;
+  // TODO(sandersd): Mark as required when |src| is removed.
+  BufferSource data;
   [EnforceRange] unsigned long offset;
   required [EnforceRange] unsigned long stride;
+
+  // DEPRECATED: Use |data|.
+  BufferSource src;
 };

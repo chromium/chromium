@@ -23,7 +23,7 @@ dictionary VideoDecoderConfig {
   [EnforceRange] unsigned long codedHeight;
 
   // Hint about the visible region of the content.
-  VideoRegion visibleRegion;
+  VideoFrameRegion visibleRegion;
 
   // Hint about the pixel aspect ratio of the content.
   [EnforceRange] unsigned long displayWidth;
