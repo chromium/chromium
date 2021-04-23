@@ -204,12 +204,18 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
                          TRACE_EVENT_FLAG_FLOW_OUT, "step",
                          "SubmitHitTestData");
 
+  recordreplay::Assert("AsyncLayerTreeFrameSink::SubmitCompositorFrame #1");
+
   if (recordreplay::IsRecordingOrReplaying()) {
     RecordReplaySubmitCompositorFrame(local_surface_id_, frame);
   }
 
+  recordreplay::Assert("AsyncLayerTreeFrameSink::SubmitCompositorFrame #2");
+
   compositor_frame_sink_ptr_->SubmitCompositorFrame(
       local_surface_id_, std::move(frame), std::move(hit_test_region_list), 0);
+
+  recordreplay::Assert("AsyncLayerTreeFrameSink::SubmitCompositorFrame Done");
 }
 
 void AsyncLayerTreeFrameSink::DidNotProduceFrame(
