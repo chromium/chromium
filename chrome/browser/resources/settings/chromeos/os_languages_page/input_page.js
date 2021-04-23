@@ -266,6 +266,14 @@ Polymer({
   /** @private */
   onAddSpellcheckLanguagesDialogClose_() {
     this.showAddSpellcheckLanguagesDialog_ = false;
+
+    if (this.languages.spellCheckOnLanguages.length === 0) {
+      // User closed the dialog right after turning on spell check without any
+      // existing spell check languages - turn off spell checking if this is
+      // the case.
+      this.setPrefValue('browser.enable_spellchecking', false);
+    }
+
     // Because #addSpellcheckLanguages is not statically created (as it is
     // within a <template is="dom-if">), we need to use
     // this.$$("#addSpellcheckLanguages") instead of
@@ -332,6 +340,17 @@ Polymer({
    */
   onSpellcheckToggleChange_(e) {
     this.languagesMetricsProxy_.recordToggleSpellCheck(e.target.checked);
+
+    if (this.languageSettingsV2Update2Enabled_ && e.target.checked &&
+        this.languages.spellCheckOnLanguages.length === 0) {
+      // In LSV2 Update 2, we never want to enable spell check without the user
+      // having a spell check language. When this happens, we prompt the user to
+      // enable a spell check language now. If the user dismisses this dialog
+      // without adding a spell check language, we disable spell check again
+      // (see |onAddSpellcheckLanguagesDialogClose_|).
+      // TODO(b/185947656): Determine a spell check language automatically.
+      this.onAddSpellcheckLanguagesClick_();
+    }
   },
 
   /**

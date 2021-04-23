@@ -1100,6 +1100,10 @@ suite('input page', () => {
       assertTrue(newSpellCheckList[1].textContent.includes('Norwegian Bokmål'));
     });
 
+    // TODO(crbug.com/1201540): Add test to ensure that it is impossible to
+    //     enable spell check without a spell check language added (i.e. the
+    //     "add spell check languages" dialog appears when turning it on).
+
     test('error handling', () => {
       // Enable Swahili so we have two languages for testing.
       languageHelper.setPrefValue('spellcheck.dictionaries', ['en-US', 'sw']);
