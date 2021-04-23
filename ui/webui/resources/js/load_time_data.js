@@ -16,8 +16,9 @@
 
 // #import {assert} from './assert.m.js';
 
+/** @type {!LoadTimeData} */
 // eslint-disable-next-line no-var
-/* #export */ /** @type {!LoadTimeData} */ var loadTimeData;
+/* #export */ var loadTimeData;
 
 class LoadTimeData {
   constructor() {
