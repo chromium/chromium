@@ -460,6 +460,8 @@ ChromeDownloadManagerDelegateTest::PrepareDownloadItemForMixedContent(
   std::vector<GURL> url_chain;
   if (redirect_url.has_value())
     url_chain.push_back(redirect_url.value());
+  // The redirect chain always contains the final destination at the end.
+  url_chain.push_back(download_url);
   std::unique_ptr<download::MockDownloadItem> download_item =
       CreateActiveDownloadItem(0);
   ON_CALL(*download_item, GetURL())
@@ -506,7 +508,7 @@ void ExpectExtensionOnlyIn(const InsecureDownloadExtensions& ext,
 }
 
 // Determine download target for |download_item| after enabling active content
-// download blocking with the |parameers| enabled. Verify |extension|,
+// download blocking with the |parameters| enabled. Verify |extension|,
 // |interrupt_reason| and |mixed_content_status|. Used by
 // BlockedAsActiveContent_ tests.
 void ChromeDownloadManagerDelegateTest::VerifyMixedContentExtensionOverride(
@@ -928,6 +930,42 @@ TEST_F(ChromeDownloadManagerDelegateTest,
       InsecureDownloadExtensions::kUnknown,
       download::DOWNLOAD_INTERRUPT_REASON_NONE,
       download::DownloadItem::MixedContentStatus::SAFE);
+}
+
+// Verify that downloads ending in a blob URL are considered secure.
+TEST_F(ChromeDownloadManagerDelegateTest,
+       BlockedAsActiveContent_BlobConsideredSecure) {
+  // Verifies blob URLs are not blocked for active content blocking.
+  const GURL kRedirectUrl("https://example.org/");
+  const GURL kFinalUrl("blob:null/xyz.foo");
+  const auto kSecureOrigin = Origin::Create(GURL("https://example.org"));
+
+  DetermineDownloadTargetResult result;
+  base::test::ScopedFeatureList feature_list;
+  base::HistogramTester histograms;
+
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      PrepareDownloadItemForMixedContent(kFinalUrl, kSecureOrigin,
+                                         kRedirectUrl);
+
+  feature_list.InitAndEnableFeature(features::kTreatUnsafeDownloadsAsActive);
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  // DownloadTargetDeterminer looks for plugin handlers if there's an
+  // extension.
+  content::PluginService::GetInstance()->Init();
+#endif
+
+  DetermineDownloadTarget(download_item.get(), &result);
+  EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE, result.interrupt_reason);
+  EXPECT_EQ(download::DownloadItem::MixedContentStatus::SAFE,
+            result.mixed_content_status);
+  histograms.ExpectUniqueSample(
+      kInsecureDownloadHistogramName,
+      InsecureDownloadSecurityStatus::kInitiatorSecureFileSecure, 1);
+  ExpectExtensionOnlyIn(InsecureDownloadExtensions::kUnknown,
+                        kInsecureDownloadExtensionInitiatorSecure,
+                        kInsecureDownloadHistogramTargetSecure, histograms);
 }
 
 TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_SilentBlock) {
