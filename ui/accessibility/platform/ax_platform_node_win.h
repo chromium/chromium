@@ -286,6 +286,11 @@ enum {
   UMA_API_ADVISE_EVENT_ADDED = 248,
   UMA_API_ADVISE_EVENT_REMOVED = 249,
   UMA_API_ITEMCONTAINER_FINDITEMBYPROPERTY = 250,
+  UMA_API_ANNOTATION_GET_ANNOTATIONTYPEID = 251,
+  UMA_API_ANNOTATION_GET_ANNOTATIONTYPENAME = 252,
+  UMA_API_ANNOTATION_GET_AUTHOR = 253,
+  UMA_API_ANNOTATION_GET_DATETIME = 254,
+  UMA_API_ANNOTATION_GET_TARGET = 255,
 
   // This must always be the last enum. It's okay for its value to
   // increase, but none of the other enum values may change.
@@ -366,6 +371,7 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
                         public IAccessibleTable2,
                         public IAccessibleTableCell,
                         public IAccessibleValue,
+                        public IAnnotationProvider,
                         public IExpandCollapseProvider,
                         public IGridItemProvider,
                         public IGridProvider,
@@ -408,6 +414,7 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
     COM_INTERFACE_ENTRY(IAccessibleTableCell)
     COM_INTERFACE_ENTRY(IAccessibleValue)
     COM_INTERFACE_ENTRY(IChromeAccessible)
+    COM_INTERFACE_ENTRY(IAnnotationProvider)
     COM_INTERFACE_ENTRY(IExpandCollapseProvider)
     COM_INTERFACE_ENTRY(IGridItemProvider)
     COM_INTERFACE_ENTRY(IGridProvider)
@@ -591,6 +598,20 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
 
   IFACEMETHODIMP GetIAccessiblePair(IAccessible** accessible,
                                     LONG* child_id) override;
+
+  //
+  // IAnnotationProvider methods.
+  //
+
+  IFACEMETHODIMP get_AnnotationTypeId(int* type_id) override;
+
+  IFACEMETHODIMP get_AnnotationTypeName(BSTR* type_name) override;
+
+  IFACEMETHODIMP get_Author(BSTR* author) override;
+
+  IFACEMETHODIMP get_DateTime(BSTR* date_time) override;
+
+  IFACEMETHODIMP get_Target(IRawElementProviderSimple** target) override;
 
   //
   // IExpandCollapseProvider methods.
@@ -1219,7 +1240,7 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
  private:
   bool IsWebAreaForPresentationalIframe();
   bool ShouldNodeHaveFocusableState(const AXNodeData& data) const;
-
+  int GetAnnotationTypeImpl() const;
   // Get the value attribute as a Bstr, this means something different depending
   // on the type of element being queried. (e.g. kColorWell uses kColorValue).
   static BSTR GetValueAttributeAsBstr(AXPlatformNodeWin* target);

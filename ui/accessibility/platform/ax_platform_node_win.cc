@@ -1776,6 +1776,104 @@ IFACEMETHODIMP AXPlatformNodeWin::GetIAccessiblePair(IAccessible** accessible,
 }
 
 //
+// IAnnotationProvider methods.
+//
+
+IFACEMETHODIMP AXPlatformNodeWin::get_AnnotationTypeId(int* type_id) {
+  WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ANNOTATION_GET_ANNOTATIONTYPEID);
+  UIA_VALIDATE_CALL_1_ARG(type_id);
+
+  *type_id = GetAnnotationTypeImpl();
+  return S_OK;
+}
+
+IFACEMETHODIMP AXPlatformNodeWin::get_AnnotationTypeName(BSTR* type_name) {
+  WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ANNOTATION_GET_ANNOTATIONTYPENAME);
+  UIA_VALIDATE_CALL_1_ARG(type_name);
+
+  // According to UIA spec, for well known AnnotationType, we do not need to
+  // implement the type name, since UI Automation can provide a default name, so
+  // we do not set |type_name|.
+  // But for unknown type, we should provide a name, so we set |type_name| to
+  // the localized role description.
+  // https://docs.microsoft.com/en-us/windows/win32/winauto/uiauto-implementingannotation
+  if (AnnotationType_Unknown == GetAnnotationTypeImpl())
+    *type_name = SysAllocString(base::as_wcstr(GetRoleDescription()));
+
+  return S_OK;
+}
+
+IFACEMETHODIMP AXPlatformNodeWin::get_Author(BSTR* author) {
+  WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ANNOTATION_GET_AUTHOR);
+  UIA_VALIDATE_CALL_1_ARG(author);
+  // This method is optional, and currently does not have a mapping. So we
+  // return S_OK with empty string.
+  *author = SysAllocString(L"");
+  return S_OK;
+}
+
+IFACEMETHODIMP AXPlatformNodeWin::get_DateTime(BSTR* date_time) {
+  WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ANNOTATION_GET_DATETIME);
+  UIA_VALIDATE_CALL_1_ARG(date_time);
+  // This method is optional, and currently does not have a mapping. So we
+  // return S_OK with empty string.
+  *date_time = SysAllocString(L"");
+  return S_OK;
+}
+
+IFACEMETHODIMP AXPlatformNodeWin::get_Target(
+    IRawElementProviderSimple** target) {
+  WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ANNOTATION_GET_TARGET);
+  UIA_VALIDATE_CALL_1_ARG(target);
+  std::set<AXPlatformNode*> reverse_relations =
+      GetDelegate()->GetReverseRelations(
+          ax::mojom::IntListAttribute::kDetailsIds);
+
+  // If there is no reverse relation target, IAnnotationProvider
+  // should not be exposed in the first place.
+  DCHECK(reverse_relations.size() > 0);
+  AXPlatformNodeWin* target_node;
+  auto iter = reverse_relations.begin();
+  target_node = static_cast<AXPlatformNodeWin*>(*iter);
+
+  // Since this method is expected to return only one target, if the node has
+  // multiple targets, we default to return the first one.
+  // Since |reverse_relations| does not guarantee the order of the nodes. We
+  // have to compare the nodes to find the first target node.
+  ++iter;
+  while (iter != reverse_relations.end()) {
+    AXPlatformNodeWin* lhs = static_cast<AXPlatformNodeWin*>(*iter);
+    if (lhs->CompareTo(*target_node) < 0)
+      target_node = lhs;
+    ++iter;
+  }
+
+  return target_node->QueryInterface(IID_PPV_ARGS(target));
+}
+
+int AXPlatformNodeWin::GetAnnotationTypeImpl() const {
+  switch (GetData().role) {
+    case ax::mojom::Role::kComment:
+      return AnnotationType_Comment;
+    case ax::mojom::Role::kDocEndnote:
+      return AnnotationType_Endnote;
+    case ax::mojom::Role::kDocFootnote:
+      return AnnotationType_Footnote;
+    case ax::mojom::Role::kMark:
+      return AnnotationType_Highlighted;
+    case ax::mojom::Role::kGroup:
+    case ax::mojom::Role::kRegion: {
+      if (DescendantHasComment(this))
+        return AnnotationType_Comment;
+
+      FALLTHROUGH;
+    }
+    default:
+      return AnnotationType_Unknown;
+  }
+}
+
+//
 // IExpandCollapseProvider implementation.
 //
 
@@ -6640,7 +6738,7 @@ LONG AXPlatformNodeWin::ComputeUIAControlType() {  // NOLINT(runtime/int)
 
     case ax::mojom::Role::kComment:
     case ax::mojom::Role::kSuggestion:
-      return ROLE_SYSTEM_GROUPING;
+      return UIA_GroupControlTypeId;
 
     case ax::mojom::Role::kApplication:
       return UIA_PaneControlTypeId;
@@ -7939,6 +8037,11 @@ AXPlatformNodeWin::GetPatternProviderFactoryMethod(PATTERNID pattern_id) {
   const AXNodeData& data = GetData();
 
   switch (pattern_id) {
+    case UIA_AnnotationPatternId:
+      if (IsStructuredAnnotation()) {
+        return &PatternProvider<IAnnotationProvider>;
+      }
+      break;
     case UIA_ExpandCollapsePatternId:
       if (data.SupportsExpandCollapse()) {
         return &PatternProvider<IExpandCollapseProvider>;
@@ -8051,7 +8154,6 @@ AXPlatformNodeWin::GetPatternProviderFactoryMethod(PATTERNID pattern_id) {
       break;
 
     // Not currently implemented.
-    case UIA_AnnotationPatternId:
     case UIA_CustomNavigationPatternId:
     case UIA_DockPatternId:
     case UIA_DragPatternId:

@@ -5074,6 +5074,273 @@ TEST_F(AXPlatformNodeWinTest, UIANavigate) {
                nullptr);
 }
 
+TEST_F(AXPlatformNodeWinTest, IAnnotationProvider) {
+  // rootWebArea
+  // ++mark detailsIds=comment, footnote, definition
+  // ++++staticText name='highlighted 1'
+  // ++comment
+  // ++++staticText name='comment 1'
+  // ++docFootnote
+  // ++++staticText name="footnote"
+  // ++definition
+  // ++button
+
+  AXNodeData root;
+  AXNodeData highlighted1;
+  AXNodeData highlighted1_text;
+  AXNodeData comment1;
+  AXNodeData comment1_text;
+  AXNodeData footnote;
+  AXNodeData footnote_text;
+  AXNodeData definition;
+  AXNodeData button;
+
+  root.id = 1;
+  highlighted1.id = 2;
+  highlighted1_text.id = 3;
+  comment1.id = 4;
+  comment1_text.id = 5;
+  footnote.id = 6;
+  footnote_text.id = 7;
+  definition.id = 8;
+  button.id = 9;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.SetName("root");
+  root.child_ids = {highlighted1.id, comment1.id, footnote.id, definition.id,
+                    button.id};
+
+  highlighted1.role = ax::mojom::Role::kMark;
+  highlighted1.AddIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds,
+                                   {comment1.id, footnote.id, definition.id});
+  highlighted1.child_ids = {highlighted1_text.id};
+
+  highlighted1_text.role = ax::mojom::Role::kStaticText;
+  highlighted1_text.SetName("highlighted 1");
+
+  comment1.role = ax::mojom::Role::kComment;
+  comment1.child_ids = {comment1_text.id};
+
+  comment1_text.role = ax::mojom::Role::kStaticText;
+  comment1_text.SetName("comment 1");
+
+  footnote.role = ax::mojom::Role::kDocFootnote;
+  footnote.child_ids = {footnote_text.id};
+
+  footnote_text.role = ax::mojom::Role::kStaticText;
+  footnote_text.SetName("highligthed 2");
+
+  definition.role = ax::mojom::Role::kDefinition;
+  button.role = ax::mojom::Role::kButton;
+
+  Init(root, highlighted1, highlighted1_text, comment1, comment1_text, footnote,
+       footnote_text, definition, button);
+
+  ComPtr<IRawElementProviderSimple> highlighted1_node =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(
+          GetRootAsAXNode()->children()[0]);
+  ComPtr<IRawElementProviderSimple> comment1_node =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(
+          GetRootAsAXNode()->children()[1]);
+  ComPtr<IRawElementProviderSimple> footnote_node =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(
+          GetRootAsAXNode()->children()[2]);
+  ComPtr<IRawElementProviderSimple> definition_node =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(
+          GetRootAsAXNode()->children()[3]);
+  ComPtr<IRawElementProviderSimple> button_node =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(
+          GetRootAsAXNode()->children()[4]);
+  ComPtr<IAnnotationProvider> annotation_provider;
+  ComPtr<IRawElementProviderSimple> target;
+  int annotation_type;
+  ScopedBstr name;
+
+  {
+    // |highlighted1_node| with Role::kMark should not support
+    // IAnnotationProvider, since it does not have a relation back to the
+    // target.
+    EXPECT_HRESULT_SUCCEEDED(highlighted1_node->GetPatternProvider(
+        UIA_AnnotationPatternId, &annotation_provider));
+    ASSERT_EQ(nullptr, annotation_provider.Get());
+    annotation_provider.Reset();
+  }
+
+  {
+    // |comment1_node| with Role::kComment should support IAnnotationProvider.
+    EXPECT_HRESULT_SUCCEEDED(comment1_node->GetPatternProvider(
+        UIA_AnnotationPatternId, &annotation_provider));
+    ASSERT_NE(nullptr, annotation_provider.Get());
+    EXPECT_HRESULT_SUCCEEDED(
+        annotation_provider->get_AnnotationTypeId(&annotation_type));
+    EXPECT_EQ(AnnotationType_Comment, annotation_type);
+    EXPECT_HRESULT_SUCCEEDED(
+        annotation_provider->get_AnnotationTypeName(name.Receive()));
+    // For common annotation type such as Comment, we return empty string for
+    // the type name, since UIA will provide a default name.
+    EXPECT_EQ(nullptr, name.Get());
+
+    // Retrieve the target from |comment1_node| and verify that it is
+    // |highlighted1_node|.
+    EXPECT_HRESULT_SUCCEEDED(annotation_provider->get_Target(&target));
+    EXPECT_EQ(highlighted1_node.Get(), target.Get());
+    annotation_provider.Reset();
+    target.Reset();
+    name.Release();
+  }
+
+  {
+    // |footnote_node| with Role::kDocFootnote should support
+    // IAnnotationProvider.
+    EXPECT_HRESULT_SUCCEEDED(footnote_node->GetPatternProvider(
+        UIA_AnnotationPatternId, &annotation_provider));
+    ASSERT_NE(nullptr, annotation_provider.Get());
+    EXPECT_HRESULT_SUCCEEDED(
+        annotation_provider->get_AnnotationTypeId(&annotation_type));
+    EXPECT_EQ(AnnotationType_Footnote, annotation_type);
+    EXPECT_HRESULT_SUCCEEDED(
+        annotation_provider->get_AnnotationTypeName(name.Receive()));
+    // For common annotation type such as Footnote, we return empty string for
+    // the type name, since UIA will provide a default name.
+    EXPECT_EQ(nullptr, name.Get());
+
+    // Retrieve the target from |footnote_node| and verify that it is
+    // |highlighted1_node|.
+    EXPECT_HRESULT_SUCCEEDED(annotation_provider->get_Target(&target));
+    EXPECT_EQ(highlighted1_node.Get(), target.Get());
+    annotation_provider.Reset();
+    target.Reset();
+    name.Release();
+  }
+
+  {
+    // |definition_node| with Role::kDefinition should support
+    // IAnnotationProvider.
+    EXPECT_HRESULT_SUCCEEDED(definition_node->GetPatternProvider(
+        UIA_AnnotationPatternId, &annotation_provider));
+    ASSERT_NE(nullptr, annotation_provider.Get());
+    // AnnotationType for Role::kDefinition is currently not implemented, so map
+    // it to AnnotationType_Unknown.
+    EXPECT_HRESULT_SUCCEEDED(
+        annotation_provider->get_AnnotationTypeId(&annotation_type));
+    EXPECT_EQ(AnnotationType_Unknown, annotation_type);
+    EXPECT_HRESULT_SUCCEEDED(
+        annotation_provider->get_AnnotationTypeName(name.Receive()));
+    // Role::kDefinition has AnnotationType_Unknown, we explicitly return the
+    // type name and should be "definition".
+    EXPECT_STREQ(L"definition", name.Get());
+
+    // Retrieve the target from |definition_node| and verify that it is
+    // |highlighted_node|.
+    EXPECT_HRESULT_SUCCEEDED(annotation_provider->get_Target(&target));
+    EXPECT_EQ(highlighted1_node.Get(), target.Get());
+    annotation_provider.Reset();
+    target.Reset();
+    name.Release();
+  }
+
+  {
+    // |button_node| with Role::kButton should not support IAnnotationProvider.
+    EXPECT_HRESULT_SUCCEEDED(button_node->GetPatternProvider(
+        UIA_AnnotationPatternId, &annotation_provider));
+    ASSERT_EQ(nullptr, annotation_provider.Get());
+  }
+}
+
+TEST_F(AXPlatformNodeWinTest, IAnnotationProviderMultipleTargets) {
+  // rootWebArea
+  // ++mark detailsIds=comment
+  // ++++staticText name='highlighted 1'
+  // ++mark detailsIds=comment
+  // ++++staticText name="highlighted 2"
+  // ++docEndnote detailsIds=comment
+  // ++++staticText name="endnote"
+  // ++comment
+  // ++++staticText name='comment 1'
+
+  AXNodeData root;
+  AXNodeData highlighted1;
+  AXNodeData highlighted1_text;
+  AXNodeData highlighted2;
+  AXNodeData highlighted2_text;
+  AXNodeData endnote;
+  AXNodeData endnote_text;
+  AXNodeData comment1;
+  AXNodeData comment1_text;
+
+  root.id = 1;
+  highlighted1.id = 2;
+  highlighted1_text.id = 3;
+  highlighted2.id = 4;
+  highlighted2_text.id = 5;
+  endnote.id = 6;
+  endnote_text.id = 7;
+  comment1.id = 8;
+  comment1_text.id = 9;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.SetName("root");
+  root.child_ids = {highlighted1.id, highlighted2.id, endnote.id, comment1.id};
+
+  highlighted1.role = ax::mojom::Role::kMark;
+  highlighted1.AddIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds,
+                                   {comment1.id});
+  highlighted1.child_ids = {highlighted1_text.id};
+
+  highlighted1_text.role = ax::mojom::Role::kStaticText;
+  highlighted1_text.SetName("highlighted 1");
+
+  highlighted2.role = ax::mojom::Role::kMark;
+  highlighted2.AddIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds,
+                                   {comment1.id});
+  highlighted2.child_ids = {highlighted2_text.id};
+
+  highlighted2_text.role = ax::mojom::Role::kStaticText;
+  highlighted2_text.SetName("highlighted 2");
+
+  endnote.role = ax::mojom::Role::kDocEndnote;
+  endnote.AddIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds,
+                              {comment1.id});
+  endnote.child_ids = {endnote_text.id};
+
+  endnote_text.role = ax::mojom::Role::kStaticText;
+  endnote_text.SetName("endnote");
+
+  comment1.role = ax::mojom::Role::kComment;
+  comment1.child_ids = {comment1_text.id};
+
+  comment1_text.role = ax::mojom::Role::kStaticText;
+  comment1_text.SetName("comment 1");
+
+  Init(root, highlighted1, highlighted1_text, highlighted2, highlighted2_text,
+       endnote, endnote_text, comment1, comment1_text);
+
+  ComPtr<IRawElementProviderSimple> highlighted1_node =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(
+          GetRootAsAXNode()->children()[0]);
+  ComPtr<IRawElementProviderSimple> comment1_node =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(
+          GetRootAsAXNode()->children()[3]);
+
+  ComPtr<IAnnotationProvider> annotation_provider;
+  ComPtr<IRawElementProviderSimple> target;
+  int annotation_type;
+
+  // |comment1_node| with Role::kComment should support IAnnotationProvider.
+  EXPECT_HRESULT_SUCCEEDED(comment1_node->GetPatternProvider(
+      UIA_AnnotationPatternId, &annotation_provider));
+  ASSERT_NE(nullptr, annotation_provider.Get());
+  EXPECT_HRESULT_SUCCEEDED(
+      annotation_provider->get_AnnotationTypeId(&annotation_type));
+  EXPECT_EQ(AnnotationType_Comment, annotation_type);
+
+  // |comment1_node| is set up as the annotation for both |highlighted1_node|
+  // and |highlighted2_node|, which means it has two targets. Since get_Target
+  // only returns one target, verify that it is |highlighted1_node|.
+  EXPECT_HRESULT_SUCCEEDED(annotation_provider->get_Target(&target));
+  EXPECT_EQ(highlighted1_node.Get(), target.Get());
+}
+
 TEST_F(AXPlatformNodeWinTest, ISelectionProviderCanSelectMultipleDefault) {
   Init(BuildListBox(/*option_1_is_selected*/ false,
                     /*option_2_is_selected*/ false,

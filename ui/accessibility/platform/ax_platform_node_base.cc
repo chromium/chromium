@@ -37,7 +37,7 @@ base::LazyInstance<std::map<ax::mojom::Event, base::RepeatingClosure>>::
     DestructorAtExit g_on_notify_event_for_testing;
 
 // Check for descendant comment, using limited depth first search.
-bool FindDescendantRoleWithMaxDepth(AXPlatformNodeBase* node,
+bool FindDescendantRoleWithMaxDepth(const AXPlatformNodeBase* node,
                                     ax::mojom::Role descendant_role,
                                     int max_depth,
                                     int max_children_to_check) {
@@ -594,6 +594,19 @@ bool AXPlatformNodeBase::SetHypertextSelection(int start_offset,
 
 bool AXPlatformNodeBase::IsPlatformDocument() const {
   return ui::IsPlatformDocument(GetData().role);
+}
+
+bool AXPlatformNodeBase::IsStructuredAnnotation() const {
+  // The node represents a structured annotation if it can trace back to a
+  // target node that is being annotated.
+  std::set<AXPlatformNode*> reverse_relations =
+      GetDelegate()->GetReverseRelations(
+          ax::mojom::IntListAttribute::kDetailsIds);
+
+  if (reverse_relations.empty())
+    return false;
+
+  return true;
 }
 
 bool AXPlatformNodeBase::IsSelectionItemSupported() const {
@@ -2258,12 +2271,7 @@ std::string AXPlatformNodeBase::ComputeDetailsRoles() const {
         break;
       case ax::mojom::Role::kGroup:
       case ax::mojom::Role::kRegion: {
-        // These should still report comment if there are comments inside them.
-        constexpr int kMaxChildrenToCheck = 8;
-        constexpr int kMaxDepthToCheck = 4;
-        if (FindDescendantRoleWithMaxDepth(
-                detail_object, ax::mojom::Role::kComment, kMaxDepthToCheck,
-                kMaxChildrenToCheck)) {
+        if (DescendantHasComment(detail_object)) {
           details_roles_set.insert("comment");
           break;
         }
@@ -2281,6 +2289,18 @@ std::string AXPlatformNodeBase::ComputeDetailsRoles() const {
   std::vector<std::string> details_roles_vector(details_roles_set.begin(),
                                                 details_roles_set.end());
   return base::JoinString(details_roles_vector, " ");
+}
+
+// static
+bool AXPlatformNodeBase::DescendantHasComment(const AXPlatformNodeBase* node) {
+  // These should still report comment if there are comments inside them.
+  constexpr int kMaxChildrenToCheck = 8;
+  constexpr int kMaxDepthToCheck = 4;
+  if (FindDescendantRoleWithMaxDepth(node, ax::mojom::Role::kComment,
+                                     kMaxDepthToCheck, kMaxChildrenToCheck)) {
+    return true;
+  }
+  return false;
 }
 
 int AXPlatformNodeBase::GetMaxSelectableItems() const {

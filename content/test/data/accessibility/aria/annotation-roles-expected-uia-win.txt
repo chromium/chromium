@@ -1,6 +1,6 @@
 Document LocalizedControlType='document'
-++Name='comment'
-++Name='suggestion'
+++Group LocalizedControlType='comment' Name='comment'
+++Group LocalizedControlType='group' Name='suggestion'
 ++Group LocalizedControlType='group' IsControlElement=false
 ++++Text Name='This is '
 ++++Text LocalizedControlType='highlight'

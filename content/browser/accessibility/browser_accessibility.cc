@@ -2024,6 +2024,9 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
     case ax::mojom::Role::kColorWell:
       return content_client->GetLocalizedString(IDS_AX_ROLE_COLOR_WELL);
 
+    case ax::mojom::Role::kComment:
+      return content_client->GetLocalizedString(IDS_AX_ROLE_COMMENT);
+
     case ax::mojom::Role::kContentInfo:
       return content_client->GetLocalizedString(IDS_AX_ROLE_CONTENT_INFO);
 
@@ -2046,8 +2049,17 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
       return {};
     }
 
+    case ax::mojom::Role::kDefinition:
+      return content_client->GetLocalizedString(IDS_AX_ROLE_DEFINITION);
+
     case ax::mojom::Role::kDetails:
       return content_client->GetLocalizedString(IDS_AX_ROLE_DETAILS);
+
+    case ax::mojom::Role::kDocEndnote:
+      return content_client->GetLocalizedString(IDS_AX_ROLE_DOC_ENDNOTE);
+
+    case ax::mojom::Role::kDocFootnote:
+      return content_client->GetLocalizedString(IDS_AX_ROLE_DOC_FOOTNOTE);
 
     case ax::mojom::Role::kEmphasis:
       return content_client->GetLocalizedString(IDS_AX_ROLE_EMPHASIS);

@@ -713,6 +713,9 @@ std::u16string TestAXNodeWrapper::GetLocalizedStringForRoleDescription() const {
     case ax::mojom::Role::kColorWell:
       return u"color picker";
 
+    case ax::mojom::Role::kComment:
+      return u"comment";
+
     case ax::mojom::Role::kContentInfo:
       return u"content information";
 
@@ -732,8 +735,17 @@ std::u16string TestAXNodeWrapper::GetLocalizedStringForRoleDescription() const {
       return {};
     }
 
+    case ax::mojom::Role::kDefinition:
+      return u"definition";
+
     case ax::mojom::Role::kDetails:
       return u"details";
+
+    case ax::mojom::Role::kDocEndnote:
+      return u"endnote";
+
+    case ax::mojom::Role::kDocFootnote:
+      return u"footnote";
 
     case ax::mojom::Role::kEmphasis:
       return u"emphasis";

@@ -48,6 +48,8 @@ class AccessibilityTreeFormatterUia : public ui::AXTreeFormatterBase {
                      int root_x,
                      int root_y,
                      base::DictionaryValue* dict) const;
+  void AddAnnotationProperties(IUIAutomationElement* node,
+                               base::DictionaryValue* dict) const;
   void AddExpandCollapseProperties(IUIAutomationElement* node,
                                    base::DictionaryValue* dict) const;
   void AddGridProperties(IUIAutomationElement* node,
