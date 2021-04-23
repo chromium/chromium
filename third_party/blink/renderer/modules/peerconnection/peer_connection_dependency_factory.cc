@@ -228,7 +228,7 @@ class PeerConnectionStaticDeps {
 };
 
 PeerConnectionStaticDeps& StaticDeps() {
-  DEFINE_STATIC_LOCAL(PeerConnectionStaticDeps, instance, ());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(PeerConnectionStaticDeps, instance, ());
   return instance;
 }
 
