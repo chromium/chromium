@@ -6,5 +6,5 @@ AXWebArea
 ++++AXGroup AXTitle='<newline>'
 ++++AXTextArea AXValue='But this one is.'
 ++++++AXStaticText AXValue='But this one is.'
-++++AXGroup
+++++AXTextArea AXValue='So is this one.'
 ++++++AXStaticText AXValue='So is this one.'

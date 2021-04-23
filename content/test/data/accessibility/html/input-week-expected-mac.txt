@@ -5,8 +5,6 @@ AXWebArea AXRoleDescription='HTML content'
 ++++++++AXGroup AXRoleDescription='group'
 ++++++++++AXStaticText AXRoleDescription='text' AXValue='Week '
 ++++++++++AXIncrementor AXDescription='Week' AXRoleDescription='stepper' AXValue=0
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='--'
 ++++++++++AXStaticText AXRoleDescription='text' AXValue=', '
 ++++++++++AXIncrementor AXDescription='Year' AXRoleDescription='stepper' AXValue=0
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='----'
 ++++++AXPopUpButton AXDescription='Show week picker' AXRoleDescription='pop up button'

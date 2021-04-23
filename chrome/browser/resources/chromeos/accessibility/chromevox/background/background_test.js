@@ -2435,43 +2435,42 @@ TEST_F('ChromeVoxBackgroundTest', 'NoFocusTalkBackEnabled', function() {
   });
 });
 
-TEST_F('ChromeVoxBackgroundTest', 'NavigateOutOfMultiline', function() {
-  const mockFeedback = this.createMockFeedback();
-  this.runWithLoadedTree(
-      `
+TEST_F(
+    'ChromeVoxBackgroundTest', 'DISABLED_NavigateOutOfMultiline', function() {
+      const mockFeedback = this.createMockFeedback();
+      this.runWithLoadedTree(
+          `
     <p>start</p>
     <p>before</p>
-    <div role="textbox" contenteditable>
-      Testing testing<br>
-      one two three
+    <div contenteditable>
+      Testing testing<br>one two three
     </div>
     <p>after</p>
   `,
-      function(root) {
-        const textField = root.find({role: RoleType.TEXT_FIELD});
-        mockFeedback.call(textField.focus.bind(textField))
-            .expectSpeech('Testing testing\none two three')
-            .expectSpeech('Edit text')
-            .call(doCmd('nextLine'))
-            .expectSpeech('one two three')
-            .call(doCmd('nextLine'))
-            .expectSpeech('after')
+          function(root) {
+            const contentEditable =
+                root.find({attributes: {editableRoot: true}});
+            mockFeedback.call(contentEditable.focus.bind(contentEditable))
+                .expectSpeech(/Testing testing\s+one two three/)
+                .call(doCmd('nextLine'))
+                .expectSpeech('one two three')
+                .call(doCmd('nextLine'))
+                .expectSpeech('after')
 
-            // In reverse (explicitly focus, instead of moving to previous line,
-            // because all subsequent commands require the text field be focused
-            // first):
-            .clearPendingOutput()
-            .call(textField.focus.bind(textField))
-            .expectSpeech('Edit text')
-            .call(doCmd('nextLine'))
-            .expectSpeech('one two three')
-            .call(doCmd('previousLine'))
-            .expectSpeech('Testing testing')
-            .call(doCmd('previousLine'))
-            .expectSpeech('before')
-            .replay();
-      });
-});
+                // In reverse (explicitly focus, instead of moving to previous
+                // line, because all subsequent commands require the content
+                // editable to be focused first):
+                .clearPendingOutput()
+                .call(contentEditable.focus.bind(contentEditable))
+                .call(doCmd('nextLine'))
+                .expectSpeech('one two three')
+                .call(doCmd('previousLine'))
+                .expectSpeech('Testing testing')
+                .call(doCmd('previousLine'))
+                .expectSpeech('before')
+                .replay();
+          });
+    });
 
 TEST_F('ChromeVoxBackgroundTest', 'ReadWindowTitle', function() {
   const mockFeedback = this.createMockFeedback();
@@ -3076,9 +3075,10 @@ TEST_F('ChromeVoxBackgroundTest', 'VolumeChanges', function() {
   });
 });
 
-TEST_F('ChromeVoxBackgroundTest', 'WrapTextFieldAtEndOfDoc', function() {
+TEST_F('ChromeVoxBackgroundTest', 'WrapContentEditableAtEndOfDoc', function() {
   const mockFeedback = this.createMockFeedback();
-  const site = `<p>start</p><div role="textbox" contenteditable></div>`;
+  const site = `<p>start</p>
+      <div role="textbox" contenteditable aria-multiline="false"></div>`;
   this.runWithLoadedTree(site, function() {
     mockFeedback.call(doCmd('nextObject'))
         .expectSpeech('Edit text')

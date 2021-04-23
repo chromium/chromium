@@ -4,13 +4,10 @@ AXWebArea AXRoleDescription='HTML content'
 ++++++AXGroup AXRoleDescription='group'
 ++++++++AXGroup AXRoleDescription='group'
 ++++++++++AXIncrementor AXDescription='Month' AXRoleDescription='stepper' AXValue=9
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='09'
 ++++++++++AXStaticText AXRoleDescription='text' AXValue='/'
 ++++++++++AXIncrementor AXDescription='Day' AXRoleDescription='stepper' AXValue=1
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='01'
 ++++++++++AXStaticText AXRoleDescription='text' AXValue='/'
 ++++++++++AXIncrementor AXDescription='Year' AXRoleDescription='stepper' AXValue=2008
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='2008'
 ++++++AXPopUpButton AXDescription='Show date picker' AXRoleDescription='pop up button'
 ++++++AXWebArea AXRoleDescription='HTML content'
 ++++++++AXGroup AXRoleDescription='group'

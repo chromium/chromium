@@ -1190,13 +1190,12 @@ TEST_F('ChromeVoxEditingTest', 'BackwardWordDelete', function() {
       `
     <div
         style='max-width: 5px; overflow-wrap: normal'
-        contenteditable
-        role="textbox">
+        contenteditable>
       this is a test
     </div>
   `,
       function(root) {
-        const input = root.find({role: RoleType.TEXT_FIELD});
+        const input = root.find({attributes: {editableRoot: true}});
         this.listenOnce(input, 'focus', function() {
           mockFeedback.call(this.press(KeyCode.END, {ctrl: true}))
               .expectSpeech('test')
@@ -1210,7 +1209,6 @@ TEST_F('ChromeVoxEditingTest', 'BackwardWordDelete', function() {
               .expectSpeech('is , deleted')
               .expectBraille('this\u00a0mled', {startIndex: 5, endIndex: 5})
               .call(this.press(KeyCode.BACK, {ctrl: true}))
-              .expectSpeech('this , deleted')
               .expectBraille(' mled', {startIndex: 0, endIndex: 0})
               .replay();
         });

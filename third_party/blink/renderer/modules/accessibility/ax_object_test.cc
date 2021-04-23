@@ -42,6 +42,206 @@ TEST_F(AccessibilityTest, IsAncestorOf) {
   EXPECT_FALSE(button->IsAncestorOf(*root));
 }
 
+TEST_F(AccessibilityTest, IsEditableInTextField) {
+  SetBodyInnerHTML(R"HTML(
+      <input type="text" id="input" value="Test">
+      <textarea id="textarea">
+        Test
+      </textarea>)HTML");
+
+  const AXObject* root = GetAXRootObject();
+  ASSERT_NE(nullptr, root);
+  const AXObject* input = GetAXObjectByElementId("input");
+  ASSERT_NE(nullptr, input);
+  const AXObject* input_text =
+      input->FirstChildIncludingIgnored()->UnignoredChildAt(0);
+  ASSERT_NE(nullptr, input_text);
+  ASSERT_EQ(ax::mojom::blink::Role::kStaticText, input_text->RoleValue());
+  const AXObject* textarea = GetAXObjectByElementId("textarea");
+  ASSERT_NE(nullptr, textarea);
+  const AXObject* textarea_text =
+      textarea->FirstChildIncludingIgnored()->UnignoredChildAt(0);
+  ASSERT_NE(nullptr, textarea_text);
+  ASSERT_EQ(ax::mojom::blink::Role::kStaticText, textarea_text->RoleValue());
+
+  EXPECT_FALSE(root->IsEditable());
+  EXPECT_TRUE(input->IsEditable());
+  EXPECT_TRUE(input_text->IsEditable());
+  EXPECT_TRUE(textarea->IsEditable());
+  EXPECT_TRUE(textarea_text->IsEditable());
+
+  EXPECT_FALSE(root->IsEditableRoot());
+  EXPECT_FALSE(input->IsEditableRoot());
+  EXPECT_FALSE(input_text->IsEditableRoot());
+  EXPECT_FALSE(textarea->IsEditableRoot());
+  EXPECT_FALSE(textarea_text->IsEditableRoot());
+
+  EXPECT_FALSE(root->HasContentEditableAttributeSet());
+  EXPECT_FALSE(input->HasContentEditableAttributeSet());
+  EXPECT_FALSE(input_text->HasContentEditableAttributeSet());
+  EXPECT_FALSE(textarea->HasContentEditableAttributeSet());
+  EXPECT_FALSE(textarea_text->HasContentEditableAttributeSet());
+
+  EXPECT_FALSE(root->IsMultiline());
+  EXPECT_FALSE(input->IsMultiline());
+  EXPECT_FALSE(input_text->IsMultiline());
+  EXPECT_TRUE(textarea->IsMultiline());
+  EXPECT_FALSE(textarea_text->IsMultiline());
+
+  EXPECT_FALSE(root->IsRichlyEditable());
+  EXPECT_FALSE(input->IsRichlyEditable());
+  EXPECT_FALSE(input_text->IsRichlyEditable());
+  EXPECT_FALSE(textarea->IsRichlyEditable());
+  EXPECT_FALSE(textarea_text->IsRichlyEditable());
+}
+
+TEST_F(AccessibilityTest, IsEditableInContentEditable) {
+  // On purpose, also add the textbox role to ensure that it won't affect the
+  // contenteditable state.
+  SetBodyInnerHTML(R"HTML(
+      <div role="textbox" contenteditable="true" id="outerContenteditable">
+        Test
+        <div contenteditable="plaintext-only" id="innerContenteditable">
+          Test
+        </div>
+      </div>)HTML");
+
+  const AXObject* root = GetAXRootObject();
+  ASSERT_NE(nullptr, root);
+  const AXObject* outer_contenteditable =
+      GetAXObjectByElementId("outerContenteditable");
+  ASSERT_NE(nullptr, outer_contenteditable);
+  const AXObject* outer_contenteditable_text =
+      outer_contenteditable->UnignoredChildAt(0);
+  ASSERT_NE(nullptr, outer_contenteditable_text);
+  ASSERT_EQ(ax::mojom::blink::Role::kStaticText,
+            outer_contenteditable_text->RoleValue());
+  const AXObject* inner_contenteditable =
+      GetAXObjectByElementId("innerContenteditable");
+  ASSERT_NE(nullptr, inner_contenteditable);
+  const AXObject* inner_contenteditable_text =
+      inner_contenteditable->UnignoredChildAt(0);
+  ASSERT_NE(nullptr, inner_contenteditable_text);
+  ASSERT_EQ(ax::mojom::blink::Role::kStaticText,
+            inner_contenteditable_text->RoleValue());
+
+  EXPECT_FALSE(root->IsEditable());
+  EXPECT_TRUE(outer_contenteditable->IsEditable());
+  EXPECT_TRUE(outer_contenteditable_text->IsEditable());
+  EXPECT_TRUE(inner_contenteditable->IsEditable());
+  EXPECT_TRUE(inner_contenteditable_text->IsEditable());
+
+  EXPECT_FALSE(root->IsEditableRoot());
+  EXPECT_TRUE(outer_contenteditable->IsEditableRoot());
+  EXPECT_FALSE(outer_contenteditable_text->IsEditableRoot());
+  EXPECT_TRUE(inner_contenteditable->IsEditableRoot());
+  EXPECT_FALSE(inner_contenteditable_text->IsEditableRoot());
+
+  EXPECT_FALSE(root->HasContentEditableAttributeSet());
+  EXPECT_TRUE(outer_contenteditable->HasContentEditableAttributeSet());
+  EXPECT_FALSE(outer_contenteditable_text->HasContentEditableAttributeSet());
+  EXPECT_TRUE(inner_contenteditable->HasContentEditableAttributeSet());
+  EXPECT_FALSE(inner_contenteditable_text->HasContentEditableAttributeSet());
+
+  EXPECT_FALSE(root->IsMultiline());
+  EXPECT_TRUE(outer_contenteditable->IsMultiline());
+  EXPECT_FALSE(outer_contenteditable_text->IsMultiline());
+  EXPECT_TRUE(inner_contenteditable->IsMultiline());
+  EXPECT_FALSE(inner_contenteditable_text->IsMultiline());
+
+  EXPECT_FALSE(root->IsRichlyEditable());
+  EXPECT_TRUE(outer_contenteditable->IsRichlyEditable());
+  EXPECT_TRUE(outer_contenteditable_text->IsRichlyEditable());
+  // contenteditable="plaintext-only".
+  EXPECT_FALSE(inner_contenteditable->IsRichlyEditable());
+  EXPECT_FALSE(inner_contenteditable_text->IsRichlyEditable());
+}
+
+TEST_F(AccessibilityTest, IsEditableInCanvasFallback) {
+  SetBodyInnerHTML(R"HTML(
+      <canvas id="canvas" width="300" height="300">
+        <input id="input" value="Test">
+        <div contenteditable="true" id="outerContenteditable">
+          Test
+          <div contenteditable="plaintext-only" id="innerContenteditable">
+            Test
+          </div>
+        </div>
+      </canvas>)HTML");
+
+  const AXObject* root = GetAXRootObject();
+  ASSERT_NE(nullptr, root);
+  const AXObject* canvas = GetAXObjectByElementId("canvas");
+  ASSERT_NE(nullptr, canvas);
+  const AXObject* input = GetAXObjectByElementId("input");
+  ASSERT_NE(nullptr, input);
+  const AXObject* input_text =
+      input->FirstChildIncludingIgnored()->UnignoredChildAt(0);
+  ASSERT_NE(nullptr, input_text);
+  ASSERT_EQ(ax::mojom::blink::Role::kStaticText, input_text->RoleValue());
+  const AXObject* outer_contenteditable =
+      GetAXObjectByElementId("outerContenteditable");
+  ASSERT_NE(nullptr, outer_contenteditable);
+  const AXObject* outer_contenteditable_text =
+      outer_contenteditable->UnignoredChildAt(0);
+  ASSERT_NE(nullptr, outer_contenteditable_text);
+  ASSERT_EQ(ax::mojom::blink::Role::kStaticText,
+            outer_contenteditable_text->RoleValue());
+  const AXObject* inner_contenteditable =
+      GetAXObjectByElementId("innerContenteditable");
+  ASSERT_NE(nullptr, inner_contenteditable);
+  const AXObject* inner_contenteditable_text =
+      inner_contenteditable->UnignoredChildAt(0);
+  ASSERT_NE(nullptr, inner_contenteditable_text);
+  ASSERT_EQ(ax::mojom::blink::Role::kStaticText,
+            inner_contenteditable_text->RoleValue());
+
+  EXPECT_FALSE(root->IsEditable());
+  EXPECT_FALSE(canvas->IsEditable());
+  EXPECT_TRUE(input->IsEditable());
+  EXPECT_TRUE(input_text->IsEditable());
+  EXPECT_TRUE(outer_contenteditable->IsEditable());
+  EXPECT_TRUE(outer_contenteditable_text->IsEditable());
+  EXPECT_TRUE(inner_contenteditable->IsEditable());
+  EXPECT_TRUE(inner_contenteditable_text->IsEditable());
+
+  EXPECT_FALSE(root->IsEditableRoot());
+  EXPECT_FALSE(canvas->IsEditableRoot());
+  EXPECT_FALSE(input->IsEditableRoot());
+  EXPECT_FALSE(input_text->IsEditableRoot());
+  EXPECT_TRUE(outer_contenteditable->IsEditableRoot());
+  EXPECT_FALSE(outer_contenteditable_text->IsEditableRoot());
+  EXPECT_TRUE(inner_contenteditable->IsEditableRoot());
+  EXPECT_FALSE(inner_contenteditable_text->IsEditableRoot());
+
+  EXPECT_FALSE(root->HasContentEditableAttributeSet());
+  EXPECT_FALSE(canvas->HasContentEditableAttributeSet());
+  EXPECT_FALSE(input->HasContentEditableAttributeSet());
+  EXPECT_FALSE(input_text->HasContentEditableAttributeSet());
+  EXPECT_TRUE(outer_contenteditable->HasContentEditableAttributeSet());
+  EXPECT_FALSE(outer_contenteditable_text->HasContentEditableAttributeSet());
+  EXPECT_TRUE(inner_contenteditable->HasContentEditableAttributeSet());
+  EXPECT_FALSE(inner_contenteditable_text->HasContentEditableAttributeSet());
+
+  EXPECT_FALSE(root->IsMultiline());
+  EXPECT_FALSE(canvas->IsMultiline());
+  EXPECT_FALSE(input->IsMultiline());
+  EXPECT_FALSE(input_text->IsMultiline());
+  EXPECT_TRUE(outer_contenteditable->IsMultiline());
+  EXPECT_FALSE(outer_contenteditable_text->IsMultiline());
+  EXPECT_TRUE(inner_contenteditable->IsMultiline());
+  EXPECT_FALSE(inner_contenteditable_text->IsMultiline());
+
+  EXPECT_FALSE(root->IsRichlyEditable());
+  EXPECT_FALSE(canvas->IsRichlyEditable());
+  EXPECT_FALSE(input->IsRichlyEditable());
+  EXPECT_FALSE(input_text->IsRichlyEditable());
+  EXPECT_TRUE(outer_contenteditable->IsRichlyEditable());
+  EXPECT_TRUE(outer_contenteditable_text->IsRichlyEditable());
+  EXPECT_FALSE(inner_contenteditable->IsRichlyEditable());
+  EXPECT_FALSE(inner_contenteditable_text->IsRichlyEditable());
+}
+
 TEST_F(AccessibilityTest, DetachedIsIgnored) {
   SetBodyInnerHTML(R"HTML(<button id="button">button</button>)HTML");
 

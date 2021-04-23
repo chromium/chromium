@@ -9,7 +9,7 @@ ROLE_SYSTEM_DOCUMENT name='Action verbs' READONLY FOCUSABLE
 ++ROLE_SYSTEM_TEXT FOCUSABLE default_action='activate' action_name='activate'
 ++ROLE_SYSTEM_TEXT FOCUSABLE default_action='activate' action_name='activate'
 ++ROLE_SYSTEM_TEXT FOCUSABLE IA2_STATE_MULTI_LINE default_action='activate' action_name='activate'
-++ROLE_SYSTEM_TEXT FOCUSABLE default_action='activate' action_name='activate'
+++ROLE_SYSTEM_TEXT FOCUSABLE IA2_STATE_MULTI_LINE default_action='activate' action_name='activate'
 ++ROLE_SYSTEM_CHECKBUTTON FOCUSABLE IA2_STATE_CHECKABLE checkable:true default_action='check' action_name='check'
 ++ROLE_SYSTEM_CHECKBUTTON CHECKED FOCUSABLE IA2_STATE_CHECKABLE checkable:true default_action='uncheck' action_name='uncheck'
 ++ROLE_SYSTEM_RADIOBUTTON FOCUSABLE IA2_STATE_CHECKABLE checkable:true default_action='check' action_name='check'
