@@ -73,10 +73,10 @@ class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
   void OnHelloResponse();
   void OnDisconnectResponse();
 
-  void OnStateError(std::string error_state, base::Value& message);
-  void OnStateRemoteConnected(base::Value& message);
+  void OnStateError(const std::string& error_state, const base::Value& message);
+  void OnStateRemoteConnected(const base::Value& message);
   void OnStateRemoteDisconnected();
-  void OnStateReceivedAccessCode(base::Value& message);
+  void OnStateReceivedAccessCode(const base::Value& message);
 
   Profile* GetKioskProfile() const;
 

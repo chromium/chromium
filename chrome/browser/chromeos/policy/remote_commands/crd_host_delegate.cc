@@ -30,6 +30,10 @@ namespace policy {
 
 namespace {
 
+// Add a common prefix to all our logs, to make them easy to find.
+#define CRD_DVLOG(level) DVLOG(level) << "CRD: "
+#define CRD_LOG(level) LOG(level) << "CRD: "
+
 // OAuth2 Token scopes
 constexpr char kCloudDevicesOAuth2Scope[] =
     "https://www.googleapis.com/auth/clouddevices";
@@ -57,6 +61,20 @@ class DefaultNativeMessageHostFactory
   }
 };
 
+std::string FormatErrorMessage(const std::string& error_state,
+                               const base::Value& message) {
+  if (error_state == remoting::kHostStateDomainError) {
+    return "Invalid domain";
+  } else {
+    const std::string* error_code =
+        message.FindStringKey(remoting::kErrorMessageCode);
+    if (error_code)
+      return *error_code;
+    else
+      return "Unknown Error";
+  }
+}
+
 }  // namespace
 
 // Helper class that asynchronously fetches the OAuth token, and passes it to
@@ -79,6 +97,7 @@ class CRDHostDelegate::OAuthTokenFetcher
   ~OAuthTokenFetcher() override = default;
 
   void Start() {
+    CRD_DVLOG(1) << "Fetching OAuth access token";
     OAuth2AccessTokenManager::ScopeSet scopes{
         GaiaConstants::kGoogleUserInfoEmail, kCloudDevicesOAuth2Scope,
         kChromotingRemoteSupportOAuth2Scope, kTachyonOAuth2Scope};
@@ -92,12 +111,14 @@ class CRDHostDelegate::OAuthTokenFetcher
   void OnGetTokenSuccess(
       const OAuth2AccessTokenManager::Request* request,
       const OAuth2AccessTokenConsumer::TokenResponse& token_response) override {
+    CRD_DVLOG(1) << "Received OAuth access token";
     std::move(success_callback_).Run(token_response.access_token);
     oauth_request_.reset();
   }
 
   void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
                          const GoogleServiceAuthError& error) override {
+    CRD_DVLOG(1) << "Failed to get OAuth access token: " << error.ToString();
     std::move(error_callback_)
         .Run(DeviceCommandStartCRDSessionJob::FAILURE_NO_OAUTH_TOKEN,
              error.ToString());
@@ -121,7 +142,7 @@ CRDHostDelegate::CRDHostDelegate(
   DCHECK(factory_);
 }
 
-CRDHostDelegate::~CRDHostDelegate() {}
+CRDHostDelegate::~CRDHostDelegate() = default;
 
 bool CRDHostDelegate::HasActiveSession() const {
   return host_ != nullptr;
@@ -136,7 +157,7 @@ bool CRDHostDelegate::AreServicesReady() const {
   return user_manager::UserManager::IsInitialized() &&
          ui::UserActivityDetector::Get() != nullptr &&
          chromeos::ProfileHelper::Get() != nullptr &&
-         DeviceOAuth2TokenServiceFactory::Get() != nullptr;
+         oauth_service() != nullptr;
 }
 
 bool CRDHostDelegate::IsRunningKiosk() const {
@@ -222,26 +243,28 @@ void CRDHostDelegate::StartCRDHostAndGetCode(
   SendMessageToHost(remoting::kHelloMessage, params);
 }
 
-void CRDHostDelegate::PostMessageFromNativeHost(const std::string& message) {
-  std::unique_ptr<base::Value> message_value =
-      base::JSONReader::ReadDeprecated(message);
-  if (!message_value) {
+void CRDHostDelegate::PostMessageFromNativeHost(
+    const std::string& message_string) {
+  CRD_DVLOG(1) << "Received message from CRD host: " << message_string;
+
+  base::Optional<base::Value> message = base::JSONReader::Read(message_string);
+  if (!message) {
     OnProtocolBroken("Message is invalid JSON");
     return;
   }
 
-  if (!message_value->is_dict()) {
+  if (!message->is_dict()) {
     OnProtocolBroken("Message is not a dictionary");
     return;
   }
 
-  auto* type_value = message_value->FindKeyOfType(remoting::kMessageType,
-                                                  base::Value::Type::STRING);
-  if (!type_value) {
+  const std::string* type_pointer =
+      message->FindStringKey(remoting::kMessageType);
+  if (!type_pointer) {
     OnProtocolBroken("Message without type");
     return;
   }
-  std::string type = type_value->GetString();
+  const std::string& type = *type_pointer;
 
   if (type == remoting::kHelloResponse) {
     OnHelloResponse();
@@ -255,32 +278,31 @@ void CRDHostDelegate::PostMessageFromNativeHost(const std::string& message) {
   } else if (type == remoting::kHostStateChangedMessage ||
              type == remoting::kErrorMessage) {
     //  Handle CRD host state changes
-    auto* state_value = message_value->FindKeyOfType(remoting::kState,
-                                                     base::Value::Type::STRING);
-    if (!state_value) {
+    const std::string* state_pointer = message->FindStringKey(remoting::kState);
+    if (!state_pointer) {
       OnProtocolBroken("No state in message");
       return;
     }
-    std::string state = state_value->GetString();
+    const std::string& state = *state_pointer;
 
     if (state == remoting::kHostStateReceivedAccessCode) {
-      OnStateReceivedAccessCode(*message_value);
+      OnStateReceivedAccessCode(*message);
     } else if (state == remoting::kHostStateConnected) {
-      OnStateRemoteConnected(*message_value);
+      OnStateRemoteConnected(*message);
     } else if (state == remoting::kHostStateDisconnected) {
       OnStateRemoteDisconnected();
     } else if (state == remoting::kHostStateError ||
                state == remoting::kHostStateDomainError) {
-      OnStateError(state, *message_value);
+      OnStateError(state, *message);
     } else if (state == remoting::kHostStateStarting ||
                state == remoting::kHostStateRequestedAccessCode) {
       //  Just ignore these states.
     } else {
-      LOG(WARNING) << "Unhandled state :" << type;
+      CRD_LOG(WARNING) << "Unhandled state :" << type;
     }
     return;
   }
-  LOG(WARNING) << "Unknown message type: " << type;
+  CRD_LOG(WARNING) << "Unknown message type: " << type;
 }
 
 void CRDHostDelegate::OnHelloResponse() {
@@ -297,46 +319,35 @@ void CRDHostDelegate::OnDisconnectResponse() {
   ShutdownHost();
 }
 
-void CRDHostDelegate::OnStateError(std::string error_state,
-                                   base::Value& message) {
-  std::string error_message;
-  if (error_state == remoting::kHostStateDomainError) {
-    error_message = "Invalid domain";
-  } else {
-    auto* error_code_value = message.FindKeyOfType(remoting::kErrorMessageCode,
-                                                   base::Value::Type::STRING);
-    if (error_code_value)
-      error_message = error_code_value->GetString();
-    else
-      error_message = "Unknown Error";
-  }
+void CRDHostDelegate::OnStateError(const std::string& error_state,
+                                   const base::Value& message) {
   // Notify callback if command is still running.
   if (command_awaiting_crd_access_code_) {
     command_awaiting_crd_access_code_ = false;
     std::move(error_callback_)
         .Run(DeviceCommandStartCRDSessionJob::FAILURE_CRD_HOST_ERROR,
-             "CRD State Error: " + error_message);
+             "CRD State Error: " + FormatErrorMessage(error_state, message));
     code_success_callback_.Reset();
   }
   // Shut down host, if any.
   ShutdownHost();
 }
 
-void CRDHostDelegate::OnStateRemoteConnected(base::Value& message) {
+void CRDHostDelegate::OnStateRemoteConnected(const base::Value& message) {
   remote_connected_ = true;
   // TODO(antrim): set up watchdog timer (session duration).
-  auto* client_value =
-      message.FindKeyOfType(remoting::kClient, base::Value::Type::STRING);
-  if (client_value) {
-    VLOG(1) << "Remote connection by " << client_value->GetString();
-  }
+  const std::string* client = message.FindStringKey(remoting::kClient);
+  if (client)
+    CRD_DVLOG(1) << "Remote connection by " << *client;
 }
 
 void CRDHostDelegate::OnStateRemoteDisconnected() {
   // There could be a connection attempt that was not successful, we will
   // receive "disconnected" message without actually receiving "connected".
-  if (!remote_connected_)
+  if (!remote_connected_) {
+    CRD_DVLOG(1) << "Received disconnect out-of-order before connect";
     return;
+  }
   remote_connected_ = false;
   // Remote has disconnected, time to send "disconnect" that would result
   // in shutting down the host.
@@ -344,7 +355,7 @@ void CRDHostDelegate::OnStateRemoteDisconnected() {
   SendMessageToHost(remoting::kDisconnectMessage, params);
 }
 
-void CRDHostDelegate::OnStateReceivedAccessCode(base::Value& message) {
+void CRDHostDelegate::OnStateReceivedAccessCode(const base::Value& message) {
   if (!command_awaiting_crd_access_code_) {
     if (!remote_connected_) {
       // We have already sent the access code back to the server which initiated
@@ -357,22 +368,23 @@ void CRDHostDelegate::OnStateReceivedAccessCode(base::Value& message) {
     return;
   }
 
-  auto* code_value =
-      message.FindKeyOfType(remoting::kAccessCode, base::Value::Type::STRING);
-  auto* code_lifetime_value = message.FindKeyOfType(
-      remoting::kAccessCodeLifetime, base::Value::Type::INTEGER);
-  if (!code_value || !code_lifetime_value) {
+  const std::string* access_code = message.FindStringKey(remoting::kAccessCode);
+  base::Optional<int> code_lifetime =
+      message.FindIntKey(remoting::kAccessCodeLifetime);
+  if (!access_code || !code_lifetime) {
     OnProtocolBroken("Can not obtain access code");
     return;
   }
+
+  CRD_DVLOG(1) << "Got access code";
   // TODO(antrim): set up watchdog timer (access code lifetime).
   command_awaiting_crd_access_code_ = false;
-  std::move(code_success_callback_).Run(std::string(code_value->GetString()));
+  std::move(code_success_callback_).Run(*access_code);
   error_callback_.Reset();
 }
 
 void CRDHostDelegate::CloseChannel(const std::string& error_message) {
-  LOG(ERROR) << "CRD Host closed channel" << error_message;
+  CRD_LOG(ERROR) << "CRD Host closed channel" << error_message;
   command_awaiting_crd_access_code_ = false;
 
   if (error_callback_) {
@@ -386,6 +398,7 @@ void CRDHostDelegate::CloseChannel(const std::string& error_message) {
 
 void CRDHostDelegate::SendMessageToHost(const std::string& type,
                                         base::Value& params) {
+  CRD_DVLOG(1) << "Sending message of type '" << type << "' to CRD host.";
   std::string message_json;
   params.SetKey(remoting::kMessageType, base::Value(type));
   base::JSONWriter::Write(params, &message_json);
@@ -401,7 +414,7 @@ void CRDHostDelegate::DoSendMessage(const std::string& json) {
 }
 
 void CRDHostDelegate::OnProtocolBroken(const std::string& message) {
-  LOG(ERROR) << "Error communicating with CRD Host : " << message;
+  CRD_LOG(ERROR) << "Error communicating with CRD Host : " << message;
   command_awaiting_crd_access_code_ = false;
 
   std::move(error_callback_)
