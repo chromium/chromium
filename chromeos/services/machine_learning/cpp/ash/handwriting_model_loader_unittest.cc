@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/machine_learning/public/cpp/handwriting_model_loader.h"
+#include "chromeos/services/machine_learning/cpp/ash/handwriting_model_loader.h"
 
 #include <string>
 
@@ -16,12 +16,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace machine_learning {
 
 using ::base::test::ScopedCommandLine;
 using ::base::test::TaskEnvironment;
-using mojom::LoadHandwritingModelResult;
+using ::chromeos::machine_learning::mojom::LoadHandwritingModelResult;
 
 constexpr char kOndeviceHandwritingSwitch[] = "ondevice_handwriting";
 constexpr char kLibHandwritingDlcId[] = "libhandwriting";
@@ -29,9 +29,9 @@ constexpr char kLibHandwritingDlcId[] = "libhandwriting";
 class HandwritingModelLoaderTest : public testing::Test {
  protected:
   void SetUp() override {
-    ServiceConnection::UseFakeServiceConnectionForTesting(
-        &fake_service_connection_);
-    ServiceConnection::GetInstance()->Initialize();
+    chromeos::machine_learning::ServiceConnection::
+        UseFakeServiceConnectionForTesting(&fake_service_connection_);
+    chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
     result_ = LoadHandwritingModelResult::DEPRECATED_MODEL_SPEC_ERROR;
     language_ = "en";
   }
@@ -47,7 +47,8 @@ class HandwritingModelLoaderTest : public testing::Test {
   void ExpectLoadHandwritingModelResult(
       const LoadHandwritingModelResult expected_result) {
     LoadHandwritingModelFromRootfsOrDlc(
-        mojom::HandwritingRecognizerSpec::New(language_),
+        chromeos::machine_learning::mojom::HandwritingRecognizerSpec::New(
+            language_),
         recognizer_.BindNewPipeAndPassReceiver(),
         base::BindOnce(
             &HandwritingModelLoaderTest::OnHandwritingModelLoaderComplete,
@@ -84,11 +85,13 @@ class HandwritingModelLoaderTest : public testing::Test {
       TaskEnvironment::MainThreadType::DEFAULT,
       TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
   ScopedCommandLine scoped_command_line_;
-  FakeDlcserviceClient fake_client_;
-  FakeServiceConnectionImpl fake_service_connection_;
+  chromeos::FakeDlcserviceClient fake_client_;
+  chromeos::machine_learning::FakeServiceConnectionImpl
+      fake_service_connection_;
   LoadHandwritingModelResult result_;
   std::string language_;
-  mojo::Remote<mojom::HandwritingRecognizer> recognizer_;
+  mojo::Remote<chromeos::machine_learning::mojom::HandwritingRecognizer>
+      recognizer_;
 };
 
 TEST_F(HandwritingModelLoaderTest, HandwritingNotEnabled) {
@@ -148,4 +151,4 @@ TEST_F(HandwritingModelLoaderTest, DlcInstalledWithoutError) {
 }
 
 }  // namespace machine_learning
-}  // namespace chromeos
+}  // namespace ash

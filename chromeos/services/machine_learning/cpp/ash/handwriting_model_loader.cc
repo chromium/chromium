@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/machine_learning/public/cpp/handwriting_model_loader.h"
+#include "chromeos/services/machine_learning/cpp/ash/handwriting_model_loader.h"
 
 #include <string>
 #include <utility>
@@ -13,14 +13,14 @@
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace machine_learning {
 namespace {
 
 using ::chromeos::machine_learning::mojom::HandwritingRecognizerSpecPtr;
 using ::chromeos::machine_learning::mojom::LoadHandwritingModelResult;
-using HandwritingRecognizer =
-    mojo::PendingReceiver<mojom::HandwritingRecognizer>;
+using HandwritingRecognizer = mojo::PendingReceiver<
+    ::chromeos::machine_learning::mojom::HandwritingRecognizer>;
 using LoadHandwritingModelCallback = ::chromeos::machine_learning::mojom::
     MachineLearningService::LoadHandwritingModelCallback;
 
@@ -65,7 +65,7 @@ void OnInstallDlcComplete(
     const chromeos::DlcserviceClient::InstallResult& result) {
   // Call LoadHandwritingModelWithSpec if no error was found.
   if (result.error == dlcservice::kErrorNone) {
-    ServiceConnection::GetInstance()
+    chromeos::machine_learning::ServiceConnection::GetInstance()
         ->GetMachineLearningService()
         .LoadHandwritingModel(std::move(spec), std::move(receiver),
                               std::move(callback));
@@ -84,7 +84,7 @@ void OnGetExistingDlcsComplete(
     HandwritingRecognizerSpecPtr spec,
     HandwritingRecognizer receiver,
     LoadHandwritingModelCallback callback,
-    DlcserviceClient* const dlc_client,
+    chromeos::DlcserviceClient* const dlc_client,
     const std::string& err,
     const dlcservice::DlcsWithContent& dlcs_with_content) {
   // Loop over dlcs_with_content, and installs libhandwriting if already exists.
@@ -109,10 +109,11 @@ void OnGetExistingDlcsComplete(
 
 }  // namespace
 
-void LoadHandwritingModelFromRootfsOrDlc(HandwritingRecognizerSpecPtr spec,
-                                         HandwritingRecognizer receiver,
-                                         LoadHandwritingModelCallback callback,
-                                         DlcserviceClient* const dlc_client) {
+void LoadHandwritingModelFromRootfsOrDlc(
+    HandwritingRecognizerSpecPtr spec,
+    HandwritingRecognizer receiver,
+    LoadHandwritingModelCallback callback,
+    chromeos::DlcserviceClient* const dlc_client) {
   // Returns FEATURE_NOT_SUPPORTED_ERROR if both rootfs and dlc are not enabled.
   if (!IsLibHandwritingRootfsEnabled() && !IsLibHandwritingDlcEnabled()) {
     RecordLoadHandwritingModelResult(
@@ -134,7 +135,7 @@ void LoadHandwritingModelFromRootfsOrDlc(HandwritingRecognizerSpecPtr spec,
 
   // Load from rootfs if enabled.
   if (IsLibHandwritingRootfsEnabled()) {
-    ServiceConnection::GetInstance()
+    chromeos::machine_learning::ServiceConnection::GetInstance()
         ->GetMachineLearningService()
         .LoadHandwritingModel(std::move(spec), std::move(receiver),
                               std::move(callback));
@@ -149,4 +150,4 @@ void LoadHandwritingModelFromRootfsOrDlc(HandwritingRecognizerSpecPtr spec,
 }
 
 }  // namespace machine_learning
-}  // namespace chromeos
+}  // namespace ash

@@ -27,6 +27,7 @@
 #include "chromeos/lacros/lacros_chrome_service_delegate.h"
 #include "chromeos/lacros/lacros_chrome_service_impl_never_blocking_state.h"
 #include "chromeos/lacros/system_idle_cache.h"
+#include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/startup/startup.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -175,6 +176,10 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
 
   ConstructRemote<crosapi::mojom::AppPublisher, &Crosapi::BindAppPublisher,
                   Crosapi::MethodMinVersions::kBindAppPublisherMinVersion>();
+  ConstructRemote<
+      chromeos::machine_learning::mojom::MachineLearningService,
+      &crosapi::mojom::Crosapi::BindMachineLearningService,
+      Crosapi::MethodMinVersions::kBindMachineLearningServiceMinVersion>();
   ConstructRemote<
       crosapi::mojom::AutomationFactory, &Crosapi::BindAutomationFactory,
       Crosapi::MethodMinVersions::kBindAutomationFactoryMinVersion>();
@@ -364,6 +369,19 @@ void LacrosChromeServiceImpl::BindAudioFocusManagerDebug(
       mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>,
       &crosapi::mojom::Crosapi::BindMediaSessionAudioFocusDebug>(
       std::move(remote));
+}
+
+void LacrosChromeServiceImpl::BindMachineLearningService(
+    mojo::PendingReceiver<
+        chromeos::machine_learning::mojom::MachineLearningService> receiver) {
+  DCHECK(
+      IsAvailable<chromeos::machine_learning::mojom::MachineLearningService>());
+
+  BindPendingReceiverOrRemote<
+      mojo::PendingReceiver<
+          chromeos::machine_learning::mojom::MachineLearningService>,
+      &crosapi::mojom::Crosapi::BindMachineLearningService>(
+      std::move(receiver));
 }
 
 void LacrosChromeServiceImpl::BindMediaControllerManager(

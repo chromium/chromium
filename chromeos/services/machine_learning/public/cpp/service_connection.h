@@ -33,6 +33,8 @@ namespace machine_learning {
 // is created on.
 class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) ServiceConnection {
  public:
+  // Gets the ServiceConnection singleton, or a test fake if one has been
+  // specified.
   static ServiceConnection* GetInstance();
   // Overrides the result of GetInstance() for use in tests.
   // Does not take ownership of |fake_service_connection|.
@@ -57,6 +59,10 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) ServiceConnection {
  protected:
   ServiceConnection() = default;
   virtual ~ServiceConnection() {}
+
+ private:
+  // Creates the ServiceConnection singleton.
+  static ServiceConnection* CreateRealInstance();
 };
 
 }  // namespace machine_learning

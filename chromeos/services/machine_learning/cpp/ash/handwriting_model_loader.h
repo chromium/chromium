@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_MACHINE_LEARNING_PUBLIC_CPP_HANDWRITING_MODEL_LOADER_H_
-#define CHROMEOS_SERVICES_MACHINE_LEARNING_PUBLIC_CPP_HANDWRITING_MODEL_LOADER_H_
+#ifndef CHROMEOS_SERVICES_MACHINE_LEARNING_CPP_ASH_HANDWRITING_MODEL_LOADER_H_
+#define CHROMEOS_SERVICES_MACHINE_LEARNING_CPP_ASH_HANDWRITING_MODEL_LOADER_H_
 
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/services/machine_learning/public/mojom/handwriting_recognizer.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
-namespace chromeos {
+namespace ash {
 namespace machine_learning {
 
 // Helper function decides either to load handwriting model from rootfs or dlc.
@@ -34,12 +34,14 @@ namespace machine_learning {
 //
 //  `dlc_client` should only be replaced with non-default value in unit tests.
 void LoadHandwritingModelFromRootfsOrDlc(
-    mojom::HandwritingRecognizerSpecPtr spec,
-    mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
-    mojom::MachineLearningService::LoadHandwritingModelCallback callback,
-    DlcserviceClient* dlc_client = chromeos::DlcserviceClient::Get());
+    chromeos::machine_learning::mojom::HandwritingRecognizerSpecPtr spec,
+    mojo::PendingReceiver<
+        chromeos::machine_learning::mojom::HandwritingRecognizer> receiver,
+    chromeos::machine_learning::mojom::MachineLearningService::
+        LoadHandwritingModelCallback callback,
+    chromeos::DlcserviceClient* dlc_client = chromeos::DlcserviceClient::Get());
 
 }  // namespace machine_learning
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_SERVICES_MACHINE_LEARNING_PUBLIC_CPP_HANDWRITING_MODEL_LOADER_H_
+#endif  // CHROMEOS_SERVICES_MACHINE_LEARNING_CPP_ASH_HANDWRITING_MODEL_LOADER_H_

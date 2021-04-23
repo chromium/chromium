@@ -2,22 +2,39 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 source_set("cpp") {
   sources = [
-    "handwriting_model_loader.cc",
-    "handwriting_model_loader.h",
     "service_connection.cc",
     "service_connection.h",
   ]
   defines = [ "IS_CHROMEOS_MLSERVICE_IMPL" ]
   deps = [
     "//base",
-    "//chromeos/dbus/dlcservice",
-    "//chromeos/dbus/machine_learning",
     "//chromeos/services/machine_learning/public/mojom",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "../../cpp/ash/handwriting_model_loader.cc",
+      "../../cpp/ash/handwriting_model_loader.h",
+      "../../cpp/ash/service_connection_ash.cc",
+    ]
+    deps += [
+      "//chromeos/dbus/dlcservice",
+      "//chromeos/dbus/machine_learning",
+    ]
+  } else if (is_chromeos_lacros) {
+    sources += [ "../../cpp/lacros/service_connection_lacros.cc" ]
+    deps += [
+      "//chromeos/lacros",
+      "//mojo/public/cpp/bindings",
+      "//skia",
+    ]
+  }
 }
 
 component("stub") {
@@ -36,19 +53,29 @@ component("stub") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "handwriting_model_loader_unittest.cc",
-    "service_connection_unittest.cc",
-  ]
+  sources = [ "service_connection_unittest.cc" ]
   deps = [
     ":cpp",
     ":stub",
     "//base/test:test_support",
-    "//chromeos/dbus/dlcservice:test_support",
     "//chromeos/dbus/machine_learning",
     "//chromeos/services/machine_learning/public/mojom",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
   ]
+}
+
+if (is_chromeos_ash) {
+  source_set("ash_unit_tests") {
+    sources = [ "../../cpp/ash/handwriting_model_loader_unittest.cc" ]
+    testonly = true
+    deps = [
+      ":cpp",
+      "//base/test:test_support",
+      "//chromeos/dbus/dlcservice:test_support",
+      "//chromeos/services/machine_learning/public/cpp:stub",
+      "//testing/gtest",
+    ]
+  }
 }

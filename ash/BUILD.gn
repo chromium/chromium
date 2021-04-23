@@ -2470,6 +2470,7 @@ test("ash_unittests") {
     "//chromeos/services/assistant:test_support",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
+    "//chromeos/services/machine_learning/public/cpp:ash_unit_tests",
     "//chromeos/services/multidevice_setup/public/cpp:test_support",
     "//chromeos/services/multidevice_setup/public/mojom",
     "//chromeos/services/nearby/public/cpp",
