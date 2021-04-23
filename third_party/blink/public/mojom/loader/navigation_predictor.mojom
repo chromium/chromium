@@ -13,6 +13,16 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // Struct holding metrics of an anchor element extracted in the renderer
 // process.
 struct AnchorElementMetrics {
+  // An ID assigned to this Anchor. This is the hash of the anchor's pointer
+  // value. This means module hash collisions, anchor IDs should be unique for
+  // a given page load and given renderer, but are not stable across page loads
+  // (loading the same page twice will give two different IDs for the same
+  // anchor element). If anchor IDs from different renderers are combined on the
+  // browser site (for the same page load), then the browser has to be careful
+  // about collisions. Since we currently do not report anchor elements from
+  // OOPIFs, this is not a concern at this point.
+  uint32 anchor_id;
+
   // The ratio between the absolute/visible clickable region area of an anchor
   // element, and the viewport area. The values are capped at 1.
   float ratio_area;
@@ -51,6 +61,22 @@ struct AnchorElementMetrics {
   // however it is intended here since it is only used for metrics calculation.
   url.mojom.Url source_url;
   url.mojom.Url target_url;
+
+  // The size of the viewport at the time the anchor element was created.
+  gfx.mojom.Size viewport_size;
+};
+
+struct AnchorElementClick {
+  // The ID of the anchor that was clicked.
+  uint32 anchor_id;
+
+  // The URL of the anchor when it was clicked.
+  url.mojom.Url target_url;
+};
+
+struct AnchorElementEnteredViewport {
+  // The ID of the anchor that entered the viewport.
+  uint32 anchor_id;
 };
 
 // An interface to pass descriptive information about anchor elements from
@@ -59,11 +85,23 @@ struct AnchorElementMetrics {
 interface AnchorElementMetricsHost {
   // This is called when an anchor element is clicked. The renderer extracts and sends
   // |metrics| of the clicked anchor element.
-  ReportAnchorElementMetricsOnClick(AnchorElementMetrics metrics);
+  ReportAnchorElementClick(AnchorElementClick clicked);
 
-  // This is called after a web page is loaded. The renderer extracts and sends
-  // |metrics| of anchor elements in the first viewport.
-  ReportAnchorElementMetricsOnLoad(
-        array<AnchorElementMetrics> metrics,
-        gfx.mojom.Size viewport_size);
+  // At each layout, HTMLAnchorElements that have been newly created (since the
+  // last layout) may be reported. Only elements with an HTTPS href attribute
+  // that are 'visible' (they have non-empty bounding box, though they may not
+  // be in the viewport) are reported. This reports various metrics about each
+  // element. New HTMLAnchorElements that are not visible after the first layout
+  // since their creation will never be reported. This is not ideal, but allows
+  // us to avoid keeping references to elements that may never become visible.
+  ReportNewAnchorElements(array<AnchorElementMetrics> metrics);
+
+  // This is called regularly to report anchors that entered the viewport. This
+  // just reports the ID of each element entering the viewport. These records
+  // can be joined with the metrics reported by ReportNewAnchorElements.
+  // However, it is possible that some elements reported by this RPC have not
+  // previously been reported by ReportNewAnchorElements (e.g. because they were
+  // not visible following the first layout after the HTMLAnchorElement was
+  // created).
+  ReportAnchorElementsEnteredViewport(array<AnchorElementEnteredViewport> elements);
 };
