@@ -33,6 +33,7 @@
 #include "ui/aura/window_tree_host.h"
 
 using testing::_;
+using testing::InSequence;
 using testing::Truly;
 
 namespace chromecast {
@@ -50,6 +51,9 @@ var keyDownCode = 0;
 var keyPressCode = 0;
 var keyUpCode = 0;
 var events = "";
+var inputRect;
+var touchX = 0;
+var touchY = 0;
 
 document.addEventListener("keydown", function(event) {
   keyDownCode = event.keyCode;
@@ -66,6 +70,9 @@ document.addEventListener("keyup", function(event) {
   keyUpCode = event.keyCode;
   events += "keyup";
 });
+inputRect = document.getElementById("input").getBoundingClientRect();
+touchX = (inputRect.left + inputRect.right) / 2;
+touchY = (inputRect.top + inputRect.bottom) / 2;
 document.title = "ready";
 </script>
 </html>
@@ -195,6 +202,25 @@ class WebviewTest : public content::BrowserTestBase {
     return request;
   }
 
+  webview::WebviewRequest GenerateTouchInputRequest(int event_type,
+                                                    float touch_x,
+                                                    float touch_y) {
+    webview::WebviewRequest request;
+    webview::InputEvent* input_event = request.mutable_input();
+    input_event->set_event_type(event_type);
+    input_event->set_timestamp(
+        base::TimeTicks::Now().since_origin().InMicroseconds());
+    webview::TouchInput* touch_input = input_event->mutable_touch();
+    touch_input->set_x(touch_x);
+    touch_input->set_y(touch_y);
+    touch_input->set_root_x(touch_x);
+    touch_input->set_root_y(touch_y);
+    touch_input->set_pointer_type(
+        static_cast<int>(ui::EventPointerType::kTouch));
+    touch_input->set_pointer_id(1);
+    return request;
+  }
+
   int ExecuteScriptAndExtractInt(content::WebContents* contents,
                                  const std::string& script) {
     int value = 0;
@@ -207,6 +233,14 @@ class WebviewTest : public content::BrowserTestBase {
                                             const std::string& script) {
     std::string value = "";
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        contents, "domAutomationController.send(" + script + ")", &value));
+    return value;
+  }
+
+  double ExecuteScriptAndExtractDouble(content::WebContents* contents,
+                                       const std::string& script) {
+    double value = 0;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractDouble(
         contents, "domAutomationController.send(" + script + ")", &value));
     return value;
   }
@@ -685,6 +719,90 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, KeyInput) {
   webview::WebviewRequest resize;
   resize.mutable_resize()->set_width(800);
   resize.mutable_resize()->set_height(600);
+  SubmitWebviewRequest(&webview, resize);
+
+  webview::WebviewRequest navigate;
+  navigate.mutable_navigate()->set_url(test_url.spec());
+  SubmitWebviewRequest(&webview, navigate);
+  RunMessageLoop();
+}
+
+IN_PROC_BROWSER_TEST_F(WebviewTest, SendFocusEventWhenVKShouldBeShown) {
+  // Webview creation sends messages to the client (eg: accessibility ID).
+  EXPECT_CALL(client_, EnqueueSend(_)).Times(testing::AnyNumber());
+
+  CastWindowManagerAura window_manager(false);
+  window_manager.Setup();
+  WebviewController webview(context_.get(), &client_, true);
+  window_manager.AddWindow(webview.GetWebContents()->GetNativeView());
+  webview.GetWebContents()->GetNativeView()->Show();
+  webview.GetWebContents()->GetNativeView()->Focus();
+  webview.OnVisible(webview.GetWebContents()->GetNativeView());
+
+  GURL test_url = embedded_test_server()->GetURL("foo.com", "/key_input");
+
+  InSequence seq;
+
+  auto check = [](const std::unique_ptr<webview::WebviewResponse>& response) {
+    return response->has_page_event() &&
+           response->page_event().current_page_state() ==
+               webview::AsyncPageEvent_State_LOADED;
+  };
+  EXPECT_CALL(client_, EnqueueSend(Truly(check)))
+      .Times(testing::AtLeast(1))
+      .WillOnce([&](std::unique_ptr<webview::WebviewResponse> response) {
+        DCHECK(URLLoaded(webview.GetWebContents()));
+        float touch_x =
+            ExecuteScriptAndExtractDouble(webview.GetWebContents(), "touchX");
+        float touch_y =
+            ExecuteScriptAndExtractDouble(webview.GetWebContents(), "touchY");
+        SubmitWebviewRequest(
+            &webview,
+            GenerateTouchInputRequest(ui::ET_TOUCH_PRESSED, touch_x, touch_y));
+        SubmitWebviewRequest(
+            &webview,
+            GenerateTouchInputRequest(ui::ET_TOUCH_RELEASED, touch_x, touch_y));
+      })
+      .WillRepeatedly(
+          [](std::unique_ptr<webview::WebviewResponse> response) {});
+
+  auto input_focus_text_check =
+      [](const std::unique_ptr<webview::WebviewResponse>& response) {
+        return response->has_input_focus_event() &&
+               response->input_focus_event().type() ==
+                   webview::TEXT_INPUT_TYPE_TEXT;
+      };
+  EXPECT_CALL(client_, EnqueueSend(Truly(input_focus_text_check)))
+      .WillOnce([](std::unique_ptr<webview::WebviewResponse> response) {})
+      .WillOnce([&](std::unique_ptr<webview::WebviewResponse> response) {
+        // Tap outside the input field to verify focus loss.
+        SubmitWebviewRequest(&webview, GenerateTouchInputRequest(
+                                           ui::ET_TOUCH_PRESSED, 300, 300));
+        SubmitWebviewRequest(&webview, GenerateTouchInputRequest(
+                                           ui::ET_TOUCH_RELEASED, 300, 300));
+      });
+
+  auto input_focus_none_check =
+      [](const std::unique_ptr<webview::WebviewResponse>& response) {
+        return response->has_input_focus_event() &&
+               response->input_focus_event().type() ==
+                   webview::TEXT_INPUT_TYPE_NONE;
+      };
+  EXPECT_CALL(client_, EnqueueSend(Truly(input_focus_none_check)))
+      .WillOnce(
+          [&](std::unique_ptr<webview::WebviewResponse> response) { Quit(); });
+
+  // Need to enable JS in order to extract the text input field touch
+  // coordinates from the loaded web page.
+  webview::WebviewRequest update_settings;
+  update_settings.mutable_update_settings()->set_javascript_enabled(true);
+  SubmitWebviewRequest(&webview, update_settings);
+
+  // Requests are executed serially. Resize first to make sure the Webview is
+  // properly sized by the time the page loads.
+  webview::WebviewRequest resize;
+  resize.mutable_resize()->set_width(500);
+  resize.mutable_resize()->set_height(500);
   SubmitWebviewRequest(&webview, resize);
 
   webview::WebviewRequest navigate;

@@ -86,6 +86,8 @@ void WebviewInputMethodObserver::OnTextInputStateChanged(
   focus_event->set_flags(text_input_client->GetTextInputFlags());
   focus_event->set_type(
       ConvertTextInputType(text_input_client->GetTextInputType()));
+  last_focus_response_ = std::make_unique<chromecast::webview::WebviewResponse>(
+      *focus_event_response);
   controller_->client()->EnqueueSend(std::move(focus_event_response));
 }
 
@@ -105,6 +107,14 @@ WebviewInputMethodObserver::~WebviewInputMethodObserver() {
 void WebviewInputMethodObserver::OnInputMethodDestroyed(
     const ui::InputMethod* input_method) {
   input_method_ = nullptr;
+}
+
+void WebviewInputMethodObserver::OnShowVirtualKeyboardIfEnabled() {
+  std::unique_ptr<chromecast::webview::WebviewResponse>
+      last_focus_response_copy =
+          std::make_unique<chromecast::webview::WebviewResponse>(
+              *last_focus_response_);
+  controller_->client()->EnqueueSend(std::move(last_focus_response_copy));
 }
 
 }  // namespace chromecast

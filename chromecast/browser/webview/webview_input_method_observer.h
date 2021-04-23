@@ -28,11 +28,12 @@ class WebviewInputMethodObserver : public ui::InputMethodObserver {
   void OnCaretBoundsChanged(const ui::TextInputClient* client) override {}
   void OnTextInputStateChanged(const ui::TextInputClient* client) override;
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override;
-  void OnShowVirtualKeyboardIfEnabled() override {}
+  void OnShowVirtualKeyboardIfEnabled() override;
 
  private:
   chromecast::WebContentController* controller_;
   ui::InputMethod* input_method_;
+  std::unique_ptr<chromecast::webview::WebviewResponse> last_focus_response_;
 };
 
 }  // namespace chromecast
