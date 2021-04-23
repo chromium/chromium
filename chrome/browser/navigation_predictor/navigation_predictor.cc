@@ -104,7 +104,10 @@ void NavigationPredictor::ReportNewAnchorElements(
   PageAnchorsMetricsObserver::AnchorsData* data =
       PageAnchorsMetricsObserver::AnchorsData::FromWebContents(web_contents);
   DCHECK(data);
+  // TODO: rm
+  LOG(ERROR) << "reporting new anchors:";
   for (auto& element : elements) {
+    LOG(ERROR) << element->target_url;
     data->number_of_anchors_++;
     if (element->contains_image) {
       data->number_of_anchors_contains_image_++;
@@ -137,6 +140,8 @@ void NavigationPredictor::ReportNewAnchorElements(
     }
     tracked_anchor_id_to_index_[anchor_id] = tracked_anchor_id_to_index_.size();
   }
+  LOG(ERROR) << "done reporting new anchors";
+  LOG(ERROR) << "";
 }
 
 void NavigationPredictor::ReportAnchorElementClick(
@@ -242,6 +247,13 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
   DCHECK(service);
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host());
+  // TODO: rm
+  LOG(ERROR) << "reporting predictions:";
+  for (auto& pred : new_predictions) {
+    LOG(ERROR) << pred;
+  }
+  LOG(ERROR) << "done reporting predictions:";
+  LOG(ERROR) << "";
   service->OnPredictionUpdated(
       web_contents, document_url,
       NavigationPredictorKeyedService::PredictionSource::
