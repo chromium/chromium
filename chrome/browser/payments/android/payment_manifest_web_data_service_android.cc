@@ -13,9 +13,9 @@
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/payments/android/jni_headers/PaymentManifestWebDataService_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_data_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/webdata/common/web_data_results.h"
+#include "components/webdata_services/web_data_service_wrapper_factory.h"
 
 namespace payments {
 
@@ -102,9 +102,10 @@ void PaymentManifestWebDataServiceAndroid::Destroy(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& unused_obj) {
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
-      WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
-          ProfileManager::GetActiveUserProfile(),
-          ServiceAccessType::EXPLICIT_ACCESS);
+      webdata_services::WebDataServiceWrapperFactory::
+          GetPaymentManifestWebDataServiceForBrowserContext(
+              ProfileManager::GetActiveUserProfile(),
+              ServiceAccessType::EXPLICIT_ACCESS);
   if (web_data_service) {
     for (const auto& request : web_data_service_requests_) {
       web_data_service->CancelRequest(request.first);
@@ -125,9 +126,10 @@ void PaymentManifestWebDataServiceAndroid::AddPaymentMethodManifest(
                                                      &apps_package_names);
 
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
-      WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
-          ProfileManager::GetActiveUserProfile(),
-          ServiceAccessType::EXPLICIT_ACCESS);
+      webdata_services::WebDataServiceWrapperFactory::
+          GetPaymentManifestWebDataServiceForBrowserContext(
+              ProfileManager::GetActiveUserProfile(),
+              ServiceAccessType::EXPLICIT_ACCESS);
   if (web_data_service == nullptr)
     return;
 
@@ -141,9 +143,10 @@ void PaymentManifestWebDataServiceAndroid::AddPaymentWebAppManifest(
     const base::android::JavaParamRef<jobject>& unused_obj,
     const base::android::JavaParamRef<jobjectArray>& jmanifest_sections) {
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
-      WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
-          ProfileManager::GetActiveUserProfile(),
-          ServiceAccessType::EXPLICIT_ACCESS);
+      webdata_services::WebDataServiceWrapperFactory::
+          GetPaymentManifestWebDataServiceForBrowserContext(
+              ProfileManager::GetActiveUserProfile(),
+              ServiceAccessType::EXPLICIT_ACCESS);
   if (web_data_service == nullptr)
     return;
 
@@ -179,9 +182,10 @@ bool PaymentManifestWebDataServiceAndroid::GetPaymentMethodManifest(
     const base::android::JavaParamRef<jstring>& jmethod_name,
     const base::android::JavaParamRef<jobject>& jcallback) {
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
-      WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
-          ProfileManager::GetActiveUserProfile(),
-          ServiceAccessType::EXPLICIT_ACCESS);
+      webdata_services::WebDataServiceWrapperFactory::
+          GetPaymentManifestWebDataServiceForBrowserContext(
+              ProfileManager::GetActiveUserProfile(),
+              ServiceAccessType::EXPLICIT_ACCESS);
   if (web_data_service == nullptr)
     return false;
 
@@ -200,9 +204,10 @@ bool PaymentManifestWebDataServiceAndroid::GetPaymentWebAppManifest(
     const base::android::JavaParamRef<jstring>& japp_package_name,
     const base::android::JavaParamRef<jobject>& jcallback) {
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
-      WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
-          ProfileManager::GetActiveUserProfile(),
-          ServiceAccessType::EXPLICIT_ACCESS);
+      webdata_services::WebDataServiceWrapperFactory::
+          GetPaymentManifestWebDataServiceForBrowserContext(
+              ProfileManager::GetActiveUserProfile(),
+              ServiceAccessType::EXPLICIT_ACCESS);
   if (web_data_service == nullptr)
     return false;
 

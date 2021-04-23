@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/sql_init_error_message_ids.h"
 #include "chrome/browser/ui/profile_error_dialog.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/signin/public/webdata/token_web_data.h"
@@ -63,39 +62,22 @@ void ProfileErrorCallback(WebDataServiceWrapper::ErrorType error_type,
 
 }  // namespace
 
-WebDataServiceFactory::WebDataServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "WebDataService",
-          BrowserContextDependencyManager::GetInstance()) {
-  // WebDataServiceFactory has no dependecies.
-}
+WebDataServiceFactory::WebDataServiceFactory() = default;
 
-WebDataServiceFactory::~WebDataServiceFactory() {}
+WebDataServiceFactory::~WebDataServiceFactory() = default;
 
 // static
 WebDataServiceWrapper* WebDataServiceFactory::GetForProfile(
     Profile* profile,
     ServiceAccessType access_type) {
-  // If |access_type| starts being used for anything other than this
-  // DCHECK, we need to start taking it as a parameter to
-  // the *WebDataService::FromBrowserContext() functions (see above).
-  DCHECK(access_type != ServiceAccessType::IMPLICIT_ACCESS ||
-         !profile->IsOffTheRecord());
-  return static_cast<WebDataServiceWrapper*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+  return GetForBrowserContext(profile, access_type);
 }
 
 // static
 WebDataServiceWrapper* WebDataServiceFactory::GetForProfileIfExists(
     Profile* profile,
     ServiceAccessType access_type) {
-  // If |access_type| starts being used for anything other than this
-  // DCHECK, we need to start taking it as a parameter to
-  // the *WebDataService::FromBrowserContext() functions (see above).
-  DCHECK(access_type != ServiceAccessType::IMPLICIT_ACCESS ||
-         !profile->IsOffTheRecord());
-  return static_cast<WebDataServiceWrapper*>(
-      GetInstance()->GetServiceForBrowserContext(profile, false));
+  return GetForBrowserContextIfExists(profile, access_type);
 }
 
 // static
@@ -150,12 +132,8 @@ scoped_refptr<payments::PaymentManifestWebDataService>
 WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
     Profile* profile,
     ServiceAccessType access_type) {
-  WebDataServiceWrapper* wrapper =
-      WebDataServiceFactory::GetForProfile(profile, access_type);
-  // |wrapper| can be null in Incognito mode.
-  return wrapper
-             ? wrapper->GetPaymentManifestWebData()
-             : scoped_refptr<payments::PaymentManifestWebDataService>(nullptr);
+  return GetPaymentManifestWebDataServiceForBrowserContext(profile,
+                                                           access_type);
 }
 
 // static

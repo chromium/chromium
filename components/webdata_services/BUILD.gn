@@ -24,7 +24,15 @@ static_library("webdata_services") {
   ]
 
   if (!is_ios) {
-    deps += [ "//components/payments/content:utils" ]
+    sources += [
+      "web_data_service_wrapper_factory.cc",
+      "web_data_service_wrapper_factory.h",
+    ]
+    deps += [
+      "//components/keyed_service/content",
+      "//components/payments/content:utils",
+      "//content/public/browser",
+    ]
   }
 }
 
