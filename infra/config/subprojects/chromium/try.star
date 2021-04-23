@@ -1303,6 +1303,9 @@ try_.chromium_linux_builder(
     ssd = True,
     os = os.LINUX_BIONIC,
     main_list_view = "try",
+    tryjob = try_.job(
+        experiment_percentage = 10,
+    ),
 )
 
 try_.chromium_linux_builder(
