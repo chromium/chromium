@@ -7,12 +7,15 @@
 
 #include <utility>
 
+#include "base/optional.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/openh264/src/codec/api/svc/codec_app_def.h"
 #include "third_party/openh264/src/codec/api/svc/codec_def.h"
@@ -21,6 +24,54 @@
 using media::VideoFrame;
 
 namespace blink {
+
+namespace {
+
+base::Optional<EProfileIdc> ToOpenH264Profile(
+    media::VideoCodecProfile profile) {
+  static const HashMap<media::VideoCodecProfile, EProfileIdc>
+      kProfileToEProfileIdc({
+          {media::H264PROFILE_BASELINE, PRO_BASELINE},
+          {media::H264PROFILE_MAIN, PRO_MAIN},
+          {media::H264PROFILE_EXTENDED, PRO_EXTENDED},
+          {media::H264PROFILE_HIGH, PRO_HIGH},
+      });
+
+  const auto& it = kProfileToEProfileIdc.find(profile);
+  if (it != kProfileToEProfileIdc.end()) {
+    return it->value;
+  }
+  return base::nullopt;
+}
+
+base::Optional<ELevelIdc> ToOpenH264Level(uint8_t level) {
+  static const HashMap<uint8_t, ELevelIdc> kLevelToELevelIdc({
+      {10, LEVEL_1_0},
+      {9, LEVEL_1_B},
+      {11, LEVEL_1_1},
+      {12, LEVEL_1_2},
+      {13, LEVEL_1_3},
+      {20, LEVEL_2_0},
+      {21, LEVEL_2_1},
+      {22, LEVEL_2_2},
+      {30, LEVEL_3_0},
+      {31, LEVEL_3_1},
+      {32, LEVEL_3_2},
+      {40, LEVEL_4_0},
+      {41, LEVEL_4_1},
+      {42, LEVEL_4_2},
+      {50, LEVEL_5_0},
+      {51, LEVEL_5_1},
+      {52, LEVEL_5_2},
+  });
+
+  const auto& it = kLevelToELevelIdc.find(level);
+  if (it != kLevelToELevelIdc.end())
+    return it->value;
+  return base::nullopt;
+}
+
+}  // namespace
 
 void H264Encoder::ISVCEncoderDeleter::operator()(ISVCEncoder* codec) {
   if (!codec)
@@ -39,10 +90,13 @@ void H264Encoder::ShutdownEncoder(std::unique_ptr<Thread> encoding_thread,
 
 H264Encoder::H264Encoder(
     const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
+    VideoTrackRecorder::CodecProfile codec_profile,
     int32_t bits_per_second,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : Encoder(on_encoded_video_cb, bits_per_second, std::move(task_runner)) {
+    : Encoder(on_encoded_video_cb, bits_per_second, std::move(task_runner)),
+      codec_profile_(codec_profile) {
   DCHECK(encoding_thread_);
+  DCHECK_EQ(codec_profile_.codec_id, VideoTrackRecorder::CodecId::H264);
 }
 
 H264Encoder::~H264Encoder() {
@@ -176,6 +230,19 @@ void H264Encoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size) {
   init_params.sSpatialLayers[0].iVideoHeight = init_params.iPicHeight;
   init_params.sSpatialLayers[0].iSpatialBitrate = init_params.iTargetBitrate;
 
+  // Input profile may be optional, fills PRO_UNKNOWN for auto-detection.
+  init_params.sSpatialLayers[0].uiProfileIdc =
+      codec_profile_.profile
+          ? ToOpenH264Profile(*codec_profile_.profile).value_or(PRO_UNKNOWN)
+          : PRO_UNKNOWN;
+  // Input level may be optional, fills LEVEL_UNKNOWN for auto-detection.
+  init_params.sSpatialLayers[0].uiLevelIdc =
+      codec_profile_.level
+          ? ToOpenH264Level(*codec_profile_.level).value_or(LEVEL_UNKNOWN)
+          : LEVEL_UNKNOWN;
+  DCHECK_EQ(init_params.sSpatialLayers[0].uiProfileIdc == PRO_UNKNOWN,
+            init_params.sSpatialLayers[0].uiLevelIdc == LEVEL_UNKNOWN);
+
   // When uiSliceMode = SM_FIXEDSLCNUM_SLICE, uiSliceNum = 0 means auto design
   // it with cpu core number.
   init_params.sSpatialLayers[0].sSliceArgument.uiSliceNum = 0;
@@ -189,6 +256,19 @@ void H264Encoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size) {
 
   int pixel_format = EVideoFormatType::videoFormatI420;
   openh264_encoder_->SetOption(ENCODER_OPTION_DATAFORMAT, &pixel_format);
+}
+
+SEncParamExt H264Encoder::GetEncoderOptionForTesting() {
+  DCHECK(openh264_encoder_)
+      << "Call GetOption on uninitialized OpenH264 encoder";
+
+  SEncParamExt params;
+  if (openh264_encoder_->GetOption(ENCODER_OPTION_SVC_ENCODE_PARAM_EXT,
+                                   &params) != 0) {
+    NOTREACHED() << "Failed to get ENCODER_OPTION_SVC_ENCODE_PARAM_EXT";
+  }
+
+  return params;
 }
 
 }  // namespace blink

@@ -137,6 +137,12 @@ VideoTrackRecorderImpl::CodecProfile::CodecProfile(CodecId codec_id)
 
 VideoTrackRecorderImpl::CodecProfile::CodecProfile(
     CodecId codec_id,
+    base::Optional<media::VideoCodecProfile> opt_profile,
+    base::Optional<uint8_t> opt_level)
+    : codec_id(codec_id), profile(opt_profile), level(opt_level) {}
+
+VideoTrackRecorderImpl::CodecProfile::CodecProfile(
+    CodecId codec_id,
     media::VideoCodecProfile profile,
     uint8_t level)
     : codec_id(codec_id), profile(profile), level(level) {}
@@ -677,7 +683,8 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
 #if BUILDFLAG(RTC_USE_H264)
       case CodecId::H264:
         encoder_ = base::MakeRefCounted<H264Encoder>(
-            on_encoded_video_cb, bits_per_second, main_task_runner_);
+            on_encoded_video_cb, codec_profile, bits_per_second,
+            main_task_runner_);
         break;
 #endif
       case CodecId::VP8:

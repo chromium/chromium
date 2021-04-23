@@ -93,6 +93,9 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 
     explicit CodecProfile(CodecId codec_id);
     CodecProfile(CodecId codec_id,
+                 base::Optional<media::VideoCodecProfile> opt_profile,
+                 base::Optional<uint8_t> opt_level);
+    CodecProfile(CodecId codec_id,
                  media::VideoCodecProfile profile,
                  uint8_t level);
   };
@@ -138,7 +141,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
   // namely configuration, encoding (which might take some time) and
   // destruction. This task runner can be passed on the creation. If nothing is
   // passed, a new encoding thread is created and used.
-  class Encoder : public WTF::ThreadSafeRefCounted<Encoder> {
+  class MODULES_EXPORT Encoder : public WTF::ThreadSafeRefCounted<Encoder> {
    public:
     Encoder(const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
             int32_t bits_per_second,
