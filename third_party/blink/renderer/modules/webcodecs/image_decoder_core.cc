@@ -360,6 +360,7 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
     }
   }
 
+  yuv_frame_->metadata().frame_duration = base::TimeDelta();
   if (gfx_cs.IsValid()) {
     yuv_frame_->set_color_space(YUVColorSpaceToGfxColorSpace(
         skyuv_cs, gfx_cs.GetPrimaryID(), gfx_cs.GetTransferID()));
