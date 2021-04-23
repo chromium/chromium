@@ -644,7 +644,7 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
     outer_->EnsureEnoughWorkersLockRequired(&executor);
   }
 
-  recordreplay::Assert("WorkerThreadDelegateImpl::GetWork Done");
+  recordreplay::Assert("WorkerThreadDelegateImpl::GetWork Done %d", !!task_source);
   return task_source;
 }
 

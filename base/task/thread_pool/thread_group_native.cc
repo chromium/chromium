@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/record_replay.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool/task_tracker.h"
 
@@ -114,6 +115,8 @@ void ThreadGroupNative::UpdateMinAllowedPriorityLockRequired() {
 }
 
 RegisteredTaskSource ThreadGroupNative::GetWork() {
+  recordreplay::Assert("ThreadGroupNative::GetWork Start");
+
   ScopedCommandsExecutor workers_executor(this);
   CheckedAutoLock auto_lock(lock_);
   DCHECK_GT(num_pending_threadpool_work_, 0U);
@@ -124,12 +127,16 @@ RegisteredTaskSource ThreadGroupNative::GetWork() {
   while (!task_source && !priority_queue_.IsEmpty()) {
     priority = priority_queue_.PeekSortKey().priority();
     // Enforce the CanRunPolicy.
-    if (!task_tracker_->CanRunPriority(priority))
+    if (!task_tracker_->CanRunPriority(priority)) {
+      recordreplay::Assert("ThreadGroupNative::GetWork #1");
       return nullptr;
+    }
 
     task_source = TakeRegisteredTaskSource(&workers_executor);
   }
   UpdateMinAllowedPriorityLockRequired();
+
+  recordreplay::Assert("ThreadGroupNative::GetWork Done %d", !!task_source);
   return task_source;
 }
 

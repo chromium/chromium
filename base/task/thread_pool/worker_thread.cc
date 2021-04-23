@@ -326,6 +326,9 @@ void WorkerThread::RunWorker() {
 
     // Get the task source containing the next task to execute.
     RegisteredTaskSource task_source = delegate_->GetWork(this);
+
+    recordreplay::Assert("WorkerThread::RunWorker #4.1 %d", !!task_source);
+
     if (!task_source) {
       // Exit immediately if GetWork() resulted in detaching this worker.
       if (ShouldExit())
