@@ -164,7 +164,7 @@ const re2::RE2& GetAddToCartPattern() {
   static base::NoDestructor<re2::RE2> instance(
       "(\\b|[^a-z])"
       "((add(ed)?(-|_|(%20))?(item)?(-|_|(%20))?to(-|_|(%20))?(cart|basket|bag)"
-      ")|(cart\\/add)|(checkout\\/basket)|(cart_type))"
+      ")|(cart\\/add)|(checkout\\/basket)|(cart_type)|(isquickaddtocartbutton))"
       "(\\b|[^a-z])",
       options);
   return *instance;
@@ -307,7 +307,18 @@ void DetectAddToCart(content::RenderFrame* render_frame,
     return;
   }
 
-  if (CommerceHintAgent::IsAddToCart(url.path_piece())) {
+  bool is_add_to_cart = false;
+  if (navigation_url.DomainIs("dickssportinggoods.com")) {
+    is_add_to_cart = CommerceHintAgent::IsAddToCart(url.spec());
+  } else if (url.DomainIs("rei.com")) {
+    // TODO(crbug.com/1188143): There are other true positives like
+    // 'neo-product/rs/cart/item' that are missed here. Figure out a more
+    // comprehensive solution.
+    is_add_to_cart = url.path_piece() == "/rest/cart/item";
+  } else {
+    is_add_to_cart = CommerceHintAgent::IsAddToCart(url.path_piece());
+  }
+  if (is_add_to_cart) {
     RecordCommerceEvent(CommerceEvent::kAddToCartByURL);
     OnAddToCart(render_frame);
     return;
