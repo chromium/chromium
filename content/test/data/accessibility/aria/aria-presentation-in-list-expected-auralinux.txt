@@ -1,0 +1,12 @@
+[document web]
+++[list]
+++++[list item]
+++++++[panel]
+++++++++[static] name='• '
+++++++[static] name='One'
+++++[list item]
+++++++[panel]
+++++++++[static] name='• '
+++++++[static] name='Two'
+++++++[static] name=' '
+++++++[static] name='Three'

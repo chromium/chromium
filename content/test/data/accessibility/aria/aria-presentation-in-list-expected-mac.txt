@@ -1,0 +1,12 @@
+AXWebArea
+++AXList
+++++AXGroup
+++++++AXListMarker AXValue='• '
+++++++++AXStaticText AXValue='• '
+++++++AXStaticText AXValue='One'
+++++AXGroup
+++++++AXListMarker AXValue='• '
+++++++++AXStaticText AXValue='• '
+++++++AXStaticText AXValue='Two'
+++++++AXStaticText AXValue=' '
+++++++AXStaticText AXValue='Three'

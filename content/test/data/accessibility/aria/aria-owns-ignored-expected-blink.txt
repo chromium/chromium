@@ -2,7 +2,6 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++splitter horizontal name='Ordinary presentation element with id'
-++++++presentational ignored
 ++++++splitter horizontal name='An aria-owned element is never ignored'
 ++++++group
 ++++++++presentational ignored
@@ -14,12 +13,9 @@ rootWebArea
 ++++++++textField
 ++++++++++genericContainer
 ++++++splitter horizontal name='Owning an element with an ignored parent serializes cleanly'
-++++++presentational ignored
-++++++++group
-++++++++++checkBox checkedState=false
-++++++++presentational ignored
+++++++group
+++++++++checkBox checkedState=false
 ++++++splitter horizontal name='All the above in one'
-++++++presentational ignored
-++++++++genericContainer
-++++++++++presentational ignored
-++++++++++++slider horizontal value='50' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++genericContainer
+++++++++presentational ignored
+++++++++++slider horizontal value='50' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00

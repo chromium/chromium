@@ -383,7 +383,12 @@ bool AXLayoutObject::IsRichlyEditable() const {
 
 bool AXLayoutObject::IsLineBreakingObject() const {
   if (IsDetached())
-    return AXNodeObject::IsLineBreakingObject();
+    return false;
+
+  // Presentational objects should not contribute any of their remove semantic
+  // meaning to the accessibility tree, including to its text representation.
+  if (IsPresentational())
+    return false;
 
   const LayoutObject* layout_object = GetLayoutObject();
   if (layout_object->IsBR() || layout_object->IsLayoutBlock() ||

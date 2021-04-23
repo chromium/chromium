@@ -1,0 +1,12 @@
+Document
+++List
+++++ListItem Name='One'
+++++++Group
+++++++++Text Name='• ' IsControlElement=false
+++++++Text Name='One' IsControlElement=false
+++++ListItem Name='Two Three'
+++++++Group
+++++++++Text Name='• ' IsControlElement=false
+++++++Text Name='Two' IsControlElement=false
+++++++Text Name=' ' IsControlElement=false
+++++++Text Name='Three' IsControlElement=false

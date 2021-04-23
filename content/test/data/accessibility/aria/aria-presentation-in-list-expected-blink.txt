@@ -1,0 +1,19 @@
+rootWebArea isLineBreakingObject=true
+++genericContainer ignored isLineBreakingObject=true
+++++genericContainer ignored isLineBreakingObject=true
+++++++list isLineBreakingObject=true
+++++++++listItem isLineBreakingObject=true
+++++++++++listMarker name='• ' isLineBreakingObject=true
+++++++++++++staticText name='• '
+++++++++++++++inlineTextBox name='• '
+++++++++++staticText name='One'
+++++++++++++inlineTextBox name='One'
+++++++++listItem isLineBreakingObject=true
+++++++++++listMarker name='• ' isLineBreakingObject=true
+++++++++++++staticText name='• '
+++++++++++++++inlineTextBox name='• '
+++++++++++staticText name='Two'
+++++++++++++inlineTextBox name='Two'
+++++++++++staticText name=' '
+++++++++++staticText name='Three'
+++++++++++++inlineTextBox name='Three'

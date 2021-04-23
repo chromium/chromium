@@ -1188,6 +1188,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-presentation.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaPresentationInList) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-presentation-in-list.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaPressed) {
   RunAriaTest(FILE_PATH_LITERAL("aria-pressed.html"));
 }
