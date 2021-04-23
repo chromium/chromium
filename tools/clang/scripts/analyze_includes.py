@@ -165,39 +165,86 @@ def post_order_nodes(root, child_nodes):
 def compute_doms(root, includes):
   """Compute the dominators for all nodes reachable from root. Node A dominates
   node B if all paths from the root to B go through A. Returns a dict from
-  filename to the set of dominators of that filename (including itself)."""
-  rpo = list(reversed(list(post_order_nodes(root, includes))))
-  assert rpo[0] == root
+  filename to the set of dominators of that filename (including itself).
 
-  # Initialization.
-  # The data-flow analysis starts with full dom sets,
-  # except for root, where we know the end result already.
-  # preds[n] are the direct predecessors of node n.
-  # The order is not important here, rpo is just handy as a list of all nodes.
-  doms = {}
-  preds = defaultdict(set)
-  for n in rpo:
-    doms[n] = set(rpo)
-    for x in includes[n]:
-      preds[x].add(n)
-  doms[root] = set([root])
+  The implementation follows the "simple" version of Lengauer & Tarjan "A Fast
+  Algorithm for Finding Dominators in a Flowgraph" (TOPLAS 1979).
+  """
 
-  # Iterate to fixed point.
-  # This is not the fastest algorithm, but it's simple and fast enough for us.
-  # Processing the nodes in reverse post-order leads to faster convergence.
-  # rpo[0] (the root) is skipped, because its dominators are known, and its
-  # empty preds set would break the set.intersection() invocation.
-  changed = True
-  while changed:
-    changed = False
-    for n in rpo[1:]:
-      new_set = set.intersection(*[doms[p] for p in preds[n]])
-      new_set.add(n)
-      if new_set != doms[n]:
-        doms[n] = new_set
-        changed = True
+  parent = {}
+  ancestor = {}
+  vertex = []
+  label = {}
+  semi = {}
+  pred = defaultdict(list)
+  bucket = defaultdict(list)
+  dom = {}
 
-  return doms
+  def dfs(v):
+    semi[v] = len(vertex)
+    vertex.append(v)
+    label[v] = v
+
+    for w in includes[v]:
+      if not w in semi:
+        parent[w] = v
+        dfs(w)
+      pred[w].append(v)
+
+  def compress(v):
+    if ancestor[v] in ancestor:
+      compress(ancestor[v])
+      if semi[label[ancestor[v]]] < semi[label[v]]:
+        label[v] = label[ancestor[v]]
+      ancestor[v] = ancestor[ancestor[v]]
+
+  def eval(v):
+    if v not in ancestor:
+      return v
+    compress(v)
+    return label[v]
+
+  def link(v, w):
+    ancestor[w] = v
+
+  # Step 1: Initialization.
+  dfs(root)
+
+  for w in reversed(vertex[1:]):
+    # Step 2: Compute semidominators.
+    for v in pred[w]:
+      u = eval(v)
+      if semi[u] < semi[w]:
+        semi[w] = semi[u]
+
+    bucket[vertex[semi[w]]].append(w)
+    link(parent[w], w)
+
+    # Step 3: Implicitly define the immediate dominator for each node.
+    for v in bucket[parent[w]]:
+      u = eval(v)
+      dom[v] = u if semi[u] < semi[v] else parent[w]
+    bucket[parent[w]] = []
+
+  # Step 4: Explicitly define the immediate dominator for each node.
+  for w in vertex[1:]:
+    if dom[w] != vertex[semi[w]]:
+      dom[w] = dom[dom[w]]
+
+  # Get the full dominator set for each node.
+  all_doms = {}
+  all_doms[root] = {root}
+
+  def dom_set(node):
+    if node not in all_doms:
+      # node's dominators is itself and the dominators of its immediate
+      # dominator.
+      all_doms[node] = {node}
+      all_doms[node].update(dom_set(dom[node]))
+
+    return all_doms[node]
+
+  return {n: dom_set(n) for n in vertex}
 
 
 class TestComputeDoms(unittest.TestCase):
@@ -217,6 +264,41 @@ class TestComputeDoms(unittest.TestCase):
     self.assertEqual(doms[3], set([5, 3]))
     self.assertEqual(doms[4], set([5, 4]))
     self.assertEqual(doms[5], set([5]))
+
+  def test_larger(self):
+    # Fig. 1 in the Lengauer-Tarjan paper.
+    includes = {}
+    includes['a'] = ['d']
+    includes['b'] = ['a', 'd', 'e']
+    includes['c'] = ['f', 'g']
+    includes['d'] = ['l']
+    includes['e'] = ['h']
+    includes['f'] = ['i']
+    includes['g'] = ['i', 'j']
+    includes['h'] = ['k', 'e']
+    includes['i'] = ['k']
+    includes['j'] = ['i']
+    includes['k'] = ['i', 'r']
+    includes['l'] = ['h']
+    includes['r'] = ['a', 'b', 'c']
+    root = 'r'
+
+    doms = compute_doms(root, includes)
+
+    # Fig. 2 in the Lengauer-Tarjan paper.
+    self.assertEqual(doms['a'], set(['a', 'r']))
+    self.assertEqual(doms['b'], set(['b', 'r']))
+    self.assertEqual(doms['c'], set(['c', 'r']))
+    self.assertEqual(doms['d'], set(['d', 'r']))
+    self.assertEqual(doms['e'], set(['e', 'r']))
+    self.assertEqual(doms['f'], set(['f', 'c', 'r']))
+    self.assertEqual(doms['g'], set(['g', 'c', 'r']))
+    self.assertEqual(doms['h'], set(['h', 'r']))
+    self.assertEqual(doms['i'], set(['i', 'r']))
+    self.assertEqual(doms['j'], set(['j', 'g', 'c', 'r']))
+    self.assertEqual(doms['k'], set(['k', 'r']))
+    self.assertEqual(doms['l'], set(['l', 'd', 'r']))
+    self.assertEqual(doms['r'], set(['r']))
 
 
 def trans_size(root, includes, sizes):
