@@ -101,7 +101,16 @@ void DocumentLayout::SetOptions(const Options& options) {
   options_ = options;
 }
 
-void DocumentLayout::ComputeSingleViewLayout(
+void DocumentLayout::ComputeLayout(const std::vector<gfx::Size>& page_sizes) {
+  switch (options_.page_spread()) {
+    case PageSpread::kOneUp:
+      return ComputeOneUpLayout(page_sizes);
+    case PageSpread::kTwoUpOdd:
+      return ComputeTwoUpOddLayout(page_sizes);
+  }
+}
+
+void DocumentLayout::ComputeOneUpLayout(
     const std::vector<gfx::Size>& page_sizes) {
   gfx::Size document_size(GetWidestPageWidth(page_sizes), 0);
 
@@ -133,7 +142,7 @@ void DocumentLayout::ComputeSingleViewLayout(
   }
 }
 
-void DocumentLayout::ComputeTwoUpViewLayout(
+void DocumentLayout::ComputeTwoUpOddLayout(
     const std::vector<gfx::Size>& page_sizes) {
   gfx::Size document_size(GetWidestPageWidth(page_sizes), 0);
 

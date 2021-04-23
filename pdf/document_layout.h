@@ -127,15 +127,8 @@ class DocumentLayout final {
     return page_layouts_[page_index].inner_rect;
   }
 
-  // Computes layout that represent |page_sizes| formatted for single view.
-  //
-  // TODO(kmoon): Control layout type using an option.
-  void ComputeSingleViewLayout(const std::vector<gfx::Size>& page_sizes);
-
-  // Computes layout that represent |page_sizes| formatted for two-up view.
-  //
-  // TODO(kmoon): Control layout type using an option.
-  void ComputeTwoUpViewLayout(const std::vector<gfx::Size>& page_sizes);
+  // Computes the layout for a given list of |page_sizes| based on |options_|.
+  void ComputeLayout(const std::vector<gfx::Size>& page_sizes);
 
  private:
   // Layout of a single page.
@@ -146,6 +139,10 @@ class DocumentLayout final {
     // Bounding rectangle for the page without decorations.
     gfx::Rect inner_rect;
   };
+
+  // Helpers for ComputeLayout() handling different page spreads.
+  void ComputeOneUpLayout(const std::vector<gfx::Size>& page_sizes);
+  void ComputeTwoUpOddLayout(const std::vector<gfx::Size>& page_sizes);
 
   // Copies |source_rect| to |destination_rect|, setting |dirty_| to true if
   // |destination_rect| is modified as a result.

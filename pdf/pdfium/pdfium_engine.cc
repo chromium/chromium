@@ -2843,12 +2843,7 @@ void PDFiumEngine::UpdateDocumentLayout(DocumentLayout* layout) {
   if (page_sizes.empty())
     return;
 
-  if (layout->options().page_spread() ==
-      DocumentLayout::PageSpread::kTwoUpOdd) {
-    layout->ComputeTwoUpViewLayout(page_sizes);
-  } else {
-    layout->ComputeSingleViewLayout(page_sizes);
-  }
+  layout->ComputeLayout(page_sizes);
 }
 
 std::vector<gfx::Size> PDFiumEngine::LoadPageSizes(
