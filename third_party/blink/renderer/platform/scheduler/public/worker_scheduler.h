@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_WORKER_SCHEDULER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/record_replay.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -100,7 +101,8 @@ class PLATFORM_EXPORT WorkerScheduler : public FrameOrWorkerScheduler {
 
   using TaskQueueVoterMap = std::map<
       scoped_refptr<NonMainThreadTaskQueue>,
-      std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>>;
+      std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>,
+      recordreplay::CompareRefptrByPointerId<NonMainThreadTaskQueue>>;
 
   TaskQueueVoterMap task_runners_;
 

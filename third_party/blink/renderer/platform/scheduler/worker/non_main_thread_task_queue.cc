@@ -18,6 +18,8 @@ NonMainThreadTaskQueue::NonMainThreadTaskQueue(
     NonMainThreadSchedulerImpl* non_main_thread_scheduler)
     : TaskQueue(std::move(impl), spec),
       non_main_thread_scheduler_(non_main_thread_scheduler) {
+  // Pointer registration is needed for sorting in TaskQueueVoterMap.
+  recordreplay::RegisterPointer(this);
   if (GetTaskQueueImpl() && spec.should_notify_observers) {
     // TaskQueueImpl may be null for tests.
     GetTaskQueueImpl()->SetOnTaskCompletedHandler(base::BindRepeating(
@@ -25,7 +27,9 @@ NonMainThreadTaskQueue::NonMainThreadTaskQueue(
   }
 }
 
-NonMainThreadTaskQueue::~NonMainThreadTaskQueue() = default;
+NonMainThreadTaskQueue::~NonMainThreadTaskQueue() {
+  recordreplay::UnregisterPointer(this);
+}
 
 void NonMainThreadTaskQueue::OnTaskCompleted(
     const base::sequence_manager::Task& task,
