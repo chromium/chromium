@@ -192,6 +192,7 @@ source_set("unit_tests") {
     "conversation_controller_unittest.cc",
     "conversation_observer_unittest.cc",
     "device_settings_controller_unittest.cc",
+    "display_controller_unittest.cc",
     "media_controller_unittest.cc",
     "network_provider_impl_unittest.cc",
     "notification_delegate_unittest.cc",
