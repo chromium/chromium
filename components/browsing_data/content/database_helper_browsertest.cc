@@ -31,7 +31,6 @@
 #include "url/origin.h"
 
 using content::BrowserContext;
-using content::BrowserThread;
 
 namespace browsing_data {
 namespace {
@@ -42,12 +41,6 @@ const char kTestIdentifier1[] = "http_www.example.com_0";
 
 const char kTestIdentifierExtension[] =
     "chrome-extension_behllobkkfkfnphdnhnkndlbkcpglgmj_0";
-
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-url::Origin TestOrigin() {
-  return url::Origin::Create(GURL("http://www.example.com"));
-}
 
 class DatabaseHelperTest : public content::ContentBrowserTest {
  public:
@@ -87,8 +80,8 @@ class DatabaseHelperTest : public content::ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, FetchData) {
   CreateDatabases();
-  scoped_refptr<DatabaseHelper> database_helper(
-      new DatabaseHelper(shell()->web_contents()->GetBrowserContext()));
+  auto database_helper = base::MakeRefCounted<DatabaseHelper>(
+      shell()->web_contents()->GetBrowserContext());
   std::list<content::StorageUsageInfo> database_info_list;
   base::RunLoop run_loop;
   database_helper->StartFetching(base::BindLambdaForTesting(
@@ -97,44 +90,45 @@ IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, FetchData) {
         run_loop.Quit();
       }));
   run_loop.Run();
-  ASSERT_EQ(1UL, database_info_list.size());
-  EXPECT_EQ(TestOrigin(), database_info_list.begin()->origin);
+  ASSERT_EQ(1u, database_info_list.size());
+  EXPECT_EQ(url::Origin::Create(GURL("http://www.example.com")),
+            database_info_list.begin()->origin);
 }
 
 IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, CannedAddDatabase) {
   const url::Origin origin1 = url::Origin::Create(GURL("http://host1:1/"));
   const url::Origin origin2 = url::Origin::Create(GURL("http://host2:1/"));
 
-  scoped_refptr<CannedDatabaseHelper> helper(
-      new CannedDatabaseHelper(shell()->web_contents()->GetBrowserContext()));
-  helper->Add(origin1);
-  helper->Add(origin1);
-  helper->Add(origin2);
+  auto database_helper = base::MakeRefCounted<CannedDatabaseHelper>(
+      shell()->web_contents()->GetBrowserContext());
+  database_helper->Add(origin1);
+  database_helper->Add(origin1);
+  database_helper->Add(origin2);
 
   TestCompletionCallback callback;
-  helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
-                                       base::Unretained(&callback)));
+  database_helper->StartFetching(base::BindOnce(
+      &TestCompletionCallback::callback, base::Unretained(&callback)));
 
   std::list<content::StorageUsageInfo> result = callback.result();
 
   ASSERT_EQ(2u, result.size());
   auto info = result.begin();
   EXPECT_EQ(origin1, info->origin);
-  info++;
+  ++info;
   EXPECT_EQ(origin2, info->origin);
 }
 
 IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, CannedUnique) {
   const url::Origin origin = url::Origin::Create(GURL("http://host1:1/"));
 
-  scoped_refptr<CannedDatabaseHelper> helper(
-      new CannedDatabaseHelper(shell()->web_contents()->GetBrowserContext()));
-  helper->Add(origin);
-  helper->Add(origin);
+  auto database_helper = base::MakeRefCounted<CannedDatabaseHelper>(
+      shell()->web_contents()->GetBrowserContext());
+  database_helper->Add(origin);
+  database_helper->Add(origin);
 
   TestCompletionCallback callback;
-  helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
-                                       base::Unretained(&callback)));
+  database_helper->StartFetching(base::BindOnce(
+      &TestCompletionCallback::callback, base::Unretained(&callback)));
 
   std::list<content::StorageUsageInfo> result = callback.result();
 
