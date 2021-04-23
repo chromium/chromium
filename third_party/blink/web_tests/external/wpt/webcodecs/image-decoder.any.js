@@ -200,10 +200,10 @@ promise_test(t => {
         // properly ordered.
         p1 = decoder.decode({frameIndex: 0});
         return promise_rejects_dom(
-            t, 'EncodingError', decoder.decode({frameIndex: 1}));
+            t, 'IndexSizeError', decoder.decode({frameIndex: 1}));
       })
       .then(_ => {
-        return promise_rejects_dom(t, 'EncodingError', p1);
+        return promise_rejects_dom(t, 'IndexSizeError', p1);
       })
 }, 'Test partial decoding without a frame results in an error');
 

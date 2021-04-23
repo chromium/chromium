@@ -465,6 +465,16 @@ void ImageDecoderExternal::OnDecodeReady(
   // If there was nothing to decode yet or no new image, try again; this will do
   // nothing if no new data has been received since the last submitted request.
   if (result->status == ImageDecoderCore::Status::kNoImage) {
+    // Once we're data complete, if no further image can be decoded, we should
+    // reject the decode() since it can't be satisfied.
+    if (data_complete_) {
+      request->exception = MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kIndexSizeError,
+          String::Format("Unexpected end of image. Request for frame index %d "
+                         "can't be satisfied.",
+                         request->frame_index));
+    }
+
     MaybeSatisfyPendingDecodes();
     return;
   }
