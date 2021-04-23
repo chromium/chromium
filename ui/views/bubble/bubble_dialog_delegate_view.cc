@@ -564,7 +564,6 @@ gfx::Rect BubbleDialogDelegate::GetAnchorRect() const {
     return anchor_rect_.value_or(gfx::Rect());
 
   anchor_rect_ = GetAnchorView()->GetAnchorBoundsInScreen();
-  anchor_rect_->Inset(anchor_view_insets_);
 
 #if !defined(OS_APPLE)
   // GetAnchorBoundsInScreen returns values that take anchor widget's

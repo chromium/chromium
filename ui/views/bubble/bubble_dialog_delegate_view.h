@@ -86,15 +86,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   const base::Optional<gfx::Rect>& anchor_rect() const { return anchor_rect_; }
   void SetAnchorRect(const gfx::Rect& rect);
 
-  // The anchor view insets are applied to the anchor view's bounds. This is
-  // used to align the bubble properly with the visual center of the anchor View
-  // when the anchor View's visual center is not the same as the center of its
-  // bounding box.
-  // TODO(https://crbug.com/869928): Remove this concept in favor of
-  // View::GetAnchorBoundsInScreen().
-  const gfx::Insets& anchor_view_insets() const { return anchor_view_insets_; }
-  void set_anchor_view_insets(const gfx::Insets& i) { anchor_view_insets_ = i; }
-
   //////////////////////////////////////////////////////////////////////////////
   // The anchor widget:
   //
@@ -341,9 +332,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   bool adjust_if_offscreen_ = true;
   bool focus_traversable_from_anchor_view_ = true;
   ViewTracker highlighted_button_tracker_;
-
-  // Insets applied to the |anchor_view_| bounds.
-  gfx::Insets anchor_view_insets_;
 
   // A flag controlling bubble closure on deactivation.
   bool close_on_deactivate_ = true;

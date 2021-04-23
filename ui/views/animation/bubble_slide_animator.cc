@@ -91,7 +91,6 @@ void BubbleSlideAnimator::OnWidgetDestroying(Widget* widget) {
 
 gfx::Rect BubbleSlideAnimator::CalculateTargetBounds(
     const View* desired_anchor_view) const {
-  DCHECK(bubble_delegate_->anchor_view_insets().IsEmpty());
   return bubble_delegate_->GetBubbleFrameView()->GetUpdatedWindowBounds(
       desired_anchor_view->GetAnchorBoundsInScreen(), bubble_delegate_->arrow(),
       bubble_delegate_->GetWidget()->client_view()->GetPreferredSize(), true);

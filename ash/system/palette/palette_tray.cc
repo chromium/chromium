@@ -44,7 +44,6 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/events/event_constants.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -551,7 +550,10 @@ void PaletteTray::ShowBubble() {
   TrayBubbleView::InitParams init_params;
   init_params.delegate = this;
   init_params.parent_window = GetBubbleWindowContainer();
-  init_params.anchor_view = GetBubbleAnchor();
+  init_params.anchor_view = nullptr;
+  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
+  init_params.anchor_rect = GetBubbleAnchor()->GetAnchorBoundsInScreen();
+  init_params.anchor_rect.Inset(GetBubbleAnchorInsets());
   init_params.shelf_alignment = shelf()->alignment();
   init_params.preferred_width = kPaletteWidth;
   init_params.close_on_deactivate = true;
@@ -566,7 +568,6 @@ void PaletteTray::ShowBubble() {
 
   // Create and customize bubble view.
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
-  bubble_view->set_anchor_view_insets(GetBubbleAnchorInsets());
   bubble_view->set_margins(GetSecondaryBubbleInsets());
   bubble_view->SetBorder(views::CreateEmptyBorder(
       gfx::Insets(0, 0, kPaddingBetweenBottomAndLastTrayItem, 0)));

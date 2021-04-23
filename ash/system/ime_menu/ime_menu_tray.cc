@@ -336,7 +336,10 @@ void ImeMenuTray::ShowImeMenuBubbleInternal() {
   TrayBubbleView::InitParams init_params;
   init_params.delegate = this;
   init_params.parent_window = GetBubbleWindowContainer();
-  init_params.anchor_view = GetBubbleAnchor();
+  init_params.anchor_view = nullptr;
+  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
+  init_params.anchor_rect = GetBubbleAnchor()->GetAnchorBoundsInScreen();
+  init_params.anchor_rect.Inset(GetBubbleAnchorInsets());
   init_params.shelf_alignment = shelf()->alignment();
   init_params.preferred_width = kTrayMenuWidth;
   init_params.close_on_deactivate = true;
@@ -351,7 +354,6 @@ void ImeMenuTray::ShowImeMenuBubbleInternal() {
   };
 
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
-  bubble_view->set_anchor_view_insets(GetBubbleAnchorInsets());
   bubble_view->set_margins(GetSecondaryBubbleInsets());
 
   // Add a title item with a separator on the top of the IME menu.
