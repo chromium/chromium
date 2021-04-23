@@ -30,6 +30,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,10 +80,10 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
     protected class CategoryCardInteractionDelegate
             implements ContextMenuManager.Delegate, OnClickListener, OnCreateContextMenuListener,
                        OnFocusChangeListener {
-        private String mSiteUrl;
+        private GURL mSiteUrl;
         private int mTileIndex;
 
-        public CategoryCardInteractionDelegate(String siteUrl, int tileIndex) {
+        public CategoryCardInteractionDelegate(GURL siteUrl, int tileIndex) {
             mSiteUrl = siteUrl;
             mTileIndex = tileIndex;
         }
@@ -92,7 +93,7 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
             recordCategoryClick(mCategory.getType());
             recordTileIndexClick(mCategoryCardIndex, mTileIndex);
             RecordUserAction.record("Android.ExploreSitesPage.ClickOnSiteIcon");
-            ExploreSitesBridge.recordClick(mProfile, mSiteUrl, mCategory.getType());
+            ExploreSitesBridge.recordClick(mProfile, mSiteUrl.getSpec(), mCategory.getType());
             mNavigationDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
                     new LoadUrlParams(getUrl(), PageTransition.AUTO_BOOKMARK));
         }
@@ -112,7 +113,7 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
         @Override
         public void removeItem() {
             // Update the database on the C++ side.
-            ExploreSitesBridge.blockSite(mProfile, mSiteUrl);
+            ExploreSitesBridge.blockSite(mProfile, mSiteUrl.getSpec());
 
             // Remove from model (category).
             mCategory.removeSite(mTileIndex);
@@ -123,7 +124,7 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
         }
 
         @Override
-        public String getUrl() {
+        public GURL getUrl() {
             return mSiteUrl;
         }
 

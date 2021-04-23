@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 
@@ -60,12 +61,12 @@ public class ExploreSitesCategoryCardViewTest {
                 new ExploreSitesCategory(id, type, title, ntpShownCount, interactionCount);
 
         for (int i = 0; i < numMockSites; i++) {
-            final int site_id = i;
-            final String site_title = "Site #" + i;
-            final String site_url = "http://example.com/" + i;
+            final int siteId = i;
+            final String siteTitle = "Site #" + i;
+            final GURL siteUrl = new GURL("http://example.com/" + i);
             final boolean isBlocklisted = i < numBlocklisted;
             ExploreSitesSite mockSite =
-                    new ExploreSitesSite(site_id, site_title, site_url, isBlocklisted);
+                    new ExploreSitesSite(siteId, siteTitle, siteUrl, isBlocklisted);
             syntheticCategory.addSite(mockSite);
         }
 

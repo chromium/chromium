@@ -888,7 +888,7 @@ public class OfflinePageUtils {
                 if (page.getClientId().getNamespace().equals(OfflinePageBridge.LAST_N_NAMESPACE)) {
                     tabRestoreContext |= BIT_LAST_N;
                 }
-            } else if (!OfflinePageBridge.canSavePage(tab.getUrlString()) || tab.isIncognito()) {
+            } else if (!OfflinePageBridge.canSavePage(tab.getUrl()) || tab.isIncognito()) {
                 tabRestoreContext |= BIT_CANT_SAVE_OFFLINE;
             }
 

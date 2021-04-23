@@ -143,7 +143,7 @@ public class OfflinePageBridge {
     /**
      * @return True if an offline copy of the given URL can be saved.
      */
-    public static boolean canSavePage(String url) {
+    public static boolean canSavePage(GURL url) {
         return org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get().canSavePage(url);
     }
 
@@ -661,7 +661,7 @@ public class OfflinePageBridge {
 
     @NativeMethods
     interface Natives {
-        boolean canSavePage(String url);
+        boolean canSavePage(GURL url);
         OfflinePageBridge getOfflinePageBridgeForProfileKey(ProfileKey profileKey);
         void getAllPages(long nativeOfflinePageBridge, OfflinePageBridge caller,
                 List<OfflinePageItem> offlinePages, final Callback<List<OfflinePageItem>> callback);

@@ -44,6 +44,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 
@@ -67,8 +68,8 @@ public class ExploreSitesPageTest {
             // 0th category would be filtered out. Tests that row maximums are obeyed.
             int numSites = 4 * i + 1;
             for (int j = 0; j < numSites; j++) {
-                ExploreSitesSite site = new ExploreSitesSite(
-                        i * 8 + j, "Site #" + Integer.toString(j), "https://example.com/", false);
+                ExploreSitesSite site = new ExploreSitesSite(i * 8 + j,
+                        "Site #" + Integer.toString(j), new GURL("https://example.com/"), false);
                 category.addSite(site);
             }
             categoryList.add(category);

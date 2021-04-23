@@ -570,8 +570,8 @@ public class TileGroup implements MostVisitedSites.Observer {
         }
 
         @Override
-        public String getUrl() {
-            return mSuggestion.url.getSpec();
+        public GURL getUrl() {
+            return mSuggestion.url;
         }
 
         @Override

@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.ui.base.WindowAndroid.OnCloseContextMenuListener;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -70,7 +71,7 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
          * @return the URL of the current item for saving offline, or null if the item can't be
          *         saved offline.
          */
-        String getUrl();
+        GURL getUrl();
 
         /**
          * @return Title to be displayed in the context menu when applicable, or null if no title
@@ -97,7 +98,7 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         public void removeItem() {}
 
         @Override
-        public String getUrl() {
+        public GURL getUrl() {
             return null;
         }
 
@@ -225,7 +226,7 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
             case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
                 return mNavigationDelegate.isOpenInNewWindowEnabled();
             case ContextMenuItemId.SAVE_FOR_OFFLINE: {
-                String itemUrl = delegate.getUrl();
+                GURL itemUrl = delegate.getUrl();
                 return itemUrl != null && OfflinePageBridge.canSavePage(itemUrl);
             }
             case ContextMenuItemId.REMOVE:

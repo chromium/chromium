@@ -217,9 +217,9 @@ void PublishPageDone(
 
 static jboolean JNI_OfflinePageBridge_CanSavePage(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_url) {
-  GURL url(ConvertJavaStringToUTF8(env, j_url));
-  return OfflinePageModel::CanSaveURL(url);
+    const JavaParamRef<jobject>& j_url) {
+  return OfflinePageModel::CanSaveURL(
+      *url::GURLAndroid::ToNativeGURL(env, j_url));
 }
 
 static ScopedJavaLocalRef<jobject>

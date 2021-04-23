@@ -26,6 +26,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/gfx/android/java_bitmap.h"
+#include "url/android/gurl_android.h"
 
 namespace explore_sites {
 using base::android::ConvertUTF8ToJavaString;
@@ -60,10 +61,11 @@ void CatalogReady(ScopedJavaGlobalRef<jobject>(j_result_obj),
             ConvertUTF8ToJavaString(env, category.label),
             category.ntp_shown_count, category.interaction_count, j_result_obj);
     for (auto& site : category.sites) {
+      ScopedJavaLocalRef<jobject> jurl =
+          url::GURLAndroid::FromNativeGURL(env, site.url);
       Java_ExploreSitesSite_createSiteInCategory(
-          env, site.site_id, ConvertUTF8ToJavaString(env, site.title),
-          ConvertUTF8ToJavaString(env, site.url.spec()), site.is_blocked,
-          j_category);
+          env, site.site_id, ConvertUTF8ToJavaString(env, site.title), jurl,
+          site.is_blocked, j_category);
     }
   }
   base::android::RunObjectCallbackAndroid(j_callback_obj, j_result_obj);

@@ -13,6 +13,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link ExploreSitesCategory} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -27,7 +29,7 @@ public class ExploreSitesCategoryUnitTest {
         final int interactionCount = 3;
         final int siteId = 100;
         final String title = "test";
-        final String url = "http://www.google.com";
+        final GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
         final String categoryTitle = "Movies";
 
         ExploreSitesCategory category =
@@ -57,14 +59,14 @@ public class ExploreSitesCategoryUnitTest {
         final int siteId2 = 101;
         final int siteId3 = 102;
         final int siteId4 = 103;
-        final String title1 = "Google";
-        final String title2 = "Chromium";
-        final String title3 = "YouTube";
-        final String title4 = "GMail";
-        final String url1 = "http://www.google.com";
-        final String url2 = "http://chromium.org";
-        final String url3 = "http://youtube.com";
-        final String url4 = "http://gmail.com";
+        final String title1 = "One";
+        final String title2 = "Two";
+        final String title3 = "Three";
+        final String title4 = "Example";
+        final GURL url1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+        final GURL url2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+        final GURL url3 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_3);
+        final GURL url4 = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
         final String categoryTitle = "Science";
 
         ExploreSitesCategory category = new ExploreSitesCategory(
