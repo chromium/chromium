@@ -15,8 +15,8 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
@@ -203,7 +203,7 @@ class AutofillControllerTest : public ChromeWebTest {
   void WaitForSuggestionRetrieval(BOOL wait_for_trigger);
 
   // Blocks until |expected_size| forms have been fecthed.
-  bool WaitForFormFetched(AutofillManager* manager,
+  bool WaitForFormFetched(BrowserAutofillManager* manager,
                           size_t expected_number_of_forms) WARN_UNUSED_RESULT;
 
   // Loads the page and wait until the initial form processing has been done.
@@ -275,7 +275,7 @@ void AutofillControllerTest::SetUp() {
   std::string locale("en");
   autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
       web_state(), autofill_client_.get(), /*autofill_agent=*/nil, locale,
-      autofill::AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
+      autofill::BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
 
   accessory_mediator_ =
       [[FormInputAccessoryMediator alloc] initWithConsumer:nil
@@ -315,7 +315,7 @@ void AutofillControllerTest::WaitForSuggestionRetrieval(BOOL wait_for_trigger) {
 }
 
 bool AutofillControllerTest::WaitForFormFetched(
-    AutofillManager* manager,
+    BrowserAutofillManager* manager,
     size_t expected_number_of_forms) {
   return base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForPageLoadTimeout, ^bool {
@@ -329,7 +329,7 @@ bool AutofillControllerTest::LoadHtmlAndWaitForFormFetched(
   ChromeWebTest::LoadHtml(html);
   web::WebFrame* main_frame =
       web_state()->GetWebFramesManager()->GetMainWebFrame();
-  AutofillManager* autofill_manager =
+  BrowserAutofillManager* autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
           ->autofill_manager();
   return WaitForFormFetched(autofill_manager, expected_number_of_forms);
@@ -346,12 +346,12 @@ void AutofillControllerTest::ExpectHappinessMetric(
 }
 
 // Checks that viewing an HTML page containing a form results in the form being
-// registered as a FormStructure by the AutofillManager.
+// registered as a FormStructure by the BrowserAutofillManager.
 TEST_F(AutofillControllerTest, ReadForm) {
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormHtml, 1));
   web::WebFrame* main_frame =
       web_state()->GetWebFramesManager()->GetMainWebFrame();
-  AutofillManager* autofill_manager =
+  BrowserAutofillManager* autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
           ->autofill_manager();
   const auto& forms = autofill_manager->form_structures();
@@ -366,13 +366,13 @@ TEST_F(AutofillControllerTest, ReadForm) {
 }
 
 // Checks that viewing an HTML page containing a form with an 'id' results in
-// the form being registered as a FormStructure by the AutofillManager, and the
-// name is correctly set.
+// the form being registered as a FormStructure by the BrowserAutofillManager,
+// and the name is correctly set.
 TEST_F(AutofillControllerTest, ReadFormName) {
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kMinimalFormWithNameHtml, 1));
   web::WebFrame* main_frame =
       web_state()->GetWebFramesManager()->GetMainWebFrame();
-  AutofillManager* autofill_manager =
+  BrowserAutofillManager* autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
           ->autofill_manager();
   const auto& forms = autofill_manager->form_structures();

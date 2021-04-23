@@ -44,7 +44,7 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/test_autofill_manager.h"
+#include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -165,14 +165,15 @@ class CreditCardAccessManagerTest : public testing::Test {
         std::unique_ptr<payments::TestPaymentsClient>(payments_client_));
     autofill_client_.set_test_strike_database(
         std::make_unique<TestStrikeDatabase>());
-    autofill_manager_ = std::make_unique<TestAutofillManager>(
+    browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
         autofill_driver_.get(), &autofill_client_, &personal_data_manager_,
         autocomplete_history_manager_.get());
     credit_card_access_manager_ =
-        autofill_manager_->credit_card_access_manager();
+        browser_autofill_manager_->credit_card_access_manager();
 
 #if !defined(OS_IOS)
-    autofill_driver_->SetAutofillManager(std::move(autofill_manager_));
+    autofill_driver_->SetBrowserAutofillManager(
+        std::move(browser_autofill_manager_));
     autofill_driver_->SetAuthenticator(new TestInternalAuthenticator());
     credit_card_access_manager_->set_fido_authenticator_for_testing(
         std::make_unique<TestCreditCardFIDOAuthenticator>(
@@ -399,7 +400,7 @@ class CreditCardAccessManagerTest : public testing::Test {
   TestPersonalDataManager personal_data_manager_;
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<AutofillManager> autofill_manager_;
+  std::unique_ptr<BrowserAutofillManager> browser_autofill_manager_;
   CreditCardAccessManager* credit_card_access_manager_;
 };
 

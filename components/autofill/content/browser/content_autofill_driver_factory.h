@@ -10,7 +10,7 @@
 #include "base/supports_user_data.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/browser/autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
@@ -35,7 +35,8 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
       content::WebContents* web_contents,
       AutofillClient* client,
       const std::string& app_locale,
-      AutofillManager::AutofillDownloadManagerState enable_download_manager,
+      BrowserAutofillManager::AutofillDownloadManagerState
+          enable_download_manager,
       AutofillProvider* provider);
 
   ~ContentAutofillDriverFactory() override;
@@ -44,13 +45,15 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
       content::WebContents* contents,
       AutofillClient* client,
       const std::string& app_locale,
-      AutofillManager::AutofillDownloadManagerState enable_download_manager);
+      BrowserAutofillManager::AutofillDownloadManagerState
+          enable_download_manager);
 
   static void CreateForWebContentsAndDelegate(
       content::WebContents* contents,
       AutofillClient* client,
       const std::string& app_locale,
-      AutofillManager::AutofillDownloadManagerState enable_download_manager,
+      BrowserAutofillManager::AutofillDownloadManagerState
+          enable_download_manager,
       AutofillProvider* provider);
 
   static ContentAutofillDriverFactory* FromWebContents(
@@ -76,7 +79,7 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
 
  private:
   std::string app_locale_;
-  AutofillManager::AutofillDownloadManagerState enable_download_manager_;
+  BrowserAutofillManager::AutofillDownloadManagerState enable_download_manager_;
   AutofillProvider* provider_;
 };
 

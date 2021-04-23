@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_MANAGER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_MANAGER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_BROWSER_AUTOFILL_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_BROWSER_AUTOFILL_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 
 using base::TimeTicks;
 
@@ -24,16 +24,16 @@ class FormStructure;
 class TestPersonalDataManager;
 class MockAutocompleteHistoryManager;
 
-class TestAutofillManager : public AutofillManager {
+class TestBrowserAutofillManager : public BrowserAutofillManager {
  public:
-  TestAutofillManager(
+  TestBrowserAutofillManager(
       AutofillDriver* driver,
       AutofillClient* client,
       TestPersonalDataManager* personal_data,
       MockAutocompleteHistoryManager* autocomplete_history_manager);
-  ~TestAutofillManager() override;
+  ~TestBrowserAutofillManager() override;
 
-  // AutofillManager overrides.
+  // BrowserAutofillManager overrides.
   bool IsAutofillProfileEnabled() const override;
   bool IsAutofillCreditCardEnabled() const override;
   void UploadFormData(const FormStructure& submitted_form,
@@ -46,7 +46,7 @@ class TestAutofillManager : public AutofillManager {
                                    const base::TimeTicks& submission_time,
                                    bool observed_submission) override;
 
-  // Unique to TestAutofillManager:
+  // Unique to TestBrowserAutofillManager:
 
   int GetPackedCreditCardID(int credit_card_id);
 
@@ -71,7 +71,7 @@ class TestAutofillManager : public AutofillManager {
 
   void SetCallParentUploadFormData(bool value);
 
-  using AutofillManager::pending_form_data;
+  using BrowserAutofillManager::pending_form_data;
 
  private:
   TestPersonalDataManager* personal_data_;  // Weak reference.
@@ -85,9 +85,9 @@ class TestAutofillManager : public AutofillManager {
   std::string submitted_form_signature_;
   std::vector<ServerFieldTypeSet> expected_submitted_field_types_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillManager);
+  DISALLOW_COPY_AND_ASSIGN(TestBrowserAutofillManager);
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_MANAGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_BROWSER_AUTOFILL_MANAGER_H_

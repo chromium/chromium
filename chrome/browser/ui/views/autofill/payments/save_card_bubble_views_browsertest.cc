@@ -206,7 +206,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
             &test_url_loader_factory_);
     ContentAutofillDriver::GetForRenderFrameHost(
         GetActiveWebContents()->GetMainFrame())
-        ->autofill_manager()
+        ->browser_autofill_manager()
         ->client()
         ->GetPaymentsClient()
         ->set_url_loader_factory_for_testing(test_shared_loader_factory_);
@@ -218,7 +218,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
     // Set up this class as the ObserverForTest implementation.
     credit_card_save_manager_ = ContentAutofillDriver::GetForRenderFrameHost(
                                     GetActiveWebContents()->GetMainFrame())
-                                    ->autofill_manager()
+                                    ->browser_autofill_manager()
                                     ->client()
                                     ->GetFormDataImporter()
                                     ->credit_card_save_manager_.get();

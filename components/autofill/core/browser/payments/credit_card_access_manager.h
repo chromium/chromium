@@ -29,7 +29,7 @@
 
 namespace autofill {
 
-class AutofillManager;
+class BrowserAutofillManager;
 enum class WebauthnDialogCallbackType;
 
 // Flow type denotes which card unmask authentication method was used.
@@ -57,7 +57,7 @@ struct CachedServerCardInfo {
 };
 
 // Manages logic for accessing credit cards either stored locally or stored
-// with Google Payments. Owned by AutofillManager.
+// with Google Payments. Owned by BrowserAutofillManager.
 #if defined(OS_IOS)
 class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester {
 #else
@@ -143,7 +143,7 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
                            PreflightCallRateLimited);
   friend class AutofillAssistantTest;
-  friend class AutofillManagerTest;
+  friend class BrowserAutofillManagerTest;
   friend class AutofillMetricsTest;
   friend class CreditCardAccessManagerTest;
 

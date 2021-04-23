@@ -30,7 +30,7 @@ class UpiVpaSaveManager {
   AutofillClient* client_;
 
   // The personal data manager, used to save and load personal data to/from the
-  // web database. This is overridden by the AutofillManagerTest.
+  // web database. This is overridden by the BrowserAutofillManagerTest.
   // Weak reference. May be nullptr, which indicates OTR.
   PersonalDataManager* personal_data_manager_;
 

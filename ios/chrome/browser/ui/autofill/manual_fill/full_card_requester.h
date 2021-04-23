@@ -18,7 +18,7 @@
 class ChromeBrowserState;
 
 namespace autofill {
-class AutofillManager;
+class BrowserAutofillManager;
 class CreditCard;
 }  // namespace autofill
 
@@ -32,7 +32,7 @@ class FullCardRequester
 
   void GetFullCard(
       const autofill::CreditCard& card,
-      autofill::AutofillManager* autofill_manager,
+      autofill::BrowserAutofillManager* autofill_manager,
       base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
           result_delegate);
 

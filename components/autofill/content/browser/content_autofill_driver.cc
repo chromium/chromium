@@ -14,7 +14,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_handler_proxy.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -66,15 +66,15 @@ ContentAutofillDriver::ContentAutofillDriver(
     AutofillHandler::AutofillDownloadManagerState enable_download_manager,
     AutofillProvider* provider)
     : render_frame_host_(render_frame_host),
-      autofill_manager_(nullptr),
+      browser_autofill_manager_(nullptr),
       key_press_handler_manager_(this),
       log_manager_(client->GetLogManager()) {
-  // AutofillManager isn't used if provider is valid, Autofill provider is
-  // currently used by Android WebView only.
+  // BrowserAutofillManager isn't used if provider is valid, Autofill provider
+  // is currently used by Android WebView only.
   if (provider) {
     SetAutofillProvider(provider, client, enable_download_manager);
   } else {
-    SetAutofillManager(std::make_unique<AutofillManager>(
+    SetBrowserAutofillManager(std::make_unique<BrowserAutofillManager>(
         this, client, app_locale, enable_download_manager));
   }
   if (client && ShouldEnableHeavyFormDataScraping(client->GetChannel())) {
@@ -142,11 +142,11 @@ bool ContentAutofillDriver::RendererIsAvailable() {
 
 InternalAuthenticator*
 ContentAutofillDriver::GetOrCreateCreditCardInternalAuthenticator() {
-  if (!authenticator_impl_ && autofill_manager_ &&
-      autofill_manager_->client()) {
+  if (!authenticator_impl_ && browser_autofill_manager_ &&
+      browser_autofill_manager_->client()) {
     authenticator_impl_ =
-        autofill_manager_->client()->CreateCreditCardInternalAuthenticator(
-            render_frame_host_);
+        browser_autofill_manager_->client()
+            ->CreateCreditCardInternalAuthenticator(render_frame_host_);
   }
   return authenticator_impl_.get();
 }
@@ -170,8 +170,9 @@ void ContentAutofillDriver::SendFormDataToRenderer(
 
 void ContentAutofillDriver::PropagateAutofillPredictions(
     const std::vector<FormStructure*>& forms) {
-  AutofillHandler* handler =
-      autofill_manager_ ? autofill_manager_ : autofill_handler_.get();
+  AutofillHandler* handler = browser_autofill_manager_
+                                 ? browser_autofill_manager_
+                                 : autofill_handler_.get();
   DCHECK(handler);
   handler->PropagateAutofillPredictions(render_frame_host_, forms);
 }
@@ -238,7 +239,8 @@ void ContentAutofillDriver::RendererShouldSetSuggestionAvailability(
 void ContentAutofillDriver::PopupHidden() {
   // If the unmask prompt is showing, keep showing the preview. The preview
   // will be cleared when the prompt closes.
-  if (autofill_manager_ && autofill_manager_->ShouldClearPreviewedForm())
+  if (browser_autofill_manager_ &&
+      browser_autofill_manager_->ShouldClearPreviewedForm())
     RendererShouldClearPreviewedForm();
 }
 
@@ -358,8 +360,8 @@ void ContentAutofillDriver::DidNavigateFrame(
   if (navigation_handle->IsSameDocument()) {
     // On page refresh, reset the rate limiter for fetching authentication
     // details for credit card unmasking.
-    if (autofill_manager_) {
-      autofill_manager_->credit_card_access_manager()
+    if (browser_autofill_manager_) {
+      browser_autofill_manager_->credit_card_access_manager()
           ->SignalCanFetchUnmaskDetails();
     }
     return;
@@ -377,15 +379,16 @@ void ContentAutofillDriver::DidNavigateFrame(
   autofill_handler_->Reset();
 }
 
-void ContentAutofillDriver::SetAutofillManager(
-    std::unique_ptr<AutofillManager> manager) {
+void ContentAutofillDriver::SetBrowserAutofillManager(
+    std::unique_ptr<BrowserAutofillManager> manager) {
   autofill_handler_ = std::move(manager);
-  autofill_manager_ = static_cast<AutofillManager*>(autofill_handler_.get());
+  browser_autofill_manager_ =
+      static_cast<BrowserAutofillManager*>(autofill_handler_.get());
 }
 
 ContentAutofillDriver::ContentAutofillDriver()
     : render_frame_host_(nullptr),
-      autofill_manager_(nullptr),
+      browser_autofill_manager_(nullptr),
       key_press_handler_manager_(this),
       log_manager_(nullptr) {}
 
@@ -442,14 +445,15 @@ bool ContentAutofillDriver::DocumentUsedWebOTP() const {
 }
 
 void ContentAutofillDriver::MaybeReportAutofillWebOTPMetrics() {
-  // In tests, the autofill_manager_ may be unset or destroyed before |this|.
-  if (!autofill_manager_)
+  // In tests, the browser_autofill_manager_ may be unset or destroyed before
+  // |this|.
+  if (!browser_autofill_manager_)
     return;
   // It's possible that a frame without any form uses WebOTP. e.g. a server may
   // send the verification code to a phone number that was collected beforehand
   // and uses the WebOTP API for authentication purpose without user manually
   // entering the code.
-  if (!autofill_manager_->has_parsed_forms() && !DocumentUsedWebOTP())
+  if (!browser_autofill_manager_->has_parsed_forms() && !DocumentUsedWebOTP())
     return;
 
   ReportAutofillWebOTPMetrics(DocumentUsedWebOTP());
@@ -457,15 +461,17 @@ void ContentAutofillDriver::MaybeReportAutofillWebOTPMetrics() {
 
 void ContentAutofillDriver::ReportAutofillWebOTPMetrics(
     bool document_used_webotp) {
-  if (autofill_manager_->has_observed_phone_number_field())
+  if (browser_autofill_manager_->has_observed_phone_number_field())
     phone_collection_metric_state_ |= phone_collection_metric::kPhoneCollected;
-  if (autofill_manager_->has_observed_one_time_code_field())
+  if (browser_autofill_manager_->has_observed_one_time_code_field())
     phone_collection_metric_state_ |= phone_collection_metric::kOTCUsed;
   if (document_used_webotp)
     phone_collection_metric_state_ |= phone_collection_metric::kWebOTPUsed;
 
-  ukm::UkmRecorder* recorder = autofill_manager_->client()->GetUkmRecorder();
-  ukm::SourceId source_id = autofill_manager_->client()->GetUkmSourceId();
+  ukm::UkmRecorder* recorder =
+      browser_autofill_manager_->client()->GetUkmRecorder();
+  ukm::SourceId source_id =
+      browser_autofill_manager_->client()->GetUkmSourceId();
   AutofillMetrics::LogWebOTPPhoneCollectionMetricStateUkm(
       recorder, source_id, phone_collection_metric_state_);
 
@@ -480,8 +486,8 @@ void ContentAutofillDriver::SetAutofillProviderForTesting(
   SetAutofillProvider(provider, client,
                       AutofillHandler::AutofillDownloadManagerState::
                           DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
-  // AutofillManager isn't used if provider is valid.
-  autofill_manager_ = nullptr;
+  // BrowserAutofillManager isn't used if provider is valid.
+  browser_autofill_manager_ = nullptr;
 }
 
 void ContentAutofillDriver::ShowOfferNotificationIfApplicable(
@@ -489,20 +495,21 @@ void ContentAutofillDriver::ShowOfferNotificationIfApplicable(
   if (!navigation_handle->IsInMainFrame())
     return;
 
-  // TODO(crbug.com/1093057): Android webview does not have |autofill_manager_|,
-  // so flow is not enabled in Android Webview.
+  // TODO(crbug.com/1093057): Android webview does not have
+  // |browser_autofill_manager_|, so flow is not enabled in Android Webview.
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableOfferNotification) ||
-      !autofill_manager_) {
+      !browser_autofill_manager_) {
     return;
   }
 
-  AutofillOfferManager* offer_manager = autofill_manager_->offer_manager();
+  AutofillOfferManager* offer_manager =
+      browser_autofill_manager_->offer_manager();
   // This happens in the Incognito mode.
   if (!offer_manager)
     return;
 
-  GURL url = autofill_manager_->client()->GetLastCommittedURL();
+  GURL url = browser_autofill_manager_->client()->GetLastCommittedURL();
   if (!offer_manager->IsUrlEligible(url))
     return;
 
@@ -518,7 +525,7 @@ void ContentAutofillDriver::ShowOfferNotificationIfApplicable(
   if (domains.empty() || !card)
     return;
 
-  autofill_manager_->client()->ShowOfferNotificationIfApplicable(
+  browser_autofill_manager_->client()->ShowOfferNotificationIfApplicable(
       domains, offer_details_url, card);
 }
 

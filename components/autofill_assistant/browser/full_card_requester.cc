@@ -44,10 +44,10 @@ void FullCardRequester::GetFullCard(
     return;
   }
 
-  driver->autofill_manager()->GetOrCreateFullCardRequest()->GetFullCard(
+  driver->browser_autofill_manager()->GetOrCreateFullCardRequest()->GetFullCard(
       *card, autofill::AutofillClient::UNMASK_FOR_AUTOFILL,
       weak_ptr_factory_.GetWeakPtr(),
-      driver->autofill_manager()->GetAsFullCardRequestUIDelegate());
+      driver->browser_autofill_manager()->GetAsFullCardRequestUIDelegate());
 }
 
 FullCardRequester::~FullCardRequester() = default;

@@ -25,7 +25,7 @@ namespace autofill {
 class CreditCard;
 
 // Manages all Autofill related offers. One per frame; owned by the
-// AutofillManager.
+// BrowserAutofillManager.
 class AutofillOfferManager : public KeyedService,
                              public PersonalDataManagerObserver {
  public:

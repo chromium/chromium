@@ -101,7 +101,7 @@ bool ExtractFormsData(NSString* forms_json,
     return false;
 
   // Iterate through all the extracted forms and copy the data from JSON into
-  // AutofillManager structures.
+  // BrowserAutofillManager structures.
   for (const auto& form_dict : *forms_list) {
     autofill::FormData form;
     if (ExtractFormData(form_dict, filtered, form_name, main_frame_url,

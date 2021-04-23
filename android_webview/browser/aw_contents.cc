@@ -63,7 +63,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/android/provider/autofill_provider_android.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
@@ -242,10 +242,12 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
   permission_request_handler_ =
       std::make_unique<PermissionRequestHandler>(this, web_contents_.get());
 
-  AwAutofillClient* autofill_manager_delegate =
+  AwAutofillClient* browser_autofill_manager_delegate =
       AwAutofillClient::FromWebContents(web_contents_.get());
-  if (autofill_manager_delegate)
-    InitAutofillIfNecessary(autofill_manager_delegate->GetSaveFormData());
+  if (browser_autofill_manager_delegate) {
+    InitAutofillIfNecessary(
+        browser_autofill_manager_delegate->GetSaveFormData());
+  }
   content::SynchronousCompositor::SetClientForWebContents(
       web_contents_.get(), &browser_view_renderer_);
   AwContentsLifecycleNotifier::GetInstance().OnWebViewCreated(this);
@@ -290,7 +292,7 @@ void AwContents::SetJavaPeers(
 void AwContents::SetSaveFormData(bool enabled) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   InitAutofillIfNecessary(enabled);
-  // We need to check for the existence, since autofill_manager_delegate
+  // We need to check for the existence, since browser_autofill_manager_delegate
   // may not be created when the setting is false.
   if (AwAutofillClient::FromWebContents(web_contents_.get())) {
     AwAutofillClient::FromWebContents(web_contents_.get())

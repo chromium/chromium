@@ -144,7 +144,7 @@ class CreditCardFIDOAuthenticator
   Flow current_flow() { return current_flow_; }
 
  private:
-  friend class AutofillManagerTest;
+  friend class BrowserAutofillManagerTest;
   friend class CreditCardAccessManagerTest;
   friend class CreditCardFIDOAuthenticatorTest;
   friend class TestCreditCardFIDOAuthenticator;

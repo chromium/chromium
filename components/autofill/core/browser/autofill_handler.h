@@ -62,7 +62,8 @@ class AutofillHandler
   static bool IsRawMetadataUploadingEnabled(version_info::Channel channel);
 
   // TODO(crbug.com/1151542): Move to anonymous namespace once
-  // AutofillManager::OnLoadedServerPredictions() moves to AutofillHandler.
+  // BrowserAutofillManager::OnLoadedServerPredictions() moves to
+  // AutofillHandler.
   static void LogAutofillTypePredictionsAvailable(
       LogManager* log_manager,
       const std::vector<FormStructure*>& forms);

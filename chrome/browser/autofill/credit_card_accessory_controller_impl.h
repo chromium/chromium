@@ -47,7 +47,7 @@ class CreditCardAccessoryControllerImpl
       content::WebContents* web_contents,
       base::WeakPtr<ManualFillingController> mf_controller,
       autofill::PersonalDataManager* personal_data_manager,
-      autofill::AutofillManager* af_manager,
+      autofill::BrowserAutofillManager* af_manager,
       autofill::AutofillDriver* af_driver);
 
  private:
@@ -61,20 +61,20 @@ class CreditCardAccessoryControllerImpl
       content::WebContents* web_contents,
       base::WeakPtr<ManualFillingController> mf_controller,
       PersonalDataManager* personal_data_manager,
-      autofill::AutofillManager* af_manager,
+      autofill::BrowserAutofillManager* af_manager,
       autofill::AutofillDriver* af_driver);
 
   void FetchSuggestionsFromPersonalDataManager();
   base::WeakPtr<ManualFillingController> GetManualFillingController();
   autofill::AutofillDriver* GetDriver();
-  autofill::AutofillManager* GetManager() const;
+  autofill::BrowserAutofillManager* GetManager() const;
 
   // Pointers to cards owned by PersonalDataManager.
   std::vector<CreditCard*> cards_cache_;
   content::WebContents* web_contents_;
   base::WeakPtr<ManualFillingController> mf_controller_;
   PersonalDataManager* const personal_data_manager_;
-  autofill::AutofillManager* af_manager_for_testing_ = nullptr;
+  autofill::BrowserAutofillManager* af_manager_for_testing_ = nullptr;
   autofill::AutofillDriver* af_driver_for_testing_ = nullptr;
 
   // The observer to notify if available suggestions change.

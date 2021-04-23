@@ -19,7 +19,7 @@ namespace autofill {
 class AutofillHandlerProxy;
 
 // This class defines the interface for the autofill implementation other than
-// default AutofillManager.
+// default BrowserAutofillManager.
 class AutofillProvider {
  public:
   AutofillProvider();

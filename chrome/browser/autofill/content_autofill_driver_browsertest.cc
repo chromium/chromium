@@ -15,7 +15,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -86,7 +86,7 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
             kContentAutofillDriverFactoryWebContentsUserDataKey);
     ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
         web_contents, &autofill_client(), "en-US",
-        AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
+        BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
 
     // Serve both a.com and b.com (and any other domain).
     host_resolver()->AddRule("*", "127.0.0.1");

@@ -12,7 +12,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -28,7 +28,8 @@ std::unique_ptr<AutofillDriver> CreateDriver(
     content::RenderFrameHost* render_frame_host,
     AutofillClient* client,
     const std::string& app_locale,
-    AutofillManager::AutofillDownloadManagerState enable_download_manager,
+    BrowserAutofillManager::AutofillDownloadManagerState
+        enable_download_manager,
     AutofillProvider* provider) {
   return std::make_unique<ContentAutofillDriver>(
       render_frame_host, client, app_locale, enable_download_manager, provider);
@@ -47,7 +48,8 @@ void ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
     content::WebContents* contents,
     AutofillClient* client,
     const std::string& app_locale,
-    AutofillManager::AutofillDownloadManagerState enable_download_manager) {
+    BrowserAutofillManager::AutofillDownloadManagerState
+        enable_download_manager) {
   CreateForWebContentsAndDelegate(contents, client, app_locale,
                                   enable_download_manager, nullptr);
 }
@@ -56,7 +58,8 @@ void ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
     content::WebContents* contents,
     AutofillClient* client,
     const std::string& app_locale,
-    AutofillManager::AutofillDownloadManagerState enable_download_manager,
+    BrowserAutofillManager::AutofillDownloadManagerState
+        enable_download_manager,
     AutofillProvider* provider) {
   if (FromWebContents(contents))
     return;
@@ -102,7 +105,8 @@ ContentAutofillDriverFactory::ContentAutofillDriverFactory(
     content::WebContents* web_contents,
     AutofillClient* client,
     const std::string& app_locale,
-    AutofillManager::AutofillDownloadManagerState enable_download_manager,
+    BrowserAutofillManager::AutofillDownloadManagerState
+        enable_download_manager,
     AutofillProvider* provider)
     : AutofillDriverFactory(client),
       content::WebContentsObserver(web_contents),

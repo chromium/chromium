@@ -82,9 +82,9 @@ class PaymentsClient;
 // embedder.
 //
 // Each client instance is associated with a given context within which an
-// AutofillManager is used (e.g. a single tab), so when we say "for the client"
-// below, we mean "in the execution context the client is associated with" (e.g.
-// for the tab the AutofillManager is attached to).
+// BrowserAutofillManager is used (e.g. a single tab), so when we say "for the
+// client" below, we mean "in the execution context the client is associated
+// with" (e.g. for the tab the BrowserAutofillManager is attached to).
 class AutofillClient : public RiskDataLoader {
  public:
   enum PaymentsRpcResult {

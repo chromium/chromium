@@ -28,7 +28,7 @@ class AddressProfileSaveManager;
 
 // Manages logic for importing address profiles and credit card information from
 // web forms into the user's Autofill profile via the PersonalDataManager.
-// Owned by AutofillManager.
+// Owned by BrowserAutofillManager.
 class FormDataImporter {
  public:
   // Record type of the credit card imported from the form, if one exists.
@@ -166,7 +166,7 @@ class FormDataImporter {
 #endif  // #if !defined(OS_ANDROID) && !defined(OS_IOS)
 
   // The personal data manager, used to save and load personal data to/from the
-  // web database.  This is overridden by the AutofillManagerTest.
+  // web database.  This is overridden by the BrowserAutofillManagerTest.
   // Weak reference.
   // May be NULL.  NULL indicates OTR.
   PersonalDataManager* personal_data_manager_;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_MANAGER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_MANAGER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_BROWSER_AUTOFILL_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_BROWSER_AUTOFILL_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -50,7 +50,7 @@ namespace autofill {
 
 class AutofillField;
 class AutofillClient;
-class AutofillManagerTestDelegate;
+class BrowserAutofillManagerTestDelegate;
 class AutofillProfile;
 class AutofillType;
 class CreditCard;
@@ -73,15 +73,16 @@ enum class ValuePatternsMetric {
 
 // Manages saving and restoring the user's personal information entered into web
 // forms. One per frame; owned by the AutofillDriver.
-class AutofillManager : public AutofillHandler,
-                        public AutocompleteHistoryManager::SuggestionsHandler,
-                        public CreditCardAccessManager::Accessor {
+class BrowserAutofillManager
+    : public AutofillHandler,
+      public AutocompleteHistoryManager::SuggestionsHandler,
+      public CreditCardAccessManager::Accessor {
  public:
-  AutofillManager(AutofillDriver* driver,
-                  AutofillClient* client,
-                  const std::string& app_locale,
-                  AutofillDownloadManagerState enable_download_manager);
-  ~AutofillManager() override;
+  BrowserAutofillManager(AutofillDriver* driver,
+                         AutofillClient* client,
+                         const std::string& app_locale,
+                         AutofillDownloadManagerState enable_download_manager);
+  ~BrowserAutofillManager() override;
 
   void ShowAutofillSettings(bool show_credit_card_settings);
 
@@ -183,7 +184,7 @@ class AutofillManager : public AutofillHandler,
   const std::string& app_locale() const { return app_locale_; }
 
   // Only for testing.
-  void SetTestDelegate(AutofillManagerTestDelegate* delegate);
+  void SetTestDelegate(BrowserAutofillManagerTestDelegate* delegate);
 
   // Will send an upload based on the |form_structure| data and the local
   // Autofill profile data. |observed_submission| is specified if the upload
@@ -299,7 +300,7 @@ class AutofillManager : public AutofillHandler,
 
  protected:
   // Test code should prefer to use this constructor.
-  AutofillManager(
+  BrowserAutofillManager(
       AutofillDriver* driver,
       AutofillClient* client,
       PersonalDataManager* personal_data,
@@ -366,8 +367,9 @@ class AutofillManager : public AutofillHandler,
   FormData* pending_form_data() { return pending_form_data_.get(); }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(AutofillManagerTest, PageLanguageGetsCorrectlySet);
-  FRIEND_TEST_ALL_PREFIXES(AutofillManagerTest,
+  FRIEND_TEST_ALL_PREFIXES(BrowserAutofillManagerTest,
+                           PageLanguageGetsCorrectlySet);
+  FRIEND_TEST_ALL_PREFIXES(BrowserAutofillManagerTest,
                            PageLanguageGetsCorrectlyDetected);
 
   // Keeps track of the filling context for a form, used to make refill attemps.
@@ -625,7 +627,7 @@ class AutofillManager : public AutofillHandler,
   std::string app_locale_;
 
   // The personal data manager, used to save and load personal data to/from the
-  // web database.  This is overridden by the AutofillManagerTest.
+  // web database.  This is overridden by the BrowserAutofillManagerTest.
   // Weak reference.
   // May be NULL.  NULL indicates OTR.
   PersonalDataManager* personal_data_;
@@ -675,8 +677,8 @@ class AutofillManager : public AutofillHandler,
   std::unique_ptr<CreditCardAccessManager> credit_card_access_manager_;
 
   // The autofill offer manager, used to to retrieve offers for card
-  // suggestions. Initialized when AutofillManager is created. |offer_manager_|
-  // is never null.
+  // suggestions. Initialized when BrowserAutofillManager is created.
+  // |offer_manager_| is never null.
   AutofillOfferManager* offer_manager_;
 
   // Collected information about the autofill form where a credit card will be
@@ -699,7 +701,7 @@ class AutofillManager : public AutofillHandler,
   mutable std::map<int, std::string> int_to_backend_map_;
 
   // Delegate used in test to get notifications on certain events.
-  AutofillManagerTestDelegate* test_delegate_ = nullptr;
+  BrowserAutofillManagerTestDelegate* test_delegate_ = nullptr;
 
   // A map of form names to FillingContext instances used to make refill
   // attempts for dynamic forms.
@@ -713,17 +715,17 @@ class AutofillManager : public AutofillHandler,
   // interaction and re-used throughout the context of this manager.
   AutofillSyncSigninState sync_state_ = AutofillSyncSigninState::kNumSyncStates;
 
-  base::WeakPtrFactory<AutofillManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<BrowserAutofillManager> weak_ptr_factory_{this};
 
   friend class AutofillAssistantTest;
-  friend class AutofillManagerTest;
+  friend class BrowserAutofillManagerTest;
   friend class AutofillMetricsTest;
   friend class FormStructureBrowserTest;
   friend class GetMatchingTypesTest;
   friend class CreditCardAccessoryControllerTest;
-  DISALLOW_COPY_AND_ASSIGN(AutofillManager);
+  DISALLOW_COPY_AND_ASSIGN(BrowserAutofillManager);
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_MANAGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_BROWSER_AUTOFILL_MANAGER_H_

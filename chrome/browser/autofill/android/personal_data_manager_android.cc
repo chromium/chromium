@@ -120,9 +120,12 @@ class FullCardRequester : public FullCardRequest::ResultDelegate,
       return;
     }
 
-    driver->autofill_manager()->GetOrCreateFullCardRequest()->GetFullCard(
-        *card_, AutofillClient::UNMASK_FOR_PAYMENT_REQUEST, AsWeakPtr(),
-        driver->autofill_manager()->GetAsFullCardRequestUIDelegate());
+    driver->browser_autofill_manager()
+        ->GetOrCreateFullCardRequest()
+        ->GetFullCard(*card_, AutofillClient::UNMASK_FOR_PAYMENT_REQUEST,
+                      AsWeakPtr(),
+                      driver->browser_autofill_manager()
+                          ->GetAsFullCardRequestUIDelegate());
   }
 
  private:

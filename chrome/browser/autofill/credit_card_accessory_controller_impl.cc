@@ -242,7 +242,7 @@ void CreditCardAccessoryControllerImpl::CreateForWebContentsForTesting(
     content::WebContents* web_contents,
     base::WeakPtr<ManualFillingController> mf_controller,
     autofill::PersonalDataManager* personal_data_manager,
-    autofill::AutofillManager* af_manager,
+    autofill::BrowserAutofillManager* af_manager,
     autofill::AutofillDriver* af_driver) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   DCHECK(!FromWebContents(web_contents)) << "Controller already attached!";
@@ -269,7 +269,7 @@ CreditCardAccessoryControllerImpl::CreditCardAccessoryControllerImpl(
     content::WebContents* web_contents,
     base::WeakPtr<ManualFillingController> mf_controller,
     PersonalDataManager* personal_data_manager,
-    autofill::AutofillManager* af_manager,
+    autofill::BrowserAutofillManager* af_manager,
     autofill::AutofillDriver* af_driver)
     : web_contents_(web_contents),
       mf_controller_(mf_controller),
@@ -306,14 +306,14 @@ autofill::AutofillDriver* CreditCardAccessoryControllerImpl::GetDriver() {
                    web_contents_->GetFocusedFrame());
 }
 
-autofill::AutofillManager* CreditCardAccessoryControllerImpl::GetManager()
-    const {
+autofill::BrowserAutofillManager*
+CreditCardAccessoryControllerImpl::GetManager() const {
   DCHECK(web_contents_->GetFocusedFrame());
   return af_manager_for_testing_
              ? af_manager_for_testing_
              : autofill::ContentAutofillDriver::GetForRenderFrameHost(
                    web_contents_->GetFocusedFrame())
-                   ->autofill_manager();
+                   ->browser_autofill_manager();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CreditCardAccessoryControllerImpl)

@@ -28,7 +28,8 @@ void AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
     AutofillClient* client,
     id<AutofillDriverIOSBridge> bridge,
     const std::string& app_locale,
-    AutofillManager::AutofillDownloadManagerState enable_download_manager) {
+    BrowserAutofillManager::AutofillDownloadManagerState
+        enable_download_manager) {
   // By the time this method is called, no web_frame is available. This method
   // only prepares the factory and the AutofillDriverIOS will be created in the
   // first call to FromWebStateAndWebFrame.
@@ -51,10 +52,14 @@ AutofillDriverIOS::AutofillDriverIOS(
     AutofillClient* client,
     id<AutofillDriverIOSBridge> bridge,
     const std::string& app_locale,
-    AutofillManager::AutofillDownloadManagerState enable_download_manager)
+    BrowserAutofillManager::AutofillDownloadManagerState
+        enable_download_manager)
     : web_state_(web_state),
       bridge_(bridge),
-      autofill_manager_(this, client, app_locale, enable_download_manager) {
+      browser_autofill_manager_(this,
+                                client,
+                                app_locale,
+                                enable_download_manager) {
   web_frame_id_ = web::GetWebFrameId(web_frame);
 }
 
@@ -101,13 +106,14 @@ void AutofillDriverIOS::SendFormDataToRenderer(
 
 void AutofillDriverIOS::PropagateAutofillPredictions(
     const std::vector<autofill::FormStructure*>& forms) {
-  autofill_manager_.client()->PropagateAutofillPredictions(nullptr, forms);
+  browser_autofill_manager_.client()->PropagateAutofillPredictions(nullptr,
+                                                                   forms);
 }
 
 void AutofillDriverIOS::HandleParsedForms(
     const std::vector<const FormData*>& forms) {
   const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& map =
-      autofill_manager_.form_structures();
+      browser_autofill_manager_.form_structures();
   std::vector<FormStructure*> form_structures;
   form_structures.reserve(forms.size());
   for (const FormData* form : forms) {

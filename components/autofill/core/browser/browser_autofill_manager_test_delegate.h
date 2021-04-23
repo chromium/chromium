@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_MANAGER_TEST_DELEGATE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_MANAGER_TEST_DELEGATE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_BROWSER_AUTOFILL_MANAGER_TEST_DELEGATE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_BROWSER_AUTOFILL_MANAGER_TEST_DELEGATE_H_
 
 namespace autofill {
 
-class AutofillManagerTestDelegate {
+class BrowserAutofillManagerTestDelegate {
  public:
-  virtual ~AutofillManagerTestDelegate() {}
+  virtual ~BrowserAutofillManagerTestDelegate() {}
 
   // Called when a form is previewed with Autofill suggestions.
   virtual void DidPreviewFormData() = 0;
@@ -26,4 +26,4 @@ class AutofillManagerTestDelegate {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_MANAGER_TEST_DELEGATE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_BROWSER_AUTOFILL_MANAGER_TEST_DELEGATE_H_

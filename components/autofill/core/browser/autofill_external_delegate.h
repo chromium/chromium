@@ -22,7 +22,7 @@
 namespace autofill {
 
 class AutofillDriver;
-class AutofillManager;
+class BrowserAutofillManager;
 class CreditCard;
 
 // TODO(csharp): A lot of the logic in this class is copied from autofillagent.
@@ -32,9 +32,10 @@ class CreditCard;
 // Delegate for in-browser Autocomplete and Autofill display and selection.
 class AutofillExternalDelegate : public AutofillPopupDelegate {
  public:
-  // Creates an AutofillExternalDelegate for the specified AutofillManager and
-  // AutofillDriver.
-  AutofillExternalDelegate(AutofillManager* manager, AutofillDriver* driver);
+  // Creates an AutofillExternalDelegate for the specified
+  // BrowserAutofillManager and AutofillDriver.
+  AutofillExternalDelegate(BrowserAutofillManager* manager,
+                           AutofillDriver* driver);
   virtual ~AutofillExternalDelegate();
 
   // AutofillPopupDelegate implementation.
@@ -144,7 +145,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   // Returns the text (i.e. |Suggestion| value) for Chrome autofill options.
   std::u16string GetSettingsSuggestionValue() const;
 
-  AutofillManager* const manager_;  // weak.
+  BrowserAutofillManager* const manager_;  // weak.
 
   // Provides driver-level context to the shared code of the component. Must
   // outlive this object.

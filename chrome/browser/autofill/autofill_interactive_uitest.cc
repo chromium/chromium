@@ -45,9 +45,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/autofill_manager_test_delegate.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_configuration_parser.h"
 #include "components/autofill/core/browser/validation.h"
@@ -500,7 +500,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   // Make a pointless round trip to the renderer, giving the popup a chance to
   // show if it's going to. If it does show, an assert in
-  // AutofillManagerTestDelegateImpl will trigger.
+  // BrowserAutofillManagerTestDelegateImpl will trigger.
   void MakeSurePopupDoesntAppear() {
     int unused;
     ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
@@ -2537,7 +2537,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, NoAutocomplete) {
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(), url));
 
   // There should a form we can trigger fill on (using the firstname field).
-  ASSERT_EQ(1U, GetAutofillManager()->NumFormsDetected());
+  ASSERT_EQ(1U, GetBrowserAutofillManager()->NumFormsDetected());
   TriggerFormFill("firstname");
 
   // Wait for the fill to happen.
@@ -2576,7 +2576,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, SomeAutocomplete) {
       "/autofill/formless_some_autocomplete.html");
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(), url));
 
-  ASSERT_EQ(1U, GetAutofillManager()->NumFormsDetected());
+  ASSERT_EQ(1U, GetBrowserAutofillManager()->NumFormsDetected());
   TriggerFormFill("firstname");
 
   // Wait for the fill to happen.
@@ -2612,7 +2612,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_AllAutocomplete) {
       "/autofill/formless_all_autocomplete.html");
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(), url));
 
-  ASSERT_EQ(1U, GetAutofillManager()->NumFormsDetected());
+  ASSERT_EQ(1U, GetBrowserAutofillManager()->NumFormsDetected());
   TriggerFormFill("firstname");
 
   // Wait for the fill to happen.
@@ -2646,7 +2646,7 @@ class AutofillInteractiveIsolationTest : public AutofillInteractiveTestBase {
     return !!static_cast<ChromeAutofillClient*>(
                  ContentAutofillDriverFactory::FromWebContents(GetWebContents())
                      ->DriverForFrame(GetWebContents()->GetMainFrame())
-                     ->autofill_manager()
+                     ->browser_autofill_manager()
                      ->client())
                  ->popup_controller_for_testing();
   }
@@ -2686,7 +2686,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
       ContentAutofillDriverFactory::FromWebContents(GetWebContents())
           ->DriverForFrame(cross_frame);
   ASSERT_TRUE(cross_driver);
-  cross_driver->autofill_manager()->SetTestDelegate(test_delegate());
+  cross_driver->browser_autofill_manager()->SetTestDelegate(test_delegate());
 
   // Focus the form in the iframe and simulate choosing a suggestion via
   // keyboard.
@@ -2727,7 +2727,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, CrossSitePaymentForms) {
       ContentAutofillDriverFactory::FromWebContents(GetWebContents())
           ->DriverForFrame(cross_frame);
   ASSERT_TRUE(cross_driver);
-  cross_driver->autofill_manager()->SetTestDelegate(test_delegate());
+  cross_driver->browser_autofill_manager()->SetTestDelegate(test_delegate());
 
   // Focus the form in the iframe and simulate choosing a suggestion via
   // keyboard.
@@ -2773,7 +2773,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
       ContentAutofillDriverFactory::FromWebContents(GetWebContents())
           ->DriverForFrame(cross_frame);
   ASSERT_TRUE(cross_driver);
-  cross_driver->autofill_manager()->SetTestDelegate(test_delegate());
+  cross_driver->browser_autofill_manager()->SetTestDelegate(test_delegate());
 
   // Focus the form in the iframe and simulate choosing a suggestion via
   // keyboard.

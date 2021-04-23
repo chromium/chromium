@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/test_autofill_manager.h"
+#include "components/autofill/core/browser/test_browser_autofill_manager.h"
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,48 +15,49 @@
 
 namespace autofill {
 
-TestAutofillManager::TestAutofillManager(
+TestBrowserAutofillManager::TestBrowserAutofillManager(
     AutofillDriver* driver,
     AutofillClient* client,
     TestPersonalDataManager* personal_data,
     MockAutocompleteHistoryManager* autocomplete_history_manager)
-    : AutofillManager(driver,
-                      client,
-                      personal_data,
-                      autocomplete_history_manager),
+    : BrowserAutofillManager(driver,
+                             client,
+                             personal_data,
+                             autocomplete_history_manager),
       personal_data_(personal_data) {}
 
-TestAutofillManager::~TestAutofillManager() {}
+TestBrowserAutofillManager::~TestBrowserAutofillManager() {}
 
-bool TestAutofillManager::IsAutofillProfileEnabled() const {
+bool TestBrowserAutofillManager::IsAutofillProfileEnabled() const {
   return autofill_profile_enabled_;
 }
 
-bool TestAutofillManager::IsAutofillCreditCardEnabled() const {
+bool TestBrowserAutofillManager::IsAutofillCreditCardEnabled() const {
   return autofill_credit_card_enabled_;
 }
 
-void TestAutofillManager::UploadFormData(const FormStructure& submitted_form,
-                                         bool observed_submission) {
+void TestBrowserAutofillManager::UploadFormData(
+    const FormStructure& submitted_form,
+    bool observed_submission) {
   submitted_form_signature_ = submitted_form.FormSignatureAsStr();
 
   if (call_parent_upload_form_data_)
-    AutofillManager::UploadFormData(submitted_form, observed_submission);
+    BrowserAutofillManager::UploadFormData(submitted_form, observed_submission);
 }
 
-bool TestAutofillManager::MaybeStartVoteUploadProcess(
+bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(
     std::unique_ptr<FormStructure> form_structure,
     bool observed_submission) {
   run_loop_ = std::make_unique<base::RunLoop>();
-  if (AutofillManager::MaybeStartVoteUploadProcess(std::move(form_structure),
-                                                   observed_submission)) {
+  if (BrowserAutofillManager::MaybeStartVoteUploadProcess(
+          std::move(form_structure), observed_submission)) {
     run_loop_->Run();
     return true;
   }
   return false;
 }
 
-void TestAutofillManager::UploadFormDataAsyncCallback(
+void TestBrowserAutofillManager::UploadFormDataAsyncCallback(
     const FormStructure* submitted_form,
     const base::TimeTicks& interaction_time,
     const base::TimeTicks& submission_time,
@@ -86,18 +87,18 @@ void TestAutofillManager::UploadFormDataAsyncCallback(
     }
   }
 
-  AutofillManager::UploadFormDataAsyncCallback(
+  BrowserAutofillManager::UploadFormDataAsyncCallback(
       submitted_form, interaction_time, submission_time, observed_submission);
 }
 
-int TestAutofillManager::GetPackedCreditCardID(int credit_card_id) {
+int TestBrowserAutofillManager::GetPackedCreditCardID(int credit_card_id) {
   std::string credit_card_guid =
       base::StringPrintf("00000000-0000-0000-0000-%012d", credit_card_id);
 
   return MakeFrontendID(credit_card_guid, std::string());
 }
 
-void TestAutofillManager::AddSeenForm(
+void TestBrowserAutofillManager::AddSeenForm(
     const FormData& form,
     const std::vector<ServerFieldType>& heuristic_types,
     const std::vector<ServerFieldType>& server_types) {
@@ -115,21 +116,21 @@ void TestAutofillManager::AddSeenForm(
   form_interactions_ukm_logger()->OnFormsParsed(client()->GetUkmSourceId());
 }
 
-void TestAutofillManager::AddSeenFormStructure(
+void TestBrowserAutofillManager::AddSeenFormStructure(
     std::unique_ptr<FormStructure> form_structure) {
   const auto id = form_structure->global_id();
   (*mutable_form_structures())[id] = std::move(form_structure);
 }
 
-void TestAutofillManager::ClearFormStructures() {
+void TestBrowserAutofillManager::ClearFormStructures() {
   mutable_form_structures()->clear();
 }
 
-const std::string TestAutofillManager::GetSubmittedFormSignature() {
+const std::string TestBrowserAutofillManager::GetSubmittedFormSignature() {
   return submitted_form_signature_;
 }
 
-void TestAutofillManager::SetAutofillProfileEnabled(
+void TestBrowserAutofillManager::SetAutofillProfileEnabled(
     bool autofill_profile_enabled) {
   autofill_profile_enabled_ = autofill_profile_enabled;
   if (!autofill_profile_enabled_)
@@ -137,7 +138,7 @@ void TestAutofillManager::SetAutofillProfileEnabled(
     personal_data_->ClearProfiles();
 }
 
-void TestAutofillManager::SetAutofillCreditCardEnabled(
+void TestBrowserAutofillManager::SetAutofillCreditCardEnabled(
     bool autofill_credit_card_enabled) {
   autofill_credit_card_enabled_ = autofill_credit_card_enabled;
   if (!autofill_credit_card_enabled_)
@@ -145,16 +146,16 @@ void TestAutofillManager::SetAutofillCreditCardEnabled(
     personal_data_->ClearCreditCards();
 }
 
-void TestAutofillManager::SetExpectedSubmittedFieldTypes(
+void TestBrowserAutofillManager::SetExpectedSubmittedFieldTypes(
     const std::vector<ServerFieldTypeSet>& expected_types) {
   expected_submitted_field_types_ = expected_types;
 }
 
-void TestAutofillManager::SetExpectedObservedSubmission(bool expected) {
+void TestBrowserAutofillManager::SetExpectedObservedSubmission(bool expected) {
   expected_observed_submission_ = expected;
 }
 
-void TestAutofillManager::SetCallParentUploadFormData(bool value) {
+void TestBrowserAutofillManager::SetCallParentUploadFormData(bool value) {
   call_parent_upload_form_data_ = value;
 }
 

@@ -21,8 +21,8 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
-#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/prefs/pref_service.h"
@@ -55,8 +55,8 @@ namespace autofill {
 namespace {
 
 const char kAppLocale[] = "en-US";
-const AutofillManager::AutofillDownloadManagerState kDownloadState =
-    AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER;
+const BrowserAutofillManager::AutofillDownloadManagerState kDownloadState =
+    BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER;
 
 class MockAutofillClient : public autofill::TestAutofillClient {
  public:
@@ -90,22 +90,22 @@ class MockAutofillDriver : public ContentAutofillDriver {
   DISALLOW_COPY_AND_ASSIGN(MockAutofillDriver);
 };
 
-class MockAutofillManager : public AutofillManager {
+class MockBrowserAutofillManager : public BrowserAutofillManager {
  public:
-  MockAutofillManager(AutofillDriver* driver, MockAutofillClient* client)
-      : AutofillManager(driver,
-                        client,
-                        client->GetPersonalDataManager(),
-                        client->GetAutocompleteHistoryManager()) {}
-  ~MockAutofillManager() override = default;
+  MockBrowserAutofillManager(AutofillDriver* driver, MockAutofillClient* client)
+      : BrowserAutofillManager(driver,
+                               client,
+                               client->GetPersonalDataManager(),
+                               client->GetAutocompleteHistoryManager()) {}
+  ~MockBrowserAutofillManager() override = default;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(MockAutofillManager);
+  DISALLOW_COPY_AND_ASSIGN(MockBrowserAutofillManager);
 };
 
 class MockAutofillExternalDelegate : public AutofillExternalDelegate {
  public:
-  MockAutofillExternalDelegate(AutofillManager* autofill_manager,
+  MockAutofillExternalDelegate(BrowserAutofillManager* autofill_manager,
                                AutofillDriver* autofill_driver)
       : AutofillExternalDelegate(autofill_manager, autofill_driver) {}
   ~MockAutofillExternalDelegate() override = default;
@@ -258,7 +258,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   CreateExternalDelegate() {
     ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
         web_contents(), autofill_client_.get(), "en-US",
-        AutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER);
+        BrowserAutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER);
     // Make sure RenderFrame is created.
     NavigateAndCommit(GURL("about:blank"));
     ContentAutofillDriverFactory* factory =
@@ -266,7 +266,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
     ContentAutofillDriver* driver =
         factory->DriverForFrame(web_contents()->GetMainFrame());
     return std::make_unique<NiceMock<MockAutofillExternalDelegate>>(
-        driver->autofill_manager(), driver);
+        driver->browser_autofill_manager(), driver);
   }
 
   TestAutofillPopupController* popup_controller() {
@@ -309,14 +309,14 @@ class AutofillPopupControllerAccessibilityUnitTest
   CreateExternalDelegate() override {
     autofill_driver_ = std::make_unique<NiceMock<MockAutofillDriver>>(
         web_contents()->GetMainFrame(), autofill_client_.get());
-    autofill_manager_ = std::make_unique<MockAutofillManager>(
+    autofill_manager_ = std::make_unique<MockBrowserAutofillManager>(
         autofill_driver_.get(), autofill_client_.get());
     return std::make_unique<NiceMock<MockAutofillExternalDelegate>>(
         autofill_manager_.get(), autofill_driver_.get());
   }
 
  protected:
-  std::unique_ptr<MockAutofillManager> autofill_manager_;
+  std::unique_ptr<MockBrowserAutofillManager> autofill_manager_;
   std::unique_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;
 
  private:
@@ -605,7 +605,8 @@ TEST_F(AutofillPopupControllerUnitTest, GetOrCreate) {
       ContentAutofillDriverFactory::FromWebContents(web_contents());
   ContentAutofillDriver* driver =
       factory->DriverForFrame(web_contents()->GetMainFrame());
-  MockAutofillExternalDelegate delegate(driver->autofill_manager(), driver);
+  MockAutofillExternalDelegate delegate(driver->browser_autofill_manager(),
+                                        driver);
 
   WeakPtr<AutofillPopupControllerImpl> controller =
       AutofillPopupControllerImpl::GetOrCreate(
@@ -681,8 +682,8 @@ TEST_F(AutofillPopupControllerUnitTest, HidingClearsPreview) {
       ContentAutofillDriverFactory::FromWebContents(web_contents());
   ContentAutofillDriver* driver =
       factory->DriverForFrame(web_contents()->GetMainFrame());
-  StrictMock<MockAutofillExternalDelegate> delegate(driver->autofill_manager(),
-                                                    driver);
+  StrictMock<MockAutofillExternalDelegate> delegate(
+      driver->browser_autofill_manager(), driver);
   StrictMock<TestAutofillPopupController>* test_controller =
       new StrictMock<TestAutofillPopupController>(delegate.GetWeakPtr(),
                                                   gfx::RectF());

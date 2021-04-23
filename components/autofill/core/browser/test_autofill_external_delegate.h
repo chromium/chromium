@@ -14,9 +14,10 @@ namespace autofill {
 
 class TestAutofillExternalDelegate : public AutofillExternalDelegate {
  public:
-  explicit TestAutofillExternalDelegate(AutofillManager* autofill_manager,
-                                        AutofillDriver* autofill_driver,
-                                        bool call_parent_methods);
+  explicit TestAutofillExternalDelegate(
+      BrowserAutofillManager* autofill_manager,
+      AutofillDriver* autofill_driver,
+      bool call_parent_methods);
   ~TestAutofillExternalDelegate() override;
 
   // AutofillExternalDelegate overrides.

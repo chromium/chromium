@@ -8,6 +8,7 @@
 
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/full_card_request_result_delegate_bridge.h"
 #include "ios/chrome/browser/ui/autofill/manual_fill/full_card_requester.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -60,7 +61,7 @@ class CreditCard;
   // Payment Request is only enabled in main frame.
   web::WebState* webState = self.webStateList->GetActiveWebState();
   web::WebFrame* mainFrame = webState->GetWebFramesManager()->GetMainWebFrame();
-  autofill::AutofillManager* autofillManager =
+  autofill::BrowserAutofillManager* autofillManager =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, mainFrame)
           ->autofill_manager();
   DCHECK(autofillManager);

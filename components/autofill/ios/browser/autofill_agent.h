@@ -17,9 +17,9 @@ class WebState;
 }
 
 // Handles autofill form suggestions. Reads forms from the page, sends them to
-// AutofillManager for metrics and to retrieve suggestions, and fills forms in
-// response to user interaction with suggestions. This is the iOS counterpart
-// to the upstream class autofill::AutofillAgent.
+// BrowserAutofillManager for metrics and to retrieve suggestions, and fills
+// forms in response to user interaction with suggestions. This is the iOS
+// counterpart to the upstream class autofill::AutofillAgent.
 @interface AutofillAgent : NSObject <AutofillClientIOSBridge,
                                      AutofillDriverIOSBridge,
                                      FormSuggestionProvider>

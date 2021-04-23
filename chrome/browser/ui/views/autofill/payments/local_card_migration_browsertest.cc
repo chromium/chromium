@@ -196,7 +196,7 @@ class LocalCardMigrationBrowserTest
             &test_url_loader_factory_);
     ContentAutofillDriver::GetForRenderFrameHost(
         GetActiveWebContents()->GetMainFrame())
-        ->autofill_manager()
+        ->browser_autofill_manager()
         ->client()
         ->GetPaymentsClient()
         ->set_url_loader_factory_for_testing(test_shared_loader_factory_);
@@ -205,7 +205,7 @@ class LocalCardMigrationBrowserTest
     local_card_migration_manager_ =
         ContentAutofillDriver::GetForRenderFrameHost(
             GetActiveWebContents()->GetMainFrame())
-            ->autofill_manager()
+            ->browser_autofill_manager()
             ->client()
             ->GetFormDataImporter()
             ->local_card_migration_manager_.get();

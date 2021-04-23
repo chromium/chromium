@@ -17,8 +17,8 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
-#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_data_predictions.h"
@@ -40,8 +40,8 @@ namespace autofill {
 namespace {
 
 const char kAppLocale[] = "en-US";
-const AutofillManager::AutofillDownloadManagerState kDownloadState =
-    AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER;
+const BrowserAutofillManager::AutofillDownloadManagerState kDownloadState =
+    BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER;
 
 class FakeAutofillAgent : public mojom::AutofillAgent {
  public:
@@ -266,11 +266,11 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
 }  // namespace
 
-class MockAutofillManager : public AutofillManager {
+class MockBrowserAutofillManager : public BrowserAutofillManager {
  public:
-  MockAutofillManager(AutofillDriver* driver, AutofillClient* client)
-      : AutofillManager(driver, client, kAppLocale, kDownloadState) {}
-  ~MockAutofillManager() override {}
+  MockBrowserAutofillManager(AutofillDriver* driver, AutofillClient* client)
+      : BrowserAutofillManager(driver, client, kAppLocale, kDownloadState) {}
+  ~MockBrowserAutofillManager() override {}
 
   MOCK_METHOD0(Reset, void());
 };
@@ -289,14 +289,14 @@ class TestContentAutofillDriver : public ContentAutofillDriver {
                               kAppLocale,
                               kDownloadState,
                               nullptr) {
-    std::unique_ptr<AutofillManager> autofill_manager(
-        new MockAutofillManager(this, client));
-    SetAutofillManager(std::move(autofill_manager));
+    std::unique_ptr<BrowserAutofillManager> autofill_manager(
+        new MockBrowserAutofillManager(this, client));
+    SetBrowserAutofillManager(std::move(autofill_manager));
   }
   ~TestContentAutofillDriver() override {}
 
-  virtual MockAutofillManager* mock_autofill_manager() {
-    return static_cast<MockAutofillManager*>(autofill_manager());
+  virtual MockBrowserAutofillManager* mock_browser_autofill_manager() {
+    return static_cast<MockBrowserAutofillManager*>(browser_autofill_manager());
   }
 
   using ContentAutofillDriver::DidNavigateFrame;
@@ -345,17 +345,17 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
 };
 
 TEST_F(ContentAutofillDriverTest, NavigatedMainFrameDifferentDocument) {
-  EXPECT_CALL(*driver_->mock_autofill_manager(), Reset());
+  EXPECT_CALL(*driver_->mock_browser_autofill_manager(), Reset());
   Navigate(/*same_document=*/false);
 }
 
 TEST_F(ContentAutofillDriverTest, NavigatedMainFrameSameDocument) {
-  EXPECT_CALL(*driver_->mock_autofill_manager(), Reset()).Times(0);
+  EXPECT_CALL(*driver_->mock_browser_autofill_manager(), Reset()).Times(0);
   Navigate(/*same_document=*/true);
 }
 
 TEST_F(ContentAutofillDriverTest, NavigatedMainFrameFromBackForwardCache) {
-  EXPECT_CALL(*driver_->mock_autofill_manager(), Reset()).Times(0);
+  EXPECT_CALL(*driver_->mock_browser_autofill_manager(), Reset()).Times(0);
   Navigate(/*same_document=*/false, /*from_bfcache=*/true);
 }
 

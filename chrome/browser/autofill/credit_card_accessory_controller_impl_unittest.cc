@@ -10,8 +10,8 @@
 #include "chrome/browser/autofill/mock_manual_filling_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -35,24 +35,25 @@ const std::u16string kFirstTwelveDigits = u"411111111111";
 namespace autofill {
 namespace {
 
-class TestAutofillManager : public AutofillManager {
+class TestBrowserAutofillManager : public BrowserAutofillManager {
  public:
-  TestAutofillManager(
+  TestBrowserAutofillManager(
       AutofillDriver* driver,
       AutofillClient* client,
       PersonalDataManager* personal_data,
       AutocompleteHistoryManager* autocomplete_history_manager,
       std::unique_ptr<CreditCardAccessManager> cc_access_manager = nullptr)
       // Force to use the constructor designated for unit test.
-      : AutofillManager(driver,
-                        client,
-                        personal_data,
-                        autocomplete_history_manager,
-                        "en-US",
-                        AutofillHandler::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
-                        std::move(cc_access_manager)) {}
+      : BrowserAutofillManager(
+            driver,
+            client,
+            personal_data,
+            autocomplete_history_manager,
+            "en-US",
+            AutofillHandler::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
+            std::move(cc_access_manager)) {}
 
-  ~TestAutofillManager() override = default;
+  ~TestBrowserAutofillManager() override = default;
 
   const FormData& last_query_form() const override { return last_form_; }
 
@@ -61,7 +62,7 @@ class TestAutofillManager : public AutofillManager {
  private:
   FormData last_form_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillManager);
+  DISALLOW_COPY_AND_ASSIGN(TestBrowserAutofillManager);
 };
 
 AccessorySheetData::Builder CreditCardAccessorySheetDataBuilder() {
@@ -156,7 +157,7 @@ class CreditCardAccessoryControllerTest
   autofill::TestPersonalDataManager data_manager_;
   MockAutocompleteHistoryManager history_;
   testing::NiceMock<MockManualFillingController> mock_mf_controller_;
-  TestAutofillManager af_manager_;
+  TestBrowserAutofillManager af_manager_;
   base::MockCallback<AccessoryController::FillingSourceObserver>
       filling_source_observer_;
 };

@@ -60,8 +60,8 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/autofill_manager_test_delegate.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
@@ -1728,13 +1728,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestDispatchKeyEventDoesNotCrash) {
   RunTest("testDispatchKeyEventDoesNotCrash", "about:blank");
 }
 
-class AutofillManagerTestDelegateDevtoolsImpl
-    : public autofill::AutofillManagerTestDelegate {
+class BrowserAutofillManagerTestDelegateDevtoolsImpl
+    : public autofill::BrowserAutofillManagerTestDelegate {
  public:
-  explicit AutofillManagerTestDelegateDevtoolsImpl(
+  explicit BrowserAutofillManagerTestDelegateDevtoolsImpl(
       WebContents* inspectedContents)
       : inspected_contents_(inspectedContents) {}
-  ~AutofillManagerTestDelegateDevtoolsImpl() override {}
+  ~BrowserAutofillManagerTestDelegateDevtoolsImpl() override {}
 
   void DidPreviewFormData() override {}
 
@@ -1750,7 +1750,7 @@ class AutofillManagerTestDelegateDevtoolsImpl
  private:
   WebContents* inspected_contents_;
 
-  DISALLOW_COPY_AND_ASSIGN(AutofillManagerTestDelegateDevtoolsImpl);
+  DISALLOW_COPY_AND_ASSIGN(BrowserAutofillManagerTestDelegateDevtoolsImpl);
 };
 
 // Disabled. Failing on MacOS MSAN. See https://crbug.com/849129.
@@ -1769,9 +1769,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
   autofill::ContentAutofillDriver* autofill_driver =
       autofill::ContentAutofillDriverFactory::FromWebContents(GetInspectedTab())
           ->DriverForFrame(GetInspectedTab()->GetMainFrame());
-  autofill::AutofillManager* autofill_manager =
-      autofill_driver->autofill_manager();
-  AutofillManagerTestDelegateDevtoolsImpl autoFillTestDelegate(
+  autofill::BrowserAutofillManager* autofill_manager =
+      autofill_driver->browser_autofill_manager();
+  BrowserAutofillManagerTestDelegateDevtoolsImpl autoFillTestDelegate(
       GetInspectedTab());
   autofill_manager->SetTestDelegate(&autoFillTestDelegate);
 

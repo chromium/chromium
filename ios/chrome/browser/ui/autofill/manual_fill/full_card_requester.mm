@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/ui/autofill/manual_fill/full_card_requester.h"
 
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
 
@@ -30,7 +30,7 @@ FullCardRequester::FullCardRequester(UIViewController* base_view_controller,
 
 void FullCardRequester::GetFullCard(
     const autofill::CreditCard& card,
-    autofill::AutofillManager* autofill_manager,
+    autofill::BrowserAutofillManager* autofill_manager,
     base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
         result_delegate) {
   DCHECK(autofill_manager);

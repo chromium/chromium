@@ -15,8 +15,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_autofill_external_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -45,7 +45,7 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest,
             ->DriverForFrame(web_contents->GetMainFrame());
     autofill_external_delegate_ =
         std::make_unique<TestAutofillExternalDelegate>(
-            driver->autofill_manager(), driver,
+            driver->browser_autofill_manager(), driver,
             /*call_parent_methods=*/true);
 
     disable_animation_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(

@@ -21,8 +21,8 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
-#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -53,8 +53,9 @@ bool IsAutofillWarningEntry(int frontend_id) {
 
 }  // namespace
 
-AutofillExternalDelegate::AutofillExternalDelegate(AutofillManager* manager,
-                                                   AutofillDriver* driver)
+AutofillExternalDelegate::AutofillExternalDelegate(
+    BrowserAutofillManager* manager,
+    AutofillDriver* driver)
     : manager_(manager), driver_(driver) {
   DCHECK(manager);
 }

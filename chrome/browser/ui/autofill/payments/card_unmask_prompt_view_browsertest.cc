@@ -248,8 +248,9 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
                        CloseTabWhileDialogShowing) {
   ShowUi(kExpiryExpired);
-  // Simulate AutofillManager (the delegate in production code) being destroyed
-  // before CardUnmaskPromptViewBridge::OnConstrainedWindowClosed() is called.
+  // Simulate BrowserAutofillManager (the delegate in production code) being
+  // destroyed before CardUnmaskPromptViewBridge::OnConstrainedWindowClosed() is
+  // called.
   FreeDelegate();
   browser()->tab_strip_model()->GetActiveWebContents()->Close();
 

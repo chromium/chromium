@@ -17,9 +17,9 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
-#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -100,14 +100,14 @@ class MockAutofillClient : public TestAutofillClient {
   DISALLOW_COPY_AND_ASSIGN(MockAutofillClient);
 };
 
-class MockAutofillManager : public AutofillManager {
+class MockBrowserAutofillManager : public BrowserAutofillManager {
  public:
-  MockAutofillManager(AutofillDriver* driver, MockAutofillClient* client)
+  MockBrowserAutofillManager(AutofillDriver* driver, MockAutofillClient* client)
       // Force to use the constructor designated for unit test.
-      : AutofillManager(driver,
-                        client,
-                        client->GetPersonalDataManager(),
-                        client->GetAutocompleteHistoryManager()) {}
+      : BrowserAutofillManager(driver,
+                               client,
+                               client->GetPersonalDataManager(),
+                               client->GetAutocompleteHistoryManager()) {}
 
   PopupType GetPopupType(const FormData& form,
                          const FormFieldData& field) override {
@@ -155,7 +155,7 @@ class MockAutofillManager : public AutofillManager {
 
  private:
   bool should_show_cards_from_account_option_ = false;
-  DISALLOW_COPY_AND_ASSIGN(MockAutofillManager);
+  DISALLOW_COPY_AND_ASSIGN(MockBrowserAutofillManager);
 };
 
 }  // namespace
@@ -165,16 +165,16 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   void SetUp() override {
     autofill_driver_ =
         std::make_unique<testing::NiceMock<MockAutofillDriver>>();
-    autofill_manager_ = std::make_unique<MockAutofillManager>(
+    browser_autofill_manager_ = std::make_unique<MockBrowserAutofillManager>(
         autofill_driver_.get(), &autofill_client_);
     external_delegate_ = std::make_unique<AutofillExternalDelegate>(
-        autofill_manager_.get(), autofill_driver_.get());
+        browser_autofill_manager_.get(), autofill_driver_.get());
   }
 
   void TearDown() override {
-    // Order of destruction is important as AutofillManager relies on
+    // Order of destruction is important as BrowserAutofillManager relies on
     // PersonalDataManager to be around when it gets destroyed.
-    autofill_manager_.reset();
+    browser_autofill_manager_.reset();
     external_delegate_.reset();
     autofill_driver_.reset();
   }
@@ -205,21 +205,21 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
 
   testing::NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<testing::NiceMock<MockAutofillDriver>> autofill_driver_;
-  std::unique_ptr<MockAutofillManager> autofill_manager_;
+  std::unique_ptr<MockBrowserAutofillManager> browser_autofill_manager_;
   std::unique_ptr<AutofillExternalDelegate> external_delegate_;
 
   FormGlobalId form_id_ = test::MakeFormGlobalId();
   FieldGlobalId field_id_ = test::MakeFieldGlobalId();
 };
 
-// Variant for use in cases when we expect the AutofillManager would normally
-// set the |should_show_cards_from_account_option_| bit.
+// Variant for use in cases when we expect the BrowserAutofillManager would
+// normally set the |should_show_cards_from_account_option_| bit.
 class AutofillExternalDelegateCardsFromAccountTest
     : public AutofillExternalDelegateUnitTest {
  protected:
   void SetUp() override {
     AutofillExternalDelegateUnitTest::SetUp();
-    autofill_manager_->ShowCardsFromAccountOption();
+    browser_autofill_manager_->ShowCardsFromAccountOption();
   }
 };
 
@@ -245,7 +245,7 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
   EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 
   EXPECT_CALL(
-      *autofill_manager_,
+      *browser_autofill_manager_,
       FillOrPreviewForm(AutofillDriver::FORM_DATA_ACTION_FILL, _, _, _, _));
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
@@ -260,7 +260,7 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
 // separator in the popup items when there are suggestions.
 TEST_F(AutofillExternalDelegateUnitTest,
        TestSigninPromoIsNotAdded_WithSuggestions) {
-  EXPECT_CALL(*autofill_manager_, ShouldShowCreditCardSigninPromo(_, _))
+  EXPECT_CALL(*browser_autofill_manager_, ShouldShowCreditCardSigninPromo(_, _))
       .WillOnce(testing::Return(true));
 
   IssueOnQuery(kRecentQueryId);
@@ -287,7 +287,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 
   EXPECT_CALL(
-      *autofill_manager_,
+      *browser_autofill_manager_,
       FillOrPreviewForm(AutofillDriver::FORM_DATA_ACTION_FILL, _, _, _, _));
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
@@ -302,7 +302,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 // separator in the dropdown, when there are no suggestions.
 TEST_F(AutofillExternalDelegateUnitTest,
        TestSigninPromoIsAdded_WithNoSuggestions) {
-  EXPECT_CALL(*autofill_manager_, ShouldShowCreditCardSigninPromo(_, _))
+  EXPECT_CALL(*browser_autofill_manager_, ShouldShowCreditCardSigninPromo(_, _))
       .WillOnce(testing::Return(true));
 
   IssueOnQuery(kRecentQueryId);
@@ -586,14 +586,16 @@ TEST_F(AutofillExternalDelegateUnitTest,
 // negative unique id.
 TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
   // Ensure it doesn't try to preview the negative id.
-  EXPECT_CALL(*autofill_manager_, FillOrPreviewForm(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewForm(_, _, _, _, _))
+      .Times(0);
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   external_delegate_->DidSelectSuggestion(std::u16string(), -1);
 
   // Ensure it doesn't try to fill the form in with the negative id.
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
-  EXPECT_CALL(*autofill_manager_, FillOrPreviewForm(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewForm(_, _, _, _, _))
+      .Times(0);
   external_delegate_->DidAcceptSuggestion(std::u16string(), -1, 0);
 }
 
@@ -608,7 +610,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
                                           POPUP_ITEM_ID_PASSWORD_ENTRY);
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   EXPECT_CALL(
-      *autofill_manager_,
+      *browser_autofill_manager_,
       FillOrPreviewForm(AutofillDriver::FORM_DATA_ACTION_PREVIEW, _, _, _, _));
   external_delegate_->DidSelectSuggestion(u"baz foo", 1);
 
@@ -652,7 +654,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   std::u16string dummy_string(u"John Legend");
-  EXPECT_CALL(*autofill_manager_,
+  EXPECT_CALL(*browser_autofill_manager_,
               FillOrPreviewForm(AutofillDriver::FORM_DATA_ACTION_FILL, _, _, _,
                                 kAutofillProfileId));
   external_delegate_->DidAcceptSuggestion(dummy_string, kAutofillProfileId,
@@ -673,7 +675,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearForm) {
 // Test that the client is directed to hide the autofill popup after being
 // notified that the user clicked "Hide suggestions" menu item.
 TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateHideSuggestions) {
-  EXPECT_CALL(*autofill_manager_, OnUserHideSuggestions(_, _));
+  EXPECT_CALL(*browser_autofill_manager_, OnUserHideSuggestions(_, _));
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
 
@@ -694,7 +696,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardMenuItem) {
 TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardPromptMetricsTest) {
   // Log that the scan card item was shown, although nothing was selected.
   {
-    EXPECT_CALL(*autofill_manager_, ShouldShowScanCreditCard(_, _))
+    EXPECT_CALL(*browser_autofill_manager_, ShouldShowScanCreditCard(_, _))
         .WillOnce(testing::Return(true));
     base::HistogramTester histogram;
     IssueOnQuery(kRecentQueryId);
@@ -705,7 +707,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardPromptMetricsTest) {
   }
   // Log that the scan card item was selected.
   {
-    EXPECT_CALL(*autofill_manager_, ShouldShowScanCreditCard(_, _))
+    EXPECT_CALL(*browser_autofill_manager_, ShouldShowScanCreditCard(_, _))
         .WillOnce(testing::Return(true));
     base::HistogramTester histogram;
     IssueOnQuery(kRecentQueryId);
@@ -723,7 +725,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardPromptMetricsTest) {
   }
   // Log that something else was selected.
   {
-    EXPECT_CALL(*autofill_manager_, ShouldShowScanCreditCard(_, _))
+    EXPECT_CALL(*browser_autofill_manager_, ShouldShowScanCreditCard(_, _))
         .WillOnce(testing::Return(true));
     base::HistogramTester histogram;
     IssueOnQuery(kRecentQueryId);
@@ -741,7 +743,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardPromptMetricsTest) {
   }
   // Nothing is logged when the item isn't shown.
   {
-    EXPECT_CALL(*autofill_manager_, ShouldShowScanCreditCard(_, _))
+    EXPECT_CALL(*browser_autofill_manager_, ShouldShowScanCreditCard(_, _))
         .WillOnce(testing::Return(false));
     base::HistogramTester histogram;
     IssueOnQuery(kRecentQueryId);
@@ -772,7 +774,7 @@ TEST_F(AutofillExternalDelegateUnitTest, FillCreditCardForm) {
   CreditCard card;
   test::SetCreditCardInfo(&card, "Alice", "4111", "1", "3000", "1");
   EXPECT_CALL(
-      *autofill_manager_,
+      *browser_autofill_manager_,
       FillCreditCardForm(_, _, _, CreditCardMatches(card), std::u16string()));
   external_delegate_->OnCreditCardScanned(card);
 }

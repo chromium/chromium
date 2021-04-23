@@ -10,7 +10,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 
 namespace web {
 class WebFrame;
@@ -32,7 +32,8 @@ class AutofillDriverIOS : public AutofillDriver {
       AutofillClient* client,
       id<AutofillDriverIOSBridge> bridge,
       const std::string& app_locale,
-      AutofillManager::AutofillDownloadManagerState enable_download_manager);
+      BrowserAutofillManager::AutofillDownloadManagerState
+          enable_download_manager);
 
   static AutofillDriverIOS* FromWebStateAndWebFrame(web::WebState* web_state,
                                                     web::WebFrame* web_frame);
@@ -58,7 +59,9 @@ class AutofillDriverIOS : public AutofillDriver {
       const FieldGlobalId& field,
       const std::u16string& value) override;
 
-  AutofillManager* autofill_manager() { return &autofill_manager_; }
+  BrowserAutofillManager* autofill_manager() {
+    return &browser_autofill_manager_;
+  }
 
   void RendererShouldFillFieldWithValue(const FieldGlobalId& field,
                                         const std::u16string& value) override;
@@ -77,13 +80,13 @@ class AutofillDriverIOS : public AutofillDriver {
   void set_processed(bool processed) { processed_ = processed; }
 
  protected:
-  AutofillDriverIOS(
-      web::WebState* web_state,
-      web::WebFrame* web_frame,
-      AutofillClient* client,
-      id<AutofillDriverIOSBridge> bridge,
-      const std::string& app_locale,
-      AutofillManager::AutofillDownloadManagerState enable_download_manager);
+  AutofillDriverIOS(web::WebState* web_state,
+                    web::WebFrame* web_frame,
+                    AutofillClient* client,
+                    id<AutofillDriverIOSBridge> bridge,
+                    const std::string& app_locale,
+                    BrowserAutofillManager::AutofillDownloadManagerState
+                        enable_download_manager);
 
  private:
   // The WebState with which this object is associated.
@@ -100,9 +103,9 @@ class AutofillDriverIOS : public AutofillDriver {
   // been enabled and the forms have been extracted).
   bool processed_ = false;
 
-  // AutofillManager instance via which this object drives the shared Autofill
-  // code.
-  AutofillManager autofill_manager_;
+  // BrowserAutofillManager instance via which this object drives the shared
+  // Autofill code.
+  BrowserAutofillManager browser_autofill_manager_;
 };
 
 }  // namespace autofill

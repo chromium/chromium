@@ -116,7 +116,7 @@ class CreditCardCVCAuthenticator
 
  private:
   friend class AutofillAssistantTest;
-  friend class AutofillManagerTest;
+  friend class BrowserAutofillManagerTest;
   friend class AutofillMetricsTest;
   friend class CreditCardAccessManagerTest;
   friend class CreditCardCVCAuthenticatorTest;

@@ -23,8 +23,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/keyboard_accessory_metrics_logger.h"
@@ -102,8 +102,8 @@ void GetFormField(autofill::FormFieldData* field,
 
   // Hack to get suggestions from select input elements.
   if (field->form_control_type == "select-one") {
-    // Any value set will cause the AutofillManager to filter suggestions (only
-    // show suggestions that begin the same as the current value) with the
+    // Any value set will cause the BrowserAutofillManager to filter suggestions
+    // (only show suggestions that begin the same as the current value) with the
     // effect that one only suggestion would be returned; the value itself.
     field->value = std::u16string();
   }
@@ -147,7 +147,7 @@ void GetFormField(autofill::FormFieldData* field,
 
   // Popup delegate for the most recent suggestions.
   // The reference is weak because a weak pointer is sent to our
-  // AutofillManagerDelegate.
+  // BrowserAutofillManagerDelegate.
   base::WeakPtr<autofill::AutofillPopupDelegate> _popupDelegate;
 
   // The autofill data that needs to be send when the |webState_| is shown.
@@ -166,11 +166,11 @@ void GetFormField(autofill::FormFieldData* field,
 
   // AutofillDriverIOSWebFrame will keep a refcountable AutofillDriverIOS.
   // This is a workaround crbug.com/892612. On submission,
-  // AutofillDownloadManager and CreditCardSaveManager expect AutofillManager
-  // and AutofillDriver to live after web frame deletion so AutofillAgent will
-  // keep the latest submitted AutofillDriver alive.
+  // AutofillDownloadManager and CreditCardSaveManager expect
+  // BrowserAutofillManager and AutofillDriver to live after web frame deletion
+  // so AutofillAgent will keep the latest submitted AutofillDriver alive.
   // TODO(crbug.com/892612): remove this workaround once life cycle of
-  // AutofillManager is fixed.
+  // BrowserAutofillManager is fixed.
   scoped_refptr<autofill::AutofillDriverIOSRefCountable>
       _last_submitted_autofill_driver;
 
@@ -224,9 +224,9 @@ void GetFormField(autofill::FormFieldData* field,
 // Returns nullptr if there is no autofill manager associated anymore, this can
 // happen when |close| has been called on the |webState|. Also returns nullptr
 // if -webStateDestroyed: has been called.
-- (autofill::AutofillManager*)
-autofillManagerFromWebState:(web::WebState*)webState
-                   webFrame:(web::WebFrame*)webFrame {
+- (autofill::BrowserAutofillManager*)
+    autofillManagerFromWebState:(web::WebState*)webState
+                       webFrame:(web::WebFrame*)webFrame {
   if (!webState || !_webStateObserverBridge)
     return nullptr;
   return autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState,
@@ -235,17 +235,19 @@ autofillManagerFromWebState:(web::WebState*)webState
 }
 
 // Notifies the autofill manager when forms are detected on a page.
-- (void)notifyAutofillManager:(autofill::AutofillManager*)autofillManager
-                  ofFormsSeen:(const FormDataVector&)forms {
+- (void)notifyBrowserAutofillManager:
+            (autofill::BrowserAutofillManager*)autofillManager
+                         ofFormsSeen:(const FormDataVector&)forms {
   DCHECK(autofillManager);
   DCHECK(!forms.empty());
   autofillManager->OnFormsSeen(forms);
 }
 
 // Notifies the autofill manager when forms are submitted.
-- (void)notifyAutofillManager:(autofill::AutofillManager*)autofillManager
-             ofFormsSubmitted:(const FormDataVector&)forms
-                userInitiated:(BOOL)userInitiated {
+- (void)notifyBrowserAutofillManager:
+            (autofill::BrowserAutofillManager*)autofillManager
+                    ofFormsSubmitted:(const FormDataVector&)forms
+                       userInitiated:(BOOL)userInitiated {
   DCHECK(autofillManager);
   // Exactly one form should be extracted.
   DCHECK_EQ(1U, forms.size());
@@ -256,7 +258,7 @@ autofillManagerFromWebState:(web::WebState*)webState
 }
 
 // Invokes the form extraction script in |frame| and loads the output into the
-// format expected by the AutofillManager.
+// format expected by the BrowserAutofillManager.
 // If |filtered| is NO, all forms are extracted.
 // If |filtered| is YES,
 //   - if |formName| is non-empty, only a form of that name is extracted.
@@ -299,8 +301,8 @@ autofillManagerFromWebState:(web::WebState*)webState
 
 #pragma mark - FormSuggestionProvider
 
-// Sends a request to AutofillManager to retrieve suggestions for the specified
-// form and field.
+// Sends a request to BrowserAutofillManager to retrieve suggestions for the
+// specified form and field.
 - (void)queryAutofillForForm:(const autofill::FormData&)form
              fieldIdentifier:(NSString*)fieldIdentifier
                         type:(NSString*)type
@@ -310,7 +312,7 @@ autofillManagerFromWebState:(web::WebState*)webState
            completionHandler:(SuggestionsAvailableCompletion)completion {
   web::WebFrame* frame =
       GetWebFrameWithId(webState, SysNSStringToUTF8(frameID));
-  autofill::AutofillManager* autofillManager =
+  autofill::BrowserAutofillManager* autofillManager =
       [self autofillManagerFromWebState:webState webFrame:frame];
   if (!autofillManager)
     return;
@@ -323,7 +325,7 @@ autofillManagerFromWebState:(web::WebState*)webState
   _suggestionsAvailableCompletion = [completion copy];
   _typedValue = [typedValue copy];
 
-  // Query the AutofillManager for suggestions. Results will arrive in
+  // Query the BrowserAutofillManager for suggestions. Results will arrive in
   // -showAutofillPopup:popupDelegate:.
   autofillManager->OnQueryFormFieldAutofill(
       ++_lastQueryID, form, field, gfx::RectF(),
@@ -358,7 +360,7 @@ autofillManagerFromWebState:(web::WebState*)webState
   }
 
   // Once the active form and field are extracted, send a query to the
-  // AutofillManager for suggestions.
+  // BrowserAutofillManager for suggestions.
   __weak AutofillAgent* weakSelf = self;
   id completionHandler = ^(BOOL success, const FormDataVector& forms) {
     if (success && forms.size() == 1) {
@@ -453,7 +455,7 @@ autofillManagerFromWebState:(web::WebState*)webState
              autofill::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
     web::WebFrame* frame =
         GetWebFrameWithId(_webState, SysNSStringToUTF8(frameID));
-    autofill::AutofillManager* autofillManager =
+    autofill::BrowserAutofillManager* autofillManager =
         [self autofillManagerFromWebState:_webState webFrame:frame];
     if (autofillManager) {
       autofillManager->OnUserAcceptedCardsFromAccountOption();
@@ -508,7 +510,7 @@ autofillManagerFromWebState:(web::WebState*)webState
     [self sendData:std::move(autofillData) toFrame:frame];
   }
 
-  autofill::AutofillManager* autofillManager =
+  autofill::BrowserAutofillManager* autofillManager =
       [self autofillManagerFromWebState:_webState webFrame:frame];
   if (autofillManager)
     autofillManager->OnDidFillAutofillFormData(
@@ -740,11 +742,11 @@ autofillManagerFromWebState:(web::WebState*)webState
     AutofillAgent* strongSelf = weakSelf;
     if (!strongSelf || !success)
       return;
-    autofill::AutofillManager* autofillManager =
+    autofill::BrowserAutofillManager* autofillManager =
         [strongSelf autofillManagerFromWebState:webState webFrame:webFrame];
     if (!autofillManager || forms.empty())
       return;
-    [strongSelf notifyAutofillManager:autofillManager ofFormsSeen:forms];
+    [strongSelf notifyBrowserAutofillManager:autofillManager ofFormsSeen:forms];
   };
   // The document has now been fully loaded. Scan for forms to be extracted.
   size_t min_required_fields =
@@ -839,26 +841,26 @@ autofillManagerFromWebState:(web::WebState*)webState
       base::SysUTF8ToNSString(formData), true, base::UTF8ToUTF16(formName),
       webState->GetLastCommittedURL(), frame->GetSecurityOrigin(), &forms);
 
-  autofill::AutofillManager* autofillManager =
+  autofill::BrowserAutofillManager* autofillManager =
       [self autofillManagerFromWebState:webState webFrame:frame];
   if (!autofillManager || !success || forms.empty())
     return;
   // AutofillDriverIOSWebFrame will keep a refcountable AutofillDriverIOS.
   // This is a workaround crbug.com/892612. On submission,
-  // AutofillDownloadManager and CreditCardSaveManager expect AutofillManager
-  // and AutofillDriver to live after web frame deletion so AutofillAgent will
-  // keep the latest submitted AutofillDriver alive.
+  // AutofillDownloadManager and CreditCardSaveManager expect
+  // BrowserAutofillManager and AutofillDriver to live after web frame deletion
+  // so AutofillAgent will keep the latest submitted AutofillDriver alive.
   // TODO(crbug.com/892612): remove this workaround once life cycle of
-  // AutofillManager is fixed.
+  // BrowserAutofillManager is fixed.
   DCHECK(frame);
   _last_submitted_autofill_driver =
       autofill::AutofillDriverIOSWebFrame::FromWebFrame(frame)
           ->GetRetainableDriver();
   DCHECK(_last_submitted_autofill_driver);
   DCHECK(forms.size() <= 1) << "Only one form should be extracted.";
-  [self notifyAutofillManager:autofillManager
-             ofFormsSubmitted:forms
-                userInitiated:hasUserGesture];
+  [self notifyBrowserAutofillManager:autofillManager
+                    ofFormsSubmitted:forms
+                       userInitiated:hasUserGesture];
 }
 
 #pragma mark - PrefObserverDelegate
@@ -981,7 +983,7 @@ autofillManagerFromWebState:(web::WebState*)webState
   if (!webFrame)
     return;
 
-  autofill::AutofillManager* autofillManager =
+  autofill::BrowserAutofillManager* autofillManager =
       [self autofillManagerFromWebState:_webState webFrame:webFrame];
   if (!autofillManager)
     return;

@@ -171,10 +171,9 @@ void AddAutofillProfile(autofill::PersonalDataManager* personalDataManager) {
 
 namespace autofill {
 
-// Helper class that provides access to private members of AutofillManager,
-// FormDataImporter and CreditCardSaveManager.
-// This class is friend with some autofill internal classes to access private
-// fields.
+// Helper class that provides access to private members of
+// BrowserAutofillManager, FormDataImporter and CreditCardSaveManager. This
+// class is friend with some autofill internal classes to access private fields.
 class SaveCardInfobarEGTestHelper
     : public CreditCardSaveManager::ObserverForTest {
  public:

@@ -164,7 +164,7 @@ void TabWebContentsDelegateAndroid::PortalWebContentsCreated(
       portal_contents,
       autofill::ChromeAutofillClient::FromWebContents(portal_contents),
       g_browser_process->GetApplicationLocale(),
-      autofill::AutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER);
+      autofill::BrowserAutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER);
   ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
       portal_contents,
       autofill::ChromeAutofillClient::FromWebContents(portal_contents));

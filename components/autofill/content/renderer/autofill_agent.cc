@@ -422,9 +422,9 @@ void AutofillAgent::FillForm(int32_t id, const FormData& form) {
   if (!element_.Form().IsNull())
     UpdateLastInteractedForm(element_.Form());
 
-  // TODO(crbug.com/1198811): Inform the AutofillManager about the fields that
-  // were actually filled. It's possible that the form has changed since the
-  // time filling was triggered.
+  // TODO(crbug.com/1198811): Inform the BrowserAutofillManager about the fields
+  // that were actually filled. It's possible that the form has changed since
+  // the time filling was triggered.
   GetAutofillDriver()->DidFillAutofillFormData(form,
                                                AutofillTickClock::NowTicks());
 

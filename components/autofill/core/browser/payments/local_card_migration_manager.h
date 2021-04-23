@@ -168,7 +168,7 @@ class LocalCardMigrationManager {
   AutofillClient* const client_;
 
   // Handles Payments service requests.
-  // Owned by AutofillManager.
+  // Owned by BrowserAutofillManager.
   payments::PaymentsClient* payments_client_;
 
  private:
@@ -216,7 +216,7 @@ class LocalCardMigrationManager {
   std::string app_locale_;
 
   // The personal data manager, used to save and load personal data to/from the
-  // web database.  This is overridden by the AutofillManagerTest.
+  // web database.  This is overridden by the BrowserAutofillManagerTest.
   // Weak reference.
   // May be NULL.  NULL indicates OTR.
   PersonalDataManager* personal_data_manager_;

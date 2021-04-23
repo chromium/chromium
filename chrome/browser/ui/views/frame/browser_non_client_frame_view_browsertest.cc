@@ -237,7 +237,7 @@ class SaveCardOfferObserver
   explicit SaveCardOfferObserver(content::WebContents* web_contents) {
     manager_ = autofill::ContentAutofillDriver::GetForRenderFrameHost(
                    web_contents->GetMainFrame())
-                   ->autofill_manager()
+                   ->browser_autofill_manager()
                    ->client()
                    ->GetFormDataImporter()
                    ->credit_card_save_manager_.get();

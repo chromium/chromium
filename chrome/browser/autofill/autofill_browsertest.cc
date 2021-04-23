@@ -128,10 +128,10 @@ class AutofillTest : public InProcessBrowserTest {
     // Make sure to close any showing popups prior to tearing down the UI.
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    AutofillManager* autofill_manager =
+    BrowserAutofillManager* autofill_manager =
         ContentAutofillDriverFactory::FromWebContents(web_contents)
             ->DriverForFrame(web_contents->GetMainFrame())
-            ->autofill_manager();
+            ->browser_autofill_manager();
     autofill_manager->client()->HideAutofillPopup(PopupHidingReason::kTabGone);
     test::ReenableSystemServices();
   }
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfilesAggregatedWithSubmitHandler) {
   FillFormAndSubmitWithHandler("duplicate_profiles_test.html", data, submit,
                                false);
 
-  // The AutofillManager will update the user's profile.
+  // The BrowserAutofillManager will update the user's profile.
   EXPECT_EQ(1u, personal_data_manager()->GetProfiles().size());
 
   EXPECT_EQ(u"Bob",
@@ -778,18 +778,19 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, TestAutocompleteState) {
 }
 
 // Test fixture for testing that that appropriate form submission events are
-// fired in AutofillManager.
+// fired in BrowserAutofillManager.
 class FormSubmissionDetectionTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  protected:
-  class MockAutofillManager : public AutofillManager {
+  class MockBrowserAutofillManager : public BrowserAutofillManager {
    public:
-    MockAutofillManager(AutofillDriver* driver, AutofillClient* client)
-        : AutofillManager(driver,
-                          client,
-                          "en-US",
-                          AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER) {}
+    MockBrowserAutofillManager(AutofillDriver* driver, AutofillClient* client)
+        : BrowserAutofillManager(
+              driver,
+              client,
+              "en-US",
+              BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER) {}
 
     MOCK_METHOD3(OnFormSubmittedImpl,
                  void(const FormData&, bool, mojom::SubmissionSource));
@@ -824,7 +825,7 @@ class FormSubmissionDetectionTest
         blink::WebMouseEvent::Button::kLeft);
   }
 
-  MockAutofillManager* autofill_manager_ = nullptr;
+  MockBrowserAutofillManager* autofill_manager_ = nullptr;
 
  private:
   void InitializeFeatures() {
@@ -891,8 +892,8 @@ class FormSubmissionDetectionTest
   }
 
   // TODO(crbug/1119526) This dependency injection is wonky because it only
-  // mocks the current ContentAutofillDriver's AutofillManager, not the future
-  // ones' AutofillManagers.
+  // mocks the current ContentAutofillDriver's BrowserAutofillManager, not the
+  // future ones' BrowserAutofillManagers.
   void Mock() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -902,18 +903,18 @@ class FormSubmissionDetectionTest
     ContentAutofillDriver* driver =
         driver_factory->DriverForFrame(web_contents->GetMainFrame());
 
-    std::unique_ptr<MockAutofillManager> mock_autofill_manager =
-        std::make_unique<MockAutofillManager>(driver, client);
+    std::unique_ptr<MockBrowserAutofillManager> mock_autofill_manager =
+        std::make_unique<MockBrowserAutofillManager>(driver, client);
     autofill_manager_ = mock_autofill_manager.get();
 
-    driver->SetAutofillManager(std::move(mock_autofill_manager));
+    driver->SetBrowserAutofillManager(std::move(mock_autofill_manager));
   }
 
   base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that user-triggered submission triggers a submission event in
-// AutofillManager.
+// BrowserAutofillManager.
 IN_PROC_BROWSER_TEST_P(FormSubmissionDetectionTest, Submission) {
   base::RunLoop run_loop;
   EXPECT_CALL(
@@ -930,7 +931,7 @@ IN_PROC_BROWSER_TEST_P(FormSubmissionDetectionTest, Submission) {
 }
 
 // Tests that non-link-click, renderer-inititiated navigation triggers a
-// submission event in AutofillManager.
+// submission event in BrowserAutofillManager.
 IN_PROC_BROWSER_TEST_P(FormSubmissionDetectionTest, ProbableSubmission) {
   base::RunLoop run_loop;
   EXPECT_CALL(*autofill_manager_,

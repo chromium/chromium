@@ -290,7 +290,7 @@ TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
 // Tests that text entered into fields specifying autocomplete="off" is not sent
 // to the WebDatabase to be saved. Note this is also important as the mechanism
 // for preventing CVCs from being saved.
-// See AutofillManagerTest.DontSaveCvcInAutocompleteHistory
+// See BrowserAutofillManagerTest.DontSaveCvcInAutocompleteHistory
 TEST_F(AutocompleteHistoryManagerTest, FieldWithAutocompleteOff) {
   FormData form;
   form.name = u"MyForm";

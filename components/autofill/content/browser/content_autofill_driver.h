@@ -16,7 +16,7 @@
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/browser/autofill_driver.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -146,7 +146,9 @@ class ContentAutofillDriver : public AutofillDriver,
   // navigation occurs in that specific frame.
   void DidNavigateFrame(content::NavigationHandle* navigation_handle);
 
-  AutofillManager* autofill_manager() { return autofill_manager_; }
+  BrowserAutofillManager* browser_autofill_manager() {
+    return browser_autofill_manager_;
+  }
   AutofillHandler* autofill_handler() { return autofill_handler_.get(); }
   content::RenderFrameHost* render_frame_host() { return render_frame_host_; }
 
@@ -161,11 +163,13 @@ class ContentAutofillDriver : public AutofillDriver,
                                      AutofillClient* client);
 
   // Sets the manager to |manager|. Takes ownership of |manager|.
-  void SetAutofillManager(std::unique_ptr<AutofillManager> manager);
+  void SetBrowserAutofillManager(
+      std::unique_ptr<BrowserAutofillManager> manager);
 
   // Reports whether a document collects phone numbers, uses one time code, uses
   // WebOTP. There are cases that the reporting is not expected:
-  //   1. some unit tests do not set necessary members, |autofill_manager_|
+  //   1. some unit tests do not set necessary members,
+  //   |browser_autofill_manager_|
   //   2. there is no form and WebOTP is not used
   // |MaybeReportAutofillWebOTPMetrics| is to exclude the cases above.
   // |ReportAutofillWebOTPMetrics| is visible for unit tests where the
@@ -215,10 +219,10 @@ class ContentAutofillDriver : public AutofillDriver,
   // code.
   std::unique_ptr<AutofillHandler> autofill_handler_;
 
-  // The pointer to autofill_handler_ if it is AutofillManager instance.
-  // TODO: unify autofill_handler_ and autofill_manager_ to a single pointer to
-  // a common root.
-  AutofillManager* autofill_manager_;
+  // The pointer to autofill_handler_ if it is BrowserAutofillManager instance.
+  // TODO: unify autofill_handler_ and browser_autofill_manager_ to a single
+  // pointer to a common root.
+  BrowserAutofillManager* browser_autofill_manager_;
 
   // Pointer to an implementation of InternalAuthenticator.
   std::unique_ptr<InternalAuthenticator> authenticator_impl_;

@@ -21,7 +21,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
@@ -139,7 +139,7 @@ void RemoveDuplicatePhoneNumberAtIndex(size_t index,
     list->Remove(index, nullptr);
 }
 
-autofill::AutofillManager* GetAutofillManager(
+autofill::BrowserAutofillManager* GetBrowserAutofillManager(
     content::WebContents* web_contents) {
   if (!web_contents) {
     return nullptr;
@@ -149,7 +149,7 @@ autofill::AutofillManager* GetAutofillManager(
           ->DriverForFrame(web_contents->GetMainFrame());
   if (!autofill_driver)
     return nullptr;
-  return autofill_driver->autofill_manager();
+  return autofill_driver->browser_autofill_manager();
 }
 
 }  // namespace
@@ -528,10 +528,11 @@ AutofillPrivateMigrateCreditCardsFunction::Run() {
   if (!personal_data || !personal_data->IsDataLoaded())
     return RespondNow(Error(kErrorDataUnavailable));
 
-  // Get the AutofillManager from the web contents. AutofillManager has a
-  // pointer to its AutofillClient which owns FormDataImporter.
-  autofill::AutofillManager* autofill_manager =
-      GetAutofillManager(GetSenderWebContents());
+  // Get the BrowserAutofillManager from the web contents.
+  // BrowserAutofillManager has a pointer to its AutofillClient which owns
+  // FormDataImporter.
+  autofill::BrowserAutofillManager* autofill_manager =
+      GetBrowserAutofillManager(GetSenderWebContents());
   if (!autofill_manager || !autofill_manager->client())
     return RespondNow(Error(kErrorDataUnavailable));
 
@@ -578,8 +579,8 @@ AutofillPrivateLogServerCardLinkClickedFunction::Run() {
 ExtensionFunction::ResponseAction
 AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction::Run() {
   // Getting CreditCardAccessManager from WebContents.
-  autofill::AutofillManager* autofill_manager =
-      GetAutofillManager(GetSenderWebContents());
+  autofill::BrowserAutofillManager* autofill_manager =
+      GetBrowserAutofillManager(GetSenderWebContents());
   if (!autofill_manager)
     return RespondNow(Error(kErrorDataUnavailable));
   autofill::CreditCardAccessManager* credit_card_access_manager =

@@ -31,7 +31,7 @@ bool IsContextSecureForWebState(web::WebState* web_state);
 std::unique_ptr<base::Value> ParseJson(NSString* json_string);
 
 // Processes the JSON form data extracted from the page into the format expected
-// by AutofillManager and fills it in |forms_data|.
+// by BrowserAutofillManager and fills it in |forms_data|.
 // |forms_data| cannot be nil.
 // |filtered| and |form_name| limit the field that will be returned in
 // |forms_data|.

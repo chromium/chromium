@@ -92,7 +92,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
         active_browser_->tab_strip_model()->GetActiveWebContents();
     ContentAutofillDriverFactory::FromWebContents(web_contents)
         ->DriverForFrame(web_contents->GetMainFrame())
-        ->autofill_manager()
+        ->browser_autofill_manager()
         ->client()
         ->HideAutofillPopup(PopupHidingReason::kTabGone);
     test::ReenableSystemServices();

@@ -54,7 +54,7 @@ class TestCreditCardFIDOAuthenticator : public CreditCardFIDOAuthenticator {
   bool IsOptOutCalled() { return opt_out_called_; }
 
  private:
-  friend class AutofillManagerTest;
+  friend class BrowserAutofillManagerTest;
   friend class CreditCardAccessManagerTest;
 
   PublicKeyCredentialRequestOptionsPtr request_options_;

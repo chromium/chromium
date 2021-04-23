@@ -118,7 +118,7 @@ class AutofillProviderBrowserTest : public InProcessBrowserTest {
     // Replace the ContentAutofillDriverFactory for sub frame.
     ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
         web_contents, autofill_client_.get(), "en-US",
-        AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
+        BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
         autofill_provider_.get());
   }
 

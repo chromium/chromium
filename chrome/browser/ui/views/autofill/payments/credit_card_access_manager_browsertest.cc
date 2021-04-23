@@ -14,7 +14,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
-#include "components/autofill/core/browser/test_autofill_manager.h"
+#include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "content/public/test/browser_test.h"
 
 namespace autofill {
@@ -42,7 +42,8 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
     ContentAutofillDriver* autofill_driver =
         ContentAutofillDriverFactory::FromWebContents(web_contents)
             ->DriverForFrame(web_contents->GetMainFrame());
-    return autofill_driver->autofill_manager()->credit_card_access_manager();
+    return autofill_driver->browser_autofill_manager()
+        ->credit_card_access_manager();
   }
 
   CreditCard SaveServerCard(std::string card_number) {

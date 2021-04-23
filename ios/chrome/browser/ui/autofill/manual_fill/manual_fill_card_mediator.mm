@@ -9,7 +9,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_consumer.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_list_delegate.h"
