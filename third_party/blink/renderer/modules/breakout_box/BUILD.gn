@@ -48,6 +48,8 @@ source_set("unit_tests") {
     "media_stream_track_processor_test.cc",
     "media_stream_video_track_underlying_sink_test.cc",
     "media_stream_video_track_underlying_source_test.cc",
+    "pushable_media_stream_audio_source_test.cc",
+    "pushable_media_stream_video_source_test.cc",
     "stream_test_utils.cc",
     "stream_test_utils.h",
     "video_track_signal_underlying_sink_test.cc",
