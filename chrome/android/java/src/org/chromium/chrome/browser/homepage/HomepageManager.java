@@ -165,6 +165,19 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
     }
 
     /**
+     * Determines whether the homepage is set to something other than the NTP or empty/null. This is
+     * the same as {@link #isHomepageNonNtp()}, but uses {@link UrlUtilities#isCanonicalizedNTPUrl}
+     * instead of {@link UrlUtilities#isNTPUrl} to make it possible to use before native is loaded.
+     * Prefer {@link #isHomepageNonNtp()} if possible.
+     * @return Whether the current homepage is something other than the NTP.
+     */
+    public static boolean isHomepageNonNtpPreNative() {
+        String currentHomepage = getHomepageUri();
+        return !TextUtils.isEmpty(currentHomepage)
+                && !UrlUtilities.isCanonicalizedNTPUrl(currentHomepage);
+    }
+
+    /**
      * Get homepage URI without checking if the homepage is enabled.
      * @return Homepage URI based on policy and shared preference settings.
      */

@@ -58,6 +58,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.AppLaunch.BlockDrawForInitialTabAccuracy"
+    enum="AppLaunchBlockDrawForInitialTabAccuracy" expires_after="2021-12-15">
+  <owner>sinansahin@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>skym@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the accuracy of the logic used to decide whether to block the view
+    draw of the first tab, expressed as an enum. Recorded when the active tab is
+    restored or an initial tab is created in ChromeTabbedActivity.
+  </summary>
+</histogram>
+
+<histogram name="Android.AppLaunch.DurationDrawWasBlocked" units="ms"
+    expires_after="2021-12-15">
+  <owner>sinansahin@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>skym@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records how long the initial tab's draw was blocked, if it was. Recorded
+    when the active tab is restored or an initial tab is created in
+    ChromeTabbedActivity.
+  </summary>
+</histogram>
+
 <histogram name="Android.AppNotificationStatus" enum="NotificationAppStatus"
     expires_after="2020-11-15">
   <owner>peter@chromium.org</owner>
