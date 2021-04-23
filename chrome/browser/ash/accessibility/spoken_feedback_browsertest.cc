@@ -1576,7 +1576,8 @@ class SigninToUserProfileSwitchTest : public OobeSpokenFeedbackTest {
 
 // Verifies that spoken feedback correctly handles profile switch (signin ->
 // user) and announces the sync consent screen correctly.
-IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, LoginAsNewUser) {
+// TODO(crbug.com/1184714): Fix flakiness.
+IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, DISABLED_LoginAsNewUser) {
   // Force sync screen.
   auto reset = WizardController::ForceBrandedBuildForTesting(true);
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
