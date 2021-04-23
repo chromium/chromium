@@ -85,11 +85,6 @@ IN_PROC_BROWSER_TEST_F(AncestorThrottleTest, XFOAndCSPFrameAncestors) {
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
 
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-  console_observer.SetPattern(
-      "The page delivered both an 'X-Frame-Options' header and a "
-      "'Content-Security-Policy' header with a 'frame-ancestors' directive. "
-      "The 'X-Frame-Options' header has been ignored.");
   EXPECT_TRUE(NavigateToURL(web_contents, parent_url));
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test_iframe", iframe_url));
 
@@ -102,7 +97,6 @@ IN_PROC_BROWSER_TEST_F(AncestorThrottleTest, XFOAndCSPFrameAncestors) {
                    ->current_frame_host()
                    ->GetLastCommittedOrigin()
                    .opaque());
-  console_observer.Wait();
 }
 
 // Tests that redirecting on a forbidden frame-ancestors will still commit if
