@@ -236,7 +236,7 @@ vars = {
   #
   # Note this revision should be updated with
   # third_party/boringssl/roll_boringssl.py, not roll-dep.
-  'boringssl_revision': '15961379e6b2682d73c3cb8f8016a09d04257c77',
+  'boringssl_revision': '354cd48f51ea6c6d5c1b1d76ae0585107f8a868e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling google-toolbox-for-mac
   # and whatever else without interference from each other.
