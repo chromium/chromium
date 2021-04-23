@@ -396,8 +396,12 @@ public class CableAuthenticatorUI
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Closing mAuthenticator is not done in |onStop| because Android can
+        // generate spurious |onStop| calls when the activity is started from
+        // a lock-screen notification.
         if (mAuthenticator != null) {
             mAuthenticator.close();
         }
