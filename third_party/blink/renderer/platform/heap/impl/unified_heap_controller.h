@@ -45,9 +45,6 @@ class PLATFORM_EXPORT UnifiedHeapController final
   void RegisterV8References(const std::vector<std::pair<void*, void*>>&) final;
   bool AdvanceTracing(double) final;
   bool IsTracingDone() final;
-  bool IsRootForNonTracingGC(const v8::TracedReference<v8::Value>&) final;
-  bool IsRootForNonTracingGC(const v8::TracedGlobal<v8::Value>&) final;
-  void ResetHandleInNonTracingGC(const v8::TracedReference<v8::Value>&) final;
 
   ThreadState* thread_state() const { return thread_state_; }
 

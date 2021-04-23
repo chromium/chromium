@@ -140,6 +140,7 @@ class PLATFORM_EXPORT ThreadState final {
   ~ThreadState();
 
   std::unique_ptr<v8::CppHeap> cpp_heap_;
+  std::unique_ptr<v8::EmbedderRootsHandler> embedder_roots_handler_;
   cppgc::AllocationHandle& allocation_handle_;
   cppgc::HeapHandle& heap_handle_;
   v8::Isolate* isolate_ = nullptr;

@@ -5,14 +5,82 @@
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/thread_state.h"
 
 #include "gin/public/v8_platform.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/custom_spaces.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8.h"
+#include "v8/include/cppgc/heap-consistency.h"
 #include "v8/include/v8-cppgc.h"
 
 namespace blink {
+
+namespace {
+
+// Handler allowing for dropping V8 wrapper objects that can be recreated
+// lazily.
+class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
+ public:
+  explicit BlinkRootsHandler(v8::CppHeap& cpp_heap) : cpp_heap_(cpp_heap) {}
+  ~BlinkRootsHandler() final = default;
+
+  bool IsRoot(const v8::TracedReference<v8::Value>& handle) final {
+    const uint16_t class_id = handle.WrapperClassId();
+    // Stand-alone reference or kCustomWrappableId. Keep as root as
+    // we don't know better.
+    if (class_id != WrapperTypeInfo::kNodeClassId &&
+        class_id != WrapperTypeInfo::kObjectClassId)
+      return true;
+
+    const v8::TracedReference<v8::Object>& traced =
+        handle.template As<v8::Object>();
+    if (ToWrapperTypeInfo(traced)->IsActiveScriptWrappable() &&
+        ToScriptWrappable(traced)->HasPendingActivity()) {
+      return true;
+    }
+
+    if (ToScriptWrappable(traced)->HasEventListeners()) {
+      return true;
+    }
+
+    return false;
+  }
+
+  bool IsRoot(const v8::TracedGlobal<v8::Value>& handle) final {
+    CHECK(false) << "Blink does not use v8::TracedGlobal.";
+    return false;
+  }
+
+  // ResetRoot() clears references to V8 wrapper objects in all worlds. It is
+  // invoked for references where IsRoot() returned false during young
+  // generation garbage collections.
+  void ResetRoot(const v8::TracedReference<v8::Value>& handle) final {
+    const uint16_t class_id = handle.WrapperClassId();
+    // Only consider handles that have not been treated as roots, see IsRoot().
+    if (class_id != WrapperTypeInfo::kNodeClassId &&
+        class_id != WrapperTypeInfo::kObjectClassId)
+      return;
+
+    // Clearing the wrapper below adjusts the DOM wrapper store which may
+    // re-allocate its backing. NoGarbageCollectionScope is required to avoid
+    // triggering a GC from such re-allocating calls as ResetRoot() is itself
+    // called from GC.
+    cppgc::subtle::NoGarbageCollectionScope no_gc(cpp_heap_.GetHeapHandle());
+    const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
+    bool success = DOMWrapperWorld::UnsetSpecificWrapperIfSet(
+        ToScriptWrappable(traced), traced);
+    // Since V8 found a handle, Blink needs to find it as well when trying to
+    // remove it.
+    CHECK(success);
+  }
+
+ private:
+  v8::CppHeap& cpp_heap_;
+};
+
+}  // namespace
 
 // static
 base::LazyInstance<WTF::ThreadSpecific<ThreadState*>>::Leaky
@@ -52,11 +120,14 @@ void ThreadState::AttachToIsolate(v8::Isolate* isolate,
   isolate->AttachCppHeap(cpp_heap_.get());
   CHECK_EQ(cpp_heap_.get(), isolate->GetCppHeap());
   isolate_ = isolate;
+  embedder_roots_handler_ = std::make_unique<BlinkRootsHandler>(cpp_heap());
+  isolate_->SetEmbedderRootsHandler(embedder_roots_handler_.get());
 }
 
 void ThreadState::DetachFromIsolate() {
   CHECK_EQ(cpp_heap_.get(), isolate_->GetCppHeap());
   isolate_->DetachCppHeap();
+  isolate_->SetEmbedderRootsHandler(nullptr);
   isolate_ = nullptr;
 }
 

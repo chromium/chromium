@@ -45,9 +45,12 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_base.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/blink_gc.h"
 #include "third_party/blink/renderer/platform/heap/blink_gc_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -220,6 +223,68 @@ void ThreadState::DetachCurrentThread() {
   delete state;
 }
 
+namespace {
+
+// See platform/heap/v8_wrapper/thread_state.cc version for details.
+class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
+ public:
+  explicit BlinkRootsHandler(ThreadState& thread_state)
+      : thread_state_(thread_state) {}
+  ~BlinkRootsHandler() final = default;
+
+  bool IsRoot(const v8::TracedReference<v8::Value>& handle) final {
+    const uint16_t class_id = handle.WrapperClassId();
+    // Stand-alone reference or kCustomWrappableId. Keep as root as
+    // we don't know better.
+    if (class_id != WrapperTypeInfo::kNodeClassId &&
+        class_id != WrapperTypeInfo::kObjectClassId)
+      return true;
+
+    const v8::TracedReference<v8::Object>& traced =
+        handle.template As<v8::Object>();
+    if (ToWrapperTypeInfo(traced)->IsActiveScriptWrappable() &&
+        ToScriptWrappable(traced)->HasPendingActivity()) {
+      return true;
+    }
+
+    if (ToScriptWrappable(traced)->HasEventListeners()) {
+      return true;
+    }
+
+    return false;
+  }
+
+  bool IsRoot(const v8::TracedGlobal<v8::Value>& handle) final {
+    CHECK(false) << "Blink does not use v8::TracedGlobal.";
+    return false;
+  }
+
+  void ResetRoot(const v8::TracedReference<v8::Value>& handle) final {
+    const uint16_t class_id = handle.WrapperClassId();
+    // Only consider handles that have not been treated as roots, see
+    // IsRootForNonTracingGCInternal.
+    if (class_id != WrapperTypeInfo::kNodeClassId &&
+        class_id != WrapperTypeInfo::kObjectClassId)
+      return;
+
+    // Clearing the wrapper below adjusts the DOM wrapper store which may
+    // re-allocate its backing. We have to avoid report memory to V8 as that may
+    // trigger GC during GC.
+    ThreadState::GCForbiddenScope no_gc(&thread_state_);
+    const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
+    bool success = DOMWrapperWorld::UnsetSpecificWrapperIfSet(
+        ToScriptWrappable(traced), traced);
+    // Since V8 found a handle, Blink needs to find it as well when trying to
+    // remove it.
+    CHECK(success);
+  }
+
+ private:
+  ThreadState& thread_state_;
+};
+
+}  // namespace
+
 void ThreadState::AttachToIsolate(
     v8::Isolate* isolate,
     V8BuildEmbedderGraphCallback v8_build_embedder_graph) {
@@ -232,6 +297,8 @@ void ThreadState::AttachToIsolate(
   if (v8::HeapProfiler* profiler = isolate->GetHeapProfiler()) {
     profiler->AddBuildEmbedderGraphCallback(v8_build_embedder_graph, nullptr);
   }
+  embedder_roots_handler_ = std::make_unique<BlinkRootsHandler>(*this);
+  isolate_->SetEmbedderRootsHandler(embedder_roots_handler_.get());
 }
 
 void ThreadState::DetachFromIsolate() {
@@ -245,6 +312,7 @@ void ThreadState::DetachFromIsolate() {
       profiler->RemoveBuildEmbedderGraphCallback(v8_build_embedder_graph_,
                                                  nullptr);
     }
+    isolate_->SetEmbedderRootsHandler(nullptr);
   }
   isolate_ = nullptr;
   v8_build_embedder_graph_ = nullptr;

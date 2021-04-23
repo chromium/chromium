@@ -613,6 +613,7 @@ class PLATFORM_EXPORT ThreadState final {
   v8::Isolate* isolate_ = nullptr;
   V8BuildEmbedderGraphCallback v8_build_embedder_graph_ = nullptr;
   std::unique_ptr<UnifiedHeapController> unified_heap_controller_;
+  std::unique_ptr<v8::EmbedderRootsHandler> embedder_roots_handler_;
 
 #if defined(ADDRESS_SANITIZER)
   void* asan_fake_stack_;
