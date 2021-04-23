@@ -13,6 +13,8 @@
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_piece.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/values.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
@@ -162,15 +164,24 @@ class ExtensionAPI {
                                          Feature::Context context,
                                          const GURL& url);
 
-  bool default_configuration_initialized_;
-
   // Loads a schema.
   void LoadSchema(const std::string& name, const base::StringPiece& schema);
+
+  // Same as GetSchemaStringPiece() but doesn't acquire |lock_|.
+  base::StringPiece GetSchemaStringPieceUnsafe(const std::string& api_name);
+
+  // Same as GetAPINameFromFullName() but doesn't acquire |lock_|.
+  std::string GetAPINameFromFullNameUnsafe(const std::string& full_name,
+                                           std::string* child_name);
+
+  bool default_configuration_initialized_ = false;
+
+  base::Lock lock_;
 
   // Schemas for each namespace.
   using SchemaMap =
       std::map<std::string, std::unique_ptr<const base::DictionaryValue>>;
-  SchemaMap schemas_;
+  SchemaMap schemas_ GUARDED_BY(lock_);
 
   // FeatureProviders used for resolving dependencies.
   typedef std::map<std::string, const FeatureProvider*> FeatureProviderMap;

@@ -11,12 +11,16 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind_post_task.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
+#include "base/threading/thread.h"
 #include "base/values.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_features_unittest.h"
@@ -982,6 +986,40 @@ TEST(ExtensionAPITest, ManifestKeys) {
                                  Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
                                  CheckAliasStatus::NOT_ALLOWED)
                    .is_available());
+}
+
+// (TSAN) Tests that ExtensionAPI are able to handle GetSchema from different
+// threads.
+TEST(ExtensionAPITest, GetSchemaFromDifferentThreads) {
+  ExtensionAPI* shared_instance = ExtensionAPI::GetSharedInstance();
+  ASSERT_TRUE(shared_instance);
+  base::test::TaskEnvironment task_environment;
+
+  base::Thread t("test_thread");
+  ASSERT_TRUE(t.Start());
+
+  base::RunLoop run_loop;
+  const base::DictionaryValue* another_thread_schema = nullptr;
+
+  auto result_cb =
+      base::BindLambdaForTesting([&](const base::DictionaryValue* res) {
+        another_thread_schema = res;
+        run_loop.Quit();
+      });
+  auto task =
+      base::BindOnce(&ExtensionAPI::GetSchema,
+                     base::Unretained(shared_instance), "storage")
+          .Then(base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                                   std::move(result_cb)));
+  t.task_runner()->PostTask(FROM_HERE, std::move(task));
+
+  const auto* current_thread_schema = shared_instance->GetSchema("storage");
+  EXPECT_TRUE(current_thread_schema);
+
+  run_loop.Run();
+
+  // The pointers (not only the values) must be the same.
+  EXPECT_EQ(another_thread_schema, current_thread_schema);
 }
 
 }  // namespace extensions

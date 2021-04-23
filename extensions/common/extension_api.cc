@@ -138,6 +138,7 @@ ExtensionAPI::OverrideSharedInstanceForTest::~OverrideSharedInstanceForTest() {
 
 void ExtensionAPI::LoadSchema(const std::string& name,
                               const base::StringPiece& schema) {
+  lock_.AssertAcquired();
   std::unique_ptr<base::DictionaryValue> schema_dict(
       LoadSchemaDictionary(name, schema));
   std::string schema_namespace;
@@ -145,11 +146,9 @@ void ExtensionAPI::LoadSchema(const std::string& name,
   schemas_[schema_namespace] = std::move(schema_dict);
 }
 
-ExtensionAPI::ExtensionAPI() : default_configuration_initialized_(false) {
-}
+ExtensionAPI::ExtensionAPI() = default;
 
-ExtensionAPI::~ExtensionAPI() {
-}
+ExtensionAPI::~ExtensionAPI() = default;
 
 void ExtensionAPI::InitDefaultConfiguration() {
   const constexpr char* const names[] = {"api", "behavior", "manifest",
@@ -223,27 +222,22 @@ Feature::Availability ExtensionAPI::IsAvailable(const std::string& full_name,
 
 base::StringPiece ExtensionAPI::GetSchemaStringPiece(
     const std::string& api_name) {
-  DCHECK_EQ(api_name, GetAPINameFromFullName(api_name, nullptr));
-  ExtensionsClient* client = ExtensionsClient::Get();
-  DCHECK(client);
-  if (!default_configuration_initialized_)
-    return base::StringPiece();
-
-  base::StringPiece schema = client->GetAPISchema(api_name);
-  return schema;
+  base::AutoLock lock(lock_);
+  return GetSchemaStringPieceUnsafe(api_name);
 }
 
 const base::DictionaryValue* ExtensionAPI::GetSchema(
     const std::string& full_name) {
+  base::AutoLock lock(lock_);
   std::string child_name;
-  std::string api_name = GetAPINameFromFullName(full_name, &child_name);
+  std::string api_name = GetAPINameFromFullNameUnsafe(full_name, &child_name);
 
   const base::DictionaryValue* result = NULL;
   auto maybe_schema = schemas_.find(api_name);
   if (maybe_schema != schemas_.end()) {
     result = maybe_schema->second.get();
   } else {
-    base::StringPiece schema_string = GetSchemaStringPiece(api_name);
+    base::StringPiece schema_string = GetSchemaStringPieceUnsafe(api_name);
     if (schema_string.empty())
       return nullptr;
     LoadSchema(api_name, schema_string);
@@ -281,34 +275,13 @@ const Feature* ExtensionAPI::GetFeatureDependency(
 
 std::string ExtensionAPI::GetAPINameFromFullName(const std::string& full_name,
                                                  std::string* child_name) {
-  std::string api_name_candidate = full_name;
-  ExtensionsClient* extensions_client = ExtensionsClient::Get();
-  DCHECK(extensions_client);
-  while (true) {
-    if (IsKnownAPI(api_name_candidate, extensions_client)) {
-      if (child_name) {
-        if (api_name_candidate.length() < full_name.length())
-          *child_name = full_name.substr(api_name_candidate.length() + 1);
-        else
-          *child_name = "";
-      }
-      return api_name_candidate;
-    }
-
-    size_t last_dot_index = api_name_candidate.rfind('.');
-    if (last_dot_index == std::string::npos)
-      break;
-
-    api_name_candidate = api_name_candidate.substr(0, last_dot_index);
-  }
-
-  if (child_name)
-    *child_name = "";
-  return std::string();
+  base::AutoLock lock(lock_);
+  return GetAPINameFromFullNameUnsafe(full_name, child_name);
 }
 
 bool ExtensionAPI::IsKnownAPI(const std::string& name,
                               ExtensionsClient* client) {
+  lock_.AssertAcquired();
   return schemas_.find(name) != schemas_.end() ||
          client->IsAPISchemaGenerated(name);
 }
@@ -346,6 +319,49 @@ Feature::Availability ExtensionAPI::IsAliasAvailable(
                        << " for API feature " << feature.name();
 
   return alias_feature->IsAvailableToContext(extension, context, url);
+}
+
+base::StringPiece ExtensionAPI::GetSchemaStringPieceUnsafe(
+    const std::string& api_name) {
+  lock_.AssertAcquired();
+  DCHECK_EQ(api_name, GetAPINameFromFullNameUnsafe(api_name, nullptr));
+  ExtensionsClient* client = ExtensionsClient::Get();
+  DCHECK(client);
+  if (!default_configuration_initialized_)
+    return base::StringPiece();
+
+  base::StringPiece schema = client->GetAPISchema(api_name);
+  return schema;
+}
+
+std::string ExtensionAPI::GetAPINameFromFullNameUnsafe(
+    const std::string& full_name,
+    std::string* child_name) {
+  lock_.AssertAcquired();
+  std::string api_name_candidate = full_name;
+  ExtensionsClient* extensions_client = ExtensionsClient::Get();
+  DCHECK(extensions_client);
+  while (true) {
+    if (IsKnownAPI(api_name_candidate, extensions_client)) {
+      if (child_name) {
+        if (api_name_candidate.length() < full_name.length())
+          *child_name = full_name.substr(api_name_candidate.length() + 1);
+        else
+          *child_name = "";
+      }
+      return api_name_candidate;
+    }
+
+    size_t last_dot_index = api_name_candidate.rfind('.');
+    if (last_dot_index == std::string::npos)
+      break;
+
+    api_name_candidate = api_name_candidate.substr(0, last_dot_index);
+  }
+
+  if (child_name)
+    *child_name = "";
+  return std::string();
 }
 
 }  // namespace extensions
