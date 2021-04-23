@@ -172,6 +172,7 @@ mojom("mojom_platform") {
     "service_worker/service_worker_installed_scripts_manager.mojom",
     "service_worker/service_worker_state.mojom",
     "service_worker/service_worker_stream_handle.mojom",
+    "service_worker/service_worker_worker_client.mojom",
     "site_engagement/site_engagement.mojom",
     "sms/webotp_service.mojom",
     "speculation_rules/speculation_rules.mojom",
