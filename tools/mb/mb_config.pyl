@@ -592,6 +592,11 @@
       'fuchsia-builder-perf-fyi': 'official_goma_fuchsia_arm64_perf',
     },
 
+    'chromium.reclient.fyi': {
+      'Linux Builder Re-Client Staging': 'gpu_tests_release_bot_reclient',
+      'Linux Builder Re-Client Test': 'gpu_tests_release_bot_reclient',
+    },
+
     'chromium.swangle': {
       'linux-swangle-chromium-x64': 'gpu_tests_release_trybot',
       'linux-swangle-tot-angle-x64': 'angle_deqp_release_trybot',
