@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">以太网：<ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">智能助理（正在加载中…）</translation>
 <translation id="1838895407229022812">当前已关闭护眼模式。</translation>
-<translation id="1850504506766569011">Wi-Fi 已关闭。</translation>
 <translation id="1864454756846565995">USB-C 设备（背面端口）</translation>
 <translation id="1882814835921407042">无移动网络</translation>
 <translation id="1882897271359938046">正在镜像到<ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">用户设置</translation>
 <translation id="3217205077783620295">已开启声音，使用切换开关可将音频静音。</translation>
 <translation id="3226991577105957773">+另外 <ph name="COUNT" /> 条</translation>
-<translation id="3236488194889173876">没有可用的移动网络</translation>
 <translation id="3249513730522716925">窗口“<ph name="WINDOW_TITLE" />”已由桌面 <ph name="ACTIVE_DESK" /> 移至桌面 <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">你能做些什么？</translation>
 <translation id="3269597722229482060">右键点击</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774">“<ph name="FEATURE_NAME" />”功能已开启。</translation>
 <translation id="5947494881799873997">还原</translation>
 <translation id="595202126637698455">已启用性能跟踪</translation>
-<translation id="5957083217255311415">移动数据网络现处于关闭状态。</translation>
 <translation id="5958529069007801266">受监管用户</translation>
 <translation id="5960825221082587934">让 Google 助理显示与您所选内容相关的信息（例如定义、翻译或单位换算）。</translation>
 <translation id="5977415296283489383">耳机</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">用于在任务栏中显示输入法选项菜单气泡的快捷键已更改。请使用<ph name="NEW_SHORTCUT" />（而不是 <ph name="OLD_SHORTCUT" />）。</translation>
 <translation id="8444246603146515890">桌面 <ph name="DESK_TITILE" /> 已激活</translation>
 <translation id="8452135315243592079">缺少 SIM 卡</translation>
-<translation id="8454013096329229812">Wi-Fi 已打开。</translation>
 <translation id="8462305545768648477">关闭“随选朗读”功能</translation>
 <translation id="847056008324733326">显示比例设置</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />已<ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />。</translation>

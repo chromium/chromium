@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Асистент (зарежда се...)</translation>
 <translation id="1838895407229022812">Функцията за нощно осветление е изключена.</translation>
-<translation id="1850504506766569011">Wi-Fi е изключен.</translation>
 <translation id="1864454756846565995">USB-C устройство (задният порт)</translation>
 <translation id="1882814835921407042">Няма мобилна мрежа</translation>
 <translation id="1882897271359938046">Дублира се на „<ph name="DISPLAY_NAME" />“</translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">Потребителски настройки</translation>
 <translation id="3217205077783620295">Звукът е включен. Превключването ще го спре.</translation>
 <translation id="3226991577105957773">+ още <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Няма мобилни мрежи</translation>
 <translation id="3249513730522716925">Прозорецът <ph name="WINDOW_TITLE" /> бе преместен от работен кът <ph name="ACTIVE_DESK" /> в работен кът <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">„What can you do?“ („Какво можеш да правиш?“)</translation>
 <translation id="3269597722229482060">Кликване с десния бутон</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774">„<ph name="FEATURE_NAME" />“ е включено.</translation>
 <translation id="5947494881799873997">Възстановяване</translation>
 <translation id="595202126637698455">Проследяването на ефективността е активирано</translation>
-<translation id="5957083217255311415">Мобилните данни са изключени.</translation>
 <translation id="5958529069007801266">Контролиран потребител</translation>
 <translation id="5960825221082587934">Позволяване на Асистент да показва информация за избраното от вас, като например определение, превод или преобразуване на мерни единици.</translation>
 <translation id="5977415296283489383">Слушалки</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">Комбинацията за показване в лавицата на балончето с менюто за опциите за въвеждане е променена. Моля, използвайте <ph name="NEW_SHORTCUT" /> вместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Работен кът <ph name="DESK_TITILE" /> е активиран</translation>
 <translation id="8452135315243592079">SIM картата липсва</translation>
-<translation id="8454013096329229812">Wi-Fi е включен.</translation>
 <translation id="8462305545768648477">Затваряне на функцията „Прочитане на глас“</translation>
 <translation id="847056008324733326">Настройки за мащаба на показване</translation>
 <translation id="8473301994082929012">Функцията „<ph name="FEATURE_NAME" />“ е <ph name="FEATURE_STATE" /> от <ph name="ORGANIZATION_NAME" />.</translation>

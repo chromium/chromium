@@ -204,6 +204,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="3112556859945124369">Marcar como...</translation>
 <translation id="3131206671572504478">Bloquear todas</translation>
 <translation id="3153862085237805241">Gardar tarxeta</translation>
+<translation id="3157387275655328056">Engadir á lista de lectura</translation>
 <translation id="3157684681743766797">Marcar todo como...</translation>
 <translation id="3161291298470460782">Pecharás sesión, desactivarase a sincronización e borraranse deste dispositivo todos os teus datos de Chrome. Os datos sincronizados conservaranse na túa Conta de Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5188482106078495165">A configuración das cookies aplícase a todas as pestanas. Para aplicar unha nova configuración a unha pestana aberta, volve cargala.</translation>
 <translation id="5190835502935405962">Barra de marcadores</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Pechar pestana</translation>
 <translation id="5228579091201413441">Activar sincronización</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
 <translation id="5245322853195994030">Cancelar sincronización</translation>
@@ -486,7 +488,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6127379762771434464">Eliminouse o elemento</translation>
 <translation id="6136914049981179737">Seg. antes</translation>
 <translation id="6144589619057374135">Abre ${url} no modo de incógnito</translation>
-<translation id="616831107264507309">Ler máis tarde</translation>
 <translation id="6177442314419606057">Busca en Chrome</translation>
 <translation id="6184086493125982861">Amosar pestanas</translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6293101329759844770">Para activar a opción Navegación segura, abre <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" /> e toca Navegación segura.</translation>
 <translation id="6303969859164067831">Pechar sesión e desactivar a sincronización</translation>
 <translation id="6308436439357671616">Permíteche tirar e cargar fotos.</translation>
+<translation id="6321526113093607004">Engadir aos marcadores</translation>
 <translation id="6324528485781869530">Cambiar de conta de sincronización</translation>
 <translation id="6324669097367352121">Conf. inicio sesión</translation>
 <translation id="6337234675334993532">Encriptado</translation>
@@ -672,7 +674,6 @@ Ademais, dado que a conta está xestionada por <ph name="HOSTED_DOMAIN" />, os t
 <translation id="7856733331829174190">Non se puido descargar o ficheiro</translation>
 <translation id="7859704718976024901">Historial de navegación</translation>
 <translation id="7887198238286927132">Para protexer a túa privacidade, Chrome non autocompletará este campo.</translation>
-<translation id="7918293828610777738">A túa lista de lectura está dispoñible sen conexión. Para engadirlle unha páxina, toca <ph name="SHARE_OPENING_ICON" /> e, a continuación, <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar contrasinais...</translation>
 <translation id="7947953824732555851">Acep. e iniciar ses.</translation>

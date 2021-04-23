@@ -108,7 +108,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1823873187264960516">Eternet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Asistenti (po ngarkohet...)</translation>
 <translation id="1838895407229022812">"Drita e natës" është joaktive.</translation>
-<translation id="1850504506766569011">Wi-Fi është i çaktivizuar.</translation>
 <translation id="1864454756846565995">Pajisja USB-C (porta prapa)</translation>
 <translation id="1882814835921407042">Nuk ka rrjet celular</translation>
 <translation id="1882897271359938046">Po pasqyron në <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3207953481422525583">Cilësimet e përdoruesit</translation>
 <translation id="3217205077783620295">Volumi është aktiv. Ndërrimi do ta heqë audion.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> më shumë</translation>
-<translation id="3236488194889173876">Nuk disponohet asnjë rrjet celular</translation>
 <translation id="3249513730522716925">Dritarja <ph name="WINDOW_TITLE" /> u zhvendos nga tavolina e punës <ph name="ACTIVE_DESK" /> në tavolinën e punës <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Çfarë mund të bësh?</translation>
 <translation id="3269597722229482060">Kliko me butonin djathtas</translation>
@@ -584,7 +582,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> është aktive.</translation>
 <translation id="5947494881799873997">Riktheje</translation>
 <translation id="595202126637698455">Gjurmimi i rendimentit u aktivizua</translation>
-<translation id="5957083217255311415">Të dhënat celulare janë çaktivizuar.</translation>
 <translation id="5958529069007801266">Përdorues i mbikëqyrur</translation>
 <translation id="5960825221082587934">Lëri "Asistentit" të tregojë informacione, si p.sh. përkufizimin, përkthimin apo konvertimin e njësive për zgjedhjen tënde.</translation>
 <translation id="5977415296283489383">Kufjet</translation>
@@ -884,7 +881,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8433977262951327081">Shkurtorja për të shfaqur flluskën e menysë së opsioneve të hyrjes në raft ka ndryshuar. Përdor <ph name="NEW_SHORTCUT" /> në vend të <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Tavolina e punës <ph name="DESK_TITILE" /> u aktivizua</translation>
 <translation id="8452135315243592079">Karta SIM mungon</translation>
-<translation id="8454013096329229812">Wi-Fi është i aktivizuar.</translation>
 <translation id="8462305545768648477">Mbyll "Zgjidh që të thuhet"</translation>
 <translation id="847056008324733326">Cilësimet e shkallës së ekranit</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ka <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

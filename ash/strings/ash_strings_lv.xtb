@@ -108,7 +108,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1823873187264960516">Ethernet adrese: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Asistents (notiek ielāde...)</translation>
 <translation id="1838895407229022812">Nakts režīms ir izslēgts.</translation>
-<translation id="1850504506766569011">Wi-Fi tīkls ir izslēgts.</translation>
 <translation id="1864454756846565995">USB-C ierīce (aizmugurējā pieslēgvieta)</translation>
 <translation id="1882814835921407042">Nav mobilā tīkla</translation>
 <translation id="1882897271359938046">Spoguļo šeit: <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3207953481422525583">Lietotāja iestatījumi</translation>
 <translation id="3217205077783620295">Skaņa ir ieslēgta. Pārslēdzot tiks izslēgta skaņa.</translation>
 <translation id="3226991577105957773">vēl <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Mobilais tīkls nav pieejams</translation>
 <translation id="3249513730522716925">Logs <ph name="WINDOW_TITLE" /> pārvietots no darbvirsmas <ph name="ACTIVE_DESK" /> uz darbvirsmu <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Iespējamās darbības</translation>
 <translation id="3269597722229482060">Noklikšķināt ar peles labo pogu</translation>
@@ -584,7 +582,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> ir ieslēgta.</translation>
 <translation id="5947494881799873997">Atjaunot</translation>
 <translation id="595202126637698455">Veiktspējas izsekošana ir iespējota</translation>
-<translation id="5957083217255311415">Mobilie dati ir izslēgti.</translation>
 <translation id="5958529069007801266">Uzraudzīts lietotājs</translation>
 <translation id="5960825221082587934">Atļaut Asistentam rādīt ar atlasīto saturu saistītu informāciju, piemēram, definīciju, tulkojumu vai citās mērvienībās izteiktu vērtību.</translation>
 <translation id="5977415296283489383">Austiņas</translation>
@@ -884,7 +881,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="8433977262951327081">Tika mainīti īsinājumtaustiņi, ar kuriem plauktā var parādīt ievades opciju izvēlnes burbuli. Lūdzu, turpmāk izmantojiet <ph name="NEW_SHORTCUT" />, nevis <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Darbvirsma <ph name="DESK_TITILE" /> ir aktivizēta</translation>
 <translation id="8452135315243592079">Nav SIM kartes.</translation>
-<translation id="8454013096329229812">Wi-Fi tīkls ir ieslēgts.</translation>
 <translation id="8462305545768648477">Aizvērt funkciju “Atlasīt, lai izrunātu”</translation>
 <translation id="847056008324733326">Displeja mēroga iestatījumi</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ir <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

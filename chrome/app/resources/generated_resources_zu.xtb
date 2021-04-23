@@ -3078,6 +3078,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4392896746540753732">Hlela ifayela lokulungiselelwa</translation>
 <translation id="4394049700291259645">Khubaza</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Vula konke}=1{&amp;Vula ibhukhimakhi}one{&amp;Vula konke ({COUNT})}other{&amp;Vula konke ({COUNT})}}</translation>
+<translation id="4398131717714042083">Isula umlando kanye nokuqeda ngokuzenzakalelayo ebhokisini lokusesha</translation>
 <translation id="439817266247065935">Idivayisi yakho ayicishanga ngendlela efanele. Qala kabusha i-Linux ukusebenzisa izinhlelo zokusebenza ze-Linux.</translation>
 <translation id="4400367121200150367">Amasayithi angalokothi alondoloze amaphasiwedi azovela lapha</translation>
 <translation id="4400632832271803360">Bamba ukhiye wesiqalisi ukuze ushintshe phakathi kokuziphatha kokhiye berowu ephezulu</translation>
@@ -5063,6 +5064,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="6651237644330755633">Themba lesi sitifiketi sokukhomba amawebhusayithi</translation>
 <translation id="6651495917527016072">Vumelanisa amanethiwekhi e-Wi-Fi nefoni yakho. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Ukuqiniswa kwe-Chrome <ph name="MS_AD_NAME" /> kusekelwa kuphela kuzingxenyekazi ze-x86_64. Ama-Chromebooks akhelwe phezu kwe-ARM noma ingxenyekazi ye-x86 awasekeli lo msebenzi.</translation>
+<translation id="66537479323396140">Isula umlando nokuqedelelwa okuzenzakalelayo kubhokisi losesho. I-akhawunti yakho ye-Google ingaba namanye amafomu omlando okuphequlula ku-<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">Ncamela inethiwekhi</translation>
 <translation id="6655190889273724601">Imodi yonjiniyela</translation>
 <translation id="6655458902729017087">Fihla ama-akhawunti</translation>
@@ -5929,6 +5931,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="7636919061354591437">Faka kule divayisi</translation>
 <translation id="7637593984496473097">Asikho isikhala sediski esanele</translation>
 <translation id="7638605456503525968">Izimbobo ze-serial</translation>
+<translation id="7639914187072011620">Yenqabile ukulanda i-SAML yokuqondisa kabusha i-URL kusuka kuseva</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> ingena ngemvume ngokuzenzakalelayo kumasayithi afanelekile ngamaphasiwedi owalondolozile.</translation>
 <translation id="7642778300616172920">Fihla okuqukethwe okuzwelayo</translation>
 <translation id="7643842463591647490">{0,plural, =1{# vula iwindi}one{# vula amawindi}other{# vula amawindi}}</translation>

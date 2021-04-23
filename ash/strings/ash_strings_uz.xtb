@@ -108,7 +108,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Assistent (yuklanmoqda...)</translation>
 <translation id="1838895407229022812">Tungi rejim oʻchiq.</translation>
-<translation id="1850504506766569011">Wi-Fi o‘chirildi.</translation>
 <translation id="1864454756846565995">USB-C qurilma (orqa port)</translation>
 <translation id="1882814835921407042">Mobil tarmoq topilmadi</translation>
 <translation id="1882897271359938046">Nusxa tasvir <ph name="DISPLAY_NAME" /> ekraniga uzatilmoqda</translation>
@@ -267,7 +266,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3207953481422525583">Foydalanuvchi sozlamalari</translation>
 <translation id="3217205077783620295">Ovoz yoniq. Ovozsiz qilish uchun shu belgini bosing.</translation>
 <translation id="3226991577105957773">yana <ph name="COUNT" /> ta</translation>
-<translation id="3236488194889173876">Birorta ham mobil tarmoq mavjud emas</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> oynasi <ph name="ACTIVE_DESK" /> ish stolidan <ph name="TARGET_DESK" /> ish stoliga koʻchirildi</translation>
 <translation id="3255483164551725916">Assistent nimalarga qodir?</translation>
 <translation id="3269597722229482060">Oʻng klik</translation>
@@ -584,7 +582,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> yoniq.</translation>
 <translation id="5947494881799873997">Bekor qilish</translation>
 <translation id="595202126637698455">Unumdorlik kuzatuvi yoniq</translation>
-<translation id="5957083217255311415">Mobil internet yoqilmagan.</translation>
 <translation id="5958529069007801266">Boshqariladigan profil</translation>
 <translation id="5960825221082587934">Assistent ekranda tanlangan narsaga mos tavsif, tarjima yoki birliklar konvertorini chiqarsin.</translation>
 <translation id="5977415296283489383">Quloqchin</translation>
@@ -884,7 +881,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="8433977262951327081">Matn kiritish usuli parametrlarini qalqib chiquvchi oynada ko‘rish uchun tugmalar birikmasi o‘zgardi. Endi <ph name="OLD_SHORTCUT" /> o‘rniga <ph name="NEW_SHORTCUT" /> birikmasidan foydalaning.</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> ish stoli yoqildi</translation>
 <translation id="8452135315243592079">Yo‘qolgan SIM karta</translation>
-<translation id="8454013096329229812">Wi-Fi yoqildi.</translation>
 <translation id="8462305545768648477">Teginib tinglash oynasini yopish</translation>
 <translation id="847056008324733326">Ekran ko‘lami sozlamalari</translation>
 <translation id="8473301994082929012"><ph name="FEATURE_NAME" /> funksiyasi <ph name="ORGANIZATION_NAME" /> tomonidan <ph name="FEATURE_STATE" />.</translation>

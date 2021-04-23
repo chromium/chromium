@@ -204,6 +204,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="3112556859945124369">Markeren…</translation>
 <translation id="3131206671572504478">Alles blokkeren</translation>
 <translation id="3153862085237805241">Pas opslaan</translation>
+<translation id="3157387275655328056">Toevoegen aan leeslijst</translation>
 <translation id="3157684681743766797">Alles markeren…</translation>
 <translation id="3161291298470460782">Hiermee word je uitgelogd en wordt de synchronisatie stopgezet. Ook worden alle Chrome-gegevens van dit apparaat gewist. Je gesynchroniseerde gegevens blijven in je Google-account staan.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5188482106078495165">Je cookie-instellingen zijn van toepassing op alle tabbladen. Als je een nieuwe instelling wilt toepassen op een geopend tabblad, laad je het tabblad opnieuw.</translation>
 <translation id="5190835502935405962">Bookmarkbalk</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Tabblad sluiten</translation>
 <translation id="5228579091201413441">Synchronisatie aanzetten</translation>
 <translation id="5234764350956374838">Sluiten</translation>
 <translation id="5245322853195994030">Synchronisatie annuleren</translation>
@@ -486,7 +488,6 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6127379762771434464">Item verwijderd</translation>
 <translation id="6136914049981179737">Sec. geleden</translation>
 <translation id="6144589619057374135">${url} openen in de incognitomodus</translation>
-<translation id="616831107264507309">Later lezen</translation>
 <translation id="6177442314419606057">Zoeken in Chrome</translation>
 <translation id="6184086493125982861">Tabbladen tonen</translation>
 <translation id="6187302354554850004">Laatst gesynchroniseerd: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6293101329759844770">Als je Safe Browsing wilt gebruiken, open je <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> en tik je op Safe Browsing.</translation>
 <translation id="6303969859164067831">Uitloggen en synchronisatie uitzetten</translation>
 <translation id="6308436439357671616">Hiermee kun je foto's maken en uploaden.</translation>
+<translation id="6321526113093607004">Toevoegen aan bookmarks</translation>
 <translation id="6324528485781869530">Synchronisatieaccount wisselen</translation>
 <translation id="6324669097367352121">Inloginstellingen</translation>
 <translation id="6337234675334993532">Versleuteling</translation>
@@ -672,7 +674,6 @@ Aangezien je account wordt beheerd door <ph name="HOSTED_DOMAIN" />, worden je C
 <translation id="7856733331829174190">Kan niet downloaden</translation>
 <translation id="7859704718976024901">Browsegeschiedenis</translation>
 <translation id="7887198238286927132">Ter bescherming van je privacy wordt dit veld niet automatisch ingevuld door Chrome.</translation>
-<translation id="7918293828610777738">Je leeslijst is offline beschikbaar. Tik op <ph name="SHARE_OPENING_ICON" /> en vervolgens op <ph name="READ_LATER_TEXT" /> om een pagina toe te voegen aan je leeslijst.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Wachtwoorden exporteren...</translation>
 <translation id="7947953824732555851">Accepteren en inloggen</translation>

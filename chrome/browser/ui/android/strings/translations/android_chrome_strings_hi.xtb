@@ -234,6 +234,7 @@
 <translation id="2517472476991765520">स्कैन करें</translation>
 <translation id="2518590038762162553">Chrome, लाइट मोड में पेजों को ज़्यादा तेज़ी से लोड करता है और 60 प्रतिशत तक कम डेटा इस्तेमाल करता है. जिन पेजों पर आप जाते हैं उनको ऑप्टिमाइज़ करने के लिए Chrome आपके वेब ट्रैफ़िक की जानकारी Google को भेजता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">आप जिन पेजों पर जाते हैं उनके यूआरएल Google को भेजती है</translation>
+<translation id="2527779675047087889">क्लिपबोर्ड का कॉन्टेंट छिपाएं</translation>
 <translation id="2532336938189706096">वेब व्यू</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> आइटम मिटाए गए</translation>
 <translation id="2536728043171574184">इस पृष्‍ठ की ऑफ़लाइन कॉपी देख रहे हैं</translation>
@@ -314,6 +315,7 @@
 <translation id="3062802207422175757">Chrome पर आपकी पसंद के लेख</translation>
 <translation id="3070005020161560471">अपने-आप अनुवाद करें</translation>
 <translation id="3089395242580810162">गुप्त टैब में खोलें</translation>
+<translation id="3091010850649238832">क्लिपबोर्ड का कॉन्टेंट दिखाएं</translation>
 <translation id="3098745985164956033">कुछ इमेज Google को भेजी जाती हैं, ताकि आपको मिलने वाली जानकारी को बेहतर बनाया जा सके</translation>
 <translation id="3114507951000454849">आज की खबरें <ph name="NEWS_ICON" /> पढ़ें</translation>
 <translation id="3123734510202723619">एलान</translation>
@@ -865,6 +867,7 @@
 <translation id="661266467055912436">यह सुविधा, वेब पर आपकी और सभी उपयोगकर्ताओं की सुरक्षा को बेहतर बनाती है.</translation>
 <translation id="6618554661997243500">अपने हिसाब से खास साइटें और खबरें देखने के लिए, होम बटन पर टैप करें</translation>
 <translation id="6627583120233659107">फ़ोल्‍डर में बदलाव करें</translation>
+<translation id="6635718764393004944">आपका सर्च इंजन <ph name="DSE" /> है. अगर लागू हो, तो अपना खोज इतिहास मिटाने के लिए, उनके निर्देश देखें.</translation>
 <translation id="663674369910034433">निजता, सुरक्षा और डेटा इकट्ठा करने से जुड़ी ज़्यादा सेटिंग के लिए, <ph name="BEGIN_LINK1" />सिंक करें<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />Google की सेवाएं<ph name="END_LINK2" /> देखें</translation>
 <translation id="6643016212128521049">साफ़ करें</translation>
 <translation id="6643649862576733715">सेव किए गए डेटा की मात्रा के हिसाब से क्रम में लगाएं</translation>

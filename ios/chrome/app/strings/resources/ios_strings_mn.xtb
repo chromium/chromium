@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">Тэмдэглэх...</translation>
 <translation id="3131206671572504478">Бүх күүкийг блоклосон</translation>
 <translation id="3153862085237805241">Картыг хадгалах</translation>
+<translation id="3157387275655328056">Унших жагсаалтад нэмэх</translation>
 <translation id="3157684681743766797">Бүгдийг тэмдэглэх...</translation>
 <translation id="3161291298470460782">Ингэснээр таныг гаргаж, синк хийхийг унтраах бөгөөд Chrome-н бүх өгөгдлийг энэ төхөөрөмжөөс устгана. Таны cинк хийсэн өгөгдөл Google Бүртгэлд тань үлдэнэ.</translation>
 <translation id="3169472444629675720">Олох</translation>
@@ -398,6 +399,7 @@
 <translation id="5188482106078495165">Таны күүкиний тохиргоо бүх табд хэрэгжинэ. Шинэ тохиргоог нээлттэй табд хэрэгжүүлэхийн тулд табыг дахин ачаална уу.</translation>
 <translation id="5190835502935405962">Хайлтын жагсаалтын цонх</translation>
 <translation id="5197255632782567636">Интернэт</translation>
+<translation id="5210365745912300556">Цонхыг хаа</translation>
 <translation id="5228579091201413441">Синхроныг идэвхжүүлэх</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
 <translation id="5245322853195994030">Синкийг цуцлах</translation>
@@ -485,7 +487,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6127379762771434464">Хамгийн их зочилсон вэбсайтуудыг устгасан</translation>
 <translation id="6136914049981179737">Секунтын өмнө</translation>
 <translation id="6144589619057374135">${url}-г Нууцлалтай горимд нээх</translation>
-<translation id="616831107264507309">Дараа унших</translation>
 <translation id="6177442314419606057">Chrome-с хайх</translation>
 <translation id="6184086493125982861">Цонхнуудыг харуул</translation>
 <translation id="6187302354554850004">Хамгийн сүүлд синк хийсэн: <ph name="LAST_USED_TIME" /></translation>
@@ -500,6 +501,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6293101329759844770">Аюулгүй үзэлтийг асаахын тулд <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүдийг<ph name="END_LINK" /> нээж, Аюулгүй үзэлт дээр товшино уу.</translation>
 <translation id="6303969859164067831">Гараад синк хийхийг унтраах</translation>
 <translation id="6308436439357671616">Энэ нь танд зураг авах, байршуулах боломжийг олгодог.</translation>
+<translation id="6321526113093607004">Хавчуургaд нэмэх</translation>
 <translation id="6324528485781869530">Синклэх бүртгэлийг солих</translation>
 <translation id="6324669097367352121">Нэвтрэх тохиргоонууд</translation>
 <translation id="6337234675334993532">Шифрлэх</translation>
@@ -671,7 +673,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7856733331829174190">Татаж чадсангүй</translation>
 <translation id="7859704718976024901">Хайлтын түүх</translation>
 <translation id="7887198238286927132">Таны нууцлалыг хамгаалахын тулд Chrome энэ талбарыг автоматаар бөглөхгүй.</translation>
-<translation id="7918293828610777738">Таны унших жагсаалт офлайнаар боломжтой байна. Унших жагсаалтдаа хуудас нэмэхийн тулд <ph name="SHARE_OPENING_ICON" />-г, дараа нь <ph name="READ_LATER_TEXT" />-г товшино уу.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Нууц үгийг экспортлох...</translation>
 <translation id="7947953824732555851">Хүлээн зөвшөөрсний дараагаар нэвтрэх</translation>

@@ -204,6 +204,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="3112556859945124369">Markér…</translation>
 <translation id="3131206671572504478">Bloker alle</translation>
 <translation id="3153862085237805241">Gem kortet</translation>
+<translation id="3157387275655328056">Føj til læseliste</translation>
 <translation id="3157684681743766797">Markér alle…</translation>
 <translation id="3161291298470460782">Du logges ud, synkronisering deaktiveres, og alle Chrome-data på enheden ryddes. Alle synkroniserede data vil stadig være på din Google-konto.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5188482106078495165">Dine cookieindstillinger gælder for alle faner. Du kan anvende en ny indstilling i en åben fane ved at genindlæse fanen.</translation>
 <translation id="5190835502935405962">Bogmærkelinje</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Luk fanen</translation>
 <translation id="5228579091201413441">Aktivér synkronisering</translation>
 <translation id="5234764350956374838">Luk</translation>
 <translation id="5245322853195994030">Annuller synkronisering</translation>
@@ -486,7 +488,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6127379762771434464">Elementet blev fjernet</translation>
 <translation id="6136914049981179737">Sek. siden</translation>
 <translation id="6144589619057374135">Åbn ${url} i inkognito</translation>
-<translation id="616831107264507309">Læs senere</translation>
 <translation id="6177442314419606057">Søg i Chrome</translation>
 <translation id="6184086493125982861">Vis faner</translation>
 <translation id="6187302354554850004">Sidst synkroniseret: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6293101329759844770">Åbn <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />, og tryk på Beskyttet browsing for at aktivere Beskyttet browsing.</translation>
 <translation id="6303969859164067831">Log ud, og deaktiver synkronisering</translation>
 <translation id="6308436439357671616">Dette giver dig mulighed for at tage og uploade billeder.</translation>
+<translation id="6321526113093607004">Føj til Bogmærker</translation>
 <translation id="6324528485781869530">Skift synkroniseringskonto</translation>
 <translation id="6324669097367352121">Loginindstillinger</translation>
 <translation id="6337234675334993532">Kryptering</translation>
@@ -672,7 +674,6 @@ Eftersom din konto administreres af <ph name="HOSTED_DOMAIN" />, slettes dine Ch
 <translation id="7856733331829174190">Downloaden mislykkedes</translation>
 <translation id="7859704718976024901">Browserhistorik</translation>
 <translation id="7887198238286927132">Af hensyn til beskyttelsen af dine personlige oplysninger autofylder Chrome ikke dette felt.</translation>
-<translation id="7918293828610777738">Din læseliste er tilgængelig offline. Du kan føje en side til din læseliste ved at trykke på <ph name="SHARE_OPENING_ICON" /> og derefter <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Eksportér adgangskoder…</translation>
 <translation id="7947953824732555851">Acceptér og log ind</translation>

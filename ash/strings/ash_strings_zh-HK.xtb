@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">以太網：<ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">小幫手 (正在載入…)</translation>
 <translation id="1838895407229022812">「夜燈模式」已關閉。</translation>
-<translation id="1850504506766569011">Wi-Fi 已關閉。</translation>
 <translation id="1864454756846565995">USB-C 裝置 (後方連接埠)</translation>
 <translation id="1882814835921407042">沒有流動網絡</translation>
 <translation id="1882897271359938046">正在建立<ph name="DISPLAY_NAME" />鏡像</translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">使用者設定</translation>
 <translation id="3217205077783620295">打開咗音量，切換將會靜音。</translation>
 <translation id="3226991577105957773">還有 <ph name="COUNT" /> 項</translation>
-<translation id="3236488194889173876">沒有可用的流動網絡</translation>
 <translation id="3249513730522716925">「<ph name="WINDOW_TITLE" />」視窗已從桌面 <ph name="ACTIVE_DESK" /> 移至桌面 <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">你可以做咩嘢？</translation>
 <translation id="3269597722229482060">按滑鼠右鍵</translation>
@@ -583,7 +581,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" />功能已開啟。</translation>
 <translation id="5947494881799873997">還原</translation>
 <translation id="595202126637698455">效能追蹤已啟用</translation>
-<translation id="5957083217255311415">流動數據已關閉。</translation>
 <translation id="5958529069007801266">受管使用者</translation>
 <translation id="5960825221082587934">俾「Google 助理」針對你揀嘅內容顯示定義、翻譯或者單位轉換之類嘅資料。</translation>
 <translation id="5977415296283489383">耳機</translation>
@@ -883,7 +880,6 @@
 <translation id="8433977262951327081">在捷徑列中顯示輸入選項選單小視窗的快速鍵已變更，請改用 <ph name="NEW_SHORTCUT" /> 以取代原有的 <ph name="OLD_SHORTCUT" />。</translation>
 <translation id="8444246603146515890">已啟用桌面 <ph name="DESK_TITILE" /></translation>
 <translation id="8452135315243592079">找不到 SIM 卡</translation>
-<translation id="8454013096329229812">Wi-Fi 已開啟。</translation>
 <translation id="8462305545768648477">關閉「選取以朗讀」</translation>
 <translation id="847056008324733326">顯示比例設定</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> 已 <ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />。</translation>

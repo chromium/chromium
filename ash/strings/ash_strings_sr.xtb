@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">Етернет: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Помоћник (учитава се...)</translation>
 <translation id="1838895407229022812">Ноћно светло је искључено.</translation>
-<translation id="1850504506766569011">WiFi је искључен.</translation>
 <translation id="1864454756846565995">Уређај са USB прикључком типа C (задњи порт)</translation>
 <translation id="1882814835921407042">Нема мобилне мреже</translation>
 <translation id="1882897271359938046">Пресликавање у <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">Подешавања корисника</translation>
 <translation id="3217205077783620295">Звук је укључен. Можете да га искључите померањем прекидача.</translation>
 <translation id="3226991577105957773">и још <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Није доступна ниједна мобилна мрежа</translation>
 <translation id="3249513730522716925">Прозор <ph name="WINDOW_TITLE" /> је премештен са радне површине <ph name="ACTIVE_DESK" /> на радну површину <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Шта можеш да радиш?</translation>
 <translation id="3269597722229482060">Десни клик</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774">Функција <ph name="FEATURE_NAME" /> је укључена.</translation>
 <translation id="5947494881799873997">Врати</translation>
 <translation id="595202126637698455">Праћење учинка је омогућено</translation>
-<translation id="5957083217255311415">Мобилни подаци су искључени.</translation>
 <translation id="5958529069007801266">Корисник под надзором</translation>
 <translation id="5960825221082587934">Омогућите Помоћнику да приказује информације као што су дефиниције, преводи или конверзије јединица за оно што сте изабрали.</translation>
 <translation id="5977415296283489383">Слушалице</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">Промењена је пречица за приказивање облачића за мени Опције уноса на полици. Користите <ph name="NEW_SHORTCUT" /> уместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Радна површина <ph name="DESK_TITILE" /> је активирана</translation>
 <translation id="8452135315243592079">SIM картица недостаје</translation>
-<translation id="8454013096329229812">WiFi је укључен.</translation>
 <translation id="8462305545768648477">Затворите Изаберите за говор</translation>
 <translation id="847056008324733326">Подешавања размере приказа</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> – <ph name="FEATURE_STATE" />: <ph name="FEATURE_NAME" />.</translation>

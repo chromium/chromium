@@ -204,6 +204,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="3112556859945124369">Merkja…</translation>
 <translation id="3131206671572504478">Útiloka öll</translation>
 <translation id="3153862085237805241">Vista kort</translation>
+<translation id="3157387275655328056">Bæta við leslista</translation>
 <translation id="3157684681743766797">Merkja allt…</translation>
 <translation id="3161291298470460782">Þetta skráir þig út, slekkur á samstillingu og hreinsar öll Chrome gögn úr þessu tæki. Samstillt gögn verða áfram á Google reikningnum.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5188482106078495165">Fótsporastillingarnar þínar ná til allra flipa. Til að ný stilling taki gildi fyrir opinn flipa þarftu að endurhlaða hann.</translation>
 <translation id="5190835502935405962">Bókamerkjastika</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Loka flipa</translation>
 <translation id="5228579091201413441">Kveikja á samstillingu</translation>
 <translation id="5234764350956374838">Hunsa</translation>
 <translation id="5245322853195994030">Hætta við samstillingu</translation>
@@ -486,7 +488,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6127379762771434464">Atriði fjarlægt</translation>
 <translation id="6136914049981179737">sekúndur síðan</translation>
 <translation id="6144589619057374135">Opna ${url} í huliðsstillingu</translation>
-<translation id="616831107264507309">Lesa síðar</translation>
 <translation id="6177442314419606057">Leita í Chrome</translation>
 <translation id="6184086493125982861">Sýna flipa</translation>
 <translation id="6187302354554850004">Síðast samstillt: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6293101329759844770">Til að kveikja á öruggri vefskoðun skaltu opna <ph name="BEGIN_LINK" />Google þjónustur<ph name="END_LINK" /> og ýta á „Örugg vefskoðun“.</translation>
 <translation id="6303969859164067831">Skrá út og slökkva á samstillingu</translation>
 <translation id="6308436439357671616">Með þessu móti geturðu tekið myndir og hlaðið þeim upp.</translation>
+<translation id="6321526113093607004">Bæta við bókamerki</translation>
 <translation id="6324528485781869530">Skipta um samstillingarreikning</translation>
 <translation id="6324669097367352121">Innskráningarstillingar</translation>
 <translation id="6337234675334993532">Dulkóðun</translation>
@@ -672,7 +674,6 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7856733331829174190">Tókst ekki að sækja</translation>
 <translation id="7859704718976024901">Vafraferill</translation>
 <translation id="7887198238286927132">Til að tryggja öryggi þitt fyllir Chrome ekki sjálfkrafa út í þennan reit.</translation>
-<translation id="7918293828610777738">Leslistinn þinn er tiltækur án nettengingar. Þú bætir síðu við leslistann með því að ýta á <ph name="SHARE_OPENING_ICON" /> og síðan <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Flytja út aðgangsorð...</translation>
 <translation id="7947953824732555851">Samþykkja og skrá inn</translation>

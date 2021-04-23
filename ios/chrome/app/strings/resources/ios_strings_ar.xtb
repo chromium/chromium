@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">وضع علامة...</translation>
 <translation id="3131206671572504478">حظر الكل</translation>
 <translation id="3153862085237805241">حفظ البطاقة</translation>
+<translation id="3157387275655328056">إضافة إلى قائمة القراءة</translation>
 <translation id="3157684681743766797">وضع علامة على الكل...</translation>
 <translation id="3161291298470460782">‏سيؤدي هذا الإجراء إلى تسجيل الخروج من حسابك على Chrome وإيقاف المزامنة ومحو جميع بيانات Chrome من هذا الجهاز. وستظل البيانات المتزامنة في حسابك على Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">تنطبق إعدادات ملفات تعريف الارتباط على جميع علامات التبويب. ولتطبيق إعدادات جديدة في علامة تبويب مفتوحة، يجب إعادة تحميل علامة التبويب.</translation>
 <translation id="5190835502935405962">شريط الإشارات</translation>
 <translation id="5197255632782567636">الإنترنت</translation>
+<translation id="5210365745912300556">إغلاق علامة التبويب</translation>
 <translation id="5228579091201413441">تفعيل المزامنة</translation>
 <translation id="5234764350956374838">تجاهل</translation>
 <translation id="5245322853195994030">إلغاء المزامنة</translation>
@@ -486,7 +488,6 @@
 <translation id="6127379762771434464">أُزيلَ عنصر</translation>
 <translation id="6136914049981179737">قبل ثانية</translation>
 <translation id="6144589619057374135">‏فتح {url}$ في وضع التصفُّح المتخفي</translation>
-<translation id="616831107264507309">القراءة لاحقًا</translation>
 <translation id="6177442314419606057">‏البحث في Chrome</translation>
 <translation id="6184086493125982861">إظهار علامات التبويب</translation>
 <translation id="6187302354554850004">تاريخ آخر مزامنة: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@
 <translation id="6293101329759844770">‏لتفعيل "التصفّح الآمن"، افتح <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" /> وانقر على "التصفّح الآمن".</translation>
 <translation id="6303969859164067831">تسجيل الخروج وإيقاف المزامنة</translation>
 <translation id="6308436439357671616">هذا يتيح لك التقاط الصور وتحميلها.</translation>
+<translation id="6321526113093607004">إضافة إلى الإشارات المرجعية</translation>
 <translation id="6324528485781869530">تبديل حساب المزامنة</translation>
 <translation id="6324669097367352121">إعدادات تسجيل الدخول</translation>
 <translation id="6337234675334993532">ترميز</translation>
@@ -672,7 +674,6 @@
 <translation id="7856733331829174190">تعذّر التنزيل.</translation>
 <translation id="7859704718976024901">سجلّ التصفّح</translation>
 <translation id="7887198238286927132">‏لحماية خصوصيتك، لن يجري Chrome الملء التلقائي لهذا الحقل.</translation>
-<translation id="7918293828610777738">قائمة القراءة متاحة بلا اتصال بالإنترنت. لإضافة صفحة إلى قائمة القراءة، انقر على  <ph name="SHARE_OPENING_ICON" />  ثم <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">جارٍ تصدير كلمات المرور...</translation>
 <translation id="7947953824732555851">قبول وتسجيل الدخول</translation>

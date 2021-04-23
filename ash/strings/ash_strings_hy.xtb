@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">Ethernet՝ <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Օգնական (բեռնում...)</translation>
 <translation id="1838895407229022812">Գիշերային ռեժիմն անջատված է</translation>
-<translation id="1850504506766569011">Wi-Fi-ն անջատված է:</translation>
 <translation id="1864454756846565995">USB-C սարք (հետևի միացք)</translation>
 <translation id="1882814835921407042">Բջջային կապ չկա</translation>
 <translation id="1882897271359938046">Հայելապատճենվում է <ph name="DISPLAY_NAME" />-ին</translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">Օգտատիրոջ կարգավորումներ</translation>
 <translation id="3217205077783620295">Ձայնը միացված է։ Անջատելու համար սեղմեք այս կոճակը։</translation>
 <translation id="3226991577105957773">Եվս <ph name="COUNT" /> ծանուցում</translation>
-<translation id="3236488194889173876">Հասանելի բջջային ցանց չկա</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> պատուհանը տեղափոխվել է աշխատասեղան <ph name="ACTIVE_DESK" />-ից աշխատասեղան <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Ի՞նչ կարող ես անել:</translation>
 <translation id="3269597722229482060">Աջ սեղմում</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774">«<ph name="FEATURE_NAME" />» գործառույթը միացված է։</translation>
 <translation id="5947494881799873997">Հետադարձել</translation>
 <translation id="595202126637698455">Կատարողականության հետագծումը միացված է</translation>
-<translation id="5957083217255311415">Բջջային ինտերնետն անջատված է:</translation>
 <translation id="5958529069007801266">Վերահսկվող պրոֆիլ</translation>
 <translation id="5960825221082587934">Թույլատրել Օգնականին ցուցադրել տարրի մասին տեղեկություններ, օրինակ՝ սահմանումը, թարգմանությունը կամ փոխարկման միավորը։</translation>
 <translation id="5977415296283489383">Ականջակալ</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">Ներածման ընտրանքների պղպջակը դարակում ցուցադրելու դյուրանցումը փոխվել է։ <ph name="OLD_SHORTCUT" />-ի փոխարեն օգտագործեք <ph name="NEW_SHORTCUT" />։</translation>
 <translation id="8444246603146515890">Աշխատասեղան <ph name="DESK_TITILE" />-ն ակտիվացված է</translation>
 <translation id="8452135315243592079">SIM քարտը բացակայում է</translation>
-<translation id="8454013096329229812">Wi-Fi-ը միացված է:</translation>
 <translation id="8462305545768648477">Փակել «Ընտրեք և լսեք» գործառույթը</translation>
 <translation id="847056008324733326">Էկրանի մասշտաբի կարգավորումներ</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />-ն ունի <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />:</translation>

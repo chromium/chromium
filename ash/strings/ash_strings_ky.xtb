@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Жардамчы (жүктөлүүдө...)</translation>
 <translation id="1838895407229022812">Түнкү жарык өчүк.</translation>
-<translation id="1850504506766569011">Wi-Fi өчүрүлгөн.</translation>
 <translation id="1864454756846565995">USB-C түзмөгү (арткы оюкча)</translation>
 <translation id="1882814835921407042">Мобилдик Интернет жок</translation>
 <translation id="1882897271359938046">Төмөнкүгө чагылыштыруу <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">Колдонуучунун жөндөөлөрү</translation>
 <translation id="3217205077783620295">Үнү чыгып турат, өчүрүү менен аудионун үнү басылат.</translation>
 <translation id="3226991577105957773">+ дагы <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Бир да мобилдик тармак жок</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> терезеси <ph name="ACTIVE_DESK" /> иш тактасынан <ph name="TARGET_DESK" /> иш тактасына жылдырылды</translation>
 <translation id="3255483164551725916">Эмне кыла аласыз?</translation>
 <translation id="3269597722229482060">Оң баскычын чыкылдатуу</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> күйүк.</translation>
 <translation id="5947494881799873997">Кайтаруу</translation>
 <translation id="595202126637698455">Иштин майнаптуулугуна көз салуу аракети иштетилди</translation>
-<translation id="5957083217255311415">Мобилдик Интернет өчүрүлгөн.</translation>
 <translation id="5958529069007801266">Көзөмөлдөнгөн колдонуучу</translation>
 <translation id="5960825221082587934">Жардамчыга тандаган нерсеңиздин аныктамасын, котормосун же бирдикти которуу сыяктуу маалыматты көрсөтүүгө уруксат бериңиз.</translation>
 <translation id="5977415296283489383">Гарнитура</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">Баштоо панелиндеги киргизүү параметрлеринин менюсунун көбүгүн ача турган ыкчам баскычтар өзгөргөн. <ph name="OLD_SHORTCUT" /> ордуна <ph name="NEW_SHORTCUT" /> баскычтарын колдонуңуз.</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" />-иш такта жандырылды</translation>
 <translation id="8452135315243592079">SIM-картасы жок</translation>
-<translation id="8454013096329229812">Wi-Fi күйгүзүлгөн.</translation>
 <translation id="8462305545768648477">"Басып туруп угуңуз" функциясын жабуу</translation>
 <translation id="847056008324733326">Дисплей шкаласынын жөндөөлөрү</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> уюмунун <ph name="FEATURE_NAME" /> функциясы <ph name="FEATURE_STATE" /> абалда.</translation>

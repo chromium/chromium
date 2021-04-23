@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">ईथरनेट: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Assistant (सेवा लोड हो रही है...)</translation>
 <translation id="1838895407229022812">नाइट लाइट बंद है.</translation>
-<translation id="1850504506766569011">वाई-फ़ाई  बंद है.</translation>
 <translation id="1864454756846565995">USB-C डिवाइस (पिछला पोर्ट)</translation>
 <translation id="1882814835921407042">आपके फ़ोन में मोबाइल नेटवर्क उपलब्ध नहीं है</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> पर स्क्रीन शेयर कर रहा है</translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">उपयोगकर्ता सेटिंग</translation>
 <translation id="3217205077783620295">आवाज़ चालू है, टॉगल करने से ऑडियो बंद हो जाएगा.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> और</translation>
-<translation id="3236488194889173876">कोई मोबाइल नेटवर्क उपलब्ध नहीं</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> को डेस्क <ph name="ACTIVE_DESK" /> से डेस्क <ph name="TARGET_DESK" /> पर सेट कर दिया गया है</translation>
 <translation id="3255483164551725916">तुम क्या-क्या कर सकती हो?</translation>
 <translation id="3269597722229482060">दायां क्लिक करें</translation>
@@ -585,7 +583,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> चालू है.</translation>
 <translation id="5947494881799873997">वापस लाएं</translation>
 <translation id="595202126637698455">निष्पादन ट्रेसिंग सक्षम है</translation>
-<translation id="5957083217255311415">मोबाइल डेटा बंद कर दिया गया है.</translation>
 <translation id="5958529069007801266">निगरानी में रखा गया उपयोगकर्ता</translation>
 <translation id="5960825221082587934">Assistant को स्क्रीन पर चुने गए कॉन्टेंट से जुड़ी जानकारी दिखाने की अनुमति दें, जैसे कि परिभाषा, अनुवाद या एक यूनिट से दूसरी यूनिट में बदलकर दिखाना.</translation>
 <translation id="5977415296283489383">हेडफ़ोन</translation>
@@ -885,7 +882,6 @@
 <translation id="8433977262951327081">शेल्फ़ में इनपुट विकल्पों का मेन्यू बबल दिखाने वाला शॉर्टकट बदल गया है. कृपया <ph name="OLD_SHORTCUT" /> के बजाय <ph name="NEW_SHORTCUT" /> का इस्तेमाल करें.</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> डेस्क चालू है</translation>
 <translation id="8452135315243592079">अनुपलब्ध SIM कार्ड</translation>
-<translation id="8454013096329229812">वाई-फ़ाई  चालू है.</translation>
 <translation id="8462305545768648477">'चुनें और सुनें' सुविधा बंद करें</translation>
 <translation id="847056008324733326">डिसप्ले पैमाने की सेटिंग</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> में <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> हैं.</translation>

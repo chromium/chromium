@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Assistant (жүктелуде...)</translation>
 <translation id="1838895407229022812">"Түнгі жарық" функциясы өшірулі.</translation>
-<translation id="1850504506766569011">Wi-Fi өшірілді.</translation>
 <translation id="1864454756846565995">USB-C құрылғысы (артқы ұяшық)</translation>
 <translation id="1882814835921407042">Мобильдік желі жоқ.</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> арқылы экран көшірмесін көрсету</translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">Пайдаланушы параметрлері</translation>
 <translation id="3217205077783620295">Дыбыс деңгейі қосылып тұр. Түймені қайта бассаңыз, дауыс өшеді.</translation>
 <translation id="3226991577105957773">Тағы <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Ешқандай мобильдік желі қолжетімді емес</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> терезесі <ph name="ACTIVE_DESK" /> үстелінен <ph name="TARGET_DESK" /> үстеліне көшірілді.</translation>
 <translation id="3255483164551725916">Сен не істей аласың?</translation>
 <translation id="3269597722229482060">Тінтуірдің оң жақ түймесін басу</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> қосулы.</translation>
 <translation id="5947494881799873997">Қайтару</translation>
 <translation id="595202126637698455">Өнімділікті бақылау қосылған</translation>
-<translation id="5957083217255311415">Мобильдік деректер өшірулі.</translation>
 <translation id="5958529069007801266">Бақылаудағы пайдаланушы</translation>
 <translation id="5960825221082587934">Assistant қолданбасына анықтама, аударма немесе бірлікті түрлендіру сияқты ақпаратты көрсетуге мүмкіндік беріңіз.</translation>
 <translation id="5977415296283489383">Құлақаспап</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">Сөредегі енгізу опцияларының қалқымалы анықтамасын шығаратын пернелер тіркесі өзгерді. <ph name="OLD_SHORTCUT" /> орнына <ph name="NEW_SHORTCUT" /> тіркесін қолданыңыз.</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> үстелі іске қосылды.</translation>
 <translation id="8452135315243592079">SIM картасы жоқ</translation>
-<translation id="8454013096329229812">Wi-Fi қосылды.</translation>
 <translation id="8462305545768648477">Select-to-Speak функциясын жабу</translation>
 <translation id="847056008324733326">Дисплей масштабы параметрлері</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ұйымы <ph name="FEATURE_NAME" /> функциясын <ph name="FEATURE_STATE" />.</translation>

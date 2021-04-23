@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">אתרנט: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">‏Assistant (בטעינה...)</translation>
 <translation id="1838895407229022812">תאורת הלילה כבויה.</translation>
-<translation id="1850504506766569011">‏Wi-Fi כבוי.</translation>
 <translation id="1864454756846565995">‏מכשיר עם יציאת USB-C (יציאה אחורית)</translation>
 <translation id="1882814835921407042">אין רשת סלולרית</translation>
 <translation id="1882897271359938046">משקף אל <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">הגדרות משתמש</translation>
 <translation id="3217205077783620295">לחצן עוצמת הקול מופעל. אם המצב יוחלף, האודיו יושתק.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> נוספות</translation>
-<translation id="3236488194889173876">אין רשת סלולרית זמינה</translation>
 <translation id="3249513730522716925">החלון <ph name="WINDOW_TITLE" /> הועבר משולחן העבודה <ph name="ACTIVE_DESK" /> אל שולחן העבודה <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">מה אפשר לעשות?</translation>
 <translation id="3269597722229482060">לחיצה ימנית</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> פעילות.</translation>
 <translation id="5947494881799873997">חזרה לגרסה הקודמת</translation>
 <translation id="595202126637698455">מעקב אחר הביצועים מופעל</translation>
-<translation id="5957083217255311415">חבילת הגלישה מושבתת.</translation>
 <translation id="5958529069007801266">משתמש בפיקוח</translation>
 <translation id="5960825221082587934">‏Assistant תוכל להציג מידע לגבי הטקסט שבחרת, כמו ההגדרה, התרגום או המרת היחידות.</translation>
 <translation id="5977415296283489383">אוזניות</translation>
@@ -886,7 +883,6 @@
 <translation id="8433977262951327081">שינינו את קיצור הדרך להצגת בועת התפריט של אפשרויות הקלט במדף. יש להשתמש ב-<ph name="NEW_SHORTCUT" /> במקום ב-<ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">שולחן העבודה <ph name="DESK_TITILE" /> הופעל</translation>
 <translation id="8452135315243592079">‏כרטיס SIM חסר</translation>
-<translation id="8454013096329229812">‏Wi-Fi מופעל.</translation>
 <translation id="8462305545768648477">סגירת הקראה</translation>
 <translation id="847056008324733326">הגדרות קנה המידה של התצוגה</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> את <ph name="FEATURE_NAME" />.</translation>

@@ -234,6 +234,7 @@
 <translation id="2517472476991765520">검색</translation>
 <translation id="2518590038762162553">Chrome의 라이트 모드를 사용하면 페이지가 더 빠르게 로드되고 데이터가 최대 60퍼센트 절약됩니다. Chrome에서는 사용자가 방문하는 페이지를 최적화하기 위해 웹 트래픽을 Google에 전송합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">방문한 페이지의 URL을 Google에 전송</translation>
+<translation id="2527779675047087889">클립보드 내용 숨기기</translation>
 <translation id="2532336938189706096">웹 보기</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />개 항목 삭제함</translation>
 <translation id="2536728043171574184">이 페이지의 오프라인 사본 보는 중</translation>
@@ -314,6 +315,7 @@
 <translation id="3062802207422175757">Chrome에서 관심분야 기사를 읽어보세요.</translation>
 <translation id="3070005020161560471">자동으로 번역</translation>
 <translation id="3089395242580810162">시크릿 탭에서 열기</translation>
+<translation id="3091010850649238832">클립보드 내용 표시</translation>
 <translation id="3098745985164956033">설명을 개선하기 위해 일부 이미지가 Google에 전송됨</translation>
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">공지사항</translation>
@@ -865,6 +867,7 @@
 <translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6618554661997243500">맞춤 인기 사이트 및 뉴스를 보려면 홈 버튼 탭하기</translation>
 <translation id="6627583120233659107">폴더 수정</translation>
+<translation id="6635718764393004944">기본 검색엔진은 <ph name="DSE" />입니다. 해당하는 경우, 검색엔진에서 방문 기록을 삭제하는 방법을 확인하세요.</translation>
 <translation id="663674369910034433">개인정보 보호, 보안, 데이터 수집에 관한 추가 설정을 보려면 <ph name="BEGIN_LINK1" />동기화<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Google 서비스<ph name="END_LINK2" />를 참고하세요.</translation>
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6643649862576733715">저장된 데이터 양에 따라 정렬</translation>

@@ -108,7 +108,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1823873187264960516">Eternet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Pomoćnik (učitava se...)</translation>
 <translation id="1838895407229022812">Noćno svetlo je isključeno.</translation>
-<translation id="1850504506766569011">WiFi je isključen.</translation>
 <translation id="1864454756846565995">Uređaj sa USB priključkom tipa C (zadnji port)</translation>
 <translation id="1882814835921407042">Nema mobilne mreže</translation>
 <translation id="1882897271359938046">Preslikavanje u <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3207953481422525583">Podešavanja korisnika</translation>
 <translation id="3217205077783620295">Zvuk je uključen. Možete da ga isključite pomeranjem prekidača.</translation>
 <translation id="3226991577105957773">i još <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Nije dostupna nijedna mobilna mreža</translation>
 <translation id="3249513730522716925">Prozor <ph name="WINDOW_TITLE" /> je premešten sa radne površine <ph name="ACTIVE_DESK" /> na radnu površinu <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Šta možeš da radiš?</translation>
 <translation id="3269597722229482060">Desni klik</translation>
@@ -584,7 +582,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> je uključena.</translation>
 <translation id="5947494881799873997">Vrati</translation>
 <translation id="595202126637698455">Praćenje učinka je omogućeno</translation>
-<translation id="5957083217255311415">Mobilni podaci su isključeni.</translation>
 <translation id="5958529069007801266">Korisnik pod nadzorom</translation>
 <translation id="5960825221082587934">Omogućite Pomoćniku da prikazuje informacije kao što su definicije, prevodi ili konverzije jedinica za ono što ste izabrali.</translation>
 <translation id="5977415296283489383">Slušalice</translation>
@@ -884,7 +881,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="8433977262951327081">Promenjena je prečica za prikazivanje oblačića za meni Opcije unosa na polici. Koristite <ph name="NEW_SHORTCUT" /> umesto <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Radna površina <ph name="DESK_TITILE" /> je aktivirana</translation>
 <translation id="8452135315243592079">SIM kartica nedostaje</translation>
-<translation id="8454013096329229812">WiFi je uključen.</translation>
 <translation id="8462305545768648477">Zatvorite Izaberite za govor</translation>
 <translation id="847056008324733326">Podešavanja razmere prikaza</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> – <ph name="FEATURE_STATE" />: <ph name="FEATURE_NAME" />.</translation>

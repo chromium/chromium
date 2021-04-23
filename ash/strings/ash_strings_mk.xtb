@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">Етернет: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">„Помошник“ (се вчитува…)</translation>
 <translation id="1838895407229022812">„Ноќното светло“ е исклучено.</translation>
-<translation id="1850504506766569011">Wi-Fi е исклучено.</translation>
 <translation id="1864454756846565995">USB-Ц уред (задна порта)</translation>
 <translation id="1882814835921407042">Нема мобилна мрежа</translation>
 <translation id="1882897271359938046">Отсликување во <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">Поставки на корисникот</translation>
 <translation id="3217205077783620295">Јачината на звук е вклучена. Ако смените, ќе се исклучи звукот на аудиото.</translation>
 <translation id="3226991577105957773">и уште <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Нема достапна мобилна мрежа</translation>
 <translation id="3249513730522716925">Прозорецот <ph name="WINDOW_TITLE" /> се премести од работен простор <ph name="ACTIVE_DESK" /> на работен простор <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Што можеш да направиш?</translation>
 <translation id="3269597722229482060">Десен клик</translation>
@@ -585,7 +583,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> е вклучено.</translation>
 <translation id="5947494881799873997">Врати</translation>
 <translation id="595202126637698455">Овозможено е следење на изведбата</translation>
-<translation id="5957083217255311415">Мобилниот интернет е исклучен.</translation>
 <translation id="5958529069007801266">Надгледуван корисник</translation>
 <translation id="5960825221082587934">Дозволете „Помошникот“ да ви прикажува информации, како дефиниција, превод или конверзија на единиците за вашиот избор.</translation>
 <translation id="5977415296283489383">Слушалки</translation>
@@ -885,7 +882,6 @@
 <translation id="8433977262951327081">Кратенката за прикажување на балончето со мени со опции за внесување на полицата се промени. Користете <ph name="NEW_SHORTCUT" /> наместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Работен простор <ph name="DESK_TITILE" /> е активиран</translation>
 <translation id="8452135315243592079">Недостасува SIM-картичка</translation>
-<translation id="8454013096329229812">Wi-Fi е вклучено.</translation>
 <translation id="8462305545768648477">Затворете ја функцијата „Изберете за говор“</translation>
 <translation id="847056008324733326">Приказ на поставките за скала</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> има <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

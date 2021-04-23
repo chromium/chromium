@@ -108,7 +108,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1823873187264960516">Ethaneti: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Mratibu (inapakia...)</translation>
 <translation id="1838895407229022812">Umezima Mwanga wa Usiku.</translation>
-<translation id="1850504506766569011">Wi-Fi imezimwa.</translation>
 <translation id="1864454756846565995">Kifaa cha USB-C (mlango wa nyuma)</translation>
 <translation id="1882814835921407042">Hakuna mtandao wa simu</translation>
 <translation id="1882897271359938046">Inaakisi kwenye <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3207953481422525583">Mipangilio ya Mtumiaji</translation>
 <translation id="3217205077783620295">Umewasha sauti, Ukigeuza swichi utazima sauti.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> zaidi</translation>
-<translation id="3236488194889173876">Mtandao wa simu haupatikani</translation>
 <translation id="3249513730522716925">Dirisha la <ph name="WINDOW_TITLE" /> limehamishwa kutoka Kiolesura cha <ph name="ACTIVE_DESK" /> hadi Kiolesura cha <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Unaweza kufanya nini?</translation>
 <translation id="3269597722229482060">Bofya Kulia</translation>
@@ -584,7 +582,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> kimewashwa.</translation>
 <translation id="5947494881799873997">Rejesha</translation>
 <translation id="595202126637698455">Ufuatiliaji wa utendaji umewashwa</translation>
-<translation id="5957083217255311415">Data ya mtandao wa simu imezimwa.</translation>
 <translation id="5958529069007801266">Mtumiaji anayesimamiwa</translation>
 <translation id="5960825221082587934">Ruhusu programu ya Mratibu ionyeshe maelezo kama vile ufafanuzi, ubadilishaji wa vipimo au tafsiri ya chaguo lako.</translation>
 <translation id="5977415296283489383">Vipokea sauti</translation>
@@ -885,7 +882,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8433977262951327081">Njia ya mkato ya kuonyesha kiputo cha menyu ya chaguo za kuingiza data katika rafu imebadilika. Tafadhali tumia <ph name="NEW_SHORTCUT" /> badala ya <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Kiolesura cha <ph name="DESK_TITILE" /> kimewashwa</translation>
 <translation id="8452135315243592079">Hakuna SIM kadi</translation>
-<translation id="8454013096329229812">Wi-Fi imewashwa.</translation>
 <translation id="8462305545768648477">Funga kipengele cha Kuchagua ili izungumze</translation>
 <translation id="847056008324733326">Onyesha mipangilio ya vipimo</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ina <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

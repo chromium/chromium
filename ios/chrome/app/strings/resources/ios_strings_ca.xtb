@@ -204,6 +204,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="3112556859945124369">Marca com a…</translation>
 <translation id="3131206671572504478">Bloqueja-ho tot</translation>
 <translation id="3153862085237805241">Desa la targeta</translation>
+<translation id="3157387275655328056">Afegeix a la llista de lectura</translation>
 <translation id="3157684681743766797">Marca-ho tot com a…</translation>
 <translation id="3161291298470460782">Amb aquesta acció es tancarà la sessió, es desactivarà la sincronització i s'esborraran totes les dades de Chrome d'aquest dispositiu. Les dades sincronitzades es conservaran al teu Compte de Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5188482106078495165">La configuració de les galetes s'aplica a totes les pestanyes. Per aplicar una configuració nova a una pestanya oberta, torna a carregar-la.</translation>
 <translation id="5190835502935405962">Barra d'adreces d'interès</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Tanca la pestanya</translation>
 <translation id="5228579091201413441">Activa la sincronització</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5245322853195994030">Cancel·la la sincronització</translation>
@@ -486,7 +488,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6127379762771434464">S'ha suprimit l'element</translation>
 <translation id="6136914049981179737">Fa segons</translation>
 <translation id="6144589619057374135">Obre ${url} en mode d'incògnit</translation>
-<translation id="616831107264507309">Llegeix més tard</translation>
 <translation id="6177442314419606057">Fes cerques a Chrome</translation>
 <translation id="6184086493125982861">Mostra les pestanyes</translation>
 <translation id="6187302354554850004">Última sincronització: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6293101329759844770">Per activar la funció Navegació segura, obre la pàgina <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" /> i toca Navegació segura.</translation>
 <translation id="6303969859164067831">Tanca la sessió i desactiva la sincronització</translation>
 <translation id="6308436439357671616">Això et permet fer i penjar fotos.</translation>
+<translation id="6321526113093607004">Afegeix a Adreces d'interès</translation>
 <translation id="6324528485781869530">Canvia de compte de sincronització</translation>
 <translation id="6324669097367352121">Configuració d'inici de sessió</translation>
 <translation id="6337234675334993532">Encriptació</translation>
@@ -672,7 +674,6 @@ Com que <ph name="HOSTED_DOMAIN" /> gestiona el teu compte, les dades de Chrome 
 <translation id="7856733331829174190">No s'ha pogut baixar</translation>
 <translation id="7859704718976024901">Historial de navegació</translation>
 <translation id="7887198238286927132">Amb la finalitat de protegir la teva privadesa, Chrome no emplenarà aquest camp automàticament.</translation>
-<translation id="7918293828610777738">La llista de lectura està disponible sense connexió. Per afegir-hi una pàgina, toca <ph name="SHARE_OPENING_ICON" /> i després <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exporta les contrasenyes</translation>
 <translation id="7947953824732555851">Acc. i inicia sessió</translation>

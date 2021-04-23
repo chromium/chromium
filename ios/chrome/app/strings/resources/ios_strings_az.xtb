@@ -204,6 +204,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="3112556859945124369">Qeyd edin...</translation>
 <translation id="3131206671572504478">Hamısını blok edin</translation>
 <translation id="3153862085237805241">Kartı Yadda saxlayın</translation>
+<translation id="3157387275655328056">Oxu Siyahısına əlavə edin</translation>
 <translation id="3157684681743766797">Hamısını Qeyd Edin…</translation>
 <translation id="3161291298470460782">Bunun nəticəsində çıxacaqsınız, sinxronizasiya deaktiv ediləcək və bu cihazdakı bütün Chrome datası silinəcək. Sinxronlaşdırılmış data Google Hesabınızda qalacaq.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="5188482106078495165">Kuki ayarınız bütün tablara tətbiq edilir. Açıq taba yeni ayar tətbiq etmək üçün tabı yenidən yükləyin.</translation>
 <translation id="5190835502935405962">Əlfəcinlər Paneli</translation>
 <translation id="5197255632782567636">internet</translation>
+<translation id="5210365745912300556">Paneli qapadın</translation>
 <translation id="5228579091201413441">Sinxronizasiyanı aktiv edin</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>
 <translation id="5245322853195994030">Sinxronizasiyanı Ləğv Edin</translation>
@@ -486,7 +488,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6127379762771434464">Element silindi</translation>
 <translation id="6136914049981179737">Saniyələr əvvəl</translation>
 <translation id="6144589619057374135">${url} keçidini Anonim rejimdə açın</translation>
-<translation id="616831107264507309">Daha Sonra Oxuyun</translation>
 <translation id="6177442314419606057">Chrome'da axtarın</translation>
 <translation id="6184086493125982861">Panelləri Göstərin</translation>
 <translation id="6187302354554850004">Son sinxronizasiya: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6293101329759844770">Təhlükəsiz Baxışı aktiv etmək üçün <ph name="BEGIN_LINK" />Google Xidmətləri<ph name="END_LINK" /> bölməsini açın və Təhlükəsiz Baxış seçiminə toxunun.</translation>
 <translation id="6303969859164067831">Çıxış edin və sinxronizasiyanı deaktiv edin</translation>
 <translation id="6308436439357671616">Foto çəkməyə və yükləməyə icazə verir.</translation>
+<translation id="6321526113093607004">Əlfəcinlərə əlavə edin</translation>
 <translation id="6324528485781869530">Sinxronizasiya Hesabına keçin</translation>
 <translation id="6324669097367352121">Daxil olma ayarları</translation>
 <translation id="6337234675334993532">Şifrələmə</translation>
@@ -672,7 +674,6 @@ Hesabınız <ph name="HOSTED_DOMAIN" /> tərəfindən idarə edildiyinə görə,
 <translation id="7856733331829174190">Yüklənmədi</translation>
 <translation id="7859704718976024901">Brauzer Tarixçəsi</translation>
 <translation id="7887198238286927132">Chrome məxfiliyi qorumaq üçün bu sahəni avtomatik doldurmayacaq.</translation>
-<translation id="7918293828610777738">Oxu siyahısı oflayn əlçatandır. Oxu siyahısına səhifə əlavə etmək üçün <ph name="SHARE_OPENING_ICON" /> ikonasına, sonra isə <ph name="READ_LATER_TEXT" /> ikonasına klikləyin.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Parolları Eksport Edin...</translation>
 <translation id="7947953824732555851">Qəbul edin və daxil olun</translation>

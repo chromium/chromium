@@ -108,7 +108,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Assistent (laadimine …)</translation>
 <translation id="1838895407229022812">Öövalgus on väljas.</translation>
-<translation id="1850504506766569011">WiFi on välja lülitatud.</translation>
 <translation id="1864454756846565995">C-tüüpi USB-seade (tagumine port)</translation>
 <translation id="1882814835921407042">Mobiilsidevõrku pole</translation>
 <translation id="1882897271359938046">Peegeldamine asukohta <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3207953481422525583">Kasutaja seaded</translation>
 <translation id="3217205077783620295">Helitugevus on sees, vahetamisel heli vaigistatakse.</translation>
 <translation id="3226991577105957773">ja veel <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Ühtegi mobiilsidevõrku pole saadaval</translation>
 <translation id="3249513730522716925">Aken <ph name="WINDOW_TITLE" /> teisaldati töölaualt <ph name="ACTIVE_DESK" /> töölauale <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Mida sa teha oskad?</translation>
 <translation id="3269597722229482060">Paremklikk</translation>
@@ -585,7 +583,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> on sees.</translation>
 <translation id="5947494881799873997">Ennista</translation>
 <translation id="595202126637698455">Toimivuse jälgimine on lubatud</translation>
-<translation id="5957083217255311415">Mobiilne andmeside on välja lülitatud.</translation>
 <translation id="5958529069007801266">Valvatav kasutaja</translation>
 <translation id="5960825221082587934">Laske assistendil kuvada teavet, näiteks teie valitud üksuse definitsiooni, tõlke või ühiku teisenduse.</translation>
 <translation id="5977415296283489383">Kõrvaklapid</translation>
@@ -885,7 +882,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="8433977262951327081">Otsetee sisestusvalikute menüü mulli kuvamiseks riiulil on muutunud. Kasutage otsetee <ph name="OLD_SHORTCUT" /> asemel otseteed <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Töölaud <ph name="DESK_TITILE" /> aktiveeriti</translation>
 <translation id="8452135315243592079">SIM-kaart puudub</translation>
-<translation id="8454013096329229812">WiFi on sisse lülitatud.</translation>
 <translation id="8462305545768648477">Sule funktsioon Vali ja kuula</translation>
 <translation id="847056008324733326">Ekraani skaala seaded</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />: <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

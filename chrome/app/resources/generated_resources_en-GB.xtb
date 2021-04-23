@@ -3080,6 +3080,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4392896746540753732">Edit the configuration file</translation>
 <translation id="4394049700291259645">Disable</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Open all}=1{&amp;Open bookmark}other{&amp;Open all ({COUNT})}}</translation>
+<translation id="4398131717714042083">Clears history and auto-completions in the search box</translation>
 <translation id="439817266247065935">Your device didn't shut down properly. Restart Linux to use Linux apps.</translation>
 <translation id="4400367121200150367">Sites which never save passwords will appear here</translation>
 <translation id="4400632832271803360">Hold the Launcher key to switch the behaviour of the top-row keys</translation>
@@ -5062,6 +5063,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6651237644330755633">Trust this certificate for identifying websites</translation>
 <translation id="6651495917527016072">Sync Wi-Fi networks with your phone. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> integration is only supported on x86_64 platforms. Chromebooks built on top of an ARM or x86 platform do not support this functionality.</translation>
+<translation id="66537479323396140">Clears history and auto-completions in the search box. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">Prefer network</translation>
 <translation id="6655190889273724601">Developer mode</translation>
 <translation id="6655458902729017087">Hide Accounts</translation>
@@ -5928,6 +5930,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7636919061354591437">Install on this device</translation>
 <translation id="7637593984496473097">Not enough disk space</translation>
 <translation id="7638605456503525968">Serial ports</translation>
+<translation id="7639914187072011620">Failed to fetch the SAML redirect URL from the server</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> automatically signs you in to eligible sites with passwords that you saved.</translation>
 <translation id="7642778300616172920">Hide sensitive content</translation>
 <translation id="7643842463591647490">{0,plural, =1{# open window}other{# open windows}}</translation>

@@ -3080,6 +3080,7 @@
 <translation id="4392896746540753732">設定ファイルを編集します</translation>
 <translation id="4394049700291259645">無効にする</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{すべてを開く(&amp;O)}=1{ブックマークを開く(&amp;O)}other{すべて（{COUNT} 個）を開く(&amp;O)}}</translation>
+<translation id="4398131717714042083">検索ボックスの履歴とオートコンプリート データを削除します</translation>
 <translation id="439817266247065935">デバイスは正しく終了しませんでした。Linux アプリを使用するには、Linux を再起動してください。</translation>
 <translation id="4400367121200150367">パスワードを保存していないサイトがここに表示されます</translation>
 <translation id="4400632832271803360">キーボードの最上段にあるキーの動作を切り替えるには、ランチャー キーを押したままにします</translation>
@@ -5062,6 +5063,7 @@
 <translation id="6651237644330755633">ウェブサイトの識別でこの証明書を信頼します</translation>
 <translation id="6651495917527016072">Wi-Fi ネットワークをスマートフォンと同期します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome と <ph name="MS_AD_NAME" /> の統合は x86_64 プラットフォームでのみサポートされています。ARM または x86 プラットフォームを使用している Chromebooks では、この機能はサポートされていません。</translation>
+<translation id="66537479323396140">検索ボックスの履歴とオートコンプリート データを削除します。お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります。</translation>
 <translation id="6654509035557065241">優先するネットワーク</translation>
 <translation id="6655190889273724601">デベロッパー モード</translation>
 <translation id="6655458902729017087">アカウントを非表示にする</translation>
@@ -5928,6 +5930,7 @@
 <translation id="7636919061354591437">このデバイスにインストール</translation>
 <translation id="7637593984496473097">ディスクの空き容量が不足しています</translation>
 <translation id="7638605456503525968">シリアルポート</translation>
+<translation id="7639914187072011620">サーバーから SAML リダイレクト URL を取得できませんでした</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> では、保存したパスワードを使って対象となるサイトへの自動ログインが行われます。</translation>
 <translation id="7642778300616172920">プライベートな内容を表示しない</translation>
 <translation id="7643842463591647490">{0,plural, =1{開いているウィンドウ # 個}other{開いているウィンドウ # 個}}</translation>

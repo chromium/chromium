@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">マーク...</translation>
 <translation id="3131206671572504478">すべてブロック</translation>
 <translation id="3153862085237805241">カードを保存</translation>
+<translation id="3157387275655328056">リーディング リストに追加</translation>
 <translation id="3157684681743766797">すべてマーク...</translation>
 <translation id="3161291298470460782">この操作を行うと、ログアウトして同期がオフになり、このデバイスから Chrome のデータがすべて削除されます。同期データは Google アカウントに残ります。</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">Cookie の設定はすべてのタブに適用されます。開いているタブに新しい設定を適用するには、タブを再読み込みしてください。</translation>
 <translation id="5190835502935405962">ブックマーク バー</translation>
 <translation id="5197255632782567636">インターネット</translation>
+<translation id="5210365745912300556">タブを閉じる</translation>
 <translation id="5228579091201413441">同期を有効にする</translation>
 <translation id="5234764350956374838">閉じる</translation>
 <translation id="5245322853195994030">同期をキャンセル</translation>
@@ -486,7 +488,6 @@
 <translation id="6127379762771434464">アイテムを削除しました</translation>
 <translation id="6136914049981179737">数秒前</translation>
 <translation id="6144589619057374135">${url} をシークレット モードで開く</translation>
-<translation id="616831107264507309">後で読む</translation>
 <translation id="6177442314419606057">Chrome で検索</translation>
 <translation id="6184086493125982861">タブを表示</translation>
 <translation id="6187302354554850004">最終同期: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@
 <translation id="6293101329759844770">セーフ ブラウジングをオンにするには、[<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />] を開いて [セーフ ブラウジング] をタップします。</translation>
 <translation id="6303969859164067831">ログアウトして同期をオフにする</translation>
 <translation id="6308436439357671616">写真を撮影してアップロードできます。</translation>
+<translation id="6321526113093607004">ブックマークに追加</translation>
 <translation id="6324528485781869530">同期アカウントの切り替え</translation>
 <translation id="6324669097367352121">ログインの設定</translation>
 <translation id="6337234675334993532">暗号化</translation>
@@ -672,7 +674,6 @@
 <translation id="7856733331829174190">ダウンロードできませんでした</translation>
 <translation id="7859704718976024901">閲覧履歴</translation>
 <translation id="7887198238286927132">プライバシー保護のため、Chrome ではこの欄の自動入力は行われません。</translation>
-<translation id="7918293828610777738">リーディング リストをオフラインで利用できます。リーディング リストにページを追加するには、<ph name="SHARE_OPENING_ICON" /> &gt; [<ph name="READ_LATER_TEXT" />] をタップします。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">パスワードをエクスポート...</translation>
 <translation id="7947953824732555851">同意してログイン</translation>

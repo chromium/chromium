@@ -9,6 +9,7 @@
 <translation id="1431818719585918472">Chromium peut verrouiller vos onglets de navigation privée.</translation>
 <translation id="1472013873724362412">Votre compte n'est pas compatible avec Chromium. Veuillez contacter l'administrateur de votre domaine ou utiliser un compte Google standard pour vous connecter.</translation>
 <translation id="1507010443238049608">Contribuer à l'amélioration des fonctionnalités et des performances de Chromium</translation>
+<translation id="1531155317299575425">Permet d'afficher des invites de connexion à Chromium.</translation>
 <translation id="1617663976202781617">Données issues de la synchronisation Chromium</translation>
 <translation id="1736662517232558588">Données de Chromium effacées</translation>
 <translation id="1838412507805038478">Chromium a confirmé que le certificat de ce site Web a bien été émis par <ph name="ISSUER" />.</translation>
@@ -46,9 +47,10 @@
 <translation id="4999538639245140991">Comme vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="5308226104666789935">Chromium ne parvient pas à rechercher les mises à jour</translation>
-<translation id="5396916991083608703">Définir Chromium en tant que navigateur par défaut ?</translation>
+<translation id="5396916991083608703">Utiliser Chromium par défaut ?</translation>
 <translation id="5521125884468363740">Pour retrouver vos onglets Chromium quel que soit l'appareil utilisé, connectez-vous et activez la synchronisation</translation>
 <translation id="5573014823074921752">Astuce Chromium : Pour afficher plus d'options d'onglets, appuyez de manière prolongée sur le bouton "Afficher les onglets" situé dans la barre d'outils affichée dans la partie inférieure ou supérieure de l'écran.</translation>
+<translation id="5651741435382092412">Connectez-vous à ce site, à votre compte Google et à Chromium. Vous pouvez activer la synchronisation plus tard.</translation>
 <translation id="5700709190537129682">Chromium ne parvient pas à vérifier vos mots de passe</translation>
 <translation id="5742135483959137648">Utiliser Chromium pour ouvrir des liens</translation>
 <translation id="5777187867430702742">Page Chromium</translation>
@@ -59,6 +61,7 @@
 1. Accédez à "Réglages" Appuyez sur "Navigateur par défaut"
 3. Sélectionnez "Chromium".</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium ?</translation>
+<translation id="632825460376924298">Autoriser la connexion à Chromium</translation>
 <translation id="6337530241089703714">Indiquez si vous voulez effacer ou garder les données Chromium de cet appareil</translation>
 <translation id="6424492062988593837">Chromium a été amélioré ! Une nouvelle version est désormais disponible.</translation>
 <translation id="6820823224820483452">Chromium n'est pas parvenu à vérifier tous les mots de passe. Réessayez demain.</translation>

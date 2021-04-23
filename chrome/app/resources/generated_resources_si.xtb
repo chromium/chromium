@@ -3078,6 +3078,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4392896746540753732">වින්‍යාස ගොනුව සංස්කරණ කරන්න</translation>
 <translation id="4394049700291259645">අක්‍රිය කරන්න</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;සියල්ල විවෘත කරන්න}=1{&amp;පිටුසන විවෘත කරන්න}one{&amp;සියල්ල විවෘත කරන්න ({COUNT})}other{&amp;සියල්ල විවෘත කරන්න ({COUNT})}}</translation>
+<translation id="4398131717714042083">සෙවීම් කොටුවේ ඉතිහාසය සහ ස්වයං සම්පූර්ණ කිරීම් හිස් කරයි</translation>
 <translation id="439817266247065935">ඔබේ උපාංගය නිසි පරිදි වැසුණේ නැත. ලිනක්ස් යෙදුම් භාවිත කිරීමට ලිනක්ස් යළි අරඹන්න.</translation>
 <translation id="4400367121200150367">කිසි විටක මුරපද නොසුරකින අඩවි මෙහි දිස් වනු ඇත</translation>
 <translation id="4400632832271803360">ඉහළ පේළියේ යතුරු හැසිරීම මාරු කිරීමට දියත්කරණ යතුර අල්ලාගෙන සිටින්න</translation>
@@ -5059,6 +5060,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6651237644330755633">වෙබ් අඩවි හඳුනා ගැනීම සඳහා මෙම සහතිකය විශ්වාස කරන්න</translation>
 <translation id="6651495917527016072">ඔබේ දුරකථනය සමග Wi-Fi ජාල සමුමුහුර්ත කරන්න <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> අනුකලනය කිරීම x86_64 වේදිකාවල පමණක් සහාය දක්වයි. ARM හෝ x86 වේදිකාවක් මත ගොඩනැගුණු Chromebooks මෙම කාර්යයට සහාය නොදක්වයි.</translation>
+<translation id="66537479323396140">සෙවීම් කොටුවේ ඉතිහාසය සහ ස්වයං සම්පූර්ණ කිරීම් හිස් කරයි. ඔබගේ Google ගිණුමට <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> හිදී බ්‍රවුස් කිරීමේ ඉතිහාසයේ වෙනත් ආකාර තිබිය හැකිය.</translation>
 <translation id="6654509035557065241">ජාල මනාපය</translation>
 <translation id="6655190889273724601">සංවර්ධක ප්‍රකාරය</translation>
 <translation id="6655458902729017087">ගිණුම් සඟවන්න</translation>
@@ -5925,6 +5927,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7636919061354591437">මෙම උපාංගයේ ස්ථාපන කරන්න</translation>
 <translation id="7637593984496473097">ප්‍රමාණවත් තැටි ඉඩක් නැත</translation>
 <translation id="7638605456503525968">අනුක්‍රමික තොට</translation>
+<translation id="7639914187072011620">සේවාදායකයෙන් SAML ප්‍රතියොමු URL යළි ලබා ගැනීමට අපොහොසත් විය</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> විසින් ඔබ සුරැකි මුරපද සමඟ සුදුසු වෙබ් අඩවි වෙත ඔබව ස්වයංක්‍රීයව පුරනය කරවයි.</translation>
 <translation id="7642778300616172920">සංවේදී අන්තර්ගතය සඟවන්න</translation>
 <translation id="7643842463591647490">{0,plural, =1{# විවෘත කවුළුවක්}one{විවෘත කවුළු #ක්}other{විවෘත කවුළු #ක්}}</translation>

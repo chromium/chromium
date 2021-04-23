@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">আপনি Chrome-কে আপনার লোকেশন জানার অনুমতি দিলে আপনি যেসব সাইটকে লোকেশন অ্যাক্সেস করার অনুমতি দেবেন, Chrome সেই সব সাইটে এই তথ্য পাঠিয়ে দেবে। কাছাকাছি দোকান অথবা সংশ্লিষ্ট এলাকার খবরের মতো স্থানীয় তথ্য আপনাকে দেখাতে হলে, কোনও সাইট আপনার লোকেশন জানতে চাইতে পারে।</translation>
 <translation id="6036420186814142909">Google Chrome-এর একটি বৈশিষ্ট্য যা আপনাকে আপনার ইন্টারনেট ডেটা পরিচালনা করতে এবং কিভাবে আপনি ওয়েবপৃষ্ঠাগুলি দ্রুত লোড করতে পারবেন সে বিষয়ে সহায়তা করে৷
 <ph name="BEGIN_LINK" />আরো জানুন<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Chrome-এ সাইন-ইন করার অনুমতি দিন</translation>
 <translation id="6181930887571472871">Chrome-এ পাল্টান</translation>
 <translation id="6238746320622508509">Chrome-কে আপনার ছদ্মবেশী ট্যাব লক করার অনুমতি দিন।</translation>
 <translation id="6573431926118603307">আপনার অন্য ডিভাইসগুলিতে Chrome এ আপনি যে ট্যাবগুলি খুলেছেন সেগুলি এখানে দেখা যাবে।</translation>
@@ -96,5 +97,6 @@
   ৩. Chrome বেছে নিন।</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chrome-এর সাহায্যে নিরাপদে থাকুন</translation>
+<translation id="8772179140489533211">Chrome-এ সাইন-ইন করার প্রম্পট দেখাবে।</translation>
 <translation id="9112744793181547300">Chrome ডিফল্ট হিসেবে সেট করতে চান?</translation>
 </translationbundle>

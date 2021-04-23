@@ -108,7 +108,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Assistent (läses in …)</translation>
 <translation id="1838895407229022812">Nattljus är inaktiverat.</translation>
-<translation id="1850504506766569011">Wi-Fi är inaktiverat.</translation>
 <translation id="1864454756846565995">USB-C-enhet (bakre port)</translation>
 <translation id="1882814835921407042">Inget mobilnätverk</translation>
 <translation id="1882897271359938046">Spegling av <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3207953481422525583">Användarinställningar</translation>
 <translation id="3217205077783620295">Ljudet är på. Om du ändrar läge stängs ljudet av.</translation>
 <translation id="3226991577105957773">och <ph name="COUNT" /> till</translation>
-<translation id="3236488194889173876">Det finns inget tillgängligt mobilnätverk</translation>
 <translation id="3249513730522716925">Fönstret <ph name="WINDOW_TITLE" /> flyttades från skrivbordet <ph name="ACTIVE_DESK" /> till skrivbordet <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Vad kan du göra?</translation>
 <translation id="3269597722229482060">Högerklicka</translation>
@@ -584,7 +582,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> är på.</translation>
 <translation id="5947494881799873997">Återgå</translation>
 <translation id="595202126637698455">Resultatspårning aktiverat</translation>
-<translation id="5957083217255311415">Mobildata har inaktiverats.</translation>
 <translation id="5958529069007801266">Kontrollerad användare</translation>
 <translation id="5960825221082587934">Låt assistenten visa information för det som är markerat, till exempel en definition, en översättning eller en omräkning till en annan enhet.</translation>
 <translation id="5977415296283489383">Hörlurar</translation>
@@ -884,7 +881,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8433977262951327081">Kortkommandot för att visa menybubblan för inmatningsalternativ i hyllan har ändrats. Använd <ph name="NEW_SHORTCUT" /> i stället för <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Skrivbordet <ph name="DESK_TITILE" /> har aktiverats</translation>
 <translation id="8452135315243592079">SIM-kort saknas</translation>
-<translation id="8454013096329229812">Wi-Fi är aktiverat.</translation>
 <translation id="8462305545768648477">Stäng av textuppläsningen</translation>
 <translation id="847056008324733326">Inställningar för skala på skärmen</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> har <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

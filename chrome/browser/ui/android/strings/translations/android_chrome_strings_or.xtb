@@ -247,6 +247,7 @@
 <translation id="2612676031748830579">କାର୍ଡ ସଂଖ୍ୟା</translation>
 <translation id="2625189173221582860">ପାସ୍‍ୱର୍ଡ କପି ହୋଇଛି</translation>
 <translation id="2631006050119455616">ସେଭ୍‌ ହୋଇଗଲା</translation>
+<translation id="2645657967708199252">ଆପଣଙ୍କ <ph name="CONNECTION_TYPE" /> ସଂଯୋଗ ଆପଣଙ୍କର ଡାଉନଲୋଡକୁ ସ୍ଲୋ କରିପାରେ</translation>
 <translation id="2647434099613338025">ଭାଷା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2650751991977523696">ଫାଇଲ୍‌ଟି ପୁଣି ଡାଉନ୍‌ଲୋଡ୍ କରିବେ?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{#ଟି ଅଡିଓ ଫାଇଲ୍‌}other{#ଟି ଅଡିଓ ଫାଇଲ୍‌}}</translation>
@@ -259,6 +260,7 @@
 <translation id="2718846868787000099">ଆପଣଙ୍କ ପସନ୍ଦର ଭାଷାଗୁଡ଼ିକରେ ବିଷୟବସ୍ତୁ ଦେଖାଇବା ପାଇଁ, ଆପଣ ଭିଜିଟ୍ କରୁଥିବା ସାଇଟଗୁଡ଼ିକ ଆପଣଙ୍କ ପସନ୍ଦଗୁଡ଼ିକୁ ଦେଖିପାରିବ</translation>
 <translation id="2723001399770238859">ଅଡିଓ</translation>
 <translation id="2728754400939377704">ସାଇଟ୍ ଅନୁସାରେ ସଜାନ୍ତୁ</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">ତତ୍‍କ୍ଷଣାତ୍‍ ସର୍ଚ୍ଚ କରିବାକୁ କିମ୍ବା ସେହି ସମ୍ବନ୍ଧିତ କାର୍ଯ୍ୟ ଦେଖିବାକୁ ଏକ ଶଦ୍ଦ ଟାପ୍‍ କରନ୍ତୁ</translation>
 <translation id="2760989362628427051">ଆପଣଙ୍କ ଡିଭାଇସ୍‌ର ଗାଢା ଥିମ୍ ବା ବ୍ୟାଟେରୀ ସେଭର୍ ଚାଲୁଥିବା ସମୟରେ ଗାଢା ଥିମ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2762000892062317888">ଏହିକ୍ଷଣି</translation>
@@ -435,6 +437,7 @@
 <translation id="3943557322767080599">ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସାଇନ୍ ଇନ୍ କରିବା ବେଳେ Chrome ସାଇନ୍-ଇନ୍ ପ୍ରମ୍ପ୍ଟଗୁଡ଼ିକୁ ଦେଖାନ୍ତୁ</translation>
 <translation id="395206256282351086">ସନ୍ଧାନ ଏବଂ ସାଇଟ୍‍ର ପରାମର୍ଶଗୁଡ଼ିକ ଅକ୍ଷମ କରାଗଲା</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{ଯେତେବେଳେ ପ୍ରସ୍ତୁତ ହୋ‍ଇଯିବ, ସେତେବେଳେ Chrome ଆପଣଙ୍କର ପୃଷ୍ଠା ଲୋଡ୍‌ କରିବ}other{ଯେତେବେଳେ ପ୍ରସ୍ତୁତ ହୋ‍ଇଯିବ, ସେତେବେଳେ Chrome ଆପଣଙ୍କର ପୃଷ୍ଠା ଲୋଡ୍‌ କରିବ}}</translation>
+<translation id="3962957115499249330">ୱାଇ-ଫାଇରେ ଏହି ଡାଉନଲୋଡ୍ ଆରମ୍ଭ ହେଲେ ଆପଣ ଏକ ବିଜ୍ଞପ୍ତି ଦେଖିବେ।</translation>
 <translation id="3963007978381181125">ପାସଫ୍ରେଜ୍ ଏନକ୍ରିପ୍ସନ୍, Google Payରୁ ପେମେଣ୍ଟ ପଦ୍ଧତି ଓ ଠିକଣାଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରେ ନାହିଁ। ଆପଣଙ୍କ ଏନ୍‌କ୍ରିପ୍ଟ ହୋଇଥିବା ଡାଟାକୁ କେବଳ ଆପଣଙ୍କ ପାସ୍‍‍ଫ୍ରେଜ୍ ଥିବା ଜଣେ ବ୍ୟକ୍ତି ପଢ଼ିପାରିବେ। ଏହି ପାସଫ୍ରେଜ୍ Googleକୁ ପଠାଯାଏ ନାହିଁ କିମ୍ବା Google.ଦ୍ୱାରା ଷ୍ଟୋର୍ କରାଯାଏ ନାହିଁ। ଯଦି ଆପଣ ଆପଣଙ୍କର ପାସଫ୍ରେଜ୍ ଭୁଲିଯାଇଛନ୍ତି କିମ୍ବା ଏହି ସେଟିଂ ପରିବର୍ତ୍ତନ କରିବାକୁ ଚାହୁଁଛନ୍ତି, ତେବେ ଆପଣଙ୍କୁ ସିଙ୍କ ରିସେଟ୍ କରିବାକୁ ହେବ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> Chromeରେ ଖୋଲିବ। ଜାରି ରଖିବା ଦ୍ୱାରା, ଆପଣ <ph name="BEGIN_LINK1" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />Google Chrome ଏବଂ Chrome OS ଅତିରିକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK2" /> ସହିତ ସହମତ ହେଉଛନ୍ତି। <ph name="BEGIN_LINK3" />Family Link ମାଧ୍ୟମରେ ପରିଚାଳନା କରାଯାଇଥିବା Google ଆକାଉଣ୍ଟଗୁଡ଼ିକ ପାଇଁ ଗୋପନୀୟତା ନୋଟିସ୍<ph name="END_LINK3" /> ମଧ୍ୟ ଲାଗୁ ହୋଇଥାଏ।</translation>
@@ -478,6 +481,7 @@
 <translation id="4256782883801055595">ମୁକ୍ତ ଉତ୍ସ ଲାଇସେନ୍ସ</translation>
 <translation id="4263656433980196874">Assistantର ଭଏସ୍ ମାଧ୍ୟମରେ ସନ୍ଧାନ ପାଇଁ ସମ୍ମତିର ui ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲିଛି</translation>
 <translation id="4269820728363426813">ଲିଙ୍କ୍ ଠିକଣା କପି କରନ୍ତୁ</translation>
+<translation id="4290281343757112331">ଏହା ପରିବର୍ତ୍ତେ ପରେ ଡାଉନଲୋଡ୍ କରିବେ କି?</translation>
 <translation id="4298388696830689168">ଲିଙ୍କ୍‌ ହୋ‍ଇଥିବା ସାଇଟ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">ଆଧାରଗୁଡିକ</translation>
@@ -540,6 +544,7 @@
 <translation id="4698034686595694889"><ph name="APP_NAME" /> ମାଧ୍ୟମରେ ଅଫ୍‌ଲାଇନ୍‌ରେ ଦେଖନ୍ତୁ</translation>
 <translation id="4699172675775169585">କେଚ୍‍ ଛବି ଏବଂ ଫାଇଲ୍‌</translation>
 <translation id="4714588616299687897">ଆପଣଙ୍କ ଡାଟାର 60% ପର୍ଯ୍ୟନ୍ତ ସେଭ୍ କରନ୍ତୁ</translation>
+<translation id="4716066120200945007">ଅନୁସରଣ କରୁଛନ୍ତି</translation>
 <translation id="4719927025381752090">ଅନୁବାଦ କରିବାକୁ ପ୍ରସ୍ତାବ ଦିଅନ୍ତୁ</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />ରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="4720982865791209136">Chromeକୁ ଉନ୍ନତ କରିବାରେ ସହାୟତା କରନ୍ତୁ। <ph name="BEGIN_LINK" />ସର୍ବେକ୍ଷଣରେ ଭାଗ ନିଅନ୍ତୁ<ph name="END_LINK" /></translation>
@@ -620,6 +625,7 @@
 <translation id="5191251636205085390">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ପରିବର୍ତ୍ତନ କରିବାକୁ ଲକ୍ଷ୍ୟ ରଖୁଥିବା ନୂଆ ଟେକ୍ନୋଲୋଜିଗୁଡ଼ିକ ବିଷୟରେ ଜାଣନ୍ତୁ ଏବଂ ସେଗୁଡ଼ିକୁ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
 <translation id="5193988420012215838">ଆପଣଙ୍କର କ୍ଲିପ୍‌ବୋର୍ଡକୁ କପି କରାଯାଇଛି</translation>
 <translation id="5199929503336119739">ୱର୍କ ପ୍ରୋଫାଇଲ୍‌</translation>
+<translation id="5201464744567315552"><ph name="TIME" />ରେ ଏହି ଡାଉନଲୋଡ୍ ଆରମ୍ଭ ହେଲେ ଆପଣ ଏକ ବିଜ୍ଞପ୍ତି ଦେଖିବେ।</translation>
 <translation id="5204967432542742771">ପାସ୍‌ୱର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="5210286577605176222">ପୂର୍ବବର୍ତ୍ତୀ ଟାବ୍‍କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5210365745912300556">ଟ୍ୟାବ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -630,6 +636,7 @@
 <translation id="5230560987958996918"><ph name="SITE" /> ଆଖପାଖର ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ସ୍କାନ୍ କରିବାକୁ ଚାହୁଁଛି। ନିମ୍ନୋକ୍ତ ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ମିଳିଛି:</translation>
 <translation id="5233638681132016545">ନୂତନ ଟ୍ୟାବ୍</translation>
 <translation id="5250483651202458397">ସ୍କ୍ରିନସଟ୍। ବନ୍ଦ କରିବାକୁ ଟାପ୍ କରନ୍ତୁ।</translation>
+<translation id="5262378156578470238"><ph name="DATE" />ରେ ଏହି ଡାଉନଲୋଡ୍ ଆରମ୍ଭ ହେଲେ ଆପଣ ଏକ ବିଜ୍ଞପ୍ତି ଦେଖିବେ।</translation>
 <translation id="526421993248218238">ଏହି ପୃଷ୍ଠା ଲୋଡ୍‌ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5271967389191913893">ଡାଉନ୍‌ଲୋଡ୍‍ ହେବାକୁ ଥିବା ବିଷୟବସ୍ତୁକୁ ଡିଭାଇସ୍‌ ଖୋଲିପାରିବ ନାହିଁ।</translation>
 <translation id="5292796745632149097">ଏହାକୁ ପଠାନ୍ତୁ</translation>
@@ -910,6 +917,7 @@
 <translation id="6981982820502123353">ଆକ୍ସେସିବିଲିଟୀ</translation>
 <translation id="6989267951144302301">ଡାଉନଲୋଡ୍ କରିହେଲା ନାହିଁ</translation>
 <translation id="6995899638241819463">ଯଦି ଡାଟା ଚୋରି ଯୋଗୁଁ ପାସ୍‌ୱାର୍ଡଗୁଡ଼ିକ ବିପଦରେ ପଡ଼ିଯାଏ, ତେବେ ଏହା ଆପଣଙ୍କୁ ଚେତାବନୀ ଦେଇଥାଏ</translation>
+<translation id="7001056293070445572">ଏହି ଫାଇଲଟି ବଡ଼ ଅଟେ (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">ପ୍ରାରମ୍ଭିକ ସିଙ୍କ୍ ସେଟ୍‌ଅପ୍ ସମାପ୍ତ ହୋଇନାହିଁ। ସିଙ୍କ୍ ବନ୍ଦ ଅଛି</translation>
 <translation id="7022756207310403729">ବ୍ରାଉଜର୍‌ରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="702463548815491781">TalkBack କିମ୍ବା ଆକ୍ସେସ୍ ପରିବର୍ତ୍ତନ ଚାଲୁ ଥିଲେ ଏହା କରିବାକୁ ସୁପାରିଶ୍ କରାଯାଇଛି</translation>

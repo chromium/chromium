@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">အမှတ်အသားလုပ်ရန်…</translation>
 <translation id="3131206671572504478">အားလုံးကို ပိတ်ရန်</translation>
 <translation id="3153862085237805241">ကတ်ကို သိမ်းရန်</translation>
+<translation id="3157387275655328056">ဖတ်ရန်စာရင်းသို့ ထည့်ပါ</translation>
 <translation id="3157684681743766797">အားလုံးကို အမှတ်အသားလုပ်ရန်…</translation>
 <translation id="3161291298470460782">ယခုလုပ်ဆောင်ချက်က သင့်အကောင့်မှထွက်သွားပြီး စင့်ခ်လုပ်ခြင်းကို ပိတ်လိုက်မည်၊ ထို့နောက် ဤစက်မှ Chrome ဒေတာအားလုံး ဖယ်ရှားလိုက်ပါမည်။ သင်စင့်ခ်လုပ်ထားသော ဒေတာများ သင်၏ Google Account တွင် ကျန်နေပါမည်။</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">သင့်ကွတ်ကီးများဆက်တင်က တဘ်အားလုံးသို့ သက်ရောက်ပါသည်။ ဖွင့်ထားသောတဘ်သို့ ဆက်တင်အသစ်ထည့်သွင်းရန် တဘ်ကိုပြန်စတင်ပါ။</translation>
 <translation id="5190835502935405962">စာညှပ် ဘား</translation>
 <translation id="5197255632782567636">အင်တာနက်</translation>
+<translation id="5210365745912300556">တဘ် ပိတ်ရန်</translation>
 <translation id="5228579091201413441">စင့်က် ဖွင့်ထားရန်</translation>
 <translation id="5234764350956374838">ပယ်ရန်</translation>
 <translation id="5245322853195994030">စင့်ခ်လုပ်ခြင်း ပယ်ဖျက်ရန်</translation>
@@ -485,7 +487,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6127379762771434464">အကြောင်းအရာကို ဖယ်ရှားလိုက်ပါပြီ</translation>
 <translation id="6136914049981179737">ပြီးခဲ့သော စက္ကန့်</translation>
 <translation id="6144589619057374135">ရုပ်ဖျက်မုဒ်တွင် ${url} ဖွင့်ရန်</translation>
-<translation id="616831107264507309">နောက်မှဖတ်ရန်</translation>
 <translation id="6177442314419606057">Chrome တွင် ရှာဖွေရန်</translation>
 <translation id="6184086493125982861">တဲဘ်များ ပြမည်</translation>
 <translation id="6187302354554850004">နောက်ဆုံး ထပ်တူပြုခြင်း: <ph name="LAST_USED_TIME" /></translation>
@@ -500,6 +501,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6293101329759844770">'လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း' ကိုဖွင့်ရန် <ph name="BEGIN_LINK" />Google ဝန်ဆောင်မှုများ<ph name="END_LINK" /> တွင် 'လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း' ကို တို့ပါ။</translation>
 <translation id="6303969859164067831">ထွက်ပြီးနောက် စင့်ခ်လုပ်ခြင်းကို ပိတ်ပါ</translation>
 <translation id="6308436439357671616">၎င်းသည် ဓာတ်ပုံရိုက်ရန်နှင့် အပ်လုဒ်လုပ်ရန် ခွင့်ပြုပါသည်။</translation>
+<translation id="6321526113093607004">လိပ်စာများသို့ ထည့်ရန်</translation>
 <translation id="6324528485781869530">စင့်ခ်အကောင့်ကို ပြောင်းလဲခြင်း</translation>
 <translation id="6324669097367352121">လက်မှတ်ထိုးဝင်ရောက်ခြင်း ဆက်တင်များ</translation>
 <translation id="6337234675334993532">လျှို့ဝှက်ကုဒ်သွင်းခြင်း</translation>
@@ -671,7 +673,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7856733331829174190">ဒေါင်းလုဒ် လုပ်၍မရပါ</translation>
 <translation id="7859704718976024901">ရှာဖွေမှု မှတ်တမ်း</translation>
 <translation id="7887198238286927132">သင်၏ ပုဂ္ဂိုလ်ရေးကို ကာကွယ်ရန် Chrome သည် ဤအကွက်တွင် အော်တိုဖြည့်မည် မဟုတ်ပါ။</translation>
-<translation id="7918293828610777738">သင်၏ ဖတ်ရန်စာရင်းကို အော့ဖ်လိုင်းတွင် ရနိုင်ပါသည်။ ဖတ်ရန်စာရင်းသို့ စာမျက်နှာတစ်ခုထည့်ရန် <ph name="SHARE_OPENING_ICON" /> ကို တို့ပြီး <ph name="READ_LATER_TEXT" /> ကို တို့ပါ။</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">စကားဝှက်များကို တင်ပို့ခြင်း…</translation>
 <translation id="7947953824732555851">လက်ခံကာ ဝင်ရောက်မည်</translation>

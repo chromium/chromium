@@ -204,6 +204,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="3112556859945124369">Markatu…</translation>
 <translation id="3131206671572504478">Blokeatu cookie guztiak</translation>
 <translation id="3153862085237805241">Gorde txartela</translation>
+<translation id="3157387275655328056">Gehitu zerrendan</translation>
 <translation id="3157684681743766797">Markatu guztiak…</translation>
 <translation id="3161291298470460782">Horrela, saioa amaitu, sinkronizazioa desaktibatu eta Chrome-ko datu guztiak gailu honetatik kenduko dira. Sinkronizatutako datuek Google-ko kontuan jarraituko dute.</translation>
 <translation id="3169472444629675720">Ezagutu</translation>
@@ -399,6 +400,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5188482106078495165">Fitxa guztiei aplikatzen zaizkie cookieen ezarpenak. Irekita dagoen fitxa bati beste ezarpenen bat aplikatzeko, kargatu berriro fitxa.</translation>
 <translation id="5190835502935405962">Laster-marken barra</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Itxi fitxa</translation>
 <translation id="5228579091201413441">Gaitu sinkronizazioa</translation>
 <translation id="5234764350956374838">Baztertu</translation>
 <translation id="5245322853195994030">Utzi sinkronizazioa bertan behera</translation>
@@ -486,7 +488,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6127379762771434464">Kendu egin da elementua</translation>
 <translation id="6136914049981179737">Duela segundo gutxi</translation>
 <translation id="6144589619057374135">Ireki ${url} ezkutuko moduan</translation>
-<translation id="616831107264507309">Irakurri geroago</translation>
 <translation id="6177442314419606057">Bilatu Chrome-n</translation>
 <translation id="6184086493125982861">Erakutsi fitxak</translation>
 <translation id="6187302354554850004">Azken sinkronizazioa: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6293101329759844770">Arakatze segurua aktibatzeko, ireki <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> eta sakatu Arakatze segurua.</translation>
 <translation id="6303969859164067831">Amaitu saioa eta desaktibatu sinkronizazioa</translation>
 <translation id="6308436439357671616">Honi esker, argazkiak atera eta kargatu ahal izango dituzu.</translation>
+<translation id="6321526113093607004">Gehitu Laster-markak atalean</translation>
 <translation id="6324528485781869530">Aldatu sinkronizazio-kontua</translation>
 <translation id="6324669097367352121">Saioa hasteko ezarpenak</translation>
 <translation id="6337234675334993532">Enkriptatzea</translation>
@@ -672,7 +674,6 @@ Kontua <ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen duenez, saioa amaitzen du
 <translation id="7856733331829174190">Ezin izan da deskargatu</translation>
 <translation id="7859704718976024901">Arakatze-historia</translation>
 <translation id="7887198238286927132">Zure pribatutasuna babesteko, Chrome-k ez du automatikoki beteko eremu hau.</translation>
-<translation id="7918293828610777738">Konexiorik gabe ere erabil dezakezu irakurketa-zerrenda. Irakurketa-zerrendan orriak gehitzeko, sakatu <ph name="SHARE_OPENING_ICON" /> eta, ondoren, <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Esportatu pasahitzak…</translation>
 <translation id="7947953824732555851">Onartu eta hasi saioa</translation>

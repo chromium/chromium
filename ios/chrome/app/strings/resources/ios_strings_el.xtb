@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">Επισήμανση…</translation>
 <translation id="3131206671572504478">Αποκλεισμός όλων</translation>
 <translation id="3153862085237805241">Αποθήκευση κάρτας</translation>
+<translation id="3157387275655328056">Προσθήκη στη λίστα ανάγνωσης</translation>
 <translation id="3157684681743766797">Επισήμανση όλων…</translation>
 <translation id="3161291298470460782">Με αυτήν την ενέργεια θα αποσυνδεθείτε, θα απενεργοποιηθεί ο συγχρονισμός και θα διαγραφούν όλα τα δεδομένα του Chrome από αυτήν τη συσκευή. Τα συγχρονισμένα δεδομένα θα διατηρηθούν στον Λογαριασμό σας Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">Η ρύθμιση cookie ισχύει για όλες τις καρτέλες. Για να εφαρμόσετε μια νέα ρύθμιση σε μια ανοικτή καρτέλα, επαναλάβετε ξανά τη φόρτωση της καρτέλας.</translation>
 <translation id="5190835502935405962">Γραμμή σελιδοδεικτών</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Κλείσιμο καρτέλας</translation>
 <translation id="5228579091201413441">Ενεργοποίηση συγχρονισμού</translation>
 <translation id="5234764350956374838">Παράβλεψη</translation>
 <translation id="5245322853195994030">Ακύρωση συγχρονισμού</translation>
@@ -486,7 +488,6 @@
 <translation id="6127379762771434464">Το στοιχείο καταργήθηκε</translation>
 <translation id="6136914049981179737">Δευτ.πριν</translation>
 <translation id="6144589619057374135">Άνοιγμα ${url} σε ανώνυμη περιήγηση</translation>
-<translation id="616831107264507309">Ανάγνωση αργότερα</translation>
 <translation id="6177442314419606057">Αναζήτηση στο Chrome</translation>
 <translation id="6184086493125982861">Εμφάνιση καρτελών</translation>
 <translation id="6187302354554850004">Τελευτ. συγχρ.: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@
 <translation id="6293101329759844770">Για να ενεργοποιήσετε την Ασφαλή περιήγηση, ανοίξτε τις <ph name="BEGIN_LINK" />υπηρεσίες Google<ph name="END_LINK" /> και πατήστε Ασφαλής περιήγηση.</translation>
 <translation id="6303969859164067831">Αποσύνδεση και απενεργοποίηση συγχρονισμού</translation>
 <translation id="6308436439357671616">Σας επιτρέπει να κάνετε λήψη και μεταφόρτωση φωτογραφιών.</translation>
+<translation id="6321526113093607004">Προσθήκη στους σελιδοδείκτες</translation>
 <translation id="6324528485781869530">Εναλλαγή λογαριασμού συγχρονισμού</translation>
 <translation id="6324669097367352121">Ρυθμίσεις σύνδεσης</translation>
 <translation id="6337234675334993532">Κρυπτογράφηση</translation>
@@ -673,7 +675,6 @@
 <translation id="7856733331829174190">Δεν ήταν δυνατή η λήψη</translation>
 <translation id="7859704718976024901">Ιστορικό περιήγησης</translation>
 <translation id="7887198238286927132">Προκειμένου να προστατεύσει το απόρρητό σας, το Chrome δεν θα συμπληρώνει αυτόματα αυτό το πεδίο.</translation>
-<translation id="7918293828610777738">Η λίστα ανάγνωσης είναι διαθέσιμη εκτός σύνδεσης. Για να προσθέσετε μια σελίδα στη λίστα ανάγνωσης, πατήστε το εικονίδιο <ph name="SHARE_OPENING_ICON" /> και μετά πατήστε το στοιχείο <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Εξαγωγή κωδικών πρόσβασης…</translation>
 <translation id="7947953824732555851">Αποδοχή και σύνδεση</translation>

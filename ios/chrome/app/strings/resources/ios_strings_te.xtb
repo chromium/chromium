@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">గుర్తు పెట్టు…</translation>
 <translation id="3131206671572504478">అన్నీ బ్లాక్ చేయి</translation>
 <translation id="3153862085237805241">కార్డ్‌ను సేవ్ చేయండి</translation>
+<translation id="3157387275655328056">పఠన జాబితాకు జోడించు</translation>
 <translation id="3157684681743766797">అన్నీ గుర్తు పెట్టు…</translation>
 <translation id="3161291298470460782">ఇది మిమ్మల్ని సైన్ అవుట్ చేస్తుంది, సింక్‌ను ఆఫ్ చేస్తుంది, ఈ పరికరం నుండి మొత్తం Chrome డేటాను క్లియర్ చేస్తుంది. మీ సింక్ చేయబడిన డేటా మీ Google ఖాతాలోనే ఉండిపోతుంది.</translation>
 <translation id="3169472444629675720">కనుగొను</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">మీ కుక్కీల సెట్టింగ్ అన్ని ట్యాబ్‌లకు వర్తిస్తుంది. తెరిచి ఉన్న ట్యాబ్‌కు కొత్త సెట్టింగ్ వర్తించాలంటే, ట్యాబ్‌ను రీలోడ్ చేయండి.</translation>
 <translation id="5190835502935405962">బుక్‌మార్క్‌ల బార్</translation>
 <translation id="5197255632782567636">ఇంటర్నెట్</translation>
+<translation id="5210365745912300556">ట్యాబ్‌ను మూసివేయి</translation>
 <translation id="5228579091201413441">సమకాలీకరణను ప్రారంభించండి</translation>
 <translation id="5234764350956374838">తొలగించు</translation>
 <translation id="5245322853195994030">సింక్‌ను రద్దు చేయి</translation>
@@ -486,7 +488,6 @@
 <translation id="6127379762771434464">అంశాన్ని తీసివేసారు</translation>
 <translation id="6136914049981179737">సెకన్ల క్రితం</translation>
 <translation id="6144589619057374135">${url}ను అజ్ఞాత మోడ్‌లో తెరవండి</translation>
-<translation id="616831107264507309">తర్వాత చదవండి</translation>
 <translation id="6177442314419606057">Chromeలో వెతకండి</translation>
 <translation id="6184086493125982861">ట్యాబ్‌లను చూపించు</translation>
 <translation id="6187302354554850004">చివరగా సమకాలీకరించింది: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@
 <translation id="6293101329759844770">సురక్షిత బ్రౌజింగ్ ఆన్ చేయడానికి, <ph name="BEGIN_LINK" />Google సర్వీస్‌ల<ph name="END_LINK" />ను తెరిచి, 'సురక్షిత బ్రౌజింగ్'ను ట్యాప్ చేయండి.</translation>
 <translation id="6303969859164067831">సైన్ అవుట్ చేసి, సమకాలీకరణను ఆఫ్ చేయండి</translation>
 <translation id="6308436439357671616">దీని వలన మీరు ఫోటోలను తీసి, అప్‌లోడ్ చేయగలుగుతారు.</translation>
+<translation id="6321526113093607004">బుక్‌మార్క్‌లకు జోడించు</translation>
 <translation id="6324528485781869530">సింక్‌ ఖాతాను మార్చండి</translation>
 <translation id="6324669097367352121">సైన్ ఇన్ సెట్టింగ్‌లు</translation>
 <translation id="6337234675334993532">ఎన్‌క్రిప్షన్</translation>
@@ -672,7 +674,6 @@
 <translation id="7856733331829174190">డౌన్‌లోడ్ సాధ్యపడలేదు</translation>
 <translation id="7859704718976024901">బ్రౌజింగ్ హిస్టరీ</translation>
 <translation id="7887198238286927132">మీ గోప్యతను సంరక్షించడానికి, Chrome ఈ ఫీల్డ్‌ను ఆటోమేటిక్‌గా పూరించదు.</translation>
-<translation id="7918293828610777738">మీ చదవాల్సిన జాబితా ఆఫ్‌లైన్‌లో అందుబాటులో ఉంది. మీ చదవాల్సిన జాబితాకు పేజీని జోడించడానికి, <ph name="SHARE_OPENING_ICON" />ని నొక్కి తర్వాత <ph name="READ_LATER_TEXT" /> ఎంపికను నొక్కండి.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">పాస్‌వర్డ్‌లను ఎగుమతి చేయి...</translation>
 <translation id="7947953824732555851">ఆమోదించి, సైన్ ఇన్ చేయండి</translation>

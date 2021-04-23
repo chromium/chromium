@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">អ៊ីសឺរណិត៖ <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">ជំនួយការ (កំពុង​ផ្ទុក...)</translation>
 <translation id="1838895407229022812">បានបិទពន្លឺពេលយប់។</translation>
-<translation id="1850504506766569011">Wi-Fi ត្រូវបានបិទ។</translation>
 <translation id="1864454756846565995">ឧបករណ៍ USB-C (រន្ធខាងក្រោយ)</translation>
 <translation id="1882814835921407042">គ្មានបណ្ដាញ​ទូរសព្ទចល័តទេ</translation>
 <translation id="1882897271359938046">កំពុងឆ្លុះទៅ <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">ការ​កំណត់​អ្នកប្រើប្រាស់</translation>
 <translation id="3217205077783620295">កម្រិត​សំឡេង​ត្រូវបានបើក ការបិទ​នឹងបិទសំឡេង។</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> ទៀត</translation>
-<translation id="3236488194889173876">គ្មាន​បណ្ដាញ​ទូរសព្ទ​ចល័ត​ទេ</translation>
 <translation id="3249513730522716925">បានផ្លាស់ទីផ្ទាំង <ph name="WINDOW_TITLE" /> ពីតុទី <ph name="ACTIVE_DESK" /> ទៅតុទី <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">តើអ្នក​អាច​ធ្វើអ្វី​បានខ្លះ?</translation>
 <translation id="3269597722229482060">ចុចកណ្ដុរខាងស្ដាំ</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> បាន​បើក។</translation>
 <translation id="5947494881799873997">ត្រលប់ក្រោយ</translation>
 <translation id="595202126637698455">ការតាមដានប្រតិបត្តិការបានបើកដំណើរការ</translation>
-<translation id="5957083217255311415">ទិន្នន័យ​ទូរសព្ទចល័ត​ត្រូវបានបិទ។</translation>
 <translation id="5958529069007801266">អ្នកប្រើដែលបានចាត់</translation>
 <translation id="5960825221082587934">អនុញ្ញាត​ឱ្យ​ជំនួយ​ការបង្ហាញព័ត៌មាន​ដូចជា និយមន័យ ការបកប្រែ ឬការបំប្លែងខ្នាត​សម្រាប់ការជ្រើសរើស​របស់អ្នក។</translation>
 <translation id="5977415296283489383">កាសត្រចៀក</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">ផ្លូវកាត់សម្រាប់បង្ហាញម៉ឺនុយជម្រើសបញ្ចូលសារលេចឡើងនៅក្នុងធ្នើរបានផ្លាស់ប្តូរ។ សូមប្រើ <ph name="NEW_SHORTCUT" /> ជំនួសឲ្យ <ph name="OLD_SHORTCUT" /> ។</translation>
 <translation id="8444246603146515890">បានបើកដំណើរការតុទី <ph name="DESK_TITILE" /></translation>
 <translation id="8452135315243592079">បាត់ស៊ីមកាត</translation>
-<translation id="8454013096329229812">Wi-Fi ត្រូវបានបើក។</translation>
 <translation id="8462305545768648477">បិទមុខងារជ្រើសរើសដើម្បីអាន</translation>
 <translation id="847056008324733326">ការកំណត់​មាត្រដ្ឋានអេក្រង់</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> មាន <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />។</translation>

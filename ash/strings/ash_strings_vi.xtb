@@ -108,7 +108,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Trợ lý (đang tải...)</translation>
 <translation id="1838895407229022812">Chế độ Ánh sáng đêm đang tắt.</translation>
-<translation id="1850504506766569011">Wi-Fi đang tắt.</translation>
 <translation id="1864454756846565995">Thiết bị USB-C (cổng phía sau)</translation>
 <translation id="1882814835921407042">Không có mạng di động</translation>
 <translation id="1882897271359938046">Đang phản chiếu tới <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3207953481422525583">Cài đặt người dùng</translation>
 <translation id="3217205077783620295">Âm lượng đang bật. Nếu bạn chuyển đổi, âm thanh sẽ bị tắt.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> mục khác</translation>
-<translation id="3236488194889173876">Không có mạng di động nào</translation>
 <translation id="3249513730522716925">Đã di chuyển cửa sổ <ph name="WINDOW_TITLE" /> từ Không gian làm việc <ph name="ACTIVE_DESK" /> sang Không gian làm việc <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Bạn có thể làm gì?</translation>
 <translation id="3269597722229482060">Nhấp chuột phải</translation>
@@ -584,7 +582,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> đang bật.</translation>
 <translation id="5947494881799873997">Hoàn nguyên</translation>
 <translation id="595202126637698455">Đã bật theo dõi hoạt động</translation>
-<translation id="5957083217255311415">Dữ liệu di động đã bị tắt.</translation>
 <translation id="5958529069007801266">Người dùng được giám sát</translation>
 <translation id="5960825221082587934">Cho phép Trợ lý hiển thị những thông tin như định nghĩa, bản dịch hoặc kết quả chuyển đổi đơn vị cho nội dung bạn chọn.</translation>
 <translation id="5977415296283489383">Tai nghe</translation>
@@ -884,7 +881,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8433977262951327081">Phím tắt để hiển thị bong bóng menu tùy chọn nhập trong giá đã thay đổi. Vui lòng sử dụng <ph name="NEW_SHORTCUT" /> thay cho <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Đã kích hoạt Không gian làm việc <ph name="DESK_TITILE" /></translation>
 <translation id="8452135315243592079">Thiếu thẻ SIM</translation>
-<translation id="8454013096329229812">Wi-Fi đang bật.</translation>
 <translation id="8462305545768648477">Đóng tính năng Chọn để nói</translation>
 <translation id="847056008324733326">Cài đặt tỷ lệ hiển thị</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> đã <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

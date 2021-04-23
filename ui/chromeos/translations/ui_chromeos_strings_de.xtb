@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">Schieberegler für die Suche</translation>
 <translation id="1404323374378969387">Norwegisch</translation>
 <translation id="1430915738399379752">Drucken</translation>
+<translation id="1433628812591023318">Um Dateien in Parallels Desktop per Drag-and-drop abzulegen, muss die Datei in „Windows-Dateien“ verschoben werden.</translation>
 <translation id="1435838927755162558">Ordner für Parallels Desktop freigeben</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="1471718551822868769">Slowakisch</translation>
@@ -611,6 +612,7 @@
 <translation id="7417453074306512035">Äthiopische Tastatur</translation>
 <translation id="7417705661718309329">Google-Karte</translation>
 <translation id="7460898608667578234">Ukrainisch</translation>
+<translation id="7486315294984620427">Um Dateien in Parallels Desktop per Drag-and-drop abzulegen, muss die Datei in „Windows-Dateien“ kopiert werden.</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> gefunden
     <ph name="LINE_BREAK1" />
     Bereit für die Sicherung auf <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>

@@ -234,6 +234,7 @@
 <translation id="2517472476991765520">ස්කෑන් කරන්න</translation>
 <translation id="2518590038762162553">සැහැල්ලු ප්‍රකාරය තුළ, Chrome වේගයෙන් පිටු පූරණය කර සියයට 60ක් දක්වා අඩුවෙන් දත්ත භාවිත කරයි. ඔබ පිවිසෙන පිටු ප්‍රශස්ත කිරීම සඳහා, Chrome ඔබේ වෙබ් ගමනාගමනය Google වෙත යවයි. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Google වෙත ඔබ පිවිසෙන පිටු URL යවයි</translation>
+<translation id="2527779675047087889">පසුරු පුවරු අන්තර්ගතය සඟවන්න</translation>
 <translation id="2532336938189706096">ජාල දර්ශනය</translation>
 <translation id="2534155362429831547">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් මකන ලදි</translation>
 <translation id="2536728043171574184">මෙම පිටුවෙහි නොබැඳි පිටපතක් බලමින්</translation>
@@ -314,6 +315,7 @@
 <translation id="3062802207422175757">Chrome හි ඔබේ රුචිකත්ව ගැන ලිපි</translation>
 <translation id="3070005020161560471">ස්වයංක්‍රියව පරිවර්තනය කරන්න</translation>
 <translation id="3089395242580810162">අප්‍රකට පටිත්තක විවෘත කරන්න</translation>
+<translation id="3091010850649238832">පසුරු පුවරු අන්තර්ගතය පෙන්වන්න</translation>
 <translation id="3098745985164956033">ඔබ සඳහා විස්තර වැඩි දියුණු කිරීම සඳහා සමහර පින්තූර Google වෙත යවනු ලැබේ</translation>
 <translation id="3114507951000454849">අද දවසේ <ph name="NEWS_ICON" /> පුවත් කියවන්න</translation>
 <translation id="3123734510202723619">නිවේදන</translation>
@@ -865,6 +867,7 @@
 <translation id="661266467055912436">ඔබේ සහ වෙබය මත සියලු දෙනාගේම ආරක්‍ෂාව වැඩිදියුණු කරයි.</translation>
 <translation id="6618554661997243500">ඔබ සඳහා ඉහළම අඩවි සහ කථාන්දර බැලීමට, මුල් පිටු බොත්තම තට්ටු කරන්න</translation>
 <translation id="6627583120233659107">ෆෝල්ඩරය සංස්කරණය කරන්න</translation>
+<translation id="6635718764393004944">ඔබගේ සෙවීම් යන්ත්‍රය වන්නේ <ph name="DSE" />. අදාළ නම්, ඔබගේ සෙවීම් ඉතිහාසය මැකීමට ඔවුන්ගේ උපදෙස් බලන්න.</translation>
 <translation id="663674369910034433">රහස්‍යතාව, ආරක්ෂාව, සහ දත්ත රැස් කිරීමට අදාළ තවත් සැකසීම් සඳහා, <ph name="BEGIN_LINK1" />සමමුහුර්තකරණය<ph name="END_LINK1" /> සහ <ph name="BEGIN_LINK2" />Google සේවා<ph name="END_LINK2" /> බලන්න</translation>
 <translation id="6643016212128521049">මකන්න</translation>
 <translation id="6643649862576733715">සුරැකි දත්ත ප්‍රමාණයේ එකතුව අනුව අනුපිළිවෙලට සකසන්න</translation>

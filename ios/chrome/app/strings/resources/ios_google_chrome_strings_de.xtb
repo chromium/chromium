@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Wenn Sie zulassen, dass Chrome Ihren Standort ermittelt, sendet der Browser diesen an Websites, für die Sie die Berechtigung dazu erteilen. Möglicherweise fragen Websites nach Ihrem Standort, wenn sie lokale Informationen wie Geschäfte in der Nähe oder Nachrichten für Sie haben.</translation>
 <translation id="6036420186814142909">Google Chrome bietet Funktionen, mit denen Sie Ihre Internetdaten und die Ladezeit von Webseiten verwalten können.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Anmeldung in Chrome zulassen</translation>
 <translation id="6181930887571472871">Zu Chrome wechseln</translation>
 <translation id="6238746320622508509">Erlauben Sie Chrome, Ihre Inkognitotabs zu sperren.</translation>
 <translation id="6573431926118603307">Hier werden Tabs angezeigt, die Sie auf Ihren anderen Geräten in Chrome geöffnet haben.</translation>
@@ -96,5 +97,6 @@
 3. Wählen Sie Chrome aus.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Sicherer surfen mit Google Chrome</translation>
+<translation id="8772179140489533211">Aufforderungen für die Anmeldung in Chrome werden angezeigt.</translation>
 <translation id="9112744793181547300">Chrome als Standardbrowser festlegen?</translation>
 </translationbundle>

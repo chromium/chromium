@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">标为…</translation>
 <translation id="3131206671572504478">阻止所有 Cookie</translation>
 <translation id="3153862085237805241">保存卡片</translation>
+<translation id="3157387275655328056">添加到阅读清单</translation>
 <translation id="3157684681743766797">全部标为…</translation>
 <translation id="3161291298470460782">执行此操作会使您退出帐号、关闭同步功能并清除此设备中的所有 Chrome 数据，但已同步的数据仍会保留在您的 Google 帐号中。</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">您的 Cookie 设置适用于所有标签页。若要对某个已打开的标签页应用新设置，请重新加载该标签页。</translation>
 <translation id="5190835502935405962">书签栏</translation>
 <translation id="5197255632782567636">互联网</translation>
+<translation id="5210365745912300556">关闭标签页</translation>
 <translation id="5228579091201413441">启用同步功能</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="5245322853195994030">取消同步</translation>
@@ -486,7 +488,6 @@
 <translation id="6127379762771434464">该项已移除</translation>
 <translation id="6136914049981179737">几秒前</translation>
 <translation id="6144589619057374135">在无痕模式下打开 ${url}</translation>
-<translation id="616831107264507309">稍后阅读</translation>
 <translation id="6177442314419606057">在 Chrome 中搜索</translation>
 <translation id="6184086493125982861">显示标签页</translation>
 <translation id="6187302354554850004">上次同步时间：<ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@
 <translation id="6293101329759844770">如需开启“安全浏览”功能，请打开 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />，然后点按“安全浏览”。</translation>
 <translation id="6303969859164067831">退出帐号并关闭同步功能</translation>
 <translation id="6308436439357671616">这样，您就可以拍摄并上传照片。</translation>
+<translation id="6321526113093607004">添加到“书签”</translation>
 <translation id="6324528485781869530">切换同步帐号</translation>
 <translation id="6324669097367352121">登录设置</translation>
 <translation id="6337234675334993532">加密</translation>
@@ -672,7 +674,6 @@
 <translation id="7856733331829174190">无法下载</translation>
 <translation id="7859704718976024901">浏览记录</translation>
 <translation id="7887198238286927132">为保护您的隐私，Chrome 不会自动填充此字段。</translation>
-<translation id="7918293828610777738">您的阅读清单支持离线访问。要将某个网页添加到该清单中，请依次点按 <ph name="SHARE_OPENING_ICON" /> 和“<ph name="READ_LATER_TEXT" />”。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">导出密码…</translation>
 <translation id="7947953824732555851">接受并登录</translation>

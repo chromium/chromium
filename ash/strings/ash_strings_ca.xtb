@@ -108,7 +108,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Assistent (s'està carregant...)</translation>
 <translation id="1838895407229022812">La funció Llum nocturna està desactivada.</translation>
-<translation id="1850504506766569011">La Wi-Fi està desactivada.</translation>
 <translation id="1864454756846565995">Dispositiu USB-C (port posterior)</translation>
 <translation id="1882814835921407042">No hi ha cap xarxa mòbil</translation>
 <translation id="1882897271359938046">S'està replicant <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3207953481422525583">Configuració d'usuari</translation>
 <translation id="3217205077783620295">El volum està activat. En commutar-lo, se silenciarà l'àudio.</translation>
 <translation id="3226991577105957773"><ph name="COUNT" /> més</translation>
-<translation id="3236488194889173876">No hi ha cap xarxa mòbil disponible</translation>
 <translation id="3249513730522716925">La finestra <ph name="WINDOW_TITLE" /> ha passat de l'escriptori <ph name="ACTIVE_DESK" /> a l'escriptori <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Què pots fer?</translation>
 <translation id="3269597722229482060">Clic amb el botó dret</translation>
@@ -584,7 +582,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5946788582095584774">La funció <ph name="FEATURE_NAME" /> està activada.</translation>
 <translation id="5947494881799873997">Reverteix</translation>
 <translation id="595202126637698455">Traça del rendiment activada</translation>
-<translation id="5957083217255311415">Les dades mòbils estan desactivades.</translation>
 <translation id="5958529069007801266">Usuari supervisat</translation>
 <translation id="5960825221082587934">Permet que l'Assistent mostri informació com ara la definició, la traducció o la conversió d'unitats associades a la teva selecció.</translation>
 <translation id="5977415296283489383">Auricular</translation>
@@ -884,7 +881,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8433977262951327081">La drecera per mostrar el quadre d'ajuda amb el menú d'opcions d'introducció al prestatge ha canviat. Fes servir <ph name="NEW_SHORTCUT" /> en lloc de la drecera <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">L'escriptori <ph name="DESK_TITILE" /> està activat</translation>
 <translation id="8452135315243592079">Falta la targeta SIM</translation>
-<translation id="8454013096329229812">La Wi-Fi està activada.</translation>
 <translation id="8462305545768648477">Tanca Escolta la selecció</translation>
 <translation id="847056008324733326">Configuració de l'escala de visualització</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> té la funció <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>

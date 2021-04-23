@@ -234,6 +234,7 @@
 <translation id="2517472476991765520">掃瞄</translation>
 <translation id="2518590038762162553">「精簡模式」可加快 Chrome 載入網頁的速度，並節省高達 60% 數據用量。Chrome 會將您的網絡流量傳送給 Google，以優化您瀏覽的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">將您瀏覽的網頁網址傳送給 Google</translation>
+<translation id="2527779675047087889">隱藏剪貼簿內容</translation>
 <translation id="2532336938189706096">網頁檢視</translation>
 <translation id="2534155362429831547">已刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
 <translation id="2536728043171574184">正在瀏覽此網頁的離線版本</translation>
@@ -314,6 +315,7 @@
 <translation id="3062802207422175757">您感興趣的文章和內容，一切盡在 Chrome</translation>
 <translation id="3070005020161560471">自動翻譯</translation>
 <translation id="3089395242580810162">在無痕式分頁中開啟</translation>
+<translation id="3091010850649238832">顯示剪貼簿內容</translation>
 <translation id="3098745985164956033">部分圖片會傳送至 Google，以便為您提供更完善的說明</translation>
 <translation id="3114507951000454849">閱讀今天的新聞 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">公告</translation>
@@ -865,6 +867,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="661266467055912436">為您和網絡上的所有使用者提高安全性。</translation>
 <translation id="6618554661997243500">㩒「主按鈕」就可以睇下熱門網站同報導</translation>
 <translation id="6627583120233659107">編輯資料夾</translation>
+<translation id="6635718764393004944">您的搜尋引擎是 <ph name="DSE" />。請查看搜尋引擎的指示 (如有) 以便刪除搜尋記錄。</translation>
 <translation id="663674369910034433">如需更多與私隱權、安全性和資料收集相關的設定，請參閱<ph name="BEGIN_LINK1" />同步處理<ph name="END_LINK1" />和 <ph name="BEGIN_LINK2" />Google 服務<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6643649862576733715">依節省數據量排序</translation>

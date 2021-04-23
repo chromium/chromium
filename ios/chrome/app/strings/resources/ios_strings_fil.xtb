@@ -204,6 +204,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="3112556859945124369">Markahan…</translation>
 <translation id="3131206671572504478">I-block Lahat</translation>
 <translation id="3153862085237805241">I-save ang Card</translation>
+<translation id="3157387275655328056">Idagdag sa Listahan ng Babasahin</translation>
 <translation id="3157684681743766797">Markahan Lahat...</translation>
 <translation id="3161291298470460782">Kapag ginawa ito, masa-sign out ka, mao-off ang pag-sync, at maki-clear ang lahat ng data ng Chrome sa device na ito. Mananatili sa iyong Google Account ang naka-sync mong data.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5188482106078495165">Nalalapat ang iyong setting ng cookies sa lahat ng tab. Para maglapat ng bagong setting sa isang bukas na tab, i-reload ang tab.</translation>
 <translation id="5190835502935405962">Bar ng Mga Bookmark</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Isara ang tab</translation>
 <translation id="5228579091201413441">I-enable ang pag-sync</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
 <translation id="5245322853195994030">Kanselahin ang Pag-sync</translation>
@@ -486,7 +488,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6127379762771434464">Inalis ang item</translation>
 <translation id="6136914049981179737">Segundo</translation>
 <translation id="6144589619057374135">Buksan ang ${url} sa Incognito</translation>
-<translation id="616831107264507309">Basahin Sa Ibang Pagkakataon</translation>
 <translation id="6177442314419606057">Search in Chrome</translation>
 <translation id="6184086493125982861">Ipakita ang Mga Tab</translation>
 <translation id="6187302354554850004">Huling na-sync: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6293101329759844770">Para i-on ang Ligtas na Pag-browse, buksan ang <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" /> at i-tap ang Ligtas na Pag-browse.</translation>
 <translation id="6303969859164067831">Mag-sign out at i-off ang pag-sync</translation>
 <translation id="6308436439357671616">Binibigyang-daan ka nito upang makakuha at makapag-upload ng mga larawan.</translation>
+<translation id="6321526113093607004">Idagdag sa Mga Bookmark</translation>
 <translation id="6324528485781869530">Magpalit ng Account sa Pag-sync</translation>
 <translation id="6324669097367352121">Mga setting sa pag-sign in</translation>
 <translation id="6337234675334993532">Pag-encrypt</translation>
@@ -672,7 +674,6 @@ Dahil pinapamahalaan ng <ph name="HOSTED_DOMAIN" /> ang iyong account, made-dele
 <translation id="7856733331829174190">Hindi Ma-download</translation>
 <translation id="7859704718976024901">History ng Pag-browse</translation>
 <translation id="7887198238286927132">Para protektahan ang iyong privacy, hindi io-autofill ng Chrome ang field na ito.</translation>
-<translation id="7918293828610777738">Available ang iyong listahan ng babasahin offline. Para magdagdag ng page sa iyong listahan ng babasahin, i-tap ang <ph name="SHARE_OPENING_ICON" /> pagkatapos ay i-tap ang <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">I-export Password...</translation>
 <translation id="7947953824732555851">I-accept, mag-sign in</translation>

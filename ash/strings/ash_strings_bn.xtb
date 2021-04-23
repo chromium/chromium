@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">ইথারনেট: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">সহায়ক (লোড হচ্ছে...)</translation>
 <translation id="1838895407229022812">নাইট লাইট ফিচার বন্ধ করা আছে।</translation>
-<translation id="1850504506766569011">ওয়াই-ফাই বন্ধ আছে৷</translation>
 <translation id="1864454756846565995">USB-C ডিভাইস (পিছনের পোর্ট)</translation>
 <translation id="1882814835921407042">মোবাইল নেটওয়ার্ক নেই</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> তে প্রতিবিম্বিত হচ্ছে</translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">ব্যবহারকারী সংক্রান্ত সেটিংস</translation>
 <translation id="3217205077783620295">ভলিউম চালু আছে, টগল করলে অডিও মিউট হয়ে যাবে।</translation>
 <translation id="3226991577105957773">+ আরও <ph name="COUNT" />টি</translation>
-<translation id="3236488194889173876">কোনো মোবাইল নেটওয়ার্ক উপলব্ধ নেই</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> ডেস্ক <ph name="ACTIVE_DESK" /> থেকে ডেস্ক <ph name="TARGET_DESK" />-এ সরানো হয়েছে</translation>
 <translation id="3255483164551725916">আপনি কি করতে পারেন?</translation>
 <translation id="3269597722229482060">ডানদিকের বোতামে ক্লিক করুন</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> চালু আছে।</translation>
 <translation id="5947494881799873997">ফেরান</translation>
 <translation id="595202126637698455">কার্য-সম্পাদনা ট্রেস করা সক্ষম রয়েছে</translation>
-<translation id="5957083217255311415">মোবাইল ডেটা বন্ধ করা আছে।</translation>
 <translation id="5958529069007801266">তত্ত্বাবধানে থাকা ব্যবহারকারী</translation>
 <translation id="5960825221082587934">আপনার বেছে নেওয়া আইটেমের জন্য Assistant-কে সংজ্ঞা, অনুবাদ বা ইউনিট রূপান্তরের মতো তথ্য দেখানোর অনুমতি দিন।</translation>
 <translation id="5977415296283489383">হেডফোন</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">শেল্ফে ইনপুট বিকল্পের মেনুর বুদবুদ দেখানোর শর্টকাটটি পরিবর্তন করা হয়েছে। অনুগ্রহ করে <ph name="OLD_SHORTCUT" /> এর পরিবর্তে <ph name="NEW_SHORTCUT" /> ব্যবহার করুন।</translation>
 <translation id="8444246603146515890">ডেস্ক <ph name="DESK_TITILE" /> অ্যাক্টিভেট করা হয়েছে</translation>
 <translation id="8452135315243592079">সিম কার্ড পাওয়া যাচ্ছে না</translation>
-<translation id="8454013096329229812">ওয়াই-ফাই চালু আছে৷</translation>
 <translation id="8462305545768648477">'বাছুন ও শুনুন' ফিচারটি বন্ধ করুন</translation>
 <translation id="847056008324733326">স্কেলের সেটিংস দেখান</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />-এর <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />।</translation>

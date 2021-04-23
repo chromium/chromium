@@ -108,7 +108,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Asistent (načítání...)</translation>
 <translation id="1838895407229022812">Noční režim je vypnutý.</translation>
-<translation id="1850504506766569011">Připojení Wi-Fi je vypnuto.</translation>
 <translation id="1864454756846565995">Zařízení USB Type-C (zadní port)</translation>
 <translation id="1882814835921407042">Žádná mobilní síť</translation>
 <translation id="1882897271359938046">Zrcadlení na displej <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3207953481422525583">Uživatelská nastavení</translation>
 <translation id="3217205077783620295">Zvuk je zapnutý. Přepnutím ho vypnete.</translation>
 <translation id="3226991577105957773">a ještě <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Není k dispozici žádná mobilní síť</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> bylo přesunuto z plochy <ph name="ACTIVE_DESK" /> na plochu <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Co umíš?</translation>
 <translation id="3269597722229482060">Kliknutí pravým tlačítkem</translation>
@@ -584,7 +582,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5946788582095584774">Funkce <ph name="FEATURE_NAME" /> je zapnutá.</translation>
 <translation id="5947494881799873997">Vrátit zpět</translation>
 <translation id="595202126637698455">Sledování výkonu aktivováno</translation>
-<translation id="5957083217255311415">Mobilní data jsou vypnuta.</translation>
 <translation id="5958529069007801266">Dozorovaný uživatel</translation>
 <translation id="5960825221082587934">Povolit Asistentovi, aby vám zobrazoval informace, jako je definice, překlad nebo převod jednotek související s vybraným obsahem.</translation>
 <translation id="5977415296283489383">Sluchátka</translation>
@@ -884,7 +881,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8433977262951327081">Klávesová zkratka k zobrazení bubliny s možnostmi vstupu na poličce se změnila. Namísto zkratky <ph name="OLD_SHORTCUT" /> používejte zkratku <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Plocha <ph name="DESK_TITILE" /> byla aktivována</translation>
 <translation id="8452135315243592079">Chybí SIM karta</translation>
-<translation id="8454013096329229812">Připojení Wi-Fi je zapnuto.</translation>
 <translation id="8462305545768648477">Zavřít poslech vybraného textu</translation>
 <translation id="847056008324733326">Zobrazit nastavení měřítka</translation>
 <translation id="8473301994082929012">Organizace <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> funkci <ph name="FEATURE_NAME" />.</translation>

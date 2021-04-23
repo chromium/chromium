@@ -247,6 +247,7 @@
 <translation id="2612676031748830579">कार्ड नंबर</translation>
 <translation id="2625189173221582860">पासवर्ड कॉपी केला</translation>
 <translation id="2631006050119455616">वाचवला</translation>
+<translation id="2645657967708199252">तुमच्या <ph name="CONNECTION_TYPE" /> कनेक्शनमुळे तुमच्या डाउनलोडचा वेग कमी होऊ शकतो</translation>
 <translation id="2647434099613338025">भाषा जोडा</translation>
 <translation id="2650751991977523696">फाइल पुन्हा डाउनलोड करायची?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ऑडिओ फाइल}other{# ऑडिओ फाइल}}</translation>
@@ -259,6 +260,7 @@
 <translation id="2718846868787000099">तुमच्या प्राधान्यकृत भाषांमध्ये आशय दाखवण्यासाठी, तुम्ही भेट देता त्या साइट तुमची प्राधान्ये पाहू शकतात</translation>
 <translation id="2723001399770238859">ऑडिओ</translation>
 <translation id="2728754400939377704">साइटनुसार क्रमाने लावा</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">झटपट शोधण्यासाठी किंवा संबंधित ॲक्‍शन पाहण्यासाठी एखाद्या शब्दावर टॅप करा</translation>
 <translation id="2760989362628427051">तुमच्या डिव्हाइसची गडद थीम किंवा बॅटरी सेव्हर सुरू असताना गडद थीम सुरू करा</translation>
 <translation id="2762000892062317888">आत्ताच</translation>
@@ -435,6 +437,7 @@
 <translation id="3943557322767080599">तुम्ही तुमच्या Google खाते मध्ये साइन इन करता तेव्हा Chrome मध्ये साइन इन सूचना दाखवा</translation>
 <translation id="395206256282351086">शोध आणि साइट सूचना बंद आहेत</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{तयार झाल्यावर, Chrome तुमचे पेज लोड करेल}other{तयार झाल्यावर, Chrome तुमची पेज लोड करेल}}</translation>
+<translation id="3962957115499249330">हा डाउनलोड वाय-फाय वर सुरू होईल तेव्हा तुम्हाला सूचना दिसेल.</translation>
 <translation id="3963007978381181125">पासफ्रेज एंक्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो. फक्त तुमचा पासफ्रेज असलेली एखादी व्यक्ती तुमचा एंक्रिप्ट केलेला डेटा वाचू शकते. पासफ्रेज Google कडे पाठवला किंवा त्याद्वारे स्टोअर केला जात नाही. तुम्ही तुमचा पासफ्रेज विसरल्यास किंवा तुम्हाला हे सेटिंग बदलायचे असल्यास, तुम्हाला सिंक रीसेट करण्याची आवश्यकता असेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome तुमचे पासवर्ड तपासू शकत नाही</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> हे Chrome मध्ये उघडेल. सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व Chrome OS अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता. <ph name="BEGIN_LINK3" />Family Link सोबत व्यवस्थापित केलेली Google खाती यांसाठी गोपनीयतेची सूचना<ph name="END_LINK3" /> देखील लागू होते.</translation>
@@ -478,6 +481,7 @@
 <translation id="4256782883801055595">मुक्त स्रोत परवाने</translation>
 <translation id="4263656433980196874">Assistant च्या व्हॉइस शोध संमतीशी संबंधित UI स्क्रीनवर पूर्ण उंचीपर्यंत उघडले</translation>
 <translation id="4269820728363426813">लिंकचा पत्ता कॉपी करा</translation>
+<translation id="4290281343757112331">त्याऐवजी नंतर डाउनलोड करायचे का?</translation>
 <translation id="4298388696830689168">लिंक केलेल्या साइट</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">मूलभूत</translation>
@@ -540,6 +544,7 @@
 <translation id="4698034686595694889"><ph name="APP_NAME" /> मध्ये ऑफलाइन पाहा</translation>
 <translation id="4699172675775169585">कॅशे   इमेज आणि फाइल</translation>
 <translation id="4714588616299687897">तुमचा सुमारे 60% डेटा वाचवा</translation>
+<translation id="4716066120200945007">फॉलो करत आहे</translation>
 <translation id="4719927025381752090">भाषांतर करण्यास ऑफर करा</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> मध्‍ये उघडा</translation>
 <translation id="4720982865791209136">Chrome सुधारण्यात मदत करा. <ph name="BEGIN_LINK" />सर्वेक्षण करा<ph name="END_LINK" /></translation>
@@ -620,6 +625,7 @@
 <translation id="5191251636205085390">तृतीय पक्षाच्या कुकी बदलण्याचा उद्देश असलेल्या नवीन तंत्रज्ञान आणि ते कसे नियंत्रित करायचे याविषयी जाणून घ्या</translation>
 <translation id="5193988420012215838">तुमच्या क्लिपबोर्डवर कॉपी केले</translation>
 <translation id="5199929503336119739">कार्य प्रोफाइल</translation>
+<translation id="5201464744567315552">हा डाउनलोड <ph name="TIME" /> वाजता सुरू होईल तेव्हा तुम्हाला सूचना दिसेल.</translation>
 <translation id="5204967432542742771">पासवर्ड एंटर करा</translation>
 <translation id="5210286577605176222">मागील टॅबवर जा</translation>
 <translation id="5210365745912300556">टॅब बंद करा</translation>
@@ -630,6 +636,7 @@
 <translation id="5230560987958996918"><ph name="SITE" /> ला जवळपासची ब्लूटूथ डिव्हाइस स्कॅन करायची आहेत. खालील डिव्हाइस आढळली:</translation>
 <translation id="5233638681132016545">नवीन टॅब</translation>
 <translation id="5250483651202458397">स्क्रीनशॉट. बंद करण्यासाठी टॅप करा.</translation>
+<translation id="5262378156578470238">हा डाउनलोड <ph name="DATE" /> रोजी सुरू होईल तेव्हा तुम्हाला सूचना दिसेल.</translation>
 <translation id="526421993248218238">हे पेज लोड करू शकत नाही</translation>
 <translation id="5271967389191913893">डाउनलोड केली जाण्यासाठी डिव्हाइस आशय उघडू शकत नाही.</translation>
 <translation id="5292796745632149097">यांना पाठवा</translation>
@@ -910,6 +917,7 @@
 <translation id="6981982820502123353">ॲक्सेसिबिलिटी</translation>
 <translation id="6989267951144302301">डाउनलोड करता आले नाही</translation>
 <translation id="6995899638241819463">डेटा भंगामध्ये पासवर्ड उघड झाल्यास, तुम्हाला चेतावणी द्या</translation>
+<translation id="7001056293070445572">ही फाइल मोठी आहे (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">सुरुवातीचे सिंक सेट करणे पूर्ण झाले नाही. सिंक बंद आहे.</translation>
 <translation id="7022756207310403729">ब्राउझरमध्ये उघडा</translation>
 <translation id="702463548815491781">TalkBack किंवा स्विच ॲक्सेस सुरू असताना शिफारस केलेले</translation>

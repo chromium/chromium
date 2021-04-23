@@ -3080,6 +3080,7 @@
 <translation id="4392896746540753732">Изменение файла конфигурации.</translation>
 <translation id="4394049700291259645">Отключить</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Открыть все}=1{&amp;Открыть закладку}one{&amp;Открыть все ({COUNT})}few{&amp;Открыть все ({COUNT})}many{&amp;Открыть все ({COUNT})}other{&amp;Открыть все ({COUNT})}}</translation>
+<translation id="4398131717714042083">Удаление истории и вариантов автозаполнения в окне поиска.</translation>
 <translation id="439817266247065935">Работа устройства была завершена неправильно. Чтобы использовать приложения для Linux, перезагрузите эту операционную систему.</translation>
 <translation id="4400367121200150367">Здесь появятся сайты, которые никогда не сохраняют пароли</translation>
 <translation id="4400632832271803360">Чтобы сменить функции клавиш верхнего ряда, удерживайте клавишу Launcher</translation>
@@ -5062,6 +5063,7 @@
 <translation id="6651237644330755633">Доверять этому сертификату при идентификации сайтов</translation>
 <translation id="6651495917527016072">Синхронизировать сети Wi-Fi с телефоном. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Интеграция Chrome <ph name="MS_AD_NAME" /> доступна только на платформах x86-64. Устройства Chromebook, разработанные на базе ARM или платформе x86, не поддерживают эту функцию.</translation>
+<translation id="66537479323396140">Удаление истории и вариантов автозаполнения в окне поиска. История браузера также может храниться в вашем аккаунте Google: <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">Выбрать предпочитаемую сеть</translation>
 <translation id="6655190889273724601">Режим разработчика</translation>
 <translation id="6655458902729017087">Скрыть аккаунты</translation>
@@ -5928,6 +5930,7 @@
 <translation id="7636919061354591437">Установить на этом устройстве</translation>
 <translation id="7637593984496473097">Недостаточно свободного места на диске.</translation>
 <translation id="7638605456503525968">Последовательные порты</translation>
+<translation id="7639914187072011620">Не удалось получить URL переадресации SAML с сервера</translation>
 <translation id="764017888128728">С помощью <ph name="PASSWORD_MANAGER_BRAND" /> вы будете автоматически входить на сайты, для которых сохранили пароли.</translation>
 <translation id="7642778300616172920">Скрыть конфиденциальные данные</translation>
 <translation id="7643842463591647490">{0,plural, =1{Открыто # окно}one{Открыто # окно}few{Открыто # окна}many{Открыто # окон}other{Открыто # окна}}</translation>

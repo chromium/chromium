@@ -108,7 +108,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Asisten (sedang dimuat...)</translation>
 <translation id="1838895407229022812">Cahaya Malam nonaktif.</translation>
-<translation id="1850504506766569011">Wi-Fi dinonaktifkan.</translation>
 <translation id="1864454756846565995">Perangkat USB-C (port belakang)</translation>
 <translation id="1882814835921407042">Tidak ada jaringan seluler</translation>
 <translation id="1882897271359938046">Mencerminkan ke <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3207953481422525583">Setelan Pengguna</translation>
 <translation id="3217205077783620295">Volume aktif, mengalihkan tombol akan membisukan audio.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> lagi</translation>
-<translation id="3236488194889173876">Jaringan seluler tidak tersedia</translation>
 <translation id="3249513730522716925">Jendela <ph name="WINDOW_TITLE" /> berpindah dari Desktop <ph name="ACTIVE_DESK" /> ke Desktop <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Apa yang bisa kamu lakukan?</translation>
 <translation id="3269597722229482060">Klik Kanan</translation>
@@ -584,7 +582,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> aktif.</translation>
 <translation id="5947494881799873997">Kembalikan</translation>
 <translation id="595202126637698455">Kinerja pelacakan aktif</translation>
-<translation id="5957083217255311415">Data seluler dinonaktifkan.</translation>
 <translation id="5958529069007801266">Pengguna yang diawasi</translation>
 <translation id="5960825221082587934">Izinkan Asisten menampilkan info seperti definisi, terjemahan, atau konversi unit untuk teks yang Anda pilih.</translation>
 <translation id="5977415296283489383">Headphone</translation>
@@ -884,7 +881,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8433977262951327081">Pintasan untuk menampilkan balon menu opsi masukan di rak telah diubah. Harap gunakan <ph name="NEW_SHORTCUT" />, bukan <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Desktop <ph name="DESK_TITILE" /> diaktifkan</translation>
 <translation id="8452135315243592079">Kartu SIM tidak ada</translation>
-<translation id="8454013096329229812">Wi-Fi diaktifkan.</translation>
 <translation id="8462305545768648477">Tutup Klik untuk Diucapkan</translation>
 <translation id="847056008324733326">Setelan skala layar</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> telah <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">نشان زد کریں…</translation>
 <translation id="3131206671572504478">سبھی کو مسدود کریں</translation>
 <translation id="3153862085237805241">کارڈ محفوظ کریں</translation>
+<translation id="3157387275655328056">پڑھنے کی فہرست میں شامل کریں</translation>
 <translation id="3157684681743766797">سبھی کو نشان زد کریں…</translation>
 <translation id="3161291298470460782">‏یہ آپ کو سائن آؤٹ، مطابقت پذیری کو آف اور اس آلہ سے تمام Chrome ڈیٹا کو صاف کر دے گا۔ آپ کا مطابقت پذیر ڈیٹا آپ کے Google اکاؤنٹ میں رہے گا۔</translation>
 <translation id="3169472444629675720">دریافت کریں</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">آپ کی کوکیز کی ترتیب سبھی ٹیبز پر لاگو ہوتی ہے۔ ایک کھلے ٹیب پر نئی ترتیب لاگو کرنے کیلئے، ٹیب کو دوبارہ لوڈ کریں۔</translation>
 <translation id="5190835502935405962">بُک مارکس بار</translation>
 <translation id="5197255632782567636">انٹرنیٹ</translation>
+<translation id="5210365745912300556">ٹیب بند کریں</translation>
 <translation id="5228579091201413441">مطابقت پذیری فعال کریں</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
 <translation id="5245322853195994030">مطابقت پذیری منسوخ کریں</translation>
@@ -446,6 +448,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5782227691023083829">ترجمہ کیا جا رہا ہے...</translation>
 <translation id="5803566855766646066">کیا آپ واقعی اس نئے کارڈ کو مسترد کرنا چاہتے ہیں؟</translation>
 <translation id="5816228676161003208">یہ آپ کو اپنی آواز کا استعمال کر کے زیادہ تیزی سے تلاش کرنے دیتا ہے۔</translation>
+<translation id="581659025233126501">مطابقت پذیری آن کریں</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> نظم کرتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">تلاش انجن</translation>
 <translation id="5854790677617711513">30 دن سے زیادہ پرانا</translation>
@@ -485,7 +488,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6127379762771434464">آئٹم ہٹا دیا گیا</translation>
 <translation id="6136914049981179737">کچھ سیکنڈ پہلے</translation>
 <translation id="6144589619057374135">‏پوشیدگی میں {url}$ کھولیں</translation>
-<translation id="616831107264507309">بعد میں پڑھیں</translation>
 <translation id="6177442314419606057">‏Chrome میں تلاش کریں</translation>
 <translation id="6184086493125982861">ٹیبز دکھائیں</translation>
 <translation id="6187302354554850004">آخری مطابقت پذیری: <ph name="LAST_USED_TIME" /></translation>
@@ -493,12 +495,14 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6196207969502475924">صوتی تلاش</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ٹیب بند کریں}other{{COUNT} ٹیبز بند کریں}}</translation>
 <translation id="6219688215832490856">کبھی بھی ترجمہ نہ کریں</translation>
+<translation id="6223816392543092032">اپنے سبھی آلات پر اپنے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات حاصل کریں۔</translation>
 <translation id="6254066287920239840">براؤزر کی بجائے لنکس کو ایپ میں کھولیں۔</translation>
 <translation id="6255097610484507482">کریڈٹ کارڈ میں ترمیم کریں</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> کا ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="6293101329759844770">‏محفوظ براؤزنگ کو آن کرنے کے لیے، <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> کھولیں اور محفوظ براؤزنگ پر تھپتھپائیں۔</translation>
 <translation id="6303969859164067831">سائن آؤٹ کریں اور مطابقت پذیری آف کریں</translation>
 <translation id="6308436439357671616">یہ آپ کو تصاویر لینے اور اپ لوڈ کرنے دیتا ہے۔</translation>
+<translation id="6321526113093607004">بُک مارکس میں شامل کریں</translation>
 <translation id="6324528485781869530">مطابقت پذیری اکاؤنٹ کو سوئچ کریں</translation>
 <translation id="6324669097367352121">سائن ان کی ترتیبات</translation>
 <translation id="6337234675334993532">مرموزکاری</translation>
@@ -525,6 +529,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6445981559479772097">پیغام بھیج دیا گیا۔</translation>
 <translation id="6447842834002726250">کوکیز</translation>
 <translation id="6453018583485750254">چیک کبھی نہیں چلتا ہے۔</translation>
+<translation id="6459307836338400162">‏رازداری، سیکیورٹی اور ڈیٹا جمع کرنے سے متعلق مزید ترتیبات کے لیے، <ph name="BEGIN_LINK" />مطابقت پذیری<ph name="END_LINK" /> اور <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> دونوں دیکھیں۔</translation>
 <translation id="6464071786529933911">نئے پوشیدگی ٹیب میں کھولیں</translation>
 <translation id="6464397691496239022">سائٹس آپ کے براؤزنگ کے تجربہ کو بہتر بنانے کے لیے کوکیز کا استعمال کر سکتی ہیں، مثال کے طور پر آپ کو سائن ان رکھنا یا آپ کی شاپنگ کارٹ میں آئٹمز کو یاد رکھنا۔
 
@@ -669,7 +674,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7856733331829174190">ڈاؤن لوڈ نہیں ہو سکی</translation>
 <translation id="7859704718976024901">براؤزنگ سرگزشت</translation>
 <translation id="7887198238286927132">‏آپ کی رازداری کے تحفظ کے لیے، Chrome اس فیلڈ کو آٹو فل نہیں کرے گا۔</translation>
-<translation id="7918293828610777738">آپ کی پڑھنے کی فہرست آف لائن دستیاب ہے۔ اپنی پڑھنے کی فہرست میں صفحہ شامل کرنے کیلئے، پہلے <ph name="SHARE_OPENING_ICON" /> پھر <ph name="READ_LATER_TEXT" /> کو تھپتھپائیں۔</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">پاس ورڈز برآمد کریں...</translation>
 <translation id="7947953824732555851">قبول و سائن ان کریں</translation>
@@ -708,6 +712,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8281886186245836920">نظر انداز کریں</translation>
 <translation id="8283172974887967105">سیٹ کریں…</translation>
 <translation id="8299417921174340354">پاس ورڈز استعمال کرنے کے ليے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا ہوگا۔</translation>
+<translation id="83100941411593607">سائن ان کی خصوصیت غیر فعال ہے</translation>
 <translation id="8319076807703933069">نئی تلاش</translation>
 <translation id="8323906514956095947">ٹیب کے مزید اختیارات کیلئے ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="8328777765163860529">تمام بند کریں</translation>

@@ -108,7 +108,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Assistent (laden...)</translation>
 <translation id="1838895407229022812">Nachtverlichting staat uit.</translation>
-<translation id="1850504506766569011">Wifi staat uit.</translation>
 <translation id="1864454756846565995">USB-C-apparaat (poort aan achterkant)</translation>
 <translation id="1882814835921407042">Geen mobiel netwerk</translation>
 <translation id="1882897271359938046">Spiegelen naar <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3207953481422525583">Gebruikersinstellingen</translation>
 <translation id="3217205077783620295">Volume staat aan. Als je het uitzet, hoor je geen audio.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> andere meldingen</translation>
-<translation id="3236488194889173876">Geen mobiel netwerk beschikbaar</translation>
 <translation id="3249513730522716925">Het venster <ph name="WINDOW_TITLE" /> is verplaatst van bureaublad <ph name="ACTIVE_DESK" /> naar bureaublad <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Wat kun je doen?</translation>
 <translation id="3269597722229482060">Klikken met rechtermuisknop</translation>
@@ -584,7 +582,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> staat aan.</translation>
 <translation id="5947494881799873997">Terugzetten</translation>
 <translation id="595202126637698455">Bijhouden van prestaties staat aan</translation>
-<translation id="5957083217255311415">Mobiele data staan uit.</translation>
 <translation id="5958529069007801266">Gelimiteerde gebruiker</translation>
 <translation id="5960825221082587934">Laat de Assistent informatie tonen zoals de definitie, vertaling of eenheidsconversie voor je selectie.</translation>
 <translation id="5977415296283489383">Hoofdtelefoon</translation>
@@ -884,7 +881,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8433977262951327081">De sneltoets waarmee je de ballon van het menu met invoeropties op de plank toont, is gewijzigd. Gebruik <ph name="NEW_SHORTCUT" /> in plaats van <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Bureaublad <ph name="DESK_TITILE" /> geactiveerd</translation>
 <translation id="8452135315243592079">Simkaart ontbreekt</translation>
-<translation id="8454013096329229812">Wifi staat aan.</translation>
 <translation id="8462305545768648477">'Selecteer om uitgesproken te worden' sluiten</translation>
 <translation id="847056008324733326">Instellingen voor weergaveschaal</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> heeft <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>

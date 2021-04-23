@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">അടയാളപ്പെടുത്തുക…</translation>
 <translation id="3131206671572504478">എല്ലാം ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="3153862085237805241">കാർഡ് സംരക്ഷിക്കുക</translation>
+<translation id="3157387275655328056">വായന ലിസ്റ്റിൽ ചേർക്കുക</translation>
 <translation id="3157684681743766797">എല്ലാം അടയാളപ്പെടുത്തുക…</translation>
 <translation id="3161291298470460782">ഇത് നിങ്ങളെ സൈൻ ഔട്ട് ആക്കുകയും സമന്വയിപ്പിക്കൽ ഓഫാക്കുകയും ചെയ്യും, ഒപ്പം ഉപകരണത്തിൽ നിന്ന് എല്ലാ Chrome ഡാറ്റയും മായ്ക്കും. നിങ്ങളുടെ സമന്വയിപ്പിച്ച ഡാറ്റ Google അക്കൗണ്ടിൽ നിലനിൽക്കും.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">നിങ്ങളുടെ കുക്കികളുടെ ക്രമീകരണം എല്ലാ ടാബുകൾക്കും ബാധകമാണ്. തുറന്നിരിക്കുന്ന ടാബിൽ ഒരു പുതിയ ക്രമീകരണം ബാധകമാക്കാൻ, ടാബ് റീലോഡ് ചെയ്യുക.</translation>
 <translation id="5190835502935405962">ബുക്ക്‌മാര്‍‌ക്ക് ബാര്‍‌</translation>
 <translation id="5197255632782567636">ഇന്‍റര്‍നെറ്റ്</translation>
+<translation id="5210365745912300556">ടാബ് അടയ്ക്കൂക</translation>
 <translation id="5228579091201413441">സമന്വയം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="5234764350956374838">ഡിസ്മിസ്സ് ചെയ്യുക</translation>
 <translation id="5245322853195994030">സമന്വയം റദ്ദാക്കുക</translation>
@@ -486,7 +488,6 @@
 <translation id="6127379762771434464">ഇനം നീക്കംചെയ്‌തു</translation>
 <translation id="6136914049981179737">സെക്കൻഡ് മുമ്പ്</translation>
 <translation id="6144589619057374135">${url} അദൃശ്യ മോഡിൽ തുറക്കുക</translation>
-<translation id="616831107264507309">പിന്നീട് വായിക്കുക</translation>
 <translation id="6177442314419606057">Chrome-ൽ തിരയുക</translation>
 <translation id="6184086493125982861">ടാബുകൾ കാണിക്കുക</translation>
 <translation id="6187302354554850004">അവസാനം സമന്വയിപ്പിച്ചത്: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@
 <translation id="6293101329759844770">സുരക്ഷിത ബ്രൗസിംഗ് ഓണാക്കാൻ, <ph name="BEGIN_LINK" />Google സേവനങ്ങൾ<ph name="END_LINK" /> തുറന്ന് സുരക്ഷിത ബ്രൗസിംഗ് ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="6303969859164067831">സൈൻ ഔട്ട് ചെയ്‌ത് സമന്വയം ഓഫാക്കുക</translation>
 <translation id="6308436439357671616">ഫോട്ടോകളെടുത്ത് അപ്‌ലോഡ് ചെയ്യാൻ ഇത് നിങ്ങളെ അനുവദിക്കുന്നു.</translation>
+<translation id="6321526113093607004">ബുക്ക്‌മാർക്കുകളിൽ ചേർക്കുക</translation>
 <translation id="6324528485781869530">സമന്വയ അക്കൗണ്ട് മാറുക</translation>
 <translation id="6324669097367352121">സൈൻ ഇൻ ക്രമീകരണങ്ങൾ</translation>
 <translation id="6337234675334993532">എന്‍ക്രിപ്ഷന്‍</translation>
@@ -672,7 +674,6 @@
 <translation id="7856733331829174190">ഡൗൺലോഡ് ചെയ്യാനായില്ല</translation>
 <translation id="7859704718976024901">ബ്രൗസിംഗ് ചരിത്രം</translation>
 <translation id="7887198238286927132">നിങ്ങളുടെ സ്വകാര്യത പരിരക്ഷിക്കാൻ, Chrome ഈ ഫീൽഡ് സ്വമേധയാ പൂരിപ്പിക്കില്ല.</translation>
-<translation id="7918293828610777738">നിങ്ങളുടെ വായനാ ലിസ്‌റ്റ് ഓഫ്‌ലൈനായി ലഭ്യമാണ്. വായനാ ലിസ്‌റ്റിലേക്ക് ഒരു പേജ് ചേർക്കാൻ, ആദ്യം <ph name="SHARE_OPENING_ICON" />, തുടർന്ന് <ph name="READ_LATER_TEXT" /> എന്നിവ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യുക...</translation>
 <translation id="7947953824732555851">അംഗീകരിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>

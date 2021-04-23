@@ -3081,6 +3081,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4392896746540753732">Úprava konfiguračného súboru</translation>
 <translation id="4394049700291259645">Zakázať</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{Otvoriť všetky}=1{Otvoriť záložku}few{Otvoriť všetky ({COUNT})}many{Otvoriť všetky ({COUNT})}other{Otvoriť všetky ({COUNT})}}</translation>
+<translation id="4398131717714042083">Vymaže históriu a záznamy automatického dopĺňania vo vyhľadávacom poli</translation>
 <translation id="439817266247065935">Zariadenie nebolo správne vypnuté. Ak chcete používať aplikácie pre Linux, reštartujte tento systém.</translation>
 <translation id="4400367121200150367">Tu sa zobrazia weby, ktoré nikdy neukladajú heslo</translation>
 <translation id="4400632832271803360">Pridržaním klávesa spúšťača prepnete správanie klávesov v hornom riadku</translation>
@@ -5063,6 +5064,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6651237644330755633">Dôverovať tomuto certifikátu na identifikáciu webových stránok</translation>
 <translation id="6651495917527016072">Synchronizujte siete Wi‑Fi so svojím telefónom. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Integrácia <ph name="MS_AD_NAME" /> pre Chrome je podporovaná iba v platformách x86_64. Chromebooky zostavené na základe platformy ARM alebo x86 túto funkciu nepodporujú.</translation>
+<translation id="66537479323396140">Vymaže históriu a záznamy automatického dopĺňania vo vyhľadávacom poli. Váš účet Google môže mať ďalšie formy histórie prehliadania na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">Preferovať sieť</translation>
 <translation id="6655190889273724601">Režim pre vývojárov</translation>
 <translation id="6655458902729017087">Skryť účty</translation>
@@ -5929,6 +5931,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7636919061354591437">Nainštalovať v tomto zariadení</translation>
 <translation id="7637593984496473097">Na disku nie je dostatok miesta</translation>
 <translation id="7638605456503525968">Sériové porty</translation>
+<translation id="7639914187072011620">Presmerovanie SAML sa nepodarilo načítať zo servera</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> vás automaticky prihlási na vhodných weboch pomocou hesiel, ktoré ste si uložili.</translation>
 <translation id="7642778300616172920">Skryť citlivý obsah</translation>
 <translation id="7643842463591647490">{0,plural, =1{# otvorené okno}few{# otvorené okná}many{# open windows}other{# otvorených okien}}</translation>

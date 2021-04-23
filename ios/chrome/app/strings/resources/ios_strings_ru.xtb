@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">Отметить…</translation>
 <translation id="3131206671572504478">Блокировать все</translation>
 <translation id="3153862085237805241">Сохранить подсказку</translation>
+<translation id="3157387275655328056">Добавить в список для чтения</translation>
 <translation id="3157684681743766797">Отметить все…</translation>
 <translation id="3161291298470460782">Вы выйдете из аккаунта, синхронизация будет отключена, а все данные Chrome – удалены с этого устройства. Синхронизированные данные останутся в вашем аккаунте Google.</translation>
 <translation id="3169472444629675720">Рекомендации</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">Заданные вами параметры в отношении файлов cookie действуют для всех вкладок. Если вам нужно применить новый параметр к открытой вкладке, перезагрузите ее.</translation>
 <translation id="5190835502935405962">Панель закладок</translation>
 <translation id="5197255632782567636">Интернет</translation>
+<translation id="5210365745912300556">Закрыть вкладку</translation>
 <translation id="5228579091201413441">Включить синхронизацию</translation>
 <translation id="5234764350956374838">Закрыть</translation>
 <translation id="5245322853195994030">Отключить</translation>
@@ -486,7 +488,6 @@
 <translation id="6127379762771434464">Быстрая ссылка удалена.</translation>
 <translation id="6136914049981179737">только что</translation>
 <translation id="6144589619057374135">Открыть ${url} в режиме инкогнито</translation>
-<translation id="616831107264507309">Читать позже</translation>
 <translation id="6177442314419606057">Поиск в Chrome</translation>
 <translation id="6184086493125982861">Показать вкладки</translation>
 <translation id="6187302354554850004">Послед. синхр.: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@
 <translation id="6293101329759844770">Чтобы включить Безопасный просмотр, откройте <ph name="BEGIN_LINK" />сервисы Google<ph name="END_LINK" /> и нажмите "Безопасный просмотр".</translation>
 <translation id="6303969859164067831">Выйти из аккаунта и отключить синхронизацию</translation>
 <translation id="6308436439357671616">Это нужно, чтобы делать снимки и загружать фотографии</translation>
+<translation id="6321526113093607004">Добавить в закладки</translation>
 <translation id="6324528485781869530">Смена аккаунта</translation>
 <translation id="6324669097367352121">Настройки входа</translation>
 <translation id="6337234675334993532">Шифрование</translation>
@@ -672,7 +674,6 @@
 <translation id="7856733331829174190">Не удалось скачать файл</translation>
 <translation id="7859704718976024901">История браузера</translation>
 <translation id="7887198238286927132">Чтобы обеспечить конфиденциальность ваших данных, Chrome не использует автозаполнение для этого поля.</translation>
-<translation id="7918293828610777738">Список для чтения доступен без подключения к Интернету. Чтобы добавить в него страницу, нажмите <ph name="SHARE_OPENING_ICON" />, а затем –<ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Экспорт паролей...</translation>
 <translation id="7947953824732555851">Принять и войти</translation>

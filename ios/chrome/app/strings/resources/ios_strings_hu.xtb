@@ -204,6 +204,7 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="3112556859945124369">Megjelölés…</translation>
 <translation id="3131206671572504478">Összes letiltása</translation>
 <translation id="3153862085237805241">Kártya mentése</translation>
+<translation id="3157387275655328056">Hozzáadás olvasási listához</translation>
 <translation id="3157684681743766797">Az összes megjelölése…</translation>
 <translation id="3161291298470460782">Ezzel kijelentkezik, kikapcsol a szinkronizálás, és minden Chrome-adat törlődik erről az eszközről. Szinkronizált adatai továbbra is megmaradnak Google-fiókjában.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5188482106078495165">A cookie-kra vonatkozó beállítás az összes lapra érvényes. Ha valamelyik megnyitott laphoz új beállítást szeretne megadni, töltse be újra az adott lapot.</translation>
 <translation id="5190835502935405962">Könyvjelzősáv</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Lap bezárása</translation>
 <translation id="5228579091201413441">Szinkronizálás bekapcsolása</translation>
 <translation id="5234764350956374838">Elvetés</translation>
 <translation id="5245322853195994030">Szinkronizálás megszakítása</translation>
@@ -486,7 +488,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6127379762771434464">Elem eltávolítva</translation>
 <translation id="6136914049981179737">Néhány másodperce</translation>
 <translation id="6144589619057374135">${url} megnyitása inkognitó módban</translation>
-<translation id="616831107264507309">Olvasás később</translation>
 <translation id="6177442314419606057">Keresés a Chrome-ban</translation>
 <translation id="6184086493125982861">Lapok megjelenítése</translation>
 <translation id="6187302354554850004">Utolsó szinkron.: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6293101329759844770">A Biztonságos Böngészés bekapcsolásához nyissa meg a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> szakaszt, majd koppintson a Biztonságos Böngészés lehetőségre.</translation>
 <translation id="6303969859164067831">Kijelentkezés, és a szinkronizálás kikapcsolása</translation>
 <translation id="6308436439357671616">Lehetővé teszi a fotók készítését és feltöltését.</translation>
+<translation id="6321526113093607004">Hozzáadás a könyvjelzőkhöz</translation>
 <translation id="6324528485781869530">Szinkronizált fiók váltása</translation>
 <translation id="6324669097367352121">Bejelentkezési beállítások</translation>
 <translation id="6337234675334993532">Titkosítás</translation>
@@ -672,7 +674,6 @@ Mivel fiókját a(z) <ph name="HOSTED_DOMAIN" /> kezeli, Chrome-adatai törölve
 <translation id="7856733331829174190">Nem sikerült letölteni</translation>
 <translation id="7859704718976024901">Böngészési előzmények</translation>
 <translation id="7887198238286927132">Adatai védelme érdekében a Chrome nem tölti ki automatikusan ezt a mezőt.</translation>
-<translation id="7918293828610777738">Olvasási listája hozzáférhető offline módban. Ha szeretne hozzáadni oldalakat a listához, koppintson a következőkre: <ph name="SHARE_OPENING_ICON" />, majd <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Jelszavak exportálása…</translation>
 <translation id="7947953824732555851">Elfogadás és bejelentkezés</translation>

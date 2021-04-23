@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">इथरनेट: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">सहायक (लोड गर्दै...)</translation>
 <translation id="1838895407229022812">रात्रि प्रकाश निष्क्रिय छ।</translation>
-<translation id="1850504506766569011">Wi-Fi बन्द गरिएको छ।</translation>
 <translation id="1864454756846565995">USB-C यन्त्र (पछाडिको पोर्ट)</translation>
 <translation id="1882814835921407042">मोबाइल नेटवर्कमा कनेक्ट भएको छैन</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> मा प्रतिबिम्बित गर्दै</translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">प्रयोगकर्ताका सेटिङहरू</translation>
 <translation id="3217205077783620295">भोल्युम सक्रिय छ, टगल गर्नुले अडियो म्युट गर्ने छ।</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> थप</translation>
-<translation id="3236488194889173876">मोबाइल नेटवर्क उपलब्ध छैन</translation>
 <translation id="3249513730522716925">विन्डो सारेर <ph name="WINDOW_TITLE" /> डेस्क <ph name="ACTIVE_DESK" /> बाट <ph name="TARGET_DESK" /> डेस्कमा पुर्‍याइयो</translation>
 <translation id="3255483164551725916">तपाईं के गर्न सक्नुहुन्छ?</translation>
 <translation id="3269597722229482060">दायाँ क्लिक गर्नुहोस्</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> अन छ।</translation>
 <translation id="5947494881799873997">उल्टाउनुहोस्</translation>
 <translation id="595202126637698455">प्रदर्शन ट्रेसिङ सक्षम गरियो</translation>
-<translation id="5957083217255311415">मोबाइल डेटा निष्क्रिय पारिएको छ।</translation>
 <translation id="5958529069007801266">सुपरिवेक्षित प्रयोगकर्ता</translation>
 <translation id="5960825221082587934">सहायकलाई आफूले चयन गरेको पाठको परिभाषा, अनुवाद वा त्यसको एकाइ रूपान्तरण जस्ता जानकारी देखाउन दिनुहोस्।</translation>
 <translation id="5977415296283489383">हेडफोन</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">सेल्फमा इनपुट विकल्पहरूको मेनु बबल देखाउने सर्टकट परिवर्तन भएको छ। कृपया <ph name="OLD_SHORTCUT" /> को सट्टामा  <ph name="NEW_SHORTCUT" /> प्रयोग गर्नुहोस्।</translation>
 <translation id="8444246603146515890">डेस्क <ph name="DESK_TITILE" /> सक्रिय गरियो</translation>
 <translation id="8452135315243592079">SIM कार्ड उपलब्ध छैन</translation>
-<translation id="8454013096329229812">Wi-Fi खुला छ।</translation>
 <translation id="8462305545768648477">'सेलेक्ट टु स्पिक' बन्द गर्नुहोस्</translation>
 <translation id="847056008324733326">प्रदर्शनको स्केलका सेटिङहरू</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> सँग <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> छ।</translation>

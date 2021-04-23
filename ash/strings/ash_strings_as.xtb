@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">ইথাৰনেট: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Assistant (ল’ড হৈ আছে...)</translation>
 <translation id="1838895407229022812">ৰাতিৰ লাইট অফ কৰা আছে।</translation>
-<translation id="1850504506766569011">ৱাই-ফাই অফ কৰা আছে।</translation>
 <translation id="1864454756846565995">USB-C ডিভাইচ (পিছফালে থকা পর্ট)</translation>
 <translation id="1882814835921407042">কোনো ম’বাইল নেটৱৰ্ক উপলব্ধ নহয়</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />ৰ সৈতে মিৰ’ৰ কৰা হৈছে</translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">ব্যৱহাৰকাৰীৰ ছেটিংসমূহ</translation>
 <translation id="3217205077783620295">ভলিউম অন কৰা আছে, ট’গল কৰিলে অডিঅ’ মিউট হ’ব।</translation>
 <translation id="3226991577105957773">আৰু <ph name="COUNT" />টা</translation>
-<translation id="3236488194889173876">কোনো ম'বাইল নেটৱর্ক নাই</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> ৱিণ্ড’খন <ph name="ACTIVE_DESK" /> ডেস্কৰ পৰা <ph name="TARGET_DESK" />লৈ স্থানান্তৰ কৰা হৈছে</translation>
 <translation id="3255483164551725916">আপুনি কি কৰিব পাৰে?</translation>
 <translation id="3269597722229482060">সোঁফালে ক্লিক কৰক</translation>
@@ -583,7 +581,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> অন কৰা আছে।</translation>
 <translation id="5947494881799873997">পূৰ্বাৱস্থালৈ নিয়ক</translation>
 <translation id="595202126637698455">কার্যদক্ষতা ট্ৰে’চ কৰাটো সক্ষম কৰা হৈছে</translation>
-<translation id="5957083217255311415">ম’বাইল ডেটা অফ কৰা হৈছে।</translation>
 <translation id="5958529069007801266">নিৰীক্ষণত থকা ব্যৱহাৰকাৰী</translation>
 <translation id="5960825221082587934">Assistantক আপুনি কৰা বাছনিটোৰ সংজ্ঞা, অনুবাদ অথবা একক ৰূপান্তৰণৰ দৰে তথ্য দেখুৱাবলৈ দিয়ক।</translation>
 <translation id="5977415296283489383">হেডফ’ন</translation>
@@ -880,7 +877,6 @@
 <translation id="8433977262951327081">শ্বেল্ফত ইনপুট বিকল্পৰ মেনু বাব্‌ল দেখুওৱা শ্বৰ্টকাটটো সলনি কৰা হৈছে। অনুগ্ৰহ কৰি <ph name="OLD_SHORTCUT" />ৰ পৰিৱৰ্তে <ph name="NEW_SHORTCUT" /> ব্যৱহাৰ কৰক।</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> ডেস্ক সক্রিয় কৰা হৈছে</translation>
 <translation id="8452135315243592079">কোনো ছিম কাৰ্ড নাই</translation>
-<translation id="8454013096329229812">ৱাই-ফাই অন কৰা হ’ল৷</translation>
 <translation id="8462305545768648477">কথা ক’বলৈ বাছনি কৰক সুবিধাটো বন্ধ কৰক</translation>
 <translation id="847056008324733326">ডিছপ্লে’ স্কে’লৰ ছেটিং</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />ৰ <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />আছে।</translation>

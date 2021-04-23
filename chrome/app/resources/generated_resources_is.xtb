@@ -3080,6 +3080,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4392896746540753732">Breyta stillingaskrá</translation>
 <translation id="4394049700291259645">Slökkva</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Opna allt}=1{&amp;Opna bókamerki}one{&amp;Opna allt ({COUNT})}other{&amp;Opna allt ({COUNT})}}</translation>
+<translation id="4398131717714042083">Hreinsar feril og sjálfvirkar útfyllingar í leitarreitnum</translation>
 <translation id="439817266247065935">Ekki var slökkt á tækinu á réttan hátt. Endurræstu Linux til að nota Linux-forrit.</translation>
 <translation id="4400367121200150367">Vefsvæði sem aldrei vista aðgangsorð munu birtast hér</translation>
 <translation id="4400632832271803360">Haltu ræsihnappinum inni til að breyta hegðun lykla í efstu röðinni</translation>
@@ -5062,6 +5063,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6651237644330755633">Treysta þessu vottorði til að auðkenna vefsvæði</translation>
 <translation id="6651495917527016072">Samstilltu Wi-Fi net við símann þinn. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Samþætting Chrome <ph name="MS_AD_NAME" /> er aðeins studd í x86_64 kerfum. Chromebook tæki sem eru byggð á ARM- eða x86-kerfi styðja ekki þennan eiginleika.</translation>
+<translation id="66537479323396140">Hreinsar ferilinn og sjálfvirkar útfyllingar í leitarreitnum. Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil á <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">Kjósa net</translation>
 <translation id="6655190889273724601">Forritarastilling</translation>
 <translation id="6655458902729017087">Fela reikninga</translation>
@@ -5928,6 +5930,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7636919061354591437">Setja upp í þessu tæki</translation>
 <translation id="7637593984496473097">Ekki nægilegt diskpláss</translation>
 <translation id="7638605456503525968">Raðtengi</translation>
+<translation id="7639914187072011620">Ekki tókst að sækja framsendingarslóð SAML hjá þjóninum</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> skráir þig sjálfkrafa inn á vefsvæði með þeim aðgangsorðum sem þú hefur vistað.</translation>
 <translation id="7642778300616172920">Fela viðkvæmt efni</translation>
 <translation id="7643842463591647490">{0,plural, =1{# opinn gluggi}one{# opinn gluggi}other{# opnir gluggar}}</translation>

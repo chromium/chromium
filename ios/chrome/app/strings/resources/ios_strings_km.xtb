@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">សម្គាល់…</translation>
 <translation id="3131206671572504478">ទប់ស្កាត់​​ទាំង​អស់</translation>
 <translation id="3153862085237805241">រក្សាទុក​បណ្ណ</translation>
+<translation id="3157387275655328056">បន្ថែមទៅបញ្ជីអាន</translation>
 <translation id="3157684681743766797">សម្គាល់ទាំងអស់…</translation>
 <translation id="3161291298470460782">ការធ្វើបែបនេះនឹងនាំអ្នកចេញពីគណនី បិទសមកាលកម្ម និងសម្អាតទិន្នន័យ Chrome ទាំងអស់​ចេញពីឧបករណ៍នេះ។ ទិន្នន័យ​ដែលអ្នកបានធ្វើសមកាលកម្ម​នឹងនៅតែមាននៅក្នុងគណនី Google របស់អ្នកដដែល។</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">ការកំណត់ខូគីរបស់អ្នកត្រូវ​បាន​អនុវត្តនៅក្នុងផ្ទាំងទាំងអស់។ ដើម្បីប្រើការកំណត់ថ្មីនៅក្នុងផ្ទាំងដែលបើក សូមផ្ទុកផ្ទាំងនោះឡើងវិញ។</translation>
 <translation id="5190835502935405962">របាចំណាំ</translation>
 <translation id="5197255632782567636">អ៊ីនធឺណិត</translation>
+<translation id="5210365745912300556">បិទផ្ទាំង</translation>
 <translation id="5228579091201413441">បើកដំណើរការធ្វើសមកាលកម្ម</translation>
 <translation id="5234764350956374838">ច្រានចោល</translation>
 <translation id="5245322853195994030">បោះបង់​ការធ្វើសមកាលកម្ម</translation>
@@ -486,7 +488,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6127379762771434464">ធាតុត្រូវបានយកចេញ</translation>
 <translation id="6136914049981179737">វិនាទីមុន</translation>
 <translation id="6144589619057374135">បើក ${url} នៅក្នុង​មុខងារឯកជន</translation>
-<translation id="616831107264507309">អាននៅពេលក្រោយ</translation>
 <translation id="6177442314419606057">ការស្វែងរកនៅក្នុង Chrome</translation>
 <translation id="6184086493125982861">បង្ហាញផ្ទាំង</translation>
 <translation id="6187302354554850004">សមកម្មចុងក្រោយ: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6293101329759844770">ដើម្បីបើក "ការរុករកដោយសុវត្ថិភាព" សូមបើក​<ph name="BEGIN_LINK" />សេវាកម្ម Google<ph name="END_LINK" /> រួចចុច "ការរុករកដោយសុវត្ថិភាព"។</translation>
 <translation id="6303969859164067831">ចាកចេញ ហើយបិទការធ្វើសមកាលកម្ម</translation>
 <translation id="6308436439357671616">វាអនុញ្ញាតឲ្យអ្នកថត និងអាប់ឡូតរូបថត</translation>
+<translation id="6321526113093607004">បញ្ចូល​ទៅ​ក្នុង​ចំណាំ</translation>
 <translation id="6324528485781869530">ប្តូរ​គណនី​សមកាលកម្ម</translation>
 <translation id="6324669097367352121">ការកំណត់ការចូល</translation>
 <translation id="6337234675334993532">ការអ៊ីនគ្រីប</translation>
@@ -672,7 +674,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7856733331829174190">មិន​អាច​ទាញ​យកបាន​ទេ</translation>
 <translation id="7859704718976024901">ប្រវត្តិរុករក</translation>
 <translation id="7887198238286927132">ដើម្បី​ការពារ​ឯកជនភាព​របស់អ្នក Chrome នឹងមិន​បំពេញ​កន្លែងបញ្ចូល​នេះដោយស្វ័យ​ប្រវត្តិទេ។</translation>
-<translation id="7918293828610777738">បញ្ជី​អាន​របស់អ្នក​អាច​ប្រើបាន​ពេលគ្មានអ៊ីធឺណិត។ ដើម្បី​បញ្ចូល​ទំព័រ​ទៅ​ក្នុង​បញ្ជី​អាន​របស់អ្នក សូមចុច <ph name="SHARE_OPENING_ICON" />  បន្ទាប់មក <ph name="READ_LATER_TEXT" /> ។</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">នាំចេញ​ពាក្យ​សម្ងាត់...</translation>
 <translation id="7947953824732555851">ទទួល និងចូល</translation>

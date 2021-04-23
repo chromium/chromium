@@ -340,7 +340,6 @@
 <translation id="1479427764273213107">このポリシーでは、ユーザーがカーネル ドライバから分離してウェブアプリ内で直接 chrome.usb API を通じて使用できる USB デバイスのリストを定義できます。USB ベンダー ID と商品 ID をペアで入力し、個々のハードウェアを特定できるようにします。
 
       このポリシーを設定しない場合、分離可能な USB デバイスのリストは空になります。</translation>
-<translation id="1479515813926202288">Enterprise ユーザーに対して Google レンズのカメラを使用した検索を無効にする</translation>
 <translation id="1481508277421549404">このポリシーを True に設定した場合、エンタープライズ ポリシーによってインストールされた拡張機能に対して Enterprise Hardware Platform API の使用が許可されます。
 
       このポリシーを False に設定するか未設定のままにした場合、拡張機能に対して API の使用は禁止されます。
@@ -432,13 +431,6 @@
       詳しくは、https://www.chromestatus.com/feature/4664843055398912 をご覧ください。</translation>
 <translation id="1587585749332985896">ヘッドレス モードの使用を許可しない</translation>
 <translation id="1588240398285670601">ブラウザの設定</translation>
-<translation id="1593245608325508847">このポリシーでは、Chrome の制限付きログイン機能を G Suite で有効にするとともに、ユーザーがこの設定を変更できないようにします。ユーザーは、指定ドメインのアカウントでのみ、Google のツールにアクセスできます（Gmail アカウントまたは GoogleMail アカウントを許可する場合は、consumer_accounts をドメインリストに追加します）。この設定により、Google の認証を必要とする管理対象のデバイス上では、アカウントが明示的に許可されたドメインのいずれにも属していない場合に、ユーザーは予備のアカウントへのログインや追加ができなくなります。
-
-      この設定を空白または未設定のままにした場合、ユーザーはどのアカウントでも G Suite にアクセスできます。
-
-      ユーザーはこの設定を変更またはオーバーライドできません。
-
-      注: このポリシーにより、すべての google.com ドメインに対するすべての HTTP および HTTPS リクエストに X-GoogApps-Allowed-Domains ヘッダーが追加されます。詳しくは https://support.google.com/a/answer/1668854 をご覧ください。</translation>
 <translation id="1599424828227887013">Android デバイスで指定の発行元に対してサイト分離を有効にする</translation>
 <translation id="159946228300522107">このポリシーを True に設定した場合、Chrome では初回実行時に最初に表示されたウィンドウが最大化されます。このポリシーを False に設定した場合、または未設定のままにした場合、画面サイズによっては、Chrome で最初に表示されたウィンドウが最大化されます。</translation>
 <translation id="1600340610556453828">このポリシーを無効に設定した場合、<ph name="PRODUCT_OS_NAME" /> で Wi-Fi がオフになり、ユーザーはこの設定を変更できません。
@@ -964,7 +956,6 @@
 <translation id="2303795211377219696">クレジット カードの自動入力を有効にする</translation>
 <translation id="2307496301287881990">ディスプレイとグラフィックのステータスを報告する</translation>
 <translation id="2309390639296060546">デフォルトの位置情報設定</translation>
-<translation id="2327252517317514801">G Suite へのアクセスを許可するドメインを定義する</translation>
 <translation id="2331354174913096226">希望の DNS-over-HTTPS リゾルバの URI テンプレートを指定します。複数の DNS-over-HTTPS リゾルバを指定するには、対応する URI テンプレートをスペースで区切ります。
 
       DnsOverHttpsMode が <ph name="SECURE_DNS_MODE_SECURE" /> に設定されている場合、このポリシーの設定は必須で、空にはできません。
@@ -2545,7 +2536,6 @@
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290"><ph name="PLUGIN_VM_NAME" /> に関連するポリシーを設定します。</translation>
 <translation id="449784980858429908">すべてのシリアルポートへの接続を自動的にサイトに許可します。</translation>
-<translation id="4507775063441355559"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> のカメラを使用した検索を許可する</translation>
 <translation id="4510923771103268849">Crostini コンテナへのルートアクセスをユーザーに許可する</translation>
 <translation id="4515404363392014383">信頼できる提供元に対してセーフ ブラウジングを有効にする</translation>
 <translation id="4518251772179446575">サイトがユーザーの物理的な現在地を追跡しようとしたときに毎回確認する</translation>
@@ -3099,7 +3089,6 @@
           * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> フィールドと <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> フィールドを使用します。
 
       注: 詳しい例については、Chromium プロジェクトの説明（https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett）をご覧ください。</translation>
-<translation id="5264773067879932127">このポリシーを未設定のままにするか有効に設定した場合、ユーザーはカメラと <ph name="GOOGLE_LENS_PRODUCT_NAME" /> を使用して検索できます。このポリシーを False に設定した場合、<ph name="GOOGLE_LENS_PRODUCT_NAME" /> のカメラを使用した検索が可能な場合でも、検索ボックスに <ph name="GOOGLE_LENS_PRODUCT_NAME" /> ボタンは表示されません。</translation>
 <translation id="5266173014392157048">このポリシーはサポートが終了しています。代わりに <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> ポリシーを使用してください。
 
       このポリシーでは、<ph name="PRODUCT_NAME" /> が委任できるサーバーを割り当てることができます。複数のサーバー名を入力するときはカンマで区切ります。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。
@@ -4615,7 +4604,6 @@
       <ph name="MS_WIN_NAME" /> では、<ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみこの機能を使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="7258823566580374486">リモート アクセス ホストのカーテンを有効にする</translation>
 <translation id="7260204423892780600">Google アシスタントの設定を管理します。</translation>
-<translation id="7260277299188117560">自動更新での p2p の有効化</translation>
 <translation id="7261252191178797385">デバイスの壁紙画像</translation>
 <translation id="7264704483008663819">このポリシーは M68 でサポートを終了しました。代わりに DeveloperToolsAvailability を使用してください。
 
@@ -4647,7 +4635,6 @@
 
       このポリシーが未設定の場合、デフォルトにより、企業の管理対象ユーザーは使用を許可されず、管理対象外のユーザーは使用を許可されます。</translation>
 <translation id="7295019613773647480">監視対象ユーザーを有効にする</translation>
-<translation id="7295038772938766029">Enterprise ユーザーに対して Google レンズのカメラを使用した検索を有効にする</translation>
 <translation id="7302043767260300182">画面がロックされるまでの時間（AC 電源での実行時）</translation>
 <translation id="7303902834678570827">管理対象のゲスト セッションのユーザーにデバイスのディスプレイ設定の保存を許可しない</translation>
 <translation id="731208205557053914">VPD 情報を報告する</translation>
@@ -5082,7 +5069,6 @@
 <translation id="7925224837072026018">このポリシーでは、拡張機能または Android アプリに対し、企業キーへのアクセスを許可します。管理対象アカウントで chrome.enterprise.platformKeys API を使用して生成したキーは、企業専用のキーと指定されます。ユーザーは、拡張機能または Android アプリに企業キーへのアクセス権を付与することはできず、拡張機能または Android アプリに付与された企業キーへのアクセス権を取り消すこともできません。
 
       デフォルトでは、拡張機能または Android アプリで企業用のキーを使用することはできません。この動作は、拡張機能または Android アプリに対して allowCorporateKeyUsage を False に設定した場合の結果と同じです。拡張機能または Android アプリに対して allowCorporateKeyUsage が True に設定されている場合のみ、その拡張機能または Android アプリでは企業用のプラットフォーム キーを任意のデータの署名に使用できます。対象の拡張機能または Android アプリがキーへのアクセスを攻撃から保護できると信頼できる場合にのみ、この許可を付与してください。</translation>
-<translation id="793134539373873765">p2p を OS 更新ペイロードに使用するかどうかを指定します。True に設定すると、デバイスは LAN 上で更新ペイロードを共有し、使用しようとするため、インターネット帯域幅の使用と混雑が削減される可能性があります。更新ペイロードが LAN 上で使用できない場合、デバイスは更新サーバーからのダウンロードにフォールバックします。False に設定するか、何も設定しない場合、p2p は使用されません。</translation>
 <translation id="7933141401888114454">監視対象ユーザーを作成できるようにする</translation>
 <translation id="793473937901685727">ARC アプリで証明書を使用できるかどうかを設定します</translation>
 <translation id="7937766917976512374">動画キャプチャを許可または拒否する</translation>

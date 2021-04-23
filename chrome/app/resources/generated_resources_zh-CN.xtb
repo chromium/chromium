@@ -984,7 +984,7 @@
 <translation id="205560151218727633">Google 助理徽标</translation>
 <translation id="2058456167109518507">检测到的设备</translation>
 <translation id="2059913712424898428">时区</translation>
-<translation id="2060375639911876205">移除 eSIM 卡个人资料</translation>
+<translation id="2060375639911876205">移除 eSIM 卡配置文件</translation>
 <translation id="2065405795449409761">Chrome 正受到自动测试软件的控制。</translation>
 <translation id="2071393345806050157">没有本地日志文件。</translation>
 <translation id="2071692954027939183">由于您通常不允许显示通知，系统已自动屏蔽通知</translation>
@@ -2881,7 +2881,7 @@
 <translation id="4131410914670010031">黑白色</translation>
 <translation id="413193092008917129">网络诊断例程</translation>
 <translation id="4132183752438206707">在 Google Play 商店中查找所需应用</translation>
-<translation id="4132364317545104286">重命名 eSIM 卡个人资料</translation>
+<translation id="4132364317545104286">重命名 eSIM 卡配置文件</translation>
 <translation id="4133076602192971179">打开应用以更改密码</translation>
 <translation id="4136203100490971508">护眼模式将于日出时自动关闭</translation>
 <translation id="41365691917097717">继续操作会启用 ADB 调试，以创建和测试 Android 应用。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且一旦安装就无法停用，除非将设备恢复到出厂设置。</translation>
@@ -3074,6 +3074,7 @@
 <translation id="4392896746540753732">修改配置文件</translation>
 <translation id="4394049700291259645">停用</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{打开全部书签(&amp;O)}=1{打开书签(&amp;O)}other{打开全部（{COUNT} 个）书签(&amp;O)}}</translation>
+<translation id="4398131717714042083">会清除历史记录以及搜索框中的自动补全项</translation>
 <translation id="439817266247065935">您的设备未正常关闭。要使用 Linux 应用，请重启 Linux。</translation>
 <translation id="4400367121200150367">一律不保存密码的网站将显示在这里</translation>
 <translation id="4400632832271803360">按住启动器键可切换顶行键的行为</translation>
@@ -5056,6 +5057,7 @@
 <translation id="6651237644330755633">信任该证书，以标识网站的身份</translation>
 <translation id="6651495917527016072">将 Wi-Fi 网络配置同步到您的手机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">只有 x86_64 平台才支持 Chrome <ph name="MS_AD_NAME" /> 集成功能。采用 ARM 或 x86 平台的 Chromebook 不支持此功能。</translation>
+<translation id="66537479323396140">会清除历史记录以及搜索框中的自动补全项。您的 Google 帐号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="6654509035557065241">设置首选网络</translation>
 <translation id="6655190889273724601">开发者模式</translation>
 <translation id="6655458902729017087">隐藏帐号</translation>
@@ -5922,6 +5924,7 @@
 <translation id="7636919061354591437">在此设备上安装</translation>
 <translation id="7637593984496473097">磁盘空间不足</translation>
 <translation id="7638605456503525968">串行端口</translation>
+<translation id="7639914187072011620">未能从服务器中提取 SAML 重定向网址</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> 会使用您保存的密码让您自动登录到符合条件的网站。</translation>
 <translation id="7642778300616172920">隐藏敏感内容</translation>
 <translation id="7643842463591647490">{0,plural, =1{# 个打开的窗口}other{# 个打开的窗口}}</translation>
@@ -6748,7 +6751,7 @@
 <translation id="8551588720239073785">日期和时间设置</translation>
 <translation id="8553342806078037065">管理其他用户</translation>
 <translation id="8554899698005018844">无语言</translation>
-<translation id="8555195867496021627">无可用的 eSIM 卡个人资料。您可在<ph name="BEGIN_LINK" />此处<ph name="END_LINK" />下载一份新的个人资料。</translation>
+<translation id="8555195867496021627">无可用的 eSIM 卡配置文件。您可在<ph name="BEGIN_LINK" />此处<ph name="END_LINK" />下载一份新的配置文件。</translation>
 <translation id="8557022314818157177">连续轻触您的安全密钥，直到您的指纹被捕获</translation>
 <translation id="8557930019681227453">由应用缓存指定的网址</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{在新窗口中打开全部书签(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）书签(&amp;N)}}</translation>

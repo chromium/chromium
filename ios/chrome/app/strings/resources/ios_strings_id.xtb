@@ -204,6 +204,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="3112556859945124369">Tandai…</translation>
 <translation id="3131206671572504478">Blokir Semua</translation>
 <translation id="3153862085237805241">Simpan Kartu</translation>
+<translation id="3157387275655328056">Tambahkan ke Daftar Bacaan</translation>
 <translation id="3157684681743766797">Tandai Semua...</translation>
 <translation id="3161291298470460782">Ini akan membuat Anda logout, menonaktifkan sinkronisasi, dan menghapus semua data Chrome dari perangkat ini. Data yang disinkronkan akan tetap berada di Akun Google Anda.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5188482106078495165">Setelan cookie berlaku untuk semua tab. Untuk menerapkan setelan baru pada tab yang terbuka, muat ulang tab.</translation>
 <translation id="5190835502935405962">Bilah Bookmark</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Tutup tab</translation>
 <translation id="5228579091201413441">Aktifkan sinkronisasi</translation>
 <translation id="5234764350956374838">Tutup</translation>
 <translation id="5245322853195994030">Batalkan Sinkronisasi</translation>
@@ -486,7 +488,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6127379762771434464">Item dihapus</translation>
 <translation id="6136914049981179737">Detik lalu</translation>
 <translation id="6144589619057374135">Buka ${url} dalam mode Samaran</translation>
-<translation id="616831107264507309">Baca Nanti</translation>
 <translation id="6177442314419606057">Penelusuran di Chrome</translation>
 <translation id="6184086493125982861">Tampilkan Tab</translation>
 <translation id="6187302354554850004">Sinkron terakhir: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6293101329759844770">Untuk mengaktifkan Safe Browsing, buka <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" /> dan ketuk Safe Browsing.</translation>
 <translation id="6303969859164067831">Logout dan nonaktifkan sinkronisasi</translation>
 <translation id="6308436439357671616">Hal ini memungkinkan Anda mengambil dan mengupload foto.</translation>
+<translation id="6321526113093607004">Tambahkan ke Bookmark</translation>
 <translation id="6324528485781869530">Ganti Akun Sinkronisasi</translation>
 <translation id="6324669097367352121">Setelan masuk</translation>
 <translation id="6337234675334993532">Enkripsi</translation>
@@ -672,7 +674,6 @@ Karena akun Anda dikelola oleh <ph name="HOSTED_DOMAIN" />, data Chrome Anda aka
 <translation id="7856733331829174190">Tidak Dapat Mendownload</translation>
 <translation id="7859704718976024901">Histori Browsing</translation>
 <translation id="7887198238286927132">Untuk melindungi privasi Anda, Chrome tidak akan melakukan IsiOtomatis pada kolom ini.</translation>
-<translation id="7918293828610777738">Daftar bacaan Anda tersedia secara offline. Untuk menambahkan halaman ke daftar bacaan, ketuk <ph name="SHARE_OPENING_ICON" /> lalu <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Ekspor Sandi...</translation>
 <translation id="7947953824732555851">Terima dan masuk</translation>

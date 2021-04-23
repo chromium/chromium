@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">குறி…</translation>
 <translation id="3131206671572504478">அனைத்தையும் தடு</translation>
 <translation id="3153862085237805241">கார்டைச் சேமிக்கும்</translation>
+<translation id="3157387275655328056">வாசிப்புப் பட்டியலில் சேர்</translation>
 <translation id="3157684681743766797">அனைத்தையும் குறி…</translation>
 <translation id="3161291298470460782">இதைச் செய்தால் வெளியேற்றப்படுவீர்கள், ஒத்திசைவு முடக்கப்படும், இந்தச் சாதனத்திலிருந்து Chrome தரவு அனைத்தும் அழிக்கப்படும். ஏற்கெனவே ஒத்திசைக்கப்பட்ட தரவு தொடர்ந்து உங்கள் Google கணக்கிலேயே இருக்கும்.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">குக்கீகளுக்கான உங்கள் அமைப்பு அனைத்துத் தாவல்களுக்கும் பொருந்தும். திறந்திருக்கும் தாவலை புதிய அமைப்புக்கு உட்படுத்த, அதை ரெஃப்ரெஷ் செய்யவும்.</translation>
 <translation id="5190835502935405962">புக்மார்க் பட்டி</translation>
 <translation id="5197255632782567636">இணையம்</translation>
+<translation id="5210365745912300556">தாவலை மூடுக</translation>
 <translation id="5228579091201413441">ஒத்திசைவை இயக்கு</translation>
 <translation id="5234764350956374838">நிராகரி</translation>
 <translation id="5245322853195994030">ஒத்திசைவை ரத்துசெய்</translation>
@@ -446,6 +448,7 @@
 <translation id="5782227691023083829">மொழிபெயர்க்கிறது...</translation>
 <translation id="5803566855766646066">இந்தப் புதிய கார்டை நிராகரிக்க வேண்டுமா?</translation>
 <translation id="5816228676161003208">இதன் மூலம் உங்கள் குரலைப் பயன்படுத்தி வேகமாகத் தேடலாம்.</translation>
+<translation id="581659025233126501">ஒத்திசைவை இயக்கு</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> நிர்வகிக்கிறது. <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">தேடல் இன்ஜின்</translation>
 <translation id="5854790677617711513">30 நாட்களுக்கு முந்தையவை</translation>
@@ -485,7 +488,6 @@
 <translation id="6127379762771434464">உருப்படி அகற்றப்பட்டது</translation>
 <translation id="6136914049981179737">வினாடிகள் முன்பு</translation>
 <translation id="6144589619057374135">${url} இணைப்பை மறைநிலையில் திற</translation>
-<translation id="616831107264507309">பின்னர் படிக்க</translation>
 <translation id="6177442314419606057">Chromeமில் தேடு</translation>
 <translation id="6184086493125982861">தாவல்களைக் காண்பி</translation>
 <translation id="6187302354554850004">கடைசியாக ஒத்திசைத்தது: <ph name="LAST_USED_TIME" /></translation>
@@ -493,12 +495,14 @@
 <translation id="6196207969502475924">குரல் தேடல்</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} தாவலை மூடுக}other{{COUNT} தாவல்களை மூடுக}}</translation>
 <translation id="6219688215832490856">எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>
+<translation id="6223816392543092032">உங்கள் புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள் மற்றும் பிற அமைப்புகளை உங்கள் சாதனங்கள் அனைத்திலும் பெறலாம்.</translation>
 <translation id="6254066287920239840">உலாவியில் திறப்பதற்குப் பதிலாக இணைப்புகளைப் பயன்பாட்டில் திற.</translation>
 <translation id="6255097610484507482">கடன் அட்டையைத் திருத்துக</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> க்கு மொழிபெயர்</translation>
 <translation id="6293101329759844770">’பாதுகாப்பு உலாவலை’ இயக்க, <ph name="BEGIN_LINK" />Google சேவைகள்<ph name="END_LINK" /> என்பதைத் திறந்து ’பாதுகாப்பு உலாவல்’ என்பதைத் தட்டவும்.</translation>
 <translation id="6303969859164067831">வெளியேறி ஒத்திசைவை முடக்கு</translation>
 <translation id="6308436439357671616">இதன் மூலம் படங்களை எடுத்துப் பதிவேற்றலாம்.</translation>
+<translation id="6321526113093607004">புக்மார்க்குகளில் சேர்</translation>
 <translation id="6324528485781869530">ஒத்திசைவுக் கணக்கை மாற்றவும்</translation>
 <translation id="6324669097367352121">உள்நுழைவு அமைப்புகள்</translation>
 <translation id="6337234675334993532">என்க்ரிப்ஷன்</translation>
@@ -525,6 +529,7 @@
 <translation id="6445981559479772097">செய்தி அனுப்பப்பட்டது.</translation>
 <translation id="6447842834002726250">குக்கீகள்</translation>
 <translation id="6453018583485750254">இதுவரை சரிபார்ப்பு இயக்கப்படவில்லை.</translation>
+<translation id="6459307836338400162">தனியுரிமை, பாதுகாப்பு, தரவுச் சேகரிப்பு ஆகியவை தொடர்பான கூடுதல் அமைப்புகளுக்கு <ph name="BEGIN_LINK" />ஒத்திசைவு<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Google சேவைகள்<ph name="END_LINK" /> ஆகிய இரண்டு அமைப்புகளுக்கும் செல்லவும்.</translation>
 <translation id="6464071786529933911">புதிய மறைநிலைத் தாவலில் திற</translation>
 <translation id="6464397691496239022">உங்கள் உலாவல் அனுபவத்தை மேம்படுத்துவதற்காக (எ.கா., உங்களை உள்நுழைந்தபடியே வைத்திருப்பது, உங்கள் ஷாப்பிங் கார்ட்டில் உள்ளவற்றை நினைவில் கொள்வது போன்றவை) குக்கீகளைத் தளங்கள் பயன்படுத்த முடியும்.
 
@@ -669,7 +674,6 @@
 <translation id="7856733331829174190">பதிவிறக்க முடியவில்லை</translation>
 <translation id="7859704718976024901">உலாவல் வரலாறு</translation>
 <translation id="7887198238286927132">உங்கள் தனியுரிமையைப் பாதுகாக்க, Chrome இந்தப் புலத்தைத் தானாக நிரப்பாது.</translation>
-<translation id="7918293828610777738">உங்கள் வாசிப்புப் பட்டியலை ஆஃப்லைனில் அணுகலாம். வாசிப்புப் பட்டியலில் ஒரு பக்கத்தைச் சேர்க்க, <ph name="SHARE_OPENING_ICON" /> ஐகானைத் தட்டிய பின்னர் <ph name="READ_LATER_TEXT" /> என்பதைத் தட்டவும்.</translation>
 <translation id="7938254975914653459">ஃபேஸ்டைம்</translation>
 <translation id="7939128259257418052">கடவுச்சொற்களை ஏற்று...</translation>
 <translation id="7947953824732555851">ஏற்று உள்நுழைக</translation>
@@ -708,6 +712,7 @@
 <translation id="8281886186245836920">தவிர்</translation>
 <translation id="8283172974887967105">அமை…</translation>
 <translation id="8299417921174340354">கடவுச்சொற்களைப் பயன்படுத்த முதலில் உங்கள் சாதனத்தில் கடவுக்குறியீட்டை அமைக்க வேண்டும்.</translation>
+<translation id="83100941411593607">உள்நுழைவு முடக்கப்பட்டுள்ளது</translation>
 <translation id="8319076807703933069">புதிய தேடல்</translation>
 <translation id="8323906514956095947">கூடுதல் தாவல் விருப்பத்தேர்வுகளுக்குத் தொட்டுப் பிடிக்கவும்</translation>
 <translation id="8328777765163860529">எல்லாவற்றையும் மூடு</translation>

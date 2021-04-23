@@ -204,6 +204,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="3112556859945124369">Mark…</translation>
 <translation id="3131206671572504478">Block all</translation>
 <translation id="3153862085237805241">Save Card</translation>
+<translation id="3157387275655328056">Add to Reading List</translation>
 <translation id="3157684681743766797">Mark All…</translation>
 <translation id="3161291298470460782">This will sign you out, turn off sync and clear all Chrome data from this device. Your synced data will remain in your Google Account.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5188482106078495165">Your cookies setting applies to all tabs. To apply a new setting to an open tab, reload the tab.</translation>
 <translation id="5190835502935405962">Bookmarks Bar</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Close tab</translation>
 <translation id="5228579091201413441">Enable sync</translation>
 <translation id="5234764350956374838">Dismiss</translation>
 <translation id="5245322853195994030">Cancel sync</translation>
@@ -486,7 +488,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6127379762771434464">Item removed</translation>
 <translation id="6136914049981179737">Seconds ago</translation>
 <translation id="6144589619057374135">Open ${url} in Incognito</translation>
-<translation id="616831107264507309">Read Later</translation>
 <translation id="6177442314419606057">Search in Chrome</translation>
 <translation id="6184086493125982861">Show Tabs</translation>
 <translation id="6187302354554850004">Last synced: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6293101329759844770">To turn on Safe Browsing, open <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" /> and tap Safe Browsing.</translation>
 <translation id="6303969859164067831">Sign out and turn off sync</translation>
 <translation id="6308436439357671616">This lets you take and upload photos.</translation>
+<translation id="6321526113093607004">Add to Bookmarks</translation>
 <translation id="6324528485781869530">Switch Sync Account</translation>
 <translation id="6324669097367352121">Sign in settings</translation>
 <translation id="6337234675334993532">Encryption</translation>
@@ -672,7 +674,6 @@ Because your account is managed by <ph name="HOSTED_DOMAIN" />, your Chrome data
 <translation id="7856733331829174190">Couldn't download</translation>
 <translation id="7859704718976024901">Browsing history</translation>
 <translation id="7887198238286927132">To protect your privacy, Chrome will not auto-fill this field.</translation>
-<translation id="7918293828610777738">Your reading list is available offline. To add a page to your reading list, tap <ph name="SHARE_OPENING_ICON" />, then <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Export Passwords…</translation>
 <translation id="7947953824732555851">Accept and sign in</translation>

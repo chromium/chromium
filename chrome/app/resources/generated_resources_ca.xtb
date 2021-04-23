@@ -2963,7 +2963,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4252899949534773101">El Bluetooth està desactivat</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: el contingut de les pestanyes es comparteix</translation>
 <translation id="4253183225471855471">No s'ha trobat cap xarxa. Insereix la SIM i reinicia el dispositiu abans de tornar-ho a provar.</translation>
-<translation id="4254813446494774748">Idioma de la traducció:</translation>
+<translation id="4254813446494774748">Idioma de traducció:</translation>
 <translation id="425573743389990240">Velocitat de descàrrega de la bateria en watts (un valor negatiu significa que la bateria s'està carregant)</translation>
 <translation id="4256316378292851214">De&amp;sa el vídeo com a...</translation>
 <translation id="4258348331913189841">Sistemes de fitxers</translation>
@@ -3078,6 +3078,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4392896746540753732">Edita el fitxer de configuració</translation>
 <translation id="4394049700291259645">Desactiva</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Obre-les totes}=1{&amp;Obre l'adreça d'interès}other{&amp;Obre-les totes ({COUNT})}}</translation>
+<translation id="4398131717714042083">Esborra l'historial i les complecions automàtiques del quadre de cerca</translation>
 <translation id="439817266247065935">El dispositiu no s'ha apagat correctament. Reinicia Linux per fer servir les aplicacions de Linux.</translation>
 <translation id="4400367121200150367">Els llocs que no desen contrasenyes mai es mostraran aquí</translation>
 <translation id="4400632832271803360">Mantén premuda la tecla del menú d'aplicacions per canviar el comportament de les tecles de la fila superior</translation>
@@ -5062,6 +5063,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6651237644330755633">Confia en aquest certificat per identificar llocs web</translation>
 <translation id="6651495917527016072">Sincronitza les xarxes Wi‑Fi amb el teu telèfon. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">La integració de Chrome amb <ph name="MS_AD_NAME" /> només s'admet en plataformes x86_64. Els dispositius Chromebook equipats amb una plataforma ARM o x86 no admeten aquesta funció.</translation>
+<translation id="66537479323396140">Esborra l'historial i les complecions automàtiques del quadre de cerca. A <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> trobaràs altres maneres d'explorar l'historial de navegació del Compte de Google.</translation>
 <translation id="6654509035557065241">Estableix una xarxa com a preferida</translation>
 <translation id="6655190889273724601">Mode de desenvolupador </translation>
 <translation id="6655458902729017087">Amaga els comptes</translation>
@@ -5928,6 +5930,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7636919061354591437">Instal·la en aquest dispositiu</translation>
 <translation id="7637593984496473097">No hi ha prou espai de disc</translation>
 <translation id="7638605456503525968">Ports en sèrie</translation>
+<translation id="7639914187072011620">L'URL de redirecció de SAML no s'ha pogut recuperar del servidor</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> us inicia la sessió automàticament als llocs que compleixen els requisits amb les contrasenyes que heu desat.</translation>
 <translation id="7642778300616172920">Amaga el contingut sensible</translation>
 <translation id="7643842463591647490">{0,plural, =1{# finestra oberta}other{# finestres obertes}}</translation>

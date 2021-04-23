@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Βοηθός (φόρτωση…)</translation>
 <translation id="1838895407229022812">Ο Νυχτερινός φωτισμός είναι ανενεργός.</translation>
-<translation id="1850504506766569011">Το Wi-Fi έχει απενεργοποιηθεί.</translation>
 <translation id="1864454756846565995">Συσκευή USB-C (πίσω θύρα)</translation>
 <translation id="1882814835921407042">Δεν υπάρχει δίκτυο κινητής τηλεφωνίας</translation>
 <translation id="1882897271359938046">Κατοπτρισμός σε <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">Ρυθμίσεις χρήστη</translation>
 <translation id="3217205077783620295">Ο ήχος είναι ενεργοποιημένος, η εναλλαγή θα ενεργοποιήσει τη σίγαση ήχου.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> ακόμη</translation>
-<translation id="3236488194889173876">Δεν υπάρχουν διαθέσιμα δίκτυα κινητής τηλεφωνίας</translation>
 <translation id="3249513730522716925">Η επιφάνεια εργασίας <ph name="WINDOW_TITLE" /> μετακινήθηκε από την επιφάνεια εργασίας <ph name="ACTIVE_DESK" /> στην επιφάνεια εργασίας <ph name="TARGET_DESK" />.</translation>
 <translation id="3255483164551725916">Τι μπορείς να κάνεις;</translation>
 <translation id="3269597722229482060">Δεξί κλικ</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774">Η λειτουργία <ph name="FEATURE_NAME" /> είναι ενεργοποιημένη.</translation>
 <translation id="5947494881799873997">Επαναφορά</translation>
 <translation id="595202126637698455">Η παρακολούθηση απόδοσης έχει ενεργοποιηθεί</translation>
-<translation id="5957083217255311415">Τα δεδομένα κινητής τηλεφωνίας είναι απενεργοποιημένα.</translation>
 <translation id="5958529069007801266">Εποπτευόμενος χρήστης</translation>
 <translation id="5960825221082587934">Επιτρέψτε στον Βοηθό να σας εμφανίζει πληροφορίες, όπως ορισμούς, μεταφράσεις ή μετατροπές μονάδων για την επιλογή σας.</translation>
 <translation id="5977415296283489383">Ακουστικά</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">Η συντόμευση για να εμφανίσετε το συννεφάκι μενού επιλογών εισαγωγής άλλαξε. Χρησιμοποιήστε το <ph name="NEW_SHORTCUT" /> αντί για το <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Η επιφάνεια εργασίας <ph name="DESK_TITILE" /> ενεργοποιήθηκε</translation>
 <translation id="8452135315243592079">Κάρτα SIM που λείπει</translation>
-<translation id="8454013096329229812">Το Wi-Fi έχει ενεργοποιηθεί.</translation>
 <translation id="8462305545768648477">Κλείσιμο λειτουργίας Επιλέξτε για αυτόματη ανάγνωση</translation>
 <translation id="847056008324733326">Εμφάνιση ρυθμίσεων κλίμακας</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> έχει <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

@@ -204,6 +204,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="3112556859945124369">Marchează…</translation>
 <translation id="3131206671572504478">Blochează-le pe toate</translation>
 <translation id="3153862085237805241">Salvează cardul</translation>
+<translation id="3157387275655328056">Adaugă în lista de lectură</translation>
 <translation id="3157684681743766797">Marchează-le pe toate…</translation>
 <translation id="3161291298470460782">Astfel, te vei deconecta, vei dezactiva sincronizarea și vei șterge toate datele Chrome de pe dispozitiv. Datele sincronizate se vor păstra în Contul Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5188482106078495165">Setarea pentru cookie-uri se aplică tuturor filelor. Pentru a aplica o nouă setare unei file deschise, reîncarcă fila.</translation>
 <translation id="5190835502935405962">Bară de marcaje</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Închide fila</translation>
 <translation id="5228579091201413441">Activează sincronizarea</translation>
 <translation id="5234764350956374838">Închide</translation>
 <translation id="5245322853195994030">Anulează sincronizarea</translation>
@@ -486,7 +488,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6127379762771434464">Elementul a fost eliminat</translation>
 <translation id="6136914049981179737">Secunde</translation>
 <translation id="6144589619057374135">Deschide ${url} în modul incognito</translation>
-<translation id="616831107264507309">Citește mai târziu</translation>
 <translation id="6177442314419606057">Caută în Chrome</translation>
 <translation id="6184086493125982861">Afișează butonul File</translation>
 <translation id="6187302354554850004">Ultima sincronizare: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6293101329759844770">Pentru a activa Navigarea sigură, deschide <ph name="BEGIN_LINK" />Serviciile Google<ph name="END_LINK" /> și atinge Navigare sigură.</translation>
 <translation id="6303969859164067831">Deconectează-te și dezactivează sincronizarea</translation>
 <translation id="6308436439357671616">Astfel, poți să fotografiezi și să încarci fotografiile.</translation>
+<translation id="6321526113093607004">Adaugă în Marcaje</translation>
 <translation id="6324528485781869530">Schimbă contul de sincronizare</translation>
 <translation id="6324669097367352121">Setări de conectare</translation>
 <translation id="6337234675334993532">Criptare</translation>
@@ -672,7 +674,6 @@ Deoarece contul tău este gestionat de <ph name="HOSTED_DOMAIN" />, datele Chrom
 <translation id="7856733331829174190">Nu s-a putut descărca</translation>
 <translation id="7859704718976024901">Istoricul de navigare</translation>
 <translation id="7887198238286927132">Pentru a-ți proteja confidențialitatea, Chrome nu va completa automat acest câmp.</translation>
-<translation id="7918293828610777738">Lista de lectură este disponibilă offline. Pentru a adăuga o pagină în lista de lectură, atinge <ph name="SHARE_OPENING_ICON" />, apoi <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportă parolele...</translation>
 <translation id="7947953824732555851">Accept și conectare</translation>

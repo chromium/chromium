@@ -204,6 +204,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="3112556859945124369">Märgi …</translation>
 <translation id="3131206671572504478">Blokeeri kõik</translation>
 <translation id="3153862085237805241">Salvesta kaart</translation>
+<translation id="3157387275655328056">Lisa lugemisloendisse</translation>
 <translation id="3157684681743766797">Märgi kõik …</translation>
 <translation id="3161291298470460782">See logib teid välja, lülitab sünkroonimise välja ja kustutab sellest seadmest kõik Chrome'i andmed. Teie sünkroonitud andmed jäävad teie Google'i kontole.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5188482106078495165">Küpsisefailide seaded rakenduvad kõikidele vahelehtedele. Uue seade rakendamiseks avatud vahelehele laadige see uuesti.</translation>
 <translation id="5190835502935405962">Järjehoidjariba</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Sule vaheleht</translation>
 <translation id="5228579091201413441">Sünkroonimise lubamine</translation>
 <translation id="5234764350956374838">Loobu</translation>
 <translation id="5245322853195994030">Tühista sünkroonimine</translation>
@@ -486,7 +488,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6127379762771434464">Üksus eemaldati</translation>
 <translation id="6136914049981179737">Sek. eest</translation>
 <translation id="6144589619057374135">Ava ${url} inkognito aknas</translation>
-<translation id="616831107264507309">Hiljem lugemiseks</translation>
 <translation id="6177442314419606057">Otsing Chrome'ist</translation>
 <translation id="6184086493125982861">Kuva vahelehed</translation>
 <translation id="6187302354554850004">Viimati sünkr.: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6293101329759844770">Google'i ohutu sirvimise sisselülitamiseks avage jaotis <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" /> ja puudutage valikut Google'i ohutu sirvimine.</translation>
 <translation id="6303969859164067831">Logi välja ja lülita sünkroonimine välja</translation>
 <translation id="6308436439357671616">See võimaldab fotosid jäädvustada ja üles laadida.</translation>
+<translation id="6321526113093607004">Lisa järjehoidjatesse</translation>
 <translation id="6324528485781869530">Sünkroonimiskonto vahetamine</translation>
 <translation id="6324669097367352121">Sisselogimisseaded</translation>
 <translation id="6337234675334993532">Krüpteerimine</translation>
@@ -672,7 +674,6 @@ Kuna teie kontot haldab domeen <ph name="HOSTED_DOMAIN" />, kustutatakse teie Ch
 <translation id="7856733331829174190">Ei saanud alla laadida</translation>
 <translation id="7859704718976024901">Sirvimisajalugu</translation>
 <translation id="7887198238286927132">Teie privaatsuse kaitsmiseks ei täida Chrome seda välja automaatselt.</translation>
-<translation id="7918293828610777738">Teie lugemisloend on võrguühenduseta saadaval. Lugemisloendisse lehe lisamiseks puudutage ikooni <ph name="SHARE_OPENING_ICON" /> ja seejärel valikut <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Paroolide eksportimine …</translation>
 <translation id="7947953824732555851">Nõustu ja logi sisse</translation>

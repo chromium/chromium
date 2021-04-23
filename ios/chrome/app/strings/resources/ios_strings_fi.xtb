@@ -204,6 +204,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="3112556859945124369">Merkitse…</translation>
 <translation id="3131206671572504478">Estä kaikki</translation>
 <translation id="3153862085237805241">Tallenna kortti</translation>
+<translation id="3157387275655328056">Lisää lukulistalle</translation>
 <translation id="3157684681743766797">Merkitse kaikki…</translation>
 <translation id="3161291298470460782">Tämä kirjaa sinut ulos, laittaa synkronoinnin pois päältä ja tyhjentää kaiken Chrome-datan tältä laitteelta. Synkronoitu datasi pysyy Google-tililläsi.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5188482106078495165">Evästeasetustasi käytetään kaikilla välilehdillä. Jos haluat käyttää uutta asetusta avoimella välilehdellä, päivitä kyseinen välilehti.</translation>
 <translation id="5190835502935405962">Kirjanmerkkipalkki</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Sulje välilehti</translation>
 <translation id="5228579091201413441">Ota synkronointi käyttöön</translation>
 <translation id="5234764350956374838">Hylkää</translation>
 <translation id="5245322853195994030">Peru synkronointi</translation>
@@ -486,7 +488,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6127379762771434464">Kohde poistettu</translation>
 <translation id="6136914049981179737">Hetki sitten</translation>
 <translation id="6144589619057374135">Avaa ${url} incognito-tilassa</translation>
-<translation id="616831107264507309">Lue myöhemmin</translation>
 <translation id="6177442314419606057">Hae Chromesta</translation>
 <translation id="6184086493125982861">Näytä välilehdet</translation>
 <translation id="6187302354554850004">Viim. synkronoitu: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6293101329759844770">Avaa <ph name="BEGIN_LINK" />Googlen palvelut<ph name="END_LINK" /> ja valitse Selaussuoja.</translation>
 <translation id="6303969859164067831">Kirjaudu ulos ja poista synkronointi käytöstä</translation>
 <translation id="6308436439357671616">Tämän avulla voit ottaa kuvia ja ladata niitä palvelimelle.</translation>
+<translation id="6321526113093607004">Lisää kirjanmerkkeihin</translation>
 <translation id="6324528485781869530">Vaihda synkronointitiliä</translation>
 <translation id="6324669097367352121">Kirjautumisen aset.</translation>
 <translation id="6337234675334993532">Salaus</translation>
@@ -672,7 +674,6 @@ Koska <ph name="HOSTED_DOMAIN" /> ylläpitää tiliäsi, Chrome-datasi poistetaa
 <translation id="7856733331829174190">Lataus epäonnistui</translation>
 <translation id="7859704718976024901">Selaushistoria</translation>
 <translation id="7887198238286927132">Tietojesi suojaamiseksi Chrome ei täytä tätä kenttää automaattisesti.</translation>
-<translation id="7918293828610777738">Lukulistasi on käytettävissä offline-tilassa. Lisää sivu lukulistalle valitsemalla <ph name="SHARE_OPENING_ICON" /> ja sitten <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Vie salasanat…</translation>
 <translation id="7947953824732555851">Hyväksy ja kirjaudu sisään</translation>

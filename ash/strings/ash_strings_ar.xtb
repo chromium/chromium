@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">الإيثرنت: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">المساعد (جارٍ التحميل...)</translation>
 <translation id="1838895407229022812">"الإضاءة الليلية" غير مفعّلة.</translation>
-<translation id="1850504506766569011">‏تم إيقاف Wi-Fi.</translation>
 <translation id="1864454756846565995">‏جهاز USB-C (المنفذ الخلفي)</translation>
 <translation id="1882814835921407042">شبكة الجوّال غير متاحة</translation>
 <translation id="1882897271359938046">نسخ إلى <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">إعدادات المستخدم</translation>
 <translation id="3217205077783620295">تم تفعيل الصوت، وسيؤدي التبديل إلى كتم الصوت</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> والمزيد</translation>
-<translation id="3236488194889173876">ليست هناك شبكة جوّال متاحة</translation>
 <translation id="3249513730522716925">تم نقل النافذة <ph name="WINDOW_TITLE" /> من سطح المكتب <ph name="ACTIVE_DESK" /> إلى سطح المكتب <ph name="TARGET_DESK" />.</translation>
 <translation id="3255483164551725916">ما الإجراء المطلوب؟</translation>
 <translation id="3269597722229482060">النقر بزر الماوس الأيمن</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774">ميزة <ph name="FEATURE_NAME" /> مُفعَّلة.</translation>
 <translation id="5947494881799873997">التراجع عن الإجراء</translation>
 <translation id="595202126637698455">تم تفعيل تتبع مستوى الأداء</translation>
-<translation id="5957083217255311415">تم إيقاف ميزة بيانات الجوّال.</translation>
 <translation id="5958529069007801266">مستخدم يخضع للإدارة</translation>
 <translation id="5960825221082587934">‏السماح لـ "مساعد Google" بعرض معلومات ذات صلة بالمحتوى الذي حدّدته مثل التعريف أو الترجمة أو تحويل الوحدات</translation>
 <translation id="5977415296283489383">السمّاعة</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">تم تغيير اختصار عرض الفقاعة التفسيرية لقائمة خيارات الإدخال في الرف. يُرجى استخدام <ph name="NEW_SHORTCUT" /> بدلاً من <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">تم تفعيل سطح المكتب <ph name="DESK_TITILE" />.</translation>
 <translation id="8452135315243592079">‏شريحة SIM مفقودة</translation>
-<translation id="8454013096329229812">‏تم تفعيل Wi-Fi.</translation>
 <translation id="8462305545768648477">إيقاف ميزة "سماع الاختيار"</translation>
 <translation id="847056008324733326">عرض إعدادات المقياس</translation>
 <translation id="8473301994082929012">الميزة <ph name="FEATURE_NAME" /> حالتها <ph name="FEATURE_STATE" /> في <ph name="ORGANIZATION_NAME" />.</translation>

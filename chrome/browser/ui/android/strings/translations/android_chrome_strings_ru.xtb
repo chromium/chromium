@@ -234,6 +234,7 @@
 <translation id="2517472476991765520">Искать</translation>
 <translation id="2518590038762162553">В упрощенном режиме Chrome быстрее загружает страницы и экономит до 60 % трафика. Чтобы оптимизировать страницы, которые вы посещаете, Chrome отправляет ваш интернет-трафик в Google. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Отправлять URL посещенных страниц в Google</translation>
+<translation id="2527779675047087889">Скрыть содержимое буфера обмена</translation>
 <translation id="2532336938189706096">Веб-версия</translation>
 <translation id="2534155362429831547">Удалено записей: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2536728043171574184">Офлайн-копия страницы</translation>
@@ -314,6 +315,7 @@
 <translation id="3062802207422175757">Прочитайте в Chrome статьи, подобранные с учетом ваших интересов.</translation>
 <translation id="3070005020161560471">Переводить автоматически</translation>
 <translation id="3089395242580810162">Открыть в режиме инкогнито</translation>
+<translation id="3091010850649238832">Показать содержимое буфера обмена</translation>
 <translation id="3098745985164956033">Передавать некоторые изображения в Google, чтобы улучшить их описание</translation>
 <translation id="3114507951000454849">Будьте в курсе новостей <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Оповещения</translation>
@@ -865,6 +867,7 @@
 <translation id="661266467055912436">Делает Интернет безопаснее для вас и других пользователей.</translation>
 <translation id="6618554661997243500">Нажмите эту кнопку, чтобы увидеть интересные вам сайты и новости</translation>
 <translation id="6627583120233659107">Изменить папку</translation>
+<translation id="6635718764393004944">Ваша поисковая система – <ph name="DSE" />. Если возможно, следуйте инструкциям по удалению истории поиска для этой системы.</translation>
 <translation id="663674369910034433">Другие настройки, связанные с конфиденциальностью, безопасностью и сбором данных, можно найти в разделах <ph name="BEGIN_LINK1" />Синхронизация<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Сервисы Google<ph name="END_LINK2" />.</translation>
 <translation id="6643016212128521049">Удалить</translation>
 <translation id="6643649862576733715">Сортировать по объему сохраненного трафика</translation>

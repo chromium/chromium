@@ -204,6 +204,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="3112556859945124369">Marquer…</translation>
 <translation id="3131206671572504478">Tout bloquer</translation>
 <translation id="3153862085237805241">Enregistrer la carte</translation>
+<translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
 <translation id="3157684681743766797">Tout marquer…</translation>
 <translation id="3161291298470460782">Vous serez alors déconnecté, la synchronisation sera désactivée, et toutes les données Chrome seront supprimées de cet appareil. En revanche, vos données synchronisées resteront dans votre compte Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5188482106078495165">Votre paramètre de cookies s'applique à tous les onglets. Pour en appliquer un nouveau à un onglet ouvert, rechargez l'onglet.</translation>
 <translation id="5190835502935405962">Barre de favoris</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Fermer l'onglet</translation>
 <translation id="5228579091201413441">Activer la synchronisation</translation>
 <translation id="5234764350956374838">Ignorer</translation>
 <translation id="5245322853195994030">Annuler la synchronisation</translation>
@@ -446,6 +448,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5782227691023083829">Traduction en cours...</translation>
 <translation id="5803566855766646066">Voulez-vous vraiment supprimer cette nouvelle carte ?</translation>
 <translation id="5816228676161003208">Cela vous permet d'effectuer des recherches plus rapidement en utilisant la recherche vocale.</translation>
+<translation id="581659025233126501">Activer la synchronisation</translation>
 <translation id="5819208479324046259">Géré par <ph name="MANAGER" />. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Moteur de recherche</translation>
 <translation id="5854790677617711513">Datant de plus de 30 jours</translation>
@@ -485,7 +488,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6127379762771434464">Élément supprimé</translation>
 <translation id="6136914049981179737">À l'instant.</translation>
 <translation id="6144589619057374135">Ouvrir ${url} en mode navigation privée</translation>
-<translation id="616831107264507309">Lire plus tard</translation>
 <translation id="6177442314419606057">Effectuer une recherche dans Chrome</translation>
 <translation id="6184086493125982861">Afficher les onglets</translation>
 <translation id="6187302354554850004">Dernière synchro : <ph name="LAST_USED_TIME" /></translation>
@@ -493,12 +495,14 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6196207969502475924">Recherche vocale</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Fermer {COUNT} onglet}one{Fermer {COUNT} onglet}other{Fermer {COUNT} onglets}}</translation>
 <translation id="6219688215832490856">Ne jamais traduire</translation>
+<translation id="6223816392543092032">Accédez à vos favoris, votre historique, vos mots de passe et d'autres paramètres sur tous vos appareils.</translation>
 <translation id="6254066287920239840">Ouvrir les liens dans l'application et non dans le navigateur.</translation>
 <translation id="6255097610484507482">Modifier la carte de paiement</translation>
 <translation id="6284652193729350524">Proposer de traduire la langue suivante : <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Pour activer la navigation sécurisée, ouvrez <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /> et appuyez sur "Navigation sécurisée".</translation>
 <translation id="6303969859164067831">Se déconnecter et désactiver la synchronisation</translation>
 <translation id="6308436439357671616">Cela vous permet de prendre et d'importer des photos.</translation>
+<translation id="6321526113093607004">Ajouter aux favoris</translation>
 <translation id="6324528485781869530">Changer de compte pour synchro</translation>
 <translation id="6324669097367352121">Paramètres connexion</translation>
 <translation id="6337234675334993532">Chiffrement</translation>
@@ -525,6 +529,7 @@ Vos données ont été chiffrées avec votre phrase secrète de synchronisation 
 <translation id="6445981559479772097">Message envoyé.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">Aucune vérification jusqu'à présent.</translation>
+<translation id="6459307836338400162">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez les pages <ph name="BEGIN_LINK" />Synchronisation<ph name="END_LINK" /> et <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Ouvrir nouvel onglet navigation privée</translation>
 <translation id="6464397691496239022">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation (par exemple, pour maintenir votre connexion ou mémoriser les articles de votre panier).
 
@@ -669,7 +674,6 @@ Votre compte étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chrome 
 <translation id="7856733331829174190">Téléchargement impossible</translation>
 <translation id="7859704718976024901">Historique de navigation</translation>
 <translation id="7887198238286927132">Pour protéger votre vie privée, Chrome ne renseigne pas automatiquement de champ.</translation>
-<translation id="7918293828610777738">Votre liste de lecture est disponible hors connexion. Pour y ajouter une page, appuyez sur <ph name="SHARE_OPENING_ICON" />, puis sur <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Export mots de passe…</translation>
 <translation id="7947953824732555851">Accepter/Se connecter</translation>
@@ -708,6 +712,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8281886186245836920">Passer</translation>
 <translation id="8283172974887967105">Définir…</translation>
 <translation id="8299417921174340354">Pour utiliser les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
+<translation id="83100941411593607">Connexion désactivée</translation>
 <translation id="8319076807703933069">Nouvelle recherche</translation>
 <translation id="8323906514956095947">Appuyez de manière prolongée pour afficher plus d'options d'onglets</translation>
 <translation id="8328777765163860529">Tout fermer</translation>

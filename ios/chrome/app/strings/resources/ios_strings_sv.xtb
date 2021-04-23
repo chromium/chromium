@@ -204,6 +204,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="3112556859945124369">Markera …</translation>
 <translation id="3131206671572504478">Blockera alla</translation>
 <translation id="3153862085237805241">Spara kortet</translation>
+<translation id="3157387275655328056">Lägg till i läslistan</translation>
 <translation id="3157684681743766797">Markera alla …</translation>
 <translation id="3161291298470460782">Med den här åtgärden loggas du ut, synkroniseringen inaktiveras och all data i Chrome rensas från enheten. Din synkroniserade data finns kvar i Google-kontot.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5188482106078495165">Cookie-inställningarna tillämpas för alla flikar. Om du vill tillämpa en ny inställning på en öppen flik läser du in fliken igen.</translation>
 <translation id="5190835502935405962">Bokmärkesfältet</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Stäng flik</translation>
 <translation id="5228579091201413441">Aktivera synkronisering</translation>
 <translation id="5234764350956374838">Stäng</translation>
 <translation id="5245322853195994030">Avbryt synkronisering</translation>
@@ -486,7 +488,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6127379762771434464">Objektet har tagits bort</translation>
 <translation id="6136914049981179737">Nyss</translation>
 <translation id="6144589619057374135">Öppna ${url} i inkognitoläget</translation>
-<translation id="616831107264507309">Läs senare</translation>
 <translation id="6177442314419606057">Sök i Chrome</translation>
 <translation id="6184086493125982861">Visa flikar</translation>
 <translation id="6187302354554850004">Synkroniserades senast: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6293101329759844770">Öppna <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" /> och tryck på Säker webbsökning om du vill aktivera det.</translation>
 <translation id="6303969859164067831">Logga ut och inaktivera synkronisering</translation>
 <translation id="6308436439357671616">Det här gör att du kan ta foton och ladda upp dem.</translation>
+<translation id="6321526113093607004">Lägg till i bokmärken</translation>
 <translation id="6324528485781869530">Byt synkroniseringskonto</translation>
 <translation id="6324669097367352121">Inloggningsinställn.</translation>
 <translation id="6337234675334993532">Kryptering</translation>
@@ -672,7 +674,6 @@ Eftersom ditt konto hanteras av <ph name="HOSTED_DOMAIN" /> raderas din data i C
 <translation id="7856733331829174190">Nedladdning misslyckades</translation>
 <translation id="7859704718976024901">Webbhistorik</translation>
 <translation id="7887198238286927132">Av sekretesskäl fylls det här fältet inte i automatiskt.</translation>
-<translation id="7918293828610777738">Läslistan är tillgänglig offline. Om du vill lägga till en sida i läslistan trycker du på <ph name="SHARE_OPENING_ICON" /> följt av <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportera lösenord …</translation>
 <translation id="7947953824732555851">Godkänn och logga in</translation>

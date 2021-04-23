@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">Означи…</translation>
 <translation id="3131206671572504478">Се блокираат сите</translation>
 <translation id="3153862085237805241">Зачувај ја картичката</translation>
+<translation id="3157387275655328056">Додај во „Списокот за читање“</translation>
 <translation id="3157684681743766797">Означи ги сите…</translation>
 <translation id="3161291298470460782">Со ова ќе се одјавите, ќе се исклучи синхронизацијата и сите податоци од Chrome ќе се избришат од уредов. Синхронизираните податоци ќе останат во вашата сметка на Google.</translation>
 <translation id="3169472444629675720">Откриј</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">Поставката за колачиња се применува на сите картички. За да примените нова поставка на отворена картичка, вчитајте ја картичката повторно.</translation>
 <translation id="5190835502935405962">Лента со обележувачи</translation>
 <translation id="5197255632782567636">Интернет</translation>
+<translation id="5210365745912300556">Затвори ја картичката</translation>
 <translation id="5228579091201413441">Овозможи синхронизација</translation>
 <translation id="5234764350956374838">Отфрли</translation>
 <translation id="5245322853195994030">Откажи ја синхронизацијата</translation>
@@ -486,7 +488,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6127379762771434464">Ставката е отстранета</translation>
 <translation id="6136914049981179737">Пред секунди</translation>
 <translation id="6144589619057374135">Отвори ${url} во „Инкогнито“</translation>
-<translation id="616831107264507309">Прочитајте подоцна</translation>
 <translation id="6177442314419606057">Пребарувајте во Chrome</translation>
 <translation id="6184086493125982861">Прикажи картички</translation>
 <translation id="6187302354554850004">Последна синхронизација: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6293101329759844770">За да го вклучите „Безбедното прелистување“, отворете <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" /> и допрете „Безбедно прелистување“.</translation>
 <translation id="6303969859164067831">Одјавете се и исклучете ја синхронизацијата</translation>
 <translation id="6308436439357671616">Ова ви овозможува да фотографирате и да поставувате фотографии.</translation>
+<translation id="6321526113093607004">Додај во „Обележувачи“</translation>
 <translation id="6324528485781869530">Префрли синхронизација на сметка</translation>
 <translation id="6324669097367352121">Поставки за најавување</translation>
 <translation id="6337234675334993532">Шифрирање</translation>
@@ -672,7 +674,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7856733331829174190">Не може да се преземе</translation>
 <translation id="7859704718976024901">Историја на прелистувањето</translation>
 <translation id="7887198238286927132">За да ја заштити вашата приватност, Chrome нема автоматски да го пополнува ова поле.</translation>
-<translation id="7918293828610777738">„Списокот за читање“ е достапен офлајн. За да додадете страница во списокот за читање, допрете <ph name="SHARE_OPENING_ICON" />, а потоа <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Извезување лозинки…</translation>
 <translation id="7947953824732555851">Прифати и најави се</translation>

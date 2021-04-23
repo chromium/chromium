@@ -108,7 +108,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Asistent (se încarcă...)</translation>
 <translation id="1838895407229022812">Lumina de noapte este dezactivată.</translation>
-<translation id="1850504506766569011">Conexiunea Wi-Fi este dezactivată.</translation>
 <translation id="1864454756846565995">Dispozitiv USB-C (portul din spate)</translation>
 <translation id="1882814835921407042">Nu este disponibilă nicio rețea mobilă</translation>
 <translation id="1882897271359938046">Se oglindește pe <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3207953481422525583">Setările utilizatorului</translation>
 <translation id="3217205077783620295">Volumul este activat. Comutarea îl va dezactiva.</translation>
 <translation id="3226991577105957773">+ încă <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Nicio rețea mobilă disponibilă</translation>
 <translation id="3249513730522716925">Fereastra <ph name="WINDOW_TITLE" /> a fost mutată de pe desktopul <ph name="ACTIVE_DESK" /> pe desktopul <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Ce poți face?</translation>
 <translation id="3269597722229482060">Clic dreapta</translation>
@@ -584,7 +582,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> este activat.</translation>
 <translation id="5947494881799873997">Reveniți</translation>
 <translation id="595202126637698455">Urmărirea performanței este activată</translation>
-<translation id="5957083217255311415">Datele mobile sunt dezactivate.</translation>
 <translation id="5958529069007801266">Utilizator monitorizat</translation>
 <translation id="5960825221082587934">Lasă Asistentul să îți arate informații cum ar fi definiția, traducerea sau conversia unităților pentru selecția ta.</translation>
 <translation id="5977415296283489383">Căști</translation>
@@ -884,7 +881,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8433977262951327081">Comanda rapidă pentru afișarea în raft a balonului meniului cu opțiunile de introducere a textului a fost modificată. Folosește <ph name="NEW_SHORTCUT" /> în loc de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Desktopul <ph name="DESK_TITILE" /> este activat</translation>
 <translation id="8452135315243592079">Lipsește cardul SIM</translation>
-<translation id="8454013096329229812">Conexiunea Wi-Fi este activată.</translation>
 <translation id="8462305545768648477">Închide funcția „Selectați și ascultați”</translation>
 <translation id="847056008324733326">Setările pentru scara afișajului</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> are <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>

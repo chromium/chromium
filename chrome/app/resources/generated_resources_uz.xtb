@@ -3078,6 +3078,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4392896746540753732">Konfiguratsiya faylini tahrirlash</translation>
 <translation id="4394049700291259645">Faolsizlantirish</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{Barchasini &amp;ochish}=1{Bukmarkni &amp;ochish}other{Barchasini ({COUNT}) &amp;ochish}}</translation>
+<translation id="4398131717714042083">Qidiruv oynasidagi tarix va avtomatik kiritishlarni tozalaydi</translation>
 <translation id="439817266247065935">Qurilmangiz seansi xato yakunlangan. Linux ilovalarini ishlatish uchun Linuxni qaytadan ishga tushiring.</translation>
 <translation id="4400367121200150367">Bu yerda parollarni saqlash hech qachon taklif qilinmaydigan saytlar ko‘rsatiladi</translation>
 <translation id="4400632832271803360">Yuqori qatordagi tugmalar rejimni almashtirish uchun qidiruv tugmasini bosib turing</translation>
@@ -5060,6 +5061,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6651237644330755633">Saytlarni identifikatsiya qilishda ushbu sertifikat ishonchli deb hisoblansin</translation>
 <translation id="6651495917527016072">Wi-Fi tarmoqlarni telefon orqali sinxronlang. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> faqatgina x86_64 platformalar bilan integratsiyalangan. Chromebooklar ARM yoki x86 platformasi asosida tuzilgan. Ularda bu funksiya ishlamaydi.</translation>
+<translation id="66537479323396140">Qidiruv oynasidagi tarix va avtomatik kiritishlarni tozalaydi. Google hisobingiz orqali bajargan internetdagi faoliyatingizni <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> orqali ko‘rishingiz mumkin.</translation>
 <translation id="6654509035557065241">Afzal tarmoqni tanlash</translation>
 <translation id="6655190889273724601">Dasturchi rejimi</translation>
 <translation id="6655458902729017087">Hisoblarni yashirish</translation>
@@ -5926,6 +5928,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7636919061354591437">Shu qurilmaga oʻrnatish</translation>
 <translation id="7637593984496473097">Diskda yetarlicha joy mavjud emas</translation>
 <translation id="7638605456503525968">Ketma-ket portlar</translation>
+<translation id="7639914187072011620">Serverdan kelgan URL yoʻnaltiruvi SAML protokoli orqali fetch qilinmadi</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> kerakli ilova va saytlarga saqlangan parollaringiz orqali avtomatik kirish imkonini beradi.</translation>
 <translation id="7642778300616172920">Maxfiy axborotlar berkitilsin</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ta ochiq oyna}other{# ta ochiq oyna}}</translation>

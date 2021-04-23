@@ -108,7 +108,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Pembantu (memuat...)</translation>
 <translation id="1838895407229022812">Cahaya Malam dimatikan.</translation>
-<translation id="1850504506766569011">Wi-Fi dimatikan.</translation>
 <translation id="1864454756846565995">Peranti USB-C (port belakang)</translation>
 <translation id="1882814835921407042">Tiada rangkaian mudah alih</translation>
 <translation id="1882897271359938046">Mencerminkan <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3207953481422525583">Tetapan Pengguna</translation>
 <translation id="3217205077783620295">Kelantangan dihidupkan. Tindakan menogol akan meredamkan audio.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> lagi</translation>
-<translation id="3236488194889173876">Tiada rangkaian mudah alih tersedia</translation>
 <translation id="3249513730522716925">Tetingkap <ph name="WINDOW_TITLE" /> dialihkan daripada Meja <ph name="ACTIVE_DESK" /> ke Meja <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Apakah yang boleh anda lakukan?</translation>
 <translation id="3269597722229482060">Klik Kanan</translation>
@@ -585,7 +583,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> dihidupkan.</translation>
 <translation id="5947494881799873997">Berbalik</translation>
 <translation id="595202126637698455">Penjejakan prestasi didayakan</translation>
-<translation id="5957083217255311415">Data mudah alih dimatikan.</translation>
 <translation id="5958529069007801266">Pengguna diselia</translation>
 <translation id="5960825221082587934">Biarkan Assistant menunjukkan maklumat seperti takrif, terjemahan atau penukaran unit untuk pilihan anda.</translation>
 <translation id="5977415296283489383">Fon kepala</translation>
@@ -885,7 +882,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8433977262951327081">Pintasan untuk menunjukkan gelembung menu pilihan input dalam rak telah berubah. Sila gunakan <ph name="NEW_SHORTCUT" /> dan bukannya <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Meja <ph name="DESK_TITILE" /> diaktifkan</translation>
 <translation id="8452135315243592079">Kad SIM tiada</translation>
-<translation id="8454013096329229812">Wi-Fi dihidupkan.</translation>
 <translation id="8462305545768648477">Tutup Pilih untuk bercakap</translation>
 <translation id="847056008324733326">Tetapan skala paparan</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> mempunyai <ph name="FEATURE_NAME" /> yang <ph name="FEATURE_STATE" />.</translation>

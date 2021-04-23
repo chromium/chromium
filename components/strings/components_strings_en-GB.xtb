@@ -942,7 +942,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Use of a proxy is disabled but an explicit proxy configuration is specified.</translation>
 <translation id="4464826014807964867">Websites with info from your organisation</translation>
-<translation id="4466881336512663640">Form changes will be lost. Are you sure that you want to continue?</translation>
 <translation id="4476953670630786061">This form is not secure. Auto-fill has been turned off.</translation>
 <translation id="4477350412780666475">Next track</translation>
 <translation id="4482953324121162758">This site will not be translated.</translation>
@@ -1296,7 +1295,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5785756445106461925">Further, this page includes other resources which are not secure. These resources can be viewed by others while in transit, and can be modified by an attacker to change the look of the page.</translation>
 <translation id="5786044859038896871">Do you want to fill in your card info?</translation>
 <translation id="578633867165174378">Chrome found the password that you just used in a data breach. We recommend changing this password now.</translation>
-<translation id="5798290721819630480">Discard changes?</translation>
 <translation id="5803412860119678065">Do you want to fill in your <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="5804427196348435412">Use NFC devices</translation>
@@ -1457,7 +1455,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6428450836711225518">Verifying your phone number</translation>
 <translation id="6433490469411711332">Edit contact info</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> refused to connect.</translation>
-<translation id="6434309073475700221">Discard</translation>
 <translation id="6440503408713884761">Ignored</translation>
 <translation id="6443406338865242315">Which extensions and plug-ins you have installed</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>
@@ -1714,7 +1711,6 @@ Additional details:
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7485870689360869515">No data found.</translation>
 <translation id="7495528107193238112">This content is blocked. Contact the site owner to fix the issue.</translation>
-<translation id="7498234416455752244">Keep editing</translation>
 <translation id="7503664977220660814">You just entered your password on a deceptive site. Chromium recommends checking your saved passwords for <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> and other sites where you use this password now.</translation>
 <translation id="7508255263130623398">Returned policy device ID is empty or doesn't match current device ID</translation>
 <translation id="7508870219247277067">Avocado green</translation>

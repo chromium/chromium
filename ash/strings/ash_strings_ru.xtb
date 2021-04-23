@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Ассистент (загрузка…)</translation>
 <translation id="1838895407229022812">Ночная подсветка отключена</translation>
-<translation id="1850504506766569011">Wi-Fi отключен</translation>
 <translation id="1864454756846565995">Устройство USB-C (порт сзади)</translation>
 <translation id="1882814835921407042">Не подключено к мобильной сети</translation>
 <translation id="1882897271359938046">Дублирование экрана в <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">Пользовательские настройки</translation>
 <translation id="3217205077783620295">Звук включен. Нажмите эту кнопку, чтобы отключить его.</translation>
 <translation id="3226991577105957773">Ещё <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Нет доступных мобильных сетей</translation>
 <translation id="3249513730522716925">Окно "<ph name="WINDOW_TITLE" />" перемещено с рабочего стола "<ph name="ACTIVE_DESK" />" на рабочий стол "<ph name="TARGET_DESK" />".</translation>
 <translation id="3255483164551725916">Что ты умеешь?</translation>
 <translation id="3269597722229482060">Правый клик</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774">Функция "<ph name="FEATURE_NAME" />" включена</translation>
 <translation id="5947494881799873997">Отменить</translation>
 <translation id="595202126637698455">Включено отслеживание эффективности</translation>
-<translation id="5957083217255311415">Мобильный Интернет отключен.</translation>
 <translation id="5958529069007801266">Контролируемый профиль</translation>
 <translation id="5960825221082587934">Разрешите Google Ассистенту показывать определение и перевод слова, а также конвертировать одни единицы измерения в другие.</translation>
 <translation id="5977415296283489383">Наушники</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">Быстрые клавиши для вызова всплывающего окна с параметрами ввода на панели запуска изменились. Используйте <ph name="NEW_SHORTCUT" /> вместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Рабочий стол "<ph name="DESK_TITILE" />" активирован.</translation>
 <translation id="8452135315243592079">SIM-карта не обнаружена</translation>
-<translation id="8454013096329229812">Wi-Fi включен</translation>
 <translation id="8462305545768648477">Остановить озвучивание при нажатии</translation>
 <translation id="847056008324733326">Настройки масштаба экрана</translation>
 <translation id="8473301994082929012">Организация <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> функцию "<ph name="FEATURE_NAME" />".</translation>

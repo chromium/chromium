@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">Նշել…</translation>
 <translation id="3131206671572504478">Բոլոր քուքիներն արգելափակված են</translation>
 <translation id="3153862085237805241">Պահել քարտը</translation>
+<translation id="3157387275655328056">Ավելացնել ընթերցանության ցանկում</translation>
 <translation id="3157684681743766797">Նշել բոլորը…</translation>
 <translation id="3161291298470460782">Դուք դուրս կգրվեք հաշվից, համաժամացումը կանջատվի, և Chrome-ի բոլոր տվյալները կջնջվեն այս սարքից։ Համաժամացված տվյալները կպահպանվեն ձեր Google հաշվում։</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">Ձեր քուքիների կարգավորումները կիրառվում են բոլոր ներդիրներում։ Եթե նոր կարգավորումն ուզում եք կիրառել բացված ներդիրում, վերաբեռնեք այն։</translation>
 <translation id="5190835502935405962">Էջանիշների գոտի</translation>
 <translation id="5197255632782567636">Համացանց</translation>
+<translation id="5210365745912300556">Փակել ներդիրը</translation>
 <translation id="5228579091201413441">Միացնել համաժամացումը</translation>
 <translation id="5234764350956374838">Փակել</translation>
 <translation id="5245322853195994030">Չեղարկել համաժամացումը</translation>
@@ -486,7 +488,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6127379762771434464">Տարրը հեռացվեց</translation>
 <translation id="6136914049981179737">Վայրկյաններ առաջ</translation>
 <translation id="6144589619057374135">Բացել ինկոգնիտո ռեժիմում` ${url}</translation>
-<translation id="616831107264507309">Կարդալ ավելի ուշ</translation>
 <translation id="6177442314419606057">Որոնում Chrome-ում</translation>
 <translation id="6184086493125982861">Ցույց տալ ներդիրները</translation>
 <translation id="6187302354554850004">Վերջին անգամ համաժամացվել է՝ <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6293101329759844770">Անվտանգ դիտարկումը միացնելու համար բացեք <ph name="BEGIN_LINK" />Google-ի ծառայությունները<ph name="END_LINK" /> և սեղմեք «Անվտանգ դիտարկում»։</translation>
 <translation id="6303969859164067831">Դուրս գրվել հաշվից և անջատել համաժամացումը</translation>
 <translation id="6308436439357671616">Թույլ է տալիս լուսանկարել և վերբեռնել լուսանկարները:</translation>
+<translation id="6321526113093607004">Ավելացնել «Էջանիշներ» բաժնում</translation>
 <translation id="6324528485781869530">Փոխեք համաժամացման հաշիվը</translation>
 <translation id="6324669097367352121">Մուտքի կարգավորումներ</translation>
 <translation id="6337234675334993532">Գաղտնագրում</translation>
@@ -672,7 +674,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7856733331829174190">Չհաջողվեց ներբեռնել</translation>
 <translation id="7859704718976024901">Այցելությունների պատմություն</translation>
 <translation id="7887198238286927132">Ձեր գաղտնիությունը պաշտպանելու նպատակով Chrome-ն ավտոմատ չի լրացնի այս դաշտը:</translation>
-<translation id="7918293828610777738">Ձեր ընթերցանության ցանկը հասանելի է նաև անցանց ռեժիմում: Ընթերցանության ցանկում էջ ավելացնելու համար հպեք <ph name="SHARE_OPENING_ICON" />, ապա <ph name="READ_LATER_TEXT" />։</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Գաղտնաբառերի արտահանում...</translation>
 <translation id="7947953824732555851">Ընդունել և մտնել</translation>

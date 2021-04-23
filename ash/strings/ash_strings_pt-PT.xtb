@@ -108,7 +108,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Assistente (a carregar...)</translation>
 <translation id="1838895407229022812">A Luz noturna está desativada.</translation>
-<translation id="1850504506766569011">A ligação Wi-Fi está desativada.</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (porta traseira)</translation>
 <translation id="1882814835921407042">Sem rede móvel</translation>
 <translation id="1882897271359938046">A espelhar para <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3207953481422525583">Definições do utilizador</translation>
 <translation id="3217205077783620295">O volume está ativado, premir o botão irá desativar o áudio.</translation>
 <translation id="3226991577105957773">E mais <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Nenhuma rede móvel disponível</translation>
 <translation id="3249513730522716925">A janela <ph name="WINDOW_TITLE" /> foi movida do espaço de trabalho <ph name="ACTIVE_DESK" /> para o espaço de trabalho <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">O que podes fazer?</translation>
 <translation id="3269597722229482060">Clicar com o botão direito do rato</translation>
@@ -584,7 +582,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5946788582095584774">A funcionalidade <ph name="FEATURE_NAME" /> está ativada.</translation>
 <translation id="5947494881799873997">Reverter</translation>
 <translation id="595202126637698455">Rastreio do desempenho ativado</translation>
-<translation id="5957083217255311415">Os dados móveis estão desativados.</translation>
 <translation id="5958529069007801266">Utilizador supervisionado</translation>
 <translation id="5960825221082587934">Permita que o Assistente lhe mostre informações como a definição, a tradução ou a conversão de unidades para a sua seleção.</translation>
 <translation id="5977415296283489383">Auscultador</translation>
@@ -884,7 +881,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8433977262951327081">O atalho para mostrar o balão do menu de opções de introdução na prateleira foi alterado. Utilize <ph name="NEW_SHORTCUT" /> em vez de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Espaço de trabalho <ph name="DESK_TITILE" /> ativado</translation>
 <translation id="8452135315243592079">Cartão SIM em falta</translation>
-<translation id="8454013096329229812">A ligação Wi-Fi está ativada.</translation>
 <translation id="8462305545768648477">Fechar Selecionar para falar</translation>
 <translation id="847056008324733326">Definições de escala do ecrã</translation>
 <translation id="8473301994082929012">A <ph name="ORGANIZATION_NAME" /> colocou a funcionalidade <ph name="FEATURE_NAME" /> como <ph name="FEATURE_STATE" />.</translation>

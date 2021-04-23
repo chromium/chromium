@@ -3077,6 +3077,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4392896746540753732">Edita el archivo de configuración</translation>
 <translation id="4394049700291259645">Inhabilitar</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Abrir todo}=1{&amp;Abrir favorito}other{&amp;Abrir todo ({COUNT})}}</translation>
+<translation id="4398131717714042083">Borra el historial y las sugerencias de autocompletado del cuadro de búsqueda.</translation>
 <translation id="439817266247065935">El dispositivo no se apagó correctamente. Reinicia Linux para usar las apps de este sistema operativo.</translation>
 <translation id="4400367121200150367">Aquí aparecerán los sitios que nunca guardan las contraseñas</translation>
 <translation id="4400632832271803360">Mantén presionada la tecla de Launcher para cambiar el comportamiento de las teclas en la fila superior</translation>
@@ -5059,6 +5060,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6651237644330755633">Confía en este certificado para identificar sitios web</translation>
 <translation id="6651495917527016072">Sincroniza las redes Wi-Fi con tu teléfono. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">La integración de <ph name="MS_AD_NAME" /> en Chrome solo es compatible en plataformas x86_64. Las Chromebooks creadas a partir de una plataforma ARM o x86 no son compatibles con esta funcionalidad.</translation>
+<translation id="66537479323396140">Borra el historial y las sugerencias de autocompletado del cuadro de búsqueda. Es posible que tu Cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">Configurar una red preferida</translation>
 <translation id="6655190889273724601">Modo de desarrollador</translation>
 <translation id="6655458902729017087">Ocultar cuentas</translation>
@@ -5925,6 +5927,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7636919061354591437">Instalar en este dispositivo</translation>
 <translation id="7637593984496473097">No hay espacio suficiente en el disco</translation>
 <translation id="7638605456503525968">Puertos en serie</translation>
+<translation id="7639914187072011620">No se pudo obtener la URL de redireccionamiento para SAML del servidor.</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> te permite acceder automáticamente a los sitios aptos con las contraseñas que guardaste.</translation>
 <translation id="7642778300616172920">Ocultar contenido confidencial</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ventana abierta}other{# ventanas abiertas}}</translation>

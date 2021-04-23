@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">ასისტენტი (იტვირთება...)</translation>
 <translation id="1838895407229022812">ღამის განათება გამორთულია.</translation>
-<translation id="1850504506766569011">Wi-Fi გამორთულია.</translation>
 <translation id="1864454756846565995">USB-C მოწყობილობა (უკანა პორტი)</translation>
 <translation id="1882814835921407042">მობილური ქსელი არ არის</translation>
 <translation id="1882897271359938046">გამოსახვა <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">მომხმარებლის პარამეტრები</translation>
 <translation id="3217205077783620295">ხმა ჩართულია, გადართვისას აუდიო დადუმდება.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> სხვა</translation>
-<translation id="3236488194889173876">მობილური ქსელი მიუწვდომელია</translation>
 <translation id="3249513730522716925">ფანჯარა <ph name="WINDOW_TITLE" /> გადატანილია სამუშაო მაგიდიდან <ph name="ACTIVE_DESK" /> სამუშაო მაგიდაზე <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">რისი გაკეთება შეგიძლია?</translation>
 <translation id="3269597722229482060">მარჯვენა დაწკაპუნება</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ჩართულია.</translation>
 <translation id="5947494881799873997">დაბრუნება</translation>
 <translation id="595202126637698455">ეფექტურობის ტრასირება ჩართულია</translation>
-<translation id="5957083217255311415">მობილური ინტერნეტი გამორთულია.</translation>
 <translation id="5958529069007801266">კონტროლის ქვეშ მყოფი მომხმარებელი</translation>
 <translation id="5960825221082587934">მიეცით საშუალება ასისტენტს, გაჩვენოთ არჩეულ კონტენტთან დაკავშირებული ინფორმაცია, მაგალითად, განმარტება, თარგმანი ან საზომი ერთეულის გარდაქმნის ვარიანტი.</translation>
 <translation id="5977415296283489383">ყურსასმენი</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">თაროზე შეყვანის ვარიანტების მენიუს ბუშტის გამოჩენის მალსახმობი შეიცვალა. გთხოვთ, გამოიყენოთ <ph name="NEW_SHORTCUT" /> და არა — <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">სამუშაო მაგიდა <ph name="DESK_TITILE" /> გააქტიურებულია</translation>
 <translation id="8452135315243592079">აკლია SIM ბარათი</translation>
-<translation id="8454013096329229812">Wi-Fi ჩართულია.</translation>
 <translation id="8462305545768648477">წარმოსათქმელად მონიშვნის დახურვა</translation>
 <translation id="847056008324733326">ჩვენების მასშტაბის პარამეტრები</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />-ს აქვს <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

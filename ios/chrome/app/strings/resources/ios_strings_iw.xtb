@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">סימון…</translation>
 <translation id="3131206671572504478">‏חסימת כל קובצי ה-cookie</translation>
 <translation id="3153862085237805241">שמירת כרטיס</translation>
+<translation id="3157387275655328056">הוסף לרשימת הקריאה</translation>
 <translation id="3157684681743766797">סימון הכול…</translation>
 <translation id="3161291298470460782">‏הפעולה הזו תוציא אותך מהחשבון, תשבית את הסנכרון ותנקה את כל נתוני Chrome מהמכשיר הזה. הנתונים המסונכרנים יישארו בחשבון Google שלך.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">‏הגדרת קובצי ה-cookie שלך חלה על כל הכרטיסיות. כדי להחיל הגדרה חדשה על כרטיסייה פתוחה יש לטעון את הכרטיסייה מחדש.</translation>
 <translation id="5190835502935405962">סרגל הסימניות</translation>
 <translation id="5197255632782567636">אינטרנט</translation>
+<translation id="5210365745912300556">סגירת כרטיסייה</translation>
 <translation id="5228579091201413441">הפעלת סנכרון</translation>
 <translation id="5234764350956374838">סגירה</translation>
 <translation id="5245322853195994030">ביטול הסנכרון</translation>
@@ -486,7 +488,6 @@
 <translation id="6127379762771434464">הפריט הוסר</translation>
 <translation id="6136914049981179737">שניות</translation>
 <translation id="6144589619057374135">‏פתיחת ${urls} במצב אנונימי</translation>
-<translation id="616831107264507309">קריאה אחר כך</translation>
 <translation id="6177442314419606057">‏חיפוש ב-Chrome</translation>
 <translation id="6184086493125982861">הצגת כרטיסיות</translation>
 <translation id="6187302354554850004">סונכרן לאחרונה: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@
 <translation id="6293101329759844770">‏כדי להפעיל גלישה בטוחה, יש להיכנס ל<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" /> ולהקיש על 'גלישה בטוחה'.</translation>
 <translation id="6303969859164067831">יציאה וכיבוי הסנכרון</translation>
 <translation id="6308436439357671616">אישור זה מאפשר לך לצלם ולעדכן תמונות.</translation>
+<translation id="6321526113093607004">הוספה לסימניות</translation>
 <translation id="6324528485781869530">החלפת חשבון לסנכרון</translation>
 <translation id="6324669097367352121">הגדרות כניסה</translation>
 <translation id="6337234675334993532">הצפנה</translation>
@@ -672,7 +674,6 @@
 <translation id="7856733331829174190">ההורדה נכשלה</translation>
 <translation id="7859704718976024901">היסטוריית הגלישה</translation>
 <translation id="7887198238286927132">‏כדי לשמור על הפרטיות שלך, מערכת Chrome לא ממלאת את השדה הזה באופן אוטומטי.</translation>
-<translation id="7918293828610777738">רשימת הקריאה זמינה אופליין. כדי להוסיף דף לרשימת הקריאה צריך להקיש על <ph name="SHARE_OPENING_ICON" /> ועל <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">ייצוא סיסמאות...</translation>
 <translation id="7947953824732555851">קבלה וכניסה</translation>

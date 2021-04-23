@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">علامت‌گذاری...</translation>
 <translation id="3131206671572504478">مسدود کردن همه</translation>
 <translation id="3153862085237805241">ذخیره کردن کارت</translation>
+<translation id="3157387275655328056">افزودن به فهرست خواندن</translation>
 <translation id="3157684681743766797">علامت‌گذاری همه...</translation>
 <translation id="3161291298470460782">‏با این کار، از سیستم خارج می‌شوید، همگام‌سازی خاموش می‌شود، و همه داده‌های Chrome از این دستگاه پاک می‌شود. داده‌های همگام‌سازی‌شده در «حساب Google» شما باقی خواهد ماند.</translation>
 <translation id="3169472444629675720">کشف کردن</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">تنظیمات کوکی برای همه برگه‌ها اعمال می‌شود. برای اعمال تنظیم جدید در یکی از برگه‌های باز، برگه را تازه‌سازی کنید.</translation>
 <translation id="5190835502935405962">نوار نشانک‌ها</translation>
 <translation id="5197255632782567636">اینترنت</translation>
+<translation id="5210365745912300556">بستن برگه</translation>
 <translation id="5228579091201413441">فعال کردن همگام‌سازی</translation>
 <translation id="5234764350956374838">رد کردن</translation>
 <translation id="5245322853195994030">لغو همگام‌سازی</translation>
@@ -486,7 +488,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6127379762771434464">مورد برداشته شد</translation>
 <translation id="6136914049981179737">ثانیه‌هایی قبل</translation>
 <translation id="6144589619057374135">‏باز کردن ${url} در حالت ناشناس</translation>
-<translation id="616831107264507309">خواندن در فرصتی دیگر</translation>
 <translation id="6177442314419606057">‏جستجو در Chrome</translation>
 <translation id="6184086493125982861">نمایش برگه‌ها</translation>
 <translation id="6187302354554850004">آخرین همگام‌سازی: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6293101329759844770">‏برای روشن کردن «مرور ایمن»، <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> را باز کنید و روی «مرور ایمن» ضربه بزنید.</translation>
 <translation id="6303969859164067831">خروج از سیستم و خاموش کردن همگام‌سازی</translation>
 <translation id="6308436439357671616">این کار به شما اجازه می‌دهد عکس بگیرید و آن‌ها را بارگذاری کنید.</translation>
+<translation id="6321526113093607004">افزودن به نشانک‌ها</translation>
 <translation id="6324528485781869530">تغییر وضعیت حساب همگام‌سازی</translation>
 <translation id="6324669097367352121">تنظیمات ورود به سیستم</translation>
 <translation id="6337234675334993532">رمزگذاری</translation>
@@ -672,7 +674,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7856733331829174190">بارگیری نشد</translation>
 <translation id="7859704718976024901">سابقه مرور</translation>
 <translation id="7887198238286927132">‏برای محافظت از حریم‌خصوصی‌تان، Chrome از ویژگی تکمیل خودکار برای این فیلد استفاده نخواهد کرد.</translation>
-<translation id="7918293828610777738">فهرست مطالعه‌تان درحالت آفلاین دردسترس است. برای اضافه کردن صفحه به فهرست مطالعه، روی <ph name="SHARE_OPENING_ICON" /> و بعد <ph name="READ_LATER_TEXT" /> ضربه بزنید.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">صادر کردن گذرواژه‌ها…</translation>
 <translation id="7947953824732555851">پذیرش و ورود به سیستم</translation>

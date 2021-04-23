@@ -204,6 +204,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3112556859945124369">Đánh dấu...</translation>
 <translation id="3131206671572504478">Chặn tất cả</translation>
 <translation id="3153862085237805241">Lưu thẻ</translation>
+<translation id="3157387275655328056">Thêm vào Danh sách đọc</translation>
 <translation id="3157684681743766797">Đánh dấu tất cả...</translation>
 <translation id="3161291298470460782">Thao tác này sẽ khiến bạn bị đăng xuất, tắt tính năng đồng bộ hóa và xóa tất cả dữ liệu trên Chrome khỏi thiết bị này. Dữ liệu đã đồng bộ hóa của bạn sẽ vẫn ở trong Tài khoản Google của bạn.</translation>
 <translation id="3169472444629675720">Khám phá</translation>
@@ -399,6 +400,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5188482106078495165">Tùy chọn cài đặt cookie của bạn sẽ áp dụng cho mọi thẻ. Để áp dụng một tùy chọn cài đặt mới cho một thẻ đang mở, hãy tải lại thẻ đó.</translation>
 <translation id="5190835502935405962">Thanh Dấu trang</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Đóng thẻ</translation>
 <translation id="5228579091201413441">Bật đồng bộ hóa</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
 <translation id="5245322853195994030">Hủy đồng bộ hóa</translation>
@@ -486,7 +488,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="6127379762771434464">Đã xóa mục</translation>
 <translation id="6136914049981179737">Giây trước</translation>
 <translation id="6144589619057374135">Mở ${url} ở Chế độ ẩn danh</translation>
-<translation id="616831107264507309">Đọc sau</translation>
 <translation id="6177442314419606057">Tìm kiếm trong Chrome</translation>
 <translation id="6184086493125982861">Hiển thị thẻ</translation>
 <translation id="6187302354554850004">Đồng bộ hóa lần gần đây nhất: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="6293101329759844770">Để bật tính năng Duyệt web an toàn, hãy mở <ph name="BEGIN_LINK" />Các dịch vụ của Google<ph name="END_LINK" /> rồi nhấn vào Duyệt web an toàn.</translation>
 <translation id="6303969859164067831">Đăng xuất và tắt đồng bộ hóa</translation>
 <translation id="6308436439357671616">Điều này cho phép bạn chụp và tải ảnh lên.</translation>
+<translation id="6321526113093607004">Thêm vào Dấu trang</translation>
 <translation id="6324528485781869530">Chuyển đổi tài khoản đồng bộ hóa</translation>
 <translation id="6324669097367352121">Cài đặt đăng nhập</translation>
 <translation id="6337234675334993532">Mã hóa</translation>
@@ -672,7 +674,6 @@ Vì tài khoản của bạn do <ph name="HOSTED_DOMAIN" /> quản lý, nên d�
 <translation id="7856733331829174190">Không thể tải xuống</translation>
 <translation id="7859704718976024901">Lịch sử duyệt web</translation>
 <translation id="7887198238286927132">Để bảo vệ quyền riêng tư của bạn, Chrome sẽ không tự động điền trường này.</translation>
-<translation id="7918293828610777738">Danh sách đọc của bạn vẫn dùng được khi không có mạng. Để thêm một trang vào danh sách đọc, hãy nhấn vào biểu tượng <ph name="SHARE_OPENING_ICON" /> rồi nhấn vào <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Xuất mật khẩu...</translation>
 <translation id="7947953824732555851">Chấp nhận &amp; đăng nhập</translation>

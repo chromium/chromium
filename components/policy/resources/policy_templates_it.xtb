@@ -350,7 +350,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1479427764273213107">L'impostazione del criterio consente di definire l'elenco di dispositivi USB che gli utenti possono scollegare dal proprio driver del kernel per essere utilizzati tramite l'API chrome.usb direttamente all'interno di un'app web. Le voci sono coppie costituite dall'ID fornitore USB e dall'ID prodotto per identificare un hardware specifico.
 
       Se non viene configurato, l'elenco di dispositivi USB scollegabili è vuoto.</translation>
-<translation id="1479515813926202288">Disattiva la ricerca assistita della fotocamera di Lens per gli utenti aziendali</translation>
 <translation id="1481508277421549404">Se il criterio è impostato su true, le estensioni installate dal criterio aziendale usano l'API Enterprise Hardware Platform.
 
       Se il criterio è impostato su false o non viene configurato, le estensioni non possono usare tale API.
@@ -442,13 +441,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Visita la pagina https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Non è consentito l'uso della modalità headless</translation>
 <translation id="1588240398285670601">Impostazioni del browser</translation>
-<translation id="1593245608325508847">La configurazione del criterio consente di attivare la funzionalità di accesso limitato di Chrome in G Suite e di impedire agli utenti di modificare questa impostazione. Gli utenti possono accedere solo agli strumenti Google utilizzando gli account dei domini specificati (per consentire gli account gmail o googlemail, aggiungi consumer_accounts all'elenco dei domini). Questa impostazione impedisce agli utenti di accedere a un account secondario e di aggiungerne uno su un dispositivo gestito che richiede l'autenticazione di Google, se tale account non appartiene a uno dei domini esplicitamente consentiti.
-
-      Se il criterio viene lasciato vuoto o se non viene configurato, gli utenti possono accedere a G Suite con qualsiasi account.
-
-      Gli utenti non possono modificare o sovrascrivere questa impostazione.
-
-      Nota: questo criterio comporta l'aggiunta dell'intestazione X-GoogApps-Allowed-Domains a tutte le richieste GTTP e HTTPS inviate a tutti i domini google.com, come descritto all'indirizzo https://support.google.com/a/answer/1668854.</translation>
 <translation id="1599424828227887013">Attiva isolamento dei siti per origini specificate su dispositivi Android</translation>
 <translation id="159946228300522107">Se il criterio è impostato su True, Chrome ingrandisce la prima finestra mostrata alla prima esecuzione.
 
@@ -987,7 +979,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="2303795211377219696">Attiva la Compilazione automatica per le carte di credito</translation>
 <translation id="2307496301287881990">Segnala stati del display e della grafica</translation>
 <translation id="2309390639296060546">Impostazione di geolocalizzazione predefinita</translation>
-<translation id="2327252517317514801">Definisci i domini autorizzati ad accedere a G Suite</translation>
 <translation id="2331354174913096226">Il modello URI del resolver DNS over HTTPS desiderato. Per specificare diversi resolver DNS over HTTPS, separa i modelli URI corrispondenti con gli spazi.
 
       Se il criterio DnsOverHttpsMode viene impostato su <ph name="SECURE_DNS_MODE_SECURE" />, questo criterio deve essere impostato e non può essere vuoto.
@@ -2603,7 +2594,6 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="4494132853995232608">DTC wilco</translation>
 <translation id="449423975179525290">Imposta le norme relative a <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="449784980858429908">Concedi automaticamente ai siti l'autorizzazione a connettersi a tutte le porte seriali</translation>
-<translation id="4507775063441355559">Consenti la ricerca assistita della fotocamera di <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="4510923771103268849">L'utente può avere accesso root ai contenitori Crostini</translation>
 <translation id="4515404363392014383">Attiva Navigazione sicura per le origini attendibili</translation>
 <translation id="4518251772179446575">Chiedi ogni volta che un sito desidera monitorare la posizione fisica degli utenti</translation>
@@ -3181,7 +3171,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
           * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, vengono utilizzati i campi <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
 
       Nota: per esempi più approfonditi, consulta la pagina The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
-<translation id="5264773067879932127">Se il criterio non viene configurato o se viene impostato su Disattivato, gli utenti possono effettuare ricerche con le loro fotocamere utilizzando <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Se viene impostato su Falso, gli utenti non possono visualizzare il pulsante <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nella casella di ricerca, se la ricerca assistita della fotocamera di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> è supportata.</translation>
 <translation id="5266173014392157048">Questo criterio è deprecato. Utilizza il criterio "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />".
 
       La configurazione del criterio consente di assegnare i server a cui <ph name="PRODUCT_NAME" /> può delegare le credenziali utente. Separa i nomi dei server con le virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
@@ -4758,7 +4747,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="7258823566580374486">Attiva separazione degli host di accesso remoto</translation>
 <translation id="7260204423892780600">Consente di gestire le impostazioni dell'Assistente Google.</translation>
-<translation id="7260277299188117560">Aggiornamento automatico p2p attivato</translation>
 <translation id="7261252191178797385">Immagine di sfondo del dispositivo</translation>
 <translation id="7264704483008663819">Questa norma è stata ritirata in M68; usa la norma DeveloperToolsAvailability.
 
@@ -4790,7 +4778,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se questa norma non è impostata, per impostazione predefinita la funzione non è consentita per gli utenti gestiti dall'azienda ed è consentita per gli utenti non gestiti.</translation>
 <translation id="7295019613773647480">Attiva utenti supervisionati</translation>
-<translation id="7295038772938766029">Attiva la ricerca assistita della fotocamera di Lens per gli utenti aziendali</translation>
 <translation id="7302043767260300182">Ritardo blocco schermo in caso di utilizzo di CA</translation>
 <translation id="7303902834678570827">Gli utenti di sessioni Ospite gestite non possono memorizzare le impostazioni di visualizzazione a livello di dispositivo.</translation>
 <translation id="731208205557053914">Segnala informazioni sui VPD</translation>
@@ -5239,7 +5226,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7925224837072026018">La configurazione del criterio consente alle estensioni o alle app per Android di accedere alle chiavi aziendali. Le chiavi sono destinate unicamente all'utilizzo aziendale se vengono generate tramite l'API chrome.enterprise.platformKeys su un account gestito. Gli utenti non possono consentire o revocare l'accesso delle estensioni o delle app per Android alle chiavi aziendali.
 
       Per impostazione predefinita, un'estensione o un'app per Android non può utilizzare una chiave destinata all'uso aziendale, il che equivale a impostare il criterio allowCorporateKeyUsage su Falso per tale estensione. Solo se il criterio allowCorporateKeyUsage viene impostato su Vero per un'estensione o un'app per Android può utilizzare qualsiasi chiave della piattaforma contrassegnata per uso aziendale per firmare dati arbitrari. L'autorizzazione viene concessa solo se l'estensione o l'app per Android viene considerata protetta dall'accesso alla chiave di potenziali utenti malintenzionati.</translation>
-<translation id="793134539373873765">Consente di specificare se p2p deve essere utilizzato per i payload di aggiornamento del sistema operativo. Se questa norma viene impostata su True, i dispositivi condivideranno e proveranno a consumare i payload di aggiornamento sulla LAN, riducendo potenzialmente l'utilizzo e la congestione della larghezza di banda Internet. Se il payload di aggiornamento non è disponibile sulla LAN, il dispositivo ripiegherà sul download da un server di aggiornamento. Se la norma viene impostata su False o non viene configurata, non verrà utilizzato p2p.</translation>
 <translation id="7933141401888114454">Attivazione della creazione di utenti controllati</translation>
 <translation id="793473937901685727">Imposta la disponibilità dei certificati per le app ARC</translation>
 <translation id="7937766917976512374">Consenti o nega acquisizione video</translation>

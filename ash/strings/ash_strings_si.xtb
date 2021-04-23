@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">ඊතර්නෙට්: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">සහායක (පූරණය වේ...)</translation>
 <translation id="1838895407229022812">රාත්‍රී ආලෝකය අක්‍රියයි.</translation>
-<translation id="1850504506766569011">Wi-Fi අක්‍රීය කර ඇත.</translation>
 <translation id="1864454756846565995">USB-C උපාංගය (පසුපස තොට)</translation>
 <translation id="1882814835921407042">ජංගම ජාලයක් නැත</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> වෙත කැඩපත් කරයි</translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">පරිශීලක සැකසුම්</translation>
 <translation id="3217205077783620295">ශබ්දය ක්‍රියාත්මකයි, ටොගල කිරීම ශ්‍රව්‍ය නිහඬ කරනු ඇත.</translation>
 <translation id="3226991577105957773">තවත් +<ph name="COUNT" /></translation>
-<translation id="3236488194889173876">ලබා ගත හැකි ජංගම ජාල නොමැත</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> කවුළුව <ph name="ACTIVE_DESK" /> මේසයෙන් <ph name="TARGET_DESK" /> මේසයට ගියා</translation>
 <translation id="3255483164551725916">ඔබට කළ හැක්කේ කුමක්ද?</translation>
 <translation id="3269597722229482060">දකුණු ක්ලික් කිරීම</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ක්‍රියාත්මකයි.</translation>
 <translation id="5947494881799873997">ප්‍රතිවර්තනය</translation>
 <translation id="595202126637698455">ක්‍රියාකරිත්ව හඹායෑම සබල කෙරිණි</translation>
-<translation id="5957083217255311415">ජංගම දත්ත ක්‍රියාවිරහිතයි.</translation>
 <translation id="5958529069007801266">අධීක්ෂණය කරන ලද භාවිතකරු</translation>
 <translation id="5960825221082587934">සහායකට අර්ථ දැක්වීම, පරිවර්තනය හෝ ඒකක පරිවර්තනය වැනි තොරතුරු පෙන්වීමට ඉඩ දෙන්න.</translation>
 <translation id="5977415296283489383">කන් යොමු</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">රාක්කය තුළ ආදාන විකල්ප මෙනු බුබුළ පෙන්වීමේ කෙටි මග වෙනස් කර ඇත. <ph name="OLD_SHORTCUT" /> වෙනුවට <ph name="NEW_SHORTCUT" /> භාවිත කරන්න.</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> මේසය ක්‍රියාත්මක කළා</translation>
 <translation id="8452135315243592079">SIM පත අතුරුදහන්</translation>
-<translation id="8454013096329229812">Wi-Fi ඔන් කර ඇත.</translation>
 <translation id="8462305545768648477">කථා කිරීමට තෝරන්න වසන්න</translation>
 <translation id="847056008324733326">සංදර්ශන පරිමාණ සැකසීම්</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> හට <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ඇත.</translation>

@@ -108,7 +108,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Asistan (yükleniyor...)</translation>
 <translation id="1838895407229022812">Gece Işığı kapalı.</translation>
-<translation id="1850504506766569011">Kablosuz kapalı.</translation>
 <translation id="1864454756846565995">USB-C cihaz (arka bağlantı noktası)</translation>
 <translation id="1882814835921407042">Mobil ağ yok</translation>
 <translation id="1882897271359938046">Şuraya yansıtılıyor: <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3207953481422525583">Kullanıcı Ayarları</translation>
 <translation id="3217205077783620295">Ses açık, düğmeye basılırsa ses kapatılacak.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> öğe daha</translation>
-<translation id="3236488194889173876">Kullanılabilir mobil ağ yok</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> penceresi, Masa <ph name="ACTIVE_DESK" /> üzerinden Masa <ph name="TARGET_DESK" /> üzerine taşındı</translation>
 <translation id="3255483164551725916">Neler yapabilirsin?</translation>
 <translation id="3269597722229482060">Sağ Tıkla</translation>
@@ -584,7 +582,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> özelliği açık.</translation>
 <translation id="5947494881799873997">Geri döndür</translation>
 <translation id="595202126637698455">Performans izleme etkin</translation>
-<translation id="5957083217255311415">Mobil veri kapatıldı.</translation>
 <translation id="5958529069007801266">Denetlenen kullanıcı</translation>
 <translation id="5960825221082587934">Asistan'ın yaptığınız seçimin tanımı, çevirisi veya birimin dönüştürülmesi gibi bilgileri göstermesine izin verir.</translation>
 <translation id="5977415296283489383">Kulaklık</translation>
@@ -885,7 +882,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8433977262951327081">Giriş seçenekleri menüsü balonunu rafta görüntüleme kısa yolu değişti. <ph name="OLD_SHORTCUT" /> yerine <ph name="NEW_SHORTCUT" /> kısayolunu kullanın.</translation>
 <translation id="8444246603146515890">Masa <ph name="DESK_TITILE" /> etkinleştirildi</translation>
 <translation id="8452135315243592079">SIM kart yok</translation>
-<translation id="8454013096329229812">Kablosuz açık.</translation>
 <translation id="8462305545768648477">Seç ve Dinle özelliğini kapat</translation>
 <translation id="847056008324733326">Ekran ölçeği ayarları</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />, <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> özelliğine sahip.</translation>

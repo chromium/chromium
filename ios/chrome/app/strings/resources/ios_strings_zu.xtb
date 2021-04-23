@@ -204,6 +204,7 @@ Amasayithi awakwazi ukusebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula
 <translation id="3112556859945124369">Maka...</translation>
 <translation id="3131206671572504478">Vimbela konke</translation>
 <translation id="3153862085237805241">Londoloza ikhadi</translation>
+<translation id="3157387275655328056">Engeza kuhlu lokufunda</translation>
 <translation id="3157684681743766797">Maka konke...</translation>
 <translation id="3161291298470460782">Lokhu kuzokukhipha ngemvume, kuvale ukuvumelanisa, futhi kusule yonke idatha ye-Chrome kule divayisi. Idatha yakho evunyelanisiwe izohlala ku-Akhawunti yakho ye-Google.</translation>
 <translation id="3169472444629675720">Zitholele</translation>
@@ -399,6 +400,7 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5188482106078495165">Isethingi lamakhukhi wakho lisebenza kuwo wonke amathebhu. Ukuze usebenzise isethingi entsha ukuvula ithebhu, layisha kabusha ithebhu.</translation>
 <translation id="5190835502935405962">Ibha yamabhukhimakhi</translation>
 <translation id="5197255632782567636">I-inthanethi</translation>
+<translation id="5210365745912300556">Vala ithebhu</translation>
 <translation id="5228579091201413441">Nika amandla ukuvumelanisa</translation>
 <translation id="5234764350956374838">Cashisa</translation>
 <translation id="5245322853195994030">Khansela ukuvumelanisa</translation>
@@ -486,7 +488,6 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6127379762771434464">Into isusiwe</translation>
 <translation id="6136914049981179737">Amasekhondi adlule</translation>
 <translation id="6144589619057374135">Vula i-${url} ku-Incognito</translation>
-<translation id="616831107264507309">Funda ngemuva kwesikhathi</translation>
 <translation id="6177442314419606057">Sesha ku-Chrome</translation>
 <translation id="6184086493125982861">Bonisa amthebhu</translation>
 <translation id="6187302354554850004">Ukugcina ukuvumelanisa: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6293101329759844770">Ukuze uvule Ukuphequlula Ngokuphepha, vula <ph name="BEGIN_LINK" />Amasevisi we-Google<ph name="END_LINK" /> bese uthepha okuthi Ukuphequlula ngokuphepha.</translation>
 <translation id="6303969859164067831">Phuma bese uvale ukuvumelanisa</translation>
 <translation id="6308436439357671616">Lokhu kukuvumela ukuthi uthathe uphinde wabelane ngezithombe.</translation>
+<translation id="6321526113093607004">Engeza kumabhukhimakhi</translation>
 <translation id="6324528485781869530">Shintsha i-akhawunti yokuvumelanisa</translation>
 <translation id="6324669097367352121">Izilungiselelo zokungena ngemvume</translation>
 <translation id="6337234675334993532">Ukubethela</translation>
@@ -672,7 +674,6 @@ Ngoba i-akhawunti yakho iphethwe yi-<ph name="HOSTED_DOMAIN" />, idatha yakho ye
 <translation id="7856733331829174190">Ayikwazanga ukulanda</translation>
 <translation id="7859704718976024901">Umlando wokuphequlula</translation>
 <translation id="7887198238286927132">Ukuvikela ubumfihlo bakho, i-Chrome ngeke igcwalise ngokuzenzakalelayo le nkambu.</translation>
-<translation id="7918293828610777738">Uhlu lwakho lokufunda lutholakala ungaxhunyiwe kwi-inthanethi. Ukuze ungeze ikhasi kuhlu lwakho lokufunda, thepha ku-<ph name="SHARE_OPENING_ICON" /> bese ku-<ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">I-FaceTime</translation>
 <translation id="7939128259257418052">Thumela amaphasiwedi...</translation>
 <translation id="7947953824732555851">Yamukela uphinde ungene ngemvume</translation>

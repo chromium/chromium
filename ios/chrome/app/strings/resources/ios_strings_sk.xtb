@@ -204,6 +204,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="3112556859945124369">Označiť…</translation>
 <translation id="3131206671572504478">Blokovať všetky</translation>
 <translation id="3153862085237805241">Uložiť kartu</translation>
+<translation id="3157387275655328056">Pridať do zoznamu na čítanie</translation>
 <translation id="3157684681743766797">Označiť všetko…</translation>
 <translation id="3161291298470460782">Touto akciou sa odhlásite, vypnete synchronizáciu a vymažete všetky údaje Chromu z tohto zariadenia. Synchronizované údaje zostanú vo vašom účte Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5188482106078495165">Nastavenie súborov cookie platí pre všetky karty. Ak chcete pre otvorenú kartu použiť nové nastavenie, znova ju načítajte.</translation>
 <translation id="5190835502935405962">Panel so záložkami</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Zatvoriť kartu</translation>
 <translation id="5228579091201413441">Povoliť synchronizáciu</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
 <translation id="5245322853195994030">Zrušiť synchronizáciu</translation>
@@ -486,7 +488,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6127379762771434464">Položka bola odstránená</translation>
 <translation id="6136914049981179737">Pred chvíľou</translation>
 <translation id="6144589619057374135">Otvoriť adresu ${url} v režime inkognito</translation>
-<translation id="616831107264507309">Prečítať neskôr</translation>
 <translation id="6177442314419606057">Hľadať v Chrome</translation>
 <translation id="6184086493125982861">Zobraziť karty</translation>
 <translation id="6187302354554850004">Synchronizované <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6293101329759844770">Ak chcete zapnúť Bezpečné prehliadanie, otvorte <ph name="BEGIN_LINK" />Služby Googlu<ph name="END_LINK" /> a klepnite na Bezpečné prehliadanie.</translation>
 <translation id="6303969859164067831">Odhlásiť sa a vypnúť synchronizáciu</translation>
 <translation id="6308436439357671616">Umožňuje fotiť a nahrať fotky.</translation>
+<translation id="6321526113093607004">Pridať medzi záložky</translation>
 <translation id="6324528485781869530">Prepnutie účtu na synchronizáciu</translation>
 <translation id="6324669097367352121">Nastavenia prihlásenia</translation>
 <translation id="6337234675334993532">Šifrovanie</translation>
@@ -672,7 +674,6 @@ Váš účet spravuje doména <ph name="HOSTED_DOMAIN" />, takže vaše údaje C
 <translation id="7856733331829174190">Sťahovanie zlyhalo</translation>
 <translation id="7859704718976024901">História prehliadania</translation>
 <translation id="7887198238286927132">Chrome automaticky nedoplní toho pole, čím ochráni vaše súkromie.</translation>
-<translation id="7918293828610777738">Váš čitateľský zoznam je k dispozícii offline. Ak doň chcete pridať stránku, klepnite na položku <ph name="SHARE_OPENING_ICON" /> a potom na možnosť <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportovať heslá...</translation>
 <translation id="7947953824732555851">Prijať a prihl. sa</translation>

@@ -749,6 +749,7 @@
 <translation id="1794791083288629568">ଏହି ସମସ୍ୟାକୁ ସମାଧାନ କରିବାରେ ଆମକୁ ସାହାଯ୍ୟ କରିବାକୁ ମତାମତ ପଠାନ୍ତୁ।</translation>
 <translation id="1795214765651529549">କ୍ଲାସିକ୍ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନ୍‌ସନ୍‌ ସ୍ୱଚାଳିତ ଭାବେ ଅକ୍ଷମ ହୋ‍ଇଗଲା।</translation>
+<translation id="1800973090344019061">"<ph name="APP_NAME" />" ଏକ୍ସଟେନସନ୍ ଆପଣଙ୍କ ସ୍କ୍ରିନର ବିଷୟବସ୍ତୁକୁ ସେୟାର୍ କରିବାକୁ ଚାହୁଁଛି।</translation>
 <translation id="1802624026913571222">କଭର୍ ବନ୍ଦ ହେବା ପରେ ସ୍ଲିପ୍ ମୋଡ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="1802687198411089702">ପୃଷ୍ଠାଟି କାମ କରୁନାହିଁ। ଆପଣ ଏଥିପାଇଁ ଅପେକ୍ଷା କରିପାରିବେ କିମ୍ବା ପ୍ରସ୍ଥାନ କରିପାରିବେ।</translation>
 <translation id="1803531841600994172">ଏହି ଭାଷାକୁ ଅନୁବାଦ କରାଯିବ</translation>
@@ -1345,6 +1346,7 @@
 <translation id="2464089476039395325">HTTP ପ୍ରୋକ୍ସି</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" /> ଆପଣଙ୍କୁ ବର୍ତ୍ତମାନ ୱାଇ-ଫାଇ ସହ ସଂଯୋଗ କରି ଏକ ଅପଡେଟକୁ ଡାଉନଲୋଡ୍ କରିବା ପାଇଁ ଆବଶ୍ୟକ କରୁଛି। କିମ୍ବା, ଏକ ମିଟର ହୋଇଥିବା ସଂଯୋଗରୁ ଡାଉନଲୋଡ୍ କରନ୍ତୁ (ଶୁଳ୍କ ଲାଗୁ ହୋଇପାରେ)।</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> ନେଟ୍‍ୱାର୍କ, ବନ୍ଦ ଅଛି</translation>
+<translation id="2467755475704469005">କୌଣସି ଡିଭାଇସ୍ ଚିହ୍ନଟ କରାଯାଇନାହିଁ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">ଟଚପ୍ୟାଡ୍ ସ୍କ୍ରୋଲ୍ ଆକ୍ସଲରେସନ୍</translation>
 <translation id="2468205691404969808">ଯଦିଓ, ଆପଣ ସେହି ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଯାଆନ୍ତି ନାହିଁ, ତଥାପି ଆପଣଙ୍କର ପ୍ରାଥମିକତାକୁ ମନେରଖିବାକୁ ଏହା କୁକୀ ବ୍ୟବହାର କରେ</translation>
 <translation id="2468402215065996499">ଟାମାଗୋଚୀ</translation>
@@ -2373,6 +2375,7 @@
 <translation id="3608576286259426129">ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ଛବିର ପୂର୍ବାବଲୋକନ</translation>
 <translation id="3610369246614755442">ଡକ୍ ଫ୍ୟାନ୍‌କୁ ସେବାର ଆବଶ୍ୟକତା ଅଛି</translation>
 <translation id="361106536627977100">ଫ୍ଲାସ୍ ଡାଟା</translation>
+<translation id="3611655097742243705">ଅଧିକ ଆପ୍ ଖୋଜିବା ପାଇଁ Play Storeକୁ ଭିଜିଟ୍ କରନ୍ତୁ</translation>
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; ଦ୍ଵାରା ଡାଉନଲୋଡ୍ କରାଯାଇଛି</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" /> ଦେଖାନ୍ତୁ</translation>
 <translation id="3613422051106148727">ନୂଆ ଟାବ୍ &amp;ଖୋଲନ୍ତୁ</translation>
@@ -2707,6 +2710,7 @@
 <translation id="3943494825379372497">ଆପ୍ ଓ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ରିଷ୍ଟୋର୍ କରିବେ?</translation>
 <translation id="3943582379552582368">&amp;ପଛକୁ</translation>
 <translation id="3943857333388298514">ପେଷ୍ଟ କରନ୍ତୁ</translation>
+<translation id="3945513714196326460">ଏକ ଛୋଟ ନାମ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="3948116654032448504">&amp;ଛବି ପାଇଁ <ph name="SEARCH_ENGINE" /> ଖୋଜନ୍ତୁ</translation>
 <translation id="3948507072814225786">ନିମ୍ନୋକ୍ତ ଫୋଲ୍ଡର୍‌ଗୁଡ଼ିକରେ <ph name="ORIGIN" /> ଫାଇଲ୍‌ଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିପାରିବ</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -3092,6 +3096,7 @@
 <translation id="4415245286584082850">କୌଣସି ଡିଭାଇସ୍ ମିଳିଲା ନାହିଁ। ଏକ ନୂଆ ଟାବ୍‌ରେ ଏକ ସହାୟତା କେନ୍ଦ୍ର ପ୍ରବନ୍ଧ ଖୋଲନ୍ତୁ।</translation>
 <translation id="4415276339145661267">ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="4415748029120993980">SECG ଅଣ୍ଡାକାର ବକ୍ର secp384r1 (aka NIST P-384)</translation>
+<translation id="4416450511678320850">ଏହି ବିଷୟବସ୍ତୁ ପାଇଁ କୌଣସି ଆପ୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="4416582610654027550">ଏକ ଵୈଧ URL ଟାଇପ୍‌ କରନ୍ତୁ</translation>
 <translation id="4419409365248380979">ସର୍ବଦା <ph name="HOST" />କୁ କୁକୀଗୁଡ଼ିକ ସେଟ୍ କରିବା ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="4421932782753506458">ଫ୍ଲୁଫି</translation>
@@ -3384,6 +3389,7 @@
 <translation id="473936925429402449">ଚୟନ କରାଯାଇଛି, <ph name="TOTAL_ELEMENTS" />ଟିରୁ <ph name="CURRENT_ELEMENT" />ଟି ଅତିରିକ୍ତ ବିଷୟବସ୍ତୁ</translation>
 <translation id="4739639199548674512">ଟିକେଟ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="4742334355511750246">ଛବିଗୁଡ଼ିକୁ ଦେଖାଇବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
+<translation id="4742970037960872810">ହାଇଲାଇଟ୍ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" /> ଏହା ଜାଣନ୍ତୁ ଯେ କିପରି ଆପ୍ଲିକେସନ୍‌ଗୁଡ଼ିକୁ ଅପ୍‌ଡେଟ୍ କରିବେ<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ସାଇଟ୍ ଅନ୍‌ମ୍ୟୁଟ୍ କରନ୍ତୁ}other{ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଅନ୍‌ମ୍ୟୁଟ୍ କରନ୍ତୁ}}</translation>
 <translation id="4746351372139058112">Messages</translation>
@@ -4592,6 +4598,7 @@
 <translation id="6136114942382973861">ଡାଉନ୍‌ଲୋଡ୍ ବାର୍‍କୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6136287496450963112">ଆପଣଙ୍କର ସୁରକ୍ଷା କୀ ଏକ PIN ଦ୍ୱାରା ସୁରକ୍ଷିତ ନୁହେଁ। ଟିପଚିହ୍ନଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ ପ୍ରଥମେ ଏକ PIN ତିଆରି କରନ୍ତୁ।</translation>
 <translation id="6138680304137685902">SHA-384 ସହିତ X9.62 ECDSAର ସ୍ଵାକ୍ଷର</translation>
+<translation id="6138774640412545950">"<ph name="APP_NAME" />" ଏକ୍ସଟେନସନ୍ ଆପଣଙ୍କ ସ୍କ୍ରିନର ବିଷୟବସ୍ତୁକୁ <ph name="TARGET_NAME" /> ସହ ସେୟାର୍ କରିବାକୁ ଚାହୁଁଛି।</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, କୌଣସି ନେଟ୍‌ୱାର୍କ ନାହିଁ</translation>
 <translation id="6141988275892716286">ଡାଉନ୍‌ଲୋଡ୍ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="6143186082490678276">ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
@@ -5383,6 +5390,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7009709314043432820"><ph name="APP_NAME" /> ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="701080569351381435">ଉତ୍ସ ଦେଖନ୍ତୁ</translation>
 <translation id="7014174261166285193">ଇନ୍‍ଷ୍ଟଲ୍ କରିହେଲା ନାହିଁ</translation>
+<translation id="7014480873681694324">ହାଇଲାଇଟ୍ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="7017004637493394352">ପୁଣି "Ok Google" କୁହନ୍ତୁ</translation>
 <translation id="7017219178341817193">ଏକ ନୂଆ ପୃଷ୍ଠା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7017354871202642555">ୱିଣ୍ଡୋ ସେଟ୍ ହେବା ପରେ ମୋଡ୍ ସେଟ୍ ହୋଇପାରିବ ନାହିଁ।</translation>

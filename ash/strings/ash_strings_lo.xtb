@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">ອີເທີເນັດ: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">ຜູ້ຊ່ວຍ (ກຳລັງໂຫຼດຢູ່...)</translation>
 <translation id="1838895407229022812">ແສງກາງຄືນປິດຢູ່.</translation>
-<translation id="1850504506766569011">Wi​-Fi ປິດແລ້ວ​.</translation>
 <translation id="1864454756846565995">ອຸ​ປະ​ກອນ USB-C (ຜອດ​ດ້ານຫຼັງ)</translation>
 <translation id="1882814835921407042">ບໍ່ມີເຄືອຂ່າຍມືຖື</translation>
 <translation id="1882897271359938046">ການສ່ອງໜ້າຈໍໃສ່ <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">ຕັ້ງຄ່າຜູ້ໃຊ້</translation>
 <translation id="3217205077783620295">ລະດັບສຽງເປີດຢູ່, ການສະຫຼັບຈະປິດສຽງ.</translation>
 <translation id="3226991577105957773">ອີກ +<ph name="COUNT" /></translation>
-<translation id="3236488194889173876">ບໍ່ມີເຄືອຂ່າຍມືຖື</translation>
 <translation id="3249513730522716925">ຍ້າຍໜ້າຈໍ <ph name="WINDOW_TITLE" /> ຈາກເດັສ <ph name="ACTIVE_DESK" /> ໄປຫາເດັສ <ph name="TARGET_DESK" /> ແລ້ວ</translation>
 <translation id="3255483164551725916">ທ່ານເຮັດຫຍັງໄດ້ແດ່?</translation>
 <translation id="3269597722229482060">ຄລິກຂວາ</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ເປີດຢູ່.</translation>
 <translation id="5947494881799873997">ກັບຄືນ</translation>
 <translation id="595202126637698455">ການຕິດຕາມການປະຕິບັດເປີດໃຊ້ງານແລ້ວ</translation>
-<translation id="5957083217255311415">ຂໍ້ມູນມືຖືປິດຢູ່.</translation>
 <translation id="5958529069007801266">ຜູ້ໃຊ້ທີ່ມີການຄວບຄຸມດູແລ</translation>
 <translation id="5960825221082587934">ອະນຸຍາດໃຫ້ຜູ້ຊ່ວຍສະແດງຂໍ້ມູນ ເຊັ່ນ: ຄຳນິຍາມ, ຄຳແປ ຫຼື ການປ່ຽນຫົວໜ່ວຍສຳລັບການເລືອກຂອງທ່ານ.</translation>
 <translation id="5977415296283489383">ຫູຟັງ</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">ທາງລັດເພື່ອສະແດງຟອງເມນູຕົວເລືອກການປ້ອນຂໍ້ມູນໃນຖ້ານໄດ້ປ່ຽນແປງແລ້ວ. ກະລຸນາໃຊ້ <ph name="NEW_SHORTCUT" /> ແທນ <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">ເປີດນຳໃຊ້ເດັສ <ph name="DESK_TITILE" /> ແລ້ວ</translation>
 <translation id="8452135315243592079">ແຜ່ນ SIM ຫາຍໄປ</translation>
-<translation id="8454013096329229812">Wi​-Fi ເປີດແລ້ວ​.</translation>
 <translation id="8462305545768648477">ປິດເລືອກເພື່ອເວົ້າ</translation>
 <translation id="847056008324733326">ສະແດງການຕັ້ງຄ່າຂະໜາດ</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ມີ <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

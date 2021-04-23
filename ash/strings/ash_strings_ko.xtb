@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">이더넷: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">어시스턴트(로드 중...)</translation>
 <translation id="1838895407229022812">야간 조명이 꺼졌습니다.</translation>
-<translation id="1850504506766569011">Wi-Fi가 꺼져 있습니다.</translation>
 <translation id="1864454756846565995">USB-C 기기(후면 포트)</translation>
 <translation id="1882814835921407042">모바일 네트워크 없음</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />에 미러링</translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">사용자 설정</translation>
 <translation id="3217205077783620295">볼륨이 켜져 있으며 전환하면 오디오가 꺼집니다.</translation>
 <translation id="3226991577105957773">외 <ph name="COUNT" />개</translation>
-<translation id="3236488194889173876">사용할 수 있는 모바일 네트워크 없음</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> 창이 <ph name="ACTIVE_DESK" /> 데스크에서 <ph name="TARGET_DESK" /> 데스크로 이동했습니다.</translation>
 <translation id="3255483164551725916">무엇을 할 수 있어?</translation>
 <translation id="3269597722229482060">마우스 오른쪽 버튼 클릭</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> 기능이 켜져 있습니다.</translation>
 <translation id="5947494881799873997">되돌리기</translation>
 <translation id="595202126637698455">성능 추적 사용 중</translation>
-<translation id="5957083217255311415">모바일 데이터가 사용 중지되었습니다.</translation>
 <translation id="5958529069007801266">관리 대상 사용자</translation>
 <translation id="5960825221082587934">어시스턴트가 선택 항목의 정의, 번역 또는 단위 변환과 같은 정보를 표시하도록 허용합니다.</translation>
 <translation id="5977415296283489383">헤드폰</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">실행기에서 입력 옵션 메뉴 도움말 풍선을 표시하는 단축키가 변경되었습니다. <ph name="OLD_SHORTCUT" /> 대신 <ph name="NEW_SHORTCUT" />을(를) 사용하세요.</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> 데스크가 활성화되었습니다.</translation>
 <translation id="8452135315243592079">SIM 카드 없음</translation>
-<translation id="8454013096329229812">Wi-Fi가 켜져 있습니다.</translation>
 <translation id="8462305545768648477">텍스트 읽어주기 닫기</translation>
 <translation id="847056008324733326">배율 설정 표시</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />에서 <ph name="FEATURE_NAME" /> 기능을 <ph name="FEATURE_STATE" /> 상태로 설정했습니다.</translation>

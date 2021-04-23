@@ -349,7 +349,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 <translation id="1479427764273213107">Politikayı ayarlamak, kullanıcıların chrome.usb API'sı aracılığıyla doğrudan bir web uygulaması içinde kullanmak için çekirdek sürücüsünden çıkarabildikleri USB cihazlarının listesini tanımlar. Girişler, belirli bir donanımı tanımlamak için kullanılan USB Tedarikçi Tanımlayıcısı ve Ürün Tanımlayıcısı çiftlerinden oluşmaktadır.
 
       Ayarlanmazsa çıkarılabilir USB cihazları listesi boştur.</translation>
-<translation id="1479515813926202288">Kurumsal kullanıcılar için Lens kamera destekli aramayı devre dışı bırak</translation>
 <translation id="1481508277421549404">Politika True (Doğru) değerine ayarlandığında kurumsal politika tarafından yüklenen uzantıların Kurumsal Donanım Platformu API'sini kullanmasına izin verilir.
 
       Politika False (Yanlış) değerine ayarlandığında veya ayarlanmadan bırakıldığında uzantıların bu API'yı kullanmasına izin verilmez.
@@ -441,13 +440,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       https://www.chromestatus.com/feature/4664843055398912 adresine bakın.</translation>
 <translation id="1587585749332985896">Gözetimsiz Mod'un kullanımına izin verme</translation>
 <translation id="1588240398285670601">Tarayıcı Ayarları</translation>
-<translation id="1593245608325508847">Politika ayarlanırsa G Suite'te Chrome'un kısıtlı oturum açma özelliği etkinleştirilir ve kullanıcılar bu ayarı değiştiremezler. Kullanıcılar sadece belirtilen alan adlarındaki hesapları kullanarak Google araçlarına erişebilirler (gmail veya googlemail hesaplarına izin vermek için alan adı listesine consumer_accounts öğesini ekleyin). Bu ayar, kullanıcıların Google kimlik doğrulaması gerektiren yönetilen bir cihazda oturum açmalarını ve açıkça izin verilen alan adlarından birine ait olmadığı sürece İkincil Hesap eklemelerini engeller.
-
-      Bu ayar boş veya ayarlanmadan bırakılırsa kullanıcılar herhangi bir hesapla G Suite'e erişebilirler.
-
-      Kullanıcılar bu ayarı değiştiremez veya geçersiz kılamazlar.
-
-      Not: Bu politika, https://support.google.com/a/answer/1668854 sayfasında açıklandığı gibi, tüm google.com alan adlarına gönderilen tüm HTTP ve HTTPS isteklerine X-GoogApps-Allowed-Domains başlığının eklenmesine neden olur.</translation>
 <translation id="1599424828227887013">Android cihazlarda Site İzolasyonu'nu belirtilen kaynaklar için etkinleştirme</translation>
 <translation id="159946228300522107">Politikayı True (Doğru) değerine ayarlamak, Chrome'un ilk çalıştırmada birinci pencereyi büyüteceği anlamına gelir.
 
@@ -985,7 +977,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 <translation id="2303795211377219696">Kredi kartları için Otomatik Doldurma özelliğini etkinleştirme</translation>
 <translation id="2307496301287881990">Ekran ve grafik durumlarını raporla</translation>
 <translation id="2309390639296060546">Varsayılan coğrafi konum ayarı</translation>
-<translation id="2327252517317514801">G Suite'e erişmesine izin verilen alan adlarını tanımla</translation>
 <translation id="2331354174913096226">İstenen DNS-over-HTTPS çözümleyicisinin URI şablonu. Birden fazla DNS-over-HTTPS çözümleyicisi belirlemek için karşılık gelen URI şablonlarını boşlukla ayırın.
 
       DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> olarak ayarlanırsa bu politika ayarlanmalı, boş bırakılmamalıdır.
@@ -2603,7 +2594,6 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290"><ph name="PLUGIN_VM_NAME" /> ile ilgili politikaları yapılandırır.</translation>
 <translation id="449784980858429908">Sitelere, tüm seri bağlantı noktalarına bağlanmak için otomatik olarak izin ver.</translation>
-<translation id="4507775063441355559"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> Kamera Destekli Aramaya izin ver</translation>
 <translation id="4510923771103268849">Kullanıcının, Crostini kapsayıcılarına root erişimi olmasına izin verilir</translation>
 <translation id="4515404363392014383">Güvenilen kaynaklar için Güvenli Tarama'yı etkinleştir</translation>
 <translation id="4518251772179446575">Bir site, kullanıcının fiziksel konumunu izlemek istediğinde sor</translation>
@@ -3178,7 +3168,6 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
           * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> ve <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> alanları kullanılır.
 
       Not: Daha ayrıntılı örnekler için Chromium Projeleri'ni ziyaret edin (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
-<translation id="5264773067879932127">Politika ayarlanmadan bırakılır veya Etkin değerine ayarlanırsa kullanıcıların <ph name="GOOGLE_LENS_PRODUCT_NAME" /> kullanarak kameralarıyla arama yapmasına izin verilir. Politika, Dever Dışı değerine ayarlanırsa <ph name="GOOGLE_LENS_PRODUCT_NAME" /> Kamera Destekli Arama desteklense de kullanıcıya arama kutusunda <ph name="GOOGLE_LENS_PRODUCT_NAME" /> düğmesi gösterilmez.</translation>
 <translation id="5266173014392157048">Bu politika kullanımdan kaldırıldı. Bunun yerine lütfen "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />" politikasını kullanın.
 
       Politikayı ayarlamak <ph name="PRODUCT_NAME" /> ürününün yetki verebileceği sunucular atar. Birden fazla sunucu adını virgülle ayırın. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
@@ -4746,7 +4735,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       <ph name="MS_WIN_NAME" /> işletim sisteminde bu işlev, yalnızca Windows 10 Pro üzerinde çalışan bir <ph name="MS_AD_NAME" /> alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir. <ph name="MAC_OS_NAME" /> işletim sisteminde bu işlev yalnızca MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış örneklerde kullanılabilir.</translation>
 <translation id="7258823566580374486">Uzaktan erişen ana makinelerin perdelenmesini etkinleştirme</translation>
 <translation id="7260204423892780600">Google Asistan'la ilgili ayarları kontrol eder.</translation>
-<translation id="7260277299188117560">p2p otomatik güncellemesi etkin</translation>
 <translation id="7261252191178797385">Cihaz duvar kağıdı resmi</translation>
 <translation id="7264704483008663819">Bu politika M68 sürümünde kullanımdan kaldırılmıştır; lütfen bunun yerine DeveloperToolsAvailability politikasını kullanın.
 
@@ -4778,7 +4766,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Bu politika ayarlanmadan bırakılırsa, varsayılan olarak kuruluş tarafından yönetilen kullanıcılara izin verilmezken, yönetilmeyen kullanıcılara izin verilir.</translation>
 <translation id="7295019613773647480">Denetlenen kullanıcıları etkinleştir</translation>
-<translation id="7295038772938766029">Kurumsal kullanıcılar için Lens kamera destekli aramayı etkinleştir</translation>
 <translation id="7302043767260300182">AC güçle çalışırken ekran kilidi gecikmesi</translation>
 <translation id="7303902834678570827">Yönetilen Misafir Oturumu kullanıcıları, cihaz genelindeki görüntü ayarlarını saklayamazlar.</translation>
 <translation id="731208205557053914">VPD bilgilerini raporla</translation>
@@ -5228,7 +5215,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7925224837072026018">Bu politika ayarlanırsa uzantıların veya Android uygulamalarının şirket anahtarlarına erişmesine izin verilir. Anahtarlar ancak yönetilen bir hesapta chrome.enterprise.platformKeys API kullanılarak oluşturulmuşsa şirket kullanımı için atanır. Kullanıcılar, uzantıların ya da Android uygulamalarının şirket anahtarlarına erişimine izin veremez veya şirket anahtarlarına erişim izinlerini kaldıramaz.
 
       Varsayılan olarak bir uzantı ya da Android uygulaması, şirket kullanımı için atanmış bir anahtarı kullanamaz. Bu, söz konusu uzantı ya da Android uygulaması için allowCorporateKeyUsage politikasını Yanlış değerine ayarlamayla eş değerdir. Yalnızca, bir uzantı ya da Android uygulaması için allowCorporateKeyUsage politikası Doğru değerine ayarlandığında, söz konusu uzantı ya da Android uygulaması rastgele verileri imzalamak amacıyla, şirket kullanımı için işaretlenen platform anahtarlarını kullanabilir. Saldırganlara karşı anahtar erişimi güvenliği sağlamak için bu izin yalnızca uzantıya ya da Android uygulamasına güveniliyorsa verilmelidir.</translation>
-<translation id="793134539373873765">OS güncelleme yükleri için p2p'nin kullanılıp kullanılmayacağını belirtir. Doğru seçeneğine ayarlanırsa, cihazlar LAN üzerindeki yükleri paylaşır ve kullanmaya çalışır, bu da İnternet bant genişliği kullanımını ve tıkanıklığını potansiyel olarak azaltır. Güncelleme yükü LAN'da kullanılamıyorsa, cihaz bir güncelleme sunucusundan indirme işlemine geçer. Yanlış seçeneğine ayarlanırsa veya yapılandırılmazsa p2p kullanılmaz.</translation>
 <translation id="7933141401888114454">Denetlenen kullanıcılar oluşturmayı etkinleştir</translation>
 <translation id="793473937901685727">ARC uygulamaları için sertifika kullanılabilirliğini ayarla</translation>
 <translation id="7937766917976512374">Video yakalamaya izin verme veya reddetme</translation>

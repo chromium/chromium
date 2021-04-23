@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">চিহ্নিত করুন…</translation>
 <translation id="3131206671572504478">সব ব্লক করুন</translation>
 <translation id="3153862085237805241">কার্ড সেভ করুন</translation>
+<translation id="3157387275655328056">পড়ার তালিকায় যোগ করুন</translation>
 <translation id="3157684681743766797">সবগুলি চিহ্নিত করুন…</translation>
 <translation id="3161291298470460782">এর ফলে আপনি অ্যাকাউন্ট থেকে সাইন-আউট হয়ে যাবেন, সিঙ্ক করার সুবিধা বন্ধ হয়ে যাবে এবং এই ডিভাইস থেকে Chrome-এর সমস্ত ডেটা মুছে যাবে। আপনি যেসব ডেটা সিঙ্ক করেছেন, সেগুলি আপনার Google অ্যাকাউন্টেই থেকে যাবে।</translation>
 <translation id="3169472444629675720">আবিষ্কার করুন</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">আপনার কুকি সেটিং সমস্ত ট্যাবের ক্ষেত্রেই প্রযোজ্য। কোনও খোলা ট্যাবে নতুন সেটিং প্রয়োগ করতে, ট্যাবটি আবার লোড করুন।</translation>
 <translation id="5190835502935405962">বুকমার্ক বার</translation>
 <translation id="5197255632782567636">ইন্টারনেট</translation>
+<translation id="5210365745912300556">ট্যাব বন্ধ করুন</translation>
 <translation id="5228579091201413441">সিঙ্ক সক্ষম করুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
 <translation id="5245322853195994030">সিঙ্ক বাতিল করুন</translation>
@@ -447,6 +449,7 @@
 <translation id="5782227691023083829">অনুবাদ হচ্ছে...</translation>
 <translation id="5803566855766646066">আপনি কি সত্যিই এই নতুন কার্ড বাতিল করতে চান?</translation>
 <translation id="5816228676161003208">এটি আপনাকে আপনার ভয়েস ব্যবহার করে আরও দ্রুত সার্চ করতে দেয়।</translation>
+<translation id="581659025233126501">সিঙ্ক চালু করুন</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> এটি ম্যানেজ করে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">সার্চ ইঞ্জিন</translation>
 <translation id="5854790677617711513">৩০ দিনের বেশি পুরনো</translation>
@@ -486,7 +489,6 @@
 <translation id="6127379762771434464">আইটেম সরানো হয়েছে</translation>
 <translation id="6136914049981179737">সেকেন্ড আগে</translation>
 <translation id="6144589619057374135">'ছদ্মবেশী মোডে' ${url} খুলুন</translation>
-<translation id="616831107264507309">পরে পড়ুন</translation>
 <translation id="6177442314419606057">Chrome-এ সার্চ করুন</translation>
 <translation id="6184086493125982861">ট্যাব দেখান</translation>
 <translation id="6187302354554850004">শেষে সিঙ্ক হয়েছে: <ph name="LAST_USED_TIME" /></translation>
@@ -494,12 +496,14 @@
 <translation id="6196207969502475924">ভয়েস সার্চ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT}টি ট্যাব বন্ধ করুন}one{{COUNT}টি ট্যাব বন্ধ করুন}other{{COUNT}টি ট্যাব বন্ধ করুন}}</translation>
 <translation id="6219688215832490856">কখনও অনুবাদ করবেন না</translation>
+<translation id="6223816392543092032">আপনার সবকটি ডিভাইসে বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস পান।</translation>
 <translation id="6254066287920239840">ব্রাউজারের পরিবর্তে অ্যাপটিতে লিঙ্কগুলি খুলুন।</translation>
 <translation id="6255097610484507482">ক্রেডিট কার্ড সম্পাদনা করুন</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> ভাষায় অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="6293101329759844770">Safe Browsing চালু করতে, <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> বিকল্পটি খুলে Safe Browsing-এ ট্যাপ করুন।</translation>
 <translation id="6303969859164067831">সাইন-আউট করুন এবং সিঙ্ক করা বন্ধ করুন</translation>
 <translation id="6308436439357671616">এটি আপনাকে ফটো তুলতে এবং আপলোড করতে দেয়।</translation>
+<translation id="6321526113093607004">বুকমার্কে যোগ করুন</translation>
 <translation id="6324528485781869530">সিঙ্ক অ্যাকাউন্ট পাল্টান</translation>
 <translation id="6324669097367352121">সাইন-ইন সেটিংস</translation>
 <translation id="6337234675334993532">এনক্রিপশন</translation>
@@ -526,6 +530,7 @@
 <translation id="6445981559479772097">বার্তা পাঠানো হয়েছে৷</translation>
 <translation id="6447842834002726250">কুকিজ</translation>
 <translation id="6453018583485750254">কখনও চেক করা হয়নি।</translation>
+<translation id="6459307836338400162">আপনার গোপনীয়তা, নিরাপত্তা ও ডেটা সংগ্রহের সাথে সম্পর্কিত আরও সেটিংসের জন্য <ph name="BEGIN_LINK" />সিঙ্ক<ph name="END_LINK" /> এবং <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> উভয় বিকল্প দেখুন।</translation>
 <translation id="6464071786529933911">নতুন ছদ্মবেশী ট্যাবে খুলুন</translation>
 <translation id="6464397691496239022">আপনি যাতে সাইন-ইন হয়ে থাকতে পারেন তার ব্যবস্থা করা বা শপিং কার্টে আপনার বেছে নেওয়া আইটেমগুলি মনে রাখার মতো আপনার ব্রাউজিং অভিজ্ঞতা আরও ভাল করার জন্য সাইট কুকি ব্যবহার করতে পারবে।
 
@@ -670,7 +675,6 @@
 <translation id="7856733331829174190">ডাউনলোড করা যায়নি</translation>
 <translation id="7859704718976024901">ব্রাউজিং ইতিহাস</translation>
 <translation id="7887198238286927132">আপনার গোপনীয়তা রক্ষার জন্য, Chrome এই ক্ষেত্রটি নিজে থেকে পূরণ করবে না।</translation>
-<translation id="7918293828610777738">আপনার পড়ার তালিকাটি অফলাইনে উপলভ্য। আপনার পড়ার তালিকায় কোনও পৃষ্ঠা যোগ করতে <ph name="SHARE_OPENING_ICON" />  তারপর <ph name="READ_LATER_TEXT" /> ট্যাপ করুন।</translation>
 <translation id="7938254975914653459">ফেসটাইম</translation>
 <translation id="7939128259257418052">পাসওয়ার্ড এক্সপোর্ট করুন...</translation>
 <translation id="7947953824732555851">সম্মত হয়ে সাইন-ইন করুন</translation>
@@ -709,6 +713,7 @@
 <translation id="8281886186245836920">ছেড়ে যান</translation>
 <translation id="8283172974887967105">সেট করুন…</translation>
 <translation id="8299417921174340354">পাসওয়ার্ড ব্যবহার করার জন্য, আপনাকে ডিভাইসে প্রথমে একটি পাসকোড সেট করতে হবে।</translation>
+<translation id="83100941411593607">সাইন-ইন করার সুবিধা বন্ধ করা আছে</translation>
 <translation id="8319076807703933069">নতুন ট্যাবে সার্চ করুন</translation>
 <translation id="8323906514956095947">আরও ট্যাবের বিকল্প দেখতে টাচ করে ধরে থাকুন</translation>
 <translation id="8328777765163860529">সমস্ত বন্ধ করুন</translation>

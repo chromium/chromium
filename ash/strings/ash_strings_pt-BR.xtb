@@ -108,7 +108,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Assistente (carregando…)</translation>
 <translation id="1838895407229022812">O Modo noturno está desativado.</translation>
-<translation id="1850504506766569011">O Wi-Fi está desligado.</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (porta traseira)</translation>
 <translation id="1882814835921407042">Rede móvel indisponível</translation>
 <translation id="1882897271359938046">Espelhamento de <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3207953481422525583">Configurações do usuário</translation>
 <translation id="3217205077783620295">O som está ativado. Alterná-lo desativará o som.</translation>
 <translation id="3226991577105957773">Mais <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Nenhuma rede móvel disponível</translation>
 <translation id="3249513730522716925">A janela <ph name="WINDOW_TITLE" /> foi movida do espaço de trabalho <ph name="ACTIVE_DESK" /> para o <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">O que você pode fazer?</translation>
 <translation id="3269597722229482060">Clique com o botão direito do mouse</translation>
@@ -584,7 +582,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="5946788582095584774">O recurso <ph name="FEATURE_NAME" /> está ativado.</translation>
 <translation id="5947494881799873997">Reverter</translation>
 <translation id="595202126637698455">Rastreamento de desempenho ativado</translation>
-<translation id="5957083217255311415">Os dados móveis estão desativados.</translation>
 <translation id="5958529069007801266">Usuário supervisionado</translation>
 <translation id="5960825221082587934">Permitir que o Assistente mostre informações como a definição, a tradução ou a conversão de unidades da sua seleção.</translation>
 <translation id="5977415296283489383">Fone de ouvido</translation>
@@ -884,7 +881,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="8433977262951327081">O atalho para mostrar o balão de menu de opções de entrada na estante foi alterado. Use <ph name="NEW_SHORTCUT" /> em vez de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Espaço de trabalho <ph name="DESK_TITILE" /> ativado</translation>
 <translation id="8452135315243592079">Chip ausente</translation>
-<translation id="8454013096329229812">O Wi-Fi está ligado.</translation>
 <translation id="8462305545768648477">Fechar o Selecionar para ouvir</translation>
 <translation id="847056008324733326">Exibir configurações de escala</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> o recurso <ph name="FEATURE_NAME" />.</translation>

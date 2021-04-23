@@ -108,7 +108,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Asistente (cargando…)</translation>
 <translation id="1838895407229022812">La luz nocturna está apagada.</translation>
-<translation id="1850504506766569011">Wi-Fi desactivada</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (puerto trasero)</translation>
 <translation id="1882814835921407042">Sin red móvil</translation>
 <translation id="1882897271359938046">Duplicando en <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3207953481422525583">Configuración del usuario</translation>
 <translation id="3217205077783620295">El volumen está activado. Si lo desactivas, se silenciará.</translation>
 <translation id="3226991577105957773"><ph name="COUNT" /> más</translation>
-<translation id="3236488194889173876">No hay redes móviles disponibles</translation>
 <translation id="3249513730522716925">La ventana <ph name="WINDOW_TITLE" /> se movió del escritorio <ph name="ACTIVE_DESK" /> al <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">¿Qué puedes hacer?</translation>
 <translation id="3269597722229482060">Hacer clic con el botón derecho</translation>
@@ -585,7 +583,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5946788582095584774">La función <ph name="FEATURE_NAME" /> está activada.</translation>
 <translation id="5947494881799873997">Revertir</translation>
 <translation id="595202126637698455">Seguimiento de rendimiento habilitado</translation>
-<translation id="5957083217255311415">Los datos móviles están desactivados.</translation>
 <translation id="5958529069007801266">Usuario supervisado</translation>
 <translation id="5960825221082587934">Permite que Asistente muestre información sobre el texto seleccionado, como su definición, traducción o conversión de unidad.</translation>
 <translation id="5977415296283489383">Auriculares</translation>
@@ -885,7 +882,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8433977262951327081">El acceso directo para mostrar el cuadro con el menú de opciones de entrada en la biblioteca cambió. Usa <ph name="NEW_SHORTCUT" /> en lugar de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Se activó el escritorio <ph name="DESK_TITILE" /></translation>
 <translation id="8452135315243592079">Falta la tarjeta SIM</translation>
-<translation id="8454013096329229812">Wi-Fi activada</translation>
 <translation id="8462305545768648477">Cerrar Seleccionar para pronunciar</translation>
 <translation id="847056008324733326">Configuración de escala de visualización</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> tiene <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>

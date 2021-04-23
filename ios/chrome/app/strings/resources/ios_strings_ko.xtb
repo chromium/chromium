@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">표시…</translation>
 <translation id="3131206671572504478">모두 차단</translation>
 <translation id="3153862085237805241">카드 저장</translation>
+<translation id="3157387275655328056">읽기 목록에 추가</translation>
 <translation id="3157684681743766797">모두 표시...</translation>
 <translation id="3161291298470460782">로그아웃되고 동기화가 사용 중지되며 기기에서 모든 Chrome 데이터가 삭제됩니다. 동기화된 데이터는 Google 계정에 그대로 유지됩니다.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">쿠키 설정이 모든 탭에 적용됩니다. 새로운 설정을 열려 있는 탭에 적용하려면 탭을 새로고침하세요.</translation>
 <translation id="5190835502935405962">북마크바</translation>
 <translation id="5197255632782567636">인터넷</translation>
+<translation id="5210365745912300556">탭 닫기</translation>
 <translation id="5228579091201413441">동기화 사용</translation>
 <translation id="5234764350956374838">닫기</translation>
 <translation id="5245322853195994030">동기화 취소</translation>
@@ -486,7 +488,6 @@
 <translation id="6127379762771434464">항목 삭제됨</translation>
 <translation id="6136914049981179737">초 전</translation>
 <translation id="6144589619057374135">시크릿 모드에서 ${url} 열기</translation>
-<translation id="616831107264507309">나중에 읽기</translation>
 <translation id="6177442314419606057">Chrome에서 검색</translation>
 <translation id="6184086493125982861">탭 표시</translation>
 <translation id="6187302354554850004">최근 동기화: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@
 <translation id="6293101329759844770">세이프 브라우징을 사용 설정하려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 열고 세이프 브라우징을 탭하세요.</translation>
 <translation id="6303969859164067831">로그아웃하고 동기화 사용 중지</translation>
 <translation id="6308436439357671616">액세스를 허용하면 사진을 찍고 업로드할 수 있습니다.</translation>
+<translation id="6321526113093607004">북마크에 추가</translation>
 <translation id="6324528485781869530">동기화 계정 전환</translation>
 <translation id="6324669097367352121">로그인 설정</translation>
 <translation id="6337234675334993532">암호화</translation>
@@ -672,7 +674,6 @@
 <translation id="7856733331829174190">다운로드할 수 없음</translation>
 <translation id="7859704718976024901">인터넷 사용 기록</translation>
 <translation id="7887198238286927132">Chrome에서는 개인정보 보호를 위해 이 입력란을 자동 완성하지 않습니다.</translation>
-<translation id="7918293828610777738">읽기 목록을 오프라인으로 사용할 수 있습니다. 읽기 목록에 페이지를 추가하려면 <ph name="SHARE_OPENING_ICON" />, <ph name="READ_LATER_TEXT" />을(를) 차례로 탭하세요.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">비밀번호 내보내기...</translation>
 <translation id="7947953824732555851">수락 및 로그인</translation>

@@ -204,6 +204,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="3112556859945124369">Merk …</translation>
 <translation id="3131206671572504478">Blokkeer alles</translation>
 <translation id="3153862085237805241">Stoor kaart</translation>
+<translation id="3157387275655328056">Voeg by leeslys</translation>
 <translation id="3157684681743766797">Merk alles …</translation>
 <translation id="3161291298470460782">Dit sal jou afmeld, sinkronisering afskakel en alle Chrome-data op hierdie toestel uitvee. Jou gesinkroniseerde data sal in jou Google-rekening bly.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="5188482106078495165">Jou webkoekiesinstelling is van toepassing op alle oortjies. Herlaai die oortjie om 'n nuwe instelling op 'n oop oortjie toe te pas.</translation>
 <translation id="5190835502935405962">Boekmerkebalk</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Maak oortjie toe</translation>
 <translation id="5228579091201413441">Aktiveer sinkronisering</translation>
 <translation id="5234764350956374838">Verwerp</translation>
 <translation id="5245322853195994030">Kanselleer sinkronisering</translation>
@@ -486,7 +488,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6127379762771434464">Item is verwyder</translation>
 <translation id="6136914049981179737">Sekondes gelede</translation>
 <translation id="6144589619057374135">Maak ${url} in Incognitomodus oop</translation>
-<translation id="616831107264507309">Lees later</translation>
 <translation id="6177442314419606057">Soek in Chrome</translation>
 <translation id="6184086493125982861">Wys oortjies</translation>
 <translation id="6187302354554850004">Laas gesinkroniseer: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6293101329759844770">Maak <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> oop en tik op Veiligblaai om Veiligblaai aan te skakel.</translation>
 <translation id="6303969859164067831">Meld af en skakel sinkronisering af</translation>
 <translation id="6308436439357671616">Dit laat jou foto's neem en oplaai.</translation>
+<translation id="6321526113093607004">Voeg by Boekmerke</translation>
 <translation id="6324528485781869530">Wissel gesinkroniseerde rekening</translation>
 <translation id="6324669097367352121">Aanmeldinstellings</translation>
 <translation id="6337234675334993532">Enkriptering</translation>
@@ -672,7 +674,6 @@ Wanneer jy afmeld, sal jou Chrome-data op hierdie toestel uigevee word omdat jou
 <translation id="7856733331829174190">Kon nie aflaai nie</translation>
 <translation id="7859704718976024901">Blaaigeskiedenis</translation>
 <translation id="7887198238286927132">Om jou privaatheid te beskerm, sal Chrome nie hierdie veld outomaties invul nie.</translation>
-<translation id="7918293828610777738">Jou leeslys is vanlyn beskikbaar. Tik op <ph name="SHARE_OPENING_ICON" /> en dan <ph name="READ_LATER_TEXT" /> om 'n bladsy by jou leeslys te voeg.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Voer wagwoorde uit …</translation>
 <translation id="7947953824732555851">Aanvaar en meld aan</translation>

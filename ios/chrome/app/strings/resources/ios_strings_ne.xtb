@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">चिन्ह लगाउनुहोस्…</translation>
 <translation id="3131206671572504478">सबै ब्लक गर्नुहोस्</translation>
 <translation id="3153862085237805241">कार्ड सेभ गर्नुहोस्</translation>
+<translation id="3157387275655328056">पाठ्य सूचीमा थप्नुहोस्</translation>
 <translation id="3157684681743766797">सबैलाई चिन्ह लगाउनुहोस्…</translation>
 <translation id="3161291298470460782">यस कार्यले तपाईंलाई साइन आउट गराउने छ, सिंक गर्ने सुविधा निष्क्रिय पार्ने छ र यो यन्त्रबाट Chrome का सबै डेटा मेटाउने छ। सिंक भएको तपाईंको डेटा तपाईंको Google खातामा रहिरहने छ।</translation>
 <translation id="3169472444629675720">पत्ता लगाउनुहोस्</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">तपाईंको कुकीसम्बन्धी सेटिङ सबै ट्याबमा लागू हुन्छ। कुनै खुला रहेको ट्याबमा नयाँ सेटिङ लागू गर्न उक्त ट्याब पुनः लोड गर्नुहोस्।</translation>
 <translation id="5190835502935405962">पृष्ठमञ्जूषा पट्टी</translation>
 <translation id="5197255632782567636">इन्टरनेट</translation>
+<translation id="5210365745912300556">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="5228579091201413441">सिंकलाई सक्रिय गर्नुहोस्</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
 <translation id="5245322853195994030">सिंक गर्ने कार्य रद्द गर्नुहोस्</translation>
@@ -485,7 +487,6 @@
 <translation id="6127379762771434464">वस्तुलाई हटाइयो</translation>
 <translation id="6136914049981179737">सेकेन्ड अघि</translation>
 <translation id="6144589619057374135">${url} इन्कोग्निटो मोडमा खोल्नुहोस्</translation>
-<translation id="616831107264507309">पछि पढ्नुुहोस्</translation>
 <translation id="6177442314419606057">Chrome मा खोज्नुहोस्</translation>
 <translation id="6184086493125982861">ट्याबहरू देखाउनुहोस्</translation>
 <translation id="6187302354554850004">पछिल्लोपटक सिंक भएको: <ph name="LAST_USED_TIME" /></translation>
@@ -499,6 +500,7 @@
 <translation id="6293101329759844770">Safe Browsing अन गर्न <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> खोल्नुहोस् र Safe Browsing मा ट्याप गर्नुहोस्।</translation>
 <translation id="6303969859164067831">साइन आउट गरी सिंक प्रक्रिया निष्क्रिय पार्नुहोस्</translation>
 <translation id="6308436439357671616">यसले तपाईँलाई तस्बिरहरू लिन र अपलोड गर्न दिन्छ।</translation>
+<translation id="6321526113093607004">'बुकमार्कहरू' मा हाल्नुहोस्</translation>
 <translation id="6324528485781869530">सिंक गरिने खाता बदल्नुहोस्</translation>
 <translation id="6324669097367352121">सेटिङहरूमा साइन इन गर्नुहोस्</translation>
 <translation id="6337234675334993532">इन्क्रिप्सन</translation>
@@ -669,7 +671,6 @@
 <translation id="7856733331829174190">डाउनलोड गर्न सकिएन</translation>
 <translation id="7859704718976024901">ब्राउजिङ इतिहास</translation>
 <translation id="7887198238286927132">तपाईंको गोपनीयताको सुरक्षा गर्न Chrome ले यो फिल्ड स्वतः भर्ने छैन।</translation>
-<translation id="7918293828610777738">तपाईंको पाठ्य सूची अफलाइन उपलब्ध छ। आफ्नो पाठ्य सूचीमा कुनै पृष्ठ थप्न पहिला <ph name="SHARE_OPENING_ICON" /> र त्यसपछि <ph name="READ_LATER_TEXT" /> मा ट्याप गर्नुहोस्।</translation>
 <translation id="7938254975914653459">फेसटाइम</translation>
 <translation id="7939128259257418052">पासवर्ड निर्यात गर्नु…</translation>
 <translation id="7947953824732555851">स्वीकार र साइन इन गर्नुहोस्</translation>

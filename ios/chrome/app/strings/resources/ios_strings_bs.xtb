@@ -204,6 +204,7 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="3112556859945124369">Označi…</translation>
 <translation id="3131206671572504478">Blokiraj sve</translation>
 <translation id="3153862085237805241">Sačuvajte karticu</translation>
+<translation id="3157387275655328056">Dodaj na popis za čitanje</translation>
 <translation id="3157684681743766797">Označi sve…</translation>
 <translation id="3161291298470460782">Ovim ćete se odjaviti, isključiti sinhronizaciju i obrisati Chrome podatke s ovog uređaja. Vaši sinhronizirani podaci će ostati na vašem Google računu.</translation>
 <translation id="3169472444629675720">Otkrijte</translation>
@@ -399,6 +400,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5188482106078495165">Postavka kolačića se primjenjuje na sve kartice. Da primijenite novu postavku na otvorenu karticu, ponovo učitajte karticu.</translation>
 <translation id="5190835502935405962">Traka oznaka</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Zatvorite karticu.</translation>
 <translation id="5228579091201413441">Omogući sinhronizaciju</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5245322853195994030">Otkaži sinhronizaciju</translation>
@@ -486,7 +488,6 @@ Također, Handoff mora biti omogućen u odjeljku Općenito u Postavkama, a vaši
 <translation id="6127379762771434464">Stavka je uklonjena</translation>
 <translation id="6136914049981179737">Prije nekoliko sekundi</translation>
 <translation id="6144589619057374135">Otvorite ${url} u anonimnom načinu rada</translation>
-<translation id="616831107264507309">Pročitajte kasnije</translation>
 <translation id="6177442314419606057">Pretražite u Chromeu</translation>
 <translation id="6184086493125982861">Prikaz kartica</translation>
 <translation id="6187302354554850004">Posljednji put sinhronizirano: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Također, Handoff mora biti omogućen u odjeljku Općenito u Postavkama, a vaši
 <translation id="6293101329759844770">Da uključite Sigurno pregledanje, otvorite <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" /> i dodirnite Sigurno pregledanje.</translation>
 <translation id="6303969859164067831">Odjavite se i isključite sinhronizaciju</translation>
 <translation id="6308436439357671616">To vam omogućava da snimate i otpremate fotografije.</translation>
+<translation id="6321526113093607004">Dodaj u Oznake</translation>
 <translation id="6324528485781869530">Promjena računa za sinhronizaciju</translation>
 <translation id="6324669097367352121">Postavke prijave</translation>
 <translation id="6337234675334993532">Enkripcija</translation>
@@ -672,7 +674,6 @@ S obzirom da vašim računom upravlja domena <ph name="HOSTED_DOMAIN" />, vaši 
 <translation id="7856733331829174190">Preuzimanje nije uspjelo</translation>
 <translation id="7859704718976024901">Historija pregledanja</translation>
 <translation id="7887198238286927132">Chrome neće automatski popuniti ovu rubriku radi zaštite vaše privatnosti.</translation>
-<translation id="7918293828610777738">Vaš spisak za čitanje je dostupan van mreže. Da dodate stranicu na spisak za čitanje, dodirnite <ph name="SHARE_OPENING_ICON" />, a nakon toga <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Izvezi lozinke...</translation>
 <translation id="7947953824732555851">Prihvati i prijavi me</translation>

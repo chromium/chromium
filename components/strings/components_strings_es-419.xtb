@@ -933,7 +933,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Se inhabilitó el uso de un proxy, pero se especificó una configuración explícita de proxy.</translation>
 <translation id="4464826014807964867">Sitios web con información de tu organización</translation>
-<translation id="4466881336512663640">Se perderán los cambios del formulario. ¿Confirmas que deseas continuar?</translation>
 <translation id="4476953670630786061">Este formulario no es seguro. Se desactivó la función Autocompletar.</translation>
 <translation id="4477350412780666475">Siguiente pista</translation>
 <translation id="4482953324121162758">Este sitio no se traducirá.</translation>
@@ -1287,7 +1286,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5785756445106461925">Además, esta página incluye otros recursos que no son seguros. Otras personas pueden ver estos recursos mientras se encuentran en tránsito, y un atacante puede modificarlos para cambiar la apariencia de la página.</translation>
 <translation id="5786044859038896871">¿Deseas llenar los campos con la información de tu tarjeta?</translation>
 <translation id="578633867165174378">Chrome encontró la contraseña que acabas de usar en una violación de la seguridad de los datos. Te recomendamos cambiar la contraseña ahora.</translation>
-<translation id="5798290721819630480">¿Descartas los cambios?</translation>
 <translation id="5803412860119678065">¿Deseas llenar los campos con la información de tu tarjeta <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5804427196348435412">Usar dispositivos con NFC</translation>
@@ -1448,7 +1446,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6428450836711225518">Verifica tu número de teléfono</translation>
 <translation id="6433490469411711332">Editar la información de contacto</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> rechazó la conexión.</translation>
-<translation id="6434309073475700221">Descartar</translation>
 <translation id="6440503408713884761">Ignorada</translation>
 <translation id="6443406338865242315">Las extensiones y complementos que instalaste</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>
@@ -1705,7 +1702,6 @@ Detalles adicionales:
 <translation id="7481312909269577407">Reenviar</translation>
 <translation id="7485870689360869515">No se encontró ningún dato.</translation>
 <translation id="7495528107193238112">Este contenido está bloqueado. Comunícate con el propietario del sitio para solucionar el problema.</translation>
-<translation id="7498234416455752244">Seguir editando</translation>
 <translation id="7503664977220660814">Ingresaste tu contraseña en un sitio engañoso. Chromium te recomienda revisar las contraseñas guardadas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> y otros sitios donde uses esta contraseña.</translation>
 <translation id="7508255263130623398">El ID de dispositivo de la política que se muestra está vacío o no coincide con el ID de dispositivo actual</translation>
 <translation id="7508870219247277067">Verde aguacate</translation>

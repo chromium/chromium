@@ -108,7 +108,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Assistent (yüklənir...)</translation>
 <translation id="1838895407229022812">Gecə işığı deaktivdir.</translation>
-<translation id="1850504506766569011">Wi-Fi deaktivdir.</translation>
 <translation id="1864454756846565995">USB-C cihazı (arxa port)</translation>
 <translation id="1882814835921407042">Mobil şəbəkə yoxdur</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> əks etdirilir</translation>
@@ -267,7 +266,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3207953481422525583">İstifadəçi ayarları</translation>
 <translation id="3217205077783620295">Səs səviyyəsi aktivdir, keçirdikdə audio səssiz ediləcək.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Heç bir mobil şəbəkə əlçatan deyil</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> pəncərəsi <ph name="ACTIVE_DESK" /> Masasından <ph name="TARGET_DESK" /> Masasına köçürüldü</translation>
 <translation id="3255483164551725916">Nə edə bilərsiniz?</translation>
 <translation id="3269597722229482060">Sağ düymə ilə toxunun</translation>
@@ -584,7 +582,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> aktivdir.</translation>
 <translation id="5947494881799873997">Geri dönün</translation>
 <translation id="595202126637698455">Fəaliyyət izləməsi aktiv edildi</translation>
-<translation id="5957083217255311415">Mobil data deaktiv edildi.</translation>
 <translation id="5958529069007801266">Nəzarət olunan istifadəçi</translation>
 <translation id="5960825221082587934">Assistentin seçiminiz üçün izahat, tərcümə və ya vahidin çevrilməsi kimi məlumatları göstərməsinə imkan verin.</translation>
 <translation id="5977415296283489383">Qulaqlıq</translation>
@@ -884,7 +881,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8433977262951327081">Daxiletmə seçimləri menyu qutusunu rəfdə göstərmək üçün qısayol dəyişilib. <ph name="OLD_SHORTCUT" /> əvəzinə <ph name="NEW_SHORTCUT" /> qısayolunu istifadə edin.</translation>
 <translation id="8444246603146515890">Masa <ph name="DESK_TITILE" /> aktiv edildi</translation>
 <translation id="8452135315243592079">SIM kart yoxdur</translation>
-<translation id="8454013096329229812">Wi-Fi aktivdir.</translation>
 <translation id="8462305545768648477">Seç və danış funksiyasını bağlayın</translation>
 <translation id="847056008324733326">Miqyaqs ayarlarını göstərin</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_NAME" /> xüsusiyyətini <ph name="FEATURE_STATE" /> edib.</translation>

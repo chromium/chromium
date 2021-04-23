@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Асистент (завантаження…)</translation>
 <translation id="1838895407229022812">Нічний екран вимкнено.</translation>
-<translation id="1850504506766569011">Wi-Fi вимкнено.</translation>
 <translation id="1864454756846565995">Пристрій із портом USB типу C (на задній панелі)</translation>
 <translation id="1882814835921407042">Немає мобільних мереж</translation>
 <translation id="1882897271359938046">Дзеркалювання на <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">Налаштування користувача</translation>
 <translation id="3217205077783620295">Звук увімкнено. Його можна вимкнути за допомогою перемикача.</translation>
 <translation id="3226991577105957773">Ще <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Немає мобільних мереж</translation>
 <translation id="3249513730522716925">Вікно "<ph name="WINDOW_TITLE" />" переміщено з робочого столу "<ph name="ACTIVE_DESK" />" на робочий стіл "<ph name="TARGET_DESK" />"</translation>
 <translation id="3255483164551725916">Що ти можеш?</translation>
 <translation id="3269597722229482060">Натиснути правою кнопкою миші</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774">Функцію "<ph name="FEATURE_NAME" />" увімкнено.</translation>
 <translation id="5947494881799873997">Повернути</translation>
 <translation id="595202126637698455">Відстеження ефективності ввімкнено</translation>
-<translation id="5957083217255311415">Мобільне передавання даних вимкнено.</translation>
 <translation id="5958529069007801266">Контрольований користувач</translation>
 <translation id="5960825221082587934">Дозволити Асистенту показувати визначення чи переклад терміна, конвертувати одиниці тощо для вибраного контенту.</translation>
 <translation id="5977415296283489383">Навушники</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">Комбінація клавіш для виклику спливаючої підказки з опціями введення змінилась. Тепер це <ph name="NEW_SHORTCUT" />, а не <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Робочий стіл "<ph name="DESK_TITILE" />" активовано</translation>
 <translation id="8452135315243592079">Немає SIM-карти</translation>
-<translation id="8454013096329229812">Wi-Fi увімкнено.</translation>
 <translation id="8462305545768648477">Закрити "Читання з екрана"</translation>
 <translation id="847056008324733326">Налаштування масштабу дисплея</translation>
 <translation id="8473301994082929012">На сайті <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

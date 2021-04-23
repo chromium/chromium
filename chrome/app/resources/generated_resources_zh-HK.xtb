@@ -3079,6 +3079,7 @@
 <translation id="4392896746540753732">編輯設定檔案</translation>
 <translation id="4394049700291259645">停用</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{開啟所有書籤(&amp;O)}=1{開啟書籤(&amp;O)}other{開啟全部 {COUNT} 個書籤(&amp;O)}}</translation>
+<translation id="4398131717714042083">清除搜尋框中的記錄和自動完成資料</translation>
 <translation id="439817266247065935">您的裝置先前未正確關閉。如要使用 Linux 應用程式，請重新啟動 Linux。</translation>
 <translation id="4400367121200150367">永不儲存密碼的網站會在這裡顯示</translation>
 <translation id="4400632832271803360">按住啟動器鍵，即可切換最上排按鍵的執行動作</translation>
@@ -5061,6 +5062,7 @@
 <translation id="6651237644330755633">信任這個用來識別網站的憑證</translation>
 <translation id="6651495917527016072">將 Wi-Fi 網絡設定同步至您的手機。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">只有 x86_64 平台支援 Chrome <ph name="MS_AD_NAME" /> 整合，採用 ARM 或 x86 平台的 Chromebook 不支援此功能。</translation>
+<translation id="66537479323396140">清除搜尋框中的記錄和自動完成資料。您的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>
 <translation id="6654509035557065241">偏好網絡</translation>
 <translation id="6655190889273724601">開發人員模式</translation>
 <translation id="6655458902729017087">隱藏帳戶</translation>
@@ -5927,6 +5929,7 @@
 <translation id="7636919061354591437">在此裝置上安裝</translation>
 <translation id="7637593984496473097">磁碟空間不足</translation>
 <translation id="7638605456503525968">序列連接埠</translation>
+<translation id="7639914187072011620">無法由伺服器擷取 SAML 重新導向網址</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> 會使用您已儲存的密碼，自動登入符合資格的網站。</translation>
 <translation id="7642778300616172920">隱藏敏感內容</translation>
 <translation id="7643842463591647490">{0,plural, =1{# 個開啟的視窗}other{# 個開啟的視窗}}</translation>

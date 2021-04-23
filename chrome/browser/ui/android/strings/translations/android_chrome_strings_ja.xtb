@@ -234,6 +234,7 @@
 <translation id="2517472476991765520">スキャン</translation>
 <translation id="2518590038762162553">ライトモードを使用すると、Chrome でページの読み込みが高速化され、データ使用量も最大 60% 抑えることができます。アクセスするページを最適化するため、ウェブ トラフィックが Chrome から Google に送信されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">アクセスしたページの URL を Google に送信します</translation>
+<translation id="2527779675047087889">クリップボードの内容を非表示</translation>
 <translation id="2532336938189706096">ウェブ表示</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />件の項目を削除しました</translation>
 <translation id="2536728043171574184">このページのオフライン コピーを表示しています</translation>
@@ -314,6 +315,7 @@
 <translation id="3062802207422175757">Chrome の履歴に基づくおすすめの記事を表示します</translation>
 <translation id="3070005020161560471">自動的に翻訳する</translation>
 <translation id="3089395242580810162">シークレット タブで開く</translation>
+<translation id="3091010850649238832">クリップボードの内容を表示</translation>
 <translation id="3098745985164956033">正確な説明を生成するため、画像が Google に送信される場合があります</translation>
 <translation id="3114507951000454849">今日のニュースをチェック <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">お知らせ</translation>
@@ -865,6 +867,7 @@
 <translation id="661266467055912436">すべてのウェブユーザーの安全性を高めます。</translation>
 <translation id="6618554661997243500">よく使用するサイトや記事を表示するには、ホームボタンをタップします</translation>
 <translation id="6627583120233659107">フォルダを編集</translation>
+<translation id="6635718764393004944">検索エンジンは <ph name="DSE" /> に設定されています。この検索エンジンの検索履歴を削除するには、以下の手順をご覧ください。</translation>
 <translation id="663674369910034433">プライバシー、セキュリティ、データ収集に関連するその他の設定については、<ph name="BEGIN_LINK1" />同期<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google サービス<ph name="END_LINK2" />をご覧ください</translation>
 <translation id="6643016212128521049">削除</translation>
 <translation id="6643649862576733715">データ節約量で並べ替え</translation>

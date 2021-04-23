@@ -204,6 +204,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="3112556859945124369">Marcar…</translation>
 <translation id="3131206671572504478">Bloquear tudo</translation>
 <translation id="3153862085237805241">Guardar cartão</translation>
+<translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="3157684681743766797">Marcar tudo…</translation>
 <translation id="3161291298470460782">Esta ação termina a sua sessão, desativa a sincronização e limpa todos os dados do Chrome deste dispositivo. Os seus dados sincronizados permanecem na sua Conta Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5188482106078495165">A sua definição de cookies aplica-se a todos os separadores. Para aplicar uma nova definição a um separador aberto, atualize o separador.</translation>
 <translation id="5190835502935405962">Barra de marcadores</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Fechar separador</translation>
 <translation id="5228579091201413441">Ativar a sincronização</translation>
 <translation id="5234764350956374838">Ignorar</translation>
 <translation id="5245322853195994030">Cancelar sincronização</translation>
@@ -486,7 +488,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6127379762771434464">Item removido</translation>
 <translation id="6136914049981179737">Há segundos</translation>
 <translation id="6144589619057374135">Abrir ${url} na Navegação anónima</translation>
-<translation id="616831107264507309">Ler mais tarde</translation>
 <translation id="6177442314419606057">Pesquisar no Chrome</translation>
 <translation id="6184086493125982861">Mostrar Separadores</translation>
 <translation id="6187302354554850004">Última sincronização: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6293101329759844770">Para ativar a Navegação segura, abra <ph name="BEGIN_LINK" />Serviços Google<ph name="END_LINK" /> e toque em Navegação segura.</translation>
 <translation id="6303969859164067831">Terminar sessão e desativar a sincronização</translation>
 <translation id="6308436439357671616">Isto permite-lhe tirar e carregar fotos.</translation>
+<translation id="6321526113093607004">Adicionar aos Marcadores</translation>
 <translation id="6324528485781869530">Mudar conta de sincronização</translation>
 <translation id="6324669097367352121">Definições de início de sessão</translation>
 <translation id="6337234675334993532">Encriptação</translation>
@@ -672,7 +674,6 @@ Uma vez que a sua conta é gerida pelo domínio <ph name="HOSTED_DOMAIN" />, os 
 <translation id="7856733331829174190">Impossível transferir</translation>
 <translation id="7859704718976024901">Histórico de navegação</translation>
 <translation id="7887198238286927132">Para proteger a sua privacidade, o Chrome não irá preencher automaticamente este campo.</translation>
-<translation id="7918293828610777738">A sua lista de leitura está disponível offline. Para adicionar uma página à mesma, toque em <ph name="SHARE_OPENING_ICON" /> e, em seguida, em <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar palavras-passe...</translation>
 <translation id="7947953824732555851">Aceitar e in. sessão</translation>

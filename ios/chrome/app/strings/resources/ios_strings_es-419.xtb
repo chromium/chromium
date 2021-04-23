@@ -204,6 +204,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="3112556859945124369">Marcar…</translation>
 <translation id="3131206671572504478">Bloquear todas</translation>
 <translation id="3153862085237805241">Guardar tarjeta</translation>
+<translation id="3157387275655328056">Agregar a la lista de lectura</translation>
 <translation id="3157684681743766797">Marcar todas…</translation>
 <translation id="3161291298470460782">Si realizas esta acción, saldrás de tu cuenta, se desactivará la sincronización y se borrarán todos los datos de Chrome de este dispositivo. Los datos que tengas sincronizados permanecerán en tu Cuenta de Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5188482106078495165">Tu configuración de cookies se aplica a todas las pestañas. Para aplicar una configuración nueva en una pestaña abierta, vuelve a cargarla.</translation>
 <translation id="5190835502935405962">Barra de favoritos</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Cerrar pestaña</translation>
 <translation id="5228579091201413441">Habilitar sincronización</translation>
 <translation id="5234764350956374838">Descartar</translation>
 <translation id="5245322853195994030">Cancelar sincronización</translation>
@@ -486,7 +488,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6127379762771434464">Se eliminó el elemento</translation>
 <translation id="6136914049981179737">Hace seg.</translation>
 <translation id="6144589619057374135">Abrir ${url} en modo Incógnito</translation>
-<translation id="616831107264507309">Leer más tarde</translation>
 <translation id="6177442314419606057">Buscar en Chrome</translation>
 <translation id="6184086493125982861">Mostrar las pestañas</translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6293101329759844770">Si quieres activar la Navegación segura, abre <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" /> y, luego, presiona Navegación segura.</translation>
 <translation id="6303969859164067831">Salir y desactivar la sincronización</translation>
 <translation id="6308436439357671616">Te permite tomar fotos y subirlas.</translation>
+<translation id="6321526113093607004">Agregar a Favoritos</translation>
 <translation id="6324528485781869530">Cambiar cta. de sincronización</translation>
 <translation id="6324669097367352121">Config. acceso</translation>
 <translation id="6337234675334993532">Encriptación</translation>
@@ -672,7 +674,6 @@ Como <ph name="HOSTED_DOMAIN" /> administra tu cuenta, los datos de Chrome se bo
 <translation id="7856733331829174190">No se pudo descargar</translation>
 <translation id="7859704718976024901">Historial de navegación</translation>
 <translation id="7887198238286927132">Para proteger tu privacidad, Chrome no completará este campo de forma automática.</translation>
-<translation id="7918293828610777738">Tu lista de lectura está disponible sin conexión. Para agregar una página a la lista, presiona <ph name="SHARE_OPENING_ICON" /> y, luego, <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar contraseñas…</translation>
 <translation id="7947953824732555851">Aceptar y acceder</translation>

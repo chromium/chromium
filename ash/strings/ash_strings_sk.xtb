@@ -108,7 +108,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Asistent (načítava sa...)</translation>
 <translation id="1838895407229022812">Nočný režim je vypnutý.</translation>
-<translation id="1850504506766569011">Pripojenie Wi‑Fi je vypnuté.</translation>
 <translation id="1864454756846565995">Zariadenie USB-C (port vzadu)</translation>
 <translation id="1882814835921407042">Žiadna mobilná sieť</translation>
 <translation id="1882897271359938046">Zrkadlenie na displej <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3207953481422525583">Nastavenia používateľa</translation>
 <translation id="3217205077783620295">Zvuk je zapnutý. Ak ho chcete vypnúť, prepnite tlačidlo.</translation>
 <translation id="3226991577105957773">a ďalšie (<ph name="COUNT" />)</translation>
-<translation id="3236488194889173876">Nie je k dispozícii žiadna mobilná sieť</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> bolo presunuté z plochy <ph name="ACTIVE_DESK" /> na plochu <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Čo dokážeš?</translation>
 <translation id="3269597722229482060">Kliknúť pravým tlačidlom</translation>
@@ -584,7 +582,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5946788582095584774">Funkcia <ph name="FEATURE_NAME" /> je zapnutá.</translation>
 <translation id="5947494881799873997">Vrátiť</translation>
 <translation id="595202126637698455">Sledovanie výkonnosti je povolené</translation>
-<translation id="5957083217255311415">Mobilné dáta sú vypnuté.</translation>
 <translation id="5958529069007801266">Kontrolovaný používateľ</translation>
 <translation id="5960825221082587934">Nechajte si od Asistenta zobrazovať informácie súvisiace s vaším výberom, napríklad definíciu, preklad alebo konverziu jednotiek.</translation>
 <translation id="5977415296283489383">Slúchadlo</translation>
@@ -884,7 +881,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8433977262951327081">Klávesová skratka na zobrazenie bubliny s možnosťami vstupu na poličke sa zmenila. Namiesto skratky <ph name="OLD_SHORTCUT" /> použite skratku <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Bola aktivovaná plocha <ph name="DESK_TITILE" /></translation>
 <translation id="8452135315243592079">Chýba SIM karta</translation>
-<translation id="8454013096329229812">Pripojenie Wi‑Fi je zapnuté.</translation>
 <translation id="8462305545768648477">Zavrieť počúvanie vybraného textu</translation>
 <translation id="847056008324733326">Nastavenia hustoty zobrazenia</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> má <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">ምልክት አድርግበት…</translation>
 <translation id="3131206671572504478">ሁሉንም አግድ</translation>
 <translation id="3153862085237805241">ካርድ አስቀምጥ</translation>
+<translation id="3157387275655328056">ወደ የንባብ ዝርዝር አክል</translation>
 <translation id="3157684681743766797">ሁሉንም ምልክት አድርግባቸው…</translation>
 <translation id="3161291298470460782">ይህ እርስዎን ዘግቶ ያስወጣዎታል፣ ስምረትን ያጠፋል እና እንዲሁም ሁሉንም የChrome ውሂብ ያጸዳል። የእርስዎ የሰመረ ውሂብ በእርስዎ የGoogle መለያ ውስጥ ይቆያል።</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">የኩኪዎችዎ ቅንብር በሁሉም ትሮች ላይ ተፈጻሚ ይሆናል። በክፍት ትር ላይ አዲስ ቅንብርን ለመተግበር ትሩን እንደገና ይጫኑት።</translation>
 <translation id="5190835502935405962">የዕልባቶች አሞሌ</translation>
 <translation id="5197255632782567636">በይነመረብ</translation>
+<translation id="5210365745912300556">ትር ዝጋ</translation>
 <translation id="5228579091201413441">ማመሳሰልን አንቃ</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
 <translation id="5245322853195994030">ስምረትን ሰርዝ</translation>
@@ -486,7 +488,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6127379762771434464">ንጥል ተወግዷል</translation>
 <translation id="6136914049981179737">ከሰከንዶች በፊት</translation>
 <translation id="6144589619057374135">ማንነት በማያሳውቅ ሁነታ ላይ ${url}ን ይክፈቱ</translation>
-<translation id="616831107264507309">በኋላ ላይ ያንብቡ</translation>
 <translation id="6177442314419606057">በChrome ውስጥ ይፈልጉ</translation>
 <translation id="6184086493125982861">ትሮችን አሳይ</translation>
 <translation id="6187302354554850004">ለመጨረሻ ጊዜ የተመሳሰለው፦ <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6293101329759844770">ደህንነቱ የተጠበቀ አሰሳን ለማብራት <ph name="BEGIN_LINK" />የGoogle አገልግሎቶች<ph name="END_LINK" />ን ይክፈቱ እና የጥንቃቄ አሰሳን መታ ያድርጉ።</translation>
 <translation id="6303969859164067831">ዘግተው ይውጡ እና ስምረትን ያጥፉ</translation>
 <translation id="6308436439357671616">ይህ ፎቶዎችን እንዲያነሱ እና እንዲሰቅሉ ያስችልዎታል።</translation>
+<translation id="6321526113093607004">ወደ ዕልባቶች አክል</translation>
 <translation id="6324528485781869530">የማመሳስል መቀየሪያ መለያ</translation>
 <translation id="6324669097367352121">የመግቢያ ቅንብሮች</translation>
 <translation id="6337234675334993532">ምስጠራ</translation>
@@ -672,7 +674,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7856733331829174190">ማውረድ አልተቻለም</translation>
 <translation id="7859704718976024901">የአሰሳ ታሪክ</translation>
 <translation id="7887198238286927132">የእርስዎን ግላዊነት ለመጠበቅ፣ Chrome ይህን መስክ በራስ-ሰር ይሞላዋል።</translation>
-<translation id="7918293828610777738">የንባብ ዝርዝርዎ ከመስመር ውጭ ይገኛል። አንድ ገጽ ወደ የንባብ ዝርዝርዎ ለማከል በመጀመሪያ <ph name="SHARE_OPENING_ICON" />ን ከዚያም <ph name="READ_LATER_TEXT" />ን መታ ያድርጉ።</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">የይለፍ ቃላትን ወደ ውጭ ላክ...</translation>
 <translation id="7947953824732555851">ተቀበል እና ግባ</translation>

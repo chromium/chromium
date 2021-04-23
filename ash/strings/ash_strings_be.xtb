@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Памочнік (загружаецца...)</translation>
 <translation id="1838895407229022812">Начная падсветка выключана.</translation>
-<translation id="1850504506766569011">Wi-Fi выключаны.</translation>
 <translation id="1864454756846565995">Прылада USB-C (порт ззаду)</translation>
 <translation id="1882814835921407042">Мабільная сетка адсутнічае</translation>
 <translation id="1882897271359938046">Выконваецца адлюстраванне на дысплэй <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">Налады карыстальніка</translation>
 <translation id="3217205077783620295">Гук уключаны, выключыць яго можна з дапамогай гэтага пераключальніка.</translation>
 <translation id="3226991577105957773">+ яшчэ <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Няма даступных мабільных сетак</translation>
 <translation id="3249513730522716925">Акно "<ph name="WINDOW_TITLE" />" было перанесена са Стала <ph name="ACTIVE_DESK" /> на Стол <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Што ты ўмееш?</translation>
 <translation id="3269597722229482060">Націснуць правай кнопкай мышы</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774">Стан функцыі "<ph name="FEATURE_NAME" />": уключана.</translation>
 <translation id="5947494881799873997">Вярнуць</translation>
 <translation id="595202126637698455">Уключана трасіроўка прадукцыйнасці</translation>
-<translation id="5957083217255311415">Мабільная перадача даных выключана.</translation>
 <translation id="5958529069007801266">Падкантрольны карыстальнік</translation>
 <translation id="5960825221082587934">Дазволіць Памочніку паказваць інфармацыю пра вылучаны вамі тэкст: напрыклад, ён можа даць азначэнне, пераклад або перавесці адзінкі вымярэння.</translation>
 <translation id="5977415296283489383">Навушнікі</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">Спалучэнне клавіш для паказу выплыўнога меню параметраў уводу на паліцы змянілася. Замест <ph name="OLD_SHORTCUT" /> выкарыстоўвайце <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Стол "<ph name="DESK_TITILE" />" актываваны</translation>
 <translation id="8452135315243592079">Адсутнічае SIM-карта</translation>
-<translation id="8454013096329229812">Wi-Fi уключаны.</translation>
 <translation id="8462305545768648477">Выйсці з функцыі "Чытаць уголас"</translation>
 <translation id="847056008324733326">Паказаць налады маштабу</translation>
 <translation id="8473301994082929012">Арганізацыя <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> функцыю "<ph name="FEATURE_NAME" />".</translation>

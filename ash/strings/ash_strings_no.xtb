@@ -108,7 +108,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Assistent (laster inn …)</translation>
 <translation id="1838895407229022812">Nattlys er av.</translation>
-<translation id="1850504506766569011">Wi-Fi er slått av.</translation>
 <translation id="1864454756846565995">USB-C-enhet (porten på baksiden)</translation>
 <translation id="1882814835921407042">Ingen mobilnettverk</translation>
 <translation id="1882897271359938046">Speiler <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3207953481422525583">Brukerinnstillinger</translation>
 <translation id="3217205077783620295">Volumet er på. Hvis du slår det av, kuttes lyden.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> til</translation>
-<translation id="3236488194889173876">Ingen mobilnettverk er tilgjengelige</translation>
 <translation id="3249513730522716925">Vinduet <ph name="WINDOW_TITLE" /> ble flyttet fra skrivebord <ph name="ACTIVE_DESK" /> til skrivebord <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Hva kan du gjøre?</translation>
 <translation id="3269597722229482060">Høyreklikk</translation>
@@ -584,7 +582,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> er på.</translation>
 <translation id="5947494881799873997">Tilbakestill</translation>
 <translation id="595202126637698455">Ytelsessporing er aktivert</translation>
-<translation id="5957083217255311415">Mobildata er slått av.</translation>
 <translation id="5958529069007801266">Administrert bruker</translation>
 <translation id="5960825221082587934">La assistenten vise informasjon som definisjoner, oversettelser og enhetsomregninger for det du markerer.</translation>
 <translation id="5977415296283489383">Hodetelefon</translation>
@@ -884,7 +881,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8433977262951327081">Hurtigtasten for å vise boblen med menyen for valg av inndataalternativer på hyllen er endret. Bruk <ph name="NEW_SHORTCUT" /> i stedet for <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Skrivebord <ph name="DESK_TITILE" /> er aktivert</translation>
 <translation id="8452135315243592079">SIM-kort mangler</translation>
-<translation id="8454013096329229812">Wi-Fi er slått på.</translation>
 <translation id="8462305545768648477">Lukk Tekstopplesing</translation>
 <translation id="847056008324733326">Innstillinger for visningsskala</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> har <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

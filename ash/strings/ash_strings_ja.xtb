@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">イーサネット: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">アシスタント（読み込み中...）</translation>
 <translation id="1838895407229022812">夜間モードはオフです。</translation>
-<translation id="1850504506766569011">Wi-Fi が無効になりました。</translation>
 <translation id="1864454756846565995">USB-C デバイス（背面のポート）</translation>
 <translation id="1882814835921407042">モバイル ネットワークに接続されていません</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> へミラーリング</translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">ユーザー設定</translation>
 <translation id="3217205077783620295">音量はオンになっています。切り替えると音声がミュートされます。</translation>
 <translation id="3226991577105957773">他 <ph name="COUNT" /> 件</translation>
-<translation id="3236488194889173876">利用できるモバイル ネットワークがありません</translation>
 <translation id="3249513730522716925">ウィンドウ <ph name="WINDOW_TITLE" /> がデスク <ph name="ACTIVE_DESK" /> からデスク <ph name="TARGET_DESK" /> に移動されました</translation>
 <translation id="3255483164551725916">何ができる？</translation>
 <translation id="3269597722229482060">右クリック</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> はオンになっています。</translation>
 <translation id="5947494881799873997">元に戻す</translation>
 <translation id="595202126637698455">パフォーマンス追跡機能が有効です</translation>
-<translation id="5957083217255311415">モバイルデータ通信が無効になっています。</translation>
 <translation id="5958529069007801266">監視対象ユーザー</translation>
 <translation id="5960825221082587934">選択した項目の情報（定義、翻訳、単位変換など）をアシスタントで表示します。</translation>
 <translation id="5977415296283489383">ヘッドホン</translation>
@@ -885,7 +882,6 @@
 <translation id="8433977262951327081">シェルフに入力オプション メニューのふきだしを表示するためのショートカットが変わりました。今後は <ph name="OLD_SHORTCUT" /> ではなく <ph name="NEW_SHORTCUT" /> を使用してください。</translation>
 <translation id="8444246603146515890">デスク <ph name="DESK_TITILE" /> が有効になりました</translation>
 <translation id="8452135315243592079">SIM カードがありません</translation>
-<translation id="8454013096329229812">Wi-Fi が有効になりました。</translation>
 <translation id="8462305545768648477">「選択して読み上げ」を閉じる</translation>
 <translation id="847056008324733326">表示スケールの設定</translation>
 <translation id="8473301994082929012"><ph name="FEATURE_NAME" />は <ph name="ORGANIZATION_NAME" /> により<ph name="FEATURE_STATE" />に設定されています。</translation>

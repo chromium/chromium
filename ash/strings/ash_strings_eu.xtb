@@ -108,7 +108,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Laguntzailea (kargatzen…)</translation>
 <translation id="1838895407229022812">Gaueko argia itzalita dago.</translation>
-<translation id="1850504506766569011">Wi-Fi konexioa desaktibatuta dago.</translation>
 <translation id="1864454756846565995">USB-C gailua (atzealdeko ataka)</translation>
 <translation id="1882814835921407042">Ez dago sare mugikorrik</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> pantailan islatzen</translation>
@@ -267,7 +266,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3207953481422525583">Erabiltzaile-ezarpenak</translation>
 <translation id="3217205077783620295">Bolumena aktibatuta dago. Aldatzen baduzu, audioa isilaraziko da.</translation>
 <translation id="3226991577105957773">eta beste <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Ez dago sare mugikor erabilgarririk</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> leihoa <ph name="ACTIVE_DESK" /> lan-eremutik <ph name="TARGET_DESK" /> lan-eremura eraman da</translation>
 <translation id="3255483164551725916">Zer egin dezakezu?</translation>
 <translation id="3269597722229482060">Egin klik eskuineko botoiarekin</translation>
@@ -585,7 +583,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5946788582095584774">Aktibatuta dago <ph name="FEATURE_NAME" />.</translation>
 <translation id="5947494881799873997">Leheneratu</translation>
 <translation id="595202126637698455">Errendimenduaren jarraipena egiteko aukera gaitu da</translation>
-<translation id="5957083217255311415">Desaktibatuta dago datu-konexioa.</translation>
 <translation id="5958529069007801266">Erabiltzaile gainbegiratua</translation>
 <translation id="5960825221082587934">Laguntzailea eginbideak erakutsiko dizu zure hautapenari buruzko informazioa, hala nola definizioa, itzulpena edo bihurketa-unitatea.</translation>
 <translation id="5977415296283489383">Entzungailua</translation>
@@ -885,7 +882,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8433977262951327081">Aldatu egin da idazketa-aukeren burbuila apalean erakusteko lasterbidea. Aurrerantzean, erabili <ph name="NEW_SHORTCUT" />, eta ez <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> lan-eremua aktibatu da</translation>
 <translation id="8452135315243592079">SIM txartela falta da</translation>
-<translation id="8454013096329229812">Wi-Fi konexioa aktibatuta dago.</translation>
 <translation id="8462305545768648477">Itxi Hautatu ozen irakurtzeko</translation>
 <translation id="847056008324733326">Bistaratu eskala-ezarpenak</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> erakundeak <ph name="FEATURE_STATE" /> dauka <ph name="FEATURE_NAME" />.</translation>

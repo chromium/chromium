@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">Si vous l'autorisez à connaître votre position, Chrome la communique à tous les sites que vous autorisez. Certains sites peuvent demander votre position lorsqu'ils souhaitent vous montrer des informations locales, comme des magasins à proximité ou des actualités.</translation>
 <translation id="6036420186814142909">Google Chrome dispose de fonctionnalités qui vous permettent de gérer vos données Internet et la vitesse de chargement des pages Web.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Autoriser la connexion à Chrome</translation>
 <translation id="6181930887571472871">Passer à Chrome</translation>
 <translation id="6238746320622508509">Chrome peut verrouiller vos onglets de navigation privée.</translation>
 <translation id="6573431926118603307">Les onglets que vous avez ouverts dans Chrome sur vos autres appareils s'affichent ici.</translation>
@@ -96,5 +97,6 @@
   3. Sélectionnez "Chrome".</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Restez protégé avec Google Chrome</translation>
-<translation id="9112744793181547300">Définir Chrome en tant que navigateur par défaut ?</translation>
+<translation id="8772179140489533211">Permet d'afficher des invites de connexion à Chrome.</translation>
+<translation id="9112744793181547300">Utiliser Chrome par défaut ?</translation>
 </translationbundle>

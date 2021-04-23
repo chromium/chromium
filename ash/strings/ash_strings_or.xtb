@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">ଇଥର୍ନେଟ୍: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">ଆସିଷ୍ଟାଣ୍ଟ (ଲୋଡ୍‌ ହେଉଛି...)</translation>
 <translation id="1838895407229022812">ନାଇଟ୍ ଲାଇଟ୍ ବନ୍ଦ ଅଛି।</translation>
-<translation id="1850504506766569011">ୱାଇ-ଫାଇ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="1864454756846565995">USB-C ଡିଭାଇସ୍ (ପଛ ପୋର୍ଟ)</translation>
 <translation id="1882814835921407042">କୌଣସି ମୋବାଇଲ ନେଟୱାର୍କ ନାହିଁ</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />ର ପ୍ରତିଫଳନ</translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">ଉପଯୋଗକର୍ତ୍ତା ସେଟିଂସ୍</translation>
 <translation id="3217205077783620295">ଭଲ୍ୟୁମ୍ ଚାଲୁ ଅଛି, ଟୋଗଲ୍ କରିବା ଦ୍ୱାରା ଅଡିଓ ମ୍ୟୁଟ୍ ହୋଇଯିବ।</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" />ଟି ଅଧିକ</translation>
-<translation id="3236488194889173876">କୌଣସି ମୋବାଇଲ୍ ନେଟ୍‌ୱାର୍କ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> ୱିଣ୍ଡୋ <ph name="ACTIVE_DESK" /> ଡେସ୍କରୁ <ph name="TARGET_DESK" />ଡେସ୍କକୁ ଘୁଞ୍ଚାଇ ଦିଆଯାଇଛି</translation>
 <translation id="3255483164551725916">ଆପଣ କ’ଣ କରିପାରିବେ?</translation>
 <translation id="3269597722229482060">ଡାହାଣ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ଚାଲୁ ଅଛି।</translation>
 <translation id="5947494881799873997">ପୂର୍ବାବସ୍ଥାକୁ ଆଣନ୍ତୁ</translation>
 <translation id="595202126637698455">କାର୍ଯ୍ୟଦକ୍ଷତା ଟ୍ରେସିଂ ସକ୍ଷମ କରାଯାଇଛି</translation>
-<translation id="5957083217255311415">ମୋବାଇଲ୍ ଡାଟା ବନ୍ଦ ଅଛି।</translation>
 <translation id="5958529069007801266">ପର୍ଯ୍ୟବେକ୍ଷିତ ଉପଯୋଗକର୍ତ୍ତା</translation>
 <translation id="5960825221082587934">ଆପଣଙ୍କ ଚୟନ ପାଇଁ Assistantକୁ ସଂଜ୍ଞା, ଅନୁବାଦ କିମ୍ବା ୟୁନିଟ୍ କନଭର୍ସନ୍ ପରି ସୂଚନା ଦେଖାଇବାକୁ ଦିଅନ୍ତୁ।</translation>
 <translation id="5977415296283489383">ହେଡ୍‌ଫୋନ୍‌</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">ସେଲ୍ଫ ମଧ୍ୟରେ ଇନ୍‍ପୁଟ୍ ବିକଳ୍ପ ମେନୁ ବବଲ୍ ଦେଖାଇବା ପାଇଁ ସର୍ଟକଟ୍ ବଦଳିଯାଇଛି। ଦୟାକରି <ph name="OLD_SHORTCUT" />ପରିବର୍ତ୍ତେ <ph name="NEW_SHORTCUT" />ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> ଡେସ୍କ ସକ୍ରିୟ କରାଯାଇଛି</translation>
 <translation id="8452135315243592079">ଅନୁପଲବ୍ଧ ଥିବା SIM କାର୍ଡ</translation>
-<translation id="8454013096329229812">ୱାଇ-ଫାଇ ଚାଲୁ ସ୍ଥିତିରେ ଅଛି।</translation>
 <translation id="8462305545768648477">ସିଲେକ୍ଟ-ଟୁ-ସ୍ପିକକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="847056008324733326">ଡିସପ୍ଲେ ସ୍କେଲ୍‌ ସେଟିଂସ୍‌</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />ର <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />ଅଛି।</translation>

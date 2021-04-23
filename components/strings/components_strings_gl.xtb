@@ -940,7 +940,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4435702339979719576">Postal)</translation>
 <translation id="443673843213245140">O uso dun proxy está desactivado, pero especifícase unha configuración de proxy explícita.</translation>
 <translation id="4464826014807964867">Sitios web con información da túa organización</translation>
-<translation id="4466881336512663640">Perderanse os cambios que realizases no formulario. Seguro que queres continuar?</translation>
 <translation id="4476953670630786061">Este formulario non é seguro, polo que se desactivou a función de autocompletar.</translation>
 <translation id="4477350412780666475">Pista seguinte</translation>
 <translation id="4482953324121162758">Non se traducirá este sitio.</translation>
@@ -1294,7 +1293,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5785756445106461925">Ademais, esta páxina inclúe outros recursos que non son seguros. Outros usuarios poden ver estes recursos mentres se desprazan e un atacante pode cambiar o aspecto da páxina.</translation>
 <translation id="5786044859038896871">Queres completar a información da tarxeta de crédito?</translation>
 <translation id="578633867165174378">Chrome atopou o contrasinal que acabas de utilizar entre os datos dunha violación da seguranza dos datos. Recomendámosche que o cambies de inmediato.</translation>
-<translation id="5798290721819630480">Queres descartar os cambios?</translation>
 <translation id="5803412860119678065">Queres completar a información da tarxeta de crédito <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5804427196348435412">Utilizar dispositivos con NFC</translation>
@@ -1455,7 +1453,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6428450836711225518">Verificar o teu número de teléfono</translation>
 <translation id="6433490469411711332">Editar información de contacto</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> rexeitou a conexión.</translation>
-<translation id="6434309073475700221">Descartar</translation>
 <translation id="6440503408713884761">Política ignorada</translation>
 <translation id="6443406338865242315">As extensións e os complementos que teñas instalados</translation>
 <translation id="6446163441502663861">Kahu (sobre)</translation>
@@ -1712,7 +1709,6 @@ Detalles adicionais:
 <translation id="7481312909269577407">Adiante</translation>
 <translation id="7485870689360869515">Non se atoparon datos.</translation>
 <translation id="7495528107193238112">Este contido está bloqueado. Ponte en contacto co propietario do sitio para corrixir o problema.</translation>
-<translation id="7498234416455752244">Seguir editando</translation>
 <translation id="7503664977220660814">Acabas de escribir o teu contrasinal nun sitio enganoso. Chromium recomenda comprobar os contrasinais gardados para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e outros sitios nos que esteas a utilizar este contrasinal neste momento.</translation>
 <translation id="7508255263130623398">O código de dispositivo da política está baleiro ou non coincide co código do dispositivo actual</translation>
 <translation id="7508870219247277067">Verde aguacate</translation>

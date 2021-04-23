@@ -204,6 +204,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="3112556859945124369">Segna come…</translation>
 <translation id="3131206671572504478">Blocca tutti</translation>
 <translation id="3153862085237805241">Salva carta</translation>
+<translation id="3157387275655328056">Aggiungi all'elenco di lettura</translation>
 <translation id="3157684681743766797">Segna tutti come...</translation>
 <translation id="3161291298470460782">In questo modo il tuo account verrà disconnesso, la sincronizzazione verrà disattivata e tutti i dati di Chrome verranno eliminati da questo dispositivo. I tuoi dati sincronizzati rimarranno nel tuo Account Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5188482106078495165">L'impostazione relativa ai cookie viene applicata a tutte le schede. Per applicare una nuova impostazione a una scheda aperta, ricarica la scheda.</translation>
 <translation id="5190835502935405962">Barra dei Preferiti</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Chiudi scheda</translation>
 <translation id="5228579091201413441">Abilita sincronizzazione</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5245322853195994030">Annulla sincronizzazione</translation>
@@ -486,7 +488,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6127379762771434464">Elemento rimosso</translation>
 <translation id="6136914049981179737">Secondi fa</translation>
 <translation id="6144589619057374135">Apri ${url} in incognito</translation>
-<translation id="616831107264507309">Leggi dopo</translation>
 <translation id="6177442314419606057">Cerca in Chrome</translation>
 <translation id="6184086493125982861">Mostra schede</translation>
 <translation id="6187302354554850004">Ultima sincronizzazione: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6293101329759844770">Per attivare Navigazione sicura, apri <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" /> e tocca Navigazione sicura.</translation>
 <translation id="6303969859164067831">Esci e disattiva la sincronizzazione</translation>
 <translation id="6308436439357671616">In questo modo puoi scattare e caricare foto.</translation>
+<translation id="6321526113093607004">Aggiungi ai preferiti</translation>
 <translation id="6324528485781869530">Cambia account di sincronizzazione</translation>
 <translation id="6324669097367352121">Impostazioni accesso</translation>
 <translation id="6337234675334993532">Crittografia</translation>
@@ -672,7 +674,6 @@ Poiché il tuo account è gestito da <ph name="HOSTED_DOMAIN" />, i tuoi dati di
 <translation id="7856733331829174190">Download non riuscito</translation>
 <translation id="7859704718976024901">Cronologia di navigazione</translation>
 <translation id="7887198238286927132">Per tutelare la tua privacy, Chrome non compilerà automaticamente questo campo.</translation>
-<translation id="7918293828610777738">Il tuo elenco di lettura è disponibile offline. Per aggiungere una pagina all'elenco di lettura, tocca <ph name="SHARE_OPENING_ICON" />, quindi <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Esporta password...</translation>
 <translation id="7947953824732555851">Accetta e accedi</translation>

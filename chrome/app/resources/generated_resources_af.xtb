@@ -3080,6 +3080,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4392896746540753732">Wysig die opstellinglêer</translation>
 <translation id="4394049700291259645">Deaktiveer</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{Maak almal &amp;oop}=1{Maak boekmerk &amp;oop}other{Maak almal ({COUNT}) &amp;oop}}</translation>
+<translation id="4398131717714042083">Vee geskiedenis en outovoltooi in die soekkassie uit</translation>
 <translation id="439817266247065935">Jou toestel het nie reg afgeskakel nie. Herbegin Linux om Linux-programme te gebruik.</translation>
 <translation id="4400367121200150367">Werwe wat nooit wagwoorde stoor nie, sal hier verskyn</translation>
 <translation id="4400632832271803360">Hou die Lanseerder-sleutel in om te verander wat die boonste ry sleutels doen</translation>
@@ -5063,6 +5064,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6651237644330755633">Vertrou hierdie sertifikaat om webwerwe te identifiseer</translation>
 <translation id="6651495917527016072">Sinkroniseer wi-fi-netwerke met jou foon. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> se integrasie word net op x86_64-platforms gesteun. Chromebooks wat bo-op 'n ARM of x86-platform gebou is, steun nie hierdie funksionaliteit nie.</translation>
+<translation id="66537479323396140">Vee geskiedenis en outovoltooi in die soekkassie uit. Jou Google-rekening kan dalk ander vorme van blaaigeskiedenis hê by <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">Verkies netwerk</translation>
 <translation id="6655190889273724601">Ontwikkelaarmodus</translation>
 <translation id="6655458902729017087">Versteek rekeninge</translation>
@@ -5929,6 +5931,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7636919061354591437">Installeer op hierdie toestel</translation>
 <translation id="7637593984496473097">Te min skyfspasie</translation>
 <translation id="7638605456503525968">Reekspoorte</translation>
+<translation id="7639914187072011620">Kon nie die SAML-herlei-URL by die bediener gaan haal nie</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> meld jou outomaties by geskikte werwe aan met wagwoorde wat jy gestoor het.</translation>
 <translation id="7642778300616172920">Versteek sensitiewe inhoud</translation>
 <translation id="7643842463591647490">{0,plural, =1{# oop venster}other{# oop vensters}}</translation>

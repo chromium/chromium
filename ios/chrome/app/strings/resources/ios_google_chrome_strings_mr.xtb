@@ -58,6 +58,7 @@
 <translation id="5876773482963502140">तुम्ही Chrome तुमचे स्थान जाणून घेण्याची परवानगी दिल्यास, Chrome हे तुम्ही अनुमती दिलेल्या कोणत्याही साइटला ते पाठवते. साइटकडे तुम्हाला दाखवण्यासाठी जवळपासची दुकाने किंवा बातम्या यांसारखी स्थानिक माहिती असल्यास, त्या कदाचित तुमचे स्थान मागू शकतात.</translation>
 <translation id="6036420186814142909">Google Chrome कडे अशी वैशिष्ट्ये आहेत जी तुम्हाला तुमचा इंटरनेट डेटा आणि तुम्ही किती द्रुतपणे वेबपृष्ठे लोड करण्यात सक्षम होते हे व्यवस्थापित करण्यात मदत करतात.
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="6063091872902370735">Chrome मध्ये साइन-इन करण्यासाठी अनुमती द्या</translation>
 <translation id="6181930887571472871">Chrome वर स्विच करा</translation>
 <translation id="6238746320622508509">Chrome ला तुमचे गुप्त टॅब लॉक करू द्या.</translation>
 <translation id="6573431926118603307">आपल्या अन्य डिव्हाइसेसवर तुम्ही Chrome मध्ये उघडलेले टॅब येथे दिसतील.</translation>
@@ -97,5 +98,6 @@
   ३. Chrome निवडा.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chrome सह सुरक्षित राहा</translation>
+<translation id="8772179140489533211">Chrome मध्ये साइन इन करण्यासाठी सूचना दाखवते.</translation>
 <translation id="9112744793181547300">Chrome ला डीफॉल्ट म्हणून सेट करायचे आहे का?</translation>
 </translationbundle>

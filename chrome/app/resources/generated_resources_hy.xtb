@@ -3081,6 +3081,7 @@
 <translation id="4392896746540753732">Կարգավորման ֆայլի փոփոխում</translation>
 <translation id="4394049700291259645">Անջատել</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Բացել բոլորը}=1{&amp;Բացել էջանիշը}one{&amp;Բացել բոլորը ({COUNT})}other{&amp;Բացել բոլորը ({COUNT})}}</translation>
+<translation id="4398131717714042083">Մաքրում է պատմությունն ու ինքնալրացումները որոնման դաշտում</translation>
 <translation id="439817266247065935">Ձեր սարքը ճիշտ չի անջատվել։ Վերագործարկեք Լինուքսը՝ դրա հավելվածներն օգտագործելու համար։</translation>
 <translation id="4400367121200150367">Կայքերը, որոնք գաղտնաբառեր չեն պահում, կցուցադրվեն այստեղ</translation>
 <translation id="4400632832271803360">Վերևի շարքի ստեղները փոխարկելու համար սեղմած պահեք գործարկիչի ստեղնը</translation>
@@ -5066,6 +5067,7 @@
 <translation id="6651237644330755633">Վստահել այս հավաստագրին կայքերի նույնականացման համար</translation>
 <translation id="6651495917527016072">Համաժամացնել Wi-Fi ցանցերը հեռախոսի հետ։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome-ի <ph name="MS_AD_NAME" /> ինտեգրումը հասանելի է միայն x86_64 հարթակներում: ARM-ի կամ x86 հարթակի հիման վրա ստեղծված Chromebook սարքերը չեն աջակցում այս գործառույթը:</translation>
+<translation id="66537479323396140">Մաքրում է պատմությունն ու ինքնալրացումները որոնման դաշտում։ Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր, որոնք կարող եք գտնել <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> էջում։</translation>
 <translation id="6654509035557065241">Ցանցը դարձնել նախընտրած</translation>
 <translation id="6655190889273724601">Մշակողի ռեժիմ</translation>
 <translation id="6655458902729017087">Թաքցնել հաշիվները</translation>
@@ -5932,6 +5934,7 @@
 <translation id="7636919061354591437">Տեղադրել այս սարքում</translation>
 <translation id="7637593984496473097">Սկավառակում բավարար տարածք չկա</translation>
 <translation id="7638605456503525968">Հաջորդական միացքներ</translation>
+<translation id="7639914187072011620">Չհաջողվեց URL-ի SAML վերաուղղորդումները բեռնել սերվերից</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" />-ը թույլ է տալիս ավտոմատ կերպով մուտք գործել աջակցվող կայքեր ձեր պահած գաղտնաբառերով:</translation>
 <translation id="7642778300616172920">Թաքցնել գաղտնի տվյալները</translation>
 <translation id="7643842463591647490">{0,plural, =1{# բաց պատուհան}one{# բաց պատուհան}other{# բաց պատուհան}}</translation>

@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">Означи…</translation>
 <translation id="3131206671572504478">Све је блокирано</translation>
 <translation id="3153862085237805241">Сачувај картицу</translation>
+<translation id="3157387275655328056">Додај на листу за читање</translation>
 <translation id="3157684681743766797">Означи све…</translation>
 <translation id="3161291298470460782">Тиме ћете се одјавити, искључити синхронизацију и обрисати све Chrome податке са овог уређаја. Синхронизовани подаци ће остати на Google налогу.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">Подешавање колачића се примењује на све картице. Да бисте применили ново подешавање на отворену картицу, поново учитајте картицу.</translation>
 <translation id="5190835502935405962">Трака са обележивачима</translation>
 <translation id="5197255632782567636">Интернет</translation>
+<translation id="5210365745912300556">Затвори картицу</translation>
 <translation id="5228579091201413441">Омогући синхронизацију</translation>
 <translation id="5234764350956374838">Одбаци</translation>
 <translation id="5245322853195994030">Желите ли да откажете синхронизацију?</translation>
@@ -486,7 +488,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6127379762771434464">Уклонили сте ставку</translation>
 <translation id="6136914049981179737">Малопре</translation>
 <translation id="6144589619057374135">Отвори ${url} у режиму без архивирања</translation>
-<translation id="616831107264507309">Прочитајте касније</translation>
 <translation id="6177442314419606057">Претражите у Chrome-у</translation>
 <translation id="6184086493125982861">Прикажи картице</translation>
 <translation id="6187302354554850004">Последња синхрон.: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6293101329759844770">Да бисте укључили Безбедно прегледање, отворите <ph name="BEGIN_LINK" />Google услуге<ph name="END_LINK" /> и додирните Безбедно прегледање.</translation>
 <translation id="6303969859164067831">Одјави ме и искључи синхронизацију</translation>
 <translation id="6308436439357671616">Ово вам омогућава да снимате и отпремате слике.</translation>
+<translation id="6321526113093607004">Додај у обележиваче</translation>
 <translation id="6324528485781869530">Промените налог за синхронизацију</translation>
 <translation id="6324669097367352121">Подешавања пријављивања</translation>
 <translation id="6337234675334993532">Шифровање</translation>
@@ -672,7 +674,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7856733331829174190">Преузимање није успело</translation>
 <translation id="7859704718976024901">Историја прегледања</translation>
 <translation id="7887198238286927132">Ради заштите приватности Chrome неће аутоматски попуњавати ово поље.</translation>
-<translation id="7918293828610777738">Листа за читање је доступна офлајн. Да бисте додали страницу на листу за читање, додирните <ph name="SHARE_OPENING_ICON" />, па <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Извези лозинке…</translation>
 <translation id="7947953824732555851">Прихвати и пријави ме</translation>

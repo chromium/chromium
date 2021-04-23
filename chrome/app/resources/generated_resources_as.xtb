@@ -751,6 +751,7 @@
 <translation id="1794791083288629568">আমাক এই সমস্যা সামাধান কৰাত সহায় কৰিবলৈ মতামত পঠিয়াওক।</translation>
 <translation id="1795214765651529549">ক্লাছিক থীম ব্যৱহাৰ কৰক</translation>
 <translation id="1799071797295057738">এক্সটেনশ্বনটো "<ph name="EXTENSION_NAME" />" স্বয়ংক্ৰিয়ভাৱে অক্ষম কৰা হ’ল।</translation>
+<translation id="1800973090344019061">এক্সটেনশ্বন "<ph name="APP_NAME" />"এ আপোনাৰ স্ক্ৰীনত থকা সমল শ্বেয়াৰ কৰিব বিচাৰে।</translation>
 <translation id="1802624026913571222">ক’ভাৰটো বন্ধ কৰিলে সুপ্ত অৱস্থালৈ নিয়ক</translation>
 <translation id="1802687198411089702">এই পৃষ্ঠাটোৱে সঁহাৰি জনোৱা নাই। আপুনি পৃষ্ঠাটোৱে সঁহাৰি জনোৱালৈ অপেক্ষা কৰিব পাৰে বা বাহিৰ হ’ব পাৰে।</translation>
 <translation id="1803531841600994172">যি ভাষালৈ অনুবাদ কৰা হ'ব</translation>
@@ -1350,6 +1351,7 @@
 <translation id="2464089476039395325">HTTP প্ৰক্সি</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" />ৰ বাবে আপুনি এতিয়াই এটা ৱাই-ফাই নেটৱৰ্কৰ সৈতে সংযোগ কৰিব লাগিব আৰু এটা আপডে’ট ডাউনল’ড কৰিব লাগিব। অথবা, এটা নিৰিখ-নিৰ্দিষ্ট সংযোগৰ পৰা ডাউনল’ড কৰক (দৰ প্ৰযোজ্য হ’ব পাৰে)।</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> নেটৱৰ্ক, অফ কৰা আছে</translation>
+<translation id="2467755475704469005">কোনো ডিভাইচ চিনাক্ত কৰা হোৱা নাই। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">টাচ্‌পেড স্ক্ৰ’লৰ এক্সিলাৰেশ্বন</translation>
 <translation id="2468205691404969808">আপুনি সেই পৃষ্ঠাবোৰলৈ নগ'লেও আপোনাৰ পচন্দসমূহ মনত ৰাখিবলৈ কুকি ব্যৱহাৰ কৰে</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
@@ -2377,6 +2379,7 @@
 <translation id="3608576286259426129">ব্যৱহাৰকাৰীৰ প্ৰতিচ্ছবিৰ পূৰ্বদৰ্শন</translation>
 <translation id="3610369246614755442">ড’ক ফেনখন ছাৰ্ভিছিং কৰাৰ প্ৰয়োজন হৈছে</translation>
 <translation id="361106536627977100">Flashৰ ডেটা</translation>
+<translation id="3611655097742243705">অধিক এপ্ বিচাৰিবলৈ Play Storeলৈ যাওক</translation>
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;এ ডাউনল’ড কৰিছে</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" /> দেখুৱাওক</translation>
 <translation id="3613422051106148727">&amp;নতুন টেবত খোলক</translation>
@@ -2710,6 +2713,7 @@
 <translation id="3942420633017001071">ডায়েগনষ্টিক্স</translation>
 <translation id="3943494825379372497">এপ্‌ আৰু পৃষ্ঠা পুনঃস্থাপন কৰিবনে?</translation>
 <translation id="3943582379552582368">&amp;উভতি যাওক</translation>
+<translation id="3945513714196326460">এটা চুটি নাম দি চাওক</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" />ত প্ৰতিচ্ছবিৰ &amp;সন্ধান কৰক</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" />এ তলৰ ফ’ল্ডাৰসমূহত থকা ফাইলসমূহ সম্পাদনা কৰিব পাৰে</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -3094,6 +3098,7 @@
 <translation id="4415245286584082850">কোনো ডিভাইচ বিচাৰি পোৱা নগ’ল। এটা নতুন টেবত এটা সহায় কেন্দ্ৰৰ প্ৰবন্ধ খোলক।</translation>
 <translation id="4415276339145661267">আপোনাৰ Google একাউণ্ট পৰিচালনা কৰক</translation>
 <translation id="4415748029120993980">SECG উপবৃত্তাকাৰ লেখ secp384r1 (aka NIST P-384)</translation>
+<translation id="4416450511678320850">এই সমলটোৰ বাবে কোনো এপ্ উপলব্ধ নহয়</translation>
 <translation id="4416582610654027550">কোনো মান্য URL টাইপ কৰক</translation>
 <translation id="4419409365248380979">সদায় <ph name="HOST" />ক কুকিসমূহ ছেট কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="4421932782753506458">নোমাল</translation>
@@ -3385,6 +3390,7 @@
 <translation id="473936925429402449">অতিৰিক্ত <ph name="TOTAL_ELEMENTS" /> টা সমলৰ <ph name="CURRENT_ELEMENT" /> নম্বৰটো বাছনি কৰা হৈছে</translation>
 <translation id="4739639199548674512">টিকেটবোৰ</translation>
 <translation id="4742334355511750246">প্ৰতিচ্ছবি দেখুওৱাৰ অনুমতি নাই</translation>
+<translation id="4742970037960872810">হাইলাইট আঁতৰাওক</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />এপ্লিকেশ্বনসমূহ কেনেদৰে আপডে’ট কৰে সেয়া জানক<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ছাইট আনমিউট কৰক}one{ছাইটসমূহ আনমিউট কৰক}other{ছাইটসমূহ আনমিউট কৰক}}</translation>
 <translation id="4746351372139058112">Messages</translation>
@@ -4591,6 +4597,7 @@
 <translation id="6136114942382973861">ডাউনল’ডৰ বাৰডাল বন্ধ কৰক</translation>
 <translation id="6136287496450963112">আপোনাৰ সুৰক্ষা সম্পৰ্কীয় চাবি এটা পিনৰ দ্বাৰা সুৰক্ষিত নহয়। ফিংগাৰপ্ৰিণ্ট পৰিচালনা কৰিবলৈ, প্ৰথমে এটা পিন সৃষ্টি কৰক।</translation>
 <translation id="6138680304137685902">SHA-384ৰ সৈতে X9.62 ECDSA স্বাক্ষৰ</translation>
+<translation id="6138774640412545950">এক্সটেনশ্বন "<ph name="APP_NAME" />"এ <ph name="TARGET_NAME" />ৰ সৈতে আপোনাৰ স্ক্ৰীনত থকা সমল শ্বেয়াৰ কৰিব বিচাৰে।</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, কোনো নেটৱৰ্ক নাই</translation>
 <translation id="6141988275892716286">ডাউনল’ড নিশ্চিত কৰক</translation>
 <translation id="6143186082490678276">সহায় লওক</translation>
@@ -5377,6 +5384,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" />এ আপোনাৰ কেমেৰা ব্যৱহাৰ কৰি আছে</translation>
 <translation id="701080569351381435">উৎস চাওক</translation>
 <translation id="7014174261166285193">ইনষ্টল কৰিব পৰা নগ’ল।</translation>
+<translation id="7014480873681694324">হাইলাইট আঁতৰাওক</translation>
 <translation id="7017004637493394352">পুনৰ "Ok Google" বুলি কওক</translation>
 <translation id="7017219178341817193">কোনো নতুন পৃষ্ঠা যোগ কৰক</translation>
 <translation id="7017354871202642555">ৱিণ্ড’ ছেট কৰা হোৱাৰ পিছত ম’ড ছেট কৰিব নোৱাৰি।</translation>

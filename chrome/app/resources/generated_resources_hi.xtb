@@ -3079,6 +3079,7 @@
 <translation id="4392896746540753732">कॉन्फ़िगरेशन फ़ाइल में बदलाव करें</translation>
 <translation id="4394049700291259645">बंद करें</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{सभी यूआरएल &amp;खोलें}=1{बुकमार्क &amp;खोलें}one{दिया गया ({COUNT}) यूआरएल &amp;खोलें}other{सभी ({COUNT}) यूआरएल &amp;खोलें}}</translation>
+<translation id="4398131717714042083">खोज बॉक्स में, अपने-आप पूरी होने वाली गतिविधियों और इतिहास को मिटाता है</translation>
 <translation id="439817266247065935">आपका डिवाइस सही तरीके से बंद नहीं हुआ. Linux ऐप्लिकेशन को इस्तेमाल करने के लिए, Linux को रीस्टार्ट करें.</translation>
 <translation id="4400367121200150367">वे साइटें जो कभी पासवर्ड नहीं सेव करती हैं, यहां दिखाई देंगी</translation>
 <translation id="4400632832271803360">शीर्ष-पंक्ति वाली कुंजियों का व्यवहार स्विच करने के लिए Launcher कुंजी दबाए रखें</translation>
@@ -5061,6 +5062,7 @@
 <translation id="6651237644330755633">वेबसाइटों की पहचान करने के लिए इस प्रमाणपत्र पर विश्वास करें</translation>
 <translation id="6651495917527016072">वाई-फ़ाई नेटवर्क को अपने फ़ोन के साथ सिंक करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> एकीकरण सिर्फ़ x86_64 प्लैटफ़ॉर्म पर काम करता है. किसी ARM या x86 प्लैटफ़ॉर्म पर बने Chromebook इस काम की क्षमता की सुविधा नहीं देते हैं.</translation>
+<translation id="66537479323396140">खोज बॉक्स में, अपने-आप पूरी होने वाली गतिविधियों और इतिहास को मिटाता है. आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य तरह का ब्राउज़िंग इतिहास हो सकता है.</translation>
 <translation id="6654509035557065241">नेटवर्क चुनें</translation>
 <translation id="6655190889273724601">डेवलपर मोड</translation>
 <translation id="6655458902729017087">खाते छिपाएं</translation>
@@ -5927,6 +5929,7 @@
 <translation id="7636919061354591437">इस डिवाइस पर इंस्टॉल करें</translation>
 <translation id="7637593984496473097">डिस्क में स्टोर करने के लिए जगह नहीं बची है</translation>
 <translation id="7638605456503525968">सीरियल पोर्ट</translation>
+<translation id="7639914187072011620">एसएएमएल के दूसरे वेबलिंक को सर्वर से फ़ेच नहीं किया जा सका</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" />   सहेजे गए पासवर्ड से आपको योग्य साइट में अपने आप प्रवेश करा देता है.</translation>
 <translation id="7642778300616172920">संवेदनशील सामग्री छिपाएं</translation>
 <translation id="7643842463591647490">{0,plural, =1{# खुली विंडो}one{# खुली विंडो}other{# खुली विंडो}}</translation>

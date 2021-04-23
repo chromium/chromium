@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">ኤተርኔት፦ <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">ረዳት (በመጫን ላይ...)</translation>
 <translation id="1838895407229022812">የምሽት ብርሃን ጠፍቷል።</translation>
-<translation id="1850504506766569011">Wi-Fi ጠፍቷል።</translation>
 <translation id="1864454756846565995">USB-C መሣሪያ (የኋላ ወደብ)</translation>
 <translation id="1882814835921407042">ምንም ተንቀሳቃሽ ስልክ አውታረ መረብ የለም</translation>
 <translation id="1882897271359938046">ወደ <ph name="DISPLAY_NAME" /> በማንጸባረቅ ላይ</translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">የተጠቃሚ ቅንብሮች</translation>
 <translation id="3217205077783620295">ድምፅ መጠን በርቷል፣ መቀያየር ኦዲዮን ድምፀ ከል ያደርገዋል።</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> ተጨማሪ</translation>
-<translation id="3236488194889173876">ምንም የተንቀሳቃሽ ስልክ አውታረ መረብ የለም</translation>
 <translation id="3249513730522716925">መስኮት <ph name="WINDOW_TITLE" /> ከዴስክ <ph name="ACTIVE_DESK" /> ወደ ዴስክ <ph name="TARGET_DESK" /> ይወሰዳል</translation>
 <translation id="3255483164551725916">ምን ማድረግ ይችላሉ?</translation>
 <translation id="3269597722229482060">የቀኝ ጠቅታ</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> በርቷል።</translation>
 <translation id="5947494881799873997">አድህር</translation>
 <translation id="595202126637698455">አፈጻጸም መከታተያ ነቅቷል</translation>
-<translation id="5957083217255311415">የተንቀሳቃሽ ስልክ ውሂብ ጠፍቷል።</translation>
 <translation id="5958529069007801266">ክትትል የሚደረግበት ተጠቃሚ</translation>
 <translation id="5960825221082587934">ረዳት ለእርስዎ ምርጫ እንደ ፍቺ፣ ትርጉም ወይም አሃድ ልወጣ የመሳሰሉ መረጃዎችን እንዲያሳይ ይፍቀዱ።</translation>
 <translation id="5977415296283489383">ጆሮ ማዳጀጫ</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">በመደርደሪያው ውስጥ የግቤት አማራጮች ምናሌ አረፋን ለማሳየት የሚሆነው አቋራጭ ተለውጧል። እባክዎ በ<ph name="OLD_SHORTCUT" /> ምትክ <ph name="NEW_SHORTCUT" />ን ይጠቀሙ።</translation>
 <translation id="8444246603146515890">ዴስክ <ph name="DESK_TITILE" /> ገቢር ተደርጓል</translation>
 <translation id="8452135315243592079">ሲም ካርድ ይጎድላል</translation>
-<translation id="8454013096329229812">Wi-Fi በርቷል።</translation>
 <translation id="8462305545768648477">ለመናገር ምረጥን ይዝጉ</translation>
 <translation id="847056008324733326">የልኬት ቅንብሮችን አሳይ</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> አለው።</translation>

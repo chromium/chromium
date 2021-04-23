@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">Позначити…</translation>
 <translation id="3131206671572504478">Заблокувати всі</translation>
 <translation id="3153862085237805241">Зберегти картку</translation>
+<translation id="3157387275655328056">Додати в список читання</translation>
 <translation id="3157684681743766797">Позначити всі…</translation>
 <translation id="3161291298470460782">Ваш сеанс в обліковому записі буде завершено, синхронізацію – вимкнено, а всі дані Chrome на пристрої – видалено. Синхронізовані дані залишаться у вашому обліковому записі Google.</translation>
 <translation id="3169472444629675720">Рекомендації</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">Налаштування файлів cookie застосовується до всіх вкладок. Щоб застосувати його до відкритої вкладки, оновіть її.</translation>
 <translation id="5190835502935405962">Панель закладок</translation>
 <translation id="5197255632782567636">Інтернет</translation>
+<translation id="5210365745912300556">Закрити вкладку</translation>
 <translation id="5228579091201413441">Увімкнути синхронізацію</translation>
 <translation id="5234764350956374838">Закрити</translation>
 <translation id="5245322853195994030">Скасувати синхронізацію</translation>
@@ -486,7 +488,6 @@
 <translation id="6127379762771434464">Веб-сайт видалено</translation>
 <translation id="6136914049981179737">Мить тому</translation>
 <translation id="6144589619057374135">Відкрити URL-адресу ${url} в анонімному режимі</translation>
-<translation id="616831107264507309">Читати пізніше</translation>
 <translation id="6177442314419606057">Пошук у Chrome</translation>
 <translation id="6184086493125982861">Показати вкладки</translation>
 <translation id="6187302354554850004">Востаннє синхрон.: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@
 <translation id="6293101329759844770">Щоб увімкнути Безпечний перегляд, відкрийте параметр <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" /> і натисніть "Безпечний перегляд".</translation>
 <translation id="6303969859164067831">Вийти й вимкнути синхронізацію</translation>
 <translation id="6308436439357671616">Ви зможете робити й завантажувати фотографії.</translation>
+<translation id="6321526113093607004">Додати в закладки</translation>
 <translation id="6324528485781869530">Змінити обліковий запис для синхронізації</translation>
 <translation id="6324669097367352121">Налаштування входу</translation>
 <translation id="6337234675334993532">Шифрування</translation>
@@ -672,7 +674,6 @@
 <translation id="7856733331829174190">Не вдалося завантажити</translation>
 <translation id="7859704718976024901">Історія веб-перегляду</translation>
 <translation id="7887198238286927132">Щоб захистити вашу конфіденційність, Chrome не буде автоматично заповнювати це поле.</translation>
-<translation id="7918293828610777738">Ваш список читання доступний офлайн. Щоб додати до нього сторінку, торкніться значка <ph name="SHARE_OPENING_ICON" /> й виберіть <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Експортувати паролі…</translation>
 <translation id="7947953824732555851">Прийняти й увійти</translation>

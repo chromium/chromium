@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">ทำเครื่องหมาย…</translation>
 <translation id="3131206671572504478">บล็อกทั้งหมด</translation>
 <translation id="3153862085237805241">บันทึกบัตร</translation>
+<translation id="3157387275655328056">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="3157684681743766797">ทำเครื่องหมายทั้งหมด…</translation>
 <translation id="3161291298470460782">การดำเนินการนี้จะนำคุณออกจากระบบ ปิดการซิงค์ และล้างข้อมูล Chrome ทั้งหมดในอุปกรณ์นี้ แต่ข้อมูลที่ซิงค์ไว้จะยังอยู่ในบัญชี Google</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">การตั้งค่าคุกกี้จะมีผลกับทุกแท็บ โหลดแท็บซ้ำเพื่อให้การตั้งค่าใหม่มีผลกับแท็บที่เปิดอยู่</translation>
 <translation id="5190835502935405962">แถบบุ๊กมาร์ก</translation>
 <translation id="5197255632782567636">อินเทอร์เน็ต</translation>
+<translation id="5210365745912300556">ปิดแท็บ</translation>
 <translation id="5228579091201413441">เปิดใช้การซิงค์</translation>
 <translation id="5234764350956374838">ปิด</translation>
 <translation id="5245322853195994030">ยกเลิกการซิงค์</translation>
@@ -486,7 +488,6 @@
 <translation id="6127379762771434464">นำรายการออกแล้ว</translation>
 <translation id="6136914049981179737">วินาทีแล้ว</translation>
 <translation id="6144589619057374135">เปิด ${url} ในโหมดไม่ระบุตัวตน</translation>
-<translation id="616831107264507309">อ่านในภายหลัง</translation>
 <translation id="6177442314419606057">ค้นหาใน Chrome</translation>
 <translation id="6184086493125982861">แสดงแท็บ</translation>
 <translation id="6187302354554850004">ซิงค์ครั้งล่าสุด: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@
 <translation id="6293101329759844770">หากต้องการเปิด Google Safe Browsing ให้เปิด<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /> จากนั้นแตะ Google Safe Browsing</translation>
 <translation id="6303969859164067831">ออกจากระบบและปิดการซิงค์</translation>
 <translation id="6308436439357671616">ช่วยให้คุณถ่ายและอัปโหลดรูปภาพได้</translation>
+<translation id="6321526113093607004">เพิ่มลงในบุ๊กมาร์ก</translation>
 <translation id="6324528485781869530">เปลี่ยนบัญชีที่จะซิงค์</translation>
 <translation id="6324669097367352121">ตั้งค่าลงชื่อเข้าใช้</translation>
 <translation id="6337234675334993532">การเข้ารหัส</translation>
@@ -672,7 +674,6 @@
 <translation id="7856733331829174190">ดาวน์โหลดไม่ได้</translation>
 <translation id="7859704718976024901">ประวัติการเข้าชม</translation>
 <translation id="7887198238286927132">Chrome จะไม่ป้อนข้อความลงในช่องนี้โดยอัตโนมัติเพื่อปกป้องความเป็นส่วนตัวของคุณ</translation>
-<translation id="7918293828610777738">เรื่องรออ่านของคุณพร้อมใช้งานในแบบออฟไลน์ หากต้องการเพิ่มหน้าลงในเรื่องรออ่าน ให้แตะ <ph name="SHARE_OPENING_ICON" /> แล้วแตะ "<ph name="READ_LATER_TEXT" />"</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">ส่งออกรหัสผ่าน...</translation>
 <translation id="7947953824732555851">ยอมรับและลงชื่อเข้าใช้</translation>

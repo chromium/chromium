@@ -108,7 +108,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Assistent (laai tans …)</translation>
 <translation id="1838895407229022812">Aandbeligting is af.</translation>
-<translation id="1850504506766569011">Wi-Fi is afgeskakel.</translation>
 <translation id="1864454756846565995">USB C-toestel (poort aan agterkant)</translation>
 <translation id="1882814835921407042">Geen selnetwerk nie</translation>
 <translation id="1882897271359938046">Weerspieëling na <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3207953481422525583">Gebruikerinstellings</translation>
 <translation id="3217205077783620295">Volume is aan. Wissel om oudio te demp.</translation>
 <translation id="3226991577105957773">+nog <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Geen selnetwerk beskikbaar nie</translation>
 <translation id="3249513730522716925">Venster <ph name="WINDOW_TITLE" /> is geskuif van lessenaar <ph name="ACTIVE_DESK" /> af na lessenaar <ph name="TARGET_DESK" /> toe</translation>
 <translation id="3255483164551725916">Wat kan jy doen?</translation>
 <translation id="3269597722229482060">Regsklik</translation>
@@ -585,7 +583,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is aan.</translation>
 <translation id="5947494881799873997">Stel terug</translation>
 <translation id="595202126637698455">Prestasie-nasporing geaktiveer</translation>
-<translation id="5957083217255311415">Mobiele data is afgeskakel.</translation>
 <translation id="5958529069007801266">Gebruiker onder toesig</translation>
 <translation id="5960825221082587934">Laat Assistent vir jou inligting vir jou keuse wys, soos definisie, vertaling of eenheidomskakeling.</translation>
 <translation id="5977415296283489383">Oorfone</translation>
@@ -885,7 +882,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8433977262951327081">Die kortpad om die invoeropsies se kieslysborrel op die rak te wys, het verander. Gebruik asseblief <ph name="NEW_SHORTCUT" /> in plaas van <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Lessenaar <ph name="DESK_TITILE" /> is geaktiveer</translation>
 <translation id="8452135315243592079">Verlore SIM-kaart</translation>
-<translation id="8454013096329229812">Wi-Fi is aangeskakel.</translation>
 <translation id="8462305545768648477">Maak Hardoplees toe</translation>
 <translation id="847056008324733326">Vertoonskaalinstellings</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> het <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

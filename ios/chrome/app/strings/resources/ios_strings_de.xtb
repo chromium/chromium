@@ -204,6 +204,7 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 <translation id="3112556859945124369">Markieren…</translation>
 <translation id="3131206671572504478">Alle blockieren</translation>
 <translation id="3153862085237805241">Karte speichern</translation>
+<translation id="3157387275655328056">Zur Leseliste hinzufügen</translation>
 <translation id="3157684681743766797">Alle markieren…</translation>
 <translation id="3161291298470460782">Hierdurch werden Sie abgemeldet, die Synchronisierung wird deaktiviert und alle Chrome-Daten werden von diesem Gerät gelöscht. Ihre synchronisierten Daten verbleiben jedoch in Ihrem Google-Konto.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5188482106078495165">Ihre Cookie-Einstellung gilt für alle Tabs. Wenn Sie eine neue Einstellung auf einen geöffneten Tab anwenden möchten, aktualisieren Sie den Tab.</translation>
 <translation id="5190835502935405962">Lesezeichenleiste</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Schließen</translation>
 <translation id="5228579091201413441">Synchronisierung aktivieren</translation>
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5245322853195994030">Synchronisierung abbrechen</translation>
@@ -446,6 +448,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="5782227691023083829">Wird übersetzt...</translation>
 <translation id="5803566855766646066">Möchten Sie diese neue Karte wirklich verwerfen?</translation>
 <translation id="5816228676161003208">Per Spracheingabe können Sie noch schneller suchen.</translation>
+<translation id="581659025233126501">Synchronisierung aktivieren</translation>
 <translation id="5819208479324046259">Verwaltet von <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Suchmaschine</translation>
 <translation id="5854790677617711513">Älter als 30 Tage</translation>
@@ -485,7 +488,6 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="6127379762771434464">Eintrag entfernt</translation>
 <translation id="6136914049981179737">Gerade eben</translation>
 <translation id="6144589619057374135">${url} im Inkognitomodus öffnen</translation>
-<translation id="616831107264507309">Später lesen</translation>
 <translation id="6177442314419606057">Suche in Chrome</translation>
 <translation id="6184086493125982861">Tabs anzeigen</translation>
 <translation id="6187302354554850004">Letzte Synchr.: <ph name="LAST_USED_TIME" /></translation>
@@ -493,12 +495,14 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="6196207969502475924">Sprachsuche</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} Tab schließen}other{{COUNT} Tabs schließen}}</translation>
 <translation id="6219688215832490856">Nie übersetzen</translation>
+<translation id="6223816392543092032">Sie können Ihre Lesezeichen, Ihren Verlauf, Ihre Passwörter und andere Einstellungen auf allen Ihren Geräten aufrufen.</translation>
 <translation id="6254066287920239840">Links in der App statt im Browser öffnen.</translation>
 <translation id="6255097610484507482">Kreditkarte bearbeiten</translation>
 <translation id="6284652193729350524">Übersetzung für <ph name="LANGUAGE" /> anbieten</translation>
 <translation id="6293101329759844770">Wenn Sie Safe Browsing aktivieren möchten, öffnen Sie <ph name="BEGIN_LINK" />Google-Dienste<ph name="END_LINK" /> und tippen Sie auf „Safe Browsing“.</translation>
 <translation id="6303969859164067831">Abmelden und die Synchronisierung ausschalten</translation>
 <translation id="6308436439357671616">Dadurch können Sie Fotos aufnehmen und hochladen.</translation>
+<translation id="6321526113093607004">Zu Lesezeichen hinzufügen</translation>
 <translation id="6324528485781869530">Synchronisiertes Konto wechseln</translation>
 <translation id="6324669097367352121">Anmeldeeinstellungen</translation>
 <translation id="6337234675334993532">Verschlüsselung</translation>
@@ -525,6 +529,7 @@ Ihre Daten wurden am <ph name="TIME" /> mit Ihrer Synchronisierungspassphrase ve
 <translation id="6445981559479772097">Nachricht gesendet</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">Überprüfung nie durchgeführt.</translation>
+<translation id="6459307836338400162">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten finden Sie unter <ph name="BEGIN_LINK" />Synchronisierung<ph name="END_LINK" /> und <ph name="BEGIN_LINK" />Google-Dienste<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">In neuem Inkognitotab öffnen</translation>
 <translation id="6464397691496239022">Websites können Cookies verwenden, um Ihnen das Surfen zu erleichtern; zum Beispiel, damit Sie angemeldet oder Artikel in Ihrem Einkaufswagen gespeichert bleiben.
 
@@ -669,7 +674,6 @@ Da Ihr Konto von <ph name="HOSTED_DOMAIN" /> verwaltet wird, werden Ihre Chrome-
 <translation id="7856733331829174190">Fehler beim Download</translation>
 <translation id="7859704718976024901">Browserverlauf</translation>
 <translation id="7887198238286927132">Um Ihre Daten zu schützen, füllt Chrome dieses Feld nicht automatisch aus.</translation>
-<translation id="7918293828610777738">Ihre Leseliste ist offline verfügbar. Sie können eine Seite Ihrer Leseliste hinzufügen, indem Sie auf <ph name="SHARE_OPENING_ICON" /> &gt; <ph name="READ_LATER_TEXT" /> tippen.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Passwörter exportieren…</translation>
 <translation id="7947953824732555851">Akzeptieren und anmelden</translation>
@@ -708,6 +712,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8281886186245836920">Überspringen</translation>
 <translation id="8283172974887967105">Festlegen…</translation>
 <translation id="8299417921174340354">Sie müssen zuerst einen Sicherheitscode auf Ihrem Gerät einrichten, um Passwörter zu verwenden.</translation>
+<translation id="83100941411593607">Anmeldung ist deaktiviert</translation>
 <translation id="8319076807703933069">Neue Suche</translation>
 <translation id="8323906514956095947">Für weitere Tab-Optionen berühren und halten</translation>
 <translation id="8328777765163860529">Alle schließen</translation>

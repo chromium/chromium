@@ -3078,6 +3078,7 @@
 <translation id="4392896746540753732">설정 파일 수정</translation>
 <translation id="4394049700291259645">사용 중지</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{모두 열기(O)}=1{북마크 열기(O)}other{{COUNT}개 모두 열기(O)}}</translation>
+<translation id="4398131717714042083">검색창에서 방문 기록과 자동 완성을 지웁니다.</translation>
 <translation id="439817266247065935">기기가 제대로 종료되지 않았습니다. Linux 앱을 사용하려면 Linux를 다시 시작하세요.</translation>
 <translation id="4400367121200150367">비밀번호를 저장하지 않는 사이트가 표시됩니다.</translation>
 <translation id="4400632832271803360">맨 윗 줄 키의 동작을 전환하려면 런처 키를 길게 누르세요.</translation>
@@ -5060,6 +5061,7 @@
 <translation id="6651237644330755633">웹사이트를 식별하기 위해 이 인증서 신뢰</translation>
 <translation id="6651495917527016072">휴대전화와 Wi-Fi 네트워크를 동기화합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> 통합은 x86_64 플랫폼에서만 지원됩니다. ARM 또는 x86 플랫폼에서 구축된 Chromebook은 이 기능을 지원하지 않습니다.</translation>
+<translation id="66537479323396140">검색창에 저장된 방문 기록과 자동 완성 내역을 지웁니다. Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에는 방문 기록이 다른 형식으로 남아 있을 수도 있습니다.</translation>
 <translation id="6654509035557065241">선호 네트워크 설정</translation>
 <translation id="6655190889273724601">개발자 모드</translation>
 <translation id="6655458902729017087">계정 숨기기</translation>
@@ -5926,6 +5928,7 @@
 <translation id="7636919061354591437">이 기기에 설치</translation>
 <translation id="7637593984496473097">디스크 공간이 충분하지 않음</translation>
 <translation id="7638605456503525968">직렬 포트</translation>
+<translation id="7639914187072011620">SAML 리디렉션 URL을 서버에서 가져올 수 없습니다.</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" />에서 저장한 비밀번호를 사용하여 적합한 사이트에 자동 로그인합니다.</translation>
 <translation id="7642778300616172920">민감한 내용 숨기기</translation>
 <translation id="7643842463591647490">{0,plural, =1{열린 창 #개}other{열린 창 #개}}</translation>

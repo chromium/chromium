@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">ચિહ્નિત કરો…</translation>
 <translation id="3131206671572504478">બધી બ્લૉક કરો</translation>
 <translation id="3153862085237805241">કાર્ડ સાચવો</translation>
+<translation id="3157387275655328056">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="3157684681743766797">તમામને આ રીતે ચિહ્નિત કરો…</translation>
 <translation id="3161291298470460782">આમ કરવાથી તમને સાઇન આઉટ કરવામાં આવશે, સિંક કરવાનું બંધ થશે અને આ ડિવાઇસમાંથી બધો Chrome ડેટા સાફ કરવામાં આવશે. તમારો સિંક કરેલો ડેટા તમારા Google એકાઉન્ટમાં રહેશે.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">તમારી કુકીનાં સેટિંગ બધી ટૅબ પર લાગુ થાય છે. કોઈ ખુલ્લી ટૅબ પર નવું સેટિંગ લાગુ કરવા માટે, ટૅબ ફરીથી લોડ કરો.</translation>
 <translation id="5190835502935405962">બુકમાર્ક્સ બાર</translation>
 <translation id="5197255632782567636">ઇન્ટરનેટ</translation>
+<translation id="5210365745912300556">ટૅબ બંધ કરો</translation>
 <translation id="5228579091201413441">સિંક ચાલુ કરો</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
 <translation id="5245322853195994030">સિંક કરવાનું રદ કરો</translation>
@@ -446,6 +448,7 @@
 <translation id="5782227691023083829">ભાષાંતર કરી રહ્યું છે...</translation>
 <translation id="5803566855766646066">શું તમે ખરેખર આ નવું કાર્ડ કાઢી નાખવા માગો છો?</translation>
 <translation id="5816228676161003208">આ તમને તમારા અવાજનો ઉપયોગ કરીને વધુ ઝડપથી શોધવા દે છે.</translation>
+<translation id="581659025233126501">સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવેલું બ્રાઉઝર. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">શોધ એન્જિન</translation>
 <translation id="5854790677617711513">30 દિવસ કરતા જૂનો</translation>
@@ -485,7 +488,6 @@
 <translation id="6127379762771434464">આઇટમ દૂર કરી</translation>
 <translation id="6136914049981179737">સેકંડ પહેલાં</translation>
 <translation id="6144589619057374135">છૂપા મોડમાં ${url} ખોલો</translation>
-<translation id="616831107264507309">પછીથી વાંચો</translation>
 <translation id="6177442314419606057">Chromeમાં શોધો</translation>
 <translation id="6184086493125982861">ટૅબ્સ બતાવો</translation>
 <translation id="6187302354554850004">છેલ્લે સમન્વયિત કરેલું: <ph name="LAST_USED_TIME" /></translation>
@@ -493,12 +495,14 @@
 <translation id="6196207969502475924">વૉઇસ શોધ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ટૅબ બંધ કરો}one{{COUNT} ટૅબ બંધ કરો}other{{COUNT} ટૅબ બંધ કરો}}</translation>
 <translation id="6219688215832490856">ક્યારેય અનુવાદ કરશો નહીં</translation>
+<translation id="6223816392543092032">તમારા તમામ ડિવાઇસ પર તમારા બુકમાર્ક્સ, ઇતિહાસ, પાસવર્ડ અન્ય સેટિંગ મેળવો.</translation>
 <translation id="6254066287920239840">બ્રાઉઝરને બદલે ઍપ્લિકેશનમાં લિંક્સ ખોલો.</translation>
 <translation id="6255097610484507482">ક્રેડિટ કાર્ડમાં ફેરફાર કરો</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />નો અનુવાદ કરવાનું કહો</translation>
 <translation id="6293101329759844770">Safe Browsingની સુવિધા ચાલુ કરવા માટે, <ph name="BEGIN_LINK" />Google સેવાઓ<ph name="END_LINK" /> ખોલો અને Safe Browsing પર ટૅપ કરો.</translation>
 <translation id="6303969859164067831">સાઇન આઉટ કરો અને સિંક બંધ કરો</translation>
 <translation id="6308436439357671616">આ તમને ફોટો લેવા અને અપલોડ કરવા દે છે.</translation>
+<translation id="6321526113093607004">બુકમાર્કમાં ઉમેરો</translation>
 <translation id="6324528485781869530">સિંક એકાઉન્ટ સ્વિચ કરો</translation>
 <translation id="6324669097367352121">સાઇન ઇન કરો સેટિંગ્સ</translation>
 <translation id="6337234675334993532">એન્ક્રિપ્શન</translation>
@@ -525,6 +529,7 @@
 <translation id="6445981559479772097">સંદેશ મોકલ્યો.</translation>
 <translation id="6447842834002726250">કૂકીઝ</translation>
 <translation id="6453018583485750254">ચેક ક્યારેય ચાલ્યું નથી.</translation>
+<translation id="6459307836338400162">પ્રાઇવસી, સુરક્ષા અને ડેટા સંગ્રહથી સંબંધિત વધુ સેટિંગ માટે, <ph name="BEGIN_LINK" />સિંક<ph name="END_LINK" /> અને <ph name="BEGIN_LINK" />Googleની સેવાઓ<ph name="END_LINK" /> બન્નેને જુઓ.</translation>
 <translation id="6464071786529933911">નવા છુપા ટૅબમાં ખોલો</translation>
 <translation id="6464397691496239022">સાઇટ તમને વધુ સારો બ્રાઉઝિંગ અનુભવ આપવા, ઉદાહરણ તરીકે, તમને સાઇન ઇન કરીને રાખવા અથવા તમારા શૉપિંગ કાર્ટની આઇટમ યાદ રાખવા માટે, કુકીનો ઉપયોગ કરી શકે છે.
 
@@ -669,7 +674,6 @@
 <translation id="7856733331829174190">ડાઉનલોડ ન કરી શક્યાં</translation>
 <translation id="7859704718976024901">બ્રાઉઝિંગ ઇતિહાસ</translation>
 <translation id="7887198238286927132">તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે, Chrome આ ફીલ્ડ સ્વતઃ નહીં ભરે.</translation>
-<translation id="7918293828610777738">તમારી વાંચન સૂચિ ઑફલાઇન ઉપલબ્ધ છે. તમારી વાંચન સૂચિમાં પેજ ઉમેરવા માટે, <ph name="SHARE_OPENING_ICON" /> પર અને પછી <ph name="READ_LATER_TEXT" /> પર ટૅપ કરો.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">પાસવર્ડની નિકાસ કરો...</translation>
 <translation id="7947953824732555851">સ્વીકારો અને સાઇન ઇન કરો</translation>
@@ -708,6 +712,7 @@
 <translation id="8281886186245836920">છોડો</translation>
 <translation id="8283172974887967105">સેટ કરો…</translation>
 <translation id="8299417921174340354">પાસવર્ડનો ઉપયોગ કરવા માટે, તમારે પહેલા તમારા ડિવાઇસ પર પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
+<translation id="83100941411593607">સાઇન ઇન કરવાનું બંધ કરેલું છે</translation>
 <translation id="8319076807703933069">નવી શોધ</translation>
 <translation id="8323906514956095947">ટૅબના વધુ વિકલ્પો માટે, ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="8328777765163860529">બધું બંધ કરો</translation>

@@ -204,6 +204,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="3112556859945124369">Marquer…</translation>
 <translation id="3131206671572504478">Tout bloquer</translation>
 <translation id="3153862085237805241">Enregistrer la carte</translation>
+<translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
 <translation id="3157684681743766797">Tout marquer…</translation>
 <translation id="3161291298470460782">Cette action vous déconnectera, désactivera la synchronisation et effacera toutes les données de Chrome sur cet appareil. Vos données synchronisées resteront dans votre compte Google.</translation>
 <translation id="3169472444629675720">Découvrir</translation>
@@ -399,6 +400,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5188482106078495165">Votre paramètre de témoins s'applique à tous les onglets. Pour appliquer un nouveau paramètre à un onglet ouvert, actualisez-le.</translation>
 <translation id="5190835502935405962">Barre de favoris</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5210365745912300556">Fermer l'onglet</translation>
 <translation id="5228579091201413441">Activer la synchronisation</translation>
 <translation id="5234764350956374838">Fermer</translation>
 <translation id="5245322853195994030">Annuler la synchronisation</translation>
@@ -486,7 +488,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6127379762771434464">Élément supprimé</translation>
 <translation id="6136914049981179737">Qq sec.</translation>
 <translation id="6144589619057374135">Ouvrir ${url} en mode de navigation privée</translation>
-<translation id="616831107264507309">Lire plus tard</translation>
 <translation id="6177442314419606057">Rechercher dans Chrome</translation>
 <translation id="6184086493125982861">Afficher les onglets</translation>
 <translation id="6187302354554850004">Dernière synchro : <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6293101329759844770">Pour activer la navigation sécurisée, ouvrez le menu <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /> et touchez Navigation sécurisée.</translation>
 <translation id="6303969859164067831">Se déconnecter et désactiver la synchronisation</translation>
 <translation id="6308436439357671616">Ceci vous permet de prendre des photos et de les téléverser.</translation>
+<translation id="6321526113093607004">Ajouter aux favoris</translation>
 <translation id="6324528485781869530">Passer au compte synchronisé</translation>
 <translation id="6324669097367352121">Param. de connexion</translation>
 <translation id="6337234675334993532">Chiffrement</translation>
@@ -671,7 +673,6 @@ Comme votre compte est géré par <ph name="HOSTED_DOMAIN" />, vos données Chro
 <translation id="7856733331829174190">Échec du téléchargement</translation>
 <translation id="7859704718976024901">Historique de navigation</translation>
 <translation id="7887198238286927132">Afin de protéger votre confidentialité, Chrome ne remplira pas automatiquement ce champ.</translation>
-<translation id="7918293828610777738">Votre liste de lecture est disponible hors connexion. Pour ajouter une page à votre liste de lecture, touchez <ph name="SHARE_OPENING_ICON" />, puis <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exporter les mots de passe…</translation>
 <translation id="7947953824732555851">Accepter et se connecter</translation>

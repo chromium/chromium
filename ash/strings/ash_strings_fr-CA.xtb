@@ -108,7 +108,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1823873187264960516">Ethernet : <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Assistant Google (chargement en cours…)</translation>
 <translation id="1838895407229022812">Le mode Éclairage nocturne est désactivé.</translation>
-<translation id="1850504506766569011">Le Wi-Fi est désactivé.</translation>
 <translation id="1864454756846565995">Appareil USB-C (port arrière)</translation>
 <translation id="1882814835921407042">Aucun réseau cellulaire</translation>
 <translation id="1882897271359938046">Mise en miroir pour <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3207953481422525583">Paramètres de l'utilisateur</translation>
 <translation id="3217205077783620295">Le son est activé et peut être coupé en cliquant sur le bouton de volume.</translation>
 <translation id="3226991577105957773">et <ph name="COUNT" /> autres</translation>
-<translation id="3236488194889173876">Aucun réseau mobile accessible</translation>
 <translation id="3249513730522716925">La fenêtre <ph name="WINDOW_TITLE" /> a passé du bureau <ph name="ACTIVE_DESK" /> au bureau <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Que peux-tu faire?</translation>
 <translation id="3269597722229482060">Clic droit</translation>
@@ -583,7 +581,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5946788582095584774">La fonctionnalité <ph name="FEATURE_NAME" /> est activée.</translation>
 <translation id="5947494881799873997">Rétablir</translation>
 <translation id="595202126637698455">Suivi des performances activé</translation>
-<translation id="5957083217255311415">Les données mobiles sont désactivées.</translation>
 <translation id="5958529069007801266">Utilis. supervisé</translation>
 <translation id="5960825221082587934">L'Assistant peut vous présenter de l'information, comme la définition, la traduction ou la conversion d'unités, relative à votre sélection.</translation>
 <translation id="5977415296283489383">Casque d'écoute</translation>
@@ -883,7 +880,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="8433977262951327081">Le raccourci qui permet d'afficher la bulle du menu des options d'entrée dans l'étagère a changé. Veuillez utiliser <ph name="NEW_SHORTCUT" /> au lieu de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Bureau <ph name="DESK_TITILE" /> activé</translation>
 <translation id="8452135315243592079">Carte SIM manquante</translation>
-<translation id="8454013096329229812">Le Wi-Fi est activé.</translation>
 <translation id="8462305545768648477">Fermer Sélectionner pour énoncer</translation>
 <translation id="847056008324733326">Paramètres de l'échelle d'affichage</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> a <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

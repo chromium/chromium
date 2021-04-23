@@ -3083,6 +3083,7 @@
 <translation id="4392896746540753732">Змінити файл конфігурації</translation>
 <translation id="4394049700291259645">Вимкнути</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Відкрити всі}=1{&amp;Відкрити закладку}one{&amp;Відкрити всі ({COUNT})}few{&amp;Відкрити всі ({COUNT})}many{&amp;Відкрити всі ({COUNT})}other{&amp;Відкрити всі ({COUNT})}}</translation>
+<translation id="4398131717714042083">Буде очищено історію та підказки автозавершення в полі пошуку</translation>
 <translation id="439817266247065935">Ваш пристрій завершив роботу неналежним чином. Щоб користуватися додатками Linux, перезапустіть Linux.</translation>
 <translation id="4400367121200150367">Тут відображатимуться сайти, які ніколи не зберігають паролі</translation>
 <translation id="4400632832271803360">Утримуйте клавішу панелі запуску, щоб змінити функції клавіш верхнього ряду</translation>
@@ -5065,6 +5066,7 @@
 <translation id="6651237644330755633">Довіряти цьому сертифікату для ідентифікації веб-сайтів</translation>
 <translation id="6651495917527016072">Синхронізувати мережі Wi-Fi із вашим телефоном. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Інтеграція Chrome <ph name="MS_AD_NAME" /> підтримується лише на платформах x86_64. Комп’ютери Chromebook на платформі ARM або x86 не підтримують цю функцію.</translation>
+<translation id="66537479323396140">Буде очищено історію та підказки автозавершення в полі пошуку. Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">Основна мережа</translation>
 <translation id="6655190889273724601">Режим розробника</translation>
 <translation id="6655458902729017087">Сховати облікові записи</translation>
@@ -5931,6 +5933,7 @@
 <translation id="7636919061354591437">Установити на цьому пристрої</translation>
 <translation id="7637593984496473097">Недостатньо місця на диску</translation>
 <translation id="7638605456503525968">Послідовні порти</translation>
+<translation id="7639914187072011620">Не вдалось отримати із сервера переспрямування SAML</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> зберігає ваші паролі й автоматично входить в облікові записи на сайтах.</translation>
 <translation id="7642778300616172920">Ховати конфіденційний вміст</translation>
 <translation id="7643842463591647490">{0,plural, =1{# відкрите вікно}one{# відкрите вікно}few{# відкриті вікна}many{# відкритих вікон}other{# відкритого вікна}}</translation>

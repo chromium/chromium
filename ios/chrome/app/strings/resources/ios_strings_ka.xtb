@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">მონიშვნა…</translation>
 <translation id="3131206671572504478">ყველას დაბლოკვა</translation>
 <translation id="3153862085237805241">ბარათის შენახვა</translation>
+<translation id="3157387275655328056">საკითხავ სიაში დამატება</translation>
 <translation id="3157684681743766797">ყველას მონიშვნა…</translation>
 <translation id="3161291298470460782">ეს მოქმედება გამოგიყვანთ სისტემიდან, გამორთავს სინქრონიზაციას და გაასუფთავებს Chrome-ის ყველა მონაცემს ამ მოწყობილობიდან. თქვენი სინქრონიზებული მონაცემები დარჩება თქვენს Google ანგარიშში.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">ქუქი-ჩანაწერების პარამეტრები ვრცელდება ყველა ჩანართზე. ახალი პარამეტრის გახსნილ ჩანართზე მისასადაგებლად გადატვირთეთ ჩანართი.</translation>
 <translation id="5190835502935405962">სანიშნეების ზოლი</translation>
 <translation id="5197255632782567636">ინტერნეტი</translation>
+<translation id="5210365745912300556">ჩანართის დახურვა</translation>
 <translation id="5228579091201413441">სინქრონიზაციის ჩართვა</translation>
 <translation id="5234764350956374838">გაუქმება</translation>
 <translation id="5245322853195994030">სინქრონიზაციის გაუქმება</translation>
@@ -486,7 +488,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6127379762771434464">ერთეული ამოიშალა</translation>
 <translation id="6136914049981179737">წამის წინ</translation>
 <translation id="6144589619057374135">${url}-ის გახსნა ინკოგნიტო რეჟიმში</translation>
-<translation id="616831107264507309">მოგვიანებით წაკითხვა</translation>
 <translation id="6177442314419606057">Chrome-ში ძიება</translation>
 <translation id="6184086493125982861">ჩანართების ჩვენება</translation>
 <translation id="6187302354554850004">ბოლო სინქრონიზაცია: <ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6293101329759844770">Safe Browsing-ის ჩასართავად გახსენით <ph name="BEGIN_LINK" />Google სერვისები<ph name="END_LINK" /> და შეეხეთ Safe Browsing-ს.</translation>
 <translation id="6303969859164067831">გამოსვლა და სინქრონიზაციის გამორთვა</translation>
 <translation id="6308436439357671616">საშუალებას გაძლევთ, გადაიღოთ და ატვირთოთ ფოტოები.</translation>
+<translation id="6321526113093607004">სანიშნეებში დამატება</translation>
 <translation id="6324528485781869530">სინქრონიზაციის ანგარიშის გადართვა</translation>
 <translation id="6324669097367352121">შესვლის პარამეტრები</translation>
 <translation id="6337234675334993532">დაშიფვრა</translation>
@@ -672,7 +674,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7856733331829174190">ჩამოტვირთვა ვერ მოხერხდა</translation>
 <translation id="7859704718976024901">დათვალიერების ისტორია</translation>
 <translation id="7887198238286927132">თქვენი კონფიდენციალურობის დაცვის მიზნით, Chrome არ შეავსებს ავტომატურად ამ ველს.</translation>
-<translation id="7918293828610777738">თქვენი საკითხავი სია ხელმისაწვდომია ხაზგარეშე რეჟიმში. მასში გვერდის დასამატებლად შეეხებით აირჩიეთ <ph name="SHARE_OPENING_ICON" />, ხოლო შემდეგ — „<ph name="READ_LATER_TEXT" />“.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">პაროლების ექსპორტი...</translation>
 <translation id="7947953824732555851">მიღება და შესვლა</translation>

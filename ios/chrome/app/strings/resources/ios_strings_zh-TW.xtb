@@ -204,6 +204,7 @@
 <translation id="3112556859945124369">標示…</translation>
 <translation id="3131206671572504478">全部封鎖</translation>
 <translation id="3153862085237805241">儲存卡片</translation>
+<translation id="3157387275655328056">加入閱讀清單</translation>
 <translation id="3157684681743766797">全部標示…</translation>
 <translation id="3161291298470460782">這項操作會將你登出帳戶、關閉同步功能，並清除這部裝置上的所有 Chrome 資料，但是已同步處理的資料會繼續保留在你的 Google 帳戶中。</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -399,6 +400,7 @@
 <translation id="5188482106078495165">你的 Cookie 設定會套用到所有分頁。如要將新的設定套用到已開啟的分頁，請重新載入分頁。</translation>
 <translation id="5190835502935405962">書籤列</translation>
 <translation id="5197255632782567636">網際網路</translation>
+<translation id="5210365745912300556">關閉分頁</translation>
 <translation id="5228579091201413441">啟用同步功能</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5245322853195994030">取消同步處理</translation>
@@ -486,7 +488,6 @@
 <translation id="6127379762771434464">已移除項目</translation>
 <translation id="6136914049981179737">幾秒前</translation>
 <translation id="6144589619057374135">在無痕模式中開啟 ${url}</translation>
-<translation id="616831107264507309">稍後閱讀</translation>
 <translation id="6177442314419606057">在 Chrome 中搜尋</translation>
 <translation id="6184086493125982861">顯示分頁</translation>
 <translation id="6187302354554850004">上次同步處理時間：<ph name="LAST_USED_TIME" /></translation>
@@ -501,6 +502,7 @@
 <translation id="6293101329759844770">如要啟用安全瀏覽功能，請開啟 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />並輕觸 [安全瀏覽]。</translation>
 <translation id="6303969859164067831">登出並關閉同步處理功能</translation>
 <translation id="6308436439357671616">可讓你拍照並上傳相片。</translation>
+<translation id="6321526113093607004">加入書籤</translation>
 <translation id="6324528485781869530">切換同步處理帳戶</translation>
 <translation id="6324669097367352121">登入設定</translation>
 <translation id="6337234675334993532">加密</translation>
@@ -672,7 +674,6 @@
 <translation id="7856733331829174190">無法下載</translation>
 <translation id="7859704718976024901">瀏覽記錄</translation>
 <translation id="7887198238286927132">為保護個人隱私，Chrome 不會自動填入這個欄位。</translation>
-<translation id="7918293828610777738">閱讀清單可供離線存取。如要將網頁加入閱讀清單，請依序輕觸 <ph name="SHARE_OPENING_ICON" /> &gt; [<ph name="READ_LATER_TEXT" />]。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">匯出密碼...</translation>
 <translation id="7947953824732555851">接受並登入</translation>

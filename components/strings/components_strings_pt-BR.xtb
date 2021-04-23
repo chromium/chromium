@@ -932,7 +932,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4435702339979719576">Postal</translation>
 <translation id="443673843213245140">O uso de um proxy está desativado, mas uma configuração explícita de proxy é especificada.</translation>
 <translation id="4464826014807964867">Sites com informações da sua organização</translation>
-<translation id="4466881336512663640">As alterações no formulário serão perdidas. Tem certeza de que quer continuar?</translation>
 <translation id="4476953670630786061">Este formulário não é seguro. O preenchimento automático foi desativado.</translation>
 <translation id="4477350412780666475">Próxima faixa</translation>
 <translation id="4482953324121162758">Este site não será traduzido.</translation>
@@ -1286,7 +1285,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5785756445106461925">Além disso, esta página inclui outros recursos que não são seguros. Esses recursos podem ser visualizados por outros usuários enquanto eles navegam e podem ser modificados por um invasor para alterar o comportamento da página.</translation>
 <translation id="5786044859038896871">Quer preencher as informações do cartão?</translation>
 <translation id="578633867165174378">A senha que você acabou de usar foi encontrada pelo Chrome em uma violação de dados. Recomendamos mudá-la agora mesmo.</translation>
-<translation id="5798290721819630480">Descartar alterações?</translation>
 <translation id="5803412860119678065">Quer preencher as informações do seu cartão <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5804427196348435412">Usar dispositivos NFC</translation>
@@ -1447,7 +1445,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6428450836711225518">Verificar seu número de telefone</translation>
 <translation id="6433490469411711332">Editar informações de contato</translation>
 <translation id="6433595998831338502">A conexão com <ph name="HOST_NAME" /> foi recusada.</translation>
-<translation id="6434309073475700221">Descartar</translation>
 <translation id="6440503408713884761">Ignorada</translation>
 <translation id="6443406338865242315">quais extensões e plug-ins você instalou;</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>
@@ -1704,7 +1701,6 @@ Mais detalhes:
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7485870689360869515">Nenhum dado encontrado</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Entre em contato com o proprietário do site para corrigir o problema.</translation>
-<translation id="7498234416455752244">Continuar editando</translation>
 <translation id="7503664977220660814">Você acabou de digitar sua senha em um site suspeito. O Chromium recomenda que você verifique agora suas senhas salvas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e outros sites em que você usa essa senha.</translation>
 <translation id="7508255263130623398">O código do dispositivo da política retornado está em branco ou não corresponde ao código do dispositivo atual</translation>
 <translation id="7508870219247277067">Verde-abacate</translation>

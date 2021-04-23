@@ -108,7 +108,6 @@
 <translation id="1823873187264960516">ایتھرنیٹ: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">اسسٹنٹ (لوڈ ہو رہا ہے...)</translation>
 <translation id="1838895407229022812">نائٹ لائٹ آف ہے۔</translation>
-<translation id="1850504506766569011">‏Wi-Fi آف ہے۔</translation>
 <translation id="1864454756846565995">‏USB-C آلہ (پیچھے کا پورٹ)</translation>
 <translation id="1882814835921407042">کوئی موبائل نیٹ ورک نہیں ہے</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> میں معکوس سازی</translation>
@@ -267,7 +266,6 @@
 <translation id="3207953481422525583">صارف کی ترتیبات</translation>
 <translation id="3217205077783620295">والیوم آن ہے۔ ٹوگل کرنے سے آڈیو خاموش ہو جائے گی۔</translation>
 <translation id="3226991577105957773">‏‎<ph name="COUNT" />+‎ مزید</translation>
-<translation id="3236488194889173876">کوئی موبائل نیٹ ورک دستیاب نہیں ہے</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> ونڈو کو <ph name="ACTIVE_DESK" /> ڈیسک سے <ph name="TARGET_DESK" /> ڈیسک میں منتقل کر دیا گیا ہے</translation>
 <translation id="3255483164551725916">آپ کیا کر سکتی ہیں؟</translation>
 <translation id="3269597722229482060">دائیں طرف کلک کریں</translation>
@@ -584,7 +582,6 @@
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> آن ہے۔</translation>
 <translation id="5947494881799873997">واپس لوٹیں</translation>
 <translation id="595202126637698455">کارکردگی کی ٹریسنگ فعال کر دی گئی</translation>
-<translation id="5957083217255311415">موبائل ڈیٹا بند ہے۔</translation>
 <translation id="5958529069007801266">تحفظ یافتہ صارف</translation>
 <translation id="5960825221082587934">اسسٹنٹ کو آپ کے انتخاب کیلئے تعریف، ترجمہ یا یونٹ تبدیلی جیسی معلومات دکھانے دیں۔</translation>
 <translation id="5977415296283489383">ہیڈفون</translation>
@@ -884,7 +881,6 @@
 <translation id="8433977262951327081">شیلف میں ان پٹ اختیارات کے مینو بلبلے کو دکھانے والا شارٹ کٹ تبدیل ہو گیا ہے۔ براہ کرم <ph name="OLD_SHORTCUT" /> کی بجائے <ph name="NEW_SHORTCUT" /> استعمال کریں۔</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> ڈیسک فعال کر دیا گیا</translation>
 <translation id="8452135315243592079">‏غائب SIM کارڈ</translation>
-<translation id="8454013096329229812">‏Wi-Fi آن ہے۔</translation>
 <translation id="8462305545768648477">سننے کیلئے منتخب کریں کو بند کریں</translation>
 <translation id="847056008324733326">اسکیل ترتیبات کو ڈسپلے کریں</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> میں <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ہے۔</translation>

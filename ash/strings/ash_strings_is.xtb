@@ -108,7 +108,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Aðstoðarmaður (hleður...)</translation>
 <translation id="1838895407229022812">Slökkt er á næturljósi.</translation>
-<translation id="1850504506766569011">Slökkt er á Wi-Fi.</translation>
 <translation id="1864454756846565995">USB-C-tæki (tengi að aftan)</translation>
 <translation id="1882814835921407042">Ekkert farsímakerfi</translation>
 <translation id="1882897271359938046">Speglar á <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3207953481422525583">Notandastillingar</translation>
 <translation id="3217205077783620295">Kveikt er á hljóði; slökkt verður á því ef hnappurinn er valinn.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> í viðbót</translation>
-<translation id="3236488194889173876">Ekkert farsímakerfi í boði</translation>
 <translation id="3249513730522716925">Gluggi <ph name="WINDOW_TITLE" /> færður af skjáborði <ph name="ACTIVE_DESK" /> yfir á skjáborð <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Hvað geturðu gert?</translation>
 <translation id="3269597722229482060">Hægrismella</translation>
@@ -584,7 +582,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5946788582095584774">Kveikt er á <ph name="FEATURE_NAME" /></translation>
 <translation id="5947494881799873997">Afturkalla</translation>
 <translation id="595202126637698455">Kveikt á afkastarakningu</translation>
-<translation id="5957083217255311415">Slökkt er á farsímagögnum.</translation>
 <translation id="5958529069007801266">Stýrður notandi</translation>
 <translation id="5960825221082587934">Leyfa Hjálparanum að birta upplýsingar á borð við skilgreiningu, þýðingu eða umbreytingu mælieininga fyrir valið þitt.</translation>
 <translation id="5977415296283489383">Heyrnartól</translation>
@@ -884,7 +881,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8433977262951327081">Flýtileiðin til að sýna valmyndarblöðru fyrir innsláttarvalkosti í hillunni hefur breyst. Notaðu <ph name="NEW_SHORTCUT" /> í staðinn fyrir <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Skjáborð <ph name="DESK_TITILE" /> virkjað</translation>
 <translation id="8452135315243592079">SIM-kort vantar</translation>
-<translation id="8454013096329229812">Kveikt er á Wi-Fi.</translation>
 <translation id="8462305545768648477">Loka Textaupplestri</translation>
 <translation id="847056008324733326">Stillingarar skjástærðar</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> hefur <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

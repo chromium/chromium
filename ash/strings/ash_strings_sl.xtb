@@ -108,7 +108,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Pomočnik (nalaganje ...)</translation>
 <translation id="1838895407229022812">Nočna svetloba je izklopljena.</translation>
-<translation id="1850504506766569011">Wi-Fi je izklopljen.</translation>
 <translation id="1864454756846565995">Naprava USB-C (vrata zadaj)</translation>
 <translation id="1882814835921407042">Ni mobilnih omrežij</translation>
 <translation id="1882897271359938046">Zrcaljenje na <ph name="DISPLAY_NAME" /></translation>
@@ -267,7 +266,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3207953481422525583">Uporabniške nastavitve</translation>
 <translation id="3217205077783620295">Glasnost je vklopljena: če to preklopite, bo zvok izklopljen.</translation>
 <translation id="3226991577105957773">in še <ph name="COUNT" /></translation>
-<translation id="3236488194889173876">Mobilno omrežje ni na voljo</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> je bilo premaknjeno iz namizja <ph name="ACTIVE_DESK" /> v namizje <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Kakšne možnosti so na voljo?</translation>
 <translation id="3269597722229482060">Desni klik</translation>
@@ -584,7 +582,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> je vklopljena.</translation>
 <translation id="5947494881799873997">Razveljavi</translation>
 <translation id="595202126637698455">Sledenje učinkovitosti delovanja je omogočeno</translation>
-<translation id="5957083217255311415">Prenos podatkov v mobilnem omrežju je izklopljen.</translation>
 <translation id="5958529069007801266">Zaščiteni uporabnik</translation>
 <translation id="5960825221082587934">Naj vam Pomočnik prikazuje informacije, kot je definicija, prevod ali pretvorba enot za izbor.</translation>
 <translation id="5977415296283489383">Slušalke</translation>
@@ -884,7 +881,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="8433977262951327081">Bližnjica za prikaz oblačka menija z možnostmi vnosa na polici se je spremenila. Namesto <ph name="OLD_SHORTCUT" /> uporabite <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Namizje <ph name="DESK_TITILE" /> je bilo aktivirano</translation>
 <translation id="8452135315243592079">Ni kartice SIM</translation>
-<translation id="8454013096329229812">Wi-Fi je vklopljen.</translation>
 <translation id="8462305545768648477">Zapri »Izberite in poslušajte«</translation>
 <translation id="847056008324733326">Nastavitve zaslonskega razmerja</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> je <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
