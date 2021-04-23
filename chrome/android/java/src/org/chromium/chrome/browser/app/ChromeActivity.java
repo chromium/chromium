@@ -384,6 +384,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public void performPreInflationStartup() {
         setupUnownedUserDataSuppliers();
 
+        // Ensure that mConfig is initialized before tablet mode changes.
+        mConfig = getResources().getConfiguration();
+
         // Make sure the root coordinator is created prior to calling super to ensure all
         // the activity lifecycle events are called.
         mRootUiCoordinator = createRootUiCoordinator();
@@ -1278,8 +1281,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
         if (mCompositorViewHolderSupplier.hasValue()) mCompositorViewHolderSupplier.get().onStart();
 
-        mConfig = getResources().getConfiguration();
-
         mStarted = true;
     }
 
@@ -2038,28 +2039,31 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public void performOnConfigurationChanged(Configuration newConfig) {
         super.performOnConfigurationChanged(newConfig);
-        // We only handle VR UI mode and UI mode night changes. Any other changes should follow the
-        // default behavior of recreating the activity. Note that if UI mode night changes, with or
-        // without other changes, we will still recreate() until we get a callback from the
-        // ChromeBaseAppCompatActivity#onNightModeStateChanged or the overridden method in
-        // sub-classes if necessary.
-        if (didChangeNonVrUiMode(mConfig.uiMode, newConfig.uiMode)
-                && !didChangeUiModeNight(mConfig.uiMode, newConfig.uiMode)) {
-            recreate();
-            return;
-        }
-
-        if (newConfig.densityDpi != mConfig.densityDpi) {
-            if (!VrModuleProvider.getDelegate().onDensityChanged(
-                        mConfig.densityDpi, newConfig.densityDpi)) {
+        if (mConfig != null) {
+            // We only handle VR UI mode and UI mode night changes. Any other changes should follow
+            // the default behavior of recreating the activity. Note that if UI mode night changes,
+            // with or without other changes, we will still recreate() until we get a callback from
+            // the ChromeBaseAppCompatActivity#onNightModeStateChanged or the overridden method in
+            // sub-classes if necessary.
+            if (didChangeNonVrUiMode(mConfig.uiMode, newConfig.uiMode)
+                    && !didChangeUiModeNight(mConfig.uiMode, newConfig.uiMode)) {
                 recreate();
                 return;
             }
-        }
 
-        if (newConfig.orientation != mConfig.orientation) {
-            RequestDesktopUtils.recordScreenOrientationChangedUkm(
-                    newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, getActivityTab());
+            if (newConfig.densityDpi != mConfig.densityDpi) {
+                if (!VrModuleProvider.getDelegate().onDensityChanged(
+                            mConfig.densityDpi, newConfig.densityDpi)) {
+                    recreate();
+                    return;
+                }
+            }
+
+            if (newConfig.orientation != mConfig.orientation) {
+                RequestDesktopUtils.recordScreenOrientationChangedUkm(
+                        newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE,
+                        getActivityTab());
+            }
         }
 
         mConfig = newConfig;
@@ -2668,6 +2672,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @VisibleForTesting
     public boolean didChangeTabletMode() {
+        assert mConfig
+                != null : "Can not determine the tablet mode when mConfig is not initialized";
         DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(this);
         boolean isTablet = DisplayUtil.pxToDp(display, DisplayUtil.getSmallestWidth(display))
                 >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
