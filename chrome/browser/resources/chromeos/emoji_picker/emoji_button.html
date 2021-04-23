@@ -49,6 +49,24 @@
         315deg, var(--google-grey-refresh-500) 4px,
         var(--emoji-background) 4px, var(--emoji-background));
   }
+
+  #tooltip {
+    --paper-tooltip-background: var(--cr-menu-background-color);
+    --paper-tooltip-opacity: 1;
+    --paper-tooltip-text-color: var(--cr-secondary-text-color);
+    --paper-tooltip-delay-in: 200ms;
+    --paper-tooltip-delay-out: 200ms;
+    --paper-tooltip-duration-in: 0;
+    --paper-tooltip-duration-out: 0;
+
+    --paper-tooltip: {
+      box-shadow: var(--cr-elevation-3);
+      font-family: 'Roboto', sans-serif;
+      font-size: 12px;
+      padding: 4px 8px 4px 8px;
+      white-space: nowrap;
+    };
+  }
 </style>
 
 
@@ -61,6 +79,10 @@
     aria-label="[[_label(emoji, variants)]]">
   [[emoji]]
 </button>
+<paper-tooltip id="tooltip" for="button" fit-to-visible-bounds part="tooltip"
+  offset="8">
+  [[tooltip]]
+</paper-tooltip>
 <template is="dom-if" if="[[variantsVisible]]">
   <emoji-variants variants="[[variants]]"></emoji-variants>
 </template>

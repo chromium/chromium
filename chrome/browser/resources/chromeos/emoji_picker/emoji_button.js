@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './emoji_variants.js';
+import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
 import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -33,7 +34,9 @@ export class EmojiButton extends PolymerElement {
       /** @type {!string} */
       base: {type: String},
       /** @type {?Array<Emoji>} */
-      allVariants: {type: Array, readonly: true}
+      allVariants: {type: Array, readonly: true},
+      /** @type {!string} */
+      toolTip: {type: String, readonly: true},
     };
   }
 

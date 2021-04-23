@@ -35,6 +35,11 @@ class EmojiGroupComponent extends PolymerElement {
     super();
   }
 
+  /** @param emoji {Emoji} */
+  getTooltipForEmoji(emoji) {
+    return emoji.name;
+  }
+
   getDisplayEmojiForEmoji(emoji) {
     return this.preferred[emoji] || emoji;
   }
