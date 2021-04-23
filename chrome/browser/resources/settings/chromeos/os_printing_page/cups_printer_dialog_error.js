@@ -5,7 +5,16 @@
 /**
  * 'printer-dialog-error' is the error container for dialogs.
  */
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './cups_printer_shared_css.js';
+
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getBaseName, getErrorText, getPrintServerErrorText, isNameAndAddressValid, isNetworkProtocol, isPPDInfoValid, matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
+import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, ManufacturersInfo, ModelsInfo, PrinterMakeModel, PrinterPpdMakeModel, PrinterSetupResult, PrintServerResult} from './cups_printers_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'printer-dialog-error',
 
   properties: {

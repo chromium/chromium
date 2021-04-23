@@ -2,25 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {PrinterSetupResult, PrintServerResult, CupsPrinterInfo} from './cups_printers_browser_proxy.m.js';
-// #import {PrinterListEntry} from './cups_printer_types.m.js';
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
+import {PrinterListEntry} from './cups_printer_types.js';
+import {CupsPrinterInfo, PrinterSetupResult, PrintServerResult} from './cups_printers_browser_proxy.js';
 
 /**
  * @fileoverview  Utility functions that are used in Cups printer setup dialogs.
  */
 
-cr.define('settings.printing', function() {
   /**
    * @param {string} protocol
    * @return {boolean} Whether |protocol| is a network protocol
    */
-  /* #export */ function isNetworkProtocol(protocol) {
-    return ['ipp', 'ipps', 'http', 'https', 'socket', 'lpd'].includes(protocol);
-  }
+export function isNetworkProtocol(protocol) {
+  return ['ipp', 'ipps', 'http', 'https', 'socket', 'lpd'].includes(protocol);
+}
 
   /**
    * Returns true if the printer's name and address is valid. This function
@@ -32,53 +30,53 @@ cr.define('settings.printing', function() {
    * @param {CupsPrinterInfo} printer
    * @return {boolean}
    */
-  /* #export */ function isNameAndAddressValid(printer) {
-    if (!printer) {
-      return false;
-    }
-
-    const name = printer.printerName;
-    const address = printer.printerAddress;
-
-    if (!isNetworkProtocol(printer.printerProtocol) && !!name) {
-      // We do not need to verify the address of a non-network printer.
-      return true;
-    }
-
-    if (!name || !address) {
-      return false;
-    }
-
-    const hostnamePrefix = '([a-z\\d]|[a-z\\d][a-z\\d\\-]{0,61}[a-z\\d])';
-
-    // Matches an arbitrary number of 'prefix patterns' which are separated by a
-    // dot.
-    const hostnameSuffix = `(\\.${hostnamePrefix})*`;
-
-    // Matches an optional port at the end of the address.
-    const portNumber = '(:\\d+)?';
-
-    const ipv6Full = '(([a-f\\d]){1,4}(:(:)?([a-f\\d]){1,4}){1,7})';
-
-    // Special cases for addresses using a shorthand notation.
-    const ipv6Prefix = '(::([a-f\\d]){1,4})';
-    const ipv6Suffix = '(([a-f\\d]){1,4}::)';
-    const ipv6Combined = `(${ipv6Full}|${ipv6Prefix}|${ipv6Suffix})`;
-    const ipv6WithPort = `(\\[${ipv6Combined}\\]${portNumber})`;
-
-    // Matches valid hostnames and ipv4 addresses.
-    const hostnameRegex =
-        new RegExp(`^${hostnamePrefix}${hostnameSuffix}${portNumber}$`, 'i');
-
-    // Matches valid ipv6 addresses.
-    const ipv6AddressRegex =
-        new RegExp(`^(${ipv6Combined}|${ipv6WithPort})$`, 'i');
-
-    const invalidIpv6Regex = new RegExp('.*::.*::.*');
-
-    return hostnameRegex.test(address) ||
-        (ipv6AddressRegex.test(address) && !invalidIpv6Regex.test(address));
+export function isNameAndAddressValid(printer) {
+  if (!printer) {
+    return false;
   }
+
+  const name = printer.printerName;
+  const address = printer.printerAddress;
+
+  if (!isNetworkProtocol(printer.printerProtocol) && !!name) {
+    // We do not need to verify the address of a non-network printer.
+    return true;
+  }
+
+  if (!name || !address) {
+    return false;
+  }
+
+  const hostnamePrefix = '([a-z\\d]|[a-z\\d][a-z\\d\\-]{0,61}[a-z\\d])';
+
+  // Matches an arbitrary number of 'prefix patterns' which are separated by a
+  // dot.
+  const hostnameSuffix = `(\\.${hostnamePrefix})*`;
+
+  // Matches an optional port at the end of the address.
+  const portNumber = '(:\\d+)?';
+
+  const ipv6Full = '(([a-f\\d]){1,4}(:(:)?([a-f\\d]){1,4}){1,7})';
+
+  // Special cases for addresses using a shorthand notation.
+  const ipv6Prefix = '(::([a-f\\d]){1,4})';
+  const ipv6Suffix = '(([a-f\\d]){1,4}::)';
+  const ipv6Combined = `(${ipv6Full}|${ipv6Prefix}|${ipv6Suffix})`;
+  const ipv6WithPort = `(\\[${ipv6Combined}\\]${portNumber})`;
+
+  // Matches valid hostnames and ipv4 addresses.
+  const hostnameRegex =
+      new RegExp(`^${hostnamePrefix}${hostnameSuffix}${portNumber}$`, 'i');
+
+  // Matches valid ipv6 addresses.
+  const ipv6AddressRegex =
+      new RegExp(`^(${ipv6Combined}|${ipv6WithPort})$`, 'i');
+
+  const invalidIpv6Regex = new RegExp('.*::.*::.*');
+
+  return hostnameRegex.test(address) ||
+      (ipv6AddressRegex.test(address) && !invalidIpv6Regex.test(address));
+}
 
   /**
    * Returns true if the printer's manufacturer and model or ppd path is valid.
@@ -87,21 +85,21 @@ cr.define('settings.printing', function() {
    * @param {string} ppdPath
    * @return {boolean}
    */
-  /* #export */ function isPPDInfoValid(manufacturer, model, ppdPath) {
-    return !!((manufacturer && model) || ppdPath);
-  }
+export function isPPDInfoValid(manufacturer, model, ppdPath) {
+  return !!((manufacturer && model) || ppdPath);
+}
 
   /**
    * Returns the base name of a filepath.
    * @param {string} path The full path of the file
    * @return {string} The base name of the file
    */
-  /* #export */ function getBaseName(path) {
-    if (path && path.length > 0) {
-      return path.substring(path.lastIndexOf('/') + 1);
-    }
-    return '';
+export function getBaseName(path) {
+  if (path && path.length > 0) {
+    return path.substring(path.lastIndexOf('/') + 1);
   }
+  return '';
+}
 
   /**
    * A function used for sorting printer names based on the current locale's
@@ -120,7 +118,7 @@ cr.define('settings.printing', function() {
    * @param {!PrinterSetupResult} result
    * @return {string}
    */
-  /* #export */ function getErrorText(result) {
+  export function getErrorText(result) {
     switch (result) {
       case PrinterSetupResult.FATAL_ERROR:
         return loadTimeData.getString('printerAddedFatalErrorMessage');
@@ -153,7 +151,7 @@ cr.define('settings.printing', function() {
    * @param {!PrintServerResult} result
    * @return {string}
    */
-  /* #export */ function getPrintServerErrorText(result) {
+  export function getPrintServerErrorText(result) {
     switch (result) {
       case PrintServerResult.CONNECTION_ERROR:
         return loadTimeData.getString('printServerConnectionError');
@@ -172,10 +170,9 @@ cr.define('settings.printing', function() {
    * @param {!PrinterListEntry} second
    * @return {number}
    */
-  /* #export */ function sortPrinters(first, second) {
+  export function sortPrinters(first, second) {
     if (first.printerType === second.printerType) {
-      return settings.printing.alphabeticalSort(
-          first.printerInfo, second.printerInfo);
+      return alphabeticalSort(first.printerInfo, second.printerInfo);
     }
 
     return first.printerType - second.printerType;
@@ -186,7 +183,7 @@ cr.define('settings.printing', function() {
    * @param {string} searchTerm
    * @return {boolean} True if the printer has |searchTerm| in its name.
    */
-  /* #export */ function matchesSearchTerm(printer, searchTerm) {
+  export function matchesSearchTerm(printer, searchTerm) {
     return printer.printerName.toLowerCase().includes(searchTerm.toLowerCase());
   }
 
@@ -205,25 +202,9 @@ cr.define('settings.printing', function() {
    * @param {!Array<!PrinterListEntry>} secondArr
    * @return {!Array<!PrinterListEntry>}
    */
-  /* #export */ function findDifference(firstArr, secondArr) {
+  export function findDifference(firstArr, secondArr) {
     return firstArr.filter(p1 => {
       return !secondArr.some(
           p2 => p2.printerInfo.printerId === p1.printerInfo.printerId);
     });
   }
-
-  // #cr_define_end
-  return {
-    isNetworkProtocol: isNetworkProtocol,
-    isNameAndAddressValid: isNameAndAddressValid,
-    isPPDInfoValid: isPPDInfoValid,
-    getBaseName: getBaseName,
-    alphabeticalSort: alphabeticalSort,
-    getErrorText: getErrorText,
-    getPrintServerErrorText: getPrintServerErrorText,
-    sortPrinters: sortPrinters,
-    matchesSearchTerm: matchesSearchTerm,
-    arePrinterIdsEqual: arePrinterIdsEqual,
-    findDifference: findDifference,
-  };
-});

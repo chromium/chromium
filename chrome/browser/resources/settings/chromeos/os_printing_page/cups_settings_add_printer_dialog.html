@@ -1,37 +1,19 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared"></style>
 
-<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="../localized_link/localized_link.html">
-<link rel="import" href="../../i18n_setup.html">
-<link rel="import" href="cups_add_print_server_dialog.html">
-<link rel="import" href="cups_add_printer_manually_dialog.html">
-<link rel="import" href="cups_add_printer_manufacturer_model_dialog.html">
-<link rel="import" href="cups_printer_dialog_util.html">
-<link rel="import" href="cups_printer_shared_css.html">
-<link rel="import" href="cups_printers_browser_proxy.html">
+<!-- Manually Add Printer Dialog -->
+<template is="dom-if" if="[[showManuallyAddDialog_]]" restamp>
+  <add-printer-manually-dialog new-printer="{{newPrinter}}">
+  </add-printer-manually-dialog>
+</template>
 
+<!-- Manufacturer and Model Dialog -->
+<template is="dom-if" if="[[showManufacturerDialog_]]" restamp>
+  <add-printer-manufacturer-model-dialog active-printer="{{newPrinter}}">
+  </add-printer-manufacturer-model-dialog>
+</template>
 
-<dom-module id="settings-cups-add-printer-dialog">
-  <template>
-    <style include="settings-shared"></style>
+<!-- Add Print Server Dialog -->
+<template is="dom-if" if="[[showAddPrintServerDialog_]]" restamp>
+  <add-print-server-dialog></add-print-server-dialog>
+</template>
 
-    <!-- Manually Add Printer Dialog -->
-    <template is="dom-if" if="[[showManuallyAddDialog_]]" restamp>
-      <add-printer-manually-dialog new-printer="{{newPrinter}}">
-      </add-printer-manually-dialog>
-    </template>
-
-    <!-- Manufacturer and Model Dialog -->
-    <template is="dom-if" if="[[showManufacturerDialog_]]" restamp>
-      <add-printer-manufacturer-model-dialog active-printer="{{newPrinter}}">
-      </add-printer-manufacturer-model-dialog>
-    </template>
-
-    <!-- Add Print Server Dialog -->
-    <template is="dom-if" if="[[showAddPrintServerDialog_]]" restamp>
-      <add-print-server-dialog></add-print-server-dialog>
-    </template>
-
-  </template>
-  <script src="cups_settings_add_printer_dialog.js"></script>
-</dom-module>

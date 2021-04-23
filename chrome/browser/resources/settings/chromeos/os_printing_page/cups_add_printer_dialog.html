@@ -1,32 +1,18 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared">
+  #dialog [slot=body] {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+</style>
 
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="cups_printer_dialog_util.html">
-<link rel="import" href="cups_printer_shared_css.html">
-<link rel="import" href="cups_printers_browser_proxy.html">
-
-<dom-module id="add-printer-dialog">
-  <template>
-    <style include="settings-shared">
-      #dialog [slot=body] {
-        padding-inline-end: 0;
-        padding-inline-start: 0;
-      }
-    </style>
-
-    <cr-dialog id="dialog" close-text="$i18n{close}">
-      <div slot="title">
-        <slot name="dialog-title"></slot>
-      </div>
-      <div slot="body">
-        <slot name="dialog-body"></slot>
-      </div>
-      <div slot="button-container">
-        <slot name="dialog-buttons"></slot>
-      </div>
-    </cr-dialog>
-  </template>
-  <script src="cups_add_printer_dialog.js"></script>
-</dom-module>
+<cr-dialog id="dialog" close-text="$i18n{close}">
+  <div slot="title">
+    <slot name="dialog-title"></slot>
+  </div>
+  <div slot="body">
+    <slot name="dialog-body"></slot>
+  </div>
+  <div slot="button-container">
+    <slot name="dialog-buttons"></slot>
+  </div>
+</cr-dialog>

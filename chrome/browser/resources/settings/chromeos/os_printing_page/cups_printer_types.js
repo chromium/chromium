@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {CupsPrinterInfo} from './cups_printers_browser_proxy.m.js';
+import {CupsPrinterInfo} from './cups_printers_browser_proxy.js';
 
 /**
  * @typedef {{
@@ -10,7 +10,7 @@
  *   printerType: number,
  * }}
  */
-/* #export */ let PrinterListEntry;
+export let PrinterListEntry;
 
 /**
  * @enum {number}
@@ -20,7 +20,7 @@
  *
  * The types are numbered in desired sorting order for display.
  */
-/* #export */ const PrinterType = {
+export const PrinterType = {
   SAVED: 0,
   PRINTSERVER: 1,
   AUTOMATIC: 2,

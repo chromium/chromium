@@ -7,7 +7,21 @@
  *   add a print server.
  */
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_input/cr_input.m.js';
+import './cups_add_printer_dialog.js';
+import './cups_printer_dialog_error.js';
+import './cups_printer_shared_css.js';
+
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+
+import {getBaseName, getErrorText, getPrintServerErrorText, isNameAndAddressValid, isNetworkProtocol, isPPDInfoValid, matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
+import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, ManufacturersInfo, ModelsInfo, PrinterMakeModel, PrinterPpdMakeModel, PrinterSetupResult, PrintServerResult} from './cups_printers_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'add-print-server-dialog',
 
   properties: {
@@ -39,7 +53,7 @@ Polymer({
   onAddPrintServerTap_: function() {
     this.inProgress_ = true;
     this.$$('#printServerAddressInput').invalid = false;
-    settings.CupsPrintersBrowserProxyImpl.getInstance()
+    CupsPrintersBrowserProxyImpl.getInstance()
         .queryPrintServer(this.printServerAddress_)
         .then(
             this.onPrintServerAddedSucceeded_.bind(this),
@@ -66,7 +80,7 @@ Polymer({
       this.$$('#printServerAddressInput').invalid = true;
       return;
     }
-    this.errorText_ = settings.printing.getPrintServerErrorText(
+    this.errorText_ = getPrintServerErrorText(
         /** @type {PrintServerResult} */ (addPrintServerError));
   },
 

@@ -6,11 +6,23 @@
  * @fileoverview 'settings-cups-printers-entry' is a component that holds a
  * printer.
  */
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '../../settings_shared_css.js';
+
+import {FocusRowBehavior} from '//resources/js/cr/ui/focus_row_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+
+import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
+import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, ManufacturersInfo, ModelsInfo, PrinterMakeModel, PrinterPpdMakeModel, PrinterSetupResult, PrintServerResult} from './cups_printers_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-cups-printers-entry',
 
   behaviors: [
-    cr.ui.FocusRowBehavior,
+    FocusRowBehavior,
   ],
   properties: {
     /** @type {!PrinterListEntry} */

@@ -1,183 +1,146 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="cups-printer-shared action-link iron-flex
+    iron-flex-alignment">
+  .custom-list-item {
+    border-bottom: var(--cr-separator-line);
+    min-height: var(--settings-row-min-height);
+  }
 
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toast/cr_toast.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
-<link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/cr_elements/action_link_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="cups_settings_add_printer_dialog.html">
-<link rel="import" href="cups_edit_printer_dialog.html">
-<link rel="import" href="cups_printer_shared_css.html">
-<link rel="import" href="cups_printers_entry_manager.html">
-<link rel="import" href="cups_saved_printers.html">
-<link rel="import" href="cups_nearby_printers.html">
-<link rel="import" href="../localized_link/localized_link.html">
-<link rel="import" href="../../icons.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="./cups_printers_browser_proxy.html">
-<link rel="import" href="./cups_printer_types.html">
+  .padded {
+    padding: 20px;
+  }
 
-<dom-module id="settings-cups-printers">
-  <template>
-    <style include="cups-printer-shared action-link iron-flex
-        iron-flex-alignment">
-      .custom-list-item {
-        border-bottom: var(--cr-separator-line);
-        min-height: var(--settings-row-min-height);
-      }
+  #addPrinterText {
+    flex: 1;
+  }
 
-      .padded {
-        padding: 20px;
-      }
+  #addManualPrinterIcon {
+    --cr-icon-button-fill-color: rgb(138, 180, 248);
+    --cr-icon-button-margin-end: 0;
+  }
 
-      #addPrinterText {
-        flex: 1;
-      }
+  #cloudOffIcon {
+    --iron-icon-fill-color: rgb(95, 99, 104);
+    margin-top: 10px;
+  }
 
-      #addManualPrinterIcon {
-        --cr-icon-button-fill-color: rgb(138, 180, 248);
-        --cr-icon-button-margin-end: 0;
-      }
+  #connectionMessage {
+    padding-inline-start: 20px;
+  }
 
-      #cloudOffIcon {
-        --iron-icon-fill-color: rgb(95, 99, 104);
-        margin-top: 10px;
-      }
+  #noConnectivityContentContainer {
+    border-bottom: var(--cr-separator-line);
+    padding-inline-start: 20px;
+  }
 
-      #connectionMessage {
-        padding-inline-start: 20px;
-      }
+  #noSearchResultsMessage {
+    color: var(--md-loading-message-color);
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 80px;
+    text-align: center;
+  }
 
-      #noConnectivityContentContainer {
-        border-bottom: var(--cr-separator-line);
-        padding-inline-start: 20px;
-      }
+  #savedPrintersContainer {
+    border-bottom: var(--cr-separator-line);
+  }
 
-      #noSearchResultsMessage {
-        color: var(--md-loading-message-color);
-        font-size: 16px;
-        font-weight: 500;
-        margin-top: 80px;
-        text-align: center;
-      }
+  :host(:not([can-add-printer])) #addPrinterSection,
+  :host(:not([can-add-printer])) #nearbyPrinters {
+    opacity: var(--cr-disabled-opacity);
+    pointer-events: none;
+  }
+</style>
 
-      #savedPrintersContainer {
-        border-bottom: var(--cr-separator-line);
-      }
+<template is="dom-if" if="[[!canAddPrinter]]">
+  <div id="noConnectivityContentContainer"
+      class="layout horizontal padded">
+    <iron-icon id="cloudOffIcon" icon="settings20:cloud-off"></iron-icon>
+    <div id="connectionMessage" class="layout vertical">
+      <div>$i18n{noInternetConnection}</div>
+      <div class="secondary">$i18n{checkNetworkAndTryAgain}</div>
+    </div>
+  </div>
+</template>
 
-      :host(:not([can-add-printer])) #addPrinterSection,
-      :host(:not([can-add-printer])) #nearbyPrinters {
-        opacity: var(--cr-disabled-opacity);
-        pointer-events: none;
-      }
-    </style>
-
-    <template is="dom-if" if="[[!canAddPrinter]]">
-      <div id="noConnectivityContentContainer"
-          class="layout horizontal padded">
-        <iron-icon id="cloudOffIcon" icon="settings20:cloud-off"></iron-icon>
-        <div id="connectionMessage" class="layout vertical">
-          <div>$i18n{noInternetConnection}</div>
-          <div class="secondary">$i18n{checkNetworkAndTryAgain}</div>
-        </div>
+<template is="dom-if"
+    if="[[doesAccountHaveSavedPrinters_(savedPrinters_)]]" restamp>
+  <div id="savedPrintersContainer">
+    <div class="settings-box first">
+      <div class="start">
+        <span aria-label$="[[savedPrintersAriaLabel_]]">
+          $i18n{savedPrintersTitle}
+        </span>
       </div>
+    </div>
+
+    <settings-cups-saved-printers id="savedPrinters"
+        active-printer="{{activePrinter}}"
+        search-term="[[searchTerm]]"
+        printers-count="{{savedPrinterCount_}}">
+    </settings-cups-saved-printers>
+  </div>
+</template>
+<template is="dom-if" if="[[attemptedLoadingPrinters_]]">
+  <div class="padded first" id="nearbyPrinters">
+    <div aria-label$="[[nearbyPrintersAriaLabel_]]">
+      $i18n{nearbyPrintersListTitle}
+    </div>
+    <settings-localized-link class="secondary"
+        localized-string="$i18n{nearbyPrintersListDescription}"
+        link-url="$i18n{printingCUPSPrintLearnMoreUrl}">
+    </settings-localized-link>
+    <template is="dom-if" if="[[!addPrinterButtonActive_(canAddPrinter,
+      prefs.native_printing.user_native_printers_allowed.value)]]">
+      <cr-policy-pref-indicator
+          pref="[[prefs.native_printing.user_native_printers_allowed]]"
+          icon-aria-label="$i18n{printingPageTitle}">
+      </cr-policy-pref-indicator>
     </template>
+  </div>
 
-    <template is="dom-if"
-        if="[[doesAccountHaveSavedPrinters_(savedPrinters_)]]" restamp>
-      <div id="savedPrintersContainer">
-        <div class="settings-box first">
-          <div class="start">
-            <span aria-label$="[[savedPrintersAriaLabel_]]">
-              $i18n{savedPrintersTitle}
-            </span>
-          </div>
-        </div>
-
-        <settings-cups-saved-printers id="savedPrinters"
-            active-printer="{{activePrinter}}"
-            search-term="[[searchTerm]]"
-            printers-count="{{savedPrinterCount_}}">
-        </settings-cups-saved-printers>
+  <div id="addPrinterSection" class="list-frame">
+    <div class="layout horizontal center custom-list-item">
+      <div id="addPrinterText" aria-hidden="true">
+        $i18n{addCupsPrinter}
       </div>
-    </template>
-    <template is="dom-if" if="[[attemptedLoadingPrinters_]]">
-      <div class="padded first" id="nearbyPrinters">
-        <div aria-label$="[[nearbyPrintersAriaLabel_]]">
-          $i18n{nearbyPrintersListTitle}
-        </div>
-        <settings-localized-link class="secondary"
-            localized-string="$i18n{nearbyPrintersListDescription}"
-            link-url="$i18n{printingCUPSPrintLearnMoreUrl}">
-        </settings-localized-link>
-        <template is="dom-if" if="[[!addPrinterButtonActive_(canAddPrinter,
-          prefs.native_printing.user_native_printers_allowed.value)]]">
-          <cr-policy-pref-indicator
-              pref="[[prefs.native_printing.user_native_printers_allowed]]"
-              icon-aria-label="$i18n{printingPageTitle}">
-          </cr-policy-pref-indicator>
-        </template>
-      </div>
+      <cr-icon-button class="action-button" id="addManualPrinterIcon"
+          iron-icon="settings20:printer-add"
+          on-click="onAddPrinterTap_"
+          disabled="[[!addPrinterButtonActive_(canAddPrinter,
+              prefs.native_printing.user_native_printers_allowed.value)]]"
+          title="$i18n{addCupsPrinter}"
+          deep-link-focus-id$="[[Setting.kAddPrinter]]">
+      </cr-icon-button>
+    </div>
+  </div>
 
-      <div id="addPrinterSection" class="list-frame">
-        <div class="layout horizontal center custom-list-item">
-          <div id="addPrinterText" aria-hidden="true">
-            $i18n{addCupsPrinter}
-          </div>
-          <cr-icon-button class="action-button" id="addManualPrinterIcon"
-              iron-icon="settings20:printer-add"
-              on-click="onAddPrinterTap_"
-              disabled="[[!addPrinterButtonActive_(canAddPrinter,
-                  prefs.native_printing.user_native_printers_allowed.value)]]"
-              title="$i18n{addCupsPrinter}"
-              deep-link-focus-id$="[[Setting.kAddPrinter]]">
-          </cr-icon-button>
-        </div>
-      </div>
-
-      <template is="dom-if" if="[[canAddPrinter]]" restamp>
-        <settings-cups-nearby-printers search-term="[[searchTerm]]"
-            active-printer="{{activePrinter}}"
-            printers-count="{{nearbyPrinterCount_}}">
-        </settings-cups-nearby-printers>
-      </template>
-    </template>
-
-    <settings-cups-add-printer-dialog id="addPrinterDialog"
-        on-close="onAddPrinterDialogClose_">
-    </settings-cups-add-printer-dialog>
-
-    <template is="dom-if" if="[[showCupsEditPrinterDialog_]]" restamp>
-      <settings-cups-edit-printer-dialog id="editPrinterDialog"
-          active-printer="{{activePrinter}}"
-          on-close="onEditPrinterDialogClose_">
-      </settings-cups-edit-printer-dialog>
-    </template>
-
-    <cr-toast id="errorToast" duration="3000">
-      <div class="error-message" id="addPrinterDoneMessage">
-        [[addPrinterResultText_]]
-      </div>
-    </cr-toast>
-
-    <cr-toast id="printServerErrorToast" duration="3000">
-      <div class="error-message" id="addPrintServerDoneMessage">
-        [[addPrintServerResultText_]]
-      </div>
-    </cr-toast>
+  <template is="dom-if" if="[[canAddPrinter]]" restamp>
+    <settings-cups-nearby-printers search-term="[[searchTerm]]"
+        active-printer="{{activePrinter}}"
+        printers-count="{{nearbyPrinterCount_}}">
+    </settings-cups-nearby-printers>
   </template>
-  <script src="cups_printers.js"></script>
-</dom-module>
+</template>
+
+<settings-cups-add-printer-dialog id="addPrinterDialog"
+    on-close="onAddPrinterDialogClose_">
+</settings-cups-add-printer-dialog>
+
+<template is="dom-if" if="[[showCupsEditPrinterDialog_]]" restamp>
+  <settings-cups-edit-printer-dialog id="editPrinterDialog"
+      active-printer="{{activePrinter}}"
+      on-close="onEditPrinterDialogClose_">
+  </settings-cups-edit-printer-dialog>
+</template>
+
+<cr-toast id="errorToast" duration="3000">
+  <div class="error-message" id="addPrinterDoneMessage">
+    [[addPrinterResultText_]]
+  </div>
+</cr-toast>
+
+<cr-toast id="printServerErrorToast" duration="3000">
+  <div class="error-message" id="addPrintServerDoneMessage">
+    [[addPrintServerResultText_]]
+  </div>
+</cr-toast>

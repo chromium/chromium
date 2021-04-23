@@ -7,7 +7,22 @@
  * 'add-printer-manufacturer-model-dialog' is a dialog in which the user can
  *   manually select the manufacture and model of the new printer.
  */
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_input/cr_input.m.js';
+import '../localized_link/localized_link.m.js';
+import './cups_add_printer_dialog.js';
+import './cups_printer_dialog_error.js';
+import './cups_printer_shared_css.js';
+
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+
+import {getBaseName, getErrorText, getPrintServerErrorText, isNameAndAddressValid, isNetworkProtocol, isPPDInfoValid, matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
+import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, ManufacturersInfo, ModelsInfo, PrinterMakeModel, PrinterPpdMakeModel, PrinterSetupResult, PrintServerResult} from './cups_printers_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'add-printer-manufacturer-model-dialog',
 
   properties: {
@@ -84,7 +99,7 @@ Polymer({
 
   /** @override */
   attached() {
-    settings.CupsPrintersBrowserProxyImpl.getInstance()
+    CupsPrintersBrowserProxyImpl.getInstance()
         .getCupsPrinterManufacturersList()
         .then(this.manufacturerListChanged_.bind(this));
   },
@@ -112,7 +127,7 @@ Polymer({
    */
   onPrinterAddedFailed_(result) {
     this.addPrinterInProgress_ = false;
-    this.errorText_ = settings.printing.getErrorText(
+    this.errorText_ = getErrorText(
         /** @type {PrinterSetupResult} */ (result));
   },
 
@@ -144,7 +159,7 @@ Polymer({
     this.set('activePrinter.ppdModel', '');
     this.modelList = [];
     if (manufacturer && manufacturer.length !== 0) {
-      settings.CupsPrintersBrowserProxyImpl.getInstance()
+      CupsPrintersBrowserProxyImpl.getInstance()
           .getCupsPrinterModelsList(manufacturer)
           .then(this.modelListChanged_.bind(this));
     }
@@ -163,7 +178,7 @@ Polymer({
       return;
     }
 
-    settings.CupsPrintersBrowserProxyImpl.getInstance()
+    CupsPrintersBrowserProxyImpl.getInstance()
         .getEulaUrl(
             this.activePrinter.ppdManufacturer, this.activePrinter.ppdModel)
         .then(this.onGetEulaUrlCompleted_.bind(this));
@@ -187,7 +202,7 @@ Polymer({
     }
     this.manufacturerList = manufacturersInfo.manufacturers;
     if (this.activePrinter.ppdManufacturer.length !== 0) {
-      settings.CupsPrintersBrowserProxyImpl.getInstance()
+      CupsPrintersBrowserProxyImpl.getInstance()
           .getCupsPrinterModelsList(this.activePrinter.ppdManufacturer)
           .then(this.modelListChanged_.bind(this));
     }
@@ -205,9 +220,8 @@ Polymer({
 
   /** @private */
   onBrowseFile_() {
-    settings.CupsPrintersBrowserProxyImpl.getInstance()
-        .getCupsPrinterPPDPath()
-        .then(this.printerPPDPathChanged_.bind(this));
+    CupsPrintersBrowserProxyImpl.getInstance().getCupsPrinterPPDPath().then(
+        this.printerPPDPathChanged_.bind(this));
   },
 
   /**
@@ -217,20 +231,20 @@ Polymer({
   printerPPDPathChanged_(path) {
     this.set('activePrinter.printerPPDPath', path);
     this.invalidPPD_ = !path;
-    this.newUserPPD_ = settings.printing.getBaseName(path);
+    this.newUserPPD_ = getBaseName(path);
   },
 
   /** @private */
   onCancelTap_() {
     this.close();
-    settings.CupsPrintersBrowserProxyImpl.getInstance().cancelPrinterSetUp(
+    CupsPrintersBrowserProxyImpl.getInstance().cancelPrinterSetUp(
         this.activePrinter);
   },
 
   /** @private */
   addPrinter_() {
     this.addPrinterInProgress_ = true;
-    settings.CupsPrintersBrowserProxyImpl.getInstance()
+    CupsPrintersBrowserProxyImpl.getInstance()
         .addCupsPrinter(this.activePrinter)
         .then(
             this.onPrinterAddedSucceeded_.bind(this),
@@ -248,8 +262,7 @@ Polymer({
       ppdManufacturer, ppdModel, printerPPDPath, addPrinterInProgress,
       isManufacturerInvalid, isModelInvalid) {
     return !addPrinterInProgress &&
-        settings.printing.isPPDInfoValid(
-            ppdManufacturer, ppdModel, printerPPDPath) &&
+        isPPDInfoValid(ppdManufacturer, ppdModel, printerPPDPath) &&
         !isManufacturerInvalid && !isModelInvalid;
   },
 });

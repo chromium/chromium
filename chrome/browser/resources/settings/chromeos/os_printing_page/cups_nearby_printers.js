@@ -6,7 +6,24 @@
  * @fileoverview 'settings-cups-nearby-printers' is a list container for
  * Nearby Printers.
  */
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import './cups_printers_entry.js';
+import '../../settings_shared_css.js';
+
+import {ListPropertyUpdateBehavior} from '//resources/js/list_property_update_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+
+import {getBaseName, getErrorText, getPrintServerErrorText, isNameAndAddressValid, isNetworkProtocol, isPPDInfoValid, matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
+import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
+import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, ManufacturersInfo, ModelsInfo, PrinterMakeModel, PrinterPpdMakeModel, PrinterSetupResult, PrintServerResult} from './cups_printers_browser_proxy.js';
+import {CupsPrintersEntryListBehavior} from './cups_printers_entry_list_behavior.js';
+import {CupsPrintersEntryManager} from './cups_printers_entry_manager.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-cups-nearby-printers',
 
   // ListPropertyUpdateBehavior is used in CupsPrintersEntryListBehavior.
@@ -100,11 +117,10 @@ Polymer({
     // |filteredPrinters_| is just |nearbyPrinters|.
     const updatedPrinters = this.searchTerm ?
         this.nearbyPrinters.filter(
-            item => settings.printing.matchesSearchTerm(
-                item.printerInfo, this.searchTerm)) :
+            item => matchesSearchTerm(item.printerInfo, this.searchTerm)) :
         this.nearbyPrinters.slice();
 
-    updatedPrinters.sort(settings.printing.sortPrinters);
+    updatedPrinters.sort(sortPrinters);
 
     this.updateList(
         'filteredPrinters_', printer => printer.printerInfo.printerId,
@@ -120,13 +136,13 @@ Polymer({
     this.setActivePrinter_(item);
     this.savingPrinter_ = true;
 
-    settings.CupsPrintersBrowserProxyImpl.getInstance()
+    CupsPrintersBrowserProxyImpl.getInstance()
         .addDiscoveredPrinter(item.printerInfo.printerId)
         .then(
             this.onAddNearbyPrintersSucceeded_.bind(
                 this, item.printerInfo.printerName),
             this.onAddNearbyPrinterFailed_.bind(this));
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /**
@@ -137,7 +153,7 @@ Polymer({
     const item = e.detail.item;
     this.setActivePrinter_(item);
     this.savingPrinter_ = true;
-    settings.CupsPrintersBrowserProxyImpl.getInstance()
+    CupsPrintersBrowserProxyImpl.getInstance()
         .addCupsPrinter(item.printerInfo)
         .then(
             this.onAddNearbyPrintersSucceeded_.bind(
@@ -159,13 +175,13 @@ Polymer({
     // rejected js promises.
     const queryDiscoveredPrinterFailed = /** @type {!Function}) */ (
         this.onQueryDiscoveredPrinterFailed_.bind(this));
-    settings.CupsPrintersBrowserProxyImpl.getInstance()
+    CupsPrintersBrowserProxyImpl.getInstance()
         .addDiscoveredPrinter(item.printerInfo.printerId)
         .then(
             this.onQueryDiscoveredPrinterSucceeded_.bind(
                 this, item.printerInfo.printerName),
             queryDiscoveredPrinterFailed);
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /**

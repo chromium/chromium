@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {PrinterListEntry} from './cups_printer_types.m.js';
-// #import {CupsPrintersEntryManager} from './cups_printers_entry_manager.m.js';
-// #import {findDifference} from './cups_printer_dialog_util.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {findDifference} from './cups_printer_dialog_util.js';
+import {PrinterListEntry} from './cups_printer_types.js';
+import {CupsPrintersEntryManager} from './cups_printers_entry_manager.js';
 
 /**
  * @fileoverview Polymer behavior for observing CupsPrintersEntryManager events.
@@ -14,9 +15,9 @@
  */
 
 /** @polymerBehavior */
-/* #export */ const CupsPrintersEntryListBehavior = {
+export const CupsPrintersEntryListBehavior = {
   properties: {
-    /** @private {!settings.printing.CupsPrintersEntryManager} */
+    /** @private {!CupsPrintersEntryManager} */
     entryManager_: Object,
 
     /** @type {!Array<!PrinterListEntry>} */
@@ -34,8 +35,7 @@
 
   /** @override */
   created() {
-    this.entryManager_ =
-        settings.printing.CupsPrintersEntryManager.getInstance();
+    this.entryManager_ = CupsPrintersEntryManager.getInstance();
   },
 
   /** @override */
@@ -89,7 +89,7 @@
     // |printerList| consists of automatic and discovered printers that have
     // not been saved and are available. Add all unsaved print server printers
     // to |printerList|.
-    this.entryManager_.printServerPrinters = settings.printing.findDifference(
+    this.entryManager_.printServerPrinters = findDifference(
         this.entryManager_.printServerPrinters, this.savedPrinters);
     printerList = printerList.concat(this.entryManager_.printServerPrinters);
 

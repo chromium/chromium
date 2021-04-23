@@ -9,13 +9,48 @@
  * unix printing system) and the many open source drivers built for CUPS.
  */
 // TODO(xdai): Rename it to 'settings-cups-printers-page'.
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_toast/cr_toast.m.js';
+import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
+import '//resources/js/action_link.js';
+import '//resources/cr_elements/action_link_css.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './cups_settings_add_printer_dialog.js';
+import './cups_edit_printer_dialog.js';
+import './cups_printer_shared_css.js';
+import './cups_saved_printers.js';
+import './cups_nearby_printers.js';
+import '../localized_link/localized_link.m.js';
+import '../../icons.js';
+
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {NetworkListenerBehavior} from '//resources/cr_components/chromeos/network/network_listener_behavior.m.js';
+import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from '//resources/js/cr.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+
+import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
+import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, ManufacturersInfo, ModelsInfo, PrinterMakeModel, PrinterPpdMakeModel, PrinterSetupResult, PrintServerResult} from './cups_printers_browser_proxy.js';
+import {CupsPrintersEntryManager} from './cups_printers_entry_manager.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-cups-printers',
 
   behaviors: [
     DeepLinkingBehavior,
     NetworkListenerBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -117,15 +152,14 @@ Polymer({
   /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
   networkConfig_: null,
 
-  /** @private {settings.printing.CupsPrintersEntryManager} */
+  /** @private {CupsPrintersEntryManager} */
   entryManager_: null,
 
   /** @override */
   created() {
-    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
-                              .getMojoServiceRemote();
-    this.entryManager_ =
-        settings.printing.CupsPrintersEntryManager.getInstance();
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
+    this.entryManager_ = CupsPrintersEntryManager.getInstance();
   },
 
   /** @override */
@@ -158,7 +192,7 @@ Polymer({
       return true;
     }
 
-    Polymer.RenderStatus.afterNextRender(this, () => {
+    afterNextRender(this, () => {
       const savedPrinters = this.$$('#savedPrinters');
       const printerEntry =
           savedPrinters && savedPrinters.$$('settings-cups-printers-entry');
@@ -174,14 +208,14 @@ Polymer({
   },
 
   /**
-   * settings.RouteObserverBehavior
-   * @param {!settings.Route} route
+   * RouteObserverBehavior
+   * @param {!Route} route
    * @protected
    */
   currentRouteChanged(route) {
-    if (route !== settings.routes.CUPS_PRINTERS) {
+    if (route !== routes.CUPS_PRINTERS) {
       if (this.onPrintersChangedListener_) {
-        cr.removeWebUIListener(
+        removeWebUIListener(
             /** @type {WebUIListener} */ (this.onPrintersChangedListener_));
         this.onPrintersChangedListener_ = null;
       }
@@ -190,7 +224,7 @@ Polymer({
     }
 
     this.entryManager_.addWebUIListeners();
-    this.onPrintersChangedListener_ = cr.addWebUIListener(
+    this.onPrintersChangedListener_ = addWebUIListener(
         'on-printers-changed', this.onPrintersChanged_.bind(this));
     this.updateCupsPrintersList_();
     this.attemptDeepLink();
@@ -275,9 +309,8 @@ Polymer({
 
   /** @private */
   updateCupsPrintersList_() {
-    settings.CupsPrintersBrowserProxyImpl.getInstance()
-        .getCupsPrintersList()
-        .then(this.onPrintersChanged_.bind(this));
+    CupsPrintersBrowserProxyImpl.getInstance().getCupsPrintersList().then(
+        this.onPrintersChanged_.bind(this));
   },
 
   /**
@@ -301,7 +334,7 @@ Polymer({
 
   /** @private */
   onAddPrinterDialogClose_() {
-    cr.ui.focusWithoutInk(assert(this.$$('#addManualPrinterIcon')));
+    focusWithoutInk(assert(this.$$('#addManualPrinterIcon')));
   },
 
   /** @private */

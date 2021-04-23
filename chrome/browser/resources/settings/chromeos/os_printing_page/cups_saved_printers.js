@@ -2,7 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import './cups_printers_entry.js';
+import '../../settings_shared_css.js';
+
+import {ListPropertyUpdateBehavior} from '//resources/js/list_property_update_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+
+import {getBaseName, getErrorText, getPrintServerErrorText, isNameAndAddressValid, isNetworkProtocol, isPPDInfoValid, matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
+import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
+import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, ManufacturersInfo, ModelsInfo, PrinterMakeModel, PrinterPpdMakeModel, PrinterSetupResult, PrintServerResult} from './cups_printers_browser_proxy.js';
+import {CupsPrintersEntryListBehavior} from './cups_printers_entry_list_behavior.js';
+
 
 // If the Show more button is visible, the minimum number of printers we show
 // is 3.
@@ -25,6 +42,7 @@ function moveEntryInPrinters(printerArr, fromIndex, toIndex) {
  * Printers.
  */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-cups-saved-printers',
 
   // ListPropertyUpdateBehavior is used in CupsPrintersEntryListBehavior.
@@ -118,7 +136,7 @@ Polymer({
       ['onSearchOrPrintersChanged_(savedPrinters.*, searchTerm,' +
        'hasShowMoreBeenTapped_, newPrinters_.*)'],
 
-  /** @private {settings.CupsPrintersBrowserProxy} */
+  /** @private {CupsPrintersBrowserProxy} */
   browserProxy_: null,
 
   /**
@@ -130,7 +148,7 @@ Polymer({
 
   /** @override */
   created() {
-    this.browserProxy_ = settings.CupsPrintersBrowserProxyImpl.getInstance();
+    this.browserProxy_ = CupsPrintersBrowserProxyImpl.getInstance();
   },
 
   /**
@@ -177,7 +195,7 @@ Polymer({
   onRemoveTap_() {
     this.browserProxy_.removeCupsPrinter(
         this.activePrinter.printerId, this.activePrinter.printerName);
-    settings.recordSettingChange();
+    recordSettingChange();
     this.activePrinter = null;
     this.activeListEntryIndex_ = -1;
     this.closeActionMenu_();
@@ -200,11 +218,10 @@ Polymer({
     // |filteredPrinters_| is just |savedPrinters|.
     const updatedPrinters = this.searchTerm ?
         this.savedPrinters.filter(
-            item => settings.printing.matchesSearchTerm(
-                item.printerInfo, this.searchTerm)) :
+            item => matchesSearchTerm(item.printerInfo, this.searchTerm)) :
         this.savedPrinters.slice();
 
-    updatedPrinters.sort(settings.printing.sortPrinters);
+    updatedPrinters.sort(sortPrinters);
 
     this.moveNewlyAddedPrinters_(updatedPrinters, 0 /* toIndex */);
 
@@ -319,4 +336,3 @@ Polymer({
     return this.filteredPrinters_.length;
   },
 });
-})();

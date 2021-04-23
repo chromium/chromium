@@ -1,110 +1,101 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<template>
+  <style include="settings-shared md-select">
+    [slot='dialog-body'] .settings-box {
+      border-top: none;
+      margin-bottom: 10px;
+    }
 
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
-<link rel="import" href="../../settings_shared_css.html">
+    [slot='dialog-body'] .settings-box.two-line {
+      align-items: flex-start;
+    }
 
-<!-- Common styles for CUPS printer settings. -->
-<dom-module id="cups-printer-shared">
-  <template>
-    <style include="settings-shared md-select">
-      [slot='dialog-body'] .settings-box {
-        border-top: none;
-        margin-bottom: 10px;
-      }
+    [slot='dialog-body'] .settings-box cr-input {
+      width: 100%;
+    }
 
-      [slot='dialog-body'] .settings-box.two-line {
-        align-items: flex-start;
-      }
+    /* The only input that has error-message are at the end, so we don't
+        need to allocate space for error-message under each input
+        for consistency. */
+    [slot='dialog-body'] .settings-box cr-input:not([error-message]) {
+      --cr-input-error-display: none;
+    }
 
-      [slot='dialog-body'] .settings-box cr-input {
-        width: 100%;
-      }
+    [slot='dialog-body'] .settings-box .md-select {
+      width: 100%;
+    }
 
-      /* The only input that has error-message are at the end, so we don't
-         need to allocate space for error-message under each input
-         for consistency. */
-      [slot='dialog-body'] .settings-box cr-input:not([error-message]) {
-        --cr-input-error-display: none;
-      }
+    [slot='dialog-body'] .settings-box .printer-name-input {
+      width: 100%;
+    }
 
-      [slot='dialog-body'] .settings-box .md-select {
-        width: 100%;
-      }
+    [slot='dialog-body'] .settings-box .browse-file-input {
+      flex: 1;
+      width: auto;
+    }
 
-      [slot='dialog-body'] .settings-box .printer-name-input {
-        width: 100%;
-      }
+    [slot='dialog-body'] .settings-box .browse-button {
+      margin-bottom: 8px;
+      margin-inline-start: 12px;
+    }
 
-      [slot='dialog-body'] .settings-box .browse-file-input {
-        flex: 1;
-        width: auto;
-      }
+    [slot='dialog-body'] .last {
+      margin-top: 20px;
+    }
 
-      [slot='dialog-body'] .settings-box .browse-button {
-        margin-bottom: 8px;
-        margin-inline-start: 12px;
-      }
+    [slot='dialog-body'] .center {
+      display: flex;
+      justify-content: center;
+      position: absolute;
+      top: 50%;
+      width: 100%;
+    }
 
-      [slot='dialog-body'] .last {
-        margin-top: 20px;
-      }
+    [slot='dialog-buttons'] {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
 
-      [slot='dialog-body'] .center {
-        display: flex;
-        justify-content: center;
-        position: absolute;
-        top: 50%;
-        width: 100%;
-      }
+    [slot='dialog-buttons'] .eula {
+      padding-top: 6px;
+    }
 
-      [slot='dialog-buttons'] {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-      }
+    [slot='dialog-body'] {
+      height: 350px;
+    }
 
-      [slot='dialog-buttons'] .eula {
-        padding-top: 6px;
-      }
+    .flex-auto {
+      flex: 1 1 auto;
+    }
 
-      [slot='dialog-body'] {
-        height: 350px;
-      }
+    .list-item {
+      background: none;
+      border: none;
+      box-sizing: border-box;
+      color: var(--google-grey-800);
+      cursor: pointer;
+      font: inherit;
+      min-height: 32px;
+      padding: 0 24px;
+      text-align: start;
+      width: 100%;
+    }
 
-      .flex-auto {
-        flex: 1 1 auto;
-      }
+    .list-item:focus {
+      background-color: var(--google-grey-300);
+      outline: none;
+    }
 
-      .list-item {
-        background: none;
-        border: none;
-        box-sizing: border-box;
-        color: var(--google-grey-800);
-        cursor: pointer;
-        font: inherit;
-        min-height: 32px;
-        padding: 0 24px;
-        text-align: start;
-        width: 100%;
-      }
+    #search input[type='search'] {
+      font: inherit;
+    }
 
-      .list-item:focus {
-        background-color: var(--google-grey-300);
-        outline: none;
-      }
+    #ppdLabel {
+      padding-inline-start: 20px;
+    }
 
-      #search input[type='search'] {
-        font: inherit;
-      }
-
-      #ppdLabel {
-        padding-inline-start: 20px;
-      }
-
-      #no-search-results {
-        text-align: center;
-      }
-    </style>
-  </template>
-</dom-module>
+    #no-search-results {
+      text-align: center;
+    }
+  </style>
+</template>
