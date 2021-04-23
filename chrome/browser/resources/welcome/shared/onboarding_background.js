@@ -7,17 +7,28 @@
  * animated and responsive background for any page that contains it.
  */
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'onboarding-background',
+/** @polymer */
+export class OnboardingBackgroundElement extends PolymerElement {
+  static get is() {
+    return 'onboarding-background';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /** @private @const {!Array<!Animation>} */
-  animations_: [],
+  constructor() {
+    super();
 
-  attached() {
+    /** @private @const {!Array<!Animation>} */
+    this.animations_ = [];
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
     [['blue-line', 60],
      ['green-line', 68],
      ['red-line', 45],
@@ -25,9 +36,10 @@ Polymer({
      ['yellow-line', 49],
     ].forEach(([id, width]) => {
       this.createLineAnimation_(
-          /** @type{!HTMLElement} */ (this.$$(`#${id}`)), width);
+          /** @type{!HTMLElement} */ (this.shadowRoot.querySelector(`#${id}`)),
+          width);
     });
-  },
+  }
 
   /**
    * @param {!HTMLElement} lineContainer
@@ -95,7 +107,7 @@ Polymer({
     lineTransformAnimation.pause();
     this.animations_.push(lineTransformAnimation);
     this.loopAnimation_(lineTransformAnimation);
-  },
+  }
 
   /**
    * @param {!Animation} animation
@@ -109,13 +121,15 @@ Polymer({
     animation.onfinish = () => {
       animation.play();
     };
-  },
+  }
 
   pause() {
     this.animations_.forEach(animation => animation.pause());
-  },
+  }
 
   play() {
     this.animations_.forEach(animation => animation.play());
-  },
-});
+  }
+}
+customElements.define(
+    OnboardingBackgroundElement.is, OnboardingBackgroundElement);

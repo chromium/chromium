@@ -205,3 +205,25 @@ export const NavigationBehavior = {
 
   onRouteUnload() {},
 };
+
+/** @interface */
+export class NavigationBehaviorInterface {
+  constructor() {
+    /** @type {string} */
+    this.subtitle;
+  }
+
+  notifyRouteEnter() {}
+  updateFocusForA11y() {}
+  updateTitle() {}
+
+  /**
+   * @param {!Routes} route
+   * @param {number} step
+   */
+  onRouteChange(route, step) {}
+
+  onRouteEnter() {}
+  onRouteExit() {}
+  onRouteUnload() {}
+}

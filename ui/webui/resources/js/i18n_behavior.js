@@ -132,4 +132,54 @@
   },
 };
 
+/** @interface */
+/* #export */ class I18nBehaviorInterface {
+  constructor() {
+    // <if expr="chromeos">
+    /** @type {string} */
+    this.locale;
+    // </if>
+  }
+
+  // <if expr="chromeos">
+  i18nUpdateLocale() {}
+  // </if>
+
+  /**
+   * @param {string} id
+   * @param {...string|number} var_args
+   * @return {string}
+   */
+  i18n(id, var_args) {}
+
+  /**
+   * @param {string} id
+   * @param {SanitizeInnerHtmlOpts=} opts
+   * @return {string}
+   */
+  i18nAdvanced(id, opts) {}
+
+  /**
+   * @param {string} locale
+   * @param {string} id
+   * @param {...string} var_args
+   * @return {string}
+   */
+  i18nDynamic(locale, id, var_args) {}
+
+  /**
+   * @param {string} locale
+   * @param {string} id
+   * @param {...string} var_args
+   * @return {string}
+   */
+  i18nRecursive(locale, id, var_args) {}
+
+  /**
+   * @param {string} id
+   * @return {boolean}
+   */
+  i18nExists(id) {}
+}
+
 /* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

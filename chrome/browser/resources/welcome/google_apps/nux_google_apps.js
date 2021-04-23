@@ -13,13 +13,13 @@ import '../shared/chooser_shared_css.js';
 import '../shared/step_indicator.js';
 import '../strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {navigateTo, navigateToNextStep, NavigationBehavior, Routes} from '../navigation_behavior.js';
+import {navigateTo, navigateToNextStep, NavigationBehavior, NavigationBehaviorInterface, Routes} from '../navigation_behavior.js';
 import {BookmarkBarManager, BookmarkProxy, BookmarkProxyImpl} from '../shared/bookmark_proxy.js';
 import {ModuleMetricsManager} from '../shared/module_metrics_proxy.js';
 import {BookmarkListItem, stepIndicatorModel} from '../shared/nux_types.js';
@@ -49,72 +49,91 @@ let AppItemModel;
 
 const KEYBOARD_FOCUSED = 'keyboard-focused';
 
-Polymer({
-  is: 'nux-google-apps',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {NavigationBehaviorInterface}
+ */
+const NuxGoogleAppsElementBase =
+    mixinBehaviors([I18nBehavior, NavigationBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
+  static get is() {
+    return 'nux-google-apps';
+  }
 
-  behaviors: [NavigationBehavior, I18nBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {stepIndicatorModel} */
-    indicatorModel: Object,
+  static get properties() {
+    return {
+      /** @type {stepIndicatorModel} */
+      indicatorModel: Object,
 
-    /**
-     * @type {!Array<!AppItem>}
-     * @private
-     */
-    appList_: Array,
+      /** @private {!Array<!AppItem>} */
+      appList_: Array,
 
-    hasAppsSelected_: {
-      type: Boolean,
-      notify: true,
-      value: true,
-    },
+      /** @private */
+      hasAppsSelected_: {
+        type: Boolean,
+        notify: true,
+        value: true,
+      },
 
-    subtitle: {
-      type: String,
-      value: loadTimeData.getString('googleAppsDescription'),
-    },
-  },
+      subtitle: {
+        type: String,
+        value: loadTimeData.getString('googleAppsDescription'),
+      },
+    };
+  }
 
-  /** @private {GoogleAppProxy} */
-  appProxy_: null,
+  constructor() {
+    super();
 
-  /** @private {?ModuleMetricsManager} */
-  metricsManager_: null,
+    /** @private {GoogleAppProxy} */
+    this.appProxy_ = null;
 
-  /** @private {boolean} */
-  finalized_: false,
+    /** @private {?ModuleMetricsManager} */
+    this.metricsManager_ = null;
 
-  /** @private {BookmarkProxy} */
-  bookmarkProxy_: null,
+    /** @private {boolean} */
+    this.finalized_ = false;
 
-  /** @private {BookmarkBarManager} */
-  bookmarkBarManager_: null,
+    /** @private {BookmarkProxy} */
+    this.bookmarkProxy_ = null;
 
-  /** @private {boolean} */
-  wasBookmarkBarShownOnInit_: false,
+    /** @private {BookmarkBarManager} */
+    this.bookmarkBarManager_ = null;
+
+    /** @private {boolean} */
+    this.wasBookmarkBarShownOnInit_ = false;
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.appProxy_ = GoogleAppProxyImpl.getInstance();
     this.metricsManager_ = new ModuleMetricsManager(
         GoogleAppsMetricsProxyImpl.getInstance());
     this.bookmarkProxy_ = BookmarkProxyImpl.getInstance();
     this.bookmarkBarManager_ = BookmarkBarManager.getInstance();
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
     afterNextRender(this, () => IronA11yAnnouncer.requestAvailability());
-  },
+  }
 
   onRouteEnter() {
     this.finalized_ = false;
     this.metricsManager_.recordPageInitialized();
     this.populateAllBookmarks_();
-  },
+  }
 
   onRouteExit() {
     if (this.finalized_) {
@@ -122,7 +141,7 @@ Polymer({
     }
     this.cleanUp_();
     this.metricsManager_.recordBrowserBackOrForward();
-  },
+  }
 
   onRouteUnload() {
     if (this.finalized_) {
@@ -130,7 +149,7 @@ Polymer({
     }
     this.cleanUp_();
     this.metricsManager_.recordNavigatedAway();
-  },
+  }
 
   /**
    * @param {EventTarget} element
@@ -160,7 +179,16 @@ Polymer({
     } else {
       oldFocus.classList.add(KEYBOARD_FOCUSED);
     }
-  },
+  }
+
+  /**
+   * @param {string} text
+   * @private
+   */
+  announceA11y_(text) {
+    this.dispatchEvent(new CustomEvent(
+        'iron-announce', {bubbles: true, composed: true, detail: {text}}));
+  }
 
   /**
    * Called when bookmarks should be removed for all selected apps.
@@ -186,9 +214,10 @@ Polymer({
     // Only update and announce if we removed bookmarks.
     if (removedBookmarks) {
       this.bookmarkBarManager_.setShown(this.wasBookmarkBarShownOnInit_);
-      this.fire('iron-announce', {text: this.i18n('bookmarksRemoved')});
+      this.announceA11y_(this.i18n('bookmarksRemoved'));
     }
-  },
+  }
+
 
   /**
    * Handle toggling the apps selected.
@@ -208,8 +237,8 @@ Polymer({
     // Announcements should NOT be in |updateBookmark_| because there should be
     // a different utterance when all app bookmarks are added/removed.
     const i18nKey = item.selected ? 'bookmarkAdded' : 'bookmarkRemoved';
-    this.fire('iron-announce', {text: this.i18n(i18nKey)});
-  },
+    this.announceA11y_(this.i18n(i18nKey));
+  }
 
   /**
    * @param {!Event} e
@@ -223,7 +252,7 @@ Polymer({
     } else {
       e.currentTarget.classList.add(KEYBOARD_FOCUSED);
     }
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -231,7 +260,7 @@ Polymer({
    */
   onAppPointerDown_(e) {
     e.currentTarget.classList.remove(KEYBOARD_FOCUSED);
-  },
+  }
 
   /** @private */
   onGetStartedClicked_() {
@@ -243,14 +272,14 @@ Polymer({
     });
     this.metricsManager_.recordGetStarted();
     navigateToNextStep();
-  },
+  }
 
   /** @private */
   onNoThanksClicked_() {
     this.cleanUp_();
     this.metricsManager_.recordNoThanks();
     navigateToNextStep();
-  },
+  }
 
   /**
    * Called when bookmarks should be created for all selected apps.
@@ -270,10 +299,10 @@ Polymer({
           this.updateBookmark_(app);
         });
         this.updateHasAppsSelected_();
-        this.fire('iron-announce', {text: this.i18n('bookmarksAdded')});
+        this.announceA11y_(this.i18n('bookmarksAdded'));
       });
     }
-  },
+  }
 
   /**
    * @param {!AppItem} item
@@ -297,7 +326,7 @@ Polymer({
       this.bookmarkProxy_.removeBookmark(item.bookmarkId);
       item.bookmarkId = null;
     }
-  },
+  }
 
   /**
    * Updates the value of hasAppsSelected_.
@@ -309,7 +338,7 @@ Polymer({
     if (!this.hasAppsSelected_) {
       this.bookmarkBarManager_.setShown(this.wasBookmarkBarShownOnInit_);
     }
-  },
+  }
 
   /**
    * Converts a boolean to a string because aria-pressed needs a string value.
@@ -320,4 +349,5 @@ Polymer({
   getAriaPressed_(value) {
     return value ? 'true' : 'false';
   }
-});
+}
+customElements.define(NuxGoogleAppsElement.is, NuxGoogleAppsElement);

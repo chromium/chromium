@@ -14,9 +14,9 @@ import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {navigateTo, navigateToNextStep, NavigationBehavior, Routes} from './navigation_behavior.js';
+import {navigateTo, navigateToNextStep, NavigationBehavior, NavigationBehaviorInterface, Routes} from './navigation_behavior.js';
 import {NuxSetAsDefaultProxyImpl} from './set_as_default/nux_set_as_default_proxy.js';
 import {BookmarkBarManager} from './shared/bookmark_proxy.js';
 import {WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
@@ -47,43 +47,61 @@ const MODULES_WHITELIST = new Set([
 const MODULES_NEEDING_INDICATOR =
     new Set(['nux-google-apps', 'nux-ntp-background', 'nux-set-as-default']);
 
-Polymer({
-  is: 'welcome-app',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {NavigationBehaviorInterface}
+ */
+const WelcomeAppElementBase =
+    mixinBehaviors([NavigationBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class WelcomeAppElement extends WelcomeAppElementBase {
+  static get is() {
+    return 'welcome-app';
+  }
 
-  behaviors: [NavigationBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /** @private {?Routes} */
-  currentRoute_: null,
+  static get properties() {
+    return {
+      /** @private */
+      modulesInitialized_: {
+        type: Boolean,
+        // Default to false so view-manager is hidden until views are
+        // initialized.
+        value: false,
+      },
+    };
+  }
 
-  /** @private {NuxOnboardingModules} */
-  modules_: {
-    'new-user': loadTimeData.getString('newUserModules').split(','),
-    'returning-user': loadTimeData.getString('returningUserModules').split(','),
-  },
+  constructor() {
+    super();
 
-  properties: {
-    /** @private */
-    modulesInitialized_: {
-      type: Boolean,
-      // Default to false so view-manager is hidden until views are initialized.
-      value: false,
-    },
-  },
+    /** @private {?Routes} */
+    this.currentRoute_ = null;
 
-  hostAttributes: {
-    role: 'main',
-  },
+    /** @private {NuxOnboardingModules} */
+    this.modules_ = {
+      'new-user': loadTimeData.getString('newUserModules').split(','),
+      'returning-user':
+          loadTimeData.getString('returningUserModules').split(','),
+    };
+  }
 
-  listeners: {
-    'default-browser-change': 'onDefaultBrowserChange_',
-  },
+  ready() {
+    super.ready();
+    this.setAttribute('role', 'main');
+    this.addEventListener(
+        'default-browser-change', () => this.onDefaultBrowserChange_());
+  }
 
   /** @private */
   onDefaultBrowserChange_() {
-    this.$$('cr-toast').show();
-  },
+    this.shadowRoot.querySelector('cr-toast').show();
+  }
 
   /**
    * @param {Routes} route
@@ -94,7 +112,7 @@ Polymer({
     const setStep = () => {
       // If the specified step doesn't exist, that means there are no more
       // steps. In that case, replace this page with NTP.
-      if (!this.$$(`#step-${step}`)) {
+      if (!this.shadowRoot.querySelector(`#step-${step}`)) {
         WelcomeBrowserProxyImpl.getInstance().goToNewTabPage(
             /* replace */ true);
       } else {  // Otherwise, go to the chosen step of that route.
@@ -113,7 +131,7 @@ Polymer({
     }
 
     this.currentRoute_ = route;
-  },
+  }
 
   /** @param {Routes} route */
   initializeModules(route) {
@@ -185,5 +203,6 @@ Polymer({
             }
           });
         });
-  },
-});
+  }
+}
+customElements.define(WelcomeAppElement.is, WelcomeAppElement);

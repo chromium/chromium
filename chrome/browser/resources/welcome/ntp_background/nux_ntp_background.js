@@ -12,12 +12,12 @@ import '../shared/chooser_shared_css.js';
 import '../shared/step_indicator.js';
 import '../strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {navigateTo, navigateToNextStep, NavigationBehavior, Routes} from '../navigation_behavior.js';
+import {navigateTo, navigateToNextStep, NavigationBehavior, NavigationBehaviorInterface, Routes} from '../navigation_behavior.js';
 import {ModuleMetricsManager} from '../shared/module_metrics_proxy.js';
 import {stepIndicatorModel} from '../shared/nux_types.js';
 
@@ -26,53 +26,70 @@ import {NtpBackgroundData, NtpBackgroundProxy, NtpBackgroundProxyImpl} from './n
 
 const KEYBOARD_FOCUSED_CLASS = 'keyboard-focused';
 
-Polymer({
-  is: 'nux-ntp-background',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {NavigationBehaviorInterface}
+ */
+const NuxNtpBackgroundElementBase =
+    mixinBehaviors([I18nBehavior, NavigationBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
+  static get is() {
+    return 'nux-ntp-background';
+  }
 
-  behaviors: [
-    I18nBehavior,
-    NavigationBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {stepIndicatorModel} */
-    indicatorModel: Object,
+  static get properties() {
+    return {
+      /** @type {stepIndicatorModel} */
+      indicatorModel: Object,
 
-    /** @private {?NtpBackgroundData} */
-    selectedBackground_: {
-      observer: 'onSelectedBackgroundChange_',
-      type: Object,
-    },
+      /** @private {?NtpBackgroundData} */
+      selectedBackground_: {
+        observer: 'onSelectedBackgroundChange_',
+        type: Object,
+      },
 
-    subtitle: {
-      type: String,
-      value: loadTimeData.getString('ntpBackgroundDescription'),
-    },
-  },
+      subtitle: {
+        type: String,
+        value: loadTimeData.getString('ntpBackgroundDescription'),
+      },
+    };
+  }
 
-  /** @private {?Array<!NtpBackgroundData>} */
-  backgrounds_: null,
+  constructor() {
+    super();
 
-  /** @private */
-  finalized_: false,
+    /** @private {?Array<!NtpBackgroundData>} */
+    this.backgrounds_ = null;
 
-  /** @private {boolean} */
-  imageIsLoading_: false,
+    /** @private */
+    this.finalized_ = false;
 
-  /** @private {?ModuleMetricsManager} */
-  metricsManager_: null,
+    /** @private {boolean} */
+    this.imageIsLoading_ = false;
 
-  /** @private {?NtpBackgroundProxy} */
-  ntpBackgroundProxy_: null,
+    /** @private {?ModuleMetricsManager} */
+    this.metricsManager_ = null;
+
+    /** @private {?NtpBackgroundProxy} */
+    this.ntpBackgroundProxy_ = null;
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.ntpBackgroundProxy_ = NtpBackgroundProxyImpl.getInstance();
     this.metricsManager_ =
         new ModuleMetricsManager(NtpBackgroundMetricsProxyImpl.getInstance());
-  },
+  }
 
   onRouteEnter() {
     this.finalized_ = false;
@@ -94,7 +111,7 @@ Polymer({
       });
     }
     this.metricsManager_.recordPageInitialized();
-  },
+  }
 
   onRouteExit() {
     if (this.imageIsLoading_) {
@@ -105,7 +122,7 @@ Polymer({
       return;
     }
     this.metricsManager_.recordBrowserBackOrForward();
-  },
+  }
 
   onRouteUnload() {
     if (this.imageIsLoading_) {
@@ -116,7 +133,7 @@ Polymer({
       return;
     }
     this.metricsManager_.recordNavigatedAway();
-  },
+  }
 
   /**
    * @return {boolean}
@@ -124,7 +141,7 @@ Polymer({
    */
   hasValidSelectedBackground_() {
     return this.selectedBackground_.id > -1;
-  },
+  }
 
   /**
    * @param {!NtpBackgroundData} background
@@ -132,7 +149,7 @@ Polymer({
    */
   isSelectedBackground_(background) {
     return background === this.selectedBackground_;
-  },
+  }
 
   /** @private */
   onSelectedBackgroundChange_() {
@@ -160,7 +177,7 @@ Polymer({
     } else {
       this.$.backgroundPreview.classList.remove('active');
     }
-  },
+  }
 
   /** @private */
   onBackgroundPreviewTransitionEnd_() {
@@ -170,7 +187,16 @@ Polymer({
     if (!this.$.backgroundPreview.classList.contains('active')) {
       this.$.backgroundPreview.style.backgroundImage = '';
     }
-  },
+  }
+
+  /**
+   * @param {string} text
+   * @private
+   */
+  announceA11y_(text) {
+    this.dispatchEvent(new CustomEvent(
+        'iron-announce', {bubbles: true, composed: true, detail: {text}}));
+  }
 
   /**
    * @param {!{model: !{item: !NtpBackgroundData}}} e
@@ -179,11 +205,9 @@ Polymer({
   onBackgroundClick_(e) {
     this.selectedBackground_ = e.model.item;
     this.metricsManager_.recordClickedOption();
-    this.fire('iron-announce', {
-      text: this.i18n(
-          'ntpBackgroundPreviewUpdated', this.selectedBackground_.title)
-    });
-  },
+    this.announceA11y_(this.i18n(
+        'ntpBackgroundPreviewUpdated', this.selectedBackground_.title));
+  }
 
   /**
    * @param {!Event} e
@@ -197,7 +221,7 @@ Polymer({
     } else {
       this.changeFocus_(e.currentTarget, 0);
     }
-  },
+  }
 
   /**
    * @param {EventTarget} element
@@ -226,7 +250,7 @@ Polymer({
     } else {
       oldFocus.classList.add(KEYBOARD_FOCUSED_CLASS);
     }
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -234,7 +258,7 @@ Polymer({
    */
   onBackgroundPointerDown_(e) {
     e.currentTarget.classList.remove(KEYBOARD_FOCUSED_CLASS);
-  },
+  }
 
   /** @private */
   onNextClicked_() {
@@ -247,7 +271,7 @@ Polymer({
     }
     this.metricsManager_.recordGetStarted();
     navigateToNextStep();
-  },
+  }
 
   /** @private */
   onSkipClicked_() {
@@ -256,7 +280,8 @@ Polymer({
     navigateToNextStep();
 
     if (this.hasValidSelectedBackground_()) {
-      this.fire('iron-announce', {text: this.i18n('ntpBackgroundReset')});
+      this.announceA11y_(this.i18n('ntpBackgroundReset'));
     }
-  },
-});
+  }
+}
+customElements.define(NuxNtpBackgroundElement.is, NuxNtpBackgroundElement);

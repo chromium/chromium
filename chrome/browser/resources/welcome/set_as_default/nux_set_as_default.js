@@ -13,63 +13,80 @@ import '../shared/step_indicator.js';
 import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {navigateTo, navigateToNextStep, NavigationBehavior, Routes} from '../navigation_behavior.js';
+import {navigateTo, navigateToNextStep, NavigationBehavior, NavigationBehaviorInterface, Routes} from '../navigation_behavior.js';
 import {DefaultBrowserInfo, stepIndicatorModel} from '../shared/nux_types.js';
 
 import {NuxSetAsDefaultProxy, NuxSetAsDefaultProxyImpl} from './nux_set_as_default_proxy.js';
 
-Polymer({
-  is: 'nux-set-as-default',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ * @implements {NavigationBehaviorInterface}
+ */
+const NuxSetAsDefaultElementBase =
+    mixinBehaviors([WebUIListenerBehavior, NavigationBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
+  static get is() {
+    return 'nux-set-as-default';
+  }
 
-  behaviors: [
-    WebUIListenerBehavior,
-    NavigationBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {stepIndicatorModel} */
-    indicatorModel: Object,
+  static get properties() {
+    return {
+      /** @type {stepIndicatorModel} */
+      indicatorModel: Object,
 
-    // <if expr="is_win">
-    isWin10: {
-      type: Boolean,
-      value: loadTimeData.getBoolean('is_win10'),
-    },
-    // </if>
+      // <if expr="is_win">
+      isWin10: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('is_win10'),
+      },
+      // </if>
 
-    subtitle: {
-      type: String,
-      value: loadTimeData.getString('setDefaultHeader'),
-    },
-  },
+      subtitle: {
+        type: String,
+        value: loadTimeData.getString('setDefaultHeader'),
+      },
+    };
+  }
 
-  /** @private {NuxSetAsDefaultProxy} */
-  browserProxy_: null,
+  constructor() {
+    super();
 
-  /** @private {boolean} */
-  finalized_: false,
+    /** @private {NuxSetAsDefaultProxy} */
+    this.browserProxy_ = null;
 
-  /** @private {!Function} */
-  navigateToNextStep_: navigateToNextStep,
+    /** @private {boolean} */
+    this.finalized_ = false;
+
+    /** @private {!Function} */
+    this.navigateToNextStep_ = navigateToNextStep;
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.browserProxy_ = NuxSetAsDefaultProxyImpl.getInstance();
 
     this.addWebUIListener(
         'browser-default-state-changed',
         this.onDefaultBrowserChange_.bind(this));
-  },
+  }
 
   onRouteEnter() {
     this.finalized_ = false;
     this.browserProxy_.recordPageShown();
-  },
+  }
 
   onRouteExit() {
     if (this.finalized_) {
@@ -77,7 +94,7 @@ Polymer({
     }
     this.finalized_ = true;
     this.browserProxy_.recordNavigatedAwayThroughBrowserHistory();
-  },
+  }
 
   onRouteUnload() {
     if (this.finalized_) {
@@ -85,7 +102,7 @@ Polymer({
     }
     this.finalized_ = true;
     this.browserProxy_.recordNavigatedAway();
-  },
+  }
 
   /** @private */
   onDeclineClick_() {
@@ -95,7 +112,7 @@ Polymer({
 
     this.browserProxy_.recordSkip();
     this.finished_();
-  },
+  }
 
   /** @private */
   onSetDefaultClick_() {
@@ -105,7 +122,7 @@ Polymer({
 
     this.browserProxy_.recordBeginSetDefault();
     this.browserProxy_.setAsDefault();
-  },
+  }
 
   /**
    * Automatically navigate to the next onboarding step once default changed.
@@ -116,7 +133,8 @@ Polymer({
     if (status.isDefault) {
       this.browserProxy_.recordSuccessfullySetDefault();
       // Triggers toast in the containing welcome-app.
-      this.fire('default-browser-change');
+      this.dispatchEvent(new CustomEvent(
+          'default-browser-change', {bubbles: true, composed: true}));
       this.finished_();
       return;
     }
@@ -129,11 +147,12 @@ Polymer({
           this.onDefaultBrowserChange_.bind(this));
     }, 100);
     // </if>
-  },
+  }
 
   /** @private */
   finished_() {
     this.finalized_ = true;
     this.navigateToNextStep_();
-  },
-});
+  }
+}
+customElements.define(NuxSetAsDefaultElement.is, NuxSetAsDefaultElement);
