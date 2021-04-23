@@ -498,6 +498,13 @@ template("test") {
       test_exe = invoker.target_name
       runtime_deps_file = _runtime_deps_file
 
+      if (is_chromeos_lacros) {
+        # At build time, Lacros tests don't know whether they'll run on VM or
+        # HW, and instead, these flags are specified at runtime when invoking
+        # the generated runner script.
+        skip_generating_board_args = true
+      }
+
       if (tests_have_location_tags) {
         data = [ "//testing/location_tags.json" ]
       }
