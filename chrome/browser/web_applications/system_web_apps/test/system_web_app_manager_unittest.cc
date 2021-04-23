@@ -56,82 +56,29 @@ const char kCameraAppInternalName[] = "Camera";
 GURL AppUrl1() {
   return GURL(content::GetWebUIURL("system-app1"));
 }
-GURL AppIconUrl1() {
-  return GURL(content::GetWebUIURL("system-app1/app.ico"));
-}
 GURL AppUrl2() {
   return GURL(content::GetWebUIURL("system-app2"));
 }
-GURL AppIconUrl2() {
-  return GURL(content::GetWebUIURL("system-app2/app.ico"));
-}
-GURL AppUrl3() {
-  return GURL(content::GetWebUIURL("system-app3"));
-}
-GURL AppIconUrl3() {
-  return GURL(content::GetWebUIURL("system-app3/app.ico"));
-}
 
-std::unique_ptr<WebApplicationInfo> GetApp1WebApplicationInfo() {
+std::unique_ptr<WebApplicationInfo> GetWebApplicationInfo(const GURL& url) {
   std::unique_ptr<WebApplicationInfo> info =
       std::make_unique<WebApplicationInfo>();
-  info->start_url = AppUrl1();
-  info->scope = AppUrl1().GetWithoutFilename();
-  info->title = u"Foo Web App";
+  info->start_url = url;
+  info->scope = url.GetWithoutFilename();
+  info->title = u"Web App";
   return info;
 }
 
 WebApplicationInfoFactory GetApp1WebAppInfoFactory() {
   // "static" so that ExternalInstallOptions comparisons in tests work.
-  static auto factory = base::BindRepeating(&GetApp1WebApplicationInfo);
+  static auto factory = base::BindRepeating(&GetWebApplicationInfo, AppUrl1());
   return factory;
-}
-
-std::unique_ptr<WebApplicationInfo> GetApp2WebApplicationInfo() {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
-  info->start_url = AppUrl2();
-  info->scope = AppUrl2().GetWithoutFilename();
-  info->title = u"Bar Web App";
-  return info;
 }
 
 WebApplicationInfoFactory GetApp2WebAppInfoFactory() {
   // "static" so that ExternalInstallOptions comparisons in tests work.
-  static auto factory = base::BindRepeating(&GetApp2WebApplicationInfo);
+  static auto factory = base::BindRepeating(&GetWebApplicationInfo, AppUrl2());
   return factory;
-}
-
-std::unique_ptr<WebApplicationInfo> GetApp3WebApplicationInfo() {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
-  info->start_url = AppUrl3();
-  info->scope = AppUrl3().GetWithoutFilename();
-  info->title = u"Bar Web App";
-  return info;
-}
-
-WebApplicationInfoFactory GetApp3WebAppInfoFactory() {
-  // "static" so that ExternalInstallOptions comparisons in tests work.
-  static auto factory = base::BindRepeating(&GetApp3WebApplicationInfo);
-  return factory;
-}
-
-ExternalInstallOptions GetWindowedInstallOptions() {
-  ExternalInstallOptions options(AppUrl1(), DisplayMode::kStandalone,
-                                 ExternalInstallSource::kSystemInstalled);
-  options.add_to_applications_menu = true;
-  options.add_to_desktop = false;
-  options.add_to_quick_launch_bar = false;
-  options.add_to_search = true;
-  options.add_to_management = false;
-  options.is_disabled = false;
-  options.bypass_service_worker_check = true;
-  options.force_reinstall = true;
-  options.only_use_app_info_factory = true;
-  options.system_app_type = SystemAppType::SETTINGS;
-  options.app_info_factory = GetApp1WebAppInfoFactory();
-  return options;
 }
 
 struct SystemAppData {
@@ -360,9 +307,13 @@ TEST_F(SystemWebAppManagerTest, UninstallAppInstalledInPreviousSession) {
   // Simulate System Apps and a regular app that were installed in the
   // previous session.
   InitRegistrarWithSystemApps(
-      {{AppUrl1(), AppIconUrl1(), ExternalInstallSource::kSystemInstalled},
-       {AppUrl2(), AppIconUrl2(), ExternalInstallSource::kSystemInstalled},
-       {AppUrl3(), AppIconUrl3(), ExternalInstallSource::kInternalDefault}});
+      {{AppUrl1(), GURL(content::GetWebUIURL("system-app1/app.ico")),
+        ExternalInstallSource::kSystemInstalled},
+       {AppUrl2(), GURL(content::GetWebUIURL("system-app2/app.ico")),
+        ExternalInstallSource::kSystemInstalled},
+       {GURL(content::GetWebUIURL("system-app3")),
+        GURL(content::GetWebUIURL("system-app3/app.ico")),
+        ExternalInstallSource::kInternalDefault}});
 
   base::flat_map<SystemAppType, SystemAppInfo> system_apps;
   system_apps.emplace(SystemAppType::SETTINGS,
@@ -373,8 +324,20 @@ TEST_F(SystemWebAppManagerTest, UninstallAppInstalledInPreviousSession) {
   StartAndWaitForAppsToSynchronize();
 
   // We should only try to install the app in the System App list.
-  std::vector<ExternalInstallOptions> expected_install_options_list;
-  expected_install_options_list.push_back(GetWindowedInstallOptions());
+  ExternalInstallOptions options(AppUrl1(), DisplayMode::kStandalone,
+                                 ExternalInstallSource::kSystemInstalled);
+  options.add_to_applications_menu = true;
+  options.add_to_desktop = false;
+  options.add_to_quick_launch_bar = false;
+  options.add_to_search = true;
+  options.add_to_management = false;
+  options.is_disabled = false;
+  options.bypass_service_worker_check = true;
+  options.force_reinstall = true;
+  options.only_use_app_info_factory = true;
+  options.system_app_type = SystemAppType::SETTINGS;
+  options.app_info_factory = GetApp1WebAppInfoFactory();
+  std::vector<ExternalInstallOptions> expected_install_options_list = {options};
   EXPECT_EQ(externally_managed_app_manager().install_requests(),
             expected_install_options_list);
 
@@ -464,9 +427,10 @@ TEST_F(SystemWebAppManagerTest, UpdateOnVersionChange) {
 
   // Changing the install URL of a system app propagates even without a
   // version change.
-  system_apps.find(SystemAppType::SETTINGS)->second.install_url = AppUrl3();
+  const GURL kAppUrl3(content::GetWebUIURL("system-app3"));
+  system_apps.find(SystemAppType::SETTINGS)->second.install_url = kAppUrl3;
   system_apps.find(SystemAppType::SETTINGS)->second.app_info_factory =
-      GetApp3WebAppInfoFactory();
+      base::BindRepeating(&GetWebApplicationInfo, kAppUrl3);
   system_web_app_manager().SetSystemAppsForTesting(system_apps);
   StartAndWaitForAppsToSynchronize();
 
@@ -475,7 +439,7 @@ TEST_F(SystemWebAppManagerTest, UpdateOnVersionChange) {
   EXPECT_FALSE(install_requests[6].force_reinstall);
   EXPECT_FALSE(IsInstalled(AppUrl1()));
   EXPECT_TRUE(IsInstalled(AppUrl2()));
-  EXPECT_TRUE(IsInstalled(AppUrl3()));
+  EXPECT_TRUE(IsInstalled(kAppUrl3));
 }
 
 TEST_F(SystemWebAppManagerTest, UpdateOnLocaleChange) {
@@ -989,7 +953,7 @@ TEST_F(SystemWebAppManagerTest, IsSWABeforeSync) {
   system_apps.emplace(
       SystemAppType::SETTINGS,
       SystemAppInfo(kSettingsAppInternalName, AppUrl1(),
-                    base::BindRepeating(&GetApp1WebApplicationInfo)));
+                    base::BindRepeating(&GetWebApplicationInfo, AppUrl1())));
   system_web_app_manager().SetSystemAppsForTesting(system_apps);
 
   system_web_app_manager().set_current_version(base::Version("1.0.0.0"));
@@ -1023,7 +987,7 @@ class SystemWebAppManagerTimerTest : public SystemWebAppManagerTest {
     system_apps.emplace(
         SystemAppType::SETTINGS,
         SystemAppInfo(kSettingsAppInternalName, AppUrl1(),
-                      base::BindRepeating(&GetApp1WebApplicationInfo)));
+                      base::BindRepeating(&GetWebApplicationInfo, AppUrl1())));
 
     system_apps.at(SystemAppType::SETTINGS).timer_info =
         SystemAppBackgroundTaskInfo();
@@ -1265,7 +1229,7 @@ TEST_F(SystemWebAppManagerTest,
   system_apps.emplace(
       SystemAppType::SETTINGS,
       SystemAppInfo(kSettingsAppInternalName, AppUrl1(),
-                    base::BindRepeating(&GetApp1WebApplicationInfo)));
+                    base::BindRepeating(&GetWebApplicationInfo, AppUrl1())));
   system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
 
   base::RunLoop run_loop;
