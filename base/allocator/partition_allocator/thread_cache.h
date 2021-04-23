@@ -81,7 +81,7 @@ class BASE_EXPORT ThreadCacheRegistry {
   static constexpr TimeDelta kMinPurgeInterval = TimeDelta::FromSeconds(1);
   static constexpr TimeDelta kMaxPurgeInterval = TimeDelta::FromMinutes(1);
   static constexpr TimeDelta kDefaultPurgeInterval = 2 * kMinPurgeInterval;
-  static constexpr int kMinAllocationsForPurging = 10000;
+  static constexpr size_t kMinCachedMemoryForPurging = 500 * 1024;
 
  private:
   void PeriodicPurge();
@@ -90,7 +90,6 @@ class BASE_EXPORT ThreadCacheRegistry {
   // Not using base::Lock as the object's constructor must be constexpr.
   PartitionLock lock_;
   ThreadCache* list_head_ GUARDED_BY(GetLock()) = nullptr;
-  uint64_t allocations_at_last_purge_ = 0;
   base::TimeDelta purge_interval_ = kDefaultPurgeInterval;
   bool periodic_purge_running_ = false;
 };
@@ -244,6 +243,8 @@ class BASE_EXPORT ThreadCache {
   // V8 is performance-sensitive, and zones can (and do) grow up to 32kiB for
   // each individual allocation.
   static constexpr size_t kLargeSizeThreshold = 1 << 15;
+  static_assert(kLargeSizeThreshold <= std::numeric_limits<uint16_t>::max(),
+                "");
 
  private:
   struct Bucket {
@@ -300,7 +301,7 @@ class BASE_EXPORT ThreadCache {
   static uint16_t largest_active_bucket_index_;
 
   Bucket buckets_[kBucketCount];
-  uint64_t allocations_ = 0;
+  size_t cached_memory_ = 0;
   std::atomic<bool> should_purge_;
   ThreadCacheStats stats_;
   PartitionRoot<ThreadSafe>* const root_;
@@ -346,6 +347,7 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* slot_start,
   PA_DCHECK(bucket.count != 0 || bucket.freelist_head == nullptr);
 
   PutInBucket(bucket, slot_start);
+  cached_memory_ += bucket.slot_size;
   INCREMENT_COUNTER(stats_.cache_fill_hits);
 
   // Relaxed ordering: we don't care about having an up-to-date or consistent
@@ -366,7 +368,6 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* slot_start,
 
 ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index,
                                               size_t* slot_size) {
-  allocations_++;
 #if defined(PA_THREAD_CACHE_ALLOC_STATS)
   stats_.allocs_per_bucket_[bucket_index]++;
 #endif
@@ -405,6 +406,8 @@ ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index,
   bucket.freelist_head = next;
   *slot_size = bucket.slot_size;
 
+  PA_DCHECK(cached_memory_ >= bucket.slot_size);
+  cached_memory_ -= bucket.slot_size;
   return result;
 }
 

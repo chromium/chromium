@@ -12,6 +12,7 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -50,6 +51,7 @@ static bool g_thread_cache_key_created = false;
 constexpr base::TimeDelta ThreadCacheRegistry::kMinPurgeInterval;
 constexpr base::TimeDelta ThreadCacheRegistry::kMaxPurgeInterval;
 constexpr base::TimeDelta ThreadCacheRegistry::kDefaultPurgeInterval;
+constexpr size_t ThreadCacheRegistry::kMinCachedMemoryForPurging;
 uint8_t ThreadCache::global_limits_[ThreadCache::kBucketCount];
 
 // Start with the normal size, not the maximum one.
@@ -214,6 +216,7 @@ void ThreadCacheRegistry::PostDelayedPurgeTask() {
 }
 
 void ThreadCacheRegistry::PeriodicPurge() {
+  TRACE_EVENT0("memory", "PeriodicPurge");
   // To stop periodic purge for testing.
   if (!periodic_purge_running_)
     return;
@@ -224,7 +227,7 @@ void ThreadCacheRegistry::PeriodicPurge() {
   //
   // Since there is no synchronization with other threads, the value is stale,
   // which is fine.
-  uint64_t all_allocations_approx = 0;
+  size_t cached_memory_approx = 0;
   {
     PartitionAutoLock scoped_locker(GetLock());
     ThreadCache* tcache = list_head_;
@@ -235,40 +238,36 @@ void ThreadCacheRegistry::PeriodicPurge() {
       return;
 
     while (tcache) {
-      all_allocations_approx += tcache->allocations_;
+      cached_memory_approx += tcache->cached_memory_;
       tcache = tcache->next_;
     }
   }
 
-  uint64_t allocations_since_last_purge =
-      all_allocations_approx - allocations_at_last_purge_;
-
-  // If there were not enough allocations since the last purge, back off. On the
-  // other hand, if there were many allocations, make purge more frequent, but
-  // always in a set frequency range.
+  // If cached memory is low, this means that either memory footprint is fine,
+  // or the process is mostly idle, and not allocating much since the last
+  // purge. In this case, back off. On the other hand, if there is a lot of
+  // cached memory, make purge more frequent, but always within a set frequency
+  // range.
   //
   // There is a potential drawback: a process that was idle for a long time and
   // suddenly becomes very active will take some time to go back to regularly
   // scheduled purge with a small enough interval. This is the case for instance
-  // of a renderer moving to foreground. To mitigate that, if the number of
-  // allocations since the last purge was very large, make a greater leap to
-  // faster purging.
-  if (allocations_since_last_purge > 10 * kMinAllocationsForPurging) {
+  // of a renderer moving to foreground. To mitigate that, if cached memory
+  // jumps is very large, make a greater leap to faster purging.
+  if (cached_memory_approx > 10 * kMinCachedMemoryForPurging) {
     purge_interval_ = std::min(kDefaultPurgeInterval, purge_interval_ / 2);
-  } else if (allocations_since_last_purge > 2 * kMinAllocationsForPurging) {
+  } else if (cached_memory_approx > 2 * kMinCachedMemoryForPurging) {
     purge_interval_ = std::max(kMinPurgeInterval, purge_interval_ / 2);
-  } else if (allocations_since_last_purge < kMinAllocationsForPurging) {
+  } else if (cached_memory_approx < kMinCachedMemoryForPurging) {
     purge_interval_ = std::min(kMaxPurgeInterval, purge_interval_ * 2);
   }
 
   PurgeAll();
 
-  allocations_at_last_purge_ = all_allocations_approx;
   PostDelayedPurgeTask();
 }
 
 void ThreadCacheRegistry::ResetForTesting() {
-  allocations_at_last_purge_ = 0;
   purge_interval_ = kDefaultPurgeInterval;
   periodic_purge_running_ = false;
 }
@@ -486,6 +485,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   PA_DCHECK(!root_->buckets[bucket_index].CanStoreRawSize());
   PA_DCHECK(!root_->buckets[bucket_index].is_direct_mapped());
 
+  size_t allocated_slots = 0;
   // Same as calling RawAlloc() |count| times, but acquires the lock only once.
   internal::ScopedGuard<internal::ThreadSafe> guard(root_->lock_);
   for (int i = 0; i < count; i++) {
@@ -512,8 +512,11 @@ void ThreadCache::FillBucket(size_t bucket_index) {
     if (!ptr)
       break;
 
+    allocated_slots++;
     PutInBucket(bucket, ptr);
   }
+
+  cached_memory_ += allocated_slots * bucket.slot_size;
 }
 
 void ThreadCache::ClearBucket(ThreadCache::Bucket& bucket, size_t limit) {
@@ -521,6 +524,7 @@ void ThreadCache::ClearBucket(ThreadCache::Bucket& bucket, size_t limit) {
   if (!bucket.count || bucket.count <= limit)
     return;
 
+  uint8_t count_before = bucket.count;
   if (limit == 0) {
     FreeAfter(bucket.freelist_head);
     bucket.freelist_head = nullptr;
@@ -537,6 +541,12 @@ void ThreadCache::ClearBucket(ThreadCache::Bucket& bucket, size_t limit) {
     head->SetNext(nullptr);
   }
   bucket.count = limit;
+  uint8_t count_after = bucket.count;
+  size_t freed_memory = (count_before - count_after) * bucket.slot_size;
+  PA_DCHECK(cached_memory_ >= freed_memory);
+  cached_memory_ -= freed_memory;
+
+  PA_DCHECK(cached_memory_ == CachedMemory());
 }
 
 void ThreadCache::FreeAfter(PartitionFreelistEntry* head) {
@@ -552,8 +562,6 @@ void ThreadCache::FreeAfter(PartitionFreelistEntry* head) {
 }
 
 void ThreadCache::ResetForTesting() {
-  allocations_ = 0;
-
   stats_.alloc_count = 0;
   stats_.alloc_hits = 0;
   stats_.alloc_misses = 0;
@@ -571,6 +579,7 @@ void ThreadCache::ResetForTesting() {
   stats_.metadata_overhead = 0;
 
   Purge();
+  PA_CHECK(cached_memory_ == 0u);
   should_purge_.store(false, std::memory_order_relaxed);
 }
 
@@ -603,7 +612,11 @@ void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
   }
 #endif  // defined(PA_THREAD_CACHE_ALLOC_STATS)
 
-  stats->bucket_total_memory += CachedMemory();
+  // cached_memory_ is not necessarily equal to |CachedMemory()| here, since
+  // this function can be called racily from another thread, to collect
+  // statistics. Hence no DCHECK_EQ(CachedMemory(), cached_memory_).
+  stats->bucket_total_memory += cached_memory_;
+
   stats->metadata_overhead += sizeof(*this);
 }
 
