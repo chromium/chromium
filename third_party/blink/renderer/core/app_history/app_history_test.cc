@@ -76,7 +76,7 @@ TEST_F(AppHistoryTest, NavigateEventCancelable) {
       item->Url(), WebFrameLoadType::kBackForward, item,
       ClientRedirectPolicy::kNotClientRedirect,
       false /* has_transient_user_activation */, nullptr /* initiator_origin */,
-      false /* is_content_initiated */,
+      false /* is_synchronously_committed */,
       mojom::blink::TriggeringEventInfo::kUnknown, nullptr);
 
   EXPECT_EQ(result, mojom::blink::CommitResult::Ok);

@@ -168,13 +168,16 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       WebFrameLoadType = WebFrameLoadType::kReplaceCurrentItem,
       mojom::blink::ScrollRestorationType =
           mojom::blink::ScrollRestorationType::kAuto);
+
+  // |is_synchronously_committed| is described in comment for
+  // CommitSameDocumentNavigation.
   void UpdateForSameDocumentNavigation(const KURL&,
                                        SameDocumentNavigationSource,
                                        scoped_refptr<SerializedScriptValue>,
                                        mojom::blink::ScrollRestorationType,
                                        WebFrameLoadType,
                                        const SecurityOrigin* initiator_origin,
-                                       bool is_content_initiated);
+                                       bool is_synchronously_committed);
 
   const ResourceResponse& GetResponse() const { return response_; }
   bool IsClientRedirect() const { return is_client_redirect_; }
@@ -214,10 +217,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // |initiator_origin| is the origin of the document or script that initiated
   // the navigation or nullptr if the navigation is browser-initiated (e.g.
   // typed in omnibox).
-  // |is_content_initiated| is true iff the navigation comes internally from
-  // *this* renderer's content (e.g. link click, script). E.g. this argument is
-  // false when script in another renderer initiates the navigation (even
-  // though it is "content initiated").
+  // |is_synchronously_committed| is true if the navigation is synchronously
+  // committed from within Blink, rather than being driven by the browser's
+  // navigation stack.
   mojom::CommitResult CommitSameDocumentNavigation(
       const KURL&,
       WebFrameLoadType,
@@ -225,7 +227,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       ClientRedirectPolicy,
       bool has_transient_user_activation,
       const SecurityOrigin* initiator_origin,
-      bool is_content_initiated,
+      bool is_synchronously_committed,
       mojom::blink::TriggeringEventInfo,
       std::unique_ptr<WebDocumentLoader::ExtraData>);
 
@@ -396,7 +398,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       ClientRedirectPolicy,
       bool has_transient_user_activation,
       const SecurityOrigin* initiator_origin,
-      bool is_content_initiated,
+      bool is_synchronously_committed,
       mojom::blink::TriggeringEventInfo,
       std::unique_ptr<WebDocumentLoader::ExtraData>);
 

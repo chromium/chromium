@@ -7681,7 +7681,7 @@ class TestDidNavigateCommitTypeWebFrameClient
 
   // frame_test_helpers::TestWebFrameClient:
   void DidFinishSameDocumentNavigation(WebHistoryCommitType type,
-                                       bool content_initiated,
+                                       bool is_synchronously_committed,
                                        bool is_history_api_navigation,
                                        bool is_client_redirect) override {
     last_commit_type_ = type;
@@ -7708,7 +7708,7 @@ TEST_F(WebFrameTest, SameDocumentHistoryNavigationCommitType) {
       item->Url(), WebFrameLoadType::kBackForward, item.Get(),
       ClientRedirectPolicy::kNotClientRedirect,
       false /* has_transient_user_activation */, /*initiator_origin=*/nullptr,
-      /*is_content_initiated=*/false,
+      /*is_synchronously_committed=*/false,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       nullptr /* extra_data */);
   EXPECT_EQ(kWebBackForwardCommit, client.LastCommitType());
@@ -13305,7 +13305,8 @@ TEST_F(WebFrameTest, RecordSameDocumentNavigationToHistogram) {
       ToKURL("about:blank"), kSameDocumentNavigationHistoryApi, message,
       mojom::blink::ScrollRestorationType::kAuto,
       WebFrameLoadType::kReplaceCurrentItem,
-      frame->DomWindow()->GetSecurityOrigin(), /*is_content_initiated=*/true);
+      frame->DomWindow()->GetSecurityOrigin(),
+      /*is_synchronously_committed=*/true);
   // The bucket index corresponds to the definition of
   // |SinglePageAppNavigationType|.
   tester.ExpectBucketCount(histogramName,
@@ -13314,14 +13315,15 @@ TEST_F(WebFrameTest, RecordSameDocumentNavigationToHistogram) {
       ToKURL("about:blank"), kSameDocumentNavigationDefault, message,
       mojom::blink::ScrollRestorationType::kManual,
       WebFrameLoadType::kBackForward, frame->DomWindow()->GetSecurityOrigin(),
-      /*is_content_initiated=*/true);
+      /*is_synchronously_committed=*/true);
   tester.ExpectBucketCount(histogramName,
                            kSPANavTypeSameDocumentBackwardOrForward, 1);
   document_loader.UpdateForSameDocumentNavigation(
       ToKURL("about:blank"), kSameDocumentNavigationDefault, message,
       mojom::blink::ScrollRestorationType::kManual,
       WebFrameLoadType::kReplaceCurrentItem,
-      frame->DomWindow()->GetSecurityOrigin(), /*is_content_initiated=*/true);
+      frame->DomWindow()->GetSecurityOrigin(),
+      /*is_synchronously_committed=*/true);
   tester.ExpectBucketCount(histogramName, kSPANavTypeOtherFragmentNavigation,
                            1);
   // kSameDocumentNavigationHistoryApi and WebFrameLoadType::kBackForward is an

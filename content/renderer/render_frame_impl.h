@@ -544,7 +544,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidHandleOnloadEvents() override;
   void DidFinishLoad() override;
   void DidFinishSameDocumentNavigation(blink::WebHistoryCommitType commit_type,
-                                       bool content_initiated,
+                                       bool is_synchronously_committed,
                                        bool is_history_api_navigation,
                                        bool is_client_redirect) override;
   void DidSetPageLifecycleState() override;

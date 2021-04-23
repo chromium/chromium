@@ -699,7 +699,7 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
   UpdateForSameDocumentNavigation(
       new_url, kSameDocumentNavigationHistoryApi, std::move(data),
       scroll_restoration_type, type, frame_->DomWindow()->GetSecurityOrigin(),
-      /*is_content_initiated=*/true);
+      /*is_synchronously_committed=*/true);
 }
 
 void DocumentLoader::UpdateForSameDocumentNavigation(
@@ -709,7 +709,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     mojom::blink::ScrollRestorationType scroll_restoration_type,
     WebFrameLoadType type,
     const SecurityOrigin* initiator_origin,
-    bool is_content_initiated) {
+    bool is_synchronously_committed) {
   SinglePageAppNavigationType single_page_app_navigation_type =
       CategorizeSinglePageAppNavigation(same_document_navigation_source, type);
   UMA_HISTOGRAM_ENUMERATION(
@@ -754,7 +754,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   if (type == WebFrameLoadType::kStandard ||
       same_document_navigation_source == kSameDocumentNavigationDefault) {
     bool is_browser_initiated = !initiator_origin;
-    DCHECK(!(is_browser_initiated && is_content_initiated));
+    DCHECK(!(is_browser_initiated && is_synchronously_committed));
     has_text_fragment_token_ =
         TextFragmentAnchor::GenerateNewTokenForSameDocument(
             new_url.FragmentIdentifier(), type, is_browser_initiated,
@@ -781,7 +781,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       FrameScheduler::NavigationType::kSameDocument);
 
   GetLocalFrameClient().DidFinishSameDocumentNavigation(
-      history_item_.Get(), commit_type, is_content_initiated,
+      history_item_.Get(), commit_type, is_synchronously_committed,
       is_history_api_navigation, is_client_redirect_);
   probe::DidNavigateWithinDocument(frame_);
   if (!was_loading) {
@@ -1216,7 +1216,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     ClientRedirectPolicy client_redirect_policy,
     bool has_transient_user_activation,
     const SecurityOrigin* initiator_origin,
-    bool is_content_initiated,
+    bool is_synchronously_committed,
     mojom::blink::TriggeringEventInfo triggering_event_info,
     std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) {
   DCHECK(!IsReloadLoadType(frame_load_type));
@@ -1264,10 +1264,10 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
 
   // If the requesting document is cross-origin, perform the navigation
   // asynchronously to minimize the navigator's ability to execute timing
-  // attacks. If |is_content_initiated| is false, the navigation is already
-  // asynchronous since it's coming from another agent so there's no need to
-  // post it again.
-  if (is_content_initiated && initiator_origin &&
+  // attacks. If |is_synchronously_committed| is false, the navigation is
+  // already asynchronous since it's coming from the browser so there's no need
+  // to post it again.
+  if (is_synchronously_committed && initiator_origin &&
       !initiator_origin->CanAccess(frame_->DomWindow()->GetSecurityOrigin())) {
     frame_->GetTaskRunner(TaskType::kInternalLoading)
         ->PostTask(
@@ -1276,13 +1276,15 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
                       WrapWeakPersistent(this), url, frame_load_type,
                       WrapPersistent(history_item), client_redirect_policy,
                       has_transient_user_activation,
-                      WTF::RetainedRef(initiator_origin), is_content_initiated,
-                      triggering_event_info, std::move(extra_data)));
+                      WTF::RetainedRef(initiator_origin),
+                      is_synchronously_committed, triggering_event_info,
+                      std::move(extra_data)));
   } else {
     CommitSameDocumentNavigationInternal(
         url, frame_load_type, history_item, client_redirect_policy,
-        has_transient_user_activation, initiator_origin, is_content_initiated,
-        triggering_event_info, std::move(extra_data));
+        has_transient_user_activation, initiator_origin,
+        is_synchronously_committed, triggering_event_info,
+        std::move(extra_data));
   }
   return mojom::CommitResult::Ok;
 }
@@ -1294,7 +1296,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     ClientRedirectPolicy client_redirect,
     bool has_transient_user_activation,
     const SecurityOrigin* initiator_origin,
-    bool is_content_initiated,
+    bool is_synchronously_committed,
     mojom::blink::TriggeringEventInfo triggering_event_info,
     std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) {
   // If this function was scheduled to run asynchronously, this DocumentLoader
@@ -1349,7 +1351,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
   UpdateForSameDocumentNavigation(url, kSameDocumentNavigationDefault, nullptr,
                                   mojom::blink::ScrollRestorationType::kAuto,
                                   frame_load_type, initiator_origin,
-                                  is_content_initiated);
+                                  is_synchronously_committed);
 
   initial_scroll_state_.was_scrolled_by_user = false;
 

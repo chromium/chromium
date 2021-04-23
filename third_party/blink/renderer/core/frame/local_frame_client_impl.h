@@ -93,7 +93,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DispatchDidHandleOnloadEvents() override;
   void DidFinishSameDocumentNavigation(HistoryItem*,
                                        WebHistoryCommitType,
-                                       bool content_initiated,
+                                       bool is_handled_within_agent,
                                        bool is_history_api_navigation,
                                        bool is_client_redirect) override;
   void DispatchDidReceiveTitle(const String&) override;

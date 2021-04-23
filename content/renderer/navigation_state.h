@@ -28,7 +28,7 @@ class CONTENT_EXPORT NavigationState {
  public:
   ~NavigationState();
 
-  static std::unique_ptr<NavigationState> CreateBrowserInitiated(
+  static std::unique_ptr<NavigationState> Create(
       mojom::CommonNavigationParamsPtr common_params,
       mojom::CommitNavigationParamsPtr commit_params,
       mojom::NavigationClient::CommitNavigationCallback
@@ -36,7 +36,7 @@ class CONTENT_EXPORT NavigationState {
       std::unique_ptr<NavigationClient> navigation_client,
       bool was_initiated_in_this_frame);
 
-  static std::unique_ptr<NavigationState> CreateContentInitiated();
+  static std::unique_ptr<NavigationState> CreateForSynchronousCommit();
 
   static NavigationState* FromDocumentLoader(
       blink::WebDocumentLoader* document_loader);
@@ -44,8 +44,7 @@ class CONTENT_EXPORT NavigationState {
   // True iff the frame's navigation was within the same document.
   bool WasWithinSameDocument();
 
-  // True if this navigation was not initiated via WebFrame::LoadRequest.
-  bool IsContentInitiated();
+  bool IsForSynchronousCommit();
 
   const mojom::CommonNavigationParams& common_params() const {
     return *common_params_;
@@ -73,7 +72,7 @@ class CONTENT_EXPORT NavigationState {
  private:
   NavigationState(mojom::CommonNavigationParamsPtr common_params,
                   mojom::CommitNavigationParamsPtr commit_params,
-                  bool is_content_initiated,
+                  bool is_for_synchronous_commit,
                   content::mojom::NavigationClient::CommitNavigationCallback
                       commit_callback,
                   std::unique_ptr<NavigationClient> navigation_client,
@@ -89,8 +88,10 @@ class CONTENT_EXPORT NavigationState {
   // Used to ensure consistent observer notifications about a navigation.
   bool was_initiated_in_this_frame_;
 
-  // True if this navigation was not initiated via WebFrame::LoadRequest.
-  const bool is_content_initiated_;
+  // True if this navigation is for a renderer synchronous commit (e.g. the
+  // synchronous about:blank navigation, same-origin initiated same-document
+  // navigations), rather than using the browser's navigation stack.
+  const bool is_for_synchronous_commit_;
 
   mojom::CommonNavigationParamsPtr common_params_;
 

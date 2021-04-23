@@ -662,7 +662,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     document_loader_->CommitSameDocumentNavigation(
         url, frame_load_type, nullptr, request.ClientRedirect(),
         resource_request.HasUserGesture(), origin_window->GetSecurityOrigin(),
-        /*is_content_initiated=*/true, request.GetTriggeringEventInfo(),
+        /*is_synchronously_committed=*/true, request.GetTriggeringEventInfo(),
         nullptr /* extra_data */);
     return;
   }

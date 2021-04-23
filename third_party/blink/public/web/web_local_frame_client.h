@@ -409,10 +409,13 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual void DidFinishLoad() {}
 
   // The navigation resulted in no change to the documents within the page.
-  // For example, the navigation may have just resulted in scrolling to a
-  // named anchor or a PopState event may have been dispatched.
+  // For example, the navigation may have just resulted in scrolling to a named
+  // anchor or a PopState event may have been dispatched.
+  // |is_synchronously_committed| is true if the navigation is synchronously
+  // committed from within Blink, as opposed to being driven by the browser's
+  // navigation stack.
   virtual void DidFinishSameDocumentNavigation(WebHistoryCommitType,
-                                               bool content_initiated,
+                                               bool is_synchronously_committed,
                                                bool is_history_api_navigation,
                                                bool is_client_redirect) {}
 

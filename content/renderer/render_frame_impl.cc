@@ -345,7 +345,7 @@ ui::PageTransition GetTransitionType(blink::WebDocumentLoader* document_loader,
   NavigationState* navigation_state =
       NavigationState::FromDocumentLoader(document_loader);
   ui::PageTransition default_transition =
-      navigation_state->IsContentInitiated()
+      navigation_state->IsForSynchronousCommit()
           ? ui::PAGE_TRANSITION_LINK
           : navigation_state->common_params().transition;
   if (navigation_state->WasWithinSameDocument())
@@ -825,7 +825,7 @@ std::unique_ptr<DocumentState> BuildDocumentState() {
   std::unique_ptr<DocumentState> document_state =
       std::make_unique<DocumentState>();
   InternalDocumentStateData::FromDocumentState(document_state.get())
-      ->set_navigation_state(NavigationState::CreateContentInitiated());
+      ->set_navigation_state(NavigationState::CreateForSynchronousCommit());
   return document_state;
 }
 
@@ -860,7 +860,7 @@ std::unique_ptr<DocumentState> BuildDocumentStateFromParams(
     document_state->set_data_url(common_params.url);
 
   InternalDocumentStateData::FromDocumentState(document_state.get())
-      ->set_navigation_state(NavigationState::CreateBrowserInitiated(
+      ->set_navigation_state(NavigationState::Create(
           common_params.Clone(), commit_params.Clone(),
           std::move(commit_callback), std::move(navigation_client),
           was_initiated_in_this_frame));
@@ -3164,7 +3164,7 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
     // opposed to a fragment link click, which would have been handled
     // synchronously in the renderer process), therefore
     // |was_initiated_in_this_frame| must be false.
-    internal_data->set_navigation_state(NavigationState::CreateBrowserInitiated(
+    internal_data->set_navigation_state(NavigationState::Create(
         std::move(common_params), std::move(commit_params),
         mojom::NavigationClient::CommitNavigationCallback(), nullptr,
         false /* was_initiated_in_this_frame */));
@@ -3944,7 +3944,7 @@ void RenderFrameImpl::DidFinishLoad() {
 
 void RenderFrameImpl::DidFinishSameDocumentNavigation(
     blink::WebHistoryCommitType commit_type,
-    bool content_initiated,
+    bool is_synchronously_committed,
     bool is_history_api_navigation,
     bool is_client_redirect) {
   TRACE_EVENT1("navigation,rail",
@@ -3953,8 +3953,8 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
   InternalDocumentStateData* data =
       InternalDocumentStateData::FromDocumentLoader(
           frame_->GetDocumentLoader());
-  if (content_initiated)
-    data->set_navigation_state(NavigationState::CreateContentInitiated());
+  if (is_synchronously_committed)
+    data->set_navigation_state(NavigationState::CreateForSynchronousCommit());
   data->navigation_state()->set_was_within_same_document(true);
 
   ui::PageTransition transition =
