@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.Callable;
@@ -151,6 +153,27 @@ public class UndoBarControllerTest {
 
         Assert.assertNull(
                 "Undo snack bar should not be showing in accessibility mode", getCurrentSnackbar());
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    public void testUndoSnackbarEnabled_AccessibilityEnabledWithGroupM5() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
+
+        Assert.assertNull("Snack bar should be null initially", getCurrentSnackbar());
+        Assert.assertEquals("Tab Model should contain 1 tab", 1, mTabModel.getCount());
+
+        ChromeTabUtils.closeAllTabs(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+
+        Snackbar currentSnackbar = getCurrentSnackbar();
+        Assert.assertEquals("Incorrect snackbar text", "Closed about:blank", getSnackbarText());
+        Assert.assertTrue("Incorrect SnackbarController type",
+                currentSnackbar.getController() instanceof UndoBarController);
+        Assert.assertEquals(
+                "Tab Model should contain 0 tab after tab closed", 0, mTabModel.getCount());
     }
 
     private void clickSnackbar() {
