@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
+#include "base/record_replay.h"
 #include "mojo/public/c/system/message_pipe.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 
@@ -51,6 +52,8 @@ Buffer& Buffer::operator=(Buffer&& other) {
 }
 
 size_t Buffer::Allocate(size_t num_bytes) {
+  recordreplay::Assert("Buffer::Allocate %lu", num_bytes);
+
   const size_t aligned_num_bytes = Align(num_bytes);
   const size_t new_cursor = cursor_ + aligned_num_bytes;
   if (new_cursor < cursor_ || (new_cursor > size_ && !message_.is_valid())) {
