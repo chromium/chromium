@@ -279,6 +279,7 @@ source_set("blink_heap_unittests_sources") {
     sources += [
       "impl/test/card_table_test.cc",
       "impl/test/gc_info_test.cc",
+      "impl/test/heap_internals_test.cc",
       "impl/test/heap_stats_collector_test.cc",
       "impl/test/heap_thread_test.cc",
       "impl/test/incremental_marking_internals_test.cc",
