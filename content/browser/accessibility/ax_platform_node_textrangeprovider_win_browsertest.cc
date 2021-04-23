@@ -490,8 +490,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 // With a rich text field, the read-only attribute should be determined based on
 // the editable root node's editable state.
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
-                       DISABLED_GetAttributeValueIsReadonlyRichTextField) {
-  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+                       GetAttributeValueIsReadonlyRichTextField) {
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
       <!DOCTYPE html>
       <html>
         <style>
@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
           class="myDiv"><p>3.14</p></div>
         </body>
       </html>
-  )HTML");
+  )HTML"));
 
   auto* text_field_node = FindNode(ax::mojom::Role::kTextField, "text_field");
   ASSERT_NE(nullptr, text_field_node);

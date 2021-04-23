@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<body contenteditable aria-hidden="true">
+  &nbsp;
+
+  <script>
+  test(function() {
+    var axDocument = accessibilityController.rootElement;
+    assert_equals(axDocument.childrenCount, 1);
+
+    assert_false(axDocument.isEditable);
+    assert_false(axDocument.isRichlyEditable);
+  }, 'The document should not be marked editable because the body is aria-hidden.');
+
+  test(function() {
+    document.body.setAttribute('aria-hidden', 'false');
+    var axDocument = accessibilityController.rootElement;
+    assert_equals(axDocument.childrenCount, 1);
+
+    assert_true(axDocument.isEditable);
+    assert_true(axDocument.isRichlyEditable);
+  }, 'The document should be marked editable because the body is aria-hidden="false".');
+  </script>
+</body>

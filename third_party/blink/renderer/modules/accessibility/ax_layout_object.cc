@@ -118,10 +118,6 @@ void AXLayoutObject::Trace(Visitor* visitor) const {
   AXNodeObject::Trace(visitor);
 }
 
-LayoutObject* AXLayoutObject::GetLayoutObject() const {
-  return layout_object_;
-}
-
 bool IsProgrammaticallyScrollable(LayoutBox* box) {
   if (!box->IsScrollContainer())
     return false;
@@ -311,6 +307,89 @@ static bool IsLinkable(const AXObject& object) {
   // Mozilla considers linkable.
   return object.IsLink() || object.IsImage() ||
          object.GetLayoutObject()->IsText();
+}
+
+// Requires layoutObject to be present because it relies on style
+// user-modify. Don't move this logic to AXNodeObject.
+bool AXLayoutObject::IsEditable() const {
+  if (IsDetached())
+    return false;
+
+  const Node* node = GetNodeOrContainingBlockNode();
+  if (!node)
+    return false;
+
+  const auto* elem = DynamicTo<Element>(node);
+  if (!elem)
+    elem = FlatTreeTraversal::ParentElement(*node);
+  if (GetLayoutObject()->IsTextControlIncludingNG())
+    return true;
+
+  // Contrary to Firefox, we mark editable all auto-generated content, such as
+  // list bullets and soft line breaks, that are contained within an editable
+  // container.
+  if (HasEditableStyle(*node))
+    return true;
+
+  if (IsWebArea()) {
+    Document& document = GetLayoutObject()->GetDocument();
+    HTMLElement* body = document.body();
+    if (body && HasEditableStyle(*body)) {
+      // A web area is editable if the body is contenteditable, unless the body
+      // or an ancestor of the body is aria-hidden. The following avoids
+      // GetOrCreate() on the body so that IsEditable() can be called when
+      // layout is not clean. Check current object for AriaHiddenRoot(), and
+      // manually check the <html> and <body> elements directly.
+      bool is_null = true;
+      if (AriaHiddenRoot() ||
+          AccessibleNode::GetPropertyOrARIAAttribute(
+              body, AOMBooleanProperty::kHidden, is_null) ||
+          AccessibleNode::GetPropertyOrARIAAttribute(
+              body->parentElement(), AOMBooleanProperty::kHidden, is_null)) {
+        return false;
+      }
+      return true;
+    }
+
+    return HasEditableStyle(document);
+  }
+
+  return AXNodeObject::IsEditable();
+}
+
+// Requires layoutObject to be present because it relies on style
+// user-modify. Don't move this logic to AXNodeObject.
+// Returns true for a contenteditable or any descendant of it.
+bool AXLayoutObject::IsRichlyEditable() const {
+  if (IsDetached())
+    return false;
+
+  const Node* node = GetNodeOrContainingBlockNode();
+  if (!node)
+    return false;
+
+  const Element* elem = DynamicTo<Element>(node);
+  if (!elem)
+    elem = FlatTreeTraversal::ParentElement(*node);
+
+  // Contrary to Firefox, we mark richly editable all auto-generated content,
+  // such as list bullets and soft line breaks, that are contained within a
+  // richly editable container.
+  if (HasRichlyEditableStyle(*node))
+    return true;
+
+  if (IsWebArea()) {
+    Document& document = layout_object_->GetDocument();
+    HTMLElement* body = document.body();
+    if (body && HasRichlyEditableStyle(*body)) {
+      AXObject* ax_body = AXObjectCache().GetOrCreate(body);
+      return ax_body && ax_body != ax_body->AriaHiddenRoot();
+    }
+
+    return HasRichlyEditableStyle(document);
+  }
+
+  return AXNodeObject::IsRichlyEditable();
 }
 
 bool AXLayoutObject::IsLineBreakingObject() const {

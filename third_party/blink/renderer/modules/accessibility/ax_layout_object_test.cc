@@ -22,7 +22,7 @@ class AXLayoutObjectTest : public AccessibilityTest {
   }
 };
 
-TEST_F(AXLayoutObjectTest, IsNotEditableInsideListmarker) {
+TEST_F(AXLayoutObjectTest, IsEditableInsideListmarker) {
   SetBodyInnerHTML("<div contenteditable><li id=t>ab");
   // The layout tree is:
   //    LayoutNGBlockFlow {DIV} at (0,0) size 784x20
@@ -44,11 +44,11 @@ TEST_F(AXLayoutObjectTest, IsNotEditableInsideListmarker) {
   const AXObject* ax_list_marker = GetAXObject(&list_marker);
   ASSERT_NE(nullptr, ax_list_marker);
   EXPECT_TRUE(IsA<AXLayoutObject>(ax_list_item));
-  EXPECT_FALSE(ax_list_marker->IsEditable());
-  EXPECT_FALSE(ax_list_marker->IsRichlyEditable());
+  EXPECT_TRUE(ax_list_marker->IsEditable());
+  EXPECT_TRUE(ax_list_marker->IsRichlyEditable());
 }
 
-TEST_F(AXLayoutObjectTest, IsNotEditableOutsideListmarker) {
+TEST_F(AXLayoutObjectTest, IsEditableOutsideListmarker) {
   SetBodyInnerHTML("<ol contenteditable><li id=t>ab");
   // THe layout tree is:
   //    LayoutNGBlockFlow {OL} at (0,0) size 784x20
@@ -70,8 +70,8 @@ TEST_F(AXLayoutObjectTest, IsNotEditableOutsideListmarker) {
   const AXObject* ax_list_marker = GetAXObject(&list_marker);
   ASSERT_NE(nullptr, ax_list_marker);
   EXPECT_TRUE(IsA<AXLayoutObject>(ax_list_item));
-  EXPECT_FALSE(ax_list_marker->IsEditable());
-  EXPECT_FALSE(ax_list_marker->IsRichlyEditable());
+  EXPECT_TRUE(ax_list_marker->IsEditable());
+  EXPECT_TRUE(ax_list_marker->IsRichlyEditable());
 }
 
 TEST_F(AXLayoutObjectTest, GetValueForControlWithTextTransform) {

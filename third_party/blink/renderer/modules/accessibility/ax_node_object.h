@@ -92,6 +92,10 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsAutofillAvailable() const override;
   bool IsControllingVideoElement() const;
   bool IsDefault() const final;
+  bool IsMultiline() const override;
+  bool IsEditable() const override;
+  bool ComputeIsEditableRoot() const override;
+  bool HasContentEditableAttributeSet() const override;
   bool IsFieldset() const final;
   bool IsHovered() const final;
   bool IsImageButton() const;
@@ -102,6 +106,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsNativeImage() const final;
   bool IsOffScreen() const override;
   bool IsProgressIndicator() const override;
+  bool IsRichlyEditable() const override;
   bool IsSlider() const override;
   bool IsSpinButton() const override;
   bool IsNativeSlider() const override;
@@ -182,8 +187,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
       Vector<ax::mojom::blink::Dropeffect>& dropeffects) const override;
 
   ax::mojom::blink::HasPopup HasPopup() const override;
-  bool IsEditableRoot() const override;
-  bool HasContentEditableAttributeSet() const override;
 
   // Modify or take an action on an object.
   bool OnNativeSetValueAction(const String&) override;
@@ -234,7 +237,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   Element* ActionElement() const override;
   Element* AnchorElement() const override;
   Document* GetDocument() const override;
-  Node* GetNode() const final;
+  Node* GetNode() const override { return node_; }
 
   // DOM and layout tree access.
   AtomicString Language() const override;
@@ -281,6 +284,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   const AtomicString& GetInternalsAttribute(Element&,
                                             const QualifiedName&) const;
 
+  Member<Node> node_;
+
   bool IsNativeCheckboxInMixedState() const;
   String NativeTextAlternative(AXObjectSet& visited,
                                ax::mojom::blink::NameFrom&,
@@ -316,8 +321,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   static bool IsNameFromLabelElement(HTMLElement* control);
   static bool IsRedundantLabel(HTMLLabelElement* label);
-
-  Member<Node> node_;
 
   DISALLOW_COPY_AND_ASSIGN(AXNodeObject);
 };

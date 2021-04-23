@@ -1507,7 +1507,6 @@ bool AXNode::IsLeaf() const {
     case ax::mojom::Role::kGraphicsSymbol:
     case ax::mojom::Role::kMeter:
     case ax::mojom::Role::kScrollBar:
-    case ax::mojom::Role::kSpinButton:
     case ax::mojom::Role::kSlider:
     case ax::mojom::Role::kSplitter:
     case ax::mojom::Role::kProgressIndicator:

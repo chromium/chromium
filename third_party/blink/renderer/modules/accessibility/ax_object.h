@@ -464,7 +464,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Returns true if this object is not an <input> or a <textarea>, and is
   // either a contenteditable, or has role=textbox role=searchbox or
-  // (on certain platforms) role=combobox.
+  // role=combobox.
   bool IsNonNativeTextField() const;
 
   // Returns true if this object is a text field that is used for entering
@@ -822,39 +822,15 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual void AriaOwnsElements(AXObjectVector& owns) const {}
   virtual void AriaDescribedbyElements(AXObjectVector&) const {}
   virtual AXObject* ErrorMessage() const { return nullptr; }
-
-  // Determines whether this object has an associated popup menu, list, or grid,
-  // such as in the case of an ARIA combobox or when the browser offers an
-  // autocomplete suggestion.
-  virtual ax::mojom::blink::HasPopup HasPopup() const;
-
-  // Returns true if this object is within or at the root of an editable region,
-  // such as a contenteditable. Also, returns true if this object is an atomic
-  // text field, i.e. an input or a textarea. Note that individual subtrees
-  // within an editable region could be made non-editable via e.g.
-  // contenteditable="false".
-  bool IsEditable() const;
-
-  // Returns true if this object is at the root of an editable region, such as a
-  // contenteditable. Does not return true if this object is an atomic text
-  // field, i.e. an input or a textarea.
-  //
-  // https://w3c.github.io/editing/execCommand.html#editing-host
-  virtual bool IsEditableRoot() const;
-
-  // Returns true if this object has contenteditable="true" or
-  // contenteditable="plaintext-only".
-  virtual bool HasContentEditableAttributeSet() const;
-
-  // Returns true if the user can enter multiple lines of text inside this
-  // editable region. By default, textareas and content editables can accept
-  // multiple lines of text.
-  bool IsMultiline() const;
-
-  // Same as `IsEditable()` but returns whether the region accepts rich text
-  // as well.
-  bool IsRichlyEditable() const;
-
+  virtual ax::mojom::blink::HasPopup HasPopup() const {
+    return ax::mojom::blink::HasPopup::kFalse;
+  }
+  virtual bool IsEditable() const { return false; }
+  bool IsEditableRoot() const;
+  virtual bool ComputeIsEditableRoot() const { return false; }
+  virtual bool HasContentEditableAttributeSet() const { return false; }
+  virtual bool IsMultiline() const { return false; }
+  virtual bool IsRichlyEditable() const { return false; }
   bool AriaCheckedIsPresent() const;
   bool AriaPressedIsPresent() const;
   bool SupportsARIAExpanded() const;
@@ -1156,25 +1132,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual double EstimatedLoadingProgress() const { return 0; }
   virtual AXObject* RootScroller() const;
 
-  //
   // DOM and layout tree access.
-  //
-
-  // Returns the associated DOM node or, if an associated layout object is
-  // present, the node of the associated layout object.
-  //
-  // If this object is associated with generated content, or a list marker,
-  // returns a pseudoelement. It does not return the node that generated the
-  // content or the list marker.
-  virtual Node* GetNode() const;
-
-  // Returns the associated layout object if any.
-  virtual LayoutObject* GetLayoutObject() const;
-
-  // Returns the same as `AXObject::GetNode()` if the node is an Element,
-  // otherwise returns nullptr.
-  Element* GetElement() const;
-
+  virtual Node* GetNode() const { return nullptr; }
+  Element* GetElement() const;  // Same as GetNode, if it's an Element.
+  virtual LayoutObject* GetLayoutObject() const { return nullptr; }
   virtual Document* GetDocument() const = 0;
   LocalFrameView* DocumentFrameView() const;
   virtual Element* AnchorElement() const { return nullptr; }
@@ -1435,6 +1396,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   mutable bool cached_is_inert_or_aria_hidden_ : 1;
   mutable bool cached_is_hidden_via_style : 1;
   mutable bool cached_is_descendant_of_disabled_node_ : 1;
+  mutable bool cached_is_editable_root_ : 1;
   mutable Member<AXObject> cached_live_region_root_;
   mutable int cached_aria_column_index_;
   mutable int cached_aria_row_index_;

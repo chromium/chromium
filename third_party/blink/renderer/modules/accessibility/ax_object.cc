@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
-#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -50,10 +49,8 @@
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
-#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
@@ -472,6 +469,7 @@ AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
       cached_is_ignored_but_included_in_tree_(false),
       cached_is_inert_or_aria_hidden_(false),
       cached_is_descendant_of_disabled_node_(false),
+      cached_is_editable_root_(false),
       cached_live_region_root_(nullptr),
       cached_aria_column_index_(0),
       cached_aria_row_index_(0),
@@ -1915,7 +1913,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
                                DocumentLifecycle::kAfterPerformLayout)
       << "Unclean document at lifecycle "
       << GetDocument()->Lifecycle().ToString();
-#endif  // DCHECK_IS_ON()
+#endif
 
   // TODO(accessibility) Every AXObject must have a parent except the root.
   // Sometimes the parent is detached and a new parent isn't yet reattached.
@@ -1979,6 +1977,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 
   cached_is_ignored_ = is_ignored;
   cached_is_ignored_but_included_in_tree_ = is_ignored_but_included_in_tree;
+  cached_is_editable_root_ = ComputeIsEditableRoot();
   // Compute live region root, which can be from any ARIA live value, including
   // "off", or from an automatic ARIA live value, e.g. from role="status".
   // TODO(dmazzoni): remove this const_cast.
@@ -3485,71 +3484,9 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
   return role;
 }
 
-ax::mojom::blink::HasPopup AXObject::HasPopup() const {
-  return ax::mojom::blink::HasPopup::kFalse;
-}
-
-bool AXObject::IsEditable() const {
-  const Node* node = GetNode();
-  if (IsDetached() || !node)
-    return false;
-#if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
-  DCHECK(GetDocument());
-  DCHECK_GE(GetDocument()->Lifecycle().GetState(),
-            DocumentLifecycle::kStyleClean)
-      << "Unclean document style at lifecycle state "
-      << GetDocument()->Lifecycle().ToString();
-#endif  // DCHECK_IS_ON()
-
-  if (HasEditableStyle(*node))
-    return true;
-
-  // For the purposes of accessibility, atomic text fields  i.e. input and
-  // textarea are editable because the user can potentially enter text in them.
-  if (IsNativeTextField())
-    return true;
-
-  return false;
-}
-
 bool AXObject::IsEditableRoot() const {
-  return false;
-}
-
-bool AXObject::HasContentEditableAttributeSet() const {
-  return false;
-}
-
-bool AXObject::IsMultiline() const {
-  if (IsDetached() || !GetNode() || !IsTextField())
-    return false;
-
-  bool is_multiline = false;
-  if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kMultiline,
-                                    is_multiline)) {
-    return is_multiline;
-  }
-
-  return IsA<HTMLTextAreaElement>(*GetNode()) ||
-         HasContentEditableAttributeSet();
-}
-
-bool AXObject::IsRichlyEditable() const {
-  const Node* node = GetNode();
-  if (IsDetached() || !node)
-    return false;
-#if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
-  DCHECK(GetDocument());
-  DCHECK_GE(GetDocument()->Lifecycle().GetState(),
-            DocumentLifecycle::kStyleClean)
-      << "Unclean document style at lifecycle state "
-      << GetDocument()->Lifecycle().ToString();
-#endif  // DCHECK_IS_ON()
-
-  if (HasRichlyEditableStyle(*node))
-    return true;
-
-  return false;
+  UpdateCachedAttributeValuesIfNeeded();
+  return cached_is_editable_root_;
 }
 
 AXObject* AXObject::LiveRegionRoot() const {
@@ -4158,14 +4095,6 @@ void AXObject::ClearChildren() const {
       ax_child_from_node->DetachFromParent();
     }
   }
-}
-
-Node* AXObject::GetNode() const {
-  return nullptr;
-}
-
-LayoutObject* AXObject::GetLayoutObject() const {
-  return nullptr;
 }
 
 Element* AXObject::GetElement() const {
@@ -5025,9 +4954,9 @@ bool AXObject::HasARIAOwns(Element* element) {
   const AtomicString& aria_owns =
       element->FastGetAttribute(html_names::kAriaOwnsAttr);
 
-  // TODO(accessibility): do we need to check !AriaOwnsElements.empty() ? Is
-  // that fundamentally different from HasExplicitlySetAttrAssociatedElements()?
-  // And is an element even necessary in the case of virtual nodes?
+  // TODO: do we need to check !AriaOwnsElements.empty() ? Is that fundamentally
+  // different from HasExplicitlySetAttrAssociatedElements()? And is an element
+  // even necessary in the case of virtual nodes?
   return !aria_owns.IsEmpty() ||
          element->HasExplicitlySetAttrAssociatedElements(
              html_names::kAriaOwnsAttr);
