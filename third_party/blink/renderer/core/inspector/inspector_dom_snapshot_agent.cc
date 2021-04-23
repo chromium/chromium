@@ -287,6 +287,11 @@ protocol::Response InspectorDOMSnapshotAgent::captureSnapshot(
   if (!main_window)
     return Response::ServerError("Document is not available");
 
+  // Update layout before traversal of document so that we inspect a
+  // current and consistent state of all trees.
+  inspected_frames_->Root()->View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kInspector);
+
   strings_ = std::make_unique<protocol::Array<String>>();
   documents_ = std::make_unique<
       protocol::Array<protocol::DOMSnapshot::DocumentSnapshot>>();
@@ -372,13 +377,6 @@ void InspectorDOMSnapshotAgent::SetRare(
 }
 
 void InspectorDOMSnapshotAgent::VisitDocument(Document* document) {
-  // Update layout before traversal of document so that we inspect a
-  // current and consistent state of all trees. No need to do this if paint
-  // order was calculated, since layout trees were already updated during
-  // TraversePaintLayerTree().
-  if (!paint_order_map_)
-    document->UpdateStyleAndLayoutTreeForSubtree(document);
-
   DocumentType* doc_type = document->doctype();
   InspectorContrast contrast(document);
 
@@ -756,10 +754,6 @@ InspectorDOMSnapshotAgent::BuildPaintLayerTree(Document* document) {
 void InspectorDOMSnapshotAgent::TraversePaintLayerTree(
     Document* document,
     PaintOrderMap* paint_order_map) {
-  // Update layout before traversal of document so that we inspect a
-  // current and consistent state of all trees.
-  document->UpdateStyleAndLayoutTreeForSubtree(document);
-
   PaintLayer* root_layer = document->GetLayoutView()->Layer();
   // LayoutView requires a PaintLayer.
   DCHECK(root_layer);
