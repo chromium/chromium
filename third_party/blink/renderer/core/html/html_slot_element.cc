@@ -185,7 +185,8 @@ void HTMLSlotElement::assign(HeapVector<Member<Node>> nodes,
       if (previous_slot == this)
         continue;
       previous_slot->manually_assigned_nodes_.erase(node);
-      previous_slot->DidSlotChange(SlotChangeType::kSignalSlotChangeEvent);
+      if (previous_slot->SupportsAssignment())
+        previous_slot->DidSlotChange(SlotChangeType::kSignalSlotChangeEvent);
     }
     updated = true;
     node->SetManuallyAssignedSlot(this);
