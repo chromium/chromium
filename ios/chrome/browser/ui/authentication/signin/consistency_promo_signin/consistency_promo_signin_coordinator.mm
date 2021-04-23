@@ -196,9 +196,9 @@
   NOTREACHED();
 }
 
-- (void)consistencyDefaultAccountCoordinator:
-            (ConsistencyDefaultAccountCoordinator*)coordinator
-                            selectedIdentity:(ChromeIdentity*)identity {
+- (void)consistencyDefaultAccountCoordinatorSignin:
+    (ConsistencyDefaultAccountCoordinator*)coordinator {
+  ChromeIdentity* identity = self.defaultAccountCoordinator.selectedIdentity;
   __weak __typeof(self) weakSelf = self;
   // |onPrimaryAccountChanged| notification is sent immediately after calling
   // SignIn. All callbacks should be set prior to this operation.

@@ -43,6 +43,15 @@
   return self.defaultAccountViewController;
 }
 
+- (ChromeIdentity*)selectedIdentity {
+  return self.mediator.selectedIdentity;
+}
+
+- (void)setSelectedIdentity:(ChromeIdentity*)identity {
+  DCHECK(self.mediator);
+  self.mediator.selectedIdentity = identity;
+}
+
 #pragma mark - ConsistencyDefaultAccountMediatorDelegate
 
 - (void)consistencyDefaultAccountMediatorNoIdentities:
@@ -64,9 +73,7 @@
 
 - (void)consistencyDefaultAccountViewControllerContinueWithSelectedIdentity:
     (ConsistencyDefaultAccountViewController*)viewController {
-  [self.delegate
-      consistencyDefaultAccountCoordinator:self
-                          selectedIdentity:self.mediator.defaultIdentity];
+  [self.delegate consistencyDefaultAccountCoordinatorSignin:self];
 }
 
 @end

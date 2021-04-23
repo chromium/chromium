@@ -27,7 +27,7 @@
     delegate;
 @property(nonatomic, strong) id<ConsistencyDefaultAccountConsumer> consumer;
 // Identity presented to the user.
-@property(nonatomic, strong, readonly) ChromeIdentity* defaultIdentity;
+@property(nonatomic, strong) ChromeIdentity* selectedIdentity;
 
 @end
 

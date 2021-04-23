@@ -21,9 +21,8 @@
     (ConsistencyDefaultAccountCoordinator*)coordinator;
 
 // Called when the user wants to sign-in with the default identity.
-- (void)consistencyDefaultAccountCoordinator:
-            (ConsistencyDefaultAccountCoordinator*)coordinator
-                            selectedIdentity:(ChromeIdentity*)chromeIdentity;
+- (void)consistencyDefaultAccountCoordinatorSignin:
+    (ConsistencyDefaultAccountCoordinator*)coordinator;
 
 @end
 
@@ -34,6 +33,8 @@
 @property(nonatomic, strong, readonly) UIViewController* viewController;
 @property(nonatomic, weak) id<ConsistencyDefaultAccountCoordinatorDelegate>
     delegate;
+// This property can be used only after the coordinator is started.
+@property(nonatomic, strong) ChromeIdentity* selectedIdentity;
 
 @end
 

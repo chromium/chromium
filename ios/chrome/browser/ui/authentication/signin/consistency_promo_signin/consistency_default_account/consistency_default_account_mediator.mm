@@ -22,7 +22,6 @@
   std::unique_ptr<ChromeBrowserProviderObserverBridge> _browserProviderObserver;
 }
 
-@property(nonatomic, strong, readwrite) ChromeIdentity* defaultIdentity;
 @property(nonatomic, strong) UIImage* avatar;
 @property(nonatomic, strong) ResizedAvatarCache* avatarCache;
 
@@ -45,13 +44,22 @@
 
 - (void)setConsumer:(id<ConsistencyDefaultAccountConsumer>)consumer {
   _consumer = consumer;
-  [self selectDefaultIdentity];
+  [self selectSelectedIdentity];
+}
+
+- (void)setSelectedIdentity:(ChromeIdentity*)identity {
+  DCHECK(identity);
+  if (_selectedIdentity == identity) {
+    return;
+  }
+  _selectedIdentity = identity;
+  [self updateSelectedIdentityUI];
 }
 
 #pragma mark - Private
 
 // Updates the default identity.
-- (void)selectDefaultIdentity {
+- (void)selectSelectedIdentity {
   NSArray* identities = ios::GetChromeBrowserProvider()
                             ->GetChromeIdentityService()
                             ->GetAllIdentitiesSortedForDisplay();
@@ -59,21 +67,20 @@
     [self.delegate consistencyDefaultAccountMediatorNoIdentities:self];
     return;
   }
-  ChromeIdentity* newDefaultIdentity = identities[0];
-  if ([newDefaultIdentity isEqual:self.defaultIdentity]) {
+  ChromeIdentity* newSelectedIdentity = identities[0];
+  if ([newSelectedIdentity isEqual:self.selectedIdentity]) {
     return;
   }
-  self.defaultIdentity = newDefaultIdentity;
-  [self updateDefaultIdentityUI];
+  self.selectedIdentity = newSelectedIdentity;
 }
 
 // Updates the view controller using the default identity.
-- (void)updateDefaultIdentityUI {
-  [self.consumer updateWithFullName:self.defaultIdentity.userFullName
-                          givenName:self.defaultIdentity.userGivenName
-                              email:self.defaultIdentity.userEmail];
+- (void)updateSelectedIdentityUI {
+  [self.consumer updateWithFullName:self.selectedIdentity.userFullName
+                          givenName:self.selectedIdentity.userGivenName
+                              email:self.selectedIdentity.userEmail];
   UIImage* avatar =
-      [self.avatarCache resizedAvatarForIdentity:self.defaultIdentity];
+      [self.avatarCache resizedAvatarForIdentity:self.selectedIdentity];
   [self.consumer updateUserAvatar:avatar];
 }
 
@@ -92,12 +99,12 @@
 #pragma mark - ChromeIdentityServiceObserver
 
 - (void)identityListChanged {
-  [self selectDefaultIdentity];
+  [self selectSelectedIdentity];
 }
 
 - (void)profileUpdate:(ChromeIdentity*)identity {
-  if ([self.defaultIdentity isEqual:identity]) {
-    [self updateDefaultIdentityUI];
+  if ([self.selectedIdentity isEqual:identity]) {
+    [self updateSelectedIdentityUI];
   }
 }
 
