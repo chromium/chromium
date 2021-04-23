@@ -10,16 +10,21 @@ import "protos/perfetto/metrics/custom_options.proto";
 // different sensors. See go/power-mobile-benchmark for the list of
 // supported devices.
 // Output values are in Joules (Watt-seconds).
-
+//
+// Next id: 26.
 message PowerRailsMetric {
   // story_* values - power consumption over the duration of the story run.
   // This doesn't include Chrome starting and loading a page.
   optional float story_total_j = 1 [(unit) = "J_smallerIsBetter"];
   optional float story_cpu_big_core_cluster_j = 2
       [(unit) = "J_smallerIsBetter"];
+  optional float story_cpu_mid_core_cluster_j = 24
+      [(unit) = "J_smallerIsBetter"];
   optional float story_cpu_little_core_cluster_j = 3
       [(unit) = "J_smallerIsBetter"];
   optional float story_soc_j = 4 [(unit) = "J_smallerIsBetter"];
+  optional float story_mem_j = 20 [(unit) = "J_smallerIsBetter"];
+  optional float story_gpu_j = 21 [(unit) = "J_smallerIsBetter"];
   optional float story_cellular_j = 5 [(unit) = "J_smallerIsBetter"];
   optional float story_wifi_j = 6 [(unit) = "J_smallerIsBetter"];
   optional float story_display_j = 7 [(unit) = "J_smallerIsBetter"];
@@ -31,9 +36,13 @@ message PowerRailsMetric {
   optional float interaction_total_j = 11 [(unit) = "J_smallerIsBetter"];
   optional float interaction_cpu_big_core_cluster_j = 12
       [(unit) = "J_smallerIsBetter"];
+  optional float interaction_cpu_mid_core_cluster_j = 25
+      [(unit) = "J_smallerIsBetter"];
   optional float interaction_cpu_little_core_cluster_j = 13
       [(unit) = "J_smallerIsBetter"];
   optional float interaction_soc_j = 14 [(unit) = "J_smallerIsBetter"];
+  optional float interaction_mem_j = 22 [(unit) = "J_smallerIsBetter"];
+  optional float interaction_gpu_j = 23 [(unit) = "J_smallerIsBetter"];
   optional float interaction_cellular_j = 15 [(unit) = "J_smallerIsBetter"];
   optional float interaction_wifi_j = 16 [(unit) = "J_smallerIsBetter"];
   optional float interaction_display_j = 17 [(unit) = "J_smallerIsBetter"];
