@@ -413,6 +413,7 @@ export function scanningAppTest() {
     return scanningApp.$$('#collapse').opened;
   }
 
+  // Verify a full scan job can be completed.
   test('Scan', () => {
     /** @type {!Array<!mojoBase.mojom.FilePath>} */
     const scannedFilePaths =
@@ -574,6 +575,7 @@ export function scanningAppTest() {
         });
   });
 
+  // Verify the scan failed dialog shows when a scan job fails.
   test('ScanFailed', () => {
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
@@ -610,6 +612,8 @@ export function scanningAppTest() {
         });
   });
 
+  // Verify the correct message is shown in the scan failed dialog based on the
+  // error type.
   test('ScanResults', () => {
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
@@ -703,6 +707,7 @@ export function scanningAppTest() {
         });
   });
 
+  // Verify a scan job can be canceled.
   test('CancelScan', () => {
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
@@ -764,6 +769,7 @@ export function scanningAppTest() {
         });
   });
 
+  // Verify the cancel scan failed dialog shows when a scan job fails to cancel.
   test('CancelScanFailed', () => {
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
@@ -816,6 +822,7 @@ export function scanningAppTest() {
         });
   });
 
+  // Verify the scan failed to start toast shows when a scan job fails to start.
   test('ScanFailedToStart', () => {
     fakeScanService_.setFailStartScan(true);
 
@@ -846,6 +853,7 @@ export function scanningAppTest() {
         });
   });
 
+  // Verify the left and right panel exist on app initialization.
   test('PanelContainerContent', () => {
     return initializeScanningApp(expectedScanners, capabilities).then(() => {
       const panelContainer = scanningApp.$$('#panelContainer');
@@ -859,6 +867,7 @@ export function scanningAppTest() {
     });
   });
 
+  // Verify the more settings toggle behavior.
   test('MoreSettingsToggle', () => {
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
@@ -880,6 +889,7 @@ export function scanningAppTest() {
         });
   });
 
+  // Verify the loading page container is shown when no scanners are available.
   test('NoScanners', () => {
     return initializeScanningApp(/*scanners=*/[], /*capabilities=*/ new Map())
         .then(() => {
@@ -890,6 +900,7 @@ export function scanningAppTest() {
         });
   });
 
+  // Verify clicking the retry button loads available scanners.
   test('RetryClickLoadsScanners', () => {
     return initializeScanningApp(/*scanners=*/[], /*capabilities=*/ new Map())
         .then(() => {
@@ -911,6 +922,8 @@ export function scanningAppTest() {
         });
   });
 
+  // Verify no changes are recorded when a scan job is initiated without any
+  // settings changes.
   test('RecordNoSettingChanges', () => {
     testBrowserProxy.setExpectedNumScanSettingChanges(0);
     return initializeScanningApp(expectedScanners, capabilities)
@@ -922,6 +935,8 @@ export function scanningAppTest() {
         });
   });
 
+  // Verify the correct amount of settings changes are recorded when a scan job
+  // is initiated.
   test('RecordSomeSettingChanges', () => {
     testBrowserProxy.setExpectedNumScanSettingChanges(2);
     return initializeScanningApp(expectedScanners, capabilities)
@@ -943,6 +958,8 @@ export function scanningAppTest() {
         });
   });
 
+  // Verify the correct amount of changes are recorded after the selected
+  // scanner is changed then a scan job is initiated.
   test('RecordSettingsWithScannerChange', () => {
     testBrowserProxy.setExpectedNumScanSettingChanges(3);
     return initializeScanningApp(expectedScanners, capabilities)
@@ -974,6 +991,7 @@ export function scanningAppTest() {
         });
   });
 
+  // Verify the default scan settings are chosen on app load.
   test('DefaultScanSettings', () => {
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
@@ -1002,6 +1020,8 @@ export function scanningAppTest() {
         });
   });
 
+  // Verify the first option in each settings dropdown is selected when the
+  // default option is not available on the selected scanner.
   test('DefaultScanSettingsNotAvailable', () => {
     return initializeScanningApp(expectedScanners.slice(1), capabilities)
         .then(() => {

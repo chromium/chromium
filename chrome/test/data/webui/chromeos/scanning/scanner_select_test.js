@@ -37,6 +37,8 @@ export function scannerSelectTest() {
     scannerSelect = null;
   });
 
+  // Verify the scanner select is initialized enabled with two expected
+  // scanners and the first scanner selected.
   test('initializeScannerSelect', () => {
     const select = scannerSelect.$$('select');
     assertTrue(!!select);
@@ -55,6 +57,7 @@ export function scannerSelectTest() {
     assertEquals(tokenToString(firstScannerId), select.value);
   });
 
+  // Verify the scanners are sorted alphabetically.
   test('scannersSortedAlphabetically', () => {
     const scanners = [
       createScanner(secondScannerId, secondScannerName),

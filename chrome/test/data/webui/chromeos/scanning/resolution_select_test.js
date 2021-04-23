@@ -26,6 +26,8 @@ export function resolutionSelectTest() {
     resolutionSelect = null;
   });
 
+  // Verify that adding resolutions results in the dropdown displaying the
+  // correct options.
   test('initializeResolutionSelect', () => {
     // Before options are added, the dropdown should be enabled and empty.
     const select =
@@ -39,8 +41,6 @@ export function resolutionSelectTest() {
     resolutionSelect.options = [firstResolution, secondResolution];
     flush();
 
-    // Verify that adding resolutions results in the dropdown displaying the
-    // correct options.
     assertEquals(2, select.length);
     assertEquals(
         secondResolution.toString() + ' dpi',
@@ -59,6 +59,7 @@ export function resolutionSelectTest() {
         });
   });
 
+  // Verify the resolutions are sorted correctly.
   test('resolutionsSortedCorrectly', () => {
     resolutionSelect.options = [150, 300, 75, 600, 1200, 200];
     flush();

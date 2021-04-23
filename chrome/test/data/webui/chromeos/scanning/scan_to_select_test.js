@@ -38,6 +38,8 @@ export function scanToSelectTest() {
     scanToSelect = null;
   });
 
+  // Verifies the 'Scan To' dropdown is initialized enabled with the 'My files'
+  // and 'Select folder' option.
   test('initializeScanToSelect', () => {
     const select = scanToSelect.$$('select');
     assertTrue(!!select);

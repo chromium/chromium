@@ -47,6 +47,8 @@ export function sourceSelectTest() {
     sourceSelect = null;
   });
 
+  // Verify that adding sources results in the dropdown displaying the correct
+  // options.
   test('initializeSourceSelect', () => {
     // Before options are added, the dropdown should be enabled and empty.
     const select = sourceSelect.$$('select');
@@ -61,8 +63,7 @@ export function sourceSelectTest() {
     sourceSelect.options = sourceArr;
     flush();
 
-    // Verify that adding sources results in the dropdown displaying the correct
-    // options. The expected options are simplex and flatbed.
+    // The expected options are simplex and flatbed.
     assertEquals(2, select.length);
     assertEquals(
         getSourceTypeString(firstSource.type),
@@ -73,6 +74,7 @@ export function sourceSelectTest() {
     assertEquals(secondSource.name, select.value);
   });
 
+  // Verify the sources are sorted alphabetically.
   test('sourcesSortedAlphabetically', () => {
     const sources = [
       createScannerSource(SourceType.FLATBED, 'C', pageSizes),
@@ -86,6 +88,7 @@ export function sourceSelectTest() {
         sourceSelect.options, (source) => getSourceTypeString(source.type));
   });
 
+  // Verify the default option is selected when available.
   test('flatbedSelectedByDefaultIfProvided', () => {
     const sources = [
       createScannerSource(SourceType.FLATBED, 'C', pageSizes),
@@ -99,6 +102,8 @@ export function sourceSelectTest() {
     assertEquals(sourceSelect.selectedOption, flatbedSource.name);
   });
 
+  // Verify the first option is selected when the default option is not
+  // available.
   test('firstSourceUsedWhenFlatbedNotProvided', () => {
     const sources = [
       createScannerSource(SourceType.ADF_SIMPLEX, 'C', pageSizes),

@@ -32,9 +32,9 @@ export function fileTypeSelectTest() {
     fileTypeSelect = null;
   });
 
+  // Verify the dropdown is initialized as enabled with three options. The
+  // default option should be PDF.
   test('initializeFileTypeSelect', () => {
-    // The dropdown should be initialized as enabled with three options. The
-    // default option should be PDF.
     const select =
         /** @type {!HTMLSelectElement} */ (fileTypeSelect.$$('select'));
     assertTrue(!!select);

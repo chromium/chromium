@@ -26,6 +26,8 @@ export function loadingPageTest() {
     loadingPage = null;
   });
 
+  // Verify the loading page, then the no scanners page is shown when no
+  // scanners are available.
   test('noScanners', () => {
     assertTrue(
         isVisible(/** @type {!HTMLElement} */ (loadingPage.$$('#loadingDiv'))));
@@ -39,6 +41,8 @@ export function loadingPageTest() {
         /** @type {!HTMLElement} */ (loadingPage.$$('#noScannersDiv'))));
   });
 
+  // Verify clicking the retry button on the no scanners page fires the
+  // 'retry-click' event.
   test('retryClick', () => {
     loadingPage.appState = AppState.NO_SCANNERS;
 
@@ -51,6 +55,8 @@ export function loadingPageTest() {
     assertTrue(retryEventFired);
   });
 
+  // Verify clicking the learn more button on the no scanners page fires the
+  // 'learn-more-click' event.
   test('learnMoreClick', () => {
     loadingPage.appState = AppState.NO_SCANNERS;
 
