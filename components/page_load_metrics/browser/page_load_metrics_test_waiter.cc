@@ -96,6 +96,11 @@ void PageLoadMetricsTestWaiter::AddMemoryUpdateExpectation(int routing_id) {
   expected_.memory_update_frame_ids_.insert(routing_id);
 }
 
+void PageLoadMetricsTestWaiter::AddLoadingBehaviorExpectation(
+    int behavior_flags) {
+  expected_.loading_behavior_flags_ |= behavior_flags;
+}
+
 bool PageLoadMetricsTestWaiter::DidObserveInPage(TimingField field) const {
   return observed_.page_fields_.IsSet(field);
 }
@@ -146,6 +151,12 @@ void PageLoadMetricsTestWaiter::OnCpuTimingUpdated(
     content::RenderFrameHost* subframe_rfh,
     const page_load_metrics::mojom::CpuTiming& timing) {
   current_aggregate_cpu_time_ += timing.task_time;
+  if (ExpectationsSatisfied() && run_loop_)
+    run_loop_->Quit();
+}
+
+void PageLoadMetricsTestWaiter::OnLoadingBehaviorObserved(int behavior_flags) {
+  observed_.loading_behavior_flags_ |= behavior_flags;
   if (ExpectationsSatisfied() && run_loop_)
     run_loop_->Quit();
 }
@@ -337,6 +348,14 @@ bool PageLoadMetricsTestWaiter::CpuTimeExpectationsSatisfied() const {
   return current_aggregate_cpu_time_ >= expected_minimum_aggregate_cpu_time_;
 }
 
+bool PageLoadMetricsTestWaiter::LoadingBehaviorExpectationsSatisfied() const {
+  // Once we've observed everything we've expected, we're satisfied. We allow
+  // other behaviors to be present incidentally.
+  return (expected_.loading_behavior_flags_ &
+          observed_.loading_behavior_flags_) ==
+         expected_.loading_behavior_flags_;
+}
+
 bool PageLoadMetricsTestWaiter::ResourceUseExpectationsSatisfied() const {
   return (expected_minimum_complete_resources_ == 0 ||
           current_complete_resources_ >=
@@ -397,6 +416,7 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          SubframeNavigationExpectationsSatisfied() &&
          SubframeDataExpectationsSatisfied() &&
          IsSubset(expected_.frame_sizes_, observed_.frame_sizes_) &&
+         LoadingBehaviorExpectationsSatisfied() &&
          CpuTimeExpectationsSatisfied() &&
          MainFrameIntersectionExpectationsSatisfied() &&
          MemoryUpdateExpectationsSatisfied();
@@ -429,6 +449,12 @@ void PageLoadMetricsTestWaiter::WaiterMetricsObserver::OnCpuTimingUpdate(
     const page_load_metrics::mojom::CpuTiming& timing) {
   if (waiter_)
     waiter_->OnCpuTimingUpdated(subframe_rfh, timing);
+}
+
+void PageLoadMetricsTestWaiter::WaiterMetricsObserver::
+    OnLoadingBehaviorObserved(content::RenderFrameHost*, int behavior_flags) {
+  if (waiter_)
+    waiter_->OnLoadingBehaviorObserved(behavior_flags);
 }
 
 void PageLoadMetricsTestWaiter::WaiterMetricsObserver::OnLoadedResource(

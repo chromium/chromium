@@ -72,6 +72,16 @@ void BackForwardCachePageLoadMetricsObserver::OnRestoreFromBackForwardCache(
   in_back_forward_cache_ = false;
   back_forward_cache_navigation_ids_.push_back(
       navigation_handle->GetNavigationId());
+
+  // HistoryNavigation is a singular event, and we share the same instance as
+  // long as we use the same source ID.
+  ukm::builders::HistoryNavigation builder(
+      GetUkmSourceIdForBackForwardCacheRestore(
+          back_forward_cache_navigation_ids_.size() - 1));
+  bool amp_flag = GetDelegate().GetMainFrameMetadata().behavior_flags &
+                  blink::kLoadingBehaviorAmpDocumentLoaded;
+  builder.SetBackForwardCache_IsAmpPage(amp_flag);
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 void BackForwardCachePageLoadMetricsObserver::

@@ -87,6 +87,10 @@ class PageLoadMetricsTestWaiter
   // frame routing IDs expected to receive a memory measurement update.
   void AddMemoryUpdateExpectation(int routing_id);
 
+  // Adds all |blink::LoadingBehaviorFlag|s set in |behavior_flags| to the
+  // set of expected behaviors.
+  void AddLoadingBehaviorExpectation(int behavior_flags);
+
   // Whether the given TimingField was observed in the page.
   bool DidObserveInPage(TimingField field) const;
 
@@ -137,6 +141,8 @@ class PageLoadMetricsTestWaiter
         content::RenderFrameHost* subframe_rfh,
         const page_load_metrics::mojom::CpuTiming& timing) override;
 
+    void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
+                                   int behavior_flags) override;
     void OnLoadedResource(const page_load_metrics::ExtraRequestCompleteInfo&
                               extra_request_complete_info) override;
 
@@ -222,6 +228,11 @@ class PageLoadMetricsTestWaiter
   void OnCpuTimingUpdated(content::RenderFrameHost* subframe_rfh,
                           const page_load_metrics::mojom::CpuTiming& timing);
 
+  // Updates observed page fields when a loading behavior (see
+  // |blink::LoadingBehaviorFlag|) is observed by MetricsWebContentsObserver.
+  // Stops waiting if expectations are satsfied after update.
+  void OnLoadingBehaviorObserved(int behavior_flags);
+
   // Updates observed page fields when a resource load is observed by
   // MetricsWebContentsObserver.  Stops waiting if expectations are satsfied
   // after update.
@@ -264,6 +275,7 @@ class PageLoadMetricsTestWaiter
   // These methods check whether expectations are satisfied for specific fields
   // inside the State object, by comparing them in expected_ and observed_.
   bool CpuTimeExpectationsSatisfied() const;
+  bool LoadingBehaviorExpectationsSatisfied() const;
   bool ResourceUseExpectationsSatisfied() const;
   bool WebFeaturesExpectationsSatisfied() const;
   bool SubframeNavigationExpectationsSatisfied() const;
@@ -286,6 +298,7 @@ class PageLoadMetricsTestWaiter
     std::bitset<static_cast<size_t>(
         blink::mojom::WebFeature::kNumberOfFeatures)>
         web_features_;
+    int loading_behavior_flags_ = 0;
     bool subframe_navigation_ = false;
     bool subframe_data_ = false;
     std::set<gfx::Size, FrameSizeComparator> frame_sizes_;
