@@ -107,7 +107,8 @@ class CAPTURE_EXPORT RequestManager final
                  VideoCaptureBufferType buffer_type,
                  std::unique_ptr<CameraBufferFactory> camera_buffer_factory,
                  BlobifyCallback blobify_callback,
-                 scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner);
+                 scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
+                 uint32_t device_api_version);
   ~RequestManager() override;
 
   // Sets up the stream context and allocate buffers according to the
@@ -370,6 +371,9 @@ class CAPTURE_EXPORT RequestManager final
   std::map<StreamType, uint32_t> last_received_frame_number_map_;
 
   base::WeakPtr<CameraAppDeviceImpl> camera_app_device_;
+
+  // The API version of the camera device.
+  uint32_t device_api_version_;
 
   base::WeakPtrFactory<RequestManager> weak_ptr_factory_{this};
 

@@ -320,6 +320,7 @@ void CameraDeviceDelegate::AllocateAndStart(
     return;
   }
 
+  device_api_version_ = camera_info->device_version;
   SortCameraMetadata(&camera_info->static_camera_characteristics);
   static_metadata_ = std::move(camera_info->static_camera_characteristics);
 
@@ -790,7 +791,8 @@ void CameraDeviceDelegate::Initialize() {
       device_context_,
       chrome_capture_params_[ClientType::kPreviewClient].buffer_type,
       std::make_unique<CameraBufferFactory>(),
-      base::BindRepeating(&RotateAndBlobify), ipc_task_runner_);
+      base::BindRepeating(&RotateAndBlobify), ipc_task_runner_,
+      device_api_version_);
   camera_3a_controller_ = std::make_unique<Camera3AController>(
       static_metadata_, request_manager_.get(), ipc_task_runner_);
   device_ops_->Initialize(
@@ -871,6 +873,9 @@ void CameraDeviceDelegate::ConfigureStreams(
     stream->data_space = 0;
     stream->rotation =
         cros::mojom::Camera3StreamRotation::CAMERA3_STREAM_ROTATION_0;
+    if (device_api_version_ >= cros::mojom::CAMERA_DEVICE_API_VERSION_3_5) {
+      stream->physical_camera_id = "";
+    }
 
     stream_config->streams.push_back(std::move(stream));
   }
@@ -903,6 +908,9 @@ void CameraDeviceDelegate::ConfigureStreams(
     still_capture_stream->data_space = 0;
     still_capture_stream->rotation =
         cros::mojom::Camera3StreamRotation::CAMERA3_STREAM_ROTATION_0;
+    if (device_api_version_ >= cros::mojom::CAMERA_DEVICE_API_VERSION_3_5) {
+      still_capture_stream->physical_camera_id = "";
+    }
     stream_config->streams.push_back(std::move(still_capture_stream));
 
     int32_t max_yuv_width = 0, max_yuv_height = 0;
@@ -919,6 +927,9 @@ void CameraDeviceDelegate::ConfigureStreams(
       reprocessing_stream_input->data_space = 0;
       reprocessing_stream_input->rotation =
           cros::mojom::Camera3StreamRotation::CAMERA3_STREAM_ROTATION_0;
+      if (device_api_version_ >= cros::mojom::CAMERA_DEVICE_API_VERSION_3_5) {
+        reprocessing_stream_input->physical_camera_id = "";
+      }
 
       auto reprocessing_stream_output = cros::mojom::Camera3Stream::New();
       reprocessing_stream_output->id =
@@ -935,6 +946,9 @@ void CameraDeviceDelegate::ConfigureStreams(
       reprocessing_stream_output->data_space = 0;
       reprocessing_stream_output->rotation =
           cros::mojom::Camera3StreamRotation::CAMERA3_STREAM_ROTATION_0;
+      if (device_api_version_ >= cros::mojom::CAMERA_DEVICE_API_VERSION_3_5) {
+        reprocessing_stream_output->physical_camera_id = "";
+      }
 
       stream_config->streams.push_back(std::move(reprocessing_stream_input));
       stream_config->streams.push_back(std::move(reprocessing_stream_output));
@@ -943,6 +957,9 @@ void CameraDeviceDelegate::ConfigureStreams(
 
   stream_config->operation_mode = cros::mojom::Camera3StreamConfigurationMode::
       CAMERA3_STREAM_CONFIGURATION_NORMAL_MODE;
+  if (device_api_version_ >= cros::mojom::CAMERA_DEVICE_API_VERSION_3_5) {
+    stream_config->session_parameters = cros::mojom::CameraMetadata::New();
+  }
   device_ops_->ConfigureStreams(
       std::move(stream_config),
       base::BindOnce(&CameraDeviceDelegate::OnConfiguredStreams, GetWeakPtr(),

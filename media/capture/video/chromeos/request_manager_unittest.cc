@@ -104,7 +104,8 @@ class RequestManagerTest : public ::testing::Test {
               [](const uint8_t* buffer, const uint32_t bytesused,
                  const VideoCaptureFormat& capture_format,
                  const int rotation) { return mojom::Blob::New(); }),
-          base::ThreadTaskRunnerHandle::Get());
+          base::ThreadTaskRunnerHandle::Get(),
+          cros::mojom::CAMERA_DEVICE_API_VERSION_3_5);
     }
   }
 

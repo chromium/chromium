@@ -272,6 +272,8 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
 
   base::WeakPtr<CameraAppDeviceImpl> camera_app_device_;
 
+  uint32_t device_api_version_;
+
   // States of SetPhotoOptions
   bool is_set_awb_mode_;
   bool is_set_brightness_;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 4
+// Next min version: 5
 
 module cros.mojom;
 
@@ -86,11 +86,15 @@ struct Camera3Stream {
   uint32 data_space;
   Camera3StreamRotation rotation;
   [MinVersion=1] CropRotateScaleInfo? crop_rotate_scale_info;
+  // Required for camera HAL device API versions >= 3.5.
+  [MinVersion=4] string? physical_camera_id;
 };
 
 struct Camera3StreamConfiguration {
   array<Camera3Stream> streams;
   Camera3StreamConfigurationMode operation_mode;
+  // Required for camera HAL device API versions >= 3.5.
+  [MinVersion=4] CameraMetadata? session_parameters;
 };
 
 enum Camera3BufferStatus {
@@ -167,11 +171,21 @@ enum Camera3RequestTemplate {
   CAMERA3_TEMPLATE_COUNT,
 };
 
+struct Camera3PhyscamMetadata {
+  // |id| is the camera ID of the physical camera, and comes from
+  // CameraCharacteristics.getPhysicalCameraIds(). All values are guaranteed to
+  // be integers.
+  int32 id;
+  CameraMetadata metadata;
+};
+
 struct Camera3CaptureRequest {
   uint32 frame_number;
   CameraMetadata settings;
   Camera3StreamBuffer? input_buffer;
   array<Camera3StreamBuffer> output_buffers;
+  // Required for camera HAL device API versions >= 3.5.
+  [MinVersion=4] array<Camera3PhyscamMetadata>? physcam_settings;
 };
 
 struct Camera3CaptureResult {
@@ -180,6 +194,8 @@ struct Camera3CaptureResult {
   array<Camera3StreamBuffer>? output_buffers;
   Camera3StreamBuffer? input_buffer;
   uint32 partial_result;
+  // Required for camera HAL device API versions >= 3.5.
+  [MinVersion=4] array<Camera3PhyscamMetadata>? physcam_metadata;
 };
 
 // Camera3CallbackOps is a translation of the camera3_callback_ops_t API
