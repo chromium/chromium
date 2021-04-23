@@ -30,6 +30,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gin/array_buffer.h"
+#include "gin/public/cppgc.h"
 #include "gin/public/gin_embedders.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/public/v8_platform.h"
@@ -256,7 +257,7 @@ void SetUpV8() {
       gin::IsolateHolder::IsolateType::kUtility);
   g_isolate_holder->isolate()->Enter();
 #if defined(PDF_ENABLE_XFA)
-  cppgc::InitializeProcess(gin::V8Platform::Get()->GetPageAllocator());
+  gin::InitializeCppgcFromV8Platform();
 #endif
 }
 

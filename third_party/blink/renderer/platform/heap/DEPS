@@ -14,6 +14,7 @@ include_rules = [
     "+base/task_runner.h",
     "+base/task/post_job.h",
     "+base/template_util.h",
+    "+gin/public/cppgc.h",
     "+gin/public/v8_platform.h",
     "+testing/perf/perf_result_reporter.h",
 
