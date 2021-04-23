@@ -70,9 +70,6 @@ class ASH_EXPORT WindowMiniView : public views::View,
   // margins and layouts of certain elements.
   virtual gfx::Rect GetHeaderBounds() const;
   virtual gfx::Size GetPreviewViewSize() const;
-  // Allows subclasses to resize/add shadow to the image that will appear as the
-  // icon. Defaults to do resize the image to |kIconSize|.
-  virtual gfx::ImageSkia ModifyIcon(gfx::ImageSkia* image) const;
 
   // views::View:
   void Layout() override;

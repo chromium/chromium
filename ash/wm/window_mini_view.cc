@@ -120,11 +120,6 @@ gfx::Size WindowMiniView::GetPreviewViewSize() const {
   return preview_view_->GetPreferredSize();
 }
 
-gfx::ImageSkia WindowMiniView::ModifyIcon(gfx::ImageSkia* image) const {
-  return gfx::ImageSkiaOperations::CreateResizedImage(
-      *image, skia::ImageOperations::RESIZE_BEST, kIconSize);
-}
-
 WindowMiniView::WindowMiniView(aura::Window* source_window)
     : source_window_(source_window) {
   SetPaintToLayer();
@@ -169,7 +164,8 @@ void WindowMiniView::UpdateIconView() {
         header_view_->AddChildViewAt(std::make_unique<views::ImageView>(), 0);
   }
 
-  icon_view_->SetImage(ModifyIcon(icon));
+  icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
+      *icon, skia::ImageOperations::RESIZE_BEST, kIconSize));
 }
 
 gfx::Rect WindowMiniView::GetContentAreaBounds() const {
