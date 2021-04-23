@@ -123,6 +123,11 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   bool HasTopOverflow() const { return box_->HasTopOverflow(); }
   bool HasNonVisibleOverflow() const { return box_->HasNonVisibleOverflow(); }
 
+  // Return true if overflow in the block direction is clipped. With
+  // overflow-[xy]:clip, it is possible with visible overflow along one axis at
+  // the same time as we clip it along the other axis.
+  bool HasNonVisibleBlockOverflow() const;
+
   OverflowClipAxes GetOverflowClipAxes() const {
     return box_->GetOverflowClipAxes();
   }

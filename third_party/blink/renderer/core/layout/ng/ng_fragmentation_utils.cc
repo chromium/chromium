@@ -214,7 +214,13 @@ void SetupFragmentBuilderForFragmentation(
     const NGConstraintSpace& space,
     const NGBlockBreakToken* previous_break_token,
     NGBoxFragmentBuilder* builder) {
-  builder->SetHasBlockFragmentation();
+  // When resuming layout after a break, we may not be allowed to break again
+  // (because of clipped overflow). In such situations, we should not call
+  // SetHasBlockFragmentation(), but we still need to resume layout correctly,
+  // based on the previous break token.
+  DCHECK(space.HasBlockFragmentation() || previous_break_token);
+  if (space.HasBlockFragmentation())
+    builder->SetHasBlockFragmentation();
   builder->SetPreviousBreakToken(previous_break_token);
 
   if (space.IsInitialColumnBalancingPass())
@@ -244,11 +250,11 @@ bool IsNodeFullyGrown(NGBlockNode node,
   return max_block_size == current_total_block_size;
 }
 
-bool FinishFragmentation(NGBlockNode node,
-                         const NGConstraintSpace& space,
-                         LayoutUnit trailing_border_padding,
-                         LayoutUnit space_left,
-                         NGBoxFragmentBuilder* builder) {
+NGBreakStatus FinishFragmentation(NGBlockNode node,
+                                  const NGConstraintSpace& space,
+                                  LayoutUnit trailing_border_padding,
+                                  LayoutUnit space_left,
+                                  NGBoxFragmentBuilder* builder) {
   const NGBlockBreakToken* previous_break_token = builder->PreviousBreakToken();
   LayoutUnit previously_consumed_block_size;
   if (previous_break_token && !previous_break_token->IsBreakBefore())
@@ -301,7 +307,8 @@ bool FinishFragmentation(NGBlockNode node,
     // two fragments for #container after the spanner, each 40px tall.
     final_block_size = std::min(final_block_size, intrinsic_block_size) -
                        trailing_border_padding;
-  } else if (space_left != kIndefiniteSize && desired_block_size > space_left) {
+  } else if (space_left != kIndefiniteSize && desired_block_size > space_left &&
+             space.HasBlockFragmentation()) {
     // We're taller than what we have room for. We don't want to use more than
     // |space_left|, but if the intrinsic block-size is larger than that, it
     // means that there's something unbreakable (monolithic) inside (or we'd
@@ -348,14 +355,14 @@ bool FinishFragmentation(NGBlockNode node,
                                 final_block_size);
   builder->SetFragmentBlockSize(final_block_size);
 
-  if (builder->FoundColumnSpanner())
-    return true;
+  if (builder->FoundColumnSpanner() || !space.HasBlockFragmentation())
+    return NGBreakStatus::kContinue;
 
   if (space_left == kIndefiniteSize) {
     // We don't know how space is available (initial column balancing pass), so
     // we won't break.
     builder->SetIsAtBlockEnd();
-    return true;
+    return NGBreakStatus::kContinue;
   }
 
   if (builder->HasChildBreakInside()) {
@@ -397,8 +404,20 @@ bool FinishFragmentation(NGBlockNode node,
       if (!was_broken_by_child ||
           IsNodeFullyGrown(node, space, fragments_total_block_size,
                            builder->BorderPadding(),
-                           builder->InitialBorderBoxSize().inline_size))
+                           builder->InitialBorderBoxSize().inline_size)) {
+        if (node.HasNonVisibleBlockOverflow() &&
+            builder->HasChildBreakInside()) {
+          // We have reached the end of a fragmentable node that clips overflow
+          // in the block direction. If something broke inside at this point, we
+          // need to relayout without fragmentation, so that we don't generate
+          // any additional fragments (apart from the one we're working on) from
+          // this node. We don't want any zero-sized clipped fragments that
+          // contribute to superfluous fragmentainers.
+          return NGBreakStatus::kDisableFragmentation;
+        }
+
         builder->SetIsAtBlockEnd();
+      }
 
       // If we're going to break just because of floats or out-of-flow child
       // breaks, no break appeal will have been recorded so far, since we only
@@ -420,7 +439,7 @@ bool FinishFragmentation(NGBlockNode node,
                                     std::max(final_block_size, space_left));
     }
 
-    return true;
+    return NGBreakStatus::kContinue;
   }
 
   if (desired_block_size > space_left) {
@@ -451,16 +470,16 @@ bool FinishFragmentation(NGBlockNode node,
       //
       // [1] https://www.w3.org/TR/css-break-3/#possible-breaks
       if (builder->HasEarlyBreak())
-        return false;
+        return NGBreakStatus::kNeedsEarlierBreak;
       break_appeal = kBreakAppealLastResort;
     }
     builder->SetBreakAppeal(break_appeal);
-    return true;
+    return NGBreakStatus::kContinue;
   }
 
   // The end of the block fits in the current fragmentainer.
   builder->SetIsAtBlockEnd();
-  return true;
+  return NGBreakStatus::kContinue;
 }
 
 NGBreakStatus BreakBeforeChildIfNeeded(const NGConstraintSpace& space,

@@ -1526,6 +1526,13 @@ base::Optional<TransformationMatrix> NGBlockNode::GetTransformForChildFragment(
   return transform;
 }
 
+bool NGBlockNode::HasNonVisibleBlockOverflow() const {
+  OverflowClipAxes clip_axes = GetOverflowClipAxes();
+  if (Style().IsHorizontalWritingMode())
+    return clip_axes & kOverflowClipY;
+  return clip_axes & kOverflowClipX;
+}
+
 bool NGBlockNode::IsCustomLayoutLoaded() const {
   DCHECK(box_->IsLayoutNGCustom());
   return To<LayoutNGCustom>(box_.Get())->IsLoaded();

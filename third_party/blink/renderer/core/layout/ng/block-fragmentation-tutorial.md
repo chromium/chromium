@@ -228,6 +228,22 @@ values know nothing about fragmentation. The space taken up by previous
 fragments can be retrieved from
 [BreakToken()->ConsumedBlockSize()](ng_block_break_token.h).
 
+As mentioned earlier, normally the right thing to do before performing block
+fragmentation steps is to check if
+[ConstraintSpace().HasBlockFragmentation()](ng_constraint_space.h) returns true,
+but there are situations where we may already have generated fragments from a
+node, but need to stop it from fragmenting any further. This happens when
+overflow is clipped
+[(overflow:clip)](https://www.w3.org/TR/css-overflow-3/#valdef-overflow-clip). In
+such situations, ConstraintSpace().HasBlockFragmentation() will return false,
+but we still need to pick up any previous break token to resume layout
+correctly. In cases where this distinction matters (like here - since the
+previous break token is necessary in order to calculate the final block-size, if
+specified), [InvolvedInBlockFragmentation()](ng_fragmentation_utils.h) should be
+called instead. This situation is detected in FinishFragmentation(), and
+kDisableFragmentation will be returned then, which means that we need to abort
+layout and retry without fragmentation.
+
 ## Break appeal ##
 
 Some breakpoints are more appealing, while others violate certain breaking
@@ -364,16 +380,17 @@ algorithm (the NGBlockLayoutAlgorithm for the second column). The column only
 had one break token child, i.e. the one for #container. We'll proceed with its
 sibling #next, which will also fit in the second column. And we're done.
 
-## Aborting and re-running layout to an earlier breakpoint ##
+## Aborting and re-running layout ##
 
-If BreakBeforeChildIfNeeded() returns kNeedsEarlierBreak, or
-FinishFragmentation() fails (i.e. returns false), we ran out of space at an
-unappealing breakpoint. It also means that we have actually found a better
-earlier breakpoint (further up in the fragmentainer). When this happens, we need
-to abort and rerun layout, but this time with a parameter that says exactly
-where to stop and break. Early breaks are stored in NGLayoutResult when
-found. See NGLayoutResult::GetEarlyBreak() and the
-[NGEarlyBreak](ng_early_break.h) structure.
+### Re-running to an earlier breakpoint ###
+
+If BreakBeforeChildIfNeeded() or FinishFragmentation() returns
+kNeedsEarlierBreak, we ran out of space at an unappealing breakpoint. It also
+means that we have actually found a better earlier breakpoint (further up in the
+fragmentainer). When this happens, we need to abort and rerun layout, but this
+time with a parameter that says exactly where to stop and break. Early breaks
+are stored in NGLayoutResult when found. See NGLayoutResult::GetEarlyBreak() and
+the [NGEarlyBreak](ng_early_break.h) structure.
 
 An algorithm can be rerun to break at the appealing early breakpoint by passing
 said early breakpoint to the algorithm's constructor. This can be done in the
@@ -390,6 +407,20 @@ called (as long as the algorithm only deals with block nodes). If it returns
 true, this is where to break. Otherwise, before laying out a child,
 [EnterEarlyBreakInChild()](ng_fragmentation_utils.h) should be called, and
 the return value should be passed to the layout algorithm of the child.
+
+### Re-running without block fragmentation ###
+
+If [FinishFragmentation()](ng_fragmentation_utils.h) returns
+kDisableFragmentation, it means that a clipped node isn't allowed to fragment
+any further, because we've reached the end, and anything past that point will be
+clipped (and we don't want any additional fragmentainers generated just to hold
+empty clipped fragments). When we've reached the end, but some child still
+claims more space than available in the current fragmentainer, we need to abort
+and relayout without block fragmentation, so that the node from this point will
+be treated as monolithic.
+
+The correct response to this is to abort layout of the node and relayout using
+[NGLayoutAlgorithm::RelayoutWithoutFragmentation()](ng_layout_algorithm.h).
 
 ## Parallel flows ##
 

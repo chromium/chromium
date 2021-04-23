@@ -424,19 +424,22 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::Layout() {
     result = LayoutWithInlineChildLayoutContext(first_child);
   else
     result = Layout(nullptr);
-  if (UNLIKELY(result->Status() == NGLayoutResult::kNeedsEarlierBreak)) {
-    // If we found a good break somewhere inside this block, re-layout and break
-    // at that location.
-    DCHECK(result->GetEarlyBreak());
-    return RelayoutAndBreakEarlier<NGBlockLayoutAlgorithm>(
-        *result->GetEarlyBreak());
-  } else if (UNLIKELY(result->Status() ==
-                      NGLayoutResult::
-                          kNeedsRelayoutWithNoForcedTruncateAtLineClamp)) {
-    DCHECK(!ignore_line_clamp_);
-    return RelayoutIgnoringLineClamp();
+  switch (result->Status()) {
+    case NGLayoutResult::kNeedsEarlierBreak:
+      // If we found a good break somewhere inside this block, re-layout and
+      // break at that location.
+      DCHECK(result->GetEarlyBreak());
+      return RelayoutAndBreakEarlier<NGBlockLayoutAlgorithm>(
+          *result->GetEarlyBreak());
+    case NGLayoutResult::kNeedsRelayoutWithNoForcedTruncateAtLineClamp:
+      DCHECK(!ignore_line_clamp_);
+      return RelayoutIgnoringLineClamp();
+    case NGLayoutResult::kDisableFragmentation:
+      DCHECK(ConstraintSpace().HasBlockFragmentation());
+      return RelayoutWithoutFragmentation<NGBlockLayoutAlgorithm>();
+    default:
+      return result;
   }
-  return result;
 }
 
 NOINLINE const NGLayoutResult*
@@ -927,10 +930,15 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
   // We only finalize for fragmentation if the fragment has a BFC block offset.
   // This may occur with a zero block size fragment. We need to know the BFC
   // block offset to determine where the fragmentation line is relative to us.
-  if (container_builder_.BfcBlockOffset() &&
-      ConstraintSpace().HasBlockFragmentation()) {
-    if (!FinalizeForFragmentation())
-      return container_builder_.Abort(NGLayoutResult::kNeedsEarlierBreak);
+  if (UNLIKELY(container_builder_.BfcBlockOffset() &&
+               InvolvedInBlockFragmentation(container_builder_))) {
+    NGBreakStatus status = FinalizeForFragmentation();
+    if (status != NGBreakStatus::kContinue) {
+      if (status == NGBreakStatus::kNeedsEarlierBreak)
+        return container_builder_.Abort(NGLayoutResult::kNeedsEarlierBreak);
+      DCHECK_EQ(status, NGBreakStatus::kDisableFragmentation);
+      return container_builder_.Abort(NGLayoutResult::kDisableFragmentation);
+    }
   }
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
@@ -938,7 +946,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
 #if DCHECK_IS_ON()
   // If we're not participating in a fragmentation context, no block
   // fragmentation related fields should have been set.
-  if (!ConstraintSpace().HasBlockFragmentation())
+  if (!InvolvedInBlockFragmentation(container_builder_))
     container_builder_.CheckNoBlockFragmentation();
 #endif
 
@@ -2240,8 +2248,9 @@ void NGBlockLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
   }
 }
 
-bool NGBlockLayoutAlgorithm::FinalizeForFragmentation() {
-  if (Node().IsInlineFormattingContextRoot() && !early_break_) {
+NGBreakStatus NGBlockLayoutAlgorithm::FinalizeForFragmentation() {
+  if (Node().IsInlineFormattingContextRoot() && !early_break_ &&
+      ConstraintSpace().HasBlockFragmentation()) {
     if (container_builder_.HasInflowChildBreakInside() ||
         first_overflowing_line_) {
       if (first_overflowing_line_ &&
@@ -2261,7 +2270,7 @@ bool NGBlockLayoutAlgorithm::FinalizeForFragmentation() {
         const NGEarlyBreak* breakpoint =
             MakeGarbageCollected<NGEarlyBreak>(line_number);
         container_builder_.SetEarlyBreak(breakpoint, kBreakAppealPerfect);
-        return false;
+        return NGBreakStatus::kNeedsEarlierBreak;
       }
     } else {
       // Everything could fit in the current fragmentainer, but, depending on
@@ -2300,7 +2309,7 @@ bool NGBlockLayoutAlgorithm::FinalizeForFragmentation() {
                                               consumed_block_size);
       container_builder_.SetConsumedBlockSize(fragments_total_block_size);
     }
-    return true;
+    return NGBreakStatus::kContinue;
   }
 
   LayoutUnit space_left = kIndefiniteSize;

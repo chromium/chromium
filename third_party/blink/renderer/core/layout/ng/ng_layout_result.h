@@ -45,6 +45,7 @@ class CORE_EXPORT NGLayoutResult final
     kNeedsEarlierBreak = 2,
     kOutOfFragmentainerSpace = 3,
     kNeedsRelayoutWithNoForcedTruncateAtLineClamp = 4,
+    kDisableFragmentation = 5,
     // When adding new values, make sure the bit size of |Bitfields::status| is
     // large enough to store.
   };

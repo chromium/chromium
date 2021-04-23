@@ -225,9 +225,11 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // from crossing fragmentainer boundaries, and rather create a break token if
   // we're out of space. As part of finalizing we may also discover that we need
   // to abort layout, because we've run out of space at a less-than-ideal
-  // location. In this case, false will be returned. Otherwise, true will be
-  // returned.
-  bool FinalizeForFragmentation();
+  // location, or that we need to relayout without block fragmentation (when a
+  // clipped box gets overflowed past the fragmentation line). The return value
+  // can be checked for this. Only if kContinue is returned, can a fragment be
+  // created.
+  NGBreakStatus FinalizeForFragmentation();
 
   // Insert a fragmentainer break before the child if necessary.
   // See |::blink::BreakBeforeChildIfNeeded()| for more documentation.

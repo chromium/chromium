@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -92,8 +93,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
     container_builder_.SetIsNewFormattingContext(
         params.space.IsNewFormattingContext());
     container_builder_.SetInitialFragmentGeometry(params.fragment_geometry);
-    if (UNLIKELY(params.space.HasBlockFragmentation())) {
-      DCHECK(params.space.IsAnonymous() || !params.node.IsMonolithic());
+    if (UNLIKELY(params.space.HasBlockFragmentation() || params.break_token)) {
       SetupFragmentBuilderForFragmentation(params.space, params.break_token,
                                            &container_builder_);
     }
@@ -151,6 +151,32 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
     new_builder.PropagateSpaceShortage(
         container_builder_.MinimalSpaceShortage());
     return algorithm_with_break.Layout();
+  }
+
+  // Lay out again, this time without block fragmentation. This happens when a
+  // block-axis clipped node reaches the end, but still has content inside that
+  // wants to break. We don't want any zero-sized clipped fragments that
+  // contribute to superfluous fragmentainers.
+  template <typename Algorithm>
+  const NGLayoutResult* RelayoutWithoutFragmentation() {
+    DCHECK(ConstraintSpace().HasBlockFragmentation());
+    // We'll relayout with a special cloned constraint space that disables
+    // further fragmentation (but rather lets clipped child content "overflow"
+    // past the fragmentation line). This means that the cached constraint space
+    // will still be set up to do block fragmentation, but that should be the
+    // right thing, since, as far as input is concerned, this node is meant to
+    // perform block fragmentation (and it may already have produced multiple
+    // fragment, but this one will be the last).
+    NGConstraintSpace new_space =
+        NGConstraintSpaceBuilder::CloneWithoutFragmentation(ConstraintSpace());
+
+    NGLayoutAlgorithmParams params(Node(),
+                                   container_builder_.InitialFragmentGeometry(),
+                                   new_space, BreakToken());
+    Algorithm algorithm_without_fragmentation(params);
+    auto& new_builder = algorithm_without_fragmentation.container_builder_;
+    new_builder.SetBoxType(container_builder_.BoxType());
+    return algorithm_without_fragmentation.Layout();
   }
 
   NGInputNodeType node_;
