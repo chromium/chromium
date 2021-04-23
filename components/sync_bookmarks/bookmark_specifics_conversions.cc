@@ -324,8 +324,6 @@ void UpdateBookmarkNodeFromSpecifics(
   SetBookmarkFaviconFromSpecifics(specifics, node, favicon_service);
 }
 
-// TODO(crbug.com/1005219): Replace this function to move children between
-// parent nodes more efficiently.
 const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
     const bookmarks::BookmarkNode* node,
     const base::GUID& guid,
