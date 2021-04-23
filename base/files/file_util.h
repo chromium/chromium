@@ -343,6 +343,10 @@ BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStream(FilePath* path);
 BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
                                                          FilePath* path);
 
+// Do NOT USE in new code. Use ScopedTempDir instead.
+// TODO(crbug.com/561597) Remove existing usage and make this an implementation
+// detail inside ScopedTempDir.
+//
 // Create a new directory. If prefix is provided, the new directory name is in
 // the format of prefixyyyy.
 // NOTE: prefix is ignored in the POSIX implementation.
