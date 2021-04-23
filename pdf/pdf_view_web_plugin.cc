@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -73,8 +74,8 @@ namespace {
 class PerProcessInitializer final {
  public:
   static PerProcessInitializer& GetInstance() {
-    static PerProcessInitializer instance;
-    return instance;
+    static base::NoDestructor<PerProcessInitializer> instance;
+    return *instance;
   }
 
   void Acquire() {

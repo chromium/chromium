@@ -24,6 +24,13 @@ if (enable_pdf) {
     configs = [ "//build/config/compiler:noshadowing" ]
   }
 
+  config("strict") {
+    configs = [
+      ":common",
+      "//build/config/compiler:wexit_time_destructors",
+    ]
+  }
+
   config("pdfium_includes") {
     include_dirs = [ "//third_party/pdfium" ]
   }
@@ -31,7 +38,7 @@ if (enable_pdf) {
   static_library("pdf") {
     sources = [ "pdf.cc" ]
 
-    configs += [ ":common" ]
+    configs += [ ":strict" ]
 
     public = [ "pdf.h" ]
 
@@ -46,7 +53,7 @@ if (enable_pdf) {
   static_library("pdf_ppapi") {
     sources = [ "pdf_ppapi.cc" ]
 
-    configs += [ ":common" ]
+    configs += [ ":strict" ]
 
     public = [ "pdf_ppapi.h" ]
 
@@ -65,7 +72,7 @@ if (enable_pdf) {
   source_set("features") {
     sources = [ "pdf_features.cc" ]
 
-    configs += [ ":common" ]
+    configs += [ ":strict" ]
 
     public = [ "pdf_features.h" ]
 
@@ -154,7 +161,7 @@ if (enable_pdf) {
 
     public_configs = [ ":pdfium_includes" ]
 
-    configs += [ ":common" ]
+    configs += [ ":strict" ]
 
     public_deps = [ "//skia" ]
 
@@ -194,6 +201,8 @@ if (enable_pdf) {
   source_set("assert_enums") {
     visibility = [ ":*" ]
 
+    testonly = true
+
     sources = [
       "pdfium/pdfium_assert_matching_enums.cc",
       "ppapi_migration/ppapi_assert_matching_enums.cc",
@@ -223,7 +232,7 @@ if (enable_pdf) {
       "accessibility_structs.h",
     ]
 
-    configs += [ ":common" ]
+    configs += [ ":strict" ]
 
     deps = [
       "//base",
@@ -253,7 +262,7 @@ if (enable_pdf) {
       "ppapi_migration/value_conversions.h",
     ]
 
-    configs += [ ":common" ]
+    configs += [ ":strict" ]
 
     public_deps = [ "//third_party/abseil-cpp:absl" ]
 
@@ -277,7 +286,7 @@ if (enable_pdf) {
       "out_of_process_instance.h",
     ]
 
-    configs += [ ":common" ]
+    configs += [ ":strict" ]
 
     public_deps = [ "//third_party/abseil-cpp:absl" ]
 
@@ -313,7 +322,7 @@ if (enable_pdf) {
       "post_message_sender.h",
     ]
 
-    configs += [ ":common" ]
+    configs += [ ":strict" ]
 
     public = [ "pdf_view_web_plugin.h" ]
 
@@ -348,7 +357,7 @@ if (enable_pdf) {
       "test/test_document_loader.h",
     ]
 
-    configs += [ "//build/config/compiler:noshadowing" ]
+    configs += [ ":common" ]
 
     deps = [
       ":internal",
