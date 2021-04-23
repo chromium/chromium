@@ -11,19 +11,24 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace payments {
 
 // Android wrapper of the PaymentManifestWebDataService which provides access
-// from the Java layer. Note that on Android, there's only a single profile, and
-// therefore a single instance of this wrapper.
-class PaymentManifestWebDataServiceAndroid : public WebDataServiceConsumer {
+// from the Java layer.
+class PaymentManifestWebDataServiceAndroid
+    : public WebDataServiceConsumer,
+      public content::WebContentsObserver {
  public:
-  PaymentManifestWebDataServiceAndroid(JNIEnv* env, jobject obj);
+  PaymentManifestWebDataServiceAndroid(JNIEnv* env,
+                                       jobject obj,
+                                       content::WebContents* web_contents);
   ~PaymentManifestWebDataServiceAndroid() override;
 
   // Override WebDataServiceConsumer interface.
@@ -73,6 +78,8 @@ class PaymentManifestWebDataServiceAndroid : public WebDataServiceConsumer {
   void OnPaymentMethodManifestRequestDone(JNIEnv* env,
                                           WebDataServiceBase::Handle h,
                                           WDTypedResult* result);
+  scoped_refptr<PaymentManifestWebDataService>
+  GetPaymentManifestWebDataService();
 
   // Pointer to the java counterpart.
   JavaObjectWeakGlobalRef weak_java_obj_;

@@ -8,6 +8,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.payments.WebAppManifestSection;
+import org.chromium.content_public.browser.WebContents;
 
 /** Java wrapper of the payment manifest web data service. */
 @JNINamespace("payments")
@@ -36,15 +37,24 @@ public class PaymentManifestWebDataService {
     /** Holds the native counterpart of this class object. */
     private long mManifestWebDataServiceAndroid;
 
-    public PaymentManifestWebDataService() {
-        mManifestWebDataServiceAndroid =
-                PaymentManifestWebDataServiceJni.get().init(PaymentManifestWebDataService.this);
+    /**
+     * Creates a new PaymentManifestWebDataService.
+     *
+     * @param webContents The web contents where the payment is being requested.
+     */
+    public PaymentManifestWebDataService(WebContents webContents) {
+        if (webContents == null || webContents.isDestroyed()) return;
+
+        mManifestWebDataServiceAndroid = PaymentManifestWebDataServiceJni.get().init(
+                PaymentManifestWebDataService.this, webContents);
     }
 
     /**
      * Destroy this class object. It destroys the native counterpart.
      */
     public void destroy() {
+        if (mManifestWebDataServiceAndroid == 0) return;
+
         PaymentManifestWebDataServiceJni.get().destroy(
                 mManifestWebDataServiceAndroid, PaymentManifestWebDataService.this);
         mManifestWebDataServiceAndroid = 0;
@@ -59,6 +69,8 @@ public class PaymentManifestWebDataService {
      */
     public boolean getPaymentMethodManifest(
             String methodName, PaymentManifestWebDataServiceCallback callback) {
+        if (mManifestWebDataServiceAndroid == 0) return false;
+
         return PaymentManifestWebDataServiceJni.get().getPaymentMethodManifest(
                 mManifestWebDataServiceAndroid, PaymentManifestWebDataService.this, methodName,
                 callback);
@@ -73,6 +85,8 @@ public class PaymentManifestWebDataService {
      */
     public boolean getPaymentWebAppManifest(
             String appPackageName, PaymentManifestWebDataServiceCallback callback) {
+        if (mManifestWebDataServiceAndroid == 0) return false;
+
         return PaymentManifestWebDataServiceJni.get().getPaymentWebAppManifest(
                 mManifestWebDataServiceAndroid, PaymentManifestWebDataService.this, appPackageName,
                 callback);
@@ -86,6 +100,8 @@ public class PaymentManifestWebDataService {
      *                         applicable.
      */
     public void addPaymentMethodManifest(String methodName, String[] appIdentifiers) {
+        if (mManifestWebDataServiceAndroid == 0) return;
+
         PaymentManifestWebDataServiceJni.get().addPaymentMethodManifest(
                 mManifestWebDataServiceAndroid, PaymentManifestWebDataService.this, methodName,
                 appIdentifiers);
@@ -97,6 +113,8 @@ public class PaymentManifestWebDataService {
      * @param manifest The manifest.
      */
     public void addPaymentWebAppManifest(WebAppManifestSection[] manifest) {
+        if (mManifestWebDataServiceAndroid == 0) return;
+
         PaymentManifestWebDataServiceJni.get().addPaymentWebAppManifest(
                 mManifestWebDataServiceAndroid, PaymentManifestWebDataService.this, manifest);
     }
@@ -135,7 +153,7 @@ public class PaymentManifestWebDataService {
 
     @NativeMethods
     interface Natives {
-        long init(PaymentManifestWebDataService caller);
+        long init(PaymentManifestWebDataService caller, WebContents webContents);
         void destroy(long nativePaymentManifestWebDataServiceAndroid,
                 PaymentManifestWebDataService caller);
         boolean getPaymentMethodManifest(long nativePaymentManifestWebDataServiceAndroid,

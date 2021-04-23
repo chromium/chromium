@@ -1552,8 +1552,8 @@ public class AndroidPaymentAppFinderTest
         mMethodData = buildMethodData(methodNames);
         mActivityTestRule.runOnUiThread(() -> {
             AndroidPaymentAppFinder finder =
-                    new AndroidPaymentAppFinder(new PaymentManifestWebDataService(), mDownloader,
-                            new PaymentManifestParser(), mPackageManager,
+                    new AndroidPaymentAppFinder(new PaymentManifestWebDataService(getWebContents()),
+                            mDownloader, new PaymentManifestParser(), mPackageManager,
                             /*delegate=*/AndroidPaymentAppFinderTest.this, /*factory=*/null);
             finder.bypassIsReadyToPayServiceInTest();
             if (appStorePackageName != null) {
