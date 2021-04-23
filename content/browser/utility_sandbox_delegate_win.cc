@@ -280,4 +280,10 @@ bool UtilitySandboxedProcessLauncherDelegate::ShouldUnsandboxedRunInJob() {
   return false;
 }
 
+bool UtilitySandboxedProcessLauncherDelegate::CetCompatible() {
+  auto utility_sub_type =
+      cmd_line_.GetSwitchValueASCII(switches::kUtilitySubType);
+  return GetContentClient()->browser()->IsUtilityCetCompatible(
+      utility_sub_type);
+}
 }  // namespace content
