@@ -134,13 +134,18 @@
 
   .dotted-line {
     -webkit-mask: url(../images/background_svgs/streamer_line.svg);
-    -webkit-mask-position: center left;
+    -webkit-mask-position: 3px 0;
     -webkit-mask-size: 153px 6px;
+    animation: dotted-line 1s infinite linear;
     background-color: var(--welcome-grey);
     height: 6px;
     left: 50%;
     top: 50%;
     transform-origin: center left;
+  }
+
+  @keyframes dotted-line {
+    to { -webkit-mask-position: 23px 0; }
   }
 
   #dotted-line-1 {
