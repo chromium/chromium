@@ -653,7 +653,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   CheckPageInfoUkmMetrics(url, true);
 }
 
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+// TODO(crbug.com/1201588): Fix flakiness on Windows.
+#if defined(OS_WIN) || defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_FetchAndEmitMetricsWithExtensionsAndHostReuse \
   DISABLED_FetchAndEmitMetricsWithExtensionsAndHostReuse
 #else
