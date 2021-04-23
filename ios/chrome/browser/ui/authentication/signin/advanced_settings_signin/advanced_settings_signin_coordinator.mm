@@ -106,10 +106,12 @@ using l10n_util::GetNSString;
   [self.syncSettingsCoordinator stop];
   self.syncSettingsCoordinator = nil;
 
-  // Revokes all refresh tokens and alerts services of the signed-out state.
-  self.identityManager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-      signin_metrics::ABORT_SIGNIN,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
+    // Revokes all refresh tokens and alerts services of the signed-out state.
+    self.identityManager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
+        signin_metrics::ABORT_SIGNIN,
+        signin_metrics::SignoutDelete::kIgnoreMetric);
+  }
 
   switch (action) {
     case SigninCoordinatorInterruptActionNoDismiss:
