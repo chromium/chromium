@@ -29,10 +29,11 @@ class PageHolder : public TestPageHolder,
                     web_contents,
                     web_contents,
                     web_contents,
-                    web_contents) {
+                    web_contents,
+                    FrameTree::Type::kPrimary) {
     frame_tree_.Init(
         SiteInstance::Create(web_contents->GetBrowserContext()).get(), false,
-        "", FrameTree::Type::kPrimary);
+        "");
 
     web_contents_->NotifySwappedFromRenderManager(
         nullptr, frame_tree_.root()->render_manager()->current_frame_host(),

@@ -104,7 +104,8 @@ FrameTree::FrameTree(
     RenderFrameHostDelegate* render_frame_delegate,
     RenderViewHostDelegate* render_view_delegate,
     RenderWidgetHostDelegate* render_widget_delegate,
-    RenderFrameHostManager::Delegate* manager_delegate)
+    RenderFrameHostManager::Delegate* manager_delegate,
+    Type type)
     : delegate_(delegate),
       render_frame_delegate_(render_frame_delegate),
       render_view_delegate_(render_view_delegate),
@@ -126,7 +127,8 @@ FrameTree::FrameTree(
                               blink::mojom::FrameOwnerProperties(),
                               blink::mojom::FrameOwnerElementType::kNone)),
       focused_frame_tree_node_id_(FrameTreeNode::kFrameTreeNodeInvalidId),
-      load_progress_(0.0) {}
+      load_progress_(0.0),
+      type_(type) {}
 
 FrameTree::~FrameTree() {
 #if DCHECK_IS_ON()
@@ -555,13 +557,11 @@ void FrameTree::RegisterExistingOriginToPreventOptInIsolation(
 
 void FrameTree::Init(SiteInstance* main_frame_site_instance,
                      bool renderer_initiated_creation,
-                     const std::string& main_frame_name,
-                     FrameTree::Type type) {
+                     const std::string& main_frame_name) {
   // blink::FrameTree::SetName always keeps |unique_name| empty in case of a
   // main frame - let's do the same thing here.
   std::string unique_name;
   root_->SetFrameName(main_frame_name, unique_name);
-  type_ = type;
   root_->render_manager()->InitRoot(main_frame_site_instance,
                                     renderer_initiated_creation);
 }

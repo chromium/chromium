@@ -834,7 +834,15 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       render_view_host_delegate_view_(nullptr),
       created_with_opener_(false),
       node_(this),
-      frame_tree_(browser_context, this, this, this, this, this, this, this),
+      frame_tree_(browser_context,
+                  this,
+                  this,
+                  this,
+                  this,
+                  this,
+                  this,
+                  this,
+                  FrameTree::Type::kPrimary),
       is_load_to_different_document_(false),
       main_frame_process_status_(base::TERMINATION_STATUS_STILL_RUNNING),
       main_frame_process_error_code_(0),
@@ -2733,10 +2741,8 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
         ->PreventAssociationWithSpareProcess();
   }
 
-  FrameTree::Type type = params.is_prerendering ? FrameTree::Type::kPrerender
-                                                : FrameTree::Type::kPrimary;
   frame_tree_.Init(site_instance.get(), params.renderer_initiated_creation,
-                   params.main_frame_name, type);
+                   params.main_frame_name);
 
   WebContentsViewDelegate* delegate =
       GetContentClient()->browser()->GetWebContentsViewDelegate(this);

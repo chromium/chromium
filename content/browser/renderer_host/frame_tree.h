@@ -118,18 +118,6 @@ class CONTENT_EXPORT FrameTree {
     virtual bool IsHidden() = 0;
   };
 
-  // A set of delegates are remembered here so that we can create
-  // RenderFrameHostManagers.
-  FrameTree(BrowserContext* browser_context,
-            Delegate* delegate,
-            NavigationControllerDelegate* navigation_controller_delegate,
-            NavigatorDelegate* navigator_delegate,
-            RenderFrameHostDelegate* render_frame_delegate,
-            RenderViewHostDelegate* render_view_delegate,
-            RenderWidgetHostDelegate* render_widget_delegate,
-            RenderFrameHostManager::Delegate* manager_delegate);
-  ~FrameTree();
-
   // Type of FrameTree instance.
   enum class Type {
     // This FrameTree is the primary frame tree for the WebContents, whose main
@@ -140,7 +128,19 @@ class CONTENT_EXPORT FrameTree {
     // invisible to the user.
     kPrerender
   };
-  Type type() { return type_; }
+
+  // A set of delegates are remembered here so that we can create
+  // RenderFrameHostManagers.
+  FrameTree(BrowserContext* browser_context,
+            Delegate* delegate,
+            NavigationControllerDelegate* navigation_controller_delegate,
+            NavigatorDelegate* navigator_delegate,
+            RenderFrameHostDelegate* render_frame_delegate,
+            RenderViewHostDelegate* render_view_delegate,
+            RenderWidgetHostDelegate* render_widget_delegate,
+            RenderFrameHostManager::Delegate* manager_delegate,
+            Type type);
+  ~FrameTree();
 
   // Initializes the main frame for this FrameTree. That is it creates the
   // initial RenderFrameHost in the root node's RenderFrameHostManager. This
@@ -150,8 +150,9 @@ class CONTENT_EXPORT FrameTree {
   // constructor so we do not leave objects in a half initialized state.
   void Init(SiteInstance* main_frame_site_instance,
             bool renderer_initiated_creation,
-            const std::string& main_frame_name,
-            Type type);
+            const std::string& main_frame_name);
+
+  Type type() const { return type_; }
 
   FrameTreeNode* root() const { return root_; }
 
@@ -376,16 +377,6 @@ class CONTENT_EXPORT FrameTree {
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
 
-  // Prerender2:
-  // Indicates whether this frame tree is being prerendered.
-  // Set to true when frame tree is created (PrerenderHost()) and to false once
-  // the prerendered page is activated
-  // (PrerenderHost::ActivatePrerenderedContents()).
-  // TODO(https://crbug.com/1174926): Migrate this parameter to FrameTreeType
-  // once activation path is migrated onto MPArch and WebContents-swap-based
-  // activation logic is removed.
-  bool is_prerendering_ = false;
-
   // Returns a range to iterate over all FrameTreeNodes in the frame tree in
   // breadth-first traversal order, skipping the subtree rooted at
   // |node|, but including |node| itself.
@@ -427,11 +418,8 @@ class CONTENT_EXPORT FrameTree {
   // to modify the blank page.  Always false after the first commit.
   bool has_accessed_initial_main_document_ = false;
 
-  // Indicates type of frame tree. The default value is set to kPrimary until
-  // the initialization is moved to the constructor.
-  // TODO(https://crbug.com/1174926): Make FrameTree::Type const once
-  // WebContents-swap-based activation logic is removed.
-  Type type_ = Type::kPrimary;
+  // Indicates type of frame tree.
+  const Type type_;
 
 #if DCHECK_IS_ON()
   // Whether Shutdown() was called.
