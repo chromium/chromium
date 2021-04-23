@@ -57,6 +57,18 @@ void AssertTestFiles(const base::FilePath& install_dir) {
 
 }  // namespace
 
+class TestAwComponentInstallerPolicyDelegate
+    : public AwComponentInstallerPolicyDelegate {
+ public:
+  TestAwComponentInstallerPolicyDelegate(const std::vector<uint8_t>& hash)
+      : AwComponentInstallerPolicyDelegate(hash) {}
+  ~TestAwComponentInstallerPolicyDelegate() override = default;
+
+ private:
+  void IncrementComponentsUpdatedCount() override { /* noop */
+  }
+};
+
 class AwComponentInstallerPolicyDelegateTest : public testing::Test {
  public:
   AwComponentInstallerPolicyDelegateTest() = default;
@@ -82,7 +94,7 @@ class AwComponentInstallerPolicyDelegateTest : public testing::Test {
 
     std::vector<uint8_t> hash;
     hash.assign(std::begin(kSha256Hash), std::end(kSha256Hash));
-    delegate_ = std::make_unique<AwComponentInstallerPolicyDelegate>(hash);
+    delegate_ = std::make_unique<TestAwComponentInstallerPolicyDelegate>(hash);
   }
 
   void TearDown() override {
@@ -95,7 +107,7 @@ class AwComponentInstallerPolicyDelegateTest : public testing::Test {
 
  protected:
   base::FilePath cps_component_path_;
-  std::unique_ptr<AwComponentInstallerPolicyDelegate> delegate_;
+  std::unique_ptr<TestAwComponentInstallerPolicyDelegate> delegate_;
 
  private:
   base::ScopedTempDir scoped_temp_dir_;

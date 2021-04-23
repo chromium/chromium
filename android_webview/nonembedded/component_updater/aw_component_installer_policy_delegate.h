@@ -30,7 +30,8 @@ class AwComponentInstallerPolicyDelegate {
   // `hash` is the raw byte SHA256 public key hash of the component.
   explicit AwComponentInstallerPolicyDelegate(const std::vector<uint8_t>& hash);
 
-  ~AwComponentInstallerPolicyDelegate();
+  // Virtual for testing.
+  virtual ~AwComponentInstallerPolicyDelegate();
 
   AwComponentInstallerPolicyDelegate(
       const AwComponentInstallerPolicyDelegate&) = delete;
@@ -45,6 +46,9 @@ class AwComponentInstallerPolicyDelegate {
 
  private:
   base::FilePath GetComponentsProviderServiceDirectory();
+
+  // Virtual for testing.
+  virtual void IncrementComponentsUpdatedCount();
 
   const std::string component_id_;
 };

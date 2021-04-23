@@ -330,8 +330,11 @@ TEST_F(AwComponentUpdateServiceTest, TestComponentReadyWhenOffline) {
       test_pref_.get(),
       base::MakeRefCounted<
           MockNetworkFetcherFactory<FailingNetworkFetcher>>()));
-  service.StartComponentUpdateService(run_loop.QuitClosure());
 
+  base::OnceClosure closure = run_loop.QuitClosure();
+  service.StartComponentUpdateService(base::BindOnce(
+      [](base::OnceClosure closure, int) { std::move(closure).Run(); },
+      std::move(closure)));
   run_loop.Run();
 
   ASSERT_TRUE(service.GetMockPolicy()->IsComponentReadyInvoked());
@@ -347,7 +350,10 @@ TEST_F(AwComponentUpdateServiceTest, TestFreshDownloadingFakeApk) {
       base::MakeRefCounted<
           MockNetworkFetcherFactory<FakeCrxNetworkFetcher>>()));
 
-  service.StartComponentUpdateService(run_loop.QuitClosure());
+  base::OnceClosure closure = run_loop.QuitClosure();
+  service.StartComponentUpdateService(base::BindOnce(
+      [](base::OnceClosure closure, int) { std::move(closure).Run(); },
+      std::move(closure)));
   run_loop.Run();
 
   ASSERT_TRUE(service.GetMockPolicy()->IsComponentReadyInvoked());
