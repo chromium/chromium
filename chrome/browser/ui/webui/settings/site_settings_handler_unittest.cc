@@ -1924,25 +1924,15 @@ constexpr char kUsbPolicySetting[] = R"(
       }
     ])";
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL AndroidUrl() {
-  return GURL("https://android.com");
-}
-GURL ChromiumUrl() {
-  return GURL("https://chromium.org");
-}
-GURL GoogleUrl() {
-  return GURL("https://google.com");
-}
-GURL WebUIUrl() {
-  return GURL("chrome://test");
-}
-
 }  // namespace
 
 class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
  protected:
+  const GURL kAndroidUrl{"https://android.com"};
+  const GURL kChromiumUrl{"https://chromium.org"};
+  const GURL kGoogleUrl{"https://google.com"};
+  const GURL kWebUIUrl{"chrome://test"};
+
   void SetUp() override {
     // Set up UsbChooserContext first, since the granting of device permissions
     // causes the WebUI listener callbacks for
@@ -1982,10 +1972,10 @@ class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
         base::DoNothing::Once<std::vector<device::mojom::UsbDeviceInfoPtr>>());
     base::RunLoop().RunUntilIdle();
 
-    const auto kAndroidOrigin = url::Origin::Create(AndroidUrl());
-    const auto kChromiumOrigin = url::Origin::Create(ChromiumUrl());
-    const auto kGoogleOrigin = url::Origin::Create(GoogleUrl());
-    const auto kWebUIOrigin = url::Origin::Create(WebUIUrl());
+    const auto kAndroidOrigin = url::Origin::Create(kAndroidUrl);
+    const auto kChromiumOrigin = url::Origin::Create(kChromiumUrl);
+    const auto kGoogleOrigin = url::Origin::Create(kGoogleUrl);
+    const auto kWebUIOrigin = url::Origin::Create(kWebUIUrl);
 
     // Add the user granted permissions for testing.
     // These two persistent device permissions should be lumped together with
@@ -2027,7 +2017,7 @@ class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
         base::DoNothing::Once<std::vector<device::mojom::UsbDeviceInfoPtr>>());
     base::RunLoop().RunUntilIdle();
 
-    const auto kChromiumOrigin = url::Origin::Create(ChromiumUrl());
+    const auto kChromiumOrigin = url::Origin::Create(kChromiumUrl);
     chooser_context->GrantDevicePermission(kChromiumOrigin,
                                            *off_the_record_device_);
 
@@ -2143,7 +2133,7 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   EXPECT_EQ(exceptions.GetList().size(), 5u);
 
   // Don't include WebUI schemes.
-  const std::string kWebUIOriginStr = WebUIUrl().GetOrigin().spec();
+  const std::string kWebUIOriginStr = kWebUIUrl.GetOrigin().spec();
   EXPECT_FALSE(ChooserExceptionContainsSiteException(exceptions, "Gizmo",
                                                      kWebUIOriginStr));
 }
@@ -2191,12 +2181,12 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
       site_settings::ContentSettingsTypeToGroupName(
           ContentSettingsType::USB_CHOOSER_DATA)
           .as_string();
-  const auto kAndroidOrigin = url::Origin::Create(AndroidUrl());
-  const auto kChromiumOrigin = url::Origin::Create(ChromiumUrl());
-  const auto kGoogleOrigin = url::Origin::Create(GoogleUrl());
-  const std::string kAndroidOriginStr = AndroidUrl().GetOrigin().spec();
-  const std::string kChromiumOriginStr = ChromiumUrl().GetOrigin().spec();
-  const std::string kGoogleOriginStr = GoogleUrl().GetOrigin().spec();
+  const auto kAndroidOrigin = url::Origin::Create(kAndroidUrl);
+  const auto kChromiumOrigin = url::Origin::Create(kChromiumUrl);
+  const auto kGoogleOrigin = url::Origin::Create(kGoogleUrl);
+  const std::string kAndroidOriginStr = kAndroidUrl.GetOrigin().spec();
+  const std::string kChromiumOriginStr = kChromiumUrl.GetOrigin().spec();
+  const std::string kGoogleOriginStr = kGoogleUrl.GetOrigin().spec();
 
   {
     const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
