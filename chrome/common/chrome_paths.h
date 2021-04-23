@@ -8,6 +8,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/widevine/cdm/buildflags.h"
 
 namespace base {
 class FilePath;
@@ -72,30 +73,27 @@ enum {
 #endif
   DIR_EXTERNAL_EXTENSIONS,  // Directory where installer places .crx files.
 
-  DIR_DEFAULT_APPS,         // Directory where installer places .crx files
-                            // to be installed when chrome is first run.
-  FILE_RESOURCE_MODULE,      // Full path and filename of the module that
-                             // contains embedded resources (version,
-                             // strings, images, etc.).
-  FILE_LOCAL_STATE,          // Path and filename to the file in which
-                             // machine/installation-specific state is saved.
-  FILE_RECORDED_SCRIPT,      // Full path to the script.log file that
-                             // contains recorded browser events for
-                             // playback.
-  DIR_PNACL_BASE,            // Full path to the base dir for PNaCl.
-  DIR_PNACL_COMPONENT,       // Full path to the latest PNaCl version
-                             // (subdir of DIR_PNACL_BASE).
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  DIR_DEFAULT_APPS,      // Directory where installer places .crx files
+                         // to be installed when chrome is first run.
+  FILE_RESOURCE_MODULE,  // Full path and filename of the module that
+                         // contains embedded resources (version,
+                         // strings, images, etc.).
+  FILE_LOCAL_STATE,      // Path and filename to the file in which
+                         // machine/installation-specific state is saved.
+  FILE_RECORDED_SCRIPT,  // Full path to the script.log file that
+                         // contains recorded browser events for
+                         // playback.
+  DIR_PNACL_BASE,        // Full path to the base dir for PNaCl.
+  DIR_PNACL_COMPONENT,   // Full path to the latest PNaCl version
+                         // (subdir of DIR_PNACL_BASE).
+#if BUILDFLAG(ENABLE_WIDEVINE)
   DIR_BUNDLED_WIDEVINE_CDM,  // Full path to the directory containing the
                              // bundled Widevine CDM.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   DIR_COMPONENT_UPDATED_WIDEVINE_CDM,  // Base directory of the Widevine CDM
-                                       // downloaded by the component
-                                       // updater.
+                                       // downloaded by the component updater.
   FILE_COMPONENT_WIDEVINE_CDM_HINT,    // A file in a known location that points
                                        // to the component updated Widevine CDM.
-#endif                                 // !BUILDFLAG(IS_CHROMEOS_ASH)
-#endif                  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif
   FILE_RESOURCES_PACK,  // Full path to the .pak file containing binary data.
                         // This includes data for internal pages (e.g., html
                         // files and images), unless these resources are

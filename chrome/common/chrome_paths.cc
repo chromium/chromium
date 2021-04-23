@@ -20,7 +20,6 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "media/media_buildflags.h"
-#include "third_party/widevine/cdm/buildflags.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/path_utils.h"
@@ -38,7 +37,7 @@
 #include "base/win/registry.h"
 #endif
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && BUILDFLAG(ENABLE_WIDEVINE)
+#if BUILDFLAG(ENABLE_WIDEVINE)
 #include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 #endif
 
@@ -56,15 +55,13 @@ const base::FilePath::CharType kFilepathSinglePrefExtensions[] =
 
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
-    BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
+#if BUILDFLAG(ENABLE_WIDEVINE)
 // The name of the hint file that tells the latest component updated Widevine
 // CDM directory. This file name should not be changed as otherwise existing
 // Widevine CDMs might not be loaded.
 const base::FilePath::CharType kComponentUpdatedWidevineCdmHint[] =
     FILE_PATH_LITERAL("latest-component-updated-widevine-cdm");
-#endif  // (defined(OS_LINUX) || defined(OS_CHROMEOS)) &&
-        // BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::FilePath::CharType kChromeOSTPMFirmwareUpdateLocation[] =
@@ -314,26 +311,21 @@ bool PathProvider(int key, base::FilePath* result) {
       cur = cur.Append(FILE_PATH_LITERAL("pnacl"));
       break;
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
-    BUILDFLAG(BUNDLE_WIDEVINE_CDM)
+#if BUILDFLAG(ENABLE_WIDEVINE)
     case chrome::DIR_BUNDLED_WIDEVINE_CDM:
       if (!GetComponentDirectory(&cur))
         return false;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
       // TODO(crbug.com/971433): Move Widevine CDM to a separate folder on
-      // ChromeOS so that the manifest can be included.
+      // Chrome OS so that the manifest can be included.
       cur = cur.AppendASCII(kWidevineCdmBaseDirectory);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
       break;
-#endif  // (defined(OS_LINUX) || defined(OS_CHROMEOS)) &&
-        // BUILDFLAG(BUNDLE_WIDEVINE_CDM)
 
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
     case chrome::DIR_COMPONENT_UPDATED_WIDEVINE_CDM:
       if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur))
         return false;
-      cur = cur.Append(kWidevineCdmBaseDirectory);
+      cur = cur.AppendASCII(kWidevineCdmBaseDirectory);
       break;
     case chrome::FILE_COMPONENT_WIDEVINE_CDM_HINT:
       if (!base::PathService::Get(chrome::DIR_COMPONENT_UPDATED_WIDEVINE_CDM,
@@ -341,8 +333,7 @@ bool PathProvider(int key, base::FilePath* result) {
         return false;
       cur = cur.Append(kComponentUpdatedWidevineCdmHint);
       break;
-#endif  // (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) &&
-        // BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
     case chrome::FILE_RESOURCES_PACK:  // Falls through.
     case chrome::FILE_DEV_UI_RESOURCES_PACK:

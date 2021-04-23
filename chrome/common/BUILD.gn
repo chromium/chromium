@@ -589,6 +589,7 @@ static_library("constants") {
     ":non_code_constants",
     "//content/public/common:result_codes",
     "//rlz/buildflags",
+    "//third_party/widevine/cdm:buildflags",
   ]
 
   deps = [
