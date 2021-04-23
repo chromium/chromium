@@ -676,17 +676,20 @@ bool NigoriSyncBridgeImpl::SetKeystoreKeys(
         TryDecryptPendingKeystoreDecryptorToken(
             sync_pb::EncryptedData(*state_.pending_keystore_decryptor_token));
 
-    base::Optional<ModelError> error = UpdateCryptographer(
-        sync_pb::EncryptedData(*state_.pending_keys),
+    base::Optional<ModelError> error = TryDecryptPendingKeysWith(
         BuildDecryptionKeyBagForRemoteKeybag(keystore_decryptor_key));
     if (error.has_value()) {
       processor_->ReportError(*error);
       return false;
     }
 
-    broadcasting_observer_->OnCryptographerStateChanged(
-        state_.cryptographer.get(), state_.pending_keys.has_value());
+    if (!state_.pending_keys.has_value()) {
+      broadcasting_observer_->OnPassphraseAccepted();
+      broadcasting_observer_->OnCryptographerStateChanged(
+          state_.cryptographer.get(), state_.pending_keys.has_value());
+    }
   }
+
   MaybeTriggerKeystoreReencryption();
   // Note: we don't need to persist keystore keys here, because we will receive
   // Nigori node right after this method and persist all the data during
@@ -774,6 +777,7 @@ base::Optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
     return ModelError(FROM_HERE, "Invalid encrypted types transition.");
   }
 
+  const bool had_pending_keys_before_update = state_.pending_keys.has_value();
   const ModelTypeSet encrypted_types_before_update = state_.GetEncryptedTypes();
 
   state_.encrypt_everything = specifics.encrypt_everything();
@@ -799,16 +803,36 @@ base::Optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
     state_.pending_keystore_decryptor_token.reset();
   }
 
+  const NigoriKeyBag decryption_key_bag_for_remote_update =
+      BuildDecryptionKeyBagForRemoteKeybag(keystore_decryptor_key);
+
   if (state_.passphrase_type == NigoriSpecifics::CUSTOM_PASSPHRASE) {
     state_.custom_passphrase_key_derivation_params =
         GetKeyDerivationParamsFromSpecifics(specifics);
   }
 
-  base::Optional<ModelError> error = UpdateCryptographer(
-      specifics.encryption_keybag(),
-      BuildDecryptionKeyBagForRemoteKeybag(keystore_decryptor_key));
-  if (error) {
+  // Set incoming encrypted keys as pending, so they are processed in
+  // TryDecryptPendingKeysWith(). If the keybag is not immediately decryptable,
+  // it will be kept in |state_.pending_keys| until decryption is possible, e.g.
+  // upon SetDecryptionPassphrase() or equivalent depending on the passphrase
+  // type.
+  state_.pending_keys = specifics.encryption_keybag();
+  state_.cryptographer->ClearDefaultEncryptionKey();
+
+  base::Optional<ModelError> error =
+      TryDecryptPendingKeysWith(decryption_key_bag_for_remote_update);
+  if (error.has_value()) {
     return error;
+  }
+
+  // TODO(crbug.com/1057655): issuing OnPassphraseAccepted() should be allowed
+  // for all passphrase types, but going out from |pending_keys| state might
+  // be disallowed for some circumstances (such as CUSTOM_PASSPHRASE ->
+  // CUSTOM_PASSPHRASE updates). Keep temporarily as is to avoid behavioral
+  // changes.
+  if (!state_.pending_keys.has_value() && had_pending_keys_before_update &&
+      state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE) {
+    broadcasting_observer_->OnPassphraseAccepted();
   }
 
   if (passphrase_type_changed) {
@@ -832,35 +856,6 @@ base::Optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   PutNextApplicablePendingLocalCommit();
 
   storage_->StoreData(SerializeAsNigoriLocalData());
-
-  return base::nullopt;
-}
-
-base::Optional<ModelError> NigoriSyncBridgeImpl::UpdateCryptographer(
-    const sync_pb::EncryptedData& encryption_keybag,
-    const NigoriKeyBag& decryption_key_bag) {
-  DCHECK(!encryption_keybag.blob().empty());
-
-  const bool had_pending_keys_before_update = state_.pending_keys.has_value();
-
-  state_.pending_keys = encryption_keybag;
-  state_.cryptographer->ClearDefaultEncryptionKey();
-
-  base::Optional<ModelError> error =
-      TryDecryptPendingKeysWith(decryption_key_bag);
-  if (error.has_value()) {
-    return error;
-  }
-
-  // TODO(crbug.com/1057655): issuing OnPassphraseAccepted() should be allowed
-  // for all passphrase types, but going out from |pending_keys| state might
-  // be disallowed for some circumstances (such as CUSTOM_PASSPHRASE ->
-  // CUSTOM_PASSPHRASE updates). Keep temporarily as is to avoid behavioral
-  // changes.
-  if (!state_.pending_keys.has_value() && had_pending_keys_before_update &&
-      state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE) {
-    broadcasting_observer_->OnPassphraseAccepted();
-  }
 
   return base::nullopt;
 }

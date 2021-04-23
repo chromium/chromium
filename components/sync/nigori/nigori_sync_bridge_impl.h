@@ -97,10 +97,6 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   base::Optional<ModelError> UpdateLocalState(
       const sync_pb::NigoriSpecifics& specifics);
 
-  base::Optional<ModelError> UpdateCryptographer(
-      const sync_pb::EncryptedData& encryption_keybag,
-      const NigoriKeyBag& decryption_key_bag);
-
   base::Optional<sync_pb::NigoriKey> TryDecryptPendingKeystoreDecryptorToken(
       const sync_pb::EncryptedData& keystore_decryptor_token);
 
