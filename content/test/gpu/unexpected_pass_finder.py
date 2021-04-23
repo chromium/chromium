@@ -86,6 +86,7 @@ def ParseArgs():
           'power',
           'screenshot_sync',
           'trace_test',
+          'webcodecs',
           'webgl_conformance1',
           'webgl_conformance2',
       ],
