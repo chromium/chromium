@@ -74,7 +74,7 @@ const struct TestParams {
 
   // Expected outputs from fields of net::ProxyConfig (via IO).
   bool auto_detect;
-  std::string pac_url;
+  const char* pac_url;
   net::ProxyRulesExpectation proxy_rules;
 } tests[] = {
     {
