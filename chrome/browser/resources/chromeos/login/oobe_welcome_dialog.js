@@ -335,7 +335,7 @@
     onBeforeShow() {
       if (this.isNewLayout_) {
         document.documentElement.setAttribute('new-layout', '');
-        this.$.newWelcomeAnimation.setPlay(true);
+        this.setVideoPlay_(true);
       } else {
         this.$.oldDialog.onBeforeShow();
       }
@@ -418,11 +418,13 @@
     },
 
     attached() {
-      this.welcomeVideoController_ = new WelcomeVideoController(
-          this.getVideoDeviceType_(), this.getVideoOrientationType_());
-      let videos = Polymer.dom(this.root).querySelectorAll('video');
-      for (let video of videos)
-        this.welcomeVideoController_.add(video);
+      if (!this.isNewLayout_) {
+        this.welcomeVideoController_ = new WelcomeVideoController(
+            this.getVideoDeviceType_(), this.getVideoOrientationType_());
+        let videos = Polymer.dom(this.root).querySelectorAll('video');
+        for (let video of videos)
+          this.welcomeVideoController_.add(video);
+      }
 
       this.titleLongTouchDetector_ = new TitleLongTouchDetector(
           this.isNewLayout_ ? this.$.newTitle : this.$.title,
@@ -459,15 +461,32 @@
       let visible = !newValue;
       if (visible) {
         this.focus();
-        this.welcomeVideoController_.play();
-      } else {
-        // Pause the welcome video to avoid using resources while
-        // this page is not visible
-        this.welcomeVideoController_.pause();
       }
 
-      if (this.isNewLayout_ && !this.isMeet_)
-        this.$.newWelcomeAnimation.setPlay(visible);
+      this.setVideoPlay_(visible);
+    },
+
+    /**
+     * Play or pause welcome video.
+     * @param Boolean play - whether play or pause welcome video.
+     * @private
+     */
+    setVideoPlay_(play) {
+      if (this.isNewLayout_) {
+        if (this.isMeet_)
+          return;
+        this.$.newWelcomeAnimation.setPlay(play);
+        return;
+      }
+
+      if (!this.welcomeVideoController_)
+        return;
+
+      if (play) {
+        this.welcomeVideoController_.play();
+      } else {
+        this.welcomeVideoController_.pause();
+      }
     },
 
     /**
@@ -494,14 +513,14 @@
      */
     showChromeVoxHint() {
       this.$.chromeVoxHint.showDialog();
-      this.welcomeVideoController_.pause();
+      this.setVideoPlay_(false);
     },
 
     /**
      * Called to close the ChromeVox hint dialog.
      */
     closeChromeVoxHint() {
-      this.welcomeVideoController_.play();
+      this.setVideoPlay_(true);
       this.$.chromeVoxHint.hideDialog();
     },
 
