@@ -9,13 +9,13 @@ namespace blink {
 using FeatureType = mojom::UseCounterFeatureType;
 
 bool UseCounterFeatureTracker::Test(const UseCounterFeature& feature) const {
-  switch (feature.type) {
+  switch (feature.type()) {
     case FeatureType::kWebFeature:
-      return web_features_.test(feature.value);
+      return web_features_.test(feature.value());
     case FeatureType::kCssProperty:
-      return css_properties_.test(feature.value);
+      return css_properties_.test(feature.value());
     case FeatureType::kAnimatedCssProperty:
-      return animated_css_properties_.test(feature.value);
+      return animated_css_properties_.test(feature.value());
   }
 }
 
@@ -53,15 +53,15 @@ void UseCounterFeatureTracker::ResetForTesting(
 
 void UseCounterFeatureTracker::Set(const UseCounterFeature& feature,
                                    bool value) {
-  switch (feature.type) {
+  switch (feature.type()) {
     case FeatureType::kWebFeature:
-      web_features_[feature.value] = value;
+      web_features_[feature.value()] = value;
       break;
     case FeatureType::kCssProperty:
-      css_properties_[feature.value] = value;
+      css_properties_[feature.value()] = value;
       break;
     case FeatureType::kAnimatedCssProperty:
-      animated_css_properties_[feature.value] = value;
+      animated_css_properties_[feature.value()] = value;
       break;
   }
 }

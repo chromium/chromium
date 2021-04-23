@@ -79,18 +79,18 @@ void PageTimingMetricsSender::DidObserveNewFeatureUsage(
   if (feature_tracker_.TestAndSet(feature))
     return;
 
-  switch (feature.type) {
+  switch (feature.type()) {
     case blink::mojom::UseCounterFeatureType::kWebFeature:
       new_features_->features.push_back(
-          static_cast<blink::mojom::WebFeature>(feature.value));
+          static_cast<blink::mojom::WebFeature>(feature.value()));
       break;
     case blink::mojom::UseCounterFeatureType::kCssProperty:
       new_features_->css_properties.push_back(
-          static_cast<blink::mojom::CSSSampleId>(feature.value));
+          static_cast<blink::mojom::CSSSampleId>(feature.value()));
       break;
     case blink::mojom::UseCounterFeatureType::kAnimatedCssProperty:
       new_features_->animated_css_properties.push_back(
-          static_cast<blink::mojom::CSSSampleId>(feature.value));
+          static_cast<blink::mojom::CSSSampleId>(feature.value()));
       break;
   }
 

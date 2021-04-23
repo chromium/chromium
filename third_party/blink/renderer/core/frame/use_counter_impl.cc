@@ -235,9 +235,9 @@ bool UseCounterImpl::ReportMeasurement(const UseCounterFeature& feature,
     return false;
   auto* client = frame->Client();
 
-  switch (feature.type) {
+  switch (feature.type()) {
     case mojom::blink::UseCounterFeatureType::kWebFeature: {
-      WebFeature web_feature = static_cast<WebFeature>(feature.value);
+      WebFeature web_feature = static_cast<WebFeature>(feature.value());
       if (context_ != kDefaultContext)
         CountFeature(web_feature);
       NotifyFeatureCounted(web_feature);
@@ -258,7 +258,7 @@ bool UseCounterImpl::ReportMeasurement(const UseCounterFeature& feature,
 // https://github.com/HTTPArchive/httparchive/issues/59
 void UseCounterImpl::TraceMeasurement(const UseCounterFeature& feature) {
   const char* trace_name = nullptr;
-  switch (feature.type) {
+  switch (feature.type()) {
     case mojom::blink::UseCounterFeatureType::kWebFeature:
       trace_name = "FeatureFirstUsed";
       break;
@@ -270,7 +270,7 @@ void UseCounterImpl::TraceMeasurement(const UseCounterFeature& feature) {
       break;
   }
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("blink.feature_usage"), trace_name,
-               "feature", feature.value);
+               "feature", feature.value());
 }
 
 }  // namespace blink
