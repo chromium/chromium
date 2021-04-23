@@ -133,7 +133,8 @@ struct FinalResult {
   [MinVersion=1] array<HypothesisPartInResult>? hypothesis_part;
 };
 
-// Frequent event from recognizer, almost from every frame. Gives an indication of speechiness and audio level.
+// Frequent event from recognizer, almost from every frame. Gives an indication
+// of speechiness and audio level.
 [Stable]
 struct AudioLevelEvent {
   // RMS audio level, from PowerEvaluator . Score is [0, 1)
@@ -158,7 +159,7 @@ union SpeechRecognizerEvent {
 // Next ordinal: 3
 [Stable]
 interface SodaClient {
-  // After SODA successfully starts / stops, in case the client
+  // After SODA successfully starts / warms up / stops, in case the client
   // cares:
   OnStart@0();
   OnStop@1();

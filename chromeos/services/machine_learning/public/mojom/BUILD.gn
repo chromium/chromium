@@ -14,6 +14,7 @@ mojom_component("mojom") {
     "soda.mojom",
     "tensor.mojom",
     "text_classifier.mojom",
+    "text_suggester.mojom",
     "web_platform_handwriting.mojom",
   ]
 

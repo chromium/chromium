@@ -21,6 +21,7 @@
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/tensor.mojom.h"
+#include "chromeos/services/machine_learning/public/mojom/text_suggester.mojom.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -733,6 +734,65 @@ TEST_F(ServiceConnectionTest, FakeGrammarChecker) {
             EXPECT_EQ(result->candidates.at(0)->fragments.at(0)->length, 5U);
             EXPECT_EQ(result->candidates.at(0)->fragments.at(0)->replacement,
                       "dog");
+          },
+          &infer_callback_done));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(infer_callback_done);
+}
+
+TEST_F(ServiceConnectionTest, FakeTextSuggester) {
+  mojo::Remote<mojom::TextSuggester> suggester;
+  bool callback_done = false;
+  FakeServiceConnectionImpl fake_service_connection;
+  ServiceConnection::UseFakeServiceConnectionForTesting(
+      &fake_service_connection);
+  ServiceConnection::GetInstance()->Initialize();
+
+  ServiceConnection::GetInstance()
+      ->GetMachineLearningService()
+      .LoadTextSuggester(
+          suggester.BindNewPipeAndPassReceiver(),
+          base::BindOnce(
+              [](bool* callback_done, mojom::LoadModelResult result) {
+                EXPECT_EQ(result, mojom::LoadModelResult::OK);
+                *callback_done = true;
+              },
+              &callback_done));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(callback_done);
+  ASSERT_TRUE(suggester.is_bound());
+
+  // Construct fake output
+  mojom::TextSuggesterResultPtr result = mojom::TextSuggesterResult::New();
+  result->status = mojom::TextSuggesterResult::Status::OK;
+
+  mojom::MultiWordSuggestionCandidatePtr multi_word =
+      mojom::MultiWordSuggestionCandidate::New();
+  multi_word->text = "hello";
+  multi_word->normalized_score = 0.5f;
+  mojom::TextSuggestionCandidatePtr candidate =
+      mojom::TextSuggestionCandidate::New();
+  candidate->set_multi_word(std::move(multi_word));
+
+  result->candidates.emplace_back(std::move(candidate));
+  fake_service_connection.SetOutputTextSuggesterResult(result);
+
+  auto query = mojom::TextSuggesterQuery::New();
+  bool infer_callback_done = false;
+  suggester->Suggest(
+      std::move(query),
+      base::BindOnce(
+          [](bool* infer_callback_done, mojom::TextSuggesterResultPtr result) {
+            *infer_callback_done = true;
+            // Check the fake suggestion is returned
+            ASSERT_EQ(result->status, mojom::TextSuggesterResult::Status::OK);
+            ASSERT_EQ(result->candidates.size(), 1UL);
+            ASSERT_TRUE(result->candidates.at(0)->is_multi_word());
+            EXPECT_EQ(result->candidates.at(0)->get_multi_word()->text,
+                      "hello");
+            EXPECT_EQ(
+                result->candidates.at(0)->get_multi_word()->normalized_score,
+                0.5f);
           },
           &infer_callback_done));
   base::RunLoop().RunUntilIdle();

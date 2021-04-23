@@ -45,6 +45,7 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       public mojom::GrammarChecker,
       public mojom::GraphExecutor,
       public mojom::SodaRecognizer,
+      public mojom::TextSuggester,
       public web_platform::mojom::HandwritingRecognizer {
  public:
   FakeServiceConnectionImpl();
@@ -108,6 +109,11 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       mojo::PendingRemote<mojom::SodaClient> soda_client,
       mojo::PendingReceiver<mojom::SodaRecognizer> soda_recognizer,
       mojom::MachineLearningService::LoadSpeechRecognizerCallback callback)
+      override;
+
+  void LoadTextSuggester(
+      mojo::PendingReceiver<mojom::TextSuggester> receiver,
+      mojom::MachineLearningService::LoadTextSuggesterCallback callback)
       override;
 
   // mojom::Model:
@@ -181,6 +187,11 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       const std::vector<web_platform::mojom::HandwritingPredictionPtr>&
           predictions);
 
+  // Call SetOutputTextSuggesterResult() before Suggest() to set the
+  // output of a text suggestion query.
+  void SetOutputTextSuggesterResult(
+      const mojom::TextSuggesterResultPtr& result);
+
   // mojom::TextClassifier:
   void Annotate(mojom::TextAnnotationRequestPtr request,
                 mojom::TextClassifier::AnnotateCallback callback) override;
@@ -216,6 +227,10 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   void Stop() override;
   void Start() override;
   void MarkDone() override;
+
+  // mojom::TextSuggester:
+  void Suggest(mojom::TextSuggesterQueryPtr query,
+               mojom::TextSuggester::SuggestCallback callback) override;
 
  private:
   void ScheduleCall(base::OnceClosure call);
@@ -269,6 +284,12 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       mojo::PendingRemote<mojom::SodaClient> soda_client,
       mojo::PendingReceiver<mojom::SodaRecognizer> soda_recognizer,
       mojom::MachineLearningService::LoadSpeechRecognizerCallback callback);
+  void HandleLoadTextSuggesterCall(
+      mojo::PendingReceiver<mojom::TextSuggester> receiver,
+      mojom::MachineLearningService::LoadTextSuggesterCallback callback);
+  void HandleTextSuggesterSuggestCall(
+      mojom::TextSuggesterQueryPtr query,
+      mojom::TextSuggester::SuggestCallback callback);
 
   void HandleStopCall();
   void HandleStartCall();
@@ -286,6 +307,7 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       web_platform_handwriting_receivers_;
   mojo::ReceiverSet<mojom::GrammarChecker> grammar_checker_receivers_;
   mojo::ReceiverSet<mojom::SodaRecognizer> soda_recognizer_receivers_;
+  mojo::ReceiverSet<mojom::TextSuggester> text_suggester_receivers_;
   mojo::RemoteSet<mojom::SodaClient> soda_client_remotes_;
   mojom::TensorPtr output_tensor_;
   mojom::LoadHandwritingModelResult load_handwriting_model_result_;
@@ -302,6 +324,7 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   std::vector<web_platform::mojom::HandwritingPredictionPtr>
       web_platform_handwriting_result_;
   mojom::GrammarCheckerResultPtr grammar_checker_result_;
+  mojom::TextSuggesterResultPtr text_suggester_result_;
 
   bool async_mode_;
   std::vector<base::OnceClosure> pending_calls_;
