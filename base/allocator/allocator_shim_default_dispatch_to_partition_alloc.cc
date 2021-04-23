@@ -313,11 +313,29 @@ void* PartitionRealloc(const AllocatorDispatch*,
                        void* address,
                        size_t size,
                        void* context) {
+#if defined(OS_MAC)
+  if (!base::IsManagedByPartitionAlloc(address)) {
+    // A memory region allocated by the system allocator is passed in this
+    // function.  Forward the request to `realloc` which supports zone-
+    // dispatching so that it appropriately selects the right zone.
+    return realloc(address, size);
+  }
+#endif  // defined(OS_MAC)
+
   return Allocator()->ReallocFlags(base::PartitionAllocNoHooks, address,
                                    MaybeAdjustSize(size), "");
 }
 
 void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
+#if defined(OS_MAC)
+  if (!base::IsManagedByPartitionAlloc(address)) {
+    // A memory region allocated by the system allocator is passed in this
+    // function.  Forward the request to `free` which supports zone-
+    // dispatching so that it appropriately selects the right zone.
+    return free(address);
+  }
+#endif  // defined(OS_MAC)
+
   base::ThreadSafePartitionRoot::FreeNoHooks(address);
 }
 
