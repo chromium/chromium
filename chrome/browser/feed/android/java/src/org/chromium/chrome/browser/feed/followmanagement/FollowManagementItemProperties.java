@@ -17,10 +17,17 @@ public class FollowManagementItemProperties {
 
     public static final WritableObjectPropertyKey<String> TITLE_KEY =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<String> DESCRIPTION_KEY =
+    public static final WritableObjectPropertyKey<String> URL_KEY =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<OnClickListener> ON_CLICK_KEY =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Boolean> SUBSCRIBED_KEY =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<byte[]> ID_KEY =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<byte[]> FAVICON_KEY =
+            new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = {TITLE_KEY, DESCRIPTION_KEY, ON_CLICK_KEY};
+    public static final PropertyKey[] ALL_KEYS = {
+            TITLE_KEY, URL_KEY, ON_CLICK_KEY, SUBSCRIBED_KEY, ID_KEY, FAVICON_KEY};
 }

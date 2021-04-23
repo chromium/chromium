@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.feed.followmanagement;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,8 +18,10 @@ import org.chromium.chrome.browser.feed.webfeed.R;
  */
 public class FollowManagementItemView extends LinearLayout {
     private TextView mTitle;
-    private TextView mDescription;
+    private TextView mUrl;
     private boolean mChecked;
+    private ImageView mFavicon;
+    private CheckBox mSubscribedCheckbox;
 
     public FollowManagementItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -25,15 +29,22 @@ public class FollowManagementItemView extends LinearLayout {
     public void setTitle(String title) {
         mTitle.setText(title);
     }
-    public void setDescription(String description) {
-        mDescription.setText(description);
+    public void setUrl(String url) {
+        mUrl.setText(url);
     }
-    // TODO(petewil): Add icon, checkbox..
+    public void setFavicon(byte[] favicon) {
+        // TODO(1197286): Put bitmap into image view.
+    }
+    public void setSubscribed(boolean subscribed) {
+        mSubscribedCheckbox.setChecked(subscribed);
+    }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         mTitle = (TextView) findViewById(R.id.follow_management_item_text);
-        mDescription = (TextView) findViewById(R.id.follow_management_item_description);
+        mUrl = (TextView) findViewById(R.id.follow_management_item_url);
+        mFavicon = (ImageView) findViewById(R.id.follow_management_favicon);
+        mSubscribedCheckbox = (CheckBox) findViewById(R.id.follow_management_subscribed_checkbox);
     }
 }
