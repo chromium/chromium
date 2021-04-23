@@ -233,4 +233,4 @@ SK_API void SkDebugf_FileLine(const char* file,
 #define SK_ATTR_DEPRECATED          SK_NOTHING_ARG1
 #define GR_GL_CUSTOM_SETUP_HEADER   "GrGLConfig_chrome.h"
 
-#endif
+#endif  // SKIA_CONFIG_SKUSERCONFIG_H_

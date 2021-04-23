@@ -77,4 +77,4 @@ private:
 };
 
 }
-#endif // SKIA_EXT_BENCHMARKING_CANVAS_H
+#endif  // SKIA_EXT_BENCHMARKING_CANVAS_H_

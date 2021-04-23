@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GrVulkanDefines_DEFINED
-#define GrVulkanDefines_DEFINED
+#ifndef SKIA_CONFIG_SKVULKANCONFIG_H_
+#define SKIA_CONFIG_SKVULKANCONFIG_H_
 
 #ifdef SK_VULKAN
 
@@ -18,4 +18,4 @@
 
 #endif
 
-#endif
+#endif  // SKIA_CONFIG_SKVULKANCONFIG_H_

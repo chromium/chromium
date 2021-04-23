@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SKIA_EXT_SK_DISCARDABLE_MEMORY_CHROME_H_
-#define SKIA_EXT_SK_DISCARDABLE_MEMORY_CHROME_H_
+#ifndef SKIA_EXT_SKDISCARDABLEMEMORY_CHROME_H_
+#define SKIA_EXT_SKDISCARDABLEMEMORY_CHROME_H_
 
 #include <memory>
 
@@ -42,4 +42,4 @@ private:
   std::unique_ptr<base::DiscardableMemory> discardable_;
 };
 
-#endif  // SKIA_EXT_SK_DISCARDABLE_MEMORY_CHROME_H_
+#endif  // SKIA_EXT_SKDISCARDABLEMEMORY_CHROME_H_
