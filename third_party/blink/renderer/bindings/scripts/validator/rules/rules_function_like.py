@@ -13,18 +13,23 @@ from validator.framework import target
 from validator.framework import RuleBase
 
 
-class NonOptionalArgumentAfterOptional(RuleBase):
+class NonOptionalArgumentAfterOptionalOrVariadicArgument(RuleBase):
     def validate(self, assert_, function_like):
-        is_optional = False
-        for argument in function_like.arguments:
-            if is_optional and not argument.is_optional:
-                assert_(not is_optional or argument.is_optional,
-                        ("Non-optional argument must not follow "
-                         "an optional argument"))
+        is_optional_seen = False
+        for i, argument in enumerate(function_like.arguments):
+            assert_(
+                not is_optional_seen
+                or (argument.is_optional or argument.is_variadic),
+                ("A non-optional argument "
+                 "must not follow an optional argument."))
             if argument.is_optional:
-                is_optional = True
+                is_optional_seen = True
+            if argument.is_variadic:
+                assert_(i == len(function_like.arguments) - 1,
+                        ("A variadic argument must be written "
+                         "at the end of arguments."))
 
 
 def register_rules(rule_store):
     rule_store.register(target.FUNCTION_LIKES,
-                        NonOptionalArgumentAfterOptional())
+                        NonOptionalArgumentAfterOptionalOrVariadicArgument())

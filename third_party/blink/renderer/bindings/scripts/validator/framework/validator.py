@@ -42,19 +42,15 @@ class Validator(object):
 
         # These local variables are captured in assert_.
         rule = None
-        target = None
         target_type = None
         target_object = None
-        error_counts = [0]
 
         def assert_(condition, error_message):
             if not condition:
-                report_error(
-                    rule=rule,
-                    target=target,
-                    debug_info=target_type.get_debug_info(target_object),
-                    error_message=error_message)
-                error_counts[0] += 1
+                report_error(rule=rule,
+                             target=target_object,
+                             target_type=target_type,
+                             error_message=error_message)
 
         for target_type in rule_store.all_target_types:
             rules = rule_store.get_rules(target_type)
@@ -63,5 +59,3 @@ class Validator(object):
                 for rule in rules:
                     assert isinstance(rule, RuleBase)
                     rule.validate(assert_, target_object)
-
-        return error_counts[0]
