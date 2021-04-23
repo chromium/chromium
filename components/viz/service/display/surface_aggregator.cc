@@ -209,8 +209,10 @@ base::Optional<gfx::Rect> SurfaceAggregator::CalculateClipRect(
 int SurfaceAggregator::ChildIdForSurface(Surface* surface) {
   auto it = surface_id_to_resource_child_id_.find(surface->surface_id());
   if (it == surface_id_to_resource_child_id_.end()) {
-    int child_id = provider_->CreateChild(base::BindRepeating(
-        &SurfaceAggregator::UnrefResources, surface->client()));
+    int child_id = provider_->CreateChild(
+        base::BindRepeating(&SurfaceAggregator::UnrefResources,
+                            surface->client()),
+        surface->surface_id());
     surface_id_to_resource_child_id_[surface->surface_id()] = child_id;
     return child_id;
   } else {

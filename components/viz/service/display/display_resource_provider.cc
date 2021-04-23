@@ -137,6 +137,16 @@ bool DisplayResourceProvider::IsOverlayCandidate(ResourceId id) {
   return resource && resource->transferable.is_overlay_candidate;
 }
 
+SurfaceId DisplayResourceProvider::GetSurfaceId(ResourceId id) {
+  ChildResource* resource = GetResource(id);
+  return children_[resource->child_id].surface_id;
+}
+
+int DisplayResourceProvider::GetChildId(ResourceId id) {
+  ChildResource* resource = GetResource(id);
+  return resource->child_id;
+}
+
 bool DisplayResourceProvider::IsResourceSoftwareBacked(ResourceId id) {
   return GetResource(id)->transferable.is_software;
 }
@@ -155,13 +165,15 @@ const gfx::ColorSpace& DisplayResourceProvider::GetColorSpace(ResourceId id) {
   return resource->transferable.color_space;
 }
 
-int DisplayResourceProvider::CreateChild(ReturnCallback return_callback) {
+int DisplayResourceProvider::CreateChild(ReturnCallback return_callback,
+                                         const SurfaceId& surface_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   int child_id = next_child_++;
   Child& child = children_[child_id];
   child.id = child_id;
   child.return_callback = std::move(return_callback);
+  child.surface_id = surface_id;
 
   return child_id;
 }

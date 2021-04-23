@@ -22,6 +22,7 @@
 #include "components/viz/common/resources/return_callback.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/display/external_use_client.h"
 #include "components/viz/service/display/resource_fence.h"
 #include "components/viz/service/viz_service_export.h"
@@ -85,6 +86,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   const gfx::ColorSpace& GetColorSpace(ResourceId id);
   // Indicates if this resource may be used for a hardware overlay plane.
   bool IsOverlayCandidate(ResourceId id);
+  SurfaceId GetSurfaceId(ResourceId id);
+  int GetChildId(ResourceId id);
 
   // Checks whether a resource is in use.
   bool InUse(ResourceId id);
@@ -150,8 +153,11 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     current_read_lock_fence_ = fence;
   }
 
-  // Creates accounting for a child. Returns a child ID.
-  int CreateChild(ReturnCallback return_callback);
+  // Creates accounting for a child. Returns a child ID. surface_id is used to
+  // associate resources to the surface they belong to. This is used for
+  // overlays on webview where overlays are updated outside of normal draw (i.e
+  // DrawAndSwap isn't called).
+  int CreateChild(ReturnCallback return_callback, const SurfaceId& surface_id);
 
   // Destroys accounting for the child, deleting all accounted resources.
   void DestroyChild(int child);
@@ -235,6 +241,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>
         child_to_parent_map;
     ReturnCallback return_callback;
+    SurfaceId surface_id;
     bool marked_for_deletion = false;
   };
 

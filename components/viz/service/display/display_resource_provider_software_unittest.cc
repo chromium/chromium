@@ -116,7 +116,7 @@ TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
   std::vector<TransferableResource> send_to_parent;
   std::vector<ReturnedResource> returned_to_child;
   int child_id = resource_provider_->CreateChild(
-      base::BindRepeating(&CollectResources, &returned_to_child));
+      base::BindRepeating(&CollectResources, &returned_to_child), SurfaceId());
   child_resource_provider_->PrepareSendToParent(
       {resource_id}, &send_to_parent,
       static_cast<RasterContextProvider*>(nullptr));

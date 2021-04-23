@@ -133,8 +133,8 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
   ResourceId id1 =
       child_resource_provider_->ImportResource(gl_resource, base::DoNothing());
   std::vector<ReturnedResource> returned_to_child;
-  int child_id =
-      resource_provider_->CreateChild(GetReturnCallback(&returned_to_child));
+  int child_id = resource_provider_->CreateChild(
+      GetReturnCallback(&returned_to_child), SurfaceId());
 
   // Transfer some resources to the parent.
   std::vector<TransferableResource> list;
@@ -213,8 +213,8 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUseWebView) {
   ResourceId id1 =
       child_resource_provider_->ImportResource(gl_resource, base::DoNothing());
   std::vector<ReturnedResource> returned_to_child;
-  int child_id =
-      resource_provider_->CreateChild(GetReturnCallback(&returned_to_child));
+  int child_id = resource_provider_->CreateChild(
+      GetReturnCallback(&returned_to_child), SurfaceId());
 
   // Transfer some resources to the parent.
   std::vector<TransferableResource> list;
@@ -318,8 +318,8 @@ TEST_F(DisplayResourceProviderSkiaTest,
                             base::Unretained(&release)));
 
   std::vector<ReturnedResource> returned_to_child;
-  int child_id =
-      resource_provider_->CreateChild(GetReturnCallback(&returned_to_child));
+  int child_id = resource_provider_->CreateChild(
+      GetReturnCallback(&returned_to_child), SurfaceId());
 
   // Transfer some resources to the parent.
   std::vector<TransferableResource> list;
@@ -376,8 +376,8 @@ TEST_F(DisplayResourceProviderSkiaTest, ReadLockFenceDestroyChild) {
                             base::Unretained(&release)));
 
   std::vector<ReturnedResource> returned_to_child;
-  int child_id =
-      resource_provider_->CreateChild(GetReturnCallback(&returned_to_child));
+  int child_id = resource_provider_->CreateChild(
+      GetReturnCallback(&returned_to_child), SurfaceId());
 
   // Transfer resources to the parent.
   std::vector<TransferableResource> list;
@@ -430,8 +430,8 @@ TEST_F(DisplayResourceProviderSkiaTest,
   MockReleaseCallback release;
 
   std::vector<ReturnedResource> returned_to_child;
-  int child_id =
-      resource_provider_->CreateChild(GetReturnCallback(&returned_to_child));
+  int child_id = resource_provider_->CreateChild(
+      GetReturnCallback(&returned_to_child), SurfaceId());
 
   // Transfer some resources to the parent.
   constexpr size_t kTotalResources = 5;

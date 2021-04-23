@@ -22,7 +22,8 @@ const std::
   DCHECK(child_resource_provider);
   // Transfer resources to the parent.
   std::vector<viz::TransferableResource> send_to_parent;
-  int child_id = resource_provider->CreateChild(base::DoNothing());
+  int child_id =
+      resource_provider->CreateChild(base::DoNothing(), viz::SurfaceId());
   child_resource_provider->PrepareSendToParent(resource_ids, &send_to_parent,
                                                child_context_provider);
   resource_provider->ReceiveFromChild(child_id, send_to_parent);

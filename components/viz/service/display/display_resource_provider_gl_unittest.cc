@@ -137,7 +137,7 @@ class DisplayResourceProviderGLTest : public testing::Test {
       DisplayResourceProvider* resource_provider) {
     ReturnCallback return_callback = base::DoNothing();
 
-    int child = resource_provider->CreateChild(return_callback);
+    int child = resource_provider->CreateChild(return_callback, SurfaceId());
 
     gpu::Mailbox gpu_mailbox = gpu::Mailbox::Generate();
     constexpr gfx::Size size(64, 64);
@@ -175,8 +175,8 @@ TEST_F(DisplayResourceProviderGLTest, ReadLockCountStopsReturnToChildOrDelete) {
                            base::Unretained(&release)));
 
   std::vector<ReturnedResource> returned_to_child;
-  int child_id =
-      resource_provider_->CreateChild(GetReturnCallback(&returned_to_child));
+  int child_id = resource_provider_->CreateChild(
+      GetReturnCallback(&returned_to_child), SurfaceId());
   {
     // Transfer some resources to the parent.
     std::vector<TransferableResource> list;
@@ -238,8 +238,8 @@ TEST_F(DisplayResourceProviderGLTest, ReadLockFenceStopsReturnToChildOrDelete) {
                             base::Unretained(&release)));
 
   std::vector<ReturnedResource> returned_to_child;
-  int child_id =
-      resource_provider_->CreateChild(GetReturnCallback(&returned_to_child));
+  int child_id = resource_provider_->CreateChild(
+      GetReturnCallback(&returned_to_child), SurfaceId());
 
   // Transfer some resources to the parent.
   std::vector<TransferableResource> list;
@@ -296,8 +296,8 @@ TEST_F(DisplayResourceProviderGLTest, ReadLockFenceDestroyChild) {
                             base::Unretained(&release)));
 
   std::vector<ReturnedResource> returned_to_child;
-  int child_id =
-      resource_provider_->CreateChild(GetReturnCallback(&returned_to_child));
+  int child_id = resource_provider_->CreateChild(
+      GetReturnCallback(&returned_to_child), SurfaceId());
 
   // Transfer resources to the parent.
   std::vector<TransferableResource> list;
@@ -350,8 +350,8 @@ TEST_F(DisplayResourceProviderGLTest,
   MockReleaseCallback release;
 
   std::vector<ReturnedResource> returned_to_child;
-  int child_id =
-      resource_provider_->CreateChild(GetReturnCallback(&returned_to_child));
+  int child_id = resource_provider_->CreateChild(
+      GetReturnCallback(&returned_to_child), SurfaceId());
 
   // Transfer some resources to the parent.
   constexpr size_t kTotalResources = 5;
@@ -506,7 +506,8 @@ class ResourceProviderTestImportedResourceGLFilters {
     std::vector<TransferableResource> send_to_parent;
     std::vector<ReturnedResource> returned_to_child;
     int child_id = resource_provider->CreateChild(
-        base::BindRepeating(&CollectResources, &returned_to_child));
+        base::BindRepeating(&CollectResources, &returned_to_child),
+        SurfaceId());
     child_resource_provider->PrepareSendToParent(
         {resource_id}, &send_to_parent,
         static_cast<RasterContextProvider*>(child_context_provider.get()));
@@ -626,7 +627,7 @@ TEST_F(DisplayResourceProviderGLTest, ReceiveGLTextureExternalOES) {
   std::vector<TransferableResource> send_to_parent;
   std::vector<ReturnedResource> returned_to_child;
   int child_id = resource_provider->CreateChild(
-      base::BindRepeating(&CollectResources, &returned_to_child));
+      base::BindRepeating(&CollectResources, &returned_to_child), SurfaceId());
   child_resource_provider->PrepareSendToParent(
       {resource_id}, &send_to_parent,
       static_cast<RasterContextProvider*>(child_context_provider_.get()));
