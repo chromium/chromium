@@ -96,10 +96,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("about:blank", child->GetLastCommittedURL());
 
   content::TestNavigationObserver observer(web_contents);
-  content::TestUntrustedDataSourceCSP csp;
-  csp.no_xfo = true;
+  content::TestUntrustedDataSourceHeaders headers;
+  headers.no_xfo = true;
   untrusted_factory().add_web_ui_config(
-      std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host", csp));
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host",
+                                                     headers));
 
   content::PwnMessageHelper::OpenURL(
       child, content::GetChromeUntrustedUIURL("test-iframe-host/title1.html"));

@@ -262,10 +262,10 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
                        WebFrameInChromeUntrustedSchemeAllowedByCSP) {
   // Add an untrusted WebUI with no iframe restrictions.
-  TestUntrustedDataSourceCSP csp;
-  csp.child_src = "child-src * data:;";
+  TestUntrustedDataSourceHeaders headers;
+  headers.child_src = "child-src * data:;";
   untrusted_factory().add_web_ui_config(
-      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host", csp));
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host", headers));
 
   GURL main_frame_url(GetChromeUntrustedUIURL("test-host/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
@@ -375,11 +375,11 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   {
     TestNavigationObserver observer(shell()->web_contents());
     // Add a DataSource for chrome-untrusted:// that can be iframe'd.
-    TestUntrustedDataSourceCSP csp;
-    csp.no_xfo = true;
+    TestUntrustedDataSourceHeaders headers;
+    headers.no_xfo = true;
     untrusted_factory().add_web_ui_config(
         std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host",
-                                                       csp));
+                                                       headers));
     GURL untrusted_url(GetChromeUntrustedUIURL("test-iframe-host/title1.html"));
     EXPECT_TRUE(ExecJs(shell(), JsReplace(kAddIframeScript, untrusted_url),
                        EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
@@ -441,10 +441,11 @@ IN_PROC_BROWSER_TEST_F(
   GURL main_frame_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
 
-  TestUntrustedDataSourceCSP csp;
-  csp.no_xfo = true;
+  TestUntrustedDataSourceHeaders headers;
+  headers.no_xfo = true;
   untrusted_factory().add_web_ui_config(
-      std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host", csp));
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host",
+                                                     headers));
 
   // Add iframe but don't navigate it to a chrome-untrusted:// URL yet.
   EXPECT_TRUE(ExecJs(shell(),
@@ -629,10 +630,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0UL, root->child_count());
 
   // Add a DataSource for chrome-untrusted:// that can be iframe'd.
-  TestUntrustedDataSourceCSP csp;
-  csp.no_xfo = true;
+  TestUntrustedDataSourceHeaders headers;
+  headers.no_xfo = true;
   untrusted_factory().add_web_ui_config(
-      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host", csp));
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host", headers));
   GURL untrusted_url(GetChromeUntrustedUIURL("test-host/title1.html"));
 
   // Navigate an iframe to a chrome-untrusted URL and verify that the navigation
@@ -675,15 +676,15 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
                 root->current_frame_host()->GetProcess()->GetID()),
             webui_site_instance->GetProcessLock());
 
-  TestUntrustedDataSourceCSP csp;
+  TestUntrustedDataSourceHeaders headers;
   std::vector<std::string> frame_ancestors({"chrome://web-ui"});
-  csp.frame_ancestors =
+  headers.frame_ancestors =
       base::make_optional<std::vector<std::string>>(std::move(frame_ancestors));
 
   // Add a DataSource for the chrome-untrusted:// iframe with frame ancestor
   // chrome://web-ui.
   untrusted_factory().add_web_ui_config(
-      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host", csp));
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host", headers));
   GURL untrusted_url(GetChromeUntrustedUIURL("test-host/title1.html"));
   TestNavigationObserver observer(shell()->web_contents());
 
@@ -780,10 +781,11 @@ IN_PROC_BROWSER_TEST_F(
   GURL main_frame_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
 
-  TestUntrustedDataSourceCSP csp;
-  csp.no_xfo = false;
+  TestUntrustedDataSourceHeaders headers;
+  headers.no_xfo = false;
   untrusted_factory().add_web_ui_config(
-      std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host", csp));
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host",
+                                                     headers));
   GURL untrusted_url(GetChromeUntrustedUIURL("test-iframe-host/title1.html"));
 
   TestNavigationObserver observer(shell()->web_contents());

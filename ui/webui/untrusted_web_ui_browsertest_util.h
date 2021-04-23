@@ -33,22 +33,23 @@ class TestUntrustedWebUIControllerFactory
 class TestUntrustedWebUIConfig : public ui::WebUIConfig {
  public:
   explicit TestUntrustedWebUIConfig(base::StringPiece host);
-  explicit TestUntrustedWebUIConfig(
+  TestUntrustedWebUIConfig(
       base::StringPiece host,
-      const content::TestUntrustedDataSourceCSP& content_security_policy);
+      const content::TestUntrustedDataSourceHeaders& headers);
   ~TestUntrustedWebUIConfig() override;
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui) override;
-  const content::TestUntrustedDataSourceCSP content_security_policy_;
+
+  const content::TestUntrustedDataSourceHeaders headers_;
 };
 
 class TestUntrustedWebUIController : public ui::UntrustedWebUIController {
  public:
-  explicit TestUntrustedWebUIController(
+  TestUntrustedWebUIController(
       content::WebUI* web_ui,
       const std::string& host,
-      const content::TestUntrustedDataSourceCSP& content_security_policy);
+      const content::TestUntrustedDataSourceHeaders& headers);
   ~TestUntrustedWebUIController() override;
 };
 

@@ -25,25 +25,24 @@ TestUntrustedWebUIConfig::TestUntrustedWebUIConfig(base::StringPiece host)
 
 TestUntrustedWebUIConfig::TestUntrustedWebUIConfig(
     base::StringPiece host,
-    const content::TestUntrustedDataSourceCSP& content_security_policy)
-    : WebUIConfig(content::kChromeUIUntrustedScheme, host),
-      content_security_policy_(content_security_policy) {}
+    const content::TestUntrustedDataSourceHeaders& headers)
+    : WebUIConfig(content::kChromeUIUntrustedScheme, host), headers_(headers) {}
 
 TestUntrustedWebUIConfig::~TestUntrustedWebUIConfig() = default;
 
 std::unique_ptr<content::WebUIController>
 TestUntrustedWebUIConfig::CreateWebUIController(content::WebUI* web_ui) {
-  return std::make_unique<TestUntrustedWebUIController>(
-      web_ui, host(), content_security_policy_);
+  return std::make_unique<TestUntrustedWebUIController>(web_ui, host(),
+                                                        headers_);
 }
 
 TestUntrustedWebUIController::TestUntrustedWebUIController(
     content::WebUI* web_ui,
     const std::string& host,
-    const content::TestUntrustedDataSourceCSP& content_security_policy)
+    const content::TestUntrustedDataSourceHeaders& headers)
     : ui::UntrustedWebUIController(web_ui) {
   content::AddUntrustedDataSource(web_ui->GetWebContents()->GetBrowserContext(),
-                                  host, content_security_policy);
+                                  host, headers);
 }
 
 TestUntrustedWebUIController::~TestUntrustedWebUIController() = default;

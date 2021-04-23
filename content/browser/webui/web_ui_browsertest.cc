@@ -447,6 +447,23 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, NavigateWhileWebUISend) {
   EXPECT_TRUE(received_send_message);
 }
 
+IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, CoopCoepPolicies) {
+  auto* web_contents = shell()->web_contents();
+
+  TestUntrustedDataSourceHeaders headers;
+  headers.cross_origin_opener_policy =
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
+  untrusted_factory().add_web_ui_config(
+      std::make_unique<ui::TestUntrustedWebUIConfig>("isolated", headers));
+
+  const GURL isolated_url(GetChromeUntrustedUIURL("isolated/title2.html"));
+  ASSERT_TRUE(NavigateToURL(web_contents, isolated_url));
+
+  auto* main_frame = web_contents->GetMainFrame();
+  EXPECT_EQ(true, EvalJs(main_frame, "window.crossOriginIsolated;",
+                         EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
+}
+
 class WebUIRequestSchemesTest : public ContentBrowserTest {
  public:
   WebUIRequestSchemesTest() = default;
@@ -566,24 +583,24 @@ class WebUIWorkerTest : public ContentBrowserTest {
 
  protected:
   void SetUntrustedWorkerSrcToWebUIConfig(bool allow_embedded_frame) {
-    TestUntrustedDataSourceCSP csp;
+    TestUntrustedDataSourceHeaders headers;
 
     if (allow_embedded_frame) {
       // Allow the frame to be embedded in the chrome main page.
-      csp.frame_ancestors.emplace().push_back("chrome://trusted");
+      headers.frame_ancestors.emplace().push_back("chrome://trusted");
     }
 
     // These two lines are to avoid:
     // "TypeError: Failed to construct 'SharedWorker': This document requires
     // 'TrustedScriptURL' assignment."
-    csp.script_src = "worker-src chrome-untrusted://untrusted;";
-    csp.no_trusted_types = true;
+    headers.script_src = "worker-src chrome-untrusted://untrusted;";
+    headers.no_trusted_types = true;
 
     untrusted_factory().add_web_ui_config(
-        std::make_unique<ui::TestUntrustedWebUIConfig>("untrusted", csp));
+        std::make_unique<ui::TestUntrustedWebUIConfig>("untrusted", headers));
     if (allow_embedded_frame) {
       AddUntrustedDataSource(shell()->web_contents()->GetBrowserContext(),
-                             "untrusted", csp);
+                             "untrusted", headers);
     }
   }
 

@@ -11,13 +11,14 @@
 
 #include "base/optional.h"
 #include "content/public/browser/web_ui_controller_factory.h"
+#include "services/network/public/mojom/cross_origin_opener_policy.mojom.h"
 
 namespace content {
 
-struct TestUntrustedDataSourceCSP {
-  TestUntrustedDataSourceCSP();
-  TestUntrustedDataSourceCSP(const TestUntrustedDataSourceCSP& other);
-  ~TestUntrustedDataSourceCSP();
+struct TestUntrustedDataSourceHeaders {
+  TestUntrustedDataSourceHeaders();
+  TestUntrustedDataSourceHeaders(const TestUntrustedDataSourceHeaders& other);
+  ~TestUntrustedDataSourceHeaders();
 
   base::Optional<std::string> child_src = base::nullopt;
   base::Optional<std::string> script_src = base::nullopt;
@@ -27,13 +28,15 @@ struct TestUntrustedDataSourceCSP {
   bool no_trusted_types = false;
   bool no_xfo = false;
   base::Optional<std::vector<std::string>> frame_ancestors = base::nullopt;
+  base::Optional<network::mojom::CrossOriginOpenerPolicyValue>
+      cross_origin_opener_policy = base::nullopt;
 };
 
 // Adds a DataSource for chrome-untrusted://|host| URLs.
-void AddUntrustedDataSource(BrowserContext* browser_context,
-                            const std::string& host,
-                            base::Optional<TestUntrustedDataSourceCSP>
-                                content_security_policy = base::nullopt);
+void AddUntrustedDataSource(
+    BrowserContext* browser_context,
+    const std::string& host,
+    base::Optional<TestUntrustedDataSourceHeaders> headers = base::nullopt);
 
 // Returns chrome-untrusted://|host_and_path| as a GURL.
 GURL GetChromeUntrustedUIURL(const std::string& host_and_path);

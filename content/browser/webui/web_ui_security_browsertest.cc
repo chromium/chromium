@@ -684,12 +684,12 @@ IN_PROC_BROWSER_TEST_F(
 // chrome-untrusted:// page succeeds if Content Security Policy allows it.
 IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
                        CrossOriginFetchRequestToChromeUntrusted) {
-  TestUntrustedDataSourceCSP csp;
-  csp.default_src = "default-src chrome-untrusted://test2;";
+  TestUntrustedDataSourceHeaders headers;
+  headers.default_src = "default-src chrome-untrusted://test2;";
   const GURL untrusted_url1 = GURL("chrome-untrusted://test1/title1.html");
   untrusted_factory().add_web_ui_config(
       std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url1.host(),
-                                                     csp));
+                                                     headers));
 
   const GURL untrusted_url2 = GURL("chrome-untrusted://test2/title2.html");
   URLDataSource::Add(
@@ -707,12 +707,12 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
 // for chrome:// scheme, even if CSP allows this.
 IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
                        DisallowChromeUntrustedFetchRequestToChrome) {
-  TestUntrustedDataSourceCSP csp;
-  csp.default_src = "default-src chrome://webui;";
+  TestUntrustedDataSourceHeaders headers;
+  headers.default_src = "default-src chrome://webui;";
   const GURL untrusted_url = GURL("chrome-untrusted://test1/title1.html");
   untrusted_factory().add_web_ui_config(
       std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.host(),
-                                                     csp));
+                                                     headers));
 
   const GURL chrome_url = GURL("chrome://webui/title2.html");
 
@@ -825,12 +825,12 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     WebUISecurityTest,
     CrossOriginXHRRequestToChromeUntrustedIfContenSecurityPolicyAllowsIt) {
-  TestUntrustedDataSourceCSP csp;
-  csp.default_src = "default-src chrome-untrusted://test2;";
+  TestUntrustedDataSourceHeaders headers;
+  headers.default_src = "default-src chrome-untrusted://test2;";
   const GURL untrusted_url1 = GURL("chrome-untrusted://test1/title1.html");
   untrusted_factory().add_web_ui_config(
       std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url1.host(),
-                                                     csp));
+                                                     headers));
 
   const GURL untrusted_url2 = GURL("chrome-untrusted://test2/");
   URLDataSource::Add(
@@ -845,12 +845,12 @@ IN_PROC_BROWSER_TEST_F(
 // blocked, even if CSP allows this.
 IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
                        DisallowChromeUntrustedXHRRequestToChrome) {
-  TestUntrustedDataSourceCSP csp;
-  csp.default_src = "default-src chrome://webui;";
+  TestUntrustedDataSourceHeaders headers;
+  headers.default_src = "default-src chrome://webui;";
   const GURL untrusted_url = GURL("chrome-untrusted://test1/title1.html");
   untrusted_factory().add_web_ui_config(
       std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.host(),
-                                                     csp));
+                                                     headers));
 
   const GURL chrome_url = GURL("chrome://webui/title2.html");
 
