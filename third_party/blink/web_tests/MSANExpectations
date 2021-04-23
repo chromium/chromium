@@ -178,3 +178,6 @@ crbug.com/1179829 [ Linux ] http/tests/devtools/isolated-code-cache/stale-revali
 
 # Sheriff 2021-03-23
 crbug.com/1179829 [ Linux ] http/tests/devtools/console/viewport-testing/console-stick-to-bottom-with-large-prompt.js [ Pass Timeout ]
+
+# Sheriff 2021-04-22
+crbug.com/1201807 [ Linux ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Pass Timeout ]
