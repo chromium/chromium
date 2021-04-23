@@ -159,13 +159,17 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 
     // Allocates and owns a buffer for message data with enough capacity for
     // |payload_size| bytes plus a header, plus |max_handles| platform handles.
-    Message(size_t payload_size, size_t max_handles);
-    Message(size_t payload_size, size_t max_handles, MessageType message_type);
-    Message(size_t capacity, size_t payload_size, size_t max_handles);
-    Message(size_t capacity,
-            size_t max_handles,
-            size_t payload_size,
-            MessageType message_type);
+    static MessagePtr CreateMessage(size_t payload_size, size_t max_handles);
+    static MessagePtr CreateMessage(size_t payload_size,
+                                    size_t max_handles,
+                                    MessageType message_type);
+    static MessagePtr CreateMessage(size_t capacity,
+                                    size_t payload_size,
+                                    size_t max_handles);
+    static MessagePtr CreateMessage(size_t capacity,
+                                    size_t max_handles,
+                                    size_t payload_size,
+                                    MessageType message_type);
     ~Message();
 
     static MessagePtr CreateRawForFuzzing(base::span<const unsigned char> data);
@@ -218,6 +222,11 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 
    private:
     Message();
+
+    Message(size_t capacity,
+            size_t max_handles,
+            size_t payload_size,
+            MessageType message_type);
 
     // The message data buffer.
     AlignedBuffer data_;

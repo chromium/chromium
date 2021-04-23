@@ -100,7 +100,7 @@ TEST_F(NodeChannelTest, MessagesCannotBeSmallerThanOldestVersion) {
   int payload_size = 1;
   int capacity = /*sizeof(header)=*/8 + payload_size;
   auto message =
-      std::make_unique<Channel::Message>(capacity, capacity, /*num_handles=*/0);
+      Channel::Message::CreateMessage(capacity, capacity, /*num_handles=*/0);
 
   memset(message->mutable_payload(), 0, capacity);
 

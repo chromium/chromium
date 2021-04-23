@@ -74,26 +74,42 @@ Channel::AlignedBuffer MakeAlignedBuffer(size_t size) {
 
 }  // namespace
 
-Channel::Message::Message() = default;
+// static
+Channel::MessagePtr Channel::Message::CreateMessage(size_t payload_size,
+                                                    size_t max_handles) {
+  return CreateMessage(payload_size, payload_size, max_handles);
+}
 
-Channel::Message::Message(size_t payload_size, size_t max_handles)
-    : Message(payload_size, payload_size, max_handles) {}
+// static
+Channel::MessagePtr Channel::Message::CreateMessage(size_t payload_size,
+                                                    size_t max_handles,
+                                                    MessageType message_type) {
+  return CreateMessage(payload_size, payload_size, max_handles, message_type);
+}
 
-Channel::Message::Message(size_t payload_size,
-                          size_t max_handles,
-                          MessageType message_type)
-    : Message(payload_size, payload_size, max_handles, message_type) {}
-
-Channel::Message::Message(size_t capacity,
-                          size_t payload_size,
-                          size_t max_handles)
+// static
+Channel::MessagePtr Channel::Message::CreateMessage(size_t capacity,
+                                                    size_t payload_size,
+                                                    size_t max_handles) {
 #if defined(MOJO_CORE_LEGACY_PROTOCOL)
-    : Message(capacity, payload_size, max_handles, MessageType::NORMAL_LEGACY) {
-}
+  return CreateMessage(capacity, payload_size, max_handles,
+                       Message::MessageType::NORMAL_LEGACY);
 #else
-    : Message(capacity, payload_size, max_handles, MessageType::NORMAL) {
-}
+  return CreateMessage(capacity, payload_size, max_handles,
+                       Message::MessageType::NORMAL);
 #endif
+}
+
+// static
+Channel::MessagePtr Channel::Message::CreateMessage(size_t capacity,
+                                                    size_t payload_size,
+                                                    size_t max_handles,
+                                                    MessageType message_type) {
+  return base::WrapUnique(
+      new Channel::Message(capacity, payload_size, max_handles, message_type));
+}
+
+Channel::Message::Message() = default;
 
 Channel::Message::Message(size_t capacity,
                           size_t payload_size,
@@ -267,8 +283,8 @@ Channel::MessagePtr Channel::Message::Deserialize(
     return nullptr;
   }
 
-  MessagePtr message(
-      new Message(payload_size, max_handles, legacy_header->message_type));
+  MessagePtr message =
+      CreateMessage(payload_size, max_handles, legacy_header->message_type);
   DCHECK_EQ(message->data_num_bytes(), data_num_bytes);
 
   // Copy all payload bytes.

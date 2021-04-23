@@ -10,8 +10,8 @@
 #include <sys/eventfd.h>
 #include <sys/mman.h>
 #include <sys/syscall.h>
-#include <unistd.h>
 #include <sys/utsname.h>
+#include <unistd.h>
 
 #include <algorithm>
 #include <atomic>
@@ -893,9 +893,9 @@ void ChannelLinux::OfferSharedMemUpgradeInternal() {
   UpgradeOfferMessage offer_msg;
   offer_msg.num_pages = num_pages_;
   offer_msg.version = notifier_version;
-  MessagePtr msg(new Channel::Message(sizeof(UpgradeOfferMessage),
-                                      /*num handles=*/fds.size(),
-                                      Message::MessageType::UPGRADE_OFFER));
+  MessagePtr msg = Message::CreateMessage(sizeof(UpgradeOfferMessage),
+                                          /*num handles=*/fds.size(),
+                                          Message::MessageType::UPGRADE_OFFER);
   msg->SetHandles(std::move(fds));
   memcpy(msg->mutable_payload(), &offer_msg, sizeof(offer_msg));
 

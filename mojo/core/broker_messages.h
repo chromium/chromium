@@ -67,7 +67,8 @@ inline Channel::MessagePtr CreateBrokerMessage(
     void** out_extra_data = nullptr) {
   const size_t message_size = sizeof(BrokerMessageHeader) +
                               sizeof(**out_message_data) + extra_data_size;
-  Channel::MessagePtr message(new Channel::Message(message_size, num_handles));
+  Channel::MessagePtr message =
+      Channel::Message::CreateMessage(message_size, num_handles);
   BrokerMessageHeader* header =
       reinterpret_cast<BrokerMessageHeader*>(message->mutable_payload());
   header->type = type;
@@ -82,8 +83,8 @@ inline Channel::MessagePtr CreateBrokerMessage(
     BrokerMessageType type,
     size_t num_handles,
     std::nullptr_t** dummy_out_data) {
-  Channel::MessagePtr message(
-      new Channel::Message(sizeof(BrokerMessageHeader), num_handles));
+  Channel::MessagePtr message =
+      Channel::Message::CreateMessage(sizeof(BrokerMessageHeader), num_handles);
   BrokerMessageHeader* header =
       reinterpret_cast<BrokerMessageHeader*>(message->mutable_payload());
   header->type = type;

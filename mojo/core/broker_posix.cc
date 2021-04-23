@@ -29,8 +29,8 @@ Channel::MessagePtr WaitForBrokerMessage(
     size_t expected_num_handles,
     size_t expected_data_size,
     std::vector<PlatformHandle>* incoming_handles) {
-  Channel::MessagePtr message(new Channel::Message(
-      sizeof(BrokerMessageHeader) + expected_data_size, expected_num_handles));
+  Channel::MessagePtr message = Channel::Message::CreateMessage(
+      sizeof(BrokerMessageHeader) + expected_data_size, expected_num_handles);
   std::vector<base::ScopedFD> incoming_fds;
   ssize_t read_result =
       SocketRecvmsg(socket_fd, const_cast<void*>(message->data()),

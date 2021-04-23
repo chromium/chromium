@@ -86,7 +86,7 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
       Channel::HandlePolicy::kRejectHandles,
       environment->main_thread_task_executor.task_runner());
   sender->Start();
-  auto message = std::make_unique<Channel::Message>(size, 0 /* num_handles */);
+  auto message = Channel::Message::CreateMessage(size, 0 /* num_handles */);
   std::copy(data, data + size,
             static_cast<unsigned char*>(message->mutable_payload()));
   sender->Write(std::move(message));
