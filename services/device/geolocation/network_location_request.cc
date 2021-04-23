@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "net/base/escape.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/location_arbitrator.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
@@ -303,11 +304,11 @@ void GetLocationFromResponse(int net_error,
                              const GURL& server_url,
                              mojom::Geoposition* position) {
   DCHECK(position);
-
   // HttpPost can fail for a number of reasons. Most likely this is because
   // we're offline, or there was no response.
   if (net_error != net::OK) {
-    FormatPositionError(server_url, "No response received", position);
+    FormatPositionError(server_url, net::ErrorToShortString(net_error),
+                        position);
     RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_EMPTY);
     return;
   }
