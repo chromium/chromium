@@ -67,11 +67,29 @@ manager key combo conflicts) by doing something like
 startx out/cros/chrome
 ```
 
-NOTE: if you decide to run Chrome OS under linux within a window manager, you
-are subject to its keybindings which will most certainly conflict with
-ChromeVox. The Search key (which gets mapped from LWIN/key code 91), usually
-gets assigned to numerous shortcut combinations. You can manually disable all
-such combinations, or run under X as described above.
+### Remapping keys so ChromeVox recognizes a Search key
+ChromeVox expects that the Search key is mapped from your
+left Windows key/LWIN/key code 91; however, your window manager/desktop
+environment (Linux) treats this as a Super or Meta which usually gets assigned
+to numerous shortcut combinations.
+
+#### Option 1: running under a new X session
+To avoid these conflicts, run using startx as described above.
+
+#### Option 2: remapping keys in your window manager
+If you decide not to run under X or wish to run Linux within a window manager
+such as through Chrome Remote Desktop or a virtual machine, you need to remap
+keys either in Linux or inside Chrome OS.
+
+To manually disable all conflicting key combinations in Linux, remove all
+keyboard bindings that reference "Super" or "Meta" in
+System Settings > Keyboard > Shortcuts.
+
+#### Option #3: remapping the Search key inside Chrome OS
+To remap the Search key inside Chrome OS, go to Settings > Device > Keyboard.
+The control key is a good choice for setting as Search as there should be no
+conflicts with Linux on its own. Caps Lock is not recommended to change as
+ChromeVox may handle it as a special case.
 
 ## Speech
 
@@ -118,7 +136,7 @@ In particular, the api-parameters Auth param may exclude the current user.
 You can turn this off by doing:
 api-parameters Auth=none
 
-Testing against the latest releases of Brltty (e.g. 5.4 at time of writing) is
+Testing against the latest releases of Brltty (e.g. 6.3 at time of writing) is
 encouraged.
 
 For more general information, see [ChromeVox](chromevox.md)
