@@ -84,7 +84,9 @@ WaylandWindow::~WaylandWindow() {
   if (root_surface_)
     connection_->wayland_window_manager()->RemoveWindow(GetWidget());
 
-  if (parent_window_)
+  // This might have already been hidden and another window has been shown.
+  // Thus, the parent will have another child window. Do not reset it.
+  if (parent_window_ && parent_window_->child_window() == this)
     parent_window_->set_child_window(nullptr);
 }
 
@@ -556,7 +558,7 @@ void WaylandWindow::AddEnteredOutputId(struct wl_output* output) {
   // Wayland does weird things for menus so instead of tracking outputs that
   // we entered or left, we take that from the parent window and ignore this
   // event.
-  if (AsWaylandPopup() || type() == ui::PlatformWindowType::kTooltip)
+  if (AsWaylandPopup())
     return;
 
   entered_outputs_.emplace_back(

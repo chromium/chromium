@@ -43,6 +43,7 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
       }
       window = std::make_unique<WaylandToplevelWindow>(delegate, connection);
       break;
+    case PlatformWindowType::kTooltip:
     case PlatformWindowType::kMenu:
       // Set the parent window in advance otherwise it is not possible to know
       // if the popup is able to find one and if WaylandWindow::Initialize()
@@ -60,11 +61,6 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
         DLOG(WARNING) << "Failed to determine for menu/popup window.";
         window = std::make_unique<WaylandToplevelWindow>(delegate, connection);
       }
-      break;
-    case PlatformWindowType::kTooltip:
-      window = std::make_unique<WaylandAuxiliaryWindow>(
-          delegate, connection,
-          GetParentWindow(connection, properties.parent_widget));
       break;
     case PlatformWindowType::kWindow:
     case PlatformWindowType::kBubble:

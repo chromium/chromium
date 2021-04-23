@@ -926,12 +926,7 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
                                               : gfx::kNullAcceleratedWidget);
     auto widget = temp_window->GetWidget();
 
-    // Subsurface doesn't have an interface for sending configure events.
-    // Thus, WaylandAuxiliaryWindow notifies the manager that the window is
-    // activated upon creation of the subsurface. Skip calling Show() and call
-    // later then.
-    if (type != PlatformWindowType::kTooltip)
-      temp_window->Show(false);
+    temp_window->Show(false);
 
     Sync();
 
@@ -958,15 +953,8 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
         widget, kDmabufBufferId, window_->GetBounds(), window_->GetBounds());
     Sync();
 
-    if (type != PlatformWindowType::kTooltip) {
-      DCHECK(mock_surface->xdg_surface());
-      ActivateSurface(mock_surface->xdg_surface());
-    } else {
-      // WaylandAuxiliaryWindow uses the focused window as a parent.
-      window_->SetPointerFocus(true);
-      // See the comment near Show() call above.
-      temp_window->Show(false);
-    }
+    DCHECK(mock_surface->xdg_surface());
+    ActivateSurface(mock_surface->xdg_surface());
 
     EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
     EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
