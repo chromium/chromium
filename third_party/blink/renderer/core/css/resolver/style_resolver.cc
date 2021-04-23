@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
+#include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
@@ -1709,7 +1710,7 @@ bool PropagateScrollSnapStyleToViewport(
 
 void StyleResolver::PropagateStyleToViewport() {
   DCHECK(GetDocument().InStyleRecalc());
-  HTMLElement* body = GetDocument().body();
+  HTMLBodyElement* body = GetDocument().FirstBodyElement();
   Element* document_element = GetDocument().documentElement();
 
   const ComputedStyle* document_element_style =
@@ -1743,7 +1744,7 @@ void StyleResolver::PropagateStyleToViewport() {
     // <body> child.
     // Also see LayoutBoxModelObject::BackgroundTransfersToView()
     if (body_style && IsA<HTMLHtmlElement>(document_element) &&
-        IsA<HTMLBodyElement>(body) && !background_style->HasBackground()) {
+        !background_style->HasBackground()) {
       background_style = body_style;
     }
 

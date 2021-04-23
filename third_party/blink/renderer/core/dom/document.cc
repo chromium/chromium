@@ -3277,7 +3277,7 @@ Element* Document::ViewportDefiningElement() const {
   // (3) The root element has visible overflow.
   // Otherwise it's the root element's properties that are to be propagated.
   Element* root_element = documentElement();
-  Element* body_element = body();
+  HTMLBodyElement* body_element = FirstBodyElement();
   if (!root_element)
     return nullptr;
   const ComputedStyle* root_style = root_element->GetComputedStyle();

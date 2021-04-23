@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -1296,10 +1297,9 @@ bool CompositedLayerMapping::ContainsPaintedContent() const {
         HasBoxDecorationsOrBackgroundImage(root_object->StyleRef()))
       return true;
 
-    // Now look at the body's layoutObject.
-    HTMLElement* body = layout_object.GetDocument().body();
-    LayoutObject* body_object =
-        IsA<HTMLBodyElement>(body) ? body->GetLayoutObject() : nullptr;
+    // Now look at the body's LayoutObject.
+    HTMLElement* body = layout_object.GetDocument().FirstBodyElement();
+    LayoutObject* body_object = body ? body->GetLayoutObject() : nullptr;
     if (body_object &&
         HasBoxDecorationsOrBackgroundImage(body_object->StyleRef()))
       return true;
