@@ -46,24 +46,27 @@ bool DeviceTrustService::IsEnabled() const {
           !prefs_->GetList(kContextAwareAccessSignalsAllowlistPref)->empty());
 }
 
+base::RepeatingCallback<bool()> DeviceTrustService::MakePolicyCheck() {
+  // Have to make lambda here because weak_ptrs can only bind to methods without
+  // return values. Unretained is ok here since this callback is only used in
+  // reporter_.SendReport(), and reporter_ is owned by this class.
+  return base::BindRepeating(
+      [](DeviceTrustService* self) { return self->IsEnabled(); },
+      base::Unretained(this));
+}
+
 void DeviceTrustService::OnPolicyUpdated() {
   if (!reporter_) {
     return;
   }
 
-  if (!first_report_sent_ &&
-      IsEnabled()) {  // Policy enabled for the first time.
+  if (!first_report_sent_ && IsEnabled()) {  // Policy enabled for the 1st time.
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
     key_pair_->Init();
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-    reporter_->Init(
-        base::BindRepeating(
-            [](DeviceTrustService* self) { return self->IsEnabled(); },
-            base::Unretained(this)),
-        // Unretained is ok here since owned by this class, and this callback is
-        // only used in reporter_.SendReport().
-        base::BindOnce(&DeviceTrustService::OnReporterInitialized,
-                       weak_factory_.GetWeakPtr()));
+    reporter_->Init(MakePolicyCheck(),
+                    base::BindOnce(&DeviceTrustService::OnReporterInitialized,
+                                   weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -74,13 +77,16 @@ void DeviceTrustService::OnReporterInitialized(bool success) {
     return;
   }
 
-  base::Value val(base::Value::Type::DICTIONARY);
+  DeviceTrustReportEvent report;
 
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-  val.SetStringKey("machine_attestion_key", key_pair_->ExportPEMPublicKey());
+  auto* credential = report.mutable_attestation_credential();
+  credential->set_format(
+      DeviceTrustReportEvent::Credential::EC_NID_X9_62_PRIME256V1_PUBLIC_DER);
+  credential->set_credential(key_pair_->ExportPEMPublicKey());
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
-  reporter_->SendReport(std::move(val), std::move(signal_report_callback_));
+  reporter_->SendReport(&report, std::move(signal_report_callback_));
 }
 
 void DeviceTrustService::OnSignalReported(bool success) {
@@ -99,8 +105,19 @@ void DeviceTrustService::SetSignalReporterForTesting(
 }
 
 void DeviceTrustService::SetSignalReportCallbackForTesting(
-    base::OnceCallback<void(bool)> cb) {
-  signal_report_callback_ = std::move(cb);
+    SignalReportCallback cb) {
+  signal_report_callback_ = base::BindOnce(
+      [](DeviceTrustService* self, SignalReportCallback test_cb, bool success) {
+        self->OnSignalReported(success);
+        std::move(test_cb).Run(success);
+      },
+      base::Unretained(this), std::move(cb));
 }
+
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+std::string DeviceTrustService::GetAttestationCredentialForTesting() const {
+  return key_pair_->ExportPEMPublicKey();
+}
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
 }  // namespace enterprise_connectors

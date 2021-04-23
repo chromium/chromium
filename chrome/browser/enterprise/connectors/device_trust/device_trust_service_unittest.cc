@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/mock_signal_reporter.h"
@@ -12,12 +13,15 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/enterprise/common/proto/device_trust_report_event.pb.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::A;
 using testing::Invoke;
+
 namespace {
 
 const base::Value origins[]{base::Value("example1.example.com"),
@@ -28,6 +32,8 @@ const base::Value origins[]{base::Value("example1.example.com"),
 namespace enterprise_connectors {
 
 class DeviceTrustServiceTest : public testing::Test {
+  using Reporter = enterprise_connectors::MockDeviceTrustSignalReporter;
+
  public:
   DeviceTrustServiceTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
 
@@ -59,14 +65,18 @@ class DeviceTrustServiceTest : public testing::Test {
   }
 
   void SetUpReporterForUpdates(DeviceTrustService* dt_service) {
-    using Reporter = enterprise_connectors::MockDeviceTrustSignalReporter;
     std::unique_ptr<Reporter> reporter = std::make_unique<Reporter>();
-    EXPECT_CALL(*reporter, SendReport(_, _))
-        .WillRepeatedly(Invoke(
-            [this](base::Value value, base::OnceCallback<void(bool)> sent_cb) {
-              signal_posted_ = std::move(value);
-              std::move(sent_cb).Run(true);
-            }));
+
+    // Should only be sending protos.
+    EXPECT_CALL(*reporter, SendReport(A<base::Value>(), _)).Times(0);
+
+    // Mock that the proto has been sent and run the callback.
+    EXPECT_CALL(*reporter, SendReport(A<const DeviceTrustReportEvent*>(), _))
+        .WillRepeatedly(Invoke([=](const DeviceTrustReportEvent* report,
+                                   Reporter::Callback sent_cb) {
+          CheckReportAndRunCallback(dt_service, report, std::move(sent_cb));
+        }));
+
     dt_service->SetSignalReporterForTesting(std::move(reporter));
     dt_service->SetSignalReportCallbackForTesting(base::BindOnce(
         &DeviceTrustServiceTest::ReportCallback, base::Unretained(this)));
@@ -75,16 +85,37 @@ class DeviceTrustServiceTest : public testing::Test {
 
   void WaitForSignalReported() { run_loop_->Run(); }
 
-  void ReportCallback(bool success) { run_loop_->Quit(); }
+  void ReportCallback(bool success) {
+    report_sent_ = success;
+    run_loop_->Quit();
+  }
 
   sync_preferences::TestingPrefServiceSyncable* prefs() {
     return profile_->GetTestingPrefService();
   }
+
   TestingProfile* profile() { return profile_.get(); }
 
+  bool report_sent_ = false;
+
  private:
+  void CheckReportAndRunCallback(DeviceTrustService* dt_service,
+                                 const DeviceTrustReportEvent* report,
+                                 Reporter::Callback sent_cb) {
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+    ASSERT_TRUE(report->has_attestation_credential());
+    ASSERT_TRUE(report->attestation_credential().has_credential());
+    const auto& credential = report->attestation_credential();
+    EXPECT_EQ(credential.credential(),
+              dt_service->GetAttestationCredentialForTesting());
+    EXPECT_EQ(
+        credential.format(),
+        DeviceTrustReportEvent::Credential::EC_NID_X9_62_PRIME256V1_PUBLIC_DER);
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+    std::move(sent_cb).Run(true);
+  }
+
   std::unique_ptr<base::RunLoop> run_loop_;
-  base::Value signal_posted_;
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_ = std::make_unique<TestingProfile>();
@@ -96,6 +127,7 @@ TEST_F(DeviceTrustServiceTest, StartWithEnabledPolicy) {
   DeviceTrustService* device_trust_service =
       DeviceTrustFactory::GetForProfile(profile());
   EXPECT_TRUE(device_trust_service->IsEnabled());
+  ASSERT_FALSE(report_sent_);
 }
 
 TEST_F(DeviceTrustServiceTest, StartWithDisabledPolicy) {
@@ -108,6 +140,7 @@ TEST_F(DeviceTrustServiceTest, StartWithDisabledPolicy) {
   EnableService();
   WaitForSignalReported();
   EXPECT_TRUE(device_trust_service->IsEnabled());
+  ASSERT_TRUE(report_sent_);
 }
 
 // According to Chrome policy_templates "do's / don'ts" (go/policies-dos-donts),
@@ -123,6 +156,7 @@ TEST_F(DeviceTrustServiceTest, StartWithNoPolicy) {
   EnableService();
   WaitForSignalReported();
   EXPECT_TRUE(device_trust_service->IsEnabled());
+  ASSERT_TRUE(report_sent_);
 }
 
 }  // namespace enterprise_connectors

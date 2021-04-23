@@ -41,8 +41,12 @@ class MockDeviceTrustSignalReporter
 
   MOCK_METHOD(void,
               SendReport,
-              (base::Value value, base::OnceCallback<void(bool)> sent_cb),
-              (override));
+              (base::Value value, Callback sent_cb),
+              (const override));
+  MOCK_METHOD(void,
+              SendReport,
+              (const DeviceTrustReportEvent*, Callback sent_cb),
+              (const override));
 
  protected:
   void PostCreateReportQueueTask(

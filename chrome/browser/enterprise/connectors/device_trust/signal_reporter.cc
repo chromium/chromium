@@ -8,12 +8,21 @@
 
 namespace enterprise_connectors {
 
+reporting::ReportQueue::EnqueueCallback MakeEnqueueCallback(
+    DeviceTrustSignalReporter::Callback sent_cb) {
+  return base::BindOnce(
+      [](decltype(sent_cb) cb, reporting::Status status) {
+        std::move(cb).Run(status.ok());
+      },
+      std::move(sent_cb));
+}
+
 DeviceTrustSignalReporter::DeviceTrustSignalReporter() = default;
 DeviceTrustSignalReporter::~DeviceTrustSignalReporter() = default;
 
 void DeviceTrustSignalReporter::Init(
-    base::RepeatingCallback<bool(void)> policy_check,
-    base::OnceCallback<void(bool)> done_cb) {
+    base::RepeatingCallback<bool()> policy_check,
+    Callback done_cb) {
   switch (create_queue_status_) {
     case CreateQueueStatus::NOT_STARTED: {
       create_queue_status_ = CreateQueueStatus::IN_PROGRESS;
@@ -75,23 +84,24 @@ void DeviceTrustSignalReporter::Init(
                             std::move(config_result.ValueOrDie()));
 }
 
-void DeviceTrustSignalReporter::SendReport(
-    base::Value value,
-    base::OnceCallback<void(bool)> sent_cb) {
+void DeviceTrustSignalReporter::SendReport(base::Value value,
+                                           Callback sent_cb) const {
   CHECK_EQ(create_queue_status_, CreateQueueStatus::DONE);
   DCHECK(report_queue_);
-
-  reporting::ReportQueue::EnqueueCallback cb = base::BindOnce(
-      [](decltype(sent_cb) cb, reporting::Status status) {
-        std::move(cb).Run(status.ok());
-      },
-      std::move(sent_cb));
   report_queue_->Enqueue(std::move(value), reporting::Priority::FAST_BATCH,
-                         std::move(cb));
+                         MakeEnqueueCallback(std::move(sent_cb)));
+}
+
+void DeviceTrustSignalReporter::SendReport(const DeviceTrustReportEvent* report,
+                                           Callback sent_cb) const {
+  CHECK_EQ(create_queue_status_, CreateQueueStatus::DONE);
+  DCHECK(report_queue_);
+  report_queue_->Enqueue(report, reporting::Priority::FAST_BATCH,
+                         MakeEnqueueCallback(std::move(sent_cb)));
 }
 
 void DeviceTrustSignalReporter::OnCreateReportQueueResponse(
-    base::OnceCallback<void(bool)> create_queue_cb,
+    Callback create_queue_cb,
     reporting::ReportQueueProvider::CreateReportQueueResponse
         report_queue_result) {
   bool success = report_queue_result.ok();

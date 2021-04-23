@@ -6,8 +6,9 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/signal_reporter.h"
 
-#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/optional.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/device_trust/mock_signal_reporter.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
@@ -47,11 +48,6 @@ class DeviceTrustSignalReporterForTest
 
 class DeviceTrustSignalReporterTest : public testing::Test {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        reporting::ReportQueueProvider::kEncryptedReportingPipeline);
-  }
-
   void InitQueue() {
     run_loop_ = std::make_unique<base::RunLoop>();
     quit_closure_ = run_loop_->QuitClosure();
@@ -71,29 +67,6 @@ class DeviceTrustSignalReporterTest : public testing::Test {
   void OnCreateQueueResult(bool success) {
     ++create_queue_callbacked_;
     create_queue_success_ += success;
-
-    if (success) {
-      ASSERT_NE(reporter_.GetReportQueue(), nullptr);
-      // Mock AddRecord() to store message received so that its content can be
-      // verified.
-      EXPECT_CALL(*(reporter_.GetReportQueue()), AddRecord(_, _, _))
-          .WillRepeatedly(
-              Invoke([this](base::StringPiece val, reporting::Priority priority,
-                            reporting::MockReportQueue::EnqueueCallback cb) {
-                base::Optional<base::Value> msg_result =
-                    base::JSONReader::Read(val);
-                ASSERT_TRUE(msg_result.has_value());
-                msg_received_ = std::move(msg_result.value());
-                std::move(cb).Run(reporting::Status::StatusOK());
-              }));
-    }
-
-    std::move(quit_closure_).Run();
-  }
-
-  void EnqueueCallback(bool success) {
-    ++msg_callbacked_;
-    msg_added_ += success;
     std::move(quit_closure_).Run();
   }
 
@@ -102,9 +75,6 @@ class DeviceTrustSignalReporterTest : public testing::Test {
   int create_queue_callbacked_ = 0;
   int create_queue_success_ = 0;
   int policy_checked_ = 0;
-  int msg_added_ = 0;
-  int msg_callbacked_ = 0;
-  base::Value msg_received_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -113,7 +83,106 @@ class DeviceTrustSignalReporterTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(DeviceTrustSignalReporterTest, SendReportNormal) {
+class DeviceTrustSignalReporter_SendReportTest
+    : public DeviceTrustSignalReporterTest {
+ public:
+  void SetUp() override {
+    DeviceTrustSignalReporterTest::SetUp();
+
+    // Setup to create a MockReportQueue in PostCreateReportQueueTask.
+    EXPECT_CALL(reporter_, PostCreateReportQueueTask(_, _))
+        .WillRepeatedly(
+            Invoke(&reporter_, &DeviceTrustSignalReporterForTest::
+                                   CreateMockReportQueueAndCallback));
+
+    // Initialize the queue and the setup above should result in success.
+    InitQueue();
+    ASSERT_EQ(create_queue_callbacked_, 1);
+    ASSERT_EQ(create_queue_success_, 1);
+    ASSERT_NE(reporter_.GetReportQueue(), nullptr);
+
+    // Mock AddRecord() to store message received so that its content can be
+    // verified.
+    EXPECT_CALL(*(reporter_.GetReportQueue()), AddRecord(_, _, _))
+        .WillRepeatedly(
+            Invoke([this](base::StringPiece str, reporting::Priority priority,
+                          reporting::MockReportQueue::EnqueueCallback cb) {
+              msg_received_ = str.data();
+              std::move(cb).Run(reporting::Status::StatusOK());
+            }));
+  }
+
+ protected:
+  DeviceTrustSignalReporter::Callback MakeEnqueueCallback() {
+    return base::BindOnce(
+        &DeviceTrustSignalReporter_SendReportTest::EnqueueCallback,
+        base::Unretained(this));
+  }
+
+  int msg_added_ = 0;
+  int msg_callbacked_ = 0;
+  std::string msg_received_;
+
+ private:
+  void EnqueueCallback(bool success) {
+    ++msg_callbacked_;
+    msg_added_ += success;
+    std::move(quit_closure_).Run();
+  }
+};
+
+TEST_F(DeviceTrustSignalReporter_SendReportTest, base_Value) {
+  std::string val_json;
+  base::Value val;
+
+  for (int i = 1; i < 3; ++i) {
+    // Prepare the test message & its serialized version for comparison.
+    val = base::Value(base::Value::Type::DICTIONARY);
+    val.SetIntKey("test_field", i);
+    ASSERT_TRUE(base::JSONWriter::Write(val, &val_json));
+
+    // Send the test message.
+    run_loop_ = std::make_unique<base::RunLoop>();
+    quit_closure_ = run_loop_->QuitClosure();
+    reporter_.SendReport(std::move(val), MakeEnqueueCallback());
+    run_loop_->Run();
+
+    // Check that the message was sent properly.
+    ASSERT_EQ(msg_callbacked_, i);
+    ASSERT_EQ(msg_added_, i);
+    ASSERT_EQ(msg_received_, val_json);
+  }
+}
+
+TEST_F(DeviceTrustSignalReporter_SendReportTest, proto) {
+  std::string report_serialized;
+  DeviceTrustReportEvent report;
+  auto* credential = report.mutable_attestation_credential();
+  credential->set_format(
+      DeviceTrustReportEvent::Credential::EC_NID_X9_62_PRIME256V1_PUBLIC_DER);
+
+  for (int i = 1; i < 3; ++i) {
+    // Prepare the test message & its serialized version for comparison.
+    credential->set_credential(base::StringPrintf("test credential %d", i));
+    ASSERT_TRUE(report.SerializeToString(&report_serialized));
+
+    // Send the test message.
+    run_loop_ = std::make_unique<base::RunLoop>();
+    quit_closure_ = run_loop_->QuitClosure();
+    reporter_.SendReport(&report, MakeEnqueueCallback());
+    run_loop_->Run();
+
+    // Check that the message was sent properly.
+    ASSERT_EQ(msg_callbacked_, i);
+    ASSERT_EQ(msg_added_, i);
+    ASSERT_EQ(msg_received_, report_serialized);
+  }
+}
+
+class DeviceTrustSignalReporter_InitQueueTest
+    : public DeviceTrustSignalReporterTest {};
+
+TEST_F(DeviceTrustSignalReporter_InitQueueTest, Success) {
   // Setup to create a MockReportQueue in PostCreateReportQueueTask.
   EXPECT_CALL(reporter_, PostCreateReportQueueTask(_, _))
       .WillRepeatedly(Invoke(
@@ -131,26 +200,10 @@ TEST_F(DeviceTrustSignalReporterTest, SendReportNormal) {
   ASSERT_EQ(create_queue_callbacked_, 2);
   ASSERT_EQ(create_queue_success_, 2);
 
-  base::Value val;
-  for (int i = 1; i < 3; ++i) {
-    val = base::Value(base::Value::Type::DICTIONARY);
-    val.SetIntKey("test_field", i);
-
-    run_loop_ = std::make_unique<base::RunLoop>();
-    quit_closure_ = run_loop_->QuitClosure();
-    reporter_.SendReport(
-        std::move(val),
-        base::BindOnce(&DeviceTrustSignalReporterTest::EnqueueCallback,
-                       base::Unretained(this)));
-    run_loop_->Run();
-
-    ASSERT_EQ(msg_callbacked_, i);
-    ASSERT_EQ(msg_added_, i);
-    ASSERT_EQ(msg_received_.FindPath("test_field")->GetInt(), i);
-  }
+  ASSERT_NE(reporter_.GetReportQueue(), nullptr);
 }
 
-TEST_F(DeviceTrustSignalReporterTest, InitQueueFailure) {
+TEST_F(DeviceTrustSignalReporter_InitQueueTest, Failure) {
   // Setup to fail in PostCreateReportQueueTask.
   EXPECT_CALL(reporter_, PostCreateReportQueueTask(_, _))
       .WillRepeatedly(Invoke(

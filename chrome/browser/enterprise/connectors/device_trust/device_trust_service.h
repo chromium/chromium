@@ -42,7 +42,11 @@ class DeviceTrustService : public KeyedService {
   void SetSignalReporterForTesting(
       std::unique_ptr<enterprise_connectors::DeviceTrustSignalReporter>
           reporter);
-  void SetSignalReportCallbackForTesting(base::OnceCallback<void(bool)> cb);
+  using SignalReportCallback = base::OnceCallback<void(bool)>;
+  void SetSignalReportCallbackForTesting(SignalReportCallback cb);
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+  std::string GetAttestationCredentialForTesting() const;
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
  private:
   friend class DeviceTrustFactory;
@@ -57,6 +61,8 @@ class DeviceTrustService : public KeyedService {
   void OnReporterInitialized(bool success);
   void OnSignalReported(bool success);
 
+  base::RepeatingCallback<bool()> MakePolicyCheck();
+
   PrefService* prefs_;
 
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
@@ -67,7 +73,7 @@ class DeviceTrustService : public KeyedService {
   bool first_report_sent_;
 
   std::unique_ptr<enterprise_connectors::DeviceTrustSignalReporter> reporter_;
-  base::OnceCallback<void(bool)> signal_report_callback_;
+  SignalReportCallback signal_report_callback_;
   base::WeakPtrFactory<DeviceTrustService> weak_factory_{this};
 };
 
