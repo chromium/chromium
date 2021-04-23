@@ -493,7 +493,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageTranslationSuccess) {
 
 // Test that the translation was successful in an about:blank page.
 // This is a regression test for https://crbug.com/943685.
-IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageTranslationAboutBlank) {
+// Disabled due to flakiness: https://crbug.com/1202065.
+IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
+                       DISABLED_PageTranslationAboutBlank) {
   SetTranslateScript(kTestValidScript);
   AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
                 ui::PAGE_TRANSITION_TYPED);
