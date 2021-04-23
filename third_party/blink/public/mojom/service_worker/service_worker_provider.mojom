@@ -42,19 +42,3 @@ struct ServiceWorkerProviderInfoForStartWorker {
   // Used for accessing services from the worker.
   pending_remote<blink.mojom.BrowserInterfaceBroker> browser_interface_broker;
 };
-
-// ServiceWorkerWorkerClientRegistry is a mojo interface for hosting and
-// registering ServiceWorkerWorkerClients. An instance of this interface is
-// implemented by ServiceWorkerProviderContext and lives in the same renderer
-// process as the worker clients.
-// This interface is useful when one needs to register a new worker client
-// for an existing ServiceWorkerProviderContext on non-main thread, i.e. for
-// nested workers.
-interface ServiceWorkerWorkerClientRegistry {
-  // Adds a new ServiceWorkerWorkerClient.
-  RegisterWorkerClient(pending_remote<ServiceWorkerWorkerClient> client);
-
-  // Clones this host.
-  CloneWorkerClientRegistry(
-      pending_receiver<ServiceWorkerWorkerClientRegistry> host);
-};
