@@ -122,8 +122,6 @@ if (enable_downstream_media_tests) {
 source_set("test_support") {
   testonly = true
   sources = [
-    "media_router_base_browsertest.cc",
-    "media_router_base_browsertest.h",
     "test_media_sinks_observer.cc",
     "test_media_sinks_observer.h",
   ]

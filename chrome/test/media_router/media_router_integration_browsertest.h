@@ -8,11 +8,16 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/macros.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/providers/test/test_media_route_provider.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
-#include "chrome/test/media_router/media_router_base_browsertest.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/media_router/media_router_ui_for_test.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/test/browser_test_utils.h"
@@ -20,19 +25,21 @@
 
 namespace media_router {
 
-class MediaRouterIntegrationBrowserTest : public MediaRouterBaseBrowserTest {
+class MediaRouterIntegrationBrowserTest : public InProcessBrowserTest {
  public:
   MediaRouterIntegrationBrowserTest();
   ~MediaRouterIntegrationBrowserTest() override;
 
+  // InProcessBrowserTest Overrides
+  void SetUp() override;
+
  protected:
   // InProcessBrowserTest Overrides
+  void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
   void SetUpInProcessBrowserTestFixture() override;
-  void SetUpOnMainThread() override;
 
-  // MediaRouterBaseBrowserTest Overrides
-  void ParseCommandLine() override;
+  virtual void ParseCommandLine();
 
   // Checks that the request initiated from |web_contents| to start presentation
   // failed with expected |error_name| and |error_message_substring|.
@@ -130,6 +137,16 @@ class MediaRouterIntegrationBrowserTest : public MediaRouterBaseBrowserTest {
   // Sets whether media router is enabled.
   void SetEnableMediaRouter(bool enable);
 
+  // Wait until get the successful callback or timeout.
+  // Returns true if the condition is satisfied before the timeout.
+  // TODO(leilei): Replace this method with WaitableEvent class.
+  bool ConditionalWait(base::TimeDelta timeout,
+                       base::TimeDelta interval,
+                       const base::RepeatingCallback<bool(void)>& callback);
+
+  // Wait for a specific time.
+  void Wait(base::TimeDelta timeout);
+
   // Test API for manipulating the UI.
   MediaRouterUiForTest* test_ui_ = nullptr;
 
@@ -140,6 +157,12 @@ class MediaRouterIntegrationBrowserTest : public MediaRouterBaseBrowserTest {
   std::string receiver_;
 
   std::unique_ptr<TestMediaRouteProvider> test_provider_;
+
+  bool is_incognito() { return browser()->profile()->IsOffTheRecord(); }
+
+  // Returns the superclass' browser(). Marked virtual so that it can be
+  // overridden by MediaRouterIntegrationIncognitoBrowserTest.
+  virtual Browser* browser();
 
  private:
   // Get the full path of the resource file.
@@ -156,13 +179,10 @@ class MediaRouterIntegrationBrowserTest : public MediaRouterBaseBrowserTest {
 class MediaRouterIntegrationIncognitoBrowserTest
     : public MediaRouterIntegrationBrowserTest {
  protected:
-  void InstallAndEnableMRExtension() override;
-  void UninstallMRExtension() override;
   Browser* browser() override;
 
  private:
   Browser* incognito_browser_ = nullptr;
-  std::string incognito_extension_id_;
 };
 
 }  // namespace media_router

@@ -52,7 +52,7 @@ MediaRouterE2EBrowserTest::MediaRouterE2EBrowserTest()
 MediaRouterE2EBrowserTest::~MediaRouterE2EBrowserTest() {}
 
 void MediaRouterE2EBrowserTest::SetUpOnMainThread() {
-  MediaRouterBaseBrowserTest::SetUpOnMainThread();
+  MediaRouterIntegrationBrowserTest::SetUpOnMainThread();
   media_router_ =
       MediaRouterFactory::GetApiForBrowserContext(browser()->profile());
   DCHECK(media_router_);
@@ -62,7 +62,7 @@ void MediaRouterE2EBrowserTest::TearDownOnMainThread() {
   observer_.reset();
   route_id_.clear();
   media_router_ = nullptr;
-  MediaRouterBaseBrowserTest::TearDownOnMainThread();
+  InProcessBrowserTest::TearDownOnMainThread();
 }
 
 void MediaRouterE2EBrowserTest::OnRouteResponseReceived(

@@ -91,14 +91,23 @@ MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest() =
 MediaRouterIntegrationBrowserTest::~MediaRouterIntegrationBrowserTest() =
     default;
 
+Browser* MediaRouterIntegrationBrowserTest::browser() {
+  return InProcessBrowserTest::browser();
+}
+
+void MediaRouterIntegrationBrowserTest::SetUp() {
+  ParseCommandLine();
+  InProcessBrowserTest::SetUp();
+}
+
 void MediaRouterIntegrationBrowserTest::TearDownOnMainThread() {
   test_ui_->TearDown();
-  MediaRouterBaseBrowserTest::TearDownOnMainThread();
+  InProcessBrowserTest::TearDownOnMainThread();
   test_navigation_observer_.reset();
 }
 
 void MediaRouterIntegrationBrowserTest::SetUpInProcessBrowserTestFixture() {
-  MediaRouterBaseBrowserTest::SetUpInProcessBrowserTestFixture();
+  InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   ON_CALL(provider_, IsInitializationComplete(testing::_))
       .WillByDefault(testing::Return(true));
   ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
@@ -122,6 +131,31 @@ void MediaRouterIntegrationBrowserTest::SetUpOnMainThread() {
 
   test_ui_ =
       MediaRouterUiForTest::GetOrCreateForWebContents(GetActiveWebContents());
+}
+
+bool MediaRouterIntegrationBrowserTest::ConditionalWait(
+    base::TimeDelta timeout,
+    base::TimeDelta interval,
+    const base::RepeatingCallback<bool(void)>& callback) {
+  base::ElapsedTimer timer;
+  do {
+    if (callback.Run())
+      return true;
+
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), interval);
+    run_loop.Run();
+  } while (timer.Elapsed() < timeout);
+
+  return false;
+}
+
+void MediaRouterIntegrationBrowserTest::Wait(base::TimeDelta timeout) {
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), timeout);
+  run_loop.Run();
 }
 
 void MediaRouterIntegrationBrowserTest::ExecuteJavaScriptAPI(
@@ -306,7 +340,6 @@ bool MediaRouterIntegrationBrowserTest::IsRouteClosedOnUI() {
 }
 
 void MediaRouterIntegrationBrowserTest::ParseCommandLine() {
-  MediaRouterBaseBrowserTest::ParseCommandLine();
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   receiver_ = command_line->GetSwitchValueASCII(kReceiver);
@@ -593,18 +626,6 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
                        Fail_StartCancelledNoSupportedSinks) {
   test_provider_->set_unsupported_media_sources_list();
   StartSessionAndAssertNotFoundError();
-}
-
-void MediaRouterIntegrationIncognitoBrowserTest::InstallAndEnableMRExtension() {
-  const extensions::Extension* extension =
-      LoadExtension(extension_unpacked_, {.allow_in_incognito = true});
-  incognito_extension_id_ = extension->id();
-}
-
-void MediaRouterIntegrationIncognitoBrowserTest::UninstallMRExtension() {
-  if (!incognito_extension_id_.empty()) {
-    UninstallExtension(incognito_extension_id_);
-  }
 }
 
 Browser* MediaRouterIntegrationIncognitoBrowserTest::browser() {
