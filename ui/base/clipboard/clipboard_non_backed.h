@@ -97,7 +97,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
   void ReadData(const ClipboardFormatType& format,
                 const DataTransferEndpoint* data_dst,
                 std::string* result) const override;
+#if defined(USE_OZONE)
   bool IsSelectionBufferAvailable() const override;
+#endif  // defined(USE_OZONE)
   void WritePortableRepresentations(
       ClipboardBuffer buffer,
       const ObjectMap& objects,

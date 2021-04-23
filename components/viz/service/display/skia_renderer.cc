@@ -2156,7 +2156,6 @@ void SkiaRenderer::ScheduleOverlays() {
   if (current_frame()->overlay_list.empty())
     return;
 
-  auto& locks = pending_overlay_locks_.back();
   std::vector<gpu::SyncToken> sync_tokens;
 
 #if !defined(OS_WIN)
@@ -2168,6 +2167,7 @@ void SkiaRenderer::ScheduleOverlays() {
   // switched over to OverlayProcessor.
   // TODO(weiliangc): Remove this when CrOS and Android SurfaceControl switch
   // to OverlayProcessor as well.
+  auto& locks = pending_overlay_locks_.back();
   for (auto& overlay : current_frame()->overlay_list) {
     // Resources will be unlocked after the next SwapBuffers() is completed.
     locks.emplace_back(resource_provider(), overlay.resource_id);
@@ -2182,6 +2182,7 @@ void SkiaRenderer::ScheduleOverlays() {
     DCHECK(!overlay.mailbox.IsZero());
   }
 #elif defined(OS_WIN)
+  auto& locks = pending_overlay_locks_.back();
   for (auto& dc_layer_overlay : current_frame()->overlay_list) {
     for (size_t i = 0; i < DCLayerOverlay::kNumResources; ++i) {
       ResourceId resource_id = dc_layer_overlay.resources[i];
@@ -2202,6 +2203,7 @@ void SkiaRenderer::ScheduleOverlays() {
     DCHECK(!dc_layer_overlay.mailbox[0].IsZero());
   }
 #elif defined(OS_APPLE)
+  auto& locks = pending_overlay_locks_.back();
   for (CALayerOverlay& ca_layer_overlay : current_frame()->overlay_list) {
     if (ca_layer_overlay.rpdq) {
       PrepareRenderPassOverlay(&ca_layer_overlay);
@@ -2236,6 +2238,7 @@ void SkiaRenderer::ScheduleOverlays() {
     return;
   }
   // Only Wayland uses this code path.
+  auto& locks = pending_overlay_locks_.back();
   for (auto& overlay : current_frame()->overlay_list) {
     // Resources will be unlocked after the next SwapBuffers() is completed.
     locks.emplace_back(resource_provider(), overlay.resource_id);

@@ -688,6 +688,7 @@ void ClipboardNonBacked::ReadData(const ClipboardFormatType& format,
 #endif
 }
 
+#if defined(USE_OZONE)
 bool ClipboardNonBacked::IsSelectionBufferAvailable() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return false;
@@ -695,6 +696,7 @@ bool ClipboardNonBacked::IsSelectionBufferAvailable() const {
   return true;
 #endif
 }
+#endif  // defined(USE_OZONE)
 
 void ClipboardNonBacked::WritePortableRepresentations(
     ClipboardBuffer buffer,
